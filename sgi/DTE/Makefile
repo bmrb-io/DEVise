@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1998/03/04 18:40:33  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.5  1998/03/02 22:30:49  wenger
 #  Got DEVise to link on SGI (haha) -- had to change things so that all
 #  templates are implicit (they are still not implicit on other
@@ -47,10 +53,5 @@ include ../Makefile.config
 ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.sgi
-
-# DO NOT DELETE

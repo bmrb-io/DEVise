@@ -1,13 +1,16 @@
 #include "RelationManager.h"
 #include "types.h"
 #include "Interface.h"
-
+#include "Utility.h"
 #include "sysdep.h"
+
 
 RelationManager::RelationManager()
 {
 	string idFile = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.idFile);
 	string definitionFile = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.definitionFile);
+        //cerr << "using id file: " << idFile << endl;
+        //cerr << "using definition file: " << definitionFile << endl;
 	if(idFile.empty()){
 		err = "Please set up the environment variable \'" +
 			DTE_ENV_VARS.idFile + 
@@ -22,19 +25,22 @@ RelationManager::RelationManager()
 			" or a file that contains table definition entries.";
 		goto end;
 	}
-
+#if 0
+  cerr << "HERE HERE4\n";
 	if(!fileExists(idFile)){
 		string err = "Could not open file: " + idFile + " pointed by " +
 			" env var " + DTE_ENV_VARS.idFile;
 		goto end;
 	}
 
+  cerr << "HERE HERE5\n";
 	if(!fileExists(definitionFile)){
 		string err = "Could not open file: " + definitionFile 
 			+ " pointed by " +
 			" env var " + DTE_ENV_VARS.definitionFile;
 		goto end;
 	}
+#endif
 
 	idStream.open(idFile.c_str(), ios::in | ios::out);
 	if (!idStream.good()) {
@@ -60,13 +66,16 @@ RelationId RelationManager::registerNewRelation(const Interface& myInterface)
 	}
 	int nextId = 0;
 	idStream.seekp(0);
+        assert(idStream.good());
 	if(!idStream.read((char*)&nextId, sizeof(int))){
 		
 		// file is empty, initialize it
 
 		idStream.clear();
+                assert(idStream.good());
 		int futureId = htonl(3);	// next id to be created
 		idStream.write((char*)&futureId, sizeof(int));
+                assert(idStream.good());
 		futureId = htonl(0);	// offset, for future use
 		idStream.write((char*)&futureId, sizeof(int));
 		assert(idStream.good());
@@ -84,6 +93,7 @@ RelationId RelationManager::registerNewRelation(const Interface& myInterface)
 	int nextPos = htonl(defStream.tellp());	// this id points to offset 0
 	idStream.seekp(0, ios::end);
 	idStream.write((char*)&nextPos, sizeof(int));
+        idStream.flush();       // kb: I added, but not really needed
 
 	myInterface.write(defStream);
 	defStream << endl;
@@ -94,11 +104,13 @@ RelationId RelationManager::registerNewRelation(const Interface& myInterface)
 Interface* RelationManager::createInterface(const RelationId& relId)
 {
 	if(!err.empty()){
+                cerr << "had an error! " << err<< endl;
 		THROW(new Exception(err), 0);
 	}
 	assert(relId.getServerId() == DTE_SERVER_ID || !"not implemented");
 	
 	int idOffset = relId.getLocalId();
+        cerr << "got idOffset: " << idOffset << endl;
 
 	idStream.seekg(idOffset * sizeof(int));
 	
@@ -110,20 +122,23 @@ Interface* RelationManager::createInterface(const RelationId& relId)
 		idStream.clear();
 		string msg = "No local relation with relation id: " +
 			relId.toString() + " exists";
+                cerr << msg << endl;
 		THROW(new Exception(msg), 0);
 	}
 	defOffset = ntohl(defOffset);
+        cerr << "got defOffset: " << defOffset << endl;
 
 	defStream.seekg(defOffset);
 	assert(defStream.good());
 
-	char* space = new char[INITIAL_INTERFACE_SIZE];
-	void* retVal = (Interface*) new (space) StandardInterface();
-
-	interfaceRead(defStream, retVal);
-
+        //kb: how did I break this?? I added this to fix it
+        Interface* interface = Interface::create(defStream);
+	assert(interface);
 	assert(defStream.good());
-	return (Interface*) retVal;
+
+        // StandardInterface* interface = new StandardInterface();
+        // TRY(interface->read(defStream), NULL);
+	return interface;
 }
 
 void RelationManager::deleteRelation(const RelationId&)

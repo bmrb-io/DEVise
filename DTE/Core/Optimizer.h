@@ -35,15 +35,14 @@ const float CUT_OFF_COST = 1e10;
 
 class OptNode;
 class LogicalProp;
-class BaseSelection;
+class OptExpr;
 class TableAlias;
 class Iterator;
 class JoinMethod;
-class ExprList;
 
 enum Ordering {ASC, DESC};
 typedef vector<OptNode*> NodeTable;
-typedef pair<BaseSelection*, Ordering> SortCriterion;
+typedef pair<OptExpr*, Ordering> SortCriterion;
 typedef pair<Cost, JoinMethod*> AltEntry;
 
 string& operator<<(string& s, const SortCriterion&);
@@ -62,15 +61,15 @@ public:
 };
 
 class Query {
-	vector<BaseSelection*> selectList;
+	OptExprList selectList;
 	vector<TableAlias*> tableList;
-	vector<BaseSelection*> predList;
+	OptExprList predList;
 	vector<SortCriterion> orderBy;
 public:
 /*
-	Query(const vector<BaseSelection*>& selectList,
+	Query(const OptExprList& selectList,
 		const vector<TableAlias*>& tableList,
-		const vector<BaseSelection*>& predList,
+		const OptExprList& predList,
 		const vector<SortCriterion>& orderBy) :
 
 		logicalProp(selectList, tableList, predList), orderBy(orderBy) {
@@ -78,16 +77,16 @@ public:
 */
 	// temporary Query constructor
 
-	Query(const vector<BaseSelection*>& selectList,
+	Query(const OptExprList& selectList,
 		const vector<TableAlias*>& tableList,
-		const vector<BaseSelection*>& predList) :
+		const OptExprList& predList) :
 
 		selectList(selectList), tableList(tableList), predList(predList){
 	}
-	const vector<BaseSelection*>& getSelectList() const {
+	const OptExprList& getSelectList() const {
 		return selectList;
 	}
-	const vector<BaseSelection*>& getPredicateList() const {
+	const OptExprList& getPredicateList() const {
 		return predList;
 	}
 	const vector<TableAlias*>& getTableList() const {
@@ -174,12 +173,13 @@ protected:
 //	const SiteDesc* siteDesc;
 public:
 	OptNode(TableMap tableMap, const SiteDesc* siteDesc);
+        virtual ~OptNode() {}
 	LogicalProp getLogProp(const LogPropTable& logPropTab) const;
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab) = 0;
-	virtual Iterator* createExec(const Query& q) const = 0;
+	virtual Iterator* createExec(const Query& q, bool isTop) const = 0;
 	virtual Cost getCost(const LogPropTable& logPropTab) = 0;
 	virtual string toString() const = 0;
 	virtual int getNumOfChilds() = 0;
@@ -187,7 +187,7 @@ public:
 	virtual Cost getCostConst() const = 0;
 	virtual int getTotalNumNodes() const = 0;	// for debugging
 	virtual int getNumExpandedNodes() const = 0;	// for debugging
-	vector<BaseSelection*> getProjectList(const Query& query) const;
+	OptExprList getProjectList(const Query& query) const;
 	TableMap getTableMap() const {
 		return tableMap;
 	}
@@ -197,12 +197,12 @@ class SPJQueryProduced : public OptNode {
 	vector<AltEntry> alts;
 public:
 	SPJQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
-	SPJQueryProduced::~SPJQueryProduced();
+	~SPJQueryProduced();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec(const Query& q) const;
+	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
 	virtual int getNumOfChilds(){return 2;}
@@ -216,15 +216,15 @@ class RemQueryProduced : public OptNode {
 	string queryToShip;
 	string host;
 	int port;
-	TypeIDList typeIDs;
+	DteTupleAdt adt;
 public:
 	RemQueryProduced(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
-	RemQueryProduced::~RemQueryProduced();
+	~RemQueryProduced();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec(const Query& q) const;
+	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const {return "Query Shipping";}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
 		return 0;
@@ -240,13 +240,13 @@ class QueryNeeded : public OptNode {
 	OptNode* root;
 public:
 	QueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
-	QueryNeeded::~QueryNeeded();
+	~QueryNeeded();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec(const Query& q) const {
-		return root->createExec(q);
+	virtual Iterator* createExec(const Query& q, bool isTop) const {
+		return root->createExec(q, isTop);
 	}
 	virtual string toString() const {return root->toString();}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
@@ -260,20 +260,22 @@ public:
 };
 
 class AggQueryNeeded : public OptNode {
-	Query* aggLessQuery;
-	AggList* aggs;
+	Query* agglessQuery;
+	ExecAggList aggs;
 	OptNode* root;
+        void createAgg(OptExprList& agglessSelList, OptFunction* f);
+
 public:
 	AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
-	AggQueryNeeded::~AggQueryNeeded();
+	~AggQueryNeeded();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab)
 	{
-		return root->expand(*aggLessQuery, nodeTab, logPropTab);
+		return root->expand(*agglessQuery, nodeTab, logPropTab);
 	}
-	virtual Iterator* createExec(const Query& q) const;
+	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const {return "aggregates";}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
 		return root->getCost(logPropTab);
@@ -291,12 +293,12 @@ class SPQueryProduced : public OptNode {
 	string aliasM;
 public:
 	SPQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
-	SPQueryProduced::~SPQueryProduced();
+	~SPQueryProduced();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec(const Query& q) const;
+	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
 	virtual int getNumOfChilds(){return 0;}
@@ -313,12 +315,12 @@ class GestaltQueryProduced : public SPQueryProduced {
 	vector<NodeQueryPair> gestMembers;
 public:
 	GestaltQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
-	GestaltQueryProduced::~GestaltQueryProduced();
+	~GestaltQueryProduced();
 	virtual bool expand(
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec(const Query& q) const;
+	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const;
 };
 

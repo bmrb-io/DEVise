@@ -24,6 +24,7 @@
 #include "types.h"
 #include "Iterator.h"
 #include "sysdep.h"
+#include "STuple.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -43,7 +44,7 @@ public:
 
   DataReadExec(const string& schemaFile, const string& dataFile); // throws
 
-  DataReadExec::DataReadExec(DataReader* ud);
+  DataReadExec::DataReadExec(DataReader* dr);
   
   virtual ~DataReadExec();
 
@@ -55,7 +56,7 @@ public:
   
   virtual Offset getOffset();
 
-  virtual const TypeIDList& getTypes();
+  static void translateSchema(DataReader* dr, ISchema& schema);
 
 protected:
 
@@ -65,23 +66,18 @@ protected:
 
   char* buff;	// this has to be aligned!
   int buffSize;
-  DataReader* ud;
-  UnmarshalPtr* unmarshalPtrs;
-  DestroyPtr* destroyPtrs;
-  Type** tuple;
+  DataReader* dr;
+  STuple tuple;
   off_t off;
-  int* offsets;
   int numFlds;
-  int recId;
-  TypeIDList types;
 };
 
 
 //---------------------------------------------------------------------------
 
-
+#if 0
 class DataRead : public PlanOp {
-	DataReader* ud;
+	DataReader* dr;
 	int numFlds;
 protected:
 	TypeID* typeIDs;
@@ -124,5 +120,6 @@ public:
 	}
 	virtual Iterator* createExec();
 };
+#endif
 
 #endif

@@ -1,6 +1,9 @@
 #ifndef TYPECHECK_H
 #define TYPECHECK_H
 
+#if 0
+//kb: remove this file
+
 #include <vector>
 #include <string>
 #include <map>
@@ -10,20 +13,21 @@
 using namespace std;
 #endif
 
-// This class is the owner of all BaseSelection objects
+// This class is the owner of all OptExpr objects
 
-class BaseSelection;
+class OptExpr;
 class TableAlias;
 
 class TypeCheck {
-	map<string, BaseSelection*, StringLess> symtab;
+	map<string, OptExpr*, StringLess> symtab;
 public:
 	void initialize(const vector<TableAlias*>& tableList);
-	void insert(BaseSelection* element);
-     void setupSelList(vector<BaseSelection*>& list);
-	BaseSelection* TypeCheck::resolve(BaseSelection* curr);
-     void resolve(vector<BaseSelection*>& list);	// throws
+	void insert(OptExpr* element);
+     void setupSelList(vector<OptExpr*>& list);
+	OptExpr* TypeCheck::resolve(OptExpr* curr);
+     void resolve(vector<OptExpr*>& list);	// throws
 	~TypeCheck();
 };
+#endif
 
 #endif

@@ -13,18 +13,18 @@ void PQueue::enq(Node *newitem)
 
   while (parent >= 0)
     {
-      // Assumes Ascending sort order
       if (order == Ascending){
-	if (tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+	if (tupleCompare(fld_types, num_sort_flds, sort_flds,
 			 Items[place]->tuple, Items[parent]->tuple) >= 0)
 	  break;
       }
        else{
-	if (tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+	if (tupleCompare(fld_types, num_sort_flds, sort_flds,
 			 Items[place]->tuple, Items[parent]->tuple) <= 0)
 	  break;
       }
-      
+
+      // move newitem up & parent down
       Node *temp = Items[place];
       Items[place] = Items[parent];
       Items[parent] = temp;
@@ -51,6 +51,13 @@ Node *PQueue::deq()
   return min_elem;
 }
 
+Node *PQueue::head()
+{
+  if (num_of_elems == 0)
+    return NULL;
+  return Items[0];
+}
+
 void PQueue::adjust(int root)
 {  
 
@@ -61,8 +68,8 @@ void PQueue::adjust(int root)
     // Root is not a leaf
     int right_child = child + 1;
     
-      int right = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-			       Items[right_child]->tuple, Items[child]->tuple);
+    int right = tupleCompare(fld_types, num_sort_flds, sort_flds,
+                             Items[right_child]->tuple, Items[child]->tuple);
     if (right_child < num_of_elems) {
       
       if (order == Ascending){
@@ -77,11 +84,11 @@ void PQueue::adjust(int root)
     
     int root_smaller;
     if (order == Ascending)
-      root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-				  Items[child]->tuple, Items[root]->tuple);
+      root_smaller = tupleCompare(fld_types, num_sort_flds, sort_flds,
+                                  Items[child]->tuple, Items[root]->tuple);
     else
-      root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-				  Items[root]->tuple, Items[child]->tuple);
+      root_smaller = tupleCompare(fld_types, num_sort_flds, sort_flds,
+                                  Items[root]->tuple, Items[child]->tuple);
  
     if (root_smaller < 0)
      {	

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/11/23 19:18:52  donjerko
+  Added support for gestalts
+
   Revision 1.27  1998/07/24 04:37:55  donjerko
   *** empty log message ***
 
@@ -114,13 +117,10 @@ class StandReadExec : public RandomAccessIterator
 {
 public:
 
-  StandReadExec(const TypeIDList& typeIDs, istream* in,
+  StandReadExec(const DteTupleAdt& adt, istream* in,
                 const string& url = "*noname*");
 
-  StandReadExec(const TypeIDList& typeIDs, const string& url);
-
-  StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
-                string url = "*noname*"); // defunct
+  StandReadExec(const DteTupleAdt& adt, const string& url);
 
   virtual ~StandReadExec();
 
@@ -132,19 +132,13 @@ public:
 
   virtual Offset getOffset();
 
-  virtual const TypeIDList& getTypes();
-
 protected:
 
-  TypeIDList types;
   istream* in;
   string url;
-  int numFlds;
-  vector<ReadPtr> readPtrs;
-  Type** tuple;
   int currentLine;
   bool first_pass;
-  
+  PageBuf pageBuf;
 };
 
 class DteProtocol;
@@ -152,52 +146,44 @@ class DteProtocol;
 class StandReadExec2 : public StandReadExec {
 	DteProtocol* dteProt;
 public:
-	StandReadExec2(const TypeIDList& typeIDs, istream* in, DteProtocol* dteProt)
-		: StandReadExec(typeIDs, in), dteProt(dteProt)
-	{
-	}
+	StandReadExec2(const DteTupleAdt& tupAdt,
+                       istream* in, DteProtocol* dteProt);
 	virtual ~StandReadExec2();
 };
 
 
+#if 0
 class StandardRead : public PlanOp {
 protected:
 	istream* in;
-	int numFlds;
-	string* typeIDs;
-	string* attributeNames;
-	string* order;
+  DteTupleAdt tupAdt;
+  vector<string> attributeNames;
+  vector<string> order;         // not used yet
 	Stats* stats;
 	string urlStr;
 public:
      StandardRead() : 
-		in(NULL), numFlds(0), typeIDs(NULL), 
-		attributeNames(NULL),
-		order(NULL), stats(NULL) {}
+		in(NULL), stats(NULL) {}
 
 	virtual ~StandardRead(){
-		delete [] typeIDs;
-		delete [] attributeNames;
 		delete stats;
 	}
-	void open(istream* in, int numFlds, const TypeID* typeIDs); 
+	void open(istream* in, const DteTupleAdt& tupAdt); 
 		// throws, used for tmp tables
 
 	void open(const ISchema& schema, istream* in, const string& urlStr); 
 
 	void writeTo(ofstream* outfile);
-	virtual int getNumFlds(){
-		return numFlds;
+	virtual int getNumFields(){
+		return tupAdt.getNumFields();
 	}
-	virtual const string *getTypeIDs(){
-		assert(typeIDs);
-		return typeIDs;
+	virtual const DteTupleAdt& getAdt(){
+		return tupAdt;
 	}
-	virtual const string* getAttributeNames(){
-		assert(attributeNames);
+	virtual const vector<string>& getAttributeNames(){
 		return attributeNames;
 	}
-	virtual string * getOrderingAttrib(){
+	virtual const vector<string>& getOrderingAttrib(){
 		return order;
 	}
      virtual Stats* getStats(){
@@ -209,40 +195,34 @@ public:
 		}
      }
 	virtual ostream& display(ostream& out){
-		out << "Num fields: " << numFlds << endl;
+		out << "Num fields: " << getNumFields() << endl;
 		out << "(";
-		for(int i = 0; i < numFlds; i++){
-			out << typeIDs[i] << " " << attributeNames[i];
-			out << (i == numFlds - 1 ? "" : ", ");
-		}
+                out << tupAdt.getTypeSpec();
 		out << ")";
 		stats->display(out);
 		return out;
 	}
 	virtual Iterator* createExec(){
-          return new StandReadExec(numFlds, typeIDs, in);
+          return new StandReadExec(tupAdt, in);
 	}
 };
 
 class RidAdder : public PlanOp {
-	PlanOp* input;
-	int numFlds;
-	TypeID* typeIDs;
-	string* attributeNames;
+  PlanOp* input;
+  DteTupleAdt tupAdt;
+  vector<string> attributeNames;
 public:
 	RidAdder(PlanOp* input);
 	virtual ~RidAdder(){
 		delete input;
-		delete [] typeIDs;
-		delete [] attributeNames;
 	}
-	virtual int getNumFlds(){
-		return numFlds;
+	virtual int getNumFields(){
+		return tupAdt.getNumFields();
 	}
-	virtual const TypeID* getTypeIDs(){
-		return typeIDs;
+	virtual const DteTupleAdt& getAdt(){
+		return tupAdt;
 	}
-	virtual const string* getAttributeNames(){
+	virtual const vector<string>& getAttributeNames(){
 		return attributeNames;
 	}
 	virtual Iterator* createExec();
@@ -253,5 +233,6 @@ public:
      NCDCRead() : StandardRead() {}
 	virtual void open(istream* in);	// Throws exception
 };
+#endif
 
 #endif

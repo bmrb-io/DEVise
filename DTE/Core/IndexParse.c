@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/08/04 15:21:32  wenger
+  Changed ios::binary to ios::bin so this compiles on SPARC/Solaris 2.5.
+
   Revision 1.28  1998/07/24 04:37:48  donjerko
   *** empty log message ***
 
@@ -92,13 +95,13 @@
 #include<stdio.h>	// for perror
 #include<errno.h>
 
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
-#include "site.h"
+//#include "site.h"
 #include "types.h"
 #include "exception.h"
 #include "catalog.h"
-#include "listop.h"
+//#include "listop.h"
 #include "ParseTree.h"
 #include "Utility.h"
 #include "Iterator.h"
@@ -418,211 +421,3 @@ Iterator* IndexParse::createExec(){
 
 
 //---------------------------------------------------------------------------
-
-
-#if defined(OLD_STUFF)
-//***
-
-
-	int numFlds = numKeyFlds + numAddFlds;
-	const string* types = site->getTypeIDs();
-	MarshalPtr marshalPtrs[numFlds];
-	int sizes[numFlds];
-	int fixedSize = 0; 
-	for(int i = 0; i < numFlds; i++){
-		marshalPtrs[i] = getMarshalPtr(types[indirect[i]]);
-		sizes[i] = packSize(types[indirect[i]]);
-		fixedSize += sizes[i];
-	}
-	string rtreeISchema;
-	for(int i = 0; i < numKeyFlds; i++){
-		rtreeISchema += rTreeEncode(types[indirect[i]]);
-	}
-
-	int recIDSize = 0;
-	for(int i = 0; i < numAddFlds; i++){
-		recIDSize += sizes[i + numKeyFlds];
-	}
-	if(!standAlone) {
-		recIDSize += sizeof(Offset);
-	}
-	int points = 1; // set to 0 for rectangles
-	ostrstream line1;
-	line1 << numKeyFlds << " " << recIDSize << " " << points << " ";
-	line1 << rtreeISchema;
-	int fillSize  = (line1.pcount() + 1) % 8;	// allign on 8 byte boundary
-	for(int i = 0; i < fillSize; i++){
-		line1 << " ";
-	}
-	line1 << endl;
-	string bulkfile = *indexName + ".bulk";
-	ofstream ind(bulkfile.c_str());
-	assert(ind);
-	ind << line1.rdbuf();
-	int tupSize;
-	Offset offset;
-
-	LOG(logFile << "Creating executable:\n";)
-	TRY(Iterator* inpIter = site->createExec(), 0);
-
-        RandomAccessIterator* randIter = NULL;
-        if( inpIter->GetIteratorType() == Iterator::RANDOM_ITERATOR ) {
-          randIter = (RandomAccessIterator*)inpIter;
-        } else {
-          assert(!standAlone);  // standAlone (like primary) index needs
-                                // random access
-        }
-
-	inpIter->initialize();
-	const Tuple* tup = inpIter->getNext();
-	if(!standAlone) {
-          offset = randIter->getOffset();
-          // cout << "offset = " << offset << endl;
-        }
-
-	MinAggregate mins[numTFlds];
-	MaxAggregate maxs[numTFlds];
-
-	for(int i = 0; i < numTFlds; i++){
-		TRY(mins[i].typify(types[i]), NULL);
-		TRY(maxs[i].typify(types[i]), NULL);
-	}
-
-	ExecAggregate* minExs[numTFlds];
-	ExecAggregate* maxExs[numTFlds];
-
-	for(int i = 0; i < numTFlds; i++){
-		minExs[i] = mins[i].createExec();
-		assert(minExs[i]);
-		maxExs[i] = maxs[i].createExec();
-		assert(maxExs[i]);
-	}
-
-	if(tup){ // make sure this is not empty
-
-          for(int i = 0; i < numTFlds; i++){
-			minExs[i]->initialize(tup[i]);
-			maxExs[i]->initialize(tup[i]);
-          }
-
-		char flatTup[fixedSize];
-		const Type* indexTup[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			indexTup[i] = tup[indirect[i]];
-		}
-		marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
-		ind.write(flatTup, fixedSize);
-		if(!standAlone){
-			ind.write((char*) &offset, sizeof(Offset));
-			offset = randIter->getOffset();
-			// cout << "offset = " << offset << endl;
-		}
-		while((tup = inpIter->getNext())){
-
-			for(int i = 0; i < numTFlds; i++){
-				minExs[i]->update(tup[i]);
-				maxExs[i]->update(tup[i]);
-			}
-
-			for(int i = 0; i < numFlds; i++){
-				indexTup[i] = tup[indirect[i]];
-			}
-			marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
-			ind.write(flatTup, fixedSize);
-			if(!standAlone){
-				offset = randIter->getOffset();
-				// cout << "offset = " << offset << endl;
-				ind.write((char*) &offset, sizeof(Offset));
-			}
-		}
-	}
-	ind.close();
-	string convBulk = bulkfile + ".conv";
-
-	string convert_bulk = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.convert_bulk);
-
-	if(convert_bulk.empty()){
-		string msg = "Please set the env var \"" + 
-			DTE_ENV_VARS.convert_bulk + 
-			"\" to point to the convert_bulk executable";
-		THROW(new Exception(msg), NULL);
-	}
-
-	string cmd = convert_bulk + " < " + bulkfile + " > " + convBulk;
-	if(system(cmd.c_str()) != 0){
-		perror("system");
-		string msg = "Failed to execute: " + cmd;
-		msg += "\n Please set the env var \"" + 
-				DTE_ENV_VARS.convert_bulk +  
-				"\" to point to the convert_bulk executable";
-		THROW(new Exception(msg), NULL);
-		// throw Exception(msg);
-	}
-
-	int bulk_file = open(convBulk.c_str(), O_RDWR, 0600);
-
-	if(!bulk_file){
-		string msg = "Failed to open conv bulk data file:" + convBulk;
-		THROW(new Exception(msg), NULL);
-		// throw Exception(msg);
-	}
-
-	page_id_t root1;
-
-	const char* fileToContainRTree = "./testRTree";  // fix this later
-
-	db_mgr_jussi db_mgr(fileToContainRTree, cacheMgr);
-
-	typed_rtree_t rtree(&db_mgr);
-
-	rtree.bulk_load(bulk_file, root1, rtreeISchema.c_str());
-
-	// this has created index
-
-	printf("Created index\n");
-
-	close(bulk_file);
-	if(remove(bulkfile.c_str()) < 0){
-		perror("remove:");
-		string msg = string("Failed to remove tmp file: ") + bulkfile;
-		THROW(new Exception(msg), NULL);
-		// throw Exception(msg);
-	}
-	if(remove(convBulk.c_str()) < 0){
-		perror("remove:");
-		string msg = string("Failed to remove tmp file: ") + convBulk;
-		THROW(new Exception(msg), NULL);
-		// throw Exception(msg);
-	}
-
-
-
-//...clip...
-
-
-	Tuple minTup[numTFlds];
-	Tuple maxTup[numTFlds];
-	for(int i = 0; i < numTFlds; i++){
-		minTup[i] = minExs[i]->getValue();
-		maxTup[i] = maxExs[i]->getValue();
-	}
-
-	Inserter mmFile;
-	string mmFilePath = MinMax::getPathName(tablename);
-	ISchema tableSchema(numTFlds, types, attrNms);
-	TRY(mmFile.open(tableSchema, mmFilePath, ios::out), NULL);
-
-	mmFile.insert(minTup);
-	mmFile.insert(maxTup);
-
-	StandardInterface interf(tableSchema, mmFilePath);
-	MinMax::replace(tablename, &interf);
-	CATCH(cerr << "Warning: "; cerr << currExcept->toString() << endl;);
-
-	for(int i = 0; i < numTFlds; i++){
-		delete minExs[i];
-		delete maxExs[i];
-	}
-
-
-#endif

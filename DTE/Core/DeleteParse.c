@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/06/22 01:14:31  donjerko
+  *** empty log message ***
+
   Revision 1.19  1997/12/04 04:05:08  donjerko
   *** empty log message ***
 
@@ -77,29 +80,76 @@
 //#include<stdio.h>	// for perror   erased for sysdep.h
 // #include<errno.h>   erased for sysdep.h
 
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
-#include "site.h"
+//#include "site.h"
 #include "types.h"
 #include "exception.h"
 #include "catalog.h"
-#include "listop.h"
+//#include "listop.h"
 #include "ParseTree.h"
-#include "ExecExpr.h"
 #include "sysdep.h"
-#include "MemoryMgr.h"
-#include "TypeCheck.h"
+//#include "MemoryMgr.h"
+//#include "TypeCheck.h"
+#include "ExecExpr.h"
+#include "DTE/types/DteBoolAdt.h"
+#include "DTE/util/Del.h"
+#include "DteSymbolTable.h"
+#include "Deleter.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
 Iterator* DeleteParse::createExec(){
 	LOG(logFile << "Deleting from ");
-	LOG(tableName->display(logFile));
-	LOG(logFile << " tuples satisfying ";)
+	LOG(tableAlias->display(logFile));
+	LOG(logFile << " tuples satisfying ");
 	LOG(predicate->display(logFile));
-	LOG(logFile << endl;)
+	LOG(logFile << endl);
+        //kb: DELETE does not update indexes!
 
+        const Interface* interface = tableAlias->getInterface();
+        assert(interface);
+        Del<Deleter> deleter = interface->createDeleter();
+        if( !deleter ) {
+          cerr << "DELETE is not currently supported for tables of type "
+               << interface->getTypeNm() << endl;
+          return NULL;
+        }
+
+	vector<TableAlias*> tableList;
+	tableList.push_back(tableAlias);
+	vector<OptExpr*> predicateVec;
+	predicateVec.push_back(predicate);
+	//TypeCheck typeCheck;
+	//TRY(typeCheck.initialize(tableList), 0);
+	//TRY(typeCheck.resolve(predicateVec), NULL);
+        DteSymbolTable symtab(tableList);
+        if( !typeCheckVec(predicateVec, symtab) ) {
+          cerr << "DELETE statment did not type-check\n";
+          return NULL;
+        }
+
+        const DteAdt& adt = predicate->getAdt();
+        if( adt.getTypeID() != DteBoolAdt::typeID ) {
+          string msg = "Expressions has type " +  adt.getTypeSpec()
+            + "; bool expected";
+          cerr << msg << endl;
+          THROW(new Exception(msg), NULL);
+          // throw Exception(msg);
+        }
+
+        Del<ExecExpr> execPred = NULL;
+        if( predicate ) {
+          execPred = predicate->createExec(OptExprListList());
+          assert(execPred);
+        }
+
+        deleter->deleteWhere(execPred.steal());
+
+        return NULL;
+#if 0        
+//kb: dead code
 	TableName* tableNameCopy = new TableName(*tableName);
 
 	// the above line is needed because the find function changes its argument
@@ -135,7 +185,7 @@ Iterator* DeleteParse::createExec(){
 //	TRY(execPred = predicate->createExec(*alias, siteISchema, "", NULL), NULL); 
 	TRY(execPred = predicate->createExec(site, NULL), NULL); 
 	assert(execPred);
-	int inputNumFlds = site->getNumFlds();
+	int inputNumFlds = site->getNumFields();
 	const TypeID* types = site->getTypeIDs();
 	TRY(Iterator* iter = site->createExec(), NULL);
 	iter->initialize();
@@ -160,4 +210,5 @@ Iterator* DeleteParse::createExec(){
 	delete site;
 	delete execPred;
 	return NULL;
+#endif
 }

@@ -4,7 +4,7 @@
 
 string RelationId::toString() const {
 	ostringstream oss;
-	oss << *this << ends;
+	oss << *this;
 	return oss.str();
 }
 

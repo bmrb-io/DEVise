@@ -8,12 +8,13 @@
 
 typedef float Cost;
 
-class BaseSelection;
+class OptExpr;
 class Iterator;
 
 class AccessMethod {
 public:
-	virtual vector<BaseSelection*> getProjectList(const string& alias) const = 0;
+        virtual ~AccessMethod() {}
+	virtual vector<OptExpr*> getProjectList(const string& alias) const = 0;
 	virtual Iterator* createExec() = 0;	  
 	
 	// this should be a const method but cannot be so because of the way 
@@ -27,11 +28,12 @@ public:
 class FileScan : public AccessMethod {
 	Cost cost;
 public:
+        ~FileScan() {}
 	FileScan(const NewStat& stat);
 	virtual string getName() const {return "FileScan";} 
 	virtual Iterator* createExec();
 	virtual Cost getCost() const;
-	virtual vector<BaseSelection*> getProjectList(const string& alias) const {assert(0);}
+	virtual vector<OptExpr*> getProjectList(const string& alias) const {assert(0);}
 };
 
 class StandardAM : public AccessMethod {
@@ -39,10 +41,11 @@ class StandardAM : public AccessMethod {
 	string url;
 public:
 	StandardAM(const ISchema& schema, const string& url, const Stats& stats);
+        ~StandardAM() {}
 	virtual Iterator* createExec();
 	virtual Cost getCost() const;
 	virtual string getName() const {return "StandardRead";};
-	virtual vector<BaseSelection*> getProjectList(const string& alias) const;
+	virtual vector<OptExpr*> getProjectList(const string& alias) const;
 };
 
 class DataReader;
@@ -50,35 +53,27 @@ class UniData;
 class Attr;
 
 class DataReaderAM : public AccessMethod {
-	DataReader* dr;
-	UniData* ud;
-	int numFlds;
-protected:
-	TypeID* typeIDs;
-	TypeIDList typeIDlist;   // contains the same thing as typeIDs
-	string* attributeNames;
-	string* order;
+  DataReader* dr;
+  UniData* ud;
+  ISchema schema;
+  string order;
 private:
-	void translateUDInfo();
-	void translateDRInfo();
-	TypeID translateUDType(Attr* at);
+  //void translateUDInfo();
+  //void translateDRInfo();
+  // result must be deleted by caller
+  //DteAdt* translateUDType(Attr* at);
 public:
 	DataReaderAM(const string& schemaFile, const string& dataFile); // throws
 	virtual ~DataReaderAM();
 	virtual Iterator* createExec();
 	virtual Cost getCost() const;
 	virtual string getName() const {return "DataReader";};
-	virtual vector<BaseSelection*> getProjectList(const string& alias) const;
+	virtual vector<OptExpr*> getProjectList(const string& alias) const;
+        const ISchema& getSchema() const { return schema; }
 public:
-	int getNumFlds() const {
-		return numFlds;
-	}
-	const TypeID* getTypeIDs(){
-		return typeIDs;
-	}
-	const string* getAttributeNames(){
-		return attributeNames; // may be NULL
-	}
+  //int getNumFields() const { return tupAdt.getNumFields(); }
+  //const DteTupleAdt& getAdt(){ return tupAdt; }
+  //const vector<string>& getAttributeNames(){ return attributeNames; }
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/06/28 21:47:48  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.29  1998/04/27 17:30:15  wenger
   Improvements to TAttrLinks and related code.
 
@@ -103,6 +107,8 @@
 #include "DevRead.h"
 #include "catalog.h"
 #include "Interface.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/util/Del.h"
 
 // #define DEBUG
 
@@ -131,26 +137,28 @@ void getDirAndFileNames(const char* fullPath, char*& dir, char*& file){
 char* executeQuery(const string& query){
 	Engine engine(query);
 	TRY(engine.optimize(), NULL);
-	int numFlds = engine.getNumFlds();
-	if(engine.getNumFlds() == 0){
+	int numFlds = engine.getNumFields();
+	if(numFlds == 0) {
 		return NULL;
 	}
-	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
-	TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), NULL);
-	assert(writePtrs);
+	const DteTupleAdt& tupAdt = engine.getAdt();
 	ostrstream out;
 	const Tuple* tup;
-	for(tup = engine.getFirst(); tup; tup = engine.getNext()){
-		out << "{";
-		for(int i = 0; i < numFlds; i++){
-			(writePtrs[i])(out, tup[i]);
-			out << ' ';
-		}
-		out << "} ";
+	for(tup = engine.getFirst(); tup; tup = engine.getNext()) {
+          out << '{';
+          for(int i = 0 ; i < numFlds ; i++) {
+            tupAdt.getAdt(i).print(out, tup[i]);
+            out << ' ';
+          }
+  	  out << "} ";
+//  	  out << "{";
+//  	  for(int i = 0; i < numFlds; i++){
+//  	    (writePtrs[i])(out, tup[i]);
+//  	    out << ' ';
+//  	  }
+//  	  out << "} ";
 	}
 	out << ends;
-	delete [] writePtrs;
-	//engine.finalize();
 	char* retVal = out.str();
 
 #ifdef DEBUG
@@ -166,11 +174,11 @@ char* dteListCatalog(const char* catName, int& errorCode){
 	cout << "in dteListCatalog(" << catName << ")\n";
 #endif
 	errorCode = 0;
-	string query = "select cat.name, cat.interf.type from " +
+	string query = "select cat.name, cat.type from " +
 		string(catName) + " as cat";
 	char* retVal = executeQuery(query);
      CATCH(
-		string err = "DTE error coused by query: \n";
+		string err = "DTE error caused by query: \n";
 		err += query + "\n" + currExcept->toString() + "\n";
           currExcept = NULL;
 		errorCode = 1;
@@ -199,7 +207,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 #if defined(DEBUG)
 	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
 #endif
-	string query = "select cat.name, cat.interf from " +
+	string query = "select cat.name, cat.type, cat.args from " +
 		string(catName) + " as cat where cat.name = " +
 		addSQLQuotes(entryName, '\'');
 	Engine engine(query);
@@ -210,10 +218,10 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 //		cerr << "query = " << query << endl << " is empty " << endl;
 		return strdup("");
 	}
-	retVal += addQuotes(string(IString::getCStr(tup[0])));
+	retVal += addQuotes(string(DteStringAdt::cast(tup[0])));
 	retVal += " ";
-	CHECK(retVal += InterfWrapper::getInterface(tup[1])->guiRepresentation(),
-		err, 0);
+	Del<Interface> interface = Interface::create(tup[1], tup[2]);
+	CHECK(retVal += interface->guiRepresentation(), err, 0);
 #if defined(DEBUG)
   	cerr << "Returning: " << retVal << endl;
 #endif
@@ -236,6 +244,7 @@ void dteDeleteCatalogEntry(const char* tableName){
 void dteMaterializeCatalogEntry(const char* tableName){
 	string query = "materialize " + string(tableName);
 	char* retVal = executeQuery(query);
+	delete [] retVal;
 }
 
 void dteDeleteCatalogEntry(const char* catName, const char* entryName){
@@ -244,18 +253,19 @@ void dteDeleteCatalogEntry(const char* catName, const char* entryName){
 	cout << "in dteDeleteCatalogEntry(" << catName << ", " 
 		<< entryName << ")\n";
 #endif
-	string query = "delete " +
+	string query = "delete from " +
 		string(catName) + " as cat where cat.name = " +
 		addSQLQuotes(entryName, '\'');
 	char* retVal = executeQuery(query);
      CATCH(
-          cout << "DTE error coused by query: \n";
+          cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
           cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
      )
+       delete [] retVal;
 }
 
 int dteInsertCatalogEntry(const char* catName, const char* values){
@@ -269,13 +279,14 @@ int dteInsertCatalogEntry(const char* catName, const char* values){
 		addSQLQuotes(tmp.c_str(), '\'') + ")";
 	char* retVal = executeQuery(query);
      CATCH(
-          cout << "DTE error coused by query: \n";
+          cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
           cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
      )
+       delete [] retVal;
 	return 0;
 }
 
@@ -305,28 +316,28 @@ string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck){
 	Engine engine(queryToCheck);
 	const ISchema* schema = engine.typeCheck();
      CATCH(
-		string err("Coused by query:\n");
+		string err("Caused by query:\n");
 		err += queryToCheck;
 		currExcept->append(err);
           retVal = currExcept->toString();
           currExcept = NULL;
 		return retVal;
      )
-	int numFlds = schema->getNumFlds();
+	int numFlds = schema->getNumFields();
 	if(numFlds != asCard){
 		ostringstream out;
 		out << "Number of fields in the SELECT clause (" << numFlds << ")";
 		out << " does not match number of fields in the AS clause (";
 		out << asCard << ")" << ends;
-		char* tmp = out.str();
-		retVal = string(tmp);
-		delete [] tmp;
-		return retVal;
+		retVal = out.str();
 	}
 	return retVal;
 }
 
 char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
+  assert(!"kevin broke this");
+  return NULL;
+#if 0
      char* schema = strdup(schemaFile);
      char* data = strdup(dataFile);
 	DevRead tmp;
@@ -339,13 +350,14 @@ char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
 		retVal += attrs[i] + " ";
 	}
 	return strdup(retVal.c_str());
+#endif
 }
 
 char* dteListQueryAttributes(const char* query){
 	Engine engine(query);
 	TRY(const ISchema* schema = engine.typeCheck(), NULL);
-	const string* attrNames = schema->getAttributeNames();
-	int numFlds = schema->getNumFlds();
+	const vector<string>& attrNames = schema->getAttributeNames();
+	int numFlds = schema->getNumFields();
 	string retVal;
 	for(int i =  0; i < numFlds; i++){
 		retVal += attrNames[i] + " ";
@@ -361,8 +373,8 @@ char* dteListAttributes(const char* table)
 	string query = string("select * from ") + table + " as t";
 	Engine engine(query);
 	TRY(const ISchema* schema = engine.typeCheck(), NULL);
-	const string* attrNames = schema->getAttributeNames();
-	int numFlds = schema->getNumFlds();
+	const vector<string>& attrNames = schema->getAttributeNames();
+	int numFlds = schema->getNumFields();
 	string retVal;
 	for(int i =  0; i < numFlds; i++){
 		string currAtt = attrNames[i].substr(2); // discards "t."
@@ -432,6 +444,7 @@ void dteCreateIndex(const char* tableName, const char* indexName,
 	cerr << "in dteCreateIndex, query =" << query << endl;
 #endif
 	char* retVal = executeQuery(query);
+	delete [] retVal;
 }
 
 string join(const string* src, int n, const string& sep){
@@ -447,6 +460,9 @@ string join(const string* src, int n, const string& sep){
 }
 
 char* dteShowIndexDesc(const char* tableName, const char* indexName){
+  assert(!"dteShowIndexDesc is broken");
+  return 0;
+#if 0
 #if defined(DEBUG)
 	cout << "in dteShowIndexDesc(" << tableName << ", " << indexName << ")\n";
 #endif
@@ -456,14 +472,14 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	Engine engine(query);
 	engine.optimize();
      CATCH(
-          cout << "DTE error coused by query: \n";
+          cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
           cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
      )
-	assert(engine.getNumFlds() == 1);
+	assert(engine.getNumFields() == 1);
 	const TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "indexdesc");
 	const Tuple* tuple;
@@ -491,6 +507,7 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	cout << "returning " << retVal << endl;
 #endif
 	return strdup(retVal.c_str());
+#endif
 }
 
 char* dteListAllIndexes(const char* tableName){
@@ -499,7 +516,7 @@ char* dteListAllIndexes(const char* tableName){
 	string query = "select t.table, t.name from .sysind as t";
 	char* retVal = executeQuery(query);
      CATCH(
-          cout << "DTE error coused by query: \n";
+          cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
           cout << currExcept->toString();
           currExcept = NULL;
@@ -514,13 +531,14 @@ void dteDeleteIndex(const char* tableName, const char* indexName){
      string query = string("drop index ") + tableName + " " + indexName;
      char* retVal = executeQuery(query);
      CATCH(
-          cout << "DTE error coused by query: \n";
+          cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
           cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
-     )
+     );
+     delete [] retVal;
 }
 
 Boolean isDteType(const char* type){

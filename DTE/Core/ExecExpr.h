@@ -1,222 +1,82 @@
-#ifndef EXECEXPR_H
-#define EXECEXPR_H
+#ifndef _EXECEXPR_H_
+#define _EXECEXPR_H_
 
-#include <assert.h>
-#include "types.h"
+// (C) 1998- by Kevin S. Beyer
 
-#ifndef __GNUG__
-using namespace std;
-#endif
+#include <vector>
+#include "DTE/types/DteAdt.h"
 
 
-class ExecExpr {
-protected:
-	TypeID typeID;
-public:
-	ExecExpr(const TypeID& type) : typeID(type) {}
-	virtual ~ExecExpr() {};
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right) = 0;
-	const TypeID& getTypeID(){
-		return typeID;
-	}
-	static ExecExpr* createExpr(const string& fnname, class ExprList* argp);
-	virtual ostream& display(ostream& out){assert(0);}
-};
+typedef vector<class ExecExpr*> ExecExprList;
 
 
-//---------------------------------------------------------------------------
-
-
-class ExprList
+class ExecExpr
 {
 public:
 
-  ExprList() {}
+  // setResultAdt() must be called later
+  ExecExpr() : resultAdt(NULL) {}
 
-  ~ExprList();
+  ExecExpr(const DteAdt& resAdt) : resultAdt(resAdt.clone()) {}
 
-  int size() { return _expr.size(); }
+  virtual ~ExecExpr() { delete resultAdt; }
 
-  ExecExpr* operator[](int i) { return _expr[i]; }
+  virtual const Type* eval(const Tuple* tup1, const Tuple* tup2) = 0;
 
-  void push_back(ExecExpr* e);
+  DteAdt& getAdt() { return *resultAdt; }
 
-  const TypeIDList& getTypes();
+  // returns null on error.
+  // result must be deleted by caller.
+  static DteAdt* typeCheck(const string& functionName,
+                           const DteAdtList& argTypes);
 
-  void clear();                 // clears without deleting
+  static ExecExpr* createFunction(const string& functionName,
+                                  ExecExprList& args);
+
+  static ExecExpr* createFunction(const string& functionName,
+                                  ExecExpr* arg1);
+
+  static ExecExpr* createFunction(const string& functionName,
+                                  ExecExpr* arg1, ExecExpr* arg2);
+
+  static ExecExpr* createFunction(const string& functionName,
+                                  ExecExpr* arg1, ExecExpr* arg2,
+                                  ExecExpr* arg3);
+
+  static ExecExpr* createField(const DteAdt& adt, int tupNum, int slot);
+
+  // x now belongs to this expr
+  static ExecExpr* createConstant(const DteAdt& adt, Type* x);
+
+  //kb: need wildcard type for null...
+  static ExecExpr* createNull();
+
+  static ExecExpr* createBool(bool x);
+
+  static ExecExpr* createInt4(int4 x);
+
+  static ExecExpr* createFloat8(float8 x);
+
+  static ExecExpr* createString(const string& x);
+
+  static ExecExpr* createString(const char* x);
 
 protected:
 
-  vector<ExecExpr*> _expr;
+  DteAdt* resultAdt;
 
-  TypeIDList _types;
-
+  // this can only be called once
+  void setResultAdt(const DteAdt& resAdt) {
+    assert(this->resultAdt == NULL);
+    this->resultAdt = resAdt.clone();
+  }
+  
 private:
 
-  ExprList(const ExprList& x);
-  ExprList& operator=(const ExprList& x);
+  ExecExpr(const ExecExpr& x);
+  ExecExpr& operator=(const ExecExpr& x);
 };
 
+typedef vector<ExecExpr*> ExprList;
 
-inline
-ExprList::~ExprList()
-{
-  for(vector<ExecExpr*>::iterator i = _expr.begin() ; i != _expr.end() ; ++i) {
-    delete *i;
-  }
-}
-
-
-inline
-void ExprList::push_back(ExecExpr* e)
-{
-  _expr.push_back(e);
-  _types.push_back(e->getTypeID());
-}
-
-
-inline
-const TypeIDList& ExprList::getTypes()
-{
-  return _types;
-}
-
-
-inline
-void ExprList::clear()
-{
-  // _expr.clear();   // vector::clear() not defined in gcc 2.7
-  _expr.erase(_expr.begin(),_expr.end());
-  _types.clear();
-}
-
-
-//---------------------------------------------------------------------------
-
-
-class ExecSelect : public ExecExpr {
-     int leftRight;
-     int fieldNo;
-public:	
-     ExecSelect(const TypeID& type, int lr, int field) : 
-		ExecExpr(type), leftRight(lr), fieldNo(field) {}
-     ExecSelect(const Field& f)
-       : ExecExpr(f.getType()), leftRight(f.isRight()), fieldNo(f.getPos()) {}
-     virtual ~ExecSelect() {}
-     const Type* evaluate(const Tuple* left, const Tuple* right) {
-          const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
-          return base;
-     }
-	virtual ostream& display(ostream& out){
-		out << "ExecSelect(" << leftRight << ", " << fieldNo << ")";
-		return out;
-	}
-};
-
-class ExecConst : public ExecExpr {
-	Type* value;
-public:
-	ExecConst(const TypeID& type, const Type* val) : ExecExpr(type) {
-		value = duplicateObject(typeID, val);
-	}
-	virtual ~ExecConst(){
-		DestroyPtr destroyPtr = getDestroyPtr(typeID);
-		assert(destroyPtr);
-		destroyPtr(value);
-	}
-     const Type* evaluate(const Tuple* left, const Tuple* right) {
-		return value;
-	}
-};
-
-class ExecTypeCast : public ExecExpr {
-	ExecExpr* input;
-     PromotePtr promotePtr;
-     Type* value;
-     size_t valueSize;
-	DestroyPtr destroyPtr;
-public:
-	ExecTypeCast(ExecExpr* input, const TypeID& type);
-	virtual ~ExecTypeCast(){
-		delete input;
-		assert(destroyPtr);
-		destroyPtr(value);
-	}
-	const Type* evaluate(const Tuple* left, const Tuple* right){
-		const Type* tmp = input->evaluate(left, right);
-		assert(promotePtr);
-		promotePtr(tmp, value);
-		return value;
-	}
-};
-
-class ExecMember : public ExecExpr {
-	ExecExpr* input;
-	MemberPtr memberPtr;
-     Type* value;
-     size_t valueSize;
-	DestroyPtr destroyPtr;
-public:
-	ExecMember(ExecExpr* input, const string& name);
-	virtual ~ExecMember(){
-		delete input;
-		destroyPtr(value);
-	}
-	const Type* evaluate(const Tuple* left, const Tuple* right) {
-          memberPtr(input->evaluate(left, right), value);
-          return value;
-	}
-};
-
-class ExecOperator : public ExecExpr{
-	ExecExpr* left;
-	ExecExpr* right;
-     OperatorPtr opPtr;
-	Type* value;
-	size_t valueSize;
-	DestroyPtr destroyPtr;
-public:
-	ExecOperator(ExecExpr* l, ExecExpr* r, const string& name);
-	virtual ~ExecOperator(){
-		delete left;
-		delete right;
-		destroyPtr(value);
-	}
-	const Type* evaluate(const Tuple* leftT, const Tuple* rightT) {
-		const Type* arg1 = left->evaluate(leftT, rightT);
-		const Type* arg2 = right->evaluate(leftT, rightT);
-		opPtr(arg1, arg2, value, valueSize);
-		return value;
-	}
-};
-
-class ExecConstructor : public ExecExpr{
-        ExprList* input;
-	ConstructorPtr consPtr;
-	Type* value;
-	size_t valueSize;
-	DestroyPtr destroyPtr;
-	Array<const Type*>* inputVals;
-public:
-	ExecConstructor(ExprList* input, const string& name);
-	virtual ~ExecConstructor(){
-		delete input;
-		delete inputVals;
-		assert(destroyPtr);
-		destroyPtr(value);
-	}
-	const Type* evaluate(const Tuple* leftT, const Tuple* rightT) {
-                int n = input->size();
-		for(int i = 0; i < n ; i++){
-			(*inputVals)[i] = (*input)[i]->evaluate(leftT, rightT);
-		}
-		consPtr(*inputVals, value, valueSize);
-		return value;
-	}
-};
-
-
-
-
-
-#endif
+#endif // _EXECEXPR_H_

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/10/16 20:57:32  beyer
+  parser now accepts negative numbers and unary minus (I hope!)
+
   Revision 1.43  1998/10/01 21:00:31  yunrui
   Add Gestalt stuff
 
@@ -131,8 +134,13 @@
 
 #include "myopt.h"
 #include "exception.h"
-#include "queue.h"
+//#include "queue.h"
 #include "ParseTree.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteBoolAdt.h"
+#include "DTE/util/Del.h"
 //#include <iostream.h>    erased for sysdep
 #include <assert.h>
 #include <stdlib.h>
@@ -142,31 +150,30 @@
 extern int yylex();
 extern ParseTree* globalParseTree;
 int yyerror(char* msg);
-extern char* queryString;
-static int my_yyaccept();
-BaseSelection* withPredicate;
-BaseSelection* havingPredicate;
 string* sortOrdering;
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 #define alloca _alloca
 #endif
 
+typedef Del<string> SDel;
+typedef Del<TableName> TabDel;
+
 %}
 %union{
      string* stringLit;
 	int integer;
-	BaseSelection* sel;
-	ConstantSelection* constantSel;
-	vector<BaseSelection*>* selList;
-	List<ConstantSelection*>* constList;
+	OptExpr* sel;
+        OptExprList* selList;
 	vector<TableAlias*>* tableList;
 	TableAlias* tabAlias;
-	List<string*>* listOfStrings;
+	vector<string>* listOfStrings;
 	ParseTree* parseTree;
-	vector<IdentType*>* ident_type_vec;
+	vector<IdentType>* ident_type_vec;
 	IdentType* ident_type;
+        TableName* tableName;
 }
+
 %token <integer> INTY
 %token <stringLit> DOUBLEY
 %token SELECT
@@ -219,10 +226,9 @@ string* sortOrdering;
 // %type <selList> optOverClause
 
 %type <sel> selection
-%type <integer> optShiftVal 
+// %type <integer> optShiftVal 
 %type <selList> listOfSelections
 %type <selList> listOfSelectionsOrStar
-%type <constList> listOfConstants
 %type <sel> optWithClause
 %type <sel> optHavingClause
 %type <selList> optGroupByClause
@@ -232,158 +238,161 @@ string* sortOrdering;
 %type <tabAlias> tableAlias
 %type <sel> optWhereClause
 %type <sel> predicate
-%type <constantSel> constant
+%type <sel> constant
 %type <selList> optSequenceByClause
 %type <stringLit> index_name
-%type <listOfStrings> table_name
-%type <stringLit> optIndType
+%type <tableName> table_name
+%type <listOfStrings> table_path
+%type <stringLit> index_type
 %type <listOfStrings> keyAttrs
 %type <listOfStrings> optIndAdd 
 %type <listOfStrings> listOfStrings 
-%type <parseTree> query
+%type <parseTree> sql query definition
 %type <ident_type_vec> ident_type_pairs
 %type <ident_type> ident_type_pair
 
 %%
-input : query {
-		globalParseTree = $1;
-		return my_yyaccept();
-	}
-	| definition
-	;
-definition: CREATE optIndType INDEX index_name ON table_name 
-	'(' keyAttrs ')' optIndAdd {
-		globalParseTree = new IndexParse($2, $4, $6, $8, $10);
-		YYACCEPT;
-		// return my_yyaccept();  
-		// this does not work unless the last argument is optional
+input : sql opt_semicolon {
+                globalParseTree = $1;
+                if(yychar == YYEOF || yychar == YYEMPTY) {
+                  YYACCEPT;
+                } else {
+                  extern char* yytext;
+                  cerr << "extra characters at end of query:";
+                  cerr << "text: " << yytext << endl;
+                  YYABORT;
+                }
+        }
+        ;
+
+opt_semicolon: /* empty */ | ';' ;
+
+sql:      query
+        | definition
+        ;
+
+definition:
+          CREATE index_type INDEX index_name ON table_name 
+	  '(' keyAttrs ')' optIndAdd {
+                bool includePointer = true;
+		$$ = new IndexParse($2, $4, $6, $8, includePointer, $10);
 	}
 	| CREATE TABLE '(' ident_type_pairs ')' {
-		globalParseTree = new CreateTableParse($4);
-		YYACCEPT;
+		$$ = new CreateTableParse($4);
 	}
 	| CREATE GESTALT table_name '(' ident_type_pairs ')' STRING {
-		globalParseTree = new CreateGestaltParse($3, $5, $7);
-		YYACCEPT;
+		$$ = new CreateGestaltParse($3, $5, $7);
 	}
 	| REGISTER table_name INTO GESTALT table_name {
-		globalParseTree = new RegisterIntoGestaltParse($5, $2);
-		YYACCEPT;
+		$$ = new RegisterIntoGestaltParse($5, $2);
 	}
 	| UNREGISTER table_name FROM GESTALT table_name {
-		globalParseTree = new UnregisterFromGestaltParse($5, $2);
-		YYACCEPT;
+		$$ = new UnregisterFromGestaltParse($5, $2);
 	}
 	| DROP INDEX table_name index_name {
-		globalParseTree = new DropIndexParse($3, $4);
-		YYACCEPT;
+		$$ = new DropIndexParse($3, $4);
 	}
-	| INSERT INTO table_name VALUES '(' listOfConstants ')' {
-		globalParseTree = new InsertParse($3, $6);
-		YYACCEPT;
+	| INSERT INTO table_name VALUES '(' listOfSelections ')' {
+		$$ = new InsertParse($3, $6);
 	}
-	| DELETEY table_name AS STRING WHERE predicate {
-		globalParseTree = new DeleteParse($2, $4, $6);
-		YYACCEPT;
+	| DELETEY FROM tableAlias optWhereClause {
+		$$ = new DeleteParse($3, $4);
 	}
 	| SCHEMA table_name {
-		globalParseTree = new ISchemaParse($2);
-		YYACCEPT;
+		$$ = new ISchemaParse($2);
 	}
 	| MATERIALIZE table_name {
-		globalParseTree = new MaterializeParse($2);
-		YYACCEPT;
+		$$ = new MaterializeParse($2);
 	}
 	| CREATE ODBCTABLE STRING ',' STRING ',' STRING {
-		globalParseTree = new ODBCTableAddParse($3,$5,$7);
-		YYACCEPT;
+		$$ = new ODBCTableAddParse($3,$5,$7);
 	}
 	| CREATE ODBCDSN STRING ',' STRING_CONST {
-		globalParseTree = new ODBCDSNAddParse($3,$5);
-		YYACCEPT;
+		$$ = new ODBCDSNAddParse($3,$5);
 	}
 	| DELETEY ODBCTABLE STRING {
-		globalParseTree = new ODBCTableDeleteParse($3);
+		$$ = new ODBCTableDeleteParse($3);
 		YYACCEPT;
 	}
 	| DELETEY ODBCDSN STRING {
-		globalParseTree = new ODBCDSNDeleteParse($3);
+		$$ = new ODBCDSNDeleteParse($3);
 		YYACCEPT;
 	}
 	| DSNENTRIES {
-		globalParseTree = new DSNEntriesParse();
+		$$ = new DSNEntriesParse();
 		YYACCEPT;
 	}
 	| ODBCTABLELIST STRING {
-		globalParseTree = new ODBCTablesParse($2);
+		$$ = new ODBCTablesParse($2);
 		YYACCEPT;
 	}
 	;
+
 keyAttrs : listOfStrings
 	;
+
 ident_type_pairs : ident_type_pairs ',' ident_type_pair {
-		$1->push_back($3);
+		$1->push_back(*Del<IdentType>($3));
 		$$ = $1;
 	}
 	| ident_type_pair {
-		$$ = new vector<IdentType*>;
-		$$->push_back($1);
+		$$ = new vector<IdentType>;
+		$$->push_back(*Del<IdentType>($1));
 	}
 	;
 ident_type_pair : STRING STRING {
-		$$ = new IdentType($1, $2);
+		$$ = new IdentType(*SDel($1), *SDel($2));
 	}
 	;
-optIndType: STRING {
-		$$ = $1;
-	}
-	| {
-		$$ = NULL;
-	}
+index_type: STRING { $$ = $1; }
 	;
 optIndAdd: ADD '(' listOfStrings ')' {
 		$$ = $3;
 	}
 	| {
-		$$ = new List<string*>;
+		$$ = new vector<string>;
 	}
 	;
 constant :
 	STRING_CONST {
-		$$ = new ConstantSelection("string", strdup($1->c_str()));
+          SDel str($1);
+          Type* value = DteStringAdt::allocateCopy(*str);
+          $$ = new OptConstant(new DteStringAdt(str->length()), value);
 	}
 	| INTY {
-		$$ = new ConstantSelection("int", (Type*) $1);
+          Type* value = DteIntAdt::allocateCopy($1);
+          $$ = new OptConstant(new DteIntAdt, value);
 	}
 	| DOUBLEY {
-		IDouble* idouble = new IDouble(atof($1->c_str()));
-		$$ = new ConstantSelection("double", idouble);
+          SDel str($1);
+          float8 x = atof(str->c_str());
+          Type* value = DteDoubleAdt::allocateCopy(x);
+          $$ = new OptConstant(new DteDoubleAdt, value);
 	}
 	;
 index_name : STRING
 	;
-table_name : table_name '.' STRING {
-		$1->append($3);
+
+table_name : table_path { $$ = new TableName($1); }
+        ;
+
+table_path : table_path '.' STRING {
+		$1->push_back(*SDel($3));
 		$$ = $1;
 	}
 	| '.' STRING {
-		$$ = new List<string*>;
-		$$->append($2);
+		$$ = new vector<string>;
+		$$->push_back(*SDel($2));
 	}
 	| '.' {
-		$$ = new List<string*>;
+		$$ = new vector<string>;
 	}
 	;
-query : SELECT listOfSelectionsOrStar 
-		FROM listOfTables optWhereClause 
-		optGroupByClause optSequenceByClause optOrderByClause {
-		bool isSelectStar = false;
-		if($2 == NULL){
-			$2 = new vector<BaseSelection*>;
-			isSelectStar = true;
-		}
-		$$ = new QueryTree($2,$4,$5,$6,havingPredicate, $7,
-			withPredicate, $8, sortOrdering, isSelectStar);
+query : SELECT listOfSelectionsOrStar FROM listOfTables optWhereClause 
+	optGroupByClause optSequenceByClause optWithClause optHavingClause
+        optOrderByClause {
+		$$ = new QueryTree($2, $4, $5, $6, $7, $8, $9, $10,
+                                   sortOrdering);
 	}
 	| query UNION query {
 		$$ = new UnionParse($1, $3);
@@ -393,7 +402,7 @@ listOfSelectionsOrStar : listOfSelections {
 		$$ = $1;
 	}
 	| '*' {
-		$$ = NULL;
+		$$ = new OptExprList;
 	}
 	;
 listOfSelections : listOfSelections ',' predicate {
@@ -401,32 +410,25 @@ listOfSelections : listOfSelections ',' predicate {
 		$$ = $1;
 	}
 	| predicate {
-		$$ = new vector<BaseSelection*>;
+		$$ = new OptExprList;
 		$$->push_back($1);
 	}
+ /* kb: why can listOfSelections be empty?
 	| {
-		$$ = new vector<BaseSelection*>;
+		$$ = new OptExprList;
 	}
-     ;
-listOfConstants : listOfConstants ',' constant {
-		$1->append($3);
-		$$ = $1;
-	}
-	| constant {
-		$$ = new List<ConstantSelection*>;
-		$$->append($1);
-	}
+ */
      ;
 listOfStrings : listOfStrings ',' STRING {
-		$1->append($3);
+		$1->push_back(*SDel($3));
 		$$ = $1;
 	}
 	| STRING {
-		$$ = new List<string*>;
-		$$->append($1);
+		$$ = new vector<string>;
+		$$->push_back(*SDel($1));
 	}
 	| {
-		$$ = new List<string*>;
+		$$ = new vector<string>;
 	}
      ;
 listOfTables : listOfTables ',' tableAlias {
@@ -442,23 +444,32 @@ listOfTables : listOfTables ',' tableAlias {
 optWhereClause : WHERE predicate {
          $$ = $2;
 	}
-	| WHERE {
+ /*
+	| WHERE {               // kb: why is this legal?
 		$$ = NULL;
 	}
+ */
 	| {
 		$$ = NULL;
 	}
 	;
 
-optSequenceByClause :SEQUENCE BY listOfSelections optWithClause {
+optGroupByClause: GROUP BY listOfSelections {
 		$$ = $3;
-		withPredicate = $4;
 	}
-	| {
-		$$ = new vector<BaseSelection*>;
-		withPredicate = NULL;
+	|{
+		$$ = new OptExprList; 
 	}
 	;
+	
+optSequenceByClause :SEQUENCE BY listOfSelections {
+		$$ = $3;
+	}
+	| {
+		$$ = new OptExprList;
+	}
+	;
+
 optWithClause: WITH predicate {
 		$$ = $2;
 	}
@@ -466,16 +477,7 @@ optWithClause: WITH predicate {
 		$$ = NULL;
 	}
 	;
-optGroupByClause: GROUP BY listOfSelections optHavingClause{
-		$$ = $3;
-		havingPredicate = $4;
-	}
-	|{
-		$$ = new vector<BaseSelection*>; 
-		havingPredicate = NULL;
-	}
-	;
-	
+
 optHavingClause: HAVING predicate {
 		$$ = $2;
 	}
@@ -484,13 +486,15 @@ optHavingClause: HAVING predicate {
 	}
 	;
 
+ //kb: fix order by: should have asc/desc per attr, only column names or pos.
 optOrderByClause: ORDER BY listOfSelections optOrdering{
 		$$ = $3;
 		sortOrdering = $4;
 	}
 	|{
-		$$ = new vector<BaseSelection*>;
-		sortOrdering = NULL;
+		$$ = new OptExprList;
+		//sortOrdering = NULL;
+		sortOrdering = new string("na");
 	}
 	;
 optOrdering: ASC {
@@ -504,78 +508,94 @@ optOrdering: ASC {
 	}
 	;
 predicate : predicate OR predicate {
-          $$ = new OrOperator($1, $3);
+          $$ = new OptOr($1, $3);
 	}
-	| predicate AND predicate {
-		$$ = new AndOperator($1, $3);
+	| predicate AND predicate { //kb: need NOT
+		$$ = new OptAnd($1, $3);
 	}
 	| predicate '=' predicate {
-        $$ = new Operator("=", $1, $3);
+        $$ = new OptFunction("=", $1, $3);
 	}
 	| predicate LESSGREATER predicate {
-		$$ = new Operator(*$2, $1, $3);
+		$$ = new OptFunction(*$2, $1, $3);
 	}
         | predicate '+' predicate {
-          $$ = new Operator("+", $1, $3);
+          $$ = new OptFunction("+", $1, $3);
 	}
         | predicate '-' predicate {
-          $$ = new Operator("-", $1, $3);
+          $$ = new OptFunction("-", $1, $3);
 	}
         | predicate '*' predicate {
-          $$ = new Operator("*", $1, $3);
+          $$ = new OptFunction("*", $1, $3);
 	}
         | predicate '/' predicate {
-          $$ = new Operator("/", $1, $3);
+          $$ = new OptFunction("/", $1, $3);
 	}
         | '-' predicate %prec UMINUS {
-          //ksb: simplification should be done after parsing on all
-          //ksb: constant expressions, not just uminus
+          //kb: simplification should be done after parsing on all
+          //kb: constant expressions, not just uminus
           bool simplified = false;
-          if( $2->selectID() == CONST_ID ) { // simplify
-              ConstantSelection* c = (ConstantSelection*)$2;
-              TypeID t = c->getTypeID();
-              if( t == INT_TP ) {
-                  $$ = new ConstantSelection(INT_TP,
-                                             (Type*)(- (int)c->getValue()));
-                  delete c;
-                  simplified = true;
-              } else if( t == DOUBLE_TP ) {
-		  IDouble* d = new IDouble(- *(double*)(c->getValue()));
-                  $$ = new ConstantSelection(DOUBLE_TP, d);
-                  delete c;
-                  simplified = true;
+          OptExpr* oe = $2;
+          if( oe->getExprType() == OptExpr::CONST_ID ) { // simplify
+              OptConstant* ce = (OptConstant*)oe;
+              int t = ce->getAdt().getTypeID();
+              if( t == DteIntAdt::typeID ) {
+                // cheat and muck with the actual value
+                int4& x = DteIntAdt::cast((Type*)ce->getValue());
+                x = -x;
+                $$ = ce;
+                simplified = true;
+              } else if( t == DteDoubleAdt::typeID ) {
+                float8& x = DteDoubleAdt::cast((Type*)ce->getValue());
+                x = -x;
+                $$ = ce;
+                simplified = true;
               }
           }
           if( !simplified ) {
-              //ksb: hack alert! use binary minus for unary minus
-              ConstantSelection* zero = new ConstantSelection(INT_TP, (Type*)0);
-              $$ = new Operator("-", zero, $2);
+            //kb: hack alert! use binary minus for unary minus with int zero
+            Type* zeroVal = DteIntAdt::allocateCopy(0);
+            OptConstant* zero = 
+              new OptConstant(new DteIntAdt, zeroVal);
+            $$ = new OptFunction("-", zero, oe);
           }
 	}
         | '+' predicate %prec UMINUS {
           $$ = $2;
 	}
 	| predicate STRING predicate {
-		$$ = new Operator(*$2, $1, $3);
+		$$ = new OptFunction(*SDel($2), $1, $3);
 	}
 	| selection
 	;
 
 selection :
-	STRING '.' STRING {
-		$$ = new PrimeSelection($1, $3);
+	STRING {
+		$$ = new OptField("", *SDel($1));
 	}
-	|
-	selection '.' STRING {
-		$$ = new Member($3, $1);
+	| STRING '.' STRING {
+		$$ = new OptField(*SDel($1), *SDel($3));
 	}
+//	|
+//	selection '.' STRING {
+//		$$ = new Member(*$3, $1); delete $3;
+//	}
 //	| STRING '(' listOfSelections ')' optOverClause {
 	| STRING '(' listOfSelections ')' {
-		assert($3);
 //		if ($5 != NULL){
 //			$3->addList($5);
 //		}
-		$$ = new Constructor($1, $3);
+		$$ = new OptFunction(*SDel($1), *Del<OptExprList>($3));
+	}
+	| STRING '(' ')' {
+		$$ = new OptFunction(*SDel($1), OptExprList());
+	}
+	| STRING '(' '*' ')' { // eg, count(*)
+                // add dummy field
+                Type* value = DteBoolAdt::allocateCopy(true);
+                OptExprList e(1);
+                e[0] = new OptConstant(new DteBoolAdt(), value);
+		$$ = new OptFunction(*SDel($1), e);
 	}
 	| constant {
 	}
@@ -606,38 +626,20 @@ JoinString : JOINPREV {
 	;
 */
 
-tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
-		$$ = new TableAlias(new TableName($3),$7,$1,$4);
-	}
-	| table_name AS STRING {
-		$$ = new TableAlias(new TableName($1), $3);
+tableAlias : table_name AS STRING {
+		$$ = new TableAlias(*TabDel($1), *SDel($3));
 	}
 	| table_name {
-        if($1->cardinality() == 1){
-            $1->rewind();
-            string* tmp = new string(*$1->get());
-            $$ = new TableAlias(new TableName($1), tmp);
-        }
-        else{
-            string msg = "Sorry, you need to specify alias";
-            THROW(new Exception(msg), 0);
-        }
-	}
-	| STRING_CONST AS STRING {
-		$$ = new QuoteAlias($1, $3);
+                TabDel tab($1);
+                $$ = new TableAlias(*tab, tab->fileName());
 	}
 	| DOUBLEY AS STRING {	// this maches int.int
-		int dotPos = $1->find('.');
-		int serv = atoi($1->substr(0, dotPos).c_str());
-		int loc = atoi($1->substr(dotPos + 1).c_str());
-		$$ = new NumberAlias(serv, loc, $3);
-	}
-	;
-optShiftVal: ',' INTY {
-		$$ = $2;
-	}
-	|{
-		$$ = 0;
+                SDel str($1);
+		int dotPos = str->find('.');
+		int serv = atoi(str->substr(0, dotPos).c_str());
+		int loc = atoi(str->substr(dotPos + 1).c_str());
+                RelationId relId(serv, loc);
+		$$ = new NumberAlias(relId, *SDel($3));
 	}
 	;
 /*
@@ -650,13 +652,9 @@ optString : STRING {
 	;
 */
 %%
-int yyerror(char* msg){
+int yyerror(char* msg)
+{
+        cerr << msg;
 	return 0;
 }
 
-static int my_yyaccept(){
-	if(yychar != YYEOF){
-		YYABORT;
-	}
-	YYACCEPT;
-}

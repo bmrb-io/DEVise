@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/11/23 19:18:53  donjerko
+  Added support for gestalts
+
   Revision 1.37  1998/07/24 04:37:58  donjerko
   *** empty log message ***
 
@@ -105,13 +108,15 @@
 #include "Iterator.h"
 // #include "DevRead.h"
 #include "url.h"
-#include "site.h"
+//#include "site.h"
 #include "Utility.h"
 // #include "Engine.h"
 #include "Inserter.h"
 #include "Interface.h"
 #include "sysdep.h"
+#include "DTE/types/DteStringAdt.h"
 
+//kb: SQLFilter not used anymore?
 void readFilter(string viewNm, string& select, 
 		string*& attributeNames, int& numFlds, string& where){
 	ifstream vin(viewNm.c_str());
@@ -135,19 +140,30 @@ void readFilter(string viewNm, string& select,
 //     TRY(stripQuotes(vin, where), NVOID );
 }
 
+#if 0
+//kb: Site no longer used
 Site* Catalog::find(TableName* path) const { // Throws Exception
 	TRY(Interface* interf = createInterface(path), NULL);	
 	Site* retVal = interf->getSite();
 	delete interf;
 	return retVal;
 }
+#endif
 
+#if 0
+//kb: Directory::replace not used -- yes it is...
 void Directory::replace(const string& entry, const Interface* interf) const
 {
 	Modifier modifier(DIR_SCHEMA, fileName);
 
 	TRY(modifier.replace(&entry, interf), NVOID );
 }
+#else
+void Directory::replace(const string& entry, const Interface* interf) const
+{
+  assert(!"Directory::replace is broken");
+}
+#endif
 
 Interface* Directory::createInterface(const string& entry) const
 { 
@@ -164,9 +180,10 @@ Interface* Directory::createInterface(const string& entry) const
 		THROW(new Exception(msg), NULL);
 		// throw Exception(msg);
 	}
-	int dsnf = DIR_SCHEMA.getNumFlds();
-	const TypeIDList& dst = DIR_SCHEMA.getTypeIDs();
-	Iterator* iterator = new StandReadExec(dst, in);
+	//int dsnf = DIR_SCHEMA.getNumFields();
+	const DteTupleAdt& adt = DIR_SCHEMA.getAdt();
+        assert(adt.getNumFields() == 3);
+	Iterator* iterator = new StandReadExec(adt, in);
 	assert(iterator);
 	iterator->initialize();
 
@@ -177,12 +194,11 @@ Interface* Directory::createInterface(const string& entry) const
 		if(!tuple){
 			break;
 		}
-		const char* tableNm = IString::getCStr(tuple[0]);
-		if(entry == string(tableNm)){
-			const Interface* tmp = InterfWrapper::getInterface(tuple[1]);
-			Interface* retVal = tmp->duplicate();
-			delete iterator;
-			return retVal;
+		const char* tableNm = DteStringAdt::cast(tuple[0]);
+		if(entry == tableNm){
+                  Interface* retVal = Interface::create(tuple[1], tuple[2]);
+                  delete iterator;
+                  return retVal;
 		}
 	}
 	delete iterator;
@@ -193,23 +209,25 @@ Interface* Directory::createInterface(const string& entry) const
 	// throw Exception(msg);
 }
 
-Interface* Catalog::createInterface(TableName* path) const { 
+Interface* Catalog::createInterface(const TableName& path) const { 
 
 // Throws Exception
 
-	if(path->isEmpty()){
+	if(path.isEmpty()){
 		// return new StandardInterface(DIR_SCHEMA, fileName);
 		return new CatalogInterface(fileName);
 	}
-	string firstPathNm = *path->getFirst();
-	path->deleteFirst();
+	string firstPathNm = path.getFirst();
+        TableName restPath = path.getRemainingPath();
+	//path->nextPath();
 	Directory dir(fileName);
 	TRY(Interface* interf = dir.createInterface(firstPathNm), NULL);
 	if(interf->getType() == Interface::CATALOG){
 		CatalogInterface* tmp = (CatalogInterface*) interf;
 		TRY(string newFileNm = tmp->getCatalogName(), NULL);
+                delete interf;
 		Catalog tmpCat(newFileNm);
-		return tmpCat.createInterface(path);
+		return tmpCat.createInterface(restPath);
 	}
 	/*
 	else if(interf->getType() != Interface::QUERY &&
@@ -219,7 +237,7 @@ Interface* Catalog::createInterface(TableName* path) const {
 		// throw Exception(msg);
 	}
 	*/
-	interf->setRemoteTableName(path->toString());
+	interf->setRemoteTableName(restPath);
 	return interf;
 }
 

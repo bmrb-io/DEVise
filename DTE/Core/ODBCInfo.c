@@ -23,14 +23,13 @@ string ODBCInfo::dsnFindInfo(string DSN_Name) {
 
 	TRY(engine.optimize(),"");
 
-	int numFlds = engine.getNumFlds();
+	int numFlds = engine.getNumFields();
 
 	if (numFlds != 1) {
 		string err = "dsn table is not defined properly";
 		THROW(new Exception(err), "");
 	}
 
-	const TypeID* typeIDs = engine.getTypeIDs();
 	const Tuple* tup;
 	int count = 0;
 	string tmpStr; 
@@ -42,8 +41,6 @@ string ODBCInfo::dsnFindInfo(string DSN_Name) {
 		count++;
 		tup = engine.getNext();
 	}
-
-	engine.finalize();
 
 	if (count == 0) {
 		string err = DSN_Name + " is not found in dsn table";

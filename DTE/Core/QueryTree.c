@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/12/28 21:32:22  donjerko
+  Optimizer is now used by default.
+
   Revision 1.56  1998/12/11 17:00:04  beyer
   small cleanup
 
@@ -128,21 +131,23 @@
 //#pragma implementation "queue.h"
 //#endif
 
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
-#include "site.h"
+//#include "site.h"
 #include "types.h"
 #include "exception.h"
 #include "catalog.h"
 #include "DevRead.h"
-#include "listop.h"
+//#include "listop.h"
 #include "Aggregates.h"
 #include "ParseTree.h"
 #include "Sort.h"
-#include "TypeCheck.h"
+//#include "TypeCheck.h"
 #include "MinMax.h"
 #include "Interface.h"
 #include "Optimizer.h"
+#include <algorithm>
+#include "DteSymbolTable.h"
 
 //#include<iostream.h>   erased for sysdep.h
 //#include<memory.h>   erased for sysdep.h
@@ -151,127 +156,238 @@
 #include<math.h>
 //#include<stdlib.h>   erased for sysdep.h
 #include "sysdep.h"
+#include "DTE/util/DteAlgo.h"
 
 
 const int DETAIL = 1;
-LOG(ofstream logFile("log_file.txt");)
+LOG(ofstream logFile("log_file.txt"));
+
+
+QueryTree::QueryTree(OptExprList* selectList, // SELECT
+                     vector<TableAlias*>* tableVec, // FROM
+                     OptExpr* predicates,     // WHERE
+                     OptExprList* groupBy,
+                     OptExprList* sequenceby,
+                     OptExpr* withPredicate,
+                     OptExpr* havingPredicate,
+                     OptExprList* orderBy,
+                     string* sortOrdering)
+  : selectVec(*selectList), tableVec(*tableVec), 
+    predicateVec(), groupByVec(*groupBy), 
+    sequenceByVec(*sequenceby), withPredicate(withPredicate), 
+    havingPredicate(havingPredicate),
+    orderByVec(*orderBy), sortOrdering(*sortOrdering), schema(0)
+{
+  assert(selectList);
+  assert(tableVec);
+  assert(groupBy);
+  assert(sequenceby);
+  assert(orderBy);
+  assert(sortOrdering);
+  delete selectList;
+  delete tableVec;
+  delete groupBy;
+  delete sequenceby;
+  delete orderBy;
+  delete sortOrdering;
+  if( predicates ) {
+    predicateVec.push_back(predicates);
+  }
+}
+
+
+QueryTree::~QueryTree()
+{
+  delete havingPredicate;
+  delete withPredicate;
+  delete_all(tableVec);
+  delete_all(selectVec);
+  delete_all(predicateVec);
+  delete_all(groupByVec);
+  delete_all(sequenceByVec);
+  delete_all(orderByVec);
+  delete schema;
+}
 
 string QueryTree::guiRepresentation() const {
 	string retVal;
 	ostringstream out;
-	if(isSelectStar){
+	if(selectVec.size() == 0) { // select *
 		out << "*";
 	}
 	else{
-		displayVec(out, selectVec);
+		print_list(out, selectVec);
 	}
-	out << ends;
 	retVal += addQuotes(out.str()) + " ";
 	ostringstream out1;
-	displayVec(out1, tableVec);
-	out1 << ends;
+	print_list(out1, tableVec);
 	retVal += addQuotes(out1.str()) + " ";
-	if(predicates){
-		retVal += addQuotes(predicates->toString());
+	if(predicateVec.size() > 0) {
+                assert(predicateVec.size() == 1);
+		retVal += addQuotes(predicateVec[0]->toString());
 	}
 	else{
 		retVal += "\"\"";
 	}
 	retVal += " ";
 	ostringstream out2;
-	displayVec(out2, groupByVec);
-	out2 << ends;
+	print_list(out2, groupByVec);
 	retVal += addQuotes(out2.str()) + " ";
 	ostringstream out3;
-	displayVec(out3, sequenceByVec);
-	out3 << ends;
+	print_list(out3, sequenceByVec);
 	retVal += addQuotes(out3.str()) + " ";
 	ostringstream out4;
-	displayVec(out4, orderByVec);
-	out4 << ends;
+	print_list(out4, orderByVec);
 	retVal += addQuotes(out4.str()) + " ";
 	return retVal;
 }
 
-const ISchema* QueryTree::getISchema(){
-	if(schema){
-		return schema;
-	}
+//kb: move this stuff
+template <class Operation> 
+class binder2nd_ref
+  : public unary_function<typename Operation::first_argument_type,
+                          typename Operation::result_type> {
+protected:
+  Operation op;
+  typename Operation::second_argument_type value;
+public:
+  binder2nd_ref(const Operation& x,
+                const typename Operation::second_argument_type y) 
+    : op(x), value(y) {}
+  typename Operation::result_type
+  operator()(const typename Operation::first_argument_type& x) const {
+    return op(x, value); 
+  }
+};
 
-	// type checking follows, it should be done only once.
+template <class Operation, class T>
+inline binder2nd_ref<Operation> bind2nd_ref(const Operation& op, const T& x) {
+  return binder2nd_ref<Operation>(op, x);
+}
 
-	assert(schema == NULL);
-	LOG(logFile << "Query was:\n";)
-	LOG(logFile << "   select ";)
-	LOG(displayList(logFile, selectList, ", ");)
-	LOG(logFile << endl << "   from ";)
-	LOG(displayList(logFile, tableList);)
-	predicateList = 0;
-	if(predicates){
-		LOG(logFile << endl << "   where ";)
-		LOG(predicates->display(logFile);)
-		LOG(logFile << endl;)
-		LOG(logFile << "Predicates after cnf:\n";)
-		BaseSelection* newPredicates = predicates->cnf();
-		if(newPredicates){
-			delete predicates;
-			predicates = newPredicates;
-		}
-		LOG(logFile << "   ";)
-		LOG(predicates->display(logFile);)
-		if(predicates->insertConj(predicateVec)){
-			delete predicates;
-		}
-	}
-	LOG(logFile << endl << "Predicate list:\n   ";)
-	LOG(displayList(logFile, predicateVec);)
-	LOG(logFile << endl;)
+template <class Container, class Function>
+void for_each(Container& c, Function f)
+{
+  for_each(c.begin(), c.end(), f);
+}
 
-	// typecheck the query
+void QueryTree::addSelectStar()
+{
+  int N = tableVec.size();
+  for(int tabId = 0 ; tabId < N ; tabId++) {
+    const TableAlias& ta = *(tableVec[tabId]);
+    const ISchema& schema = ta.getISchema();
+    const vector<string>& attrs = schema.getAttributeNames();
+    //const DteTupleAdt& tupAdt = schema.getAdt();
+    int M = schema.getNumFields();
+    for(int slot = 0 ; slot < M ; slot++) {
+      OptField* f = new OptField(ta.getAlias(), attrs[slot]);
+      selectVec.push_back(f);
+    }
+  }
+}
 
-	TRY(typeChecker.initialize(tableVec), 0);
 
-	if(isSelectStar){
+bool ParseTree::typeCheckVec(OptExprList& exprs, const DteSymbolTable& symtab)
+{
+  
+  for(OptExprList::iterator i = exprs.begin() ; i != exprs.end() ; i++) {
+    if( ! (*i)->typeCheck(symtab) ) {
+      return false;
+    }
+  }
+  return true;
+}
 
-		// select *
 
-		typeChecker.setupSelList(selectVec);
-	}
-	else {
+bool QueryTree::typeCheck()
+{
+  LOG(logFile << "Query was:\n");
+  LOG(logFile << "   select ");
+  LOG(displayList(logFile, selectList, ", "));
+  LOG(logFile << endl << "   from ");
+  LOG(displayList(logFile, tableList));
+  if(predicateVec.size() > 0) {
+    assert(predicateVec.size() == 1);
+    OptExpr* predicates = predicateVec[0];
+    predicateVec.clear();
+    LOG(logFile << endl << "   where ");
+    LOG(predicates->display(logFile));
+    LOG(logFile << endl);
+    LOG(logFile << "Predicates after cnf:\n");
+    OptExpr* newPredicates = predicates->cnf();
+    if(newPredicates){
+      delete predicates;
+      predicates = newPredicates;
+    }
+    LOG(logFile << "   ");
+    LOG(predicates->display(logFile));
+    if( predicates->insertConj(predicateVec) ) {
+      // top was an AND, so delete it
+      delete predicates;
+    }
+    // all of 'predicates' is now in predicateVec in CNF
+  }
+  LOG(logFile << endl << "Predicate list:\n   ");
+  LOG(displayList(logFile, predicateVec));
+  LOG(logFile << endl);
+  
+  if(selectVec.size() == 0) { // select *
+    //typeChecker.setupSelList(selectVec);
+    addSelectStar();            // kb:move this
+  }
 
-#ifdef USE_OPTIMIZER
-		TRY(typeChecker.resolve(selectVec), 0);
-#else
-		aggregates = new Aggregates(
-			selectVec, sequenceByVec, withPredicate, groupByVec);
-
-		TRY(aggregates->typeCheck(typeChecker), 0);
+#if !defined(USE_OPTIMIZER)
+  #error old optimizer is broken
+  aggregates = new Aggregates(
+    selectVec, sequenceByVec, withPredicate, groupByVec);
+  
+  TRY(aggregates->typeCheck(typeChecker), 0);
 #endif
 
+  // typecheck the query
+  //TRY(typeChecker.initialize(tableVec), 0);
+  //TRY(typeChecker.resolve(selectVec), 0);
+  //TRY(typeChecker.resolve(predicateVec), 0);
+  //TRY(typeChecker.resolve(groupByVec), 0);
+  //TRY(typeChecker.resolve(orderByVec), 0);
+
+  DteSymbolTable symtab(tableVec);
+  if( !typeCheckVec(selectVec, symtab) ) {
+    return false;
+  }
+  if( !typeCheckVec(predicateVec, symtab) ) {
+    return false;
+  }
+  if( !typeCheckVec(groupByVec, symtab) ) {
+    return false;
+  }
+  if( !typeCheckVec(orderByVec, symtab) ) {
+    return false;
+  }
+  return true;
+}
+
+
+const ISchema* QueryTree::getISchema()
+{
+	if(schema) {
+		return schema;
 	}
-	TRY(typeChecker.resolve(predicateVec), 0);
-	TRY(typeChecker.resolve(groupByVec), 0);
-	TRY(typeChecker.resolve(orderByVec), 0);
-
+        typeCheck();
 	setupSchema();
-
 	return schema;
 }
 
-void QueryTree::setupSchema(){
+void QueryTree::setupSchema() {
 	int numFlds = selectVec.size();
-	TypeID* types = new TypeID[numFlds];
-	string* attrs = new string[numFlds];
-	vector<BaseSelection*>::const_iterator it;
-	int i = 0;
-	for(it = selectVec.begin(); it != selectVec.end(); ++it, i++){
-		types[i] = (*it)->getTypeID();
-		attrs[i] = (*it)->toString();
+        DteAdtList adts(numFlds);
+        vector<string> names(numFlds);
+	for(int i = 0 ; i < numFlds ; i++) {
+		adts[i] = selectVec[i]->getAdt();
+		names[i] = selectVec[i]->toString();
 	}
-	schema = new ISchema(numFlds, types, attrs);
-
-	delete [] types;
-	delete [] attrs;
+	schema = new ISchema(adts, names);
 }
 
 Iterator* QueryTree::createExec(){
@@ -313,10 +429,10 @@ Iterator* QueryTree::createExec(){
 //	cerr << endl;
 	return optimizer.createExec();
 
-#endif
-
+#else
+#error USE_OPTIMIZER is required...
+        //kb: remove this code
 	// once optimizer is in place, rest of this function will go away.
-
 	translate(tableVec, tableList);
 	translate(selectVec, selectList);
 	translate(predicateVec, predicateList);
@@ -472,7 +588,7 @@ Iterator* QueryTree::createExec(){
 		displayList(cerr, predicateList, ", ");
 	}
 	assert(predicateList->isEmpty());
-	if(selectList->cardinality() > siteGroup->getNumFlds()){
+	if(selectList->cardinality() > siteGroup->getNumFields()){
 
 		// Every site has taken what belongs to it.
 		// Create top site that takes everything left over 
@@ -492,7 +608,7 @@ Iterator* QueryTree::createExec(){
 	  // sort on concat of group by and sequence by fields
 	  if (sequenceby && !sequenceby->isEmpty()) {
 
-	    grpAndSeqFields = new List<BaseSelection*>;
+	    grpAndSeqFields = new List<OptExpr*>;
 
 	    for (groupBy->rewind(); !groupBy->atEnd(); groupBy->step()) {
 	      grpAndSeqFields->append(groupBy->get());
@@ -530,4 +646,5 @@ Iterator* QueryTree::createExec(){
 	assert(predicateList->cardinality() == 0);
 	delete predicateList;	// destroy list too
 	return siteGroup->createExec();
+#endif
 }

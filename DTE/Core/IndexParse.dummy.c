@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/12/10 02:31:14  okan
+  *** empty log message ***
+
   Revision 1.3  1997/09/05 22:20:04  donjerko
   Made changes for port to NT.
 
@@ -46,27 +49,7 @@
 
  */
 
-//#include<iostream.h>   erased for sysdep.h
-//#include<memory.h>   erased for sysdep.h
-#include <string>
-#include<assert.h>
-#include<math.h>
-//#include<stdlib.h>   erased for sysdep.h
-//#include<stdio.h>	// for perror   erased for sysdep.h
-//#include<errno.h>   erased for sysdep.h
-
-#include "queue.h"
-#include "myopt.h"
-#include "site.h"
-#include "types.h"
-#include "exception.h"
-#include "catalog.h"
-#include "listop.h"
 #include "ParseTree.h"
-#include "Utility.h"
-#include "Iterator.h"
-#include "Aggregates.h"
-#include "sysdep.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)

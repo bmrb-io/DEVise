@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/11/16 18:58:42  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.4  1998/08/17 18:51:49  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -52,6 +56,10 @@
 #include "types.h"
 #include "Inserter.h"
 #include "RelationManager.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
 #endif
 
 //#define DEBUG
@@ -111,28 +119,25 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   //
   // Create the table.
   //
-  TypeID types[1];
-  string attrs[1];
+  DteTupleAdt tupAdt;
+  vector<string> attrs(1);
   switch (attrInfo->type) {
   case IntAttr:
-    types[0] = INT_TP;
+    tupAdt.push_back(DteIntAdt());
     break;
 
   case FloatAttr:
-    types[0] = DOUBLE_TP;
-    break;
-
   case DoubleAttr:
-    types[0] = DOUBLE_TP;
+    tupAdt.push_back(DteDoubleAdt());
     break;
 
   case StringAttr:
-    types[0] = STRING_TP;
+    tupAdt.push_back(DteStringAdt(attrInfo->length));
     break;
 
   case DateAttr:
-    types[0] = DATE_TP;
-    break;
+    tupAdt.push_back(DteDateAdt());
+     break;
 
   default:
     reportErrNosys("Illegal attribute type");
@@ -142,7 +147,7 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   }
   attrs[0] = _masterAttrName;
 
-  _schema = new ISchema(1, types, attrs);
+  _schema = new ISchema(tupAdt, attrs);
 
   //
   // Create the (empty) table file right away, so that it can be referenced
@@ -179,12 +184,8 @@ DerivedTable::DerivedTable(char *name, char *masterAttrName, DevStatus &result)
   //
   // Create a dummy schema (integer type picked arbitrarily).
   //
-  TypeID types[1];
-  string attrs[1];
-  types[0] = INT_TP;
-  attrs[0] = _masterAttrName;
-
-  _schema = new ISchema(1, types, attrs);
+  _schema = new ISchema();
+  _schema->push_back(DteIntAdt(), _masterAttrName);
 
   //
   // Create the (empty) table file right away, so that it can be referenced
@@ -307,13 +308,12 @@ DerivedTable::~DerivedTable()
   _stdInt = NULL;
 
   if (_inserter != NULL) {
-    _inserter->close();
+    delete _inserter;
+    _inserter = NULL;
     if (currExcept) {
       cerr << currExcept->toString() << endl;
       currExcept = NULL;
     }
-    delete _inserter;
-    _inserter = NULL;
   }
 #endif
 
@@ -344,7 +344,7 @@ DerivedTable::Initialize()
   fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
 #endif
 #if !defined(NO_DTE)
-  _inserter = new UniqueInserter(*_schema, _tableFile, ios::out);
+  _inserter = new UniqueInserter(_tableFile, _schema->getAdt(), ios::out);
   if (currExcept) {
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
@@ -404,7 +404,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 #if defined(DEBUG)
 	  printf("  Inserting %d\n", tmpInt);
 #endif
-	  tuple[0] = IInt::getTypePtr(&tmpInt);
+	  tuple[0] = DteIntAdt::getTypePtr(tmpInt);
           break;
         }
 
@@ -415,7 +415,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 #if defined(DEBUG)
 	  printf("  Inserting %g\n", tmpDouble);
 #endif
-	  tuple[0] = IDouble::getTypePtr(&tmpDouble);
+	  tuple[0] = DteDoubleAdt::getTypePtr(tmpDouble);
           break;
 	}
 
@@ -425,13 +425,13 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 #if defined(DEBUG)
 	  printf("  Inserting %g\n", tmpDouble);
 #endif
-	  tuple[0] = IDouble::getTypePtr(&tmpDouble);
+	  tuple[0] = DteDoubleAdt::getTypePtr(tmpDouble);
           break;
 	}
 
         case StringAttr: {
 	  char *tmpStr = (char *)attrP;
-	  tuple[0] = IString::getTypePtr(tmpStr);
+	  tuple[0] = DteStringAdt::getTypePtr(tmpStr);
 #if defined(DEBUG)
 	  printf("  Inserting %s\n", tmpStr);
 #endif
@@ -487,15 +487,15 @@ DerivedTable::Done()
   //
   // Close and delete inserter.
   //
-  _inserter->close();
+  //_inserter->close();
+  delete _inserter;
+  _inserter = NULL;
   if (currExcept) {
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
     result += StatusFailed;
   }
 
-  delete _inserter;
-  _inserter = NULL;
 #endif
 
   return result;

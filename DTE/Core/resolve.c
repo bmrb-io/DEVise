@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/12/28 21:32:26  donjerko
+  Optimizer is now used by default.
+
   Revision 1.42  1998/11/23 19:18:56  donjerko
   Added support for gestalts
 
@@ -162,247 +165,333 @@
 
 #include "types.h"
 #include "myopt.h"
-#include "site.h"
+//#include "site.h"
 #include "ExecExpr.h"
 #include "catalog.h" 	// for root catalog
 #include "Interface.h"
-#include "listop.h"
+//#include "listop.h"
 #include "RelationManager.h"
 #include "AccessMethod.h"        // for getAccessMethods
+#include "DteSymbolTable.h"
+#include "Aggregates.h"
 
-bool PrimeSelection::exclusive(Site* site){
-	assert(alias);
-	return site->have(*alias);
-}
 
-TypeID PrimeSelection::typeCheck(){
-	string msg = "Table " + *alias + " does not have field " + *fieldNm;
-	THROW(new Exception(msg), "unknown");
-}
+//---------------------------------------------------------------------------
 
-bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
-	string me = toStringAttOnly();
-	for(int i = 0; i < numFlds; i++){
-		// cout << "attr = " << attributeNames[i] << endl;
-		if(me == attributeNames[i]){
-			return true;
-		}
-	}
-	// cout << "me = " << me << endl;
-	return false;
-}
 
-ExecExpr* BaseSelection::createExec(const SqlExprLists& inputs) const
+ExecExpr* OptExpr::createExec(const OptExprListList& inputs) const
 {
-//	cerr << "searching for " << toString() << "in:\n";
-	for(int i = 0; i < inputs.size(); i++){
-		for(int j = 0; j < inputs[i].size(); j++){
-			BaseSelection* curr = inputs[i][j];
-			assert(curr);
-//			cerr << curr->toString();
-			if(match(curr)){
-//				cerr << "found\n";
-				return new ExecSelect(getTypeID(), i, j);
-			}
-		}
-	}
-//	cerr << "not found\n";
-	return 0;
+  //cerr << "searching for " << toString() << " in:\n";
+  //cerr << "tableMap: " << tableMap << endl;
+  assert(inputs.size() <= 2);
+  for(int i = 0; i < (int)inputs.size(); i++) {
+    for(int j = 0; j < (int)inputs[i].size(); j++) {
+      OptExpr* curr = inputs[i][j];
+      assert(curr);
+      //cerr << curr->toString();
+      if(match(curr)) {
+        //cerr << "found\n";
+        return ExecExpr::createField(getAdt(), i, j);
+      }
+    }
+  }
+  //cerr << "not found\n";
+  return 0;
 }
-		
-ExecExpr* BaseSelection::createExec(Site* site1, Site* site2)
+
+//---------------------------------------------------------------------------
+
+
+OptConstant::~OptConstant()
 {
-     List<BaseSelection*>* selList;
-     int leftRight = 0;
-	if(site1 && exclusive(site1)){
-          selList = site1->getSelectList();
-          leftRight = 0;
-     }
-     else if(site2 && exclusive(site2)){
-          selList = site2->getSelectList();
-          leftRight = 1;
-     }
-     else{
-		return NULL;
-	}
-	selList->rewind();
-	int i = 0;
-	while(!selList->atEnd()){
-		BaseSelection* curr = selList->get();
-		assert(curr);
-		if(match(curr)){
-			return new ExecSelect(curr->getTypeID(), leftRight, i);
-		}
-		selList->step();
-		i++;
-	}
-	return NULL;
+  adt->deallocate(value);
 }
 
-ExecExpr* Operator::createExec(Site* site1, Site* site2)
+
+bool OptConstant::typeCheck(const DteSymbolTable& symbols)
 {
-	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* l;
-     TRY(l = left->createExec(site1, site2), NULL);
-	ExecExpr* r;
-     TRY(r = right->createExec(site1, site2), NULL);
-	return new ExecOperator(l, r, name);
+  return true;
 }
 
-ExecExpr* Operator::createExec(const SqlExprLists& inputs) const
+
+void OptConstant::display(ostream& out, int detail = 0) const
 {
-	ExecExpr* retVal = BaseSelection::createExec(inputs);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* l;
-	TRY(l = left->createExec(inputs), NULL);
-	ExecExpr* r;
-	TRY(r = right->createExec(inputs), NULL);
-	return new ExecOperator(l, r, name);
+  adt->print(out, value);
+  OptExpr::display(out, detail);
 }
 
-ExecExpr* EnumSelection::createExec(Site* site1, Site* site2)
+
+OptExpr* OptConstant::duplicate()
 {
-	return new ExecSelect(getTypeID(), 0, position);
+  return new OptConstant(adt, adt->allocateCopy(value));
 }
 
-ExecExpr* EnumSelection::createExec(const SqlExprLists& inputs) const
+
+void OptConstant::collect(TableMap group, OptExprList& to)
 {
-	return new ExecSelect(getTypeID(), 0, position);
+  // constants are only placed on top-level queries,
+  // and so they are never collected
 }
 
-ExecExpr* PrimeSelection::createExec(const SqlExprLists& inputs) const
+
+OptExpr::ExprType OptConstant::getExprType() const
 {
-	ExecExpr* retVal = BaseSelection::createExec(inputs);
-	if(retVal){
-		return retVal;
-	}
-	string msg = "Table " + *alias + " does not have attribute " +
-		*fieldNm;
-	THROW(new Exception(msg), NULL);
+  return CONST_ID;
 }
 
-ExecExpr* PrimeSelection::createExec(Site* site1, Site* site2)
+
+bool OptConstant::match(const OptExpr* x) const
 {
-	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
-	if(retVal){
-		return retVal;
-	}
-	string msg = "Table " + *alias + " does not have attribute " +
-		*fieldNm;
-	THROW(new Exception(msg), NULL);
+  if( getExprType() != x->getExprType() ) return false;
+  //if( !adt->isExactSameType(x->getAdt()) ) return false;
+  if( adt->getTypeID() != x->getAdt().getTypeID() ) return false;
+  if( !adt->canCompare() ) return false;
+  return( adt->compare(value, ((OptConstant*)x)->value) == 0 );
 }
 
-bool Operator::isIndexable(
-	string& attrName, string& opName, BaseSelection*& value){
-	SelectID ls = left->selectID();
-	SelectID rs = right->selectID();
-	if(ls == SELECT_ID && rs == CONST_ID){
-		attrName = *(((PrimeSelection*) left)->getFieldNm());
-		value = right;
-	}
-	else if(rs == SELECT_ID && ls == CONST_ID){
-		attrName = *(((PrimeSelection*) right)->getFieldNm());
-		value = left;
-	}
-	else{
-		return false;
-	}
-	opName = name;
-	return true;
-}
 
-ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const { 
-	
-	// throws
-
-	TRY(PromotePtr ptr = getPromotePtr(typeID, typeToPromote), NULL);
-	size_t objSz;
-	Type* newvalue = allocateSpace(typeToPromote, objSz);
-	ptr(value, newvalue, objSz);
-	return new ConstantSelection(typeToPromote, newvalue);
-}
-
-BaseSelection* ConstantSelection::duplicate() {
-//	size_t objSz;
-	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
-	return new ConstantSelection(typeID, newvalue);
-}
-
-ExecExpr* ConstantSelection::createExec(const SqlExprLists& inputs) const
+ExecExpr* OptConstant::createExec(const OptExprListList& inputs) const
 {
-	return new ExecConst(typeID, value);
+  return ExecExpr::createConstant(*adt, adt->allocateCopy(value));
 }
 
-ExecExpr* ConstantSelection::createExec(Site* site1, Site* site2)
+
+//---------------------------------------------------------------------------
+
+
+OptField::~OptField()
 {
-	return new ExecConst(typeID, value);
 }
 
-bool PrimeSelection::match(BaseSelection* x) const {
+
+void OptField::display(ostream& out, int detail = 0) const
+{
+  if(alias != "") {
+    out << alias << '.';
+  }
+  out << '"' << fieldNm << '"';
+  OptExpr::display(out, detail);
+}
+
+
+OptExpr* OptField::duplicate()
+{
+  return new OptField(alias, fieldNm);
+}
+
+
+bool OptField::typeCheck(const DteSymbolTable& symbols)
+{
+  assert(adt == NULL);
+  if( symbols.findAttr(alias, fieldNm, tableId, slot, adt) ) {
+    tableMap.set(tableId);
+    return true;
+  }
+  return false;
+}
+
+OptExpr::ExprType OptField::getExprType() const
+{
+  return FIELD_ID;
+}
+
+string OptField::toStringAttOnly() const
+{
+  return fieldNm;
+}
+
+// bool OptField::exclusive(string* attributeNames, int numFlds)
+// {
+//   string me = toStringAttOnly();
+//   for(int i = 0; i < numFlds; i++) {
+//     // cout << "attr = " << attributeNames[i] << endl;
+//     if(me == attributeNames[i]) {
+//       return true;
+//     }
+//   }
+//   // cout << "me = " << me << endl;
+//   return false;
+// }
+
+
+bool OptField::match(const OptExpr* x) const {
 	assert(x);
-	if(!(selectID() == x->selectID())){
+	if( getExprType() != x->getExprType() ) {
 		return false;
 	}
-	PrimeSelection* y = (PrimeSelection*) x;
-	assert(y->alias);
-	assert(alias);
-	if(!(*alias == *y->alias)){
+	OptField* y = (OptField*) x;
+	if( alias != y->alias) {
 		return false;
 	}
-	assert(y->fieldNm);
-	assert(fieldNm);
-	if(!(*fieldNm == *y->fieldNm)){
+	if(fieldNm != y->fieldNm) {
 		return false;
 	}
 	return true;
 }
 
-TypeID Operator::typeCheck(){
-	TRY(TypeID root = left->getTypeID(),"");
-	TRY(TypeID arg = right->getTypeID(),"");
-	GeneralPtr* genPtr;
-	genPtr = getOperatorPtr(name, root, arg, typeID);
-	CATCH(;);
-	if(!genPtr){
 
-		// need to typecast
-
-		TRY(int typeComp = typeCompare(root, arg), "");
-		if(typeComp > 0){
-
-			// typecast arg to root
-
-			TRY(PromotePtr cast = getPromotePtr(arg, root), "");
-			right = new TypeCast(root, right, cast);
-			arg = root;
-		}
-		else{
-
-			// typecast root to arg
-
-			TRY(PromotePtr cast = getPromotePtr(root, arg), "");
-			left = new TypeCast(arg, left, cast);
-			root = arg;
-		}
-		TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
-	}
-	if(!genPtr){
-		string msg = "No operator " + name + "(" + root + ", " +
-			arg + ") defined";
-		THROW(new Exception(msg), "Unknown");
-	}
-	opPtr = genPtr->opPtr;
-	avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
-	tableMap = left->getTableMap() | right->getTableMap();
-	return typeID;
+ExecExpr* OptField::createExec(const OptExprListList& inputs) const
+{
+  if( inputs.size() > 0 ) {
+    // this is the normal path that is used by the optimizer.
+    ExecExpr* retVal = OptExpr::createExec(inputs);
+    if(retVal){
+      return retVal;
+    }
+    string msg = "Table " + alias + " does not have attribute " + fieldNm;
+    THROW(new Exception(msg), NULL);
+  }
+  // no inputs, so assume input will be a scan of this field's table.
+  // This is used by DeleteParse to avoid creating OptNodes and collect(), etc.
+  assert(slot >= 0);
+  return ExecExpr::createField(getAdt(), tableId, slot);
 }
 
-double Operator::getSelectivity(){
+
+void OptField::collect(TableMap group, OptExprList& to)
+{
+  if(containedIn(group)) {
+    to.push_back(this);
+  }
+}
+
+
+// TableMap OptField::setTableMap(const vector<TableAlias*>& x) {
+// 	int pos = 1;
+// 	bool found = false;
+// 	vector<TableAlias*>::const_iterator it;
+// 	for(it = x.begin(); it != x.end(); ++it){
+// 		if(alias == (*it)->getAlias()){
+// 			found = true;
+// 			break;
+// 		}
+// 		pos <<= 1;
+// 	}
+//         cerr << "found table as pos: " << pos << endl;
+// 	assert(found);
+// 	tableMap = TableMap(pos);
+// 	return tableMap;
+// }
+
+
+//---------------------------------------------------------------------------
+
+
+OptFunction::~OptFunction()
+{
+  delete_all(args);
+}
+
+
+void OptFunction::display(ostream& out, int detail = 0) const
+{
+  out << name << "(";
+  print_ptr_list(out, args);
+  out << ')';
+  OptExpr::display(out, detail);
+}
+
+OptExpr* OptFunction::duplicate()
+{
+  int n = args.size();
+  OptExprList copyArgs(n);
+  for(int i = 0 ; i < n ; i++) {
+    copyArgs[i] = args[i]->duplicate();
+  }
+  return new OptFunction(name, copyArgs);
+}
+
+
+OptExpr::ExprType OptFunction::getExprType() const
+{
+  return FUNCTION_ID;
+}
+
+
+bool OptFunction::match(const OptExpr* x) const
+{
+  if( getExprType() != x->getExprType() ) {
+    return false;
+  }
+  OptFunction* y = (OptFunction*)x;
+  if( name != y->name ) {
+    return false;
+  }
+  int n = args.size();
+  if( n != (int)((y->args).size()) ) return false;
+  for(int i = 0 ; i < n ; i++) {
+    if( ! args[i]->match(y->args[i]) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool OptFunction::typeCheck(const DteSymbolTable& symbols)
+{
+  // typecheck all the function arguments
+  int n = args.size();
+  DteAdtList argTypes(n);
+  for(int i = 0 ; i < n ; i++) {
+    if( !args[i]->typeCheck(symbols) ) {
+      return false;
+    }
+    argTypes[i] = args[i]->getAdt();
+    tableMap |= args[i]->getTableMap();
+  }
+  // all the arguments are ok
+
+  // see if the function is an aggregate
+  if( n == 1 ) { // aggs can only have one arg (for now at least)
+    adt = ExecAgg::typeCheck(name, *(argTypes[0]));
+    if( adt ) {
+      aggFn = true;
+      return true;
+    }
+  }
+
+  // not an aggregate, find a regular function
+  adt = ExecExpr::typeCheck(name, argTypes);
+  if( adt ) {
+    aggFn = false;
+    return true;
+  }
+  return false;
+}
+
+
+bool OptFunction::isIndexable(string& attrName, string& opName,
+                                  OptExpr*& value)
+{
+  ExprType ls = args[0]->getExprType();
+  ExprType rs = args[1]->getExprType();
+
+  if( ls == FIELD_ID && rs == CONST_ID ) {
+
+    attrName = ((OptField*)args[0])->getFieldNm();
+    value = args[1];
+
+  } else if( rs == FIELD_ID && ls == CONST_ID ) {
+
+    attrName = ((OptField*)args[1])->getFieldNm();
+    value = args[0];
+
+  } else {
+
+    return false;
+
+  }
+  opName = name;
+  return true;
+}
+
+
+double OptFunction::getSelectivity() {
+  return 0.1;
+#if 0
+  //kb: this code didn't really handle Operators right before I made
+  //kb: a bunch of changes, so I didn't bother making converting it
+  //kb: for Functions...
 	if(typeID == "bool"){
 		/*
 		SelectyPtr selectyPtr = genPtr->selectyPtr;
@@ -415,12 +504,12 @@ double Operator::getSelectivity(){
 		}
 		*/
 
-		if(right->selectID() == SELECT_ID){
+		if(right->getExprType() == FIELD_ID){
 			
 			// foreign key relationship, left matches to exactly one right
 			// selectivity = 1 / cardinalityOfRightTable
 
-			PrimeSelection* rightc = (PrimeSelection*) right;
+			OptField* rightc = (OptField*) right;
 			const TableAlias* rightTable = rightc->getTable();
 			assert(rightTable);
 			Cardinality c = rightTable->getStats()->getCardinality();
@@ -437,335 +526,280 @@ double Operator::getSelectivity(){
 		assert(0);
 		return 0;
 	}
+#endif
 }
 
-ExecExpr* TypeCast::createExec(const SqlExprLists& inputs) const
+
+ExecExpr* OptFunction::createExec(const OptExprListList& inputs) const
 {
-	ExecExpr* retVal = BaseSelection::createExec(inputs);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* execInp;
-	TRY(execInp = input->createExec(inputs), NULL);
-	return new ExecTypeCast(execInp, typeID);
+  // cerr << "creating exec for OptFunction: " << toString() << endl;
+  ExecExpr* retVal = OptExpr::createExec(inputs);
+  if(retVal) {
+    return retVal;
+  }
+  int numFlds = args.size();
+  ExecExprList execArgs;
+  for(int i = 0; i < numFlds; i++) {
+    TRY(execArgs.push_back(args[i]->createExec(inputs)), NULL);
+    //kb: should delete execArgs on error
+  }
+  return ExecExpr::createFunction(name, execArgs);
 }
 
-ExecExpr* TypeCast::createExec(Site* site1, Site* site2)
+
+void OptFunction::collect(TableMap group, OptExprList& to)
 {
-	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* execInp;
-	TRY(execInp = input->createExec(site1, site2), NULL);
-	return new ExecTypeCast(execInp, typeID);
+  if(containedIn(group)) {
+    to.push_back(this);
+  } else {
+    for(size_t i = 0 ; i < args.size() ; i++) {
+      args[i]->collect(group, to);
+    }
+  }
 }
 
-ExecExpr* Member::createExec(const SqlExprLists& inputs) const
+//---------------------------------------------------------------------------
+
+void OptBool::propagateCnf()
 {
-	ExecExpr* retVal = BaseSelection::createExec(inputs);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* execInp;
-	TRY(execInp = input->createExec(inputs), NULL);
-	return new ExecMember(execInp, *name);
+  OptExpr* newExpr = args[0]->cnf();
+  if( newExpr ) {
+    delete args[0];
+    args[0] = newExpr;
+  }
+  newExpr = args[1]->cnf();
+  if( newExpr ) {
+    delete args[1];
+    args[1] = newExpr;
+  }
 }
 
-ExecExpr* Member::createExec(Site* site1, Site* site2)
+OptExpr* OptOr::cnf()
 {
-	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
-	if(retVal){
-		return retVal;
-	}
-	ExecExpr* execInp;
-	TRY(execInp = input->createExec(site1, site2), NULL);
-	return new ExecMember(execInp, *name);
+  propagateCnf();
+  OptExpr* result = NULL;
+  if(args[0]->distribute(args[1])) {
+    result = args[0];
+    args.clear();      // children are no longer mine
+  }
+  else if(args[1]->distribute(args[0])) {
+      result = args[1];
+      args.clear();      // children are no longer mine
+  }
+  return result;
 }
 
-bool Operator::match(BaseSelection* x) const {
-	if(!(selectID() == x->selectID())){
-		return false;
-	}
-	Operator* y = (Operator*) x;
-	if(!(name == y->name)){
-		return false;
-	}
-	if(!left->match(y->left)){
-		return false;
-	}
-	if(!right->match(y->right)){
-		return false;
-	}
-	return true;
-}
-
-TableName TableName::dirName(){
-	List<string*>* tmp = new List<string*>;
-	tableName->rewind();
-	while(!tableName->atEnd()){
-		string* s = tableName->get();
-		tableName->step();
-		if(tableName->atEnd()){
-			break;
-		}
-		else{
-			tmp->append(s);
-		}
-	}
-	return TableName(tmp);
-}
-
-string TableName::fileName(){
-	string* tmp = tableName->getTail();
-	if(tmp){
-		return *tmp;
-	}
-	else{
-		return "";
-	}
-}
-
-Constructor::Constructor(string* name, vector<BaseSelection*>* argVec)
-	: name(name), consPtr(NULL)
+OptExpr* OptOr::duplicate()
 {
-	translate(*argVec, args);
-	delete argVec;
+  return new OptOr(args[0]->duplicate(), args[1]->duplicate());
 }
 
-TypeID Constructor::typeCheck(){
-	assert(args);
-	int numFlds = args->cardinality();
-	TypeID* inpTypes = new TypeID[numFlds];	
-	tableMap = 0;
-	int i = 0;
-	for(args->rewind(); !args->atEnd(); args->step()){
-		inpTypes[i] = args->get()->getTypeID();
-		tableMap = tableMap | args->get()->getTableMap();
-		i++;
-	}
-	TRY(consPtr = 
-		getConstructorPtr(*name, inpTypes, numFlds, typeID), UNKN_TYPE);
-	delete [] inpTypes;
-	return typeID;
-}
 
-ExecExpr* Constructor::createExec(const SqlExprLists& inputs) const
+OptExpr* OptAnd::cnf()
 {
-//	cerr << "creating exec for Constructor: " << toString() << endl;
-
-	ExecExpr* retVal = BaseSelection::createExec(inputs);
-	if(retVal){
-		return retVal;
-	}
-	int numFlds = args->cardinality();
-	ExprList* input = new ExprList;
-	args->rewind();
-	for(int i = 0; i < numFlds; i++){
-          TRY(input->push_back(args->get()->createExec(inputs)), NULL);
-          args->step();
-	}
-	return new ExecConstructor(input, *name);
+  propagateCnf();
+  return NULL;
 }
 
-ExecExpr* Constructor::createExec(Site* site1, Site* site2)
+bool OptAnd::distribute(OptExpr* bs)
 {
-	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
-	if(retVal){
-		return retVal;
-	}
-	int numFlds = args->cardinality();
-	ExprList* input = new ExprList;
-	args->rewind();
-	for(int i = 0; i < numFlds; i++){
-          TRY(input->push_back(args->get()->createExec(site1, site2)), NULL);
-          args->step();
-	}
-	return new ExecConstructor(input, *name);
+  args[0] = new OptOr(bs, args[0]);
+  args[1] = new OptOr(bs->duplicate(), args[1]);
+  propagateCnf();
+  return true;
 }
 
-void TypeCast::collect(Site* site, List<BaseSelection*>* to){
-	if(exclusive(site)){
-		to->append(this);
-	}
-	else{
-		input->collect(site, to);
-	}
-}
-
-void Member::collect(Site* site, List<BaseSelection*>* to){
-	if(exclusive(site)){
-		to->append(this);
-	}
-	else{
-		input->collect(site, to);
-	}
-}
-
-void Constructor::collect(Site* site, List<BaseSelection*>* to){
-	if(exclusive(site)){
-		to->append(this);
-	}
-	else{
-		assert(args);
-		for(args->rewind(); !args->atEnd(); args->step()){
-			BaseSelection* curr = args->get();
-			curr->collect(site, to);
-          }
-	}
-}
-
-void PrimeSelection::collect(Site* site, List<BaseSelection*>* to){
-	if(exclusive(site)){
-		to->append(this);
-	}
-}
-
-void Operator::collect(Site* site, List<BaseSelection*>* to){
-	if(exclusive(site)){
-		to->append(this);
-		return;
-	}
-	left->collect(site, to);
-	right->collect(site, to);
-}
-
-TypeID Member::typeCheck(){
-	TypeID parentType = input->getTypeID();
-	tableMap = input->getTableMap();
-	GeneralMemberPtr* genPtr;
-	TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
-	assert(genPtr);
-	memberPtr = genPtr->memberPtr;
-	assert(memberPtr);
-	return typeID;
-}
-
-TableName::TableName(const TableName& arg){
-	tableName = new List<string*>;
-	List<string*>* other = arg.tableName;
-	for(other->rewind(); !other->atEnd(); other->step()){
-		tableName->append(new string(*other->get()));
-	}
-}
-
-TableName& TableName::operator=(const TableName& arg){
-	if(this != &arg){
-		delete tableName;
-		tableName = new List<string*>;
-		List<string*>* other = arg.tableName;
-		for(other->rewind(); !other->atEnd(); other->step()){
-			tableName->append(new string(*other->get()));
-		}
-	}
-	return *this;
-}
-
-TypeID TypeCast::typeCheck(){
-	if(promotePtr){
-
-		// already typified when consturcted 
-
-		return typeID;
-	}
-	TypeID inpType = input->getTypeID();
-	tableMap = input->getTableMap();
-	TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
-	return typeID;
-}
-
-vector<BaseSelection*> Constructor::getChildren(){
-	vector<BaseSelection*> tmp;
-	for(args->rewind(); !args->atEnd(); args->step()){
-		tmp.push_back(args->get());
-	}
-	return tmp;
-}
-
-void Constructor::setChildren(const vector<BaseSelection*>& children){
-	vector<BaseSelection*>::const_iterator it;
-	delete args;
-	args = new List<BaseSelection*>;
-	for(it = children.begin(); it != children.end(); ++it){
-		args->append(*it);
-	}
-}
-
-TableMap PrimeSelection::setTableMap(const vector<TableAlias*>& x) {
-	int pos = 1;
-	bool found = false;
-	vector<TableAlias*>::const_iterator it;
-	for(it = x.begin(); it != x.end(); ++it){
-		if(*alias == *((*it)->getAlias())){
-			found = true;
-			break;
-		}
-		pos <<= 1;
-	}
-	assert(found);
-	tableMap = TableMap(pos);
-	return tableMap;
-}
-
-TableMap Operator::setTableMap(const vector<TableAlias*>& x) {
-	tableMap = left->setTableMap(x) | right->setTableMap(x);
-	return tableMap;
-}
-
-TableAlias::TableAlias(TableName *t, string* a, string *func,
-			int optShiftVal) : table(t), alias(a),function(func),
-		shiftVal(optShiftVal), stats(0), schema(0) 
+OptExpr* OptAnd::duplicate()
 {
-	TableName* tableNameCopy = new TableName(*table);
-	const ISchema* s;
-	const Stats* tempStats;
-	CON_TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy));
-	CON_TRY(s = interf->getISchema(tableNameCopy));
-	schema = new ISchema(*s);
-	tempStats = interf->getStats();
-	if(tempStats){
-		stats = new Stats(*tempStats);
-	}
-	else{
-		stats = new Stats(schema->getNumFlds());
-	}
-	accessMethods = interf->createAccessMethods();
-	isGestaltM = interf->isGestalt();
-	isRemoteM = interf->isRemote();
-	CON_END:
-	;
+  return new OptAnd(args[0]->duplicate(), args[1]->duplicate());
+}
+
+bool OptAnd::insertConj(OptExprList& predList)
+{
+  if(args[0]->insertConj(predList)) { // left was an AND op, so delete it
+    delete args[0];
+  }
+  if(args[1]->insertConj(predList)) { // right was an AND op; delete it
+    delete args[1];
+  }
+  args.clear();               // children are no longer mine
+  return true;                // tell caller to delete me
+}
+
+
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+
+// TableMap OptFunction::setTableMap(const vector<TableAlias*>& x)
+// {
+//   TableMap tmap;
+//   int n = args.size();
+//   for(int i = 0 ; i < n ; i++) {
+//     tmap |= args[i]->setTableMap(x);
+//   }
+//   cerr << "new function tablemap for " << toString() << " = " << tmap << endl;
+//   tableMap = tmap;
+//   return tableMap;
+// }
+
+
+//===========================================================================
+
+TableAlias::TableAlias(Interface* interface, const string& a)
+: table(), alias(), stats(0), schema(), interf(0)
+{
+  //cerr << "TableAlias(interface(";
+  //interface->write(cerr);
+  //cerr << "), " << a << ")\n";
+  alias = a;
+  init(interface);
+}
+
+TableAlias::TableAlias(const TableName& t, const string& a)
+: table(), alias(), stats(0), schema(), interf(0)
+{
+  //cerr << "TableAlias(" << t.toString() << ',' << a << ")\n";
+  table = t;
+  alias = a;
+  interf = ROOT_CATALOG.createInterface(table);
+  if( !interf ) {
+    cerr << "Table " << t.toString() << " not found";
+    //string msg = "Table " + t.toString() + " not found";
+    //THROW(new Exception(msg), );
+  } else {
+    init(interf);
+  }
 }
 
 TableAlias::~TableAlias()
 {
-	vector<AccessMethod*>::iterator it;
-	for(it = accessMethods.begin(); it != accessMethods.end(); ++it){
-		delete *it;
-	}
+        delete_all(accessMethods);
 	delete stats;
 	delete interf;
 }
 
 void TableAlias::display(ostream& out, int detail){
-	assert(table);
-	if (function ){
-		out << *function << " (" ;
-		table->display(out) ;
-		cout << ") " ;
-	}
-	else{
-		table->display(out);
-	}
-	if(alias){
-		out << " as " << *alias;
-	}
+  table.display(out);
+  out << " as " << alias;
+}
+
+void TableAlias::init(Interface* interface)
+{
+  assert(interface);
+  interf = interface;
+  const ISchema* s = interf->getISchema();
+  assert(s);
+  schema = *s;
+  const Stats* tempStats = interf->getStats();
+  if(tempStats) {
+    stats = new Stats(*tempStats);
+  } else {
+    stats = new Stats(schema.getNumFields());
+  }
+  accessMethods = interf->createAccessMethods();
+  isGestaltM = interf->isGestalt();
+  isRemoteM = interf->isRemote();
 }
 
 void NumberAlias::display(ostream& out, int detail){
-	out << relId;
-	if(alias){
-		out << " as " << *alias;
+  out << relId << " as " << alias;
+}
+
+NumberAlias::~NumberAlias()
+{
+}
+
+
+
+
+//kb: delete old Site stuff
+#if 0
+ExecExpr* OptExpr::createExec(Site* site1, Site* site2)
+{
+  OptExprList selList;
+  int leftRight = 0;
+  if(site1 && exclusive(site1)) {
+    selList = site1->getSelectList();
+    leftRight = 0;
+  }
+  else if(site2 && exclusive(site2)) {
+    selList = site2->getSelectList();
+    leftRight = 1;
+  }
+  else {
+    return NULL;
+  }
+  selList->rewind();
+  int i = 0;
+  while(!selList->atEnd()){
+    OptExpr* curr = selList->get();
+    assert(curr);
+    if(match(curr)) {
+      return new ExecSelect(curr->getTypeID(), leftRight, i);
+    }
+    selList->step();
+    i++;
+  }
+  return NULL;
+}
+
+
+bool OptField::exclusive(Site* site)
+{
+  assert(alias);
+  return site->have(*alias);
+}
+
+
+ExecExpr* OptField::createExec(Site* site1, Site* site2)
+{
+	ExecExpr* retVal = OptExpr::createExec(site1, site2);
+	if(retVal){
+		return retVal;
 	}
+	string msg = "Table " + *alias + " does not have attribute " +
+		*fieldNm;
+	THROW(new Exception(msg), NULL);
+}
+
+
+void OptField::collect(Site* site, List<OptExpr*>* to)
+{
+  if(exclusive(site)) {
+    to->append(this);
+  }
+}
+
+
+ExecExpr* OptFunction::createExec(Site* site1, Site* site2)
+{
+  ExecExpr* retVal = OptExpr::createExec(site1, site2);
+  if(retVal) {
+    return retVal;
+  }
+  int numFlds = args->size();
+  ExprList* execArgs = new ExprList;
+  for(int i = 0; i < numFlds; i++) {
+    TRY(execArgs->push_back(args[i]->createExec(site1, site2)), NULL);
+  }
+  return new ExecFunction(name, execArgs);
+}
+
+void OptFunction::collect(Site* site, List<OptExpr*>* to)
+{
+  if(exclusive(site)) {
+    to->append(this);
+  }
+  else{
+    assert(args);
+    int n = args.size();
+    for(int i = 0 ; i < n ; i++) {
+      OptExpr* curr = args[i];
+      curr->collect(site, to);
+    }
+  }
 }
 
 Site* NumberAlias::createSite()
@@ -781,52 +815,8 @@ Site* NumberAlias::createSite()
 	return retVal;
 }
 
-NumberAlias::~NumberAlias(){
-}
-
-TableName* NumberAlias::getTable(){
-
-	// There is no table name for quoted tables, but 
-	// the optimizer needs to know table name to find indexes
-
-	return new TableName();
-}
-
-ISchema NumberAlias::getISchema() const
-{
-	Interface* interf;
-	TRY(interf = RELATION_MNGR.createInterface(relId), ISchema());
-	const ISchema* schema;
-
-	// because the empty table name is passed in, this will not work
-	// for remote server
-
-	TRY(schema = interf->getISchema(new TableName()), ISchema());
-	assert(schema);
-	ISchema retVal(*schema);
-	delete interf;
-	return retVal;
-}
-
 Site* TableAlias::createSite(){
 	TRY(return ROOT_CATALOG.find(table), NULL);
-}
-
-ISchema TableAlias::getISchema() const
-{
-	assert(schema);
-	return *schema;
-}
-
-const vector<AccessMethod*>& TableAlias::getAccessMethods() const
-{
-	return accessMethods;
-}
-
-ISchema QuoteAlias::getISchema() const
-{
-	assert(!"not implemented");
-	return ISchema();
 }
 
 Site* QuoteAlias::createSite(){
@@ -834,57 +824,4 @@ Site* QuoteAlias::createSite(){
 	return interf->getSite();
 }
 
-QuoteAlias::~QuoteAlias(){
-	delete quote;
-	delete interf;
-}
-
-// These are the latest (and the only) additions to this file after 
-// Working revision:    1.42    Mon Nov 23 19:18:56 1998 (Donko)
-
-void TypeCast::collect(TableMap group, vector<BaseSelection*>& to){
-	if(containedIn(group)){
-		to.push_back(this);
-	}
-	else{
-		input->collect(group, to);
-	}
-}
-
-void Member::collect(TableMap group, vector<BaseSelection*>& to){
-	if(containedIn(group)){
-		to.push_back(this);
-	}
-	else{
-		input->collect(group, to);
-	}
-}
-
-void Constructor::collect(TableMap group, vector<BaseSelection*>& to){
-	if(containedIn(group)){
-		to.push_back(this);
-	}
-	else{
-		assert(args);
-		for(args->rewind(); !args->atEnd(); args->step()){
-			BaseSelection* curr = args->get();
-			curr->collect(group, to);
-          }
-	}
-}
-
-
-void PrimeSelection::collect(TableMap group, vector<BaseSelection*>& to){
-	if(containedIn(group)){
-		to.push_back(this);
-	}
-}
-
-void Operator::collect(TableMap group, vector<BaseSelection*>& to){
-	if(containedIn(group)){
-		to.push_back(this);
-		return;
-	}
-	left->collect(group, to);
-	right->collect(group, to);
-}
+#endif

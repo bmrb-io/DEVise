@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/07/24 04:37:46  donjerko
+  *** empty log message ***
+
   Revision 1.5  1998/07/02 20:58:52  beyer
   finished fixing for new interface
 
@@ -47,7 +50,8 @@
 #include "types.h"
 #include "DevRead.h"
 
-
+#if 0
+//kb: delete Site stuff
 TypeID translateUDType(Attr* at){
    return "unknown";
 }
@@ -62,25 +66,19 @@ Iterator* DevRead::createExec(){
 
 void DevRead::Close(){
 }
+#endif
 
-
-DevReadExec::~DevReadExec(){
-}
-
-const Tuple* DevReadExec::getNext(){
-	return NULL;
-}
-
-const Tuple* DevReadExec::getThis(Offset offset) {
-	return NULL;
-}
-
-Offset DevReadExec::getOffset()
+DevReadExec::DevReadExec(UniData* ud, const DteTupleAdt& adt)
 {
-  return -1;
+  assert(ud == NULL);
 }
 
-const TypeIDList& DevReadExec::getTypes()
-{
-	return *(new TypeIDList());	
-}
+DevReadExec::~DevReadExec() {}
+
+void DevReadExec::initialize() {}
+
+const Tuple* DevReadExec::getNext() { return NULL; }
+
+const Tuple* DevReadExec::getThis(Offset offset) { return NULL; }
+
+Offset DevReadExec::getOffset() { return -1; }

@@ -19,38 +19,33 @@
 #ifndef UNIDATA_READ_H
 #define UNIDATA_READ_H
 
+
 //#include <iostream.h>   erased for sysdep.h
 #include <string>
 #include "types.h"
 #include "Iterator.h"
 #include "sysdep.h"
+#include "STuple.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-const int BUFSZE = 2048;
+//const int BUFSZE = 2048;
 
-class Attr;
+//class Attr;
 class UniData;
 typedef long off_t;
 
-TypeID translateUDType(Attr* at);
+//TypeID translateUDType(Attr* at);
 
 class DevReadExec : public RandomAccessIterator {
 	char* buff;	// this has to be aligned!
-	int buffSize;
 	UniData* ud;
-	UnmarshalPtr* unmarshalPtrs;
-	DestroyPtr* destroyPtrs;
-	Type** tuple;
+        STuple tuple;
 	off_t off;
-	int* offsets;
-	int numFlds;
-	int recId;
-        TypeIDList types;
 public:
-	DevReadExec(UniData* ud, const TypeIDList& types);
+	DevReadExec(UniData* ud);
 
 	virtual ~DevReadExec();
 
@@ -60,12 +55,14 @@ public:
 
 	virtual const Tuple* getThis(Offset offset);
 
-     virtual Offset getOffset();
+        virtual Offset getOffset();
 
-	virtual const TypeIDList& getTypes();
-
+        // translates ud info to dte schema info
+        static void translateSchema(UniData* ud, ISchema& schema);
 };
 
+#if 0
+//kb: remove class
 class DevRead : public PlanOp {
 	UniData* ud;
 	int numFlds;
@@ -115,5 +112,6 @@ public:
 	}
 	virtual Iterator* createExec();
 };
+#endif
 
 #endif

@@ -1,11 +1,14 @@
 #ifndef EXECOP_H
 #define EXECOP_H
 
+//kb: split this file!
+
 #include <vector>
 
-#include "ExecExpr.h"
 #include "Iterator.h"
-#include "MemoryMgr.h"
+#include "STuple.h"
+#include "DTE/comm/TupleLoader.h"
+#include "ExecExpr.h"
 
 
 #ifndef __GNUG__
@@ -13,7 +16,6 @@ using namespace std;
 #endif
 
 class RTreeReadExec;
-class TupleLoader;
 
 
 class SelProjExec : public Iterator
@@ -28,14 +30,12 @@ public:
   
   virtual const Tuple* getNext();
 
-  virtual const TypeIDList& getTypes();
-
 protected:
 
   Iterator* inputIt;
   ExprList& myWhere;
   ExprList& myProject;
-  Tuple* next;
+  STuple next;
 
 private:
 
@@ -60,8 +60,6 @@ public:
 
   virtual const Tuple* getNext();
 
-  virtual const TypeIDList& getTypes();
-
 protected:
 
   Iterator* inputIt;
@@ -74,7 +72,7 @@ protected:
 
   ExprList& myProject;
 
-  Tuple* next;
+  STuple next;
 
 private:
 
@@ -100,15 +98,13 @@ public:
 
   virtual const Tuple* getNext();
 
-  virtual const TypeIDList& getTypes();
-
 protected:
 
   Iterator* left;
   Iterator* right;
   ExprList& myProject;
   ExprList& myWhere;
-  Tuple* next;
+  STuple next;
   vector<const Tuple*> innerRel;
   vector<const Tuple*>::const_iterator innerIter;
   bool firstEntry;
@@ -121,7 +117,6 @@ private:
 
   NLJoinExec(const NLJoinExec& x);
   NLJoinExec& operator=(const NLJoinExec& x);
-
 };
 
 
@@ -140,8 +135,6 @@ public:
 
   virtual const Tuple* getNext();
   
-  virtual const TypeIDList& getTypes();
-
 protected:
 
   vector<Iterator*> vec;   // *** YL
@@ -174,15 +167,12 @@ public:
 
   virtual const Tuple* getNext();
 
-  virtual const TypeIDList& getTypes();
-
 protected:
 
   Iterator* input;
   int numFlds;
-  Tuple* tuple;
+  STuple tuple;
   int counter;
-  TypeIDList types;
 
 private:
 
@@ -198,7 +188,8 @@ class SingleAnswerIt
 : public Iterator
 {
 public:
-  SingleAnswerIt(Type* arg, const TypeID& type);
+  // arg and type will be deleted by this object
+  SingleAnswerIt(Type* arg, const DteAdt& type);
 
   virtual ~SingleAnswerIt();
 
@@ -206,14 +197,10 @@ public:
 
   virtual const Tuple* getNext();
 
-  virtual TypeIDList& getTypes();
-  
 protected:
 
   bool done;
-  DestroyPtr destroyPtr;
   Type* retVal;
-  TypeIDList types;
 
 };
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/11/23 19:18:51  donjerko
+  Added support for gestalts
+
   Revision 1.23  1998/07/24 04:37:54  donjerko
   *** empty log message ***
 
@@ -95,42 +98,22 @@
 #include "url.h"
 #include "ExecOp.h"
 #include "DteProtocol.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/util/DteAlgo.h"
 
-StandReadExec::StandReadExec(const TypeIDList& typeIDs, istream* in,
+StandReadExec::StandReadExec(const DteTupleAdt& adt, istream* in,
                              const string& url)
-: types(typeIDs), in(in), url(url)
+: RandomAccessIterator(adt), in(in), url(url)
 {
-  numFlds = types.size();
-  readPtrs = getReadPtrs(types);
-  tuple = allocateTuple(types);
   first_pass = true;
 }
 
 
-StandReadExec::StandReadExec(const TypeIDList& typeIDs, const string& url)
-: types(typeIDs), in(in), url(url)
+StandReadExec::StandReadExec(const DteTupleAdt& adt, const string& url)
+: RandomAccessIterator(adt), url(url)
 {
   URL url(url);
   in = url.getInputStream();
-  numFlds = types.size();
-  readPtrs = getReadPtrs(types);
-  tuple = allocateTuple(types);
-  first_pass = true;
-}
-
-
-StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
-                             string url)
-: types(), in(in), url(url)
-{
-  this->numFlds = numFlds;
-  for(int i = 0 ; i < numFlds ; i++) {
-    types.push_back(typeIDs[i]);
-  }
-  //kb: should typeIDs be deleted?? looks like sometimes yes, sometimes no
-  // delete [] typeIDs;
-  readPtrs = getReadPtrs(types);
-  tuple = allocateTuple(types);
   first_pass = true;
 }
 
@@ -138,7 +121,6 @@ StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
 StandReadExec::~StandReadExec()
 {
   delete in;
-  deleteTuple(tuple, types);
 }
 
 
@@ -159,22 +141,22 @@ void StandReadExec::initialize()
 const Tuple* StandReadExec::getNext()
 {
   assert(in);
-  for(int i = 0; i < numFlds; i++) {
-    readPtrs[i](*in, ((Type**)tuple)[i]);
-    if(currExcept) {
-      ostringstream tmp;
-      tmp << "Line " << currentLine << " of " << url << ends;
-      currExcept->append(tmp.str());
-      return NULL;
-    }
-  }
-  currentLine++;
-  if(in->good()) {
-    return tuple;
-  }
-  else {
+  int used = resultAdt.fromAscii(*in, pageBuf);
+  if( used < 0 ) {
+    //THROW
+    cerr << "tuple didn't fit on a page!!\nfile: "
+         << url << " at line " << currentLine << endl;
     return NULL;
   }
+  if( in->eof() ) {
+    return NULL;
+  }
+  if( !in->good() ) {
+    cerr << "error reading file: " << url << endl;
+    return NULL;
+  }
+  currentLine++;
+  return (Tuple*)(pageBuf.data);
 }
 
 
@@ -206,38 +188,39 @@ Offset StandReadExec::getOffset()
   return Offset(pos);
 }
 
+//---------------------------------------------------------------------------
 
-const TypeIDList& StandReadExec::getTypes()
+StandReadExec2::StandReadExec2(const DteTupleAdt& tupAdt,
+                               istream* in, DteProtocol* dteProt)
+  : StandReadExec(tupAdt, in), dteProt(dteProt)
 {
-  return types;
 }
 
+
+StandReadExec2::~StandReadExec2()
+{
+//	cerr << "Closing connection in StandReadExec2\n";
+	delete dteProt;
+	dteProt = 0;
+	in = 0; // already deleted in DteProtocol destructor
+}
 
 //---------------------------------------------------------------------------
 
-
-void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
-	this->numFlds = numFlds;
-	this->typeIDs = new TypeID[numFlds];
+#if 0
+void StandardRead::open(istream* in, const DteTupleAdt& tupAdt) {
 	assert(in && in->good());
+	this->tupAdt = tupAdt;
 	this->in = in;
-	for(int i = 0; i < numFlds; i++){
-		this->typeIDs[i] = typeIDs[i];
-	}
 }
 
 void StandardRead::open(const ISchema& schema, istream* in, 
-	const string& urlStr)
+                        const string& urlStr)
 {
-	this->numFlds = schema.getNumFlds();
-	this->typeIDs = new TypeID[numFlds];
-	this->attributeNames = new string[numFlds];
-	this->urlStr = urlStr;
-	for(int i = 0; i < numFlds; i++){
-		typeIDs[i] = schema.getTypeIDs()[i];
-		attributeNames[i] = schema.getAttributeNames()[i];
-	}
 	assert(in && in->good());
+	this->tupAdt = schema.getAdt();
+	this->attributeNames = schema.getAttributeNames();
+	this->urlStr = urlStr;
 	this->in = in;
 }
 
@@ -253,9 +236,8 @@ void NCDCRead::open(istream* in){	// Throws exception
           in->read(buff, 100);
           err.write(buff, in->gcount());
      }
-     err << ends;
      string response = err.str();
-     char* tmp = strdup(response.c_str());
+     const char* tmp = response.c_str();
 
      // find the third occurence of "http:"
 
@@ -275,12 +257,10 @@ void NCDCRead::open(istream* in){	// Throws exception
           j++;
      }
      assert(tmp[j]);
-     tmp[j] = '\0';
-     string tableUrlStr = string(tmp);
-     URL* tableUrl = new URL(tableUrlStr);
-	istream* tablein = NULL;
-     TRY(tablein = tableUrl->getInputStream(), NVOID );
-	delete tableUrl;
+     string tableUrlStr = string(tmp, j);
+     URL tableUrl(tableUrlStr);
+     istream* tablein = NULL;
+     TRY(tablein = tableUrl.getInputStream(), NVOID );
 
      // ignore first 8 lines
 
@@ -289,35 +269,21 @@ void NCDCRead::open(istream* in){	// Throws exception
           tablein->getline(buff, 100);
      }
 
-     numFlds = 2;
-	typeIDs = new string[numFlds];
-     typeIDs[0] = "int";
-     typeIDs[1] = "int";
-	attributeNames = new string[numFlds];
-	attributeNames[0] = "day";
-	attributeNames[1] = "temp";
-	stats = new Stats(numFlds);
-	in = tablein;
+     tupAdt.push_back(DteIntAdt());
+     attributeNames.push_back("day");
+
+     tupAdt.push_back(DteIntAdt());
+     attributeNames.push_back("temp");
+
+     stats = new Stats(2);
+     in = tablein;
 }
 
 RidAdder::RidAdder(PlanOp* input) : input(input) {
-	numFlds = input->getNumFlds() + 1;
-	typeIDs = new TypeID[numFlds];
-	attributeNames = new string[numFlds];
-	const TypeID* inpTypes = input->getTypeIDs();
-	const string* inpAttrs = input->getAttributeNames();
-	typeIDs[0] = INT_TP;
-	attributeNames[0] = RID_STRING;
-	for(int i = 1; i < numFlds; i++){
-		typeIDs[i] = inpTypes[i - 1];
-		attributeNames[i] = inpAttrs[i - 1];
-	}
+  tupAdt.push_back(DteIntAdt());
+  tupAdt.append(input->getAdt());
+  attributeNames.push_back(RID_STRING);
+  append(attributeNames, input->getAttributeNames());
 }
 
-StandReadExec2::~StandReadExec2()
-{
-//	cerr << "Closing connection in StandReadExec2\n";
-	delete dteProt;
-	dteProt = 0;
-	in = 0; // already deleted in DteProtocol destructor
-}
+#endif

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1997/08/12 18:46:49  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.9  1997/03/20 19:56:20  wenger
 #  Minor mods to get latest version to compile on HP and SunOS; cleaned
 #  up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -61,9 +65,5 @@ ARCH_LDPOST =
 ARCH_ENDIAN =
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script \
-	../../attrproj/ $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.hp

@@ -181,1096 +181,477 @@
 //#include <iostream.h>   erased for sysdep.h
 //#include <fstream.h>   erased for sysdep.h
 //#include <strstream.h>   erased for sysdep.h
-#include "queue.h"
+//#include "queue.h"
 #include "types.h"
 #include "exception.h"
 #include "TableUtils.h"
 #include "url.h"
-#include "RelationId.h"
-#include "listop.h"
+//#include "listop.h"
 #include "sysdep.h"
-#include "Stats.h"
+#include "Interface.h"
+#include "TableAlias.h"
+#include "DTE/util/DteAlgo.h"
+//#include "DTE/expr/ExecExpr.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
+
+//===========================================================================
+
+
+
+//===========================================================================
+
 class ExecExpr;
-class BaseSelection;
+class OptExpr;
+class DteSymbolTable;
+class ExecAgg;
 
-typedef vector<vector<BaseSelection*> > SqlExprLists;
+typedef vector<OptExpr*> OptExprList;
+typedef vector<OptExprList> OptExprListList;
 
-typedef enum SelectID {
-	BASE_ID, SELECT_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	CAST_ID, MEMBER_ID, ENUM_SELECT_ID, CONSTRUCTOR_ID
-};
-
-class BaseSelection{
+class OptExpr
+{
 protected:
-	TableMap tableMap;
-	TypeID typeID;
-	int avgSize;	// to estimate result sizes
+
+  DteAdt* adt;
+  TableMap tableMap;            // set during typeCheck()
+  int avgSize;	// to estimate result sizes
+
 public:
-     BaseSelection() {
-		 typeID ="" ;
-		avgSize = 10;
-	}
-     BaseSelection(const TypeID& typeID, int avgSize = 10) 
-		: typeID(typeID), avgSize(avgSize) {}
-	virtual ~BaseSelection(){}
-	virtual void destroy(){}
-	string toString(){
-		ostringstream os;
-		display(os);
-		os << ends;
-		string retVal(os.str());		// do not delete, works for NT
-		return retVal;
-	}
-	virtual void display(ostream& out, int detail = 0){
-	};
-	virtual bool exclusive(Site* site) = 0;
-	virtual bool exclusive(string* attributeNames, int numFlds) = 0;
-	virtual string* siteName(){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual BaseSelection* cnf(){
-		return NULL;
-	}
-	virtual bool distribute(BaseSelection* bs){
-		return false;
-	}
-	virtual BaseSelection* duplicate() = 0;
-	virtual bool insertConj(vector<BaseSelection*>& predList){
-		predList.push_back(this);
-		return false;
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
-	virtual void collect(TableMap group, vector<BaseSelection*>& to) = 0;
-	virtual ExecExpr* createExec(Site* site1, Site* site2);	// obsolete
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-	virtual TypeID typeCheck() = 0;
-	virtual vector<BaseSelection*> getChildren() = 0;
-	virtual void setChildren(const vector<BaseSelection*>& children) = 0;
-     virtual bool match(BaseSelection* x) const = 0;
-     virtual SelectID selectID() const = 0;
-	TypeID getTypeID() const {
-		return typeID;
-	}
-	virtual void setSize(int size){
-		assert(0);
-	}
-	virtual int getSize(){
-		return 10;	// not used really
-	}
-	void setTypeID(TypeID type){
-		typeID = type;
-	}
-	virtual double getSelectivity(){
-		assert(0);
-		return 0.0; // avoid compiler warning
-	}
-	virtual bool checkOrphan(){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual bool isIndexable(
-		string& attrName, string& opName, BaseSelection*& value){
 
-		// Introduced to recognize the indexable predicates.
-		// Only OperatorSelection can be indexable
+  enum ExprType {
+    CONST_ID,
+    FIELD_ID,
+    FUNCTION_ID,
+  };
 
-		return false;
-	}
-	virtual string toStringAttOnly(){
-		cout << "toStringAttOnly not definded for: " << selectID() << endl;
-		assert(0);
-		return ""; // avoid compiler warning
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>&) = 0;
-	TableMap getTableMap() const {
-		return tableMap;
-	}
-	bool containedIn(TableMap group){
-		return group.contains(tableMap);
-	}
+  OptExpr() {
+    adt = NULL;
+    avgSize = 10;
+  }
+
+  // adt1 is an allocated object that this OptExpr will delete
+  OptExpr(DteAdt* adt1, int avgSize = 10) 
+    : adt(adt1), avgSize(avgSize) {}
+
+  virtual ~OptExpr() { delete adt; }
+
+  string toString() const {
+    ostringstream os;
+    display(os);
+    return os.str();
+  }
+
+  virtual void display(ostream& out, int detail = 0) const {
+    if(detail) {
+      out << "% size = " << avgSize;
+      out << ", type = " << adt->getTypeSpec() << " %";
+    }
+  }
+
+  //virtual bool exclusive(Site* site) = 0;
+
+  //virtual bool exclusive(string* attributeNames, int numFlds) = 0;
+
+  virtual string* siteName() {
+    assert(0);
+    return NULL; // avoid compiler warning
+  }
+
+  virtual OptExpr* cnf() {
+    return NULL;
+  }
+
+  virtual bool distribute(OptExpr* bs) {
+    return false;
+  }
+
+  virtual OptExpr* duplicate() = 0;
+
+  virtual bool insertConj(OptExprList& predList) {
+    predList.push_back(this);
+    return false;
+  }
+
+  //virtual void collect(Site* s, OptExprList& to) = 0;
+
+  virtual void collect(TableMap group, OptExprList& to) = 0;
+
+  //virtual ExecExpr* createExec(Site* site1, Site* site2);	// obsolete
+
+  // returns true if success, false if failure
+  virtual bool typeCheck(const DteSymbolTable& symbols) = 0;
+
+  // only valid after typeCheck() return true
+  virtual ExecExpr* createExec(const OptExprListList& inputs) const;
+
+  //virtual OptExprList getChildren() = 0;
+
+  //virtual void setChildren(const OptExprList& children) = 0;
+
+  virtual bool match(const OptExpr* x) const = 0;
+
+  virtual OptExpr::ExprType getExprType() const = 0;
+
+  // only valid after typeCheck()
+  const DteAdt& getAdt() const {
+    assert(adt);
+    return *adt;
+  }
+
+  //  TypeID getTypeID() const {
+  //    return adt->getTypeID();
+  //  }
+
+  void setSize(int size) {
+    avgSize = size;
+  }
+
+  int getSize() {
+    return avgSize;
+  }
+
+  virtual double getSelectivity() {
+    assert(0);
+    return 0.0; // avoid compiler warning
+  }
+
+  virtual bool isIndexable(string& attrName, string& opName, OptExpr*& value) {
+    // Introduced to recognize the indexable predicates.
+    // Only OptFunction can be indexable (and only when it's a compare op)
+    return false;
+  }
+
+  virtual string toStringAttOnly() const {
+    cout << "toStringAttOnly not definded for: " << (int)getExprType() << endl;
+    assert(0);
+    return ""; // avoid compiler warning
+  }
+
+  //virtual TableMap setTableMap(const vector<TableAlias*>&) = 0;
+
+  // only valid after typeCheck() returns true
+  TableMap getTableMap() const {
+    return tableMap;
+  }
+
+  bool containedIn(TableMap group) {
+    return group.contains(tableMap);
+  }
 };
 
-class ConstantSelection : public BaseSelection {
-     Type* value;
+
+inline ostream& operator<<(ostream& s, const OptExpr& x)
+{
+  x.display(s);
+  return s;
+}
+
+//---------------------------------------------------------------------------
+
+
+class OptConstant : public OptExpr
+{
+  Type* value;
+
 public:
-	ConstantSelection(TypeID typeID, Type* val) : 
-		BaseSelection(typeID), value(val) {}
-	virtual ~ConstantSelection(){
-		DestroyPtr dp = getDestroyPtr(typeID);
-		assert(dp);
-		dp(value);
-	} 
-	const Type* getValue() {
-		return value;
-	}  
-	virtual TypeID typeCheck(){
-		return typeID;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){}
-	ConstantSelection* promote(TypeID typeToPromote) const; // throws
-	int toBinary(char* to){
-		MarshalPtr marshalPtr = getMarshalPtr(typeID);
-		marshalPtr(value, to);
-		return packSize(value, typeID);
-	}
-	int binarySize(){
-		return packSize(value, typeID);
-	}
-	bool operator<(const ConstantSelection& arg) const {
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	bool operator>(const ConstantSelection& arg) const {
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	bool operator ==(const ConstantSelection& arg) const { // throws exception
-		TypeID tmp;
-		GeneralPtr* genPtr;
-		TRY(genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp), false);
-		assert(tmp == "bool");
-		assert(genPtr && genPtr->opPtr);
-		Type* result;
-		genPtr->opPtr(value, arg.value, result);
-		return (result ? true : false);
-	}
-	virtual void display(ostream& out, int detail = 0){
-		WritePtr wp = getWritePtr(typeID);
-		if(typeID.substr(0, 6) == "string"){
 
-			// hack, must display the string SQL style
+  OptConstant(DteAdt* adt, Type* val)
+    : OptExpr(adt, adt->getMaxSize()), value(val) {}
 
-			out << addSQLQuotes((char*) value, '\'');
-			BaseSelection::display(out, detail);
-			return;
-		}
-		assert(wp);
-		wp(out, value);
-		BaseSelection::display(out, detail);
-	}
-	virtual bool exclusive(Site* site){
-		return true;
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		return true;
-	}
-	virtual BaseSelection* duplicate();
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-	}
-	virtual void collect(TableMap group, vector<BaseSelection*>& to){
-	}
-     virtual SelectID selectID() const {
-          return CONST_ID;
-     }
-	virtual bool match(BaseSelection* x) const { // throws exception
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		ConstantSelection* y = (ConstantSelection*) x;
-		TypeID tmp;
-		GeneralPtr* genPtr;
-		TRY(genPtr = getOperatorPtr("=", typeID, y->typeID, tmp), false);
-		assert(tmp == "bool");
-		Type* result;
-		assert(genPtr && genPtr->opPtr);
-		genPtr->opPtr(value, y->value, result);
-		return (result ? true : false);
-	}
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
+  virtual ~OptConstant();
+
+  const Type* getValue() { return value; }  
+
+  virtual bool typeCheck(const DteSymbolTable& symbols);
+
+  //virtual OptExprList getChildren() { return OptExprList(0); }
+
+  //virtual void setChildren(const OptExprList& children) {}
+
+  virtual void display(ostream& out, int detail = 0) const;
+
+  //virtual bool exclusive(Site* site) {
+  //return true;
+  //}
+
+//   virtual bool exclusive(string* attributeNames, int numFlds) {
+//     return true;
+//   }
+
+  virtual OptExpr* duplicate(); //kb: rename to clone()
+
+  //virtual void collect(Site* s, OptExprList& to) {}
+
+  virtual void collect(TableMap group, OptExprList& to);
+
+  virtual OptExpr::ExprType getExprType() const;
+
+  virtual bool match(const OptExpr* x) const;
+
+  //virtual ExecExpr* createExec(Site* site1, Site* site2) {
+  //return ExecExpr::createConstant(adt, adt->allocateCopy(value));
+  //}
+
+  ExecExpr* createExec(const OptExprListList& inputs) const;
   
-	virtual int getSize(){
-		return packSize(value, typeID);
-	}
-	virtual bool checkOrphan(){
-		return true;
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>&) {
-		TableMap tmp(0);
-		tableMap = tmp;
-		return tableMap;
-	}
+  //virtual TableMap setTableMap(const vector<TableAlias*>&) {
+  //TableMap tmp(0);
+  //tableMap = tmp;
+  //return tmp;
+  //}
 };
 
-class TypeCast : public BaseSelection {
-	BaseSelection* input;
-	PromotePtr promotePtr;
+
+//---------------------------------------------------------------------------
+
+
+class OptField : public OptExpr
+{
+  string alias;
+  string fieldNm;
+  int tableId;
+  int slot;
+  //const TableAlias* parentTable; // kb: delete this?
+
 public:
-	TypeCast(TypeID& typeID, BaseSelection* input, 
-		PromotePtr promotePtr = NULL) : 
-		BaseSelection(typeID), input(input), 
-		promotePtr(promotePtr){
-		
-		tableMap = input->getTableMap();
-		assert(input);
-	}
-	TypeCast(const TypeCast& x) {
-		tableMap = x.tableMap;
-		typeID = x.typeID;
-		input = x.input->duplicate();
-		promotePtr = x.promotePtr;
-	}
-	virtual ~TypeCast(){}
-	virtual TypeID typeCheck();
-	void destroy(){
-		input->destroy();
-		delete input;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		tmp.push_back(input);
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){
-		assert(children.size() == 1);
-		input = children.front();
-	}
-	virtual void display(ostream& out, int detail = 0){
-		out << typeID << "(";
-		input->display(out, detail);
-		out << ")";
-		BaseSelection::display(out, detail);
-	}
-	virtual bool exclusive(Site* site){
-		return input->exclusive(site);
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		return input->exclusive(attributeNames, numFlds);
-	}
-	virtual BaseSelection* duplicate(){
-		return new TypeCast(*this);
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to);
-	virtual void collect(TableMap group, vector<BaseSelection*>& to);
-     virtual SelectID selectID() const {
-          return CAST_ID;
-     }
-	virtual bool match(BaseSelection* x) const { // throws exception
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		TypeCast* y = (TypeCast*) x;
-		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
-		if(!(TypeID(typeID) == TypeID(y->typeID))){
-			return false;
-		}
-		if(!input->match(y->input)){
-			return false;
-		}
-		return true;
-	}
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-	virtual int getSize(){
-		return packSize(typeID);
-	}
-	virtual bool checkOrphan(){
-		return input->checkOrphan();
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
-		tableMap = input->setTableMap(x);
-		return tableMap;
-	}
+
+//   OptField(const string& alias1, const string& fieldNm1,
+//                DteAdt* adt = NULL,
+//                int avgSize = 0,
+//                const TableAlias* parentTable = NULL)
+//     : OptExpr(adt, avgSize), alias(alias1), fieldNm(fieldNm1), 
+//     parentTable(parentTable) {
+//     }
+
+  // adt & tableMap will be set by typeCheck()
+  OptField(const string& alias1, const string& fieldNm1)
+    : OptExpr(), alias(alias1), fieldNm(fieldNm1), tableId(-1), slot(-1) {}
+
+  // typeCheck() will not be called
+//   OptField(const string& alias1, const string& fieldNm1,
+//            DteAdt* adt, int tabId)
+//     : OptExpr(adt),  alias(alias1), fieldNm(fieldNm1) {
+//     tableMap.set(tabId);
+//   }
+
+  ~OptField();
+
+  //const TableAlias* getTable() {
+  //return parentTable;
+  //}
+
+  const string& getFieldNm() {
+    return fieldNm;
+  }
+
+  //virtual OptExprList getChildren() { return OptExprList(0); }
+  //virtual void setChildren(const OptExprList& children) {}
+
+  virtual void display(ostream& out, int detail = 0) const;
+
+  //virtual bool exclusive(Site* site);
+
+  //virtual bool exclusive(string* attributeNames, int numFlds);
+
+  virtual OptExpr* duplicate();
+
+  //virtual void collect(Site* s, OptExprList& to);
+
+  virtual void collect(TableMap group, OptExprList& to);
+
+  virtual ExecExpr* createExec(const OptExprListList& inputs) const;
+
+  //virtual ExecExpr* createExec(Site* site1, Site* site2);
+
+  virtual bool typeCheck(const DteSymbolTable& symbols);
+
+  virtual OptExpr::ExprType getExprType() const;
+
+  virtual bool match(const OptExpr* x) const;
+
+  virtual string toStringAttOnly() const;
+
+  //virtual TableMap setTableMap(const vector<TableAlias*>&);
 };
 
-class Member : public BaseSelection {
-friend class Method;
+
+//---------------------------------------------------------------------------
+
+
+class OptFunction : public OptExpr
+{
 protected:
-	string* name;
-	BaseSelection* input;
-	MemberPtr memberPtr;
+
+  string name;
+  OptExprList args;
+  bool aggFn;
+  bool srqlAggFn;
+
 public:
-	Member(string* name, BaseSelection* input) : 
-		BaseSelection(), name(name), input(input), 
-		memberPtr(NULL) {
-	}
-	Member(string* name, BaseSelection* input, MemberPtr memberPtr,
-			TypeID typeID) : 
-		BaseSelection(typeID), name(name), input(input), 
-		memberPtr(memberPtr) {
-	}
-	Member(const Member& x){
-		name = new string(*x.name);
-		typeID = x.typeID;
-		input = x.input->duplicate();
-		memberPtr = x.memberPtr;
-		avgSize = x.avgSize;
-	}
-	virtual ~Member(){
-		delete name;
-	}
-	virtual TypeID typeCheck();
-	void destroy(){
-		input->destroy();
-		delete input;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		tmp.push_back(input);
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){
-		assert(children.size() == 1);
-		input = children.front();
-	}
-	virtual void display(ostream& out, int detail = 0){
-		input->display(out, detail);
-		out << "." << *name;
-		BaseSelection::display(out, detail);
-	}
-	const string* getName(){
-		return name;
-	}
-	virtual bool exclusive(Site* site){
-		return input->exclusive(site);
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		return input->exclusive(attributeNames, numFlds);
-	}
-	virtual BaseSelection* duplicate(){
-		return new Member(*this);
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to);
-	virtual void collect(TableMap group, vector<BaseSelection*>& to);
-     virtual SelectID selectID() const {
-          return MEMBER_ID;
-     }
-	virtual bool match(BaseSelection* x) const { // throws exception
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		Member* y = (Member*) x;
-		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
-          if(!(*name == *y->name)){
-               return false;
-          }
-		if(!input->match(y->input)){
-			return false;
-		}
-		return true;
-	}
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-	virtual int getSize(){
-		return avgSize;
-	}
-     virtual void setSize(int size){
-          avgSize = size;
-     }
-	virtual bool checkOrphan(){
-		return input->checkOrphan();
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x){
-		tableMap = input->setTableMap(x);
-		return tableMap;
-	}
-};
 
-class Method : public Member {
-	List<BaseSelection*>* args;
-public:
-	Method(string* name, List<BaseSelection*>* args, BaseSelection* input) :
-		Member(name, input), args(args) {}
-	virtual ~Method(){
-	}
-	virtual void display(ostream& out, int detail = 0){
-		if(input){
-			input->display(out, detail);
-			out << ".";
-		}
-		assert(name);
-		out << *name << "(";
-          if(args){
-               displayList(out, args, ", ", detail);
-          }
-          out << ')';
-	}
-     List<BaseSelection*>* getArgs(){
-          return args;
-     }
-	virtual bool exclusive(Site* site){
-		assert(0);
-		return input->exclusive(site);
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		assert(0);
-		return input->exclusive(attributeNames, numFlds);
-	}
-	virtual BaseSelection* duplicate(){
-		assert(0);
-		return new Member(new string(*name), input->duplicate());
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		assert(0);
-		input->collect(s, to);
-	}
-	virtual void collect(TableMap group, vector<BaseSelection*>& to){
-		assert(0);
-	}
-     virtual SelectID selectID() const {
-          return METHOD_ID;
-     }
-	virtual bool match(BaseSelection* x) const { // throws exception
-		assert(0);
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		Member* y = (Member*) x;
-		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
-          if(!(*name == *y->name)){
-               return false;
-          }
-		if(!input->match(y->input)){
-			return false;
-		}
-		return true;
-	}
-     virtual ExecExpr* createExec(Site* site1, Site* site2)
-	{
-		assert(!"methods not implemented yet");
-		return NULL;
-     }
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const {
-		assert(!"methods not implemented yet 1");
-		return 0;
-	}
-	virtual TypeID typeCheck(){
-		assert(!"methods not implemented yet");
-		return typeID;
-	}
-	virtual int getSize(){
-		assert(0);
-		return packSize(typeID);
-	}
-	virtual bool checkOrphan(){
-		assert(0);
-		return input->checkOrphan();
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
-		assert(!"not implemented");
-		return TableMap(0);
-	}
-};
+  OptFunction(const string& name1, const OptExprList& args1)
+    : name(name1), args(args1), aggFn(false), srqlAggFn(false) {}
 
-class Constructor : public BaseSelection {
-	string* name;
-	List<BaseSelection*>* args;
-	ConstructorPtr consPtr;
-public:
-	Constructor(string* name, vector<BaseSelection*>* args);
-	Constructor(const Constructor& a){
-		assert(0);
-	}
-	virtual ~Constructor(){
-	}
-	const string* getName(){
-		return name;
-	}
-	virtual vector<BaseSelection*> getChildren();
-	virtual void setChildren(const vector<BaseSelection*>& children);
-	virtual void display(ostream& out, int detail = 0){
-		assert(name);
-		out << *name << "(";
-          if(args){
-               displayList(out, args, ", ", detail);
-          }
-          out << ')';
-	}
-     List<BaseSelection*>* getArgs(){
-          return args;
-     }
-	virtual bool exclusive(Site* site){
-		assert(args);
-		for(args->rewind(); !args->atEnd(); args->step()){
-			BaseSelection* curr = args->get();
-			if(!curr->exclusive(site)){
-				return false;
-			}
-		}
-		return true;
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		assert(0);
-		return false;
-	}
-	virtual BaseSelection* duplicate(){
-		assert(0);
-		return NULL;
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to);
-	virtual void collect(TableMap group, vector<BaseSelection*>& to);
-     virtual SelectID selectID() const {
-          return CONSTRUCTOR_ID;
-     }
-	virtual bool match(BaseSelection* x) const { // throws exception
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		Constructor* y = (Constructor*) x;
-          if(!(*name == *y->name)){
-               return false;
-          }
-		args->rewind();
-		y->args->rewind();
-		while(!args->atEnd()){
-			BaseSelection* curr = args->get();
-			BaseSelection* curry = y->args->get();
-			if(!curr->match(curry)){
-				return false;
-			}
-			args->step();
-			y->args->step();
-		}
-		return true;
-	}
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-     virtual TypeID typeCheck();
-	virtual int getSize(){
-		assert(!(typeID == UNKN_TYPE));
-		return packSize(typeID);
-	}
-	virtual bool checkOrphan(){
-		assert(0);
-		return false;
-	}
+  OptFunction(const string& name1, OptExpr* arg1)
+    : name(name1), args(1), aggFn(false), srqlAggFn(false) {
+      args[0] = arg1;
+    }
 
-	// This function is called to get the selectivity of a where clause
-	// in the similarity query.
-	virtual double getSelectivity(){  
-		return 0.01;
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
-		assert(!"not implemented");
-		return TableMap(0);
-	}
-};
+  OptFunction(const string& name1, OptExpr* arg1, OptExpr* arg2)
+    : name(name1), args(2), aggFn(false), srqlAggFn(false) {
+      args[0] = arg1;
+      args[1] = arg2;
+    }
 
-class EnumSelection : public BaseSelection {
-	int position;	// position of this selection in the input stream
-public:
-	EnumSelection(int position, TypeID typeID) :
-		BaseSelection(typeID), position(position) {}
-	virtual TypeID typeCheck(){
-		return typeID;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){}
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-     virtual SelectID selectID() const {
-          return ENUM_SELECT_ID;
-     }
-	virtual bool exclusive(Site* site){
-		assert(0);
-		return false;
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		assert(0);
-		return false;
-	}
-	virtual BaseSelection* duplicate(){
-		assert(0);
-		return NULL;
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		assert(0);
-	}
-	virtual void collect(TableMap group, vector<BaseSelection*>& to){
-		assert(0);
-	}
-	virtual bool match(BaseSelection* x) const {
-		assert(0);
-		return false;
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
-		assert(!"this should not be called!!");
-		return TableMap(0);
-	}
-};
+  virtual ~OptFunction();
 
-class PrimeSelection : public BaseSelection{
-	string* alias;
-	string* fieldNm;
-	const TableAlias* parentTable;
-public:
-	PrimeSelection(const string& a, const string& attr) 
-		: BaseSelection(), parentTable(0) {
-		alias = new string(a);
-		fieldNm = new string(attr);
-		typeID = "Unknown";
-		avgSize = 0;
-	}
-	PrimeSelection(
-		string* a, string* fieldNm = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0, const TableAlias* parentTable = 0): 
-          BaseSelection(typeID, avgSize), alias(a), fieldNm(fieldNm),
-		parentTable(parentTable) {}
-	~PrimeSelection(){
-		delete alias;
-		delete fieldNm;
-	}
-	const TableAlias* getTable(){
-		return parentTable;
-	}
-	const string* getFieldNm(){
-		return fieldNm;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){}
-     virtual void display(ostream& out, int detail = 0){
-		if(alias){
-			out << *alias;
-		}
-		if(fieldNm){
-			out << "." << '"' << *fieldNm << '"';
-		}
-		if(detail){
-               out << "% size = " << avgSize;
-               out << ", type = " << typeID << " %";
-          }
-	}
-	virtual bool exclusive(Site* site);
-	virtual bool exclusive(string* attributeNames, int numFlds);
-	virtual BaseSelection* duplicate(){
-		string* dupAlias = (alias ? new string(*alias) : (string*) NULL);
-		string* dupFieldNm = 
-			(fieldNm ? new string(*fieldNm) : (string*) NULL);
-		return new PrimeSelection(dupAlias, dupFieldNm);
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to);
-	virtual void collect(TableMap group, vector<BaseSelection*>& to);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual TypeID typeCheck();
-     virtual SelectID selectID() const {
-          return SELECT_ID;
-     }
-	virtual bool match(BaseSelection* x) const;
-	virtual void setSize(int size){
-		avgSize = size;
-	}
-	virtual int getSize(){
-		return avgSize;
-	}
-	virtual bool checkOrphan(){
-		assert(alias);
-		string msg = "Table " + *alias + " is not listed in FROM clause";
-		THROW(new Exception(msg), false);
-	}
-	virtual string toStringAttOnly(){
-		return *fieldNm;
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x);
-};
+  const string& getName() { return name; }
 
-class Operator : public BaseSelection {
-friend BaseSelection* distrib(BaseSelection* l, BaseSelection* r);
-protected:
-     string name;
-     BaseSelection* left;
-	BaseSelection* right;
-	OperatorPtr opPtr;
-public:
-	Operator(string n, BaseSelection* l, BaseSelection* r)
-		: BaseSelection(), name(n), left(l), right(r) {
-		typeID = "Unknown";
-		opPtr = NULL;
-          assert(left);
-          assert(right);
-		avgSize = 0;
-     }
-	virtual ~Operator(){
-	}
-	void destroy(){
-		left->destroy();
-		delete left;
-		right->destroy();
-		delete right;
-	}
-	virtual vector<BaseSelection*> getChildren(){
-		vector<BaseSelection*> tmp;
-		tmp.push_back(left);
-		tmp.push_back(right);
-		return tmp;
-	}
-	virtual void setChildren(const vector<BaseSelection*>& children){
-		assert(children.size() == 2);
-		left = children.front();
-		right = children.back();
-	}
-	virtual void display(ostream& out, int detail = 0){
-		out << "(";
-		left->display(out); 
-		out << " " << name << " ";
-		right->display(out);
-		out << ")";
-		if(detail){
-			out << "% size = " << avgSize;
-			out << ", type = " << typeID << " %";
-		}
-		BaseSelection::display(out, detail);
-	}
-	virtual bool isIndexable(
-		string& attrName, string& opName, BaseSelection*& value);
-	string getAttribute(){
-		string attrNm;
-		ostringstream os;
-		if(left->selectID() == SELECT_ID){
-			attrNm = *(((PrimeSelection*) left)->getFieldNm());
-		}
-		else if(right->selectID() == SELECT_ID){
-			attrNm = *(((PrimeSelection*) right)->getFieldNm());
-		}
-		else{
-			assert(!"selection expected");
-		}
-		return attrNm;
-	}
-	string getValue(){
-		ostringstream os;
-		if(left->selectID() == SELECT_ID){
-			right->display(os);
-		}
-		else if(right->selectID() == SELECT_ID){
-			left->display(os);
-		}
-		else{
-			assert(!"selection expected");
-		}
-		os << ends;
-		return os.str();
-	}
-	virtual bool exclusive(Site* site){
-		if(!left->exclusive(site)){
-			return false;
-		}
-		else if(!right->exclusive(site)){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		if(!left->exclusive(attributeNames, numFlds)){
-			return false;
-		}
-		else if(!right->exclusive(attributeNames, numFlds)){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-	virtual BaseSelection* duplicate(){
-		return new Operator(name, left->duplicate(), right->duplicate());
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to);
-	virtual void collect(TableMap group, vector<BaseSelection*>& to);
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
-     virtual SelectID selectID() const {
-          return OP_ID;
-     }
-	virtual bool match(BaseSelection* x) const;
-	virtual TypeID typeCheck();	// throws
-	virtual int getSize(){
-		return avgSize;
-	}
-	virtual double getSelectivity();
-	virtual bool checkOrphan(){
-		TRY(left->checkOrphan(), false);
-		TRY(right->checkOrphan(), false);
-		return true;
-	}
-	virtual TableMap setTableMap(const vector<TableAlias*>& x);
-};
+  // these are only valid after typeCheck() returns true
+  bool isAggFn() { return aggFn; }
+  bool isSrqlAggFn() { return srqlAggFn; }
 
-class ArithmeticOp : public Operator {
-public:
-	ArithmeticOp(string o, BaseSelection* l, BaseSelection* r)
-		: Operator(o, l, r){}
-	virtual BaseSelection* duplicate(){
-		return new ArithmeticOp(name, left->duplicate(), right->duplicate());
-	}
-};
+  //virtual OptExprList getChildren() { return args; }
 
-class BoolOperator : public Operator {
-protected:
-     BoolOperator(string s, BaseSelection* l, BaseSelection* r)
-          : Operator(s, l, r) {}
-	void propagateCnf(){
-		BaseSelection* newLeft = left->cnf();
-		BaseSelection* newRight = right->cnf();
-		if(newRight){
-			delete right;		// shallow
-			right = newRight;
-		}
-		if(newLeft){
-			delete left;		// shallow
-			left = newLeft;
-		}
-     }
-};
+  //virtual void setChildren(const OptExprList& children) {
+    //kb: why does TypeCheck() possibly delete these?
+    ////delete_all(args);
+  //args = children;
+  //}
 
-class OrOperator : public BoolOperator {
-public:
-	OrOperator(BaseSelection* l, BaseSelection* r)
-          : BoolOperator("or", l, r){}
-	virtual BaseSelection* cnf(){
-		propagateCnf();
-		if(right->distribute(left)){
-			return right;
-		}
-		else if(left->distribute(right)){
-			return left;
-		}
-		else{
-			return NULL;
-		}
-     }
-	virtual BaseSelection* duplicate(){
-		return new OrOperator(left->duplicate(), right->duplicate());
-	}
-};
+  virtual void display(ostream& out, int detail = 0) const;
 
-class AndOperator : public BoolOperator {
-public:
-	AndOperator(BaseSelection* l, BaseSelection* r)
-          : BoolOperator("and", l, r){}
-	virtual BaseSelection* cnf(){
-		propagateCnf();
-          return NULL;
-     }
-	virtual bool distribute(BaseSelection* bs){
-		left = new OrOperator(bs, left);
-		right = new OrOperator(bs->duplicate(), right);
-		propagateCnf();
-		return true;
-	}
-	virtual BaseSelection* duplicate(){
-		return new AndOperator(left->duplicate(), right->duplicate());
-	}
-	virtual bool insertConj(vector<BaseSelection*>& predList){
-		if(left->insertConj(predList)){
-			delete left;	// shallow
-		}
-		if(right->insertConj(predList)){
-			delete right;	// shallow
-		}
-		return true;
-	}
-};
+  OptExprList& getArgs() { return args; }
 
-class TableName {
-	List<string*>* tableName;
-public:
-	TableName() {
-		tableName = new List<string*>;
-	}
-	TableName(List<string*>* tableName) : tableName(tableName) {}
-	TableName(const TableName& arg);
-	TableName(string* str){	// deletes str when done
-		tableName = new List<string*>;
-		tableName->append(str);
-	}
-	TableName(const char* path){
-		int len = strlen(path);
-		char* tmp = new char[len + 1];
-		tmp[len] = '\0';
-		tableName = new List<string*>;
-		int i;
-		for(i = 0; i < len; i++){
-			if(path[i] == '.'){
-				tmp[i] = '\0';
-			}
-			else{
-				tmp[i] = path[i];
-			}
-		}
-		for(i = 0; i < len; i++){
-			if(tmp[i] == '\0'){
-				tableName->append(new string(&tmp[i + 1]));
-			}
-		}
-//		cerr << "path " << path << " resolved as: ";
-//		displayList(cerr, tableName, ".");
-		delete [] tmp;
-	}
-	TableName& operator=(const TableName& t);
-	TableName dirName();
-	string fileName();
-	~TableName(){
-		delete tableName;
-	}
-	string* getFirst(){
-		assert(tableName);
-		assert(!tableName->isEmpty());
-		tableName->rewind();
-		return tableName->get();
-	}
-	void deleteFirst(){
-		assert(tableName);
-		assert(!tableName->isEmpty());
-		tableName->rewind();
-		string* firstPath = tableName->remove();
-		delete firstPath;
-	}
-	bool isEmpty() const {
-		if(tableName){
-			return tableName->isEmpty();
-		}
-		else{
-			return false;
-		}
-	}
-	void display(ostream& out){
-		out << ".";
-		if(tableName){
-			displayList(out, tableName, ".");
-		}
-	}
-	string toString(){
-		ostringstream tmp;
-		tmp << ".";
-		displayList(tmp, tableName, ".");
-		tmp << ends;
-		string retVal(tmp.str());
-		// delete tmps; // should use free instead?
-		return retVal;
-	}
-	int cardinality(){
-		assert(tableName);
-		return tableName->cardinality();
-	}
-	List<string*>* returnAsList () {
-	  	return tableName;
-	}
-};
+  virtual bool isIndexable(string& attrName, string& opName,
+                           OptExpr*& value);
 
-class SiteDesc;
-class AccessMethod;
-
-class TableAlias {
-protected:
-	TableName* table;
-	string* alias;
-	string *function;
-	int shiftVal;
-	const SiteDesc* sd;
-	TableName relTabName;
-	Stats* stats;
-	ISchema* schema;
-	vector<AccessMethod*> accessMethods;
-	bool isGestaltM;
-	bool isRemoteM;
-	Interface* interf;
-public:
-	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
-			int optShiftVal = 0);
 /*
-	TableAlias(string tableNm, string aliasNm){
-		table = new TableName(tableNm.c_str());
-		alias = new string(aliasNm);
-		function = NULL;
-		shiftVal = 0;
-		stats = 0;
-	}
+  string getAttribute(){
+    string attrNm;
+    ostringstream os;
+    if(left->getExprType() == FIELD_ID){
+      attrNm = ((OptField*) left)->getFieldNm();
+    }
+    else if(right->getExprType() == FIELD_ID){
+      attrNm = ((OptField*) right)->getFieldNm();
+    }
+    else{
+      assert(!"selection expected");
+    }
+    return attrNm;
+  }
+  string getValue(){
+    ostringstream os;
+    if(left->getExprType() == FIELD_ID){
+      right->display(os);
+    }
+    else if(right->getExprType() == FIELD_ID){
+      left->display(os);
+    }
+    else{
+      assert(!"selection expected");
+    }
+    return os.str();
+  }
 */
-	bool isGestalt() const {
-		return isGestaltM;
-	}
-	bool isRemote() const {
-		return isRemoteM;
-	}
-	const Interface* getInterface() const {
-		return interf;
-	}
-	void setSiteDesc(const SiteDesc* sd){
-		this->sd = sd;
-	}
-	void setRelTabName(const TableName& tn){
-		relTabName = tn;
-	}
-	virtual ~TableAlias();
-	virtual TableName getTable() const {
-		return TableName(*table);
-	}
-	const string* getAlias() const {
-		return alias;
-	}
-	string * getFunction(){
-		return function;
-	}
-	int getShiftVal(){
-		return shiftVal;
-	}
-	virtual void display(ostream& out, int detail = 0);
-	virtual Site* createSite();
-	virtual ISchema getISchema() const;
-	const Stats* getStats() const {
-		assert(stats);
-		return stats;
-	}
-	virtual const vector<AccessMethod*>& getAccessMethods() const;
+
+  /*
+  virtual bool exclusive(Site* site) {
+    int n = args.size();
+    for(int i ; i < n ; i++) {
+      if( !args[i]->exclusive(site) ) {
+        return false;
+      }
+    }
+    return true;
+  }
+  */
+
+//   virtual bool exclusive(string* attributeNames, int numFlds) {
+//     int n = args.size();
+//     for(int i ; i < n ; i++) {
+//       if( !args[i]->exclusive(attributeNames, numFlds) ) {
+//         return false;
+//       }
+//     }
+//     return true;
+//   }
+
+  virtual OptExpr* duplicate();
+
+  //virtual void collect(Site* s, OptExprList& to);
+
+  virtual void collect(TableMap group, OptExprList& to);
+
+  virtual OptExpr::ExprType getExprType() const;
+
+  virtual bool match(const OptExpr* x) const;
+
+  virtual bool typeCheck(const DteSymbolTable& symbols);
+
+  //virtual ExecExpr* createExec(Site* site1, Site* site2);
+  virtual ExecExpr* createExec(const OptExprListList& inputs) const;
+
+  // This function is called to get the selectivity of a where clause
+  // in the similarity query.
+  virtual double getSelectivity(); //kb: use Operator:: version in resolve.c
+
+  //virtual TableMap setTableMap(const vector<TableAlias*>& x);
+
+private:
+
+  OptFunction(const OptFunction& a);
+  OptFunction& operator=(const OptFunction& a);
 };
 
-class QuoteAlias : public TableAlias {
-	string* quote;
-	Interface* interf;
+
+//---------------------------------------------------------------------------
+
+// the following classes are special cases used to place expressions in cnf
+
+class OptBool : public OptFunction
+{
+protected:
+
+  OptBool(string s, OptExpr* l, OptExpr* r)
+    : OptFunction(s, l, r) {}
+
+  void propagateCnf();
+};
+
+class OptOr : public OptBool
+{
 public:
-	QuoteAlias(string* quote, string* alias = NULL) :
-		TableAlias(new TableName(), alias), quote(quote), interf(NULL) {}
-	QuoteAlias(Interface* interf, string* alias) :
-		TableAlias(new TableName(), alias), quote(NULL), interf(interf) {}
-	virtual ~QuoteAlias();
-	virtual void display(ostream& out, int detail = 0){
-		if(quote){
-			out << *quote;
-		}
-		if(alias){
-			out << " " << *alias;
-		}
-	}
-	virtual TableName* getTable(){
 
-		// There is no table name for quoted tables, but 
-		// the optimizer needs to know table name to find indexes
+  OptOr(OptExpr* l, OptExpr* r) 
+    : OptBool("or", l, r) {}
 
-		return new TableName();
-	}
-	virtual Site* createSite();
-	virtual ISchema getISchema() const;
+  virtual OptExpr* cnf();
+
+  virtual OptExpr* duplicate();
 };
 
-class NumberAlias : public TableAlias {
-	RelationId relId;
-	string* alias;
+class OptAnd : public OptBool
+{
 public:
-	NumberAlias(int serverId, int localId, string* alias = NULL) :
-		TableAlias(new TableName(), alias), relId(serverId, localId) {}
-	virtual ~NumberAlias();
-	virtual void display(ostream& out, int detail = 0);
-	virtual TableName* getTable();
-	virtual Site* createSite();
-	virtual ISchema getISchema() const;
+
+  OptAnd(OptExpr* l, OptExpr* r)
+    : OptBool("and", l, r){}
+
+  virtual OptExpr* cnf();
+
+  virtual bool distribute(OptExpr* bs);
+
+  virtual OptExpr* duplicate();
+
+  virtual bool insertConj(OptExprList& predList);
 };
 
+
+//===========================================================================
 #endif

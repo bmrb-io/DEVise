@@ -1,9 +1,13 @@
 #include <string>
 
 #include "ExecOp.h"
-#include "listop.h"
+//#include "listop.h"
 #include "RTreeRead.h"
-#include "MemoryMgr.h"
+#include "exception.h"
+//#include "MemoryMgr.h"
+#include "DTE/comm/TupleStream.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteBoolAdt.h"
 
 //---------------------------------------------------------------------------
 //kb: these should be put somewhere else...
@@ -13,42 +17,63 @@ static bool evalWhere(ExprList& where,
 {
   int n = where.size();
   for(int i = 0 ; i < n ; i++) {
-    bool value = where[i]->evaluate(left, right) ? true : false;
-    if( !value ) return false;
+    const Type* b = where[i]->eval(left, right);
+    if( ! DteBoolAdt::cast(b) ) return false;
   }
   return true;
 }
 
-static void evalProject(Tuple* ret, ExprList& proj,
+static void evalProject(STuple& ret, ExprList& proj,
                         const Tuple* left, const Tuple* right = NULL)
 {
   int n = proj.size();
   for(int i = 0 ; i < n ; i++){
-    ret[i] = (Type*) proj[i]->evaluate(left, right);
+    ret[i] = proj[i]->eval(left, right);
   }
 }
 
+#if 0
+static void evalProject(Type const ** ret, ExprList& proj,
+                        const Tuple* left, const Tuple* right = NULL)
+{
+  int n = proj.size();
+  for(int i = 0 ; i < n ; i++){
+    ret[i] = proj[i]->eval(left, right);
+  }
+}
+#endif
+
+static DteTupleAdt getResultAdt(ExprList& e)
+{
+  DteTupleAdt adt;
+  int n = e.size();
+  for(int i = 0 ; i < n ; i++) {
+    adt.push_back(e[i]->getAdt());
+  }
+  return adt;
+}
 
 //---------------------------------------------------------------------------
 
 
 SelProjExec::SelProjExec(Iterator* inputIt, ExprList* where,
                          ExprList* project)
-: inputIt(inputIt), myWhere(*where), myProject(*project)
+: inputIt(inputIt), myWhere(*where), myProject(*project), next(myProject.size())
 {
   assert(inputIt);
   assert(project);
   assert(where);
-  next = new Tuple[myProject.size()];
+  resultAdt = getResultAdt(myProject);
 }
 
 
 SelProjExec::~SelProjExec()
 {
   delete inputIt;
+  delete_all(myWhere);
+  delete_all(myProject);
   delete &myWhere;
   delete &myProject;
-  delete [] next;
 }
   
 
@@ -62,7 +87,6 @@ const Tuple* SelProjExec::getNext()
 {
   bool cond = false;
   const Tuple* input;
-  assert(next);
   while(!cond){
     TRY(input = inputIt->getNext(), NULL);
     if(!input){
@@ -75,12 +99,6 @@ const Tuple* SelProjExec::getNext()
 }
 
 
-const TypeIDList& SelProjExec::getTypes()
-{
-  return myProject.getTypes();
-}
-
-
 //---------------------------------------------------------------------------
 
 
@@ -88,13 +106,13 @@ TableLookupExec::TableLookupExec(Iterator* inputIt,
                                  RandomAccessIterator* file, int offset_field,
                                  ExprList* where, ExprList* project)
 : inputIt(inputIt), file(file), offset_field(offset_field),
-  myWhere(myWhere), myProject(myProject)
+  myWhere(*where), myProject(*project), next(project->size())
 {
   assert(inputIt);
   assert(file);
   assert(where);
   assert(project);
-  next = new Tuple[myProject.size()];
+  resultAdt = getResultAdt(myProject);
 }
 
 
@@ -104,7 +122,6 @@ TableLookupExec::~TableLookupExec()
   delete file;
   delete &myWhere;
   delete &myProject;
-  delete [] next;
 }
 
 
@@ -124,7 +141,7 @@ const Tuple* TableLookupExec::getNext()
     if( !input_rec ) {
       return NULL;
     }
-    Offset offset( IInt::getInt(input_rec[offset_field]) );
+    Offset offset( DteIntAdt::cast(input_rec[offset_field]) );
     file_rec = file->getThis(offset);
     assert(input_rec);
   } while( !evalWhere(myWhere, input_rec, file_rec) );
@@ -133,33 +150,22 @@ const Tuple* TableLookupExec::getNext()
 }
 
 
-const TypeIDList& TableLookupExec::getTypes()
-{
-  return myProject.getTypes();
-}
-
-
 //---------------------------------------------------------------------------
 
 
 NLJoinExec::NLJoinExec(Iterator* left, Iterator* right, 
                        ExprList* myWhere, ExprList* myProject)
-: left(left), right(right), myWhere(*myWhere), myProject(*myProject),
-  tupleLoader()
+: left(left), right(right), myProject(*myProject), myWhere(*myWhere),
+  next(myProject->size()), tupleLoader(right->getAdt())
 {
   assert(left);
   assert(right);
   assert(myWhere);
   assert(myProject);
+  resultAdt = getResultAdt(*myProject);
   firstEntry = true;
   firstPass = true;
   outerTup = NULL;
-  next = new Tuple[myProject->size()];
-  //kb: tupleloader should take TypeIDList...
-  int numFlds = right->getNumFlds();
-  TypeID* t = makeArray(right->getTypes());
-  tupleLoader.open(numFlds, t);
-  delete [] t;
 }
 
 
@@ -167,9 +173,10 @@ NLJoinExec::~NLJoinExec()
 {
   delete left;
   delete right;
+  delete_all(myProject);
+  delete_all(myWhere);
   delete &myProject;
   delete &myWhere;
-  delete [] next;
 }
 
 
@@ -225,14 +232,6 @@ const Tuple* NLJoinExec::getNext()
 }
 
 
-const TypeIDList& NLJoinExec::getTypes()
-{
-  return myProject.getTypes();
-}
-
-
-
-
 //---------------------------------------------------------------------------
 
 /* *** YL
@@ -281,32 +280,36 @@ const TypeIDList& UnionExec::getTypes()
 
 UnionExec::UnionExec(Iterator* iter1, Iterator* iter2) : runningCurrent (0), n_iter (2)
 {
+  resultAdt = iter1->getAdt();
   vec.push_back (iter1);
   vec.push_back (iter2);
 }
 
 UnionExec::UnionExec(vector<Iterator*>& _vec) : vec (_vec), runningCurrent (0)
 {
+  // assert(vec[0]); //kb: can vec be empty? no? then why all the checks?
   n_iter = vec.size();
-  assert(vec[0]);
+  if( n_iter > 0 ) {
+    resultAdt = vec[0]->getAdt();
+  }
 }
 
 UnionExec::~UnionExec()
 {
-  vector<Iterator*>::iterator i;
-  for (i = vec.begin(); i != vec.end(); ++ i)
-    delete (*i);
+  delete_all(vec);
 }
 
 void UnionExec::initialize()
 {
-  if (n_iter > 0)
+  if (n_iter > 0) {
+    runningCurrent = 0;
     vec[0]->initialize();
+  }
 }
 
 const Tuple* UnionExec::getNext()
 {
-  if (n_iter == 0)
+  if (runningCurrent == n_iter)
     return NULL;
   
   const Tuple * next = vec[runningCurrent]->getNext();
@@ -317,37 +320,27 @@ const Tuple* UnionExec::getNext()
     }
   return next;
 }
-const TypeIDList& UnionExec::getTypes()
-{
-  assert (n_iter > 0);
-  assert(vec[0]);
-  return vec[0]->getTypes();
-}
-
 
 //---------------------------------------------------------------------------
 
 
 RidAdderExec::RidAdderExec(Iterator* input)
-: input(input)
+: input(input), numFlds(input->getNumFields()), tuple(numFlds + 1)
 {
-  types = input->getTypes();
-  types.push_front(INT_TP);
-  numFlds = input->getNumFlds();
-  tuple = new Tuple[numFlds+1];
+  resultAdt = input->getAdt();
+  resultAdt.push_front(DteIntAdt());
 }
 
 
 RidAdderExec::~RidAdderExec()
 {
-  delete [] tuple;
   delete input;
 }
 
 
 void RidAdderExec::initialize()
 {
-  counter = 0;
+  counter = -1;
   input->initialize();
 }
 
@@ -358,7 +351,8 @@ const Tuple* RidAdderExec::getNext()
   if(!inputTup) {
     return NULL;
   }
-  tuple[0] = (void*) counter++;
+  counter++;
+  tuple[0] = DteIntAdt::getTypePtr(counter);
   for(int i = 0; i < numFlds; i++) {
     tuple[i+1] = inputTup[i];
   }
@@ -366,34 +360,26 @@ const Tuple* RidAdderExec::getNext()
 }
 
 
-const TypeIDList& RidAdderExec::getTypes()
-{
-  return types;
-}
-
-
-
-
 //---------------------------------------------------------------------------
 
-
-SingleAnswerIt::SingleAnswerIt(Type* arg, const TypeID& type) 
+//kb: make this take a tuple instead of a field?
+SingleAnswerIt::SingleAnswerIt(Type* arg, const DteAdt& type) 
 : done(false)
 {
-  types.push_back(type);
-  destroyPtr = getDestroyPtr(type);
+  resultAdt.push_back(type);
   retVal = arg;
 }
 
 
 SingleAnswerIt::~SingleAnswerIt()
 {
-  destroyPtr(retVal);
+  resultAdt.getAdt(0).deallocate(retVal);
 }
 
 
 void SingleAnswerIt::initialize()
 {
+  done = false;
 }
 
 
@@ -404,12 +390,6 @@ const Tuple* SingleAnswerIt::getNext()
   }
   done = true;
   return (const Tuple*) &retVal;
-}
-
-
-TypeIDList& SingleAnswerIt::getTypes()
-{
-  return types;
 }
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/07/24 04:37:57  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/12/04 04:05:17  donjerko
   *** empty log message ***
 
@@ -43,7 +46,10 @@
 #include <string>
 #include "ParseTree.h"
 #include "exception.h"
-#include "site.h"
+//#include "site.h"
+#include "Iterator.h"
+#include "ExecOp.h"
+#include "DTE/util/Del.h"
 
 Iterator* UnionParse::createExec(){	// throws exception;
 
@@ -52,14 +58,30 @@ Iterator* UnionParse::createExec(){	// throws exception;
 
 	assert(query1);
 	assert(query2);
+        Del<Iterator> iter1 = query1->createExec();
+        assert(iter1);
+        Del<Iterator> iter2 = query2->createExec();
+        assert(iter2);
+
+        DteTupleAdt adt1 = iter1->getAdt();
+        DteTupleAdt adt2 = iter2->getAdt();
+
+        if( ! adt1.isExactSameType(adt2) ) {
+          string msg = "Cannot do UNION because types do not match";
+          THROW(new Exception(msg), NULL);
+        }
+        return new UnionExec(iter1.steal(), iter2.steal());
+
+#if 0
+        //kb: old stuf
 	Site* iter1;
 	Site* iter2;
 //	TRY(iter1 = query1->createSite(), NULL);
 //	TRY(iter2 = query2->createSite(), NULL);
 	assert(iter1);
 	assert(iter2);
-	int numFlds1 = iter1->getNumFlds();
-	int numFlds2 = iter2->getNumFlds();
+	int numFlds1 = iter1->getNumFields();
+	int numFlds2 = iter2->getNumFields();
 	if(numFlds1 != numFlds2){
 		string msg = 
 			"Cannot do UNION because numbers of fields do not match";
@@ -75,4 +97,5 @@ Iterator* UnionParse::createExec(){	// throws exception;
 	}
 //	return new UnionSite(iter1, iter2);
 	return 0;
+#endif
 }

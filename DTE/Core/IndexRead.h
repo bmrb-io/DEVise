@@ -1,3 +1,5 @@
+#if 0
+//kb: delete this file
 /*
   ========================================================================
   DEVise Data Visualization Software
@@ -16,6 +18,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/16 11:13:05  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.3  1996/12/15 06:41:05  donjerko
   Added support for RTree indexes
 
@@ -82,3 +88,4 @@ public:
           stats = new Stats(nf, sizes, cardinality);
      }
 };
+#endif

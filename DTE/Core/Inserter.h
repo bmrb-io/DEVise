@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/10/01 20:58:44  yunrui
+  *** empty log message ***
+
   Revision 1.13  1998/08/17 18:51:32  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -70,62 +73,64 @@
 using namespace std;
 #endif
 
-class Inserter {
-	ostream* out;
-	int numFlds;
-	vector<WritePtr> writePtrs;
-public:
-	Inserter(){
-		out = NULL;
-	}
-	virtual ~Inserter(){
-		delete out;
-	}
-	void open(const ISchema& schema, string urlstring, int mode = ios::app);
-		// throws
+//kb: class Inserter only works for local ascii StandardTables
+//kb: class Inserter should be made abstract, with StandardInserter derived
+class Inserter
+{
+protected:
 
-	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
-		this->out = out;
-		this->numFlds = numFlds;
-		TypeIDList types(typeIDs, numFlds);
-		TRY(writePtrs = getWritePtrs(types), NVOID );
-	}
-	void insert(const Tuple* tuple){ // throws
-		assert(out);
-		for(int i = 0; i < (int)writePtrs.size(); i++){
-			writePtrs[i](*out, tuple[i]);
-			*out << " ";
-		}
-		*out << "\n";
-	}
-	virtual void close(){
-		delete out;
-		out = NULL;
-	}
+  ofstream out;
+  DteTupleAdt tupAdt;
+  string filename;
+
+public:
+
+  Inserter() {}
+
+  Inserter(const string& filename, const DteTupleAdt& tupAdt, 
+           int mode = ios::app)
+    : tupAdt(tupAdt) { open(filename, mode); }
+
+  ~Inserter() {}
+
+  void open(const string& filename, int mode = ios::app);
+
+  void open(const string& filename, const DteTupleAdt& tupAdt,
+            int mode = ios::app);
+
+  //void open(ostream* out, const DteTupleAdt& tupAdt) {
+  //this->out = out;
+  //this->tupAdt = tupAdt;
+  //}
+
+  void insert(const Tuple* tuple); // throws
 };
 
 typedef Inserter GestaltInserter; // *** YL
 
-class UniqueInserter : public Inserter {
+
+class UniqueInserter : protected Inserter {
 	string finalFile;
 	string tmpFile;
-	ISchema schema;
-	int mode;
+        int mode;
 public:
-	UniqueInserter(const ISchema& schema, const string& urlstring, 
-		int mode = ios::app);
-	virtual void close();
+	UniqueInserter(const string& filename, const DteTupleAdt& tupAdt, 
+                       int mode = ios::app);
+        ~UniqueInserter();
+        Inserter::insert;
 };
 
+
+#if 0
+//kb: Modifier is not used
 class Modifier {
 	ISchema schema;
 	string fileName;
 public:
 	Modifier(const ISchema& schema, const string& fileName) :
 		schema(schema), fileName(fileName) {}
-	void replace
-		(const string* key, const Type* object, const string* key2 = NULL);
-	// throws
+	void replace(const string* key, const Type* object,
+          const string* key2 = NULL); // throws
 
 private:
 	bool predicate(const string* key1, const string* key2, const Tuple* tup);
@@ -143,5 +148,6 @@ inline bool Modifier::predicate
 	}
 	return *key2 == IString::getCStr(tup[1]);
 }
+#endif
 
 #endif

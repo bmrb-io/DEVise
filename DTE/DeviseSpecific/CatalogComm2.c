@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/11/05 00:20:26  donjerko
+  Added some error checking calls to the DTE.
+
   Revision 1.4  1997/08/21 21:04:51  donjerko
   Implemented view materialization
 
@@ -37,18 +40,16 @@
 #include "Control.h"
 
 extern GroupDir* gdir;	// defined in graphics.new/ParseCat.c
-extern InsertCatFile(char* tableName);	// defined in graphics.new/ParseCat.c
+extern void InsertCatFile(char* tableName);	// defined in graphics.new/ParseCat.c
 
 char* dteImportFileType(char* name){
 
-#if defined(DEBUG)
+#if defined(DEBUG)||1
 	cout << "in dteImportFileType(" << name << ")\n";
 #endif
-	string query = "dummy";
-
 	gdir->add_entry(name);
 	TDataDQLInterpClassInfo* DQLclass;
-	DQLclass = new TDataDQLInterpClassInfo(name, query.c_str());
+	DQLclass = new TDataDQLInterpClassInfo(name);
 	
 	ControlPanel::RegisterClass(DQLclass,true);
 	InsertCatFile(strdup(name));
@@ -68,6 +69,7 @@ char* dteImportFileType(char* name){
 		gdir->add_topgrp(name,newgrp);
 
 		char* attrs = dteListAttributes(name);
+                cerr << "got attrs: " << attrs << endl;
 		for(char* currAtt = strtok(attrs, " "); currAtt; 
 						currAtt = strtok(NULL, " ")){
 			newgrp->insert_item(strdup(currAtt));

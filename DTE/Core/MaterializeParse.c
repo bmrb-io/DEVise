@@ -1,5 +1,5 @@
 #include "ParseTree.h"
-#include "site.h"
+//#include "site.h"
 #include "Utility.h"
 #include "catalog.h"
 #include "Engine.h"
@@ -8,15 +8,15 @@
 #include <string>
 
 Iterator* MaterializeParse::createExec(){
-	string nameStr = tableName->toString();
-	TableName dirName = tableName->dirName();
+	string nameStr = tableName.toString();
+	TableName dirName = tableName.dirName();
 
 #if defined(DEBUG)
 	cerr << "Dir name: "; dirName.display(cerr); cerr << endl;
 #endif
 
-	string fileName = tableName->fileName();
-	TRY(Interface* interf = ROOT_CATALOG.createInterface(&dirName), NULL);
+	string fileName = tableName.fileName();
+	TRY(Interface* interf = ROOT_CATALOG.createInterface(dirName), NULL);
 
 	if(!interf){
 		string err("Collection ");
@@ -51,8 +51,6 @@ Iterator* MaterializeParse::createExec(){
 
 	Engine engine(query);
 	TRY(engine.optimize(), NULL);
-	int numFlds = engine.getNumFlds();
-	const TypeID* typeIDs = engine.getTypeIDs();
 
 	string materFile = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.materViewDir); 
 	if(materFile.empty()){
@@ -62,24 +60,19 @@ Iterator* MaterializeParse::createExec(){
 	}
 	materFile += "/" + nameStr;
 	cerr << "Materializing view: " << nameStr << " into " << materFile << endl;
-	ofstream* outf = new ofstream(materFile.c_str());
-	if(!outf || !outf->good()){
-		string err = string("Could not open file: ") + materFile;
-		THROW(new Exception(err), NULL);
-		// throw Exception(err);
-	}
-
-	Inserter inserter;
-	inserter.open(outf, numFlds, typeIDs);
+	Inserter inserter(materFile, engine.getAdt());
 	const Tuple* tuple = engine.getFirst();
 	while(tuple){
 		inserter.insert(tuple);
 		tuple = engine.getNext();
 	}
 
-	MaterViewInterface mvi
-		(numFlds, typeIDs, attributeNames, materFile, query);
-	TRY(dir.replace(fileName, (const ViewInterface*) &mvi), NULL);
+	MaterViewInterface mvi(engine.getAdt(),
+                               vector<string>(attributeNames,
+                                              attributeNames + 
+                                                engine.getNumFields()),
+                               materFile, query);
+	TRY(dir.replace(fileName, &mvi), NULL);
 
 	return NULL;
 }

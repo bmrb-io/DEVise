@@ -13,6 +13,12 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.11  1998/03/04 18:41:22  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.10  1997/11/05 00:24:25  donjerko
 #  *** empty log message ***
 #
@@ -64,8 +70,4 @@ ARCH_LDPOST = -lsocket -lnsl
 
 DTE_DIR = ../../DTE
 
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-     $(DTE_DIR)/Script $(DTE_DIR)/GUI
-
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.solaris

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/07/29 14:27:01  wenger
+#  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+#  allow static linking on Linux.
+#
 #
 ############################################################
 
@@ -27,8 +31,5 @@ ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/Script $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.alpha_osf20

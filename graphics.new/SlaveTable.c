@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/11/16 18:58:48  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.2  1998/06/15 19:55:20  wenger
   Fixed bugs 338 and 363 (problems with special cases of set links).
 
@@ -49,7 +53,7 @@
   #include "RelationManager.h"
   #include "types.h"
   #include "CatalogComm.h"
-  #include "TDataDQLInterp.h"
+  #include "TDataDQL.h"
 #endif
 
 //#define DEBUG
@@ -208,16 +212,19 @@ SlaveTable::CreateRelation()
     ostSelect << "select ";
 
     AttrList *tdAttrs = oldTdata->GetAttrList();
-    numFlds = tdAttrs->NumAttrs() - 1;
+    numFlds = tdAttrs->NumAttrs();
+    //cerr << "fields: " << numFlds << endl;
     attributeNames = new string[numFlds];
 
     int count = 0;
     tdAttrs->InitIterator();
     while (tdAttrs->More()) {
       AttrInfo *attr = tdAttrs->Next();
+      //cerr << "count: " << count << ' ' << attr->name << endl;
 
+      // note: recId is not necessarily in the list any more (KB)
       // Don't put recId into query.
-      if (strcmp(attr->name, "recId")) {
+      if (strcmp(attr->name, "recId") != 0) {
         if (count > 0) ostSelect << ", ";
         ostSelect << "t1." << attr->name;
         attributeNames[count] = attr->name;
@@ -225,6 +232,7 @@ SlaveTable::CreateRelation()
       }
     }
     tdAttrs->DoneIterator();
+    numFlds = count;
 
   } // force ostSelect out of scope
 #if defined(DEBUG)
@@ -395,7 +403,7 @@ SlaveTable::CreateTData(char *name)
   (void) DestroyTData();
 
   DataSeg::Set(name, NULL, 0, 0);
-  _tdata = new TDataDQLInterp(name, NULL, NULL);
+  _tdata = new TDataDQL(name);
   if (_tdata == NULL) {
     char errBuf[1024];
     sprintf(errBuf, "Unable to create slave TData %s", name);

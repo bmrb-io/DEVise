@@ -5,24 +5,23 @@
 #include "Stats.h"
 #include "Interface.h"
 #include "ExecOp.h"
-#include "listop.h"
+//#include "listop.h"
 #include "DteProtocol.h"
 #include "StandardRead.h"
 
 #include <math.h>
 
 #include <algorithm>
+#include "DTE/util/DteAlgo.h"
+#include "DTE/types/DteBoolAdt.h"
+
 
 DTESite THIS_SITE;
 
-void deleteFun(BaseSelection* x){
-	delete x;
-}
-
-ExprList* createExecExprs(const vector<BaseSelection*>& projList, const SqlExprLists& inputLists)
+ExprList* createExecExprs(const OptExprList& projList, const OptExprListList& inputLists)
 {
 	ExprList* retVal = new ExprList();
-	vector<BaseSelection*>::const_iterator it;
+	OptExprList::const_iterator it;
 	for(it = projList.begin(); it != projList.end(); ++it){
 		TRY(ExecExpr* ee = (*it)->createExec(inputLists), 0);
 		assert(ee);
@@ -130,7 +129,7 @@ bool SPJQueryProduced::expand(
 
 			TableMap current = *it;
 			TableMap complement = it.getComplement();
-//			cerr << "current = " << current << ", compl = " << complement << endl;
+			//cerr << "current = " << current << ", compl = " << complement << endl;
 			int left = current.getBitMap();
 			int right = complement.getBitMap();
 			Cost baseCost = JoinMethod::getBaseCost(
@@ -296,11 +295,11 @@ bool SPQueryProduced::expand(
 
 	const TableAlias* ta = tl[tableMap.index()];
 	const vector<AccessMethod*>& amethods = ta->getAccessMethods();
-
+        //cerr << "amethods.size() = " << amethods.size() << endl;
 	assert(amethods.size() == 1 || !"not implemented");
 	// choose the cheapest access method (depends on predicates available)
 
-	aliasM = *(ta->getAlias());
+	aliasM = ta->getAlias();
 
 	bestAlt = amethods[0];
 
@@ -326,9 +325,9 @@ bool GestaltQueryProduced::expand(
 		vector<string> memNames = gi->getMemberNames();
 		vector<string>::const_iterator it;
 		for(it = memNames.begin(); it != memNames.end(); ++it){
-			string* alias = new string(*q.getTableList().front()->getAlias());
+			const string& alias = q.getTableList().front()->getAlias();
 			vector<TableAlias*> newList;
-			newList.push_back(new TableAlias(new TableName((*it).c_str()), alias));
+			newList.push_back(new TableAlias(TableName((*it).c_str()), alias));
 			Query* query = new Query(q.getSelectList(), newList, q.getPredicateList());
 			OptNode* node = new QueryNeeded(*query, tableMap, &THIS_SITE);
 			gestMembers.push_back(NodeQueryPair(node, query));
@@ -344,13 +343,13 @@ bool GestaltQueryProduced::expand(
 	return retVal;
 }
 
-Iterator* GestaltQueryProduced::createExec(const Query& q) const 
+Iterator* GestaltQueryProduced::createExec(const Query& q, bool isTop) const 
 {
 	vector<NodeQueryPair>::const_iterator i;
 	vector<Iterator*> ite_vec;
 	
 	for (i = gestMembers.begin(); i != gestMembers.end(); ++i){
-		ite_vec.push_back ((*i).first->createExec(*(*i).second));
+		ite_vec.push_back ((*i).first->createExec(*(*i).second, isTop));
 	}
 	
 	Iterator* retVal = new UnionExec(ite_vec);
@@ -363,22 +362,27 @@ string GestaltQueryProduced::toString() const
 	return "gestalt";
 }
 
-Iterator* SPQueryProduced::createExec(const Query& q) const 
+Iterator* SPQueryProduced::createExec(const Query& q, bool isTop) const 
 {
 	assert(bestAlt);
 
-	vector<BaseSelection*> inputProj = bestAlt->getProjectList(aliasM);
+	OptExprList inputProj = bestAlt->getProjectList(aliasM);
 	
-	vector<vector<BaseSelection*> > inputs;
+	vector<OptExprList> inputs;
 	inputs.push_back(inputProj);
 
-	vector<BaseSelection*> projList = getProjectList(q);
+	OptExprList projList;
+        if( isTop ) {
+          projList = q.getSelectList();
+        } else {
+          projList = getProjectList(q);
+        }
 
-	const vector<BaseSelection*>& preds = q.getPredicateList();
+	const OptExprList& preds = q.getPredicateList();
 
 	ExprList* myWhere = new ExprList();
 
-	vector<BaseSelection*>::const_iterator pi;
+	OptExprList::const_iterator pi;
 	for(pi = preds.begin(); pi != preds.end(); ++pi){
 		if((*pi)->containedIn(tableMap)){
 			TRY(ExecExpr* execPred = (*pi)->createExec(inputs), 0);
@@ -393,30 +397,30 @@ Iterator* SPQueryProduced::createExec(const Query& q) const
 
 	Iterator* retVal = new SelProjExec(inputIt, myWhere, myProject);
 
-	for_each(inputProj.begin(), inputProj.end(), deleteFun);
+	delete_all(inputProj);
 
 	return retVal;
 }
 
-Iterator* SPJQueryProduced::createExec(const Query& q) const {
+Iterator* SPJQueryProduced::createExec(const Query& q, bool isTop) const {
 
 	JoinMethod* jm = alts.front().second;
 
-	TRY(Iterator* leftIt = jm->getLeft()->createExec(q), 0);
+	TRY(Iterator* leftIt = jm->getLeft()->createExec(q, false), 0);
 	assert(leftIt);
-	TRY(Iterator* rightIt = jm->getRight()->createExec(q), 0);
+	TRY(Iterator* rightIt = jm->getRight()->createExec(q, false), 0);
 	assert(rightIt);
 
-	cerr << "MADE INPUTS\n";
+	//cerr << "MADE INPUTS\n";
 
 	ExprList* execPreds = new ExprList();
 
 
-	const vector<BaseSelection*>& preds = q.getPredicateList();
-	const vector<TableAlias*>& tableList = q.getTableList();
+	const OptExprList& preds = q.getPredicateList();
+	//const vector<TableAlias*>& tableList = q.getTableList();
 
-	vector<BaseSelection*> leftProjLst = jm->getLeft()->getProjectList(q);
-	vector<BaseSelection*> rightProjLst = jm->getRight()->getProjectList(q);
+	OptExprList leftProjLst = jm->getLeft()->getProjectList(q);
+	OptExprList rightProjLst = jm->getRight()->getProjectList(q);
 
 	// there should be no duplicates in proj list (for efficiency)
 /*
@@ -427,7 +431,7 @@ Iterator* SPJQueryProduced::createExec(const Query& q) const {
 	cerr << endl;
 */
 
-	SqlExprLists inputs;
+	OptExprListList inputs;
 	inputs.push_back(leftProjLst);
 	inputs.push_back(rightProjLst);
 
@@ -438,7 +442,7 @@ Iterator* SPJQueryProduced::createExec(const Query& q) const {
 	// walk the where clause and identify the predicates that 
 	// can only be done at this level
 
-	vector<BaseSelection*>::const_iterator pi;
+	OptExprList::const_iterator pi;
 	for(pi = preds.begin(); pi != preds.end(); ++pi){
 		if((*pi)->containedIn(tableMap) && !(*pi)->containedIn(leftMap) &&
 			!(*pi)->containedIn(rightMap)){
@@ -450,9 +454,14 @@ Iterator* SPJQueryProduced::createExec(const Query& q) const {
 	}
 
 	ExprList* project = new ExprList();
-	vector<BaseSelection*> myProjLst = getProjectList(q);
-	vector<BaseSelection*>::const_iterator it;
-	for(it = myProjLst.begin(); it != myProjLst.end(); ++it){
+	OptExprList myProjList;
+        if( isTop ) {
+          myProjList = q.getSelectList();
+        } else {
+          myProjList = getProjectList(q);
+        }
+	OptExprList::const_iterator it;
+	for(it = myProjList.begin(); it != myProjList.end(); ++it){
 		project->push_back((*it)->createExec(inputs));
 	}
 
@@ -467,44 +476,75 @@ string SPQueryProduced::toString() const
 	return retVal;
 }
 
-AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc) : OptNode(tableMap, siteDesc)
+QueryNeeded::~QueryNeeded()
 {
-	vector<BaseSelection*>::const_iterator it;
-	vector<BaseSelection*> aggLessSelList;
-	aggs = new AggList();
-
-	vector<BaseSelection*> selectList = query.getSelectList();
-
-	int pos = 0;
-	for(it = selectList.begin(); it != selectList.end(); ++it){
-		BaseSelection* curr = *it;
-		if(curr->selectID() == CONSTRUCTOR_ID){
-			Constructor* function = (Constructor*) curr;
-			List<BaseSelection*>* args = function->getArgs();
-			int numArgs = args->cardinality();
-			const string* name = function->getName();
-			args->rewind();
-			if (numArgs == 1 && (*name == "min" || *name == "max")){
-				args->rewind();
-				aggLessSelList.push_back(args->get());
-				TypeID type = curr->getTypeID();
-				aggs->push_back(AggFn(*name, Field(type, pos)));
-			}
-		}
-		pos++;
-	}
-
-	vector<BaseSelection*> predList = query.getPredicateList();
-	vector<TableAlias*> tas = query.getTableList();
-
-	aggLessQuery = new Query(aggLessSelList, tas, predList);
-
-	root = new QueryNeeded(*aggLessQuery, tableMap, siteDesc);
+  delete root;
 }
 
-Iterator* AggQueryNeeded::createExec(const Query& q) const
+AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc) : OptNode(tableMap, siteDesc)
 {
-	Iterator* input = root->createExec(*aggLessQuery);
+	OptExprList::const_iterator it;
+	OptExprList agglessSelList;   //kb:who's in charge of deleting the elements?
+
+	OptExprList selectList = query.getSelectList();
+
+	for(it = selectList.begin(); it != selectList.end(); ++it) {
+		OptExpr* curr = *it;
+		if(curr->getExprType() == OptExpr::FUNCTION_ID) {
+			OptFunction* f = (OptFunction*) curr;
+      assert( !f->isSrqlAggFn() && "SRQL not yet supported");
+      if( f->isAggFn() ) {
+        OptExprList& args = f->getArgs();
+        assert(args.size() == 1 && 
+               "only aggregates with one arg are currently supported");
+        createAgg(agglessSelList, f);
+        continue;
+			}
+		}
+    // non aggregate
+    assert(!"group by is not yet supported");
+	}
+
+	OptExprList predList = query.getPredicateList();
+	vector<TableAlias*> tas = query.getTableList();
+
+	agglessQuery = new Query(agglessSelList, tas, predList);
+
+	root = new QueryNeeded(*agglessQuery, tableMap, siteDesc);
+}
+
+
+AggQueryNeeded::~AggQueryNeeded()
+{
+  delete agglessQuery;
+  delete root;
+}
+
+
+void AggQueryNeeded::createAgg(OptExprList& agglessSelList, OptFunction* f)
+{
+  //OptExpr* a = f->stealFirstArg();
+  OptExpr* a = f->getArgs()[0];
+  assert(a);
+
+  // check for duplicate expression
+  int M = agglessSelList.size();
+  int pos;
+  for(pos = 0 ; pos < M ; pos++) {
+    if( agglessSelList[pos]->match(a) ) { // duplicate
+      //delete a;
+      break;
+    }
+  }
+  if( pos == M ) {              // not a dup
+    agglessSelList.push_back(a);
+  }
+  aggs.push_back(ExecAgg::create(f->getName(), a->getAdt(), pos));
+}
+
+Iterator* AggQueryNeeded::createExec(const Query& q, bool isTop) const
+{
+	Iterator* input = root->createExec(*agglessQuery, true);
 	return new StandAggsExec(input, aggs);
 }
 
@@ -547,13 +587,23 @@ QueryNeeded::QueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* 
 	}
 }
 
+static DteTupleAdt getResultAdt(OptExprList& e)//kb: move this
+{
+  DteTupleAdt adt;
+  int n = e.size();
+  for(int i = 0 ; i < n ; i++) {
+    adt.push_back(e[i]->getAdt());
+  }
+  return adt;
+}
+
 RemQueryProduced::RemQueryProduced(const Query& query, TableMap tableMap, const SiteDesc* siteDesc) : OptNode(tableMap, siteDesc)
 {
-	vector<BaseSelection*> selectList = query.getSelectList();
-	vector<BaseSelection*> predList = query.getPredicateList();
+	OptExprList selectList = query.getSelectList();
+	OptExprList predList = query.getPredicateList();
 	const TableAlias* oldta = query.getTableList().front();
 
-	typeIDs = getTypesFromVec(selectList);
+	adt = getResultAdt(selectList);
 
 	const Interface* interf = oldta->getInterface();
 	assert(interf->getTypeNm() == DBServerInterface::typeName);
@@ -561,19 +611,22 @@ RemQueryProduced::RemQueryProduced(const Query& query, TableMap tableMap, const 
 
 	host = dbInterf->getHost();
 	port = dbInterf->getPort();
-	const string& remName = dbInterf->getRemoteTableName();
+	const string& remName = dbInterf->getRemoteTableName().toString();
 
-	const string* alias = oldta->getAlias();
+	const string& alias = oldta->getAlias();
 
 	ostringstream out;
 	out << "select ";
-	displayVec(out, selectList);
+	print_list(out, selectList);
 	out << " from ";
-	out << remName << " as " << *alias;
+	out << remName << " as " << alias;
 	out << " where ";
-	displayVec(out, predList, " and ");
-	out << ends;
+	print_list(out, predList, " and ");
 	queryToShip = out.str();
+}
+
+RemQueryProduced::~RemQueryProduced()
+{
 }
 
 bool RemQueryProduced::expand(
@@ -593,7 +646,7 @@ vector<OptNode*> RemQueryProduced::getLevel(int level)
 	return retVal;
 }
 
-Iterator* RemQueryProduced::createExec(const Query& q) const
+Iterator* RemQueryProduced::createExec(const Query& q, bool isTop) const
 {
 //	cerr << "Shipping: " << queryToShip;
 
@@ -606,7 +659,7 @@ Iterator* RemQueryProduced::createExec(const Query& q) const
 
 	// StandReadExec2 becomes the owner of dteProt
 
-	Iterator* retVal = new StandReadExec2(typeIDs, &in, dteProt);
+	Iterator* retVal = new StandReadExec2(adt, &in, dteProt);
 	return retVal;
 }
 
@@ -682,7 +735,7 @@ void Optimizer::run(){
 void Optimizer::display(ostream& out) const {
 	assert(root);
 	int level = 0;
-	const LINE_LEN = 128;
+	const int LINE_LEN = 128;
 	int nodeCnt = 0;
 	vector<OptNode*> nodes;
 	vector<int> oldHooks;
@@ -749,7 +802,7 @@ Iterator* Optimizer::createExec() {
 	if(!root){
 		run();
 	}
-	return root->createExec(query);
+	return root->createExec(query, true);
 }
 
 AccessMethod* DTESite::getBestAM(TableMap tableMap, const Query& q) const
@@ -879,9 +932,9 @@ void LogPropTable::initialize(const Query& query)
 	int numTables = tableList.size();
 	int numComb = (1 << numTables);
 	int i = 0;
-	const vector<BaseSelection*>& preds = query.getPredicateList();
+	const OptExprList& preds = query.getPredicateList();
 	predMaps.reserve(preds.size());
-	vector<BaseSelection*>::const_iterator pi;
+	OptExprList::const_iterator pi;
 	for(pi = preds.begin(); pi != preds.end(); ++pi){
 		TableMap tmp = (*pi)->getTableMap();
 		predMaps.push_back(tmp);
@@ -967,27 +1020,23 @@ LogicalProp LogPropTable::logPropFor(int i) const
 ostream& Query::display(ostream& out) const
 {
 	out << "select ";
-	displayVec(out, selectList);
+	print_list(out, selectList);
 	out << " from ";
-	displayVec(out, tableList);
+	print_list(out, tableList);
 	out << " where ";
-	displayVec(out, predList, " and ");
+	print_list(out, predList, " and ");
 	return out;
 }
 
 bool Query::hasAggregates() const
 {
-	vector<BaseSelection*>::const_iterator it;
+	OptExprList::const_iterator it;
 
 	for(it = selectList.begin(); it != selectList.end(); ++it){
-		BaseSelection* curr = *it;
-		if(curr->selectID() == CONSTRUCTOR_ID){
-			Constructor* function = (Constructor*) curr;
-			List<BaseSelection*>* args = function->getArgs();
-			int numArgs = args->cardinality();
-			const string* name = function->getName();
-			args->rewind();
-			if (numArgs == 1 && (*name == "min" || *name == "max")){
+		OptExpr* curr = *it;
+		if(curr->getExprType() == OptExpr::FUNCTION_ID){
+			OptFunction* f = (OptFunction*) curr;
+      if( f->isAggFn() ) {
 				return true;
 			}
 		}
@@ -995,13 +1044,13 @@ bool Query::hasAggregates() const
 	return false;
 }
 
-vector<BaseSelection*> OptNode::getProjectList(const Query& query) const
+OptExprList OptNode::getProjectList(const Query& query) const
 {
-	vector<BaseSelection*> retVal;
+	OptExprList retVal;
 
-	const vector<BaseSelection*>& projects = query.getSelectList();
-	const vector<BaseSelection*>& preds = query.getPredicateList();
-	vector<BaseSelection*>::const_iterator it;
+	const OptExprList& projects = query.getSelectList();
+	const OptExprList& preds = query.getPredicateList();
+	OptExprList::const_iterator it;
 	for(it = projects.begin(); it != projects.end(); ++it){
 		(*it)->collect(tableMap, retVal);
 	}

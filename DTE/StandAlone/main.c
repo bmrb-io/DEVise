@@ -17,13 +17,21 @@
 #include "sysdep.h"
 #include "exception.h"
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
+  try {
+    initialize_system();
 
-     initialize_system();
+    string query = extractQuery(cin);
+    EXIT(processQuery(query, cout));
 
-	string query = extractQuery(cin);
-	EXIT(processQuery(query, cout));
+    shutdown_system();
 
-     shutdown_system();
-	return 0;
+    //kb: add catch for DteException, stl exception
+    //} catch(...) {
+  } catch(...) {
+    cerr << "uncaught exception of unknown type!\n";
+    return 1;
+  }
+  return 0;
 }

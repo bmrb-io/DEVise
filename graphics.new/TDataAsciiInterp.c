@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/11/16 18:58:49  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.36  1998/09/30 17:44:47  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -182,9 +186,9 @@
 #include "DevError.h"
 
 #ifndef ATTRPROJ
-#if !defined(NO_DTE)
-  #include "TDataDQLInterp.h"
-#endif
+// #if !defined(NO_DTE)
+//   #include "TDataDQLInterp.h"
+// #endif
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #endif
@@ -278,6 +282,8 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
     }
 
     if(!strncmp(argv[0], "GstatXDTE:", 10)) {
+      cerr << "warning: GstatXDTE feature is disabled\n";
+#if 0
   #if defined(DTE_WARN)
     fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
   #endif
@@ -311,11 +317,13 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
       } 
 
       TDataDQLInterpClassInfo *queryClass =
-            new TDataDQLInterpClassInfo(sourceName, query);
+            new TDataDQLInterpClassInfo(sourceName);
 
-      return queryClass->CreateWithParamsNew(param, query);
+      return queryClass->CreateWithParamsNew(0, NULL);
+      //return queryClass->CreateWithParamsNew(param, query);
   #endif
-      }
+#endif
+    }
   }
 #endif
 

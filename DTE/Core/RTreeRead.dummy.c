@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/11/12 05:05:45  donjerko
+  *** empty log message ***
+
   Revision 1.8  1998/06/08 04:09:52  okan
   *** empty log message ***
 
@@ -46,7 +49,8 @@
   solaris, solsparc, and hp dependencies.
 
  */
-
+#if 0
+//kb: fix rtrees!
 #include "RTreeRead.h"
 
 RTreeReadExec::RTreeReadExec(const string& _filename, int _root_page,
@@ -82,3 +86,4 @@ const TypeIDList& RTreeReadExec::getTypes()
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	return false;
 }
+#endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/07/10 13:45:08  beyer
+  changes and bug fixes to get rtrees working in the plan reader.
+
   Revision 1.20  1998/06/28 21:47:41  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -62,6 +65,9 @@
   solaris, solsparc, and hp dependencies.
 
  */
+
+#if 0
+// kb: fix rtrees
 
 #define DTE_DEBUG
 
@@ -214,80 +220,6 @@ Iterator* RTreeIndex::createExec(){
 }
 
 
-#if 0
-	int querySize = queryBoxSize();
-	char* bounds = new char[querySize];
-	int offset = 0;
-	for(int j = 0; j < 2; j++){	// conver lower than upper bounds
-		for(int i = 0; i < numKeyFlds; i++){
-			assert(offset < querySize);
-			offset += rTreeQuery[i].values[j]->toBinary(bounds + offset);
-		}
-	}
-	string typeEncS;
-	for(int i = 0; i < numKeyFlds; i++){
-		typeEncS += rTreeEncode(typeIDs[i]);
-	}
-
-	char* typeEnc = strdup(typeEncS.c_str());
-	typed_key_t* queryBox = new typed_key_t(
-		(char *)bounds, 	// binary representation of the search key
-		numKeyFlds,			// dimensionality 
-		typeEnc, 			// encoded types as char*
-		0				// is point data (bool)
-	);
-
-#ifdef DTE_DEBUG
-	cout << "queryBox = ";
-	queryBox->debug();
-	cout << "numKeyFlds = " << numKeyFlds << endl;
-	cout << "typeEnc = " << typeEnc << endl;
-#endif
-
-	int dataSize;
-	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), NULL);
-
-#ifdef DTE_DEBUG
-	cout << "RTree scan initialized with:\n";
-	display(cout);
-#endif
-
-	Type** tuple = new Type*[numFlds];
-	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
-	int* rtreeFldLens = new int[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		tuple[i] = allocateSpace(typeIDs[i]);
-		rtreeFldLens[i] = packSize(typeIDs[i]);
-		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
-	}
-	int ridIndex;
-	for(ridIndex = 0; ridIndex < numFlds; ridIndex++){
-		if(attributeNames[ridIndex] == string("recId")){
-			break;
-		}
-	}
-	if(ridIndex >= numFlds){
-		cerr << "Index must contain recId field\n";
-		exit(1);
-	}
-
-}
-
-
-int RTreeIndex::queryBoxSize(){
-	int numKeyFlds = getNumKeyFlds();
-	int size = 0;
-	for(int j = 0; j < 2; j++){	// add lower than upper bounds
-		for(int i = 0; i < numKeyFlds; i++){
-			ConstantSelection* cs = rTreeQuery[i].values[j];
-			assert(cs);
-			size += cs->binarySize();
-		}
-	}
-	return size;
-}
-#endif
-
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	string attr;
@@ -311,55 +243,6 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	return false;
 }
 
-/*
-istream& RTreeIndex::read(istream& catalogStr){	// throws exception
-	assert(catalogStr);
-	catalogStr >> numFlds;
-	stats = new Stats(numFlds);
-
-	//	Needs to fix stats, something like this:
-
-	void setStats(){
-		double selectivity = listSelectivity(indexPreds);
-		assert(basePlanOp);
-		Stats* baseStats = basePlanOp->getStats();
-		assert(baseStats);
-		int cardinality = int(selectivity * baseStats->cardinality);
-		int* sizes = baseStats->sizes;
-		int nf = basePlanOp->getNumFlds();
-		stats = new Stats(nf, sizes, cardinality);
-	}
-
-	if(!catalogStr){
-		string msg = "Number of index attributes expected";
-		THROW(new Exception(msg), catalogStr);
-		// throw Exception(msg);
-	}
-	attributeNames = new string[numFlds];
-	typeIDs = new TypeID[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		catalogStr >> typeIDs[i];
-		catalogStr >> attributeNames[i];
-		if(!catalogStr){
-			string msg = 
-				"Type and name of the index attribute expected";
-			THROW(new Exception(msg), catalogStr);
-			// throw Exception(msg);
-		}
-	}
-//	catalogStr >> pageId;
-	if(!catalogStr){
-		string msg = "PageId expected in RTree index";
-		THROW(new Exception(msg), catalogStr);
-		// throw Exception(msg);
-	}
-	rTreeQuery = new RTreePred[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		rTreeQuery[i].setTypeID(typeIDs[i]);
-	}
-	return catalogStr;
-}
-*/
 
 RTreePred::RTreePred(string opName, ConstantSelection* constant){
 	bounded[0] = bounded[1] = false;
@@ -433,3 +316,4 @@ void RTreePred::intersect(const RTreePred& pred){
 		}
 	}
 }
+#endif

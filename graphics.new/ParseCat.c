@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/11/16 18:58:47  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.46  1998/10/28 19:22:28  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -222,10 +226,10 @@
 
 #include "machdep.h"
 #include "TDataAsciiInterp.h"
-#if !defined(NO_DTE)
-  #include "TDataDQLInterp.h"
-  #include "TDataDQL.h"
-#endif
+// #if !defined(NO_DTE)
+//   #include "TDataDQLInterp.h"
+//   #include "TDataDQL.h"
+// #endif
 #include "TDataBinaryInterp.h"
 #include "Parse.h"
 #include "Control.h"

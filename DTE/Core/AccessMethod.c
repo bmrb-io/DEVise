@@ -3,12 +3,16 @@
 #include "AccessMethod.h"
 #include "myopt.h"
 #include "catalog.h" 	// for root catalog
-#include "ExecOp.h"
+//#include "ExecOp.h"
 #include "Interface.h"
 #include "DataRead.h"
 #include "DevRead.h"
 #include "DataReader.h"
 #include "UniData.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
 
 Iterator* FileScan::createExec() {
 	assert(!"not implemented");
@@ -40,28 +44,22 @@ Cost StandardAM::getCost() const
 
 Iterator* StandardAM::createExec()
 {
-	TypeIDList typeIDs = schemaM.getTypeIDs();
-	return new StandReadExec(typeIDs, url);
+	return new StandReadExec(schemaM.getAdt(), url);
 }
 
-vector<BaseSelection*> StandardAM::getProjectList(const string& alias) const
+vector<OptExpr*> StandardAM::getProjectList(const string& alias) const
 {
-	vector<BaseSelection*> retVal;
-	const string* atts = schemaM.getAttributeNames();
-	for(int i = 0; i < schemaM.getNumFlds(); i++){
-		retVal.push_back(new PrimeSelection(alias, atts[i]));
+	vector<OptExpr*> retVal;
+	const vector<string>& atts = schemaM.getAttributeNames();
+	for(int i = 0; i < schemaM.getNumFields(); i++){
+		retVal.push_back(new OptField(alias, atts[i]));
 	}
 	return retVal;
 }
 
-DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile) :
-          ud(NULL), numFlds(0), typeIDs(NULL),
-          attributeNames(NULL),
-          order(NULL)
+DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
+  : dr(NULL)//, ud(NULL)
 {
-	ud = 0;
-	dr = 0;
-
 	if(schemaFile.substr(schemaFile.size() - 3) == "ddr"){
 
 		// datareader
@@ -73,7 +71,7 @@ DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile) :
 			CON_THROW(new Exception(msg));
 			// throw Exception(msg);
 		}
-		translateDRInfo();
+		DataReadExec::translateSchema(dr, schema);
 	}
 	else{
 
@@ -87,54 +85,55 @@ DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile) :
 			CON_THROW(new Exception(msg));
 			// throw Exception(msg);
 		}
-		translateUDInfo();
+		DevReadExec::translateSchema(ud, schema);
 	}
 	CON_END:;
 }
 
+#if 0
 void DataReaderAM::translateDRInfo() {
-	numFlds = dr->myDRSchema->tAttr + 1; //for RECID
-	int temNum = dr->myDRSchema->qAttr + 1;
-	int i = 0;
+	int temNum = dr->myDRSchema->qAttr;
 	int fType;
-	ostringstream tmp;
-	typeIDs = new TypeID[numFlds];
-	attributeNames = new string[numFlds];
 
-	typeIDs[0] = INT_TP;
-	attributeNames[0] = string("recId");
+        //tupAdt.push_back(DteInt4Adt());
+	//attributeNames.push_back("recId");
 
-	for (int count = 1; count < temNum; count ++) {
+	for(int i = 0; i < temNum; i++) {
 
-		if ((dr->myDRSchema->tableAttr[count-1])->getFieldName() == NULL) { //skipping SKIP attributes
+		if ((dr->myDRSchema->tableAttr[i])->getFieldName() == NULL) { //skipping SKIP attributes
 			continue;
 		}
-		i++;
 			
-		fType = dr->myDRSchema->tableAttr[count-1]->getType();
+		fType = dr->myDRSchema->tableAttr[i]->getType();
 		switch (fType) {
-			case TYPE_INT:
-				typeIDs[i] = string("int");
-				break;
-			case TYPE_STRING:
-				tmp << "string" << (dr->myDRSchema->tableAttr[count-1]->getMaxLen() > 0 ? dr->myDRSchema->tableAttr[count-1]->getMaxLen() : dr->myDRSchema->tableAttr[count-1]->getFieldLen()) << ends;
-				typeIDs[i] = string(tmp.str());
-				tmp.seekp(0);
-				break;
-			case TYPE_DOUBLE:
-				typeIDs[i] = string("double");
-				break;
-			case TYPE_DATE:
-				typeIDs[i] = string("date");
-				break;
-			default:
-				cout <<"This type isn't handled yet: " << dr->myDRSchema->tableAttr[count-1]->getType() << endl;
-				typeIDs[i] = string("unknown");
+                case TYPE_INT:
+                  tupAdt.push_back(DteIntAdt());
+                  break;
+                case TYPE_STRING: {
+                  int maxlen = dr->myDRSchema->tableAttr[i]->getMaxLen();
+                  if( maxlen < 0 )
+                    maxlen = dr->myDRSchema->tableAttr[i]->getFieldLen();
+                  tupAdt.push_back(DteStringAdt(maxlen));
+                  break;
+                }
+                case TYPE_DOUBLE:
+                  tupAdt.push_back(DteDoubleAdt());
+                  break;
+                case TYPE_DATE:
+                  tupAdt.push_back(DteDateAdt());
+                  break;
+                default:
+                  cout <<"This type isn't handled yet: "
+                       << dr->myDRSchema->tableAttr[i]->getType() << endl;
+                  assert(!"unknown type");
 		}
-		attributeNames[i] = string(dr->myDRSchema->tableAttr[count-1]->getFieldName());
+		attributeNames.push_back(
+                  dr->myDRSchema->tableAttr[i]->getFieldName());
 	}
 }
+#endif
 
+#if 0
 void DataReaderAM::translateUDInfo() {
 
 	// this function is same as translateDRInfor, except it is for unidata
@@ -153,6 +152,7 @@ void DataReaderAM::translateUDInfo() {
         attributeNames[i] = string(at->flat_name());
     }
 }
+#endif
 
 Iterator* DataReaderAM::createExec()
 {
@@ -161,24 +161,15 @@ Iterator* DataReaderAM::createExec()
 		dr = 0;	// not the owner any more
 		return retVal;
 	}
-	else{
-		DevReadExec* retVal = new DevReadExec(ud, typeIDlist);
-		ud = 0;	// not the owner any more
-		return retVal;
-	}
+        DevReadExec* retVal = new DevReadExec(ud);
+        ud = 0;	// not the owner any more
+        return retVal;
 }
 
 DataReaderAM::~DataReaderAM()
 {
-	delete ud;
+        delete ud;
 	delete dr;
-
-	delete [] typeIDs;
-	typeIDs = NULL;
-	delete [] attributeNames;
-	attributeNames = NULL;
-	delete order;
-	order = NULL;
 }
 
 Cost DataReaderAM::getCost() const
@@ -188,17 +179,18 @@ Cost DataReaderAM::getCost() const
 	return 0;
 }
 
-vector<BaseSelection*> DataReaderAM::getProjectList(const string& alias) const
+vector<OptExpr*> DataReaderAM::getProjectList(const string& alias) const
 {
-	vector<BaseSelection*> retVal;
-	assert(attributeNames);
-	const string* atts = attributeNames;
-	for(int i = 0; i < numFlds; i++){
-		retVal.push_back(new PrimeSelection(alias, atts[i]));
+	vector<OptExpr*> retVal;
+        int numFlds = schema.getNumFields();
+	const vector<string>& atts = schema.getAttributeNames();
+	for(int i = 0; i < numFlds; i++) {
+		retVal.push_back(new OptField(alias, atts[i]));
 	}
 	return retVal;
 }
 
+#if 0
 TypeID DataReaderAM::translateUDType(Attr* at){
 
    switch (at->type()) {
@@ -214,12 +206,9 @@ TypeID DataReaderAM::translateUDType(Attr* at){
 
 	case String_Attr:{
        int size = at->size_of();
-       ostrstream tmp;
-       tmp << "string" << size << ends;
-       char* tmp2 = tmp.str();
-       string retVal(tmp2);
-       delete [] tmp2;
-       return retVal;
+       ostringstream tmp;
+       tmp << "string" << size;
+       return tmp.str();
      } 
 
 	case UnixTime_Attr:
@@ -235,3 +224,4 @@ TypeID DataReaderAM::translateUDType(Attr* at){
    }
    return "unknown";
 }
+#endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/11/23 19:19:08  donjerko
+  *** empty log message ***
+
   Revision 1.4  1998/08/10 15:25:55  donjerko
   *** empty log message ***
 
@@ -65,52 +68,44 @@
 
 #include <assert.h>
 #include <math.h>
-#include "types.h"
 #include "exception.h"
 #include "Engine.h"
 #include <string>
 #include "sysdep.h"
 
-string extractQuery(istream& cin){
+string extractQuery(istream& in){
 	string query;
 	char c = '\0';
-	while(1){
-		cin.get(c);
-		if(c == ';'){
-			break;
-		}
-		else{
+	while( in && c != ';' ){
+		in.get(c);
+		//if(c == ';'){
+		//	break;
+		//}
+		//else{
 			query += c;
-		}
+                        //}
 	}
 	return query;
 }
 
-void processQuery(const string& query, ostream& cout, const string& header){
+void processQuery(const string& query, ostream& out, const string& header){
 
 	cerr << "Received query: " << query << endl;
 
 	Engine engine(query);
 	TRY(engine.optimize(), NVOID);
-	int numFlds = engine.getNumFlds();
+	int numFlds = engine.getNumFields();
 	if(numFlds > 0){
-		const TypeID* typeIDs = engine.getTypeIDs();
-		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), NVOID);
+          DteTupleAdt tupAdt = engine.getAdt();
+		out << header;
 		const Tuple* tup;
-
 		TRY(tup = engine.getFirst(), NVOID);
-		cout << header;
-		while(tup){
-			for(int i = 0; i < numFlds; i++){
-				writePtrs[i](cout, tup[i]);
-				cout << '\t';
-			}
-			cout << endl;
-			tup = engine.getNext();
+		while(tup) {
+                  tupAdt.print(out, tup);
+                  out << endl;
+                  tup = engine.getNext();
 		}
 		//engine.finalize();
-
-		delete [] writePtrs;
 	}
 	TRY( , NVOID);	// check for uncought exceptions
 }

@@ -20,12 +20,18 @@ include ../../Makefile.common
 
 // CC = /s/gcc-2.8.0/bin/g++
 
-DTE_DIR = ../../DTE
+DTE_BASE = ../..
+DTE_DIR = $(DTE_BASE)/DTE
+
+VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
+        $(DTE_DIR)/Script $(DTE_DIR)/GUI \
+	$(DTE_DIR)/types $(DTE_DIR)/comm $(DTE_DIR)/util $(DTE_DIR)/misc 
 
 NO_RTREE = 1
 #NO_UNIDATA = 1
 
 DTE_INCLUDES = \
+	-I$(DTE_BASE) \
 	-I$(DTE_DIR)/Core \
 	-I$(DTE_DIR)/DeviseSpecific \
 	-I$(DTE_DIR)/StandAlone \
@@ -52,11 +58,11 @@ DTE_INCLUDES = \
 
 #no-comment is for the perl files
 
-CFLAGS_WO_TEMPLATES = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
-	$(OPTFLAG) -DUNIX -DLIBCS -DHAVE_CONFIG_H
+CFLAGS_WO_TEMPLATES = -MMD $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
+	$(OPTFLAG) -DUNIX -DLIBCS -DHAVE_CONFIG_H -Wall -Wno-sign-compare
+#	-Wall -Wno-unused -Wno-comment \
 #	-fhandle-exceptions
 #	-pedantic
-#	-Wall -Wno-unused -Wno-comment \
 
 CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
 
@@ -72,18 +78,18 @@ ifdef USE_OPTIMIZER
 	CFLAGS += -DUSE_OPTIMIZER
 endif
 
-CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
-	listop.c catalog.c SockStream.c url.c StandardRead.c \
+CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c types.c \
+	catalog.c SockStream.c url.c StandardRead.c \
 	Engine.c Aggregates.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
-	ExecOp.c ExecExpr.c Inserter.c TypeCheck.c \
-	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
+	ExecOp.c ExecExpr.c Inserter.c \
+	Interface.c MaterializeParse.c \
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
 	RelationId.c Iterator.c DataRead.c ODBCParse.dummy.c ODBCInfo.c \
-	ODBCCatalogParse.c AccessMethod.c CreateGestaltParse.c
-	
+	ODBCCatalogParse.c AccessMethod.c CreateGestaltParse.c \
+        DteTupleAdt.C TupleStream.C
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
@@ -122,7 +128,7 @@ endif
 
 SCRIPT_SRC = post-query.c util.c
 
-CORE_OBJ = $(CORE_SRC:.c=.o) $(CORE_SRC_CPP:.cpp=.o)
+CORE_OBJ = $(addsuffix .o, $(basename $(CORE_SRC)))
 
 GUI_OBJ = $(CORE_OBJ) $(GUI_SRC:.c=.o) \
 	ParseAPIDTE_SA.o
@@ -142,6 +148,8 @@ LIBOBJ = $(CORE_OBJ) $(STAND_ALONE_OBJ) $(DEVISE_SPECIFIC_SRC:.c=.o)
 # Common.cpp should be part of the library because Jie is using it.
 
 STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
+
+DEPEND_FILES = $(LIBOBJ:.o=.d) $(STAND_ALONE_OBJ:.o=.d)
 
 LIBNAME = libdte.a
 
@@ -245,4 +253,23 @@ clean: mostlyclean
 	-rm $(LIBNAME) dte gui core script server client $(YACC_SRC)
 
 mostlyclean:
-	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o Server.o
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o Server.o \
+            $(DEPEND_FILES)
+
+#kb: depend stuff should be moved to Makefile.common
+
+depend: $(DEPEND_FILES)
+
+%.o %.d : %.c
+	$(CC) -c $(CFLAGS) $<
+
+%.o %.d : %.C
+	$(CC) -c $(CFLAGS) $<
+
+%.o %.d : %.cc
+	$(CC) -c $(CFLAGS) $<
+
+%.o %.d : %.cpp
+	$(CC) -c $(CFLAGS) $<
+
+-include *.d

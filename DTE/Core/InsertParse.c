@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/11/23 19:18:47  donjerko
+  Added support for gestalts
+
   Revision 1.12  1998/04/14 17:03:25  donjerko
   *** empty log message ***
 
@@ -61,21 +64,30 @@
 //#include<stdio.h>	// for perror   erased for sysdep.h
 //#include<errno.h>   erased for sysdep.h
 
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
-#include "site.h"
+//#include "site.h"
 #include "types.h"
 #include "exception.h"
 #include "catalog.h"
-#include "listop.h"
+//#include "listop.h"
 #include "ParseTree.h"
 #include "sysdep.h"
+#include "DTE/util/Del.h"
+#include "STuple.h"
+#include "Inserter.h"
+#include "DteSymbolTable.h"
+#include "ExecExpr.h"
+#include "DTE/types/DteStringAdt.h"
+
 
 static const int DETAIL = 1;
-LOG(extern ofstream logFile;)
+LOG(extern ofstream logFile);
 
 // #define DEBUG
 
+//kb: insert should be able to take a query
+  
 Iterator* InsertParse::createExec(){
 
 #ifdef DEBUG
@@ -86,6 +98,72 @@ Iterator* InsertParse::createExec(){
 	cerr << ")" << endl;
 #endif
 
+        // validate expressions
+        DteSymbolTable symtab;
+        if( ! typeCheckVec(fieldList, symtab) ) {
+          string msg = "typecheck failure during insert";
+          cerr << msg << endl;
+          THROW(new Exception(msg), NULL);
+        }
+
+        // find the table
+        Del<Interface> interface( ROOT_CATALOG.createInterface(tableName) );
+        assert(interface);
+
+        int numFields = fieldList.size();
+
+        Del<Inserter> inserter = interface->createInserter();
+
+        if( numFields == 1 &&
+            interface->getTypeNm() == CatalogInterface::typeName &&
+            fieldList[0]->getExprType() == OptExpr::CONST_ID &&
+            (fieldList[0]->getAdt()).getTypeID() == DteStringAdt::typeID ) {
+          // skip further type checks.
+          // This is a hack to allow catalog inserts from a single string.
+          // It is used by devise V1. KB 1/19/1999
+          //kb: should probably add a getPtr() function to class Del.
+          CatalogInterface* iface = 
+            static_cast<CatalogInterface*>(interface.operator->());
+          OptConstant* optc = static_cast<OptConstant*>(fieldList[0]);
+          string filename = iface->getCatalogName();
+          ofstream out(filename.c_str(), ios::app);
+          out << DteStringAdt::cast(optc->getValue()) << '\n';
+          return 0;
+
+        } else {
+
+          // make sure types match
+          if( numFields != interface->getNumFields() ) {
+            string msg = "number of fields do no match during insert";
+            cerr << msg << endl;
+            THROW(new Exception(msg), NULL);
+          }
+          DteTupleAdt adt = interface->getISchema()->getAdt();
+          for(int i = 0 ; i < numFields ; i++) {
+            const DteAdt& adt1 = fieldList[i]->getAdt();
+            const DteAdt& adt2 = adt.getAdt(i);
+            if( adt1 != adt2 ) {
+              string msg = "types do not match during insert";
+              cerr << msg << endl;
+              THROW(new Exception(msg), NULL);
+            }
+          }
+        }
+
+        // evaluate expressions
+        vector< Del<ExecExpr> > exprs(numFields);
+        STuple tuple(numFields);
+        for(int i = 0 ; i < numFields ; i++) {
+          exprs[i] = fieldList[i]->createExec(OptExprListList());
+          assert(exprs[i]);
+          tuple[i] = exprs[i]->eval(NULL,NULL);
+        }
+        
+        inserter->insert(tuple);
+	return 0;
+
+#if 0
+// kb: old stuff
      TRY(Site* site = ROOT_CATALOG.find(tableName), NULL);
 
 	assert(site);
@@ -120,4 +198,6 @@ Iterator* InsertParse::createExec(){
 	site->writeClose();
 	delete site;
 	return 0;
+#endif
+
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/07/24 04:37:48  donjerko
+  *** empty log message ***
+
   Revision 1.22  1998/06/28 21:47:35  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -81,8 +84,9 @@
 #define ENGINE_H
 
 #include "types.h"
-#include "site.h"
+//#include "site.h"
 #include "Iterator.h"
+#include "Stats.h"
 //#include <strstream.h>   erased for sysdep.h
 
 #include "sysdep.h"
@@ -93,16 +97,19 @@ using namespace std;
 
 class ParseTree;
 
-class Engine : public PlanOp {
+//kb: clean up this class
+
+//class Engine : public PlanOp {
+class Engine {
 protected:
 	string query;
 	Iterator* topNodeIt;
-	const ISchema* schema;
+	ISchema* schema;
 	ParseTree* parseTree;
-	TypeID* types;
+        Stats* stats;
 public:
-	Engine(const string& query) : query(query),
-		topNodeIt(0), schema(0), parseTree(0), types(0) {}
+	Engine(const string& query)
+          : query(query), topNodeIt(0), schema(0), parseTree(0), stats(0) {}
 	virtual ~Engine();
 	const ParseTree* parse();	// throws
 	const ISchema* typeCheck();	// throws
@@ -118,24 +125,16 @@ public:
 		return optimize();
 	}
 	*/
-     virtual int getNumFlds(){
+     virtual int getNumFields(){
 		assert(schema);
-		return schema->getNumFlds();
+		return schema->getNumFields();
      }
-     virtual const string* getTypeIDs(){
-		if(types){
-			return types;
-		}
-		assert(schema);
-		const TypeIDList& st = schema->getTypeIDs();
-		types = new TypeID[st.size()];
-		for(int i = 0; i < st.size(); i++){
-			types[i] = st[i];
-		}
-          return types;
+     const DteTupleAdt& getAdt() {
+       assert(schema);
+       return schema->getAdt();
      }
 	const Tuple* getFirst(){
-		assert(getNumFlds() != 0);
+		assert(getNumFields() != 0);
 		assert(topNodeIt);
 		return topNodeIt->getFirst();
 	}
@@ -143,25 +142,23 @@ public:
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
-        void finalize() {}      //kb: is this needed?
-	virtual const string* getAttributeNames(){
-		assert(schema);
-		return schema->getAttributeNames();
+	virtual const vector<string>& getAttributeNames() {
+          assert(schema);
+          return schema->getAttributeNames();
 	}
-     string* getOrderingAttrib(){
-		assert(!"not implemented");
-		return 0;
-     }
-	virtual Stats* getStats(){
-		assert(!"not implemented");
-		return 0;
+
+        virtual Stats* getStats() {
+          // assert(!"not implemented");
+          //kb: should return real stats
+          if( stats == 0 ) {
+            assert(getNumFields() != 0);
+            stats = new Stats(getNumFields());
+          }
+          return stats;
 	}
         /*
 	void reset(int lowRid, int highRid){
 		TRY(topNodeIt->reset(lowRid, highRid), NVOID );
-	}
-	void finalize(){
-		topNodeIt->finalize();
 	}
         */
 
@@ -172,42 +169,12 @@ public:
 };
 
 class ViewEngine : public Engine {
-	string* attributeNames;
-	TypeID* typeIDs;
-	int numFlds;
+  vector<string> attributeNames;
 public:
-	ViewEngine(string query, const string* attrs, int numInpFlds);
-	~ViewEngine(){
-		delete [] attributeNames;
-		delete [] typeIDs;
-	}
-     const TypeID* getTypeIDs(){
-		if(typeIDs){
-			return typeIDs;
-		}
-		assert(schema);
-		assert(schema->getNumFlds() + 1 == numFlds);
-          const TypeIDList& inTypes = schema->getTypeIDs();
-		typeIDs = new TypeID[numFlds];
-		typeIDs[0] = "int";
-		for(int i = 1; i < numFlds; i++){
-			typeIDs[i] = inTypes[i - 1];
-		}
-		return typeIDs;
-     }
-	const string* getAttributeNames(){
-		return attributeNames;
-	}
-     int getNumFlds(){
-		assert(schema);
-		assert(schema->getNumFlds() + 1 == numFlds);
-		return numFlds;
-     }
-	virtual Stats* getStats(){
-		return new Stats(numFlds);
-	}
-	virtual int optimize();	// throws
-	virtual Iterator* createExec();
+  ViewEngine(const string& query, const vector<string>& attrNames);
+  ~ViewEngine();
+  virtual const ISchema* typeCheck();
+  virtual Iterator* createExec();
 };
 
 #endif

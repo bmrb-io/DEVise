@@ -1,0 +1,15 @@
+- reorg
+  -- reduce dependencies
+  - Remove files:
+    TypeCheck.h
+  - move code in .h files to .c files; esp. types/* comm/*
+- fix aggregates - group bys; nested aggs shouldn't work
+- fix rtrees
+  -- add rtree packing to Adts?
+- make parser an object; take istream;
+- make srql work
+- fix Directory::replace()
+- add constant expression simplification
+- add NOT (which includes more cnf stuff)
+- Devise should not do a binary search on DTE table sources, and it
+  should not use randomization

@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/01/18 22:34:05  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.5  1998/11/03 18:08:49  okan
   Fixed Several Bugs of DataReader
    ----------------------------------------------------------------------
@@ -66,18 +74,21 @@
 #include <assert.h>
 
 #include "DataRead.h"
-#include "stdio.h"              // for sprintf
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
 
 
 DataReadExec::DataReadExec(const string& schemaFile, const string& dataFile)
 {
-  ud = new DataReader(dataFile.c_str(), schemaFile.c_str());
+  dr = new DataReader(dataFile.c_str(), schemaFile.c_str());
   init();
 }
 
 
-DataReadExec::DataReadExec(DataReader* ud)
-: ud(ud)
+DataReadExec::DataReadExec(DataReader* dr)
+: dr(dr)
 {
   init();
 }
@@ -85,79 +96,62 @@ DataReadExec::DataReadExec(DataReader* ud)
 
 void DataReadExec::init()
 {
-  translateTypes();
-  numFlds = types.size();
+  ISchema schema;
+  translateSchema(dr, schema);
+  resultAdt = schema.getAdt();
+  numFlds = resultAdt.getNumFields();
 
-  unmarshalPtrs = new UnmarshalPtr[numFlds];
-  destroyPtrs = new DestroyPtr[numFlds];
-  tuple = new Type*[numFlds];
-  offsets = new int[numFlds];
+  tuple.resize(numFlds);
 
-  offsets[0] = 0;                // not used, recid
-  int count = 1;
-  for(int i = 0; i < ud->myDRSchema->qAttr ; i++){
-    if (ud->myDRSchema->tableAttr[i]->getFieldName() != NULL) {
-      offsets[count++] = ud->myDRSchema->tableAttr[i]->offset;
+  buffSize = dr->myDRSchema->getRecSize();
+  // ensure double alignment
+  buff = (char*) new double[(buffSize / sizeof(double)) + 1];
+  buff[buffSize - 1] = '\0';
+
+  int count = 0;
+  for(int i = 0; i < dr->myDRSchema->qAttr ; i++){
+    if (dr->myDRSchema->tableAttr[i]->getFieldName() != NULL) {
+      int offset = dr->myDRSchema->tableAttr[i]->offset;
+      tuple[count++] = buff + offset;
     }
   }
   assert(numFlds == count);
-
-  for(int i = 0; i < numFlds; i++) {
-    unmarshalPtrs[i] = getUnmarshalPtr(types[i]);
-    destroyPtrs[i] = getDestroyPtr(types[i]);
-    assert(destroyPtrs[i]);
-    size_t currentSz;
-    tuple[i] = allocateSpace(types[i], currentSz);
-  }
-
-  buffSize = ud->myDRSchema->getRecSize();
-  buff = (char*) new double[(buffSize / sizeof(double)) + 1];
-  buff[buffSize - 1] = '\0';
-  recId = 0;
 }
 
 
 DataReadExec::~DataReadExec()
 {
-  delete [] buff;
-  delete ud;
-  delete [] unmarshalPtrs;
-  destroyTuple(tuple, numFlds, destroyPtrs);
-  delete [] destroyPtrs;
-  delete [] offsets;
+  delete [] (double*)buff;
+  delete dr;
 }
 
 
-void DataReadExec::translateTypes()
+void DataReadExec::translateSchema(DataReader* dr, ISchema& schema)
 {
-  char buf[100];
-
-  types.push_back(INT_TP);      // for recid
-
-  int fields = ud->myDRSchema->qAttr;
+  int fields = dr->myDRSchema->qAttr;
   for(int i = 0 ; i < fields ; i++) {
-    if ((ud->myDRSchema->tableAttr[i])->getFieldName() == NULL) {
+    if ((dr->myDRSchema->tableAttr[i])->getFieldName() == NULL) {
       //skipping SKIP attributes
       continue;
     }
-    int fType = ud->myDRSchema->tableAttr[i]->getType();
+    int fType = dr->myDRSchema->tableAttr[i]->getType();
+    string attrName = dr->myDRSchema->tableAttr[i]->getFieldName();
     switch (fType) {
     case TYPE_INT:
-      types.push_back(INT_TP);
+      schema.push_back(DteIntAdt(), attrName);
       break;
     case TYPE_STRING:
-      { int maxlen = ud->myDRSchema->tableAttr[i]->getMaxLen();
+      { int maxlen = dr->myDRSchema->tableAttr[i]->getMaxLen();
         if( maxlen <= 0 )
-          maxlen = ud->myDRSchema->tableAttr[i]->getFieldLen();
-        sprintf(buf, "string%d", maxlen);
-        types.push_back(string(buf));
+          maxlen = dr->myDRSchema->tableAttr[i]->getFieldLen();
+        schema.push_back(DteStringAdt(maxlen), attrName);
       }
       break;
     case TYPE_DOUBLE:
-      types.push_back(DOUBLE_TP);
+      schema.push_back(DteDoubleAdt(), attrName);
       break;
     case TYPE_DATE:
-      types.push_back(DATE_TP);
+      schema.push_back(DteDateAdt(), attrName);
       break;
     default:
       cout <<"This datareader type isn't handled yet: " << fType << endl;
@@ -175,84 +169,65 @@ void DataReadExec::initialize()
 
 const Tuple* DataReadExec::getNext()
 {
-  bool stat;
-  if(!ud->isOk()){	// should not happen
+  if( !dr->isOk() ) {	// should not happen
     return NULL;
   }
-  stat = ud->getRecord(buff);
-  if (!stat) {
-    return NULL;
+  if( dr->getRecord(buff) ) {
+    return tuple;
   }
-  intCopy((Type*) recId, tuple[0]);
-  for(int i = 1; i < numFlds; i++){
-    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-  }
-  recId++;
-  return tuple;
+  return NULL;
 }
 
 
 Offset DataReadExec::getOffset()
 {
   //kb: this is never set!!!
-  assert(!"dataread needs to be fixed!!");
+  assert(!"datareader needs to be fixed!! - it doesn't return offsets");
   return off;
 }
 
 
 const Tuple* DataReadExec::getThis(Offset offset)
 {
-  this->recId = -999;
-  bool stat;
-  stat = ud->getRndRec(buff, offset.getOffset());
-  if(!stat){
+  if( !dr->isOk() ) {	// should not happen
     return NULL;
   }
-  intCopy((Type*) recId, tuple[0]);
-  for(int i = 1; i < numFlds; i++){
-    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
+  if( dr->getRndRec(buff, offset.getOffset()) ) {
+    return tuple;
   }
-  return tuple;
-}
-
-
-const TypeIDList& DataReadExec::getTypes()
-{
-  return types;
+  return NULL;
 }
 
 
 //---------------------------------------------------------------------------
 
+#if 0
 void DataRead::translateUDInfo() {
-	numFlds = ud->myDRSchema->tAttr + 1; //for RECID
-	int temNum = ud->myDRSchema->qAttr + 1;
+	numFlds = dr->myDRSchema->tAttr;
+	int temNum = dr->myDRSchema->qAttr;
 	int i = 0;
 	int fType;
-	ostringstream tmp;
 	typeIDs = new TypeID[numFlds];
 	attributeNames = new string[numFlds];
 
-	typeIDs[0] = INT_TP;
-	attributeNames[0] = string("recId");
+	for (int count = 0; count < temNum; count ++) {
 
-	for (int count = 1; count < temNum; count ++) {
-
-		if ((ud->myDRSchema->tableAttr[count-1])->getFieldName() == NULL) { //skipping SKIP attributes
+		if ((dr->myDRSchema->tableAttr[count])->getFieldName() == NULL) { //skipping SKIP attributes
 			continue;
 		}
 		i++;
-			
-		fType = ud->myDRSchema->tableAttr[count-1]->getType();
+		fType = dr->myDRSchema->tableAttr[count]->getType();
 		switch (fType) {
 			case TYPE_INT:
 				typeIDs[i] = string("int");
 				break;
-			case TYPE_STRING:
-				tmp << "string" << (ud->myDRSchema->tableAttr[count-1]->getMaxLen() > 0 ? ud->myDRSchema->tableAttr[count-1]->getMaxLen() : ud->myDRSchema->tableAttr[count-1]->getFieldLen()) << ends;
-				typeIDs[i] = string(tmp.str());
-				tmp.seekp(0);
-				break;
+			case TYPE_STRING: {
+                          ostringstream tmp;
+                          tmp << "string" << (dr->myDRSchema->tableAttr[count]->getMaxLen() > 0 ? dr->myDRSchema->tableAttr[count]->getMaxLen() : dr->myDRSchema->tableAttr[count]->getFieldLen()) << ends;
+                          typeIDs[i] = tmp.str();
+                          tmp.seekp(0);
+                          break;
+                        }
 			case TYPE_DOUBLE:
 				typeIDs[i] = string("double");
 				break;
@@ -260,20 +235,20 @@ void DataRead::translateUDInfo() {
 				typeIDs[i] = string("date");
 				break;
 			default:
-				cout <<"This type isn't handled yet: " << ud->myDRSchema->tableAttr[count-1]->getType() << endl;
+				cout <<"This type isn't handled yet: " << dr->myDRSchema->tableAttr[count]->getType() << endl;
 				typeIDs[i] = string("unknown");
 		}
-		attributeNames[i] = string(ud->myDRSchema->tableAttr[count-1]->getFieldName());
+		attributeNames[i] = string(dr->myDRSchema->tableAttr[count]->getFieldName());
 	}
 }
 
 DataRead::DataRead(const string& schemaFile, const string& dataFile) :
-          ud(NULL), numFlds(0), typeIDs(NULL),
+          dr(NULL), numFlds(0), typeIDs(NULL),
           attributeNames(NULL),
           order(NULL)
 {
-	ud = new DataReader(dataFile.c_str(), schemaFile.c_str());
-	if(!ud || !ud->isOk()){
+	dr = new DataReader(dataFile.c_str(), schemaFile.c_str());
+	if(!dr || !dr->isOk()){
 		string msg = string("Cannot create DataReader table(") +
 			dataFile + ", " + schemaFile + ")";
 		CON_THROW(new Exception(msg));
@@ -285,8 +260,8 @@ DataRead::DataRead(const string& schemaFile, const string& dataFile) :
 
 Iterator* DataRead::createExec()
 {
-  DataReadExec* retVal = new DataReadExec(ud);
-  ud = NULL;	// not the owner any more
+  DataReadExec* retVal = new DataReadExec(dr);
+  dr = NULL;	// not the owner any more
   return retVal;
 }
 
@@ -295,7 +270,7 @@ Iterator* DataRead::createExec()
 
 void DataRead::Close()
 {
-  delete ud;
+  delete dr;
   delete [] typeIDs;
   typeIDs = NULL;
   delete [] attributeNames;
@@ -305,3 +280,4 @@ void DataRead::Close()
 }
 
 
+#endif

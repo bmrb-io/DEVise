@@ -5,11 +5,15 @@
 
 class Range
 {
+  DteAdt* adt;
+  Type* lo;
+  Type* hi;
+
 public:
 
   // lo and hi now belong to Range.  lo.getType() must equal hi.getType
   // if lo and/or hi is null, +/- infinity will be used.
-  Range(const TypeID& type, Type* lo, Type* hi)
+  Range(const DteAdt& type, Type* lo, Type* hi)
     : _type(type), _lo(lo), _hi(hi) {
       if( !(type == INT_TP)) assert(lo && hi);
   }

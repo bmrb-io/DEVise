@@ -22,6 +22,12 @@
   $Id$
 
   $Log$
+  Revision 1.101  1998/12/15 14:55:19  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.100  1998/12/08 20:01:53  wenger
   Color palette is now saved in session files.
 
@@ -452,9 +458,9 @@
 #include <assert.h>
 
 #include "ParseAPI.h"
-#if !defined(NO_DTE)
-  #include "TDataDQLInterp.h"
-#endif
+// #if !defined(NO_DTE)
+//   #include "TDataDQLInterp.h"
+// #endif
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"

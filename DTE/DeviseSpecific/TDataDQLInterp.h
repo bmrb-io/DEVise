@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/09/17 02:36:09  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/08/21 21:04:53  donjerko
   Implemented view materialization
 
@@ -62,17 +65,17 @@
 #ifndef TDataDQLInterp_h
 #define TDataDQLInterp_h
 
+#include <string>
 #include "DeviseTypes.h"
 #include "ClassDir.h"
-#include "TDataDQL.h"
-#include "AttrList.h"
+#include "TData.h"
+//#include "TDataDQL.h"
+//#include "AttrList.h"
 
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
-  TDataDQLInterpClassInfo(char* tableName, const char* query);
-  TDataDQLInterpClassInfo(char *className,
-  AttrList attrs,char * name,char * type,char *query,TData *tdata,
-  char* tableName);
+  TDataDQLInterpClassInfo(const char* tableName);
+  TDataDQLInterpClassInfo(const char* tableName, TData* tdata);
 
   virtual ~TDataDQLInterpClassInfo();
 
@@ -95,36 +98,35 @@ public:
   ***************************************************/
   virtual char *InstanceName();
   virtual void *GetInstance();
-  virtual AttrList * GetAttrList() {
-  	assert(_tdata);
-	return _tdata->GetAttrList();
-//	return & _attrs;
-  }	
+  virtual AttrList * GetAttrList();
   /* Get parameters that can be used to re-create this instance */
   virtual void CreateParams(int &argc, char **&argv);
 
 private:
-  char *_query;
-  char * _name;
-  char* _tableName;
-  char * _className; 
-  char * _type;
-  TData *_tdata;
-  int _recSize;
-  int _numFlds;
-  string* _types;
-  AttrList _attrs;
-  int* _sizes;
-  int _counter;
+  //  string _query;
+  //  string _name;
+  string _tableName;
+  //string _className; 
+  //  string _type;
+  TData* _tdata;
+  //int _recSize;
+  //int _numFlds;
+  //string* _types;
+  //AttrList _attrs;
+  //int* _sizes;
+  //int _counter;
 };
-class RecInterp;
+//class RecInterp;
 
+#if 0
 class TDataDQLInterp: public TDataDQL {
 public:
-  TDataDQLInterp(AttrList attrs,char *name,char *type,
-	int numFlds, string* types, int recSize, long totalRecs,
-	int* sizes);
-  TDataDQLInterp(char* tableName, List<char*>* attrList, char* query);
+//   TDataDQLInterp(AttrList attrs,char *name,char *type,
+// 	int numFlds, string* types, int recSize, long totalRecs,
+// 	int* sizes);
+  TDataDQLInterp(const string& tableName,
+                 const vector<string>& attrList,
+                 const string& query);
   virtual ~TDataDQLInterp();
 
 //  AttrList *GetAttrList(){ return &_attrList; }
@@ -143,5 +145,6 @@ private:
 //  AttrList  _attrList;             /* list of attributes */
 
 };
+#endif
 
 #endif

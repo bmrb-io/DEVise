@@ -2,31 +2,30 @@
 #include "ExecOp.h"
 #include "StandardRead.h"
 #include "myopt.h"
+#include "DTE/util/Del.h"
 
-Iterator* createIteratorFor(
-	const ISchema& schema, istream* in, const string& tableStr)
+Iterator* createIteratorFor(const ISchema& schema, istream* in,
+                            const string& tableStr)
 {
-	assert(in && in->good());
-	int numFlds = schema.getNumFlds();
-	const TypeIDList& types = schema.getTypeIDs();
-	StandReadExec* fs = new StandReadExec(types, in);
-
-        ExprList* project = new ExprList;
-	for(int i = 0; i < numFlds; i++) {
-          project->push_back(new ExecSelect(types[i], 0, i));
-	}
-
-	BaseSelection* name = new EnumSelection(0, "string");
-	BaseSelection* value = new ConstantSelection(
-		"string", strdup(tableStr.c_str()));
-	BaseSelection* predicate = new Operator("=", name, value);
-	assert(predicate);
-	predicate->typeCheck();
-
-        ExprList* where = new ExprList;
-	TRY(where->push_back(predicate->createExec(NULL, NULL)), NULL);
-	assert((*where)[0]);
-	return new SelProjExec(fs, where, project);
+  assert(in && in->good());
+  int numFlds = schema.getNumFields();
+  const DteTupleAdt& adt = schema.getAdt();
+  Del<StandReadExec> fs = new StandReadExec(adt, in);
+  
+  Del<ExprList> project = new ExprList;
+  for(int i = 0; i < numFlds; i++) {
+    project->push_back(ExecExpr::createField(adt.getAdt(i), 0, i));
+  }
+  Del<ExecExpr> expr1 = ExecExpr::createField(adt.getAdt(0), 0, 0);
+  Del<ExecExpr> expr2 = ExecExpr::createString(tableStr);
+  Del<ExecExpr> expr3 = ExecExpr::createFunction("=", expr1.steal(),
+                                                 expr2.steal());
+  Del<ExprList> where = new ExprList;
+  where->push_back(expr3);
+  assert((*where)[0]);
+  Iterator* iter = new SelProjExec(fs.steal(), where.steal(), project.steal());
+  expr3.steal();
+  return iter;
 }
 
 ostream& operator<<(ostream& out, const TableMap& x){
@@ -47,7 +46,7 @@ void TableMap::initialize(int numTabs){
 	assert(numTabs <= sizeof(int) * 8);
 	bitmap = 0;
 	for(int i = 0; i < numTabs; i++){
-		bitmap << 1;
+		bitmap <<= 1;
 		bitmap += 1;
 	}
 }

@@ -39,21 +39,29 @@ public:
     RANDOM_ITERATOR
   };
 
-  Iterator() {}
+  Iterator(const DteTupleAdt& resAdt) : resultAdt(resAdt) {}
   
+  // resultAdt must be set by derived Iterator constructor
+  Iterator() {}
+
   virtual ~Iterator();
 
   virtual void initialize() = 0;
 
   virtual const Tuple* getNext() = 0;
 
-  virtual const TypeIDList& getTypes() = 0;
-
   virtual IteratorType GetIteratorType();
 
   const Tuple* getFirst() { initialize(); return getNext(); }
 
-  int getNumFlds() { return getTypes().size(); }
+  //virtual const DteTupleAdtRef getTypes() = 0;
+  const DteTupleAdt& getAdt() { return resultAdt; }
+
+  int getNumFields() { return getAdt().getNumFields(); }
+
+protected:
+
+  DteTupleAdt resultAdt;
 
 private:
 
@@ -83,6 +91,9 @@ class RandomAccessIterator : public Iterator
 {
 public:
 
+  RandomAccessIterator(const DteTupleAdt& resAdt) : Iterator(resAdt) {}
+
+  // resultAdt must be set by derived class
   RandomAccessIterator() {}
 
   virtual const Tuple* getThis(Offset offset) = 0;
@@ -109,19 +120,21 @@ Iterator::IteratorType RandomAccessIterator::GetIteratorType()
 
 //---------------------------------------------------------------------------
 
-
+#if 0
+//kb: delete this stuff
 class Stats;
 
 class PlanOp {
 public:
 	virtual ~PlanOp() {}
 	virtual int getNumFlds() = 0;
-	virtual const TypeID* getTypeIDs() = 0;
-	virtual const string* getAttributeNames() = 0;
-	virtual string *getOrderingAttrib(){
-		assert(0);
-		return NULL;
-	}
+  //virtual const DteTupleAdtRef getTypes() = 0;
+  virtual const DteTupleAdt& getAdt() = 0;
+  virtual const vector<string>& getAttributeNames() = 0;
+  virtual const vector<string>& getOrderingAttrib(){
+    assert(0);
+    //return vector<string>();
+  }
 	virtual Stats* getStats();
 	virtual void open(istream* in){
 		assert(!"open not implemented on some reader");
@@ -132,5 +145,6 @@ public:
 	}
 	virtual Iterator* createExec() = 0;
 };
+#endif
 
 #endif

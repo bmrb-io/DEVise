@@ -17,24 +17,27 @@
 #ifndef TDataDQL_h
 #define TDataDQL_h
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <string>
+//#include <stdio.h>
+//#include <sys/types.h>
+//#include <string>
+//#include <vector>
 
-#include "DeviseTypes.h"
-#ifdef ATTRPROJ
-#   include "ApDispatcher.h"
-#else
-#   include "Dispatcher.h"
-#endif
+//#include "DeviseTypes.h"
+// #ifdef ATTRPROJ
+// #   include "ApDispatcher.h"
+// #else
+// #   include "Dispatcher.h"
+// #endif
 
-#include "queue.h"
-#include "types.h"
+//#include "queue.h"
 #include "TData.h"
-#include "RecId.h"
-#include "DataSource.h"
-#include "FileIndex.h"
 #include "AttrList.h"
+#include <vector>
+#include "types.h"
+//#include "RecId.h"
+//#include "DataSource.h"
+//#include "FileIndex.h"
+//#include "AttrList.h"
 
 class Engine;
 
@@ -45,13 +48,15 @@ class Engine;
         #define DBDQLNEW(a) {}
 #endif
 
-class TDataDQL: public TData, private DispatcherCallback {
+//class TDataDQL: public TData, private DispatcherCallback {
+class TDataDQL: public TData {
 public:
-	TDataDQL(AttrList attrs,char *name,char *type,
-	int numFlds, string* types, int recSize, long totalRecs, 
-	int* sizes);
+// 	TDataDQL(AttrList attrs,char *name,char *type,
+// 	int numFlds, string* types, int recSize, long totalRecs, 
+// 	int* sizes);
 
-	TDataDQL(char* tableName, List<char*>* attrList, char* query);
+        TDataDQL(const string& tableName);
+
 	virtual ~TDataDQL();
 
 	/**** MetaData about TDataDQL ****/
@@ -109,9 +114,9 @@ public:
 
 	virtual void DoneGetRecs(TDHandle handle);
 
-	virtual char *GetTableName() { 
-		cout << "In TDAtaDQL::GetTableName: returns " << _tableName << endl;
-		return _tableName; }
+// 	virtual char *GetTableName() { 
+// 		cout << "In TDAtaDQL::GetTableName: returns " << _tableName << endl;
+// 		return _tableName; }
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */
 	virtual int GetModTime();
@@ -120,25 +125,16 @@ public:
 	virtual void Checkpoint();
 
 	// rebuild index, et. al
-	virtual void InvalidateTData();
-
-	/* writing a record. For TDataDQL, the new record
-	is appended to the file (startRid not examined), numRecs ==1, 
-	and buf points to a string to be written to disk. */
-	virtual void WriteRecs(RecId startId, int numRecs, void *buf);
-
-	/* Write a line into the file, but don't make it into a record */
-	void WriteLine(void *line);
-	
+        //virtual void InvalidateTData();
 
 protected:
 	/* For derived class */
 	/* should be called by the constructors of derived classes */
-	void Initialize();
+        //void Initialize();
 
 	/* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
-	virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
+        //virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
 	/* Read/Write specific to each subclass index. The cached information
            is to be read during file start up, and written when file closes,
@@ -146,49 +142,48 @@ protected:
            file close. Return false and the index will be rebuilt
            from scratch every time. Return true and the base class
            will reuse the index it has cached. */
-	virtual Boolean WriteIndex(int fd) { return false; }
-	virtual Boolean ReadIndex(int fd) { return false; }
+  //virtual Boolean WriteIndex(int fd) { return false; }
+  //virtual Boolean ReadIndex(int fd) { return false; }
 
     /* This function is called by this class to ask the derived
     class to invalidate all indexed information */
-     virtual void InvalidateIndex() {}
+  // virtual void InvalidateIndex() {}
 
-	static char *MakeIndexFileName(char *name, char *type);
+  //static char *MakeIndexFileName(char *name, char *type);
 
 private:
-	void runQuery();
+	void runMinMaxQuery();
+  virtual char *DispatchedName();
 	/* From DispatcherCallback */
-	char *DispatchedName() { return "TDataDQL"; }
-        virtual void Run();
-	virtual void Cleanup();
+  //virtual void Run();
+  //virtual void Cleanup();
 
-	Boolean CheckFileStatus();
+  //Boolean CheckFileStatus();
 
 	/* Build or rebuild index */
-	void BuildIndex();
-	void RebuildIndex();
+  //void BuildIndex();
+  //void RebuildIndex();
 
-	TD_Status ReadRec(RecId id, int numRecs, void *buf);
+  TD_Status ReadRec(RecId id, int numRecs, void *buf);
 
 	/* Print indices */
-	void PrintIndices();
+  //void PrintIndices();
 
 	long _totalRecs;                // total number of records
-        long _lastIncompleteLen;        // length of last incomplete record
+	//long _lastIncompleteLen;        // length of last incomplete record
 
-	long _initTotalRecs;            // initial # of records in cache
-	int _initLastPos;               // initial last position in file
+	//long _initTotalRecs;            // initial # of records in cache
+	//int _initLastPos;               // initial last position in file
 
-	int _bytesFetched;              // total # of bytes fetched
+	//int _bytesFetched;              // total # of bytes fetched
+	string _tableName;
 	AttrList _attrs;
 	int _numFlds;
-	string* _types;
-	int* _sizes;
-	char* _query;
-	List<char*>* attrList;
-	string* _attributeNames;
-	MarshalPtr* _marshalPtrs;
-	char* _tableName;
+	//string* _types;
+        vector<int> _sizes;
+	string minMaxQuery;
+	//List<char*>* attrList;
+	vector<string> _attributeNames;
 	RecId _nextToFetch;
 	Engine* engine;
 	string queryHeader;

@@ -21,6 +21,16 @@ public:
           }
           cardinality = 1000;
 	}
+
+  Stats(const Stats& x)
+    : fldSizes(x.fldSizes), cardinality(x.cardinality) {}
+
+  Stats& operator=(const Stats& x) {
+    fldSizes = x.fldSizes;
+    cardinality = x.cardinality;
+    return *this;
+  }
+
 	const vector<int>& getFldSizes(){
 		return fldSizes;
 	}

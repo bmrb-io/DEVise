@@ -14,14 +14,15 @@
 
 #include "types.h"
 #include "Stats.h"
+#include "TableName.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
 class Inserter;
-class TableName;
-class Site;
+class Deleter;
+//class Site;
 class ISchema;
 class ODBC_Data;
 class AccessMethod;
@@ -34,7 +35,16 @@ public:
 	Interface() {stats = 0;}
 	virtual Interface* duplicate() const = 0;
 	virtual ~Interface(){delete stats;}
-	virtual Site* getSite() = 0;
+  //virtual Site* getSite() = 0;
+
+  static Interface* create(const char* type, istream& args);
+  static Interface* create(const string& type, istream& args);
+  static Interface* create(istream& typeArgs);
+
+  // type must be of type DteStringAdt
+  // args must be of type DteEolStringAdt
+  static Interface* create(const ::Type* type, const ::Type* args);
+
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << " ;";
@@ -42,14 +52,24 @@ public:
 	virtual string guiRepresentation() const {
 		ostringstream os;
 		write(os);
-		os << ends;
 		return os.str();
 	}
 	virtual Type getType(){
 		return UNKNOWN;
 	}
-	virtual const ISchema* getISchema(TableName* table) = 0;	// throws
-	virtual Inserter* getInserter(TableName* table); // throws
+	virtual const ISchema* getISchema() = 0;	// throws
+  int getNumFields() {
+    const ISchema* schema = getISchema();
+    assert(schema);
+    return schema->getNumFields();
+  }
+
+  // result must be deleted by caller
+  virtual Inserter* createInserter() const; // throws
+
+  // result must be deleted by caller
+  virtual Deleter* createDeleter() const; // throws
+
 	virtual const string& getTypeNm() const = 0;
 	virtual Interface* copyTo(void* space) = 0;
 	const Stats* getStats(){
@@ -58,9 +78,13 @@ public:
 	virtual vector<AccessMethod*> createAccessMethods();
 	virtual bool isGestalt() const {return false;}
 	virtual bool isRemote() const {return false;}
-	virtual void setRemoteTableName(const string& name) {} // noop
-	virtual const string& getRemoteTableName() const {assert(0);}
+	virtual void setRemoteTableName(const TableName& name) {
+          assert(name.isEmpty());
+        }
+	virtual const TableName& getRemoteTableName() const {assert(0);}
 };
+
+//kb: move other Interface classes to new .h files
 
 class DummyInterface : public Interface {
 	string key;
@@ -81,10 +105,10 @@ public:
 	virtual Interface* duplicate() const {
 		return new DummyInterface(*this);	
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Interface* copyTo(void* space){
 		return new (space) DummyInterface(*this);
 	}
@@ -108,7 +132,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new StandardInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
@@ -116,10 +140,11 @@ public:
 		out << " " << urlString;
 		Interface::write(out);
 	}
-	virtual const ISchema* getISchema(TableName* table){ // throws
+	virtual const ISchema* getISchema(){ // throws
 		return &schema;
 	}
-	virtual Inserter* getInserter(TableName* table); // throws
+	virtual Inserter* createInserter() const; // throws
+        virtual Deleter* createDeleter() const; // throws
 	virtual Interface* copyTo(void* space){
 		return new (space) StandardInterface(*this);
 	}
@@ -144,7 +169,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new GestaltInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
@@ -152,10 +177,10 @@ public:
 		out << " " << urlString; 
 		Interface::write(out);
 	}
-	virtual const ISchema* getISchema(TableName* table){ // throws
+	virtual const ISchema* getISchema(){ // throws
 		return &schema;
 	}
-	virtual Inserter* getInserter(TableName* table); // throws
+	virtual Inserter* createInserter() const; // throws
 	virtual Interface* copyTo(void* space){
 		return new (space) GestaltInterface(*this);
 	}
@@ -193,11 +218,11 @@ public:
 	virtual Interface* duplicate() const {
 		return new ViewInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
 	virtual string guiRepresentation() const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Type getType(){
 		return VIEW;
 	}
@@ -223,9 +248,9 @@ public:
 	static string typeName;
 public:
 	MaterViewInterface() {}
-	MaterViewInterface(
-		int numFlds, const TypeID* typeIDs, const string* attributeNames,
-		const string& urlStr, const string& query);
+	MaterViewInterface(const DteTupleAdt& tupAdt,
+                           const vector<string>& attributeNames,
+                           const string& urlStr, const string& query);
 	MaterViewInterface(const MaterViewInterface& a);
 	virtual ~MaterViewInterface(){}
 	virtual const string& getTypeNm() const {
@@ -234,16 +259,16 @@ public:
 	virtual Interface* duplicate() const {
 		return new MaterViewInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table){
+	virtual const ISchema* getISchema(){
 		return &schema;
 	}
 	virtual Type getType(){
 		return VIEW;
 	}
-	virtual const string* getAttributeNames() const {
+	virtual const vector<string>& getAttributeNames() const {
 		return schema.getAttributeNames();
 	}
 	virtual Interface* copyTo(void* space){
@@ -279,16 +304,18 @@ public:
 	virtual Interface* duplicate() const {
 		return new DeviseInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Interface* copyTo(void* space){
 		return new (space) DeviseInterface(*this);
 	}
 	virtual vector<AccessMethod*> createAccessMethods();
 };
 
+#if 0
+//kb: QueryInterface class not used -- remove it
 class QueryInterface : public Interface{
 	string urlString;
 	ISchema* schema;
@@ -313,7 +340,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new QueryInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
@@ -323,11 +350,12 @@ public:
 	virtual Type getType(){
 		return QUERY;
 	}
-	virtual const ISchema* getISchema(TableName* table);	// throws exception
+	virtual const ISchema* getISchema();	// throws exception
 	virtual Interface* copyTo(void* space){
 		return new (space) QueryInterface(*this);
 	}
 };
+#endif
 
 
 class CGIEntry{
@@ -353,10 +381,10 @@ public:
 	virtual Interface* duplicate() const {
 		return new CGIInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);  // throws
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Interface* copyTo(void* space){
 		return new (space) CGIInterface(*this);
 	}
@@ -392,11 +420,12 @@ public:
 	}
 };
 
+// this really represents a remote table
 class DBServerInterface : public Interface {
 	string host;
 	unsigned short port;
 	ISchema* schema;
-	string remTableName;
+	TableName remTableName;
 public:
 	static string typeName;
 	DBServerInterface() : schema(0) {}
@@ -414,18 +443,18 @@ public:
 	virtual Interface* duplicate() const {
 		return new DBServerInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Interface* copyTo(void* space){
 		return new (space) DBServerInterface(*this);
 	}
 	virtual bool isRemote() const {return true;}
-	virtual void setRemoteTableName(const string& name){
+	virtual void setRemoteTableName(const TableName& name){
 		remTableName = name;
 	}
-	virtual const string& getRemoteTableName() const {
+	virtual const TableName& getRemoteTableName() const {
 		return remTableName;
 	}
 	const string& getHost() const {
@@ -459,10 +488,10 @@ public:
 	virtual Interface* duplicate() const {
 		return new ODBCInterface(*this);
 	}
-	virtual Site* getSite();
+  //virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema();
 	virtual Interface* copyTo(void* space){
 		return new (space) ODBCInterface(*this);
 	}

@@ -30,6 +30,7 @@
 #include "DevError.h"
 #include "ParseCat.h"
 #include "DevError.h"
+#include "TDataDQL.h"
 
 #include "types.h"
 #include "exception.h"
@@ -37,155 +38,80 @@
 
 // #define DEBUG
 
-extern InsertCatFile(char* tableName);  // defined in graphics.new/ParseCat.c
+extern void InsertCatFile(char* tableName);  // defined in graphics.new/ParseCat.c
 
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
-	char* tableName, const char* query) : _attrs(tableName)
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(const char* tableName)
+  : _tableName(tableName), _tdata(NULL)
 {
-
-// this constructor does nothing
-
-	_tdata = NULL;
-	_name = NULL;
-	_tableName = strdup(tableName);
-	_type = strdup("DQL");
-	_className = strdup(tableName); 
-	_counter = 0;
 }
 
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className, AttrList attrs,char * name,char * type,char *query, 
-TData *tdata, char* tableName): _attrs(attrs)
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(const char* tableName,
+                                                 TData* tdata)
+  : _tableName(tableName), _tdata(tdata)
 {
-
-  _className = strdup(className);
-  _name = strdup(name);
-  _type = strdup(type);
-  _query = strdup(query);
-  _tdata = tdata;
-  _tableName = strdup(tableName);
-  _counter = 0;
 }
 
 TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo()
 {
 #if defined(DEBUG)
-	cout << "IN TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
+  cout << "IN TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
 #endif
-  if (_tdata)
-    delete _tdata;
-  if (_className) free (_className);
-//  if (_query) free (_query);	// causes core-dump DD
-  if (_name)  free(_name);
+  delete _tdata;
 #if defined(DEBUG)
-	cout << "OUT TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
+  cout << "OUT TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
 #endif
 }
 
 char *TDataDQLInterpClassInfo::ClassName()
 {
-  return _className;
+  return _tableName.c_str();
 }
-
-static char buf[2][256];
-static char *args[2];
 
 void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 2;
-  argv = args;
-  args[0] = buf[0];
-  args[1] = buf[1];
-  
-  strcpy(buf[0], "Name {foobar}");
-  strcpy(buf[1], "Type {foobar}");
+  argc = 0;
+  argv = NULL;
 }
 
 ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
 
 #if defined(DEBUG)
-	cout << "In TDataDQLInterpClassInfo::CreateWithParams(";
-	cout << argc << ", {";
-	for(int i = 0; i < argc; i++){
-		cout << argv[i] << ", ";
-	}
-	cout << "})" << endl;
+  cout << "In TDataDQLInterpClassInfo::CreateWithParams(";
+  cout << argc << ", {";
+  for(int i = 0; i < argc; i++){
+    cout << argv[i] << ", ";
+  }
+  cout << "})" << endl;
 #endif
 
-	if(argc < 2){
-		cout << "Problem in TDataDQLInterp.c, at leas 2 fields expected" 
-			<< endl;
-		for(int i = 0; i < argc; i++){
-			cout << argv[i] << ", ";
-		}
-		cout << endl;
-		exit(0);
-	}
-	_tableName = strdup(argv[0]);
-	char* attrs = strdup(argv[1]);
-	_type = strdup(argv[1]);
+  string query("select * from ");
+  query += _tableName;
+  query += " as t";
 
-	// List<char*>* attrList = new List<char*>;
-	List<char*>* attrList = NULL;
+#ifdef DEBUG
+  printf(" Query = %s \n",_query);
+#endif
 
-	/*
-	for(char* currAtt = strtok(attrs, " "); currAtt;
-					currAtt = strtok(NULL, " ")){
-		attrList->append(strdup(currAtt));
-	}
-	*/
+  //_name = argv[0];
 
-	string query = "select *";
-	/*
-	attrList->rewind();
-	while(!attrList->atEnd()){
-		query += string("t.") + attrList->get(); 
-		attrList->step();
-		if(attrList->atEnd()){
-			break;
-		}
-		query += ", ";
-	}
-	*/
-	query += string(" from ") + _tableName + " as t";
-	_query = strdup(query.c_str());
+  //DataSeg::Set(_name, _query, 0, 0); //kb: why?
 
-  #ifdef DEBUG
-	  printf(" Query = %s \n",_query);
-  #endif
-
-
-	ostrstream name;
-//	if(_counter){
-		name << argv[0];
-//	}
-//	else{
-//		name << argv[0] << ends;
-//	}
-	_counter++;	// this is used to create unique names;
-	name << ends;
-	_name = name.str();
-
-  DataSeg::Set(_name, _query, 0, 0);
-
-  TDataDQLInterp *tdata = new TDataDQLInterp(_name, attrList, _query);
+  TDataDQL* tdata = new TDataDQL(_tableName);
   if (currExcept) {
-    CATCH(cerr << currExcept->toString())
+    CATCH(cerr << currExcept->toString());
     delete tdata;
     return NULL;
   }
 
-//  bool tdataFailed = tdata->fail();
-
-  _tdata = NULL;	// cannot put _tdata = tdata (core dump?)
-
-  return new TDataDQLInterpClassInfo(
-	_className,_attrs, _name, _type, _query, tdata, _tableName);
+  return new TDataDQLInterpClassInfo(_tableName.c_str(), tdata);
 }
 
 ClassInfo *TDataDQLInterpClassInfo::CreateWithParamsNew(char **argv, char* queryS)
 {
-
+  //kb: is CreateWithParamsNew() needed?
+  return CreateWithParams(0, NULL);
+#if 0
 #if defined(DEBUG) || 0
 	cout << "In TDataDQLInterpClassInfo::CreateWithParamsNew(";
 	cout << "{";
@@ -197,7 +123,6 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParamsNew(char **argv, char* query
 
 	_tableName = strdup(argv[0]);
 	char* attrs = argv[1];
-	_type = strdup(argv[1]);
 	List<char*>* attrList = new List<char*>;
 	for(char* currAtt = strtok(attrs, " "); currAtt;
 					currAtt = strtok(NULL, " ")){
@@ -225,51 +150,51 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParamsNew(char **argv, char* query
 
 	_name = strdup(argv[0]);
 
-  DataSeg::Set(_name, _query, 0, 0);
+	//DataSeg::Set(_name, _query, 0, 0);
 
-  TDataDQLInterp *tdata = new TDataDQLInterp(_name,  attrList, _query);
+  TDataDQL* tdata = new TDataDQL(_name,  attrList, _query);
 
-  _tdata = NULL;	// cannot put _tdata = tdata (core dump?)
-
-  return new TDataDQLInterpClassInfo(
-	_className,_attrs, _name, _type, _query, tdata, _tableName);
+  return new TDataDQLInterpClassInfo(_tableName, tdata);
+#endif
 }
 
 char *TDataDQLInterpClassInfo::InstanceName()
 {
-	assert(_name);
-  return _name;
+  return _tableName.c_str();
 }
 
 void *TDataDQLInterpClassInfo::GetInstance()
 {
-	assert(_tdata);
+  assert(_tdata);
   return _tdata;
 }
+
+AttrList* TDataDQLInterpClassInfo::GetAttrList()
+{
+  assert(_tdata);
+  return _tdata->GetAttrList();
+}	
+
 
 /* Get parameters that can be used to re-create this instance */
 void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 2;
-  argv = args;
-#if defined(DEBUG)
-  cout << "To recreate this table args are: " << _tableName << " " << _type << endl;
-#endif
-  args[0] = _tableName;
-  args[1] = _type;
+  argc = 0;
+  argv = NULL;
 }
 
-TDataDQLInterp::TDataDQLInterp(
-	AttrList attrs,char *name, char *type, 
-	int numFlds, string* types, int recSize, long totalRecs, 
-	int* sizes) : 
-	TDataDQL(attrs, name, type, numFlds, types, recSize, totalRecs, sizes)
-{
+#if 0
+// TDataDQLInterp::TDataDQLInterp(
+// 	AttrList attrs,char *name, char *type, 
+// 	int numFlds, string* types, int recSize, long totalRecs, 
+// 	int* sizes) : 
+// 	TDataDQL(attrs, name, type, numFlds, types, recSize, totalRecs, sizes)
+// {
   
- // Need to form a attribute list and pass it back..
+//  // Need to form a attribute list and pass it back..
 
-  Initialize();
-}
+//   Initialize();
+// }
 
 TDataDQLInterp::TDataDQLInterp(char* tableName, List<char*>* attrList, char* query) : 
 	TDataDQL(tableName, attrList, query) {
@@ -299,3 +224,4 @@ Boolean TDataDQLInterp::Decode(void *recordBuf, int recPos, char *line)
   /* set buffer for interpreted record */
   return true;
 }
+#endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/12/04 04:05:23  donjerko
+  *** empty log message ***
+
   Revision 1.8  1997/09/17 02:35:53  donjerko
   Fixed the broken remote DTE interface.
 
@@ -55,9 +58,9 @@ istream* URL::getInputStream(){
 	istream* retVal = NULL;
 	if(protocol == "file"){
 		assert(!outputRequested);
-		retVal = new ifstream(file);
+		retVal = new ifstream(file.c_str());
 		if(!retVal->good()){
-			string msg = "Cannot open file: " + string(file);
+			string msg = "Cannot open file: " + file;
 			THROW(new Exception(msg), NULL);
 		}
 		return retVal;
@@ -90,42 +93,43 @@ istream* URL::getInputStream(){
 }
 
 void URL::parseURL(){	// Throws: unknown URL protocol
-	if(strncmp(url, "file:", 5) == 0){
-		protocol = "file";
-		file = strdup(url + 5);
-	}
-	else if(url[0] == '/' || url[0] == '.'){
-		protocol = "file";
-		file = strdup(url);
-	}
-	else if(strncmp(url, "http:", 5) == 0){
+	if(url.compare("http:", 0, 5) == 0){
 		protocol = "http";
-		char* slash1;
-		char* slash2;
-		char* tmp = strdup(url);
-		for(slash1 = tmp; *slash1 != '/'; slash1 += 1){
-		}
-		for(slash2 = slash1 + 2; *slash2 != '/'; slash2 += 1){
-		}
-		*slash2 = '\0';
-		host = strdup(slash1 + 2);
-		*slash2 = '/';
-		file = strdup(slash2);
-		delete tmp;
+                if( url[6] != '/' || url[7] != '/' ) {
+                  string msg = "relative URLs are not supported: " + url;
+                  THROW(new Exception(msg), NVOID );
+                }
+		int slash = url.find('/', 8);
+                host = url.substr(8, slash);
+                if( slash >= 0 ) {
+                  file = url.substr(slash);
+                } else {
+                  file = "/";
+                }
 	}
-	else{
-		string msg = "Unknown protocol: " + string(url);
-		THROW(new Exception(msg), NVOID );
+        else if(url.compare("file:", 0, 5) == 0) {
+          protocol = "file";
+          file = url.substr(5);
+        }
+        else if( url.find(':') != string::npos ) {
+          string msg = "Unknown protocol: " + url;
+          THROW(new Exception(msg), NVOID );
 	}
+        else {
+          protocol = "file";
+          file = url;
+        }
 }
 
-ostringstream* URL::encode(stringstream& input){
+#if 0
+//kb: why return an ostringstream*??
+ostringstream* URL::encode(istream& input){
 	ostringstream* encoded = new ostringstream();
-	string inputS = input.str();
 	int len = inputS.length();
 	char c;
-	for(int i = 0; i < len; i++){
-		input.get(c);
+        while(true) {
+                input.get(c);
+                if( !input ) break;
 		switch(c){
 		case '&':
 			assert('&' == 0x26);
@@ -163,3 +167,4 @@ ostringstream* URL::encode(stringstream& input){
 	}
 	return encoded;
 }
+#endif

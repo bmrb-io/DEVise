@@ -1,21 +1,56 @@
 #include "url.h"
 #include "Inserter.h"
 #include "StandardRead.h"
-#include "MemoryMgr.h"
+//#include "MemoryMgr.h"
 #include "Sort.h"
 
-void Inserter::open(const ISchema& schema, string urlString, int mode)
-{ // throws
-	TRY(URL* url = new URL(urlString), NVOID );
-	numFlds = schema.getNumFlds();
-	const TypeIDList& types = schema.getTypeIDs();
-	TRY(writePtrs = getWritePtrs(types), NVOID );
-	TRY(out = url->getOutputStream(mode), NVOID );
-	delete url;
+
+void Inserter::open(const string& filename, int mode = ios::app)
+{
+  this->filename = filename;
+  out.close();
+  out.clear();
+  out.open(filename.c_str(), mode);
+  if( !out ) {
+    string err("Could not open file: ");
+    err += filename;
+    THROW(new Exception(err), );
+  }
 }
 
-void Modifier::replace
-	(const string* key, const Type* object, const string* key2)
+void Inserter::open(const string& filename, const DteTupleAdt& tupAdt, 
+                    int mode = ios::app)
+{
+  this->tupAdt = tupAdt;
+  open(filename, mode);
+}
+
+
+void Inserter::insert(const Tuple* tuple)
+{
+  tupAdt.toAscii(out, tuple);
+  out << '\n';
+  if( !out ) {
+    //THROW
+    cerr << "error writing to file: " << filename << endl;
+  }
+}
+
+
+#if 0
+//kb: nothing in the file now
+void Inserter::open(const ISchema& schema, string urlString, int mode)
+{ // throws
+        tupAdt = schema.getAdt();
+	URL url(urlString);// thows
+	TRY(out = url.getOutputStream(mode), NVOID );
+}
+#endif
+
+#if 0
+//kb: Modifier not used
+void Modifier::replace(const string* key, const Type* object,
+  const string* key2)
 {
 	int objIndex = (key2 == NULL ? 1 : 2);
 	ifstream* ins = new ifstream(fileName.c_str());
@@ -25,7 +60,7 @@ void Modifier::replace
 		// throw Exception(msg);
 	}
 	assert(ins && ins->good());
-	int numFlds = schema.getNumFlds();
+	int numFlds = schema.getNumFields();
 	const TypeIDList& types = schema.getTypeIDs();
 	StandReadExec* iter = new StandReadExec(types, ins);
      iter->initialize();
@@ -77,46 +112,39 @@ void Modifier::replace
 		newFile.insert(tuple);
 	}
 }
+#endif
 
-UniqueInserter::UniqueInserter(const ISchema& schema, const string& urlstring, 
-          int mode)
-	: finalFile(urlstring), schema(schema), mode(mode)
+UniqueInserter::UniqueInserter(const string& filename,
+                               const DteTupleAdt& tupAdt, int mode)
+: Inserter(), finalFile(filename), mode(mode)
 {
-	tmpFile = tmpnam(NULL);
-	open(schema, tmpFile, ios::out);	
+  char fname[L_tmpnam];
+  tmpnam(fname);
+  tmpFile = fname;
+  TRY(open(tmpFile, tupAdt), NVOID);
 }
 
-void UniqueInserter::close()
+UniqueInserter::~UniqueInserter()
 {
-	Inserter::close();
-
 	// do duplicate elimination here
 
 	//cerr << tmpFile << endl;
 
-	int numFlds = schema.getNumFlds();
-	ifstream* istr = new ifstream(tmpFile.c_str());
+	TRY(open(finalFile, mode), NVOID);
+
+	ifstream* istr = new ifstream(tmpFile.c_str(), ios::in|ios::nocreate);
 	assert(*istr);
 
-	int numSortFlds = numFlds;
-	int* sortFlds = new int[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		sortFlds[i] = i;
-	}
-
-	const TypeIDList& types = schema.getTypeIDs();
-	StandReadExec* inp = new StandReadExec(types, istr);
-	open(schema, finalFile, mode);
-
+        // istr deleted by inp
+	TRY(StandReadExec* inp = new StandReadExec(tupAdt, istr), NVOID);
 
         FieldList* sort_fields = new FieldList;
-	for(int i = 0; i < numSortFlds; i++){
-          sort_fields->push_back(Field(types[sortFlds[i]], sortFlds[i]));
+	int numFlds = tupAdt.getNumFields();
+	for(int i = 0; i < numFlds; i++) {
+          sort_fields->push_back(Field(tupAdt.getAdt(i), i));
         }
-        // SortExec used to delete these...
-        delete [] sortFlds;
 
-	TRY(Iterator* inp2 = new UniqueSortExec(inp, sort_fields, Ascending),
+	TRY(Iterator* inp2 = new SortExec(inp, sort_fields, Ascending, true),
             NVOID);
 
 	const Tuple* tup;
@@ -129,3 +157,47 @@ void UniqueInserter::close()
 	delete inp2;
 	remove(tmpFile.c_str());
 }
+
+
+//kb: move Deleter functions
+#include "Deleter.h"
+#include "DTE/types/DteBoolAdt.h"
+#include "ExecExpr.h"
+
+void Deleter::deleteWhere(ExecExpr* where)
+{
+  char tempFname[L_tmpnam];
+  tmpnam(tempFname);
+  {
+    ofstream tempFile(tempFname);
+    assert(tempFile);
+    if( where ) {
+      StandReadExec sr(tupAdt, filename);
+      const Tuple* tup;
+      for(tup = sr.getFirst() ; tup ; tup = sr.getNext()) {
+        if( !DteBoolAdt::cast(where->eval(tup, NULL)) ) {
+          tupAdt.toAscii(tempFile, tup);
+          tempFile << '\n';
+          if( !tempFile ) {
+            cerr << "error deleting from " << filename << endl;
+            cerr << "the file was not modified\n";
+            assert(0);
+          }
+        }
+      }
+    }
+  }
+  {
+    ifstream tempFile(tempFname);
+    ofstream realFile(filename.c_str(), ios::out|ios::trunc);
+    realFile << tempFile.rdbuf();
+    if( !realFile ) {
+      cerr << "error replacing file " << filename << endl;
+      cerr << "the modified file is at: " << tempFname << endl;
+      assert(0);
+    }
+  }
+  unlink(tempFname);
+  delete where;
+}
+

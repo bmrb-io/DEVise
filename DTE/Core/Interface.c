@@ -1,10 +1,11 @@
 #include "types.h"
 #include "Interface.h"
-#include "site.h"
+//#include "site.h"
 #include "DevRead.h"
 #include "DataRead.h"
 #include "StandardRead.h"
 #include "Inserter.h"
+#include "Deleter.h"
 #include "Engine.h"
 #include "catalog.h"
 #include "SockStream.h"
@@ -14,11 +15,15 @@
 #include "Utility.h"
 #include "AccessMethod.h"
 #include "DteProtocol.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteEolStringAdt.h"
+#include "DTE/util/Del.h"
 
 string ViewInterface::typeName = "SQLView";
 string MaterViewInterface::typeName = "MaterView";
 string CGIInterface::typeName = "CGIInterface";
-string QueryInterface::typeName = "DEVise";
+//string QueryInterface::typeName = "DEVise";
 string StandardInterface::typeName = "StandardTable";
 string CatalogInterface::typeName = "Directory";
 string DeviseInterface::typeName = "Table";
@@ -29,6 +34,7 @@ string GestaltInterface::typeName = "Gestalt"; // *** YL
 
 const string Stats::KEYWD = "stats";
 
+#if 0
 inline int MAX_VAL(int i, int j){
 	return (i > j ? i : j);
 }
@@ -38,7 +44,7 @@ static int findMaxInterfSize(){
 	max = MAX_VAL(sizeof(ViewInterface), max);
 	max = MAX_VAL(sizeof(MaterViewInterface), max);
 	max = MAX_VAL(sizeof(CGIInterface), max);
-	max = MAX_VAL(sizeof(QueryInterface), max);
+	//max = MAX_VAL(sizeof(QueryInterface), max);
 	max = MAX_VAL(sizeof(StandardInterface), max);
 	max = MAX_VAL(sizeof(CatalogInterface), max);
 	max = MAX_VAL(sizeof(DeviseInterface), max);
@@ -50,6 +56,78 @@ static int findMaxInterfSize(){
 }
 
 const int INITIAL_INTERFACE_SIZE = findMaxInterfSize();
+#endif
+
+
+Interface* Interface::create(const char* type, istream& args)
+{
+  string typeNm(DteStringAdt::cast(type));
+
+  Interface* interface;
+  if(typeNm == CatalogInterface::typeName) {
+    interface = new CatalogInterface();
+  }
+  else if(typeNm == DeviseInterface::typeName) {
+    interface = new DeviseInterface();
+  }
+  else if(typeNm == StandardInterface::typeName) {
+    interface = new StandardInterface();
+  }
+  //  else if(typeNm == QueryInterface::typeName){
+  //    interface = new QueryInterface();
+  //  }
+  else if(typeNm == CGIInterface::typeName) {
+    interface = new CGIInterface();
+  }
+  else if(typeNm == ViewInterface::typeName) {
+    interface = new ViewInterface();
+  }
+  else if(typeNm == DummyInterface::typeName) {
+    interface = new DummyInterface();
+  }
+  else if(typeNm == MaterViewInterface::typeName) {
+    interface =  new MaterViewInterface();
+  }
+  else if(typeNm == DBServerInterface::typeName) {
+    interface = new DBServerInterface();
+  }
+  else if(typeNm == ODBCInterface::typeName){
+    interface = new ODBCInterface();
+  }
+  else if(typeNm == GestaltInterface::typeName){ // *** YL
+    interface = new GestaltInterface();
+  }
+  else {
+    cerr << "invalid catalog type name: " << typeNm << endl;
+    string msg = "Interface type: " + typeNm + " not defined";
+    THROW(new Exception(msg), NULL);
+  }
+
+  TRY(interface->read(args), NULL);
+  return interface;
+}
+
+Interface* Interface::create(const string& type, istream& args)
+{
+  return create(type.c_str(), args);
+}
+
+Interface* Interface::create(istream& typeArgs)
+{
+  string type;
+  typeArgs >> type;
+  return create(type.c_str(), typeArgs);
+}
+
+
+Interface* Interface::create(const ::Type* type, const ::Type* args)
+{
+  assert(type);
+  assert(args);
+  istringstream in(DteEolStringAdt::cast(args));
+  return create(DteStringAdt::cast(type), in);
+}
+
 
 ViewInterface::ViewInterface(const ViewInterface& a){
 	numFlds = a.numFlds;
@@ -71,13 +149,14 @@ ViewInterface::ViewInterface(const ViewInterface& a){
 	}
 }
 
-MaterViewInterface::MaterViewInterface(
-	int numFlds, const TypeID* typeIDs, const string* attributeNames,
-	const string& url, const string& query)
+//kb: fix up these classes a bit
+MaterViewInterface::MaterViewInterface(const DteTupleAdt& tupAdt,
+                                       const vector<string>& attributeNames,
+                                       const string& urlStr,
+                                       const string& query)
+  : schema(tupAdt, attributeNames), urlString(urlStr)
 {
-	schema = ISchema(numFlds, typeIDs, attributeNames);
-	urlString = url;
-	this->numFlds = numFlds;
+	numFlds = tupAdt.getNumFields();
 	this->attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		this->attributeNames[i] = attributeNames[i];
@@ -99,8 +178,8 @@ MaterViewInterface::MaterViewInterface(const MaterViewInterface& a){
 istream& MaterViewInterface::read(istream& in){
 	in >> schema;
 	in >> urlString;
-	numFlds = schema.getNumFlds();
-	const string* attrs = schema.getAttributeNames();
+	numFlds = schema.getNumFields();
+	const vector<string>& attrs = schema.getAttributeNames();
 	attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		attributeNames[i] = attrs[i];
@@ -118,6 +197,7 @@ void MaterViewInterface::write(ostream& out) const {
 	Interface::write(out);
 }
 
+#if 0
 Site* MaterViewInterface::getSite(){ // Throws a exception
 
 	TRY(URL* url = new URL(urlString), NULL);
@@ -177,32 +257,38 @@ Site* DeviseInterface::getSite(){
 	return retVal;
 */
 }
+#endif
 
-const ISchema* DeviseInterface::getISchema(TableName* table){
-	
-	// table is OK to be NULL since it is not used
+const ISchema* DeviseInterface::getISchema(){
 
 	if(schema){
 		return schema;
 	}
-	int numFlds;
-	const string* attributeNames;
-	const TypeID* typeIDs;
 	assert(viewNm.empty());		// obsolete feature
 
 	// DataReaderAM incorporates both DataReader and UniData
 
-	TRY(DataReaderAM* reader = new DataReaderAM(schemaNm, dataNm), 0);
+	TRY(Del<DataReaderAM> reader = new DataReaderAM(schemaNm, dataNm), 0);
 	assert(reader);
-	numFlds = reader->getNumFlds();
-	attributeNames = reader->getAttributeNames();
-	typeIDs = reader->getTypeIDs();
-	schema = new ISchema(numFlds, typeIDs, attributeNames);
-	delete reader;
-
+	schema = new ISchema(reader->getSchema());
 	return schema;
 }
 
+Inserter* StandardInterface::createInserter() const { // Throws 
+	LOG(logFile << "Inserting into " << urlString << endl);
+
+	Inserter* inserter = new Inserter(urlString, schema.getAdt());
+
+     return inserter;
+}
+
+Deleter* StandardInterface::createDeleter() const
+{
+  LOG(logFile << "Deleting from " << urlString << endl);
+  return new Deleter(urlString, schema.getAdt());
+}
+
+#if 0
 Site* StandardInterface::getSite(){ // Throws a exception
 
 	TRY(URL* url = new URL(urlString), NULL);
@@ -212,18 +298,6 @@ Site* StandardInterface::getSite(){ // Throws a exception
 
 	delete url;
      return new LocalTable("", unmarshal, urlString);	
-}
-
-Inserter* StandardInterface::getInserter(TableName* table){ // Throws 
-	assert(table);
-	assert(table->isEmpty());
-
-	LOG(logFile << "Inserting into " << urlString << endl);
-
-	Inserter* inserter = new Inserter();
-	TRY(inserter->open(schema, urlString), NULL);
-
-     return inserter;
 }
 
 // *** YL
@@ -237,15 +311,12 @@ Site* GestaltInterface::getSite(){ // Throws a exception
 	delete url;
      return new LocalTable("", unmarshal, urlString);	
 }
+#endif
 
-Inserter* GestaltInterface::getInserter(TableName* table){ // Throws 
-	assert(table);
-	assert(table->isEmpty());
-
+Inserter* GestaltInterface::createInserter() const { // Throws 
 	LOG(logFile << "Inserting into " << urlString << endl);
 
-	Inserter* inserter = new GestaltInserter();
-	TRY(inserter->open(schema, urlString), NULL);
+	Inserter* inserter = new GestaltInserter(urlString, schema.getAdt());
 
      return inserter;
 }
@@ -331,6 +402,7 @@ string ViewInterface::guiRepresentation() const {
 	return retVal;
 }
 
+#if 0
 Site* ViewInterface::getSite(){ 
 	// Throws a exception
 	
@@ -340,19 +412,20 @@ Site* ViewInterface::getSite(){
 	Engine* engine = new ViewEngine(query, 
 		(const string *) attributeNames, numFlds);
 	TRY(engine->optimize(), NULL);
-	int numEngFlds = engine->getNumFlds();
+	int numEngFlds = engine->getNumFields();
 	if(numEngFlds != numFlds + 1){
 		ostringstream estr;
 		estr << "Number of fields in the view (" << numFlds << ") ";
 		estr << "is not equal to the number in the query ";
-		estr << "(" << numEngFlds << ")" << ends;
-		string except = estr.str();
-		THROW(new Exception(except), NULL);
+		estr << "(" << numEngFlds << ")";
+		THROW(new Exception(estr.str()), NULL);
 		// throw Exception(except);
 	}
 	return new LocalTable("", engine); 
 }
+#endif
 
+#if 0
 const ISchema* QueryInterface::getISchema(TableName* table){
 
 	// throws exception
@@ -368,7 +441,6 @@ const ISchema* QueryInterface::getISchema(TableName* table){
 	stringstream tmp;
 	tmp << "schema ";
 	table->display(tmp);
-	tmp << ends;
 	values[0] = tmp.str() ;
 	values[1] = "true";
 	istream* in;
@@ -384,12 +456,20 @@ Site* QueryInterface::getSite(){
 	return new Site(urlString);
 }
 
+istream& QueryInterface::read(istream& in){
+	in >> urlString;
+	return Interface::read(in);
+}
+#endif
+
+#if 0
 Site* CGIInterface::getSite(){
 	assert(entries);
 	Site* site = new CGISite(urlString, entries, entryLen);
 	// CGISite is the owner of the entries
 	return site;
 }
+#endif
 
 CGIInterface::~CGIInterface(){
 	delete [] entries;
@@ -414,33 +494,26 @@ void CGIInterface::write(ostream& out) const {
 	Interface::write(out);
 }
 
-const ISchema* ViewInterface::getISchema(TableName* table){
+const ISchema* ViewInterface::getISchema(){
 	if(schema){
 		return schema;
 	}
-	assert(table);
-	assert(table->isEmpty());
 	assert(attributeNames);
 
 	// typecheck the query
 
 	Engine engine(query);
-	TRY(const ISchema* tmp = engine.typeCheck(), 0);
-	const TypeIDList& tmpTypes = tmp->getTypeIDs();
-
-	string* retVal = new string[numFlds + 1];
-	TypeID* types = new TypeID[numFlds + 1];
-	retVal[0] = "recId";
-	types[0] = INT_TP;
-	for(int i = 0; i < numFlds; i++){
-		retVal[i + 1] = attributeNames[i];
-		types[i + 1] = tmpTypes[i];
-	}
-	schema = new ISchema(numFlds + 1, types, retVal);
-
-	delete [] types;
-	delete [] retVal;
-
+        const ISchema* eSchema = engine.typeCheck();
+        assert(eSchema);
+	TRY(schema = new ISchema(*eSchema), 0);
+        //kb: make ViewInterface use vector<string> attributeNames;
+        vector<string> attrNames(numFlds);
+        for(int i = 0 ; i < numFlds ; i++) {
+          attrNames[i] = attributeNames[i];
+        }
+        schema->setAttributeNames(attrNames);
+        //kb: should views add recId anymore?
+        //schema->push_front(DteIntAdt(), RID_STRING);
 	return schema;
 }
 
@@ -505,7 +578,7 @@ void insert(string tableStr, Tuple* tuple){	// throws exception
 	TableName tableName(tableStr.c_str());
 	TRY(Interface* interf = catalog->createInterface(&tableName), NVOID );
 	delete catalog;
-	TRY(Inserter* inserter = interf->getInserter(&tableName), NVOID );
+	TRY(Inserter* inserter = interf->createInserter(&tableName), NVOID );
 	delete interf;
 	inserter->insert(tuple);
 	delete inserter;
@@ -539,24 +612,31 @@ istream& DeviseInterface::read(istream& in){
 	return Interface::read(in);
 }
 
-Inserter* Interface::getInserter(TableName* table){ // throws
+Inserter* Interface::createInserter() const { // throws
 	THROW(new Exception("Insertion not supported"), NULL);
 //	throw Exception("Insertion not supported");
 }
 
+Deleter* Interface::createDeleter() const {
+	THROW(new Exception("Deletion not supported"), NULL);
+}
+
+
+#if 0
 Site* DummyInterface::getSite(){
 	string err = "Operations on old DEVise table are not supported";
 	THROW(new Exception(err), NULL);
 //	throw Exception(err);
 }
+#endif
 
-const ISchema* DummyInterface::getISchema(TableName* table){
+const ISchema* DummyInterface::getISchema(){
 	string msg = "ISchema lookup not supported for UNIXFILEs";
 	THROW(new Exception(msg), NULL);
 //	throw Exception(msg);
 }
 
-const ISchema* CGIInterface::getISchema(TableName* table){
+const ISchema* CGIInterface::getISchema(){
 	string msg = "ISchema lookup not yet implemented for CGIs";
 	THROW(new Exception(msg), NULL);
 //	throw Exception(msg);
@@ -577,14 +657,14 @@ void DBServerInterface::write(ostream& out) const {
 	Interface::write(out);
 }
 
-const ISchema* DBServerInterface::getISchema(TableName* table){
+const ISchema* DBServerInterface::getISchema(){
 	if(schema){
 		return schema;
 	}
 	schema = new ISchema;
 	DteProtocol dteProt(host, port);
 	TRY(ostream& ostr = dteProt.getOutStream(), 0);
-	ostr << "schema " << table->toString() << ";" << flush;
+	ostr << "schema " << remTableName.toString() << ";" << flush;
 
 	TRY(istream& istr = dteProt.getInStream(), 0);
 	istr >> *schema;
@@ -595,9 +675,11 @@ const ISchema* DBServerInterface::getISchema(TableName* table){
 	return schema;
 }
 
+#if 0
 Site* DBServerInterface::getSite(){
 	return new DBServerSite(host, port);
 }
+#endif
 
 istream& ODBCInterface::read(istream& in){
 	in >> connectString;
@@ -631,17 +713,16 @@ void DeviseInterface::write(ostream& out) const{
 	Interface::write(out);
 }
 
+
 istream& Interface::read(istream& in)
 {
      string next;
      in >> next;
 	while(in && !(next == string(";"))){
 		if(next == Stats::KEYWD){
-		
-			// read in statistics
-
-			stats = new Stats();
-			stats->read(in);
+                  // read in statistics
+                  stats = new Stats();
+                  stats->read(in);
 		}
 		else{
 			string msg = "Invalid catalog format: " + Stats::KEYWD +
@@ -653,7 +734,7 @@ istream& Interface::read(istream& in)
 		string msg = "Catalog entry must end with semicolon";
 		THROW(new Exception(msg), in);
 	}
-	return in; // Avoid Visual C++ error : not all control paths return a value
+	return in;
 }
 
 istream& StandardInterface::read(istream& in){
@@ -671,7 +752,7 @@ istream& GestaltInterface::read(istream& in){
 vector<AccessMethod*> StandardInterface::createAccessMethods()
 {
 	vector<AccessMethod*> retVal;
-	Stats defStats(schema.getNumFlds());
+	Stats defStats(schema.getNumFields());
 	Stats* nonNullStats = (stats ? stats : &defStats);
 	AccessMethod* sr = new StandardAM(schema, urlString, *nonNullStats);
 	retVal.push_back(sr);
@@ -681,9 +762,9 @@ vector<AccessMethod*> StandardInterface::createAccessMethods()
 vector<AccessMethod*> DeviseInterface::createAccessMethods()
 {
 	vector<AccessMethod*> retVal;
-	const ISchema* tmpSchema = getISchema(0);
-	Stats defStats(tmpSchema->getNumFlds());
-	Stats* nonNullStats = (stats ? stats : &defStats);
+	//const ISchema* tmpSchema = getISchema();
+	//Stats defStats(tmpSchema->getNumFields());
+	//Stats* nonNullStats = (stats ? stats : &defStats);
 	AccessMethod* sr = new DataReaderAM(schemaNm, dataNm);
 	retVal.push_back(sr);
 	return retVal;
@@ -696,7 +777,7 @@ vector<AccessMethod*> GestaltInterface::createAccessMethods()
 	return retVal;
 
 /*
-	Stats defStats(schema.getNumFlds());
+	Stats defStats(schema.getNumFields());
 	Stats* nonNullStats = (stats ? stats : &defStats);
 //	AccessMethod* sr = new GestaltAM(schema, urlString, getMemberNames(), *nonNullStats);
 //	retVal.push_back(sr);
@@ -704,11 +785,6 @@ vector<AccessMethod*> GestaltInterface::createAccessMethods()
 */
 }
 
-
-istream& QueryInterface::read(istream& in){
-	in >> urlString;
-	return Interface::read(in);
-}
 
 istream& CatalogInterface::read(istream& in){
 	in >> urlString;

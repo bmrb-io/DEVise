@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.92  1999/01/04 15:33:31  wenger
+#  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+#  compiles; added code (GUI is currently disabled) to manually set view
+#  geometry (not yet saved to sessions).
+#
 #  Revision 1.91  1998/12/15 14:55:13  wenger
 #  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
 #  Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -270,7 +275,7 @@ include ../../Makefile.common
 CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics \
 	-I../../src/color/export -I../../src/utils/export \
-	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
+	-I../../ -I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
 	-I../../csgroup/export\
 	-I../unidata\
 	-I../../graphics.new -I../../tape -I../../generic $(GLINCLUDE)\

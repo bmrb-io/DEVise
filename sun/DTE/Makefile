@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1998/08/21 22:18:07  wenger
+#  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+#  linked DEVise for distribution.
+#
 #  Revision 1.10  1998/03/04 18:41:45  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -66,9 +70,5 @@ ARCH_LDPOST =
 
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/ \
-	$(DTE_DIR)/Script $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.sun

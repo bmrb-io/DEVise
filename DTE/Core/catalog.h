@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/03/17 17:19:06  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.24  1997/09/05 22:20:15  donjerko
   Made changes for port to NT.
 
@@ -81,7 +84,7 @@
 #include "sysdep.h"
 #include <assert.h>
 //#include <limits.h>   erased for sysdep.h
-#include "queue.h"
+//#include "queue.h"
 #include "exception.h"
 #include "Utility.h"
 
@@ -104,7 +107,7 @@ public:
 	Interface* createInterface(const string& entry) const;
 	// throws
 
-	void replace(const string& entry, const Interface* interf) const;
+        void replace(const string& entry, const Interface* interf) const;
 	// throws
 };
 
@@ -112,8 +115,8 @@ class Catalog {
 	string fileName;
 public:
 	Catalog(const string& fileName) : fileName(fileName) {}
-	Site* find(TableName* path) const;     // Throws Exception
-	Interface* createInterface(TableName* path) const;  // Throws exception
+  //Site* find(TableName& path) const;     // Throws Exception
+	Interface* createInterface(const TableName& path) const;  // Throws exception
 };
 
 extern const Catalog ROOT_CATALOG;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/07/10 13:45:08  beyer
+  changes and bug fixes to get rtrees working in the plan reader.
+
   Revision 1.18  1998/06/28 21:47:41  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -62,6 +65,9 @@
 
 #ifndef RTREE_READ_H
 #define RTREE_READ_H
+
+#if 0
+//kb: fix RTrees
 
 #include "myopt.h"
 #include "Iterator.h"
@@ -242,5 +248,6 @@ public:
 	}
 	Iterator* createExec();
 };
+#endif
 
 #endif

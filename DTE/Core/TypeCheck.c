@@ -1,9 +1,11 @@
+#if 0
+//kb: delete me
 #include "myopt.h"
 #include "TypeCheck.h"
 #include "catalog.h"
 #include "Interface.h"
 
-void TypeCheck::insert(BaseSelection* element){
+void TypeCheck::insert(OptExpr* element){
 #ifdef DEBUG
 	cerr << "inserting: ";
 	element->display(cerr);
@@ -12,33 +14,36 @@ void TypeCheck::insert(BaseSelection* element){
 	symtab[element->toString()] = element;
 }
 
-void TypeCheck::setupSelList(vector<BaseSelection*>& list){
-	map<string, BaseSelection*, StringLess>::iterator it;
+void TypeCheck::setupSelList(vector<OptExpr*>& list){
+	map<string, OptExpr*, StringLess>::iterator it;
 	for(it = symtab.begin(); it != symtab.end(); ++it){
 		list.push_back((*it).second);
 	}
 }
 
-BaseSelection* TypeCheck::resolve(BaseSelection* curr){
+OptExpr* TypeCheck::resolve(OptExpr* curr){
 	string selstr = curr->toString();
-	BaseSelection* present = symtab[selstr];
+cerr << "looking up OptExpr symbol [" << selstr << "]... ";
+	OptExpr* present = symtab[selstr];
 	if(present){
-		curr->destroy();
+cerr << "found\n";
+//kb: this file is deleting optexprs
 		delete curr;
 		return present;
 	}
 	else{
-		vector<BaseSelection*> children = curr->getChildren();	
+cerr << "not found\n";
+		vector<OptExpr*> children = curr->getChildren();	
 		TRY(resolve(children), NULL);
 		curr->setChildren(children);
 		TRY(curr->typeCheck(), NULL);
-		symtab[selstr] = curr;
+		//kb: symtab[selstr] = curr;
 		return curr;
 	}
 }
 
-void TypeCheck::resolve(vector<BaseSelection*>& list){
-	vector<BaseSelection*>::iterator it;
+void TypeCheck::resolve(vector<OptExpr*>& list){
+	vector<OptExpr*>::iterator it;
 	for(it = list.begin(); it != list.end(); ++it){
 		TRY(*it = resolve(*it), NVOID);
 	}
@@ -56,26 +61,25 @@ void TypeCheck::initialize(const vector<TableAlias*>& tableList){
 //		TRY(const SiteDesc* sd = interf->getSiteDesc(), NVOID);
 
 		int numFlds = schema.getNumFlds();
-		const string* attrs = schema.getAttributeNames();
-		const TypeIDList& types = schema.getTypeIDs();
-		for(int i = 0; i < numFlds; i++){
-			string* aliasCopy = new string(*current->getAlias());
-			string* attCpy = new string(attrs[i]);
-			PrimeSelection* ps;
-			int avgSize = 0;
-			ps = new PrimeSelection(
-				aliasCopy, attCpy, types[i], avgSize, current);
-			ps->setTableMap(tableList);
-			insert(ps);
+		const vector<string>& attrs = schema.getAttributeNames();
+		const DteTupleAdt& adt = schema.getAdt();
+		for(int i = 0; i < numFlds; i++) {
+                  int avgSize = 0;
+                  OptField* f = new OptField(current->getAlias(), attrs[i],
+                                             adt.getAdt(i).clone(),
+                                             avgSize, current);
+                  f->setTableMap(tableList);
+                  insert(f);
 		}
 	}
 }
 
 TypeCheck::~TypeCheck(){
 /*
-	map<string, BaseSelection*, StringLess>::iterator it;
+	map<string, OptExpr*, StringLess>::iterator it;
 	for(it = symtab.begin(); it != symtab.end(); it++){
 		delete (*it).second;
 	}
 */
 }
+#endif

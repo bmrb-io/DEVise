@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/03/11 18:25:56  wenger
+#  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+#  reducing include dependencies between csgroup code and the rest of
+#  the code, and within the csgroup code.  (Note: running collaboration
+#  doesn't work yet.)
+#
 #  Revision 1.7  1997/11/12 15:47:57  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -64,9 +70,5 @@ ARCH_LDPOST =
 
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-        $(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script \
-        ../../attrproj/ $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.linux

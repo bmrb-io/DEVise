@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/06/08 04:09:09  okan
+  *** empty log message ***
+
   Revision 1.16  1998/04/14 17:03:25  donjerko
   *** empty log message ***
 
@@ -104,8 +107,7 @@ ostream* getIndexTableOutStream(int mode){
 }
 
 void stripQuotes(const char* from, char* to, size_t len){ // can throw excetion
-	stringstream tmp;
-	tmp << from << ends;
+	istringstream tmp(from);
 	stripQuotes(tmp, to, len);
 }
 

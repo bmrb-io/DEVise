@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/10/16 20:57:31  beyer
+  parser now accepts negative numbers and unary minus (I hope!)
+
   Revision 1.34  1998/10/01 21:00:20  yunrui
   Add Gestalt stuff
 
@@ -148,7 +151,7 @@ static int my_yyinput(char* buf, int max_size){
 IntLit       [0-9]+
 DecLit       (([0-9]+)|([0-9]*\.[0-9]+))([eE][+-]?[0-9]+)?
 String       [A-Za-z][A-Za-z0-9_]*
-LessGreat    ">="|">"|"<="|"<"
+LessGreat    ">="|">"|"<="|"<"|"<>"
 %%
 [ \t\n]+     {}
 [Ss][Ee][Ll][Ee][Cc][Tt]       {return SELECT;}

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/11/06 19:18:54  beyer
+  added initialize() function
+
   Revision 1.33  1998/07/09 19:31:01  wenger
   Fixed bug 374 (Tables failing on SPARC/Solaris).
 
@@ -55,7 +58,6 @@
 
  */
 
-#include <strstream.h>
 #include "types.h"
 #include "UniData.h"
 
@@ -65,116 +67,72 @@
 #include <assert.h>
 
 #include "DevRead.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
 
 
-TypeID translateUDType(Attr* at){
-
-   switch (at->type()) {
-
-	case Int_Attr:
-       return "int";	
-
-	case Float_Attr:
-       return "float";
-
-	case Double_Attr:
-       return "double";
-
-	case String_Attr:{
-       int size = at->size_of();
-       ostrstream tmp;
-       tmp << "string" << size << ends;
-       char* tmp2 = tmp.str();
-       string retVal(tmp2);
-       delete [] tmp2;
-       return retVal;
-     } 
-
-	case UnixTime_Attr:
-       return "time_t";
-
-	case DateTime_Attr:
-       return "date";
-
-	case Invalid_Attr:
-	case UserDefined_Attr:
-	  cout << "This type isn't handled yet: " << at->type() << endl;
-	  break;
-   }
-   return "unknown";
-}
-
-void DevRead::Open(char* schemaFile, char* dataFile){ // throws
-	ud = new UniData(dataFile, schemaFile);
-	if(!ud || !ud->isOk()){
-		string msg = string("Cannot create Unidata table(") +
-			dataFile + ", " + schemaFile + ")";
-		THROW(new Exception(msg), );
-		// throw Exception(msg);
-	}
-	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
-	typeIDs = new TypeID[numFlds];
-	attributeNames = new string[numFlds];
-	AttrStk *stk = ud->schema()->GetFlatAttrs();
-	typeIDs[0] = INT_TP;
-	attributeNames[0] = string("recId"); 
-	for(int i = 1; i < numFlds; i++){
-		Attr *at = stk->ith(i - 1);
-		typeIDs[i] = translateUDType(at);
-		attributeNames[i] = string(at->flat_name()); 
-	}
-}
-
-Iterator* DevRead::createExec()
+void DevReadExec::translateSchema(UniData* ud, ISchema& schema)
 {
-  TypeIDList types;
-  for(int i = 0 ; i < numFlds ; i++) {
-    types.push_back(typeIDs[i]);
-  }
-  DevReadExec* retVal = new DevReadExec(ud, types);
-  ud = NULL;	// not the owner any more
-  return retVal;
-}
-
-
-DevReadExec::DevReadExec(UniData* ud, const TypeIDList& types)
-: ud(ud), types(types)
-{
-  numFlds = types.size();
-  assert( numFlds == ud->schema()->NumFlatAttrs() + 1 ); // for recId
-  unmarshalPtrs = new UnmarshalPtr[numFlds];
-  destroyPtrs = new DestroyPtr[numFlds];
-  tuple = new Type*[numFlds];
-  offsets = new int[numFlds];
-
+  int numFlds = ud->schema()->NumFlatAttrs();
   AttrStk *stk = ud->schema()->GetFlatAttrs();
-  offsets[0] = 0;               // not used, recid
-  for(int i = 0; i < numFlds; i++) {
-    // The 'if' in the next line prevents core dumps on some architectures
-    // because otherwise we try to use a negative array subscript.
-    // RKW 7/7/98.
-    if (i > 0) offsets[i] = stk->ith(i - 1)->offset();
-    unmarshalPtrs[i] = getUnmarshalPtr(types[i]);
-    destroyPtrs[i] = getDestroyPtr(types[i]);
-    assert(destroyPtrs[i]);
-    size_t currentSz;
-    tuple[i] = allocateSpace(types[i], currentSz);
-  }
+  for(int i = 0; i < numFlds; i++){
+    Attr *at = stk->ith(i);
+    string attrName(at->flat_name());
+    switch(at->type()) {
+    case Int_Attr:
+      schema.push_back(DteIntAdt(), attrName);
+      break;
 
-  buffSize = ud->recSze();
+    case Double_Attr:
+      schema.push_back(DteDoubleAdt(), attrName);
+      break;
+
+    case String_Attr:
+      schema.push_back(DteStringAdt(at->size_of()), attrName);
+      break;
+
+    case DateTime_Attr:
+      schema.push_back(DteDateAdt(), attrName);
+      break;
+
+      //case Float_Attr:
+      //case UnixTime_Attr:
+      //case Invalid_Attr:
+      //case UserDefined_Attr:
+    default:
+      cerr << "This type isn't handled yet: " << (int)at->type() << endl;
+      assert(0);
+    }
+  }
+}
+
+
+DevReadExec::DevReadExec(UniData* ud)
+: ud(ud)
+{
+  ISchema schema;
+  translateSchema(ud, schema);
+  resultAdt = schema.getAdt();
+
+  int buffSize = ud->recSze();
   buff = (char*) new double[(buffSize / sizeof(double)) + 1];
   buff[buffSize - 1] = '\0';
-  recId = 0;
+
+  int numFlds = resultAdt.getNumFields();
+  tuple.resize(numFlds);
+  AttrStk *stk = ud->schema()->GetFlatAttrs();
+  for(int i = 0; i < numFlds; i++) {
+    int offset = stk->ith(i)->offset(); // better be aligned
+    tuple[i] = buff + offset;
+  }
 }
 
 
 DevReadExec::~DevReadExec(){
 	delete [] buff;
 	delete ud;
-	delete [] unmarshalPtrs;
-	destroyTuple(tuple, numFlds, destroyPtrs);
-	delete [] destroyPtrs;
-	delete [] offsets;
 }
 
 
@@ -186,7 +144,6 @@ Offset DevReadExec::getOffset()
 
 void DevReadExec::initialize()
 {
-  recId = 0;
   ud->reset();
 }
 
@@ -203,17 +160,11 @@ const Tuple* DevReadExec::getNext(){
 		return NULL;
 	}
 	assert(stat == UD_OK);
-	intCopy((Type*) recId, tuple[0]);
-	for(int i = 1; i < numFlds; i++){
-		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-	}
-	recId++;
 	return tuple;
 }
 
 const Tuple* DevReadExec::getThis(Offset offset)
 {
-  this->recId = -999;
   UD_Status stat;
   if(!ud->isOk()){	// should not happen
     return NULL;
@@ -223,21 +174,42 @@ const Tuple* DevReadExec::getThis(Offset offset)
     return NULL;
   }
   assert(stat == UD_OK);
-  intCopy((Type*) recId, tuple[0]);
-  for(int i = 1; i < numFlds; i++){
-    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-  }
-  recId++;
   return tuple;
 }
 
 
-const TypeIDList& DevReadExec::getTypes()
-{
-  return types;
+
+#if 0
+void DevRead::Open(char* schemaFile, char* dataFile){ // throws
+	ud = new UniData(dataFile, schemaFile);
+	if(!ud || !ud->isOk()){
+		string msg = string("Cannot create Unidata table(") +
+			dataFile + ", " + schemaFile + ")";
+		THROW(new Exception(msg), );
+		// throw Exception(msg);
+	}
+        
+	numFlds = ud->schema()->NumFlatAttrs();
+	typeIDs = new TypeID[numFlds];
+	attributeNames = new string[numFlds];
+	AttrStk *stk = ud->schema()->GetFlatAttrs();
+	for(int i = 0; i < numFlds; i++){
+		Attr *at = stk->ith(i);
+		typeIDs[i] = translateUDType(at);
+		attributeNames[i] = string(at->flat_name()); 
+	}
 }
 
-
+Iterator* DevRead::createExec()
+{
+  TypeIDList types;
+  for(int i = 0 ; i < numFlds ; i++) {
+    types.push_back(typeIDs[i]);
+  }
+  DevReadExec* retVal = new DevReadExec(ud, types);
+  ud = NULL;	// not the owner any more
+  return retVal;
+}
 
 void DevRead::Close(){
 
@@ -250,3 +222,4 @@ void DevRead::Close(){
 	order = NULL;
 }
 
+#endif

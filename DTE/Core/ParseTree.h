@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/10/01 20:59:51  yunrui
+  add class CreateGestaltParse class and RegisterIntoGestaltParse
+
   Revision 1.31  1998/07/06 21:07:03  wenger
   More memory leak hunting -- partly tracked down some in the DTE.
 
@@ -90,7 +93,7 @@
 #ifndef PARSE_TREE_H
 #define PARSE_TREE_H
 
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
 #include "TypeCheck.h"
 
@@ -102,173 +105,135 @@ class Catalog;
 class Site;
 class Iterator;
 
-const ISchema EMPTY_SCHEMA("0");
-const ISchema SCHEMA_SCHEMA("1 " + SCHEMA_STR + " " + SCHEMA_STR);
-
 class ParseTree {
 public:
-	// We need this destructor so the destructors from the subclasses
-	// will get called, but putting it in results in a crash.  RKW 7/6/98.
-	//virtual ~ParseTree() {}
+	virtual ~ParseTree() {}
 	virtual const ISchema* getISchema(){
 		return &EMPTY_SCHEMA;
 	}
 	virtual Iterator* createExec() = 0; // throws exception
-	virtual string guiRepresentation() const {assert(0); return NULL;}	// throws
+	virtual string guiRepresentation() const {assert(0); return "";} // throws
+protected:
+  static bool typeCheckVec(OptExprList&, const DteSymbolTable& symtab);
+
 };
 
 class Aggregates;
 
 class QueryTree : public ParseTree {
-	List<BaseSelection*>* selectList;
-	List<TableAlias*>* tableList;
-	BaseSelection* predicates;
-	List<BaseSelection*>* groupBy;
-	BaseSelection* havingPredicate;
-	List<BaseSelection*>* sequenceby;
-	BaseSelection* withPredicate;
-	List<BaseSelection*>* orderBy;
-	string* sortOrdering;
-	List<BaseSelection*>* grpAndSeqFields; // concat of grp and seq fields
+  OptExprList selectVec;
+  vector<TableAlias*> tableVec;
+  OptExprList predicateVec;
+  OptExprList groupByVec;
+  OptExprList sequenceByVec;
+  OptExpr* withPredicate;
+  OptExpr* havingPredicate;
+  OptExprList orderByVec;
+  string sortOrdering;   //kb: order should be per attribute
 
-	// these new variables will eventually replace the old List style ones
-
-     vector<TableAlias*>& tableVec;
-     vector<BaseSelection*>& selectVec;
-     vector<BaseSelection*> predicateVec;
-     vector<BaseSelection*>& groupByVec;
-     vector<BaseSelection*>& sequenceByVec;
-     vector<BaseSelection*>& orderByVec;
-
-	bool isSelectStar;
+  // internally created vars
+  //Aggregates* aggregates;
+  ISchema* schema;
 
 private:
-
-	// internally created vars
-
-	List<BaseSelection*>* predicateList;
-	TypeCheck typeChecker;
-	Aggregates* aggregates;
-	ISchema* schema;
-
-private:
-	void setupSchema();
+  void addSelectStar();
+  void setupSchema();
+  bool typeCheck();
 public:	
-	QueryTree(
-		vector<BaseSelection*>* selectList,
-		vector<TableAlias*>* tableVec,
-		BaseSelection* predicates,
-		vector<BaseSelection *>*groupBy,
-		BaseSelection* havingPredicate,
-		vector<BaseSelection*>* sequenceby,
-		BaseSelection* withPredicate,
-		vector<BaseSelection*>* orderBy,
-		string* sortOrdering, bool isSelectStar) :
-		selectVec(*selectList), tableVec(*tableVec), 
-		predicates(predicates), groupByVec(*groupBy), 
-		havingPredicate(havingPredicate),
-		sequenceByVec(*sequenceby), withPredicate(withPredicate), 
-		orderByVec(*orderBy), sortOrdering(sortOrdering),
-		grpAndSeqFields(NULL),
-		predicateList(NULL),
-		aggregates(NULL),
-		schema(0), isSelectStar(isSelectStar) {}
-	
-	virtual Iterator* createExec(); // throws exception
-	virtual ~QueryTree(){
-		delete selectList;      // destroy list too
-		delete tableList;
-		delete grpAndSeqFields;
-		delete schema;
-	}
-	virtual const ISchema* getISchema();
-	virtual string guiRepresentation() const;	// throws
+  QueryTree(OptExprList* selectList, // SELECT
+            vector<TableAlias*>* tableVec, // FROM
+            OptExpr* predicates,     // WHERE
+            OptExprList* groupBy,
+            OptExprList* sequenceby,
+            OptExpr* withPredicate,
+            OptExpr* havingPredicate,
+            OptExprList* orderBy,
+            string* sortOrdering);
+
+  virtual ~QueryTree();
+  virtual Iterator* createExec(); // throws exception
+  virtual const ISchema* getISchema();
+  virtual string guiRepresentation() const;	// throws
 };
 
 class IndexParse : public ParseTree {
-	string* indexName;
-	TableName* tableName;
-	List<string*>* keyAttrs;
-	List<string*>* additionalAttrs;
+	string indexName;
+	TableName tableName;
+	vector<string> keyAttrs;
+	vector<string> additionalAttrs;
 	bool standAlone;
 public:	
 	IndexParse(
 		string* indexType,
 		string* indexName,
-		List<string*>* tableName,
-		List<string*>* keyAttrs,
-		List<string*>* additionalAttrs) :
-		indexName(indexName), tableName(new TableName(tableName)),
-		keyAttrs(keyAttrs), additionalAttrs(additionalAttrs) {
-		standAlone = false;
-		if(indexType){
-			standAlone = true;
-		}
+		TableName* tableName,
+		vector<string>* keyAttrs,
+                bool includePointer,
+		vector<string>* additionalAttrs)
+          : indexName(*indexName), tableName(*tableName),
+            keyAttrs(*keyAttrs), additionalAttrs(*additionalAttrs) {
+          standAlone = !includePointer;
+          assert(*indexType == "rtree");
+          delete indexType;
+          delete indexName;
+          delete keyAttrs;
+          delete additionalAttrs;
 	}
 	virtual Iterator* createExec();	// throws exception
-	virtual ~IndexParse(){
-		delete indexName;
-		delete tableName;	// destroy too
-		delete keyAttrs;	// destroy too
-		delete additionalAttrs;	// destroy too
-	}
+	virtual ~IndexParse() {}
 };
 
 class InsertParse : public ParseTree {
-	TableName* tableName;
-	List<ConstantSelection*>* fieldList;
+	TableName tableName;
+	OptExprList fieldList;
 public:	
-	InsertParse(
-		List<string*>* tableName,
-		List<ConstantSelection*>* fieldList) :
-		tableName(new TableName(tableName)),
-		fieldList(fieldList) {}
+	InsertParse(TableName* tableName, OptExprList* fieldList)
+          : tableName(*tableName), fieldList(*fieldList) {
+          delete tableName;
+          delete fieldList;
+        }
 	virtual Iterator* createExec();	// throws exception
 	virtual ~InsertParse(){
-		delete tableName;	// destroy too
-		delete fieldList;	// destroy too
+          delete_all(fieldList);
 	}
 };
 
 class DeleteParse : public ParseTree {
-	TableName* tableName;
-	string* alias;
-	BaseSelection* predicate;
+	TableAlias* tableAlias;
+	OptExpr* predicate;
 public:	
-	DeleteParse(
-		List<string*>* tableName, string* alias,
-		BaseSelection* predicate) :
-		tableName(new TableName(tableName)),
-		alias(alias), predicate(predicate) {}
+	DeleteParse(TableAlias* tableAlias, OptExpr* predicate)
+          : tableAlias(tableAlias), predicate(predicate) {
+        }
 	virtual Iterator* createExec();	// throws exception
-	virtual ~DeleteParse(){
-		delete tableName;	// destroy too
-		delete predicate;	// destroy too
+	virtual ~DeleteParse() {
+          delete tableAlias;
+          delete predicate;
 	}
 };
 
 class DropIndexParse : public ParseTree {
-	TableName* tableName;
-	string* indexName;
+	TableName tableName;
+	string indexName;
 public:
-	DropIndexParse(List<string*>* tableName, string* indexName) :
-		tableName(new TableName(tableName)), indexName(indexName) {}
+	DropIndexParse(TableName* tableName, string* indexName)
+          : tableName(*tableName), indexName(*indexName) {
+          delete tableName;
+          delete indexName;
+        }
 	virtual Iterator* createExec();	// throws exception
-	virtual ~DropIndexParse(){
-		delete tableName;	// destroy too
-		delete indexName;
-	}
+	virtual ~DropIndexParse() {}
 };
 
 class ISchemaParse : public ParseTree {
-	TableName* tableName;
+	TableName tableName;
 public:
-	ISchemaParse(List<string*>* tableName) :
-		tableName(new TableName(tableName)) {}
+	ISchemaParse(TableName* tableName)
+          : tableName(*tableName) {
+          delete tableName;
+        }
 	virtual Iterator* createExec();	// throws exception
-	virtual ~ISchemaParse(){
-		delete tableName;	// destroy too
-	}
+	virtual ~ISchemaParse() {}
 	virtual const ISchema* getISchema(){
 		return &SCHEMA_SCHEMA;
 	}
@@ -288,106 +253,99 @@ public:
 };
 
 class MaterializeParse : public ParseTree {
-	TableName* tableName;
+	TableName tableName;
 public:
-	MaterializeParse(List<string*>* tableName) :
-		tableName(new TableName(tableName)) {}
+	MaterializeParse(TableName* tableName) :
+		tableName(*tableName) { delete tableName; }
 	virtual Iterator* createExec();	// throws exception
-	virtual ~MaterializeParse(){
-		delete tableName;	// destroy too
-	}
+	virtual ~MaterializeParse() { }
 };
 
-typedef pair<string*, string*> IdentType;
+typedef pair<string, string> IdentType;
 
 class CreateTableParse : public ParseTree {
-	vector<IdentType*>* identTypePairs;
+	vector<IdentType> identTypePairs;
 public:
-	CreateTableParse(vector<IdentType*>* identTypePairs);
+	CreateTableParse(vector<IdentType>* identTypePairs);
 	virtual Iterator* createExec();	// throws exception
 	virtual ~CreateTableParse();
 	virtual const ISchema* getISchema();
 };
 
 class CreateGestaltParse : public ParseTree {
-  	vector<IdentType*>* identTypePairs;
-	TableName* gestaltName;
-	string* fileName;
+  	vector<IdentType> identTypePairs;
+	TableName gestaltName;
+	string fileName;
 public:
-	CreateGestaltParse(List<string*>* gestaltName, vector<IdentType*>* identTypePairs,
-			   string* fileName);
+	CreateGestaltParse(TableName* gestaltName,
+          vector<IdentType>* identTypePairs, string* fileName);
  	virtual Iterator* createExec();	// throws exception
 	virtual ~CreateGestaltParse();
 }; 
 
 class RegisterIntoGestaltParse : public ParseTree {
-	List<string*>* gestaltName;
-	TableName* tableName;
+        TableName gestaltName;
+	TableName tableName;
 public:
-	RegisterIntoGestaltParse(List<string*>* gestaltName, List<string*>* tableName);
+	RegisterIntoGestaltParse(TableName* gestaltName, TableName* tableName);
  	virtual Iterator* createExec();	// throws exception
-	virtual ~RegisterIntoGestaltParse(){
-	  delete gestaltName;
-	  delete tableName;
-	}
+	virtual ~RegisterIntoGestaltParse() {}
 };
 
 class UnregisterFromGestaltParse : public ParseTree {
-	TableName* gestaltName;
-	TableName* tableName;
+	TableName gestaltName;
+	TableName tableName;
 public:
-	UnregisterFromGestaltParse(List<string*>* gestaltName, List<string*>* tableName);
+	UnregisterFromGestaltParse(TableName* gestaltName, TableName* tableName);
  	virtual Iterator* createExec();	// throws exception
-	virtual ~UnregisterFromGestaltParse(){
-	  delete gestaltName;
-	  delete tableName;
-	}
+	virtual ~UnregisterFromGestaltParse() {}
 };
 
 class ODBCTableAddParse : public ParseTree {
-	string* DTE_Table_Name;
-	string* DSN_Name;
-	string* ODBC_Table_Name;
+	string DTE_Table_Name;
+	string DSN_Name;
+	string ODBC_Table_Name;
 public:
-	ODBCTableAddParse(string* DTN, string* DN, string* OTN) : DTE_Table_Name(DTN), DSN_Name(DN), ODBC_Table_Name(OTN) {}
+	ODBCTableAddParse(string* DTN, string* DN, string* OTN)
+          : DTE_Table_Name(*DTN), DSN_Name(*DN), ODBC_Table_Name(*OTN) {
+          delete DTN;
+          delete DN;
+          delete OTN;
+        }
 	virtual Iterator* createExec();
-	virtual ~ODBCTableAddParse() {
-		delete DTE_Table_Name;
-		delete DSN_Name;
-		delete ODBC_Table_Name;
-	}
+        virtual ~ODBCTableAddParse() {}
+
 };
 
 class ODBCDSNAddParse : public ParseTree {
-	string* DSN_Name;
-	string* DSN_Info;
+	string DSN_Name;
+	string DSN_Info;
 public:
-	ODBCDSNAddParse(string* DN, string* DI) : DSN_Name(DN), DSN_Info(DI) {}
+	ODBCDSNAddParse(string* DN, string* DI)
+          : DSN_Name(*DN), DSN_Info(*DI) {
+          delete DN;
+          delete DI;
+        }
 	virtual Iterator* createExec();
-	virtual ~ODBCDSNAddParse() {
-		delete DSN_Name;
-		delete DSN_Info;
-	}
+	virtual ~ODBCDSNAddParse() {}
 };
 
 class ODBCTableDeleteParse : public ParseTree {
-	string* DTE_Table_Name;
+	string DTE_Table_Name;
 public:
-	ODBCTableDeleteParse(string* DTN) : DTE_Table_Name(DTN) {}
+	ODBCTableDeleteParse(string* DTN) : DTE_Table_Name(*DTN) {
+          delete DTN;
+        }
 	virtual Iterator* createExec();
-	virtual ~ODBCTableDeleteParse() {
-		delete DTE_Table_Name;
-	}
+	virtual ~ODBCTableDeleteParse() {}
 };
 
 class ODBCDSNDeleteParse : public ParseTree {
-	string* DSN_Name;
+	string DSN_Name;
 public:
-	ODBCDSNDeleteParse(string* DN) : DSN_Name(DN) {}
+	ODBCDSNDeleteParse(string* DN) : DSN_Name(*DN) { delete DN; }
 	virtual Iterator* createExec();
-	virtual ~ODBCDSNDeleteParse() {
-		delete DSN_Name;
-	}
+	virtual ~ODBCDSNDeleteParse() {}
 };
 
 class DSNEntriesParse : public ParseTree {
@@ -401,7 +359,7 @@ public:
 
 class ODBCTablesParse : public ParseTree {
 	Iterator* myIterator;
-	string* DSN_Name;
+	string DSN_Name;
 public:
 	ODBCTablesParse(string* DN);
 	virtual Iterator* createExec();

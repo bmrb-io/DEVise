@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/12/04 04:05:14  donjerko
+  *** empty log message ***
+
   Revision 1.14  1997/11/05 00:19:41  donjerko
   Separated typechecking from optimization.
 
@@ -54,15 +57,28 @@
  */
 
 #include "ParseTree.h"
-#include "site.h"
+//#include "site.h"
 #include "catalog.h"
 #include "Interface.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/util/Del.h"
+#include "ExecOp.h"
+
+//kb: move this strdup
+char* strdup(const char* s)
+{
+  char* t = new char[strlen(s)+1];
+  strcpy(t, s);
+  return t;
+}
 
 Iterator* ISchemaParse::createExec(){
-	Interface* interf;
+        Del<Interface> interf;
 	TRY(interf = ROOT_CATALOG.createInterface(tableName), NULL);
-	TRY(const ISchema* schema = interf->getISchema(tableName), NULL);
-	ISchemaSite tmp(schema);
-	delete interf;
-	return tmp.createExec();
+	TRY(const ISchema* schema = interf->getISchema(), NULL);
+        ostringstream out;
+        out << *schema;
+        string schstr = out.str();
+        char* cp = strdup(schstr.c_str());
+        return new SingleAnswerIt(cp, DteStringAdt(schstr.length()));
 }

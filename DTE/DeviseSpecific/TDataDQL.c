@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/06/29 17:18:16  wenger
+  Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
+
   Revision 1.32  1998/04/16 17:34:58  donjerko
   *** empty log message ***
 
@@ -84,253 +87,234 @@
 */
 
 //#define DEBUG
-#include <assert.h>
-#include <iostream.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <string>
-#include "AttrList.h"
+
+#include "TDataDQL.h"
 #include "Timer.h"
 
-#include "Parse.h"
-#include "TDataDQL.h"
-#include "Exit.h"
-#include "Util.h"
-#include "DataSourceFileStream.h"
-#include "DataSourceSegment.h"
-#include "DataSourceBuf.h"
-#include "DevError.h"
-#include "DataSeg.h"
-#include "QueryProc.h"
-
-#include "Engine.h"
-#include "exception.h"
-#include "types.h"
-#include "queue.h"
 #include "CatalogComm.h"
+#include "Utility.h"
+#include "Engine.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
 
-#ifdef ATTRPROJ
-#   include "ApInit.h"
-#else
-#   include "Init.h"
-#   include "DataSourceWeb.h"
+AttrType getDeviseType(const DteAdt& adt)
+{
+  switch(adt.getTypeID()) {
+  case DteIntAdt::typeID:
+    return IntAttr;
+  case DteDoubleAdt::typeID:
+    return DoubleAttr;
+  case DteStringAdt::typeID:
+    return StringAttr;
+  case DteDateAdt::typeID:      // but we convert it to a time_t
+    return DateAttr;
+  }
+  cout << "Don't know DEVise type for: " << adt.getTypeSpec() << endl;
+  assert(0);
+#if 0
+  else if(type == "time_t"){
+    return DateAttr;
+  }
+  else if(type == "float") {
+    return FloatAttr;
+  }
 #endif
-
-# define  _STREAM_COMPAT
-
-AttrType getDeviseType(string type){
-	if(type == "int"){
-		return IntAttr;
-	}
-	else if(type == "float"){
-		return FloatAttr;
-	}
-	else if(type == "double"){
-		return DoubleAttr;
-	}
-	else if(type.substr(0, 6) == "string"){
-		return StringAttr;
-	}
-	else if(type == "date"){
-		return DateAttr;
-	}
-	else if(type == "time_t"){
-		return DateAttr;
-	}
-	else{
-		cout << "Don't know DEVise type for: " << type << endl;
-		assert(0);
-	}
 }
 
+
+#if 0
 TDataDQL::TDataDQL(
-	AttrList attrs,char *name, char *type, 
-	int numFlds, string* types, int recSize, long totalRecs,
-	int* sizes) : 
-	TData(name, type, strdup("query"), 0), // query <- name
-	_attrs(attrs),
-	_numFlds(numFlds),
-	_types(types),
-	_sizes(sizes),
-	_attributeNames(NULL),
-	_marshalPtrs(NULL),
-	engine(NULL),
-	tuple(0)
+  AttrList attrs,char *name, char *type, 
+  int numFlds, string* types, int recSize, long totalRecs,
+  int* sizes) : 
+  TData(name, type, strdup("query"), 0), // query <- name
+  _attrs(attrs),
+  _numFlds(numFlds),
+  _types(types),
+  _sizes(sizes),
+  _attributeNames(NULL),
+  engine(NULL),
+  tuple(0)
 {
   
 #ifdef DEBUG
-    printf("TDataDQL::TDataDQL(name = %s, type = %s, recSize = %d) called\n", 
-	name, type, recSize);
-    cout << "_attrs = ";
-    _attrs.Print();
+  printf("TDataDQL::TDataDQL(name = %s, type = %s, recSize = %d) called\n", 
+         name, type, recSize);
+  cout << "_attrs = ";
+  _attrs.Print();
 #endif
 
-	_totalRecs = totalRecs;
+  _totalRecs = totalRecs;
 
-	TData::_recSize = recSize;
+  TData::_recSize = recSize;
 }
-
-void TDataDQL::runQuery(){
-
-#if defined(DEBUG)
-	cout << "Running query: " << _query << endl;
-	cerr << ".";
 #endif
 
-	Timer::StopTimer();
 
-	delete engine;
-	tuple = 0;
-	engine = new Engine(_query);
-     TRY(engine->optimize(), );
-     if(_numFlds != engine->getNumFlds() / 2){
-		cerr << "_numFlds = " << _numFlds << endl;
-		cerr << "engine->getNumFlds() = " << engine->getNumFlds() << endl;
-	}
-     assert(_numFlds == engine->getNumFlds() / 2);
-	_types = new TypeID[_numFlds];
-	const TypeID* tmpTypes = engine->getTypeIDs();
-	for(int i = 0; i < _numFlds; i++){
-		_types[i] = tmpTypes[2 * i];
-	}
-	_marshalPtrs = new MarshalPtr[_numFlds];
-	for(int i = 0; i < _numFlds; i++){
-		if(_types[i] == DATE_TP){
-			_marshalPtrs[i] = dateToUnixTime;
-		}
-		else{
-			_marshalPtrs[i] = getMarshalPtr(_types[i]);
-		}
-	}
-
-	TRY(const Tuple* firstTup = engine->getFirst(), );
-	if(!firstTup){
-		cout << "Empty result set" << endl;
-	}
-
-	int offset = 0;
-	_sizes = new int[_numFlds]; 
-	_attrs.Clear();
-	for(int i = 0; i < _numFlds; i++){
-
-		int deviseSize;
-		if(_types[i] == DATE_TP){
-			deviseSize = sizeof(time_t);	
-		}
-		else{
-			TRY(deviseSize = packSize(_types[i]), );
-		}
-#if defined(DEBUG)
-		cout << "deviseSize = " << deviseSize << endl;
-#endif
-
-		_sizes[i] = deviseSize;
-		AttrType deviseType = getDeviseType(_types[i]);
-		bool hasHighLow = false;
-		AttrVal* hiVal = new AttrVal;
-		AttrVal* loVal = new AttrVal;
-		if(_types[i].substr(0, 6) == "string"){
-
-			// Devise will not take high and low values for strings
-
-			hasHighLow = false;
-		}
-		else if(firstTup) {
-			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
-			hasHighLow = true;
-			_marshalPtrs[i](firstTup[2 * i + 1], (char*) hiVal);
-			_marshalPtrs[i](firstTup[2 * i], (char*) loVal);
-		}
-		else {
-			hasHighLow = false;
-		}
-
-		_attrs.InsertAttr(i, strdup(_attributeNames[i].c_str()), 
-			offset, deviseSize, 
-			deviseType, false, 0, false, false, hasHighLow, hiVal, 
-			hasHighLow, loVal); 
-		offset += deviseSize;
-	}
-
-	_recSize = offset;
-
-	if(firstTup){
-		// this is max(recId)
-		_totalRecs = IInt::getInt(firstTup[2 * _recIdAttrPosition + 1]) + 1;
-	}
-	else{
-		_totalRecs = 0;
-	}
-
-//	DataSeg::Set(_tableName, _query, 0, 0);
-
-#if defined(DEBUG)
-	cout << "_totalRecs = " << _totalRecs << endl;
-//	cout << "Attr list is:\n";
-	_attrs.Print();
-#endif
-
-	Timer::StartTimer();
-}
-
-TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : 
-	_attrs(tableName), 
-	_attributeNames(NULL),
-	engine(NULL),
-	tuple(0),
-	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) 
+TDataDQL::TDataDQL(const string& tableName)
+  : TData(strdup(tableName.c_str()), strdup("DQL"), strdup("query"), 0),
+    _tableName(tableName), _attrs(tableName.c_str()),
+    engine(NULL), tuple(NULL)
 {
-	_tableName = strdup(tableName);
-	_marshalPtrs = NULL;
-	EXIT(char* attNames = dteListAttributes(_tableName));
-	assert(attNames);
-	char* attName = strtok(attNames, " ");
-	string minmaxQ("select ");
-	queryHeader += "select ";
-	const int MAX_NUM_ATTRS = 100;
-	_attributeNames = new string[MAX_NUM_ATTRS];
-	int i = 0;
-	_recIdAttrPosition = -1;
-	while(attName){
-		assert(i < MAX_NUM_ATTRS);	
-		_attributeNames[i] = string(attName);
-		if(_attributeNames[i] == RID_STRING){
-			_recIdAttrPosition = i;
-		}
-		string delimiAttNm = addSQLQuotes(attName, '"');
-		minmaxQ += string("min(t.") + delimiAttNm + 
-			"), max(t." + delimiAttNm + ")";
-		queryHeader += string("t.") + delimiAttNm;
-		attName = strtok(NULL, " "); 	
-		if(attName){
-			minmaxQ += ", ";
-			queryHeader += ", ";
-		}
-		i++;
-	}
-	assert(_recIdAttrPosition >= 0 || !"recId not found in schema");
-	_numFlds = i;
-	minmaxQ += string(" from ") + _tableName + " as t";
-	queryHeader += string(" from ") + _tableName + " as t where ";
-	_query = strdup(minmaxQ.c_str());
-	this->attrList = attrList;
-	runQuery();
-	CATCH(
-		cout << "DTE error coused by query: \n";
-		cout << "   " << _query << endl;
-		cout << currExcept->toString(); 
-		currExcept = NULL; 
-		cout << endl;
-		exit(0);
-	)
+  EXIT(char* attNames = dteListAttributes(_tableName.c_str()));
+  assert(attNames);
+  char* attName = strtok(attNames, " ");
+  minMaxQuery = "select ";
+  queryHeader = "select ";
+  int i = 0;
+  _recIdAttrPosition = -1;
+  while(attName) {
+    _attributeNames.push_back(attName);
+    if(_attributeNames[i] == RID_STRING) {
+      _recIdAttrPosition = i;
+    }
+    string delimiAttNm = addSQLQuotes(attName, '"');
+    minMaxQuery += string("min(t.") + delimiAttNm
+      + "), max(t." + delimiAttNm + ")";
+    queryHeader += string("t.") + delimiAttNm;
+    attName = strtok(NULL, " "); 	
+    minMaxQuery += ", ";
+    if(attName) {
+      queryHeader += ", ";
+    }
+    i++;
+  }
+  //assert(_recIdAttrPosition >= 0 || !"recId not found in schema");
+  minMaxQuery += "count(*)";
+  _numFlds = i;
+  assert(_numFlds > 0);
+  minMaxQuery += string(" from ") + _tableName + " as t";
+  queryHeader += string(" from ") + _tableName + " as t";
+  runMinMaxQuery();
+  CATCH(
+    cout << "DTE error caused by query: \n";
+    cout << "   " << minMaxQuery << endl;
+    cout << currExcept->toString(); 
+    currExcept = NULL;
+    cout << endl;
+    assert(0);
+    );
 }
+
+
+void TDataDQL::runMinMaxQuery(){
+
+#if defined(DEBUG)
+  cout << "Running query: " << _query << endl;
+  cerr << ".";
+#endif
+
+  Timer::StopTimer();
+
+  _nextToFetch = _totalRecs;
+
+  delete engine;
+  tuple = 0;
+  engine = new Engine(minMaxQuery);
+  TRY(engine->optimize(), );
+  if(2 * _numFlds + 1 != engine->getNumFields()){
+    cerr << "_numFlds = " << _numFlds << endl;
+    cerr << "engine->getNumFields() = " << engine->getNumFields() << endl;
+  }
+  assert(2 * _numFlds + 1 == engine->getNumFields());
+
+  TRY(const Tuple* firstTup = engine->getFirst(), );
+  if(!firstTup){
+    cout << "Empty result set" << endl;
+  }
+
+  int offset = 0;
+  _sizes.resize(_numFlds+1);	// store rec len in last pos
+  const DteTupleAdt& tupAdt = engine->getAdt();
+  
+  for(int i = 0; i < _numFlds; i++) {
+
+    //kb: fix dates
+    //if(_types[i] == DATE_TP){
+    //deviseSize = sizeof(time_t);	
+    //}
+    const DteAdt& adt = tupAdt.getAdt(2*i);
+
+    int align;
+    int size;
+    if( adt.getTypeID() == DteDateAdt::typeID ) {
+      align = INT4_ALIGN;       // assumes time_t == int4
+      size = sizeof(time_t);
+    } else {
+      align = adt.getAlignment();
+      size = adt.getMaxSize();
+      assert(size > 0);
+    }
+
+    offset = Align(offset, align);
+    _sizes[i] = offset;		// sizes[] stores offsets right now
+
+    AttrType deviseType = getDeviseType(adt);
+    bool hasHighLow = false;
+    AttrVal hiVal;
+    AttrVal loVal;
+    if( deviseType == StringAttr ) {
+      // Devise will not take high and low values for strings
+      hasHighLow = false;
+    }
+    else if(firstTup && firstTup[2*i] && firstTup[2*i+1]) {
+      assert((unsigned)size <= sizeof(AttrVal));
+      hasHighLow = true;
+      int rc;
+      if( adt.getTypeID() == DteDateAdt::typeID ) {
+        loVal.dateVal = DteDateAdt::toUnixTime(firstTup[2 * i]);
+        hiVal.dateVal = DteDateAdt::toUnixTime(firstTup[2 * i + 1]);
+      } else {
+        rc = adt.copyNonNull(firstTup[2 * i],
+                             (char*)&loVal, sizeof(AttrVal));
+        assert(rc >= 0);
+        rc = adt.copyNonNull(firstTup[2 * i + 1],
+                             (char*)&hiVal, sizeof(AttrVal));
+        assert(rc >= 0);
+      }
+    }
+    else {
+      hasHighLow = false;
+    }
+
+    _attrs.InsertAttr(i, strdup(_attributeNames[i].c_str()), 
+                      offset, size, deviseType, false, 0, false, false,
+		      hasHighLow, &hiVal, hasHighLow, &loVal);
+    offset += size;
+  }
+  offset = Align(offset, MAX_ALIGN);
+  _recSize = offset;
+  _sizes[_numFlds] = offset;
+
+  for(int i = 0 ; i < _numFlds ; i++) {
+    _sizes[i] = _sizes[i+1] - _sizes[i];
+  }
+
+  // get count(*) = max(recId) = total num records
+  _totalRecs = 0;
+  if(firstTup && firstTup[2*_numFlds]) {
+    _totalRecs = DteIntAdt::cast(firstTup[2*_numFlds]);
+    if( _recIdAttrPosition >= 0 ) { // if record as recId field
+      const Type* x = firstTup[2 * _recIdAttrPosition + 1];
+      if( x ) { // max(recId) not null
+	assert(_totalRecs == DteIntAdt::cast(x) + 1);
+      }
+    }
+  }
+
+#if defined(DEBUG)
+  cout << "_totalRecs = " << _totalRecs << endl;
+  //	cout << "Attr list is:\n";
+  _attrs.Print();
+#endif
+
+  // DataSeg::Set(_tableName, _query, 0, 0);
+
+  Timer::StartTimer();
+}
+
 
 AttrList* TDataDQL::GetAttrList(){
   return &_attrs;
@@ -341,14 +325,13 @@ TDataDQL::~TDataDQL()
 #ifdef DEBUG
   printf("TDataDQL destructor\n");
 #endif
-	delete [] _marshalPtrs;
-	delete engine;
+  delete engine;
 }
 
-Boolean TDataDQL::CheckFileStatus()
-{
-  return true;
-}
+//  Boolean TDataDQL::CheckFileStatus()
+//  {
+//    return true;
+//  }
 
 int TDataDQL::Dimensions(int *sizeDimension)
 {
@@ -370,25 +353,83 @@ Boolean TDataDQL::LastID(RecId &recId)
 }
 
 TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
-                                 Boolean asyncAllowed,
-                                 ReleaseMemoryCallback *callback
-				 )
+                                      Boolean asyncAllowed,
+                                      ReleaseMemoryCallback *callback
+                                      )
 {
 	
 #if defined(DEBUG)
   cerr << "TDataDQL::InitGetRecs(" << interval->Low << ", " << interval->High << ")\n";
 #endif
 
-  if (!strcmp(interval->AttrName,"recId")) { // recId stuff
+  if( RID_STRING != interval->AttrName ) {
+    cout << "TDataDQL: Only recId is implemented right now.\n";
+    assert(0);
+  }
+
   RecId lowId = (RecId)(interval->Low);
   RecId highId = (RecId)(interval->High);
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
-  TDataRequest *req = new TDataRequest;
-  DOASSERT(req, "Out of memory");
+  // check to see if current query can be used to answer request.
+  if( _recIdAttrPosition < 0 && _nextToFetch <= lowId ) {
 
+    cerr << "not running a new query: " << _nextToFetch << ' ' << lowId << endl;
+
+  } else {
+
+    cerr << "running a new query: " << _nextToFetch << ' ' << lowId << endl;
+
+    //  Issue a query to the engine;
+    string query(queryHeader);
+    if( _recIdAttrPosition >= 0 ) { // query has recId field
+      char whereClause[100];
+      sprintf(whereClause, " where t.recId>=%ld and t.recId<=%ld",
+              lowId, highId);
+      query += whereClause;
+      _nextToFetch = lowId;
+    } else {
+      _nextToFetch = 0;
+    }
+    
+#if defined(DEBUG)
+    cout << "Running: " << query << endl;
+    static int entryCount;
+    static double cumRecs;
+    if(entryCount++ % 100 == 0){
+      int percent = int(cumRecs / _totalRecs * 100);
+      cerr << cumRecs << " records retreived (" << percent << "%) ";
+      cerr << "dte called " << entryCount << " times" << endl;
+    }
+    cumRecs += interval->High - interval->Low + 1;
+#endif
+
+    delete engine;
+    engine = new Engine(query);
+    engine->optimize();
+    CATCH(
+          cout << "DTE error caused by query: \n";
+          cout << "   " << query << endl;
+          cout << currExcept->toString();
+          currExcept = NULL;
+          cout << endl;
+          assert(0)
+          );
+
+    tuple = engine->getFirst();
+    CATCH(
+          cout << "DTE error caused by query: \n";
+          cout << "   " << query << endl;
+          cout << currExcept->toString();
+          currExcept = NULL;
+          cout << endl;
+          assert(0);
+          );
+  }
+
+  TDataRequest* req = new TDataRequest;
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
@@ -396,71 +437,25 @@ TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
   req->granularity = interval->Granularity;
 
   // Do things similar to LimitRecords
-  if (interval->NumRecs < highId - lowId +1)
-  {
-        req->endVal = lowId + (interval->NumRecs) - 1;
+  if (interval->NumRecs < highId - lowId +1) {
+    req->endVal = lowId + (interval->NumRecs) - 1;
   }
-
-  _nextToFetch = lowId;
-//  Issue a query to the engine;
-  string SQLquery = queryHeader;
-  char whereClause[29+sizeof(unsigned long)*2];
-  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", lowId, highId);
-  SQLquery+=whereClause;
-  string query(SQLquery);
-
-#if defined(DEBUG)
-	cout << "Running: " << query << endl;
-	static int entryCount;
-	static double cumRecs;
-	if(entryCount++ % 100 == 0){
-		int percent = int(cumRecs / _totalRecs * 100);
-		cerr << cumRecs << " records retreived (" << percent << "%) ";
-		cerr << "dte called " << entryCount << " times" << endl;
-	}
-	cumRecs += interval->High - interval->Low + 1;
-#endif
-
-	delete engine;
-	engine = new Engine(query);
-	engine->optimize();
-CATCH(
-     cout << "DTE error coused by query: \n";
-     cout << "   " << query << endl;
-     cout << currExcept->toString();
-     currExcept = NULL;
-     cout << endl;
-     exit(0);
-)
-
-  tuple = engine->getFirst();
-CATCH(
-     cout << "DTE error coused by query: \n";
-     cout << "   " << query << endl;
-     cout << currExcept->toString();
-     currExcept = NULL;
-     cout << endl;
-     exit(0);
-)
 
   bytesleft = (int)(RecSize() * ( req->endVal - req->nextVal + 1));
 
   return req;
-  } // end of recId stuff
-  
-  else
-  {
-                cout << "TDataDQL: Only recId is implemented right now.\n";
-                exit (1);
-   }
 }
 
 Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize, 
 			  Interval *interval, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
+  DOASSERT(buf == Align(buf, MAX_ALIGN), "buffer not aligned");
 
-	if (!strcmp(req->AttrName, "recId")) { // recId stuff
+  if (RID_STRING != req->AttrName) {
+    cout << "TDataDQL: GetRecs deals with recId only right now.\n";
+    assert(0);
+  }
 
   interval->NumRecs = bufSize / _recSize;
   DOASSERT(interval->NumRecs, "Not enough record buffer space");
@@ -472,15 +467,13 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   if (num < interval->NumRecs)
     interval->NumRecs = num;
   
-  assert(_nextToFetch == (RecId)(req->nextVal));
-
   ReadRec((RecId)(req->nextVal), interval->NumRecs, buf);
   
   interval->Low = req->nextVal;
   dataSize = interval->NumRecs * _recSize;
   req->nextVal += interval->NumRecs;
   
-  _bytesFetched += dataSize;
+  //_bytesFetched += dataSize;
 
   interval->High = interval->Low + interval->NumRecs - 1;
   interval->AttrName = req->AttrName;
@@ -490,49 +483,42 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   DOASSERT(HeadID(LOWId), "can not find HeadID");
   DOASSERT(LastID(HIGHId), "can not find LastID");
   if (LOWId < req->nextVal)
-  {
-        interval->has_left = true;
-        interval->left_adjacent = interval->Low - 1;
-  }
+    {
+      interval->has_left = true;
+      interval->left_adjacent = interval->Low - 1;
+    }
   else
-        interval->has_left = false;
+    interval->has_left = false;
 
   if (HIGHId > interval->High)
-  {
-        interval->has_right = true;
-        interval->right_adjacent = interval->High + 1;
-  }
+    {
+      interval->has_right = true;
+      interval->right_adjacent = interval->High + 1;
+    }
   else
-        interval->has_right = false;
+    interval->has_right = false;
 
 
 #if defined(DEBUG)
-	static int entryCount;
-	if(entryCount++ % 1000 == 0){
-		cerr << " get recs called " << entryCount << "times\n";
-	}
+  static int entryCount;
+  if(entryCount++ % 1000 == 0){
+    cerr << " get recs called " << entryCount << "times\n";
+  }
 #endif
 
 #ifdef DEBUG
   printf("TDataDQL::GetRecs buf = ");
   cout << " _recSize = " <<  _recSize << endl;
   for(int i = 0; i < _recSize; i++){
-	printf("%x, ", *(((char*)buf) + i));
-	// cout << hex << (short) *(((char*)buf) + i) << ", ";
+    printf("%x, ", *(((char*)buf) + i));
+    // cout << hex << (short) *(((char*)buf) + i) << ", ";
   }
   cout << endl;
 #endif
 
-  
   return true;
-	} // end of recId stuff
-
-	else
-	{
-		cout << "TDataDQL: GetRecs deals with recId only right now.\n";
-		exit(1);
-	}
 }
+
 
 void TDataDQL::DoneGetRecs(TDHandle req)
 {
@@ -550,104 +536,83 @@ void TDataDQL::GetIndex(RecId id, int *&indices)
 
 int TDataDQL::GetModTime()
 {
-  if (!CheckFileStatus())
-    return -1;
-
-  return _data->GetModTime();
+  return 1;
 }
 
-char *TDataDQL::MakeIndexFileName(char *name, char *type)
-{
-  return 0;
-}
+// char *TDataDQL::MakeIndexFileName(char *name, char *type)
+// {
+//   return 0;
+// }
 
-void TDataDQL::Initialize()
-{
- // Probably do all the things here..
+// void TDataDQL::Initialize()
+// {
+//  // Probably do all the things here..
 
-}
+// }
 
 void TDataDQL::Checkpoint()
 {
 }
 
+#if 0
 void TDataDQL::InvalidateTData()
 {
 #if defined(DEBUG)
-    cout << "Invalidating TDataDQL" << endl;
+  cout << "Invalidating TDataDQL" << endl;
 #endif
-    runQuery();
-	CATCH(
-		cout << "DTE error coused by query: \n";
-		cout << "   " << _query << endl;
-		cout << currExcept->toString(); 
-		currExcept = NULL; 
-		cout << endl;
-		exit(0);
-	)
+  runQuery();
+  CATCH(
+    cout << "DTE error caused by query: \n";
+    cout << "   " << _query << endl;
+    cout << currExcept->toString(); 
+    currExcept = NULL; 
+    cout << endl;
+    assert(0);
+    )
     TData::InvalidateTData();
 }
+#endif
 
 
 /* Build index for the file. This code should work when file size
    is extended dynamically. Before calling this function, position
    should be at the last place where file was scanned. */
 
-void TDataDQL::BuildIndex()
+//  void TDataDQL::BuildIndex()
+//  {
+//    // Find the last record, total Recs,...
+//    // _totalRecs = 2000;
+//  }
+
+TD_Status TDataDQL::ReadRec(RecId firstId, int numRecs, void *buf)
 {
-
- // Find the last record, total Recs,...
- // _totalRecs = 2000;
-
+  int rid;
+  for(rid = _nextToFetch ; rid < firstId ; rid++) {
+    tuple = engine->getNext();
+    assert(tuple && "premature end of query!");
+  }
+  char *ptr = (char *)buf;
+  const DteTupleAdt& tupAdt = engine->getAdt();
+  for(int i = 0 ; i < numRecs ; i++) {
+    assert(tuple && "premature end of query!");
+    for(int j = 0; j < _numFlds; j++) {
+      const DteAdt& adt = tupAdt.getAdt(j);
+      int size = _sizes[j];
+      if( adt.getTypeID() == DteDateAdt::typeID ) {
+        *(time_t*)ptr = DteDateAdt::toUnixTime(tuple[j]);
+      } else {
+        int rc = adt.copyNonNull(tuple[j], ptr, size);
+        assert(rc >= 0);
+      }
+      ptr += size;
+    }
+    tuple = engine->getNext();
+  }
+  _nextToFetch = firstId + numRecs;
+  return TD_OK;
 }
 
-TD_Status TDataDQL::ReadRec(RecId, int numRecs, void *buf){
-	
-	char *ptr = (char *)buf;
-
-  int counter=0; // how many tuples have been written to buf;
-
-  while(counter < numRecs){
-
-		assert(tuple);
-		for(int j = 0; j < _numFlds; j++){
-			#if 0 
-				WritePtr* writePtrs = newWritePtrs(_types, _numFlds);
-				writePtrs[j](cerr, tuple[j]);
-				delete [] writePtrs;
-			#endif 
-			_marshalPtrs[j](tuple[j], (char*) ptr);
-			ptr += _sizes[j];
-		}
-		_nextToFetch++;
-		counter++;
-		tuple = engine->getNext();
-	}
-
-    return TD_OK;
-}
-
-void TDataDQL::WriteRecs(RecId startRid, int numRecs, void *buf)
+char* TDataDQL::DispatchedName()
 {
- printf(" Failing Write Recs not supported \n");
- assert(0); 
+  return "TDataDQL";
 }
-
-void TDataDQL::WriteLine(void *line)
-{
- printf(" Failing Write Recs not supported \n");
- assert(0); 
-}
-
-void TDataDQL::Run()
-{
-}
-
-void TDataDQL::Cleanup()
-{
-}
-
-void TDataDQL::PrintIndices()
-{
-}
-

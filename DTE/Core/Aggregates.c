@@ -1,6 +1,371 @@
 #include "Aggregates.h"
-#include "MemoryMgr.h"
-#include "SeqSimVecAggregate.h"
+#include "DTE/util/Del.h"
+#include "DTE/util/DteAlgo.h"
+#include "DTE/types/DteIntAdt.h"
+#include "DTE/types/DteBoolAdt.h"
+#include "DTE/types/DteDoubleAdt.h"
+#include "DTE/types/DteStringAdt.h"
+#include "DTE/types/DteDateAdt.h"
+
+class ExecCount : public ExecAgg
+{
+  int4 count;
+
+public:
+
+  // adt is ignored
+  ExecCount(const DteAdt& adt, int pos)
+    : ExecAgg(DteIntAdt(false), pos), count(0) {}
+
+  void init() { count = 0; }
+
+  void add(const Tuple* t) {
+    if( t[pos] != NULL ) {
+      count++;
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    if( t[pos] != NULL ) {
+      count--;
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    return DteIntAdt::getTypePtr(count);
+  }
+};
+
+class ExecCountStar : public ExecAgg
+{
+  int4 count;
+
+public:
+
+  // adt & pos are ignored
+  ExecCountStar(const DteAdt& adt, int pos)
+    : ExecAgg(DteIntAdt(false), 0), count(0) {}
+
+  void init() { count = 0; }
+
+  void add(const Tuple* t) {
+    count++;
+  }
+
+  bool remove(const Tuple* t) {
+    count--;
+    return false;
+  }
+
+  const Type* getValue() {
+    return DteIntAdt::getTypePtr(count);
+  }
+};
+
+template<class Adt>
+class ExecSum : public ExecAgg
+{
+  int4 count;
+  typename Adt::ManagedType sum;
+
+public:
+
+  ExecSum(const DteAdt& adt, int pos)
+    : ExecAgg(adt, pos), count(0), sum(0) { setNullable(); }
+
+  void init() { count = 0; sum = 0; }
+
+  void add(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      count++;
+      sum += Adt::cast(v);
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      assert(count > 0);
+      count--;
+      sum -= Adt::cast(v);
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    if( count == 0 ) return NULL;
+    return Adt::getTypePtr(sum);
+  }
+};
+
+template<class Adt>
+class ExecAvg : public ExecAgg
+{
+  typedef typename Adt::ManagedType T;
+  int4 count;
+  T sum;
+  T value;
+
+public:
+
+  ExecAvg(const DteAdt& adt, int pos)
+    : ExecAgg(adt, pos), count(0), sum(0) { setNullable(); }
+
+  void init() { count = 0; sum = 0; }
+
+  void add(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      count++;
+      sum += Adt::cast(v);
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      assert(count > 0);
+      count--;
+      sum -= Adt::cast(v);
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    if( count == 0 ) return NULL;
+    value = sum / count;
+    return Adt::getTypePtr(value);
+  }
+};
+
+template<class Adt>
+class ExecMin : public ExecAgg
+{
+  typedef typename Adt::BasicType BasicType;
+  typedef typename Adt::ManagedType ManagedType;
+  bool isNull;
+  ManagedType value;
+
+public:
+
+  ExecMin(const DteAdt& adt, int pos)
+    : ExecAgg(adt, pos), isNull(true) { setNullable(); }
+
+  void init() { isNull = true; }
+
+  void add(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      BasicType x = Adt::cast(v);
+      if( isNull || x < value ) {
+        isNull = false;
+        value = x;
+      }
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      assert(!isNull);
+      if( value == Adt::cast(v) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    if( isNull ) return NULL;
+    return Adt::getTypePtr(value);
+  }
+};
+
+template<class Adt>
+class ExecMax : public ExecAgg
+{
+  typedef typename Adt::BasicType BasicType;
+  typedef typename Adt::ManagedType ManagedType;
+  bool isNull;
+  ManagedType value;
+
+public:
+
+  ExecMax(const DteAdt& adt, int pos)
+    : ExecAgg(adt, pos), isNull(true) { setNullable(); }
+
+  void init() { isNull = true; }
+
+  void add(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      BasicType x = Adt::cast(v);
+      if( isNull || x > value ) {
+        isNull = false;
+        value = x;
+      }
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      assert(!isNull);
+      if( value == Adt::cast(v) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    if( isNull ) return NULL;
+    return Adt::getTypePtr(value);
+  }
+};
+
+template<class EA>
+static ExecAgg* create(const DteAdt& adt, int pos)
+{
+  return new EA(adt, pos);
+}
+
+//kb: move these type ids
+static const int DteAnyTypeId = -1;
+static const int DteBoolId = DteBoolAdt::typeID;
+static const int DteIntId = DteIntAdt::typeID;
+static const int DteDoubleId = DteDoubleAdt::typeID;
+static const int DteStringId = DteStringAdt::typeID;
+static const int DteDateId = DteDateAdt::typeID;
+
+struct FunctionDesc
+{
+  const char* functionName;
+  int argType;
+  ExecAgg* (*createFn)(const DteAdt& adt, int pos);
+};
+
+static FunctionDesc functionTable[] = {
+  // aggregates
+  {"count", DteAnyTypeId, create<ExecCount>},
+
+  {"sum", DteIntId, create< ExecSum<DteIntAdt> >},
+  {"avg", DteIntId, create< ExecAvg<DteIntAdt> >},
+  {"min", DteIntId, create< ExecMin<DteIntAdt> >},
+  {"max", DteIntId, create< ExecMax<DteIntAdt> >},
+
+  {"sum", DteDoubleId, create< ExecSum<DteDoubleAdt> >},
+  {"avg", DteDoubleId, create< ExecAvg<DteDoubleAdt> >},
+  {"min", DteDoubleId, create< ExecMin<DteDoubleAdt> >},
+  {"max", DteDoubleId, create< ExecMax<DteDoubleAdt> >},
+
+  {"min",   DteStringId, create< ExecMin<DteStringAdt> >},
+  {"max",   DteStringId, create< ExecMax<DteStringAdt> >},
+
+  {"min",   DteDateId, create< ExecMin<DteDateAdt> >},
+  {"max",   DteDateId, create< ExecMax<DteDateAdt> >},
+};
+
+
+static int findFunction(const string& fn, int type)
+{
+  for(int i = 0 ; functionTable[i].functionName != NULL ; i++) {
+    FunctionDesc& f = functionTable[i];
+    if( fn == f.functionName ) {
+      if( f.argType == DteAnyTypeId || f.argType == type ) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+ExecAgg* ExecAgg::create(const string& fn, const DteAdt& adt, int pos)
+{
+  int k = findFunction(fn, adt.getTypeID());
+  if( k < 0 ) {
+    string msg("aggregate function not found: ");
+    msg += fn;
+    msg += '(';
+    msg += adt.getTypeName();
+    msg += ')';
+    cerr << msg << endl;
+    //throw Exception(msg);
+    return NULL;
+  }
+  FunctionDesc& f = functionTable[k];
+  return f.createFn(adt, pos);
+}
+
+
+DteAdt* ExecAgg::typeCheck(const string& fn, const DteAdt& adt)
+{
+  //kb: improve typeCheck function
+
+  // This is a bit of a hack: It creates fake constants of the correct
+  // types and then it creates the function only to delete it after it
+  // gets the return type.  The problem is that only a executable
+  // version of the function knows its return type right now.
+
+  DteAdt* retType = NULL;
+  Del<ExecAgg> e = create(fn, adt, 0);
+  // catch
+  if( e ) {
+    retType = e->getAdt().clone();
+  }
+  return retType;
+}
+
+//---------------------------------------------------------------------------
+
+StandAggsExec::StandAggsExec(Iterator* input, const ExecAggList& aggs)
+: input(input), aggs(aggs), retTuple(aggs.size())
+{
+  for(ExecAggList::const_iterator i = aggs.begin() ; i != aggs.end() ; i++) {
+    resultAdt.push_back((*i)->getAdt());
+  }
+}
+  
+StandAggsExec::~StandAggsExec()
+{
+  delete_all(aggs);
+  delete input;
+}
+  
+void StandAggsExec::initialize()
+{
+  input->initialize();
+}
+  
+const Tuple* StandAggsExec::getNext()
+{
+  const Tuple* cur = input->getNext();
+  if(!cur) {
+    return NULL;
+  }
+  int N = getNumFields();
+  int i;
+  for(i = 0 ; i < N ; i++) {
+    aggs[i]->init();
+  }
+  do {
+    for(i = 0 ; i < N ; i++) {
+      aggs[i]->add(cur);
+    }
+    cur = input->getNext();
+  } while(cur != NULL);
+  
+  for(i = 0 ; i < N ; i++) {
+    retTuple[i] = aggs[i]->getValue();
+  }
+  return retTuple;
+}
+
+
+
+#if 0
 
 
 //---------------------------------------------------------------------------
@@ -662,3 +1027,4 @@ void ExecMovAverage::dequeue(int n){
 	}
 }
 
+#endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/11/06 17:27:07  beyer
+  Eliminated getFirst from derived Iterators.
+
   Revision 1.23  1998/07/07 19:18:23  beyer
   Made large stack object into a large heap object to keep stack size small.
   A big stack is bad for threads.
@@ -85,20 +88,21 @@
 #include "StandardRead.h"
 #include "Inserter.h"
 #include "types.h"
-#include "MemoryMgr.h"
+//#include "MemoryMgr.h"
+#include "DTE/comm/TupleLoader.h"
 
-inline void SortExec::swap(Tuple *&left, Tuple *&right) 
+
+inline void SortExec::swap(const Tuple *&left, const Tuple *&right) 
 {
-  Tuple *temp = left;
+  const Tuple *temp = left;
   left = right;
   right = temp;
-  return;
 } 
 
 void SortExec::initialize()
 {
    inpIter->initialize();
-   int tuple_size = numFlds * sizeof(Type *); 
+   int numFlds = getNumFields();
    Nruns = 0;
    strcpy(temp_filename, "sort_temp_file");   
 
@@ -106,11 +110,10 @@ void SortExec::initialize()
    generate_runs(); 
 
    // Create a priority queue in memory to merge runs
-   Q = new PQueue(numFlds,typeIDs,numSortFlds,sortFlds, order, Nruns);
+   Q = new PQueue(numFlds,getAdt(),numSortFlds,sortFlds, order, Nruns);
 
    // Open up all the temp files
    input_buf = new Iterator*[Nruns];
-   temp_files = new ifstream*[Nruns];
 
    char filename[20];
    char run_num[5];
@@ -120,10 +123,7 @@ void SortExec::initialize()
       strcpy(filename, temp_filename); 
       sprintf(run_num, "%d", i+1);
       strcat(filename, run_num);
-	 temp_files[i] = new ifstream(filename);
-	 StandardRead sr;
-	 sr.open(temp_files[i], numFlds, typeIDs);
-      input_buf[i] = sr.createExec();
+      input_buf[i] = new StandReadExec(getAdt(), filename);
 
       // Read the next tuple
       const Tuple *next_tuple = NULL;
@@ -141,34 +141,43 @@ void SortExec::initialize()
    return;
 }
 
+void SortExec::addNext()
+{
+  // Retrieve next value from appropriate input buffer 
+  const Tuple* tuple;
+  if ((tuple = input_buf[node_ptr->run_num]->getNext())) {
+    // Enqueue the retrieved tuple 
+    node_ptr->tuple = tuple;
+    Q->enq(node_ptr);
+  }
+}
+
 const Tuple* SortExec::getNext()
 {
   // Return the next value from the prority queue
   // Also insert into the queue the next value from the appropriate input 
   // buffer - the one corresponding to the value just dequeued.
 
-  if(node_ptr){
-    
-	  // Retrieve next value from appropriate input buffer 
-	  const Tuple* tuple;
-
-	  if ((tuple = input_buf[node_ptr->run_num]->getNext()))
-	   {
-		 // Enqueue the retrieved tuple 
-
-		 node_ptr->tuple = tuple;
-		 Q->enq(node_ptr);
-	   }
-
+  if(node_ptr) {
+    addNext();
   }
-  
-  if (Q->num_elems() == 0) 
-     return NULL; 
 
-  // Dequeue min/max from priority queue
-  node_ptr = Q->deq();
-  assert(node_ptr);
-  return node_ptr->tuple;
+  while( Q->num_elems() > 0 ) {
+    // Dequeue min/max from priority queue
+    node_ptr = Q->deq();
+    assert(node_ptr);
+    const Tuple* t = node_ptr->tuple;
+    if(!dedup || Q->num_elems() == 0 ||
+       tupleCompare(getAdt(), numSortFlds, sortFlds, t, Q->head()->tuple)) {
+      // not doing dedup or only one run left or its is not a duplicate value
+      return t;
+    }
+    // duplicate value; skip it
+    addNext();
+  }
+
+  // no more data
+  return NULL; 
 }
 
 
@@ -181,8 +190,7 @@ void SortExec::generate_runs()
    int count = 0;
    //kb: made table dynamic to keep stack size small
    //kb: a big stack is bad for threads!
-   Tuple** table = new Tuple*[MAX_MEM]; // array of pointers to Tuple
-   output_buf = new Inserter();	
+   const Tuple** table = new const Tuple*[MAX_MEM]; // array of pointers to Tuple
 
    const Tuple* currTup;
 
@@ -196,7 +204,7 @@ void SortExec::generate_runs()
        {
          sort_and_write_run(table, count);
          count = 0;
-	    tupleLoader->reset();
+         tupleLoader->rewrite();
        }
    }
    
@@ -206,7 +214,7 @@ void SortExec::generate_runs()
    delete [] table;
 }
 
-void SortExec::sort_and_write_run(Tuple **table, int length)
+void SortExec::sort_and_write_run(const Tuple **table, int length)
 {
      Nruns++;       
      qsort(table,0,length-1); 
@@ -218,19 +226,25 @@ void SortExec::sort_and_write_run(Tuple **table, int length)
      sprintf(run_num, "%d", Nruns);
      strcat(filename, run_num);
      unlink(filename);
-     
-     out_temp_file = new ofstream;   
-     out_temp_file->open(filename);
-     output_buf->open(out_temp_file, numFlds, typeIDs);
 
-     for (int i = 0; i < length; i++)
-       output_buf->insert(table[i]);                
-   
-     out_temp_file->close();
-     return;
+     Inserter output_buf(filename, getAdt(), ios::out|ios::trunc);
+
+     if( dedup ) {       // perform duplicate elimination
+       output_buf.insert(table[0]); // length is guaranteed to be > 0
+       for (int i = 1; i < length; i++) {
+         if(tupleCompare(getAdt(), numSortFlds, sortFlds,
+                         table[i-1], table[i])) {
+           output_buf.insert(table[i]);
+         }
+       }
+     } else {                   // don't dedup
+       for (int i = 0 ; i < length ; i++) {
+         output_buf.insert(table[i]);
+       }
+     }
 }
 
-void SortExec::qsort(Tuple **A, int left, int right)
+void SortExec::qsort(const Tuple **A, int left, int right)
 {
   // This sorts the array almost completely
   // A call to this function must be succeeded by 
@@ -240,16 +254,16 @@ void SortExec::qsort(Tuple **A, int left, int right)
 
   if (left + cutoff < right)
     {
-      Tuple *pivot = find_pivot(A, left, right);
+      const Tuple *pivot = find_pivot(A, left, right);
       int i = left;
       int j = right-1;
  
       if (order == Ascending) {
 	while (true)
 	  {
-	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs,
+            while (tupleCompare(getAdt(), numSortFlds, sortFlds,
 				A[++i], pivot) < 0);  // A[++i] < pivot
-	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs, 
+            while (tupleCompare(getAdt(), numSortFlds, sortFlds,
 				A[--j], pivot) > 0);
 	    if (i < j)     
 	      swap (A[i], A[j]);
@@ -260,9 +274,9 @@ void SortExec::qsort(Tuple **A, int left, int right)
       else { 
 	while (true)
 	  {
-	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs,
+            while (tupleCompare(getAdt(), numSortFlds, sortFlds,
 				A[++i], pivot) > 0);  // pivot < A[++i]
-	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs, 
+            while (tupleCompare(getAdt(), numSortFlds, sortFlds,
 				A[--j], pivot) < 0);
 	    if (i < j)     
 	      swap (A[i], A[j]);
@@ -277,26 +291,26 @@ void SortExec::qsort(Tuple **A, int left, int right)
     }
 }
 
-Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
+const Tuple* SortExec::find_pivot(const Tuple **A,int left, int right)
 {
   // Pivot is median of left, right and center values
 
   int center = (left + right)/2 ;  
   
   if (order == Ascending) {
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[center],A[left]) < 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[center],A[left]) < 0)
       swap(A[left], A[center]);
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right], A[left]) < 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[right], A[left]) < 0)
       swap(A[left], A[right]);
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right],A[center])< 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[right],A[center])< 0)
       swap(A[center], A[right]);
   }
   else {
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[center],A[left]) > 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[center],A[left]) > 0)
       swap(A[left], A[center]);
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right], A[left]) > 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[right], A[left]) > 0)
       swap(A[left], A[right]);
-    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right],A[center])> 0)
+    if (tupleCompare(getAdt(), numSortFlds, sortFlds, A[right],A[center])> 0)
       swap(A[center], A[right]);
   }
 
@@ -305,20 +319,22 @@ Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
 }
 
 
-void SortExec::insert_sort(Tuple **A, int length)
+void SortExec::insert_sort(const Tuple **A, int length)
 {
-  Tuple *temp;
+  const Tuple *temp;
   
   for (int i = 1; i < length; i++)
     {
       temp = A[i];
       int j;
       for (j = i; j > 0 ; j--) {
-	if (order==Ascending && tupleCompare(sortFlds,numSortFlds,comparePtrs,
-					     temp, A[j-1]) >= 0) {
+	if (order==Ascending && 
+            tupleCompare(getAdt(), numSortFlds, sortFlds, temp, A[j-1]) >= 0) {
 	  break;
 	}
-	else if (order==Descending && tupleCompare(sortFlds,numSortFlds,comparePtrs, temp, A[j-1]) <= 0) {
+	else if (order==Descending &&
+                 tupleCompare(getAdt(), numSortFlds, sortFlds,
+                              temp, A[j-1]) <= 0) {
 	  break;
 	}
 
@@ -332,12 +348,12 @@ void SortExec::insert_sort(Tuple **A, int length)
 }
 
 
-SortExec::SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order)
-: inpIter(inpIter), order(order)
+SortExec::SortExec(Iterator* inpIter, FieldList* sort_fields,
+                   SortOrder order, bool dedup)
+: Iterator(inpIter->getAdt()), inpIter(inpIter), order(order), dedup(dedup)
 {
   Nruns = 0;
   Q = NULL;
-  numFlds = inpIter->getNumFlds();
 
   numSortFlds = sort_fields->size();
   sortFlds = new int[numSortFlds];
@@ -348,23 +364,9 @@ SortExec::SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order)
 
   node_ptr = NULL;
 
-  typeIDs = makeArray(inpIter->getTypes());
+  //kb: should probably check to see if all the types canCompare
 
-  comparePtrs  = new GeneralPtr*[numFlds];
-  for (int i=0; i < numFlds; i++) {
-    comparePtrs[i] = NULL;
-  }
-  TypeID retVal;  // is a dummy	       
-  for (int i=0; i < numSortFlds; i++) {
-    const TypeID& tp = typeIDs[sortFlds[i]];
-    CON_TRY(comparePtrs[sortFlds[i]] = getOperatorPtr("comp", tp, tp, retVal)); 
-    assert(retVal == INT_TP);
-  }
-
-  tupleLoader = new TupleLoader;
-  CON_TRY(tupleLoader->open(numFlds, typeIDs));
-
- CON_END:;
+  tupleLoader = new TupleLoader(getAdt());
 }
 
 
@@ -372,23 +374,17 @@ SortExec::SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order)
 SortExec::~SortExec()
 { 
   delete inpIter;
-  delete [] typeIDs;
   delete tupleLoader;
   delete Q;
   
-  delete [] temp_files;
-	
   // individual streams of temp_files are deleted by input_buf destructors
-
   if(input_buf){
     for(int i = 0; i < Nruns; i++){
       delete input_buf[i];
     }
   }
   delete [] input_buf;
-  delete output_buf;    // out_temp_file deleted too; 
   delete [] sortFlds;
-  delete [] comparePtrs;
   delete node_ptr;
   
   char filename[20];
@@ -403,21 +399,15 @@ SortExec::~SortExec()
 }
 
 
-const TypeIDList& SortExec::getTypes()
-{
-  return inpIter->getTypes();
-}
-
-
 //---------------------------------------------------------------------------
 
-
+#if 0
 UniqueSortExec::UniqueSortExec(Iterator* inpIter, FieldList* sort_fields,
                                SortOrder order)
 : SortExec(inpIter, sort_fields, order)
 {
   int i = 0;
-  CON_TRY(;);	// Base class may have thrown exception
+  //CON_TRY(;);	// Base class may have thrown exception
 
   copyPtrs = new ADTCopyPtr[numFlds];
   destroyPtrs = new DestroyPtr[numFlds];
@@ -450,11 +440,11 @@ const Tuple* UniqueSortExec::getNext()
 
   do {
     nextTuple = SortExec::getNext();
-  } while(nextTuple && !tupleCompare(sortFlds, numSortFlds,
-                                     comparePtrs, nextTuple, tuple));
+  } while(nextTuple &&
+          !tupleCompare(getAdt(), numSortFlds, sortFlds, nextTuple, tuple));
+
   return tuple;
 }
-
 
 //---------------------------------------------------------------------------
 
@@ -488,3 +478,4 @@ Iterator* Sort::createExec(){
 }
 
 
+#endif

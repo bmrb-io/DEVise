@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/12/04 04:05:09  donjerko
+  *** empty log message ***
+
   Revision 1.3  1997/08/21 21:04:16  donjerko
   Implemented view materialization
 
@@ -31,9 +34,10 @@
 
 Iterator* DropIndexParse::createExec(){
 	string query = string("delete .sysind as t where t.table = \"") +
-		tableName->toString() + "\" and t.name = \"" + *indexName + "\"";
+		tableName.toString() + "\" and t.name = \"" + indexName + "\"";
 	cout << "in drop index with query:\n" << query << endl;
 	Engine engine(query);
      TRY(engine.optimize(), NULL);
+     //kb: DropIndex does not remove the index file, only the catalog entry
 	return NULL;
 }

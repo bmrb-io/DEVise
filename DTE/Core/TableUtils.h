@@ -4,6 +4,8 @@
 #include "types.h"
 
 class Iterator;
+class Stats;
+class Interface;
 
 Iterator* createIteratorFor(
      const ISchema& schema, istream* in, const string& tableStr);
@@ -11,6 +13,7 @@ Iterator* createIteratorFor(
 class TableMap {
 	int bitmap;
 public:
+  static const int MAX_TABLES = sizeof(int) * 8 - 1;// using signed ints
 	class Iterator {
 		int refMap;
 		int currMap;
@@ -25,6 +28,14 @@ public:
 	};
 
 	inline TableMap(int bitmap = 0);
+        void set(int pos) {
+          assert(pos >= 0 && pos < MAX_TABLES);
+          bitmap |= 1 << pos;
+        }
+        void clear(int pos) {
+          assert(pos >= 0 && pos < MAX_TABLES);
+          bitmap &= ~(1 << pos);
+        }
 	void initialize(int numTabs);
 	Iterator begin();
 	Iterator end();
@@ -36,8 +47,12 @@ public:
 	bool contains(TableMap x) const {
 		return (bitmap == (bitmap | x.bitmap));
 	}
-	TableMap operator|(TableMap x) const {
+	TableMap operator|(const TableMap& x) const {
 		return TableMap(bitmap | x.bitmap);
+	}
+	TableMap& operator|=(const TableMap& x) {
+          bitmap |= x.bitmap;
+          return *this;
 	}
 	friend ostream& operator<<(ostream&, const TableMap&);
 	string toString() const;
@@ -67,5 +82,6 @@ inline TableMap TableMap::Iterator::getComplement(){
 inline bool TableMap::isSinglet() const {
 	return count() == 1;
 }
+
 
 #endif

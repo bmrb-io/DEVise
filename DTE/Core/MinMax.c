@@ -6,25 +6,21 @@
 
 extern const Directory MINMAX_DIR;
 
-bool MinMax::isApplicable(const vector<BaseSelection*>& selList){
-	vector<BaseSelection*>::const_iterator it;
+bool MinMax::isApplicable(const vector<OptExpr*>& selList){
+	vector<OptExpr*>::const_iterator it;
 	for(it = selList.begin(); it != selList.end(); ++it){
 		
-		BaseSelection* curr = *it;
+		OptExpr* curr = *it;
 
-		if(curr->selectID() == CONSTRUCTOR_ID){
-			Constructor* function = (Constructor*) curr;
-			List<BaseSelection*>* args = function->getArgs();
-			int numArgs = args->cardinality();
-			const string* name = function->getName();
-			args->rewind();
-			if(*name == "min" && numArgs == 1){
-			}
-			else if(*name == "max" && numArgs == 1){
-			}
-			else{
-				return false;
-			}
+		if(curr->getExprType() == OptExpr::FUNCTION_ID){
+			OptFunction* function = (OptFunction*) curr;
+			OptExprList& args = function->getArgs();
+                        if( args.size() == 1 ) {
+                          const string& name = function->getName();
+                          if( name != "min" && name != "max" ) {
+                            return false;
+                          }
+                        }
 		}
 		else{
 			return false;
@@ -34,18 +30,14 @@ bool MinMax::isApplicable(const vector<BaseSelection*>& selList){
 }
 
 TableAlias* MinMax::createReplacement(TableAlias* table){
-	string* alias = new string(*table->getAlias());
 	string tableName = table->getTable().toString();
 	cerr << "looking for replacement " << tableName << endl;
 	Interface* interf = MINMAX_DIR.createInterface(tableName);
 	CATCH(cerr << "Warning: "; cerr << currExcept->toString() << endl;);
 	if(interf){
-		return new QuoteAlias(interf, alias);
+		return new TableAlias(interf, table->getAlias());
 	}
-	else{
-		delete alias;
-		return NULL;
-	}
+        return NULL;
 }
 
 void MinMax::replace(const string& entry, const Interface* interf){

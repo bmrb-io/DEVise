@@ -8,19 +8,14 @@
 #include "Utility.h"
 #include "Interface.h"
 #include "RelationManager.h"
+#include "DTE/util/Del.h"
+#include "DTE/types/DteStringAdt.h"
 
-CreateTableParse::CreateTableParse(vector<IdentType*>* identTypePairs)
-	: identTypePairs(identTypePairs) {}
+CreateTableParse::CreateTableParse(vector<IdentType>* identTypePairs)
+	: identTypePairs(*identTypePairs) { delete identTypePairs; }
 
 CreateTableParse::~CreateTableParse()
 {
-	vector<IdentType*>::iterator i;
-	for(i = identTypePairs->begin(); i != identTypePairs->end(); ++i){
-		delete (*i)->first;
-		delete (*i)->second;
-		delete (*i);
-	}
-	delete identTypePairs;
 }
 
 const ISchema* CreateTableParse::getISchema()
@@ -32,18 +27,16 @@ Iterator* CreateTableParse::createExec()
 {
 	// Create a schema of this file that should be written to the catalog
 
-	int numFlds = identTypePairs->size();
-	TypeID* const types = new TypeID[numFlds];
-	string* const attrs = new string[numFlds];
-	vector<IdentType*>::const_iterator it;
-	int i = 0;
-	for(it = identTypePairs->begin(); i < numFlds; i++, ++it){
-		attrs[i] = *((*it)->first);
-		types[i] = *((*it)->second);
+  //int numFlds = identTypePairs.size();
+        DteTupleAdt tupadt;
+	vector<string> names;
+	vector<IdentType>::const_iterator it;
+	for(it = identTypePairs.begin(); it != identTypePairs.end() ; ++it) {
+          names.push_back((*it).first);
+          Del<DteAdt> adt = DteAdt::createAdt((*it).second);
+          tupadt.push_back(*adt);
 	}
-	ISchema schema(numFlds, types, attrs);
-	delete [] types;
-	delete [] attrs;
+	ISchema schema(tupadt, names);
 
 	string dirPath = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.tempFileDir);
 	if(dirPath.empty()){
@@ -57,6 +50,7 @@ Iterator* CreateTableParse::createExec()
 
 	RelationId relId;
 	TRY(relId = RELATION_MNGR.registerNewRelation(stdInt), NULL);
-	char* ans = strdup(relId.toString().c_str());
-	return new SingleAnswerIt(ans, STRING_TP);
+        string relstr = relId.toString();
+	char* ans = strdup(relstr.c_str());
+	return new SingleAnswerIt(ans, DteStringAdt(relstr.length()));
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/11/06 17:27:08  beyer
+  Eliminated getFirst from derived Iterators.
+
   Revision 1.21  1998/06/28 21:47:42  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -80,7 +83,7 @@
 
 //#include <fstream.h>   erased for sysdep.h
 
-#include "site.h"
+//#include "site.h"
 #include "Iterator.h"
 #include "StandardRead.h"
 #include "types.h"
@@ -97,6 +100,8 @@ using namespace std;
 class Inserter;
 class TupleLoader;
 
+//kb: improve sorting...
+
 class SortExec : public Iterator {
 	Iterator* inpIter;
 	TupleLoader* tupleLoader;
@@ -104,39 +109,35 @@ class SortExec : public Iterator {
 	int       Nruns;          // Number of runs
 	PQueue *Q;                // Internal Priority Queue
 	Iterator**  input_buf;    // Used to read in sorted runs while merging
-	ifstream** temp_files;    // Temporary files that hold the runs
-	Inserter*  output_buf;    // Output buf in which current run is placed
-	ofstream  *out_temp_file; // File connected with output_buf
 	char      temp_filename[20]; // Name of temporary file to hold a run
+        bool dedup;
 
 protected:
-	TypeID*  typeIDs;
 	int       *sortFlds;     // Index of fields to be sorted on 
 	int numSortFlds;    // Number of fields on which tuple is to be sorted
-	int numFlds;
-	GeneralPtr **comparePtrs; // Comparison operators
 private:
 	Node* node_ptr;
 
+        void addNext();
 	void generate_runs();
-	Tuple *find_pivot(Tuple **, int, int);
-	inline void swap(Tuple *&, Tuple*&);
-	void qsort(Tuple **, int, int);
-	void insert_sort(Tuple **, int);
-	void sort_and_write_run(Tuple **, int);
+        const Tuple *find_pivot(const Tuple **, int, int);
+	inline void swap(const Tuple *&, const Tuple*&);
+	void qsort(const Tuple **, int, int);
+	void insert_sort(const Tuple **, int);
+	void sort_and_write_run(const Tuple **, int);
 public:
-	SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
+	SortExec(Iterator* inpIter, FieldList* sort_fields,
+                 SortOrder order, bool dedup = false);
 	virtual ~SortExec();
         virtual void initialize();         // To be called once at the start
         virtual const Tuple* getNext(); // returns NULL when no more tuples
-        virtual const TypeIDList& getTypes();
-
 };
 
 
 //---------------------------------------------------------------------------
 
-
+#if 0
+//kb: class not needed any more: use SortExec(..., true);
 class UniqueSortExec : public SortExec {
 public:
   UniqueSortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
@@ -146,15 +147,12 @@ public:
 protected:
   Type** tuple;
   const Tuple* nextTuple;
-  DestroyPtr* destroyPtrs;
-  ADTCopyPtr* copyPtrs;
-
 };
-
+#endif
 
 //---------------------------------------------------------------------------
 
-
+#if 0
 class Sort : public Site {
 private:
   
@@ -182,7 +180,7 @@ public:
 	~Sort(){
     		// do not delete attrTypes, passed to Exec;
 	}
-     virtual int getNumFlds(){
+     virtual int getNumFields(){
 		return numFlds;
      }
      virtual const string *getTypeIDs(){
@@ -213,6 +211,7 @@ public:
 
 	virtual Iterator* createExec();
 };
+#endif
 
 #endif
  

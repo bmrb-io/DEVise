@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/11/23 21:23:36  donjerko
+  Added ODBC stuff.
+
   Revision 1.9  1997/09/05 22:20:24  donjerko
   Made changes for port to NT.
 
@@ -61,16 +64,16 @@ const int MAX_HEADER = 512;
 class URL {
 friend ostream& operator<<(ostream& out, URL url);
 private:
-     char* url;
-	char* host;
-	char* file;
-	string protocol;
-	Cor_sockbuf* sockBuf;
-//	int sock;
-	bool outputRequested;
-	bool inputRequested;
-	ostringstream userInput;
-	char header[MAX_HEADER];
+  string url;
+  string host;
+  string file;
+  string protocol;
+  Cor_sockbuf* sockBuf;
+  // int sock;
+  bool outputRequested;
+  bool inputRequested;
+  ostringstream userInput;
+  char header[MAX_HEADER];
 private:
 	void parseURL();	// Throws: unknown URL protocol
      void sendRequest(ostringstream& req){
@@ -93,35 +96,27 @@ private:
 		}
 	}
 public:
-	URL(string url) : url(strdup((char*) url.c_str())) {
+	URL(const string& url) : url(url) {
 		outputRequested = false;
 		inputRequested = false;
-		host = file = NULL;
 		sockBuf = NULL;
 		parseURL();
 		if(protocol == "http"){
-			sockBuf = new Cor_sockbuf(host, httpport);
+			sockBuf = new Cor_sockbuf(host.c_str(), httpport);
 		}
 	}
 	URL(URL* baseURL, string relativeURL){
 		outputRequested = false;
-		host = file = NULL;
 		sockBuf = NULL;
-		string tmp = string(baseURL->url) + relativeURL;
-		url = strdup((char*)tmp.c_str());
+		url = baseURL->url + relativeURL;
 		parseURL();
 		if(protocol == "http"){
-			sockBuf = new Cor_sockbuf(host, httpport);
+			sockBuf = new Cor_sockbuf(host.c_str(), httpport);
 		}
 	}
 	~URL(){
-
 		// sockBuf cannot be deleted at this point because it is used
 		// in the istream
-
-		free(url);
-		free(host);
-		free(file);
 	}
      istream* getInputStream();
      void post(ostringstream& content){
@@ -136,7 +131,7 @@ public:
      }
 	ostream* getOutputStream(int mode = ios::out){
 		if(protocol == "file"){
-			ostream* retVal =  new ofstream(file, mode);
+			ostream* retVal =  new ofstream(file.c_str(), mode);
 			if(!retVal->good()){
 				string msg = "Cannot open file: " + string(file);
 				THROW(new Exception(msg), NULL);
@@ -152,7 +147,7 @@ public:
 	char* getHeader(){
 		return header;
 	}
-	static ostringstream* encode(stringstream& input);
+  //static ostringstream* encode(istream& input);
 };
 
 #endif

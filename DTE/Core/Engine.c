@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/10/28 19:21:36  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.26  1998/07/24 04:37:47  donjerko
   *** empty log message ***
 
@@ -88,18 +94,20 @@
 #include<assert.h>
 #include<math.h>
 //#include<stdlib.h>   erased for sysdep.h
-#include "queue.h"
+//#include "queue.h"
 #include "myopt.h"
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
 #include "ParseTree.h"
 #include "ExecOp.h"
+#include "DTE/types/DteIntAdt.h"
 
 extern int my_yyparse();
 extern int yydebug;
 Exception* currExcept;
 
+//kb: make parser class; remove these globals
 ParseTree* globalParseTree = NULL;
 const char* queryString;
 bool rescan;
@@ -111,9 +119,8 @@ Engine::~Engine(){
 	topNodeIt = 0;
 	delete parseTree;
 	parseTree = 0;
-	// do not delete schema
-	delete [] types;
-	types = 0;
+        delete schema;
+        schema = 0;
 }
 
 const ParseTree* Engine::parse(){
@@ -125,7 +132,9 @@ const ParseTree* Engine::parse(){
 	globalParseTree = 0;
 #endif
 	queryString = query.c_str();
+        cerr << "parsing query: " << queryString << endl;
 	rescan = true;
+        //yydebug = 0;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
 		globalParseTree = 0;
@@ -133,6 +142,7 @@ const ParseTree* Engine::parse(){
 		THROW(new Exception(msg), 0);
 		// throw Exception(msg);
 	}
+        cerr << "query parsed\n";
 	assert(globalParseTree);
 	parseTree = globalParseTree;
 	globalParseTree = 0;
@@ -145,7 +155,11 @@ const ISchema* Engine::typeCheck(){
 	}
 	assert(schema == 0);
 	// This may leak a bunch of memory.  RKW 7/6/98.
-	TRY(schema = parseTree->getISchema(), 0);
+	const ISchema* s;
+	TRY(s = parseTree->getISchema(), 0);
+        assert(s);
+        schema = new ISchema(*s);
+	cerr << "result schema: " << *schema << endl;
 	return schema;
 }
 
@@ -155,29 +169,37 @@ int Engine::optimize(){
 	}
 	// This may leak a bunch of memory.  RKW 7/6/98.
 	TRY(topNodeIt = parseTree->createExec(), 0);
+        if( topNodeIt ) {
+          cerr << "iterator schema: " << topNodeIt->getAdt().getTypeSpec() << endl;
+        } else {
+          cerr << "no iterator returned\n";
+        }
 	return 0;
 }
 
-int ViewEngine::optimize(){
-	if(!schema){
-		TRY(typeCheck(), 0);
-	}
-	return 0;
+//---------------------------------------------------------------------------
+
+ViewEngine::ViewEngine(const string& query, const vector<string>& attrNames)
+  : Engine(query), attributeNames(attrNames)
+{
 }
+
+ViewEngine::~ViewEngine()
+{
+}
+
+const ISchema* ViewEngine::typeCheck()
+{
+  Engine::typeCheck();
+  assert(schema);
+  schema->setAttributeNames(attributeNames);
+  schema->push_front(DteIntAdt(), RID_STRING);
+  return schema;
+}
+
 
 Iterator* ViewEngine::createExec(){
 	TRY(Iterator* tmp = parseTree->createExec(), 0);
 	return new RidAdderExec(tmp);
 }
 
-ViewEngine::ViewEngine(string query, const string* attrs, int numInpFlds) : 
-	Engine(query), attributeNames(NULL), typeIDs(NULL) {
-
-	numFlds = numInpFlds + 1;
-	attributeNames = new string[numFlds];
-	attributeNames[0] = RID_STRING;
-	for(int i = 1; i < numFlds; i++){
-		assert(!(attrs[i - 1] == "recId"));
-		attributeNames[i] = attrs[i - 1];
-	}
-}
