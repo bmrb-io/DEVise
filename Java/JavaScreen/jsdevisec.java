@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.94  2001/03/19 23:10:32  xuk
+// Fixed bug for no available JavaScreen for collaboration.
+//
 // Revision 1.93  2001/03/08 21:10:13  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -2425,7 +2428,9 @@ class CollabDlg extends Frame
 	}
 
         validate();
-	jsc.showMsg("No available JavaScreen for collaboration.");
+
+	if (clientList.getItemCount() <= 0) 
+	    jsc.showMsg("No available JavaScreen for collaboration.");
     }
 
     protected void processEvent(AWTEvent event)
