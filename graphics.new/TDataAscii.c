@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/18 17:12:04  jussi
+  Added missing #include <errno.h>.
+
   Revision 1.16  1996/04/18 17:04:59  jussi
   Fixed Checkpoint() which produced an unnecessary error message
   when a very small file (less than FILE_CONTENT_COMPARE_BYTES)
@@ -85,13 +88,14 @@
 #include "Init.h"
 
 //#define DEBUG
+# define  _STREAM_COMPAT
 
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[FILE_CONTENT_COMPARE_BYTES];
 
 TDataAscii::TDataAscii(char *name, int recSize) : TData()
 {
-  Dispatcher::Current()->Register(this);
+  // Dispatcher::Current()->Register(this,10,GoState,false,);
 
   _name = name;
   _recSize = recSize;
@@ -128,6 +132,13 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   _index = new long[_indexSize];
 
   _fileGrown = false;
+  // Extract the file descriptor and use it..
+  // fileno is defined in stdio.h that returns the descriptor
+  
+  //Dispatcher::Current()->Register(this,10,GoState,false,fileno(_file));
+  Dispatcher::Current()->Register(this);
+
+
 }
 
 TDataAscii::~TDataAscii()

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/16 20:38:52  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.2  1996/01/25 20:22:48  jussi
   Improved support for data files that grow while visualization
   is being performed.
@@ -39,7 +42,7 @@
 #include "Util.h"
 #include "Init.h"
 
-#define DEBUG
+//#define DEBUG
 
 TDataBinary::TDataBinary(char *name, int recSize) : TData()
 {

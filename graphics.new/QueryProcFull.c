@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/18 18:13:52  jussi
+  Name of batch file variable in Init class has changed to batchFile.
+
   Revision 1.10  1996/04/10 15:32:58  jussi
   Switched from LIFO to FIFO so that a sequence of queries from a
   single view (each query corresponding to one mapping in the view)
@@ -86,6 +89,12 @@ static const int QPFULL_RANDOM_RECS_PER_BATCH = 1024;
 /* # of iterations to scan for data to simulation pseudo-random
    display */
 static const int QPFULL_RANDOM_ITERATIONS = 5;
+
+QueryProcFull::~QueryProcFull()
+{
+	Dispatcher::CloseMarker(readFd,writeFd);
+
+}
 
 /* Get X associated with a recId */
 inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
@@ -281,14 +290,18 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 
 #ifdef DEBUG
 	printf("queries are: \n");
-	int index;
+/*	int index;
 	for(index = _queries->InitIterator(); _queries->More(index); ) {
 	  QPFullData *qd = _queries->Next(index);
 	  printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
 		 qd->priority);
 	}
 	_queries->DoneIterator(index);
+	*/
 #endif
+
+
+	Dispatcher::InsertMarker(writeFd);
 
 	return;
 }
@@ -590,37 +603,60 @@ void QueryProcFull::ProcessQPFullScatter(QPFullData *qData) {
 /*******************************************
 Process query
 ********************************************/
-
 void QueryProcFull::ProcessQuery()
 {
-  if (NoQueries()) {
 
-    if (_needDisplayFlush) {
-      DeviseDisplay::DefaultDisplay()->Flush();
-      _needDisplayFlush = false;
-    }
+ 	 Dispatcher::FlushMarker(readFd); 
+  
+	 if (NoQueries()) {
 
-    /*
-       If all queries have been executed (system is idle) and
+		if (_needDisplayFlush) {
+		  DeviseDisplay::DefaultDisplay()->Flush();
+		  _needDisplayFlush = false;
+		}
+
+		/*
+		   If all queries have been executed (system is idle) and
+		   a postscript has been defined, execute postscript and
+		   then exit.
+		*/
+		#if 0
+		char *postscript = Init::PostScript();
+		if (postscript) {
+		  ControlPanel::Instance()->ExecuteScript(postscript);
+		  Exit::DoExit(1);
+		}
+		#endif 
+		
+    	/*
+       	If all queries have been executed (system is idle) and
        a batch file has been defined, execute batch file and
        then exit.
-    */
-    char *batchFile = Init::BatchFile();
-    if (batchFile) {
-      ControlPanel::Instance()->ExecuteScript(batchFile);
-      Exit::DoExit(1);
-    }
+    	*/
+		char *batchFile = Init::BatchFile();
+		if (batchFile) {
+		  ControlPanel::Instance()->ExecuteScript(batchFile);
+		  Exit::DoExit(1);
+		}
 
-    /* Do conversion, then return */
-    DoGDataConvert();
-    return;
-  }
+		/* Do conversion, then return */
+		DoGDataConvert();
+		return;
+	  }
+	  
+	  Dispatcher::InsertMarker(writeFd);
 
-  _needDisplayFlush = true;
+	  _needDisplayFlush = true;
 
-  if (InitQueries())
-    /* Have initialized queries. Return now */
-    return;
+	  if (InitQueries())
+	  {
+		/* Have initialized queries. Return now */
+		return;
+	  }
+  // We can schedule the new queries later to be called
+  // So write a line to the pipe opened before...
+
+
   
   /* Process the first query */
   QPFullData *first = FirstQuery();
@@ -631,27 +667,32 @@ void QueryProcFull::ProcessQuery()
 #endif
 
   if (first->state == QPFull_EndState) {
-    /* InitQueries could have finished this query */
-    DeleteFirstQuery();
-    return;
+	/* InitQueries could have finished this query */
+	DeleteFirstQuery();
+	return;
   }
 
   switch(first->qType) {
   case QPFull_X:
-    ProcessQPFullX(first);
-    break;
+	ProcessQPFullX(first);
+	break;
   case QPFull_YX:
-    ProcessQPFullYX(first);
-    break;
+	ProcessQPFullYX(first);
+	break;
   case QPFull_Scatter:
-    ProcessQPFullScatter(first);
-    break;
+	ProcessQPFullScatter(first);
+	break;
   }
   
   if (first->state == QPFull_EndState) {
-    /* finished with this query */
-    DeleteFirstQuery();
+	/* finished with this query */
+	DeleteFirstQuery();
   }
+  #if 0
+  tempBuff = 'a';
+  if (writePipeFd != -1)
+	write(writePipeFd,&tempBuff,sizeof(char));
+  #endif
 }
 
 void QueryProcFull::EndQPFullX(QPFullData *qData) {

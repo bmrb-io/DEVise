@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/15 15:06:47  jussi
+  Interface to ViewGraph's mapping iterator has changed.
+
   Revision 1.8  1996/01/19 19:52:19  jussi
   Made attribute output appear on separate lines.
 
@@ -225,7 +228,7 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
 #ifdef DEBUG
-  printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
+ printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
 	 view->GetName(), x, y, xHigh, yHigh);
 #endif
 
@@ -308,7 +311,7 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
 	    tooMuch = true;
 	  }
 	} else {
-	  puts(buf);
+	  //puts(buf);
 	}
       }
     }

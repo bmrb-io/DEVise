@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/16 20:39:54  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.12  1996/04/15 15:13:52  jussi
   A mapping label is now stored as part of the mapping list data
   structure. Added GetMappingLegend() accessor method.
@@ -60,6 +63,7 @@
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
+#include<assert.h>
 
 //#define DEBUG
 
@@ -139,6 +143,8 @@ char *ViewGraph::GetMappingLegend(TDataMap *map)
 void ViewGraph::InitMappingIterator(Boolean backwards)
 {
   DOASSERT(_index < 0, "Unexpected iterator index");
+ // printf("Index = %d\n",_index);
+ // assert(_index < 0 );
   _index = _mappings.InitIterator((backwards ? 1 : 0));
 }
 
@@ -159,6 +165,7 @@ void ViewGraph::DoneMappingIterator()
   DOASSERT(_index >= 0, "Invalid iterator index");
   _mappings.DoneIterator(_index);
   _index = -1;
+  //printf("Done mapping Index = %d\n",_index);
 }
 
 void ViewGraph::DrawLegend()

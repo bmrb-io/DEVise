@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/10 01:45:56  jussi
+  Added call to Flush() when query processor becomes idle.
+
   Revision 1.6  1996/01/15 16:56:00  jussi
   Minor fixes.
 
@@ -303,6 +306,7 @@ Process query
 ********************************************************************/
 void QueryProcSimple::ProcessQuery(){
 	QueryData *query;
+	printf("QPROC SIMPLE -\n");
 	switch(_state){
 		case WaitCmd:
 			if (QueryListSize() > 0) {

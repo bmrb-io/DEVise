@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/09 18:07:47  jussi
+  Added call to Display::Flush() when all queries have been executed,
+  and added variables needed to support that.
+
   Revision 1.3  1996/01/15 16:54:23  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -76,6 +80,8 @@ class QueryProcFull: public QueryProc, private QPRangeCallback {
 public:
   QueryProcFull();
 
+  virtual ~QueryProcFull();
+
   /* batch a query. For now, we'll just queue it up.  */
   virtual void BatchQuery(TDataMap *map, VisualFilter &filter,
 			  QueryCallback *callback, void *userData,
@@ -122,6 +128,7 @@ private:
   /* Initialize all queries. Return false if no query
      is in initial state */
   Boolean InitQueries();
+
 
   /* Init for individual query types */
   void InitQPFullX(QPFullData *qData);
@@ -239,6 +246,18 @@ private:
   Boolean _tqueryApprox;           /* true for approximate match */
 
   Boolean _needDisplayFlush;       /* display needs to be flushed */
+
+  protected:
+
+  // These are modified by the derived class DispQueryProcFull 
+  // A pipe is created between the DispQueryProcFull object and Dispatcher
+  // The Query Processor writes something to the pipe if it needs to be called
+  // later..It ned not be apipe actually and the implementation is hidden in 
+  // Dispatcher::InsertMarker and toerh functions..
+
+  int readFd;		// The read descriptor
+  int writeFd;      // The write descriptor
+
 };
 
 #endif

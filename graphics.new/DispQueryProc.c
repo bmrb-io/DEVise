@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/25 20:23:17  jussi
+  Added copyright notice and improved code.
+
   Revision 1.2  1995/09/05 22:14:44  jussi
   Added CVS header.
 */
@@ -38,7 +41,13 @@ void DispQueryProcSimple::Run()
 
 DispQueryProcFull::DispQueryProcFull()
 {
-  Dispatcher::Current()->Register(this, 20);
+
+  Dispatcher::CreateMarker(readFd,writeFd);
+
+  Dispatcher::Current()->Register(this, 20,GoState,false,readFd);
+
+  Dispatcher::InsertMarker(writeFd);
+
 }
 
 /********************************************************************8

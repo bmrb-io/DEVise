@@ -10,7 +10,7 @@ CC = g++
 #		file: QueryProc.c
 #	-DTRACE_GDATA: trace GDATa query, file: QueryProc.c
 
-CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX -I../../graphics \
+CFLAGS = $(ARCH_FLAGS)  -Wall -Wno-unused -O -DUNIX -I../../graphics \
 	-I../../graphics.new -I../../tape -fexternal-templates
 .c.o: 
 	$(CC) -c  $(CFLAGS) $<
