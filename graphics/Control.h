@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/18 01:19:02  jussi
+  DestroySessionData() now resets the _batchMode flag.
+
   Revision 1.12  1996/05/22 21:03:56  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -125,6 +128,9 @@ public:
   virtual void ClearSyncNotify() { _syncNotify = false; }
   virtual Boolean GetSyncNotify() { return _syncNotify; }
   virtual void SyncNotify() {}
+
+  /* raise the control panel */
+  virtual void Raise() {}
 
   /* Instantiate control panel into display */
   static void InsertDisplay(DeviseDisplay *disp,
