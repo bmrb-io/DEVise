@@ -29,6 +29,9 @@ int main(int argc, char** argv){
 	Engine engine(query);
 	TRY(engine.optimize(), 0);
 	int numFlds = engine.getNumFlds();
+	if(numFlds == 0){
+		return 0;
+	}
 	String* types = engine.getTypeIDs();
 	String* attrs = engine.getAttributeNames();
 	for(int i = 0; i < numFlds; i++){
