@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/02/16 18:51:26  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.11  1999/06/15 18:09:45  wenger
   Added dumping of ViewWin objects to help with pile debugging.
 
@@ -84,6 +87,9 @@ public:
   static Boolean More(int index) { return _windowList.More(index);}
   static ClassInfo *Next(int index) { return _windowList.Next(index);}
   static void DoneIterator(int index) { _windowList.DoneIterator(index);};
+
+  // Get bounding box of all printable windows.
+  static void GetBoundingBox(int &left, int &right, int &top, int &bottom);
 
   static void DumpAll(FILE *fp);
 

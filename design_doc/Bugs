@@ -2338,9 +2338,10 @@ Num Date        Status  Description
 			when opening AWON session. (rkw)
 			(Fixed by rkw, 6/6/00.)
 
-596 06/14/00	OPEN	Fixed text based on a fraction of the screen height
+596 06/14/00	FIXED	Fixed text based on a fraction of the screen height
 			doesn't come out to the same relative size in the
 			JavaScreen as in "regular" DEVise. (rkw)
+			(Fixed by rkw, 6/15/00.)
 
 597 6/14/00	FIXED	Jss doesn't seem to be able to start a devised
 			(or maybe the problem is in connecting to the

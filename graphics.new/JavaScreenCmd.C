@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.103  2000/06/16 18:28:39  wenger
+  Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
+
   Revision 1.102  2000/06/05 16:22:41  wenger
   Basically finished command/GData/GIF caching for JavaScreen support
   (there are a few refinements that could still be added); changed the
@@ -678,54 +681,8 @@ FillScreen()
 	// Figure out how much of the virtual display is used up by the
 	// DEVise windows.
 	//
-	int left = -1;
-	int right = -1;
-	int top = -1;
-	int bottom = -1;
-
-	int winIndex = DevWindow::InitIterator();
-	while (DevWindow::More(winIndex)) {
-	  ClassInfo *info = DevWindow::Next(winIndex);
-	  ViewWin *window = (ViewWin *)info->GetInstance();
-	  if (window != NULL && !window->GetPrintExclude()) {
-	    int winX, winY;
-	    unsigned winW, winH;
-	    window->RealGeometry(winX, winY, winW, winH);
-#if defined(DEBUG_LOG)
-        sprintf(logBuf, "window <%s> RealGeometry = %d, %d, %d, %d\n",
-		  window->GetName(), winX, winY, winW, winH);
-        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-	    window->AbsoluteOrigin(winX, winY);
-#if defined(DEBUG_LOG)
-        sprintf(logBuf, "window <%s> AbsoluteOrigin = %d, %d\n",
-		  window->GetName(), winX, winY);
-        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-		// Windows can have negative positions (off of virtual desktop).
-		winX = ABS(winX);
-		winY = ABS(winY);
-
-        if (left < 0 || winX < left) {
-		  left = winX;
-		}
-
-		if (right < 0 || winX + (int)winW > right) {
-		  right = winX + winW;
-		}
-
-		if (top < 0 || winY < top) {
-		  top = winY;
-		}
-
-		if (bottom < 0 || winY + (int)winH > bottom) {
-		  bottom = winY + winH;
-		}
-	  }
-	}
-	DevWindow::DoneIterator(winIndex);
+	int left, right, top, bottom;
+	DevWindow::GetBoundingBox(left, right, top, bottom);
 
 #if defined(DEBUG_LOG)
 	sprintf(logBuf, "top = %d\nbottom = %d\nleft = %d\nright = %d\n",
@@ -749,7 +706,7 @@ FillScreen()
 	//
 	// Resize each window.
 	//
-	winIndex = DevWindow::InitIterator();
+	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex)) {
 	  ClassInfo *info = DevWindow::Next(winIndex);
 	  ViewWin *window = (ViewWin *)info->GetInstance();
@@ -2137,7 +2094,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 				// it should be possible to get into that state, though.
 				// RKW 2000-05-01.
 				if (!_gdataViews.Find(view)) {
+#if 1 //TEMPTEMP?
 				    DrawViewCursors(view);
+#endif //TEMPTEMP?
 				}
 			}
 			if (tmpResult != DONE) result = tmpResult;
@@ -2183,7 +2142,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 			// Tell the JS to redraw all cursors in this view and its
 			// child views.
+#if 1 //TEMPTEMP?
 		    DrawViewCursors(view);
+#endif //TEMPTEMP?
 		}
 	}
 	_gdataViews.DoneIterator(viewIndex);
@@ -2375,7 +2336,6 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	    EraseCursor(view, cursor);
 		return;
     }
-
 
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,

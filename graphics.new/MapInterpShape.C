@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.72  2000/05/04 17:40:35  wenger
+  Added new text object feature: GData Z value specifies max size of
+  font in points (if > 1).  (Allows me to fix problems with BMRB 4096
+  protein session.)
+
   Revision 1.71  1999/08/23 21:23:29  wenger
   Removed Shape::NumShapeAttrs() method -- not used.
 
@@ -374,6 +379,7 @@
 #include "StringStorage.h"
 #include "DrawTimer.h"
 #include "Display.h"
+#include "WinClassInfo.h"
 
 //#define DEBUG
 #define USE_TIMER 1
@@ -2325,6 +2331,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	/* Figure out a reasonable font size to use so that the amount of scaling
 	 * is as small as possible.  I'm sure this isn't perfect, but it seems
 	 * fairly close. RKW 4/25/97. */
+	//TEMP -- there should be a WindowRep method to do this.
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
 	win->Transform(1, 1, x1, y1);
@@ -2363,7 +2370,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	  oldItalic = italic;
     }
 
-#if defined(DEBUG)
+#if defined(DEBUG) 
     printf("Text label: <%s>\n", label);
 #endif
     
@@ -2684,6 +2691,12 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   Boolean oldBold;
   Boolean oldItalic;
 
+  // Get the bounding box for all printable windows, in case the text
+  // size is defined relative to that (size <= 1).
+  int left, right, top, bottom;
+  DevWindow::GetBoundingBox(left, right, top, bottom);
+  int bbHt = bottom - top + 1;
+
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
 	  // Always draw at least one symbol so we are sure to make progress.
@@ -2702,10 +2715,11 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     Coord y = map->GetY(gdata);
     Coord pointSize = map->GetSize(gdata);
     if (pointSize <= 1.0) {
-	  // Size of font is defined as a fraction of the screen height.
+	  // Size of font is defined as a fraction of the printable window
+	  // bounding box height.
       Coord displayWidth, displayHeight;
 	  DeviseDisplay::DefaultDisplay()->Dimensions(displayWidth, displayHeight);
-	  pointSize = pointSize * displayHeight *
+	  pointSize = pointSize * bbHt *
 		DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 	}
 

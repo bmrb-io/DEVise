@@ -120,7 +120,7 @@ font size
         4) font weight (0 = regular, 1 = bold)
         5) font slant (0 = regular, 1 = italic)
     Note: size is normally in points; however, if it is <= 1.0, size is
-    a fraction of the screen height.
+    a fraction of the printable window bounding box height.
 
 TCL/TK WINDOW - rectangular region containing a Tcl/Tk
 window

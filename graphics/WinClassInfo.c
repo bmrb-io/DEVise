@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/03/14 17:05:16  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.26  2000/02/16 18:51:25  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -142,14 +146,74 @@
 #include "Util.h"
 #include "Session.h"
 #include "PileStack.h"
+#include "DebugLog.h"
 
 //#define DEBUG
+#define DEBUG_LOG
 
 static const char *args[7];
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
   buf7[80];
 
 DevWinList DevWindow::_windowList;
+
+void
+DevWindow::GetBoundingBox(int &left, int &right, int &top, int &bottom)
+{
+  //
+  // Figure out how much of the virtual display is used up by the
+  // DEVise windows.
+  //
+  left = -1;
+  right = -1;
+  top = -1;
+  bottom = -1;
+
+  int winIndex = DevWindow::InitIterator();
+  while (DevWindow::More(winIndex)) {
+    ClassInfo *info = DevWindow::Next(winIndex);
+    ViewWin *window = (ViewWin *)info->GetInstance();
+    if (window != NULL && !window->GetPrintExclude()) {
+      int winX, winY;
+      unsigned winW, winH;
+      window->RealGeometry(winX, winY, winW, winH);
+#if defined(DEBUG_LOG)
+      char logBuf[1024];
+      sprintf(logBuf, "window <%s> RealGeometry = %d, %d, %d, %d\n",
+          window->GetName(), winX, winY, winW, winH);
+      DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+
+      window->AbsoluteOrigin(winX, winY);
+#if defined(DEBUG_LOG)
+      sprintf(logBuf, "window <%s> AbsoluteOrigin = %d, %d\n",
+          window->GetName(), winX, winY);
+      DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+
+      // Windows can have negative positions (off of virtual desktop).
+      winX = ABS(winX);
+      winY = ABS(winY);
+
+      if (left < 0 || winX < left) {
+        left = winX;
+      }
+
+      if (right < 0 || winX + (int)winW > right) {
+        right = winX + winW;
+      }
+
+      if (top < 0 || winY < top) {
+        top = winY;
+      }
+
+      if (bottom < 0 || winY + (int)winH > bottom) {
+        bottom = winY + winH;
+      }
+    }
+  }
+  DevWindow::DoneIterator(winIndex);
+}
 
 void
 DevWindow::DumpAll(FILE *fp)
