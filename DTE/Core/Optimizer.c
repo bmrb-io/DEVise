@@ -323,12 +323,22 @@ bool GestaltQueryProduced::expand(
 	return retVal;
 }
 
+// *** modified by YL
 Iterator* GestaltQueryProduced::createExec() const 
 {
 	cerr << "Hardwired ...\n";
-	Iterator* it1 = gestMembers.front().first->createExec();
-	Iterator* it2 = gestMembers.front().first->createExec();
-	return new UnionExec(it1, it2);
+	vector<NodeQueryPair>::iterator i;
+	vector<Iterator*> ite_vec;
+	
+	for (i = (const vector<NodeQueryPair>::iterator) gestMembers.begin(); 
+	     i != (const vector<NodeQueryPair>::iterator) gestMembers.end(); ++ i)
+	  ite_vec.push_back ((*i).first->createExec());
+	
+	return new UnionExec (ite_vec);
+
+	// Iterator* it1 = gestMembers.front().first->createExec();
+	// Iterator* it2 = gestMembers.front().first->createExec();
+	// return new UnionExec(it1, it2);
 }
 
 string GestaltQueryProduced::toString() const

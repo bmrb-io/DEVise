@@ -127,12 +127,13 @@ private:
 
 //---------------------------------------------------------------------------
 
-
+// Changed the structure of UnionExec  *** YL
 class UnionExec : public Iterator
 {
 public:
   UnionExec(Iterator* iter1, Iterator* iter2);
-
+  UnionExec(vector<Iterator*>& vec); // *** YL
+  
   ~UnionExec();
 
   virtual void initialize();
@@ -143,9 +144,13 @@ public:
 
 protected:
 
-  Iterator* iter1;
-  Iterator* iter2;
-  bool runningFirst;
+  vector<Iterator*> vec;   // *** YL
+  int runningCurrent;
+  int n_iter;
+  
+  // Iterator* iter1;      // *** YL
+  // Iterator* iter2;
+  // bool runningFirst;
 
 private:
 

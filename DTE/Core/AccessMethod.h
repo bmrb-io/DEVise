@@ -39,4 +39,18 @@ public:
 	virtual string getName() const {return "StandardRead";};
 };
 
+// *** YL
+class GestaltAM : public AccessMethod {
+	TypeIDList typeIDs;
+	string url;
+	vector<string> memberList;
+	
+public:
+	GestaltAM(const ISchema& schema, const string& url, vector<string> member,
+		  const Stats& stats);
+	virtual Iterator* createExec() const;
+	virtual Cost getCost() const;
+	virtual string getName() const {return "GestaltRead";};
+};
+
 #endif

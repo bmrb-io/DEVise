@@ -156,6 +156,9 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) GestaltInterface(*this);
 	}
+
+        virtual vector<AccessMethod*> createAccessMethods();
+
 	virtual bool isGestalt() const {return true;}
 	vector<string> getMemberNames() const;
 };

@@ -1,5 +1,10 @@
+#include "types.h"
 #include "StandardRead.h"
 #include "AccessMethod.h"
+#include "myopt.h"
+#include "catalog.h" 	// for root catalog
+#include "ExecOp.h"
+#include "Interface.h"
 
 Iterator* FileScan::createExec() const {
 	assert(!"not implemented");
@@ -35,3 +40,44 @@ Iterator* StandardAM::createExec() const
 {
 	return new StandReadExec(typeIDs, url);
 }
+
+// *** YL
+GestaltAM::GestaltAM(const ISchema& schema, const string& url, 
+		     vector<string> member, const Stats& stats)
+{
+	typeIDs = schema.getTypeIDs();
+	this->url = url;
+	this->memberList = member;
+}
+
+Cost GestaltAM::getCost() const
+{
+	// fix this later
+
+	return 0;
+}
+
+Iterator* GestaltAM::createExec() const
+{
+	TableName* tableName;
+	vector<Iterator*> vec;
+	Interface * interf;
+	vector<AccessMethod*> acc;
+	
+	vector<string>::iterator i;
+	
+	for (i = (vector<string>::iterator) memberList.begin(); 
+	     i != (vector<string>::iterator) memberList.end(); i++)
+	  {
+	    tableName = new TableName(i->c_str());
+	    
+	    TRY(interf = ROOT_CATALOG.createInterface(tableName),0);
+
+	    acc = interf->createAccessMethods();
+	    assert (acc.size() == 1);
+	    vec.push_back(acc[0]->createExec());
+	  }
+	
+	return new UnionExec(vec);
+}
+

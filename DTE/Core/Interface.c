@@ -705,6 +705,18 @@ vector<AccessMethod*> StandardInterface::createAccessMethods()
 	return retVal;
 }
 
+// *** YL 
+vector<AccessMethod*> GestaltInterface::createAccessMethods()
+{
+	vector<AccessMethod*> retVal;
+	Stats defStats(schema.getNumFlds());
+	Stats* nonNullStats = (stats ? stats : &defStats);
+	AccessMethod* sr = new GestaltAM(schema, urlString, getMemberNames(), *nonNullStats);
+	retVal.push_back(sr);
+	return retVal; 
+}
+
+
 istream& QueryInterface::read(istream& in){
 	in >> urlString;
 	return Interface::read(in);

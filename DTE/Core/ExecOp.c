@@ -235,6 +235,7 @@ const TypeIDList& NLJoinExec::getTypes()
 
 //---------------------------------------------------------------------------
 
+/* *** YL
 
 UnionExec::UnionExec(Iterator* iter1, Iterator* iter2)
 : iter1(iter1), iter2(iter2), runningFirst(true)
@@ -274,6 +275,51 @@ const Tuple* UnionExec::getNext()
 const TypeIDList& UnionExec::getTypes()
 {
   return iter1->getTypes();
+}
+
+*/
+
+UnionExec::UnionExec(Iterator* iter1, Iterator* iter2) : runningCurrent (0), n_iter (2)
+{
+  vec.push_back (iter1);
+  vec.push_back (iter2);
+}
+
+UnionExec::UnionExec(vector<Iterator*>& _vec) : vec (_vec), runningCurrent (0)
+{
+  n_iter = vec.size();
+}
+
+UnionExec::~UnionExec()
+{
+  vector<Iterator*>::iterator i;
+  for (i = vec.begin(); i != vec.end(); ++ i)
+    delete (*i);
+}
+
+void UnionExec::initialize()
+{
+  if (n_iter > 0)
+    vec[0]->initialize();
+}
+
+const Tuple* UnionExec::getNext()
+{
+  if (n_iter == 0)
+    return NULL;
+  
+  const Tuple * next = vec[runningCurrent]->getNext();
+  while (! next && runningCurrent < vec.size()-1)
+    {
+      vec[++ runningCurrent]->initialize();
+      next = vec[runningCurrent]->getNext();
+    }
+  return next;
+}
+const TypeIDList& UnionExec::getTypes()
+{
+  assert (n_iter > 0);
+  return vec[0]->getTypes ();
 }
 
 
