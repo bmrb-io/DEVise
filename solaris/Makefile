@@ -10,7 +10,10 @@ MODULES = $(LIBMODULES) parser generic multi
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
 	cslib
 
-all clean mostlyclean:
+all: date
+	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
+
+clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
 
 date:
