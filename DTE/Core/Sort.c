@@ -3,6 +3,10 @@
 #include "Inserter.h"
 #include "types.h"
 
+#define MAX_MEM		16000000
+#define RUNS		10
+
+
 void Sort::initialize(){
 	// creates all the runs
 	// Generate run using input->getNext
