@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/11/03 17:53:35  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.12  1998/10/13 15:41:38  wenger
   Purify'd DataReader.
 
@@ -48,6 +51,10 @@
 #include "DRSchema.h"
 #include "sysdep.h"
 #include "DateTime.h"
+
+inline int AlignDown(uint x, int align) { return x & ~((align)-1); }
+inline int Align(uint x, int align) { return AlignDown(x+align-1, align); }
+static const int MAX_ALIGN = 8;
 
 ostream&
 operator<<(ostream &out, const AttrType &attrType)
@@ -306,6 +313,7 @@ Status DRSchema::finalizeDRSchema() {
 
 		// calculate record length, length of fields and offsets of fields in
 		// the destination buffer
+                curOff = Align(curOff, MAX_ALIGN);//kb: hack to make everything aligned
 		tableAttr[i]->offset = curOff;
 		curOff += fLen;
 		tableAttr[i]->setLength(fLen);
@@ -644,10 +652,10 @@ Status DRSchema::normalizeDate(char*& curDate) {
 				tmpString << *(tmp-1); // anything, skip this
 		}
 	}
-	tmpString << '\0';
+        string tstr = tmpString.str();
 	char* tmp1 = curDate;
-	curDate = new char[strlen(tmpString.str())+1];
-	strcpy(curDate,tmpString.str());
+	curDate = new char[tstr.length()+1];
+	strcpy(curDate,tstr.c_str());
 	delete [] tmp1;
 	return OK;
 }
