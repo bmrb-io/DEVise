@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.91  2001/04/11 21:16:29  xuk
+// A collaboration leader could find out the followers hostname.
+//
 // Revision 1.90  2001/04/06 19:32:14  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -885,7 +888,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     // command is the command we sent; response is the command we got
     // in response.
-    private void processReceivedCommand(String command, String response)
+    private synchronized void processReceivedCommand(String command, String response)
       throws YException
     {
 	if (_debug) {
@@ -949,7 +952,7 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.showClientList(response);
 
         } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
-            jsc.checkQuit();
+	    jsc.collabQuit();
 
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
             if (jsc.specialID == -1) // only for normal JS	    
@@ -1522,7 +1525,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         Vector rspbuf = new Vector();
 
-        if (jsc.specialID == -1 || command != null) { // for formal JS
+        if ( (jsc.specialID == -1 && command != null) || 
+	     command != null ) { 
 	    // turn on the 'send' light
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
 	    // sending command to server, and expect an immediate response
@@ -1540,7 +1544,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
 	} else { // for collabration JS
 	    jsc.pn("We are waiting at null command...");
-        }
+         }
 
         // turn on the counter
         jsc.viewInfo.updateCount(0);
