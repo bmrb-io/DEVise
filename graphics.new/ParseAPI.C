@@ -15,7 +15,11 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/11 17:26:26  jussi
+  Initial revision. Moved all API parsing to this file so that
+  ServerAPI.c and TkControl.c would not have to duplicate it.
+*/
 
 #include <stdio.h>
 #include <ctype.h>
@@ -701,6 +705,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 3) {
+    if (!strcmp(argv[0], "addReplicaServer")) {
+      if (control->AddReplica(argv[1], atoi(argv[2])) < 0)
+	fprintf(stderr, "Could not add %s:%d as a replica.\n", argv[1],
+		atoi(argv[2]));
+      control->ReturnVal(API_OK, "done");
+      return API_OK;
+    }
+    if (!strcmp(argv[0], "removeReplicaServer")) {
+      if (control->RemoveReplica(argv[1], atoi(argv[2])) < 0)
+	fprintf(stderr, "Could not remove replica %s:%d.\n", argv[1],
+		atoi(argv[2]));
+      control->ReturnVal(API_OK, "done");
+      return API_OK;
+    }
     if (!strcmp(argv[0], "writeLine")) {
       FILE *file = (FILE *)atol(argv[2]);
       fputs(argv[1],file);

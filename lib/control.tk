@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.65  1996/05/11 03:03:49  jussi
+#	Added restoring, template, and sessionName as global variables.
+#	These used to be in TkControl.c. Changed DoClose and made it
+#	use the new DEVise clearAll command. Changed DoOpen and made
+#	it work without DEVise openSession and openTemplate commands.
+#
 #	Revision 1.64  1996/04/23 20:39:24  jussi
 #	Added HorLine and Segment shapes.
 #
@@ -433,6 +439,9 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Toggle mode" -command { ChangeMode }
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Add Replica" -command { AddReplica }
+.mbar.session.menu add command -label "Remove Replica" -command { NotImplemented }
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Print" -command PrintView
 .mbar.session.menu add command -label "Quit" -command DoExit
@@ -1123,6 +1132,54 @@ proc GetTDataTemplate {type total num} {
     catch {destroy .info}
 
     return $sname
+}
+
+############################################################
+
+proc AddReplica {} {
+    global replicaHost replicaPort
+
+    if {[WindowVisible .replica]} {
+	return
+    }
+
+    toplevel .replica
+    wm title .replica "Add Replica Server"
+    wm geometry .replica +50+50
+
+    frame .replica.top
+    frame .replica.bot
+    pack .replica.top -side top -pady 3m -fill both -expand 1
+    pack .replica.bot -side top -pady 5m -fill x
+
+    frame .replica.bot.but
+    pack .replica.bot.but -side top
+
+    label .replica.top.l1 -text "Hostname:"
+    entry .replica.top.e1 -relief sunken -width 10 -textvariable replicaHost
+    label .replica.top.l2 -text "Port:"
+    entry .replica.top.e2 -relief sunken -width 6 -textvariable replicaPort
+    pack .replica.top.l1 .replica.top.e1 .replica.top.l2 .replica.top.e2 \
+	 -side left -padx 3m -fill x -expand 1
+
+    set replicaHost ""
+    set replicaPort 6100
+
+    button .replica.bot.but.ok -text OK -width 10 -command {
+	if {$replicaHost == "" || $replicaPort == ""} {
+	    dialog .missingParms "Missing Parameters" \
+	    "Please specify replica server name and port." \
+	    "" 0 OK
+	    return
+	}
+	DEVise addReplicaServer $replicaHost $replicaPort
+	destroy .replica
+    }
+    button .replica.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .replica
+    }
+    pack .replica.bot.but.ok .replica.bot.but.cancel \
+	    -side left -padx 3m
 }
 
 ############################################################

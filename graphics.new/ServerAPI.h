@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/11 17:26:57  jussi
+  Reorganized code in order to interface with ParseAPI properly.
+
   Revision 1.2  1996/05/11 01:53:34  jussi
   Condensed the code by removing some unnecessary Tcl/Tk parts
   which are not used by the server. Changed the client-server
@@ -79,7 +82,16 @@ public:
   /* Get MapInterpClassInfo info */
   virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
 
+  /* Add replica server */
+  virtual int AddReplica(char *hostName, int port);
+
+  /* Remove replica server */
+  virtual int RemoveReplica(char *hostName, int port);
+
 protected:
+  /* replicate API command to replica servers */
+  virtual void Replicate(int argc, char **argv);
+
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
 				     Coord x, Coord y,
 				     Coord w, Coord h) {}
@@ -112,6 +124,12 @@ private:
   struct sockaddr_in _client_addr;      // address of client
 
   int _replicate;                       // number of servers to replicate to
+  const int _maxReplicas = 10;
+  struct ReplicaServer {
+    char *host;
+    int port;
+    int fd;
+  } _replicas[_maxReplicas];
 
   virtual int Send(int fd, int flag, int bracket,
 		   int argc, char **argv);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/11 17:25:39  jussi
+  Moved all command parsing to ParseAPI.C so that TkControl.c
+  would not have to duplicate the code.
+
   Revision 1.3  1996/05/11 02:01:01  jussi
   Fixed typo.
 
@@ -80,6 +84,126 @@ void ServerAPI::DoAbort(char *reason)
   SendControl(API_OK, reason);
   fprintf(stderr, "Server aborts.\n");
   exit(0);
+}
+
+int ServerAPI::AddReplica(char *hostName, int port)
+{
+  if (_replicate >= _maxReplicas) {
+    fprintf(stderr, "Replica limit exceeded.\n");
+    return -1;
+  }
+  
+  int i;
+  for(i = 0; i < _replicate; i++) {
+    if (!strcmp(_replicas[i].host, hostName) && 
+	_replicas[i].port == port)
+      break;
+  }
+
+  if (i < _replicate) {
+    fprintf(stderr, "Replica already defined.\n");
+    return -1;
+  }
+
+  struct hostent *hostEnt = gethostbyname(hostName);
+  if (!hostEnt) {
+    perror("Cannot translate replica host name");
+    return -1;
+  }
+  if (hostEnt->h_addrtype != AF_INET) {
+    fprintf(stderr, "Unsupported replica address type\n");
+    return -1;
+  }
+
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (fd < 0){
+    perror("Cannot create socket");
+    return -1;
+  }
+
+  struct in_addr *ptr = (struct in_addr *)*hostEnt->h_addr_list;
+
+  struct sockaddr_in servAddr;
+  memset(&servAddr, 0, sizeof(servAddr));
+	
+  servAddr.sin_family = AF_INET;
+  servAddr.sin_port   = htons(port);
+  servAddr.sin_addr   = *ptr;
+
+  int result = connect(fd,(struct sockaddr *)&servAddr,
+		       sizeof(struct sockaddr));
+  if (result < 0) {
+    perror("Cannot connect to replica server");
+    close(fd);
+    return -1;
+  }
+  
+  u_short cport = htons(0);
+  result = send(fd, (char *)&cport, sizeof cport, 0);
+  if (result < (int)sizeof cport) {
+    perror("Cannot send port number to replica server");
+    close(fd);
+    return -1;
+  }
+
+  u_short size = htons(0);
+  result = send(fd, (char *)&size, sizeof size, 0);
+  if (result < (int)sizeof size) {
+    perror("Cannot send DISPLAY size to replica server");
+    close(fd);
+    return -1;
+  }
+
+  _replicas[_replicate].host = CopyString(hostName);
+  _replicas[_replicate].port = port;
+  _replicas[_replicate].fd = fd;
+ 
+  _replicate++;
+
+  printf("Added %s:%d as a replica server.\n", hostName, port);
+
+  return 1;
+}
+
+int ServerAPI::RemoveReplica(char *hostName, int port)
+{
+  int i;
+  for(i = 0; i < _replicate; i++) {
+    if (!strcmp(_replicas[i].host, hostName) && 
+	_replicas[i].port == port)
+      break;
+  }
+
+  if (i >= _replicate) {
+    fprintf(stderr, "No such replica server.\n");
+    return -1;
+  }
+
+  close(_replicas[i].fd);
+
+  for(int j = i + 1; j < _replicate; j++) {
+    _replicas[j - 1].host = _replicas[j].host;
+    _replicas[j - 1].port = _replicas[j].port;
+    _replicas[j - 1].fd = _replicas[j].fd;
+  }
+
+  _replicate--;
+
+  printf("Removed %s:%d as a replica server.\n", hostName, port);
+
+  return 1;
+}
+
+void ServerAPI::Replicate(int argc, char **argv)
+{
+  for(int i = 0; i < _replicate; i++) {
+    if (Send(_replicas[i].fd, API_OK, 0, argc, argv) < 0) {
+      fprintf(stderr,
+	      "Failed to replicate command to %s:%d. Disconnecting.\n",
+	      _replicas[i].host, _replicas[i].port);
+      RemoveReplica(_replicas[i].host, _replicas[i].port);
+    }
+  }
 }
 
 void ServerAPI::DestroySessionData()
@@ -156,12 +280,12 @@ int ServerAPI::ReadSocket()
   static char **buff = 0;
 
 #ifdef DEBUG9
-  printf("Getting numElements\n");
+  printf("Getting error flag\n");
 #endif
 
-  u_short numElements;
-  int result = recv(_socketFd, (char *)&numElements, sizeof numElements, 0);
-  if (result < (int)sizeof numElements) {
+  u_short errflag;
+  int result = recv(_socketFd, (char *)&errflag, sizeof errflag, 0);
+  if (result < (int)sizeof errflag) {
 #ifdef DEBUG9
     perror("recv");
 #endif
@@ -177,7 +301,7 @@ int ServerAPI::ReadSocket()
     return -1;
   }
 
-  numElements = ntohs(numElements);
+  errflag = ntohs(errflag);
 
   // set socket to blocking mode
 
@@ -187,6 +311,30 @@ int ServerAPI::ReadSocket()
     return -1;
   }
     
+#ifdef DEBUG
+  printf("Getting bracket\n");
+#endif
+
+  u_short bracket;
+  result = recv(_socketFd, (char *)&bracket, sizeof bracket, 0);
+  if (result < (int)sizeof bracket) {
+    perror("recv");
+    return -1;
+  }
+  bracket = ntohs(bracket);
+
+#ifdef DEBUG
+  printf("Getting numElements\n");
+#endif
+
+  u_short numElements;
+  result = recv(_socketFd, (char *)&numElements, sizeof numElements, 0);
+  if (result < (int)sizeof numElements) {
+    perror("recv");
+    return -1;
+  }
+  numElements = ntohs(numElements);
+
 #ifdef DEBUG
   printf("\nGot numElements = %d\n", numElements);
 #endif
@@ -199,7 +347,8 @@ int ServerAPI::ReadSocket()
     maxSize = numElements;
   }
 
-  for(int i = 0; i < numElements;i++) {
+  int i;
+  for(i = 0; i < numElements;i++) {
 #ifdef DEBUG
     printf("Getting size of element %d\n", i);
 #endif
@@ -232,24 +381,29 @@ int ServerAPI::ReadSocket()
   printf("Executing command\n");
 #endif
 
-  if (ParseAPI(numElements, buff, this) < 0)
+  if (ParseAPI(numElements, buff, this) < 0) {
     fprintf(stderr, "Devise API command error\n");
+  } else {
+    if (_replicate) {
+      if (!numElements ||
+	  (strcmp(buff[0], "addReplicaServer")
+	   && strcmp(buff[0], "removeReplicaServer"))) {
+#ifdef DEBUG
+	printf("Replicating command to other servers\n");
+#endif
+	Replicate(numElements, buff);
+#ifdef DEBUG
+	printf("Done replicating command\n");
+#endif
+      }
+    }
+  }
 
 #ifdef DEBUG
   printf("Done executing command\n");
 #endif
 
-  if (_replicate) {
-#ifdef DEBUG
-    printf("Replicating command to other servers\n");
-#endif
-
-#ifdef DEBUG
-    printf("Done replicating command\n");
-#endif
-  }
-
-  for(int i = 0; i < numElements; i++)
+  for(i = 0; i < numElements; i++)
     delete buff[i];
 
   // When client executes an exit command, _socketFd will be
@@ -564,6 +718,12 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
   sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
 	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
   SendControl(API_OK, cmd);
+
+  if (_replicate) {
+    char *args[] = { "setFilter", view->GetName(), xLowBuf,
+		     yLowBuf, xHighBuf, yHighBuf };
+    Replicate(6, args);
+  }
 }
 
 void ServerAPI::ViewCreated(View *view)
