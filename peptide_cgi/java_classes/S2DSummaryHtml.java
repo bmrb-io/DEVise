@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/04/17 17:09:10  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.6  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -79,6 +82,8 @@ public class S2DSummaryHtml {
 
     private FileWriter _writer = null;
 
+    private boolean _wroteLink = false;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -94,6 +99,11 @@ public class S2DSummaryHtml {
       String starFileName, String systemName, String frameTitle)
       throws S2DException
     {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
+	      accessionNum + ")");
+	}
+
         _accNum = accessionNum;
 	_dataDir = dataDir;
 
@@ -128,6 +138,10 @@ public class S2DSummaryHtml {
     // Finalizer.
     protected void finalize() throws S2DException
     {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DSummaryHtml.finalize()");
+	}
+
         close();
     }
 
@@ -135,8 +149,25 @@ public class S2DSummaryHtml {
     // Writes out the tail of the html and closes the file.
     public void close() throws S2DException
     {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DSummaryHtml.close()");
+	}
+
 	if (_writer != null) {
 	try {
+		if (_accNum == 4096) {
+		    _writer.write("<hr>\n");
+		    _writer.write("Under development: <a href=" +
+		      "\"http://www.bmrb.wisc.edu/devise/4096_side3h.html\"" +
+		      ">3D visualization of 4096</a>");
+		}
+
+		if (!_wroteLink) {
+		    _writer.write("<hr>\n");
+		    _writer.write("<p>No chemical shift data available " +
+		      "for this entry.\n");
+		}
+
 	        _writer.write("</body>\n");
 	        _writer.write("</html>\n");
 
@@ -155,6 +186,10 @@ public class S2DSummaryHtml {
     // Writes the info for the start of a save frame.
     public void startFrame(String frameDetails) throws S2DException
     {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DSummaryHtml.startFrame()");
+	}
+
 	try {
             _writer.write("\n<hr>\n");
 	    if (frameDetails != null) {
@@ -172,6 +207,10 @@ public class S2DSummaryHtml {
     // Writes the info for the end of a save frame.
     public void endFrame() throws S2DException
     {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DSummaryHtml.endFrame()");
+	}
+
 	try {
 	    _writer.write("</ul>\n");
 	} catch (IOException ex) {
@@ -185,36 +224,60 @@ public class S2DSummaryHtml {
     // Writes the deltashift link.
     public void writeDeltashift(int frameIndex, int count) throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeDeltashift()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Chemical Shift Delta</a> (" + count + " shifts)\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the CSI link.
     public void writeCSI(int frameIndex, int count) throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeCSI()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Chemical Shift Index</a> (" + count + " shifts)\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the percent assignment link.
     public void writePctAssign(int frameIndex, int count) throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writePctAssign()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Percent Assigned Atoms</a> (" + count + " shifts)\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the coupling constant link.
     public void writeCoupling(int frameIndex, int count) throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeCoupling()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Coupling Constants</a> (" + count + ")\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -222,9 +285,15 @@ public class S2DSummaryHtml {
     public void writeRelax(String suffix, String name, int frameIndex,
       int count) throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeRelax()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  suffix + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">" + name + "</a> (" + count + ")\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -232,9 +301,15 @@ public class S2DSummaryHtml {
     public void writeHetNOE(String name, int frameIndex, int count)
       throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeHetNOE()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + name + "</a> (" + count + ")\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -242,10 +317,16 @@ public class S2DSummaryHtml {
     public void writeAllShifts(int frameIndex, int count)
       throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeAllShifts()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">All Chemical Shifts</a> (by amino acid) (" + count +
 	  " shifts)\n");
+
+        _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -253,9 +334,15 @@ public class S2DSummaryHtml {
     public void writeHvsNShifts(int frameIndex, int count)
       throws IOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeHvsNShifts()");
+	}
+
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">H vs. N Chemical Shifts</a> (" + count + " shifts)\n");
+
+        _wroteLink = true;
     }
 
     //===================================================================

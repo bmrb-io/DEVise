@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/04/24 18:06:43  wenger
+// More improvements to "all chem shifts" visualization; found and fixed
+// bug 666.
+//
 // Revision 1.12  2001/04/24 15:26:11  wenger
 // Reversed axes in "all chem shifts" and "H vs. N chem shift"
 // visualizations, and added atom type selection to "all chem shifts";
@@ -93,7 +97,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.6";
+    public static final String PEP_CGI_VERSION = "2.7";
 
     private int _accessionNum;
     private String _dataDir;
