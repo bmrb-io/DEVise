@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 20:57:11  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.5  1995/12/28 18:22:28  jussi
   Removed warnings related to for loop variable scope.
 
@@ -40,7 +43,10 @@
 #include <ctype.h>
 
 #include "sec.h"
+#include "cal.h"
 #include "Exit.h"
+
+#define CALFILE "dsi94.dat"
 
 // ******************* PUBLIC FUNCTIONS ******************
 
@@ -65,6 +71,7 @@ Security::Security(TapeDrive &drive) : tape(drive)
   // since the foll. arrays use the header info in determining the size.
   if (get_header() == 0)
     return;
+
   get_names();
   get_dists();
   get_shares();
@@ -109,11 +116,27 @@ void Security::print_security(ostream& out)
   // vol
   // ret
 
+  FILE *calfile = 0;
+  Calendar *calendar = 0;
+
+  // Get the calendar file pointer
+  if (!(calfile = fopen(CALFILE, "r")))
+    printf("Error: could not open calendar file: %s\n", CALFILE);
+  else
+    calendar = new Calendar(calfile);
+
   int sdate = header.begdat;
-  while (sdate <= header.enddat)
-  {
+  while (sdate <= header.enddat) {
+    // if calendar file is available, translate trading date to
+    // real date
+    int realdate = sdate;
+    if (calendar) {
+      if (calendar->load_day(sdate))
+	realdate = calendar->cal.caldt;
+    }
+
     // DATE
-    out << sdate << " ";
+    out << realdate << " ";
     // BIDLO and ASKHI
     if ((header.begsp == 0) || 
 	(sdate < header.begsp) || (sdate > header.endsp))
@@ -144,16 +167,18 @@ void Security::print_security(ostream& out)
     out << endl;
     sdate++;
   }
+
+  if (calfile)
+    fclose(calfile);
+  delete calendar;
 }
-
-
 
 //******************** PRIVATE FUNCTIONS ***************
 
 // Returns 1 on success, 0 if eof
 int Security::get_next_rec()
 {
-   // Read CRSP_DATA_RLEN bytes into currec
+  // Read CRSP_DATA_RLEN bytes into currec
   if (tape.read((void *)currec, (size_t)CRSP_DATA_RLEN) == 0)
     return 0;
   reccount++;
@@ -178,40 +203,37 @@ void Security::get_field(int pos, char type, int len, int pre, void *dst)
   char oldchar;
 
   switch (type) {
-    case 'A': 
-      memcpy((char *)dst, from, len);
-      ((char *)dst)[len] = '\0';
-      break;
+  case 'A': 
+    memcpy((char *)dst, from, len);
+    ((char *)dst)[len] = '\0';
+    break;
 
-    case 'I':
-      oldchar = from[len];
-      from[len] = 0;
-      *((int *)dst) = atoi(from);
-      from[len] = oldchar;
-      break;
+  case 'I':
+    oldchar = from[len];
+    from[len] = 0;
+    *((int *)dst) = atoi(from);
+    from[len] = oldchar;
+    break;
 
-    case 'F':
-      // Here I am assuming that the decimal point is present in the 
-      // field. If the point is implied, different actions need to be done.
-      oldchar = from[len];
-      from[len] = 0;
-      *((float *)dst) = atof(from);
-      from[len] = oldchar;
-      break;
+  case 'F':
+    // Here I am assuming that the decimal point is present in the 
+    // field. If the point is implied, different actions need to be done.
+    oldchar = from[len];
+    from[len] = 0;
+    *((float *)dst) = atof(from);
+    from[len] = oldchar;
+    break;
 
-    default:  
-      cout << "Unknown type of field"<<endl;
-      break;
-
-    };
+  default:  
+    cout << "Unknown type of field"<<endl;
+    break;
+  }
 }
-
 
 int Security::get_header()
 {
-  if (!get_next_rec())
-  {
-    cout << "Reached end of data file" <<endl;
+  if (!get_next_rec()) {
+    cout << "Reached end of data file" << endl;
     return 0;
   }
 
@@ -246,7 +268,6 @@ int Security::get_header()
   return 1;
 }
 
-
 void Security::get_names()
 {
   int len = 66;
@@ -261,17 +282,14 @@ void Security::get_names()
   names = new names_t[numitems];
   DOASSERT(names, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for (i=0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 6, 0, &names[tot].namedt);
       get_field(j*len + 27, 'A', 8, 0, names[tot].ncusip);
       get_field(j*len + 35, 'A', 8, 0, names[tot].ticker);
@@ -302,17 +320,14 @@ void Security::get_dists()
   dists = new dists_t[numitems];
   DOASSERT(dists, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 4, 0, &dists[tot].distcd);
       get_field(j*len + 25, 'F', 13, 6, &dists[tot].divamt);
       get_field(j*len + 38, 'F', 13, 6, &dists[tot].facpr);
@@ -342,17 +357,14 @@ void Security::get_shares()
   shares = new shares_t[numitems];
   DOASSERT(shares, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 10, 0, &shares[tot].shrout);
       get_field(j*len + 31, 'I', 6, 0, &shares[tot].shrsdt);
       get_field(j*len + 37, 'I', 1, 0, &shares[tot].shrflg);
@@ -377,17 +389,14 @@ void Security::get_delist()
   delist = new delist_t[numitems];
   DOASSERT(delist, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 6, 0, &delist[tot].dlstdt);
       get_field(j*len + 27, 'I', 3, 0, &delist[tot].dlstcd);
       get_field(j*len + 30, 'I', 6, 0, &delist[tot].nwperm);
@@ -418,17 +427,14 @@ void Security::get_nasdin()
   nasdin = new nasdin_t[numitems];
   DOASSERT(nasdin, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 6, 0, &nasdin[tot].trtsdt);
       get_field(j*len + 27, 'I', 2, 0, &nasdin[tot].trtscd);
       get_field(j*len + 29, 'I', 2, 0, &nasdin[tot].nmsind);
@@ -444,7 +450,7 @@ void Security::get_nasdin()
 void Security::get_bidlo()
 {
   int len = 13;
-  int numitems = header.endsp - header.begsp  + 1;;
+  int numitems = header.endsp - header.begsp  + 1;
   int numperrec = 29;
 
   int i, j, tot = 0;
@@ -457,17 +463,14 @@ void Security::get_bidlo()
   bidlo = new float[numitems];
   DOASSERT(bidlo, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &bidlo[tot]);
 
       j++;
@@ -479,7 +482,7 @@ void Security::get_bidlo()
 void Security::get_askhi()
 {
   int len = 13;
-  int numitems = header.endsp - header.begsp  + 1;;
+  int numitems = header.endsp - header.begsp  + 1;
   int numperrec = 29;
 
   int i, j, tot = 0;
@@ -492,17 +495,14 @@ void Security::get_askhi()
   askhi = new float[numitems];
   DOASSERT(askhi, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &askhi[tot]);
 
       j++;
@@ -514,7 +514,7 @@ void Security::get_askhi()
 void Security::get_prc()
 {
   int len = 13;
-  int numitems = header.endprc - header.begprc  + 1;;
+  int numitems = header.endprc - header.begprc  + 1;
   int numperrec = 29;
 
   int i, j, tot = 0;
@@ -527,17 +527,14 @@ void Security::get_prc()
   prc = new float[numitems];
   DOASSERT(prc, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &prc[tot]);
 
       j++;
@@ -549,7 +546,7 @@ void Security::get_prc()
 void Security::get_vol()
 {
   int len = 9;
-  int numitems = header.endvol - header.begvol  + 1;;
+  int numitems = header.endvol - header.begvol  + 1;
   int numperrec = 42;
 
   int i, j, tot = 0;
@@ -562,17 +559,14 @@ void Security::get_vol()
   vol = new int[numitems];
   DOASSERT(vol, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'I', 9, 0, &vol[tot]);
 
       j++;
@@ -584,7 +578,7 @@ void Security::get_vol()
 void Security::get_ret()
 {
   int len = 13;
-  int numitems = header.endret - header.begret  + 1;;
+  int numitems = header.endret - header.begret  + 1;
   int numperrec = 29;
 
   int i, j, tot = 0;
@@ -597,17 +591,14 @@ void Security::get_ret()
   ret = new float[numitems];
   DOASSERT(ret, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &ret[tot]);
 
       j++;
@@ -619,7 +610,7 @@ void Security::get_ret()
 void Security::get_sxret()
 {
   int len = 13;
-  int numitems = header.endsxs - header.begsxs  + 1;;
+  int numitems = header.endsxs - header.begsxs  + 1;
   int numperrec = 29;
 
   int i, j, tot = 0;
@@ -632,17 +623,14 @@ void Security::get_sxret()
   sxret = new float[numitems];
   DOASSERT(sxret, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &sxret[tot]);
 
       j++;
@@ -654,7 +642,7 @@ void Security::get_sxret()
 void Security::get_bxret()
 {
   int len = 13;
-  int numitems = header.endbxs - header.begbxs  + 1;;
+  int numitems = header.endbxs - header.begbxs  + 1;
   int numperrec = 29;
   if (numitems <= 0) return;
 
@@ -667,17 +655,14 @@ void Security::get_bxret()
   bxret = new float[numitems];
   DOASSERT(bxret, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 13, 6, &bxret[tot]);
 
       j++;
@@ -689,7 +674,7 @@ void Security::get_bxret()
 void Security::get_yrval()
 {
   int len = 47;
-  int numitems = header.endyr - header.begyr + 1;;
+  int numitems = header.endyr - header.begyr + 1;
   int numperrec = 8;
 
   int i, j, tot = 0;
@@ -701,17 +686,14 @@ void Security::get_yrval()
   yrval = new yrval_t[numitems];
   DOASSERT(yrval, "Out of memory");
 
-  for (i=0; i < numrec; i++)
-  {
-    if (!get_next_rec())
-    {
-      cout << "Error: inconsistency in data file" <<endl;
+  for(i = 0; i < numrec; i++) {
+    if (!get_next_rec()) {
+      cout << "Error: inconsistency in data file" << endl;
       exit(0);
     }
 
     j = 0;
-    while ((j < numperrec) && (tot < numitems))
-    {
+    while ((j < numperrec) && (tot < numitems)) {
       get_field(j*len + 21, 'F', 15, 8, &yrval[tot].yrcap);
       get_field(j*len + 36, 'I', 2, 0, &yrval[tot].prcap);
       get_field(j*len + 38, 'F', 13, 6, &yrval[tot].yrsdev);
