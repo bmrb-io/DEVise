@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/28  05:26:28  ravim
+  Support for statistics.
+
   Revision 1.3  1995/11/25 01:20:19  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -34,7 +37,6 @@
 #include "GDataBin.h"
 #include "TDataCMap.h"
 #include "Color.h"
-#include "BasicStats.h"
 
 class TDataViewX: public ViewGraph, private QueryCallback,
 	private GDataBinCallback {
@@ -77,6 +79,5 @@ private:
   GDataBin *_dataBin;
   int _totalGData, _numBatches;
   Boolean _batchRecs; /* true to batch records */
-  BasicStats *_stats;
 };
 #endif
