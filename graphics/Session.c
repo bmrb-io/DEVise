@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/04/10 18:29:11  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.18  1998/03/12 20:44:57  wenger
   Partial fix for bug 320.
 
@@ -374,8 +379,8 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 DevStatus
 Session::CreateTData(char *name)
 {
-#if defined(DEBUG)
-  printf("Session::CreateTData(%s)", name);
+#if defined(DEBUG) || 1 //TEMPTEMP
+  printf("Session::CreateTData(%s)\n", name);
 #endif
 
   DevStatus status = StatusOk;
@@ -410,18 +415,27 @@ Session::CreateTData(char *name)
   	if (cmdContainerp->Run(6, argvIn, &control)< 0) {
       status = StatusFailed;
     }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     return status;
   }
 
+#if 1 //TEMPTEMP
+  char *catEntry = NULL;
+#else
   // Get the DTE catalog entry for this data source.
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   char *catEntry = dteShowCatalogEntry(name);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
     char errBuf[256];
     sprintf(errBuf, "No catalog entry for data source {%s}", name);
     reportErrNosys(errBuf);
     status = StatusFailed;
   }
+#endif
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
+#if 0 //TEMPTEMP
   // Get rid of braces surrounding the whole catalog entry and semicolon at
   // the end so it can get parsed.
   if (status.IsComplete()) {
@@ -435,7 +449,16 @@ Session::CreateTData(char *name)
     char *semicolon = strrchr(catEntry, ';');
     if (semicolon != NULL) *semicolon = ' ';
   }
+#endif
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
+#if 1 //TEMPTEMP
+  char *schema = NULL;
+  char *schemaFile = NULL;
+  char *sourceType = NULL;
+  char *param = NULL;
+  Boolean isDteSource = true;
+#else
   // Parse the catalog entry and assemble the proper arguments for creating
   // the TData object.
   char schema[MAXPATHLEN];
@@ -454,7 +477,7 @@ Session::CreateTData(char *name)
 
       // This is a kludgey way of trying to figure out whether we have a
       // DTE data source or a UNIXFILE -- it will fail if someone has a
-      // table with an attribute call UNIXFILE.  However, because of changes
+      // table with an attribute called UNIXFILE.  However, because of changes
       // Donko has made to SQLViews, Tcl_SplitList() will barf on many
       // SQLView data sources, so we have to decide whether it belongs to
       // the DTE before with do Tcl_SplitList() on it.  RKW Mar. 12, 1998.
@@ -463,6 +486,7 @@ Session::CreateTData(char *name)
       } else {
         isDteSource = true;
       }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
       if (!isDteSource) {
         if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
@@ -480,6 +504,8 @@ Session::CreateTData(char *name)
       Tcl_DeleteInterp(interp);
     }
   }
+#endif
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Parse the schema file for the given data source, and re-set the
   // schema type if the type in the file is different from the type
@@ -497,6 +523,7 @@ Session::CreateTData(char *name)
       }
     }
   }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Execute dataSegment command.
   if (status.IsComplete()) {
@@ -517,6 +544,7 @@ Session::CreateTData(char *name)
       status = StatusFailed;
     }
   }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Create the TData object.
   if (status.IsComplete()) {
@@ -539,10 +567,12 @@ Session::CreateTData(char *name)
       status = StatusFailed;
     }
   }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   if (catEntry != NULL) free(catEntry);
 
   if (status.IsError()) reportErrNosys("Error or warning");
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   return status;
 }
 
