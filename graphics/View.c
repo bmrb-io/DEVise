@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.181  1999/07/15 15:21:30  wenger
+  Improved axis drawing when labels don't fit; Y labels spaced closer
+  together.
+
   Revision 1.180  1999/07/14 20:45:36  wenger
   Added more debug logging.
 
@@ -1860,7 +1864,8 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   if (yAxis.width <= tickLength || yAxis.width <= _noTicksYAxisWidth) return;
 
   Coord drawHeight = axisHeight - (startY - axisY);
-  int numTicks = (int)(drawHeight / yAxis.labelWidth);
+  // Factor of 0.6 spaces things out a little better -- RKW 1999-04-15.
+  int numTicks = (int)(drawHeight / yAxis.labelWidth * 0.6);
 
   /* if axis is date, draw values and return */
   if (_yAxisAttrType == DateAttr) {
