@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/12 03:42:45  ravim
+  Fixed a bug.
+
   Revision 1.5  1995/12/11 18:03:13  ravim
   Physical and logical schema handled.
 
@@ -34,6 +37,8 @@ const int INIT_CAT_FILES = 64;
 static char **_catFiles = (char **)NULL;
 static int _numCatFiles = 0;
 static int _catFileArraySize= 0;
+static	int numAttrs = 0;
+static 	AttrList *attrs=NULL ;
 
 static int _line= 0; 	/* line number */
 /* Insert a new file name into file */
@@ -200,7 +205,6 @@ char *ParseCat(char *catFile)
 
 char *ParseCatOriginal(char *catFile){
 	FILE *file= NULL;
-	AttrList *attrs=NULL ;
 	Boolean hasSource = false;
 	char *source; /* source of data. Which interpreter we use depends
 					on this */
@@ -217,11 +221,12 @@ char *ParseCatOriginal(char *catFile){
 	int numArgs;
 	char **args;
 	int recSize = 0;
-	int numAttrs = 0;
 	int attrLength;
 	AttrType attrType;
 	char *commentString;
 	Group *currgrp = NULL;
+	attrs = NULL;
+	numAttrs = 0;
 
 	/*
 	printf("opening file %s\n", catFile);
@@ -302,12 +307,12 @@ char *ParseCatOriginal(char *catFile){
 			/* Let's add the schema name to the directory now */
 			/* First check if the schema is already loaded, in
 			   which case we do nothing more */
-			if (gdir->find_entry(fileType))
+			if (gdir->find_entry(getTail(catFile)))
 			  GLoad = false;
 			else
 			{
-			  printf("Adding schema %s to directory \n", fileType);
-			  gdir->add_entry(fileType);
+			  printf("Adding schema %s to directory \n", getTail(catFile));
+			  gdir->add_entry(getTail(catFile));
 			  GLoad = true;
 			}
 		} else if (strcmp(args[0],"attr") == 0 ||
@@ -453,7 +458,7 @@ char *ParseCatOriginal(char *catFile){
 		      if (!currgrp)		/* Top level */
 		      {
 			currgrp = new Group(args[1], NULL, TOPGRP);
-			gdir->add_topgrp(fileType, currgrp);
+			gdir->add_topgrp(getTail(catFile), currgrp);
 		      }
 		      else
 			currgrp = currgrp->insert_group(args[1]);
@@ -502,10 +507,10 @@ char *ParseCatOriginal(char *catFile){
 	int i,j;
 
 	/* If no group has been defined, create a default group */
-	if (GLoad && (gdir->num_topgrp(fileType) == 0))
+	if (GLoad && (gdir->num_topgrp(getTail(catFile)) == 0))
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(fileType, newgrp);
+	  gdir->add_topgrp(getTail(catFile), newgrp);
 	  for (i=0; i < numAttrs; i++)
 	  {
 	    AttrInfo *iInfo = attrs->Get(i);
@@ -597,7 +602,6 @@ error:
 
 char *ParseCatPhysical(char *catFile){
 	FILE *file= NULL;
-	AttrList *attrs=NULL ;
 	Boolean hasSource = false;
 	char *source; /* source of data. Which interpreter we use depends
 					on this */
@@ -613,10 +617,11 @@ char *ParseCatPhysical(char *catFile){
 	int numArgs;
 	char **args;
 	int recSize = 0;
-	int numAttrs = 0;
 	int attrLength;
 	AttrType attrType;
 	char *commentString;
+	attrs = NULL;
+	numAttrs = 0;
 
 	/*
 	printf("opening file %s\n", catFile);
@@ -959,15 +964,19 @@ char *ParseCatLogical(char *catFile, char *sname)
   /* read the first line first */
   fgets(buf, LINESIZE, file);
   
-  /* Let's add the schema name to the directory now */
+  /* Let's add the group name to the directory now */
+  /* The groups for a particular logical schema are identified by the 
+     schema file name. This is bcos the type name of the physical schema
+     is not a unique identifier - several logical schemas may use the same
+     physical schema */
   /* First check if the schema is already loaded, in
      which case we do nothing more */
-  if (gdir->find_entry(sname))
+  if (gdir->find_entry(getTail(catFile)))
     GLoad = false;
   else
   {
-    printf("Adding schema %s to directory \n", sname);
-    gdir->add_entry(sname);
+    printf("Adding schema %s to directory \n", getTail(catFile));
+    gdir->add_entry(getTail(catFile));
     GLoad = true;
   }
  
@@ -1006,7 +1015,7 @@ char *ParseCatLogical(char *catFile, char *sname)
 	    if (!currgrp)		/* Top level */
 	    {
 	      currgrp = new Group(args[1], NULL, TOPGRP);
-	      gdir->add_topgrp(sname, currgrp);
+	      gdir->add_topgrp(getTail(catFile), currgrp);
 	    }
 	    else
 	      currgrp = currgrp->insert_group(args[1]);
@@ -1036,6 +1045,20 @@ char *ParseCatLogical(char *catFile, char *sname)
       
 
     }
+
+  int i;
+  /* If no group has been defined, create a default group */
+  if (GLoad && (gdir->num_topgrp(getTail(catFile)) == 0))
+  {
+    Group *newgrp = new Group("__default", NULL, TOPGRP);
+    gdir->add_topgrp(getTail(catFile), newgrp);
+    for (i=0; i < numAttrs; i++)
+    {
+      AttrInfo *iInfo = attrs->Get(i);
+      newgrp->insert_item(iInfo->name);
+    }
+  }
+
   return sname;
 error:
 	if (file != NULL)
@@ -1045,4 +1068,21 @@ error:
 	return NULL;
 
 
+}
+
+
+char *getTail(char *fname)
+{
+  /* Either the character string after the last slash or the entire string
+     if there are no slashes in it */
+
+  char *ret = fname;
+  int len = strlen(fname);
+  int i;
+  
+  for (i = 0; i < len; i++)
+    if (fname[i] == '/')
+      ret = &(fname[i+1]);
+
+  return ret;
 }
