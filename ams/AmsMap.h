@@ -67,6 +67,12 @@ struct SolDnCompiled_GData {
 
 
 
+
+
+
+
+
+
 class SolDnCompiled_RectXShape  : public RectXShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -82,12 +88,13 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 92 "/p/devise/parser/proto/RectXShape_proto.h"
+# 98 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		
     if (view->GetNumDimensions() == 3)
       return;
@@ -232,7 +239,7 @@ public:
 		                       _maxSymWidth, _maxSymHeight);
 	}
 
-	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {
 		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
@@ -306,6 +313,12 @@ struct RainCompiled_GData {
 
 
 
+
+
+
+
+
+
 class RainCompiled_BarShape  : public BarShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -321,12 +334,13 @@ public:
 
 
 
-# 89 "/p/devise/parser/proto/BarShape_proto.h"
+# 95 "/p/devise/parser/proto/BarShape_proto.h"
 
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		
     if (view->GetNumDimensions() == 3)
       return;
@@ -430,7 +444,7 @@ public:
 		                       _maxSymWidth, _maxSymHeight);
 	}
 
-	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {
 		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
@@ -507,6 +521,12 @@ struct TempCompiled_GData {
 
 
 
+
+
+
+
+
+
 class TempCompiled_RectXShape  : public RectXShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -522,12 +542,13 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 92 "/p/devise/parser/proto/RectXShape_proto.h"
+# 98 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		
     if (view->GetNumDimensions() == 3)
       return;
@@ -671,7 +692,7 @@ public:
 		                       _maxSymWidth, _maxSymHeight);
 	}
 
-	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {
 		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 

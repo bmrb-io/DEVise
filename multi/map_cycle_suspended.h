@@ -65,6 +65,12 @@ struct CycleSuspendedMapping_GData {
 
 
 
+
+
+
+
+
+
 class CycleSuspendedMapping_RectShape  : public RectShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -96,8 +102,9 @@ public:
 
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		
     if (view->GetNumDimensions() == 3)
       return;
@@ -271,7 +278,7 @@ public:
 		                       _maxSymWidth, _maxSymHeight);
 	}
 
-	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {
 		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
