@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2001/02/21 17:50:36  xuk
+// Added the collaboration security features.
+// Changes in run() for setting collaboration password in JAVAC_Connect command.
+//
 // Revision 1.78  2001/02/20 20:02:21  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -907,6 +911,9 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.CLIENTS)) {
             jsc.showClientList(response);
 
+        } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
+            jsc.checkQuit();
+
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
 	    jsc.pn("we are here in collab_state" + args[1]);
             jsc.showCollabState(args[1]);
@@ -931,7 +938,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SESSION_LIST)) {
 	    // Number of arguments is variable.
-            jsc.showSession(args, true);
+	    if (jsc.specialID == -1) // only for normal JS 
+		jsc.showSession(args, true);
 
         } else if (args[0].equals(DEViseCommands.DRAW_CURSOR)) {
 	    drawCursor(response, args);
