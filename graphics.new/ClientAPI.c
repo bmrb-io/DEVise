@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:42:26  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/15 16:40:59  jussi
   Moved all networking code from ServerAPI.c to ClientAPI.c.
   Improved support for bracketed or non-bracketed arguments
@@ -245,7 +248,9 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     if (!res)
       return 0;
     if (res < 0) {
+#ifdef DEBUG
       perror("recv");
+#endif
       return -1;
     }
     ptr += res;
