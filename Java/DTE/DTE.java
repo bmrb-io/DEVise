@@ -34,9 +34,10 @@ public class DTE {
 		}
 		System.out.println("Type checked Query is: " + query.printTypes());
 		PlanNode plan = query.optimize();
-		Iterator topIter = plan.createIterator();
 		
 		try {
+		  Iterator topIter = plan.createIterator();
+		  
 		  for(Tuple t = topIter.getFirst(); t != null; t = topIter.getNext()){
 		    t.print(System.out);
 		  }
