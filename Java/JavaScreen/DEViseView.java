@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2000/07/20 16:26:07  venkatan
+// Mouse Location Display format - is now controlled by printf type
+// format strings specified by the VIEW_DATA_AREA command
+//
 // Revision 1.48  2000/06/27 16:44:45  wenger
 // Considerably cleaned up and simplified the cursor-related code; moved
 // cursor grid implementation from the DEViseCanvas class to the DEViseCursor
@@ -555,24 +559,40 @@ public class DEViseView
 
     public double pixel2DataX(int pixelX)
     {
-        return (pixelX - viewDataLoc.x) * dataXStep + viewDataXMin;
+	if (pileBaseView != null) {
+	    return pileBaseView.pixel2DataX(pixelX);
+	} else {
+            return (pixelX - viewDataLoc.x) * dataXStep + viewDataXMin;
+	}
     }
 
     public double pixel2DataY(int pixelY)
     {
-        return viewDataYMax - (pixelY - viewDataLoc.y) * dataYStep;
+	if (pileBaseView != null) {
+	    return pileBaseView.pixel2DataY(pixelY);
+	} else {
+            return viewDataYMax - (pixelY - viewDataLoc.y) * dataYStep;
+        }
     }
 
     public int data2PixelX(double dataX)
     {
-        return (int)Math.round((dataX - viewDataXMin) /
-	  dataXStep + viewDataLoc.x);
+	if (pileBaseView != null) {
+	    return pileBaseView.data2PixelX(dataX);
+	} else {
+            return (int)Math.round((dataX - viewDataXMin) /
+	      dataXStep + viewDataLoc.x);
+        }
     }
 
     public int data2PixelY(double dataY)
     {
-        return (int)Math.round((viewDataYMax - dataY) /
-	  dataYStep + viewDataLoc.y);
+	if (pileBaseView != null) {
+	    return pileBaseView.data2PixelY(dataY);
+	} else {
+            return (int)Math.round((viewDataYMax - dataY) /
+	      dataYStep + viewDataLoc.y);
+        }
     }
 
     // check whether or not the point (relative to this view's canvas) is within the view area

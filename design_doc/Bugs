@@ -2366,11 +2366,11 @@ Num Date        Status  Description
 601 7/12/00	OPEN	JavaScreen: JS doesn't get key released event
 			while help dialog is shown. (rkw)
 
-
-602 7/18/00	OPEN	JavaScreen: dragging a cursor doesn't work right
+602 7/18/00	FIXED	JavaScreen: dragging a cursor doesn't work right
 			if the cursor is in the non-base(?) view of a pile
 			(see bmrb/test/bad_cursor_drag.ds, third cursor
 			from the right). (rkw)
+			(Fixed by rkw, 7/20/00.)
 
 603 7/19/00	FIXED	JavaScreen: variable name strings in left window
 			are truncated. (rkw)
