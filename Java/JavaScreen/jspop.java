@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2001/10/24 18:53:11  wenger
+// Fixed bug 719 (JSPoP deals with invalid client IDs better).
+//
 // Revision 1.65  2001/10/24 17:46:07  wenger
 // Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
 // the JSPoP now has a separate thread to read from each client.
@@ -1451,23 +1454,27 @@ public class jspop implements Runnable
 	    pn("Receiving command via socket.");
 	}
 
-	DEViseClient client = findClientById(id);
-	if (client != null) {
-            // set cgi flag; added for mode changing
-	    client.setCgi(cgiflag);
-       	    client.setSocket(clientSock);
-	    client.addNewCmd(cmd);
-	    // disable collaboration
-	    if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) &&
-	      (client.isAbleCollab)) {
-		client.isAbleCollab = false;
-		pn("Disable collaboration." + client.isAbleCollab);
+	if (id != DEViseGlobals.DEFAULTID) {
+	    DEViseClient client = findClientById(id);
+	    if (client != null) {
+                // set cgi flag; added for mode changing
+	        client.setCgi(cgiflag);
+       	        client.setSocket(clientSock);
+	        client.addNewCmd(cmd);
+	        // disable collaboration
+	        if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) &&
+	          (client.isAbleCollab)) {
+		    client.isAbleCollab = false;
+		    pn("Disable collaboration." + client.isAbleCollab);
+	        }
+	    } else {
+	        clientSock.sendCommand(DEViseCommands.ERROR +
+	          " {Client connection is invalid.  Please exit the JavaScreen.}");
+	        clientSock.closeSocket();
+	        throw new YException("No client for ID: " + id);
 	    }
 	} else {
-	    clientSock.sendCommand(DEViseCommands.ERROR +
-	      " {Client connection is invalid.  Please exit the JavaScreen.}");
-	    clientSock.closeSocket();
-	    throw new YException("No client for ID: " + id);
+	    System.out.println("Ignoring command from client with default ID");
 	}
     }
 

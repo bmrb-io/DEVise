@@ -2887,6 +2887,12 @@ Num Date        Status  Description
 			goes out of collaboration mode, the corresponding
 			socket is not closed in the JSPoP. (rkw)
 
+722 10/24/01	WORK?	JavaScreen: collaborator client can goof up leader
+			by sending erroneous commands. (rkw)  (Note: GUI
+			doesn't normally let the user do anything, but if
+			the collaborator sends a command, the JSPoP doesn't
+			necessarily distinguish it from the leader.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
