@@ -26,4 +26,5 @@ public abstract class DTE_Type {
 	abstract public void print(PrintWriter ps);
 	abstract public void print(PrintStream ps);
         abstract public Object clone();
+  //       abstract public Object get_val();
 }

@@ -47,7 +47,7 @@ public class Tuple implements Cloneable {
  
         public DTE_Type[] get_fields( )
         {
-	  	return types;
+	  return types;
 	}
     
         public Object clone()
@@ -59,6 +59,10 @@ public class Tuple implements Cloneable {
 	  return t;
 	}
 }
+
+
+
+
 
 
 

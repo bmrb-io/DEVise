@@ -54,6 +54,22 @@ public class FileScanIteratorTest {
 
 	      	System.out.println("read " + cnt + " tuples");
 
+		ExecExpr[] m1 = new ExecExpr[2];
+		m1[0] = new ExecSelect(0,0);
+		m1[1] = new ExecSelect(0,1);
+		
+		ExecExpr[] m2 = m1;
+
+		//		ExecExpr[] m2 = new ExecExpr[10];	
+
+		TypeDesc[] ty = new TypeDesc[2];
+		ty[0] = new TypeDesc("int");
+		ty[1] = new TypeDesc("double");
+		
+
+		//NLjoinIterator n = new NLjoinIterator(fs,fs,m1,m2,ty,10);
+		SelProj S = new SelProj(fs,m1,m2,ty);
+
 		ExecSelect es = new ExecSelect( 0, 0 );
 		SymbolTable st = new SymbolTable( );
 	}
