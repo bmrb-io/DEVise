@@ -76,7 +76,7 @@ public:
   }
 	
   Type* getValue() {
-    result = (Type*) count;  // should be a constuctor newInt
+    result = (Type*) count;  // assumes int is inlined
     return result;
   }
 
@@ -86,24 +86,22 @@ public:
 
 
 class ExecSum : public ExecAggregate {
-  OperatorPtr opPtr;
+  OperatorPtr addPtr;
   ADTCopyPtr copyPtr;
   Type* sum;
   size_t valueSize;
 
 public:
-  ExecSum(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
+  ExecSum(OperatorPtr addPtr, ADTCopyPtr copyPtr, Type* value, 
 	     size_t valueSize) :
-    opPtr(opPtr), copyPtr(copyPtr), sum(value), valueSize(valueSize) {}
+    addPtr(addPtr), copyPtr(copyPtr), sum(value), valueSize(valueSize) {}
 
   void initialize(const Type* input) {
     copyPtr(input, sum, valueSize);	
   }
 
   void update(const Type* input)  {
-    Type* result;
-    opPtr(input, sum, result);
-    copyPtr(result, sum, valueSize);	
+    addPtr(input, sum, sum);
   }
 	
   Type* getValue() {
@@ -319,17 +317,18 @@ class StandAggsExec : public Iterator {
 	int numFlds;
 	Tuple* retTuple;
 public:
-	StandAggsExec(Iterator* inputIter, ExecAggregate** aggExecs, int numFlds)
-		:
-		inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds){
-
-		retTuple = new Tuple[numFlds];
+	StandAggsExec(Iterator* inputIter, ExecAggregate** aggExecs, int numFlds) :
+	  inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds){
+		  retTuple = new Tuple[numFlds];
 	}
+
 	virtual ~StandAggsExec(){
 		delete [] retTuple;
 	}
+
 	virtual void initialize();
 	virtual const Tuple* getNext();
+
 	// Need to check this..
 	virtual void reset(int lowRid, int highRid){
 		TRY(inputIter->reset(lowRid, highRid), );
@@ -337,21 +336,21 @@ public:
 };
 
 class StandGroupByExec : public Iterator {
-	Iterator* inputIter;
+  Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
 	ExecAggregate** aggExecs;
 	int numFlds;
 	Tuple* retTuple;
 	int* grpByPos;		// positions of group by attributes
 	int grpByPosLen;
 public:
+  
 	StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		int numFlds, int* grpByPos, int grpByPosLen)
-		:
-		inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds),
-		grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
-
-		retTuple = new Tuple[numFlds];
+			 int numFlds, int* grpByPos, int grpByPosLen) :
+	  inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds),
+	  grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
+	    retTuple = new Tuple[numFlds];
 	}
+
 	virtual ~StandGroupByExec(){
 
 		// should destroy all of its members
@@ -360,11 +359,14 @@ public:
 		delete [] retTuple;	// destroy too
 		// ...
 	}
+
 	virtual void initialize(){// implement this
 	}
+
 	virtual const Tuple* getNext(){
 		return NULL; // implement
 	}
+
 	// Need to check this..
 	virtual void reset(int lowRid, int highRid){
 		TRY(inputIter->reset(lowRid, highRid), );

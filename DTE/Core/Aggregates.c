@@ -59,6 +59,25 @@ bool Aggregates::isApplicable(){
 		selList->step();
 		i++;
 	}
+	/*
+	groupBy->rewind();
+	while(!groupBy->atEnd()){
+		bool match = false;
+		selList->rewind();
+		while(!selList->atEnd()){
+			if (selList->get()->match(groupBy->get())){
+				match = true;
+				break;
+			}
+			selList->step();
+		}	
+		if (!match){
+			filteredSelList->append(groupBy->get());
+			selList->append(groupBy->get());
+		}
+		groupBy->step();
+	}
+	*/
 	return isApplicableValue;
 }
 
