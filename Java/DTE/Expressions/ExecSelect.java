@@ -12,10 +12,14 @@ public class ExecSelect implements ExecExpr {
 	}
 
      	public DTE_Type evaluate(Tuple left, Tuple right) {
+		DTE_Type[] fields = { };
+
 		if(leftRight == 0)
-			return left[fieldNo];
-		if(leftRight == 1 )	
-			return right[fieldNo];
+			fields = left.get_fields( );
+		else if(leftRight == 1 )	
+			fields = right.get_fields( );
 		// else ...
+
+		return fields[ fieldNo ];
      	}
 };

@@ -10,7 +10,7 @@ public class SymbolTable {
 	private Hashtable table;
 
 	public SymbolTable( ){
-		table = new HashTable( );
+		table = new Hashtable( );
 	}
 
 	public boolean containsKey(String exprStr){
@@ -25,7 +25,7 @@ public class SymbolTable {
 	}
 
 	public Expression get(String exprStr){
-		return table.get( exprStr );	
+		return (Expression)table.get( exprStr );	
 	}
 }
 
