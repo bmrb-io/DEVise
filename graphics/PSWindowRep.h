@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:23:03  jussi
+  Initial revision.
+*/
 
 #ifndef PSWindowRep_h
 #define PSWindowRep_h
@@ -160,9 +163,6 @@ private:
     /* child/parent links for windows */
     PSWindowRep    *_parent;
     PSWindowRepList _children;
-
-    /* True if display graphics */
-    Boolean _dispGraphics;
 };
 
 #endif
