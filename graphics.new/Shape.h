@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/28 00:07:25  jussi
+  Moved some common code from MapInterpShape.h to this file.
+  BoundingBoxGData is by default computed based on the width
+  and height of a symbol. Small symbols are drawn as single
+  pixels, and for this purpose derived classes can use the
+  DrawPixelArray method.
+
   Revision 1.4  1995/11/25  01:20:15  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -33,7 +40,9 @@
 #define Shape_h
 
 #include <stdio.h>
-#include "DeviseTypes.h"
+#include "TDataMap.h"
+#include "WindowRep.h"
+#include "Temp.h"
 
 #define GetAttr(ptr, attrName, attrType, offset) \
 	*((attrType *)(ptr+offset->attrName))
