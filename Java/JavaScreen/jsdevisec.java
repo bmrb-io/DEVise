@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.16  1998/06/23 17:53:26  wenger
+// Improved some error messages (see bug 368).
+//
 // Revision 1.15  1998/06/17 17:19:30  wenger
 // Fixes to JavaScreen for JDK 1.2.
 //
@@ -38,6 +41,7 @@ public class jsdevisec extends Frame
 {
     public DEViseCmdDispatcher dispatcher = null;
     public Thread dispatcherThread = null;
+    public DEViseCmdSocket popSocket = null;
     public DEViseCmdSocket cmdSocket = null;
     public DEViseImgSocket imgSocket = null;
     public DEViseScreen jscreen = null;
@@ -65,13 +69,14 @@ public class jsdevisec extends Frame
     public YDebugInfo debugInfo = null;
     public YLogFile logFile = null;
     
-    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3)
+    public jsdevisec(DEViseCmdSocket arg0, DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3)
     {
-        this(arg1, arg2, arg3, null);
+        this(arg0, arg1, arg2, arg3, null);
     }
     
-    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3, Vector imgs)
-    {
+    public jsdevisec(DEViseCmdSocket arg0, DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3, Vector imgs)
+    {   
+        popSocket = arg0;
         cmdSocket = arg1;
         imgSocket = arg2;
         myID = arg3;        
@@ -355,6 +360,13 @@ public class jsdevisec extends Frame
                     cmdSocket = null;
                 }
             }
+
+            if (!Globals.ISAPPLET) {
+                popSocket.sendCmd("JAVAC_Exit", Globals.API_JAVA);
+                popSocket.closeSocket();
+                popSocket = null;
+            }
+            
         } catch (YError e) {
             if (!Globals.ISAPPLET) {
                 //if (isFatalError)

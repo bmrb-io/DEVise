@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.3  1998/06/11 15:07:51  wenger
+// Added standard header to Java files.
+//
 //
 // ------------------------------------------------------------------------
 
@@ -90,6 +93,44 @@ public class js
                 System.exit(1);
             }
         }          
+        
+        DEViseCmdSocket popSocket = null;
+        System.out.println("Trying to connect to DEVise POP Server at " + hostname + " ...\n");
+        try {
+            popSocket = new DEViseCmdSocket(hostname, Globals.POPCMDPORT);
+            try {
+                String rsp = popSocket.receiveRsp(false);
+                System.out.println("Receive response: " + rsp + "\n");
+                String [] popcommands = Globals.parseStr(rsp, false);
+                if (popcommands == null) {
+                    System.out.println("Receive trash from DEVise POP Server!\n");
+                    System.exit(1);
+                } else {
+                    if (popcommands[0].equals("JAVAC_Connect")) {
+                        if (popcommands.length == 3) {
+                            Globals.CMDPORT = (Integer.valueOf(popcommands[1])).intValue();
+                            Globals.IMGPORT = (Integer.valueOf(popcommands[2])).intValue();
+                            System.out.println("Successfully talk to DEVise POP Server!\n");
+                        } else {
+                            System.out.println("Trash data received from DEVise POP Server!\n");
+                            System.exit(1);
+                        }
+                    } else {
+                        System.out.println("Connection to DEVise POP Server has been rejected!\n");
+                        System.exit(0);
+                    }
+                }
+            } catch (YError e) {
+                System.out.println("Can not talk to DEVise Pop Server!\n");
+                System.exit(1);
+            }
+        }  catch (UnknownHostException e)  {
+            System.out.println("Can not find host " + hostname + "\n");
+            System.exit(1);
+        }  catch (IOException e)  {
+            System.out.println("Communication Error -> " + e.getMessage() + "\n");
+            System.exit(1);
+        }
 
         DEViseCmdSocket cmdSocket = null;
         DEViseImgSocket imgSocket = null;        
@@ -136,6 +177,6 @@ public class js
         }
                 
         Globals.ISAPPLET = false;
-        jsdevisec newclient = new jsdevisec(cmdSocket, imgSocket, myID); 
+        jsdevisec newclient = new jsdevisec(popSocket, cmdSocket, imgSocket, myID); 
     }
 }

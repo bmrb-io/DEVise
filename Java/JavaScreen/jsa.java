@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.4  1998/06/23 17:53:25  wenger
+// Improved some error messages (see bug 368).
+//
 // Revision 1.3  1998/06/11 15:07:52  wenger
 // Added standard header to Java files.
 //
@@ -42,6 +45,7 @@ public class jsa extends Applet
     
     boolean isStarted = false;
     jsdevisec client = null;
+    DEViseCmdSocket popSocket = null;
     DEViseCmdSocket cmdSocket = null;
     DEViseImgSocket imgSocket = null;
 
@@ -115,7 +119,7 @@ public class jsa extends Applet
     
     public void closeJS()
     {
-        try {
+        try {     
             info.append("Start closing socket connection to DEVise Server ...\n");
             if (imgSocket != null) {
                 imgSocket.closeSocket();
@@ -126,6 +130,15 @@ public class jsa extends Applet
                 cmdSocket = null;
             }
             info.append("Successfully closing socket connection to DEVise Server!\n");
+
+            info.append("Start closing socket connection to DEVise POP Server ...\n");
+            if (popSocket != null) {
+                popSocket.sendCmd("JAVAC_Exit", Globals.API_JAVA);                
+                popSocket.closeSocket();
+                popSocket = null;
+            }
+            info.append("Successfully closing socket connection to DEVise POP Server!\n");
+            
         } catch (YError e) {
             info.append("Can not close socket connection!\n");
         }
@@ -155,6 +168,43 @@ public class jsa extends Applet
         info.append("Successfully load DEVise Symbol!\n");
         
         isStarted = true;
+
+        info.append("Trying to connect to DEVise POP Server at " + hostname + " ...\n");
+        try {
+            popSocket = new DEViseCmdSocket(hostname, Globals.POPCMDPORT);
+            try {
+                String rsp = popSocket.receiveRsp(false);
+                info.append("Receive response: " + rsp + "\n");
+                String [] popcommands = Globals.parseStr(rsp, false);
+                if (popcommands == null) {
+                    info.append("Receive trash from DEVise POP Server!\n");
+                    return;
+                } else {
+                    if (popcommands[0].equals("JAVAC_Connect")) {
+                        if (popcommands.length == 3) {
+                            Globals.CMDPORT = (Integer.valueOf(popcommands[1])).intValue();
+                            Globals.IMGPORT = (Integer.valueOf(popcommands[2])).intValue();
+                            info.append("Successfully talk to DEVise POP Server!\n");
+                        } else {
+                            info.append("Trash data received from DEVise POP Server!\n");
+                            return;
+                        }
+                    } else {
+                        info.append("Connection to DEVise POP Server has been rejected!\n");
+                        return;
+                    }
+                }
+            } catch (YError e) {
+                info.append("Can not talk to DEVise Pop Server!\n");
+                return;
+            }
+        }  catch (UnknownHostException e)  {
+            info.append("Can not find host " + hostname + "\n");
+            return;
+        }  catch (IOException e)  {
+            info.append("Communication Error -> " + e.getMessage() + "\n");
+            return;
+        }
 
         String myID = Globals.ERRORID;
         try  {
@@ -201,7 +251,7 @@ public class jsa extends Applet
         
         Globals.ISAPPLET = true;
 
-        client = new jsdevisec(cmdSocket, imgSocket, myID, images);
+        client = new jsdevisec(popSocket, cmdSocket, imgSocket, myID, images);
     }
 }
 
