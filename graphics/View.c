@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/06/15 13:46:39  jussi
+  X and Y axes now use the view foreground color as their color.
+  The axis.color field was removed.
+
   Revision 1.40  1996/06/15 07:05:08  yuc
   Change CompRhoPhiTheta so it will display x vs y and z-axis into the
   screen, add spherical coordinate system to CompRhoPhiTheta also.
@@ -2327,205 +2331,185 @@ void View::PrintStat()
   printf("  Unknown %d, %.2f%%\n", _unknown, 100.0 * _unknown / total);
 }
 
-// ----------------------------------------------------------
-void
-View::CompRhoPhiTheta()
+void View::CompRhoPhiTheta()
 {
-	double X, Y, Z;
-//	if (! _camera.flag) return;
-//	else _camera.flag = false;
+  double X, Y, Z;
 
-#ifdef YLC
-	printf ("*********** begin CompRhoPhiTheta ***********\n");
-	printf ("\n>>>> x = %f y = %f z = %f\n",_camera.x_,_camera.y_,_camera.z_);
+#ifdef DEBUG
+  printf ("*********** begin CompRhoPhiTheta ***********\n");
+  printf ("\n>>>> x = %f y = %f z = %f\n",_camera.x_,_camera.y_,_camera.z_);
 #endif
 
-  if (! _camera.spherical_coord) {
-	X = _camera.x_ - _camera.fx;
-	Y = _camera.y_ - _camera.fy;
-	Z = -(_camera.z_ - _camera.fz);
+  if (!_camera.spherical_coord) {
+    X = _camera.x_ - _camera.fx;
+    Y = _camera.y_ - _camera.fy;
+    Z = -(_camera.z_ - _camera.fz);
 
-     _camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
+    _camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
 
-     if (_camera._rho > 0)
-          _camera._phi = acos(Y / _camera._rho);
-     else {
-          _camera._phi = 0.0;
-          // printf ("*********** WARNING *****************\n");
-     }
+    if (_camera._rho > 0)
+      _camera._phi = acos(Y / _camera._rho);
+    else {
+      _camera._phi = 0.0;
+#ifdef DEBUG
+      printf ("*********** WARNING *****************\n");
+#endif
+    }
 
-     if (_camera._rho == 0)
-          _camera._theta = 0.0;
-     // ------------- on yz-axis
-     else if (X == 0 && Z >= 0)  // on +z axis
-          _camera._theta = 0.0;
-     else if (X == 0 && Z < 0)   // on -z axis
-          _camera._theta = M_PI;
+    if (_camera._rho == 0)
+      _camera._theta = 0.0;
+    // ------------- on yz-axis
+    else if (X == 0 && Z >= 0)  // on +z axis
+      _camera._theta = 0.0;
+    else if (X == 0 && Z < 0)   // on -z axis
+      _camera._theta = M_PI;
+    
+    // ------------- on xy-axis
+    else if (Z == 0 && X > 0) // on +x axis
+      _camera._theta = M_PI_2;
+    else if (Z == 0 && X < 0) // on -x axis
+      _camera._theta = M_PI_2 + M_PI;    // pi / 2 * 3
+    
+    else if (X > 0 && Z > 0)
+      _camera._theta = atan(X / Z);
+    else if (X > 0 && Z < 0)
+      _camera._theta = M_PI + atan(X / Z);
+    else if (X < 0 && Z < 0)
+      _camera._theta = M_PI + atan(X / Z);
+    else if (X < 0 && Z > 0)
+      _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
 
-     // ------------- on xy-axis
-     else if (Z == 0 && X > 0) // on +x axis
-          _camera._theta = M_PI_2;
-     else if (Z == 0 && X < 0) // on -x axis
-          _camera._theta = M_PI_2 + M_PI;    // pi / 2 * 3
-
-     else if (X > 0 && Z > 0)
-          _camera._theta = atan(X / Z);
-     else if (X > 0 && Z < 0)
-          _camera._theta = M_PI + atan(X / Z);
-     else if (X < 0 && Z < 0)
-          _camera._theta = M_PI + atan(X / Z);
-     else if (X < 0 && Z > 0)
-          _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
-
-     else {
-          printf ("\nERR 1: compute theta cx = %f cy = %f cz = %f\n\n",
-               X, Y, Z);
-          exit (1);
-     }
+    else {
+      printf ("\nERR 1: compute theta cx = %f cy = %f cz = %f\n\n",
+	      X, Y, Z);
+      exit (1);
+    }
   } else {
-	X = _camera.fx;
-	Y = _camera.fy;
-	Z = _camera.fz;
+    X = _camera.fx;
+    Y = _camera.fy;
+    Z = _camera.fz;
 
-     double rho1 = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z)), 
-		  phi1, 
-		  theta1;
+    double rho1 = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
+    double phi1, theta1;
 
-     if (rho1 > 0)
-          phi1 = acos(Y / rho1);
-     else {
-          phi1 = 0.0;
-          // printf ("----------- WARNING --------------\n");
-     }
+    if (rho1 > 0)
+      phi1 = acos(Y / rho1);
+    else {
+      phi1 = 0.0;
+      // printf ("----------- WARNING --------------\n");
+    }
 
-     if (rho1 == 0)
-          theta1 = 0.0;
-     // ------------- on yz-axis
-     else if (X == 0 && Z >= 0)  // on +z axis
-          theta1 = 0.0;
-     else if (X == 0 && Z < 0)   // on -z axis
-          theta1 = M_PI;
+    if (rho1 == 0)
+      theta1 = 0.0;
+    // ------------- on yz-axis
+    else if (X == 0 && Z >= 0)  // on +z axis
+      theta1 = 0.0;
+    else if (X == 0 && Z < 0)   // on -z axis
+      theta1 = M_PI;
 
-     // ------------- on xy-axis
-     else if (Z == 0 && X > 0) // on +x axis
-          theta1 = M_PI_2;
-     else if (Z == 0 && X < 0) // on -x axis
-          theta1 = M_PI_2 + M_PI;    // pi / 2 * 3
+    // ------------- on xy-axis
+    else if (Z == 0 && X > 0) // on +x axis
+      theta1 = M_PI_2;
+    else if (Z == 0 && X < 0) // on -x axis
+      theta1 = M_PI_2 + M_PI;    // pi / 2 * 3
 
-     else if (X > 0 && Z > 0)
-          theta1 = atan(X / Z);
-     else if (X > 0 && Z < 0)
-          theta1 = M_PI + atan(X / Z);
-     else if (X < 0 && Z < 0)
-          theta1 = M_PI + atan(X / Z);
-     else if (X < 0 && Z > 0)
-          theta1 = (M_PI_2 + M_PI) + fabs(atan(Z / X));
+    else if (X > 0 && Z > 0)
+      theta1 = atan(X / Z);
+    else if (X > 0 && Z < 0)
+      theta1 = M_PI + atan(X / Z);
+    else if (X < 0 && Z < 0)
+      theta1 = M_PI + atan(X / Z);
+    else if (X < 0 && Z > 0)
+      theta1 = (M_PI_2 + M_PI) + fabs(atan(Z / X));
+    
+    else {
+      printf ("\nERR 2: compute theta cx = %f cy = %f cz = %f\n\n",
+	      X, Y, Z);
+      exit (1);
+    }
 
-     else {
-          printf ("\nERR 2: compute theta cx = %f cy = %f cz = %f\n\n",
-               X, Y, Z);
-          exit (1);
-     }
+    double RHO = _camera._rho - rho1;
+    double PHI = _camera._phi - phi1;
+    double THETA = _camera._theta - theta1;
+    
+    _camera.x_ = _camera._rho*sin(_camera._phi)*sin(_camera._theta);
+    _camera.y_ = _camera._rho*cos(_camera._phi);
+    _camera.z_ = -_camera._rho*sin(_camera._phi)*cos(_camera._theta);
 
-	double RHO = _camera._rho - rho1,
-		  PHI = _camera._phi - phi1,
-		  THETA = _camera._theta - theta1;
-
-	_camera.x_ = _camera._rho*sin(_camera._phi)*sin(_camera._theta);
-	_camera.y_ = _camera._rho*cos(_camera._phi);
-	_camera.z_ = -_camera._rho*sin(_camera._phi)*cos(_camera._theta);
-
-	// _camera.x_ = RHO*sin(PHI)*sin(THETA);
-	// _camera.y_ = RHO*cos(PHI);
-	// _camera.z_ = -RHO*sin(PHI)*cos(THETA);
-
-	// _camera._phi -= fabs(fabs(_camera._phi) - fabs(phi1));
-	// _camera._theta -= fabs(fabs(_camera._theta) - fabs(theta1));
-
-#ifdef YLC1
-	printf ("rho = %.2f phi = %.2f theta = %.2f\n", _camera._rho,
-		_camera._phi, _camera._theta);
-	printf ("rho1 = %.2f phi1 = %.2f theta = %.2f\n", rho1, phi1, theta1);
+#ifdef DEBUG
+    printf ("rho = %.2f phi = %.2f theta = %.2f\n", _camera._rho,
+	    _camera._phi, _camera._theta);
+    printf ("rho1 = %.2f phi1 = %.2f theta = %.2f\n", rho1, phi1, theta1);
 #endif
-  } // end for if-then-else
+  }
 
-#ifdef YLC
-	printf (">>>> rho = %f phi = %f theta = %f\n\n", _camera._rho,
-		_camera._phi, _camera._theta);
+#ifdef DEBUG
+  printf (">>>> rho = %f phi = %f theta = %f\n\n", _camera._rho,
+	  _camera._phi, _camera._theta);
 #endif
-} // end of CompRhoPhiTheta()
+}
 
-
-// ----------------------------------------------------------
-// similar to SetVisualFilter, this will probably get incorporate
-// into SetVisualFiter when camera is put into struct VisualFilter
 void View::SetCamera(Camera new_camera)
 {
-	ReportFilterAboutToChange();
+  /* ignore new camera if same as current one */
+  if (new_camera.x_ == _camera.x_ && new_camera.y_ == _camera.y_ && 
+      new_camera.z_ == _camera.z_ && new_camera._dvs == _camera._dvs &&
 
-	/* ignore new camera if same as current one */
-	if ( new_camera.x_ != _camera.x_ || new_camera.y_ != _camera.y_ || 
-		new_camera.z_ != _camera.z_ || new_camera._dvs != _camera._dvs ||
+      new_camera._rho == _camera._rho && 
+      new_camera._phi == _camera._phi && 
+      new_camera._theta == _camera._theta && 
 
-		new_camera._rho != _camera._rho || 
-		new_camera._phi != _camera._phi || 
-		new_camera._theta != _camera._theta || 
+      new_camera.fx == _camera.fx && new_camera.fy == _camera.fy &&
+      new_camera.fz == _camera.fz && 
+      new_camera.flag == _camera.flag && 
+      new_camera._perspective == _camera._perspective && 
+      new_camera._twist_angle == _camera._twist_angle && 
+      new_camera.fix_focus == _camera.fix_focus &&
+      new_camera.spherical_coord == _camera.spherical_coord &&
+      new_camera.H == _camera.H && new_camera.V == _camera.V)
+    return;
 
-		new_camera.fx != _camera.fx || new_camera.fy != _camera.fy ||
-		new_camera.fz != _camera.fz || 
-		new_camera.flag != _camera.flag || 
-		new_camera._perspective != _camera._perspective || 
-		new_camera._twist_angle != _camera._twist_angle || 
-		new_camera.fix_focus != _camera.fix_focus ||
-		new_camera.spherical_coord != _camera.spherical_coord ||
-		new_camera.H != _camera.H || new_camera.V != _camera.V) {
-#ifdef YLC
-    printf("camera changed\n");
+#ifdef DEBUG
+  printf("camera changed\n");
 #endif
-		_filterChanged = true;
-		_camera.x_ = new_camera.x_;
-		_camera.y_ = new_camera.y_;
-		_camera.z_ = new_camera.z_;
 
-		_camera._rho = new_camera._rho;
-		_camera._phi = new_camera._phi;
-		_camera._theta = new_camera._theta;
+  _camera.x_ = new_camera.x_;
+  _camera.y_ = new_camera.y_;
+  _camera.z_ = new_camera.z_;
+    
+  _camera._rho = new_camera._rho;
+  _camera._phi = new_camera._phi;
+  _camera._theta = new_camera._theta;
 
-		_camera._dvs = new_camera._dvs;
-		_camera.fx = new_camera.fx;
-		_camera.fy = new_camera.fy;
-		_camera.fz = new_camera.fz;
-		_camera._twist_angle = new_camera._twist_angle;
-		_camera._perspective = new_camera._perspective;
-		_camera.fix_focus = new_camera.fix_focus;
-		_camera.spherical_coord = new_camera.spherical_coord;
-		_camera.flag = new_camera.flag;
-		_camera.H = new_camera.H;
-		_camera.V = new_camera.V;
+  _camera._dvs = new_camera._dvs;
+  _camera.fx = new_camera.fx;
+  _camera.fy = new_camera.fy;
+  _camera.fz = new_camera.fz;
+  _camera._twist_angle = new_camera._twist_angle;
+  _camera._perspective = new_camera._perspective;
+  _camera.fix_focus = new_camera.fix_focus;
+  _camera.spherical_coord = new_camera.spherical_coord;
+  _camera.flag = new_camera.flag;
+  _camera.H = new_camera.H;
+  _camera.V = new_camera.V;
 
-		CompRhoPhiTheta();
-		if (!_hasTimestamp) {
-			_timeStamp = TimeStamp::NextTimeStamp();
-			_hasTimestamp = true;
-		}
-		_updateTransform = true;
-	}
+  CompRhoPhiTheta();
 
-	int flushed = _filterQueue->Enqueue(_filter);
-	ReportFilterChanged(_filter, flushed);
-
-#ifdef YLC
-	printf ("_camera fx = %.3f fy = %.3f, fix_focus = %d\n",
-		_camera.fx, _camera.fy, _camera.fix_focus);
-	printf ("*********** end SetCamera ***********\n");
+#ifdef DEBUG
+  printf ("_camera fx = %.3f fy = %.3f, fix_focus = %d\n",
+	  _camera.fx, _camera.fy, _camera.fix_focus);
+  printf ("*********** end SetCamera ***********\n");
 #endif
-} // end of SetCamera
+
+  _updateTransform = true;
+  Refresh();
+}
 
 void View::SetViewDir(int H, int V)
 {
-	if (_camera.H != H || _camera.V != V) {
-		_camera.H = H;
-		_camera.V = V;
-	}
-} // end of SetViewDir
+  if (_camera.H != H || _camera.V != V) {
+    _camera.H = H;
+    _camera.V = V;
+  }
+}
 
