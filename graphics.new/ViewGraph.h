@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.84.2.1  2001/02/16 21:38:00  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.84  2001/01/08 20:32:55  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.82.2.1  2000/10/18 20:32:17  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -653,6 +661,7 @@ public:
 
   /* Update visual filter in various ways. */
   virtual void GetHome2D(Boolean explicitRequest, VisualFilter &filter);
+  virtual void GoHomeCommand();
   virtual void GoHome(Boolean explicitRequest);
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);

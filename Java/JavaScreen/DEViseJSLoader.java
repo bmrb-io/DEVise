@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2001/02/05 22:02:10  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
+//
+// Revision 1.2  2001/01/08 20:31:52  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.1.2.6  2001/01/05 19:15:45  wenger
 // Updated copyright dates.
 //
@@ -60,6 +68,8 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
     public void init()
     {
+	super.init();
+
         if (DEBUG >= 1) {
             System.out.println("DEViseJSLoader.init()");
         }

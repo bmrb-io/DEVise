@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5.4.1  2001/02/16 21:37:46  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.5  2000/02/16 18:51:20  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.4  1999/11/30 22:28:02  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -106,4 +113,16 @@ void FilterQueue::Mark(int index, Boolean true_false)
     Exit::DoExit(1);
   }
   _filterArray[Index(index)].marked = true_false;
+}
+
+void
+FilterQueue::Print(FILE *stream)
+{
+  fprintf(stream, "xLow xHigh yLow yHigh flag marked\n");
+  for (int index = 0; index < Size(); index++) {
+    VisualFilter filter;
+    Get(index, filter);
+    fprintf(stream, "(%g, %g), (%g, %g) %d %d\n", filter.xLow,
+      filter.xHigh, filter.yLow, filter.yHigh, filter.flag, filter.marked);
+  }
 }

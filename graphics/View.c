@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.232.2.1  2001/02/16 21:37:47  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.232  2001/01/08 20:32:43  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.229.2.2  2000/12/27 19:38:56  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -1233,6 +1241,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 									 DepMgr::EventViewCreated);
 	_refreshPending = true;
 	Scheduler::Current()->RequestCallback(_dispatcherID);
+
+	DeviseHistory::GetDefaultHistory()->ClearAll();
 }
 
 View::~View(void)
@@ -1268,6 +1278,8 @@ View::~View(void)
 	ControlPanel::Instance()->DeleteCallback(controlPanelCallback);
 
 	ReportViewDestroyed();
+
+	DeviseHistory::GetDefaultHistory()->ClearAll();
 
 	delete controlPanelCallback;
 	delete dispatcherCallback;
@@ -1307,7 +1319,7 @@ void    View::SetColors(PColorID fgid, PColorID bgid)
 Find view by name. Return NULL if not found.
 ****************************************************************/
 
-View *View::FindViewByName(char *name)
+View *View::FindViewByName(const char *name)
 {
   DOASSERT(_viewList, "Invalid view list");
   

@@ -428,4 +428,6 @@ see comments in DEViseCommSocket.java.
 
     8.1 JAVAC_CheckPop
     Purpose: checks that the JSPoP is runing and accepting connections.
-    Arguments: 0
+    Arguments: 1
+        <timestamp>: used to uniquely identify a particular check on
+	  both ends

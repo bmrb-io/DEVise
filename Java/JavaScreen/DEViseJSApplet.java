@@ -20,6 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2001/02/05 22:02:10  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
+//
+// Revision 1.2  2001/01/08 20:31:52  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.1.2.4  2001/01/05 19:05:16  wenger
 // Fixed the problem with warnings about scrollbars when the JSA is loaded
 // into Netscape.
@@ -48,6 +56,8 @@ import  java.util.*;
 
 public class DEViseJSApplet extends Applet
 {
+    static final int DEBUG = 0;
+
     // URL from which this applet was loaded.
     URL baseURL = null;
 
@@ -65,6 +75,12 @@ public class DEViseJSApplet extends Applet
 
     public void init()
     {
+	super.init();
+
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseJSApplet.init()");
+	}
+
 	jsValues = new DEViseJSValues();
 
         jsValues.uiglobals.isApplet = true;
@@ -101,6 +117,16 @@ public class DEViseJSApplet extends Applet
             isInit = false;
             return;
         }
+    }
+
+    public void destroy()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseJSApplet.destroy()");
+	}
+
+	sessionName = null;
+        images = null;
     }
 
     protected void checkParameters()

@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.85  2001/02/19 20:30:23  xuk
+// Added command(s) and GUI so that a collaboration leader can find out who is
+// collaborating with it.
+// Changes in settingDlg(), added "collaboration stauts" and "cancel" buttons;
+// Added showCollabState(), show collaboration info.
+//
 // Revision 1.84  2001/02/16 23:39:39  xuk
 // Added "Cancel" button in "Mode" menu.
 //
@@ -52,6 +58,10 @@
 // Revision 1.75  2001/01/30 03:00:09  xuk
 // Add "Collaboration" button for collaboration JavaScreen.
 // Add specialID for collaborated JS ID.
+//
+// Revision 1.74.2.1  2001/02/05 22:02:11  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
 //
 // Revision 1.74  2001/01/25 19:40:34  wenger
 // Added mode switching capability to the jsb (embedded) form of the client.
@@ -290,6 +300,7 @@ public class jsdevisec extends Panel
         }
 
         if (jv.debug._debugLevel > 0) {
+System.out.println("Creating new debug window");
             debugWindow = new YLogGUI(jv.debug._debugLevel);
         }
 
@@ -595,11 +606,23 @@ public class jsdevisec extends Panel
         }
     } // end of constructor
 
+    public void hideDebug() {
+	if (debugWindow != null) {
+            debugWindow.setVisible(false);
+	}
+    }
+
+    public void showDebug() {
+	if (debugWindow != null) {
+            debugWindow.setVisible(true);
+	}
+    }
+
     // print out message to debug window
     // pn() methods add a newline to the end of the string; p() methods don't.
     public void pn(String msg, int level)
     {
-        if (jsValues.debug._debugLevel > 0) {
+        if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.pn(msg, level);
         }
     }
@@ -611,7 +634,7 @@ public class jsdevisec extends Panel
 
     public void p(String msg, int level)
     {
-        if (jsValues.debug._debugLevel > 0) {
+        if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.p(msg, level);
         }
     }
@@ -762,6 +785,7 @@ public class jsdevisec extends Panel
     }
 
     // Check whether we really want to quit, and call destroy() if so.
+    // (We get here if the "Exit" button is pressed.)
     public synchronized void checkQuit()
     {
         boolean reallyQuit = true;
@@ -778,13 +802,7 @@ public class jsdevisec extends Panel
 	//TEMP -- do we want to check for an open session here?
 
 	if (reallyQuit) {
-            if (jsValues.uiglobals.isApplet) {
-                parentFrame.dispose();
-		// This will call destroy().
-	        _parentApplet.destroy();
-            } else {
-                destroy();
-	    }
+            destroy();
 	}
     }
 
@@ -801,13 +819,21 @@ public class jsdevisec extends Panel
 
         isQuit = true;
 
-        if (dispatcher != null) {
+	// Note: this must be done before destroying the dispatcher;
+	// otherwise we get null pointer errors because we get window
+	// events after the dispatcher has been destroyed.
+	parentFrame.dispose();
 
+	if (debugWindow != null) {
+	    debugWindow.dispose();
+	    debugWindow = null;
+	}
+
+        if (dispatcher != null) {
 	    if (specialID != -1 && dispatcher.dispatcherThread != null) {
 		dispatcher.dispatcherThread.stop();
 		dispatcher.dispatcherThread = null;
 	    }
-
             dispatcher.destroy();
             dispatcher = null;
         }

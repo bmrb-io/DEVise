@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2001/02/16 17:56:38  xuk
+// Added new command and GUI for collect active client ID list.
+// Changed OnCollab() sends JAVAC_Clients command after receives the first round collaboration connection request.
+//
 // Revision 1.39  2001/02/12 02:54:17  xuk
 // JavaScreen can prevent from being collaborated.
 // Changes in OnCollab(), check collaboration status with client.
@@ -37,6 +41,20 @@
 //
 // Revision 1.36  2001/01/30 03:04:46  xuk
 // Add collabration function onCollab().
+//
+// Revision 1.35.2.3  2001/02/13 23:36:31  wenger
+// Don't explicitly request garbage collection as often, because it
+// uses up loads of CPU on SGI machines.
+//
+// Revision 1.35.2.2  2001/02/05 22:36:32  wenger
+// Changed all socket recieve timeouts to 5 sec. because of problems on
+// SGIs at BMRB.
+//
+// Revision 1.35.2.1  2001/01/31 17:44:03  wenger
+// Cron job to check jspop now runs every minute on yola; added more
+// diagnostic output to checking; temporarily? increased socket receive
+// timeouts to see if this helps on yola; added timestamp to
+// JAVAC_CheckPop command.
 //
 // Revision 1.35  2001/01/27 00:11:15  wenger
 // Minor improvements to diagnostic output.
@@ -175,7 +193,9 @@ import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop [-id<string>] [-cmdport<number>] [-userfile<filename>] [-logfile<filename>] [-debug[number]] [-jspopport<number>] [-maxclient<number>] [-usage]\n" +
+    private static final int DEBUG = 1/*TEMP*/;
+
+    private static final String usage = new String("usage: java jspop [-id<string>] [-cmdport<number>] [-userfile<filename>] [-logfile<filename>] [-debug[number]] [-jspopport<number>] [-maxclient<number>] [-usage]\n" +
       "  -id<string>: ID for ps\n" +
       "  -cmdport<number>: port for command socket from devised\n" +
       "  -userfile<filename>: file containing user info\n" +
@@ -200,6 +220,8 @@ public class jspop implements Runnable
     //      number: The debug level for writing debug information to console
     //      default: No Debug information is written
     //
+
+    private static final int SOCK_REC_TIMEOUT = 5000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;
@@ -507,11 +529,17 @@ public class jspop implements Runnable
             // command socket and data socket, so create a new
             // DEViseClient corresponding to the connection.
             //
-            DEViseCommSocket socket = new DEViseCommSocket(socket1, 1000);
+            DEViseCommSocket socket = new DEViseCommSocket(socket1,
+	      SOCK_REC_TIMEOUT);
 
             try {
 
                 pn("Before reading command");
+                if (DEBUG >= 1) {
+		    System.out.println(socket.dataAvailable() +
+		      " bytes available for receiving command");
+                }
+
       		String cmd = socket.receiveCmd();
                 pn("After reading command");
 
@@ -703,7 +731,13 @@ public class jspop implements Runnable
 			int cgi;
 			boolean cgiflag;
 
+                        pn("Before reading command");
+                        if (DEBUG >= 1) {
+		            System.out.println(socket.dataAvailable() +
+		              " bytes available for receiving command");
+                        }
 			String cmd = socket.receiveCmd();
+                        pn("After reading command");
 
 			id = socket.cmdId;
 	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
@@ -790,14 +824,14 @@ public class jspop implements Runnable
             }
             removedClient.removeAllElements();
 
+            // Objects don't seem to get reliably garbage collected without
+            // this.  RKW 2000-11-07.
+            System.gc();
+
             if (debugLevel >= 1) {
                 System.out.println("jspop state: " + getServerState());
 	    }
 	}
-
-	// Objects don't seem to get reliably garbage collected without
-	// this.  RKW 2000-11-07.
-	System.gc();
 
         return client;
     }

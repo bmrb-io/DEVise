@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -30,6 +30,13 @@
   $Id$
 
   $Log$
+  Revision 1.18.4.1  2001/02/16 21:38:00  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.18  2000/02/16 18:51:48  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.17  1999/12/06 18:41:06  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -298,12 +305,12 @@ void VisualLink::Run()
   _filterLocked = false;
 }
 
-
 void
 VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
 {
 #if defined(DEBUG)
-  printf("VisualLink(%s)::GoHome(%s)\n", GetName(), view->GetName());
+  printf("VisualLink(%s)::GoHome(%s, %d)\n", GetName(), view->GetName(),
+      explicitRequest);
 #endif
 
   if (_filterLocked) {
@@ -352,7 +359,7 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
   filter.yLow = yMin;
   filter.xHigh = xMax;
   filter.yHigh = yMax;
-  view->SetVisualFilterCommand(filter);
+  view->SetVisualFilter(filter);
 }
 
 

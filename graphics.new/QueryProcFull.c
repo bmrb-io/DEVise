@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.99.4.1  2001/02/16 21:37:59  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.99  2000/02/16 18:51:40  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.98  1999/11/19 21:29:25  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -471,6 +478,7 @@
 #include "Shape.h"
 #include "DrawTimer.h"
 #include "BooleanArray.h"
+#include "DeviseHistory.h"
 
 //#define DEBUGLVL 3
 //#define DEBUG_NEG_LINKS 0
@@ -1405,6 +1413,8 @@ void QueryProcFull::ProcessQuery()
   Scheduler::Current()->RequestCallback(_dispatcherID);
 
   if (_queries->Size() == 0) {
+    DeviseHistory::GetDefaultHistory()->AllQueriesDone();
+
     /*
        If all queries have been executed (system is idle) and
        we need to notify control panel that everything is in

@@ -20,8 +20,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2001/02/16 17:48:45  xuk
+// *** empty log message ***
+//
 // Revision 1.16  2001/02/16 17:45:57  xuk
 // Changed variable cgiFlag to flag.
+//
+// Revision 1.15.2.5  2001/02/05 17:13:19  wenger
+// Finally implemented a way to timeout on the Socket constructor that
+// works in Netscape (wrote my own version of Thread.join() because
+// Netscape's doesn't work right).
+//
+// Revision 1.15.2.4  2001/02/01 21:54:27  wenger
+// More fixes to socket constructor timeout.
+//
+// Revision 1.15.2.3  2001/02/01 20:52:14  wenger
+// Fixed socket constructor timeout to work in applets.
+//
+// Revision 1.15.2.2  2001/01/31 21:02:39  wenger
+// Added timeout to socket creation in the client (currently set to 5
+// sec.); improved GUI for socket failure.
+//
+// Revision 1.15.2.1  2001/01/31 17:44:02  wenger
+// Cron job to check jspop now runs every minute on yola; added more
+// diagnostic output to checking; temporarily? increased socket receive
+// timeouts to see if this helps on yola; added timestamp to
+// JAVAC_CheckPop command.
 //
 // Revision 1.15  2001/01/30 18:42:47  wenger
 // Cleaned up formatting.
@@ -125,6 +149,7 @@
 
 import  java.io.*;
 import  java.net.*;
+import  java.util.Date;
 
 public class DEViseCommSocket
 {
@@ -132,6 +157,9 @@ public class DEViseCommSocket
     // VARIABLES
 
     private static final int DEBUG = 0;
+
+    //TEMP -- increased this from 1000 to see if it helps on yola.
+    private static final int DEFAULT_RCV_TIMEOUT = 5000; // millisec
 
     private Socket socket = null;
     public DataInputStream is = null;
@@ -178,8 +206,7 @@ public class DEViseCommSocket
     //-------------------------------------------------------------------
     public DEViseCommSocket(Socket s) throws YException
     {
-        // default time out is 1 second
-        this(s, 1000);
+        this(s, DEFAULT_RCV_TIMEOUT);
     }
 
     //-------------------------------------------------------------------
@@ -191,43 +218,26 @@ public class DEViseCommSocket
 	      ", " + port + ", " + to + ")");
 	}
 
-        if (hostname == null)
-            throw new YException("Invalid hostname in arguments",
-	      "DEViseCommSocket:constructor");
+	createSocket(hostname, port, to);
+    }
 
-        if (port < 1024 || port > 65535)
-            throw new YException("Invalid port number in arguments",
-	      "DEViseCommSocket:constructor");
+    //-------------------------------------------------------------------
+    protected void finalize()
+    {
+        closeSocket();
+    }
 
-        if (to < 0)
-            timeout = 0;
-        else
-            timeout = to;
+    //-------------------------------------------------------------------
+    // constTO is constructor timeout in milliseconds
+    public DEViseCommSocket(String hostname, int port, int to, int constTO)
+      throws YException
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket constructor(" + hostname +
+	      ", " + port + ", " + to + ", " + constTO + ")");
+	}
 
-        try {
-            socket = new Socket(hostname, port);
-        } catch (NoRouteToHostException e) {
-	    System.err.println("Exception in DEViseCommSocket constructor: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException(
-	      "Can not find route to host, may caused by an internal firewall", 
-	      "DEViseCommSocket:constructor");
-        } catch (UnknownHostException e) {
-	    System.err.println("Exception in DEViseCommSocket constructor: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException("Unknown host {" + hostname + "}",
-	      "DEViseCommSocket:constructor");
-        } catch (IOException e) {
-	    System.err.println("Exception in DEViseCommSocket constructor: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException("Can not open socket connection to host {"
-	      + hostname + "}", "DEViseCommSocket:constructor");
-        }
-
-	CreateStreams();
+	SocketCreator tmp = new SocketCreator(hostname, port, to, constTO);
     }
 
     //-------------------------------------------------------------------
@@ -245,18 +255,21 @@ public class DEViseCommSocket
             if (os != null)
                 os.close();
         } catch (IOException e) {
+	    System.err.println(e.getMessage());
         }
 
         try {
             if (is != null)
                 is.close();
         } catch (IOException e) {
+	    System.err.println(e.getMessage());
         }
 
         try {
             if (socket != null)
                 socket.close();
         } catch (IOException e) {
+	    System.err.println(e.getMessage());
         }
 
         os = null;
@@ -574,6 +587,13 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
+    // The number of bytes that have been written to the socket.
+    public int bytesWritten()
+    {
+        return os.size();
+    }
+
+    //-------------------------------------------------------------------
     // Receive data.  This method now does not return until all of the
     // requested data has been read.
     public synchronized byte[] receiveData(int dataSize)
@@ -635,6 +655,55 @@ public class DEViseCommSocket
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
+    private void createSocket(String hostname, int port, int to)
+      throws YException
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket.createSocket(" + hostname +
+	      ", " + port + ", " + to + ")");
+	}
+
+        if (hostname == null)
+            throw new YException("Invalid hostname in arguments",
+	      "DEViseCommSocket.createSocket");
+
+        if (port < 1024 || port > 65535)
+            throw new YException("Invalid port number in arguments",
+	      "DEViseCommSocket.createSocket");
+
+        if (to < 0) {
+            timeout = 0;
+        } else {
+            timeout = to;
+	}
+
+        try {
+            socket = new Socket(hostname, port);
+        } catch (NoRouteToHostException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall", 
+	      "DEViseCommSocket.createSocket");
+        } catch (UnknownHostException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException("Unknown host {" + hostname + "}",
+	      "DEViseCommSocket:constructor");
+        } catch (IOException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException("Can not open socket connection to host {"
+	      + hostname + "}", "DEViseCommSocket.createSocket");
+	}
+
+	CreateStreams();
+    }
+
+    //-------------------------------------------------------------------
     // Create input and output streams if we already have the sockets.
     private void CreateStreams() throws YException
     {
@@ -689,6 +758,118 @@ public class DEViseCommSocket
         totalSize = 0;
         dataRead = null;
         numberRead = 0;
+    }
+
+    //-------------------------------------------------------------------
+    class SocketCreator implements Runnable
+    {
+	private String _host;
+	private int _port;
+	private int _timeout;
+	private Thread _thread;
+	private boolean _threadRunning = false;;
+	private boolean _afterJoin = false;
+	private YException _ex = null;
+	private final int DEFAULT_SLEEP = 100;
+
+        //---------------------------------------------------------------
+	// This method uses a thread to allow us to put a timeout on the
+	// creation of a socket.
+	SocketCreator(String hostname, int port, int to, int constTO)
+	  throws YException
+	{
+            if (DEBUG >= 2) {
+	        System.out.println("DEViseCommSocket.SocketCreator " +
+		  "constructor");
+	    }
+
+	    _host = hostname;
+	    _port = port;
+	    _timeout = to;
+
+	    _thread = new Thread(this); 
+	    _thread.start();
+	    _threadRunning = true;
+
+	    // Wait until thread finishes or constTO milliseconds have
+	    // elapsed, whichever happens first.
+	    myJoin(constTO);
+	    _afterJoin = true;
+
+	    if (_ex != null) {
+	        throw _ex;
+	    } else if (socket == null) {
+		// Note: this exception is thrown here rather than at the
+		// more obvious place in myJoin() in case the standard
+		// Thread.join() is fixed and we use that.  RKW 2001-02-05.
+	        throw new YException("Attempt to connect socket timed out; " +
+		  "may be blocked by firewall");
+	    } else {
+	        if (DEBUG >= 2) {
+		    System.out.println("Socket successfully created");
+		}
+	    }
+	}
+
+        //---------------------------------------------------------------
+	public void run()
+	{
+            if (DEBUG >= 2) {
+                System.out.println("DEViseCommSocket.SocketCreator.run()");
+	    }
+
+	    try {
+	        createSocket(_host, _port, _timeout);
+	    } catch (YException ex) {
+		_ex = ex;
+	    }
+
+	    // Clean up if we somehow create the socket after the join()
+	    // has timed out.  There's a little potential for a race
+	    // condition here, but if it gets goofed up, finalize()
+	    // will take care of it.
+	    if (_afterJoin && socket != null) {
+	        closeSocket();
+	    }
+
+	    _threadRunning = false;
+
+            if (DEBUG >= 2) {
+                System.out.println(
+		  "  End of DEViseCommSocket.SocketCreator.run()");
+	    }
+	}
+
+        //---------------------------------------------------------------
+	// This method is here solely because Thread.join(int) does not
+	// work correctly in Netscape (at least Netscape 4.76).  RKW
+	// 2001-02-05.
+	private void myJoin(int timeout)
+	{
+            if (DEBUG >= 2) {
+                System.out.println("DEViseCommSocket.SocketCreator.myJoin(" +
+		  timeout + ")");
+	    }
+
+	    Date date1 = new Date();
+	    long endTime = date1.getTime() + timeout;
+	    date1 = null;
+
+	    long sleepTime = Math.min((long)timeout, (long)DEFAULT_SLEEP);
+
+	    while (_threadRunning) {
+		Date date2 = new Date();
+		if (date2.getTime() > endTime) {
+		    // Attempt to connect socket timed out.
+		    break;
+		}
+		try {
+	            Thread.sleep(sleepTime);
+		} catch (InterruptedException ex) {
+		    System.err.println("Warning: " + ex.getMessage());
+		}
+	    }
+	}
     }
 }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.29.4.1  2001/02/16 21:37:59  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.29  2000/03/14 17:05:30  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.28  2000/02/16 18:51:39  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -132,6 +140,7 @@
 #include "MapInterpClassInfo.h"
 #include "Util.h"
 #include "Session.h"
+#include "DeviseHistory.h"
 #include "DevError.h"
 
 //#define DEBUG
@@ -515,6 +524,7 @@ void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
 		 dimensionInfo, _numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {
     _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, dimensionInfo, _numDimensions);
+    DeviseHistory::GetDefaultHistory()->ClearAll();
     FreeString(name);
     FreeString(tdataAlias);
   }

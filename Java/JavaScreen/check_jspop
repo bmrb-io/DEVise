@@ -21,6 +21,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20.2.1  2001/01/31 17:44:03  wenger
+#  Cron job to check jspop now runs every minute on yola; added more
+#  diagnostic output to checking; temporarily? increased socket receive
+#  timeouts to see if this helps on yola; added timestamp to
+#  JAVAC_CheckPop command.
+#
+#  Revision 1.20  2001/01/22 17:29:25  wenger
+#  Oops!  Forgot to set port number for check_connect according to ID
+#  string.
+#
 #  Revision 1.19  2001/01/22 17:08:13  wenger
 #  Added DEViseCheckPop to actually connect to the jspop when checking
 #  with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -160,7 +170,6 @@ while (<PS>) {
 
 close PS;
 
-
 # Make sure we can connect to the jspop.
 if ($foundJspop) {
   my $connected = 0;
@@ -179,7 +188,12 @@ if ($foundJspop) {
   close CONNECT;
 
   if (!$connected) {
-    print STDERR "Cannot connect to jspop\n";
+    print STDERR "Cannot connect to jspop:\n";
+    open ERROR, "<check_connect.err" or die "can't open error file: $!";
+    while (<ERROR>) {
+      print STDERR "$_";
+    }
+    close ERROR;
     $foundJspop = 0;
   }
 } else {

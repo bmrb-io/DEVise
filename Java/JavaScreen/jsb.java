@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.2.1  2001/02/05 22:02:11  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
+//
+// Revision 1.12  2001/01/08 20:31:57  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.11.4.8  2001/01/05 19:15:45  wenger
 // Updated copyright dates.
 //
@@ -97,11 +105,11 @@ public class jsb extends DEViseJSApplet
 
     public void init()
     {
+	super.init();
+
         if (DEBUG >= 1) {
             System.out.println("jsb.init()");
         }
-
-	super.init();
 
         jsValues.uiglobals.inBrowser = true;
 
@@ -141,6 +149,9 @@ public class jsb extends DEViseJSApplet
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(true);
         }
+	if (jsc != null) {
+	    jsc.showDebug();
+	}
     }
 
     public void stop()
@@ -152,6 +163,9 @@ public class jsb extends DEViseJSApplet
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(false);
         }
+	if (jsc != null) {
+	    jsc.hideDebug();
+	}
     }
 
     public void destroy()
@@ -164,9 +178,6 @@ public class jsb extends DEViseJSApplet
             jsc.destroy();
             jsc = null;
         }
-
-        sessionName = null;
-        images = null;
 
         super.destroy();
     }

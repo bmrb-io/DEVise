@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.4.1  2001/02/16 21:37:46  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.4  2000/02/16 18:51:21  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.3  1995/12/29 18:30:03  jussi
   Added the copyright message and cleaned up the code a bit.
 
@@ -43,6 +50,8 @@ public:
 
   /* Get the nth element in the queue, n starts from 0 */
   void Get(int n, VisualFilter &filter);
+
+  /* Get the size of the queue. */
   int Size() { return _size; }
 
   /* Mark/unmark nth element */
@@ -50,6 +59,9 @@ public:
   
   /* Clear queue */
   void Clear();
+
+  /* Print the queue to the given stream. */
+  void Print(FILE *stream);
   
 private:
   VisualFilter _filterArray[FilterQueueSize];

@@ -1,1 +1,1 @@
-5,15,25,35,45,55 * * * * cd /bmrb/htdocs/devise/jspop; ./run_check regular 4 aden /p/devise/js.installed
+* * * * * cd /bmrb/htdocs/devise/jspop; ./run_check regular 4 aden /p/devise/js.installed

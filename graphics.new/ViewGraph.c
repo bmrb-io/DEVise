@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.148.2.1  2001/02/16 21:38:00  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.148  2001/01/08 20:32:54  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.143.2.3  2001/01/05 20:49:49  wenger
   Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
   onto the js_cgi_br branch.
@@ -692,6 +700,8 @@
 #include "Session.h"
 #include "DebugLog.h"
 #include "ViewSymFilterInfo.h"
+#include "ArgList.h"
+#include "CmdContainer.h"
 
 #define STEP_SIZE 20
 
@@ -1457,6 +1467,28 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 #endif
 }
 
+void ViewGraph::GoHomeCommand()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::GoHomeCommand()\n", GetName());
+#endif
+
+  if (DeviseCommand::GetCmdDepth() > 1) {
+    // We don't want this to be sent to collaborating deviseds, etc.
+    GoHome(true);
+
+  } else {
+    // Propagate to other deviseds if we're in group mode.
+
+    ArgList args(2);
+    args.AddArg("viewGoHome");
+    args.AddArg(GetName());
+
+    CmdContainer::GenerateCommand(args.GetCount(), args.GetArgs());
+  }
+}
+
 void ViewGraph::GoHome(Boolean explicitRequest)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
@@ -1492,7 +1524,7 @@ void ViewGraph::GoHome(Boolean explicitRequest)
         VisualFilter filter;
 	GetHome2D(explicitRequest, filter);
 
-	SetVisualFilterCommand(filter);
+	SetVisualFilter(filter);
     } else {
         Camera c=GetCamera();
 #if 0
@@ -3098,7 +3130,7 @@ ViewGraph::NiceifyAxes(Boolean xAxis, Boolean yAxis)
   if (xAxis) NiceAxisRange(filter.xLow, filter.xHigh);
   if (yAxis) NiceAxisRange(filter.yLow, filter.yHigh);
 
-  SetVisualFilterCommand(filter);
+  SetVisualFilter(filter);
 }
 
 void

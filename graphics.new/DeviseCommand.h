@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.63.2.2  2001/02/16 21:37:59  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.63.2.1  2001/01/31 22:18:24  wenger
+  Added 'stop' command to DEVise; tcl GUI now sends 'stop' instead
+  of sending 'abortQuery' to each view.
+
+  Revision 1.63  2001/01/08 20:32:53  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.61.2.1  2000/10/18 20:32:09  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -309,6 +321,7 @@
 #include "ClassDir.h"
 #include "Control.h"
 #include "ExtStack.h"
+#include "DeviseHistory.h"
 
 #define DECLARE_CLASS_DeviseCommand_(command_name)\
 class DeviseCommand_##command_name: public DeviseCommand\
@@ -2023,6 +2036,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setCursorFlag) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(stop) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(back) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(forward) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

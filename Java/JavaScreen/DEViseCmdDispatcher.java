@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2001/02/19 20:33:44  xuk
+// Added command(s) and GUI so that a collaboration leader can find out who is
+// collaborating with it.
+// In processReceivedCommand(), process JAVAC_COLLAB_STATE command.
+//
 // Revision 1.76  2001/02/16 17:53:55  xuk
 // Added new command and GUI for collect active client ID list.
 // Changed processReceivedCmd() to process new command JAVAC_Clients;
@@ -43,6 +48,33 @@
 //
 // Revision 1.71  2001/01/30 03:03:28  xuk
 // Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
+//
+// Revision 1.70.2.7  2001/02/20 15:55:35  wenger
+// JavaScreen client now checks the availability of a CGI connection
+// before prompting the user, if opening a socket fails.
+//
+// Revision 1.70.2.6  2001/02/19 19:58:56  wenger
+// Found and fixed bug 642.
+//
+// Revision 1.70.2.5  2001/02/05 22:36:29  wenger
+// Changed all socket recieve timeouts to 5 sec. because of problems on
+// SGIs at BMRB.
+//
+// Revision 1.70.2.4  2001/02/05 22:02:09  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
+//
+// Revision 1.70.2.3  2001/02/05 17:13:14  wenger
+// Finally implemented a way to timeout on the Socket constructor that
+// works in Netscape (wrote my own version of Thread.join() because
+// Netscape's doesn't work right).
+//
+// Revision 1.70.2.2  2001/02/01 18:38:07  wenger
+// Turned the JavaScreen heartbeat back on.
+//
+// Revision 1.70.2.1  2001/01/31 21:02:39  wenger
+// Added timeout to socket creation in the client (currently set to 5
+// sec.); improved GUI for socket failure.
 //
 // Revision 1.70  2001/01/23 22:58:16  xuk
 // fix bugs for mode switch.
@@ -317,6 +349,9 @@ import java.net.*;
 
 public class DEViseCmdDispatcher implements Runnable
 {
+    private static final int SOCK_REC_TIMEOUT = 5000; // milliseconds
+    private static final int SOCK_CONST_TIMEOUT = 5000; // milliseconds
+
     private jsdevisec jsc = null;
 
     public Thread dispatcherThread = null;
@@ -357,7 +392,7 @@ public class DEViseCmdDispatcher implements Runnable
         jsc = what;
     }
 
-    // This must *not* be a syncronized method, to avoid deadlock between
+    // This must *not* be a synchronized method, to avoid deadlock between
     // the GUI and command-processing threads (via
     // DEViseCanvas.checkMousePos().
     public int getStatus()
@@ -374,7 +409,8 @@ public class DEViseCmdDispatcher implements Runnable
     // Changed this to not check whether we have a socket, since we may
     // now have a "virtual" connection even if a socket isn't open.
     // RKW 2000-10-18.
-    public synchronized boolean getOnlineStatus()
+    // Note: this must *not* be synchronized (fixes bug 642).  RKW 2001-02-19.
+    public boolean getOnlineStatus()
     {
         return isOnline;
     }
@@ -418,19 +454,21 @@ public class DEViseCmdDispatcher implements Runnable
 		boolean isEnd = false;
 		while (!isEnd) {
 		    if (!connect()) {
-			String result = jsc.confirmMsg(errMsg + "\n \nDo you wish to try again?");
-			if (result.equals(YMsgBox.YIDNO)) {
-			    String result2 = jsc.confirmMsg("\nDo you wish to use CGI?");
-			    if (result2.equals(YMsgBox.YIDNO)) {    
-				jsc.animPanel.stop();
-				jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-				setStatus(0);
-				return;
-			    } else {
-				jsc.cgiMode();
-				jsc.jsValues.connection.cgi = true;
-				isEnd = true;
-			    }
+			if (testCgi()) {
+			    jsc.showMsg("Direct socket " +
+			      "connection is not available (may be blocked " +
+			      "by firewall).  Continuing in CGI mode.");
+			    jsc.cgiMode();
+			    jsc.jsValues.connection.cgi = true;
+			    isEnd = true;
+			} else {
+			    jsc.showMsg("Connection to JSPoP is not " +
+			      "currently available");
+			    jsc.animPanel.stop();
+			    jsc.stopButton.setBackground(
+			      jsc.jsValues.uiglobals.bg);
+			    setStatus(0);
+			    return;
 			}
 		    } else {
 			isEnd = true;
@@ -453,18 +491,22 @@ public class DEViseCmdDispatcher implements Runnable
 	// command to whatever was passed in.
 
 	if (!_connectedAlready) {
-	    String temp_cmd = new String(DEViseCommands.CONNECT + " {" + jsc.jsValues.connection.username +
-		"} {" + jsc.jsValues.connection.password + "} {" +
-		DEViseGlobals.PROTOCOL_VERSION + "}");
-	    if (jsc.isAbleCollab)
-		cmd = temp_cmd + " {" + DEViseGlobals.ENABLECOLLAB + "}\n" + cmd;
-	    else
-		cmd = temp_cmd + " {" + DEViseGlobals.DISABLECOLLAB + "}\n" + cmd;
+            String temp_cmd = DEViseCommands.CONNECT + " {" +
+	      jsc.jsValues.connection.username + "} {" +
+	      jsc.jsValues.connection.password + "} {" +
+	      DEViseGlobals.PROTOCOL_VERSION + "}";
+	    if (jsc.isAbleCollab) {
+		cmd = temp_cmd + " {" + DEViseGlobals.ENABLECOLLAB +
+		  "}\n" + cmd;
+	    } else {
+		cmd = temp_cmd + " {" + DEViseGlobals.DISABLECOLLAB +
+		  "}\n" + cmd;
+	    }
 	    _connectedAlready = true;
 
-	    // Start the heartbeat thrad.
-	    //TEMP _heartbeat = new DEViseHeartbeat(this);
-	}
+	    // Start the heartbeat thread.
+	    _heartbeat = new DEViseHeartbeat(this);
+        }
 
 	commands = DEViseGlobals.parseStr(cmd);
 	if (commands == null || commands.length == 0) {
@@ -531,7 +573,8 @@ public class DEViseCmdDispatcher implements Runnable
 	return;
     }
 
-    public synchronized void destroy()
+    // Note: this must *not* be synchronized (fixes bug 642).  RKW 2001-02-19.
+    public void destroy()
     {
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.destroy()");
@@ -605,11 +648,14 @@ public class DEViseCmdDispatcher implements Runnable
     private synchronized boolean connect()
     {
         try {
-            commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname, jsc.jsValues.connection.cmdport);
+            commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname,
+	      jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
+	      SOCK_CONST_TIMEOUT);
 	    jsc.pn("Socket connection set up!");
             return true;
         } catch (YException e) {
-            errMsg = e.getMessage() + " in " + e.getWhere();
+	    System.err.println(e.getMessage() + " (in " + e.getWhere() + ")");
+            errMsg = e.getMessage();
 	    jsc.pn("Socket connection turned down!");
             disconnect();
             return false;
@@ -1895,5 +1941,36 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         return imgData;
+    }
+
+    // Test whether a CGI connection to the JSPoP works.  Returns true if
+    // it does.
+    boolean testCgi() {
+        if (_debug) {
+	    System.out.println("DEViseCmdDispatcher.testCgi()");
+	}
+
+	boolean result = true;
+
+	try {
+            String[] response = cgi_sendCommand(DEViseCommands.CHECK_POP);
+	    if (response == null || response.length != 1 ||
+	      !response[0].equals(DEViseCommands.DONE))
+	    {
+		String msg = "Received incorrect response from the jspop: ";
+		if (response != null) {
+	            for (int index = 0; index < response.length; index++) {
+	                msg += "<" + response[index] + "> ";
+	            }
+		}
+		throw new YException(msg);
+	    }
+	} catch (YException ex) {
+	    System.err.println("CGI connection not available: " +
+	      ex.getMessage());
+	    result = false;
+	}
+
+	return result;
     }
 }

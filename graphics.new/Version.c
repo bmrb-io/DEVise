@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.59.4.1  2001/02/16 21:37:59  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.59  2000/07/12 20:49:27  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.58  2000/02/16 14:44:06  wenger
   Changed master copyright string to 2000.
 
@@ -323,13 +331,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.1";
+static const char *	version = "1.7.2";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2000";
+static const char *	copyright = "Copyright (c) 1992-2001";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2000";
+static const char *	winLogo = "Visualization by DEVise (tm) 2001";
 
 
 #if !defined(lint) && defined(RCSID)

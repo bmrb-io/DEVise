@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2001/02/19 20:32:45  xuk
+// Added command(s) and GUI so that a collaboration leader can find out who is
+// collaborating with it.
+// In getCmd(), process JAVAC_GET_COLLAB_LIST command.
+//
 // Revision 1.27  2001/02/12 02:53:00  xuk
 // JavaScreen can prevent from being collaborated.
 // Added isAbleCollab boolean variable;
@@ -40,6 +45,9 @@
 //
 // Revision 1.24  2001/01/30 03:12:09  xuk
 // Add collabSocket for collaboration client. changes for sendCmd() and sendData().
+//
+// Revision 1.23.2.1  2001/02/01 18:38:07  wenger
+// Turned the JavaScreen heartbeat back on.
 //
 // Revision 1.23  2001/01/26 22:22:21  wenger
 // Removed unused receiveCmd method.
@@ -388,7 +396,7 @@ public class DEViseClient
 
 	if (DEBUG >= 2) {
 	    System.out.println("Client " + ID + " heartbeat updated to " +
-	      heartBeat);
+	      heartBeat + " (" + date + ")");
         }
     }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.90.2.1  2001/02/16 21:37:46  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.90  2001/01/08 20:32:42  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.88.2.1  2000/10/18 20:31:53  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -453,6 +461,7 @@
 #include "CompositeParser.h"
 #include "ControlPanelSimple.h"
 #include "VisualLinkClassInfo.h"
+#include "DeviseHistory.h"
 
 //#define DEBUG
 #define SESSION_TIMER
@@ -510,6 +519,7 @@ Session::Open(const char *filename)
     ControlPanelSimple control;
 
     status += ReadSession(&control, filename, RunCommand);
+    DeviseHistory::GetDefaultHistory()->RequestCheckpoint();
 
     _openingSession = false;
   }
@@ -548,6 +558,8 @@ Session::Close()
     FreeString(_description);
   }
   _description = NULL;
+
+  DeviseHistory::GetDefaultHistory()->ClearAll();
 
   ViewGeom *vg = ViewGeom::GetViewGeom();
   if (!vg->IsGrouped()) {

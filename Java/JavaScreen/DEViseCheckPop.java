@@ -20,20 +20,38 @@
 // $Id$
 
 // $Log$
+// Revision 1.1.2.1  2001/01/31 17:44:02  wenger
+// Cron job to check jspop now runs every minute on yola; added more
+// diagnostic output to checking; temporarily? increased socket receive
+// timeouts to see if this helps on yola; added timestamp to
+// JAVAC_CheckPop command.
+//
+// Revision 1.1  2001/01/22 17:08:11  wenger
+// Added DEViseCheckPop to actually connect to the jspop when checking
+// with cron; added JAVAC_CheckPop command to make this possible; cleaned
+// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
+// constructor error messages now go to stderr.
+//
 
 // ========================================================================
 
 import java.io.*;
+import java.text.*;
+import java.util.*;
 
 public class DEViseCheckPop
 {
     //===================================================================
     // VARIABLES
 
-    private static final int DEBUG = 0;
+    private static final int DEBUG = 1;
+    private static final int RECEIVE_TIMEOUT = 5000; // millisec
 
     private int _port = DEViseGlobals.DEFAULTCMDPORT; // default value
     private String _host = DEViseGlobals.DEFAULTHOST; // default value
+
+    private static Date _date = null;
+    private static int _bytesWritten = 0;
 
 
     //===================================================================
@@ -42,12 +60,19 @@ public class DEViseCheckPop
     //-------------------------------------------------------------------
     public static void main(String[] args) throws YException
     {
+        _date = new Date();
+
 	try {
             DEViseCheckPop check = new DEViseCheckPop(args);
 	    if (check.doCheck()) {
 	        System.out.println("OK");
 	    } else {
 	        System.out.println("FAIL");
+	        System.err.println("DEViseCheckPop fails for " +
+		  _date.hashCode());
+                if (DEBUG >= 1) {
+		    System.err.println("Wrote " + _bytesWritten + " bytes");
+		}
 	    }
 	} catch (YException ex) {
 	    System.err.println(ex.getMessage());
@@ -122,13 +147,15 @@ public class DEViseCheckPop
 	DEViseCommSocket sock = null;
 	boolean connected = false;
         try {
-	    sock = new DEViseCommSocket(_host, _port);
+	    sock = new DEViseCommSocket(_host, _port, RECEIVE_TIMEOUT);
 	    connected = true;
 
 	    //
 	    // Send JAVAC_Connect and receive the response.
 	    //
-	    sock.sendCmd(DEViseCommands.CHECK_POP);
+	    sock.sendCmd(DEViseCommands.CHECK_POP + " " + _date.hashCode());
+            _bytesWritten = sock.bytesWritten();
+
 	    String answer = sock.receiveCmd();
 	    if (DEBUG >= 3) {
 	        System.out.println("Received from jspop: <" + answer + ">");

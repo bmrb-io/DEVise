@@ -139,7 +139,7 @@ proc AboutDevise {} {
 
     message .about.contrib11 -justify center -width 10c \
 			-fg $fg -bg $bg -font $contribFont2 \
-			-text "Haihong Wang, Liping Zhu" 
+			-text "Haihong Wang, Liping Zhu, Kai Xu" 
 
     button .about.ok -width 6 \
 			-text OK \

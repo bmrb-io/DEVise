@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.111.2.2  2001/02/16 21:37:58  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.111.2.1  2001/01/31 22:18:23  wenger
+  Added 'stop' command to DEVise; tcl GUI now sends 'stop' instead
+  of sending 'abortQuery' to each view.
+
+  Revision 1.111  2001/01/08 20:32:52  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.108.2.1  2000/10/18 20:32:09  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -4558,6 +4570,9 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
 int
 DeviseCommand_setFilter::Run(int argc, char** argv)
 {
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
     {
         {
           View *view = (View *)_classDir->FindInstance(argv[1]);
@@ -4574,6 +4589,7 @@ DeviseCommand_setFilter::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "invalid date or float");
     	return -1;
           }
+	  DeviseHistory::GetDefaultHistory()->RequestCheckpoint();
           view->SetVisualFilter(filter);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -5142,6 +5158,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGoHome)
           return -1;
         }
 
+	    DeviseHistory::GetDefaultHistory()->RequestCheckpoint();
 		view->GoHome(true);
         ReturnVal(API_ACK, "done");
 	    return 1;
@@ -6790,6 +6807,75 @@ IMPLEMENT_COMMAND_BEGIN(setCursorFlag)
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(stop)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 1) {
+		int index = View::InitViewIterator();
+		while (View::MoreView(index)) {
+		  View *view = View::NextView(index);
+		  view->AbortQuery();
+		}
+		View::DoneViewIterator(index);
+
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in stop\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(back)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 1) {
+        if (DeviseHistory::GetDefaultHistory()->Back().IsComplete()) {
+            ReturnVal(API_ACK, "done");
+            return 1;
+	} else {
+            ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+            return -1;
+	}
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in back\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
+    }
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(forward)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 1) {
+        if (DeviseHistory::GetDefaultHistory()->Forward().IsComplete()) {
+            ReturnVal(API_ACK, "done");
+            return 1;
+	} else {
+            ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+            return -1;
+	}
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in forward\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
+    }
 IMPLEMENT_COMMAND_END
 
 /*============================================================================*/

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.47.4.1  2001/02/16 21:37:58  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.47  1999/11/19 21:29:24  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.46  1999/08/23 21:22:54  wenger
   Added special provisions for drill-down on views with fixed text symbols,
   because bounding boxes don't work.
@@ -294,7 +302,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       case DeviseKey::KP_5:
       case DeviseKey::BEGIN:
       case DeviseKey::KP_BEGIN: {
-	  view->GoHome(true);
+	  view->GoHomeCommand();
 	  break;
       }
       

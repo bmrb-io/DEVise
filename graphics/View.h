@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.113.2.1  2001/02/16 21:37:50  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.113  2001/01/08 20:32:43  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.111.2.1  2000/12/27 19:38:57  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -644,7 +652,7 @@ class View : public ViewWin
 	/* Mark/unmark nth visualfilter in history */
 	void Mark(int index, Boolean true_false);
 
-	static View *FindViewByName(char *name);
+	static View *FindViewByName(const char *name);
 
 	/* iterate through all views */
 	static int InitViewIterator() { return _viewList->InitIterator(); }

@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.42.2.1  2001/02/05 22:02:10  wenger
+// Fixed bugs 639 and 640 and other problems associated with destroying
+// and re-starting the JavaScreen applets.
+//
+// Revision 1.42  2001/01/08 20:31:56  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.41.2.11  2001/01/05 19:15:45  wenger
 // Updated copyright dates.
 //
@@ -111,12 +119,11 @@ public class jsa extends DEViseJSApplet
 
     public void init()
     {
+	super.init();
+
         if (DEBUG >= 1) {
             System.out.println("jsa.init()");
 	}
-
-	super.init();
-	final Applet applet = this;
 
         jsValues.uiglobals.inBrowser = false;
 
@@ -127,24 +134,7 @@ public class jsa extends DEViseJSApplet
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    if (jsf == null) {
-                        startInfo.append("Start Java Screen ...\n");
-                        jsf = new jscframe(applet, images, sessionName,
-			  jsValues);
-                        //startButton.setEnabled(false);
-                    } else {
-			// Note: we get here if the user clicks the start
-			// button when a JS already exists.  RKW 2001-01-05.
-                        if (jsf.isQuit()) {
-                            startInfo.append("Start Java Screen ...\n");
-                            jsf = null;
-                            jsf = new jscframe(applet, images, sessionName,
-			      jsValues);
-                            //startButton.setEnabled(false);
-                        } else {
-                            startInfo.append("Java Screen already started!\n");
-                        }
-                    }
+		    startJS();
                 }
             });
     }
@@ -160,11 +150,16 @@ public class jsa extends DEViseJSApplet
                 jsf.displayMe(true);
 	    }
 	} else {
+	    loadImages();
+
+            startButton.setEnabled(true);
+
             if (sessionName != null) {
-                startJS(true);
-            } else {
-                startJS(false);
+	        startJS();
             }
+
+	    repaint();
+
 	    started = true;
 	}
     }
@@ -191,41 +186,32 @@ public class jsa extends DEViseJSApplet
             jsf = null;
         }
 
-        sessionName = null;
-        images = null;
-
         super.destroy();
     }
 
-    public void startJS(boolean flag)
-    { 
+    private void startJS()
+    {
         if (DEBUG >= 1) {
-            System.out.println("jsa.startJS()");
+	    System.out.println("jsa.startJS()");
 	}
-
-	loadImages();
-
-        startButton.setEnabled(true);
-
-        if (jsf == null) {
-            if (flag) {
-                startInfo.append("Start Java Screen ...\n");
-                jsf = new jscframe(this, images, sessionName, jsValues);
-                //startButton.setEnabled(false);
-            }
+	
+	if (jsf == null) {
+	    startInfo.append("Start Java Screen ...\n");
+	    jsf = new jscframe(this, images, sessionName,
+	    jsValues);
+	    //startButton.setEnabled(false);
         } else {
-            if (jsf.isQuit()) {
-                if (flag) {
-                    startInfo.append("Start new Java Screen ...\n");
-                    jsf = null;
-                    jsf = new jscframe(this, images, sessionName, jsValues);
-                    //startButton.setEnabled(false);
-                }
-            } else {
-                jsf.displayMe(true);
-            }
+	    // Note: we get here if the user clicks the start
+	    // button when a JS already exists.  RKW 2001-01-05.
+	    if (jsf.isQuit()) {
+	        startInfo.append("Start new Java Screen ...\n");
+		jsf = null;
+		jsf = new jscframe(this, images, sessionName, jsValues);
+		//startButton.setEnabled(false);
+	    } else {
+	        startInfo.append("Java Screen already started!\n");
+	    }
         }
-	repaint();
     }
 
     protected void checkParameters()
@@ -255,11 +241,17 @@ public class jsa extends DEViseJSApplet
 
 class jscframe extends Frame
 {
+    static final int DEBUG = 0;
+
     public jsdevisec jsc = null;
 
     public jscframe(Applet parentApplet, Vector images, String sessionName,
       DEViseJSValues jsValues)
     {
+        if (DEBUG >= 1) {
+            System.out.println("jscframe constructor");
+	}
+
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
         jsValues.uiglobals.maxScreenSize.width = dim.width - 80;
@@ -291,12 +283,21 @@ class jscframe extends Frame
 
     public boolean isQuit()
     {
-        return jsc.getQuitStatus();
+	if (jsc == null) {
+	    return true;
+	} else {
+            return jsc.getQuitStatus();
+	}
     }
 
     public void destroy()
     {
+        if (DEBUG >= 1) {
+	    System.out.println("jscframe.destroy()");
+	}
+
         jsc.destroy();
+	jsc = null;
     }
 
     protected void processEvent(AWTEvent event)
@@ -312,14 +313,24 @@ class jscframe extends Frame
 
     public void displayMe(boolean isShow)
     {
+        if (DEBUG >= 1) {
+            System.out.println("jscframe.displayMe(" + isShow + ")");
+	}
+
         if (isShow) {
             if (!isShowing()) {
                 setVisible(true);
             }
+	    if (jsc != null) {
+	        jsc.showDebug();
+	    }
         } else {
             if (isShowing()) {
                 setVisible(false);
             }
+	    if (jsc != null) {
+	        jsc.hideDebug();
+	    }
         }
     }
 }

@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2001/02/19 20:34:09  xuk
+// Added command(s) and GUI so that a collaboration leader can find out who is
+// collaborating with it.
+//
 // Revision 1.48  2001/02/06 16:38:40  xuk
 // Change for multiple collaborated JSs in run().
 //
@@ -35,6 +39,12 @@
 //
 // Revision 1.46  2001/01/30 03:12:43  xuk
 // Changes for collaboration JS.
+//
+// Revision 1.45.2.1  2001/01/31 17:44:02  wenger
+// Cron job to check jspop now runs every minute on yola; added more
+// diagnostic output to checking; temporarily? increased socket receive
+// timeouts to see if this helps on yola; added timestamp to
+// JAVAC_CheckPop command.
 //
 // Revision 1.45  2001/01/08 20:31:53  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
@@ -198,7 +208,8 @@ public class DEViseServer implements Runnable
 
     private DEViseCommSocket socket = null;
     private static final int devisedTimeout = 180 * 1000; // milliseconds
-    private static final int socketTimeout = 1000; // milliseconds
+    //TEMP -- increased this from 1000 to see if it helps on yola.
+    private static final int socketTimeout = 5000; // milliseconds
 
     // newClient is the client we're going to switch to the next time we
     // switch clients; client is the client we're currently connected to.

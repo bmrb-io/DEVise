@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.69.2.2  2001/02/16 21:37:58  wenger
+  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+  a web browser) on 'sets' of visual filters.
+
+  Revision 1.69.2.1  2001/01/31 22:18:23  wenger
+  Added 'stop' command to DEVise; tcl GUI now sends 'stop' instead
+  of sending 'abortQuery' to each view.
+
+  Revision 1.69  2001/01/08 20:32:52  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.66.2.2  2000/12/27 19:39:18  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -681,6 +693,9 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setCursorConstraints)
 	REGISTER_COMMAND(getCursorFlag)
 	REGISTER_COMMAND(setCursorFlag)
+	REGISTER_COMMAND(stop)
+	REGISTER_COMMAND(back)
+	REGISTER_COMMAND(forward)
 }
 
 CmdContainer::~CmdContainer()

@@ -1,6 +1,6 @@
 #========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2000
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,18 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.221.2.2  2001/02/16 21:39:39  wenger
+#	Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
+#	a web browser) on 'sets' of visual filters.
+#	
+#	Revision 1.221.2.1  2001/01/31 22:18:29  wenger
+#	Added 'stop' command to DEVise; tcl GUI now sends 'stop' instead
+#	of sending 'abortQuery' to each view.
+#	
+#	Revision 1.221  2001/01/08 20:33:03  wenger
+#	Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#	back onto the trunk.
+#	
 #	Revision 1.218.2.1  2000/10/18 20:35:21  wenger
 #	Merged changes from fixed_bug_616 through link_gui_improvements onto
 #	the branch.
@@ -1979,11 +1991,23 @@ pack  .panel.center.status.mouseX1 -side right -expand 0
 button .panel.messages.mode -text Display -width 7 -relief raised \
         -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
 		-highlightthickness 0 -bd 3 -command { ChangeMode }
-button .panel.messages.status -text "" -width 7 -relief flat -bd 3 \
+button .panel.messages.status -text "Stop" -width 7 -bd 3 \
         -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
-        -state disabled -highlightthickness 0 -command { AbortAllQueries }
+		-fg $colors(stopModeText) \
+        -activeforeground $colors(stopModeText) \
+		-relief raised \
+        -highlightthickness 0 -command { AbortAllQueries }
 
-pack .panel.messages.mode .panel.messages.status -side top -padx 2m -pady 1m
+frame .panel.messages.fwd_back
+button .panel.messages.fwd_back.back -text "<" -fg white \
+  -command {DEVise back} -bd 3 -highlightthickness 0
+button .panel.messages.fwd_back.fwd -text ">" -fg white \
+  -command {DEVise forward} -bd 3 -highlightthickness 0
+pack .panel.messages.fwd_back.back -side left
+pack .panel.messages.fwd_back.fwd -side right
+
+pack .panel.messages.mode -side top -padx 2m -pady 1m
+pack .panel.messages.fwd_back -side top -padx 2m -pady 1m -fill x
 
 proc ChangeMode {} {
     global mode colors
@@ -2008,29 +2032,22 @@ proc ChangeStatus { status } {
 	global colors
 
     if { $status == 0 } {
-		.panel.messages.status configure -text "" \
-				-fg $colors(runningModeText) \
-                -activeforeground $colors(runningModeText) \
-				-relief flat -state disabled
+		pack forget .panel.messages.status
+        pack .panel.messages.fwd_back -side top -padx 2m -pady 1m -fill both
         Update3DLocation
-        Update2DQueryWindow
+		Update2DQueryWindow
 		Update2DBasicStatWindow
-        UpdateHistoryWindow
+		UpdateHistoryWindow
 		EnableStackControl
     } else {
-		.panel.messages.status configure -text "Stop" \
-				-fg $colors(stopModeText) \
-                -activeforeground $colors(stopModeText) \
-				-relief raised -state normal
+		pack forget .panel.messages.fwd_back
+        pack .panel.messages.status -side top -padx 2m -pady 1m
 		DisableStackControl
     }
 }
 
 proc AbortAllQueries {} {
-    set views [ViewSet]
-    foreach view [ViewSet] {
-        DEVise abortQuery $view
-    }
+    DEVise stop
 }
 
 # Return name of file type, or ""
