@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/19 03:23:59  jussi
+  Initial revision.
+*/
 
 #ifndef PointStorage_h
 #define PointStorage_h
@@ -41,15 +44,11 @@ class PointStorage {
     }
 
     void Insert(RecId id, Coord x, Coord y, Color c) {
-        PointRec point;
-        if (_table.lookup(id, point) >= 0) {
-            printf("Warning: record %ld already in point storage\n", id);
-            return;
-        }
 #ifdef DEBUGPS
         printf("Inserting <%ld,%.2f,%.2f,%ld> to point storage 0x%p\n",
                id, x, y, c, this);
 #endif
+        PointRec point;
         point.x = x;
         point.y = y;
         point.c = c;
