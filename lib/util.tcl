@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1997/03/25 17:59:42  wenger
+#  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+#
 #  Revision 1.44  1997/03/20 01:32:19  wenger
 #  Fixed a bug in color allocation; color chooser for data shows old colors
 #  (temporarily); background conversion of GData defaults to off.
@@ -200,6 +203,21 @@
 ############################################################
 
 proc UniqueName {name} {
+    set trimedleft 0
+    set trimedright 0
+    set len [string length $name]
+    set lastOne [string index $name [expr $len - 1]]
+    set firstOne [string index $name 0]
+    if { $lastOne == "\}" } {
+    	set name [string trimright $name "\}"]
+	puts "name in UniqueName $name"
+	set trimedleft 1
+    }
+    if { $firstOne == "\{" } {
+    	set name [string trimleft $name "\{"]
+	puts "name in UniqueName $name"
+	set trimedright 1
+    }
     while { [DEVise exists $name] } {
 	set len [string length $name]
 	set lastChar [string index $name [expr $len - 1]]
@@ -211,7 +229,13 @@ proc UniqueName {name} {
 	    set name "$name 2"
 	}
     }
-    return $name
+    if { $trimedright == 1 } {
+        set name "$name\}"
+    } 
+    if { $trimedleft == 1 } {
+        set name "\{$name"
+    } 
+    return $name 
 }
 
 ############################################################
@@ -634,7 +658,9 @@ proc PrintViewSetUp {} {
     
     set toprinter 1
     set printcmd "lpr "
-    set filename "/tmp/devise"
+#    set filename "/tmp/devise"
+#    set filename "/local.doc/oldstuff/coral/newrun/northeast/age_sex/out/"
+    set filename "/u/g/u/guangshu/public/html/pictures/demo/"
     set printsrc 0 
 
     frame .printdef.top -relief groove -borderwidth 2
@@ -693,7 +719,7 @@ proc PrintViewSetUp {} {
 
 ############################################################################
 proc PrintView {} {
-    global toprinter printcmd filename  printsrc formatsel 
+    global toprinter printcmd filename  printsrc formatsel mapfile url defaultUrl
     if {[WindowVisible .printdef]} {
         return
     }
@@ -718,10 +744,13 @@ proc PrintView {} {
 ##########################################################################
 
 proc PrintWithMap {} {
-     global toprinter printcmd filename printsrc formatsel
+     global toprinter printcmd filename printsrc formatsel mapfile url defaultUrl
      if {[WindowVisible .printdef]} {
         return
      }
+     set mapfile ""
+     set url ""
+     set defaultUrl ""
 
      PrintViewSetUp
      
