@@ -4,16 +4,19 @@ import java.io.*;
 import Operators.*;
 import Expressions.*;
 
+/** IntDesc is used to represent the type "int". */
 public class IntDesc implements TypeDesc {
     static final String name = "int";
 
     public IntDesc( ){
     }
 
+    /** Return "int". */
     public String getString( ) {
         return name;
     }
 
+    /** Return an EvalOperator according to the operator and arguments. */
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws TypeCheckException
     {

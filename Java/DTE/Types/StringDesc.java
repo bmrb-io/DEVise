@@ -7,10 +7,13 @@ import Expressions.*;
 public class StringDesc implements TypeDesc {
     static final String name = "string";
 
+    /** Return "string". */
     public String getString( ) {
         return name;
     }
 
+    /** Return an EvalOperator object according to the operator and 
+	operands. */
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws TypeCheckException
     {

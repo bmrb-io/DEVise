@@ -7,10 +7,12 @@ import Expressions.*;
 public class DoubleDesc implements TypeDesc {
     static final String name = "double";
 
+    /** Return "double". */
     public String getString( ) {
         return name;
     }
 
+    /** Return an EvalOperator object. */
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws TypeCheckException
     {

@@ -10,10 +10,13 @@ public class BooleanDesc implements TypeDesc {
     public BooleanDesc( ) {
     }
 
+    /** Return "boolean". */
     public String getString( ) {
         return name;
     }
 
+    /** Return an EvalOperator object according to the operator and 
+	operands. */
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws TypeCheckException
     {
