@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/07/21 18:47:01  wenger
+  Fixed bug with cursor grid when cursor location is negative.
+
   Revision 1.25  1999/04/29 17:36:32  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -648,6 +651,86 @@ void DeviseCursor::SetCursorColor(PColorID color)
     _dst->HideCursors();
     _dst->DrawCursors();
   }
+}
+
+CursorHit::HitType
+DeviseCursor::IsOnCursor(Coord dataX, Coord dataY, Coord dataXTol,
+    Coord dataYTol)
+{
+#if defined(DEBUG)
+  printf("Cursor(%s)::IsOnCursor(%g, %g, %g, %g)\n", GetName(), dataX, dataY,
+    dataXTol, dataYTol);
+#endif
+
+  CursorHit::HitType result = CursorHit::CursorNone;
+
+  dataXTol = ABS(dataXTol);
+  dataYTol = ABS(dataYTol);
+
+  VisualFilter filter;
+  _src->GetVisualFilter(filter);
+
+  //
+  // Figure out whether we're on the cursor, and if so if we're on and
+  // edge or corner.
+  //
+  Boolean outOfCursor = false;
+  Boolean topEdge = false;
+  Boolean bottomEdge = false;
+  Boolean leftEdge = false;
+  Boolean rightEdge = false;
+
+  if ((_visFlag & VISUAL_X) &&
+      (dataX < filter.xLow || dataX > filter.xHigh)) {
+    outOfCursor = true;
+  } else if ((_visFlag & VISUAL_Y) &&
+      (dataY < filter.yLow || dataY > filter.yHigh)) {
+    outOfCursor = true;
+  } else {
+    if (!_fixedSize && (_visFlag & VISUAL_X)) {
+      if (dataX < filter.xLow + dataXTol) {
+        leftEdge = true;
+      } else if (dataX > filter.xHigh - dataXTol) {
+        rightEdge = true;
+      }
+    }
+
+    if (!_fixedSize && (_visFlag & VISUAL_Y)) {
+      if (dataY < filter.yLow + dataYTol) {
+        bottomEdge = true;
+      } else if (dataY > filter.yHigh - dataYTol) {
+        topEdge = true;
+      }
+    }
+  }
+
+  if (outOfCursor) {
+    result = CursorHit::CursorNone;
+  } else if (topEdge) {
+    if (leftEdge) {
+      result = CursorHit::CursorNW;
+    } else if (rightEdge) {
+      result = CursorHit::CursorNE;
+    } else {
+      result = CursorHit::CursorN;
+    }
+  } else if (bottomEdge) {
+    if (leftEdge) {
+      result = CursorHit::CursorSW;
+    } else if (rightEdge) {
+      result = CursorHit::CursorSE;
+    } else {
+      result = CursorHit::CursorS;
+    }
+  } else if (leftEdge) {
+    result = CursorHit::CursorW;
+  } else if (rightEdge) {
+    result = CursorHit::CursorE;
+  } else {
+    result = CursorHit::CursorMid;
+  }
+
+  return result;
 }
 
 //******************************************************************************

@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/07/14 18:42:25  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.14  1999/06/15 18:50:23  wenger
   Fixed bug 500 (problem flipping parent views of piled view symbols).
 
@@ -981,6 +984,30 @@ PileStack::SetYAxisDateFormat(const char *format)
     view->SetYAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::IsOnCursor
+ * Finds out if given coordinates are on a cursor for all views in the pile.
+ */
+CursorHit::HitType
+PileStack::IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::IsOnCursor()\n", _name);
+#endif
+
+  CursorHit::HitType result = CursorHit::CursorNone;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index) && result == CursorHit::CursorNone) {
+    View *view = (View *)GetViewList()->Next(index);
+    result = view->DoIsOnCursor(pixX, pixY, cursor);
+  }
+  GetViewList()->DoneIterator(index);
+
+  return result;
 }
 
 /*------------------------------------------------------------------------------

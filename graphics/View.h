@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.90  1999/07/21 18:51:02  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.89  1999/07/14 18:42:41  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -973,6 +976,12 @@ protected:
 									 unsigned width, unsigned height);
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
+
+        virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
+	        DeviseCursor *&cursor);
+        virtual CursorHit::HitType DoIsOnCursor(int pixX, int pix,
+	        DeviseCursor *&cursorY);
+
 
 		char *_xAxisDateFormat;
 		char *_yAxisDateFormat;

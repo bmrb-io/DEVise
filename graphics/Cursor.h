@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/04/29 17:36:33  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.19  1999/01/29 21:09:42  wenger
   Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
 
@@ -114,10 +117,10 @@
 #include "VisualArg.h"
 #include "ViewCallback.h"
 #include "CursorStore.h"
+#include "WindowRep.h"
 
 #include "Color.h"
 
-class WindowRep;
 class DeviseCursor;
 class View;
 DefinePtrDList(DeviseCursorList, DeviseCursor *)
@@ -180,6 +183,9 @@ class DeviseCursor : private ViewCallback
   // of the cursor.
   Boolean GetFixedSize() { return _fixedSize; }
   void SetFixedSize(Boolean fixed) { _fixedSize = fixed; }
+
+  CursorHit::HitType IsOnCursor(Coord dataX, Coord dataY, Coord dataXTol,
+      Coord dataYTol);
 
 private:
   virtual void FilterAboutToChange(View *view);

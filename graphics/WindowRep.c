@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/06/04 16:32:01  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.33  1998/08/24 14:57:31  wenger
   Added misc. debug output.
 
@@ -238,7 +245,7 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 
 void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("WindowRep::HandleButton(%d,%d,%d,%d,%d)\n",
 	 x, y, button, state, type);
 #endif
@@ -256,7 +263,7 @@ void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 void WindowRep::HandleButtonPress(int xlow, int ylow, 
 				  int xhigh, int yhigh, int button)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("WindowRep::HandleButtonPress(%d,%d,%d,%d,%d)\n",
          xlow, ylow, xhigh, yhigh, button);
 #endif
@@ -274,7 +281,7 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
 
 void WindowRep::HandleKey(int key, int x, int y)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("WindowRep::HandleKey()\n");
 #endif
 

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/07/14 18:42:38  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.11  1999/06/04 16:31:59  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -141,6 +144,8 @@ public:
 
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
+
+  CursorHit::HitType IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor);
 
   void SelectView();
   Boolean ViewIsSelected();

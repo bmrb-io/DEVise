@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.128  1999/07/16 21:35:57  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.127  1999/06/04 16:32:01  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -2712,7 +2720,18 @@ void XWindowRep::HandleEvent(XEvent &event)
     break;
 
   case ButtonRelease:
+    break;
+
   case MotionNotify:
+    int index;
+    for(index = InitIterator(); More(index); ){
+      WindowRepCallback *c = Next(index);
+      DeviseCursor *cursor;
+      CursorHit::HitType cursorHit =
+          c->IsOnCursor(event.xmotion.x, event.xmotion.y, cursor);
+      SetMouseCursor(cursorHit);
+    }
+    DoneIterator(index);
     break;
 #endif
 
@@ -4415,6 +4434,63 @@ XWindowRep::DeleteInputWR(XWindowRep *winRep)
   if (!_inputWins.Delete(winRep)) {
     reportErrNosys("Warning: can't find winRep in _inputWins");
   }
+}
+
+void
+XWindowRep::SetMouseCursor(CursorHit::HitType cursorHit)
+{
+  int cursorShape;
+
+  switch (cursorHit) {
+  case CursorHit::CursorNone:
+    cursorShape = XC_top_left_arrow;
+    break;
+
+  case CursorHit::CursorNW:
+    cursorShape = XC_top_left_corner;
+    break;
+
+  case CursorHit::CursorN:
+    cursorShape = XC_top_side;
+    break;
+
+  case CursorHit::CursorNE:
+    cursorShape = XC_top_right_corner;
+    break;
+
+  case CursorHit::CursorW:
+    cursorShape = XC_left_side;
+    break;
+
+  case CursorHit::CursorMid:
+    cursorShape = XC_fleur;
+    break;
+
+  case CursorHit::CursorE:
+    cursorShape = XC_right_side;
+    break;
+
+  case CursorHit::CursorSW:
+    cursorShape = XC_bottom_left_corner;
+    break;
+
+  case CursorHit::CursorS:
+    cursorShape = XC_bottom_side;
+    break;
+
+  case CursorHit::CursorSE:
+    cursorShape = XC_bottom_right_corner;
+    break;
+
+  default:
+    DOASSERT(false, "Illegal CursorHit::HitType value");
+    cursorShape = XC_top_left_arrow;
+    break;
+  }
+
+  Cursor cursor = XCreateFontCursor(_display, cursorShape);
+  XDefineCursor(_display, _win, cursor);
+  XFreeCursor(_display, cursor);
 }
 
 //******************************************************************************

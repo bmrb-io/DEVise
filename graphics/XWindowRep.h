@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/07/16 21:35:59  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.60  1999/04/20 21:25:18  wenger
   Combined DrawText() and DrawDataText() into NewDrawText() without changing
   functionality.
@@ -705,6 +713,8 @@ private:
 				      int height, SymbolAlignment alignment,
 				      Coord orientation,
 				      XPoint *points = NULL);
+
+    void SetMouseCursor(CursorHit::HitType cursorHit);
 
 	/* current dimensions of window */
 	int _x, _y;

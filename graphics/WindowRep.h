@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.78  1999/07/16 21:35:56  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.77  1999/03/01 17:47:34  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -389,8 +397,16 @@
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
+class CursorHit {
+public:
+  enum HitType { CursorInvalid = 0, CursorNone, CursorNW, CursorN, CursorNE,
+    CursorW, CursorMid, CursorE, CursorSW, CursorS, CursorSE };
+};
+
+
 class DeviseDisplay;
 class CursorStore;
+class DeviseCursor;
 
 /* Callback from windowRep for processing window events. 
    Default: no event is handled. */
@@ -439,6 +455,12 @@ public:
 
   /* Handle window destroy events */
   virtual Boolean HandleWindowDestroy(WindowRep *w) { return true; }
+
+  // Figure out whether the given location is on a cursor.
+  virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
+      DeviseCursor *&cursor) {
+    cursor = NULL;
+    return CursorHit::CursorNone; }
 };
 
 const int WindowRepTransformDepth = 10;	/* max # of transforms in the stack */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/06/15 18:09:44  wenger
+  Added dumping of ViewWin objects to help with pile debugging.
+
   Revision 1.38  1999/05/12 21:01:03  wenger
   Views containing view symbols can now be piled.
 
@@ -505,6 +508,11 @@ private:
 
 		virtual void	HandleWindowMappedInfo(WindowRep* w, Boolean mapped);
 		virtual Boolean	HandleWindowDestroy(WindowRep *w);
+
+		virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
+		    DeviseCursor *&cursor) {
+		  cursor = NULL;
+		  return CursorHit::CursorNone; }
 };
 
 //******************************************************************************
@@ -569,6 +577,12 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
 		virtual Boolean		HandleWindowDestroy(WindowRep* w)
 		{
 			return _parent->HandleWindowDestroy(w);
+		}
+
+		virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
+		    DeviseCursor *&cursor)
+		{
+			return _parent->IsOnCursor(pixX, pixY, cursor);
 		}
 };
 

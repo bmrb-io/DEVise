@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.184  1999/07/21 18:51:00  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.183  1999/07/16 21:35:52  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -4298,6 +4301,58 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
 									 DepMgr::EventViewResize);
     Refresh(true);
+}
+
+CursorHit::HitType
+View::IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+{
+#if defined(DEBUG)
+  printf("View(%s)::IsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
+#endif
+
+  cursor = NULL;
+
+  if (IsInPileMode()) {
+    return GetParentPileStack()->IsOnCursor(pixX, pixY, cursor);
+  } else {
+    return DoIsOnCursor(pixX, pixY, cursor);
+  }
+}
+
+CursorHit::HitType
+View::DoIsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+{
+#if defined(DEBUG)
+  printf("View(%s)::DoIsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
+#endif
+
+  CursorHit::HitType result = CursorHit::CursorNone;
+
+  const int pixTol = 4;
+
+  //
+  // Convert pixel coordinates to data coordinates, and figure out the
+  // tolerance for "catching" an edge.
+  //
+  Coord dataX, dataY, dataX2, dataY2;
+  WindowRep *winRep = GetWindowRep();
+  winRep->InverseTransform(pixX, pixY, dataX, dataY);
+  winRep->InverseTransform(pixX + pixTol, pixY + pixTol, dataX2, dataY2);
+
+
+  //
+  // Go thru all cursors and see if we're on one.
+  //
+  int index = _cursors->InitIterator();
+  while (_cursors->More(index) && result == CursorHit::CursorNone) {
+    DeviseCursor *tmpCursor = _cursors->Next(index);
+    result = tmpCursor->IsOnCursor(dataX, dataY, dataX - dataX2,
+        dataY - dataY2);
+    if (result != CursorHit::CursorNone) cursor = tmpCursor;
+  }
+  _cursors->DoneIterator(index);
+
+  return result;
 }
 
 void View::SetViewDir(ViewDir dir)
