@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/09/13 16:44:55  wenger
+  PixelSize in GData now used as multiplier to the size when symbols are
+  larger than one screen pixel (makes the '+' and '-' keys more useful).
+
   Revision 1.23  1996/08/07 20:11:43  wenger
   Fixed various key event-related bugs (see Bugs file); changed
   direction of camera movement for 3D to be more in agreement
@@ -264,7 +268,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
     
     AttrType xAttr = view->GetXAxisAttrType();
     AttrType yAttr = view->GetYAxisAttrType();
-    
+
     InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
     
     if (view->GetNumDimensions() != 2) {
@@ -312,7 +316,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     view->DoneMappingIterator(index);
     
     RecId startRid;
-    int numRecs;
+    int numRecs = 0;
     char *buf;
     QueryProc *qp = QueryProc::Instance();
 
@@ -401,5 +405,71 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
 
     qp->DoneTDataQuery();
 
-    return !tooMuch;
+    if (approxFlag || numRecs)
+        return(!tooMuch);
+
+
+      // Try it again, this time trying to take the size
+      // of the structures being viewed into account.
+
+      // for scatter plot, we filter using Y coordinates as well;
+      // allow user inaccuracy that is five times larger than for
+      // sortedX views (where approximation is used anyway), that is,
+      // roughly five pixels in each direction
+    filter.flag = VISUAL_X | VISUAL_Y;
+
+    Coord height, width, depth;
+    map->GetMaxSymSize(width,height,depth);
+
+    filter.xLow  = x - width / 2;
+    filter.xHigh = x + width / 2;
+    filter.yLow  = y - height / 2;
+    filter.yHigh = y + height / 2;
+
+    tooMuch = false;
+    qp->InitTDataQuery(map, filter, approxFlag);
+
+    linesDisplayed = 0;
+
+    while (qp->GetTData(startRid, numRecs, buf)) {
+        char *ptr = buf;
+        for(int i = 0; i < numRecs; i++) {
+            recInterp->SetBuf(ptr);
+            ptr += tdata->RecSize();
+            
+            if (tooMuch)
+              puts("");
+            else
+              PutMessage("");
+
+            // set up for display inside the window
+
+            for(int j = 0; j < attrs->NumAttrs(); j++) {
+                char buf[128];
+                recInterp->PrintAttr(buf, j, true);
+                if (!tooMuch) {
+                    if (!PutMessage(buf)) {
+                        PrintMsgBuf();
+                        errorMsg = "see text window";
+                        tooMuch = true;
+                    }
+                } else {
+                    puts(buf);
+                }
+                ++linesDisplayed;
+            }
+
+            if (linesDisplayed > 500) {
+                puts("\nToo many records to display");
+                break;
+            }
+        }
+        
+        if (linesDisplayed > 500)
+          break;
+    }
+
+    qp->DoneTDataQuery();
+
+    return(!tooMuch);
 }
