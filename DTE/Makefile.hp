@@ -1,6 +1,14 @@
 depend:
-	makedepend  -fMakefile.hp -I../DTE -I../graphics -I../tape \
-		-I/s/X11/include -I/s/tcl/include *.c *.C
+     makedepend -fMakefile.solaris -ICore \
+     -I../graphics -I../graphics.new -I../atrproj *.c;\
+     cd Core; \
+     makedepend -a -f../Makefile.solaris \
+     -I../../graphics -I../../graphics.new -I../../atrproj *.c;\
+     cd ..;\
+     cd StandAlone; \
+     makedepend -a -f../Makefile.solaris -I../Core \
+     -I../../graphics -I../../graphics.new -I../../atrproj *.c;\
+     cd ..;\
 
 # DO NOT DELETE
 
