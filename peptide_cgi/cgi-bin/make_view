@@ -39,7 +39,8 @@ $query = new CGI;
 $acc_num = $query->param('number') || '4101';
 
 # File name of html summary page to generate.
-$summary_page = $acc_num . 'y.html';
+my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
+$summary_page = $summary_page_dir . "/" . $acc_num . 'y.html';
 
 my ($current_dir, $data_dir);
 $current_dir = `pwd`;
@@ -53,10 +54,7 @@ if (system ("./s2d $acc_num" ) ) {
 }
 
 # return summary page
-#TEMP -- can this be made relative?
-print $query->redirect("http://pumori.cs.wisc.edu/bmrb/html/$summary_page");
-# For yola
-#print $query->redirect("http://bmrb.wisc.edu/devise/peptide-cgi/data_dir/$summary_page");
+print $query->redirect($summary_page);
 exit;
 
 #------------------------------------------------------------------------
@@ -71,4 +69,35 @@ sub dienice {
   print "$errmsg<p>\n";
   print $query->end_html;
   exit;
+}
+
+#------------------------------------------------------------------------
+# Get the value of a given s2d property.
+
+# Parameters:
+#   property name
+
+# Returns:
+#   property value
+
+sub getProperty {
+  my $prop_name = shift(@_);
+
+  my $value = "";
+
+  open(PROP_IN, "s2d.props") or dienice("Couldn't open property file: $!\n");
+
+  my $line;
+  while ($line = <PROP_IN>) {
+    chomp $line;
+    if (substr($line, 0, 1) ne "#") {
+      if ($line =~ /^$prop_name=(.*)/) {
+	$value = $1;
+      }
+    }
+  }
+
+  close(PROP_IN);
+
+  return $value;
 }

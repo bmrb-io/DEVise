@@ -32,72 +32,66 @@
 
 ############################################################
 
-# Check the argument.
+#-----------------------------------------------------------
+# Check and get the arguments.
 
-if ($#argv == 1) then
-  set location = $1
-  if ($location == cs) then
-    set demohome = /p/devise/demo
-    set wwwhome = /var/home/www
-    set pephome = $wwwhome/public/bmrb
-    set cgihome = $wwwhome/cgi-bin/bmrb
-    set sessionhome = /local.pumori/devise/bmrb/dynamic_sessions
-    set datahome = /local.pumori/devise/bmrb/dynamic_data
+if ($#argv < 6 || $#argv > 7) then
+  echo "Usage: install <dev_demo_home> <www_home> <pep_home> <cgi_home>"
+  echo "  <pep_session_home> <pep_data_home> [install_machine]"
+  exit 1;
+endif
 
-    # Check whether we're on the appropriate machine.
-    if (`hostname` != "pumori.cs.wisc.edu") then
-      echo "cs installation is normally done on pumori."
-      echo -n "Are you sure you want to continue? [n] "
+set demohome = $1
+set wwwhome = $2
+set pephome = $3
+set cgihome = $4
+set sessionhome = $5
+set datahome = $6
 
-      set answer = $<
-      if ($answer != y && $answer != Y) then
-        echo Aborted.
-        exit 1
-      endif
-    endif
+#-----------------------------------------------------------
+# Perform various checks before we actually do anything.
 
-  else if ($location == bmrb) then
-    set demohome = /p/devise/demo
-    set wwwhome = /bmrb/htdocs
-    set pephome = $wwwhome/devise/peptide-cgi
-    set cgihome = $wwwhome/cgi-bin/peptide-cgi
-    set sessionhome = $pephome/session_dir
-    set datahome = $pephome/data_dir
+if ($#argv == 7) then
+  # Check whether we're on the appropriate machine.
 
-    # Check whether we're on the appropriate machine.
-    if (`hostname` != "aden.bmrb.wisc.edu") then
-      echo "cs installation is normally done on aden."
-      echo -n "Are you sure you want to continue? [n] "
+  if (`hostname` != $7) then
+    echo "Installation is normally done on $7."
+    echo -n "Are you sure you want to continue? [n] "
 
-      set answer = $<
-      if ($answer != y && $answer != Y) then
-        echo Aborted.
-        exit 1
-      endif
-    endif
-
-    # Check whether we've modified the files to work at BMRB.
-    echo "Have you modified cgi-bin/make_view and bmrb_select.html"
-    echo -n "for installation at bmrb? [n]"
     set answer = $<
     if ($answer != y && $answer != Y) then
       echo Aborted.
       exit 1
     endif
-  else
-    echo "Illegal argument value: $location"
-    exit 1
   endif
-else
-  echo "Usage: install <cs|bmrb>"
-  exit 1
 endif
 
 
 # Check that the Java code is compiled.
+
 set file = "java_classes/S2DMain.class"
 if (! -f $file) then
   echo "Please compile the Java code before installing."
+  exit 1
+endif
+
+
+# Make sure other necessary files have been generated.
+
+if (! -f bmrb_select.html || ! -f cgi-bin/s2d.props || ! -d cgi-bin/bin) then
+  echo "You must do 'make setup' before doing 'make install'."
+  exit 1
+endif
+
+
+# Make sure the demo home and www home directories already exist.
+
+if (! -d $demohome) then
+  echo "$demohome directory doesn't exist; aborting."
+  exit 1
+endif
+if (! -d $wwwhome) then
+  echo "$wwwhome directory doesn't exist; aborting."
   exit 1
 endif
 
@@ -116,9 +110,12 @@ if ($answer != y && $answer != Y) then
   exit 1
 endif
 
+#-----------------------------------------------------------
+# Okay, here we actually start doing the installation.
 
 # Create and set up the directory containing the "front-end" html file.
 
+echo "Creating the "front-end" directory ($pephome)"
 set targetdir = $pephome
 if (! -e $targetdir) then
   mkdir $targetdir
@@ -130,23 +127,22 @@ chmod a+r $targetdir/bmrb_select.html
 
 # Create and set up the dynamic sessions directory.
 
+echo "Creating the dynamic sessions directory ($sessionhome)"
 set targetdir = $sessionhome
 if (! -e $targetdir) then
   mkdir $targetdir
-
-  # Needed so www-user can write here.
-  fs setacl $targetdir system:anyuser write
 endif
 chmod a+rwx $targetdir
 cp -p dynamic_sessions/*.base $targetdir
 chmod a+r $targetdir/*.base
 
-cp -p dynamic_sessions/*.str $demo/session.js/bmrb
-chmod a+r $demo/session.js/bmrb/*.str
+cp -p dynamic_sessions/*.str $demohome/session.js/bmrb
+chmod a+r $demohome/session.js/bmrb/*.str
 
 
 # Create and set up the data/html directory.
 
+echo "Creating the data/html directory ($datahome)"
 set targetdir = $datahome
 if (! -e $targetdir) then
   mkdir $targetdir
@@ -158,16 +154,16 @@ find $targetdir -name \* -type f -exec chmod a+r {} \;
 
 # Create the link that we use to have the browser find the summary page.
 
-if ($location == cs) then
-  set targetdir = $wwwhome/public/bmrb/html
-  if (! -e $targetdir) then
-    ln -s $demohome/dat/bmrb/dynamic_data $targetdir
-  endif
+echo "Creating html link ($pephome/html)"
+set targetdir = $pephome/html
+if (! -e $targetdir) then
+  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
 endif
 
 
 # Create and set up the CGI directory.
 
+echo "Creating CGI directory ($cgihome)"
 set targetdir = $cgihome
 if (! -e $targetdir) then
   mkdir $targetdir
@@ -183,13 +179,23 @@ cp -p cgi-bin/s2d.props $targetdir
 chmod a+rx $targetdir/s2d.props
 
 cd cgi-bin
-tar cv bin | tar xv --directory=$targetdir
+# Line below only works with GNU tar.
+# tar cv bin | tar xv --directory=$targetdir
+
+tar cvf bin.tar bin
+set curdir = `pwd`
+cd $targetdir
+tar xvf $curdir/bin.tar
+cd $curdir
+rm bin.tar
+
 cd ..
 chmod a+rx $targetdir/bin
 
 
 # Link data directory to CGI directory.
 
+echo "Linking data directory to CGI directory"
 set targetdir = $cgihome/data_dir
 if (! -e $targetdir) then
   ln -s $datahome $targetdir
@@ -198,22 +204,25 @@ endif
 
 # Link session directory to CGI directory.
 
+echo "Linking session directory to CGI directory"
 set targetdir = $cgihome/session_dir
 if (! -e $targetdir) then
   ln -s $sessionhome $targetdir
 endif
 
 
-# Link data directory to the demo area.
+# Link data directory to the DEVise demo area.
 
+echo "Linking data directory to DEVise demo area"
 set targetdir = $demohome/dat/bmrb/dynamic_data
 if (! -e $targetdir) then
   ln -s $datahome $targetdir
 endif
 
 
-# Link session directory to the demo area.
+# Link session directory to the DEVise demo area.
 
+echo "Linking session directory to DEVise demo area"
 set targetdir = $demohome/session.js/bmrb/dynamic_sessions
 if (! -e $targetdir) then
   ln -s $sessionhome $targetdir
@@ -222,6 +231,7 @@ endif
 
 # Create and set up the java classes directory.
 
+echo "Creating java classes directory for CGI ($cgihome/java_classes)"
 set targetdir = $cgihome/java_classes
 if (! -e $targetdir) then
   mkdir $targetdir
@@ -234,4 +244,5 @@ chmod a+r $targetdir/*.*
 
 # Copy the schemas to the demo area.
 
+echo "Copying schemas to the DEVise demo area"
 cp schema/bmrb* $demohome/schema/schema/physical

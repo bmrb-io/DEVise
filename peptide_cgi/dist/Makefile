@@ -36,8 +36,8 @@ dist: peptide-cgi
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:
 	ln -s ../../Makefile .
-	ln -s ../../Makefile.config .
-	ln -s ../../bmrb_select.html .
+	ln -s ../../Makefile.config.* .
+	ln -s ../../bmrb_select.tmpl .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir dynamic_sessions; cd dynamic_sessions; \
@@ -69,6 +69,7 @@ html-setup:
 	ln -s ../../../html/*.jpg .
 	ln -s ../../../html/*.js .
 	ln -s ../../../html/*.base .
+	ln -s ../../../html/*.dat .
 	ln -s ../../../html/assignments.txt .
 	ln -s ../../../html/chemshift.txt .
 

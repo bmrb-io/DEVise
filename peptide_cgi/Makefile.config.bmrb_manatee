@@ -22,17 +22,17 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /s/std/bin
-PERL_BIN = /s/std/bin
+JAVA_BIN = /usr/bin
+PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-WEB_DOMAIN = www.bmrb.wisc.edu
+WEB_DOMAIN = manatee.bmrb.wisc.edu
 STAR_URL = http://$(WEB_DOMAIN)/data_library/files/
 3D_EXAMPLE_URL = http://$(WEB_DOMAIN)/devise/4096_side3h.html
 
-SUMMARY_PAGE_DIR = http://pumori.cs.wisc.edu/bmrb/html
-CGI_URL = http://pumori.cs.wisc.edu/cgi-bin/bmrb/make_view
+SUMMARY_PAGE_DIR = http://manatee.bmrb.wisc.edu/devise/peptide-cgi/html
+CGI_URL = http://manatee.bmrb.wisc.edu/cgi-bin/peptide-cgi/make_view
 
 #-----------------------------------------------------------
 # Places to install stuff.
@@ -40,21 +40,21 @@ CGI_URL = http://pumori.cs.wisc.edu/cgi-bin/bmrb/make_view
 # The base of the DEVise demo setup.
 DEV_DEMO_HOME = /p/devise/demo
 
-WWW_HOME = /var/home/www
+WWW_HOME = /website/htdocs
 
 # The directory where the "front-end" file will be put.
-PEP_HOME = $(WWW_HOME)/public/bmrb
+PEP_HOME = $(WWW_HOME)/devise/peptide-cgi
 
 # The directory where the CGI script and related stuff will be put.
-CGI_HOME = $(WWW_HOME)/cgi-bin/bmrb
+CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi
 
 # The "real" directory (not symlink) where peptide-cgi sessions will
 # be put.
-PEP_SESSION_HOME = /local.pumori/devise/bmrb/dynamic_sessions
+PEP_SESSION_HOME = $(PEP_HOME)/session_dir
 
 # The "real" directory (not symlink) where peptide-cgi data (and html
 # files) will be put.
-PEP_DATA_HOME = /local.pumori/devise/bmrb/dynamic_data
+PEP_DATA_HOME = $(PEP_HOME)/data_dir
 
 # Machine installation should be done on (optional).
-INSTALL_MACHINE = pumori.cs.wisc.edu
+INSTALL_MACHINE = manatee
