@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/11 03:15:52  jussi
+  The extraction routine now takes a list of stock symbols, sorts
+  them according to file offset on tape, and then extracts them
+  in order.
+
   Revision 1.8  1996/04/16 20:56:38  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -253,6 +258,7 @@ static void genExtractData(char *file)
       timestr.tm_hour = hh;
       timestr.tm_min = mm;
       timestr.tm_sec = ss;
+      timestr.tm_isdst = -1;
       now = mktime(&timestr);
       laststr = timestr;
       lasttime = now;

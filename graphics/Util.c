@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/19 15:23:28  wenger
+  Minor changes to fix compiles on HP, etc.
+
   Revision 1.17  1996/11/05 18:23:11  wenger
   Minor mods to get things to compile on SGI systems.
 
@@ -191,6 +194,14 @@ static char dateBuf[21];
 
 char *DateString(time_t tm)
 {
+#if 0
+  if (tm < 0) {
+    char errBuf[1024];
+    sprintf(errBuf, "Illegal time value %ld\n", tm);
+    reportErrNosys(errBuf);
+  }
+#endif
+
   char *dateStr = ctime(&tm);
   int i;
   for(i = 0; i < 7; i++)

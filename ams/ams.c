@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/23 20:45:17  jussi
+  Removed references to QueryProcTape.
+
   Revision 1.13  1996/05/22 21:06:14  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -233,6 +236,7 @@ public:
 		timestr.tm_hour = (*tm) /100;
 		timestr.tm_min = (*tm) % 100;
 		timestr.tm_sec = 0;
+		timestr.tm_isdst = -1;
 
 		/* see if we can reuse the time value from last call's
 		   mktime() call; mktime costs 1 msec per call so we
@@ -373,6 +377,7 @@ public:
 		timestr.tm_hour = (*tm) /100;
 		timestr.tm_min = (*tm) % 100;
 		timestr.tm_sec = 0;
+		timestr.tm_isdst = -1;
 
 		/* see if we can reuse the time value from last call's
 		   mktime() call; mktime costs 1 msec per call so we

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/11/23 20:44:26  jussi
+  Removed references to QueryProcTape.
+
   Revision 1.38  1996/11/01 19:04:32  kmurli
   Makefile changed to include DQL sources
 
@@ -189,9 +192,54 @@
 #include "CursorClassInfo.h"
 #include "ParseCat.h"
 #include "HashTable.h"
+#include "DevError.h"
+#include "Util.h"
 
 static time_t GetTime(struct tm &now)
 {
+  /* Check input values. */
+  {
+    char errBuf[1024];
+
+    /* tm_isdst of -1 tells mktime to not adjust the time (we get the
+     * time we specified). */
+    if (now.tm_isdst != -1) {
+      sprintf(errBuf, "Illegal daylight savings flag; set to false");
+      reportErrNosys(errBuf);
+      now.tm_isdst = -1;
+    }
+
+    if (now.tm_mday < 1 || now.tm_mday > 366) {
+      sprintf(errBuf, "Illegal day value %d; set to 1", now.tm_mday);
+      reportErrNosys(errBuf);
+      now.tm_mday = 1;
+    }
+
+    if (now.tm_hour < 0 || now.tm_hour > 23) {
+      sprintf(errBuf, "Illegal hour value %d; set to 0", now.tm_hour);
+      reportErrNosys(errBuf);
+      now.tm_hour = 0;
+    }
+
+    if (now.tm_mon < 0 || now.tm_mon > 11) {
+      sprintf(errBuf, "Illegal month value %d; set to 0 (January)",
+	now.tm_mon);
+      reportErrNosys(errBuf);
+      now.tm_mon = 0;
+    }
+
+    if (now.tm_year < 70) {
+      sprintf(errBuf, "Illegal year value %d; set to (19)70", now.tm_year);
+      reportErrNosys(errBuf);
+      now.tm_sec = 0;
+      now.tm_min = 0;
+      now.tm_hour = 0;
+      now.tm_mday = 1;
+      now.tm_mon = 0;
+      now.tm_year = 70;
+    }
+  }
+
   static struct tm lasttm;
   static time_t    lasttime = (time_t)-1;
 
@@ -212,6 +260,10 @@ static time_t GetTime(struct tm &now)
     nowtime = mktime(&now);
     lasttime = nowtime;
     lasttm = now;
+  }
+
+  if (nowtime == -1) {
+    reportErrNosys("Requested time cannot be represented");
   }
 
   return nowtime;
@@ -263,6 +315,7 @@ public:
     now.tm_hour = 0;
     now.tm_min = 0;
     now.tm_sec = 0;
+    now.tm_isdst = -1;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
@@ -318,6 +371,7 @@ public:
     now.tm_hour = 0;
     now.tm_min = 0;
     now.tm_sec = 0;
+    now.tm_isdst = -1;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     *datePtr = GetTime(now);
@@ -374,6 +428,7 @@ public:
     now.tm_hour = (int)hour;
     now.tm_min = 60 * ((int)(hour - (int)hour));
     now.tm_sec = 0;
+    now.tm_isdst = -1;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[2]);
     *datePtr = GetTime(now);
@@ -385,6 +440,10 @@ private:
 };
 
 /* User composite function for dates of the form YYDDD, HHMM */
+/* YY (19)70 - ?
+ * DDD 001 - 366
+ * HH 01 - 24 (0100 = midnight!)
+ * MM 00 - 59 */
 
 class YyDdd_HhMmComposite : public UserComposite {
 public:
@@ -432,12 +491,14 @@ public:
     hour--; // Convert from 1-24 to 0-23.
 
     static struct tm now;
+    memset((char *) &now, 0, sizeof(now));
     now.tm_mday = day;
     now.tm_mon = 0;
     now.tm_year = year;
     now.tm_hour = hour;
     now.tm_min = minute;
     now.tm_sec = 0;
+    now.tm_isdst = -1;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[2]);
     *datePtr = GetTime(now);
@@ -496,6 +557,7 @@ public:
     now.tm_hour = *(int *)(buf + attrOffset[3]);
     now.tm_min = *(int *)(buf + attrOffset[4]);
     now.tm_sec = *(int *)(buf + attrOffset[5]);
+    now.tm_isdst = -1;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[6]);
     *datePtr = GetTime(now);
@@ -564,6 +626,7 @@ public:
     now.tm_hour = hours;
     now.tm_min = minutes;
     now.tm_sec = seconds;
+    now.tm_isdst = -1;
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
   }
@@ -618,6 +681,7 @@ public:
     now.tm_hour = 0;
     now.tm_min = 0;
     now.tm_sec = 0;
+    now.tm_isdst = -1;
 
     if (now.tm_mon >= 12) {
       // the annual statistic is moved to Dec 15th
