@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/02 22:03:38  taodb
+  Add control parameter to Run() invocations
+
   Revision 1.1  1998/02/26 20:48:32  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -304,7 +307,9 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control)
 		retval = -1;
 	}
 	else
+	{
 		retval = cmd->Run(argc, argv,control);
+	}
 	return retval;
 }
 

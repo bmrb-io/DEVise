@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.74  1998/02/26 22:59:48  wenger
+#  Added "count mappings" to views, except for API and GUI (waiting for
+#  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+#  of VisualFilter struct; did some cleanup of MappingInterp class.
+#
 #  Revision 1.73  1998/02/26 20:48:40  taodb
 #  Replaced ParseAPI() with Command Object Interface
 #
@@ -218,7 +223,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
-	CmdContainer.C DeviseCommand.C 
+	CmdContainer.C DeviseCommand.C ExtStack.C
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

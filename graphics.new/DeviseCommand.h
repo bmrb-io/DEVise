@@ -4,6 +4,7 @@
 #include "DeviseCommandOption.h"
 #include "ClassDir.h"
 #include "Control.h"
+#include "ExtStack.h"
 #define PURIFY 0
 
 #define DECLARE_CLASS_DeviseCommand_(command_name)\
@@ -25,15 +26,28 @@ class DeviseCommand
 		DeviseCommandOption	_cmdOption;
 		static	ControlPanel* defaultControl;
 		static void setDefaultControl(ControlPanel* defaultControl);
-
+		ExtStack	*_controlStack;
+		void pushControl(ControlPanel* control)
+		{
+			_controlStack->push((void*)control);
+		}
+		void popControl()
+		{
+			 _controlStack->pop();
+			 control =(ControlPanel*) _controlStack->top();
+		}
 	protected:
 		// only friend class can construct this class
 		ControlPanel* control;
 		DeviseCommand(DeviseCommandOption& cmdOption)
 		{
 			_cmdOption = cmdOption;
+			_controlStack = new ExtStack(5, NULL);
 		}
-		virtual ~DeviseCommand(){}
+		virtual ~DeviseCommand()
+		{
+			delete _controlStack;
+		}
 		virtual int Run(int argc, char** argv);
 	protected:
 		char		result[10*1024];

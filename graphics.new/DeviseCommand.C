@@ -100,8 +100,15 @@ int
 DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 {
 	// reset the control each time you run a command
+	int	retval;
+
 	control = cntl;
-	return Run(argc, argv);
+	pushControl(cntl);
+	retval = Run(argc, argv);
+
+	// restore the orignial value to control
+	popControl();
+	return retval;
 }
 
 int 
