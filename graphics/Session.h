@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  2002/01/15 21:49:41  wenger
+  Added session postscript capability needed for the latest peptide-cgi
+  improvements.
+
   Revision 1.28  2001/10/04 19:03:41  wenger
   JavaScreen support allows session files without .ds extension; various
   improvements to session file processing.
@@ -198,6 +202,8 @@ public:
 
   // Whether we're currently in the middle of opening a session.
   static Boolean OpeningSession() { return _openingSession; }
+
+  static const char *GetCurrentSession() { return _sessionFile; }
 
   static DevStatus AddDataSource(const char *catName, const char *entry);
 

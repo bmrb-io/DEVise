@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.130  2002/03/06 18:56:42  wenger
+  Changed JavaScreen protocol version from 11.0 to 10.1 (to allow backwards
+  compatibility with previous DEVised, because the new JAVAC_UpdateJS
+  command is never sent to the DEVised).
+
   Revision 1.129  2002/03/05 17:57:57  wenger
   Changed protocol version to 11.0 to match latest JavaScreen.
 
@@ -1251,6 +1256,16 @@ JavaScreenCmd::Run()
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
+
+    if (_status == ERROR) {
+		const char *session = Session::GetCurrentSession();
+		if (session == NULL) session = "null";
+        DebugLog::DefaultLog()->Message(DebugLog::LevelWarning,
+		  "Error in JavaScreen support; current session is: ", session);
+        fprintf(stderr,
+		  "Error in JavaScreen support; current session is: %s\n", session);
+	}
+
 	return ControlCmd(_status);
 }
 
