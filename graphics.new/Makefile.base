@@ -37,7 +37,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	TDataMapDispatch.c GDataBin.c TDataAscii.c TDataBinary.c \
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
-	ViewRanges.c ViewGraph.c QPRange.c \
+	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
