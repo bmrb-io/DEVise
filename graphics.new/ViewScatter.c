@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/02/26 16:31:50  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.30  1997/02/14 16:47:49  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -171,14 +174,17 @@ ViewScatter::~ViewScatter()
   // will no longer be defined.
   SubClassUnmapped();
 
+
   int index = _blist.InitIterator();
   while (_blist.More(index)) {
     delete _blist.Next(index);
   }
   _blist.DoneIterator(index);
   _blist.DeleteAll();
-  _gstat.Clear();
-  _glist.DeleteAll();
+  _gstatX.Clear();
+  _gstatY.Clear();
+  _glistX.DeleteAll();
+  _glistY.DeleteAll();
 
 }
 
@@ -201,8 +207,10 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
   }
   _blist.DoneIterator(index);
   _blist.DeleteAll();
-  _gstat.Clear();     /* Clear the hashtable and calculate it again */
-  _glist.DeleteAll(); /* Clear the gdata list */
+  _gstatX.Clear();     /* Clear the hashtable and calculate it again */
+  _gstatY.Clear();     /* Clear the hashtable and calculate it again */
+  _glistX.DeleteAll(); /* Clear the gdata list */
+  _glistY.DeleteAll(); /* Clear the gdata list */
 
   // Initialize record links whose master this view is
   index = _masterLink.InitIterator();
@@ -321,25 +329,53 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     if (!MoreMapping(_index) &&
 	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
 	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
-      if (color < MAXCOLOR)
-	_stats[color].Sample(x, y);
+      if (color < MAXCOLOR) _stats[color].Sample(x, y);
       _allStats.Sample(x, y);
+
       _allStats.Histogram(y);
 
-      if(_glist.Size() <= MAX_GSTAT) {
-          int X = (int) x;
-          BasicStats *bs;
-          if(_gstat.Lookup(X, bs)) {
-              bs->Sample(x,y);
+      if(_glistX.Size() <= MAX_GSTAT) {
+//          int X = (int) x;
+          double X = x;
+          BasicStats *bsx;
+          if(_gstatX.Lookup(x, bsx)) {
+	      DOASSERT(bsx, "GData Stat look error");
+              bsx->Sample(x,y);
           } else {
-              bs = new BasicStats();
-              DOASSERT(bs, "Out of memory");
-              bs->Init(0);
-              _glist.InsertOrderly(X, 1);
-              bs->Sample(x, y);
-              _gstat.Insert(X, bs);
-              _blist.Insert(bs);
+              bsx = new BasicStats();
+              DOASSERT(bsx, "Out of memory");
+              bsx->Init(0);
+              _glistX.InsertOrderly(x, 1);
+              bsx->Sample(x, y);
+              _gstatX.Insert(X, bsx);
+              _blist.Insert(bsx);
           }
+        } else {
+	  _gstatInMem = false;  /* mark gstatBuf faulse and submit
+				  the query to DTE */
+	}
+        if(_glistY.Size() <= MAX_GSTAT) {
+//              int Y = (int) y;
+              double Y =  y;
+              BasicStats *bsy = NULL;
+              if(_gstatY.Lookup(y, bsy)) {
+		  DOASSERT(bsy, "GData Stat look error");
+                  bsy->Sample(y,x);
+              } else {
+                  bsy = new BasicStats();
+                  DOASSERT(bsy, "Out of memory");
+                  bsy->Init(0);
+                  _glistY.InsertOrderly(y, 1);
+                  bsy->Sample(y,x);
+                  _gstatY.Insert(y, bsy);
+                  _blist.Insert(bsy);
+              }
+
+        } else {
+              /* mark gstatBuf faulse cleanup the gstat list, the group
+                 by query will be submitted to DTE when requested  */
+
+              _gstatInMem = false;
         }
     }
 
@@ -398,7 +434,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 }
 
 /* Done with query */
-void ViewScatter::QueryDone(int bytes, void *userData)
+void ViewScatter::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
 {
 #ifdef DEBUG
   printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
@@ -426,7 +462,7 @@ void ViewScatter::QueryDone(int bytes, void *userData)
     for(int i = 0; i < MAXCOLOR; i++)
       _stats[i].Done();
 
-    PrepareStatsBuffer();
+    PrepareStatsBuffer(map);
 
     DrawLegend();
 
