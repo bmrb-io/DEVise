@@ -1,0 +1,77 @@
+- Integrate new layout editor - DONE to be tested extensively.
+  -unrivet ?  -DONE
+  -screwed up when going from Grid to Custom and editing during restore 
+  -precision errors due to cast from double to int :(.
+  -Custom - Pile - Unpile (puts the views one on top of the other - 
+                           make it a grid instead)
+  - Save layout state in Custom Layout so that unpile can restore from it.
+    However if views have been added then there is no intuitive way of 
+    placing them in custom mode without user input
+  - Piling only some child views in a view (Mixed layout ??) 
+  - Opaque v/s transparent piling (stack v/s pile)
+
+- Pile display - flip  - DONE
+
+- Side panels  - take into account scrollbar sizes to get rid of hor scrollbr
+  -visual links - DONE 
+  -record links - DONE   - distinguish unlink and split
+  -cursors  - DONE (should add x, y attribute to cursor)
+  -schemas and TData - DONE
+  -mappings - DONE
+
+- Showing info about 
+  -links and cursors ??? - DONE    (X-Y Links to be done)
+  - different colors for different links ?
+  - show axis for visual links 
+  - If piles are present ??  
+  -mappings
+  -tdatas
+
+- Open/Save Sessions  - DONE
+  - loading/saving Layout info, DEViseViewPeer creation/destruction
+  - save as ??
+- Remember the groups and rivets created as part of the editing process - 
+  (Problem : if the parent's layout changes thus changing the
+size of currentView, then the saved layout state is invalid
+even though the rivets and group can be maintained !!
+maybe restoring the layout State should involve updating the
+positions and sizes of boxes while maintaining groups and rivets?)
+
+- Toolbars, Popup Menus - DONE
+- Keyboard shortcuts - 
+- Customize the colors etc - PARTIAL (Backgrounds/Foregrounds of windows)
+
+- Print ??
+
+Bugs
+====
+-Current View Selection does not happen correctly when the hierarchy is
+more than 2 levels deep
+-Some links are drawn with dotted lines...
+
+Cleanups in the code :
+-----------------------
+- make DEViseLayout derived class of DEViseObj ??
+- remove DEViseType from DEViseObj and use Java reflection API instead
+- check the sizes of various components, Frame resize handler ?? DONE
+- use serializeInfo to recreate view hierarchy instead of using the 
+  roundabout method used right now. DONE
+- make the read and write of categories more symmetrical... have to think
+  about this.  NOT REQUIRED
+- deleting tables and schemas through respective browsers ....if these
+  are used in active tables/mappings...?? More error checking....
+- port to NT  ??
+
+
+Garbage Collection Anomalies :
+------------------------------
+
+The DEViseSessionPeer and DEViseViewPeer objects never get GC'ed. There
+is a cyclic dependency between these and I tried hard to break it to
+force GC but the finalize method never seems to get called...
+
+In fact if all's well, setting m_thisSession = null should automatically
+GC all the session objects. Doesnt happen!! Seems like there is a reference
+to the session object remaining somewhere.
+
+

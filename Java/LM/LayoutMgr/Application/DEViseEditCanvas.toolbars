@@ -1,0 +1,36 @@
+BEGINTOOLBAR(View) HORIZONTAL
+DUALBUTTON New "/u/s/s/ssl/Work/LM/Icons/gifs/newrect.gif" "New View" OnViewNew OnViewNewMultiOn OnViewNewMultiOff
+SPRINGYBUTTON Delete "/u/s/s/ssl/Work/LM/Icons/gifs/clear.gif" "Delete View" OnViewDelete
+SPRINGYBUTTON Group "/u/s/s/ssl/Work/LM/Icons/gifs/group.gif" "Group Views" OnViewGroup
+SPRINGYBUTTON Ungroup "/u/s/s/ssl/Work/LM/Icons/gifs/ungroup.gif" "Ungroup Views" OnViewUnGroup
+ENDTOOLBAR
+
+BEGINTOOLBAR(Edit) HORIZONTAL
+SPRINGYBUTTON Left "/u/s/s/ssl/Work/LM/Icons/gifs/alignLeft.gif" "Align Left" OnAlignLeft
+SPRINGYBUTTON Center "/u/s/s/ssl/Work/LM/Icons/gifs/alignCenter.gif"  "Align Center" OnAlignCenter
+SPRINGYBUTTON Right "/u/s/s/ssl/Work/LM/Icons/gifs/alignRight.gif" "Align Right" OnAlignRight
+SPACER 15
+SPRINGYBUTTON Top "/u/s/s/ssl/Work/LM/Icons/gifs/alignTop.gif" "Align Top" OnAlignTop
+SPRINGYBUTTON Middle "/u/s/s/ssl/Work/LM/Icons/gifs/alignMiddle.gif" "Align Middle" OnAlignMiddle
+SPRINGYBUTTON Bottom "/u/s/s/ssl/Work/LM/Icons/gifs/alignBottom.gif" "AlignBottom" OnAlignBottom
+SPACER 15
+SPRINGYBUTTON DistHor "/u/s/s/ssl/Work/LM/Icons/gifs/distrHor.gif" "Distribute horizontally" OnDistributeHorizontally
+SPRINGYBUTTON DistVer "/u/s/s/ssl/Work/LM/Icons/gifs/distrVer.gif" "Distribute vertically" OnDistributeVertically
+SPACER 15
+SPRINGYBUTTON EquiWidth "/u/s/s/ssl/Work/LM/Icons/gifs/equiWidth.gif" "Make width equal" OnEqualizeWidth
+SPRINGYBUTTON EquiHeight "/u/s/s/ssl/Work/LM/Icons/gifs/equiHt.gif" "Make height equal"  OnEqualizeHeight
+SPRINGYBUTTON EquiSize "/u/s/s/ssl/Work/LM/Icons/gifs/equiSize.gif" "Make equal size" OnEqualizeSize
+SPACER 15
+SPRINGYBUTTON Rivet "/u/s/s/ssl/Work/LM/Icons/gifs/Rivet.gif" "Rivet selected edges" OnRivet
+SPRINGYBUTTON Unrivet "/u/s/s/ssl/Work/LM/Icons/gifs/Unrivet.gif" "Unrivet" OnUnrivet
+ENDTOOLBAR
+
+
+
+
+
+
+
+
+
+

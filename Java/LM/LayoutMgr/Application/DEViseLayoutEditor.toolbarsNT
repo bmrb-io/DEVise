@@ -1,0 +1,35 @@
+BEGINTOOLBAR(View) HORIZONTAL
+DUALBUTTON New "c:\LM\Icons\new.gif" "New View" OnViewNew OnViewNewMultiOn OnViewNewMultiOff
+SPRINGYBUTTON Delete "c:\LM\Icons\clear.gif" "Delete View" OnViewDelete
+SPRINGYBUTTON Group "c:\LM\Icons\group.gif" "Group Views" OnViewGroup
+ENDTOOLBAR
+
+BEGINTOOLBAR(Edit) HORIZONTAL
+SPRINGYBUTTON Left "c:\LM\Icons\alignLeft.gif" "Align Left" OnAlignLeft
+SPRINGYBUTTON Center "c:\LM\Icons\alignCenter.gif"  "Align Center" OnAlignCenter
+SPRINGYBUTTON Right "c:\LM\Icons\alignRight.gif" "Align Right" OnAlignRight
+SPACER 15
+SPRINGYBUTTON Top "c:\LM\Icons\alignTop.gif" "Align Top" OnAlignTop
+SPRINGYBUTTON Middle "c:\LM\Icons\alignMiddle.gif" "Align Middle" OnAlignMiddle
+SPRINGYBUTTON Bottom "c:\LM\Icons\alignBottom.gif" "AlignBottom" OnAlignBottom
+SPACER 15
+SPRINGYBUTTON DistHor "c:\LM\Icons\distrHor.gif" "Distribute horizontally" OnDistributeHorizontally
+SPRINGYBUTTON DistVer "c:\LM\Icons\distrVer.gif" "Distribute vertically" OnDistributeVertically
+SPACER 15
+SPRINGYBUTTON EquiWidth "c:\LM\Icons\equiWidth.gif" "Make width equal" OnEqualizeWidth
+SPRINGYBUTTON EquiHeight "c:\LM\Icons\equiHt.gif" "Make height equal"  OnEqualizeHeight
+SPRINGYBUTTON EquiSize "c:\LM\Icons\equiSize.gif" "Make equal size" OnEqualizeSize
+SPACER 15
+SPRINGYBUTTON Rivet "c:\LM\Icons\Rivet.gif" "Rivet selected edges" OnRivet
+SPRINGYBUTTON Unrivet "c:\LM\Icons\Unrivet.gif" "Unrivet" OnUnrivet
+ENDTOOLBAR
+
+
+
+
+
+
+
+
+
+

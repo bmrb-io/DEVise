@@ -1,0 +1,20 @@
+BEGINTOOLBAR(Session) HORIZONTAL
+SPRINGYBUTTON NewSession "/u/s/s/ssl/Work/LM/Icons/gifs/newsession.gif" "New Session" OnSessionNew
+SPRINGYBUTTON OpenSession "/u/s/s/ssl/Work/LM/Icons/gifs/opensession.gif" "Open Session" OnSessionOpen
+SPRINGYBUTTON SaveSession "/u/s/s/ssl/Work/LM/Icons/gifs/savesession.gif" "Save Session" OnSessionSave
+ENDTOOLBAR
+
+BEGINTOOLBAR(View) HORIZONTAL
+SPRINGYBUTTON NewView "/u/s/s/ssl/Work/LM/Icons/gifs/newview.gif" "New View" OnViewNew 
+SPRINGYBUTTON DelView "/u/s/s/ssl/Work/LM/Icons/gifs/delview.gif" "Delete View" OnViewDelete
+ENDTOOLBAR
+
+BEGINTOOLBAR(Pile) HORIZONTAL
+SPRINGYBUTTON PileViews "/u/s/s/ssl/Work/LM/Icons/gifs/PileV.gif" "Pile Views" OnViewPile
+SPRINGYBUTTON UnpileViews "/u/s/s/ssl/Work/LM/Icons/gifs/Unpile.gif" "Unpile Views" OnViewUnpile
+ENDTOOLBAR
+
+BEGINTOOLBAR(Link) HORIZONTAL
+SPRINGYBUTTON Link "/u/s/s/ssl/Work/LM/Icons/gifs/LinkV.gif" "Link Views" OnLinkViews
+SPRINGYBUTTON Unlink "/u/s/s/ssl/Work/LM/Icons/gifs/Unlink.gif" "Unlink Views" OnUnlinkViews
+ENDTOOLBAR

@@ -1,0 +1,14 @@
+BEGINPOPUPMENU(View)
+MENUITEM New OnViewNew
+MENUITEM Delete OnViewDelete
+MENUITEM Layout OnModeLayout
+MENUITEM SEPARATOR
+BEGINPOPUPMENU(Layout)
+MENUITEM Custom  OnLayoutCustom
+MENUITEM Grid  OnLayoutGrid
+MENUITEM Pile  OnLayoutPile
+MENUITEM Unpile OnLayoutUnPile
+ENDMENU
+MENUITEM SEPARATOR
+MENUITEM Properties OnViewProperties
+ENDMENU

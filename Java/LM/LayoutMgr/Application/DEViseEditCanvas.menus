@@ -1,0 +1,68 @@
+BEGINMENU(File)
+MENUITEM Open  OnFileOpen
+MENUITEM SEPARATOR
+MENUITEM Save  OnFileSave
+MENUITEM SaveAs  OnFileSaveAs
+MENUITEM SEPARATOR
+MENUITEM Apply  OnApply
+ENDMENU
+
+BEGINMENU(Draw)
+MENUITEM NewView OnViewNew
+MENUITEM SEPARATOR
+MENUITEM Group OnViewGroup
+MENUITEM Ungroup OnViewUnGroup
+ENDMENU
+
+BEGINMENU(Edit)
+MENUITEM Cut  OnCut
+MENUITEM Copy OnCopy
+MENUITEM Paste OnPaste
+MENUITEM SEPARATOR
+MENUITEM Delete OnViewDelete
+MENUITEM SEPARATOR
+MENUITEM Refresh OnRefresh
+MENUITEM Clear OnClear
+ENDMENU
+
+BEGINMENU(Layout)
+BEGINMENU(Align)
+MENUITEM Left OnAlignLeft
+MENUITEM Center OnAlignCenter
+MENUITEM Right OnAlignRight
+MENUITEM SEPARATOR
+MENUITEM Top OnAlignTop
+MENUITEM Middle OnAlignMiddle
+MENUITEM Bottom OnAlignBottom
+MENUITEM SEPARATOR
+MENUITEM Edges OnAlignEdges
+ENDMENU
+MENUITEM SEPARATOR
+MENUITEM Rivet OnRivet
+MENUITEM Unrivet OnUnrivet
+MENUITEM SEPARATOR
+BEGINMENU(Equalize)
+MENUITEM Width OnEqualizeWidth
+MENUITEM Height OnEqualizeHeight
+MENUITEM Size OnEqualizeSize
+ENDMENU
+BEGINMENU(Distribute)
+MENUITEM Horizontally OnDistributeHorizontally
+MENUITEM Vertically OnDistributeVertically
+ENDMENU
+ENDMENU
+BEGINMENU(Configure)
+MENUITEM Rubberbands OnConfigureRbndColors
+MENUITEM EditColors OnConfigureEditColors
+ENDMENU
+
+
+
+
+
+
+
+
+
+
+
