@@ -35,7 +35,8 @@ ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
 ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/TDataAsciiInterp.h
 ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
 ApParseCat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/DataSource.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
