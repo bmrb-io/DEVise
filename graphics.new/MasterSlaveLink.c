@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/04/05 16:16:02  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.7  1999/02/23 15:35:09  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
   other pile-related problems.
@@ -240,9 +244,18 @@ MasterSlaveLink::ClearHighlightViews()
       //
       map->ChangeCmd(&tmpCmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
       view->Refresh(false);
-      // WaitForQueries here seems a little dangerous, but doing something
-      // else would *really* get complicated. RKW 1998-11-10.
-      Dispatcher::Current()->WaitForQueries();
+
+      // Start the query for the highlight view and run it without allowing
+      // any other queries to start.  It would probably be better to also
+      // not allow any other *existing* queries to run here, but that
+      // would take changes to the query processor I don't want to make
+      // right now.  This fixes bug 562.  RKW 2000-02-09.
+      view->Run();
+      QueryProc *qp = QueryProc::Instance();
+      while (!qp->Idle()) {
+        qp->ProcessQuery();
+      }
+      view->CancelRefresh();
 
       //
       // Put the mapping back to the way it was.
@@ -251,6 +264,10 @@ MasterSlaveLink::ClearHighlightViews()
     }
   }
   DoneIterator(index);
+
+#if defined(DEBUG)
+  printf("Done with MasterSlaveLink(%s)::ClearHighlightViews()\n", _name);
+#endif
 }
 
 /*------------------------------------------------------------------------------

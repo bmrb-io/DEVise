@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.78  1999/10/08 19:57:58  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.77  1999/09/07 19:00:57  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -840,6 +846,8 @@ public:
 
   Boolean _niceXAxis;
   Boolean _niceYAxis;
+
+  Boolean _inDerivedStartQuery;
 
 	protected:
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.133  1999/12/15 16:25:50  wenger
+  Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bugs 543 and 544 (problems with cursor movement).
+
   Revision 1.132  1999/12/14 20:33:59  wenger
   Rubberband lines aren't allowed to go outside of data area; rubberband
   lines are not drawn in views in which zooming is disabled.
@@ -796,6 +799,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _niceXAxis = false;
   _niceYAxis = false;
   _homeAfterQueryDone = false;
+  _inDerivedStartQuery = false;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -2082,6 +2086,12 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   printf("  Filter y: (%g, %g)\n", filter.yLow, filter.yHigh);
 #endif
 
+  if (_inDerivedStartQuery) {
+    reportErrNosys("Warning: ViewGraph::DerivedStartQuery() should not be re-entered for a given view");
+    return;
+  }
+  _inDerivedStartQuery = true;
+
   _queryFilter = filter;
   _timestamp = timestamp;
 
@@ -2115,8 +2125,9 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   _index = InitMappingIterator(true);   // open iterator backwards
   if (MoreMapping(_index)) {
     _map = NextMapping(_index)->map;
-#ifdef DEBUG
-    printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
+#if defined(DEBUG)
+    printf("Submitting query 1 of %d: 0x%p (view <%s>)\n", _mappings.Size(),
+	    _map, GetName());
 #endif
     _pstorage.Clear();
     _map->ResetMaxSymSize();
@@ -2158,6 +2169,12 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #if defined(REPORT_QUERY_TIME)
   gettimeofday(&_queryStartTime, NULL);
 #endif
+
+#if defined(DEBUG)
+  printf("Done with ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+#endif
+
+  _inDerivedStartQuery = false;
 }
 
 void ViewGraph::DerivedAbortQuery()
@@ -2275,8 +2292,8 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 
 	if (MoreMapping(_index))
 	{
-#ifdef DEBUG
-		printf("Submitting next query 0x%p\n", _map);
+#if defined(DEBUG)
+		printf("Submitting next query 0x%p (view <%s>)\n", _map, GetName());
 #endif
 		_map = NextMapping(_index)->map;
 		_queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0,

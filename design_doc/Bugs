@@ -2194,8 +2194,12 @@ Num Date        Status  Description
 561 02/09/00	OPEN	When a session is loaded by playing back a command
 			log, the session name is not shown in the GUI. (rkw)
 
-562 02/09/00	OPEN	Pop clip underflow can be reproduced by playing
+562 02/09/00	FIXED	Pop clip underflow can be reproduced by playing
 			cmdLog.popclip. (rkw)
+
+563 02/09/00	OPEN	Other pop clip underflow problems (see
+			Test/pop_clip.ds). (rkw)  (Probably needs major
+			changes to how queries are started.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.213  2000/02/08 22:11:49  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.212  1999/12/15 16:25:42  wenger
   Fixed bugs 543 and 544 (problems with cursor movement).
 
@@ -3650,7 +3656,7 @@ void	View::Run(void)
 	}
 #endif
 #if defined(DEBUG)
-	printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
+	printf("\nView(%s, 0x%p)::Run()\n", GetName(), _dispatcherID);
 #endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
