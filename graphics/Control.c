@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 16:55:02  jussi
+  Small fix.
+
   Revision 1.3  1995/12/05 21:55:02  jussi
   Added #include <unistd.h> to get rmdir() prototype.
 
@@ -257,7 +260,8 @@ void ControlPanel::DeleteCallback(ControlPanelCallback *callback)
 
 void ControlPanel::ReportModeChange(Mode mode)
 {
-  for(int index = _callbacks->InitIterator(); _callbacks->More(index);) {
+  int index;
+  for(index = _callbacks->InitIterator(); _callbacks->More(index);) {
     ControlPanelCallback *cb = _callbacks->Next(index);
     cb->ModeChange(mode);
   }

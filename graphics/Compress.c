@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 16:53:50  jussi
+  Small fix.
+
   Revision 1.3  1995/12/05 20:19:45  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -67,8 +70,9 @@ char *SimpleCompress::CompressLine(char *line, int count, int &outCount)
   int outIndex = 0;
   int i = 0;
 
-  while ( i < count) {
-    for(int j = i+1; j < count && line[i] == line[j] ; j++);
+  while (i < count) {
+    int j;
+    for(j = i+1; j < count && line[i] == line[j] ; j++);
     /* line[i..j-1] are the same. Write out with run length
        encoding */
     int num = j - i;
@@ -107,7 +111,7 @@ char *SimpleCompress::DecompressLine(char *line, int count, int &outCount)
 	      outIndex + num);
       Exit::DoExit(1);
     }
-    for(int j = 0; j < num; j++) {
+    for(unsigned int j = 0; j < num; j++) {
       _compressBuf[outIndex++] = c;
     }
   }

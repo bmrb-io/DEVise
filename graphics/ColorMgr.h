@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 21:58:15  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:29  jussi
   Added/updated CVS header.
 */
@@ -95,8 +98,8 @@ private:
     delete _colorArray;
   }
   
-  int _numColors;
-  int _colorArraySize;
+  unsigned int _numColors;
+  unsigned int _colorArraySize;
   ColorData **_colorArray;
   static ColorMgr *_instance;
 };

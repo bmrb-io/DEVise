@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 21:56:39  jussi
+  Moved list of default colors to be a structure array rather than
+  repeated code, and also made the code use the color constants
+  defined in Color.h. Also added copyright notice.
+
   Revision 1.2  1995/09/05 21:12:28  jussi
   Added/updated CVS header.
 */
@@ -84,7 +89,7 @@ ColorMgr::ColorMgr()
 
   _colorArray = new ColorData * [_colorArraySize];
 
-  for(int i = 0; i < _numColors; i++) {
+  for(unsigned int i = 0; i < _numColors; i++) {
     assert(defaultColors[i].value == i);
     ColorData *data = _colorArray[defaultColors[i].value] = new ColorData;
     data->type = ColorData::NameVal;
@@ -102,9 +107,9 @@ void ColorMgr::_InitializeColors(DeviseDisplay *disp)
   printf("_ColorMgr::_InitializeColors\n");
 #endif
 
-  for(int i = 0; i < _numColors; i++) {
+  for(unsigned int i = 0; i < _numColors; i++) {
     ColorData *data = _colorArray[i];
-    if (data->type == ColorData::RGBVal){
+    if (data->type == ColorData::RGBVal) {
       disp->AllocColor(data->val.rgbVal.r, data->val.rgbVal.g,
 		       data->val.rgbVal.b, i);
 #ifdef DEBUG
@@ -138,7 +143,7 @@ Color ColorMgr::Insert(ColorData *data)
     /* array overflow. Create another one. */
     _colorArraySize += AdditionalColorArraySize;
     ColorData **temp = new (ColorData *[_colorArraySize]);
-    for (int i=0; i < _numColors; i++)
+    for(unsigned int i = 0; i < _numColors; i++)
       temp[i] = _colorArray[i];
     delete _colorArray;
     _colorArray = temp;
@@ -148,7 +153,8 @@ Color ColorMgr::Insert(ColorData *data)
   
   /* propagate color to all displays */
   Color tempColor = _numColors++;
-  for(int index = DeviseDisplay::InitIterator();DeviseDisplay::More(index); ){
+  int index;
+  for(index = DeviseDisplay::InitIterator();DeviseDisplay::More(index); ){
     DeviseDisplay *disp = DeviseDisplay::Next(index);
     if (data->type == ColorData::RGBVal){
       disp->AllocColor(data->val.rgbVal.r, data->val.rgbVal.g, 
