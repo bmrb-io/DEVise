@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2001/09/28 19:38:06  xuk
+// *** empty log message ***
+//
 // Revision 1.56  2001/09/28 19:00:07  xuk
 // JavaScreen command log playback.
 // Added clientLog variable to indicated whether record command log for each DEViseClient object;
@@ -263,7 +266,7 @@ public class jspop implements Runnable
       "  -cmdport<number>: port for command socket from devised\n" +
       "  -userfile<filename>: file containing user info\n" +
       "  -logfile<filename>: client log info file\n" +
-      "  -clientlog[on|off]: turn on|off client command log" + 
+      "  -clientlog[on|off]: turn on|off client command log\n" + 
       "  -debug[number]: debug output level\n" +
       "  -jspopport<number>: port on which jspop listens for jss connections\n" +
       "  -maxclient<number>: maximum number of client objects\n" +
