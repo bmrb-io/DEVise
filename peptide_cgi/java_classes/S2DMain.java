@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/04/17 17:09:09  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.9  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -80,7 +83,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.3";
+    public static final String PEP_CGI_VERSION = "2.4";
 
     private int _accessionNum;
     private String _dataDir;

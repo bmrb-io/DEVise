@@ -141,6 +141,9 @@ chmod a+rwx $targetdir
 cp -p dynamic_sessions/*.base $targetdir
 chmod a+r $targetdir/*.base
 
+cp -p dynamic_sessions/*.str $demo/session.js/bmrb
+chmod a+r $demo/session.js/bmrb/*.str
+
 
 # Create and set up the data/html directory.
 
