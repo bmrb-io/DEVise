@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/06/16 02:06:56  jussi
+  Various improvements in debugging.
+
   Revision 1.41  1996/06/15 13:46:39  jussi
   X and Y axes now use the view foreground color as their color.
   The axis.color field was removed.
@@ -235,7 +238,6 @@ View::View(char *name, VisualFilter &initFilter,
   _hasOverrideColor = false;
   _overrideColor = fg;
 
-  /* ------------- 3D stuffs ----------------- */
   _camera.x_ = 4.6;
   _camera.y_ = 4.0;
   _camera.z_ = -4.0;
@@ -2498,8 +2500,10 @@ void View::SetCamera(Camera new_camera)
 #ifdef DEBUG
   printf ("_camera fx = %.3f fy = %.3f, fix_focus = %d\n",
 	  _camera.fx, _camera.fy, _camera.fix_focus);
-  printf ("*********** end SetCamera ***********\n");
 #endif
+
+  /* this call causes the user interface to update the 3D query dialog */
+  SetVisualFilter(_filter);
 
   _updateTransform = true;
   Refresh();
