@@ -1,41 +1,44 @@
+mapping MultiMapping MultiRec {
+  shape { RectShape }
+  static {
+    double attrs[2];
+    attrs[0] = 10.0; attrs[1] = 10.0;
+    TDataMap::SetDefaultShape(MultiMapping_RectShapeID,2,attrs);
+    TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
+  }
+  dynamic x,y,color, shapeAttr[0], shapeAttr[1] {
+    MapInfo *mapInfo = (MapInfo *)userData;
+    symbol->x = (((float)(data->begin+data->end))/2.0);
+    symbol->y = (float)data->node + 0.5;
+    if (data->job == 0 )
+      /* suspended*/
+      symbol->color = suspendColor;
+    else if (data->job <0)
+      /* aborted? */
+      symbol->color = abortColor;
+    else {
+      int index;
+      if (data->cycles == 0)
+	index = 2;
+      else
+	index = (data->cycles -1) %3;
+      index = (index + 1) % 3;
+      symbol->color = 
+	mapInfo->colorArrays[index][mapInfo->job_ordering[data->job]];
+    }
+#if 0
+    printf("color %d job %d \n", symbol->color, data->job);
+#endif
 
-mapping MultiMapping MultiRec{
-	shape { RectShape }
-	static {
-		float attrs[2];
-		attrs[0] = 10.0; attrs[1] = 10.0;
-		TDataMap::SetDefaultShape(MultiMapping_RectShapeID,2,attrs);
-		TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
-	}
-	dynamic x,y,color, shapeAttr[0], shapeAttr[1] {
-		MapInfo *mapInfo = (MapInfo *)userData;
-		symbol->x = (((float)(data->begin+data->end))/2.0);
-		symbol->y = (float)data->node + 0.5;
-		if (data->job == 0 )
-			/* suspended*/
-			symbol->color = suspendColor;
-		else if (data->job <0)
-			/* aborted? */
-			symbol->color = abortColor;
-		else {
-			int index;
-			if (data->cycles == 0)
-				index = 2;
-			else index = (data->cycles -1) %3;
-			index = (index + 1) % 3;
-			symbol->color = 
-				mapInfo->colorArrays[index][mapInfo->job_ordering[data->job]];
-		}
-		printf("color %d job %d \n", symbol->color, data->job);
-
-		symbol->shapeAttr_0 = data->end-data->begin+1;
-		if (data->job == -1)
-			symbol->shapeAttr_1 = 0.9;
-		else symbol->shapeAttr_1 = 0.9;
-		/*
-		printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
-			symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
-				symbol->color);
-		*/
-	}
+    symbol->shapeAttr_0 = data->end-data->begin+1;
+    if (data->job == -1)
+      symbol->shapeAttr_1 = 0.9;
+    else
+      symbol->shapeAttr_1 = 0.9;
+#if 0
+    printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
+	   symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
+	   symbol->color);
+#endif
+  }
 }

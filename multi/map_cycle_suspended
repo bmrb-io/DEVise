@@ -1,15 +1,14 @@
-
 mapping CycleSuspendedMapping CycleRec {
-	shape { RectShape }
-	static {
-		float attrs[2];
-		attrs[0] = 5; attrs[1] = 250;
-		TDataMap::SetDefaultShape(CycleSuspendedMapping_RectShapeID,2,attrs);
-		TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
-	}
-	dynamic x, y, shapeAttr[0] {
-		symbol->x = (((float)(data->time + data->last_time)) / 2.0);
-		symbol->shapeAttr_0 = data->time - data->last_time;
-		symbol->y = data->suspended;
-	}
+  shape { RectShape }
+  static {
+    double attrs[2];
+    attrs[0] = 5; attrs[1] = 250;
+    TDataMap::SetDefaultShape(CycleSuspendedMapping_RectShapeID,2,attrs);
+    TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
+  }
+  dynamic x, y, shapeAttr[0] {
+    symbol->x = (((float)(data->time + data->last_time)) / 2.0);
+    symbol->shapeAttr_0 = data->time - data->last_time;
+    symbol->y = data->suspended;
+  }
 }
