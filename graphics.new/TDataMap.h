@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/09 22:54:08  jussi
+  Added View parameter to DrawGDataArray().
+
   Revision 1.8  1996/03/25 23:02:23  jussi
   Removed references to _view. A more comprehensive mechanism is needed
   for storing views that the map is associated with (right now is stores
@@ -50,7 +53,6 @@
 #define TDataMap_h
 
 #include <stdio.h>
-#include <assert.h>
 
 #include "DeviseTypes.h"
 #include "Exit.h"
