@@ -15,6 +15,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/06/28 21:47:45  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.32  1998/06/24 05:03:00  okan
   Added ODBC List & DSN List commands
   Added insert & delete commands to update ODBC entries in related catalogs
@@ -179,6 +183,9 @@ LessGreat    ">="|">"|"<="|"<"
 [Mm][Aa][Tt][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]	{return MATERIALIZE;}
 [Aa][Dd][Dd]				{return ADD;}
 [Uu][Nn][Ii][Oo][Nn]		{return UNION;}
+[Gg][Ee][Ss][Tt][Aa][Ll][Tt]    {return GESTALT;}
+[Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return REGISTER;}
+[Un][Nn][Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return UNREGISTER;}
 
 {String}     {yylval.stringLit = new string(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INTY;}

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/06/28 21:47:45  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.41  1998/06/24 05:03:00  okan
   Added ODBC List & DSN List commands
   Added insert & delete commands to update ODBC entries in related catalogs
@@ -192,6 +196,9 @@ string* sortOrdering;
 %token DELETEY
 %token SCHEMA
 %token MATERIALIZE
+%token GESTALT
+%token REGISTER
+%token UNREGISTER
 %token ADD
 %token <stringLit> STRING_CONST
 %left UNION
@@ -232,6 +239,7 @@ string* sortOrdering;
 %type <parseTree> query
 %type <ident_type_vec> ident_type_pairs
 %type <ident_type> ident_type_pair
+
 %%
 input : query {
 		globalParseTree = $1;
@@ -248,6 +256,18 @@ definition: CREATE optIndType INDEX index_name ON table_name
 	}
 	| CREATE TABLE '(' ident_type_pairs ')' {
 		globalParseTree = new CreateTableParse($4);
+		YYACCEPT;
+	}
+	| CREATE GESTALT table_name '(' ident_type_pairs ')' STRING {
+		globalParseTree = new CreateGestaltParse($3, $5, $7);
+		YYACCEPT;
+	}
+	| REGISTER table_name INTO GESTALT table_name {
+		globalParseTree = new RegisterIntoGestaltParse($5, $2);
+		YYACCEPT;
+	}
+	| UNREGISTER table_name FROM GESTALT table_name {
+		globalParseTree = new UnregisterFromGestaltParse($5, $2);
 		YYACCEPT;
 	}
 	| DROP INDEX table_name index_name {
