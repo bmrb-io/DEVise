@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 23:19:24  jussi
+  Added copyright notice and cleaned up code.
+
   Revision 1.2  1995/09/05 22:15:54  jussi
   Added CVS header.
 */
@@ -91,12 +94,16 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
     _gdata = NULL;
   }
   
-  _x = 0.0; _y = 0.0; _color = BlackColor;
-  _size = 1.0; _pattern = Pattern0; _orientation = 0.0;
-  _shapeId = RectShapeID; 
+  _x = 0.0; _y = 0.0;
+  _color = BlackColor;
+  _size = 1.0;
+  _pattern = Pattern0;
+  _orientation = 0.0;
+  _shapeId = 0;
+
   _numShapeAttr = MAX_MAPPING_SHAPE_ATTRS;
   _shapeAttrs = new Coord[MAX_MAPPING_SHAPE_ATTRS];
-  for (int i=0; i < MAX_MAPPING_SHAPE_ATTRS; i++)
+  for (int i = 0; i < MAX_MAPPING_SHAPE_ATTRS; i++)
     _shapeAttrs[i] = 0.1;
   
   _boundWidth = 9.0; _boundHeight = 9.0;
@@ -299,7 +306,7 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
   _shapeId = shapeID;
   _numShapeAttr = numAttr;
   if (numAttr > 0) {
-    for(int i=0; i < numAttr; i++)
+    for(int i = 0; i < numAttr; i++)
       _shapeAttrs[i] = shapeAttr[i];
   }
 }
