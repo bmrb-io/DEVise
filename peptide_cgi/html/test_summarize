@@ -1,0 +1,73 @@
+#!/s/perl/bin/perl -w
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script tests the Summarize program on all available star files
+#  from BMRB.
+
+############################################################
+
+# $Id$
+
+############################################################
+
+use strict;
+
+#TEMP -- arg for file name??
+my($input_file);
+$input_file = "star_file_list.html";
+open(INPUT, $input_file) or die "Can't open $input_file: $!\n";
+
+my($line);
+while ($line = <INPUT>) {
+  if ($line =~ m/".*(bmr.*\.str)"/) {
+    my($star_file);
+    $star_file = $1;
+    test_star($star_file);
+  }
+}
+
+close(INPUT);
+
+#-----------------------------------------------------------
+# Test a specific star file.
+
+# Parameters:
+#   0: star file name
+
+sub test_star {
+  my($star_name, $star_num);
+  $star_name = $_[0];
+
+  $star_num = $star_name;
+  $star_num =~ s/^bmr//;
+  $star_num =~ s/.str$//;
+
+  if (system("./summarize $star_name")) {
+    print STDERR "ERROR processing star file $star_name\n";
+    system("mv summarize.out summarize.out.$star_num");
+  } else {
+    print "Successfully processed star file $star_name\n";
+    my($dat_names);
+    $dat_names = $star_num . '*.dat';
+    system("rm $dat_names");
+    $dat_names = $star_num . '*.html';
+    system("rm $dat_names");
+  }
+
+  # report if error
+  # save outfile if error
+  # delete data files if not error
+}
+
+############################################################
