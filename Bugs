@@ -1280,6 +1280,12 @@ Num Date        Status  Description
 336 04/14/98	OPEN	DEVise uses 26 MB of memory before you even do
 			*anything*. (rkw)
 
+337 04/29/98	OPEN	When a session is closed, and
+			ClassDir::DestroyAllInstances() is called, many
+			objects are destroyed while other objects still
+			have pointers to them, resulting in member functions
+			of destroyed objects being called. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

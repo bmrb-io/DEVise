@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/04/10 18:29:34  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.47  1998/03/05 08:10:57  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -552,7 +557,7 @@ class ViewGraph : public View
 									BooleanArray*& drawnList)
 		{ DOASSERT(false, "Call in derived class only"); }
 		virtual void	PrintLinkInfo(void);
-		virtual Boolean HasTAttrLink()
+		virtual Boolean HasDerivedTable()
 		{ DOASSERT(false, "Call in derived class only"); return false; }
 		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs)
 		{ DOASSERT(false, "Call in derived class only"); }

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/27 15:08:57  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.1  1998/03/08 00:01:09  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -80,6 +85,9 @@ protected:
   char *_name;
   LinkViewList *_viewList;
   VisualFlag _linkAttrs; // Which attribute(s) is link on?
+
+private:
+  Boolean _objectValid;
 };
 
 #endif /* _DeviseLink_h_ */

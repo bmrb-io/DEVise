@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/10 18:29:32  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.5  1998/02/26 22:59:56  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -337,10 +342,10 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 //******************************************************************************
 Boolean
-ViewData::HasTAttrLink()
+ViewData::HasDerivedTable()
 {
 #if defined(DEBUG)
-	printf("ViewData::HasTAttrLink()\n");
+	printf("ViewData::HasDerivedTable()\n");
 #endif
 
 	Boolean result = false;

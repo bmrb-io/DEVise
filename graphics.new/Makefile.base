@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.82  1998/04/10 18:29:25  wenger
+#  TData attribute links (aka set links) mostly implemented through table
+#  insertion; a crude GUI for creating them is implemented; fixed some
+#  bugs in link GUI; changed order in session file for TData attribute links.
+#
 #  Revision 1.81  1998/03/31 16:40:44  wenger
 #  Added an 'export' directory to csgroup and re-made solaris dependencies
 #  accordingly.
@@ -266,7 +271,7 @@ QPObj += $(QPSrcC:.C=.o)
 VIEWSRC = ActionDefault.c ConnectorShape.h BasicStats.c \
 	KGraph.c ViewKGraph.c Seq.C Web.C Action.c ActionClassInfo.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
-	MapIntToInt.C MasterSlaveLink.c TAttrLink.c
+	MapIntToInt.C MasterSlaveLink.c TAttrLink.c DerivedTable.c
 
 VIEWSRCc = $(filter %.c,$(VIEWSRC))
 VIEWSRCC = $(filter %.C,$(VIEWSRC))

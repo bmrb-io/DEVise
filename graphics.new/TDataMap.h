@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/04/28 18:03:17  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.27  1998/02/26 22:59:54  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -368,6 +373,8 @@ protected:
   Coord _maxSymDepth;
 
 private:
+  Boolean _objectValid;
+
   GDataAttrOffset *_gOffset; /* offset of GData attributes */
 
   int _gRecSize; /* gdata record size */

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/04/10 18:29:32  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.3  1998/02/13 15:51:37  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -63,6 +68,9 @@ class ViewData : public ViewGraph
 					Action* action = NULL);
 		virtual ~ViewData(void) {}
 
+		//TEMP virtual void CreateDerivedTable();
+		//TEMP virtual void DestroyDerivedTable();
+
 	protected:
 
 		// Callback methods (QueryCallback)
@@ -74,7 +82,7 @@ class ViewData : public ViewGraph
 									int& recordsProcessed,
 									Boolean needDrawnList, int& recordsDrawn,
 									BooleanArray*& drawnList);
-        virtual Boolean HasTAttrLink();
+        virtual Boolean HasDerivedTable();
 		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs);
 };
 

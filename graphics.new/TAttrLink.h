@@ -24,6 +24,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/04/28 18:03:14  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.2  1998/04/14 21:03:14  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -45,10 +50,7 @@
 #include "DevStatus.h"
 
 class TData;
-class ISchema;
-class StandardInterface;
-class RelationId;
-class UniqueInserter;
+class DerivedTable;
 
 enum TDType { TDataPhys, TDataLog };
 
@@ -64,7 +66,7 @@ public:
   virtual void InsertView(ViewGraph *view);
   virtual bool DeleteView(ViewGraph *view);
 
-  virtual char *GetFileName() { return ( _tableFile ? _tableFile : "none"); }
+  virtual char *GetFileName() { return "none"; }
   virtual void Initialize();
   virtual void InsertRecs(RecId recid, int num) {}
   virtual int  FetchRecs(RecId recid, RecId &rec, int &num) { return 0; }
@@ -84,19 +86,13 @@ protected:
   DevStatus DestroyTable();
   TData *GetTData(ViewGraph *view, TDType tdType);
 
+  DerivedTable *_masterTable;
+
   char *_masterAttrName;
   char *_slaveAttrName;
 
-  char *_tdataName; // name of master view's TData
-
-  Boolean _tableExists;
-  char *_tableFile; // table holding master view attribute values
-  int _recordCount; // number of records inserted into master table
-
-  ISchema *_schema;
-  StandardInterface *_stdInt;
-  RelationId *_relId;
-  UniqueInserter *_inserter;
+private:
+  Boolean _objectValid;
 };
 
 #endif // _TAttrLink_h_

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.80  1998/04/28 18:03:07  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.79  1998/04/14 21:03:16  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -1740,7 +1745,7 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 #endif
 	int recordsDrawn;
 	BooleanArray *drawnList;
-	if (_rangeQuery->callback->HasTAttrLink()) {
+	if (_rangeQuery->callback->HasDerivedTable()) {
 	  fprintf(stderr, "Query for master view of TAttrLink doesn't have "
 	      "TData; slave views will not be updated correctly.");
 	}
@@ -1785,7 +1790,7 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 #endif
 	int tmpRecs;
 	int recordsDrawn;
-	Boolean hasTAttrLink = _rangeQuery->callback->HasTAttrLink();
+	Boolean hasTAttrLink = _rangeQuery->callback->HasDerivedTable();
 	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
                                            _gdataBuf, numToConvert,

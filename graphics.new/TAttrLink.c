@@ -29,6 +29,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/28 18:03:12  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.5  1998/04/27 17:30:26  wenger
   Improvements to TAttrLinks and related code.
 
@@ -64,12 +69,11 @@
 #include "Init.h"
 #include "Control.h"
 #include "AttrList.h"
-#include "Control.h"
 #include "Session.h"
+#include "DerivedTable.h"
 
 #include "RelationManager.h"
 #include "types.h"
-#include "Inserter.h"
 #include "CatalogComm.h"
 
 //#define DEBUG
@@ -90,7 +94,7 @@ DestroyTData(TData *tdata)
 {
   DevStatus result = StatusOk;
 
-  ControlPanel::Instance()->GetClassDir()->DestroyInstance(tdata->GetName());
+  //TEMP ControlPanel::Instance()->GetClassDir()->DestroyInstance(tdata->GetName());
 
   return result;
 }
@@ -107,15 +111,10 @@ TAttrLink::TAttrLink(char *name, char *masterAttrName, char *slaveAttrName) :
       masterAttrName, slaveAttrName);
 #endif
 
+  _masterTable = NULL;
   _masterAttrName = CopyString(masterAttrName);
   _slaveAttrName = CopyString(slaveAttrName);
-  _tdataName = NULL;
-  _tableExists = false;
-  _tableFile = NULL;
-  _schema = NULL;
-  _stdInt = NULL;
-  _relId = NULL;
-  _inserter = NULL;
+  _objectValid = true;
 }
 
 /*------------------------------------------------------------------------------
@@ -129,9 +128,11 @@ TAttrLink::~TAttrLink()
 #endif
 
   delete [] _masterAttrName;
+  _masterAttrName = NULL;
   delete [] _slaveAttrName;
-
+  _slaveAttrName = NULL;
   (void) DestroyTable();
+  _objectValid = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -141,6 +142,7 @@ TAttrLink::~TAttrLink()
 void
 TAttrLink::SetFlag(VisualFlag flag)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetFlag(%d)\n", _name, flag);
 #endif
@@ -156,6 +158,7 @@ TAttrLink::SetFlag(VisualFlag flag)
 void
 TAttrLink::SetMasterView(ViewGraph *view)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetMasterView(%s)\n", _name,
       view != NULL ? view->GetName() : "NULL");
@@ -199,13 +202,14 @@ TAttrLink::SetMasterView(ViewGraph *view)
 void
 TAttrLink::InsertView(ViewGraph *view)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
   MasterSlaveLink::InsertView(view);
 
-  if (_tableExists) {
+  if (_masterTable != NULL) {
     if (!SetSlaveTable(view).IsComplete()) {
       MasterSlaveLink::DeleteView(view);
     }
@@ -219,6 +223,7 @@ TAttrLink::InsertView(ViewGraph *view)
 bool
 TAttrLink::DeleteView(ViewGraph *view)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
@@ -253,6 +258,7 @@ TAttrLink::DeleteView(ViewGraph *view)
 void
 TAttrLink::Initialize()
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Initialize()\n", _name);
 #endif
@@ -270,11 +276,10 @@ TAttrLink::Initialize()
     curTDName = tdata->GetName();
   }
 
-  if (!_tableExists) {
+  if (_masterTable == NULL) {
     (void) CreateTable(_masterView);
-  }
-  else if (_tdataName != NULL && curTDName != NULL &&
-      strcmp(_tdataName, curTDName)) {
+  } else if (_masterTable->GetTDataName() != NULL && curTDName != NULL &&
+      strcmp(_masterTable->GetTDataName(), curTDName)) {
 #if defined(DEBUG)
     printf("TAttrLink %s: master view (%s) has new tdata\n", GetName(),
         _masterView->GetName());
@@ -283,15 +288,7 @@ TAttrLink::Initialize()
     (void) CreateTable(_masterView);
   }
 
-  if (_tableExists) {
-    _inserter = new UniqueInserter(*_schema, _tableFile, ios::out);
-    if (currExcept) {
-      cerr << currExcept->toString() << endl;
-      currExcept = NULL;
-    }
-  }
-
-  _recordCount = 0;
+  _masterTable->Initialize();
 }
 
 /*------------------------------------------------------------------------------
@@ -301,6 +298,7 @@ TAttrLink::Initialize()
 DevStatus
 TAttrLink::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::InsertValues()\n", _name);
 #endif
@@ -312,89 +310,7 @@ TAttrLink::InsertValues(TData *tdata, int recCount, void **tdataRecs)
     return StatusCancel;
   }
 
-  DevStatus result = StatusOk;
-
-  //
-  // Find offset and type of master attribute.
-  //
-  AttrList *tdAttrs = tdata->GetAttrList();
-  AttrInfo *attrInfo = tdAttrs->Find(_masterAttrName);
-  if (attrInfo == NULL) {
-    char errBuf[256];
-    sprintf(errBuf, "Can't find attribute <%s>", _masterAttrName);
-    reportErrNosys(errBuf);
-    result = StatusFailed;
-  }
-
-  //
-  // Insert master attribute values into the table.
-  //
-  if (result.IsComplete()) {
-    Tuple tuple[1];
-
-    for (int recNum = 0; recNum < recCount; recNum++) {
-      void *recordP = tdataRecs[recNum];
-      void *attrP = recordP + attrInfo->offset;
-
-      switch (attrInfo->type) {
-        case IntAttr: {
-	  int tmpInt;
-	  memcpy((void *)&tmpInt, attrP, sizeof(tmpInt));
-#if defined(DEBUG)
-	  printf("  Inserting %d\n", tmpInt);
-#endif
-	  tuple[0] = IInt::getTypePtr(&tmpInt);
-          break;
-        }
-
-        case FloatAttr: {
-	  float tmpFloat;
-	  memcpy((void *)&tmpFloat, attrP, sizeof(tmpFloat));
-	  double tmpDouble = (double) tmpFloat;
-#if defined(DEBUG)
-	  printf("  Inserting %g\n", tmpDouble);
-#endif
-	  tuple[0] = IDouble::getTypePtr(&tmpDouble);
-          break;
-	}
-
-        case DoubleAttr: {
-	  double tmpDouble;
-	  memcpy((void *)&tmpDouble, attrP, sizeof(tmpDouble));
-#if defined(DEBUG)
-	  printf("  Inserting %g\n", tmpDouble);
-#endif
-	  tuple[0] = IDouble::getTypePtr(&tmpDouble);
-          break;
-	}
-
-        case StringAttr: {
-	  char *tmpStr = (char *)attrP;
-	  tuple[0] = IString::getTypePtr(tmpStr);
-#if defined(DEBUG)
-	  printf("  Inserting %s\n", tmpStr);
-#endif
-          break;
-	}
-
-        case DateAttr: {
-          reportErrNosys("TAttrLinks not yet implemented for dates");//TEMP
-          result = StatusFailed;//TEMP
-          break;
-	}
-
-        default: {
-          reportErrNosys("Illegal attribute type");
-          result = StatusFailed;
-          break;
-	}
-      }
-
-      _inserter->insert(tuple);
-    }
-  }
-
-  _recordCount += recCount;
+  DevStatus result = _masterTable->InsertValues(tdata, recCount, tdataRecs);
 
   return result;
 }
@@ -406,6 +322,7 @@ TAttrLink::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 void
 TAttrLink::Done()
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Done()\n", _name);
 #endif
@@ -417,22 +334,7 @@ TAttrLink::Done()
     return;
   }
 
-#if defined(DEBUG)
-  printf("  %d records (including duplicates) were inserted into table "
-      "for link %s\n", _recordCount, _name);
-#endif
-
-  //
-  // Close and delete inserter.
-  //
-  _inserter->close();
-  if (currExcept) {
-    cerr << currExcept->toString() << endl;
-    currExcept = NULL;
-  }
-
-  delete _inserter;
-  _inserter = NULL;
+  _masterTable->Done();
 
   //
   // Create TDatas for all slave views that don't have them.
@@ -477,6 +379,7 @@ TAttrLink::Done()
 void
 TAttrLink::Abort()
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Abort()\n", _name);
 #endif
@@ -489,6 +392,7 @@ TAttrLink::Abort()
 void
 TAttrLink::SetLinkType(RecordLinkType type)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetLinkType(%d)\n", _name, type);
 #endif
@@ -503,6 +407,7 @@ TAttrLink::SetLinkType(RecordLinkType type)
 DevStatus
 TAttrLink::CreateTable(ViewGraph *masterView)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::CreateTable(%s)\n", _name, masterView->GetName());
 #endif
@@ -512,93 +417,23 @@ TAttrLink::CreateTable(ViewGraph *masterView)
   //
   TData *tdata = GetTData(masterView, TDataPhys);
   if (tdata == NULL) return StatusFailed;
-  _tdataName = CopyString(tdata->GetName());
 
 #if defined(DEBUG)
-  printf("  View %s has TData %s\n", masterView->GetName(), _tdataName);
+  printf("  Master view %s has TData %s\n", masterView->GetName(),
+      tdata->GetName());
 #endif
 
   //
-  // Find (hopefully) the master attribute in this tdata.
+  // Create the table to hold the master attribute values.
   //
-  AttrList *tdAttrs = tdata->GetAttrList();
-  AttrInfo *attrInfo = tdAttrs->Find(_masterAttrName);
-  if (attrInfo == NULL) {
-    char errBuf[256];
-    sprintf(errBuf, "Can't find attribute <%s>", _masterAttrName);
-    reportErrNosys(errBuf);
-    return StatusFailed;
+  DevStatus result;
+  _masterTable = new DerivedTable(_name, tdata, _masterAttrName, result);
+  if (!result.IsComplete) {
+    delete _masterTable;
+    _masterTable = NULL;
   }
 
-  //
-  // Find the TData record size and make sure it's something we can
-  // deal with.
-  //
-  int recordSize = tdata->RecSize();
-  if (recordSize < 0) {
-    reportErrNosys("Can't deal with variable-size TData records");
-    return StatusFailed;
-  } else if (recordSize == 0) {
-    reportErrNosys("TData record size is zero");
-    return StatusFailed;
-  }
-
-  //
-  // Create the table.
-  //
-  TypeID types[1];
-  string attrs[1];
-  switch (attrInfo->type) {
-  case IntAttr:
-    types[0] = INT_TP;
-    break;
-
-  case FloatAttr:
-    types[0] = DOUBLE_TP;
-    break;
-
-  case DoubleAttr:
-    types[0] = DOUBLE_TP;
-    break;
-
-  case StringAttr:
-    types[0] = STRING_TP;
-    break;
-
-  case DateAttr:
-    types[0] = DATE_TP;
-    break;
-
-  default:
-    reportErrNosys("Illegal attribute type");
-    return StatusFailed;
-    break;
-  }
-  attrs[0] = _masterAttrName;
-
-  _schema = new ISchema(1, types, attrs);
-
-  _tableFile = tempnam(Init::TmpDir(), "tdaln");
-  if (_tableFile == NULL) {
-    reportErrSys("Out of memory");
-    return StatusFailed;
-  }
-
-  _stdInt = new StandardInterface(*_schema, _tableFile);
-  _relId = new RelationId;
-  *_relId = RELATION_MNGR.registerNewRelation(*_stdInt);
-  if (currExcept) {
-    cerr << currExcept->toString() << endl;
-    currExcept = NULL;
-    return StatusFailed;
-  }
-#if defined(DEBUG)
-  printf("  Created master table file %s\n", _tableFile);
-#endif
-
-  _tableExists = true;
-
-  return StatusOk;
+  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -609,6 +444,7 @@ TAttrLink::CreateTable(ViewGraph *masterView)
 DevStatus
 TAttrLink::SetSlaveTable(ViewGraph *view)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetSlaveTable(%s)\n", _name, view->GetName());
 #endif
@@ -621,7 +457,7 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   //
   // Make sure we have a table of the master attribute values.
   //
-  if (!_tableExists) {
+  if (_masterTable == NULL) {
     char errBuf[256];
     sprintf(errBuf, "No master table for link %s", GetName());
     reportErrNosys(errBuf);
@@ -675,7 +511,8 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
       }
     }
     tdAttrs->DoneIterator();
-    ost << " from " << tdata->GetName() << " as t1, " << *_relId <<
+    ost << " from " << tdata->GetName() << " as t1, " <<
+	*_masterTable->GetRelationId() <<
         " as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
 
 #if defined(DEBUG)
@@ -737,36 +574,13 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
 DevStatus
 TAttrLink::DestroyTable()
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::DestroyTable()\n", _name);
 #endif
 
-  if (_tableExists) RELATION_MNGR.deleteRelation(*_relId);
-
-  _tableExists = false;
-
-  delete _schema;
-  _schema = NULL;
-
-  delete _stdInt;
-  _stdInt = NULL;
-
-  delete _relId;
-  _relId = NULL;
-
-  if (_inserter != NULL) {
-    _inserter->close();
-    if (currExcept) {
-      cerr << currExcept->toString() << endl;
-      currExcept = NULL;
-    }
-  }
-  delete _inserter;
-  _inserter = NULL;
-
-  unlink(_tableFile);
-  delete [] _tableFile;
-  _tableFile = NULL;
+  delete _masterTable;
+  _masterTable = NULL;
 
   return StatusOk;
 }
@@ -778,6 +592,7 @@ TAttrLink::DestroyTable()
 TData *
 TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {
+  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::GetTData(%s, %d)\n", _name, view->GetName(), tdType);
 #endif

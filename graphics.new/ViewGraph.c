@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.77  1998/04/28 18:03:21  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.76  1998/04/10 18:29:33  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -415,9 +420,9 @@ class ViewGraph_QueryCallback : public QueryCallback
 			_parent->PrintLinkInfo();
 		}
 
-		virtual Boolean HasTAttrLink()
+		virtual Boolean HasDerivedTable()
 		{
-			return _parent->HasTAttrLink();
+			return _parent->HasDerivedTable();
 		}
 
 		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/04/28 18:03:15  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.22  1998/03/04 19:11:05  wenger
   Fixed some more dynamic memory errors.
 
@@ -126,6 +131,8 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
+  _objectValid = false;
+
   _gOffset = NULL;
 
   _incarnation++;
@@ -184,13 +191,17 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _maxSymDepth = 0.0;
 
   _hintInitialized = false;
+
+  _objectValid = true;
 }
 
 TDataMap::~TDataMap()
 {
-  if (_gdata)
-    delete _gdata;
+  _objectValid = false;
+  delete _gdata;
+  _gdata = NULL;
   delete [] _shapeAttrs;
+  _shapeAttrs = NULL;
 }
 
 //******************************************************************************
@@ -377,6 +388,11 @@ char *TDataMap::CreateGDataPath(char *gdataName)
 
 void TDataMap::SetPhysTData(TData *tdata)
 {
+#if 0 // TEMP: see bug 337
+  DOASSERT(_objectValid, "operation on invalid object");
+#else
+  if (!_objectValid) return;
+#endif
   if (tdata->RecSize() != _logicalTdata->RecSize()) {
     char errBuf[1024];
     sprintf(errBuf, "New physical TData %s is incompatible with logical "
@@ -430,9 +446,7 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 
 void TDataMap::ResetGData(int gRecSize)
 {
-#ifdef DEBUG
   printf("TDataMap::ResetGData with recSize %d\n", gRecSize);
-#endif
 
   if (_gdata) {
     QueryProc::Instance()->ClearGData(_gdata);

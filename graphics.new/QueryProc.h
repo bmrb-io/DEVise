@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/04/10 18:29:26  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.15  1998/02/10 21:13:09  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved
@@ -121,7 +126,7 @@ class QueryCallback
 
 		virtual void	PrintLinkInfo(void) {}
 
-		virtual Boolean HasTAttrLink() { return false; }
+		virtual Boolean HasDerivedTable() { return false; }
 		virtual void InsertValues(TData *tdata, int recCount,
 			void **tdataRecs) {}
 };
