@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.92  1999/12/15 20:04:06  wenger
+  Command log now includes information about how many times we went through
+  the dispatcher, to try to allow reproducing timing-dependent bugs.
+
   Revision 1.91  1999/12/14 17:57:35  wenger
   Added enableDrawing command (totally enables or disables drawing) to
   allow Omer to avoid "flashing" when he inserts views into windows.
@@ -3349,23 +3353,20 @@ DeviseCommand_setLinkMaster::Run(int argc, char** argv)
 int
 DeviseCommand_setLinkType::Run(int argc, char** argv)
 {
-    {
-        {
-          RecordLink *link = (RecordLink *)_classDir->FindInstance(argv[1]);
-          if (!link) {
-    	ReturnVal(API_NAK, "Cannot find link");
-    	return -1;
-          }
-          if(atoi(argv[2]) == 0) {
-    	link->SetLinkType(Positive);
-          } else if(atoi(argv[2]) == 1) {
-    	link->SetLinkType(Negative);
-          }
-          return 1;
-        }
+    RecordLink *link = (RecordLink *)_classDir->FindInstance(argv[1]);
+    if (!link) {
+        ReturnVal(API_NAK, "Cannot find link");
+        return -1;
     }
-    return true;
+    if(atoi(argv[2]) == 0) {
+        link->SetLinkType(Positive);
+    } else if(atoi(argv[2]) == 1) {
+        link->SetLinkType(Negative);
+    }
+    ReturnVal(API_ACK, "done");
+    return 1;
 }
+
 int
 DeviseCommand_setScreenSize::Run(int argc, char** argv)
 {
