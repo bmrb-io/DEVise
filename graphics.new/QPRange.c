@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:10:01  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:12  jussi
   Added CVS header.
 */
@@ -217,6 +220,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
       }
     }
     
+    QPRangeRec *rec;
+
     switch(action){
     case NO_ACTION:
       /* no action to take */
@@ -224,7 +229,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
       break;
     case CREATE_RANGE :
       /* create a new range to the right of current */
-      QPRangeRec *rec = AllocRec();
+      rec = AllocRec();
       rec->low = low;
       rec->high = high;
       if (current == NULL)
@@ -273,7 +278,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
       Exit::DoExit(1);
       break;
     }
-	}
+  }
 }
 
 /* Get next unprocessed recId range >= currentId
