@@ -24,7 +24,7 @@ endif
 rm -r userdat
 
 # Split the data into one file per user.
-split_user_data UserLastMonth.dat userdat
+split_user_data $dataFile userdat
 
 # Remove the old 'raw' data file.
 if (-f $dataFile) then
