@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/12/12 22:02:50  jussi
+  Added checking of user interrupts when waiting for client connection.
+
   Revision 1.24  1996/12/04 00:12:34  jussi
   Removed inclusion of netdb.h because it got included from machdep.h
   also, and netdb.h isn't protected by a pair of ifdef-define's.
@@ -180,9 +183,10 @@ ServerAPI::ServerAPI()
     fclose(fp);
   }
 
-  // create space for 16 virtual semaphores
-  int status = SemaphoreV::create(16);
-  DOASSERT(status >= 0, "Cannot create virtual semaphores");
+  // attempt to create space for a large number of virtual semaphores
+  int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
+  if (status < 0)
+    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
 
   RestartSession();
 }

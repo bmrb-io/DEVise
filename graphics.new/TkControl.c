@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1996/12/12 22:03:32  jussi
+  Removed calls to semaphore and shared memory DestroyAll().
+
   Revision 1.69  1996/12/03 20:34:35  jussi
   Added initialization of semaphore structures.
 
@@ -362,9 +365,10 @@ TkControlPanel::TkControlPanel()
   ControlPanelMainWindow = _mainWindow;
 #endif
 
-  // create space for 16 virtual semaphores
-  int status = SemaphoreV::create(16);
-  DOASSERT(status >= 0, "Cannot create virtual semaphores");
+  // attempt to create space for a large number of virtual semaphores
+  int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
+  if (status < 0)
+    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/12 21:04:59  jussi
+  Removed calls to Semaphore::DestroyAll() and SharedMemory::DestroyAll().
+
   Revision 1.7  1996/12/03 20:34:12  jussi
   Updated to reflect new IOTask interfaces.
 
@@ -256,7 +259,7 @@ int main(int argc, char **argv)
 
     // create space for 16 virtual semaphores
 
-    int status = SemaphoreV::create(16);
+    int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
     assert(status >= 0);
 
     // create memory and cache manager

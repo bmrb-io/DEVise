@@ -33,7 +33,7 @@ int main()
 
     // create space for 16 virtual semaphores
 
-    int status = SemaphoreV::create(16);
+    int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
     assert(status >= 0);
 
     time_t now = time(0);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/12 21:05:15  jussi
+  Removed calls to Semaphore::DestroyAll() and SharedMemory::DestroyAll().
+  Added missing call to delete memory manager.
+
   Revision 1.1  1996/12/03 20:30:46  jussi
   Initial revision.
 */
@@ -38,7 +42,7 @@ int main(int argc, char **argv)
 
     // create space for 16 virtual semaphores
 
-    int status = SemaphoreV::create(16);
+    int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
     assert(status >= 0);
 
     // create buffer manager
