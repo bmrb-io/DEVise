@@ -325,7 +325,7 @@ Num Date        Status  Description
 094 12/06/96	FIXED	Linux version won't run because of an error in the
 			shared memory code. (rkw)
 
-095 12/16/96	OPEN	'OK' button in mapping editor doesn't work. (rkw)
+095 12/16/96	FIXED	'OK' button in mapping editor doesn't work. (rkw)
 
 096 12/16/96	OPEN	Can't display histograms at all -- you get 'invalid
 			command name "findNumericCaseValue"' from Tcl/Tk.
