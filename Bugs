@@ -1172,6 +1172,9 @@ Num Date        Status  Description
 
 308 03/03/98	OPEN	devised uses lots of CPU when idle. (sm/rkw)
 
+309 03/04/98	OPEN	Copying a view does not copy the background color
+			to the new view. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
