@@ -26,6 +26,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/19 23:26:01  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
@@ -74,8 +82,10 @@ class ActivePalette
 	public:
 
 		// Constructors and Destructors
-		ActivePalette(void) {}
+		ActivePalette() {}
 		ActivePalette(const Palette& palette, const ColorManager& cm);
+
+		virtual ~ActivePalette() {}
 
 		// Getters and Setters
 		int			GetSize(void) const			{ return colors.size();	}

@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/20 20:44:07  wenger
+  Changed color and utils libraries to new export directory scheme for
+  dealing with include files (email with complete explanation forthcoming).
+
   Revision 1.3  1998/02/19 23:26:06  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -88,6 +92,8 @@ class Palette
 
 		// Constructors and Destructors
 		Palette(void) {}
+
+		virtual ~Palette() {}
 
 		// Getters and Setters
 		const Vector&	GetColors(void) const	{ return colors;			}
