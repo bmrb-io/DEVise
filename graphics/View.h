@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/02 21:24:45  jussi
+  Changed "boundary" default to false. Views no longer have a
+  boundary because Tk or other type of margin controls will
+  surround each view.
+
   Revision 1.6  1995/11/28 05:10:23  ravim
   Support for statistics.
 
@@ -120,8 +125,8 @@ public:
 	void Highlight(Boolean flag);
 
 	/* Toggle the value of DisplayStats */
-	void ToggleDisplayStats();
 	Boolean GetDisplayStats() {return _DisplayStats; }
+	void SetDisplayStats(Boolean stat);
 
 	int GetId() { return _id; }
 
@@ -184,8 +189,11 @@ public:
 		yOnOff = yAxis.inUse;
    }
 
-   /* change label area */
-   void SetLabelParam(Boolean occpyTop, int extent, char *name=NULL);
+   /* get label parameters */
+   void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
+
+   /* set label parameters */
+   void SetLabelParam(Boolean occupyTop, int extent, char *name=NULL);
 
 	void Refresh() ;
 

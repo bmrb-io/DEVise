@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/02 21:23:26  jussi
+  Corrected code which was based on the assumption that a view
+  always has origin 0,0 which is no longer true with margins
+  surrounding the view. Fixed numerous other bugs.
+
   Revision 1.7  1995/11/28  05:08:24  ravim
   Support for statistics.
 
@@ -151,8 +156,9 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
   yAxis.useNumTicks = true;
   yAxis.fieldWidth = 10;
   
+  _label.occupyTop = false;
+  _label.extent = 12;
   _label.name = 0;
-  SetLabelParam(false, 12, name);
   
   _axisDisplay = true;
   
@@ -1159,6 +1165,15 @@ void View::UpdateTransform(WindowRep *winRep)
   winRep->PostMultiply(&transform);
 }
 
+/* Get label parameters */
+
+void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
+{
+  occupyTop = _label.occupyTop;
+  extent = _label.extent;
+  name = _label.name;
+}
+
 /* Set label parameters */
 
 void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
@@ -1173,7 +1188,6 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
 
   _label.occupyTop = occupyTop;
   _label.extent = extent;
-  _updateTransform = true;
 
   // when title is supposed to appear on the left side of the view,
   // it doesn't actually appear at all; therefore when there's no
@@ -1181,6 +1195,9 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
 
   if (!_label.name)
     occupyTop = false;
+
+  _updateTransform = true;
+  _refresh = true;
 }
 
 void View::XAxisDisplayOnOff(Boolean stat)
@@ -1191,6 +1208,7 @@ void View::XAxisDisplayOnOff(Boolean stat)
     _refresh = true;
   }
 }
+
 void View::YAxisDisplayOnOff(Boolean stat)
 {
   if (stat != yAxis.inUse) {
@@ -1200,17 +1218,15 @@ void View::YAxisDisplayOnOff(Boolean stat)
   }
 }
 
-/* Toggle DisplayStats */
-void View::ToggleDisplayStats() 
+/* Turn On/Off DisplayStats */
+void View::SetDisplayStats(Boolean stat)
 {
-  if (_DisplayStats == true)
-    _DisplayStats = false;
-  else
-    _DisplayStats = true;
-  _updateTransform = true;
-  _refresh = true;
+  if (stat != _DisplayStats) {
+    _DisplayStats = stat;
+    _updateTransform = true;
+    _refresh = true;
+  }
 }
-
 
 /* Find real window coords */
 
