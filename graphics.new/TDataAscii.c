@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 21:19:31  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.5  1995/12/14 17:57:37  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -49,17 +52,13 @@
 
 //#define DEBUG
 
-#ifndef HPUX
-extern "C" int bcmp(char *b1, char *b2, int length);
-#endif
-
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[FILE_CONTENT_COMPARE_BYTES];
 
 static char *MakeCacheName(char *file)
 {
   char *fname = StripPath(file);
-  int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
+  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
   char *name = new char[nameLen];
   sprintf(name,"%s/%s.cache", Init::WorkDir(), fname);
   assert(strlen(name) < nameLen);
@@ -132,9 +131,9 @@ Boolean TDataAscii::LastID(RecId &recId)
 
 void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
-  if (lowId >= _totalRecs ||	
-      highId >= _totalRecs || highId < lowId) {
-    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %d\n",
+  if ((long)lowId >= _totalRecs ||	
+      (long)highId >= _totalRecs || highId < lowId) {
+    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %ld\n",
 	    lowId, highId, _totalRecs);
     Exit::DoExit(1);
   }
@@ -223,7 +222,7 @@ void TDataAscii::Initialize()
   if (read(cacheFd, cachedFileContent, FILE_CONTENT_COMPARE_BYTES)
       != FILE_CONTENT_COMPARE_BYTES  ||
       fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1,_file) != 1 ||
-      bcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES) != 0)
+      memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES) != 0)
     goto error;
   
   /* Assume identical file */
@@ -250,7 +249,7 @@ void TDataAscii::Initialize()
 
   /* read the index */
   if (read(cacheFd,_index, _totalRecs*sizeof(long))
-      != _totalRecs*sizeof(long)) {
+      != (int)(_totalRecs * sizeof(long))) {
     goto error;
   }
   
@@ -294,8 +293,8 @@ void TDataAscii::Initialize()
 /* Do a checkpoint */
 void TDataAscii::Checkpoint()
 {
-  printf("Checkpointing %s, %d existing, %d additional records\n", _name,
-	 _initTotalRecs, _totalRecs-_initTotalRecs);
+  printf("Checkpointing %s, %ld existing, %ld additional records\n", _name,
+	 _initTotalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
     /* no need to checkpoint */
@@ -416,7 +415,7 @@ void TDataAscii::BuildIndex()
 
   _fileGrown = false;
 
-  printf("Extend Index for %s, %d records already built, now has %d recs\n", 
+  printf("Extend Index for %s from %d to %ld records\n", 
 	 _name, oldTotal, _totalRecs);
 }
 
@@ -519,11 +518,11 @@ void TDataAscii::Cleanup()
 void TDataAscii::PrintIndices()
 {
   int cnt = 0;
-  for(int i = 0; i < _totalRecs; i++) {
+  for(long i = 0; i < _totalRecs; i++) {
     printf("%ld ", _index[i]);
     if (cnt++ == 10) {
       printf("\n");
-      cnt=0;
+      cnt = 0;
     }
   }
   printf("\n");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/24 21:35:24  jussi
+  Added _currPos member.
+
   Revision 1.3  1995/11/22 17:52:02  jussi
   Added copyright notice and cleaned up the code. Added some
   optimizations a la TDataTape.h.
@@ -182,7 +185,7 @@ private:
 	/* Print indices */
 	void PrintIndices();
 
-	unsigned _totalRecs;            // total number of records
+	long _totalRecs;                // total number of records
 	char *_name;                    // name of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
@@ -193,7 +196,7 @@ private:
 	RecId _nextId, _endId;          // range of next retrieval
 
 	long *_index;                   // index to records
-	int _indexSize;                 // size of index
+	long _indexSize;                // size of index
 
 	long _lastPos;                  // position of last record in file
 	long _currPos;                  // current file position
@@ -202,7 +205,7 @@ private:
 
 	int _cacheFd;                   // file descriptor of cache
 
-	int _initTotalRecs;             // initial # of records in cache
+	long _initTotalRecs;            // initial # of records in cache
 
 	int _initLastPos;               // initial last position in file
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:57:17  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:16:03  jussi
   Added CVS header.
 */
@@ -73,8 +76,8 @@ char *TDataRec::GetName()
 
 void TDataRec::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
-  if (lowId < 0 || lowId >= _totalRecs ||
-      highId < 0 || highId >= _totalRecs || highId < lowId ){
+  if (lowId < 0 || (long)lowId >= _totalRecs ||
+      highId < 0 || (long)highId >= _totalRecs || highId < lowId ){
     fprintf(stderr,"TDataRec::GetRecs: invalid recId %ld, %ld total=%d\n",
 	    lowId, highId, _totalRecs);
     Exit::DoExit(1);
@@ -201,13 +204,13 @@ void TDataRec::GetIndex(RecId id, int *&indices)
 
 void TDataRec::WriteRecs(RecId startId, int numRecs, void *buf)
 {
-  if (startId >= _totalRecs){
+  if ((long)startId >= _totalRecs) {
     fprintf(stderr,"WriteRecs: can not write beyond end of file\n");
     Exit::DoExit(2);
   }
   _rFile->WriteRec(startId,numRecs,buf);
-  if (startId +numRecs >= _totalRecs)
-    _totalRecs = startId+numRecs;
+  if ((long)(startId + numRecs) >= _totalRecs)
+    _totalRecs = startId + numRecs;
 }
 
 int TDataRec::GetModTime()
