@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/07/23 22:58:22  jussi
+  Added BIRCHLE0.
+
   Revision 1.30  1996/07/23 15:36:11  jussi
   Added LandsendDateDiffComposite parser.
 
@@ -290,6 +293,62 @@ public:
     now.tm_sec = 0;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/* User composite function for dates of the form DayOfYear, Hour */
+
+class DayOfYearComposite : public UserComposite {
+public:
+
+  DayOfYearComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~DayOfYearComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "DayOfYear", "Time", "Date" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    
+    /* decode date */
+    static struct tm now;
+    now.tm_mday = *(int *)(buf + attrOffset[0]);
+    now.tm_mon = 0;
+    now.tm_year = 1996 - 1900;
+    float hour = *(float *)(buf + attrOffset[1]);
+    now.tm_hour = (int)hour;
+    now.tm_min = 60 * ((int)(hour - (int)hour));
+    now.tm_sec = 0;
+
+    time_t *datePtr = (time_t *)(buf + attrOffset[2]);
     *datePtr = GetTime(now);
   }
 
@@ -1063,6 +1122,7 @@ int main(int argc, char **argv)
   CompositeParser::Register("IBMTRACE.2.ld", new IBMAddressTraceComposite2);
   CompositeParser::Register("IBMTRACE.2.st", new IBMAddressTraceComposite2);
   CompositeParser::Register("IBMTRACE.2.miss", new IBMAddressTraceComposite2);
+  CompositeParser::Register("SOILDOY", new DayOfYearComposite);
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
