@@ -10,6 +10,7 @@ generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
 generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
+generic.o: /usr/include/values.h ../graphics/DevStatus.h
 generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 generic.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h

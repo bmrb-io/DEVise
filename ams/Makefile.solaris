@@ -9,25 +9,26 @@ MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 MapClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
-MapClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
+MapClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
+MapClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
 MapClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 MapClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MapClassInfo.o: ../graphics/Compress.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
-MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
-MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
+MapClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+MapClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
+MapClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 MapClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
@@ -35,9 +36,9 @@ MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-MapClassInfo.o: /usr/include/string.h /usr/include/ctype.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
+MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
@@ -48,8 +49,9 @@ ams.o: /usr/include/sys/time.h /usr/include/stdio.h
 ams.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-ams.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/unistd.h
+ams.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ams.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h /usr/include/stdlib.h
+ams.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
@@ -92,7 +94,8 @@ amsStat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
 amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
-amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
 amsStat.o: ../graphics.new/ams.h /usr/include/math.h

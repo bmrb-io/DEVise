@@ -9,6 +9,8 @@ atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/math.h /usr/include/floatingpoint.h
 atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h ../graphics/Util.h
 atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h
+atof.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 atof.o: ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
 http_url.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h

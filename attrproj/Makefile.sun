@@ -10,17 +10,19 @@ ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
 ApInit.o: /usr/include/sys/stat.h /usr/include/stdlib.h /usr/include/string.h
 ApInit.o: /usr/include/signal.h /usr/include/sys/signal.h
 ApInit.o: /usr/include/vm/faultcode.h ../graphics/Exit.h ApInit.h
-ApInit.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
-ApInit.o: ../graphics/Time.h /usr/include/sys/time.h /usr/include/sys/time.h
+ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Time.h
+ApInit.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
 ApInit.o: /usr/include/ctype.h /usr/include/math.h
 ApInit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ApParseCat.o: /usr/include/stdio.h ApParseCat.h ../graphics/DeviseTypes.h
-ApParseCat.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-ApParseCat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
 ApParseCat.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics/Exit.h
+ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics.new/TData.h
+ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
+ApParseCat.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
 ApParseCat.o: ../graphics/DList.h ../graphics.new/GroupDir.h
@@ -31,16 +33,18 @@ ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
 ApParseCat.o: ApInit.h ../graphics/BufPolicy.h
 ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 AttrProj.o: /usr/include/stdio.h /usr/include/string.h
 AttrProj.o: /usr/include/sys/stdtypes.h AttrProj.h ../graphics/DeviseTypes.h
+AttrProj.o: /usr/include/values.h ../graphics/DevStatus.h
+AttrProj.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 AttrProj.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
-AttrProj.o: ../graphics.new/DataSource.h /usr/include/sys/types.h
-AttrProj.o: /usr/include/sys/sysmacros.h ../graphics/Exit.h
+AttrProj.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
 AttrProj.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -48,22 +52,28 @@ AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
 AttrProj.o: ../graphics/Config.h ../graphics/DList.h
 AttrProj.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h ProjectionList.h
-ProjectionList.o: ../graphics/DeviseTypes.h
+ProjectionList.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ProjectionList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+ProjectionList.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 VectorArray.o: /usr/include/stdio.h VectorArray.h ../graphics/DeviseTypes.h
-VectorArray.o: vector.h ../graphics/Util.h /usr/include/stdlib.h
-VectorArray.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
+VectorArray.o: /usr/include/values.h ../graphics/DevStatus.h
+VectorArray.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+VectorArray.o: /usr/include/sys/sysmacros.h vector.h ../graphics/Util.h
+VectorArray.o: /usr/include/stdlib.h /usr/include/sys/time.h
 VectorArray.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 VectorArray.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 VectorArray.o: ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/sys/types.h
 aptest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h AttrProj.h
-aptest.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h VectorArray.h
+aptest.o: ../graphics/DeviseTypes.h /usr/include/values.h
+aptest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
 aptest.o: vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/sys/types.h
 show.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 show.o: /usr/include/unistd.h AttrProj.h ../graphics/DeviseTypes.h
-show.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
-show.o: ApInit.h ../graphics/BufPolicy.h
+show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
+show.o: VectorArray.h vector.h ProjectionList.h ApInit.h
+show.o: ../graphics/BufPolicy.h
 vector.o: global.h /usr/include/stdio.h /usr/include/stdlib.h
 vector.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 vector.o: /usr/include/math.h /usr/include/floatingpoint.h

@@ -8,7 +8,8 @@ atof.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/sys/time.h /usr/include/math.h ../graphics/Util.h
 atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
-atof.o: ../graphics/Exit.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h
+atof.o: /usr/include/sys/types.h ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
 http_url.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/unistd.h /usr/include/string.h

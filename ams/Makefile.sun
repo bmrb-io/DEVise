@@ -8,10 +8,12 @@ MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 MapClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 MapClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 MapClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
-MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Color.h
+MapClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
+MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+MapClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/Display.h
+MapClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-MapClassInfo.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
-MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+MapClassInfo.o: /usr/include/unistd.h /usr/include/string.h
 MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 MapClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
@@ -34,9 +36,9 @@ MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-MapClassInfo.o: /usr/include/string.h /usr/include/ctype.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
+MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
@@ -46,7 +48,8 @@ MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
-ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
+ams.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Dispatcher.h
+ams.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
@@ -86,7 +89,8 @@ amsStat.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 amsStat.o: /usr/include/limits.h /usr/include/unistd.h /usr/include/sys/uio.h
 amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
-amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
 amsStat.o: ../graphics.new/ams.h /usr/include/math.h

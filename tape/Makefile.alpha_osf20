@@ -5,23 +5,25 @@ depend:
 # DO NOT DELETE
 
 QueryProcTape.o: QueryProcTape.h ../graphics.new/QueryProc.h
-QueryProcTape.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+QueryProcTape.o: ../graphics/DeviseTypes.h /usr/include/values.h
+QueryProcTape.o: /usr/include/limits.h /usr/include/standards.h
+QueryProcTape.o: /usr/include/machine/machlimits.h
+QueryProcTape.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+QueryProcTape.o: /usr/include/sys/rt_limits.h ../graphics/DevStatus.h
+QueryProcTape.o: /usr/include/sys/types.h
+QueryProcTape.o: /usr/include/mach/machine/vm_types.h
+QueryProcTape.o: /usr/include/sys/select.h ../graphics/VisualArg.h
 QueryProcTape.o: ../graphics/Color.h ../graphics/Pattern.h
 QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-QueryProcTape.o: /usr/include/stdio.h /usr/include/standards.h
-QueryProcTape.o: /usr/include/sys/seek.h /usr/include/va_list.h
-QueryProcTape.o: /usr/include/sys/types.h
-QueryProcTape.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
-QueryProcTape.o: /usr/include/sys/limits.h
-QueryProcTape.o: /usr/include/sys/machine/machlimits.h
-QueryProcTape.o: /usr/include/sys/syslimits.h
-QueryProcTape.o: /usr/include/sys/machine/machtime.h
-QueryProcTape.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+QueryProcTape.o: /usr/include/stdio.h /usr/include/sys/seek.h
+QueryProcTape.o: /usr/include/va_list.h /usr/include/getopt.h
+QueryProcTape.o: /usr/include/sys/limits.h /usr/include/stdlib.h
 QueryProcTape.o: /usr/include/unistd.h /usr/include/sys/access.h
-QueryProcTape.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
-QueryProcTape.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+QueryProcTape.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
+QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
+QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 QueryProcTape.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 QueryProcTape.o: ../graphics.new/BufferPolicy.h ../graphics/Init.h
 QueryProcTape.o: ../graphics.new/BufMgrFull.h ../graphics.new/RangeInfo.h
@@ -34,88 +36,100 @@ QueryProcTape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 QueryProcTape.o: ../graphics/Compress.h ../graphics/Control.h
 QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
-QueryProcTape.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
-QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-QueryProcTape.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
-QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/GDataBin.h
+QueryProcTape.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+QueryProcTape.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
+QueryProcTape.o: /usr/include/sys/time.h ../graphics/Config.h
+QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+QueryProcTape.o: HashTable.h ../graphics.new/DataSourceFixedBuf.h
+QueryProcTape.o: ../graphics.new/DataSourceBuf.h ../graphics.new/UpdateLink.h
+QueryProcTape.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
+QueryProcTape.o: ../graphics.new/PointStorage.h ../graphics.new/GDataBin.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h ../graphics.new/Bitmap.h
 QueryProcTape.o: ../graphics/Display.h ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
-Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-Templates.o: ../graphics/Color.h ../graphics/Pattern.h
-Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
-Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-Templates.o: /usr/include/standards.h /usr/include/sys/seek.h
-Templates.o: /usr/include/va_list.h /usr/include/sys/types.h
-Templates.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
-Templates.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-Templates.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-Templates.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Templates.o: /usr/include/limits.h /usr/include/standards.h
+Templates.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+Templates.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+Templates.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
+Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h /usr/include/sys/seek.h
+Templates.o: /usr/include/va_list.h /usr/include/getopt.h
+Templates.o: /usr/include/sys/limits.h /usr/include/stdlib.h
 Templates.o: /usr/include/unistd.h /usr/include/sys/access.h
-Templates.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+Templates.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/TData.h
+Templates.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 Templates.o: ../graphics.new/BufferPolicy.h
 devtype.o: /usr/include/stdlib.h /usr/include/standards.h
 devtype.o: /usr/include/getopt.h /usr/include/sys/types.h
-devtype.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/stat.h
-devtype.o: /usr/include/sys/mode.h
+devtype.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+devtype.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
 tapedrive.o: /usr/include/unistd.h /usr/include/standards.h
 tapedrive.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-tapedrive.o: /usr/include/sys/access.h /usr/include/sys/seek.h
-tapedrive.o: /usr/include/getopt.h /usr/include/string.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h /usr/include/va_list.h
-tapedrive.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-tapedrive.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-tapedrive.o: /usr/include/sys/rt_limits.h ../graphics.new/machdep.h
-tapedrive.o: /usr/include/limits.h /usr/include/sys/param.h
-tapedrive.o: /usr/include/sys/machine/machparam.h
+tapedrive.o: /usr/include/sys/select.h /usr/include/sys/access.h
+tapedrive.o: /usr/include/sys/seek.h /usr/include/getopt.h
+tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
+tapedrive.o: /usr/include/va_list.h /usr/include/sys/limits.h
+tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
+tapedrive.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+tapedrive.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
 tapedrive.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
-tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/ipc.h
-tapedrive.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
-tapedrive.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
-tapedrive.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
-tapedrive.o: /usr/include/io/common/devio.h /usr/include/netdb.h
-tapedrive.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-tapedrive.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+tapedrive.o: /usr/include/sys/procset.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+tapedrive.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+tapedrive.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
+tapedrive.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+tapedrive.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+tapedrive.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+tapedrive.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+tapedrive.o: /usr/include/netinet/in.h ../graphics.new/DCE.h
+tapedrive.o: /usr/include/errno.h /usr/include/assert.h
+tapedrive.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
 tapedrive.o: ../graphics/Exit.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/standards.h
 testtape.o: /usr/include/sys/seek.h /usr/include/va_list.h
 testtape.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-testtape.o: /usr/include/getopt.h /usr/include/sys/limits.h
-testtape.o: /usr/include/sys/machine/machlimits.h
-testtape.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-testtape.o: /usr/include/sys/rt_limits.h ../graphics.new/machdep.h
-testtape.o: /usr/include/limits.h /usr/include/sys/param.h
+testtape.o: /usr/include/sys/select.h /usr/include/getopt.h
+testtape.o: /usr/include/sys/limits.h ../graphics.new/machdep.h
+testtape.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+testtape.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+testtape.o: /usr/include/sys/rt_limits.h /usr/include/sys/param.h
 testtape.o: /usr/include/sys/machine/machparam.h
 testtape.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-testtape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testtape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/ipc.h
-testtape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-testtape.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
-testtape.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
-testtape.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
-testtape.o: /usr/include/io/common/devio.h /usr/include/netdb.h
-testtape.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-testtape.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+testtape.o: /usr/include/sys/procset.h /usr/include/sys/time.h
+testtape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testtape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testtape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+testtape.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
+testtape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+testtape.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+testtape.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+testtape.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+testtape.o: /usr/include/netinet/in.h
 vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/standards.h
 vertape.o: /usr/include/sys/seek.h /usr/include/va_list.h
 vertape.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-vertape.o: /usr/include/getopt.h /usr/include/sys/limits.h
-vertape.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-vertape.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-vertape.o: ../graphics.new/machdep.h /usr/include/limits.h
-vertape.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
-vertape.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
+vertape.o: /usr/include/sys/select.h /usr/include/getopt.h
+vertape.o: /usr/include/sys/limits.h ../graphics.new/machdep.h
+vertape.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+vertape.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+vertape.o: /usr/include/sys/rt_limits.h /usr/include/sys/param.h
+vertape.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
+vertape.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+vertape.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
 vertape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-vertape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/ipc.h
+vertape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
 vertape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 vertape.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
 vertape.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h

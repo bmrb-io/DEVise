@@ -177,7 +177,7 @@ CompositeParser.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 CompositeParser.o: RecInterp.h /usr/include/sys/types.h
 CompositeParser.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 CompositeParser.o: /usr/include/values.h ../graphics/DevStatus.h
-CompositeParser.o: CompositeParser.h ../graphics/Exit.h
+CompositeParser.o: CompositeParser.h ../graphics/Exit.h /usr/include/malloc.h
 ConnectorShape.o: LineConnector.h ConnectorShape.h /usr/include/stdio.h
 ConnectorShape.o: /usr/include/ansi_compat.h ../graphics/DeviseTypes.h
 ConnectorShape.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1154,33 +1154,16 @@ BasicStats.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 BasicStats.o: DataSource.h UpdateLink.h VisualLink.h Action.h RecId.h
 BasicStats.o: PointStorage.h
 DCE.o: /usr/include/stdio.h /usr/include/ansi_compat.h /usr/include/assert.h
-DCE.o: /usr/include/sys/stat.h DCE.h /usr/include/sys/types.h
-DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DCE.o: /usr/include/sys/smp_lock.h /usr/include/sys/shm.h
-DCE.o: /usr/include/errno.h machdep.h /usr/include/limits.h
-DCE.o: /usr/include/sys/param.h /usr/include/machine/param.h
-DCE.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-DCE.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-DCE.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-DCE.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-DCE.o: /usr/include/netinet/in.h ../graphics/Exit.h
+DCE.o: DCE.h /usr/include/sys/types.h /usr/include/sys/ipc.h
+DCE.o: /usr/include/sys/sem.h /usr/include/sys/smp_lock.h
+DCE.o: /usr/include/sys/shm.h /usr/include/errno.h /usr/include/sys/stat.h
+DCE.o: machdep.h /usr/include/limits.h /usr/include/sys/param.h
+DCE.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DCE.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+DCE.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
+DCE.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
+DCE.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ../graphics/Exit.h
 DeviseKeyBinding.o: DeviseKeyBinding.h
-ExtBufMgr.o: /usr/include/memory.h /usr/include/fcntl.h
-ExtBufMgr.o: /usr/include/sys/file.h /usr/include/sys/signal.h
-ExtBufMgr.o: /usr/include/ansi_compat.h ExtBufMgr.h /usr/include/sys/types.h
-ExtBufMgr.o: /usr/include/sys/uio.h /usr/include/unistd.h
-ExtBufMgr.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ExtBufMgr.o: ../graphics/DevStatus.h ../tape/HashTable.h ../tape/tapedrive.h
-ExtBufMgr.o: /usr/include/stdio.h machdep.h /usr/include/limits.h
-ExtBufMgr.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ExtBufMgr.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
-ExtBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-ExtBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-ExtBufMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
-ExtBufMgr.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
-ExtBufMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DCE.h
-ExtBufMgr.o: /usr/include/errno.h /usr/include/assert.h ../graphics/DList.h
-ExtBufMgr.o: ../graphics/Exit.h TData.h RecId.h RecOrder.h DataSource.h
 GdataStat.o: GdataStat.h /usr/include/stdio.h /usr/include/ansi_compat.h
 GdataStat.o: /usr/include/stdlib.h ../tape/HashTable.h BasicStats.h
 GdataStat.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/DeviseTypes.h
@@ -1291,6 +1274,22 @@ RecordLink.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 RecordLink.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 RecordLink.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h Action.h
 RecordLink.o: PointStorage.h
+SBufMgr.o: /usr/include/memory.h /usr/include/fcntl.h /usr/include/sys/file.h
+SBufMgr.o: /usr/include/sys/signal.h /usr/include/ansi_compat.h
+SBufMgr.o: /usr/include/string.h SBufMgr.h /usr/include/sys/types.h
+SBufMgr.o: /usr/include/sys/uio.h /usr/include/unistd.h ../tape/tapedrive.h
+SBufMgr.o: /usr/include/stdio.h machdep.h /usr/include/limits.h
+SBufMgr.o: /usr/include/sys/param.h /usr/include/machine/param.h
+SBufMgr.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
+SBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+SBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+SBufMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
+SBufMgr.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
+SBufMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+SBufMgr.o: ../graphics/DeviseTypes.h /usr/include/values.h
+SBufMgr.o: ../graphics/DevStatus.h ../tape/HashTable.h DCE.h
+SBufMgr.o: /usr/include/errno.h /usr/include/assert.h /usr/include/sys/stat.h
+SBufMgr.o: ../graphics/DList.h ../graphics/Exit.h Web.h
 Seq.o: /usr/include/stdio.h /usr/include/ansi_compat.h /usr/include/stdlib.h
 Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/ctype.h
 Seq.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -1354,19 +1353,20 @@ Web.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 Web.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 Web.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
 Web.o: /usr/include/netinet/in.h
-testExtBufMgr.o: /usr/include/stdio.h /usr/include/ansi_compat.h
-testExtBufMgr.o: /usr/include/stdlib.h /usr/include/assert.h
-testExtBufMgr.o: /usr/include/string.h /usr/include/ctype.h ExtBufMgr.h
-testExtBufMgr.o: /usr/include/sys/types.h /usr/include/sys/uio.h
-testExtBufMgr.o: /usr/include/unistd.h ../graphics/DeviseTypes.h
-testExtBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h
-testExtBufMgr.o: ../tape/HashTable.h ../tape/tapedrive.h machdep.h
-testExtBufMgr.o: /usr/include/limits.h /usr/include/sys/param.h
-testExtBufMgr.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-testExtBufMgr.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
-testExtBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-testExtBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-testExtBufMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
-testExtBufMgr.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
-testExtBufMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DCE.h
-testExtBufMgr.o: /usr/include/errno.h ../graphics/DList.h ../graphics/Exit.h
+testSBufMgr.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+testSBufMgr.o: /usr/include/stdlib.h /usr/include/assert.h
+testSBufMgr.o: /usr/include/string.h /usr/include/ctype.h SBufMgr.h
+testSBufMgr.o: /usr/include/sys/types.h /usr/include/sys/uio.h
+testSBufMgr.o: /usr/include/unistd.h ../tape/tapedrive.h machdep.h
+testSBufMgr.o: /usr/include/limits.h /usr/include/sys/param.h
+testSBufMgr.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+testSBufMgr.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
+testSBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+testSBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testSBufMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
+testSBufMgr.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
+testSBufMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+testSBufMgr.o: ../graphics/DeviseTypes.h /usr/include/values.h
+testSBufMgr.o: ../graphics/DevStatus.h ../tape/HashTable.h DCE.h
+testSBufMgr.o: /usr/include/errno.h /usr/include/sys/stat.h
+testSBufMgr.o: ../graphics/DList.h ../graphics/Exit.h

@@ -10,7 +10,8 @@ generic.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 generic.o: /usr/include/math.h /usr/include/floatingpoint.h
 generic.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
 generic.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
+generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: /usr/include/stdlib.h /usr/include/unistd.h ../graphics/DList.h
 generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h

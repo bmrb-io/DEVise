@@ -7,15 +7,18 @@ depend:
 ApInit.o: /usr/include/stdio.h /usr/include/standards.h
 ApInit.o: /usr/include/sys/seek.h /usr/include/va_list.h
 ApInit.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-ApInit.o: /usr/include/getopt.h /usr/include/sys/limits.h
-ApInit.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-ApInit.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-ApInit.o: /usr/include/unistd.h /usr/include/sys/access.h
-ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
-ApInit.o: /usr/include/sys/mode.h /usr/include/stdlib.h /usr/include/string.h
-ApInit.o: /usr/include/signal.h ../graphics/Exit.h ApInit.h
-ApInit.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
-ApInit.o: ../graphics/Time.h /usr/include/sys/time.h
+ApInit.o: /usr/include/sys/select.h /usr/include/getopt.h
+ApInit.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+ApInit.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+ApInit.o: /usr/include/sys/rt_limits.h /usr/include/unistd.h
+ApInit.o: /usr/include/sys/access.h /usr/include/fcntl.h
+ApInit.o: /usr/include/sys/fcntl.h /usr/include/sys/mode.h
+ApInit.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/signal.h
+ApInit.o: /usr/include/sys/siginfo.h /usr/include/machine/signal.h
+ApInit.o: /usr/include/sys/procset.h ../graphics/Exit.h ApInit.h
+ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ApInit.o: /usr/include/limits.h ../graphics/DevStatus.h
+ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
 ApInit.o: /usr/include/sys/signal.h /usr/include/sys/time.h
 ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
@@ -24,95 +27,105 @@ ApInit.o: /usr/include/sys/lc_core.h /usr/include/math.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/standards.h
 ApParseCat.o: /usr/include/sys/seek.h /usr/include/va_list.h
 ApParseCat.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-ApParseCat.o: /usr/include/getopt.h /usr/include/sys/limits.h
-ApParseCat.o: /usr/include/sys/machine/machlimits.h
+ApParseCat.o: /usr/include/sys/select.h /usr/include/getopt.h
+ApParseCat.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
 ApParseCat.o: /usr/include/sys/syslimits.h
 ApParseCat.o: /usr/include/sys/machine/machtime.h
 ApParseCat.o: /usr/include/sys/rt_limits.h ApParseCat.h
-ApParseCat.o: ../graphics/DeviseTypes.h ../graphics.new/TData.h
-ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
-ApParseCat.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-ApParseCat.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
-ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-ApParseCat.o: /usr/include/unistd.h /usr/include/sys/access.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/DataSource.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ApParseCat.o: /usr/include/limits.h ../graphics/DevStatus.h
+ApParseCat.o: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApParseCat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat.o: ../graphics/Exit.h ../graphics/AttrList.h
+ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/signal.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
+ApParseCat.o: ../graphics/DList.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat.o: ApInit.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
+ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
+ApParseCat.o: /usr/include/sys/access.h /usr/include/string.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/string.h /usr/include/ctype.h
-ApParseCat.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-ApParseCat.o: /usr/include/math.h
+ApParseCat.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+ApParseCat.o: /usr/include/sys/lc_core.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/standards.h
 AttrProj.o: /usr/include/sys/seek.h /usr/include/va_list.h
 AttrProj.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-AttrProj.o: /usr/include/getopt.h /usr/include/sys/limits.h
-AttrProj.o: /usr/include/sys/machine/machlimits.h
+AttrProj.o: /usr/include/sys/select.h /usr/include/getopt.h
+AttrProj.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
 AttrProj.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
 AttrProj.o: /usr/include/sys/rt_limits.h /usr/include/string.h AttrProj.h
-AttrProj.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h VectorArray.h
-AttrProj.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
-AttrProj.o: ../graphics.new/RecOrder.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/sys/time.h
+AttrProj.o: ../graphics/DeviseTypes.h /usr/include/values.h
+AttrProj.o: /usr/include/limits.h ../graphics/DevStatus.h
+AttrProj.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj.o: ../graphics.new/DataSource.h ../graphics/Exit.h
+AttrProj.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
 AttrProj.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-AttrProj.o: /usr/include/sys/lc_core.h /usr/include/math.h ../graphics/Exit.h
+AttrProj.o: /usr/include/sys/lc_core.h /usr/include/math.h
 AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
 AttrProj.o: /usr/include/sys/signal.h ../graphics/Config.h
 AttrProj.o: ../graphics/DList.h ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/standards.h
 ProjectionList.o: /usr/include/sys/seek.h /usr/include/va_list.h
 ProjectionList.o: /usr/include/sys/types.h
-ProjectionList.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
+ProjectionList.o: /usr/include/mach/machine/vm_types.h
+ProjectionList.o: /usr/include/sys/select.h /usr/include/getopt.h
 ProjectionList.o: /usr/include/sys/limits.h
 ProjectionList.o: /usr/include/sys/machine/machlimits.h
 ProjectionList.o: /usr/include/sys/syslimits.h
 ProjectionList.o: /usr/include/sys/machine/machtime.h
 ProjectionList.o: /usr/include/sys/rt_limits.h ProjectionList.h
-ProjectionList.o: ../graphics/DeviseTypes.h
+ProjectionList.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ProjectionList.o: /usr/include/limits.h ../graphics/DevStatus.h
 VectorArray.o: /usr/include/stdio.h /usr/include/standards.h
 VectorArray.o: /usr/include/sys/seek.h /usr/include/va_list.h
 VectorArray.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-VectorArray.o: /usr/include/getopt.h /usr/include/sys/limits.h
+VectorArray.o: /usr/include/sys/select.h /usr/include/getopt.h
+VectorArray.o: /usr/include/sys/limits.h
 VectorArray.o: /usr/include/sys/machine/machlimits.h
 VectorArray.o: /usr/include/sys/syslimits.h
 VectorArray.o: /usr/include/sys/machine/machtime.h
 VectorArray.o: /usr/include/sys/rt_limits.h VectorArray.h
-VectorArray.o: ../graphics/DeviseTypes.h vector.h ../graphics/Util.h
-VectorArray.o: /usr/include/stdlib.h /usr/include/sys/time.h
-VectorArray.o: /usr/include/string.h /usr/include/ctype.h
-VectorArray.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-VectorArray.o: /usr/include/math.h ../graphics/Exit.h
+VectorArray.o: ../graphics/DeviseTypes.h /usr/include/values.h
+VectorArray.o: /usr/include/limits.h ../graphics/DevStatus.h vector.h
+VectorArray.o: ../graphics/Util.h /usr/include/stdlib.h
+VectorArray.o: /usr/include/sys/time.h /usr/include/string.h
+VectorArray.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+VectorArray.o: /usr/include/sys/lc_core.h /usr/include/math.h
+VectorArray.o: ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/standards.h
 aptest.o: /usr/include/sys/seek.h /usr/include/va_list.h
 aptest.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-aptest.o: /usr/include/getopt.h /usr/include/sys/limits.h
-aptest.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-aptest.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-aptest.o: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-aptest.o: VectorArray.h vector.h ProjectionList.h ApInit.h
-aptest.o: ../graphics/BufPolicy.h
+aptest.o: /usr/include/sys/select.h /usr/include/getopt.h
+aptest.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+aptest.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+aptest.o: /usr/include/sys/rt_limits.h AttrProj.h ../graphics/DeviseTypes.h
+aptest.o: /usr/include/values.h /usr/include/limits.h ../graphics/DevStatus.h
+aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest.o: ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sys/seek.h
 show.o: /usr/include/va_list.h /usr/include/sys/types.h
-show.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
-show.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-show.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-show.o: /usr/include/sys/rt_limits.h /usr/include/unistd.h
-show.o: /usr/include/sys/access.h AttrProj.h ../graphics/DeviseTypes.h
-show.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
-show.o: ApInit.h ../graphics/BufPolicy.h
+show.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+show.o: /usr/include/getopt.h /usr/include/sys/limits.h
+show.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
+show.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
+show.o: /usr/include/unistd.h /usr/include/sys/access.h AttrProj.h
+show.o: ../graphics/DeviseTypes.h /usr/include/values.h /usr/include/limits.h
+show.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
+show.o: vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 vector.o: global.h /usr/include/stdio.h /usr/include/standards.h
 vector.o: /usr/include/sys/seek.h /usr/include/va_list.h
 vector.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-vector.o: /usr/include/getopt.h /usr/include/sys/limits.h
-vector.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-vector.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-vector.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/math.h
-vector.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-vector.o: /usr/include/sys/lc_core.h /usr/include/unistd.h
-vector.o: /usr/include/sys/access.h /usr/include/sys/time.h
-vector.o: /usr/include/sys/times.h vector.h
+vector.o: /usr/include/sys/select.h /usr/include/getopt.h
+vector.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+vector.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+vector.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+vector.o: /usr/include/string.h /usr/include/math.h /usr/include/ctype.h
+vector.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+vector.o: /usr/include/unistd.h /usr/include/sys/access.h
+vector.o: /usr/include/sys/time.h /usr/include/sys/times.h vector.h

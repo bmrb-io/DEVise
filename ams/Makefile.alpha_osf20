@@ -4,22 +4,26 @@ depend:
 
 # DO NOT DELETE
 
-MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/limits.h
-MapClassInfo.o: /usr/include/standards.h
+MapClassInfo.o: /usr/include/sys/time.h /usr/include/standards.h
+MapClassInfo.o: /usr/include/sys/limits.h
 MapClassInfo.o: /usr/include/sys/machine/machlimits.h
 MapClassInfo.o: /usr/include/sys/syslimits.h
 MapClassInfo.o: /usr/include/sys/machine/machtime.h
 MapClassInfo.o: /usr/include/sys/rt_limits.h /usr/include/sys/types.h
 MapClassInfo.o: /usr/include/mach/machine/vm_types.h
-MapClassInfo.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+MapClassInfo.o: /usr/include/sys/select.h /usr/include/sys/signal.h
+MapClassInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+MapClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/time.h
 MapClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
 MapClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
 MapClassInfo.o: /usr/include/stdio.h /usr/include/sys/seek.h
 MapClassInfo.o: /usr/include/va_list.h ../graphics/DeviseTypes.h
-MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Color.h
+MapClassInfo.o: /usr/include/values.h /usr/include/limits.h
+MapClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
+MapClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-MapClassInfo.o: /usr/include/sys/access.h ../graphics/DList.h
-MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
+MapClassInfo.o: /usr/include/sys/access.h /usr/include/string.h
+MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 MapClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -32,15 +36,19 @@ MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
 MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MapClassInfo.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
-MapClassInfo.o: ../graphics.new/Action.h ../graphics/Temp.h
-MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
-MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
-MapClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-MapClassInfo.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
+MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+MapClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
+MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
+MapClassInfo.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+MapClassInfo.o: /usr/include/sys/lc_core.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
@@ -50,12 +58,15 @@ MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/standards.h
 ams.o: /usr/include/sys/seek.h /usr/include/va_list.h
 ams.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-ams.o: /usr/include/getopt.h /usr/include/sys/limits.h
-ams.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-ams.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-ams.o: /usr/include/sys/time.h /usr/include/sys/signal.h
-ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-ams.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/access.h
+ams.o: /usr/include/sys/select.h /usr/include/getopt.h
+ams.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+ams.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+ams.o: /usr/include/sys/rt_limits.h /usr/include/sys/time.h
+ams.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+ams.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
+ams.o: ../graphics/DeviseTypes.h /usr/include/values.h /usr/include/limits.h
+ams.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h /usr/include/stdlib.h
+ams.o: /usr/include/unistd.h /usr/include/sys/access.h /usr/include/string.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
@@ -69,15 +80,19 @@ ams.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 ams.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-ams.o: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
-ams.o: /usr/include/string.h ../graphics.new/Action.h ../graphics.new/RecId.h
-ams.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
-ams.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
-ams.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-ams.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
-ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
+ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+ams.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
+ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
+ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+ams.o: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
+ams.o: ../graphics.new/RecInterp.h ../tape/QueryProcTape.h
+ams.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
+ams.o: ../graphics.new/GData.h ../graphics.new/TData.h
 ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
@@ -86,24 +101,26 @@ ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/standards.h
 amsStat.o: /usr/include/sys/seek.h /usr/include/va_list.h
 amsStat.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-amsStat.o: /usr/include/getopt.h /usr/include/sys/limits.h
-amsStat.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-amsStat.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h
-amsStat.o: /usr/include/sys/fcntl.h /usr/include/sys/mode.h
-amsStat.o: /usr/include/limits.h /usr/include/unistd.h
-amsStat.o: /usr/include/sys/access.h /usr/include/sys/uio.h
-amsStat.o: /usr/include/sys/stat.h ../graphics.new/BufHint.h
-amsStat.o: ../graphics.new/PageSize.h ../graphics.new/TDataAppend.h
-amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-amsStat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
-amsStat.o: /usr/include/math.h
+amsStat.o: /usr/include/sys/select.h /usr/include/getopt.h
+amsStat.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+amsStat.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+amsStat.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+amsStat.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+amsStat.o: /usr/include/sys/mode.h /usr/include/limits.h
+amsStat.o: /usr/include/unistd.h /usr/include/sys/access.h
+amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
+amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/ams.h /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/standards.h
 extendAms.o: /usr/include/sys/seek.h /usr/include/va_list.h
 extendAms.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-extendAms.o: /usr/include/getopt.h /usr/include/sys/limits.h
-extendAms.o: /usr/include/sys/machine/machlimits.h
+extendAms.o: /usr/include/sys/select.h /usr/include/getopt.h
+extendAms.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
 extendAms.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
 extendAms.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
 extendAms.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
@@ -114,9 +131,11 @@ extendAms.o: ../graphics.new/ams.h /usr/include/math.h
 testdir.o: /usr/include/stdio.h /usr/include/standards.h
 testdir.o: /usr/include/sys/seek.h /usr/include/va_list.h
 testdir.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
-testdir.o: /usr/include/getopt.h /usr/include/sys/limits.h
-testdir.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-testdir.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
-testdir.o: /usr/include/sys/dir.h /usr/include/sys/param.h
-testdir.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
-testdir.o: /usr/include/sys/signal.h /usr/include/dirent.h
+testdir.o: /usr/include/sys/select.h /usr/include/getopt.h
+testdir.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+testdir.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+testdir.o: /usr/include/sys/rt_limits.h /usr/include/sys/dir.h
+testdir.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+testdir.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
+testdir.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+testdir.o: /usr/include/sys/procset.h /usr/include/dirent.h
