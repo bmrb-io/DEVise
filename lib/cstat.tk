@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.11  1996/04/10 03:05:15  jussi
+#	Checking of whether a top-level window already exists is now
+#	made via WindowVisible (utils.tcl).
+#
 #	Revision 1.10  1995/11/29 16:05:15  jussi
 #	Removed constant window size definitions because they will produce
 #	unexpected results on some window managers.
@@ -53,6 +57,7 @@
 set cstat_firmlst ""
 set cstat_numfirms 0
 set cstat_selection ""
+set cstat_source ""
 
 ############################################################
 
@@ -62,11 +67,11 @@ proc cstat_unique_name {symbol} {
 
 ############################################################
 
-proc cstat_extract_data {tapedrive filenum offset blocksize key file} {
+proc cstat_extract_data {source tapedrive filenum offset blocksize key file} {
     global sourceTypes cstat_status
 
-    set indexFile [lindex $sourceTypes(COMPUSTAT) 2]
-    set cstat_status "Extracting COMPUSTAT data..."
+    set indexFile [lindex $sourceTypes($source) 2]
+    set cstat_status "Extracting $source data..."
     cstat_setupStatus .cstatstatus
     cstat_extract $tapedrive $filenum $offset $blocksize $indexFile $key $file
     catch {destroy .cstatstatus}
@@ -127,12 +132,12 @@ proc cstat_setupFirmList {flist} {
 
 proc cstat_scanFirmList {listb msg} {
     global sourceTypes
-    global cstat_firmlst cstat_numfirms cstat_status
+    global cstat_firmlst cstat_numfirms cstat_status cstat_source
 
     $listb delete 0 end
     set cstat_firmlst ""
     set cstat_numfirms 0
-    set indexFile [lindex $sourceTypes(COMPUSTAT) 2]
+    set indexFile [lindex $sourceTypes($cstat_source) 2]
     set err [catch { set firms [open $indexFile] }]
     if {$err > 0} {
 	dialog .noFile "No Index File" \
@@ -204,8 +209,8 @@ proc cstat_setupStatus {stat} {
 
 ############################################################
 
-proc cstatMain {} {
-    global cstat_firmlst cstat_numfirms cstat_selection
+proc cstatMain {source} {
+    global cstat_firmlst cstat_numfirms cstat_selection cstat_source
 
     if {[WindowVisible .cstat]} {
 	return
@@ -214,7 +219,7 @@ proc cstatMain {} {
     set cstat_selection ""
 
     toplevel .cstat
-    wm title .cstat "Select Name from Compustat Database"
+    wm title .cstat "Select Name from $source Database"
     wm geometry .cstat +50+50
     selection clear .cstat
 
@@ -228,9 +233,10 @@ proc cstatMain {} {
     update
 
     # scan firm index only if the firm list doesn't exist yet
-    if {!$cstat_numfirms} {
+    if {!$cstat_numfirms || $source != $cstat_source} {
+	set cstat_source $source
 	if {[cstat_scanFirmList .cstat.firmlst.list .cstat.firmlst.msg] < 0} {
-	    return
+	    return "Error"
 	}
     } else {
 	.cstat.firmlst.msg configure -text \
