@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.84  1997/04/18 21:35:20  donjerko
+#	Made check to see if DTE table is already open.
+#
 #	Revision 1.83  1997/04/03 16:37:07  wenger
 #	Reduced memory and CPU usage in statistics; fixed a memory leak in the
 #	statistics code; switched devised back to listening on port 6100
@@ -58,12 +61,6 @@
 #
 #	Revision 1.72  1997/02/03 04:12:38  donjerko
 #	Catalog management moved to DTE
-#
-#	Revision 1.71.4.2  1997/03/06 21:32:08  wenger
-#	When generating a new window in which to visualize data, the 'Create
-#	Window' dialog isn't shown until you finish in the 'Define Visualization'
-#	dialog; also, if there are no existing windows, the Window selection
-#	defaults to New.
 #
 #	Revision 1.71.4.1  1997/02/09 16:14:45  wenger
 #	Cleaned up the data source GUI a little more (as per suggestions from
@@ -350,6 +347,7 @@ proc isDTEType {type} {
 proc SelectTopGroup {schemaname} {
     global selgrp
 
+puts "In SelectTopGroup schemaname=$schemaname"
     # get the list of top level group names from DEVise
     set topgrps [DEVise getTopGroups $schemaname]
 
@@ -390,9 +388,24 @@ proc SelectTopGroup {schemaname} {
 proc OpenDataSource {sname} {
     global sourceList derivedSourceList
 
+#    foreach name [array names derivedSourceList] {
+#    	puts "$name $derivedSourceList($name)"
+#	if { $name == $sname } { puts "They are equal" }
+#    }
+    set resName $sname
+    set subName [string range $sname 0 9]
+    if { $subName == "GstatXDTE:" } {
+        set pos [string last ":" $sname]
+        set mainName [string range $sname 0 [expr $pos-1]]
+	set err [catch {set exists $derivedSourceList($sname)}]
+	if {$err} {
+	    set sname $mainName
+	}
+    } 
     set err [catch {set exists $derivedSourceList($sname)}]
     if {!$err} {
 	set fname [isCached $sname -1 -1]
+#	set fname [isCached $mainName -1 -1]
 	if {$fname == ""} {
 	    dialog .noDerivedData "No Derived Data" \
 		    "Derived data \"$sname\" does not exist." \
@@ -400,9 +413,11 @@ proc OpenDataSource {sname} {
 	    return ""
 	}
 	set stype [lindex $derivedSourceList($sname) 0]
+#	set stype [lindex $derivedSourceList($mainName) 0]
+#	set command [lindex $derivedSourceList($sname) 4]
 	DEVise dataSegment $sname $fname 0 0
-
-	return [list $sname $fname $stype]
+	return [list $resName $fname $stype]
+#	return [list $sname $fname $stype]
     }
 
     # see if data source (still) defined (may be out-of-date in
@@ -419,7 +434,7 @@ proc OpenDataSource {sname} {
 			"" 0 OK
 		set sname $newname
 	}
-#	puts "looking up \"$sname\""
+	puts "looking up \"$sname\""
 	set sourcedef [DEVise dteShowCatalogEntry $sname]
 	set sourcedef [lindex $sourcedef 0]
 	set err [expr [llength $sourcedef] == 0]
@@ -553,6 +568,9 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
     foreach sname $snames {
 
+       set sname [string trimleft $sname "{"]
+       set sname [string trimright $sname "}"]
+       puts "sname after trim = $sname"
        set sourcedef [OpenDataSource $sname]
 
 	puts "OpenDataSource returns: $sourcedef"
@@ -567,11 +585,26 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 	   set schema [lindex $sourcedef 4]
       	
         # see if data stream already open
+#PROBLEMPROBLEMPROBLEMPROBLEM
+	puts "TdataSet [TdataSet]"
+	set tdata_exist 0 
         if {[lsearch [TdataSet] $sname] >= 0} {
-            continue
+	    set pos [string first : $sname ]
+	    if {$pos > 0} { 
+	    	set prefix [string range $sname 0 [expr $pos-1]]
+            } else { continue }
+	    if {$prefix == "Hist" || $prefix == "HistDate" || $prefix == "GstatX" 
+	        || $prefix == "GstatXDTE" || $prefix == "GstatXDate" 
+		|| $prefix == "GstatY" || $prefix == "GstatYDate" } { 
+		set tdata_exist 1 
+	    } else { continue }
         }
 
 	if {$derivedOnly} {
+#	    foreach my_name [array names derivedSourceList] {
+#	    	puts "$my_name $derivedSourceList($my_name)"
+#	    }
+
 	    set schema [lindex $derivedSourceList($sname) 2]
 	    set schemafile [lindex $derivedSourceList($sname) 3]
         } else {
@@ -593,6 +626,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 		puts "result of dteImportFileType=$result, topgrps=$topgrps"
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
+		puts "topgrps = $topgrps"
         	if {[llength $topgrps] == 0} {
 
 	   	    puts "list topgrps is empty"
@@ -609,6 +643,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 			# this call appears to parse the schema ??? DD
 			#
             	    set result [DEVise importFileType $stype $schemafile $param]
+		    puts "result after importFileType = $result"
 			#set result $schema
             
 		    if {$result == ""} {
@@ -625,9 +660,15 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 "Creating an index on \"$sname\".\n\n\This may take a while."
         update
 
-        # ask DEVise to create tdata
-	   puts "creating UNIXFILE tdata $schema $sname $stype $param"
-        set result [DEVise create tdata $schema $sname $stype $param]
+	if {$tdata_exist == 0} {
+        	# ask DEVise to create tdata
+		puts "creating UNIXFILE tdata $schema $sname $stype $param"
+        	set result [DEVise create tdata $schema $sname $stype $param]
+		puts "KKKKKKKKresult after create tdata = $result"
+	} else { 
+		set result [DEVise getTDataName $sname]
+		puts "KKKKKKKKmy_type afetr DEVise get tdata is $result"
+	}
 
         catch {destroy .info}
 
@@ -642,7 +683,8 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
     if { [isDTEType $stype] } {
 	return [list [lindex $snames 0] $sname 1]
     } else {
-	return [list [lindex $snames 0] [file tail $schemafile] 0]
+#	return [list [lindex $snames 0] [file tail $schemafile] 0]
+	return [list $result [file tail $schemafile] 0]
     }
 }
 
@@ -661,6 +703,8 @@ proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
     # buttons and the size of the window itself.
     
     set grplist [DEVise getItems $schemaname $topgrp $grpname]
+    puts "schemaname=$schemaname, topgrp=$topgrp, grpname=$grpname"
+    puts "after getItems grplist = $grplist"
 	
     # Find the max width of the attrs and the number of attrs
     set numattrs 0
@@ -769,6 +813,7 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 
     set default ""
     set defaultset 0
+#    set $var ""
 
     foreach itm $grplist {
 	set subname [lindex $itm 0]
@@ -939,15 +984,15 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     if {[WindowVisible .auto]} {
 	return
     }
-	
-	puts "In MacroDefAuto($tdata, $schemaname, $is_dte_type)"
 
+    puts "In MacroDefAuto($tdata, $schemaname)"
+	
 #    set schema [DEVise getSchema $tdata]
 #   set schemaname [file tail $schemafile]
 	
     set topgrp [SelectTopGroup $schemaname]
 
-    puts "topgrp = $topgrp"
+    puts "schemaname = $schemaname, topgrp = $topgrp"
 
     toplevel .auto
     wm title .auto "Define Visualization"
@@ -996,10 +1041,13 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     set windowsel ""
     if {$curView != ""} {
 	set windowsel [DEVise getViewWin $curView]
-    } elseif {[DEVise getWinCount] <= 1} {
-	set windowsel New
-    } else {
+    }
+    if {$windowsel == ""} {
 	set windowsel "None selected yet"
+    } elseif {[DEVise getWinCount] <= 1} {
+    	set windowsel New
+    } else {
+    	set windowsel "None selected yet"
     }
    
     menu .auto.windowsel.window.menu -tearoff 0
@@ -1010,13 +1058,20 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 
     .auto.windowsel.window.menu add separator
     .auto.windowsel.window.menu add command -label "New" -command {
-      set windowsel New
+	    set windowsel New
     }
+#	set newwin [DoCreateWindow "Select window type"]
+#	if {$newwin != ""} {
+#	    set windowsel $newwin
+#	    .auto.windowsel.window.menu add command -label $windowsel \
+#		    -command "set windowsel {$windowsel}"
+#	}
 
     label .auto.xsel.label -text "Select X:"
     menubutton .auto.xsel.attr -relief raised \
 	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 20
     pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
+    puts "Before setupAttrRadioMenu, schemaname=$schemaname, topgrp=$topgrp"
     set defaultx [setupAttrRadioMenu \
     		.auto.xsel.attr.g$topgrp x "" $schemaname $topgrp $topgrp]
 
@@ -1106,7 +1161,6 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     set cancel 0
 	
     button .auto.but.ok -text OK -width 15 -command {
-#TEMPTEMP?
 #	if {![DEVise exists $windowsel]} {
 #	    dialog .winError "No Window Specified" \
 #		    "Please select a window for visualization." \
@@ -1117,25 +1171,24 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 	# See whether we've selected any Y attributes.
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
-
-	      # Yes, a Y attr has been selected.  Now create a window
-	      # if necessary, and make sure that it exists.  Prompt the
-	      # user to select a window if one has not been selected.
+		# Yes, a Y attr has been selected.  Now create a window
+              # if necessary, and make sure that it exists.  Prompt the
+              # user to select a window if one has not been selected.
               if {$windowsel == "New"} {
-	        set newwin [DoCreateWindow "Select window type"]
-	        if {$newwin != ""} {
-	          set windowsel $newwin
-	        }
+                set newwin [DoCreateWindow "Select window type"]
+                if {$newwin != ""} {
+                  set windowsel $newwin
+                }
               }
-	      if {![DEVise exists $windowsel]} {
-	          dialog .winError "No Window Specified" \
-		          "Please select a window for visualization." \
-	          "" 0 OK
-	         return
-	      } else {
-	        set cancel 0
-	        return
-	      }
+              if {![DEVise exists $windowsel]} {
+                  dialog .winError "No Window Specified" \
+                          "Please select a window for visualization." \
+                  "" 0 OK
+                 return
+              } else {
+                set cancel 0
+                return
+              }
 	    }
 	}
 
@@ -1170,6 +1223,9 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 #    puts "The ylist is $ylist"
     
     if {$is_dte_type} {
+#            set result [DEVise create tdata $tdata $tdata "$x $ylist"]
+#            set tdata $result
+#	    puts "In MacroDefAuto XXXXX After dte creates tdata x=$x ylist=$ylist tdata=$tdata" 
 
 		# see if data stream already open
 		if {[lsearch [TdataSet] $tdata] < 0} {
@@ -1188,13 +1244,12 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 
 proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
-                         newgdata} {
+                         newgdata {ofAttr ""}} {
 
     puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
 		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
-    global viewDefault DEViseShapes
+    global viewDefault DEViseShapes curView
 
-	puts "in MacroDefAutoActual($tdata ..."
     set pos ""
     set subder ""
     set vname ""
@@ -1211,7 +1266,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     puts "Before getSchema $tdata"
 
     set schema [DEVise getSchema $tdata]
-    puts "In MacroDefAutoActual, schema = $schema"
+#    puts "In MacroDefAutoActual, schema = $schema"
 
     set colorAttr ""
     set sortedx 0
@@ -1294,10 +1349,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     set orient 0
     set shapeAttr0 ""
     set shapeAttr1 ""
+    set shapeAttr2 ""
 
     set view_exist 0
     set titletext ""
     set mmmtext ""
+    set mmm_view ""
 
     if {$shape == 1} {
         # set pixel width and height to one for image displays
@@ -1324,6 +1381,11 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	     set clean_name $name
 	}
         if {[lsearch $ylist $clean_name] < 0} { continue }
+	set is_mmm 0
+	if {$clean_name=="Max"||$clean_name=="Min"||$clean_name=="Avg"} {
+		set is_mmm 1
+	}
+	if {$mmm_view != "" && $is_mmm == 1} { continue }
 
         set type [lindex $attr 1]
         set sorted [lindex $attr 2]
@@ -1383,8 +1445,9 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	if {$clean_name=="Avg"} { set color 2 }
 	if {$clean_name=="Min"} { set color 3 }
 
-	
-        if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatY"} {
+        if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatXDTE" 
+	        || $subder == "GstatY"
+		|| $subder == "GstatXDate" || $subder == "GstatYDate" } {
             if {$clean_name=="Max"} {
                  set shapeAttr0 0.2
             }
@@ -1411,9 +1474,15 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         set viewbasename "View 1"
 
 	set mmm_list {Max Mean Avg Min}	
-	set stat_list {Stat GstatX GstatY}
-
-	if {[lsearch $stat_list $subder] < 0 || !$view_exist 
+	set stat_list {Stat GstatX GstatXDTE GstatY GstatXDate GstatYDate}
+	set histView ""
+	if {$subder == "Hist" || $subder == "HistDate" } {
+		set histView [DEVise getHistViewname $curView]
+	}
+puts "After DEVise getHistViewName histView=$histView"
+	if {[DEVise exists $histView]} {
+		set viewinstance $histView
+	} elseif {[lsearch $stat_list $subder] < 0 || !$view_exist 
 		|| [lsearch $mmm_list $clean_name] < 0} {
 	    set viewinstance [UniqueName $viewbasename]
 	    if {[lsearch [ViewSet] $viewinstance] >= 0} {
@@ -1428,6 +1497,9 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 			"Error creating view $viewinstance" "" 0 OK
 		return
 	    }
+	    if {$subder == "Hist" || $subder == "HistDate" } {
+	    	DEVise setHistViewname $curView $viewinstance
+	    }
 	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg"
 			|| $clean_name == "Min" } {
 		set view_exist 1 
@@ -1438,22 +1510,25 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	}
 	     
         # ask DEVise to turn on/off label
-	if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatY"} {
+	if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatXDTE" 
+	        || $subder == "GstatY"
+		|| $subder == "GstatXDate" || $subder == "GstatYDate" } {
+	  
 	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg" 
 			|| $clean_name == "Min"} {
 		if {$mmmtext==""} {
-		    set titletext "$name vs. $x"
+		    set titletext "Max|Avg|Min\($ofAttr\) vs. $x"
 		    set mmmtext $titletext
 		} else { 
 		    lappend mmmtext "$name vs. $x"
 		    set titletext $mmmtext
 	   	}
-	    } else { set titletext "$name vs. $x" }
+	    } else { set titletext "$name\($ofAttr\) vs. $x" }
 	} else {
-	   set titletext "$name vs. $x"
+	   set titletext "$name\($ofAttr\) vs. $x"
 	}
 
-        if {[llength $ylist] == 1} {
+        if {[llength $ylist] == 1 && $titletext == "" } {
             set titletext $tdata
         }
         if {$titlesel} {
@@ -1500,10 +1575,22 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
             set mapinstance [UniqueName $mapinstance]
         }
         if {[lsearch [GdataSet] $mapinstance] < 0} {
-            # ask DEVise to create an instance of mapping
-            set result [DEVise create mapping $mapname $tdata $mapinstance \
-                    "" \$$x \$$name $mapColor $size $pattern $orient $shape \
-                    $shapeAttr0 $shapeAttr1]
+	    if {$is_mmm == 1} { 
+	    	set name "Avg"
+		set shape [findNumericCaseValue $DEViseShapes {HighLow}]
+		set shapeAttr0 "\$Max"
+		set shapeAttr1 "\$Min"
+		set size 3
+		if {$x == "DATE"} {set size 4000000 }
+		set result [DEVise create mapping $mapname $tdata $mapinstance \
+			"" \$$x \$$name "" $mapColor $size $pattern $orient $shape \
+			"" $shapeAttr0 $shapeAttr1 ]
+	    } else {
+                # ask DEVise to create an instance of mapping
+	    	set result [DEVise create mapping $mapname $tdata $mapinstance \
+			"" \$$x \$$name $mapColor $size $pattern $orient $shape \
+			$shapeAttr0 $shapeAttr1]
+	    }
             DEVise setPixelWidth $mapinstance 1
         }
 
