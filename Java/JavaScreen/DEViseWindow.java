@@ -34,7 +34,7 @@ import  java.awt.image.*;
 import  java.util.*;
 
 // This class represent a image view in DEVise
-public class DEViseWindow extends Component
+public class DEViseWindow extends Container
 {
     jsdevisec jsc = null;
     DEViseScreen jscreen = null;

@@ -30,7 +30,7 @@ public class DEViseGData
             y = y - height / 2;
             if (x < 0)
                 x = 0;
-            if (y < 0);
+            if (y < 0)
                 y = 0;    
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData!");
