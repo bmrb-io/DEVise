@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 20:48:27  jussi
+  Cleaned up the code a bit.
+
   Revision 1.4  1995/11/25 01:11:08  jussi
   Added copyright notice and cleaned up the code.
 
@@ -58,22 +61,18 @@ void Action::KeySelected(View *view, char key, Coord x, Coord y)
   VisualFilter filter;
 
   if (key == 'c') {
-#if 0
-    view->DisplayConnectors(!v->DisplayConnectors());
-#endif
+    (void)view->DisplayConnectors(!view->DisplayConnectors());
   }
 
   else if (key == 's') {
-#if 0
-    view->DisplaySymbols(!view->DisplaySymbols());
-#endif
+    (void)view->DisplaySymbols(!view->DisplaySymbols());
   }
 
   else if (key == '>' || key == '.' || key == '6') {
     /* scroll data right */
     view->GetVisualFilter(filter);
     Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh-filter.xLow)/2.0;
+    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
     filter.xLow -= halfWidth;
     Coord xMin;
     if (view->GetXMin(xMin) && filter.xLow < xMin)
@@ -86,7 +85,7 @@ void Action::KeySelected(View *view, char key, Coord x, Coord y)
     /* scroll data left */
     view->GetVisualFilter(filter);
     Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh-filter.xLow)/2.0;
+    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
     filter.xLow += halfWidth;
     filter.xHigh = filter.xLow + width;
     view->SetVisualFilter(filter);
@@ -95,7 +94,7 @@ void Action::KeySelected(View *view, char key, Coord x, Coord y)
   else if (key == 'a' || key == 'A' || key == '7') {
     /* zoom in */
     view->GetVisualFilter(filter);
-    Coord quarterWidth = (filter.xHigh-filter.xLow)/4.0;
+    Coord quarterWidth = (filter.xHigh - filter.xLow) / 4.0;
     filter.xLow += quarterWidth;
     filter.xHigh -= quarterWidth;
     view->SetVisualFilter(filter);
@@ -136,7 +135,7 @@ void Action::KeySelected(View *view, char key, Coord x, Coord y)
   else if (key == 's' || key == 'S' || key == '1') {
     /* zoom in y */
     view->GetVisualFilter(filter);
-    Coord quarterHeight = (filter.yHigh-filter.yLow)/4.0;
+    Coord quarterHeight = (filter.yHigh - filter.yLow) / 4.0;
     filter.yLow += quarterHeight;
     filter.yHigh -= quarterHeight;
     view->SetVisualFilter(filter);
@@ -145,7 +144,7 @@ void Action::KeySelected(View *view, char key, Coord x, Coord y)
   else if (key == 'x' || key == 'X' || key == '3') {
     /* zoom out */
     view->GetVisualFilter(filter);
-    Coord halfHeight = (filter.yHigh-filter.yLow)/2.0;
+    Coord halfHeight = (filter.yHigh - filter.yLow) / 2.0;
     filter.yLow -= halfHeight;
     filter.yHigh += halfHeight;
     view->SetVisualFilter(filter);
