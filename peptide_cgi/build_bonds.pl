@@ -170,6 +170,7 @@ sub OutputBonds {
 }
 
 sub ConnectAtoms {
+#TEMPTEMP -- need to deal with structure type better
   @info0 = split(" +", $atom0line);
   $x0 = $info0[6];
   $y0 = $info0[7];
@@ -188,6 +189,7 @@ sub ConnectAtoms {
   if ($totaldiff > 5.0) {
     print STDERR "Bond it too long ($totaldiff) at $info0[4],$info1[4] in res $lastresnum\n";
   } else {
-    print OUT "@info0[0 .. 8] $xdiff $ydiff $zdiff\n";
+    #print OUT "@info0[0 .. 8] $xdiff $ydiff $zdiff\n";
+    print OUT "$atom0line	$xdiff	$ydiff	$zdiff\n";
   }
 }
