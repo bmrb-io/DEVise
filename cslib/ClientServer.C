@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/05/21 21:05:08  andyt
+  Support for multiple clients in client-server library. Single-client mode
+  still supported by compiling with -DSINGLE_CLIENT. Client-server library
+  can now display EmbeddedTk windows and Tasvir images. Added a sample
+  Embedded-Tk script and GIF image to the repository (ETkSample.tcl,
+  earth.gif). Modified tarcslib script to include all new files.
+
   Revision 1.4  1996/12/02 18:38:59  wenger
   Fixed memory leak in client/server library.
 
@@ -352,15 +359,20 @@ void Server::MainLoop()
 {
     while(1)
     {
-	WaitForConnection();
+	SingleStep();
+    }
+}
+
+void Server::SingleStep()
+{
+    WaitForConnection();
 #if defined(SINGLE_CLIENT)
-	while(_clientFd >= 0)
+    while(_clientFd >= 0)
 #else
-	while (_numClients > 0)
+    while (_numClients > 0)
 #endif
-	{
-	    ReadCmd();
-	}
+    {
+        ReadCmd();
     }
 }
 
@@ -696,81 +708,86 @@ WinServer::~WinServer()
 
 void WinServer::MainLoop()
 {
+    while (1)
+    {
+	SingleStep();
+    }
+}
+
+void WinServer::SingleStep()
+{
     int wfd;
     fd_set fdset;
     int maxFdCheck;
     int numFds;
-    while (1)
+
+    WaitForConnection();
+#if defined(SINGLE_CLIENT)
+    while (_clientFd >= 0)
+#else
+    while (_numClients > 0)
+#endif
     {
-	WaitForConnection();
+        //
+        // Initialize the fd set
+        //
+        memset(&fdset, 0, sizeof fdset);
+        wfd = _screenDisp->fd();
+        FD_SET(wfd, &fdset);
 #if defined(SINGLE_CLIENT)
-	while (_clientFd >= 0)
+        FD_SET(_clientFd, &fdset);
+        maxFdCheck = (wfd > _clientFd ? wfd : _clientFd);
 #else
-	while (_numClients > 0)
+        FD_SET(_listenFd, &fdset);
+        maxFdCheck = (wfd > _listenFd ? wfd :_listenFd);
+        for (int i = 0; i < _maxClients; i++)
+        {
+	    if (_clients[i].valid)
+	    {
+	        FD_SET(_clients[i].fd, &fdset);
+	        if (_clients[i].fd > maxFdCheck)
+	        {
+		    maxFdCheck = _clients[i].fd;
+	        }
+	    }
+        }
 #endif
-	{
-	    //
-	    // Initialize the fd set
-	    //
-	    memset(&fdset, 0, sizeof fdset);
-	    wfd = _screenDisp->fd();
-	    FD_SET(wfd, &fdset);
+        //
+        // select()
+        //
+        numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+        if (numFds < 0)
+        {
+	    perror("select");
+        }
+        DOASSERT(numFds > 0, "Internal error");
 #if defined(SINGLE_CLIENT)
-	    FD_SET(_clientFd, &fdset);
-	    maxFdCheck = (wfd > _clientFd ? wfd : _clientFd);
+        //
+        // Process the client command
+        //
+        if (FD_ISSET(_clientFd, &fdset))
+        {
+	    ReadCmd();
+        }
 #else
-	    FD_SET(_listenFd, &fdset);
-	    maxFdCheck = (wfd > _listenFd ? wfd :_listenFd);
-	    for (int i = 0; i < _maxClients; i++)
-	    {
-		if (_clients[i].valid)
-		{
-		    FD_SET(_clients[i].fd, &fdset);
-		    if (_clients[i].fd > maxFdCheck)
-		    {
-			maxFdCheck = _clients[i].fd;
-		    }
-		}
-	    }
+        //
+        // Handle a new connection request
+        //
+        if (FD_ISSET(_listenFd, &fdset))
+        {
+	    WaitForConnection();
+        }
+        //
+        // Process commands on all client fds
+        //
+        ExecClientCmds(&fdset);
 #endif
-	    //
-	    // select()
-	    //
-	    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
-	    if (numFds < 0)
-	    {
-		perror("select");
-	    }
-	    DOASSERT(numFds > 0, "Internal error");
-#if defined(SINGLE_CLIENT)
-	    //
-	    // Process the client command
-	    //
-	    if (FD_ISSET(_clientFd, &fdset))
-	    {
-		ReadCmd();
-	    }
-#else
-	    //
-	    // Handle a new connection request
-	    //
-	    if (FD_ISSET(_listenFd, &fdset))
-	    {
-		WaitForConnection();
-	    }
-	    //
-	    // Process commands on all client fds
-	    //
-	    ExecClientCmds(&fdset);
-#endif
-	    //
-	    // Process window events
-	    //
-	    if (FD_ISSET(wfd, &fdset))
-	    {
-                _screenDisp->InternalProcessing();
-	    }
-	}
+        //
+        // Process window events
+        //
+        if (FD_ISSET(wfd, &fdset))
+        {
+                   _screenDisp->InternalProcessing();
+        }
     }
 }
-

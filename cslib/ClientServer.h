@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/05/21 21:05:10  andyt
+  Support for multiple clients in client-server library. Single-client mode
+  still supported by compiling with -DSINGLE_CLIENT. Client-server library
+  can now display EmbeddedTk windows and Tasvir images. Added a sample
+  Embedded-Tk script and GIF image to the repository (ETkSample.tcl,
+  earth.gif). Modified tarcslib script to include all new files.
+
   Revision 1.3  1996/11/23 00:24:01  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -116,6 +123,7 @@ class Server {
 #endif
     virtual ~Server();
     virtual void MainLoop();              // main loop of server
+    virtual void SingleStep();            // once throught the body of MainLoop
 
   protected:
     virtual void DoAbort(char *reason);   // print error message and abort
@@ -165,6 +173,7 @@ class WinServer : public Server, public WindowRepCallback {
 #endif
     virtual ~WinServer();
     virtual void MainLoop();              // main loop of server
+    virtual void SingleStep();            // once throught the body of MainLoop
 
  protected:
 
