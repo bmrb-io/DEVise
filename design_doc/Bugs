@@ -2145,6 +2145,19 @@ Num Date        Status  Description
 			catalog goof things up. (rkw)
 			(Fixed by rkw, 1999-12-29.)
 
+549 01/04/00	OPEN	Select View->Cursor->Set Fixed Size, then do Cancel;
+			this produces an error (cursor not found). (rkw)
+
+550 01/04/00	OPEN	"Check Data Sources" should ask for confirmation
+			before proceeding. (rkw)
+
+551 01/04/00	OPEN	View symbols may not be handled correctly when parent
+			views are *stacked* (as opposed to piled). (rkw)
+
+552 01/04/00	OPEN	Specification of an illegal/unavailable font family
+			in GData should not prevent the JavaScreen from
+			drawing *some* symbol. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
