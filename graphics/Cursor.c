@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/02/02 17:14:26  wenger
+  Fixed bug 422 (setting cursor dest w/o source causes crash).
+
   Revision 1.21  1999/01/29 21:09:41  wenger
   Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
 
@@ -276,8 +279,9 @@ void DeviseCursor::FilterAboutToChange(View *view)
     view->GetName());
 #endif
 
-  if (_dst && view == _src)
+  if (_dst && view == _src) {
     (void)_dst->HideCursors();
+  }
 }
 
 void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
@@ -287,8 +291,32 @@ void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
   printf("DeviseCursor(%s)::FilterChanged(%s)\n", GetName(), view->GetName());
 #endif
 
-  if (_dst && view == _src)
+  if (_src && view == _dst) {
+    // Figure out whether any part of the cursor is within the destination
+    // view's new visual filter.
+    VisualFilter *cFilter;
+    GetVisualFilter(cFilter);
+    Boolean outside = false;
+    if ((cFilter->flag & VISUAL_X) &&
+        (cFilter->xHigh < filter.xLow || cFilter->xLow > filter.xHigh)) {
+      outside = true;
+    }
+    if ((cFilter->flag & VISUAL_Y) &&
+        (cFilter->yHigh < filter.yLow || cFilter->yLow > filter.yHigh)) {
+      outside = true;
+    }
+    if (outside) {
+      // The cursor is outside the visual filter -- move it to the center
+      // of the destination view.
+      Coord newX = (filter.xLow + filter.xHigh) / 2.0;
+      Coord newY = (filter.yLow + filter.yHigh) / 2.0;
+      MoveSource(newX, newY);
+    }
+  }
+
+  if (_dst && view == _src) {
     (void)_dst->DrawCursors();
+  }
 }
 
 void DeviseCursor::ViewDestroyed(View *view)
@@ -312,9 +340,10 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   if (!_src)
     return;
 
-  VisualFilter filter, oldFilter;
-  _src->GetVisualFilter(filter);
-  oldFilter = filter;
+  VisualFilter *filterP;
+  GetVisualFilter(filterP);
+  VisualFilter filter = *filterP;
+  VisualFilter oldFilter = *filterP;
 
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
