@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2000/05/04 15:53:22  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.41  2000/04/27 20:15:23  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -71,6 +76,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.42  2000/05/04 15:53:22  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.41  2000/04/27 20:15:23  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -263,6 +273,8 @@ public class DEViseCanvas extends Container
         return view.viewLoc;
     }
 
+    // This function is used to draw cursors because direct XOR drawing
+    // (with Graphics.setXORMode()) doesn't seem to work in Netscape.
     // loc is relative to this canvas
     public Image getCroppedXORImage(Color c, Rectangle loc)
     {
@@ -276,7 +288,8 @@ public class DEViseCanvas extends Container
             return null;
         }
 
-        source = new FilteredImageSource(img.getSource(), new XORFilter(c));
+        source = new FilteredImageSource(img.getSource(),
+	  new XORFilter(c, loc.width, loc.height, XORFilter.typeFrame));
         img = createImage(source);
 
         return img;
@@ -1615,8 +1628,14 @@ class XORFilter extends RGBImageFilter
 {
     Color color = Color.white;
     int red, green, blue;
+    int _width, _height;
+    int _drawType;
 
-    public XORFilter(Color c)
+    public static final int typeFilledRect = 1;
+    public static final int typeFrame = 2;
+    public static final int typeFrameAndDots = 3;
+
+    public XORFilter(Color c, int width, int height, int drawType)
     {
         if (c != null) {
             color = c;
@@ -1626,14 +1645,40 @@ class XORFilter extends RGBImageFilter
         green = color.getGreen() << 8;
         blue = color.getBlue();
 
+	_width = width;
+	_height = height;
+
         //System.out.println("r = " + red + " g = " + green + " b = " + blue);
 
-        canFilterIndexColorModel = true;
+	if (drawType == typeFilledRect) {
+            canFilterIndexColorModel = true;
+	}
+	_drawType = drawType;
     }
 
-    public int filterRGB(int x, int y, int rgb)
+    public int filterRGB(int x, int y, int rgb) throws YError
     {
-        //return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) | ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
-        return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) | ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
+	int rgbOut = rgb;
+	if (_drawType == typeFilledRect) {
+            rgbOut = ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) |
+	      ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
+	} else if (_drawType == typeFrame) {
+	    if (x < 3 || y < 3 || x > _width - 4 || y > _height - 4) {
+                rgbOut = ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) |
+	          ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
+	    }
+	} else if (_drawType == typeFrameAndDots) {
+	    if (x < 3 || y < 3 || x > _width - 4 || y > _height - 4) {
+                rgbOut = ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) |
+	          ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
+	    } else if ((x % 6 == 0) && (y % 6 == 0)) {
+                rgbOut = ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) |
+	          ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
+	    }
+	} else {
+	    throw new YError("Illegal draw type (" + _drawType + ")");
+	}
+
+	return rgbOut;
     }
 }
