@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.117  1997/02/14 16:48:01  wenger
+#	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #	Revision 1.116  1997/02/03 19:49:52  ssl
 #	Added UI for Layout Manager and negative record links
 #
@@ -822,6 +825,12 @@ proc displayTable {table} {
 
 menu .mbar.tdata.menu.indexMenu -tearoff 0
 .mbar.tdata.menu.indexMenu add command -label New -command {
+
+     global indexName
+     global keyAttrs
+     global dataAttrs
+     global standAlone
+
 	set table [selectStream]
 	while {[llength $table] > 1} {
 		dialog .note "Note" "Please select only one table." "" 0 OK
@@ -831,27 +840,72 @@ menu .mbar.tdata.menu.indexMenu -tearoff 0
 		return
 	}
 	set attrs [DEVise dteListAttributes $table]
+	set indexName ""
+	set keyAttrs ""
+	set dataAttrs ""
+	set standAlone No
+	indexUpdate $attrs
+	if {$indexName != ""} {
+		DEVise dteCreateIndex \
+			$table $indexName $keyAttrs $dataAttrs $standAlone
+	}
+}
+
+proc getSelectedIndex {} {
+	global dialogListVar
+	set indexes [DEVise dteListAllIndexes]
+	set formated ""
+	foreach pair [lsort $indexes] {
+		set tablename [lindex $pair 0]
+		set indexname [lindex $pair 1]
+		set item [format "%-40.40s  %-10.10s" $tablename $indexname]
+		lappend formated $item
+	}
+	puts "formated = $formated"
+	set answer [dialogList .selectIndex "Select Index"  \
+			    "Select Index" \
+			   "" 0 { OK Cancel } \
+			   $formated ]
+	if {$answer == 0} {
+		set table_index_pair $dialogListVar(selected)
+	} else {
+		set table_index_pair ""
+	}
+	return $table_index_pair
+}
+
+.mbar.tdata.menu.indexMenu add command -label Browse -command {
+	set table_index_pair [getSelectedIndex]
+	if {$table_index_pair == ""} {
+		return
+	}
+
+     global indexName
+     global keyAttrs
+     global dataAttrs
+     global standAlone
+
+	set tableName [lindex $table_index_pair 0]
+	set indexName [lindex $table_index_pair 1]
+
+	set indexDesc [DEVise dteShowIndexDesc $tableName $indexName]
+
+	set keyAttrs [lindex $indexDesc 0]
+	set dataAttrs [lindex $indexDesc 1]
+	set standAlone [lindex $indexDesc 2]
+
+	set attrs ""
 	indexUpdate $attrs
 }
-.mbar.tdata.menu.indexMenu add command -label Browse -command {
-	set table [selectStream]
-	while {[llength $table] > 1} {
-		dialog .note "Note" "Please select only one table." "" 0 OK
-		set table [selectStream]
-	}
-	if {$table == ""} {
-		return
-	}
-}
+
 .mbar.tdata.menu.indexMenu add command -label Delete -command {
-	set table [selectStream]
-	while {[llength $table] > 1} {
-		dialog .note "Note" "Please select only one table." "" 0 OK
-		set table [selectStream]
-	}
-	if {$table == ""} {
+	set table_index_pair [getSelectedIndex]
+	if {$table_index_pair == ""} {
 		return
 	}
+	set tableName [lindex $table_index_pair 0]
+	set indexName [lindex $table_index_pair 1]
+	DEVise dteDeleteIndex $tableName $indexName
 }
 
 .mbar.tdata.menu add separator

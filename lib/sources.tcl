@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.57  1997/02/14 16:48:08  wenger
+#	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #	Revision 1.56  1997/02/03 04:12:42  donjerko
 #	Catalog management moved to DTE
 #
@@ -497,7 +500,16 @@ proc updateStreamDef {} {
 
 ############################################################
 proc indexUpdate {logicalAttrlist} {
+
+# input {list of available attrs}
+# returns {indexName {list of key attrs} {list of add attrs} standAloneFlag}
 	
+	global indexName
+	global keyAttrs
+	global dataAttrs
+	global standAlone
+
+	set standAlone No 
 	# Create the new index window and update the indices..
     global schemafile tgrps glist attrlist dispname
 	
@@ -534,62 +546,75 @@ proc indexUpdate {logicalAttrlist} {
 
     # Bind the mouse click on this list
     bind .gbrowse.attrs.list <Double-1> {
-	  if {$query == ""} {
-	  	set query  "$query [.gbrowse.attrs.list get active] "
+	  if {$keyAttrs == ""} {
+	  	set keyAttrs  "$keyAttrs [.gbrowse.attrs.list get active] "
 	} else {
-	  	set query  "$query, [.gbrowse.attrs.list get active] "
+	  	set keyAttrs  "$keyAttrs, [.gbrowse.attrs.list get active] "
 	}
     }
 
-    #-----------------------------------------------------------
-    # Create a listbox displaying list of groups
-    #    CreateTextBitmap .gbrowse.list.label group.gif Groups
-    #label .gbrowse.list.label -text "Index attributes "
-    #pack .gbrowse.list.label -side top -fill x
-	
-	#### Gotta put the entry box here..
-    # Panel for group name and panels for operators  
-    set indexName "" 
-
+    frame .gbrowse.ops.index -relief raised -bd 1
     frame .gbrowse.ops.name -relief raised -bd 1
-    frame .gbrowse.ops.index -relief raised
+    frame .gbrowse.ops.data -relief raised -bd 1
+    frame .gbrowse.ops.standAlone -relief raised -bd 1
     frame .gbrowse.ops.op -relief raised
-    pack .gbrowse.ops.name .gbrowse.ops.index .gbrowse.ops.op -side top -fill x \
+
+    pack .gbrowse.ops.index .gbrowse.ops.name \
+    	.gbrowse.ops.data .gbrowse.ops.standAlone .gbrowse.ops.op \
+    	-side top -fill x \
 	    -padx 3m -pady 1m
     
-    label .gbrowse.ops.name.label -text "Index attributes "
-    entry .gbrowse.ops.name.entry -width 100 -relief sunken -bd 2 \
-	    -textvariable query 
+    label .gbrowse.ops.index.indexLabel -text "Index Name "
+    entry .gbrowse.ops.index.indexName -width 40 -relief sunken -bd 2 \
+	    -textvariable indexName 
+    pack .gbrowse.ops.index.indexLabel .gbrowse.ops.index.indexName -side left \
+	   -padx 1m -pady 1m
     
+    label .gbrowse.ops.name.label -text "Key attributes "
+    entry .gbrowse.ops.name.entry -width 80 -relief sunken -bd 2 \
+	    -textvariable keyAttrs 
     pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
 	   -fill x -padx 1m -pady 1m -expand 1
 
-    label .gbrowse.ops.index.indexLabel -text "Index Name "
-    entry .gbrowse.ops.index.indexName -width 100 -relief sunken -bd 2 \
-	    -textvariable indexName 
-
-    pack .gbrowse.ops.index.indexLabel .gbrowse.ops.index.indexName -side left \
+    label .gbrowse.ops.data.label -text "Data attributes "
+    entry .gbrowse.ops.data.entry -width 80 -relief sunken -bd 2 \
+	    -textvariable dataAttrs
+    pack .gbrowse.ops.data.label .gbrowse.ops.data.entry -side left \
 	   -fill x -padx 1m -pady 1m -expand 1
-    
-	#pack .gbrowse.ops.name.entry -side left \
-	#    -fill x -padx 1m -pady 1m -expand 1
-	
-	#pack .gbrowse.ops.name.indexName -side left \
-	#    -fill x -padx 1m -pady 1m -expand 1
+
+    label .gbrowse.ops.standAlone.label -text "Stand Alone "
+    radiobutton .gbrowse.ops.standAlone.yes -text Yes -variable standAlone \
+         -value Yes -anchor nw
+    radiobutton .gbrowse.ops.standAlone.no -text No -variable standAlone \
+         -value No -anchor nw
+    pack .gbrowse.ops.standAlone.label .gbrowse.ops.standAlone.yes \
+	.gbrowse.ops.standAlone.no \
+      -side left -fill x -padx 1m
 
     button .gbrowse.ops.op.create -text "OK" -command {
-	    set query "create index $indexName on $dispname ($query );" 
-	    puts " THE QUERY FOR DEVISE WAS "
-	    puts $query
-	    DEVise createIndex $query
+	if {$indexName == "" || $keyAttrs == ""} {
+		dialog .noName "Missing Information" \
+			"Please enter all requested information." \
+			"" 0 OK
+	} else {
+		destroy .gbrowse
+	}
     }
     
 	button .gbrowse.ops.op.quit -text "Cancel" -command {
+		set indexName ""
+		set keyAttrs ""
+		set dataAttrs ""
+		set standAlone No
 	  destroy .gbrowse
     }
     
     pack .gbrowse.ops.op.create .gbrowse.ops.op.quit \
 	    -side left -padx 3m -pady 1m -expand 1
+
+	tkwait visibility .gbrowse
+	grab set .gbrowse
+	tkwait window .gbrowse
 	
 }
 
