@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  1999/11/03 08:00:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.21  1999/11/01 17:40:15  hongyu
 // *** empty log message ***
 //
@@ -957,14 +960,14 @@ public class DEViseCanvas extends Container
                     jscreen.setCurrentView(activeView);
                 }
                 
-		int index = crystal.find(p.x, p.y);
-		if (index != oldHighlightAtomIndex) {
-		    action3d = 1;
-		    repaint();
-		    highlightAtomIndex = index;
-		    action3d = 1;
-		    repaint();
-                }
+		//int index = crystal.find(p.x, p.y);
+		//if (index != oldHighlightAtomIndex) {
+		//    action3d = 1;
+		//    repaint();
+		//    highlightAtomIndex = index;
+		//    action3d = 1;
+		//    repaint();
+                //}
                 
 		return;
             }
