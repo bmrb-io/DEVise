@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/14 17:22:01  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.9  1995/12/06 21:24:09  jussi
   Minor bug fixes in computing exact pixel values (removed some one-off
   errors).
@@ -147,7 +150,7 @@ void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
     newParent = DefaultRootWindow(_display);
 
 #ifdef DEBUG
-  printf("XWindowRep::Reparent 0x%x to 0x%x at %d,%d\n",
+  printf("XWindowRep::Reparent 0x%p to 0x%p at %d,%d\n",
 	 newChild, newParent, x, y);
 #endif
 
@@ -234,7 +237,7 @@ void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
 	  _win, filename);
 
 #ifdef DEBUG
-  printf("WritePostscript: for window id 0x%x:\n", _win);
+  printf("WritePostscript: for window id 0x%p:\n", _win);
   printf("WritePostscript: executing %s\n", cmd);
 #endif
 
@@ -864,7 +867,7 @@ void XWindowRep::HandleEvent(XEvent &event)
     maxX = minX + (Coord)event.xexpose.width - 1;
     maxY = minY + (Coord)event.xexpose.height - 1;
 #ifdef DEBUG
-    printf("XWindowRep 0x%x Exposed %d,%d to %d,%d\n", this,
+    printf("XWindowRep 0x%p Exposed %d,%d to %d,%d\n", this,
 	   (int)minX, (int)minY, (int)maxX, (int)maxY);
 #endif
     while (XCheckIfEvent(_display, &ev, check_expose, (char *)&_win)) {
@@ -889,7 +892,7 @@ void XWindowRep::HandleEvent(XEvent &event)
   case ConfigureNotify:
     /* resize event */
 #ifdef DEBUG
-    printf("XWindowRep 0x%x ConfigureNotify\n", this);
+    printf("XWindowRep 0x%p ConfigureNotify\n", this);
 #endif
     int saveX, saveY; 
     unsigned int saveWidth, saveHeight;
@@ -909,33 +912,33 @@ void XWindowRep::HandleEvent(XEvent &event)
     if (event.xvisibility.state == VisibilityUnobscured) {
       _unobscured = true;
 #ifdef DEBUG
-      printf("0x%x unobscured %d\n", this, _unobscured);
+      printf("0x%p unobscured %d\n", this, _unobscured);
 #endif
     }
     else if (event.xvisibility.state == VisibilityPartiallyObscured) {
       _unobscured = false;
 #ifdef DEBUG
-      printf("0x%x partially obscured\n",this);
+      printf("0x%p partially obscured\n",this);
 #endif
     }
     else {
       _unobscured = false;
 #ifdef DEBUG
-      printf("0x%x obscured\n",this);
+      printf("0x%p obscured\n",this);
 #endif
     }
     break;
 
   case MapNotify:
 #ifdef DEBUG
-    printf("XWin 0x%x mapped\n",event.xmap.window);
+    printf("XWin 0x%p mapped\n",event.xmap.window);
 #endif
     WindowRep::HandleWindowMappedInfo(true);
     break;
 
   case UnmapNotify:
 #ifdef DEBUG
-    printf("XWin 0x%x unmapped\n",event.xunmap.window);
+    printf("XWin 0x%p unmapped\n",event.xunmap.window);
 #endif
     WindowRep::HandleWindowMappedInfo(false);
     break;
@@ -1313,7 +1316,7 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
 void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 {
 #ifdef DEBUG
-  printf("Moving XWindowRep 0x%x to %d,%d, size %u,%u\n", this,
+  printf("Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
 	 x, y, w, h);
 #endif
 
@@ -1467,7 +1470,7 @@ Boolean XWindowRep::Scrollable()
   /* window is crollable if it has a backing store or
      if it is not obscured */
   /*
-     printf("XWindowRep::Scrollable: 0x%x backingstore: %d, unobscured %d\n",
+     printf("XWindowRep::Scrollable: 0x%p backingstore: %d, unobscured %d\n",
      this, _backingStore, _unobscured);
      */
   if (_backingStore || _unobscured)
@@ -1770,7 +1773,7 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
   }
 
 #ifdef DEBUG
-  printf("Created %s, id 0x%x, X id 0x%x, at %d,%d size %u,%u\n",
+  printf("Created %s, id 0x%p, X id 0x%p, at %d,%d size %u,%u\n",
 	 _tkPathName, _tkWindow, Tk_WindowId(_tkWindow),
 	 x, y, w, h);
 #endif
@@ -1781,7 +1784,7 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
   // first make this window a child of the new Tk window
 
 #ifdef DEBUG
-  printf("XWindowRep::Reparenting 0x%x to 0x%x at %d,%d\n",
+  printf("XWindowRep::Reparenting 0x%p to 0x%p at %d,%d\n",
 	 _win, Tk_WindowId(_tkWindow), _leftMargin, _topMargin);
 #endif
   XReparentWindow(_display, _win, Tk_WindowId(_tkWindow),
@@ -1799,7 +1802,7 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
   
   if (parent) {
 #ifdef DEBUG
-    printf("XWindowRep::Reparenting 0x%x to 0x%x at %d,%d\n",
+    printf("XWindowRep::Reparenting 0x%p to 0x%p at %d,%d\n",
 	   Tk_WindowId(_tkWindow), parent->_win, x, y);
 #endif
     XReparentWindow(_display, Tk_WindowId(_tkWindow), parent->_win, x, y);
@@ -1811,7 +1814,7 @@ void XWindowRep::DetachFromTkWindow()
   extern Tcl_Interp *ControlPanelTclInterp;
 
 #ifdef DEBUG
-  printf("ViewWin::Detaching 0x%x from 0x%0x\n", this, _tkWindow);
+  printf("ViewWin::Detaching 0x%p from 0x%0x\n", this, _tkWindow);
 #endif
 
   assert(_tkWindow != 0);

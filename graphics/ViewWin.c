@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/02 21:25:20  jussi
+  Added support for TK_WINDOW i.e. Tk controls surrounding views
+  and windows. Fixed some bugs.
+
   Revision 1.4  1995/11/29 15:12:51  jussi
   Commented out #define DEBUG.
 
@@ -99,7 +103,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 
   if (_parent != NULL) {
 #ifdef DEBUG
-    printf("ViewWin 0x%x mapping to parent 0x%x\n", this,
+    printf("ViewWin 0x%p mapping to parent 0x%p\n", this,
 	   _parent->GetWindowRep());
 #endif
     _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
@@ -115,7 +119,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   } else {
     /* Create a new WindowRep */
 #ifdef DEBUG
-    printf("ViewWin 0x%x mapping to root\n", this);
+    printf("ViewWin 0x%p mapping to root\n", this);
 #endif
     _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
 		    x, y, w, h, BlackColor, WhiteColor, NULL,
@@ -143,7 +147,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 void ViewWin::Unmap()
 {
 #ifdef DEBUG
-  printf("ViewWin 0x%x unmapping\n", this);
+  printf("ViewWin 0x%p unmapping\n", this);
 #endif
 
   if (!_mapped)
@@ -212,7 +216,7 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 
   if (!_hasGeometry) {
 #ifdef DEBUG
-    printf("ViewWin::Geometry from WindowRep 0x%x\n", _windowRep);
+    printf("ViewWin::Geometry from WindowRep 0x%p\n", _windowRep);
 #endif
     _windowRep->Dimensions(_width, _height);
     _x = _y = 0;
@@ -269,7 +273,7 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 {
 #ifdef DEBUG
-  printf("ViewWin::MoveResize 0x%x, %d, %d, %u, %u\n", this, x, y, w, h);
+  printf("ViewWin::MoveResize 0x%p, %d, %d, %u, %u\n", this, x, y, w, h);
 #endif
 
   if (!_mapped) {
@@ -294,7 +298,7 @@ void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
 			   unsigned width, unsigned height)
 {
 #ifdef DEBUG
-  printf("ViewWin::HandleResize 0x%x, %d, %d, %u, %u\n",
+  printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
 	 this, xlow, ylow, width, height);
 #endif
 
@@ -338,7 +342,7 @@ Boolean ViewWin::Iconified()
 void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
 {
 #ifdef DEBUG
-  printf("ViewWin::Replace 0x%x with 0x%x\n", child1, child2);
+  printf("ViewWin::Replace 0x%p with 0x%p\n", child1, child2);
 #endif
 
 for(int index = InitIterator(); More(index);) {

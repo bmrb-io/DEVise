@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:17  jussi
+  Added CVS header.
+*/
 
 /***************************************************************************
 Debug flags:
@@ -693,7 +696,7 @@ printf("DoScanIdRange: low/high = %d/%d\n", lowId, highId);
 	QueryData *query = FirstQuery();
 	while (_mgr->GetRecs(isTData,startRid,numRecs,buf,recs)){
 		/*
-		printf("QP Scan got id %d, %d recs, buf 0x%x end 0x%x\n", 
+		printf("QP Scan got id %d, %d recs, buf 0x%p end 0x%p\n", 
 			startRid, numRecs, buf, buf+numRecs*tRecSize);
 		*/
 
@@ -868,7 +871,7 @@ Boolean QueryProcSimple::InMemConvert(){
 		return false;
 	}
 #ifdef DEBUG_QUERY_FLOW
-	printf("QueryProcSimple:: got TData %d,%d, buffer = 0x%x\n", low, high, tbuf);
+	printf("QueryProcSimple:: got TData %d,%d, buffer = 0x%p\n", low, high, tbuf);
 #endif
 
 	/* Process this range */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 18:06:08  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.3  1995/09/14 20:34:02  jussi
   Removed extraneous keyword 'virtual'.
 
@@ -69,7 +72,7 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf){
 GData::~GData(){
 	/*
 	Dispatcher::Current()->Unregister(this);
-	printf("GData destructor %s, 0x%x \n", GetName(),this);
+	printf("GData destructor %s, 0x%p \n", GetName(),this);
 	*/
 
 	if (_rangeMap != NULL){
@@ -325,7 +328,7 @@ void GData::RegisterCallback(GDataCallback *c){
 
 /*
 void GData::Cleanup(){
-	printf("GData::Cleanup %s: 0x%x \n", GetName(),this);
+	printf("GData::Cleanup %s: 0x%p \n", GetName(),this);
 	if (_recFile != NULL){
 		delete _recFile;
 		_recFile = NULL;

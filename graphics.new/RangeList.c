@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:30:09  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:26  jussi
   Added CVS header.
 */
@@ -338,7 +341,7 @@ void RangeList::Print(){
 	int num=0;
 	printf("low\thi\tdata\tdataSize\tbuf\tbufSize\n");
 	for (data = _rangeList.next; data != &_rangeList; data = data->next){
-		printf("%ld\t%ld\t0x%x\t%d\t0x%x\t%d\n",data->low, data->high,
+		printf("%ld\t%ld\t0x%p\t%d\t0x%p\t%d\n",data->low, data->high,
 			data->data,data->dataSize,data->buf,data->bufSize);
 		if (++num > 7){
 			printf("\n");

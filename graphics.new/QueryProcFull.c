@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 17:51:27  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.3  1995/11/24 21:28:42  jussi
   Added copyright notice and cleaned up code. Added debugging statements.
 
@@ -143,7 +146,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 		QueryCallback *callback, void *userData, int priority)
 {
 #ifdef DEBUG
-  printf("batch query: map: 0x%x, filter xlow %f, xhigh %f\n",
+  printf("batch query: map: 0x%p, filter xlow %f, xhigh %f\n",
 	 map, filter.xLow, filter.xHigh);
 #endif
 
@@ -312,7 +315,7 @@ void QueryProcFull::ResetGData(TData *tdata, GData *gdata)
 void QueryProcFull::InitQPFullX(QPFullData *qData)
 {
 #ifdef DEBUG
-  printf("InitQPFullX map 0x%x\n", qData->map);
+  printf("InitQPFullX map 0x%p\n", qData->map);
 #endif
 
     /* Call initialization of query */
@@ -714,7 +717,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 			      Boolean tdataOnly)
 {
 #ifdef DEBUG
-  printf("DoScan map 0x%x, [%d,%d]\n", qData->map, low, high);
+  printf("DoScan map 0x%p, [%d,%d]\n", qData->map, low, high);
 #endif
 
   BufMgr *mgr = qData->mgr;
@@ -784,7 +787,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 				&_rangeRecs[numRecs-recsLeft+offset], numToConvert,_gdataBuf);
 
 /*
-printf("ReturnGData(0x%x,%d,0x%x,%d)\n", _rangeQData->map,recId,
+printf("ReturnGData(0x%p,%d,0x%p,%d)\n", _rangeQData->map,recId,
 				_gdataBuf,numToConvert);
 */
 	
@@ -802,7 +805,7 @@ printf("ReturnGData(0x%x,%d,0x%x,%d)\n", _rangeQData->map,recId,
 		_rangeQData->bytes += (high-low+1)*gRecSize;
 
 /*
-printf("ReturnGData(0x%x,%d,0x%x,%d)\n", _rangeQData->map,low,
+printf("ReturnGData(0x%p,%d,0x%p,%d)\n", _rangeQData->map,low,
 				_gdataBuf,high-low+1);
 */
 		_rangeQData->callback->ReturnGData(_rangeQData->map,
@@ -815,7 +818,7 @@ void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
 	int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-  printf("DistributeTData map 0x%x, [%d,%d]\n", queryData->map,
+  printf("DistributeTData map 0x%p, [%d,%d]\n", queryData->map,
 	 startRid, startRid+numRecs-1);
 #endif
 
@@ -859,7 +862,7 @@ void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
 	int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-  printf("DistributeGData map 0x%x, [%d,%d]\n", startRid, startRid+numRecs-1);
+  printf("DistributeGData map 0x%p, [%d,%d]\n", startRid, startRid+numRecs-1);
 #endif
 
 	/* init params for QPRangeInserted() */
@@ -973,7 +976,7 @@ void QueryProcFull::PrintStat() {
 void QueryProcFull::InsertMapping(TDataMap *map)
 {
 #ifdef DEBUG
-  printf("InsertMapping 0x%x, %s %s\n", map,
+  printf("InsertMapping 0x%p, %s %s\n", map,
 	 map->GetTData()->GetName(), map->GetName());
 #endif
 
@@ -1084,7 +1087,7 @@ void QueryProcFull::DoGDataConvert() {
 	map = _mappings[_convertIndex++];
 
 /*
-printf("DoGDataConvert map 0x%x\n", map);
+printf("DoGDataConvert map 0x%p\n", map);
 */
 
 	gdata = map->GetGData();
@@ -1298,7 +1301,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid,
 				return false;
 			}
 			/* 
-			printf("Got buffer 0x%x, %d recs\n", _tqueryBuf, _tqueryNumRecs);
+			printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
 			*/
 			if (!isTData) {
 				/* pass GData directlry */

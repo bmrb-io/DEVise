@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/06 21:22:33  jussi
+  Tries to allocate a color by using a close color approximation
+  if requested color cannot be allocated.
+
   Revision 1.5  1995/12/02 21:30:11  jussi
   Tried if letting Tcl/Tk handle all X events and pass a copy
   of each event to us would solve the problem with TK_WINDOW_old.
@@ -313,7 +317,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 
 #ifdef DEBUG
-  printf("XDisplay: Created X window 0x%x to parent 0x%x at %u,%u,\n",
+  printf("XDisplay: Created X window 0x%p to parent 0x%p at %u,%u,\n",
 	 w, parent, (unsigned)realX, (unsigned)realY);
   printf("          size %u,%u, borderwidth %d\n", (unsigned)realWidth,
 	 (unsigned)realHeight, border_width);
@@ -378,7 +382,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   }
 
 #ifdef DEBUG
-  printf("XDisplay::DestroyWindowRep 0x%x, X Window 0x%x\n",
+  printf("XDisplay::DestroyWindowRep 0x%p, X Window 0x%p\n",
 	 xwin, xwin->GetWin());
 #endif
 
@@ -426,7 +430,7 @@ void XDisplay::InternalProcessing()
 	_winList.DoneIterator(index);
 	found = true;
 #ifdef DEBUG
-	printf("XDisplay::Dispatching event %d to XWindowRep 0x%x\n",
+	printf("XDisplay::Dispatching event %d to XWindowRep 0x%p\n",
 	       event.type, win);
 #endif
 	win->HandleEvent(event);

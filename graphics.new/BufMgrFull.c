@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 18:27:16  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.3  1995/12/14 15:38:32  jussi
   Added copyright notice and made small fixes.
 
@@ -390,7 +393,7 @@ void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 	RecId lowId, RecId highId, RecordOrder recOrder,
 	Boolean tdataOnly){
 #ifdef DEBUG
-  printf("BufMgrFull::InitGetRecs (%d,%d) with tdata 0x%x, gdata 0x%x\n",
+  printf("BufMgrFull::InitGetRecs (%d,%d) with tdata 0x%p, gdata 0x%p\n",
 	 lowId, highId, tdata, gdata);
 #endif
 
@@ -520,7 +523,7 @@ void BufMgrFull::DoneGetRecs(){
 
 void BufMgrFull::FreeRecs(void *buf, BufHint hint, Boolean dirty){
 	/*
-	printf("FreeRecs 0x%x\n", buf);
+	printf("FreeRecs 0x%p\n", buf);
 	*/
 	ClearUse(buf, dirty);
 
@@ -554,7 +557,7 @@ void BufMgrFull::ClearUse(void *buf, Boolean dirty){
 			}
 		} 
 	}
-	fprintf(stderr,"BufMgrFull::FreeRecs: can't find buf 0x%x\n", buf);
+	fprintf(stderr,"BufMgrFull::FreeRecs: can't find buf 0x%p\n", buf);
 	Exit::DoExit(2);
 }
 
@@ -920,7 +923,7 @@ void BufMgrFull::CheckRange(RangeInfo *rangeInfo){
 		goto error;
 	return;
 error:
-	printf("Range error:buf 0x%x, data 0x%x, id (%ld,%ld), bsizes %d, dSize %d\n",rangeInfo->buf,rangeInfo->data,rangeInfo->low,rangeInfo->high,
+	printf("Range error:buf 0x%p, data 0x%p, id (%ld,%ld), bsizes %d, dSize %d\n",rangeInfo->buf,rangeInfo->data,rangeInfo->low,rangeInfo->high,
 	rangeInfo->BufSize(), rangeInfo->DataSize());
 	Exit::DoExit(2);
 }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+ * Revision 1.5  1995/11/25  01:20:20  jussi
+ * This code now uses Transform matrix operations to convert user/world
+ * coordinates to screen pixel coordinates. This is to avoid any future
+ * inconsistencies in how the different code locations compute the
+ * conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+ *
   Revision 1.4  1995/11/24 21:27:45  jussi
   Fixed inconsistency in computing xPerPixel vs. matrix transformations
   done by View.
@@ -81,7 +87,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   int gRecSize = mapping->GDataRecordSize();
   
 #ifdef DEBUG
-  printf("ViewScatter %d recs buf start 0x%x, end 0x%x\n", numGData,
+  printf("ViewScatter %d recs buf start 0x%p, end 0x%p\n", numGData,
 	 gdata, ((char *)gdata) + numGData * gRecSize - 1);
 #endif
 

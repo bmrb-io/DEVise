@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 17:57:37  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.4  1995/11/24 21:34:55  jussi
   Added _currPos scheme to eliminate most of the fseek() calls.
   This appears to speed up execution significantly.
@@ -147,7 +150,7 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
 			    void **recPtrs)
 {
 #ifdef DEBUG
-  printf("TDataAscii::GetRecs buf = 0x%x\n", buf);
+  printf("TDataAscii::GetRecs buf = 0x%p\n", buf);
 #endif
 
   numRecs = bufSize/_recSize;
@@ -420,7 +423,7 @@ void TDataAscii::BuildIndex()
 void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
 #ifdef DEBUG
-  printf("TDataAscii::ReadRec %d,%d,0x%x\n",id,numRecs,buf);
+  printf("TDataAscii::ReadRec %d,%d,0x%p\n",id,numRecs,buf);
 #endif
 
   char line[LINESIZE];
@@ -429,7 +432,7 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   for(int i = 0; i < numRecs; i++) {
     if (_currPos != _index[id + i]) {
       if (fseek(_file, _index[id + i], SEEK_SET) < 0) {
-	fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%x) seek\n",
+	fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%p) seek\n",
 		id, numRecs, buf);
 	perror("fseek");
 	PrintIndices();
@@ -439,7 +442,7 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
     }
 
     if (fgets(line, LINESIZE, _file) == NULL) {
-      fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%x) fgets pos %ld\n",
+      fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%p) fgets pos %ld\n",
 	      id, numRecs, buf, _index[id + i]);
       perror("fgets");
       Exit::DoExit(1);

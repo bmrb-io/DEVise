@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 23:27:10  jussi
+  Added copyright notice and cleaned up the code. Fixed bug
+  in ParamNames where shapeAttr[1] got a bogus value "(null)"
+  when in fact shapeAttr[0] had been defined.
+
   Revision 1.2  1995/09/05 22:14:59  jussi
   Added CVS header.
 */
@@ -137,7 +142,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     attrFlag |= 2;
 
   /*
-     printf("cmdFlag 0x%x attrFlag 0x%x\n",cmdFlag, attrFlag);
+     printf("cmdFlag 0x%p attrFlag 0x%p\n",cmdFlag, attrFlag);
   */
 
   cmd->xCmd = cmd->yCmd = cmd->colorCmd = cmd->sizeCmd =

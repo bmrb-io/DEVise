@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/02 20:54:09  jussi
+  Substituted DeviseTime for Time.
+
   Revision 1.3  1995/11/25 01:12:56  jussi
   Added copyright notice and added #include <unistd.h> for sleep()
   definition.
@@ -112,7 +115,7 @@ void Dispatcher::DoRegisterAll(){
 /***********************************************************************/
 void Dispatcher::DoRegister(DispatcherInfo *info, Boolean allDispatchers){ 
 /*
-printf("Dispatcher::DoRegister(0x%x) %s\n",c, c->DispatchedName());
+printf("Dispatcher::DoRegister(0x%p) %s\n",c, c->DispatchedName());
 */
 
 	int index;
@@ -226,7 +229,7 @@ void Dispatcher::Run1(){
 		DispatcherInfo *callback = _callbacks.Next(index);
 		if (callback->flag & _stateFlag){
 			/*
-			printf("Dispatcher::Run1(0x%x) %s\n",callback->callBack, 
+			printf("Dispatcher::Run1(0x%p) %s\n",callback->callBack, 
 				callback->callBack->DispatchedName());
 			*/
 			callback->callBack->Run();
@@ -363,7 +366,7 @@ void Dispatcher::Print() {
 		/*
 		printf("%s\n",info->callBack->DispatchedName());
 		*/
-		printf("0x%x\n",info->callBack);
+		printf("0x%p\n",info->callBack);
 	}
 	_callbacks.DoneIterator(index);
 
@@ -373,7 +376,7 @@ void Dispatcher::Print() {
 		/*
 		printf("%s\n",info->callBack->DispatchedName());
 		*/
-		printf("0x%x\n",info->callBack);
+		printf("0x%p\n",info->callBack);
 	}
 	_allCallbacks.DoneIterator(index);
 }

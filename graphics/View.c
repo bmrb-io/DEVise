@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1995/12/14 17:18:24  jussi
+  More small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.13  1995/12/14 17:14:56  jussi
   Small fixes.
 
@@ -435,7 +438,7 @@ Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
 			  char **&msgs, int &numMsgs)
 {
 #ifdef DEBUG
-  printf("View::HandlePopUp at %d,%d, action = 0x%x\n", x, y, _action);
+  printf("View::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
 #endif
 
   ControlPanel::Instance()->SelectView(this);
@@ -1033,7 +1036,7 @@ void View::Run()
   }
   
 #ifdef DEBUG
-  printf("Run: window 0x%x scrollable is %d\n", 
+  printf("Run: window 0x%p scrollable is %d\n", 
 	 winRep, (winRep->Scrollable() ? 1 : 0));
 #endif
   
@@ -1531,7 +1534,7 @@ char *View::DispatchedName()
 void View::SetAction(Action *action)
 { 
 #ifdef DEBUG
-  printf("SetAction 0x%x\n",action);
+  printf("SetAction 0x%p\n",action);
 #endif
   
   _action = action; 

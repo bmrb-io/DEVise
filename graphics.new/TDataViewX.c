@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/05 17:07:34  jussi
+  Statistics are now part of ViewGraph, the subclass of TDataViewX.
+
   Revision 1.7  1995/11/29 17:11:21  jussi
   Relaxed condition which determines which GData records are included
   in statistics computation. Bar graphs may have y values beyond
@@ -181,7 +184,7 @@ void TDataViewX::QueryDone(int bytes, void *userData)
 void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
 {
 #ifdef DEBUG
-  printf("TDataViewX %d recs buf start 0x%x\n", numRecs, recs);
+  printf("TDataViewX %d recs buf start 0x%p\n", numRecs, recs);
 #endif
 
   map->DrawGDataArray(GetWindowRep(), recs, numRecs);

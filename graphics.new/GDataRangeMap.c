@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 18:06:17  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.3  1995/11/27 16:21:57  jussi
   Added copyright notice and replaced bcopy()'s with more portable
   memcpy()'s.
@@ -78,7 +81,7 @@ Constructor
 GDataRangeMap::GDataRangeMap(int recSize, char *fname, Boolean trunc)
 {
 #ifdef DEBUG
-  printf("new GDataRangeMap 0x%x\n", this);
+  printf("new GDataRangeMap 0x%p\n", this);
 #endif
 
   if (recSize > MAX_RANGE_REC_SIZE) {
@@ -111,7 +114,7 @@ GDataRangeMap::~GDataRangeMap()
 {
   if (_fname != NULL) {
 #ifdef DEBUG
-    printf("GDAtaRangeMap destructor write %s, 0x%x\n", _fname, this);
+    printf("GDAtaRangeMap destructor write %s, 0x%p\n", _fname, this);
     WriteRecords(_fname);
 #endif
   }
@@ -158,13 +161,13 @@ Write record out to file
 void GDataRangeMap::WriteRecords(char *fname)
 {
 #ifdef DEBUG
-  printf("GDAtaRangeMap WriteRecords %s, 0x%x\n", _fname, this);
+  printf("GDAtaRangeMap WriteRecords %s, 0x%p\n", _fname, this);
 #endif
 
   int fd;
   if ((fd = open(fname, O_CREAT | O_TRUNC | O_WRONLY, 0660)) < 0) {
     /* can't open file */
-    printf("GDataRangeMap::WriteRecords(%s), 0x%x",fname, this);
+    printf("GDataRangeMap::WriteRecords(%s), 0x%p",fname, this);
     perror("open file: ");
     Exit::DoExit(2);
   }

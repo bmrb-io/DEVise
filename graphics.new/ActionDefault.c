@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 17:30:03  jussi
+  Made small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.3  1995/09/12 16:05:13  jussi
   Added y scrolling up and down.
 
@@ -388,7 +391,7 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   int j;
   while (qp->GetTData(startRid, numRecs, buf)){
     /*
-       printf("got records rid %d numRecs %d buf 0x%x\n",
+       printf("got records rid %d numRecs %d buf 0x%p\n",
        startRid, numRecs, buf);
     */
     char *ptr = buf;

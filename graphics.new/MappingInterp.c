@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/14 17:35:32  jussi
+  Made small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.10  1995/12/14 00:36:57  jussi
   Minor fix to conversion of shape attributes to GData.
 
@@ -159,7 +162,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 			 dimensionInfo, numDimensions, true)
 {
   /*
-     printf("MappingInterp::constructor 0x%x, %d dimensions cmdFlag 0x%x, attrFlag 0x%x\n",
+     printf("MappingInterp::constructor 0x%p, %d dimensions cmdFlag 0x%p, attrFlag 0x%p\n",
      this, numDimensions, flag, attrFlag);
   */
 
@@ -303,7 +306,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 				   void **tRecs,int numRecs,void *gdataPtr)
 {
   /*
-     printf("ConvertToGdata id %d numRecs %d, buf 0x%x, gbuf 0x%x\n", 
+     printf("ConvertToGdata id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
      startRecId, numRecs, buf, gdataPtr);
   */
 
@@ -520,7 +523,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
     }
 
     /*
-       printf("ConvertGData gptr 0x%x, x: %f y: %f color %d\n",
+       printf("ConvertGData gptr 0x%p, x: %f y: %f color %d\n",
        gPtr, *((double *)gPtr), *((double *)(gPtr+sizeof(double))),
        *((Color *)(gPtr+2*sizeof(double))));
     */
