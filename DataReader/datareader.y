@@ -86,7 +86,7 @@ getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL
                                             myDRSchema->setDelimiter(tmpHolder);
                                         }
 			;
-getcomment: COMMENT_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getComment() != NULL)
+getcomment: COMMENT_TOKEN '=' STRING_TOKEN {	if (myDRSchema->getComment() != NULL)
 												drerror("DRSchema Comment can't be entered twice !...");
 											if ($3 == NULL)
 												drerror("DRSchema Comment NULL ??? ") ;
