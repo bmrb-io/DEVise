@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.55  1996/06/12 14:56:37  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.54  1996/05/22 21:04:31  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -266,16 +274,23 @@ TkControlPanel::TkControlPanel()
 #endif
 
   if (Tcl_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr, "Cannot initialize Tcl.\n");
+    fprintf(stderr, "Cannot initialize Tcl. Is TCL_LIBRARY pointing to\n");
+    fprintf(stderr, "the directory with the Tcl initialization files?\n");
     Exit::DoExit(1);
   }
   if (Tk_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr, "Cannot initialize Tk.\n");
+    fprintf(stderr, "Cannot initialize Tk. Is TK_LIBRARY pointing to\n");
+    fprintf(stderr, "the directory with the Tk initialization files?\n");
     Exit::DoExit(1);
   }
 
-  /* register with dispatcher to be always informed of when to run */
-  Dispatcher::Current()->Register(this, AllState, true);
+  int fd = ConnectionNumber(Tk_Display(_mainWindow));
+  Dispatcher::Current()->Register(this, 10, GoState, true, fd);
+}
+
+TkControlPanel::~TkControlPanel()
+{
+  Dispatcher::Current()->Unregister(this);
 }
 
 void TkControlPanel::StartSession()
@@ -342,6 +357,8 @@ void TkControlPanel::StartSession()
     }
   }
 
+  Run();
+
   if (Init::BatchFile())
     SetSyncNotify();
 }
@@ -372,6 +389,7 @@ void TkControlPanel::DoAbort(char *reason)
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
   (void)Tcl_Eval(_interp, cmd);
+  Run();
 }
 
 int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
@@ -392,16 +410,20 @@ void TkControlPanel::Run()
 
 void TkControlPanel::SetBusy()
 {
-  if (++_busy == 1)
+  if (++_busy == 1) {
     (void)Tcl_Eval(_interp, "ChangeStatus 1");
+    Run();
+  }
 }
 
 void TkControlPanel::SetIdle()
 {
   DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
-  if (--_busy == 0)
+  if (--_busy == 0) {
     (void)Tcl_Eval(_interp, "ChangeStatus 0");
+    Run();
+  }
 }
 
 Boolean TkControlPanel::IsBusy()
@@ -437,6 +459,7 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
   sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
 	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
   (void)Tcl_Eval(_interp, cmd);
+  Run();
 }
 
 void TkControlPanel::SelectView(View *view)
@@ -444,6 +467,7 @@ void TkControlPanel::SelectView(View *view)
   char cmd[256];
   sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
   (void)Tcl_Eval(_interp, cmd);
+  Run();
 }
 
 void TkControlPanel::SyncNotify()
