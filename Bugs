@@ -20,11 +20,11 @@ Num Date        Status  Description
 006 05/16/96	OPEN	Date attribute type cannot handle dates before
 			Jan 1 1970 (Unix zero time value). (jpm)
 
-007 05/16/96	OPEN	Kiviat graph cannot be destroyed once created.
+007 05/16/96	FIXED	Kiviat graph cannot be destroyed once created.
 			Destroying it through the window manager causes
 			Devise to crash. (jpm)
 
-008 05/16/96	OPEN	View window cannot be destroyed through the
+008 05/16/96	FIXED	View window cannot be destroyed through the
 			window manager causes Devise to crash. (jpm)
 
 009 05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
