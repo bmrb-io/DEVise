@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1998/07/17 15:33:52  wenger
+#  Improved link creation GUI as per request from Raghu; started on
+#  DataReader schema GUI; changed version to 1.5.4.
+#
 #  Revision 1.42  1998/01/31 20:02:12  wenger
 #  Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
 #  written at the end.
@@ -2170,8 +2174,12 @@ proc qbrowse {_isSingle {_viewName ""}
 	    set selLen [llength $select]
 	    for {set i 0} {$i < $selLen} {incr i} {
                set current [lindex $select $i]
-			set beg [expr [string first . $current] + 1]
-	    		append as [string range $current $beg end]
+				set beg [expr [string first . $current] + 1]
+				set attrToMirr [string range $current $beg end] 
+				if {$attrToMirr == "\"recId\""} {
+					set attrToMirr "\"oldRecId\""
+				}
+	    		append as $attrToMirr
 			append as " "
 	    }
     }
