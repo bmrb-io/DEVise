@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/29 21:45:08  wenger
+  Fixed various compile errors and warnings.
+
   Revision 1.2  1996/07/23 20:13:08  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -43,7 +46,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.3";
+static const char *	version = "1.1.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

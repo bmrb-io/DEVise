@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1996/08/05 02:03:03  beyer
+  The query record popup wasn't display anything.
+
   Revision 1.55  1996/08/04 23:34:01  beyer
   Devise keys now support both X11R5 and X11R6
 
@@ -2114,7 +2117,8 @@ void XWindowRep::DoPopup(int x, int y, int button)
   int charHeight = fontStruct->max_bounds.ascent + 
     fontStruct->max_bounds.descent;
 
-  for(int i = 0; i < numMsgs; i++) {
+  int i;
+  for(i = 0; i < numMsgs; i++) {
 #if defined(DEBUG)
       printf("msgs[%d]: %s\n", i, msgs[i]);
 #endif
@@ -2229,7 +2233,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     /* check popUp window for exposure */
     if (XCheckWindowEvent(_display, win, ExposureMask, &event)) {
       /* Draw the text messages into window */
-      for(int i = 0; i < numMsgs; i++) {
+      for(i = 0; i < numMsgs; i++) {
 	int startY = charHeight * i;
 	XDrawString(_display, win, popUpGc, 1, startY + charAscent, 
 		    msgs[i], strlen(msgs[i]));

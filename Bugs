@@ -51,6 +51,17 @@ Num Date        Status  Description
 015 07/11/96	OPEN	HP version of Devise can't open the condorview1.tk
 			session. (rkw)
 
+016 07/31/96	OPEN	Catalog system is type unsafe. (kb/rkw)
+
+017 08/05/96	OPEN	Numeric keypad keys now work only if num lock is
+			off. (rkw)
+
+018 08/05/96	OPEN	Data segment stuff is broken. (rkw)
+
+019 08/05/96	OPEN	demo/COD1.tk core dumps (at least on HPs). (rkw)
+
+020 08/05/96	OPEN	Numeric keypad keys only work in solaris version? (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

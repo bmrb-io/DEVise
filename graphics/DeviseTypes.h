@@ -2,6 +2,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/08/05 17:28:58  beyer
+  Added is_safe() which checks to see if a double is safe value (ie, not
+  NaN or Infinity).  Made SetVisualFilter check the new filter for safety.
+
   Revision 1.8  1996/08/04 23:33:16  beyer
   Added #define for NULL
 
@@ -85,10 +89,48 @@ inline Boolean StatIsError(DevStatus status)
     (status == StatusWarnCancel);
 }
 
+// Was there a warning?
+inline Boolean StatIsWarn(DevStatus status)
+{
+  return (status == StatusWarn) || (status == StatusWarnCancel);
+}
+
 // Was the function cancelled (for example, by the user)?
 inline Boolean StatIsCancel(DevStatus status)
 {
   return (status == StatusCancel) || (status == StatusWarnCancel);
+}
+
+// Combine two statuses.
+inline DevStatus StatusCombine(DevStatus status1, DevStatus status2)
+{
+  DevStatus result = StatusOk;
+
+  if ((status1 == StatusFailed) || (status2 == StatusFailed))
+  {
+    result = StatusFailed;
+  }
+  else if (StatIsCancel(status1) || StatIsCancel(status2))
+  {
+    if (StatIsWarn(status1) || StatIsWarn(status2))
+    {
+      result = StatusWarnCancel;
+    }
+    else
+    {
+      result = StatusCancel;
+    }
+  }
+  else if (StatIsWarn(status1) || StatIsWarn(status2))
+  {
+    result = StatusWarn;
+  }
+  else
+  {
+    result = StatusOk;
+  }
+
+  return result;
 }
 
 

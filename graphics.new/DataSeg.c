@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/04 14:21:40  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
  */
 
 #define _DataSeg_C_
@@ -74,6 +80,8 @@ DataSeg::Set(char *label, char *filename, long offset, long length)
 
 	_offset = offset;
 	_length = length;
+
+	return;
 }
 
 /*------------------------------------------------------------------------------
@@ -83,10 +91,14 @@ DataSeg::Set(char *label, char *filename, long offset, long length)
 void
 DataSeg::Get(char *&label, char *&filename, long &offset, long &length)
 {
+	DO_DEBUG(printf("DataSeg::Get()\n"));
+
 	label = _label;
 	filename = _filename;
 	offset = _offset;
 	length = _length;
+
+	return;
 }
 
 /*============================================================================*/

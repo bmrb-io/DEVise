@@ -19,7 +19,7 @@ SHOWOBJ = $(SHOWSRC:.c=.o)
 LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
 #The following sources are in other directories, but must be specially
 #compiled for attrproj.
-LOCALSRC += Exit.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
+LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
 	TDataBinaryInterp.c DataSourceSegment.c
 
 SRC1 = $(filter %.c,$(LOCALSRC))
@@ -35,7 +35,6 @@ LIBOBJ = \
 	../graphics/DevError.o \
 	../graphics.new/RecInterp.o \
 	../graphics.new/CompositeParser.o \
-	../graphics.new/TData.o \
 	../graphics.new/Group.o \
 	../graphics.new/GroupDir.o \
 	../graphics.new/ItemList.o \
@@ -50,29 +49,30 @@ LIBOBJ = \
 	../generic/CompDate.o \
 	$(LOCALOBJ)
 
-LIB = AttrProjLib.o
+LIB = libattrproj.a
 
-ALLTESTOBJ = $(TESTOBJ) $(LIB)
-ALLSHOWOBJ = $(SHOWOBJ) $(LIB)
+ALLTESTOBJ = $(TESTOBJ)
+ALLSHOWOBJ = $(SHOWOBJ)
 
 all: aptest show
 lib: $(LIB)
 
-aptest: $(ALLTESTOBJ)
-	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLTESTOBJ) \
-                -ltcl -lm $(ARCH_LDPOST)
+aptest: $(ALLTESTOBJ) $(LIB)
+	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
+                -lattrproj -ltcl -lm $(ARCH_LDPOST)
 
-show: $(ALLSHOWOBJ)
-	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLSHOWOBJ) \
-                -ltcl -lm $(ARCH_LDPOST)
+show: $(ALLSHOWOBJ) $(LIB)
+	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
+                -lattrproj -ltcl -lm $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
-	$(LD) -r -o $@ $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm aptest
+	-rm aptest show
 
 mostlyclean:
 	-rm $(TESTOBJ) $(SHOWOBJ) $(LOCALOBJ) $(LIB)

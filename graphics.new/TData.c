@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/04 21:59:51  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.4  1996/07/23 20:13:05  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -41,17 +48,22 @@
 #include "DevFileHeader.h"
 #include "DevError.h"
 #include "AttrList.h"
+
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DataSourceBuf.h"
 #include "DataSeg.h"
+#ifndef ATTRPROJ
 #include "ViewGraph.h"
 #include "QueryProc.h"
+#endif
 
 #ifndef ATTRPROJ
 #include "DataSourceWeb.h"
 #endif
+
+static DevStatus WriteString(int fd, char *string);
 
 /*---------------------------------------------------------------------------*/
 TData::TData(char* name, char* type, char* param, int recSize)
@@ -110,6 +122,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
     }
 #endif
 
+#ifndef ATTRPROJ
 	//--------------------------------------------------------------------
 	// statistics datasources are stored in their corresponding viewgraph.
 	// the viewgraph will delete the source.
@@ -131,7 +144,6 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	DOASSERT(v, "GDATASTAT view not found");
 	_data = v->GetGdataStatistics();
     }
-#ifndef ATTRPROJ
     else if (!strcmp(_type, "WWW")) {
 	char *file = MakeCacheFileName(_name, _type);
 	delete file;
@@ -142,6 +154,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	DOASSERT(0, "Invalid TData type");
     }
 
+    //TEMPTEMP -- make sure this works right!!
     if ((segOffset != 0) || (segLength != 0)) {
 	_data = new DataSourceSegment(_data, segOffset, segLength);
     }
@@ -149,7 +162,6 @@ TData::TData(char* name, char* type, char* param, int recSize)
     DOASSERT(_data, "Couldn't find/create data source");
     _data->AddRef();
 }
-
 
 /*---------------------------------------------------------------------------*/
 TData::TData(DataSource* data_source)
@@ -161,7 +173,6 @@ TData::TData(DataSource* data_source)
     _data = data_source;
     _version = 0;
 }
-
 
 /*------------------------------------------------------------------------------
  * function: TData::~TData
@@ -231,14 +242,8 @@ TData::WriteHeader(int fd)
 {
   DevStatus result = StatusOk;
 
-  char *header = DevFileHeader::Get(FILE_TYPE_TDATA);
-  int headerLen = strlen(header);
-
-  if (write(fd, header, headerLen) != headerLen)
-  {
-    reportError("Error writing header", errno);
-    result = StatusFailed;
-  }
+  result = StatusCombine(result,
+    WriteString(fd, DevFileHeader::Get(FILE_TYPE_TDATA)));
 
   return result;
 }
@@ -252,17 +257,13 @@ TData::WriteLogSchema(int fd)
 {
   DevStatus result = StatusOk;
 
+  (void)/*TEMPTEMP*/WriteString(fd, "\nstartSchema logical\n");
 
 
 
 
-  char *endMark = "endSchema\n";
-  int endMarkLen = strlen(endMark);
-  if (write(fd, endMark, endMarkLen) != endMarkLen)
-  {
-    reportError("Error writing schema", errno);
-    result = StatusFailed;
-  }
+
+  (void)/*TEMPTEMP*/WriteString(fd, "endSchema\n");
 
   return result;
 }
@@ -276,21 +277,11 @@ TData::WritePhysSchema(int fd)
 {
   DevStatus result = StatusOk;
 
-  char *type = "\ntype <name> ascii|binary\n";//TEMPTEMP
-  int typeLen = strlen(type);
-  if (write(fd, type, typeLen) != typeLen)
-  {
-    reportError("Error writing schema", errno);
-    result = StatusFailed;
-  }
+  (void)/*TEMPTEMP*/WriteString(fd, "\nstartSchema physical\n");
 
-  char *commSep = "comment //\nseparator ','\n";//TEMPTEMP
-  int commSepLen = strlen(commSep);
-  if (write(fd, commSep, commSepLen) != commSepLen)
-  {
-    reportError("Error writing schema", errno);
-    result = StatusFailed;
-  }
+  (void)/*TEMPTEMP*/ WriteString(fd, "type <name> ascii|binary\n"/*TEMPTEMP*/);
+
+  (void)/*TEMPTEMP*/ WriteString(fd, "comment //\nseparator ','\n"/*TEMPTEMP*/);
 
   AttrList *attrListP = GetAttrList();
   if (attrListP == NULL)
@@ -303,13 +294,7 @@ TData::WritePhysSchema(int fd)
     attrListP->Write(fd);
   }
 
-  char *endMark = "endSchema\n";
-  int endMarkLen = strlen(endMark);
-  if (write(fd, endMark, endMarkLen) != endMarkLen)
-  {
-    reportError("Error writing schema", errno);
-    result = StatusFailed;
-  }
+  (void)/*TEMPTEMP*/WriteString(fd, "endSchema\n");
 
   return result;
 }
@@ -323,9 +308,29 @@ TData::WriteData(int fd)
 {
   DevStatus result = StatusOk;
 
+  (void)/*TEMPTEMP*/ WriteString(fd, "startData\n");
+
   return result;
 }
 
+/*------------------------------------------------------------------------------
+ * function: WriteString
+ * TEMPTEMP
+ */
+static DevStatus
+WriteString(int fd, char *string)
+{
+  DevStatus result = StatusOk;
+
+  int stringLen = strlen(string);
+  if (write(fd, string, stringLen) != stringLen)
+  {
+    reportError("Error writing to file", errno);
+    result = StatusFailed;
+  }
+
+  return result;
+}
 
 //---------------------------------------------------------------------------
 void TData::InvalidateTData()
@@ -337,7 +342,6 @@ void TData::InvalidateTData()
 #endif
     _version = _data->Version();
 }
-
 
 //---------------------------------------------------------------------------
 
@@ -352,6 +356,5 @@ char* TData::MakeCacheFileName(char *name, char *type)
   sprintf(fn, "%s/%s.%s", cacheDir, fname, type);
   return fn;
 }
-
 
 //===========================================================================

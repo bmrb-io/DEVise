@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/08/05 18:41:48  beyer
+  - Color stats only print an entry for each color that is in it source view.
+  (I.e., if the count for a color is zero, it doesn't have a record in the
+  color stats.)
+  - Improved safety of stats code.
+
   Revision 1.34  1996/08/04 21:59:57  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -584,8 +590,7 @@ void ViewGraph::PrepareStatsBuffer()
     int i;
     for(i = 0; i < MAXCOLOR; i++) {
 	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
-	    int len = 
-	      sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
+	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
 		      _stats[i].GetStatVal(STAT_MEAN),
 		      _stats[i].GetStatVal(STAT_MAX),
@@ -596,8 +601,9 @@ void ViewGraph::PrepareStatsBuffer()
 		      _stats[i].GetStatVal(STAT_ZVAL90H),
 		      _stats[i].GetStatVal(STAT_ZVAL95L),
 		      _stats[i].GetStatVal(STAT_ZVAL95H));
-	    DOASSERT(len < sizeof(line), "too much data in sprintf");
-	    if( _statBuffer->Write(line, len) != len ) {
+	    int len = strlen(line);
+	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+	    if( (int) _statBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 		fprintf(stderr, "Out of statistics buffer space\n");
 #endif
@@ -612,10 +618,11 @@ void ViewGraph::PrepareStatsBuffer()
 #endif
     if( width > 0 ) {
 	double pos = _allStats.GetHistMin() + width / 2.0;
-	for(int i = 0; i < HIST_NUM; i++) {
-	    int len = sprintf(line, "%g %d\n", pos, _allStats.GetHistVal(i));
-	    DOASSERT(len < sizeof(line), "too much data in sprintf");
-	    if( _histBuffer->Write(line, len) != len ) {
+	for(i = 0; i < HIST_NUM; i++) {
+	    sprintf(line, "%g %d\n", pos, _allStats.GetHistVal(i));
+	    int len = strlen(line);
+	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+	    if( (int) _histBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 	        fprintf(stderr, "Out of histogram buffer space\n");
 #endif
@@ -631,14 +638,15 @@ void ViewGraph::PrepareStatsBuffer()
 	int i = _glist.Next(index); 
 	if (_gstat.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
-	   int len = sprintf(line, "%d %d %g %g %g %g\n",
+	   sprintf(line, "%d %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MAX),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MIN));
-	   DOASSERT(len < sizeof(line), "too much data in sprintf");
-	   if( _gdataStatBuffer->Write(line, len) != len ) {
+	   int len = strlen(line);
+	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+	   if( (int) _gdataStatBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 	       fprintf(stderr, "Out of GData Stat Buffer space\n");
 #endif

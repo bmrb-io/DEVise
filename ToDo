@@ -15,6 +15,9 @@ Add true PostScript printing capability. (yi/rkw 7/9/96)
 Set up makefiles to easily be able to compile with debugging or Purify.
 (kb/rkw 7/31/96)
 
+Set up makefiles and release script to make and release statically-linked
+versions of the monolithic executable. (jpm/rkw 8/5/96)
+
 
 LOW PRIORITY
 ------------
@@ -152,6 +155,8 @@ fix it. (kb 8/4/96)
 
 Bug: Doing an extreme zoom in causes extra records to suddenly
 appear. (kb 8/4/96)
+
+Make a "slim" version of Devise with some stuff stripped out.
 
 
 COMPLETED

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/07/18 14:19:59  jussi
+#  Replaced name libgraphics.new.a with libgraphicsnew.a.
+#
 #  Revision 1.14  1996/07/09 16:01:05  wenger
 #  Added master version number and compile date to C++ code (also displayed
 #  in the user interface); added -usage and -version command line arguments;
@@ -38,10 +41,13 @@ CC = g++
 CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
 	-I../../graphics.new -I../../tape -Wall -Wno-unused -O -DUNIX
 
+# Kevin created a dependency that means that graphicsnew must be included
+# twice below.
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
-	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	-lgraphicsnew -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
+	$(ARCH_LDPOST)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

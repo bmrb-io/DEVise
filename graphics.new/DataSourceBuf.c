@@ -20,6 +20,15 @@
    $Id$
 
    $Log$
+   Revision 1.4  1996/08/04 21:23:23  beyer
+   DataSource's are now reference counted.
+   Added Version() which TData now check to see if the DataSource has changed,
+     and if it has, it rebuilds its index and invalidates the cache.
+   DataSourceFixedBuf is a DataSourceBuf that allocates and destoyes its
+     own buffer.
+   DerivedDataSource functionality is now in the TData constructor.
+   Added some defaults for virtual methods.
+
    Revision 1.3  1996/07/12 18:24:42  wenger
    Fixed bugs with handling file headers in schemas; added DataSourceBuf
    to TDataAscii.
@@ -243,7 +252,7 @@ DataSourceBuf::Write(const char *buf, size_t byteCount)
     } else {
 	int bytes_left = _end_buffer - _currentLoc + 1;
 	if( bytes_left > 0 ) {
-	    if( byteCount > bytes_left ) byteCount = bytes_left;
+	    if( (int) byteCount > bytes_left ) byteCount = bytes_left;
 	    memcpy(_currentLoc, buf, byteCount);
 	    _currentLoc += byteCount;
 	    if( _currentLoc > _end_data ) {
