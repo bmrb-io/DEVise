@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/12 14:56:27  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.14  1996/05/22 21:04:29  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -101,7 +109,6 @@
 
 //#define SERV_ANYPORT
 //#define DEBUG
-//#define DEBUG9
 
 MapInterpClassInfo *ServerAPI::_interpProto = 0;
 
@@ -268,78 +275,36 @@ void ServerAPI::DestroySessionData()
 
 void ServerAPI::Run()
 {
-#if DEBUG9
+#ifdef DEBUG
   printf("In ServerAPI::Run\n");
 #endif
 
-  DOASSERT((_socketFd < 0 && _listenFd >= 0) ||
-	   (_socketFd >= 0 && _listenFd < 0), "Invalid sockets");
+  DOASSERT(_socketFd >= 0 && _listenFd < 0, "Invalid sockets");
 
-  if (_socketFd >= 0) {
-    // We are connected so just keep reading from the socket
-    while(_socketFd >= 0) {
-      int result = ReadCommand();
-      if (!result)
-	break;
-      if (result < 0) {
-	fprintf(stderr,
-		"Cannot communicate with client. Closing connection.\n");
-	RestartSession();
-      }
-    }
+  int result = ReadCommand();
+  if (!result)
     return;
-  }
-
-  printf("\n");
-  printf("Server waiting for client connection.\n");
-
-  struct sockaddr_in tempaddr;
-  int len = sizeof(tempaddr);
-  _socketFd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
-  if (_socketFd < 0) {
-    perror("accept");
-    if (errno == EINTR) {
-      fprintf(stderr, "Server exits.\n");
-      exit(1);
-    }
-    DOASSERT(0, "Error in network interface");
-  }
-  
-  close(_listenFd);
-  _listenFd = -1;
-
-  if (GotoConnectedMode() < 0) {
-    fprintf(stderr, "Bad client connection. Closing connection.\n");
+  if (result < 0) {
+    fprintf(stderr,
+	    "Cannot communicate with client. Closing connection.\n");
     RestartSession();
-    return;
   }
-
-  Dispatcher::Current()->Unregister(this);
-  Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
 }
 
 int ServerAPI::ReadCommand()
 {
   DOASSERT(_socketFd >= 0, "Invalid socket");
 
-  // If the Dispacher uses select(), then we will be called only
-  // when there's new data to be read from _socketFd; otherwise
-  // the Dispatcher calls us constantly, so we want to read
-  // the socket in a non-blocking mode.
-
   u_short flag;
   int argc;
   char **argv;
-#ifdef USE_SELECT
   int result = NetworkReceive(_socketFd, 1, flag, argc, argv);
-#else
-  int result = NetworkReceive(_socketFd, 0, flag, argc, argv);
+#ifdef DEBUG
+  printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d\n",
+         result, errno, argc);
 #endif
+
   if (result < 0) {
-#ifndef USE_SELECT
-    if (errno == EAGAIN || errno == EWOULDBLOCK)
-      return 0;
-#endif
     perror("recv");
     return -1;
   }
@@ -378,33 +343,10 @@ int ServerAPI::ReadCommand()
   printf("Done executing command\n");
 #endif
 
-#ifndef USE_SELECT
-  // go back to non-blocking mode
-  (void)NetworkNonBlockMode(_socketFd);
-#endif
-
   return 1;
 
  error:
-#ifndef USE_SELECT
-  // go back to non-blocking mode
-  (void)NetworkNonBlockMode(_socketFd);
-#endif
-
   return -1;
-}
-
-int ServerAPI::GotoConnectedMode()
-{
-  DOASSERT(_socketFd >= 0, "Invalid socket");
-
-  printf("Setting up client connection.\n");
-    
-  // no action needed at this time
-
-  printf("Client connection established.\n");
-    
-  return 1;
 }
 
 void ServerAPI::RestartSession()
@@ -478,7 +420,27 @@ void ServerAPI::RestartSession()
     perror("listen");
   DOASSERT(result >= 0, "Cannot listen");
 
-  Dispatcher::Current()->Register(this, 10, AllState, true, _listenFd);
+  printf("\n");
+  printf("Server waiting for client connection.\n");
+
+  struct sockaddr_in tempaddr;
+  int len = sizeof(tempaddr);
+
+  do {
+    _socketFd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
+  } while (_socketFd < 0 && errno == EINTR);
+
+  if (_socketFd < 0) {
+    perror("accept");
+    DOASSERT(0, "Error in network interface");
+  }
+  
+  close(_listenFd);
+  _listenFd = -1;
+
+  printf("Client connection established.\n");
+    
+  Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
 }
 
 void ServerAPI::SetBusy()

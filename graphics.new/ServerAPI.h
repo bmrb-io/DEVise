@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:42:30  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/15 16:41:17  jussi
   Moved all networking code from ServerAPI.c to ClientAPI.c.
   Improved support for bracketed or non-bracketed arguments
@@ -122,7 +125,6 @@ private:
   int _busy;
   static MapInterpClassInfo *_interpProto;
 
-  int GotoConnectedMode();
   int ReadCommand();
 
   virtual int ReturnVal(u_short flag, char *result) {
