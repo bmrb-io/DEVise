@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.26  1996/01/10 00:38:42  jussi
+#	Added support for hi/lo values defined in schema.
+#
 #	Revision 1.25  1995/12/29 17:33:04  jussi
 #	Changed format of view instance names created automatically.
 #	Removed Double-Button-1 binding of group selection list.
@@ -670,30 +673,57 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
 
+    set bgColor white
     set sortedx 0
-    set xlo 0.0
-    set xhi 1000.0
+    set xlo ""
+    set xhi ""
 
     # Find out type of X and whether it is sorted or not
     foreach attr $schema {
 	set name [lindex $attr 0]
 	if {$name != $x} {continue}
+	set xtype [lindex $attr 1]
 	set sortedx [lindex $attr 2]
-	set xhi [lindex $attr 3]
-	set xlo [lindex $attr 4]
+	set hasxhi [lindex $attr 3]
+	if {$hasxhi} {
+	    set xhi [lindex $attr 4]
+	}
+	set hasxlo [lindex $attr 5]
+	if {$hasxlo} {
+	    set xlo [lindex $attr 6]
+	}
 	break
     }
+
+    # also consult lo/hi values defined in .rc file
+    set viewParams ""
+    catch { set viewParams $viewDefault($xtype) }
+    foreach param $viewParams {
+	set pname [lindex $param 0]
+	set value [lindex $param 1]
+	if {$xlo == "" && $pname == "xlow"} {
+	    set xlo $value
+	}
+	if {$xhi == "" && $pname == "xhigh"} {
+	    set xhi $value
+	}
+    }
+
+    # if no defaults specified anywhere, resort to these defaults
+    if {$xhi == ""} {
+	set xhi 0
+    }
+    if {$xlo == ""} {
+	set xlo 100
+    }
+
+    # puts "Mapping will have xlo $xlo and xhi $xhi"
 
     if {$sortedx > 0} {
 	set sortedx SortedX
     } else {
 	set sortedx Scatter
     }
-    # puts "The value of sortedx is $sortedx"
-
-    set bgColor white
-
-    # puts "Mapping will have xlo $xlo and xhi $xhi"
 
     set linkname [format "%s Link" $x]
     if {$linksel} {
@@ -733,8 +763,45 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
-	set yhi [lindex $attr 3]
-	set ylo [lindex $attr 4]
+	set yhi ""
+	set hasyhi [lindex $attr 3]
+	if {$hasyhi} {
+	    set yhi [lindex $attr 4]
+	}
+	set ylo ""
+	set hasylo [lindex $attr 5]
+	if {$hasylo} {
+	    set ylo [lindex $attr 6]
+	}
+
+	# also consult lo/hi values defined in .rc file
+	set viewParams ""
+	catch { set viewParams $viewDefault($type) }
+	foreach param $viewParams {
+	    set pname [lindex $param 0]
+	    set value [lindex $param 1]
+	    if {$ylo == "" && $pname == "ylow"} {
+		set ylo $value
+	    }
+	    if {$yhi == "" && $pname == "yhigh"} {
+		set yhi $value
+	    }
+	}
+
+	# for bar shape, make ylo zero
+	if {$shape == 2} {
+	    set ylo 0
+	}
+
+	# if no defaults specified anywhere, resort to these defaults
+	if {$yhi == ""} {
+	    set yhi 0
+	}
+	if {$ylo == ""} {
+	    set ylo 100
+	}
+
+	# puts "Mapping will have ylo $ylo and yhi $yhi"
 
 	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
