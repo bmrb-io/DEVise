@@ -4,6 +4,7 @@
 #include "exception.h"
 #include <string>
 #include "sysdep.h"
+#include "types.h"
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 	#include <windows.h>
@@ -17,10 +18,11 @@ using namespace std;
 
 class ODBC_Data {
 	
-	string dataSourceName;
-	string userName;
-	string passwd;
-	string tableName;
+	string dataSourceName;		//Name of ODBC Data Source
+	string userName;			//Username for Database
+	string passwd;				//Password for Database
+	string query;				//Query String (SQL Statement)
+	ADTCopyPtr* adtCopyPtrs;	//Needed for Iterator
 
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
@@ -31,27 +33,39 @@ class ODBC_Data {
 #endif
 
 public:
-	ODBC_Data(const string& dSN, const string& uN,const string& pw,const string& tN) {
+	short* types;				//C Types for columns (SQL_C_CHAR, etc.)
+	short col_Num;				//Number of Columns
+	string* attrs;				//Names of Columns
+	string* DTE_Types;			//DTE types for Columns  (string, date, etc.)
 
+	ODBC_Data(const string& dSN, const string& uN,const string& pw,const string& qry) {
 	dataSourceName = dSN ;
 	userName = uN;
 	passwd = pw;
-	tableName = tN;
-	
+	query = qry;
 	}
 
-	int ODBC_Connect();
+	void ODBC_Connect();
 	void ODBC_disConnect();
-	int ODBC_Stmt_Handle();
-
+	void ODBC_Stmt_Handle();
+	int ODBC_Get_Rec(Tuple* results);	//Get Next Tuple from database, return -1 if EOF
+	
 	#if defined(_WINDOWS) || defined(_CONSOLE)
-		int ODBC_Get_Rec(short* types,SQLINTEGER* len,void** results,short col_Num);
-		int ODBC_Error(SQLRETURN err_Stat,string err_msg);
-		void ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, short col_Num);
+		SQLINTEGER* len;				//length of Columns
+		void ODBC_Error(SQLRETURN err_Stat,string err_msg);	//Error Handler (Just THROW)
+		void ODBC_Column_Info();		//Get Column info (types,etc.) for given query
 	#endif
 
-	short ODBC_Get_ColNums();
-	virtual ~ODBC_Data(){};
+	void ODBC_Get_ColNums();			//Get Number of Columns and allocate space for related arrays
+	virtual ~ODBC_Data(){
+		delete [] adtCopyPtrs;
+		delete [] types;
+		delete [] attrs;
+		delete [] DTE_Types;
+	#if defined(_WINDOWS) || defined(_CONSOLE)
+		delete [] len;
+	#endif
+	};
 };
 
 #endif

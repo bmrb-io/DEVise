@@ -5,26 +5,27 @@
 #include "ODBC.h"
 #include "exception.h"
 #include "sysdep.h"
+#include "DateTime.h"
+#include "types.h"
 
-int ODBC_Data::ODBC_Connect() {
+void ODBC_Data::ODBC_Connect() {
 	
 	//Allocate Handle for ODBC
 	SQL_Result = SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE,&ODBC_Handle);
-	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Handle for ODBC"),NULL);
+	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Handle for ODBC"),NVOID);
 
 	//Set ODBC Version to 2 (Our Oracle Driver is 2.5)
 	SQL_Result = SQLSetEnvAttr(ODBC_Handle,SQL_ATTR_ODBC_VERSION,(SQLPOINTER)SQL_OV_ODBC2, SQL_IS_INTEGER);
-	TRY(ODBC_Error(SQL_Result,"Cannot Set Version of ODBC"),NULL);
+	TRY(ODBC_Error(SQL_Result,"Cannot Set Version of ODBC"),NVOID);
 
 	//Allocate Handle for Connection
 	SQL_Result = SQLAllocHandle(SQL_HANDLE_DBC,ODBC_Handle,&Connect_Handle);
-	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Connect Handle for ODBC"),NULL);
+	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Connect Handle for ODBC"),NVOID);
 
 	//Connect to ODBC 
 	SQL_Result = SQLConnect(Connect_Handle,(UCHAR*)(dataSourceName.c_str()),SQL_NTS,(UCHAR*)(userName.c_str()),SQL_NTS,(UCHAR*)(passwd.c_str()),SQL_NTS);
-	TRY(ODBC_Error(SQL_Result,"Cannot Connect to ODBC"),NULL);
+	TRY(ODBC_Error(SQL_Result,"Cannot Connect to ODBC"),NVOID);
 
-	return 1;
 } 
 
 void ODBC_Data::ODBC_disConnect() {
@@ -38,22 +39,21 @@ void ODBC_Data::ODBC_disConnect() {
 		SQLFreeHandle(SQL_HANDLE_ENV,ODBC_Handle);
 }
 
-int ODBC_Data::ODBC_Stmt_Handle() {
+void ODBC_Data::ODBC_Stmt_Handle() {
 	SQL_Result = SQLAllocHandle(SQL_HANDLE_STMT,Connect_Handle,&Stmt_Handle);
-	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Statement Handle for ODBC"),NULL);
+	TRY(ODBC_Error(SQL_Result,"Cannot Allocate Statement Handle for ODBC"),NVOID);
 
-	return 1;
 }
 
 
-int ODBC_Data::ODBC_Error(SQLRETURN err_Stat,string err_msg) {
+void ODBC_Data::ODBC_Error(SQLRETURN err_Stat,string err_msg) {
 	if (err_Stat != SQL_SUCCESS) {
-		THROW(new Exception(err_msg),NULL);
+		THROW(new Exception(err_msg),NVOID);
 	}
-	return 1;
 }
 
-void ODBC_Data::ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, short col_Num) {
+void ODBC_Data::ODBC_Column_Info() {
+
 	short col_D_Len;  //Length of Column Name returned from database
 	short col_Type;   // Column Type
 	unsigned long col_Len;   // Length of Column
@@ -61,6 +61,9 @@ void ODBC_Data::ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, sho
 	short col_Null_Ok;     //is NULL value allowed in Column ?
 	SQLCHAR col_Name[40];  //Name of Column
 	short i;
+
+	TRY(ODBC_Get_ColNums(),NVOID);		//Get Number of Columns for given query
+	adtCopyPtrs = new ADTCopyPtr[col_Num];
 
 	for (i=0;i<col_Num;i++) {
 		
@@ -71,23 +74,37 @@ void ODBC_Data::ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, sho
 		len[i] = col_Len;
 
 		if ((col_Type == SQL_CHAR) || (col_Type == SQL_VARCHAR) || (col_Type == SQL_LONGVARCHAR)) {
+			ostringstream os;
+			os << col_Len << ends;
+			DTE_Types[i] = "string" + os.str();
 			types[i] = SQL_C_CHAR;
+			adtCopyPtrs[i] = getADTCopyPtr(STRING_TP);
 
 		} else if ((col_Type == SQL_DECIMAL) || (col_Type == SQL_REAL) || (col_Type == SQL_FLOAT) || (col_Type == SQL_DOUBLE)) {
 			types[i] = SQL_C_DOUBLE ;
+			DTE_Types[i] = "double";
+			adtCopyPtrs[i] = getADTCopyPtr(DOUBLE_TP);
 
 		} else if ((col_Type == SQL_SMALLINT) || (col_Type == SQL_INTEGER) || (col_Type == SQL_TINYINT) || (col_Type == SQL_BIGINT)) {
 			types[i] = SQL_C_SLONG;
+			DTE_Types[i] = "int";
+			adtCopyPtrs[i] = getADTCopyPtr(INT_TP);
 
 		} else if ((col_Type == SQL_DATE) || (col_Type == SQL_TIME) || (col_Type == SQL_TIMESTAMP)) {
 			types[i] = SQL_C_TIMESTAMP;
+			DTE_Types[i] = "date";
+			adtCopyPtrs[i] = getADTCopyPtr(DATE_TP);
 
 		} else if (col_Type == SQL_NUMERIC) {
 			
 			if (col_Dec == 0) {
 				types[i] = SQL_C_SLONG;
+				DTE_Types[i] = "int";
+				adtCopyPtrs[i] = getADTCopyPtr(INT_TP);
 			} else {
 				types[i] = SQL_C_DOUBLE;
+				DTE_Types[i] = "double";
+				adtCopyPtrs[i] = getADTCopyPtr(DOUBLE_TP);
 			}
 		
 		} else { 
@@ -96,24 +113,26 @@ void ODBC_Data::ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, sho
 	}
 }
 
-short ODBC_Data::ODBC_Get_ColNums() {
-	string Query_String;
+void ODBC_Data::ODBC_Get_ColNums() {
 	short numCols;
-	Query_String = "select * from " + tableName + ";";  //Create a query that retrieves data from all columns, where statement can be false
 
-	SQL_Result = SQLExecDirect(Stmt_Handle,(UCHAR*)(Query_String.c_str()),SQL_NTS);  //Send this Query to ODBC
-	TRY(ODBC_Error(SQL_Result,"Cannot send SQL to ODBC"),NULL);
+	SQL_Result = SQLExecDirect(Stmt_Handle,(UCHAR*)(query.c_str()),SQL_NTS);  //Send this Query to ODBC
+	TRY(ODBC_Error(SQL_Result,"Cannot send SQL to ODBC"),NVOID);
 
 	SQL_Result = SQLNumResultCols(Stmt_Handle,&numCols);   //Get number of Columns
-	TRY(ODBC_Error(SQL_Result,"Cannot get number of columns from ODBC"),NULL);
-	return numCols;
+	TRY(ODBC_Error(SQL_Result,"Cannot get number of columns from ODBC"),NVOID);
+	col_Num = numCols;
+	types = new short[col_Num];
+	attrs = new string[col_Num];
+	DTE_Types = new string[col_Num];
+	len = new SQLINTEGER[col_Num];
+	return;
 }
 
 
 
-int ODBC_Data::ODBC_Get_Rec(short* types,SQLINTEGER* len,void** results,short col_Num) {
+int ODBC_Data::ODBC_Get_Rec(Tuple* results) {
 
-	SQLPOINTER data;
 	size_t size;
 	SQLINTEGER Data_Status;
 	short i;
@@ -123,34 +142,22 @@ int ODBC_Data::ODBC_Get_Rec(short* types,SQLINTEGER* len,void** results,short co
 		return(-1);
 
 	TRY(ODBC_Error(SQL_Result,"Cannot fetch results"),NULL);
-	cout << "|" ;
 	for (i=0;i<col_Num;i++) {
 		size = len[i] + 1;
-		data = new char[size];
-		SQL_Result = SQLGetData(Stmt_Handle,(i+1),types[i],data,size,&Data_Status);
+		SQL_Result = SQLGetData(Stmt_Handle,(i+1),types[i],results[i],size,&Data_Status);
 		TRY(ODBC_Error(SQL_Result,"Cannot retrieve data from ODBC"),NULL);
+
 		if (Data_Status != SQL_NULL_DATA) {
-			if (types[i] == SQL_C_CHAR) {
-				results[i] = &data;
-//				cout << ((char*)data) << "\t//";
-			} else if (types[i] == SQL_C_SLONG) {
-				results[i] = &data;
-//				cout << *((long*)data) << "\t//" ;
-			} else if (types[i] == SQL_C_DOUBLE) {
-				results[i] = &data;
-//				cout << *((double*)data) << "\t//" ;
-			} else if (types[i] == SQL_C_TIMESTAMP) {
-				TRY(ODBC_Error(-1,"Date Type is not supported for ODBC"),NULL);
-//				results[i] = (TIMESTAMP_STRUCT*)data;
-//				TIMESTAMP_STRUCT date = *(TIMESTAMP_STRUCT*)data ;
-//				cout << date.day << "-" << date.month << "-" << date.year << " " << date.hour << ":" << date.minute << ":" << date.second << "\t//";
-			} else {
+			if (!((types[i] == SQL_C_CHAR) || (types[i] == SQL_C_SLONG) || (types[i] == SQL_C_DOUBLE) || (types[i] == SQL_C_TIMESTAMP))) {
 				TRY(ODBC_Error(-1,"Can't Find DataType"),NULL);
-				exit(1);
 			} 
-		} else 
-			cout << "\t//";
+
+			if (types[i] == SQL_C_TIMESTAMP) {
+				TIMESTAMP_STRUCT date = *((TIMESTAMP_STRUCT*)results[i]) ;
+				EncodedDTF date_DTE(DateTime(0,date.year, date.month, date.day, date.hour, date.minute, date.second,0));
+				adtCopyPtrs[i]((&date_DTE), results[i]);
+			}
+		}
 	}
-	cout << "|" << endl ;
 	return(1);
 }

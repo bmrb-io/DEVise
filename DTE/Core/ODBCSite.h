@@ -7,7 +7,7 @@ class ODBCSite : public Site {
      string dataSourceName;
      string userName;
      string passwd;
-	string tableName;
+	 string tableName;
 public:
 	ODBCSite(const string& dataSourceName, const string& userName,
 		const string& passwd, const string& tableName) 

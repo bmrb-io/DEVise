@@ -6,25 +6,19 @@
 
 class ODBCIterator : public Iterator {
 protected:
-     string dataSourceName;
-     string userName;
-     string passwd;
-	 string tableName;
-     string query;
+    string dataSourceName;
+    string userName;
+    string passwd;
+	string query;
 	Tuple* next;
-	void** typePtrs;
+	Tuple* typePtrs;
 	DestroyPtr* destroyPtrs;
 	int numFlds;
 	TypeID* typeIDs;
 	ODBC_Data* myODBC;
-	short* Col_Types;
-	string* DTE_Types;
-	string* Col_Attr_Names;
-	SQLINTEGER* Col_Lengths;
-	short Col_Max;
 public:
 	ODBCIterator(const string& dataSourceName, const string& userName,
-		const string& passwd, const string& tableName, const string& query, int numFlds,
+		const string& passwd, const string& query, int numFlds,
 		const TypeID* typeIDs);
 
 	virtual ~ODBCIterator(){

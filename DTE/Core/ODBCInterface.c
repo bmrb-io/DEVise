@@ -15,50 +15,19 @@
 
 const ISchema* ODBCInterface::getISchema(TableName* table){
 
-	string Table_N=tableName ;
+	string myQuery = "Select * from " + tableName + " where 1=2;"; //construct query for getting info, you can retrieve column info by sending a query that returns nothing
 
+	cerr << "table = " << tableName << endl;
 
-	cerr << "table = " << Table_N << endl;
+	myODBC = new ODBC_Data(dataSourceName,userName,passwd,myQuery);
+	ODBC_Exist = 1;
 
-	int aa;
-	short Col_Max;    //Number of Columns
+	TRY(myODBC->ODBC_Connect(),NULL);  //Connect to ODBC driver
+	TRY(myODBC->ODBC_Stmt_Handle(),NULL);  //Allocate handle for statement
 
-	myODBC = new ODBC_Data(dataSourceName,userName,passwd,Table_N);
-
-	TRY(aa = myODBC->ODBC_Connect(),NULL);  //Connect to ODBC driver
-	TRY(aa = myODBC->ODBC_Stmt_Handle(),NULL);  //Allocate handle for statement
-
-	Col_Max = TRY(myODBC->ODBC_Get_ColNums(),NULL);  //Get Number of Columns
+	TRY(myODBC->ODBC_Column_Info(),NULL);
 	
-	short* Col_Types;
-	string* DTE_Types;
-	string* Col_Attr_Names;
-	SQLINTEGER* Col_Lengths;
-	Col_Types = new short [Col_Max];
-	DTE_Types = new string [Col_Max];
-	Col_Attr_Names = new string [Col_Max];
-	Col_Lengths = new SQLINTEGER [Col_Max];
-
-	TRY(myODBC->ODBC_Column_Info(Col_Types,Col_Attr_Names,Col_Lengths,Col_Max),NULL);
-	
-	for (aa = 0; aa < Col_Max;aa++) {
-		if (Col_Types[aa] == SQL_C_CHAR) {
-			ostringstream os;
-			os << Col_Lengths[aa] << ends;
-			DTE_Types[aa] = "string" + os.str();
-		} 
-		if (Col_Types[aa] == SQL_C_DOUBLE) {
-			DTE_Types[aa] = "double" ;
-		}
-		if (Col_Types[aa] == SQL_C_SLONG) {
-			DTE_Types[aa] = "int" ;
-		}
-		if (Col_Types[aa] == SQL_C_TIMESTAMP) {
-			DTE_Types[aa] = "date" ;
-		}
-	}
-
-	tmp = ISchema(Col_Max, DTE_Types, Col_Attr_Names);
+	tmp = ISchema(myODBC->col_Num, myODBC->DTE_Types, myODBC->attrs);
 
 	TRY(myODBC->ODBC_disConnect(),NULL);   //Disconnect from ODBC
 

@@ -390,6 +390,7 @@ class ODBCInterface : public Interface {
 	string passwd;
 	string tableName;
 	ODBC_Data* myODBC;
+	int ODBC_Exist;
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 	SQLRETURN SQL_Result;
@@ -398,8 +399,12 @@ class ODBCInterface : public Interface {
 	ISchema tmp;
 public:
 	static string typeName;
-	ODBCInterface() {}
+	ODBCInterface() {
+		ODBC_Exist = 0;
+	}
 	virtual ~ODBCInterface(){
+		if (ODBC_Exist > 0)
+			delete myODBC;
 	}
 	virtual string getTypeNm(){
 		return typeName;
