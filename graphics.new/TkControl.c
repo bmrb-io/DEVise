@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/04/22 21:38:07  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.45  1996/04/19 17:22:22  wenger
   Put the GenClassInfo code back in -- this is needed for tape data;
   started adding the tape-related code back in (it was previously
@@ -741,17 +748,18 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			  Tcl_AppendElement(interp, attrBuf);
 			}
 	        }
-		else if (strcmp(argv[1],"getAction") == 0 ) {
-			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL) {
+		else if (strcmp(argv[1], "getAction") == 0 ) {
+			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+			if (!view) {
 				interp->result = "Can't find view";
 				goto error;
 			}
 			Action *action = view->GetAction();
-			if (action == NULL || strcmp(action->GetName(),"") == 0 ||
-				strcmp(action->GetName(),"default") == 0)
-				interp->result = "";
-			else interp->result = action->GetName();
+			if (!action || !strcmp(action->GetName(), "") ||
+			    !strcmp(action->GetName(), "default"))
+			  interp->result = "";
+			else
+			  interp->result = action->GetName();
 		}
 		else if (strcmp(argv[1],"getLinkFlag") == 0 ) {
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
@@ -1137,14 +1145,14 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "";
 			else interp->result = label->GetName();
 		}
-		else if (strcmp(argv[1],"setAction") == 0) {
-			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL) {
+		else if (strcmp(argv[1], "setAction") == 0) {
+			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+			if (!view) {
 				interp->result = "can't find view";
 				goto error;
 			}
 			Action *action = (Action*)classDir->FindInstance(argv[3]);
-			if (action == NULL) {
+			if (!action) {
 				interp->result = "can't find action";
 				goto error;
 			}
