@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.203  1999/11/16 17:02:16  wenger
+#	Removed all DTE-related conditional compiles; changed version number to
+#	1.7.0 because of removing DTE; removed DTE-related schema editing and
+#	data source creation GUI.
+#	
 #	Revision 1.202  1999/10/08 19:58:06  wenger
 #	Fixed bugs 470 and 513 (crashes when closing a session while a query
 #	is running), 510 (disabling actions in piles), and 511 (problem in
@@ -1184,6 +1189,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command { DumpLinksCursors }
 .mbar.session.menu add cascade -label "Save Session Description" \
 	-menu .mbar.session.menu.descMenu
+.mbar.session.menu add command -label "Play Back Command Log..." \
+	-command { PlayBackLog }
 menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu.descMenu add command -label "Logical..." \
 	-command { SaveSessionDesc 0 }
@@ -2541,4 +2548,20 @@ proc ShowMouseLocation {x y} {
     set mouseX $x
     set mouseY $y
 
+}
+
+proc PlayBackLog {} {
+    global fsBox
+
+    # Get a log file name
+    set fsBox(path) /tmp
+    # Change for saving sessions as batch scripts only.
+    set fsBox(pattern) {cmdLog.*}
+    set file [ FSBox "Select log file to play back" ]
+    
+    if {$file == ""} {
+	return
+    }
+
+    DEVise playLog $file 0 1 0 999999
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.206  1999/11/22 18:11:59  wenger
+  Fixed 'command buffer conflict' errors, other command-related cleanup.
+
   Revision 1.205  1999/11/19 17:17:28  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -946,7 +949,6 @@
 #include "PileStack.h"
 #include "DebugLog.h"
 #include "Session.h"
-#include "CommandObj.h"
 #include "CmdContainer.h"
 #include "ArgList.h"
 #include "ControlPanelSimple.h"
@@ -1267,18 +1269,13 @@ void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
   printf("View(%s)::SetVisualFilterCommand()\n", GetName());
 #endif
 
-  if (DeviseCommand::GetCmdDepth() > 1)
-  {
+  if (DeviseCommand::GetCmdDepth() > 1) {
     // We don't want this to be sent to collaborating deviseds, etc.
     SetVisualFilter(filter, registerEvent);
-  }
-  else if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-  {
-    CommandObj *	cmdObj = GetCommandObj();
-    cmdObj->SetVisualFilter(this, &filter);
-  }
-  else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-  {
+
+  } else {
+    // Propagate to other deviseds if we're in group mode.
+
     ArgList args(6);
     args.AddArg("setFilter");
     args.AddArg(GetName());
@@ -1293,8 +1290,11 @@ void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
     sprintf(tmpBuf, "%g", filter.yHigh);
     args.AddArg(tmpBuf);
 
+    CmdSource cmdSrc(CmdSource::USER, CLIENT_INVALID);
+    CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_SERVER);
     ControlPanelSimple control;
-    cmdContainerp->RunOneCommand(args.GetCount(), args.GetArgs(), &control);
+    CmdContainer::GetCmdContainer()->Run(args.GetCount(), args.GetArgs(),
+	    &control, cmdDes);
   }
 }
 

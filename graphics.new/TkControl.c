@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.93  1999/10/18 15:36:43  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.92  1999/10/05 17:55:50  wenger
   Added debug log level.
 
@@ -416,7 +422,7 @@ TkControlPanel::TkControlPanel()
 {
 	
   _interpProto = new MapInterpClassInfo();
-  cmdContainerp = new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
+  new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
   
   View::InsertViewCallback(this);
 
@@ -565,7 +571,7 @@ int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // don't pass DEVise command verb (argv[0])
-  if (cmdContainerp->RunOneCommand(argc - 1, 
+  if (CmdContainer::GetCmdContainer()->RunInternal(argc - 1, 
 		&argv[1],(ControlPanel *)clientData) < 0)
     return TCL_ERROR;
 

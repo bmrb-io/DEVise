@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/05/02 08:38:52  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.2  1998/01/08 19:44:00  wenger
   Updated copyright to 1998.
 
@@ -74,8 +78,6 @@ class CmdSource:public Serializable
 			USER, 				// commands that comes from the X-server
 			INTERNAL, 			// commands that comes from CreateTData
 			NETWORK, 			// commands that comes form network
-			SESSION_PLAY, 		// commands from a session
-			SESSION_SAVE,		// commands for saving a session
 			LOGFILE,			// commands from the log
 			JAVACLIENT 			// commands from JAVA client
 		}SrcType;

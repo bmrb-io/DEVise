@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  1999/11/22 18:13:17  wenger
+  Fixed 'command buffer conflict' errors, other command-related cleanup.
+
   Revision 1.84  1999/11/19 15:18:47  wenger
   Added dispatcherRun1 command (for debugging).
 
@@ -4766,7 +4769,7 @@ IMPLEMENT_COMMAND_BEGIN(playLog)
 	}
 	if (!strcmp(argv[1], "default"))
 	{
-		logFile = cmdContainerp->getLogName();
+		logFile = CmdContainer::GetCmdContainer()->getLogName();
 	}
 	else
 	{
@@ -6215,8 +6218,19 @@ IMPLEMENT_COMMAND_BEGIN(dispatcherRun1)
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
-    if (argc == 1) {
-        Dispatcher::Current()->Run1();
+    if (argc == 1 || argc == 2) {
+		int count;
+	    if (argc == 1) {
+		    count = 1;
+		} else {
+	        int count = atoi(argv[1]);
+		}
+
+		for (int index = 0; index < count; index++) {
+			if (Dispatcher::Current()->CallbacksPending() <= 0) break;
+            Dispatcher::Current()->Run1();
+		}
+
         ReturnVal(API_ACK, "done");
         return true;
 	} else {

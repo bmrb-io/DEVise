@@ -599,7 +599,7 @@ JSSessionInit()
 
 	// Turn off collaboration; otherwise the collaboration stuff
 	// interferes with some commands from the JavaScreen.
-	cmdContainerp->setMake(CmdContainer::MONOLITHIC);
+	CmdContainer::GetCmdContainer()->setMake(CmdContainer::MONOLITHIC);
 }
 
 //====================================================================
@@ -1755,7 +1755,7 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 		while ((bytesRead = read(fd, buf, sizeof(buf))) > 0)
 		{
 			DeviseServer*	server;
-			server = cmdContainerp->getDeviseServer();
+			server = CmdContainer::GetCmdContainer()->getDeviseServer();
 			int bytesWritten = server->WriteImagePort(buf, bytesRead);
 			if (bytesWritten < 0) {
 				reportErrSys("write image port");
@@ -2306,7 +2306,7 @@ void
 JavaScreenCmd::CloseJavaConnection()
 {
 	DeviseServer*	server;
-	server = cmdContainerp->getDeviseServer();
+	server = CmdContainer::GetCmdContainer()->getDeviseServer();
 	server->CloseClient();
 }
 

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/05/02 08:38:58  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.6  1998/04/01 05:21:47  taodb
   Replaced types.h with CollabTypes.h, related source files were updated.
 
@@ -63,7 +67,6 @@ class CSgroupKey;
 // in a ClientInfo object. A Server instance will have an array of
 // ClientInfo objects, indexed by ClientID values.
 //
-class CommandObj;
 #define CLIENT_INVALID (-1)
 class ClientInfo
 {
@@ -111,7 +114,6 @@ class ControlChannel {
 };
 class Server:public DispatcherCallback{
 friend class ControlChannel;
-friend class CommandObj;
 friend class CmdContainer;
 public:
     Server(char *name,int image_port, 
@@ -214,8 +216,6 @@ protected:
 			    int argc,
 			    char **argv);	 	      // process a single client command
 public:
-	// Server-Switch side call back functions
-	CommandObj	*cmdObj;
 	virtual int _RequestRelinquish(char *groupname, ConnectInfo *cinfo); 
 										// requlish control call back
 	virtual int _NotifyGrabbed(char *groupname, ConnectInfo *cinfo);

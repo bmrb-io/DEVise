@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/11/19 17:17:41  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.6  1998/08/17 17:12:02  wenger
   Devised now responds to KeyAction commands from JavaScreen.
 
@@ -50,12 +54,16 @@ class CmdContainer
   	friend ostream& operator <<(ostream& os, const CmdContainer& cc);
 	public:
 		typedef enum {MONOLITHIC=0,CSGROUP} Make;
+
+		static CmdContainer *GetCmdContainer();
+
 		CmdContainer(ControlPanel* control, Make make, DeviseServer* server);
 		~CmdContainer();
 
 		int	Run(int argc, const char* const *argv, ControlPanel* control, 
 			CmdDescriptor& cmdDes);
-		int	RunOneCommand(int argc, const char* const *argv, ControlPanel* control);
+		int	RunInternal(int argc, const char* const *argv,
+		    ControlPanel* control);
 
 		void insertCmd(char*, DeviseCommand *,int cmdsize);		
 		DeviseCommand* lookupCmd(const char*);
@@ -70,6 +78,8 @@ class CmdContainer
 		DeviseServer* getDeviseServer(){ return _server;}
 
 	private:
+		int	RunOneCommand(int argc, const char* const *argv,
+		    ControlPanel* control);
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
 
@@ -79,7 +89,5 @@ class CmdContainer
 		char		*cmdLogFname;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
-//TEMP -- this should be changed to a static method.  RKW Aug 17, 1998.
-extern CmdContainer*	cmdContainerp;
 
 #endif // _CmdContainer_h_

@@ -212,6 +212,10 @@ CmdLogRecord::~CmdLogRecord()
 
 CmdLogRecord::CmdLogRecord(char* filename)
 {
+#if defined(DEBUG)
+	printf("CmdLogRecord::CmdLogRecord(%s)\n", filename);
+#endif
+
 	enabled = true;
 	currentBy = CmdLogRecord::LOG_IDLE;
 	_dispID = NULL;
@@ -222,7 +226,7 @@ CmdLogRecord::CmdLogRecord(char* filename)
 	currentSaveLogId = LOG_BEGIN;
 
 	maxlogId = -1;
-	fd = open(filename, O_RDWR|O_CREAT);
+	fd = open(filename, O_RDWR|O_CREAT, 0644);
 	if (fd <0)
 	{
 		cerr << "Cannot create log file:"<<filename<<endl;
@@ -235,6 +239,10 @@ CmdLogRecord::CmdLogRecord(char* filename)
 long
 CmdLogRecord::logCommand(int argc, char** argv)
 {
+#if defined(DEBUG)
+	printf("CmdLogRecord::logCommand(%s ...)\n", argv[0]);
+#endif
+
 	if (!enabled)
 	{
 		return -1;
@@ -407,14 +415,14 @@ CmdLogRecord::runLogRecord()
 #endif
 	}
 
-	cmdContainerp->Run(args-1, argv, 
+	CmdContainer::GetCmdContainer()->Run(args-1, argv, 
 		DeviseCommand::getDefaultControl(), cmdDes);
 
 	delete []argv;
 
 	/* run waitForQueries to get everything done
 	char	*cmd = "waitForQueries";
-	cmdContainerp->Run(1, &cmd, 
+	CmdContainer::GetCmdContainer()->Run(1, &cmd, 
 		DeviseCommand::getDefaultControl(), cmdDes);
 	*/
 }

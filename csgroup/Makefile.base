@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1998/07/29 14:19:40  wenger
+#  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+#  allow static linking on Linux.
+#
 #  Revision 1.9  1998/06/16 16:18:03  wenger
 #  Got devise to compile again on Linux (fixed problems with DataReader
 #  code).
@@ -77,8 +81,7 @@ LOCALSRC1 = Client.C\
 	parseConfig.C\
 	queue.C\
 	queueElem.C\
-	servdb.C\
-	CommandObj.C
+	servdb.C
 LOCALSRC2= prnfns.c\
 	callBks.c\
 	codec.c\

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/11/19 21:29:14  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.60  1999/11/15 22:54:40  wenger
   Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
   caused by highlight view/pile problems).
@@ -841,16 +845,32 @@ void Dispatcher::Run1()
 void Dispatcher::DoCleanup()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("Dispatcher::DoCleanup()\n");
+#endif
 
   Session::Close();
 
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *callback = _callbacks.Next(index);
-    if (callback->flag & _stateFlag)
+    if (callback->flag & _stateFlag) {
+#if defined(DEBUG)
+      printf("Cleaning up callback %s\n",
+          callback->callBack->DispatchedName());
+#endif
       callback->callBack->Cleanup();
+#if defined(DEBUG)
+      printf("  Cleaned up callback %s\n",
+          callback->callBack->DispatchedName());
+#endif
+    }
   }
   _callbacks.DoneIterator(index);
+
+#if defined(DEBUG)
+  printf("  Done with Dispatcher::DoCleanup()\n");
+#endif
 }
 
 

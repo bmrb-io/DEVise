@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.18  1999/11/19 21:28:48  wenger
+# Removed Journal class and related code (no longer works); removed various
+# other unused or unnecessary code.
+#
 # Revision 1.17  1999/01/28 22:40:00  wenger
 # Updated solaris dependencies.
 #
@@ -414,26 +418,6 @@ CmdLog.o: ../graphics/Exit.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 CmdSerialize.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 CmdSerialize.o: CmdSerialize.h
-CommandObj.o: CommandObj.h CmdDescriptor.h CmdSerialize.h Csprotocols.h
-CommandObj.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-CommandObj.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-CommandObj.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
-CommandObj.o: /usr/include/sys/time.h /usr/include/time.h
-CommandObj.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-CommandObj.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-CommandObj.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-CommandObj.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-CommandObj.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-CommandObj.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-CommandObj.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-CommandObj.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-CommandObj.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-CommandObj.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
-CommandObj.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-CommandObj.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-CommandObj.o: /usr/include/arpa/inet.h /usr/include/netdb.h codec.h
-CommandObj.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-CommandObj.o: ../graphics/View.h
 Keys.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Keys.o: /usr/include/sys/va_list.h /usr/include/string.h keys.h CollabTypes.h
 Keys.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -477,10 +461,10 @@ Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
 Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
 Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
-Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
-Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
-Server.o: keys.h Csprotocols.h /usr/include/netdb.h ../graphics/Util.h
-Server.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
+Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
+Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
+Server.o: /usr/include/netdb.h ../graphics/Util.h /usr/include/ctype.h
+Server.o: ../graphics/Init.h ../graphics/BufPolicy.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/02 09:00:43  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.7  1998/02/26 20:48:39  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -78,7 +81,6 @@
 
 
 class DeviseServer : public Server {
-friend class CommandObj;
 public:
   DeviseServer(char *name, int image_port, int swt_port, int clnt_port,
 	char* switchname, int maxclients, ControlPanel *control);

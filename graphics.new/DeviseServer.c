@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/10/05 17:55:48  wenger
+  Added debug log level.
+
   Revision 1.12  1999/07/16 21:36:07  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -114,7 +117,7 @@ DeviseServer::DeviseServer(char *name,int image_port,int swt_port,
 	image_port, swt_port, clnt_port);
 #endif
 
-  cmdContainerp = new CmdContainer(control,CmdContainer::CSGROUP, this);
+  new CmdContainer(control, CmdContainer::CSGROUP, this);
   _currentClient = CLIENT_INVALID;
   _previousClient = CLIENT_INVALID;
   _control = control;
@@ -196,7 +199,7 @@ DeviseServer::Run()
 void 
 DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
 {
-	cmdContainerp->Run(argc, argv, _control, cmdDes);
+    CmdContainer::GetCmdContainer()->Run(argc, argv, _control, cmdDes);
 }
 
 /*------------------------------------------------------------------------------
@@ -386,44 +389,6 @@ void
 DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
 	cerr << "******I should not come here "<<endl;
-/*
-#if defined(DEBUG)
-  printf("DeviseServer(0x%p)::ProcessCmd(%d)\n", this, clientID);
-  printf("  Command: ");
-  for (int num = 0; num < argc; num++) {
-    printf("<%s> ", argv[num]);
-  }
-  printf("\n");
-#endif
-
-#if defined(DEBUG)
-  printf("  _currentClient = %d\n", _currentClient);
-#endif
-  
-
-  if (_currentClient == CLIENT_INVALID) {
-    // Not currently processing a command.
-    _currentClient = clientID;
-#if defined(DEBUG)
-  printf("  Before cmdContainer call: _currentClient = %d\n", _currentClient);
-#endif
-
-    if (cmdContainerp->RunOneCommand(argc, argv,_control) < 0) {
-      	char errBuf[1024];
-      	sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
-      	reportErrNosys(errBuf);
-    }
-	_currentClient = CLIENT_INVALID;
-  } else {
-    // Currently processing another command.
-    reportErrNosys("Command while server is busy");
-    (void) ReturnVal(clientID, (u_short)API_NAK, "Server is busy");
-  }
-
-#if defined(DEBUG)
-  printf("  After cmdContainer call: _currentClient = %d\n", _currentClient);
-#endif
-*/
 }
 
 /*============================================================================*/

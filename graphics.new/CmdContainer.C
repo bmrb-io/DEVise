@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/11/19 18:19:02  wenger
+  Removed (not really used) DeviseCommandOption class and related code.
+
   Revision 1.52  1999/11/19 17:17:41  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -288,7 +291,7 @@ static char* cmdLogBase ="/tmp/cmdLog.";
 	insertCmd(#objType,(DeviseCommand*)obj,sizeof(DeviseCommand_##objType)); \
 }
 
-CmdContainer*	cmdContainerp;
+static CmdContainer*	cmdContainerP = NULL;
 static const int CMD_HASHSIZE = 4;
 int f(const Datum&,int);
 static Htable 	cmdDb(CMD_HASHSIZE, &f);
@@ -299,6 +302,12 @@ int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 int		ParseAPIDTE(int argc, char** argv, ControlPanel* control);
 int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
+CmdContainer *
+CmdContainer::GetCmdContainer()
+{
+    return cmdContainerP;
+}
+
 CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	DeviseServer* server)
 {
@@ -308,12 +317,16 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 
 	DeviseCommand::setDefaultControl(defaultControl);
 	this->make = make;
-	cmdContainerp = this;
+
+    DOASSERT(!cmdContainerP, "Can only create one CmdContainer object!");
+	cmdContainerP = this;
+
 	_server = server;
 
 	char	tempFileName[128];
 	sprintf(tempFileName, "%s%ld", cmdLogBase, (long)getpid());
 	unlink(tempFileName);
+    printf("Initializing command log file: %s\n", tempFileName);
 	cmdLog = new CmdLogRecord(tempFileName);
 
 	// JAVA Screen commands
@@ -585,6 +598,10 @@ CmdContainer::~CmdContainer()
 long
 CmdContainer::logCommand(int argc, char** argv, CmdDescriptor& cmdDes)
 {
+#if defined(DEBUG)
+	printf("CmdContainer::logCommand(%s ...)\n", argv[0]);
+#endif
+
 	char**	nargv= new (char*)[argc +1];
 	int		i;
 	long	logId;
@@ -648,6 +665,15 @@ CmdContainer::playCommand(long logId1, long logId2)
 
 
 int
+CmdContainer::RunInternal(int argc, const char* const *argv,
+    ControlPanel* control)
+{
+    CmdSource cmdSrc(CmdSource::INTERNAL, CLIENT_INVALID);
+    CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
+    return Run(argc, argv, control, cmdDes);
+}
+
+int
 CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control, 
 	CmdDescriptor& cmdDes)
 {
@@ -666,8 +692,11 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 	// no command logging & broadcasting for log file replay and session replay
 	// control command routing 
 	CmdSource::SrcType srcType =cmdDes.getCmdsource()->getSrctype();
-	if (cmdDes.getCmdsource()->isFromLog())
+	if (cmdDes.getCmdsource()->isFromLog()) {
 		srcType = CmdSource::LOGFILE;
+	} else if (getMake() == MONOLITHIC) {
+	    srcType = CmdSource::INTERNAL;
+	}
 
 	switch (srcType)
 	{
@@ -692,10 +721,12 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 			//we do not log network commands at this stage
 			//logCommand(argc, argv, cmdDes);
 			break;
+
 		case CmdSource::JAVACLIENT:
 			// run JAVA commands with logging turned off
 			retval = RunOneCommand(argc, argv, control);
 			break;
+
 		case CmdSource::USER:
 		case CmdSource::CLIENT:
 			cid = cmdDes.getCmdsource()->getClientid();
@@ -709,10 +740,11 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 			// group control client.
 
 			ClientInfo* cInfo;
-			if (cid != CLIENT_INVALID)
+			if (cid != CLIENT_INVALID) {
 				cInfo = _server->getClientInfo(cid);
-			else
+			} else {
 				cInfo = _server->getClientInfo(0);
+			}
 
 			inGroup = (cInfo->gname != NULL);
 			activeGroup = inGroup?(cInfo->active):false;
@@ -722,14 +754,11 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 				// always allowed
 				retval = RunOneCommand(argc, argv, control);
 
-				// we do not log this command
+				// we do not log a 'playLog' command
 				if (strcmp(argv[0],"playLog"))
 				{
-					if (retval > 0)
-						//TEMP -- remove typecast on argv
-						logCommand(argc, (char **)argv, cmdDes);
-					else
-						cerr <<"Commands failed, not logged"<<endl;
+					//TEMP -- remove typecast on argv
+					logCommand(argc, (char **)argv, cmdDes);
 				}
 			}
 			else 
@@ -752,23 +781,18 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 				if (retval <= 0)
 					cerr <<"Error in groupcast:"<<errmsg<<endl;
 				retval = RunOneCommand(argc, argv, control);
-				if (retval > 0)
+				if (retval > 0) {
 				    //TEMP -- remove typecast on argv
 					logCommand(argc, (char **)argv, cmdDes);
+			    }
 			}
 			break;
+
 		case CmdSource::INTERNAL:
 			retval = RunOneCommand(argc, argv, control);
-			if (retval > 0)
-				//TEMP -- remove typecast on argv
-				logCommand(argc, (char **)argv, cmdDes);
-			else
-					cerr <<"Commands failed, not logged"<<endl;
-			break;
-		case CmdSource::SESSION_PLAY:
-		case CmdSource::SESSION_SAVE:
-			retval = RunOneCommand(argc, argv, control);
-			break;
+		    //TEMP -- remove typecast on argv
+			logCommand(argc, (char **)argv, cmdDes);
+
 		default:
 			errmsg = "Illegal command source type";
 			break;
@@ -827,6 +851,7 @@ CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
 	datap = cmdDb.get(*key);
 	return;
 }
+
 DeviseCommand*
 CmdContainer::lookupCmd(const char* cmdName)
 {

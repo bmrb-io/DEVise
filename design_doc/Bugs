@@ -2088,6 +2088,11 @@ Num Date        Status  Description
 535 11/17/99	OPEN	Order of views in a pile no longer relates to the
 			order of the views in the window when flattened. (rkw)
 
+536 11/23/99	OPEN	Collaboration no longer works. (rkw)
+
+537 11/24/99	OPEN	Play back command log, then quit -> DEVise crashes
+			in Dispatcher::DoCleanup(). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1999/11/22 18:11:58  wenger
+  Fixed 'command buffer conflict' errors, other command-related cleanup.
+
   Revision 1.70  1999/11/19 17:17:26  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -418,7 +421,7 @@ Session::Open(const char *filename)
     ControlPanelSimple control;
 
 	// disable logging while evaluating the file
-	CmdLogRecord* cmdLog = cmdContainerp->getCmdLog();
+	CmdLogRecord* cmdLog = CmdContainer::GetCmdContainer()->getCmdLog();
 	int oldStatus = cmdLog->getLogStatus();
 	cmdLog->setLogStatus(false);
 
@@ -1150,7 +1153,8 @@ Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
 	control->ReturnVal(0, "");
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (cmdContainerp->RunOneCommand(argc-1, &argv[1], control) <= 0) {
+    if (CmdContainer::GetCmdContainer()->RunInternal(argc-1, &argv[1],
+	    control) <= 0) {
       status = StatusFailed;
       fprintf(stderr, "Error in command: ");
       PrintArgs(stderr, argc, argv);
@@ -1801,7 +1805,8 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (cmdContainerp->RunOneCommand(argcIn, (char **)argvIn, control) <= 0) {
+  if (CmdContainer::GetCmdContainer()->RunInternal(argcIn, (char **)argvIn,
+      control) <= 0) {
     reportErrNosys(control->GetResult());
     status = StatusFailed;
   } else {

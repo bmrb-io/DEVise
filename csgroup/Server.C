@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/07/16 21:35:25  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.23  1999/07/12 19:01:37  wenger
   Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 
@@ -166,7 +174,6 @@
 #include "Dispatcher.h"
 #include "callBks.h"
 #include "rcvMsg.h"
-#include "CommandObj.h"
 #include "CmdDescriptor.h"
 #include "serverInterface.h"
 #include "keys.h"
@@ -282,9 +289,6 @@ Server::Server(char *name, int image_port,
 	if (_listenSwtFd >0) {
 	    _channel = new ControlChannel();
     }
-
-	// initialize the command object
-	cmdObj = new CommandObj(this);
 }
 
 
