@@ -491,6 +491,10 @@ Num Date        Status  Description
 			Tool on a view with X and Y links, only the X change
 			takes effect. (rkw)
 
+129 01/22/97	OPEN	Date attribute value displayed as a floating
+			point number in Query dialog when filter changed
+			with keypad zoom/pan keys.
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
