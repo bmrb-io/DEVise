@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/29 15:12:51  jussi
+  Commented out #define DEBUG.
+
   Revision 1.3  1995/11/29 15:08:06  jussi
   Added preliminary stuff needed for Tk window support.
 
@@ -24,6 +27,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "ViewWin.h"
 #include "Display.h"
@@ -32,7 +36,6 @@
 #ifdef TK_WINDOW
 #include <tcl.h>
 #include <tk.h>
-#include "TkControl.h"
 #endif
 
 //#define DEBUG
@@ -48,6 +51,12 @@ ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
   _iconified = true;
   _background = bg;
   _foreground = fg;
+
+#ifdef TK_WINDOW
+  _marginsOn = false;
+  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
+  _tkPathName[0] = 0;
+#endif
 }
 
 void ViewWin::Iconify()
@@ -69,7 +78,7 @@ void ViewWin::AppendToParent(ViewWin *parent)
 
 void ViewWin::DeleteFromParent()
 {
-  if (_parent != NULL){
+  if (_parent != NULL) {
     _parent->Delete(this);
     if (_mapped)
       Unmap();
@@ -79,46 +88,52 @@ void ViewWin::DeleteFromParent()
 
 void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 {
-  if (_mapped){
+  if (_mapped) {
     fprintf(stderr,"ViewWin::Map() already mapped\n");
     Exit::DoExit(1);
   }
 
-  if (_parent != NULL){
+  Boolean relativeMinSize = false;
+  Coord min_width = 100;
+  Coord min_height = 100;
+
+  if (_parent != NULL) {
 #ifdef DEBUG
     printf("ViewWin 0x%x mapping to parent 0x%x\n", this,
 	   _parent->GetWindowRep());
 #endif
     _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-		    x,y,w,h,_foreground,_background,_parent->GetWindowRep(),
-		    1.0,1.0,false, _winBoundary);
+		    x, y, w, h, _foreground, _background,
+		    _parent->GetWindowRep(), min_width, min_height,
+                    relativeMinSize, _winBoundary);
     _windowRep->RegisterCallback(this);
+#ifdef TK_WINDOW_old
+    _windowRep->Decorate(_parent->GetWindowRep(), _name,
+			 (unsigned int)min_width,
+			 (unsigned int)min_height);
+#endif
   } else {
     /* Create a new WindowRep */
 #ifdef DEBUG
     printf("ViewWin 0x%x mapping to root\n", this);
 #endif
-#ifdef TK_WINDOW
-    static int tkWinCount = 1;
-    char pathname[32];
-    sprintf(pathname, ".devisewin%d", tkWinCount++);
-    Tcl_Interp *interp = ControlPanel::Instance()->GetInterp();
-    Tk_Window mainWindow = ControlPanel::Instance()->GetMainWindow();
-    Tk_Window _tkWindow = Tk_CreateWindowFromPath(interp, mainWindow,
-						  pathname, 0);
-    if (!_tkWindow) {
-      fprintf(stderr, "Cannot create Tk window %s: %s\n", pathname,
-	      interp->result);
-      Exit::DoExit(2);
-    }
-    Tk_MoveWindow(_tkWindow, x, y);
-    Tk_GeometryRequest(_tkWindow, w, h);
-#endif
     _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-		    x,y,w,h,BlackColor,WhiteColor,NULL,
-		    100, 100, false, _winBoundary);
+		    x, y, w, h, BlackColor, WhiteColor, NULL,
+		    min_width, min_height, relativeMinSize, _winBoundary);
     _windowRep->RegisterCallback(this);
+#ifdef TK_WINDOW_old
+    _windowRep->Decorate(NULL, _name, (unsigned int)min_width,
+			 (unsigned int)min_height);
+#endif
   }
+
+#ifdef TK_WINDOW
+  /* Update size of window */
+  _width = w;
+  _height = h;
+  /* Get and set appropriate margins */
+  AddMarginControls();
+#endif
 
   _hasGeometry = false;
   _mapped = true;
@@ -131,13 +146,23 @@ void ViewWin::Unmap()
   printf("ViewWin 0x%x unmapping\n", this);
 #endif
 
-  if (_mapped){
-    SubClassUnmapped();
-    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_windowRep);
-    _windowRep = NULL;
-    _hasGeometry = false;
-    _mapped = false;
-  }
+  if (!_mapped)
+    return;
+
+#ifdef TK_WINDOW_old
+  _windowRep->Undecorate();
+#endif
+#ifdef TK_WINDOWxxx
+  /* Drop margin controls */
+  if (_marginsOn)
+    DropMarginControls();
+#endif
+
+  SubClassUnmapped();
+  DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_windowRep);
+  _windowRep = NULL;
+  _hasGeometry = false;
+  _mapped = false;
 }
 
 Boolean ViewWin::Mapped()
@@ -174,22 +199,61 @@ void ViewWin::Delete(ViewWin *child)
 
 /* Get current geometry of child w. r. t. parent */
 
+#ifdef TK_WINDOW
+void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
+#else
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
+#endif
 {
   if (_windowRep == NULL) {
     fprintf(stderr,"ViewWin::Geometry: not mapped\n");
     Exit::DoExit(2);
   }
-  if (!_hasGeometry){
+
+  if (!_hasGeometry) {
+#ifdef DEBUG
+    printf("ViewWin::Geometry from WindowRep 0x%x\n", _windowRep);
+#endif
     _windowRep->Dimensions(_width, _height);
-    _windowRep->Origin(_x, _y);
+    _x = _y = 0;
+    // _windowRep->Origin(_x, _y);
     _hasGeometry = true;
+  } else {
+#ifdef DEBUG
+    printf("ViewWin::Geometry from cached values\n");
+#endif
   }
+
   x = _x;
   y = _y;
   w = _width;
   h = _height;
+
+#ifdef DEBUG
+  printf("ViewWin::Geometry returns %d,%d,%u,%u\n", x, y, w, h);
+#endif
 }
+
+#ifdef TK_WINDOW
+/* Get current geometry of child w. r. t. parent */
+
+void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
+{
+  RealGeometry(x, y, w, h);
+
+  unsigned int lm, rm, tm, bm;
+  GetMargins(lm, rm, tm, bm);
+  x += lm;
+  y += tm;
+  w -= lm + rm;
+  h -= tm + bm;
+
+#ifdef DEBUG
+  printf("ViewWin::Geometry margin-adjusted returns %d,%d,%u,%u\n",
+	 x, y, w, h);
+#endif
+}
+#endif
 
 void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
@@ -197,7 +261,7 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
     fprintf(stderr,"ViewWin::AbsoluteOrigin: not mapped\n");
     Exit::DoExit(2);
   }
-  _windowRep->AbsoluteOrigin(x,y);
+  _windowRep->AbsoluteOrigin(x, y);
 }
 
 /* Move/Resize ourselves */
@@ -205,21 +269,20 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 {
 #ifdef DEBUG
-  printf("ViewWin::MoveResize 0x%x,%d,%d,%d,%d\n", this,x,y,x+w-1,y+h-1);
+  printf("ViewWin::MoveResize 0x%x, %d, %d, %u, %u\n", this, x, y, w, h);
 #endif
 
   if (!_mapped) {
     fprintf(stderr,"ViewWin::MoveResize not mapped\n");
     Exit::DoExit(1);
   } else
-    _windowRep->MoveResize(x,y,w,h);
+    _windowRep->MoveResize(x, y, w, h);
 }
 
 int ViewWin::TotalWeight()
 {
   int w = 0;
-  int index;
-  for (index=InitIterator(); More(index);){
+  for(int index = InitIterator(); More(index);) {
     ViewWin *vw= Next(index);
     w += vw->GetWeight();
   }
@@ -227,19 +290,26 @@ int ViewWin::TotalWeight()
   return w;
 }
 
-void ViewWin::HandleResize(WindowRep * w, int xlow,
-			   int ylow, unsigned width, unsigned height)
+void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
+			   unsigned width, unsigned height)
 {
 #ifdef DEBUG
-  printf("ViewWin::HandleResize 0x%x,%d,%d,%d,%d\n",
-	 this,xlow,ylow,width,height);
+  printf("ViewWin::HandleResize 0x%x, %d, %d, %u, %u\n",
+	 this, xlow, ylow, width, height);
 #endif
 
   _hasGeometry = true;
-  _x = xlow;
-  _y = ylow;
+  // _x = xlow;
+  // _y = ylow;
+  _x = _y = 0;
   _width = width;
   _height = height;
+
+#ifdef TK_WINDOW
+  /* Resize margin controls */
+  if (_marginsOn)
+    ResizeMargins(_width, _height);
+#endif
 }
 
 void ViewWin::HandleWindowMappedInfo(WindowRep *, Boolean mapped)
@@ -250,7 +320,7 @@ void ViewWin::HandleWindowMappedInfo(WindowRep *, Boolean mapped)
 
 Boolean ViewWin::Iconified()
 {
-  if (_parent != NULL){
+  if (_parent != NULL) {
     /* subwindow must query parent */
     return _parent->Iconified();
   } else {
@@ -293,3 +363,141 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
   _children.Swap(child1, child2);
 }
+
+#ifdef TK_WINDOW
+void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
+			 unsigned int &tm, unsigned int &bm)
+{
+  lm = _leftMargin;
+  rm = _rightMargin;
+  tm = _topMargin;
+  bm = _bottomMargin;
+#ifdef DEBUG
+  printf("ViewWin::GetMargins %u, %u, %u, %u\n", lm, rm, tm, bm);
+#endif
+}
+
+void ViewWin::AddMarginControls()
+{
+  static int tkWinCnt = 1;
+  char cmd[256];
+
+  sprintf(_tkPathName, ".tkMarginControl%d", tkWinCnt++);
+  sprintf(cmd, "CreateTkMarginControls %s %s %u %u",
+	  _tkPathName, (_parent ? "View" : "Window"),
+	  _width, _height);
+
+#ifdef DEBUG
+  printf("Executing: %s\n", cmd);
+#endif
+
+  extern Tcl_Interp *ControlPanelTclInterp;
+
+  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
+    fprintf(stderr, "Cannot execute %s: %s\n",
+	    cmd, ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+
+  _leftMargin = atoi(ControlPanelTclInterp->result);
+  char *space = strchr(ControlPanelTclInterp->result, ' ');
+  _rightMargin = atoi(space + 1);
+  space = strchr(space + 1, ' ');
+  _topMargin = atoi(space + 1);
+  space = strchr(space + 1, ' ');
+  _bottomMargin = atoi(space + 1);
+
+  if (_leftMargin > 0)
+    ReparentMarginControl("left", 0, _topMargin);
+  if (_rightMargin > 0)
+    ReparentMarginControl("right", _width - _rightMargin, _topMargin);
+  if (_topMargin > 0)
+    ReparentMarginControl("top", 0, 0);
+  if (_bottomMargin > 0)
+    ReparentMarginControl("bottom", 0, _height - _bottomMargin);
+
+  _marginsOn = true;
+}
+
+void ViewWin::DropMarginControls()
+{
+  if (_leftMargin > 0)
+    DestroyMarginControl("left");
+  if (_rightMargin > 0)
+    DestroyMarginControl("right");
+  if (_topMargin > 0)
+    DestroyMarginControl("top");
+  if (_bottomMargin > 0)
+    DestroyMarginControl("bottom");
+
+  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
+  _marginsOn = false;
+}
+
+void ViewWin::DestroyMarginControl(char *side)
+{
+  char cmd[256];
+  sprintf(cmd, "destroy %s-%s", _tkPathName, side);
+
+#ifdef DEBUG
+  printf("Executing: %s\n", cmd);
+#endif
+
+  extern Tcl_Interp *ControlPanelTclInterp;
+
+  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
+    fprintf(stderr, "Cannot execute %s: %s\n",
+	    cmd, ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+}
+
+void ViewWin::ReparentMarginControl(char *side, int xoff, int yoff)
+{
+  char tkWinName[256];
+  sprintf(tkWinName, "%s-%s", _tkPathName, side);
+
+  extern Tcl_Interp *ControlPanelTclInterp;
+  extern Tk_Window ControlPanelMainWindow;
+
+  Tk_Window tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
+				       tkWinName,
+				       ControlPanelMainWindow);
+  if (!tkWindow) {
+    fprintf(stderr, "Cannot convert %s to window: %s\n",
+	    tkWinName, ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+
+  // make Tk window a child of current window
+  _windowRep->Reparent(true, (void *)Tk_WindowId(tkWindow), xoff, yoff);
+}
+
+void ViewWin::ResizeMargins(unsigned int w, unsigned int h)
+{
+  char cmd[256];
+  sprintf(cmd, "UpdateTkControlMargins %s %s %u %u",
+	  _tkPathName, (_parent ? "View" : "Window"),
+	  _width, _height);
+  
+#ifdef DEBUG
+  printf("Executing: %s\n", cmd);
+#endif
+  
+  extern Tcl_Interp *ControlPanelTclInterp;
+  
+  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
+    fprintf(stderr, "Cannot execute %s: %s\n",
+	    cmd, ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+}
+
+void ViewWin::ToggleMargins()
+{
+  if (_marginsOn)
+    DropMarginControls();
+  else
+    AddMarginControls();
+}
+#endif
