@@ -1003,7 +1003,7 @@ Num Date        Status  Description
 252 12/12/97	OPEN	Changing data color changes color of drill-down
 			results popup. (rkw)
 
-253 12/12/97	OPEN	Axis values don't show up with new color manager. (rkw)
+253 12/12/97	FIXED	Axis values don't show up with new color manager. (rkw)
 
 254 12/12/97	OPEN	Devised doesn't seem to notify Tasvir and EmbeddedTk
 			server when it exits. (rkw)
