@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/04/05 21:09:32  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.5  1999/03/16 21:47:52  wenger
   '5' (home) key now works properly on linked piles -- does home on the
   entire pile as a unit.
@@ -62,10 +67,11 @@
 class ViewLayout;
 class VisualLink;
 class ViewGraph;
+class View;
 
 class PileStack {
 public:
-  PileStack(char *name, ViewLayout *window);
+  PileStack(const char *name, ViewLayout *window);
   ~PileStack();
 
   const char *GetName() { return _name; }
@@ -83,6 +89,14 @@ public:
 
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
+
+  void SetFont(const char *which, int family, float pointSize, Boolean bold,
+      Boolean italic);
+
+  void SetLabelParam(Boolean occupyTop, int extent, const char *name);
+
+  void SetXAxisDateFormat(const char *format);
+  void SetYAxisDateFormat(const char *format);
 
 protected:
   ViewWinList *GetViewList();
@@ -105,7 +119,8 @@ private:
 
   Boolean CanPileOrStack(State state);
   void CreatePileLink();
-  void SynchronizeAxes();
+  void SynchronizeAllViews();
+  void SynchronizeView(View *view);
 };
 
 #endif // _PileStack_h_

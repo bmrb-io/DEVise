@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/04/05 21:09:32  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.6  1999/03/16 21:47:52  wenger
   '5' (home) key now works properly on linked piles -- does home on the
   entire pile as a unit.
@@ -77,7 +82,7 @@
  * function: PileStack::PileStack
  * Constructor.
  */
-PileStack::PileStack(char *name, ViewLayout *window)
+PileStack::PileStack(const char *name, ViewLayout *window)
 {
 #if (DEBUG >= 1)
   printf("PileStack::PileStack(%s)\n", name);
@@ -192,22 +197,28 @@ PileStack::InsertView(ViewWin *view)
   printf("PileStack(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
-  _views.Append(view);
-
   if (_state == PSPiledNoLink || _state == PSPiledLinked) {
+
     ((View *)view)->SetPileMode(true);
-    if (_views.Size() < 2) {
+
+    //
+    // Make sure the new view is consistent with the state of the pile as
+    // far as axes, title, etc.
+    //
+    if (_views.Size() < 1) {
       // This is the first view in the pile, so find out whether the
       // axes are turned on.
       ((View *)view)->AxisDisplay(_xAxisOn, _yAxisOn);
     }
-    ((View *)view)->XAxisDisplayOnOff(_xAxisOn, false);
-    ((View *)view)->YAxisDisplayOnOff(_yAxisOn, false);
+
+    SynchronizeView((View *)view);
   }
 
   if (_state == PSPiledLinked) {
     _link->InsertView((ViewGraph *)view);
   }
+
+  _views.Append(view);
 }
 
 /*------------------------------------------------------------------------------
@@ -331,9 +342,11 @@ PileStack::SetPiled(Boolean doLink)
 
     //
     // Make sure that all views in the pile have the same axes enabled and
-    // disabled, so that data doesn't overdraw the axes.
+    // disabled, title enabled and disabled, etc., so that data doesn't
+    // overdraw the axes.  Also sets things such as the fonts and the axis
+    // date formats to be the same.
     //
-    SynchronizeAxes();
+    SynchronizeAllViews();
 
     //
     // Make sure either all views show the title or no views show the
@@ -478,15 +491,15 @@ PileStack::CreatePileLink()
 }
 
 /*------------------------------------------------------------------------------
- * function: PileStack::SynchronizeAxes
- * Make sure that all views in a pile have the same axes enabled and disabled,
- * so that data doesn't overdraw the axes.
+ * function: PileStack::SynchronizeAllViews
+ * Make sure that the state of all views in the pile is consistent, in terms
+ * of whether axes and title are shown, etc.
  */
 void
-PileStack::SynchronizeAxes()
+PileStack::SynchronizeAllViews()
 {
 #if (DEBUG >= 3)
-  printf("PileStack(%s)::SynchronizeAxes()\n", _name);
+  printf("PileStack(%s)::SynchronizeAllViews()\n", _name);
 #endif
 
   int index = GetViewList()->InitIterator();
@@ -496,10 +509,63 @@ PileStack::SynchronizeAxes()
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    view->XAxisDisplayOnOff(_xAxisOn, false);
-    view->YAxisDisplayOnOff(_yAxisOn, false);
+    SynchronizeView(view);
   }
   GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SynchronizeView
+ * Make sure the state of the given view is consistent with the state of
+ * the pile.
+ */
+void
+PileStack::SynchronizeView(View *view)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SynchronizeView(%s)\n", _name, view->GetName());
+#endif
+
+  view->XAxisDisplayOnOff(_xAxisOn, false);
+  view->YAxisDisplayOnOff(_yAxisOn, false);
+
+  if (GetViewList()->Size() >= 1) {
+    View *firstView = (View *)GetViewList()->GetFirst();
+    if (view != firstView) {
+
+      // Fonts.
+      char *which = "title";
+      int family;
+      float pointSize;
+      Boolean bold;
+      Boolean italic;
+      firstView->GetFont(which, family, pointSize, bold, italic);
+      view->SetFont(which, family, pointSize, bold, italic, false);
+      which = "x axis";
+      firstView->GetFont(which, family, pointSize, bold, italic);
+      view->SetFont(which, family, pointSize, bold, italic, false);
+      which = "y axis";
+      firstView->GetFont(which, family, pointSize, bold, italic);
+      view->SetFont(which, family, pointSize, bold, italic, false);
+      which = "z axis";
+      firstView->GetFont(which, family, pointSize, bold, italic);
+      view->SetFont(which, family, pointSize, bold, italic, false);
+
+      // Title.
+      Boolean occupyTop;
+      int extent;
+      char *title;
+      firstView->GetLabelParam(occupyTop, extent, title);
+      view->SetLabelParam(occupyTop, extent, title, false);
+
+      // Axis date formats.
+      const char *dateFormat;
+      dateFormat = firstView->GetXAxisDateFormat();
+      view->SetXAxisDateFormat(dateFormat, false);
+      dateFormat = firstView->GetYAxisDateFormat();
+      view->SetYAxisDateFormat(dateFormat, false);
+    }
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -540,6 +606,83 @@ PileStack::EnableYAxis(Boolean enable)
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->YAxisDisplayOnOff(_yAxisOn, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetFont
+ * Set the given font for all views in the pile.
+ */
+void
+PileStack::SetFont(const char *which, int family, float pointSize,
+    Boolean bold, Boolean italic)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SetFont()\n", _name);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetFont(which, family, pointSize, bold, italic, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetLabelParam
+ * Set the label parameters (title) for all views in the pile.
+ */
+void
+PileStack::SetLabelParam(Boolean occupyTop, int extent, const char *name)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SetLabelParam()\n", _name);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetLabelParam(occupyTop, extent, name, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetXAxisDateFormat
+ * Set the X axis date format for all views in the pile.
+ */
+void
+PileStack::SetXAxisDateFormat(const char *format)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SetXAxisDateFormat()\n", _name);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetXAxisDateFormat(format, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetYAxisDateFormat
+ * Set the Y axis date format for all views in the pile.
+ */
+void
+PileStack::SetYAxisDateFormat(const char *format)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SetYAxisDateFormat()\n", _name);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetYAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
 }

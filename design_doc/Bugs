@@ -1865,6 +1865,9 @@ Num Date        Status  Description
 			effect) -> view images don't get properly updated.
 			(rkw)
 
+485 04/21/99	OPEN	Home ('5') won't function properly if one of the
+			axes has a sorted attribute. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

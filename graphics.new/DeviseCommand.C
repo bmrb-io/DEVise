@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/04/16 20:59:21  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.56  1999/04/14 15:30:17  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -4478,13 +4483,13 @@ DeviseCommand_setFont::Run(int argc, char** argv)
 {
     {
         {
-          View *view = View::FindViewByName(argv[1]);
-          if (view == NULL) {
-            ReturnVal(API_NAK, "Cannot find view");
+          ViewWin *viewWin = (ViewWin *)_classDir->FindInstance(argv[1]);
+          if (viewWin == NULL) {
+            ReturnVal(API_NAK, "Cannot find view or window");
             return -1;
           }
     
-          view->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
+          viewWin->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
     	atoi(argv[6]));
     
           ReturnVal(API_ACK, "done");

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.184  1999/04/20 14:13:11  wenger
+#	Added Refresh command (closes and re-opens current session).
+#	
 #	Revision 1.183  1999/04/14 15:30:27  wenger
 #	Improved 'switch TData': moved the code from Tcl to C++, functionality
 #	is more flexible -- schemas don't have to match exactly as long as the
@@ -1098,7 +1101,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise test }
+#.mbar.session.menu add command -label "Test" -command { DEVise setFont [DEVise getViewWin $curView] "x axis" 2 18 1 1 }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
@@ -1627,7 +1630,9 @@ menu .mbar.window.menu -tearoff 0
 # but I don't want to deal with them right now.  RKW 2/7/97.
 #.mbar.window.menu add separator
 #.mbar.window.menu add command -label "Title"
-#.mbar.window.menu add cascade -label "Fonts"
+
+.mbar.window.menu add separator
+.mbar.window.menu add cascade -label "Fonts" -menu .mbar.window.menu.fontsmenu
 
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "New" \
@@ -1660,6 +1665,14 @@ menu .mbar.window.menu -tearoff 0
 
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
+
+menu .mbar.window.menu.fontsmenu -tearoff false
+.mbar.window.menu.fontsmenu add command -label "Title" \
+    -command { GetFont "title" 1 }
+.mbar.window.menu.fontsmenu add command -label "X Axis" \
+    -command { GetFont "x axis" 1 }
+.mbar.window.menu.fontsmenu add  command -label "Y Axis"\
+    -command { GetFont "y axis" 1 }
 
 # HELP MENU.
 menu .mbar.help.menu -tearoff 0

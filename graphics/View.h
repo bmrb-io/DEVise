@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.80  1999/04/16 20:59:14  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.79  1999/04/05 16:15:50  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -547,7 +552,8 @@ class View : public ViewWin
 	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
 	
 	/* set label parameters */
-	void SetLabelParam(Boolean occupyTop, int extent, char *name = 0);
+	void SetLabelParam(Boolean occupyTop, int extent, const char *name = 0,
+	    Boolean notifyPile = true);
 
         /* abort query */
         void AbortQuery();
@@ -655,9 +661,9 @@ class View : public ViewWin
 	// Print this view (and any child views) to PostScript.
 	virtual DevStatus PrintPS();
 
-	virtual void SetFont(char *which, int family, float pointSize,
-	  Boolean bold, Boolean italic);
-	virtual void GetFont(char *which, int &family, float &pointSize,
+	virtual void SetFont(const char *which, int family, float pointSize,
+	  Boolean bold, Boolean italic, Boolean notifyPile = true);
+	virtual void GetFont(const char *which, int &family, float &pointSize,
 	  Boolean &bold, Boolean &italic);
 
 #if  0 
@@ -690,9 +696,9 @@ class View : public ViewWin
 	void SetAlign(int symbolAlign) { _symbolAlign = symbolAlign; }
 
 	const char *GetXAxisDateFormat() { return _xAxisDateFormat; }
-	void SetXAxisDateFormat(char *format);
+	void SetXAxisDateFormat(const char *format, Boolean notifyPile = true);
 	const char *GetYAxisDateFormat() { return _yAxisDateFormat; }
-	void SetYAxisDateFormat(char *format);
+	void SetYAxisDateFormat(const char *format, Boolean notifyPile = true);
 
 	static void SetDrawCursors(Boolean draw) { _drawCursors = draw; }
 	static void SetJSCursors(Boolean js) { _jsCursors = js; }

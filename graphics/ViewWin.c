@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/03/01 17:47:34  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.53  1999/02/22 19:07:37  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -1226,6 +1229,22 @@ ViewWin::SetPileStack(PileStack *ps)
 {
   delete _pileStack;
   _pileStack = ps;
+}
+
+void
+ViewWin::SetFont(const char *which, int family, float pointSize,
+    Boolean bold, Boolean italic, Boolean notifyPile)
+{
+#if defined(DEBUG)
+  printf("ViewWin(%s)::SetFont()\n", GetName());
+#endif
+
+  int index = InitIterator();
+  while (More(index)) {
+    ViewWin *vw = Next(index);
+    vw->SetFont(which, family, pointSize, bold, italic, notifyPile);
+  }
+  DoneIterator(index);
 }
 
 //******************************************************************************

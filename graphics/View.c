@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.164  1999/04/20 19:44:46  wenger
+  Improved axis drawing:
+  * Tick mark spacing is better.
+  * Axes always have tick marks drawn.
+  * Rounding errors fixed.
+  * Off-by-one-pixel errors fixed.
+  * Labels positioned better.
+
   Revision 1.163  1999/04/20 14:13:31  wenger
   Improved debug output.
 
@@ -2059,16 +2067,12 @@ void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
 
 /* Set label parameters */
 
-void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
+void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
+    Boolean notifyPile)
 {
-  //
-  // Note: we could eventually make this work by changing all views in
-  // the pile appropriately, but I didn't want to deal with that right
-  // now.  RKW 1999-02-23.
-  //
-  if (IsInPileMode()) {
-    fprintf(stderr, "Label parameters cannot be changed in a piled view\n");
-    return;
+  if (_pileMode && notifyPile) {
+    GetParent()->GetPileStack()->SetLabelParam(occupyTop, extent, name);
+	return;
   }
 
   delete _label.name;
@@ -3357,32 +3361,38 @@ View::PrintPSDone()
 }
 
 void
-View::SetFont(char *which, int family, float pointSize,
-	      Boolean bold, Boolean italic)
+View::SetFont(const char *which, int family, float pointSize,
+	      Boolean bold, Boolean italic, Boolean notifyPile)
 {
 #if defined(DEBUG)
   printf("View::SetFont(%s, %d, %f, %d, %d)\n", which, family, pointSize,
     bold, italic);
 #endif
 
-  if (!strcmp(which, "title")) {
-    _titleFont.Set(family, pointSize, bold, italic);
-  } else if (!strcmp(which, "x axis")) {
-    _xAxisFont.Set(family, pointSize, bold, italic);
-  } else if (!strcmp(which, "y axis")) {
-    _yAxisFont.Set(family, pointSize, bold, italic);
-  } else if (!strcmp(which, "z axis")) {
-    _zAxisFont.Set(family, pointSize, bold, italic);
+  if (_pileMode && notifyPile) {
+	GetParent()->GetPileStack()->SetFont(which, family, pointSize, bold,
+	    italic);
   } else {
-    reportErrNosys("Illegal font selection");
-  }
+    if (!strcmp(which, "title")) {
+      _titleFont.Set(family, pointSize, bold, italic);
+    } else if (!strcmp(which, "x axis")) {
+      _xAxisFont.Set(family, pointSize, bold, italic);
+    } else if (!strcmp(which, "y axis")) {
+      _yAxisFont.Set(family, pointSize, bold, italic);
+    } else if (!strcmp(which, "z axis")) {
+      _zAxisFont.Set(family, pointSize, bold, italic);
+    } else {
+      reportErrNosys("Illegal font selection");
+    }
 
-  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewFontCh);
-  Refresh();
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	    DepMgr::EventViewFontCh);
+    Refresh();
+  }
 }
 
 void
-View::GetFont(char *which, int &family, float &pointSize,
+View::GetFont(const char *which, int &family, float &pointSize,
 	      Boolean &bold, Boolean &italic)
 {
 #if defined(DEBUG)
@@ -4361,22 +4371,30 @@ View::SetShowNames(Boolean showNames)
 }
 
 void
-View::SetXAxisDateFormat(char *format)
+View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
-  if (_xAxisDateFormat == NULL || strcmp(format, _xAxisDateFormat)) {
-    delete [] _xAxisDateFormat;
-    _xAxisDateFormat = CopyString(format);
-    Refresh();
+  if (_pileMode && notifyPile) {
+    GetParent()->GetPileStack()->SetXAxisDateFormat(format);
+  } else {
+    if (_xAxisDateFormat == NULL || strcmp(format, _xAxisDateFormat)) {
+      delete [] _xAxisDateFormat;
+      _xAxisDateFormat = CopyString(format);
+      Refresh();
+    }
   }
 }
 
 void
-View::SetYAxisDateFormat(char *format)
+View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 {
-  if (_yAxisDateFormat == NULL || strcmp(format, _yAxisDateFormat)) {
-    delete [] _yAxisDateFormat;
-    _yAxisDateFormat = CopyString(format);
-    Refresh();
+  if (_pileMode && notifyPile) {
+    GetParent()->GetPileStack()->SetYAxisDateFormat(format);
+  } else {
+    if (_yAxisDateFormat == NULL || strcmp(format, _yAxisDateFormat)) {
+      delete [] _yAxisDateFormat;
+      _yAxisDateFormat = CopyString(format);
+      Refresh();
+    }
   }
 }
 

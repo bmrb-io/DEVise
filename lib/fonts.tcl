@@ -19,6 +19,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/04/09 18:24:45  wenger
+# Fixed various makefiles (removed extra -gstabs flags, etc.);
+# setup script now links client.tcl into all cslib directories;
+# added 24 point font to available sizes in font selection GUI.
+#
 # Revision 1.2  1996/12/20 16:50:36  wenger
 # Fonts for view label, x axis, and y axis can now be changed.
 #
@@ -29,7 +34,7 @@
 
 ############################################################
 
-proc GetFont { which } {
+proc GetFont { which {isWindow 0} } {
     global curView
     global isBold isItalic
 
@@ -80,9 +85,9 @@ proc GetFont { which } {
 # Removed Apply button because view doesn't get repainted while dialog
 # is visible anyhow (because of grab).  RKW 12/20/96.
 #    button .getFont.apply -text "Apply" -width 10 \
-#      -command "SetFont {$which}"
+#      -command "SetFont {$which} $isWindow"
     button .getFont.ok -text "OK" -width 10 \
-      -command "SetFont {$which}; destroy .getFont"
+      -command "SetFont {$which}  $isWindow; destroy .getFont"
     button .getFont.cancel -text "Cancel" -width 10 \
       -command "destroy .getFont"
 
@@ -144,14 +149,19 @@ proc GetFont { which } {
 
 ##########################################################################
 
-proc SetFont { which } {
+proc SetFont { which isWindow } {
     global curView
     global isBold isItalic
 
     set family [lindex [.getFont.family configure -text] 4]
     set size [lindex [.getFont.size configure -text] 4]
 
-    DEVise setFont $curView $which $family $size $isBold $isItalic
+    if {$isWindow} {
+        DEVise setFont [DEVise getViewWin $curView] $which $family $size \
+	  $isBold $isItalic
+    } else {
+        DEVise setFont $curView $which $family $size $isBold $isItalic
+    }
 }
 
 

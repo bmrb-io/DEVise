@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/02/22 19:07:37  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.33  1999/02/11 19:54:39  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -373,6 +378,9 @@ class ViewWin : public Coloring
 	void SetPileStack(PileStack *ps);
 
 	virtual void Refresh(Boolean refreshPile = true) {}
+
+    virtual void SetFont(const char *which, int family, float pointSize,
+      Boolean bold, Boolean italic, Boolean notifyPile = true);
 
 protected:
     /* called by base class when it has been mapped/unmapped */
