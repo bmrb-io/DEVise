@@ -9,7 +9,7 @@ public class ExecConst implements ExecExpr {
 		this.value = value;
 	}
 
-     	DTE_Type evaluate(Tuple left, Tuple right){
+     	public DTE_Type evaluate(Tuple left, Tuple right){
 		return value;
 	}
 };
