@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.85  1996/07/15 21:13:32  jussi
+#	Fixed the ordering of size, pattern, and orientation in EditMapping.
+#
 #	Revision 1.84  1996/07/15 14:25:13  jussi
 #	Added statement that sets the window title of the main
 #	control panel.
@@ -520,20 +523,22 @@ pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
 .mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0}
+.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
 .mbar.session.menu add command -label "Save as Template" \
-	-command {DoSaveAs 1 0 0}
+	-command {DoSaveAs 1 0 0 0}
+.mbar.session.menu add command -label "Save as Batch Script" \
+	-command {DoSaveAs 0 0 0 1}
 .mbar.session.menu add separator
 .mbar.session.menu add cascade -label "Export Template" \
 	-menu .mbar.session.menu.exportMenu
 menu .mbar.session.menu.exportMenu -tearoff 0
 .mbar.session.menu.exportMenu add command -label "Without Data" \
-	-command {DoSaveAs 0 1 0}
+	-command {DoSaveAs 0 1 0 0}
 .mbar.session.menu.exportMenu add command -label "With Data" \
-	-command {DoSaveAs 0 1 1}
+	-command {DoSaveAs 0 1 1 0}
 .mbar.session.menu add command -label "Merge Template" \
 	-command {DoTemplateMerge}
 .mbar.session.menu add separator
