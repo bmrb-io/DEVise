@@ -43,6 +43,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  2000/05/10 17:22:51  wenger
+  Oops -- forgot to put in explicit check for file too small to checkpoint.
+
   Revision 1.10  2000/05/10 16:08:31  wenger
   New index file format significantly improves the detection of invalid
   index files.
@@ -247,9 +250,11 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     // not necessarily an error -- we may just not have an index for this
     // data yet.)
 #if (DEBUGLVL >= 1)
-    reportErrSys("Can't open index file");
+    char errBuf[MAXPATHLEN + 256];
+    sprintf(errBuf, "Can't open index file %s", indexFileName);
+    reportErrSys(errBuf);
 #endif
-    result += StatusFailed;
+    result += StatusCancel;
   }
 
 /*
@@ -336,6 +341,13 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
   printf("\n");
 #endif
 
+  if (result.IsError()) {
+    char errBuf[MAXPATHLEN + 256];
+    sprintf(errBuf, "Error initializing index for TData %s from file %s",
+        tdataP->GetName(), indexFileName);
+    reportErrNosys(errBuf);
+  }
+
   return result;
 }
 
@@ -380,6 +392,7 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
   {
     char errBuf[1024];
     sprintf(errBuf, "Cannot create index file %s\n", indexFileName);
+    reportErrSys(errBuf);
     result += StatusFailed;
   }
 
@@ -486,6 +499,13 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
   printf("  Status at end of FileIndex::Checkpoint() ");
   result.Print();
 #endif
+
+  if (result.IsError()) {
+    char errBuf[MAXPATHLEN + 256];
+    sprintf(errBuf, "Error checkpointing TData %s to index file %s",
+        tdataP->GetName(), indexFileName);
+    reportErrNosys(errBuf);
+  }
 
   return result;
 }
@@ -748,12 +768,12 @@ FileIndex::ReadAndCompareBytes(DataSource *dataP, int indexFd, long offset,
   {
     if (dataP->Seek(offset, SEEK_SET) < 0)
     {
-      reportErrNosys("Error seeking on data file");
+      reportErrSys("Error seeking on data file");
       result += StatusFailed;
     }
     else if (dataP->Fread(buffer1, length, 1) != 1)
     {
-      reportErrNosys("Error reading data file");
+      reportErrSys("Error reading data file");
       result += StatusFailed;
     }
   }
@@ -762,7 +782,7 @@ FileIndex::ReadAndCompareBytes(DataSource *dataP, int indexFd, long offset,
   {
     if (read(indexFd, buffer2, length) != length)
     {
-      reportErrNosys("Error reading index file");
+      reportErrSys("Error reading index file");
       result += StatusFailed;
     }
     else if (memcmp(buffer1, buffer2, length))
@@ -794,7 +814,7 @@ FileIndex::ReadAndWriteBytes(DataSource *dataP, int indexFd, long offset,
   {
     if (dataP->Seek(offset, SEEK_SET) < 0)
     {
-      reportErrNosys("Error seeking on data file");
+      reportErrSys("Error seeking on data file");
       result += StatusFailed;
     }
     else
