@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/28 05:09:59  ravim
+  Initial Version.
+*/
 
 #include <stdio.h>
 #include "BasicStats.h"
@@ -54,13 +57,14 @@ void BasicStats::Done()
 
 void BasicStats::Report()
 {
-  printf("***********Statistics Report***********\n");
-  printf("Sum : %f  Sum of Squares : %f\n", sum, sum_sqr);
-  printf("Number of samples : %d\n", nsamples);
-  double avg = sum/nsamples;
-
   if (_vw->GetDisplayStats() == true) 
   {
+    printf("***********Statistics Report***********\n");
+    printf("Sum : %f  Sum of Squares : %f\n", sum, sum_sqr);
+    printf("Number of samples : %d\n", nsamples);
+    double avg = sum/nsamples;
+    printf("Average : %f\n", avg);
+
     // Draw a line across the window to depict the average
     // Get the window
     WindowRep *win = _vw->GetWindowRep();
