@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/06/21 22:47:57  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.11  1997/06/16 16:04:40  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -57,13 +60,25 @@ class Engine : public PlanOp {
 	String* attributeNames;
 	Iterator* topNodeIt;
 public:
+	Engine() :  topNode(NULL), attributeNames(NULL), topNodeIt(NULL) {}
 	Engine(String query) : query(query), topNode(NULL),
 		attributeNames(NULL), topNodeIt(NULL) {}
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
 		delete [] attributeNames;
+		delete topNodeIt;
 	}
 	int optimize();	// throws
+	int optimize(String query){	// throws
+		delete topNode;	// should delete all the sites
+		topNode = NULL;
+		delete [] attributeNames;
+		attributeNames = NULL;
+		delete topNodeIt;
+		topNodeIt = NULL;
+		this->query = query;
+		return optimize();
+	}
      int getNumFlds(){
 		return topNode->getNumFlds();
      }

@@ -33,23 +33,29 @@ typedef long off_t;
 TypeID translateUDType(Attr* at);
 
 class DevReadExec : public Iterator {
+	char* buff;	// this has to be aligned!
 	UniData* ud;
 	UnmarshalPtr* unmarshalPtrs;
+	DestroyPtr* destroyPtrs;
 	Tuple* tuple;
-	char buff[BUFSZE+1];
 	off_t off;
 	int* offsets;
 	int numFlds;
 	int recId;
 public:
 	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
+		DestroyPtr* destroyPtrs,
 		Tuple* tuple, int* offsets, int numFlds) :
-		ud(ud), unmarshalPtrs(unmarshalPtrs), tuple(tuple),
+		ud(ud), unmarshalPtrs(unmarshalPtrs),
+		destroyPtrs(destroyPtrs), tuple(tuple),
 		offsets(offsets), numFlds(numFlds) {
 
-		buff[BUFSZE] = '\0';
+		buff = (char*) new double[BUFSZE / sizeof(double)];
+		buff[BUFSZE - 1] = '\0';
 		recId = 0;
 	}
+
+	virtual ~DevReadExec();
 
 	virtual const Tuple* getNext(streampos& pos){
 		assert(! "not implemented");
@@ -58,8 +64,9 @@ public:
 
 	virtual const Tuple* getNext();
 
-	virtual void setOffset(Offset offset){
+	virtual void setOffset(Offset offset, RecId recId){
 		off = offset.getOffset();
+		this->recId = recId;
 	}
 
      virtual Offset getOffset(){

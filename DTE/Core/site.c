@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/06/21 22:48:07  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.16  1997/06/16 16:04:54  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -466,10 +469,12 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	const Tuple* tup;
 	while((tup = indexIt->getNext())){
 		IndexDesc* indexDesc = new IndexDesc(*((IndexDesc*) tup[2]));
+
+#ifdef DEBUG
 		cout << "Index Desc for " << tableNm << ": ";
 		indexDesc->display(cout);
 		cout << endl;
-
+#endif
 		int totNumIndFlds = indexDesc->getTotNumFlds();
 		String* allAttrNms = indexDesc->getAllAttrNms();
 		RTreeIndex* currInd = new RTreeIndex(indexDesc);
@@ -491,14 +496,14 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		int indexOnlyPredCnt = indexOnlyPreds.cardinality();
 		Site* newAlt = NULL;
 		bool selectInc = exclusiveList(mySelect, allAttrNms, totNumIndFlds);
-		cout << "indexOnlyPredCnt = " << indexOnlyPredCnt << endl;
-		cout << "selectInc = " << selectInc << endl;
+//		cout << "indexOnlyPredCnt = " << indexOnlyPredCnt << endl;
+//		cout << "selectInc = " << selectInc << endl;
 		if(indexOnlyPredCnt == totalNumPreds && selectInc){
 			
 			// Can do index only scan
 
 			newAlt = new LocalTable(name, mySelect, myWhere, currInd);
-			cout << "Chose Index only scan" << endl;
+//			cout << "Chose Index only scan" << endl;
 
 		}
 //		else if(indexOnlyPredCnt > 0){
@@ -517,8 +522,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		}
 		else {
 
-			// Cannot do anything with this index
-			cout << "Index is useless" << endl;
+			// cout << "Index is useless" << endl;
 		}
 
 		if(newAlt){
@@ -526,6 +530,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		}
 	}
 	delete indexIt;
+	delete indexForTable;
 	return retVal;
 }
 

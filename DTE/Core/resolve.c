@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/06/27 23:17:22  donjerko
+  Changed date structure from time_t and tm to EncodedDTF
+
   Revision 1.16  1997/06/16 16:04:53  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -349,7 +352,11 @@ ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const {
 }
 
 BaseSelection* ConstantSelection::duplicate() {
-	return new ConstantSelection(typeID, value);
+	size_t objSz;
+	Type* newvalue = allocateSpace(typeID, objSz);
+	ADTCopyPtr cp = getADTCopyPtr(typeID);
+	cp(value, newvalue, objSz);
+	return new ConstantSelection(typeID, newvalue);
 }
 
 bool PrimeSelection::match(BaseSelection* x){

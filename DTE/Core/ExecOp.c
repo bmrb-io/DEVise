@@ -18,7 +18,8 @@ const Tuple* IndexScanExec::getNext(){
 		if(offset.isNull()){
 			return NULL;
 		}
-		inputIt->setOffset(offset);
+		RecId recId = index->getRecId();
+		inputIt->setOffset(offset, recId);
 		input = inputIt->getNext();
 		assert(input);
 		cond = evaluateList(myWhere, input);
@@ -101,4 +102,10 @@ const Tuple* UnionExec::getNext(){
 	else{
 		return iter2->getNext();
 	}
+}
+
+IndexScanExec::~IndexScanExec(){
+	delete index;
+	delete inputIt;
+	delete [] next;
 }

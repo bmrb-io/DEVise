@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/06/21 22:47:58  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.10  1997/06/16 16:04:41  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -47,6 +50,7 @@
 #include "ParseTree.h"
 #include "Utility.h"
 #include "Iterator.h"
+#include "Aggregates.h"
 
 #ifndef NO_RTREE
 	#include "RTree.h"
@@ -81,18 +85,23 @@ Site* IndexParse::createSite(){
 	assert(site);
 	site->addTable(new TableAlias(tableName, new String(*indexName)));
 
-	List<BaseSelection*>* keyList = 
-		createSelectList(*indexName, keyAttrs);
-	List<BaseSelection*>* addList = 
-		createSelectList(*indexName, additionalAttrs);
-	List<BaseSelection*>* attributeList = new List<BaseSelection*>;
-	attributeList->addList(keyList);
-	attributeList->addList(addList);
-	site->filter(attributeList);
-	TRY(checkOrphanInList(attributeList), NULL);
+	site->filter(NULL);
 
 	int numKeyFlds = keyAttrs->cardinality();
 	int numAddFlds = additionalAttrs->cardinality();
+
+	String* keyFlds = new String[numKeyFlds];
+	String* addFlds = new String[numAddFlds];
+	keyAttrs->rewind();
+	for(int i = 0; !keyAttrs->atEnd(); i++, keyAttrs->step()){
+		assert(i < numKeyFlds);
+		keyFlds[i] = *keyAttrs->get();
+	}
+	additionalAttrs->rewind();
+	for(int i = 0; !additionalAttrs->atEnd(); i++, additionalAttrs->step()){
+		assert(i < numAddFlds);
+		addFlds[i] = *additionalAttrs->get();
+	}
 
 	String option = "execute";
 	TRY(site->typify(option), 0);
@@ -101,21 +110,54 @@ Site* IndexParse::createSite(){
 	LOG(site->display(logFile));
 	LOG(logFile << endl);
 
-	int numFlds = site->getNumFlds();
-	assert(numFlds == numKeyFlds + numAddFlds);
+	int numTFlds = site->getNumFlds();
+	const String* attrNms = site->getAttNamesOnly();
+
+	int indirect[numTFlds];
+	for(int i = 0; i < numKeyFlds; i++){
+		int j;
+		for(j = 0; j < numTFlds; j++){
+			if(attrNms[j] == keyFlds[i]){
+				indirect[i] = j;
+				break;
+			}
+		}
+		if(j == numTFlds){
+			cerr << "Cannot find attribute: " << keyFlds[i] << endl;
+		}
+	}
+	for(int i = 0; i < numAddFlds; i++){
+		int j;
+		for(j = 0; j < numTFlds; j++){
+			if(attrNms[j] == addFlds[i]){
+				indirect[i + numKeyFlds] = j;
+				break;
+			}
+		}
+		if(j == numTFlds){
+			cerr << "Cannot find attribute: " << addFlds[i] << endl;
+		}
+	}
+
+	int numFlds = numKeyFlds + numAddFlds;
 	String* types = site->getTypeIDs();
-	MarshalPtr* marshalPtrs = new MarshalPtr[numFlds];
-	int* sizes = new int[numFlds];
+	MarshalPtr marshalPtrs[numFlds];
+	int sizes[numFlds];
+	int fixedSize = 0; 
 	for(int i = 0; i < numFlds; i++){
-		marshalPtrs[i] = getMarshalPtr(types[i]);
-		sizes[i] = packSize(types[i]);
+		marshalPtrs[i] = getMarshalPtr(types[indirect[i]]);
+		sizes[i] = packSize(types[indirect[i]]);
+		fixedSize += sizes[i];
 	}
 	String rtreeISchema;
 	for(int i = 0; i < numKeyFlds; i++){
-		rtreeISchema += rTreeEncode(types[i]);
+		rtreeISchema += rTreeEncode(types[indirect[i]]);
 	}
 
-	TRY(int recIDSize = packSize(&(types[numKeyFlds]), numAddFlds), NULL);
+	int recIDSize = 0;
+	for(int i = 0; i < numAddFlds; i++){
+		recIDSize += sizes[i + numKeyFlds];
+	}
 	if(!standAlone) {
 		recIDSize += sizeof(Offset);
 	}
@@ -132,7 +174,6 @@ Site* IndexParse::createSite(){
 	ofstream ind(bulkfile);
 	assert(ind);
 	ind << line1.rdbuf();
-	int fixedSize; 
 	int tupSize;
 	Offset offset;
 
@@ -145,11 +186,38 @@ Site* IndexParse::createSite(){
 		// cout << "offset = " << offset << endl;
 	}
 	const Tuple* tup = inpIter->getNext();
-	char* flatTup = NULL;
+
+	MinAggregate mins[numTFlds];
+	MaxAggregate maxs[numTFlds];
+
+	for(int i = 0; i < numTFlds; i++){
+		TRY(mins[i].typify(types[i]), NULL);
+		TRY(maxs[i].typify(types[i]), NULL);
+	}
+
+	ExecMinMax* minExs[numTFlds];
+	ExecMinMax* maxExs[numTFlds];
+
+	for(int i = 0; i < numTFlds; i++){
+		minExs[i] = mins[i].createExec();
+		assert(minExs[i]);
+		maxExs[i] = maxs[i].createExec();
+		assert(maxExs[i]);
+	}
+
 	if(tup){ // make sure this is not empty
-		TRY(fixedSize = packSize(types, numFlds), NULL);
-		flatTup = new char[fixedSize];
-		marshal(tup, flatTup, marshalPtrs, sizes, numFlds);
+
+          for(int i = 0; i < numTFlds; i++){
+			minExs[i]->initialize(tup[i]);
+			maxExs[i]->initialize(tup[i]);
+          }
+
+		char flatTup[fixedSize];
+		Type* indexTup[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			indexTup[i] = tup[indirect[i]];
+		}
+		marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
 		ind.write(flatTup, fixedSize);
 		if(!standAlone){
 			ind.write((char*) &offset, sizeof(Offset));
@@ -157,11 +225,16 @@ Site* IndexParse::createSite(){
 			// cout << "offset = " << offset << endl;
 		}
 		while((tup = inpIter->getNext())){
-			tupSize = packSize(tup, types, numFlds);
-			if(tupSize != fixedSize){
-				assert(0);
+
+			for(int i = 0; i < numTFlds; i++){
+				minExs[i]->update(tup[i]);
+				maxExs[i]->update(tup[i]);
 			}
-			marshal(tup, flatTup, marshalPtrs, sizes, numFlds);
+
+			for(int i = 0; i < numFlds; i++){
+				indexTup[i] = tup[indirect[i]];
+			}
+			marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
 				ind.write((char*) &offset, sizeof(Offset));
@@ -170,8 +243,6 @@ Site* IndexParse::createSite(){
 			}
 		}
 	}
-	delete flatTup;
-	delete tup;
 	ind.close();
 	String convBulk = bulkfile + ".conv";
 	String cmd = "convert_bulk < " + bulkfile + " > " + convBulk;
@@ -194,25 +265,13 @@ Site* IndexParse::createSite(){
 //	rtree_m.olddraw(root1, stdout);
 	// note, you MUST keep root page
 
-	String* keyFlds = new String[numKeyFlds];
-	String* addFlds = new String[numAddFlds];
-	keyAttrs->rewind();
-	for(int i = 0; !keyAttrs->atEnd(); i++, keyAttrs->step()){
-		assert(i < numKeyFlds);
-		keyFlds[i] = *keyAttrs->get();
-	}
-	additionalAttrs->rewind();
-	for(int i = 0; !additionalAttrs->atEnd(); i++, additionalAttrs->step()){
-		assert(i < numAddFlds);
-		addFlds[i] = *additionalAttrs->get();
-	}
 	TypeID* keyTypes = new TypeID[numKeyFlds];
 	TypeID* addTypes = new TypeID[numAddFlds];
 	for(int i = 0; i < numKeyFlds; i++){
-		keyTypes[i] = types[i];
+		keyTypes[i] = types[indirect[i]];
 	}
 	for(int i = 0; i < numAddFlds; i++){
-		addTypes[i] = types[numKeyFlds + i];
+		addTypes[i] = types[indirect[numKeyFlds + i]];
 	}
 
 	Tuple tuple[3];
@@ -222,9 +281,15 @@ Site* IndexParse::createSite(){
 			!standAlone, root1.pid, keyTypes, addTypes);	
 	TRY(insert(".sysind", tuple), NULL);
 	delete catalog;
-	delete [] marshalPtrs;
-	delete [] sizes;
 
+	Tuple tupleM[2];
+	tupleM[0] = (Type*) tablename.chars();
+//	tupleM[1] = (Type*) 
+
+	for(int i = 0; i < numFlds; i++){
+		delete minExs[i];
+		delete maxExs[i];
+	}
 #endif
 	return new Site();
 }

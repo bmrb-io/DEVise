@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/06/27 23:17:21  donjerko
+  Changed date structure from time_t and tm to EncodedDTF
+
   Revision 1.25  1997/06/16 16:04:52  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -111,6 +114,7 @@ class BaseSelection{
 protected:
 public:
      BaseSelection() {}
+	virtual ~BaseSelection(){}
 	String toString(){
 		ostrstream os;
 		display(os);
@@ -142,7 +146,6 @@ public:
 	virtual bool distribute(BaseSelection* bs){
 		return false;
 	}
-	virtual ~BaseSelection(){}
 	virtual BaseSelection* duplicate() = 0;
 	virtual bool insertConj(List<BaseSelection*>* predList){
 		predList->append(this);
@@ -305,6 +308,7 @@ public:
 		BaseSelection::display(out);
 	}
 	virtual void displayFlat(ostream& out, int detail = 0){
+		assert(0);
 		parent->displayFlat(out, detail);
 	}
 	virtual BaseSelection* selectionF(){
@@ -335,6 +339,7 @@ public:
 		return BASE_ID; // avoid compiler warning
      }
 	virtual TypeID getTypeID(){
+		assert(0);
 		return parent->getTypeID();
 	}
 	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
@@ -351,19 +356,10 @@ class ConstantSelection : public BaseSelection {
 	TypeID typeID;
      Type* value;
 public:
-	ConstantSelection(TypeID typeID, const Type* val) : 
-		BaseSelection(), typeID(typeID) {
-
-		size_t objSize;
-		value = allocateSpace(typeID, objSize);
-		ADTCopyPtr cp = getADTCopyPtr(typeID);
-		assert(cp);
-		if(cp){
-			cp(val, value, objSize);
-		}
-	}
+	ConstantSelection(TypeID typeID, Type* val) : 
+		BaseSelection(), typeID(typeID), value(val) {}
 	virtual ~ConstantSelection(){
-		delete value;
+		delete value;	// needs destroy ptr
 	}
 	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
@@ -892,6 +888,10 @@ public:
 		avgSize = 0;
 		selectivity = 0;
      }
+	virtual ~Operator(){
+//		delete left;
+//		delete right;
+	}
 	virtual void display(ostream& out, int detail = 0){
 		out << "(";
 		left->display(out); 

@@ -30,10 +30,10 @@ TypeID translateUDType(Attr* at){
      } 
 
 	case UnixTime_Attr:
-       return "date";
+       return "time_t";
 
 	case DateTime_Attr:
-       return "tm";
+       return "date";
 
 	case Invalid_Attr:
 	case UserDefined_Attr:
@@ -60,9 +60,6 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	for(int i = 1; i < numFlds; i++){
 		Attr *at = stk->ith(i - 1);
 		typeIDs[i] = translateUDType(at);
-		if(typeIDs[i] == "tm"){
-			typeIDs[i] = "date";
-		}
 		attributeNames[i] = String(at->flat_name()); 
 		offsets[i] = at->offset();
 	}
@@ -70,13 +67,26 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 
 Iterator* DevRead::createExec(){
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
+	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 	size_t* currentSz = new size_t[numFlds];
 	Tuple* tuple = new Tuple[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
+		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
+		assert(destroyPtrs[i]);
 		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
-	return new DevReadExec(ud, unmarshalPtrs, tuple, offsets, numFlds);
+	return new DevReadExec(
+		ud, unmarshalPtrs, destroyPtrs, tuple, offsets, numFlds);
+}
+
+DevReadExec::~DevReadExec(){
+	delete [] buff;
+	delete ud;
+	delete [] unmarshalPtrs;
+	destroyTuple(tuple, numFlds, destroyPtrs);
+	delete [] destroyPtrs;
+	delete [] offsets;
 }
 
 const Tuple* DevReadExec::getNext(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/06/16 17:42:51  donjerko
+  Bug fix
+
   Revision 1.23  1997/06/16 16:04:51  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -217,7 +220,7 @@ optIndAdd: ADD '(' listOfStrings ')' {
 	;
 constant :
 	STRING_CONST {
-		$$ = new ConstantSelection("string", $1->chars());
+		$$ = new ConstantSelection("string", strdup($1->chars()));
 	}
 	| INT {
 		$$ = new ConstantSelection("int", (Type*) $1);

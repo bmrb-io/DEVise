@@ -48,13 +48,13 @@ public:
 		mySelect(mySelect), myWhere(myWhere), inputIt(inputIt) {
 		next = new Tuple[mySelect->cardinality()];
 	}
+	virtual ~IndexScanExec();
      virtual void initialize();
      virtual const Tuple* getNext();
      virtual Offset getOffset(){
           assert(inputIt);
           return inputIt->getOffset();
      }
-
 };
 
 class NLJoinExec : public Iterator {

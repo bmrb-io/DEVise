@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/06/30 23:05:05  donjerko
+  CVS:
+
   Revision 1.22  1997/06/27 23:17:23  donjerko
   Changed date structure from time_t and tm to EncodedDTF
 
@@ -95,6 +98,7 @@
 #include "Utility.h"
 #include "DateTime.h"
 #include <String.h>
+#include <time.h>
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1);
@@ -122,6 +126,27 @@ void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val2 = ((EncodedDTF*)arg2);
 	assert(val1 && val2);
      result = (Type*)(val1->compare(*val2));
+}
+
+void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	time_t* val1 = ((time_t*)arg1);
+	time_t* val2 = ((time_t*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 == *val2);
+}
+
+void time_tLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	time_t* val1 = ((time_t*)arg1);
+	time_t* val2 = ((time_t*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 < *val2);
+}
+
+void time_tGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	time_t* val1 = ((time_t*)arg1);
+	time_t* val2 = ((time_t*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 > *val2);
 }
 
 void catEntryName(const Type* arg1, Type* result){
@@ -331,8 +356,7 @@ void catEntryRead(istream& in, Type*& adt){
 	if(!in){
 		return;
 	}
-	CatEntry* tmp = new CatEntry(nameStr);
-	memcpy(adt, tmp, sizeof(CatEntry)); // memory leak
+	*((CatEntry*) adt) = CatEntry(nameStr);
 	TRY(((CatEntry*) adt)->read(in), );
 }
 
@@ -390,6 +414,11 @@ void indexDescWrite(ostream& out, const Type* adt){
 void dateWrite(ostream& out, const Type* adt){
 	assert(adt);
 	out << *((EncodedDTF*) adt);
+}
+
+void time_tWrite(ostream& out, const Type* adt){
+	assert(adt);
+	out << *((time_t*) adt);
 }
 
 int boolSize(int a, int b){
@@ -456,6 +485,9 @@ int packSize(String type){	// throws exception
 	else if(type == "date"){
 		return sizeof(EncodedDTF);
 	}
+	else if(type == "time_t"){
+		return sizeof(time_t);
+	}
 	else{
 		String msg = "Don't know size of " + type; 
 		assert(0);
@@ -476,6 +508,10 @@ void doubleMarshal(const Type* adt, char* to){
 }
 
 void dateMarshal(const Type* adt, char* to){
+	memcpy(to, adt, sizeof(EncodedDTF));
+}
+
+void time_tMarshal(const Type* adt, char* to){
 	memcpy(to, adt, sizeof(time_t));
 }
 
@@ -502,6 +538,9 @@ MarshalPtr getMarshalPtr(String type){
 	}
 	else if(type == "date"){
 		return dateMarshal;
+	}
+	else if(type == "time_t"){
+		return time_tMarshal;
 	}
 	else if(type.through(5).contains("string")){
 
@@ -531,6 +570,10 @@ void dateUnmarshal(char* from, Type*& adt){
 	memcpy(adt, from, sizeof(EncodedDTF));
 }
 
+void time_tUnmarshal(char* from, Type*& adt){
+	memcpy(adt, from, sizeof(time_t));
+}
+
 UnmarshalPtr getUnmarshalPtr(String type){
 	if(type == "int"){
 		return intUnmarshal;
@@ -543,6 +586,9 @@ UnmarshalPtr getUnmarshalPtr(String type){
 	}
 	else if(type == "date"){
 		return dateUnmarshal;
+	}
+	else if(type == "time_t"){
+		return time_tUnmarshal;
 	}
 	else if(type.through(5).contains("string")){
 
@@ -572,6 +618,9 @@ GeneralPtr* getOperatorPtr(
 	}
 	else if(root == "date"){
 		return IDate::getOperatorPtr(name, root, arg, retType);
+	}
+	else if(root == "time_t"){
+		return ITime_t::getOperatorPtr(name, root, arg, retType);
 	}
 	else{
 		String msg = "Cannot find OperatorPtr for type: " + root;
@@ -649,6 +698,9 @@ WritePtr getWritePtr(TypeID root){
 	}
 	else if(root == "date"){
 		return dateWrite;
+	}
+	else if(root == "time_t"){
+		return time_tWrite;
 	}
 	else{
 		String msg = "Cannot find WritePtr for type: " + root;
@@ -774,6 +826,21 @@ Interface* CatEntry::getInterface(){
 
 CatEntry::~CatEntry(){
 	delete interface;
+}
+
+CatEntry& CatEntry::operator=(const CatEntry& a){
+	if(this == &a){
+		return (*this);
+	}
+	singleName = a.singleName;
+//	assert(interface != a.interface);
+	delete interface;
+	interface = NULL;
+	if(a.interface){
+		interface = a.interface->duplicate();
+	}
+	typeNm = a.typeNm;
+	return *this;
 }
 
 void CatEntry::display(ostream& out){
@@ -920,6 +987,7 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 	for(int i = 0; i < numFlds; i++){
 		destroyers[i](tuple[i]);
 	}
+	delete [] tuple;
 }
 
 void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types){ // throws
@@ -977,6 +1045,9 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == "indexdesc"){
 		return indexDescDestroy;
 	}
+	else if(root == "time_t"){
+		return time_tDestroy;
+	}
 	else{
 		String msg = "Don't know how to destroy type: " + root;
 		cout << msg << endl;
@@ -987,6 +1058,10 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 
 void intDestroy(Type* adt){
 	// do nothing since the type is intupled
+}
+
+void time_tDestroy(Type* adt){
+	delete (ITime_t*) adt;
 }
 
 void boolDestroy(Type* adt){
@@ -1063,6 +1138,10 @@ void stringCopy(const Type* arg, Type*& result, size_t& sz){
 	strncpy((char*) result, (char*) arg, sz);
 }
 
+void time_tCopy(const Type* arg, Type*& result, size_t& sz){
+	*((time_t*) result) = *((time_t*) arg);
+}
+
 ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	if(adt == "int"){
 		return intCopy;
@@ -1072,6 +1151,9 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	}
 	else if(adt == DATE_TP){
 		return dateCopy;
+	}
+	else if(adt == "time_t"){
+		return time_tCopy;
 	}
 	else if(adt.through(5).contains("string")){
 		return stringCopy;
@@ -1184,6 +1266,9 @@ char* allocateSpace(TypeID type, size_t& size){
 	}
 	else if(type == "date"){
 		return (char*) new EncodedDTF();
+	}
+	else if(type == "time_t"){
+		return (char*) new time_t;
 	}
 	else if(type == "catentry"){
 		return (char*) new CatEntry();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/06/30 23:05:05  donjerko
+  CVS:
+
   Revision 1.15  1997/06/21 22:48:06  donjerko
   Separated type-checking and execution into different classes.
 
@@ -87,6 +90,7 @@ class Interface{
 public:
 	enum Type {UNKNOWN, CATALOG, QUERY};
 	Interface() {}
+	virtual Interface* duplicate() const = 0;
 	virtual ~Interface(){}
 	virtual Site* getSite() = 0;
 	virtual istream& read(istream& in) = 0;
@@ -119,6 +123,9 @@ class DummyInterface : public Interface {
 public:
 	DummyInterface() {}
 	virtual ~DummyInterface(){}
+	virtual DummyInterface* duplicate() const {
+		return new DummyInterface(*this);	
+	}
 	virtual Site* getSite(){
 		String err = "Operations on old DEVise table are not supported";
 		THROW(new Exception(err), NULL);
@@ -159,9 +166,21 @@ public:
 		: numFlds(numFlds), attributeNames(attributeNames), query(query) {
 		// cout << "ViewInterface constructor" << endl;
 	}
+	ViewInterface(const ViewInterface& a){
+		tableNm = a.tableNm;
+		numFlds = a.numFlds;
+		attributeNames = new String[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			attributeNames[i] = a.attributeNames[i];
+		}
+		query = a.query;
+	}
 	virtual ~ViewInterface(){
 		// cout << "~ViewInterface destuctor" << endl;
 		delete [] attributeNames;
+	}
+	virtual ViewInterface* duplicate() const {
+		return new ViewInterface(*this);
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
@@ -184,6 +203,9 @@ class DeviseInterface : public Interface{
 public:
 	DeviseInterface(String tableNm) : tableNm(tableNm){}
 	virtual ~DeviseInterface(){}
+	virtual DeviseInterface* duplicate() const {
+		return new DeviseInterface(*this);
+	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		in >> schemaNm >> dataNm;
@@ -204,6 +226,9 @@ class StandardInterface : public Interface{
 public:
 	StandardInterface() {}
 	StandardInterface(String urlString) : urlString(urlString){}
+	virtual StandardInterface* duplicate() const {
+		return new StandardInterface(*this);
+	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		return in >> urlString;
@@ -218,9 +243,13 @@ public:
 
 class QueryInterface : public Interface{
 	String urlString;
-	Site* site;
+	Site* site;	// not the owner? has to fix this
 public:
 	QueryInterface(){}
+	virtual ~QueryInterface(){}
+	virtual QueryInterface* duplicate() const {
+		return new QueryInterface(*this);
+	}
 	virtual Site* getSite(){
 		return site;
 	}
@@ -247,11 +276,21 @@ class CGIInterface : public Interface{
 public:
 	CGIInterface(String tableNm) : tableNm(tableNm), entries(NULL) {}
 	virtual ~CGIInterface(){
-		if(entries){
-			delete [] entries;
+		delete [] entries;
+	}
+	CGIInterface(const CGIInterface& a){
+		tableNm = a.tableNm;
+		urlString = a.urlString;
+		entryLen = a.entryLen;
+		entries = new CGISite::Entry[entryLen];
+		for(int i = 0; i < entryLen; i++){
+			entries[i] = a.entries[i];
 		}
 	}
-    virtual Site* getSite(){
+	virtual CGIInterface* duplicate() const {
+		return new CGIInterface(*this);
+	}
+	virtual Site* getSite(){
 		assert(entries);
 		Site* site = new CGISite(urlString, entries, entryLen);
 		// CGISite is the owner of the entries
@@ -278,6 +317,9 @@ class CatalogInterface : public Interface {
 	String fileName;
 public:
 	CatalogInterface() {}
+	virtual CatalogInterface* duplicate() const {
+		return new CatalogInterface(*this);
+	}
 	virtual String getFileName(){
 		return fileName;
 	}

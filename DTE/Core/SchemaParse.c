@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/06/30 23:04:56  donjerko
+  CVS:
+
   Revision 1.6  1997/06/21 22:48:01  donjerko
   Separated type-checking and execution into different classes.
 
@@ -35,9 +38,9 @@
 
 Catalog* getRootCatalog(){
 	String catalogName;
-	char* dev_schema = getenv("DEVISE_SCHEMA");
+	char* dev_schema = getenv("DEVISE_HOME_TABLE");
 	if(dev_schema){
-		catalogName = String(dev_schema) + "/catalog.dte";
+		catalogName = String(dev_schema);
 	}
 	else {
 		catalogName = "./catalog.dte";
@@ -45,19 +48,17 @@ Catalog* getRootCatalog(){
 	return new Catalog(catalogName);
 }
 
-/*
 String getIndexCatName(){
 	String catalogName;
-	char* dev_schema = getenv("DEVISE_SCHEMA");
+	char* dev_schema = getenv("DEVISE_INDEX_TABLE");
 	if(dev_schema){
-		catalogName = String(dev_schema) + "/index.dte";
+		catalogName = String(dev_schema);
 	}
 	else {
 		catalogName = "./index.dte";
 	}
 	return catalogName;	
 }
-*/
 
 class ISchemaExec : public Iterator {
 	bool done;

@@ -155,7 +155,7 @@ lib: $(LIBNAME)
 unidata:
 	cd ../unidata/; make libunidata.a; cd ../DTE
 
-dte: $(STAND_ALONE_OBJ) ../unidata/libunidata.a
+dte: $(STAND_ALONE_OBJ) unidata
 	$(CC) -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 

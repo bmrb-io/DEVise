@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:04:50  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.9  1997/04/14 20:44:12  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -176,6 +179,7 @@ void enumerateList(List<BaseSelection*>* list,
 		BaseSelection* tmp;
 		TRY(tmp = list->get()->enumerate(site1, list1, site2, list2), );
 		assert(tmp);
+		delete list->get();		// hope it will not core dump
 		list->replace(tmp);
 		list->step();
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/06/27 23:17:23  donjerko
+  Changed date structure from time_t and tm to EncodedDTF
+
   Revision 1.22  1997/06/21 22:48:09  donjerko
   Separated type-checking and execution into different classes.
 
@@ -95,10 +98,11 @@
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
+#include "RecId.h"	// just the typedef for RecId
 
 class BaseSelection;
 
-const int INITIAL_STRING_SIZE = 4000;
+const int INITIAL_STRING_SIZE = 2000;
 // const char* ISO_TM = "%Y-%m-%d %H:%M:%S";
 
 static size_t ds;	// used only as a place holder
@@ -187,11 +191,13 @@ void intCopy(const Type* arg, Type*& result, size_t& = ds);
 void doubleCopy(const Type* arg, Type*& result, size_t& = ds);
 void stringCopy(const Type* arg, Type*& result, size_t& = ds);
 void dateCopy(const Type* arg, Type*& result, size_t& sz);
+void time_tCopy(const Type* arg, Type*& result, size_t& sz);
 
 void intMarshal(const Type* adt, char* to);
 void doubleMarshal(const Type* adt, char* to);
 void stringMarshal(const Type* adt, char* to);
 void dateMarshal(const Type* adt, char* to);
+void time_tMarshal(const Type* adt, char* to);
 
 void dateToUnixTime(const Type* adt, char* to);
 
@@ -199,12 +205,14 @@ void intUnmarshal(char* from, Type*& adt);
 void doubleUnmarshal(char* from, Type*& adt);
 void stringUnmarshal(char* from, Type*& adt);
 void dateUnmarshal(char* from, Type*& adt);
+void time_tUnmarshal(char* from, Type*& adt);
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
 int memberSameSize(int a);
 
 void intDestroy(Type* adt);
+void time_tDestroy(Type* adt);
 void stringDestroy(Type* adt);
 void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
@@ -258,6 +266,10 @@ void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
+void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void time_tLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void time_tGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+
 void intToDouble(const Type* arg, Type*& result, size_t& = ds);
 void doubleToDouble(const Type* arg, Type*& result, size_t& = ds);
 void intToInt(const Type* arg, Type*& result, size_t& = ds);
@@ -298,6 +310,7 @@ void catEntryWrite(ostream&, const Type*);
 void schemaWrite(ostream&, const Type*);
 void indexDescWrite(ostream&, const Type*);
 void dateWrite(ostream& out, const Type* adt);
+void time_tWrite(ostream& out, const Type* adt);
 
 class IInt {
 /*
@@ -571,6 +584,39 @@ public:
 	}
 };
 
+class ITime_t {
+public:
+	static GeneralPtr* getOperatorPtr(
+		String name, TypeID root, TypeID arg, TypeID& retType){
+		String msg = 
+			"No operator " + name + " (" + root + ", " + arg + ") defined";
+		if(arg != "time_t"){
+			THROW(new Exception(msg), NULL);
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(time_tEq, boolSize, oneOver100);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(time_tLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(time_tGT, boolSize, oneOver3);
+		}
+		/*
+		else if(name == "comp"){
+			retType = "int";
+			return new GeneralPtr(dateComp, sameSize);
+		}
+		*/
+		else{
+			THROW(new Exception(msg), NULL);
+		}
+	}
+};
+
 class Site;
 class Interface;
 
@@ -582,6 +628,7 @@ public:
 	CatEntry(String singleName = "") : 
 		singleName(singleName), interface(NULL) {}
 	~CatEntry();
+	CatEntry& operator=(const CatEntry& a);
 	istream& read(istream& in); // Throws Exception
 	void display(ostream& out);
 	Site* getSite();

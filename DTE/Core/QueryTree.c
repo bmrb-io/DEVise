@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/06/21 22:48:00  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.24  1997/05/07 18:55:49  donjerko
   Fixed the problem when constants are selected.
 
@@ -43,6 +46,8 @@
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>
+
+// #define DEBUG
 
 #ifdef __GNUG__
 #pragma implementation "queue.h"
@@ -232,8 +237,10 @@ Site* QueryTree::createSite(){
 		assert(alters);
 		if(!alters->isEmpty()){
 			Site* current = sites->get();
+#ifdef DEBUG
 			cout << "Alters for \"" << current->getName() << "\" are:\n";
 			displayList(cout, alters, "\n");
+#endif
 			alters->rewind();
 			Site* minCostAlt = alters->get();
 			double minCost = minCostAlt->evaluateCost();

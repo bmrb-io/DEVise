@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/06/30 23:05:04  donjerko
+  CVS:
+
   Revision 1.18  1997/06/21 22:48:06  donjerko
   Separated type-checking and execution into different classes.
 
@@ -316,7 +319,7 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
 	const Tuple* tuple;
-	cout << "searching for " << firstPathNm << " in " << fileName << endl;
+//	cerr << "searching for " << firstPathNm << " in " << fileName << endl;
 
 	while((tuple = iterator->getNext())){
 		CatEntry* entry = (CatEntry*) tuple[0];

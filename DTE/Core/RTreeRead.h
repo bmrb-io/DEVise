@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/21 22:48:01  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.8  1997/06/16 16:04:44  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -176,23 +179,50 @@ class RTreeReadExec : public Iterator {
      Tuple* tuple;
      UnmarshalPtr* unmarshalPtrs;
      int* rtreeFldLens;
+
+	char* dataContent;
+	gen_key_t ret_key;
+	bool ridInKey;
+	int ridOffset;
 public:
 	RTreeReadExec(genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
 		int numKeyFlds, int numAddFlds, Tuple* tuple,
-		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens) :
+		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition) :
 		rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
 		numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
 		tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
-		rtreeFldLens(rtreeFldLens){}
+		rtreeFldLens(rtreeFldLens){
+		
+		dataContent = new char[dataSize + sizeof(Offset) + 100];
+			// This extra space is required because of some bug in RTree.
+		
+		assert(ridPosition >= 0 && ridPosition < numKeyFlds + numAddFlds);
+
+		ridOffset = 0;
+		if(ridPosition < numKeyFlds){
+			ridInKey = true;
+			for(int i = 0; i < ridPosition; i++){
+				ridOffset += rtreeFldLens[i];
+			}
+		}
+		else{
+			ridInKey = false;
+			for(int i = numKeyFlds; i < ridPosition; i++){
+				ridOffset += rtreeFldLens[i];
+			}
+		}
+	}
 	virtual ~RTreeReadExec(){
 		delete cursor;
 		delete [] tuple;
 		delete [] unmarshalPtrs;
 		delete [] rtreeFldLens;
+		delete [] dataContent;
 	}
 	virtual void initialize() {}
 	virtual const Tuple* getNext();
 	virtual Offset getNextOffset();
+	RecId getRecId();
 };
 
 class RTreeIndex : public StandardRead {

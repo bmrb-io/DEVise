@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/06/30 23:05:04  donjerko
+  CVS:
+
   Revision 1.12  1997/06/21 22:48:05  donjerko
   Separated type-checking and execution into different classes.
 
@@ -60,21 +63,24 @@
 class StandReadExec : public Iterator {
 	istream* in;
 	ReadPtr* readPtrs;
+	DestroyPtr* destroyPtrs;
 	Tuple* tuple;
 	size_t* currentSz;
 	int numFlds;
 public:
-	StandReadExec(istream* in, ReadPtr* readPtrs, Tuple* tuple,
+	StandReadExec(istream* in, ReadPtr* readPtrs,
+		DestroyPtr* destroyPtrs, Tuple* tuple,
 		size_t* currentSz, int numFlds) : 
-		in(in), readPtrs(readPtrs), tuple(tuple), currentSz(currentSz),
+		in(in), readPtrs(readPtrs),
+		destroyPtrs(destroyPtrs), tuple(tuple), currentSz(currentSz),
 		numFlds(numFlds) {}
 	virtual ~StandReadExec(){
 		// destroyTuple(tuple, numFlds, typeIDs);
 		delete [] currentSz;
 		delete [] readPtrs;
-		delete [] tuple;
+		destroyTuple(tuple, numFlds, destroyPtrs);
+		delete [] destroyPtrs;
 		delete in;
-		cerr << "deleting file in StandExec\n";
 	}
 	virtual const Tuple* getNext(streampos& pos){
 		assert(in);
@@ -167,13 +173,17 @@ public:
 	}
 	virtual Iterator* createExec(){
 		ReadPtr* readPtrs = new ReadPtr[numFlds];
+		DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 		size_t* currentSz = new size_t[numFlds];
 		Tuple* tuple = new Tuple[numFlds];
 		for(int i = 0; i < numFlds; i++){
 			readPtrs[i] = getReadPtr(typeIDs[i]);
+			destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
+			assert(destroyPtrs[i]);
 			tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 		}
-		return new StandReadExec(in, readPtrs, tuple, currentSz, numFlds);
+		return new StandReadExec(
+			in, readPtrs, destroyPtrs, tuple, currentSz, numFlds);
 	}
 };
 

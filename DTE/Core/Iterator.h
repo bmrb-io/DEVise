@@ -32,7 +32,7 @@ public:
           assert(!"getOffset not supported for this iterator");
           return Offset();
      }
-     virtual void setOffset(Offset offset){
+     virtual void setOffset(Offset offset, RecId recId){
           assert(!"setOffset not supported for this iterator");
      }
      virtual void reset(int lowRid, int highRid){

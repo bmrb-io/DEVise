@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/21 22:48:00  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.8  1997/06/16 16:04:43  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -44,7 +47,7 @@ Iterator* RTreeIndex::createExec(){
 	}
 	page_id_t* Root = new page_id_t;
 	Root->pid = indexDesc->getRootPg();
-	cout << "Root->pid = " << Root->pid << endl;
+//	cerr << "Root->pid = " << Root->pid << endl;
 	String typeEncS;
 	for(int i = 0; i < numKeyFlds; i++){
 		typeEncS += rTreeEncode(typeIDs[i]);
@@ -58,10 +61,13 @@ Iterator* RTreeIndex::createExec(){
 		0				// is point data (bool)
 	);
 
+#ifdef DEBUG
 	cout << "queryBox = ";
 	queryBox->print();
 	cout << "numKeyFlds = " << numKeyFlds << endl;
 	cout << "typeEnc = " << typeEnc << endl;
+#endif
+
 	gen_rt_cursor_t* cursor = new gen_rt_cursor_t(*queryBox);
 	assert(cursor);
 
@@ -74,8 +80,10 @@ Iterator* RTreeIndex::createExec(){
 	int dataSize;
 	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), NULL);
 
+#ifdef DEBUG
 	cout << "RTree scan initialized with:\n";
 	display(cout);
+#endif
 
 	Tuple* tuple = new Tuple[numFlds];
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
@@ -85,8 +93,18 @@ Iterator* RTreeIndex::createExec(){
 		rtreeFldLens[i] = packSize(typeIDs[i]);
 		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
 	}
+	int ridIndex;
+	for(ridIndex = 0; ridIndex < numFlds; ridIndex++){
+		if(attributeNames[ridIndex] == String("recId")){
+			break;
+		}
+	}
+	if(ridIndex >= numFlds){
+		cerr << "Index must contain recId field\n";
+		exit(1);
+	}
 	return new RTreeReadExec(rtree_m, cursor, dataSize, numKeyFlds, 
-		numAddFlds, tuple, unmarshalPtrs, rtreeFldLens);
+		numAddFlds, tuple, unmarshalPtrs, rtreeFldLens, ridIndex);
 }
 
 int RTreeIndex::queryBoxSize(){
@@ -103,11 +121,8 @@ int RTreeIndex::queryBoxSize(){
 }
 
 const Tuple* RTreeReadExec::getNext(){
-	gen_key_t ret_key;
 	bool eof = false;
 	int offsetLen;
-	char dataContent[dataSize + sizeof(Offset) + 100];
-		// This extra space is required because of some bug in RTree.
 
 	assert(cursor);
 	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
@@ -142,11 +157,9 @@ const Tuple* RTreeReadExec::getNext(){
 }
 
 Offset RTreeReadExec::getNextOffset(){
-	gen_key_t ret_key;
 	bool eof = false;
 	int offsetLen;
-	char dataContent[dataSize + sizeof(Offset) + 100];
-		// This extra space is required because of some bug in RTree.
+
 	assert(cursor);
 	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
@@ -154,12 +167,25 @@ Offset RTreeReadExec::getNextOffset(){
 	Offset offset;
 	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 	if(!eof){
-		cout << "Returning Offset = " << offset << endl;
+		// cout << "Returning Offset = " << offset << endl;
 		return offset;
 	}
 	else{
 		return Offset();
 	}
+}
+
+RecId RTreeReadExec::getRecId(){
+	int recId;
+	char* from = NULL;
+	if(ridInKey){
+		from = ((char*) ret_key.data) + ridOffset;
+	}
+	else{
+		from = ((char*) dataContent) + ridOffset;
+	}
+	memcpy(&recId, from, sizeof(int));
+	return recId;
 }
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
@@ -170,10 +196,12 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 		int numKeyFlds = getNumKeyFlds();
 		for(int i = 0; i < numKeyFlds; i++){
 			if(attributeNames[i] == attr){
+#ifdef DEBUG
 				cout << "Updating rtree query on att " << i;
 				cout << " with: " << opName << " ";
 				constant->display(cout);
 				cout << endl;
+#endif
 				TRY(rTreeQuery[i].update(opName, constant), false);
 				return true;
 			}

@@ -49,7 +49,7 @@ public:
   }
 
   virtual ~ExecMinMax(){
-    delete minMax;
+//    delete minMax;	// need destroyPtr here
   }
 
 };
@@ -193,15 +193,14 @@ public:
     return typeID;
   }
 
-  ExecAggregate* createExec(){
+  ExecMinMax* createExec(){
     ADTCopyPtr copyPtr;
     TRY(copyPtr = getADTCopyPtr(typeID), NULL);
 
     size_t valueSize;
     Type *value = allocateSpace(typeID, valueSize);
 
-    ExecAggregate* retVal = new ExecMinMax(opPtr, copyPtr, value, valueSize);
-    return retVal;
+    return new ExecMinMax(opPtr, copyPtr, value, valueSize);
   }
 
 };
