@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/06/20 17:12:53  guangshu
+#  Added DoStat procedure.
+#
 #  Revision 1.11  1996/06/15 14:43:46  jussi
 #  Added yuc's changes for 3D support.
 #
@@ -575,7 +578,7 @@ proc DoGetCursor {label} {
 ############################################################
 
 proc DoSetCursorSrc {} {
-    global curView dialogListVar
+    global curView
 
     if {![CurrentView]} {
 	return
@@ -592,7 +595,7 @@ proc DoSetCursorSrc {} {
 ############################################################
 
 proc DoSetCursorDst {} {
-    global curView dialogListVar
+    global curView
 
     if {![CurrentView]} {
 	return
@@ -604,6 +607,13 @@ proc DoSetCursorDst {} {
     }
     
     set answer [DEVise setCursorDst $cursor $curView]
+}
+
+############################################################
+
+# Make current view holder of a a record cursor
+proc DoSetRecordCursor {} {
+    NotImplemented
 }
 
 ############################################################
@@ -671,9 +681,7 @@ proc DoViewLink {} {
 	set linkSet [LinkSet]
 	if { [llength $linkSet] == 0 } {
 	    set link [DoLinkCreate]
-	    if {$link == ""} {
-		break
-	    }
+            break
 	} else {
 	    set answer [ dialogList .getLink "Select Link" \
 		    "Select a link for view\n$curView" "" 0 \
