@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2001/04/20 21:05:10  wenger
+// Changed 3D version of JAVAC_ShowRecords to use the previously-defined
+// JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
+// but doesn't actually return records yet; updated JavaScreen version;
+// updated command documentation and protocol version.
+//
 // Revision 1.73  2001/04/20 19:22:21  xuk
 // Changes for 3D drill-down of segment objects.
 //
@@ -1680,7 +1686,10 @@ public class DEViseCanvas extends Container
             }
 
             // show the data at current mouse position
-            jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
+	    if (activeView != null) {
+                jsc.viewInfo.updateInfo(activeView.viewName,
+		  activeView.getX(p.x), activeView.getY(p.y));
+	    }
 
         } else { // activeView is null and all other values will be initialized value before
             whichCursorSide = DEViseCursor.sideNone;
