@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 20:47:00  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:31  jussi
   Added CVS header.
 */
@@ -25,16 +28,18 @@
 
 #include <sys/types.h>
 #include <sys/time.h>
+
 #include "DeviseTypes.h"
 
 class AttrList;
 class AttrInfo;
+
 class RecInterp {
 public:
   RecInterp();
 
   void SetBuf(void *buf);
-  void *GetBuf() {return _buf;}
+  void *GetBuf() { return _buf; }
 
   void SetAttrs(AttrList *attrs);
 
@@ -49,8 +54,6 @@ public:
 
   /* print Attr names as heading */
   void PrintAttrHeading(); 
-  /* Print record */
-  void Print(Boolean printAttrName = false);
   
   /* Print info about ith attribute into buffer. */
   void PrintAttr(char *buf, int attrNum, Boolean printAttrName = false);

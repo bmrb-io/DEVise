@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 19:46:47  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/14 17:53:12  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -53,7 +56,7 @@ char *RecInterp::GetString(char *attrName)
     return NULL;
   if ((info = _attrs->Find(attrName)) == NULL)
     return NULL;
-  return ((char *)_buf)+info->offset;
+  return ((char *)_buf) + info->offset;
 }
 
 double *RecInterp::GetFloat(char *attrName)
@@ -61,9 +64,9 @@ double *RecInterp::GetFloat(char *attrName)
   AttrInfo *info;
   if (_attrs == NULL || _buf == NULL)
     return NULL;
-  if ((info=_attrs->Find(attrName)) == NULL)
+  if ((info = _attrs->Find(attrName)) == NULL)
     return NULL;
-  return (double *)(((char *)_buf)+info->offset);
+  return (double *)(((char *)_buf) + info->offset);
 }
 
 int *RecInterp::GetInt(char *attrName)
@@ -71,9 +74,9 @@ int *RecInterp::GetInt(char *attrName)
   AttrInfo *info;
   if (_attrs == NULL || _buf == NULL)
     return NULL;
-  if ((info=_attrs->Find(attrName)) == NULL)
+  if ((info = _attrs->Find(attrName)) == NULL)
     return NULL;
-  return (int *)(((char *)_buf)+info->offset);
+  return (int *)(((char *)_buf) + info->offset);
 }
 
 time_t *RecInterp::GetDate(char *attrName)
@@ -81,9 +84,9 @@ time_t *RecInterp::GetDate(char *attrName)
   AttrInfo *info;
   if (_attrs == NULL || _buf == NULL)
     return NULL;
-  if ((info=_attrs->Find(attrName)) == NULL)
+  if ((info = _attrs->Find(attrName)) == NULL)
     return NULL;
-  return (time_t *)(((char *)_buf)+info->offset);
+  return (time_t *)(((char *)_buf) + info->offset);
 }
 
 AttrInfo *RecInterp::GetAttrInfo(char *attrName)
@@ -105,49 +108,6 @@ void RecInterp::PrintAttrHeading()
   }
 }
 
-void RecInterp::Print(Boolean printAttrName)
-{
-  if (_attrs == NULL || _buf == NULL)
-    return;
-  
-  int num = _attrs->NumAttrs();
-  for(int i = 0; i < num; i++) {
-    AttrInfo *info = _attrs->Get(i);
-    if (printAttrName)
-      printf("%s: ", info->name);
-
-    int *intVal;
-    float *floatVal;
-    double *doubleVal;
-    char *strVal;
-    time_t *tm;
-
-    switch(info->type) {
-    case IntAttr:
-      intVal = (int *)(((char *)_buf)+info->offset);
-      printf("%d ", *intVal);
-      break;
-    case FloatAttr:
-      floatVal = (float *)(((char *)_buf)+info->offset);
-      printf("%f ", *floatVal);
-      break;
-    case DoubleAttr:
-      doubleVal = (double *)(((char *)_buf)+info->offset);
-      printf("%f ", *doubleVal);
-      break;
-    case StringAttr:
-      strVal = ((char *)_buf)+info->offset;
-      printf("%s ", strVal);
-      break;
-    case DateAttr:
-      tm = (time_t *)(((char *)_buf)+info->offset);
-      printf("'%s' ",  DateString(*tm));
-      break;
-    }
-  }
-  printf("\n");
-}
-
 void RecInterp::PrintAttr(char *buf, int attrNum, Boolean printAttrName)
 {
   if (_attrs == NULL || _buf == NULL) {
@@ -164,34 +124,43 @@ void RecInterp::PrintAttr(char *buf, int attrNum, Boolean printAttrName)
 
   switch(info->type) {
   case IntAttr:
-    intVal = (int *)(((char *)_buf)+info->offset);
+    intVal = (int *)(((char *)_buf) + info->offset);
     if (printAttrName)
       sprintf(buf, "%s: %d", info->name, *intVal);
-    else sprintf(buf, "%d ", *intVal);
+    else
+      sprintf(buf, "%d ", *intVal);
     break;
+
   case FloatAttr:
-    floatVal = (float *)(((char *)_buf)+info->offset);
+    floatVal = (float *)(((char *)_buf) + info->offset);
     if (printAttrName)
       sprintf(buf, "%s: %.2f", info->name, *floatVal);
-    else sprintf(buf, "%f", *floatVal);
+    else
+      sprintf(buf, "%f", *floatVal);
     break;
+
   case DoubleAttr:
-    doubleVal = (double *)(((char *)_buf)+info->offset);
+    doubleVal = (double *)(((char *)_buf) + info->offset);
     if (printAttrName)
       sprintf(buf, "%s: %.2f", info->name, *doubleVal);
-    else sprintf(buf, "%f", *doubleVal);
+    else
+      sprintf(buf, "%f", *doubleVal);
     break;
+
   case StringAttr:
-    strVal = ((char *)_buf)+info->offset;
+    strVal = ((char *)_buf) + info->offset;
     if (printAttrName)
       sprintf(buf, "%s: %s", info->name, strVal);
-    else sprintf(buf, "%s", strVal);
+    else
+      sprintf(buf, "%s", strVal);
     break;
+
   case DateAttr:
-    tm = (time_t *)(((char *)_buf)+info->offset);
+    tm = (time_t *)(((char *)_buf) + info->offset);
     if (printAttrName)
-      sprintf(buf, "%s: '%s' ",  info->name, DateString(*tm));
-    else sprintf(buf, "'%s' ",  DateString(*tm));
+      sprintf(buf, "%s: '%s'", info->name, DateString(*tm));
+    else
+      sprintf(buf, "'%s'", DateString(*tm));
     break;
   }
 }
