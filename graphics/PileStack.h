@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/10/22 20:54:02  wenger
+  Major changes to how view refreshes are handled (prevents "extra" queries
+  from being run in piled views, fixes bug 520); also fixed bug 517.
+
   Revision 1.16  1999/10/08 19:57:44  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -170,6 +174,8 @@ public:
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
 
+  void SetNumDimensions(int dimensions);
+
   Boolean GetRubberbandDisabled() { return _rubberbandDisabled; }
   Boolean GetCursorMoveDisabled() { return _cursorMoveDisabled; }
   Boolean GetDrillDownDisabled() { return _drillDownDisabled; }
@@ -222,6 +228,8 @@ private:
 
   Boolean _xAxisOn, _yAxisOn;
   Boolean _xTicksOn, _yTicksOn;
+
+  int _dimensions;
 
   ObjectValid _objectValid;
 

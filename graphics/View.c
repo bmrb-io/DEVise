@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.201  1999/10/30 19:08:24  wenger
+  Kludgey fix for bug 527 (problems with Condor/UserWeek.ds session).
+
   Revision 1.200  1999/10/22 20:54:02  wenger
   Major changes to how view refreshes are handled (prevents "extra" queries
   from being run in piled views, fixes bug 520); also fixed bug 517.
@@ -1393,21 +1396,25 @@ Boolean View::CheckCursorOp(int x, int y)
 
 /* set dimensionality */
 
-void View::SetNumDimensions(int d)
+void View::SetNumDimensions(int d, Boolean notifyPile = true)
 {
   if (d != 2 && d != 3) {
     fprintf(stderr, "View::SetNumDimensions %d invalid\n", d);
     return;
   }
 
-  if (d == _numDimensions)
-    return;
+  if (_pileMode && notifyPile) {
+    GetParentPileStack()->SetNumDimensions(d);
+  } else {
+	if (d != _numDimensions) {
+      _numDimensions = d;
+      _updateNumDim = true;
 
-  _numDimensions = d;
-  _updateNumDim = true;
-
-  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewDimensionsCh);
-  Refresh();
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewDimensionsCh);
+      Refresh();
+	}
+  }
 }
 
 /* set solid or wideframe 3D objects */
@@ -3591,7 +3598,8 @@ void	View::Run(void)
 
 		if (this != vw)
 		{
-			if (_pileViewHold && !_isHighlightView)
+			if ((_pileViewHold && !_isHighlightView) ||
+			  GetParentPileStack()->QueryRunning())
 			{
 #if defined(DEBUG)
 				printf("View %s cannot continue\n", GetName());

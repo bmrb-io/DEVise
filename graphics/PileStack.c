@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/10/22 20:54:01  wenger
+  Major changes to how view refreshes are handled (prevents "extra" queries
+  from being run in piled views, fixes bug 520); also fixed bug 517.
+
   Revision 1.19  1999/10/08 19:57:44  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -820,6 +824,7 @@ PileStack::SetPSProperties(View *view)
   view->TicksEnabled(_xTicksOn, _yTicksOn);
   view->GetDisabledActions(_rubberbandDisabled, _cursorMoveDisabled,
       _drillDownDisabled, _keysDisabled);
+  _dimensions = view->GetNumDimensions();
 }
 
 /*------------------------------------------------------------------------------
@@ -862,6 +867,8 @@ PileStack::SynchronizeView(View *view)
   view->YAxisDisplayOnOff(_yAxisOn, false);
   view->XAxisTicksOnOff(_xTicksOn, false);
   view->YAxisTicksOnOff(_yTicksOn, false);
+
+  view->SetNumDimensions(_dimensions, false);
 
   if (GetViewList()->Size() >= 1) {
     View *firstView = (View *)GetViewList()->GetFirst();
@@ -1076,7 +1083,7 @@ PileStack::SetXAxisDateFormat(const char *format)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::SetXAxisDateFormat()\n", _name);
+  printf("PileStack(%s)::SetXAxisDateFormat(%s)\n", _name, format);
 #endif
 
   int index = GetViewList()->InitIterator();
@@ -1102,13 +1109,41 @@ PileStack::SetYAxisDateFormat(const char *format)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::SetYAxisDateFormat()\n", _name);
+  printf("PileStack(%s)::SetYAxisDateFormat(%s)\n", _name, format);
 #endif
 
   int index = GetViewList()->InitIterator();
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->SetYAxisDateFormat(format, false);
+  }
+  GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetNumDimensions
+ * Set the number of dimensions for all views in the pile.
+ */
+void
+PileStack::SetNumDimensions(int dimensions)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SetNumDimensions(%d)\n", _name, dimensions);
+#endif
+
+  _dimensions = dimensions;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetNumDimensions(dimensions, false);
   }
   GetViewList()->DoneIterator(index);
 

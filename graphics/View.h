@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.97  1999/10/22 20:54:03  wenger
+  Major changes to how view refreshes are handled (prevents "extra" queries
+  from being run in piled views, fixes bug 520); also fixed bug 517.
+
   Revision 1.96  1999/10/08 19:57:46  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -667,7 +671,7 @@ class View : public ViewWin
 
 	/* Get/set dimensionality */
 	int GetNumDimensions() { return _numDimensions; }
-	void SetNumDimensions(int d);
+	void SetNumDimensions(int d, Boolean notifyPile = true);
 
 	/* Get/set wireframe/solid/solid+frame 3D objects */
 	int GetSolid3D() { return _solid3D; }
