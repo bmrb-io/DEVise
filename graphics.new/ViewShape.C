@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/05/07 16:09:45  wenger
+  Fixed bug in the ordering of viewsym piles.
+
   Revision 1.13  1999/05/07 14:13:55  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -173,7 +176,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     }
 
 #if defined(DEBUG)
-    printf("Drawing view symbol <%s>\n", viewname);
+    printf("Drawing view symbol <%s> in view <%s>\n", viewname,
+      view->GetName());
 #endif
 
 #if 1
@@ -251,30 +255,34 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     viewsym->AppendToParent(view);
     if (ps) {
       ViewWin *firstView = ps->GetFirstView();
-      if (firstView) {
-        int tmpX, tmpY, tmpXP, tmpYP;
+      if (firstView && firstView->Mapped()) {
+        int pileX, pileY, tmpXP, tmpYP;
 	unsigned tmpW, tmpH;
-	firstView->Geometry(tmpX, tmpY, tmpW, tmpH);
-	firstView->AbsoluteOrigin(tmpX, tmpY);
+	firstView->Geometry(pileX, pileY, tmpW, tmpH);
+	firstView->AbsoluteOrigin(pileX, pileY);
 	firstView->GetParent()->AbsoluteOrigin(tmpXP, tmpYP);
-	tmpX -= tmpXP;
-	tmpY -= tmpYP;
-	if (pixX != tmpX || pixY != tmpY || pixWd != tmpW || pixHt != tmpH) {
+	pileX -= tmpXP;
+	pileY -= tmpYP;
+	if (!PileStack::SameViewOrSamePile(firstView->GetParent(),
+	    viewsym->GetParent()) ||
+	    pixX != pileX || pixY != pileY || pixWd != tmpW || pixHt != tmpH) {
 	  if (false) {
             // Force all views in pile to the same geometry.
 #if defined(DEBUG)
-            printf("View <%s> has different geometry than first view in pile; "
-	        "geometry changed to match first view\n", viewname);
+            printf("View <%s> has different geometry or parent than first "
+	        "view in pile;\n"
+	        " geometry changed to match first view\n", viewname);
 #endif
-	    pixX = tmpX;
-	    pixY = tmpY;
+	    pixX = pileX;
+	    pixY = pileY;
 	    pixWd = tmpW;
 	    pixHt = tmpH;
 	  } else {
             // Don't pile views if geometry differs.
 #if defined(DEBUG)
-            printf("View <%s> has different geometry than first view in pile; "
-	        "view not piled\n", viewname);
+            printf("View <%s> has different geometry or parent than first "
+	        "view in pile;\n"
+	        " view not piled\n", viewname);
 #endif
             ps = NULL;
 	  }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/05/07 16:09:38  wenger
+  Fixed bug in the ordering of viewsym piles.
+
   Revision 1.56  1999/05/07 14:13:45  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -375,6 +378,7 @@ ViewWin::~ViewWin(void)
 
 	if (_myPileStack) {
 	  _myPileStack->DetachFromWindow();
+	  delete _myPileStack;
 	}
 	if (_parentPileStack) {
 	  _parentPileStack->DeleteView(this);
@@ -643,8 +647,8 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 
 void ViewWin::Unmap()
 {
-#ifdef DEBUG
-  printf("ViewWin 0x%p unmapping\n", this);
+#if defined(DEBUG)
+  printf("ViewWin(%s)::Unmap()\n", GetName());
 #endif
   
   
@@ -751,8 +755,11 @@ void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
 {
+#if defined(DEBUG)
+  printf("ViewWin(%s)::Geometry()\n", GetName());
+#endif
   if (!GetWindowRep()) {
-    fprintf(stderr,"ViewWin::Geometry: not mapped\n");
+    fprintf(stderr,"ViewWin(%s)::Geometry: not mapped\n", GetName());
     Exit::DoExit(2);
   }
 

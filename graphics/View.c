@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.168  1999/05/07 14:13:43  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.167  1999/05/04 17:16:59  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -1093,7 +1100,8 @@ void View::SubClassMapped()
   // (first) query gets properly started up
   DepMgr::Current()->RegisterEvent(dispatcherCallback,
 								   DepMgr::EventViewSubclassMapped);
-  Scheduler::Current()->RequestCallback(_dispatcherID);
+  Refresh(true);
+
 #if 0
   UpdateViewTable();
 #endif
@@ -2348,8 +2356,8 @@ void View::Refresh(Boolean refreshPile)
   }
 
   if (refreshPile && _pileMode && !_isHighlightView &&
-      GetParentPileStack()->GetFirstView()) {
-    GetParentPileStack()->GetFirstView()->Refresh(false);
+      GetParentPileStack()) {
+    GetParentPileStack()->Refresh();
   } else {
     _doneRefresh = false;
     _refresh = true;
@@ -3924,20 +3932,25 @@ void	View::Run(void)
 			sleep(1);
 		}
 
-		if (winRep->ETk_WindowCount() > 0)
+		if (winRep->ETk_WindowCount() > 0) {
 			winRep->ETk_MarkAll(false);
+        }
 
-		if (NumChildren()) {			// Clean up embedded views (symbols)
-			int index = InitIterator();
-			while (More(index)) {
-              ViewWin *view = Next(index);
-			  if (view->GetParentPileStack()) {
-			    view->GetParentPileStack()->DeleteView(view);
-				view->SetParentPileStack(NULL);
-			  }
+		// Always do the cleanup in pile mode in case this view doesn't have
+		// children but other views in the pile do.
+		if (NumChildren() || IsInPileMode()) {
+		  if (IsInPileMode()) {
+            // This view is piled -- we must clean up the view symbols (if
+			// any) of all views in the pile.
+            int parentIdx = GetParentPileStack()->InitIterator();
+			while (GetParentPileStack()->More(parentIdx)) {
+			  View *parentView = (View *)GetParentPileStack()->Next(parentIdx);
+			  parentView->CleanUpViewSyms();
 			}
-			DoneIterator(index);
-			DetachChildren();
+			GetParentPileStack()->DoneIterator(parentIdx);
+		  } else {
+		    CleanUpViewSyms();
+          }
 		}
 
 #if !FILL_WHOLE_BACKGROUND
@@ -4052,7 +4065,7 @@ void	View::HandleExpose(WindowRep* w, int x, int y, unsigned width,
 
 	DepMgr::Current()->RegisterEvent(dispatcherCallback,
 									 DepMgr::EventViewExpose);
-	Scheduler::Current()->RequestCallback(_dispatcherID);
+  Refresh(true);
 }
 
 void	View::HandleResize(WindowRep* w, int xlow, int ylow,
@@ -4076,7 +4089,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 	_updateTransform = true;// Update the transformation
 	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
 									 DepMgr::EventViewResize);
-	Scheduler::Current()->RequestCallback(_dispatcherID);
+    Refresh(true);
 }
 
 void View::SetViewDir(ViewDir dir)
@@ -4161,6 +4174,24 @@ View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
       Refresh();
     }
   }
+}
+
+void
+View::CleanUpViewSyms()
+{
+#if defined(DEBUG)
+  printf("View(%s)::CleanUpViewSyms()\n", GetName());
+#endif
+
+  int index = InitIterator();
+  while (More(index)) {
+    ViewWin *view = Next(index);
+    if (view->GetParentPileStack()) {
+      view->GetParentPileStack()->DeleteView(view);
+    }
+  }
+  DoneIterator(index);
+  DetachChildren();
 }
 
 //******************************************************************************

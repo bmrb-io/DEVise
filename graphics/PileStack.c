@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/05/07 16:09:38  wenger
+  Fixed bug in the ordering of viewsym piles.
+
   Revision 1.9  1999/05/07 14:13:43  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -118,6 +121,7 @@ PileStack::PileStack(const char *name, ViewLayout *window)
   _state = PSNormal;
   _link = NULL;
   _psList.Append(this);
+  _currentQueryView = NULL;
 
   _objectValid.Set();
 }
@@ -263,7 +267,7 @@ PileStack::Flip()
     //
     // If we're in pile mode, make sure the first view gets refreshed.
     //
-    if (_state == PSPiledLinked || _state == PSPiledNoLink) {
+    if (IsPiled()) {
       GetFirstView()->Refresh();
     }
 
@@ -295,7 +299,7 @@ PileStack::InsertView(ViewWin *view)
   while (_views.More(index)) {
     ViewWin *tmpView = _views.Next(index);
     if (tmpView == view) {
-      sprintf(errBuf, "View <%s> is already in PileStack <%s>\n",
+      sprintf(errBuf, "View <%s> is already in PileStack <%s>",
           view->GetName(), GetName());
       reportErrNosys(errBuf);
       _views.DoneIterator(index);
@@ -314,11 +318,12 @@ PileStack::InsertView(ViewWin *view)
   }
 
   // Make sure this view's parent is the same as the parent of other views
-  // in the PileStack.
+  // in the PileStack, or the parent views are in the same pile.
   if (GetFirstView()) {
-    if (view->GetParent() != GetFirstView()->GetParent()) {
+    if (!SameViewOrSamePile(view->GetParent(), GetFirstView()->GetParent())) {
       sprintf(errBuf,
-	  "View <%s> has different parent than other views in PileStack <%s>",
+	  "View <%s> has different parent view or pile than other views "
+	  "in PileStack <%s>",
 	  view->GetName(), GetName());
       reportErrNosys(errBuf);
       return;
@@ -327,7 +332,7 @@ PileStack::InsertView(ViewWin *view)
 
   view->SetParentPileStack(this);
 
-  if (_state == PSPiledNoLink || _state == PSPiledLinked) {
+  if (IsPiled()) {
 
     ((View *)view)->SetPileMode(true);
 
@@ -397,12 +402,16 @@ PileStack::DeleteView(ViewWin *view)
 
   view->SetParentPileStack(NULL);
 
-  if (_state == PSPiledNoLink || _state == PSPiledLinked) {
+  if (IsPiled()) {
     ((View *)view)->SetPileMode(false);
   }
 
   if (_state == PSPiledLinked) {
     _link->DeleteView((ViewGraph *)view);
+  }
+
+  if (_currentQueryView == view) {
+    _currentQueryView = NULL;
   }
 }
 
@@ -463,7 +472,7 @@ PileStack::SetStacked()
 #endif
 
   if (CanPileOrStack(PSStacked)) {
-    if (_state == PSPiledNoLink || _state == PSPiledLinked) {
+    if (IsPiled()) {
       SetNormal();
     }
 
@@ -576,10 +585,6 @@ PileStack::CanPileOrStack(State state)
     int index = GetViewList()->InitIterator();
     while (result && GetViewList()->More(index)) {
       ViewWin *view = GetViewList()->Next(index);
-      if (view->NumChildren() > 0) {
-        printf("Views containing view symbols cannot be piled.\n");
-        result = false;
-      }
       if (((View *)view)->GetNumDimensions() != 2) {
         printf("Only two-dimensional views can be piled.\n");
         result = false;
@@ -780,7 +785,7 @@ PileStack::SetFont(const char *which, int family, float pointSize,
     Boolean bold, Boolean italic)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 1)
   printf("PileStack(%s)::SetFont()\n", _name);
 #endif
 
@@ -800,7 +805,7 @@ void
 PileStack::SetLabelParam(Boolean occupyTop, int extent, const char *name)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 1)
   printf("PileStack(%s)::SetLabelParam()\n", _name);
 #endif
 
@@ -820,7 +825,7 @@ void
 PileStack::SetXAxisDateFormat(const char *format)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 1)
   printf("PileStack(%s)::SetXAxisDateFormat()\n", _name);
 #endif
 
@@ -840,7 +845,7 @@ void
 PileStack::SetYAxisDateFormat(const char *format)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 1)
   printf("PileStack(%s)::SetYAxisDateFormat()\n", _name);
 #endif
 
@@ -850,6 +855,83 @@ PileStack::SetYAxisDateFormat(const char *format)
     view->SetYAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::Refresh
+ * Refresh the pile (analogous to View::Refresh() on a single view).
+ */
+void
+PileStack::Refresh()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::Refresh()\n", _name);
+#endif
+
+  if (IsPiled()) {
+    if (_currentQueryView != NULL) {
+      _currentQueryView->AbortQuery();
+    }
+
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::QueryStarted
+ * Called to let this object know that a view belonging to it has started
+ * a query.
+ */
+void
+PileStack::QueryStarted(View *view)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::QueryStarted(%s)\n", _name, view->GetName());
+#endif
+
+  if (IsPiled()) {
+    if (_currentQueryView == NULL) {
+      _currentQueryView = view;
+    } else {
+      char errBuf[1024];
+      sprintf(errBuf, "View <%s> starting query, but view <%s> in the same "
+          "pile (%s) is already running a query", view->GetName(),
+	  _currentQueryView->GetName(), GetName());
+      reportErrNosys(errBuf);
+      DOASSERT(0, "bad query");
+    }
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::QueryDone
+ * Called to let this object know that a view belonging to it has finished
+ * a query (whether normally or aborted).
+ */
+void
+PileStack::QueryDone(View *view)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::QueryDone(%s)\n", _name, view->GetName());
+#endif
+
+  if (IsPiled()) {
+    if (_currentQueryView == view) {
+      _currentQueryView = NULL;
+    // Else if here because it seems possible that this method may get
+    // called twice in a row.  RKW 1999-05-12.
+    } else if (_currentQueryView != NULL) {
+      char errBuf[1024];
+      sprintf(errBuf, "View <%s> reporting query done, but pile <%s> records "
+          "that view <%s> was running query", view->GetName(), GetName(),
+	  _currentQueryView->GetName());
+      reportErrNosys(errBuf);
+      DOASSERT(0, "bad query");
+    }
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -904,7 +986,7 @@ Boolean
 PileStack::PileOk()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 2)
   printf("PileStack(%s)::PileOk()\n", _name);
 #endif
 
@@ -926,8 +1008,10 @@ PileStack::PileOk()
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    if (view->GetParent() != parent) {
-      sprintf(errBuf, "Pile <%s> has views with different parents", GetName());
+    if (!SameViewOrSamePile(view->GetParent(), parent)) {
+      sprintf(errBuf,
+          "Pile <%s> has views with different parent views or piles",
+	  GetName());
       reportErrNosys(errBuf);
       result = false;
     }
@@ -989,13 +1073,38 @@ ViewWin *
 PileStack::GetFirstView()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 3)
+#if (DEBUG >= 2)
   printf("PileStack(%s)::GetFirstView()\n", _name);
 #endif
 
   ViewWin *result = NULL;
   if (_views.Size() > 0) {
     result = _views.GetFirst();
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SameViewOrSamePile
+ * Returns true if the two views are the same view, or they are in the
+ * same PileStack and are piled.
+ */
+Boolean
+PileStack::SameViewOrSamePile(ViewWin *view1, ViewWin *view2)
+{
+#if (DEBUG >= 2)
+  printf("PileStack()::SameViewOrSamePile(%s, %s)\n", view1->GetName(),
+      view2->GetName());
+#endif
+
+  Boolean result = false;
+
+  if (view1 == view2) {
+    result = true;
+  } else if (view1->GetParentPileStack() == view2->GetParentPileStack() &&
+        view1->GetParentPileStack()->IsPiled()) {
+    result = true;
   }
 
   return result;

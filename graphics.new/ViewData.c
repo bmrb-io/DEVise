@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/04/05 16:16:02  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.17  1999/03/12 18:46:05  wenger
   Implemented duplicate symbol elimination.
 
@@ -169,7 +173,7 @@ void
 ViewData::QueryInit(void* userData)
 {
 #if defined(DEBUG)
-  printf("ViewData::QueryInit()\n");
+  printf("ViewData(%s)::QueryInit()\n", GetName());
 #endif
 
   int index = _derivedTables.InitIterator();
@@ -194,7 +198,7 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   TDataMap* map)
 {
 #if defined(DEBUG)
-  printf("ViewData::QueryDone(%d)\n", bytes);
+  printf("ViewData(%s)::QueryDone(%d)\n", GetName(), bytes);
 #endif
 
   int index = _derivedTables.InitIterator();

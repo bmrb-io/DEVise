@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.83  1999/05/07 14:13:45  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.82  1999/05/04 17:17:01  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -758,6 +765,9 @@ protected:
 	/* Optimize spacing and location of tick marks */
 	void OptimizeTickMarks(Coord low, Coord high, int numTicks,
 			       Coord &start, int &num, Coord &inc);
+
+private:
+    void CleanUpViewSyms();
 
 protected:
 	void DrawHighlight();

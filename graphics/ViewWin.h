@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/05/07 16:09:39  wenger
+  Fixed bug in the ordering of viewsym piles.
+
   Revision 1.36  1999/05/07 14:13:46  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -391,8 +394,10 @@ class ViewWin : public Coloring
 	void SetMyPileStack(PileStack *ps);
 
 	PileStack *GetParentPileStack() { return _parentPileStack; }
+protected:
 	void SetParentPileStack(PileStack *ps);
 
+public:
 	virtual void Refresh(Boolean refreshPile = true) {}
 
     virtual void SetFont(const char *which, int family, float pointSize,

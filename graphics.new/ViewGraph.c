@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.108  1999/05/04 17:17:09  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.107  1999/04/26 20:25:09  wenger
   Fixed bug 486.
 
@@ -1953,6 +1957,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #endif
     _pstorage.Clear();
     _queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0, _timestamp);
+    if (GetParentPileStack()) GetParentPileStack()->QueryStarted(this);
 
     if (_sendToSocket) {
       if (_gds != NULL) {
@@ -2005,6 +2010,7 @@ void ViewGraph::DerivedAbortQuery()
     _map = 0;
     _index = -1;
   }
+  if (GetParentPileStack()) GetParentPileStack()->QueryDone(this);
 
   // Abort record links whose master this view is
   int index = _masterLink.InitIterator();
@@ -2098,8 +2104,10 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 
 		return;
 	}
-
 	DoneMappingIterator(_index);
+
+	if (GetParentPileStack()) GetParentPileStack()->QueryDone(this);
+
 	_map = 0;
 	_index = -1;
 
