@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/18 21:33:37  jussi
+  Corrected a bug which occurs when several queries access the
+  same TData, one stealing the memory committed to another.
+
   Revision 1.16  1996/12/18 19:33:42  jussi
   Improved SelectReady() fairness.
 
@@ -623,7 +627,7 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     DOASSERT(req, "Out of memory");
 
     req->tdata = tdata;
-    req->gdata = (tdataOnly ? NULL : gdata);
+    req->gdata = (GData *) (tdataOnly ? NULL : gdata);
     req->low = lowId;
     req->high = highId;
     req->asyncAllowed = asyncAllowed;

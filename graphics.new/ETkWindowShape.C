@@ -38,7 +38,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     int i, j, k;
     char *script;
     int key;
-    int code;
+    int code = -1;
     int done;
     char *gdata;
     GDataAttrOffset *offset;
