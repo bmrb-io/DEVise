@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/08/21 21:04:38  donjerko
+  Implemented view materialization
+
   Revision 1.31  1997/08/15 21:19:14  donjerko
   Added / operator for ints and doubles
 
@@ -117,7 +120,6 @@
 
 #include <iostream.h>
 #include <assert.h>
-#include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <time.h>

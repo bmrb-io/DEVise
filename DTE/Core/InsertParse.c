@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/08/21 21:04:20  donjerko
+  Implemented view materialization
+
   Revision 1.4  1997/08/04 14:50:47  donjerko
   Fixed the bug in insert and delete queries.
 
@@ -30,7 +33,7 @@
 
 #include<iostream.h>
 #include<memory.h>
-#include<string.h>
+#include <string>
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>

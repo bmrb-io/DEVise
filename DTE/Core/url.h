@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/21 21:04:38  donjerko
+  Implemented view materialization
+
   Revision 1.6  1997/06/16 16:04:56  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -44,7 +47,6 @@
 #include <netdb.h>
 #endif
 #include <string>
-#include <string.h>
 #include <assert.h>
 #include <iostream.h>
 #include <strstream.h>

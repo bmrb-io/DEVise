@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/08/21 21:04:29  donjerko
+  Implemented view materialization
+
   Revision 1.24  1997/08/14 02:08:54  donjerko
   Index catalog is now an independent file.
 
@@ -61,7 +64,7 @@
 
  */
 
-#include <string.h>
+#include <string>
 #include <fstream.h>
 #include <iostream.h>
 #include "StandardRead.h"

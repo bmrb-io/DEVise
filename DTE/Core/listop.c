@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/21 21:04:31  donjerko
+  Implemented view materialization
+
   Revision 1.12  1997/07/30 21:39:24  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -50,7 +53,7 @@
 
 #include<iostream.h>
 #include<memory.h>
-#include<string.h>
+#include <string>
 #include<assert.h>
 #include<math.h>
 #include "queue.h"

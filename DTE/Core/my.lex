@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/08/21 21:04:31  donjerko
+  Implemented view materialization
+
   Revision 1.16  1997/04/08 01:47:35  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -60,7 +63,7 @@
 
 %{
 #include <string>
-#include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <assert.h>
 #include <memory.h>

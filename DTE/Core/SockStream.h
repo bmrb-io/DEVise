@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/21 22:21:45  donjerko
+  Added hierarchical namespace.
+
   Revision 1.2  1996/12/05 16:06:00  wenger
   Added standard Devise file headers.
 
@@ -35,7 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <string>
 
 #include <sys/types.h>
 #include <stdarg.h>

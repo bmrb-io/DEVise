@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/06 02:35:30  donjerko
+  Undefined DEBUG
+
   Revision 1.5  1997/02/03 04:11:31  donjerko
   Catalog management moved to DTE
 
@@ -36,7 +39,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <string>
 // #include <netdb.h>
 #include "machdep.h"	// Could be removed in standalone case
 #include <sys/types.h>

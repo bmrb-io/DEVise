@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/21 21:04:18  donjerko
+  Implemented view materialization
+
   Revision 1.7  1997/06/16 16:04:40  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -37,7 +40,7 @@
  */
 
 #include <strstream.h>
-#include <string.h>
+#include <string>
 #include "FunctionRead.h"
 #include "exception.h"
 #include "assert.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/08/21 21:04:24  donjerko
+  Implemented view materialization
+
   Revision 1.32  1997/08/15 00:17:33  donjerko
   Completed the Iterator destructor code.
 
@@ -86,7 +89,7 @@
 
 #include<iostream.h>
 #include<memory.h>
-#include<string.h>
+#include <string>
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>

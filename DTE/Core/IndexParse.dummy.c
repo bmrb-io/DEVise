@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/08/10 20:30:54  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.13  1997/07/30 21:39:17  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -39,7 +42,7 @@
 
 #include<iostream.h>
 #include<memory.h>
-#include<string.h>
+#include <string>
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>

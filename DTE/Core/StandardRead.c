@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/21 21:04:26  donjerko
+  Implemented view materialization
+
   Revision 1.13  1997/08/12 19:58:42  donjerko
   Moved StandardTable headers to catalog.
 
@@ -56,7 +59,7 @@
  */
 
 #include <strstream.h>
-#include <string.h>
+#include <string>
 #include "StandardRead.h"
 #include "exception.h"
 #include "assert.h"

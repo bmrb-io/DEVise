@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/21 21:04:35  donjerko
+  Implemented view materialization
+
   Revision 1.22  1997/08/14 02:08:56  donjerko
   Index catalog is now an independent file.
 
@@ -84,8 +87,7 @@
 #include "ExecOp.h"
 #include "RTreeRead.h"
 
-#include <string.h>		// for strtok
-#include <string>
+#include <string>		// for strtok
 #include <set>
 #include <algo.h>	// for includes
 

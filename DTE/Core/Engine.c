@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/21 21:04:16  donjerko
+  Implemented view materialization
+
   Revision 1.15  1997/08/09 00:54:42  donjerko
   Added indexing of select-project unmaterialized views.
 
@@ -58,7 +61,7 @@
  */
 
 #include<memory.h>
-#include<string.h>
+#include <string>
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>

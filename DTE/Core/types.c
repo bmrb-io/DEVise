@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/08/21 21:04:37  donjerko
+  Implemented view materialization
+
   Revision 1.30  1997/08/15 21:19:13  donjerko
   Added / operator for ints and doubles
 
@@ -91,7 +94,6 @@
 #include "DateTime.h"
 #include <string>
 #include <time.h>
-#include <string.h>		// for strdup
 #include <strstream.h>
 #include <stdlib.h>
 #include <limits.h>
