@@ -18,7 +18,7 @@ $yr = $year;
 # Current DOY
 $day_of_year = (localtime(time()))[7];
 #
-open(ASOSLIST, "$homedir/asos.list");
+open(ASOSLIST, "$homedir/asos.list") or die "Can't open $homedir/asos.list\n";
 while ($line = <ASOSLIST>) {
   chop ($line);
   ($stn, $stnlat, $stnlon) = split (/\s+/, $line, 3);
@@ -39,7 +39,7 @@ chdir ($asosdir);
 for ($doy=$day_of_year) {
   $yyddd = $yr + $doy;
   $file = "WI_HR.$yyddd";
-  open (INFILE, "$file");
+  open (INFILE, "$file") or die "Can't open $file\n";
   $line = <INFILE>;
   $line = <INFILE>;
   while ($line = <INFILE>) {
@@ -83,7 +83,8 @@ for ($doy=$day_of_year) {
 }
 
 for ($i=0; $i<=$nstn; $i++) {
- open (STNFILE, ">>$asosdat/$minstn[$i]") || die ("$asosdat/$minstn[$i]");
+ open (STNFILE, ">>$asosdat/$minstn[$i]") or
+     die "Can't open $asosdat/$minstn[$i]";
   for ($j=1; $j<=$n[$i]; $j++) {  
     printf STNFILE ("%9s %9.0f %9.3f  %9.3f  %9.3f  %9.3f  %9.3f  %9.3f  %9.3f\n",
               $yyddd{$i,$j},$hhmm{$i,$j},$rh{$i,$j},$eao{$i,$j},$tao{$i,$j},

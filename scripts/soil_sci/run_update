@@ -14,10 +14,10 @@ if (-e $outfile) then
     rm $outfile
 endif
 
-./asos_datafile.pl >& $outfile
+/s/std/bin/runauth ./asos_datafile.pl >& $outfile
 
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    cat $outfile | /usr/ucb/mail -s "ASOS update from cron" `whoami`
+    /s/std/bin/cat $outfile | /usr/ucb/mail -s "ASOS update from cron" `/s/std/bin/whoami`
 endif
