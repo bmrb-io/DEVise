@@ -2511,6 +2511,12 @@ Num Date        Status  Description
 634 01/19/01	OPEN	JavaScreen: arrow keys don't work unless num lock is
 			turned on. (rkw)
 
+635 01/25/01	OPEN	Zooming in doesn't work right on some peptide-cgi-
+			generated sessions (e.g., 4297g1.ds). (rkw)
+
+636 01/25/01	OPEN	JavaScreen: automatic switchover from socket to CGI
+			mode takes too long. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
