@@ -11,57 +11,67 @@ ApInit.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h
 ApInit.o: /usr/include/string.h /usr/include/signal.h
 ApInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
 ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
+ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
 ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
 ApInit.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/stdio.h ApParseCat.h ../graphics/DeviseTypes.h
+ApParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
+ApParseCat.o: /usr/include/sys/types.h /usr/include/sgidefs.h
+ApParseCat.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 ApParseCat.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-ApParseCat.o: ../graphics.new/RecOrder.h ../graphics/AttrList.h
-ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/types.h
-ApParseCat.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-ApParseCat.o: /usr/include/sys/select.h ../graphics/Config.h
-ApParseCat.o: ../graphics/DList.h ../graphics/Exit.h
-ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
-ApParseCat.o: ApInit.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat.o: ../graphics/Exit.h ../graphics/AttrList.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
+ApParseCat.o: ../graphics/DList.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat.o: /usr/include/time.h ApInit.h ../graphics/BufPolicy.h
 ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/DataSource.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
+ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/string.h AttrProj.h
-AttrProj.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h VectorArray.h
+AttrProj.o: ../graphics/DeviseTypes.h /usr/include/values.h
+AttrProj.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+AttrProj.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+AttrProj.o: /usr/include/sys/select.h ../graphics.new/RecId.h VectorArray.h
 AttrProj.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
-AttrProj.o: ../graphics.new/RecOrder.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/time.h
-AttrProj.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-AttrProj.o: /usr/include/sys/select.h /usr/include/ctype.h
-AttrProj.o: /usr/include/math.h ../graphics/Exit.h ../graphics/AttrList.h
-AttrProj.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/DList.h
+AttrProj.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+AttrProj.o: ../graphics/Exit.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
+AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj.o: ../graphics/Config.h ../graphics/DList.h
 AttrProj.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h ProjectionList.h
-ProjectionList.o: ../graphics/DeviseTypes.h
+ProjectionList.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ProjectionList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+ProjectionList.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+ProjectionList.o: /usr/include/sys/select.h
 VectorArray.o: /usr/include/stdio.h VectorArray.h ../graphics/DeviseTypes.h
+VectorArray.o: /usr/include/values.h ../graphics/DevStatus.h
+VectorArray.o: /usr/include/sys/types.h /usr/include/sgidefs.h
+VectorArray.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 VectorArray.o: vector.h ../graphics/Util.h /usr/include/stdlib.h
-VectorArray.o: /usr/include/sgidefs.h /usr/include/time.h
-VectorArray.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-VectorArray.o: /usr/include/sys/select.h /usr/include/string.h
-VectorArray.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+VectorArray.o: /usr/include/time.h /usr/include/string.h /usr/include/ctype.h
+VectorArray.o: /usr/include/math.h ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/sys/types.h
 aptest.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
 aptest.o: /usr/include/sys/select.h AttrProj.h ../graphics/DeviseTypes.h
+aptest.o: /usr/include/values.h ../graphics/DevStatus.h
 aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 aptest.o: ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/sys/types.h /usr/include/sgidefs.h
 show.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 show.o: /usr/include/unistd.h AttrProj.h ../graphics/DeviseTypes.h
-show.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
-show.o: ApInit.h ../graphics/BufPolicy.h
+show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
+show.o: VectorArray.h vector.h ProjectionList.h ApInit.h
+show.o: ../graphics/BufPolicy.h
 vector.o: global.h /usr/include/stdio.h /usr/include/stdlib.h
 vector.o: /usr/include/sgidefs.h /usr/include/string.h /usr/include/math.h
 vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/time.h

@@ -8,7 +8,7 @@ atof.o: /usr/include/ctype.h /usr/include/time.h /usr/include/sys/types.h
 atof.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 atof.o: /usr/include/math.h /usr/include/sys/time.h ../graphics/Util.h
 atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
-atof.o: ../graphics/Exit.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 http_url.o: /usr/include/unistd.h /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
@@ -24,7 +24,10 @@ http_url.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 http_url.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
 http_url.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-http_url.o: /usr/include/arpa/inet.h
+mk3dstruct.o: /usr/include/math.h /usr/include/time.h
+mk3dstruct.o: /usr/include/sys/types.h /usr/include/sgidefs.h
+mk3dstruct.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+mk3dstruct.o: /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/types.h
 mkbinfile.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
 mkbinfile.o: /usr/include/sys/select.h /usr/include/stdlib.h

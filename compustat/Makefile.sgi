@@ -11,39 +11,37 @@ compustat.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
 compustat.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 compustat.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
 compustat.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
-compustat.o: index.h ../tape/tapedrive.h /usr/include/tar.h
-compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
-compustat.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-compustat.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-compustat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-compustat.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-compustat.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-compustat.o: /usr/include/netdb.h /usr/include/sys/socket.h
-compustat.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-compustat.o: /usr/include/arpa/inet.h
+compustat.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+compustat.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+compustat.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+compustat.o: /usr/include/sys/endian.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 index.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
-index.o: index.h ../tape/tapedrive.h /usr/include/tar.h
-index.o: ../graphics.new/machdep.h /usr/include/limits.h
-index.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-index.o: /usr/include/sys/select.h /usr/include/sys/param.h
-index.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-index.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-index.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+index.o: /usr/include/limits.h /usr/include/sys/types.h
+index.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+index.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+index.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
+index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 index.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 index.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 index.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 index.o: /usr/include/netdb.h /usr/include/sys/socket.h
 index.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-index.o: /usr/include/arpa/inet.h
 project.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 project.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
-project.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+project.o: ../graphics.new/machdep.h /usr/include/limits.h
 project.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
 project.o: /usr/include/sys/select.h /usr/include/sys/param.h
 project.o: /usr/include/sys/signal.h /usr/include/sys/time.h
@@ -55,4 +53,4 @@ project.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
 project.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
 project.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 project.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-project.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
+project.o: /usr/include/sys/endian.h
