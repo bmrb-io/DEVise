@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/18 19:33:42  jussi
+  Improved SelectReady() fairness.
+
   Revision 1.15  1996/12/18 15:35:11  jussi
   Merged GetGDataInMem() and GetTDataInMem().
 
@@ -231,6 +234,9 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
         */
 
         if (req->getRange || req->currentRec > inMem->high) {
+            /* Unpin previously pinned memory range */
+            if (inMem)
+                inMem->ClearUse();
             if (!GetNextRangeInMem(req, inMem)) {
                 /* All in-memory data ranges have been processed. */
 #if DEBUGLVL >= 3
@@ -239,6 +245,8 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
                 return false;
             }
             req->inMemoryCur = inMem;
+            /* Pin range in memory until it's fully inspected */
+            inMem->SetUse();
 #if DEBUGLVL >= 3
             printf("Next in-memory %s range is [%ld,%ld]\n",
                    dataType, inMem->low, inMem->high);
@@ -273,6 +281,7 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
 #if DEBUGLVL >= 3
             printf("End of unprocessed in-memory %s ranges\n", dataType);
 #endif
+            inMem->ClearUse();
             return false;
         }
 
@@ -840,15 +849,16 @@ void BufMgrFull::DoneGetRecs(BufMgr::BMHandle req)
 #endif
     DOASSERT(req, "Invalid request handle");
 
-    if (!req->tdataInMemory && !req->gdataInMemory) {
-        if (req->gdata != NULL) {
-            if (req->haveIO)
-                req->gdata->DoneGetRecs(req->tdhandle);
-            req->gdata->DoneConvertedIterator();
-        } else if (req->tdata != NULL) {
-            if (req->haveIO)
-                req->tdata->DoneGetRecs(req->tdhandle);
-        }
+    if (req->gdataInMemory || req->tdataInMemory) {
+        if (req->inMemoryCur)
+            req->inMemoryCur->ClearUse();
+    } if (req->gdata != NULL) {
+        if (req->haveIO)
+            req->gdata->DoneGetRecs(req->tdhandle);
+        req->gdata->DoneConvertedIterator();
+    } else if (req->tdata != NULL) {
+        if (req->haveIO)
+            req->tdata->DoneGetRecs(req->tdhandle);
     }
 
     req->prev->next = req->next;
@@ -1062,6 +1072,9 @@ void BufMgrFull::Clear()
         _memoryRanges->InitIterator(i);
         while (_memoryRanges->More(i)) {
             RangeInfo *range = _memoryRanges->Next(i);
+            if (range->InUse())
+                fprintf(stderr, "Warning: range [%ld,%ld] still in use (%d)\n",
+                        range->low, range->high, range->_inUse);
             int status = _memMgr->Deallocate(MemMgr::Cache,
                                              (char *)range->GetBuffer(),
                                              range->BufSize() / _pageSize);
