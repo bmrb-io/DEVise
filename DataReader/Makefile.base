@@ -28,9 +28,9 @@ LEX_FILES = \
 FLEX = flex
 FLEXFLAGS = -t
 
-UNI_INCL = -I../../DataReader -I../DataReader -I/s/flex/include
+DATAREAD_INCL = -I../../DataReader -I. -I/s/flex/include
 
-CFLAGS = $(ARCH_FLAGS) -Wall $(OPTFLAG) $(UNI_INCL) \
+CFLAGS = $(ARCH_FLAGS) -Wall $(OPTFLAG) $(DATAREAD_INCL) \
 	-DHAVE_CONFIG_H $(OPTFLAG)
 
 .PHONY: all default clean

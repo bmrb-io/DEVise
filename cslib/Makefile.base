@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1998/02/23 23:22:20  wenger
+#  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+#
 #  Revision 1.14  1998/02/19 23:24:18  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -107,7 +110,7 @@ include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -I../../cslib -I../../src/color/export \
-	-I/s/mesa-2.4/include \
+	$(GLINCLUDE) \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS
 

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/05/02 08:38:56  taodb
+#  Added command logging and playing support
+#  Added communication support for JAVA Screen
+#
 #  Revision 1.7  1998/02/26 20:35:10  taodb
 #  Removed ParaseAPI() interface, and added CommandObject interface
 #
@@ -48,7 +52,7 @@ include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -I../../csgroup -I../../src/color/export \
-	-I/s/mesa-2.4/include \
+	$(GLINCLUDE) \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS -D__tcltk
 

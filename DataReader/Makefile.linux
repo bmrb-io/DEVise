@@ -1,0 +1,24 @@
+
+depend:
+	makedepend -f Makefile.linux *.c *.C *.cc
+
+# DO NOT DELETE
+
+Buffer.o: Buffer.h sysdep.h
+Buffer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h DRSchema.h
+Buffer.o: /usr/include/math.h /usr/include/features.h
+Buffer.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
+Buffer.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+Buffer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Buffer.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Buffer.o: DateTime.h
+DataReader.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+DataReader.o: DataReader.h Buffer.h DRSchema.h DataReaderParser.h
+DataReader.o: /usr/include/assert.h /usr/include/features.h
+DataReader.o: /usr/include/sys/cdefs.h /usr/include/FlexLexer.h
+DateTime.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+DateTime.o: DateTime.h
+Schema.o: DRSchema.h sysdep.h
+Schema.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h DateTime.h
+testParser.o: DataReader.h Buffer.h sysdep.h
+testParser.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h DRSchema.h
