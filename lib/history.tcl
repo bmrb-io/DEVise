@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/23 20:51:00  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -37,14 +40,18 @@ proc ProcessMarkSelected { sel } {
 ############################################################
 
 proc ProcessHistorySelected { sel } {
-    foreach i { xlow ylow xhigh yhigh } {
-	.history.$i delete 0 end
-    }
+    global queryWinOpened
 
-    .history.xlow  insert 0 [.historyWin.listXlow get $sel]
-    .history.ylow  insert 0 [.historyWin.listYlow get $sel]
-    .history.xhigh insert 0 [.historyWin.listXhigh get $sel]
-    .history.yhigh insert 0 [.historyWin.listYhigh get $sel]
+    if {$queryWinOpened} {
+	foreach i { xlow ylow xhigh yhigh } {
+	    .query.$i delete 0 end
+	}
+	
+	.query.xlow  insert 0 [.historyWin.listXlow get $sel]
+	.query.ylow  insert 0 [.historyWin.listYlow get $sel]
+	.query.xhigh insert 0 [.historyWin.listXhigh get $sel]
+	.query.yhigh insert 0 [.historyWin.listYhigh get $sel]
+    }
 }
 
 ############################################################
@@ -177,56 +184,11 @@ proc DoScrollBar args {
 
 proc ClearHistory {} {
     global historyWinOpened
+
     if {$historyWinOpened} {
 	foreach i {listMark listXlow listXhigh listYlow listYhigh} {
 	    selection clear .historyWin.$i
 	    .historyWin.$i delete 0 end
 	}
     }
-}
-
-############################################################
-
-proc DoUndoEdit {} {
-    global curView
-    
-    if { [string compare $curView "" ] == 0 } {
-	return
-    }
-    
-    set filters [DEVise getVisualFilters $curView] 
-    set filter [lindex $filters [expr [llength $filters]-1]]
-    
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
-    }
-    .history.xlow insert 0 [lindex $filter 0]
-    .history.ylow insert 0 [lindex $filter 1]
-    .history.xhigh insert 0 [lindex $filter 2]
-    .history.yhigh insert 0 [lindex $filter 3]
-}
-
-############################################################
-
-proc DoGoBackOne {} {
-    global curView
-    
-    if { [string compare $curView "" ] == 0 } {
-	return
-    }
-    
-    set filters [DEVise getVisualFilters $curView] 
-    set len [llength $filters ]
-    if { $len <= 1} {
-	return
-    }
-    set filter [lindex $filters [expr $len-2]]
-    
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
-    }
-    .history.xlow insert 0 [lindex $filter 0]
-    .history.ylow insert 0 [lindex $filter 1]
-    .history.xhigh insert 0 [lindex $filter 2]
-    .history.yhigh insert 0 [lindex $filter 3]
 }

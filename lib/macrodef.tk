@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.38  1996/03/26 21:16:13  jussi
+#	Added scaling of axis values to nearest "reasonable" value.
+#
 #	Revision 1.37  1996/02/05 19:55:12  jussi
 #	Background color is chosen from a palette of colors instead of
 #	a list of color names.
@@ -254,11 +257,11 @@ proc MacroDef {} {
     global tdatas schemas maps mappings views links windows
     global tdata window gdata view link none
 
-    # see if .map window already exists; if so, just return
-    set err [catch {set exists [wm state .map]}]
-    if {!$err} { wm deiconify .map; return }
-
     set none "-- None --"
+
+    if {[WindowVisible .map]} {
+	return
+    }
 
     toplevel .map
     wm title .map "Define Visualization"
@@ -410,9 +413,9 @@ proc MacroDefClear {} {
 ############################################################
 
 proc MacroDefHelp {} {
-    # see if .help window already exists; if so, just return
-    set err [catch {set exists [wm state .help]}]
-    if {!$err} { wm deiconify .help; return }
+    if {[WindowVisible .help]} {
+	return
+    }
 
     toplevel .help
     wm title .help "Help"
@@ -491,9 +494,9 @@ proc MacroDefAuto {tdata} {
     global layoutsel linksel winnamesel titlesel
     global xaxissel yaxissel sourceList
 
-    # see if .auto window already exists; if so, just return
-    set err [catch {set exists [wm state .auto]}]
-    if {!$err} { wm deiconify .auto; return }
+    if {[WindowVisible .auto]} {
+	return
+    }
 
     set sname [lindex $schemas($tdata) 0]
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
@@ -1296,9 +1299,9 @@ proc OpenNewDataSource {} {
 proc DefSource {} {
     global sourceList tdatas schemas maps sname
 
-    # see if .source window already exists; if so, just return
-    set err [catch {set exists [wm state .source]}]
-    if {!$err} { wm deiconify .source; return }
+    if {[WindowVisible .source]} {
+	return
+    }
 
     # ask user to select a data stream
     set sname [OpenNewDataSource]
@@ -1337,9 +1340,9 @@ proc statusWindow {w title msg} {
 proc DefWindow {} {
     global windows x y w h winname
 
-    # see if .def window already exists; if so, just return
-    set err [catch {set exists [wm state .def]}]
-    if {!$err} { wm deiconify .def; return }
+    if {[WindowVisible .def]} {
+	return
+    }
 
     toplevel .def
     wm title .def "Define Window"
@@ -1433,9 +1436,9 @@ proc DefMapping {tdata schema} {
     global mappings devcolors devshapes
     global mapname x y color size pattern orient shape
 
-    # see if .def window already exists; if so, just return
-    set err [catch {set exists [wm state .def]}]
-    if {!$err} { wm deiconify .def; return }
+    if {[WindowVisible .def]} {
+	return
+    }
 
     toplevel .def
     wm title .def "Define Mapping"
@@ -1602,9 +1605,9 @@ proc DefView {} {
     global DEViseColors DEViseShapes
     global devcolors devshapes
 
-    # see if .def window already exists; if so, just return
-    set err [catch {set exists [wm state .def]}]
-    if {!$err} { wm deiconify .def; return }
+    if {[WindowVisible .def]} {
+	return
+    }
 
     toplevel .def
     wm title .def "Define View"
@@ -1769,9 +1772,9 @@ proc DefLink {} {
     global x y color size pattern orient shape linkname
     global macroSelectColor
 
-    # see if .def window already exists; if so, just return
-    set err [catch {set exists [wm state .def]}]
-    if {!$err} { wm deiconify .def; return }
+    if {[WindowVisible .def]} {
+	return
+    }
 
     toplevel .def
     wm title .def "Define Link"
@@ -2155,13 +2158,13 @@ proc MacroImport {mode} {
 ############################################################
 
 proc MacroDefAutoNew {tdata} {
-    global x yvar viewselname bgcolor layoutsel linksel winnamesel titlesel
-    global xaxissel yaxissel cancel
+    global x yvar viewselname bgcolor linksel windowsel titlesel
+    global xaxissel yaxissel cancel newgdata
     global sourceList macroSelectColor macroMenuSelectColor
 
-    # see if .auto window already exists; if so, just return
-    set err [catch {set exists [wm state .auto]}]
-    if {!$err} { wm deiconify .auto; return }
+    if {[WindowVisible .auto]} {
+	return
+    }
 
     set schema [ElimStringAttr [DEVise getSchema $tdata]]
     set sfname [lindex $sourceList($tdata) 3]
@@ -2187,34 +2190,52 @@ proc MacroDefAutoNew {tdata} {
     pack .auto.ysel -side top -pady 3m -fill x -expand 1
     pack .auto.but -side top -pady 3m -fill x -expand 1
 
-    frame .auto.winnamesel -relief groove -borderwidth 2
+    frame .auto.windowsel -relief groove -borderwidth 2
     frame .auto.xsel -relief groove -borderwidth 2
-    pack .auto.winnamesel .auto.xsel -in .auto.top -side left \
+    pack .auto.windowsel .auto.xsel -in .auto.top -side left \
 	    -ipady 3m -padx 1m -fill x -expand 1
 
     frame .auto.viewsel -relief groove -borderwidth 2
-    frame .auto.layoutsel -relief groove -borderwidth 2
-    pack .auto.viewsel .auto.layoutsel -in .auto.mid \
-	    -side left -ipady 3m -padx 1m -fill x -expand 1
-
     frame .auto.colorsel -relief groove -borderwidth 2
+    frame .auto.gdatasel -relief groove -borderwidth 2
+    pack .auto.viewsel .auto.colorsel .auto.gdatasel \
+	    -in .auto.mid -side left -ipady 3m -padx 1m -fill x -expand 1
+
     frame .auto.titlesel -relief groove -borderwidth 2
     frame .auto.linksel -relief groove -borderwidth 2
     frame .auto.xaxissel -relief groove -borderwidth 2
     frame .auto.yaxissel -relief groove -borderwidth 2
-    pack  .auto.colorsel .auto.titlesel .auto.linksel .auto.xaxissel \
-	    .auto.yaxissel -in .auto.bot -side left -ipady 3m -padx 1m \
-	    -fill x -expand 1
+    pack  .auto.titlesel .auto.linksel .auto.xaxissel .auto.yaxissel \
+	    -in .auto.bot -side left -ipady 3m -padx 1m -fill x -expand 1
 
-    label .auto.winnamesel.label -text "Window Name:"
-    entry .auto.winnamesel.entry -relief sunken -textvariable winnamesel \
+    label .auto.windowsel.label -text "Window:"
+    menubutton .auto.windowsel.window -relief raised \
+	    -textvariable windowsel -menu .auto.windowsel.window.menu \
 	    -width 30
-    pack .auto.winnamesel.label .auto.winnamesel.entry -side left -padx 1m
-    set winnamesel "$tdata (Auto)"
+    pack .auto.windowsel.label .auto.windowsel.window -side left -padx 1m
+    set windowsel [lindex [WinSet] 0]
+    if {$windowsel == ""} {
+	set windowsel "None selected yet"
+    }
+    
+    menu .auto.windowsel.window.menu -tearoff 0
+    foreach w [WinSet] {
+	.auto.windowsel.window.menu add command -label $w \
+		-command "set windowsel {$w}"
+    }
+    .auto.windowsel.window.menu add separator
+    .auto.windowsel.window.menu add command -label "New..." -command {
+	set newwin [DoCreateWindow "Select window type"]
+	if {$newwin != ""} {
+	    set windowsel $newwin
+	    .auto.windowsel.window.menu add command -label $windowsel \
+		    -command "set windowsel {$windowsel}"
+	}
+    }
 
     label .auto.xsel.label -text "Select X:"
     menubutton .auto.xsel.attr -relief raised \
-	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 15
+	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 20
     pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
     setupAttrRadioMenu .auto.xsel.attr.g$topgrp x "" $schemaname \
 	    $topgrp $topgrp
@@ -2240,26 +2261,15 @@ proc MacroDefAutoNew {tdata} {
     set viewselname "Bar Chart"
     set viewsel 2
 
-    label .auto.layoutsel.label -text "Layout:"
-    menubutton .auto.layoutsel.layout -relief raised \
-	    -textvariable layoutsel -menu .auto.layoutsel.layout.menu \
-	    -width 15
-    pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 1m
-
-    menu .auto.layoutsel.layout.menu -tearoff 0
-    .auto.layoutsel.layout.menu add radiobutton -label Tiled \
-	    -variable layoutsel -value Tiled
-    .auto.layoutsel.layout.menu add radiobutton -label Vertical \
-	    -variable layoutsel -value Vertical
-    .auto.layoutsel.layout.menu add radiobutton -label Horizontal \
-	    -variable layoutsel -value Horizontal
-    set layoutsel Vertical
+    checkbutton .auto.gdatasel.link -text "New Mappings" -variable newgdata
+    pack .auto.gdatasel.link -side left -padx 3m
+    set newgdata 0
 
     label .auto.colorsel.label -text "Background:"
     button .auto.colorsel.color -width 15 -textvariable bgcolor \
-	-command "getColor bgcolor"
+	-command "getColor bgcolor" -highlightthickness 0
     pack .auto.colorsel.label .auto.colorsel.color -side left -padx 1m
-    set bgcolor AntiqueWhite
+    set bgcolor "AntiqueWhite"
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
@@ -2307,6 +2317,12 @@ proc MacroDefAutoNew {tdata} {
     set cancel 0
 
     button .auto.but.ok -text OK -width 15 -command {
+	if {![DEVise exists $windowsel]} {
+	    dialog .winError "No Window Specified" \
+		    "Please select a window for visualization." \
+		    "" 0 OK
+	    return
+	}
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
 		set cancel 0
@@ -2348,40 +2364,17 @@ proc MacroDefAutoNew {tdata} {
     # puts "The value of x is $x"
     # puts "The ylist is $ylist"
     
-    MacroDefAutoActualNew $tdata $viewsel $linksel $winnamesel $bgcolor \
-	    $layoutsel $titlesel $xaxissel $yaxissel $x $ylist
+    MacroDefAutoActualNew $tdata $viewsel $linksel $windowsel $bgcolor \
+	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
 }
 
 ############################################################
 
-proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
-                            titlesel xaxissel yaxissel x ylist} {
+proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
+                            titlesel xaxissel yaxissel x ylist
+                            newgdata} {
     global viewDefault
 
-    set window [UniqueName $window]
-
-    if {![DEVise exists $window]} {
-	# ask DEVise to create window
-	if {$layout == "Tiled"} {
-	    set winparam "0.3 0.3 0.4 0.4"
-	    set layoutparam "-1 -1"
-	} elseif {$layout == "Vertical" } {
-	    set winparam "0.3 0.15 0.4 0.7"
-	    set layoutparam "-1 1"
-	} else {
-	    set winparam "0.15 0.3 0.7 0.4"
-	    set layoutparam "1 -1"
-	}
-	set cmd "DEVise create window TileLayout \{$window\} $winparam"
-	set result [eval $cmd]
-	if {$result == ""} {
-	    dialog .windowError "Window Error" \
-		    "Error creating window $window" "" 0 OK
-	    return
-	}
-	eval "DEVise setWindowLayout \{$window\} $layoutparam"
-    }
-    
     set schema [ElimStringAttr [DEVise getSchema $tdata]]
 
     set sortedx 0
@@ -2509,13 +2502,9 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
 
 	# puts "Mapping will have ylo $ylo and yhi $yhi"
 
-	set mapname [format "%s_vs_%s" $name $x]
-
-	set viewname [format "%s View" $name]
-
 	# ask DEVise to create view instance
 	set sorted $sortedx
-	set viewbasename "$name vs. $x"
+	set viewbasename "Data View"
 	set viewinstance [UniqueName $viewbasename]
 	if {[lsearch [ViewSet] $viewinstance] >= 0} {
 	    dialog .viewError "View Error" \
@@ -2541,20 +2530,32 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
 	# ask DEVise to turn on/off Y axis
 	DEVise setAxisDisplay $viewinstance Y $yaxissel
 
+	# if new mappings are requested, associate color with mapping,
+	# otherwise associate color with view
+	set gcolor $color
+	if {!$newgdata} {
+	    set gcolor 2
+	    DEVise setViewOverrideColor $viewinstance $color 1
+	}
+
+	set mapname [format "%s_vs_%s" $name $x]
+
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    "" $color $size $pattern $orient $shape $shapeAttr0 \
+		    "" $gcolor $size $pattern $orient $shape $shapeAttr0 \
 		    $shapeAttr1 ""]
 	}
 
-	set mapinstance [UniqueName "$tdata#$mapname"]
-	# ask DEVise to create an instance of mapping
-	set result [DEVise create mapping $mapname $tdata $mapinstance \
-		"" \$$x \$$name $color $size $pattern $orient $shape \
-		$shapeAttr0 $shapeAttr1]
-	DEVise setPixelWidth $mapinstance 1
+	set mapinstance "$tdata#$mapname"
+	if {[lsearch [GdataSet] $mapinstance] < 0} {
+	    # ask DEVise to create an instance of mapping
+	    set result [DEVise create mapping $mapname $tdata $mapinstance \
+		    "" \$$x \$$name $gcolor $size $pattern $orient $shape \
+		    $shapeAttr0 $shapeAttr1]
+	    DEVise setPixelWidth $mapinstance 1
+	}
 
 	# ask DEVise to insert $viewinstance into $mapinstance
 	set result [DEVise insertMapping $viewinstance $mapinstance]

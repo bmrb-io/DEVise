@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.61  1996/03/07 16:58:49  jussi
+#	Disabled Visualize/Obsolete and View/Background for the moment.
+#	Added View/Dimensions.
+#
 #	Revision 1.60  1996/02/28 18:20:33  yuc
 #	Added 2 new shapes: Block and 3DVector.
 #
@@ -236,19 +240,6 @@
 # The following are linked to global C variables: fileName, fileAlias,
 # gdataName, windowName, sessionName, argv0,  template
 
-# Keep the following for monochrome model
-#set green white
-#set blue black
-#tk colormodel . monochrome
-
-set green green
-set blue blue
-
-# use color model used in old Tk library (bisque color)
-tk_bisque
-
-. configure -bg LightBlue
-
 set DEViseColors \
 	{{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
@@ -264,15 +255,22 @@ set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
 	{6 Block} {7 3DVector}}
 
-# global to control.tk: curView: current view selected.
-# lastView: last view selected.
-# historyOpen: true if history window has been opened.
+# global variables:
+# curView: current view selected
+# lastView: last view selected
+# historyWinOpened: true if history window has been opened
+# queryWinOpened: true if query window has been opened
+# stackWinOpened: true if stack window has been opened
+# helpWindowCreated: true if help window has been created.
 # UserMode: 1 for end-user mode (logical schemas), 0 for
 #           administrator mode (physical schemas)
 
 set curView ""
 set lastView ""
 set historyWinOpened false
+set queryWinOpened false
+set stackWinOpened false
+set helpWindowCreated 0
 set UserMode 1
 
 set libdir "."
@@ -299,8 +297,6 @@ set tmpdir "tmp"
 if { [info exists env(DEVISE_TMP)] } {
     set tmpdir $env(DEVISE_TMP)
 }
-set mode 0
-DEVise changeMode $mode
 
 set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
@@ -332,916 +328,14 @@ source $libdir/util.tcl
 source $libdir/views.tcl
 source $libdir/save.tcl
 source $libdir/history.tcl
+source $libdir/query.tcl
+source $libdir/window.tcl
 
-set helpWindowCreated 0
-# Create menu
-wm geometry . +0+0
+set mode 0
+DEVise changeMode $mode
 
-# build top level menu
-frame .mbar -relief raised -bd 2 -background LightBlue 
-menubutton .mbar.session -text Session -underline 0 \
-	-menu .mbar.session.menu -bg LightBlue
-menubutton .mbar.vis -text Visualize -underline 7 \
-	-menu .mbar.vis.menu -bg LightBlue
-menubutton .mbar.view -text View -underline 0 \
-	-menu .mbar.view.menu -bg LightBlue
-# menubutton .mbar.link -text Link -underline 0 \
-#	-menu .mbar.link.menu -bg LightBlue
-menubutton .mbar.cursor -text Cursor -underline 0 \
-	-menu .mbar.cursor.menu -bg LightBlue
-menubutton .mbar.window -text Window -underline 0 \
-	-menu .mbar.window.menu -bg LightBlue
-menubutton .mbar.schema -text Schema -underline 0 \
-	-menu .mbar.schema.menu -bg LightBlue
-menubutton .mbar.mapping -text Mapping -underline 0 \
-	-menu .mbar.mapping.menu -bg LightBlue
-
-menu .mbar.session.menu -tearoff 0
-.mbar.session.menu add command -label "Open" -command {DoOpen 0}
-.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
-.mbar.session.menu add command -label "Close" -command DoClose
-.mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0}
-.mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
-.mbar.session.menu add command -label "Print" -command PrintView
-.mbar.session.menu add command -label "Quit" -command DoExit
-
-menu .mbar.vis.menu -tearoff 0
-.mbar.vis.menu add command -label "Import" -command { MacroImport 0 }
-.mbar.vis.menu add command -label "Define" -command { MacroImport 1 }
-#.mbar.vis.menu add separator
-#.mbar.vis.menu add command -label "Sources..." -command NotImplemented
-#.mbar.vis.menu add separator
-#.mbar.vis.menu add cascade -label "Obsolete..." -menu .mbar.vis.menu.obsmenu
-
-menu .mbar.vis.menu.obsmenu -tearoff 0
-.mbar.vis.menu.obsmenu add command -label "Manual Define" -command MacroDef
-.mbar.vis.menu.obsmenu add separator
-.mbar.vis.menu.obsmenu add command -label "File" -command DoVisualizeFile
-.mbar.vis.menu.obsmenu add command -label "TData" -command DoVisualizeTData
-.mbar.vis.menu.obsmenu add command -label "GData" -command DoVisualizeGData
-
-menu .mbar.view.menu -tearoff 0
-.mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
-.mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
-.mbar.view.menu add separator
-.mbar.view.menu add command -label "Swap Position" -command DoSwapView
-.mbar.view.menu add command -label "Move To Window" -command DoViewMove
-.mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
-.mbar.view.menu add command -label "Bring Back To Window" -command DoBringView
-#.mbar.view.menu add command -label "Destroy" -command DoViewDestroy
-.mbar.view.menu add separator
-.mbar.view.menu add command -label "Link" -command DoViewLink
-.mbar.view.menu add command -label "Unlink" -command DoViewUnlink
-.mbar.view.menu add command -label "XAxis" -command {DoViewAxis x}
-.mbar.view.menu add command -label "YAxis" -command {DoViewAxis y}
-.mbar.view.menu add cascade -label "Toggle X Axis" \
-	-menu .mbar.view.menu.xaxismenu
-.mbar.view.menu add cascade -label "Toggle Y Axis" \
-	-menu .mbar.view.menu.yaxismenu
-.mbar.view.menu add cascade -label "Toggle Statistics" \
-	-menu .mbar.view.menu.statmenu
-.mbar.view.menu add cascade -label "Show KGraph" \
-	-menu .mbar.view.menu.kmenu
-.mbar.view.menu add separator
-#.mbar.view.menu add command -label "Background..." -command DoSetBgColor
-.mbar.view.menu add cascade -label "Dimensions" \
-	-menu .mbar.view.menu.dimmenu
-.mbar.view.menu add command -label "Title" -command DoSetTitle
-
-#.mbar.view.menu add command -label "Action" -command DoViewAction
-#.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
-#.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
-
-menu .mbar.view.menu.xaxismenu -tearoff 0
-.mbar.view.menu.xaxismenu add command -label "Current View" \
-	-command {DoToggleAxis X}
-.mbar.view.menu.xaxismenu add command -label "All Views" \
-	-command {DoToggleAxisAllViews X}
-
-menu .mbar.view.menu.yaxismenu -tearoff 0
-.mbar.view.menu.yaxismenu add command -label "Current View" \
-	-command {DoToggleAxis Y}
-.mbar.view.menu.yaxismenu add command -label "All Views" \
-	-command {DoToggleAxisAllViews Y}
-
-menu .mbar.view.menu.statmenu -tearoff 1
-.mbar.view.menu.statmenu add checkbutton -label Mean -variable statmean
-.mbar.view.menu.statmenu add checkbutton -label Max -variable statmax
-.mbar.view.menu.statmenu add checkbutton -label Min -variable statmin
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add radiobutton -label "No Conf. Intervals" \
-	-variable statcilevel -value "000"
-.mbar.view.menu.statmenu add radiobutton -label "85% CI" \
-	-variable statcilevel -value "100"
-.mbar.view.menu.statmenu add radiobutton -label "90% CI" \
-	-variable statcilevel -value "010"
-.mbar.view.menu.statmenu add radiobutton -label "95% CI" \
-	-variable statcilevel -value "001"
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add radiobutton -label "Current View" \
-	-variable statcurr -value 1
-.mbar.view.menu.statmenu add radiobutton -label "All Views" \
-	-variable statcurr -value 0
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add command -label "Apply..." \
-	-command {DoToggleStatistics}
-#defaults
-set statmean 1
-set statmax 0
-set statmin 0
-set statcurr 1
-set statcilevel "000"
-
-menu .mbar.view.menu.kmenu -tearoff 1
-.mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
-.mbar.view.menu.kmenu add radiobutton -label Max -variable kval -value 1
-.mbar.view.menu.kmenu add radiobutton -label Min -variable kval -value 2
-.mbar.view.menu.kmenu add radiobutton -label Count -variable kval -value 3
-.mbar.view.menu.kmenu add separator
-.mbar.view.menu.kmenu add radiobutton -label "Use Current" \
-	-variable kcurr -value 1
-.mbar.view.menu.kmenu add radiobutton -label "Specify Views" \
-	-variable kcurr -value 0
-.mbar.view.menu.kmenu add separator
-.mbar.view.menu.kmenu add radiobutton -label "New Graph" \
-	-variable knew -value 1
-.mbar.view.menu.kmenu add radiobutton -label "Reuse Graph" \
-	-variable knew -value 0
-.mbar.view.menu.kmenu add separator
-.mbar.view.menu.kmenu add command -label "Apply..." \
-	-command {ShowKGraph}
-#defaults
-set kval 0
-set kcurr 1
-set knew 0
-
-menu .mbar.view.menu.dimmenu -tearoff 0
-.mbar.view.menu.dimmenu add command -label "Two Dimensions" \
-	-command {DoSetViewDimensions 2}
-.mbar.view.menu.dimmenu add command -label "Three Dimensions" \
-	-command {DoSetViewDimensions 3}
-
-# menu .mbar.link.menu -tearoff 0
-#.mbar.link.menu add command -label "Create" -command DoLinkCreate
-#.mbar.link.menu add command -label "Modify" -command DoModifyLink
-#.mbar.link.menu add command -label "Link View" -command DoViewLink
-
-menu .mbar.cursor.menu -tearoff 0
-.mbar.cursor.menu add command -label "Create" -command DoCursorCreate
-.mbar.cursor.menu add command -label "Delete" -command DoCursorDelete
-.mbar.cursor.menu add separator
-.mbar.cursor.menu add command -label "Set source" -command DoSetCursorSrc
-.mbar.cursor.menu add command -label "Set destination" -command DoSetCursorDst
-
-menu .mbar.window.menu -tearoff 0
-.mbar.window.menu add command -label "Layout" -command {SetWindowLayout ""}
-.mbar.window.menu add command -label "Remove" -command {RemoveWindow ""}
-.mbar.window.menu add command -label "Duplicate" -command DupWindow
-.mbar.window.menu add separator
-.mbar.window.menu add command -label "Demo" -command DoDemo
-.mbar.window.menu add command -label "Help" -command DoHelp
-.mbar.window.menu add command -label "History" -command OpenHistory
-
-menu .mbar.schema.menu -tearoff 0
-# Command to execute for browsing schema depends on whether we are in 
-# the user or the superuser mode. 
-.mbar.schema.menu add command -label "Browse..." -command SchemaBrowse
-.mbar.schema.menu add separator
-.mbar.schema.menu add command -label "Physical..." -command {SchemaEdit 0}
-.mbar.schema.menu add command -label "Logical..." -command {SchemaEdit 1}
-
-menu .mbar.mapping.menu -tearoff 0
-.mbar.mapping.menu add command -label "Define" -command DefineMapping
-.mbar.mapping.menu add command -label "Resolve" -command ResolveMapping
-
-pack .mbar.session .mbar.vis .mbar.view .mbar.cursor \
-	.mbar.window .mbar.schema .mbar.mapping -side left -fill x
-
-# status widgets
-frame .status  -background LightBlue 
-frame .status.left -background LightBlue 
-frame .status.right -relief sunken  -background LightBlue -background LightBlue
-
-# .status.right configure -background LightBlue
-if { $mode == 0 } {
-    set modeText "display mode"
-} else {
-    setmodeText "layout mode"
-}
-
-button .status.left.mode -text $modeText -command {ChangeMode} \
-	-background turquoise
-pack .status.left.mode -side left -fill x -expand 1
-
-label .status.right.stat -text "status:" -bg LightBlue
-label .status.right.stat_msg -bitmap questhead -background LightBlue
-pack .status.right.stat_msg .status.right.stat -side right
-
-pack .status.left  -side left 
-pack .status.right -side right
-
-# build current view widgets
-frame .viewFrame -relief sunken -background LightBlue
-
-label .viewFrame.label -text "Current View:" -bg lavender
-label .viewFrame.viewName -text "" -width 50  -bg lavender -fg red
-pack .viewFrame.label .viewFrame.viewName  -side left 
-
-# build control widgets
-frame .topFrame -background LightBlue
-
-frame .control -relief sunken -background LightBlue
-frame .control.level1 -background LightBlue
-frame .control.level2 -background LightBlue
-frame .control.level3 -background LightBlue
-
-# Do the buttons
-button .control.left -bitmap @$libdir/left.bit \
-	-command { ProcessLeftButton} -bg cyan1
-set left_amount 0.5
-
-button .control.right -bitmap @$libdir/right.bit \
-	-command {ProcessRightButton} -bg cyan1
-set right_amount 0.5
-
-button .control.up -bitmap @$libdir/up.bit \
-	-command { ProcessUpButton } -bg cyan1
-set up_amount 0.5
-
-button .control.down -bitmap @$libdir/down.bit \
-	-command { ProcessDownButton } -bg cyan1
-set down_amount 0.5
-
-button .control.in -bitmap @$libdir/zoominx.bit \
-	-command { ProcessInButton } -bg orange
-set in_amount 0.5
-
-button .control.out -bitmap @$libdir/zoomoutx.bit \
-	-command {ProcessOutButton} -bg orange
-set out_amount 1.5
-
-button .control.yin -bitmap @$libdir/zoominy.bit \
-	-command {ProcessYInButton} -bg orange
-button .control.yout -bitmap @$libdir/zoomouty.bit \
-	-command {ProcessYOutButton} -bg orange
-
-pack .control.in .control.left .control.yin -in .control.level1 -side top
-pack .control.up -side top -in .control.level2 
-pack .control.down -side bottom -in .control.level2 -fill y 
-pack .control.out .control.right .control.yout -in .control.level3 -side top
-pack .control.level1 .control.level2 .control.level3 -in .control  -side left
-
-# build history widgets
-frame .history -relief sunken -bd 2 -background LightBlue
-
-frame .history.heading1 -background LightBlue
-frame .history.heading2 -background LightBlue
-label .history.xlowHeading -text xlow -bg LightBlue
-label .history.xhighHeading -text xhigh -bg LightBlue
-label .history.ylowHeading -text ylow -bg LightBlue
-label .history.yhighHeading -text yhigh  -bg LightBlue
-pack .history.xlowHeading .history.ylowHeading -in .history.heading1 \
-	-side top
-pack .history.xhighHeading .history.yhighHeading -in .history.heading2 \
-	-side top
-
-frame .history.entry1 -bg LightBlue
-frame .history.entry2 -bg LightBlue
-entry .history.xlow -text "" -relief sunken -width 20 -bg yellow -fg $blue
-entry .history.xhigh -text "" -relief sunken -width 20 -bg yellow -fg $blue
-entry .history.ylow -text "" -relief sunken -width 20 -bg LightGray 
-entry .history.yhigh -text "" -relief sunken -width 20 -bg LightGray
-pack .history.xlow .history.ylow  -in .history.entry1 -side top \
-	-expand 1 -fill x
-pack .history.xhigh .history.yhigh -in .history.entry2 -side top  \
-	-expand 1 -fill x
-
-frame .history.buttonFrame  -background LightBlue
-button .history.button -text "use" -relief raised -bg $green \
-	-command { ProcessUseButton }
-button .history.undo -text "undo-edit" -bg $green -relief raised \
-	-command {DoUndoEdit}
-button .history.back -text "back one" -bg $green -relief raised \
-	-command {DoGoBackOne}
-button .history.history -text "history" -bg $green -relief raised \
-	-command {DoHistoryToggle}
-pack .history.button .history.undo .history.back .history.history \
-	-in .history.buttonFrame -side left -expand 1 -fill x
-
-pack .history.buttonFrame -side bottom -expand 1 -fill x
-pack .history.heading1 .history.entry1 .history.heading2 \
-	.history.entry2 -side left -expand 1 -fill x
-
-pack .mbar .status .viewFrame .topFrame -side top -fill x -expand 1
-pack .control .history -side left -fill x -expand 1
-
-tk_menuBar .mbar .mbar.session .mbar.vis .mbar.view \
-	.mbar.link .mbar.window .mbar.help
-focus .mbar
-
-# Create a new instance of file of the given type.
-proc DoCreateTData { file type } {
-    global dialogParamVar fileName fileAlias
-    set fileName $file
-    set fileAlias [ file tail $file ]
-    set paramNames [ DEVise getparam tdata $type ]
-    set tempParams [ lrange $paramNames 1 [expr [llength $paramNames]-1]]
-
-    set button [ dialogParam .fileParam "FileParam" \
-	    "Enter Alias for file\n\
-	    $file\n\
-	    (Note: it may take a while for the program\n\
-	    to come back after clicking <OK>)"  "" 1  \
-	    { Cancel OK } $tempParams]
-    if { $button == 0} {
-	return
-    }
-
-    set fileAlias [ lindex $dialogParamVar(params) 0 ]
-    if { [DEVise exists $fileAlias] } {
-	# This file alias already exists in memory.
-	set but [dialog .fileExist "File Exists" \
-		"Warning: TData $fileAlias exists" "" \
-		1 Cancel {Use Existing}]
-	if { $but == 0 } {
-	    return
-	} else {
-	    return $fileAlias
-	}
-    }
-
-    set params $dialogParamVar(params)
-    set params [linsert $params 0 $file ]
-    set cmd "DEVise create tdata $type $params"
- 
-    set result [eval $cmd]
-    if {$result == ""} {
-	set but [ dialog .createError "CreateError" \
-		"Can't import file $file of type $type" \
-		"" 0 OK ]
-	return
-    }
-
-    return $result
-}
-
-#import a new file type
-#Return name of file type, or ""
-proc ImportFileType {} {
-    global fsBox schemadir
-    set fsBox(path) $schemadir/logical
-    set fsBox(pattern) *
-    set ftypeFile [FSBox "Select schema file"]
-    if {$ftypeFile == ""} {
-	return
-    }
-    
-    set result [DEVise importFileType $ftypeFile]
-    if {$result == ""} {
-	dialog .fileTypeError "Schema File Error" \
-		"Error reading schema file $ftypeFile" \
-		"" 0 OK
-	return
-    }
-    return $result
-}
-
-# Check to see if file already exists 
-proc FileExist { file } {
-    foreach tdata [TdataSet] {
-	if {$file == [DEVise tdataFileName $tdata]} {
-	    return 1
-	}
-    }
-    return 0
-}
-
-# Select a file and make it into a TData
-proc DoSelectFile {} {
-    global dialogListVar fsBox datadir
-    # Get file name
-    set fsBox(path) $datadir
-    set fsBox(pattern) *
-   set file [ FSBox ]
-
-    # Map file into TData classes
-    if {$file == ""} {
-	return
-    }
-
-    if  { [FileExist $file ] } {
-	set but [dialog .fileExist "File Exists" \
-		"File $file already loaded\n\
-		Please use Visualize/TData menu" "" 0 Continue]
-	return
-    }
-
-    # find file type (TData class name )
-    while { 1 } {
-	set tclass [ DEVise get tdata]
-
-	if { [ llength $tclass ] == 0 } {
-	    set but [dialog .noTdata "No File Type" \
-		    "No existing file type.\n\
-		    Import schema for file\n$file?" "" 1 \
-		    Cancel OK ]
-	    if { $but == 0} {
-		return
-	    }
-	    set result [ImportFileType]
-	    if {$result == ""} {
-		return
-	    }
-	    set ftype $result
-	    break
-	} 
-	set button [ dialogList .fileType "fileType" \
-		"Select file type for file \n$file"\
-		"" 2  { Cancel new OK } $tclass ]
-	set ftype $dialogListVar(selected)
-	if { $button  == 0 } {
-	    return
-	} elseif { $button == 1 } {
-	    set result [ImportFileType]
-	    if {$result == ""} {
-		return
-	    }
-	    set ftype $result
-	    break
-	} elseif {$dialogListVar(selected) == ""} {
-	    return
-	} else {
-	    break
-	}
-    }
-
-    set alias [ DoCreateTData $file $ftype ]
-    if {$alias == ""} {
-	return
-    }
-
-    return $alias
-}
-
-proc DoSelectTData {} {
-    global dialogListVar
-    set tdataSet [ TdataSet ]
-    if { [ llength $tdataSet  ] == 0 } {
-	return [ DoSelectFile ]
-    } else {
-	set answer [ dialogList .selectTData "SelectTData"  \
-		"Select a TData" \
-		"" 2 { New Cancel Ok } $tdataSet ]
-	if { $answer == 0 } {
-	    # Select a new file
-	    return [ DoSelectFile ]
-	} elseif { $answer == 1 || $dialogListVar(selected) == "" } {
-	    # Cancel selected or no file selected.
-	    return 
-	} else {
-	    # Get the selection
-	    return $dialogListVar(selected)
-	}
-    }
-}
-
-# Find default X attribute name.
-# The default is the sorted X attribute other than recId, if one exists.
-# Otherwise, it's the recId.
-# otherwise, it's the 0th attribute.
-
-proc FindDefaultXAttr { attrs } {
-    set numAttrs 0
-    foreach attr $attrs {
-	# puts "attr= $attr"
-	if { [lindex $attr 2] > 0 } {
-	    set temp($numAttrs) [lindex $attr 0]
-	    incr numAttrs
-	    if {$numAttrs >= 2 } {
-		break
-	    }
-	}
-    }
-    if { $numAttrs == 0 } {
-	# puts "numAttrs == 0"
-	return [lindex [lindex $attrs 0] 0]
-    } elseif { $numAttrs == 1 } {
-	# puts "numAttrs == 1"
-	return $temp(0)
-    } else {
-	# puts "numAttrs >= 2"
-	if { $temp(0) == "recId"} {
-	    return $temp(1)
-	} else {
-	    return $temp(0)
-	}
-    }
-}
-
-# Create an interpreted mapping 
-proc CreateInterpretedMapping { tdata } {
-    global dialogParamVar DEViseColors DEViseShapes sourceList
-
-    set sfname [lindex $sourceList($tdata) 3]
-    set schemaname [file tail $sfname]
-
-    set attrs [lsort [ElimStringAttr [DEVise getSchema $tdata]]]
-    set simpleAttrs [DropAttrTypes $attrs]
-    set defX [FindDefaultXAttr $attrs]
-    set defY [lindex $simpleAttrs 0]
-    if {$defX != "recId"} {
-	set defY [lindex $simpleAttrs 1]
-    }
-    set defColor red
-    set defShape Bar
-    
-    set parm [dialogMapping .enterMapping "Enter Mapping" \
-	    "Enter Mapping" ""  \
-	    $schemaname \
-	    [list  \
-	    [list x {0 1 2 3 4 5 6 7 8 9 10} $defX] \
-	    [list y {0 1 2 3 4 5 6 7 8 9 10} $defY]\
-	    [list z {0 1 2 3 4 5 6 7 8 9 10} $defZ]\
-	    [list color $DEViseColors $defColor]\
-	    [list shape $DEViseShapes $defShape]\
-	    ] 1 ] 
-    if {$parm == ""} {
-	return
-    }
-    
-    # extract parameters
-    set mapName [lindex $parm 0]
-    set parm [lindex $parm 1]
-    
-    # extract parameters
-    set params [list $tdata $mapName {} \
-	    \$[lindex $parm 0] \$[lindex $parm 1] \$[lindex $parm 2] \
-	    [findNumericValue $DEViseColors [lindex $parm 3]] \
-	    {} {} {} [findNumericValue $DEViseShapes [lindex $parm 4]] \
-	    {} {} {} ]
-    
-    set cmd "DEVise createInterp $params"
-    set result [eval $cmd]
-    if {$result == ""} {
-	set but [dialog .CreateError \
-		"Can't create mapping for tdata $tdata" \
-		"" 0 OK ]
-	return 
-    }
-    
-    return $result
-}
-
-# Actually create gdata and return its name
-proc DoActualCreateGData { tdata mapping } {
-    global dialogParamVar gdataName fileAlias
-    set fileAlias $tdata
-    set gdataName [UniqueName [ format "%s#%s" $tdata $mapping ]]
-
-    set paramNames [ DEVise getparam mapping $mapping ]
-
-    # puts "checking if interpreted $mapping"
-    if {! [DEVise isInterpreted $mapping] } {
-	# not interpreted mapping 
-	set button [ dialogParam .mappingParam "MappingParam" \
-		"Enter parameters to create gdata from file $tdata\n\
-		and mapping $mapping"\
-		"" 1 { Cancel OK } $paramNames ]
-	if { $button == 0} {
-	    return
-	}
-
-	set cmd "DEVise create mapping $mapping $dialogParamVar(params)"
-	set result [eval $cmd]
-	if {$result == ""} {
-	    set but [ dialog .CreateError \
-		    "Can't create mapping using $mapping" \
-		    "" 0 OK ]
-	    return
-	}
-	return $result
-    } else {
-	# interpreted mapping
-	set parm1 "gdata $tdata#$mapping"
-	set parms [list $parm1 ]
-	set button [ dialogParam .mappingName GDataName \
-		"Enter GData Name " "" 1 { Cancel OK } \
-		$parms ]
-	if { $button == 0 } {
-	    return
-	}
-	set initParm $dialogParamVar(params)
-	
-	set gdataName [lindex $initParm 0]
-	if { [DEVise exists $gdataName ] } {
-	    set but [dialog .gdataExist "gdataExist" \
-		    "Error: gdata $gdataName already exists" \
-		    "" 0 {Cancel} ]
-	    return
-	}
-	
-	# extract parameters
-	# puts "paramNames are: $paramNames"
-	set params [list $tdata [lindex $initParm 0] \
-		[ lindex [lindex $paramNames 2] 1] \
-		[ lindex [lindex $paramNames 3] 1] \
-		[ lindex [lindex $paramNames 4] 1] \
-		[ lindex [lindex $paramNames 5] 1] \
-		[ lindex [lindex $paramNames 6] 1] \
-		[ lindex [lindex $paramNames 7] 1] \
-		[ lindex [lindex $paramNames 8] 1] \
-		[ lindex [lindex $paramNames 9] 1] \
-		[ lindex [lindex $paramNames 10] 1] \
-		[ lindex [lindex $paramNames 11] 1] \
-		[ lindex [lindex $paramNames 12] 1] \
-		[ lindex [lindex $paramNames 13] 1]] 
-	
-	set cmd "DEVise create mapping $mapping $params"
-	set result [eval $cmd]
-	if {$result == ""} {
-	    set but [ dialog .CreateError \
-		    "Can't create mapping using $mapping" \
-		    "" 0 OK ]
-	    return
-	}
-	return $result
-    }
-}
-
-# Create a new GData from TData
-proc DoCreateGData { tdata } {
-    global dialogListVar
-    set schema [DEVise getSchema $tdata ]
-
-    while { 1 } {
-	set tmappings [ DEVise get mapping ]
-	if {$tmappings == ""} {
-	    set but [dialog .noMap "No Mapping" \
-		    "No existing mapping.\n\
-		    Create mapping for tdata\n$tdata?" "" 1 \
-		    Cancel OK ]
-	    if { $but == 0} {
-		return
-	    }
-	    set mapping [CreateInterpretedMapping $tdata]
-	    if {$mapping == ""} {
-		return
-	    }
-	    break
-	}
-	set answer [ dialogList .mapGData "MapFile"  \
-		"Select mapping to map tdata\n $tdata\ninto gdata" \
-		"" 0 { Cancel New OK } $tmappings ]
-	if { $answer == 1} {
-	    set mapping [CreateInterpretedMapping $tdata]
-	    if {$mapping == ""} {
-		return
-	    }
-	    break
-	} elseif {$answer == 0  || $dialogListVar(selected) == ""} {
-	    # no answer 
-	    return 
-	} else {
-	    set mapping $dialogListVar(selected)
-	    break
-	}
-    }
-    # Create the actual gdata
-    return [ DoActualCreateGData $tdata $mapping ]
-}
-
-# Get a GData for display
-proc DoGetGData {} {
-    global dialogListVar
-    set gdataSet [ GdataSet ]
-    if { [ llength $gdataSet ] == 0 } {
-	set answer [ dialog .getDataError "Visualize GData Error" \
-		"There is currently no GData.\n\
-		Please use menu File/Visualize to\n\
-		create GData for visualization"  "" 0 { Ok } ]
-	return
-    } else {
-	set answer [ dialogList .getGData \
-		"GetGData" "Select GData for display" \
-		"" 0 { New Cancel OK } \
-		$gdataSet ]
-	if { $answer == 0 } {
-	    # Create a new one
-	    set tdata [ DoSelectTData ]
-	    if {$tdata == ""} {
-		return
-	    }
-	    return [ DoCreateGData $tdata ]
-	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
-	    return
-	} else {
-	    return $dialogListVar(selected)
-	}
-    }
-}
-
-proc DoActualCreateView { viewType name } {
-    global dialogParamVar viewName
-    set viewName $name
-    # if { [DEVise exists $name ] } {
-	# set but [dialog .viewExists "ViewExists" \
-		# "Error: View $name exists" "" 0 {Cancel}]
-	# return
-    # }
-
-    set paramNames [ DEVise getparam view $viewType ]
-    puts "paramNames $paramNames"
-
-    set button [ dialogParam .viewParam "ViewParam" \
-	    "Enter parameters to create view\n$viewName"\
-	    "" 1 { Cancel OK } $paramNames ]
-    if { $button == 0} {
-	return
-    }
-    set name [lindex $dialogParamVar(params) 0]
-    if { [DEVise exists $name ] } {
-	set but [dialog .viewExists "ViewExists" \
-		"Error: View\n$name exists" "" 0  {Cancel}]
-	return
-    }
-
-    set cmd "DEVise create view $viewType $dialogParamVar(params)"
-    set result [eval $cmd]
-    if {$result == ""} {
-	set but [ dialog .viewError "ViewError" \
-		"Can't create view using $viewType" "" 0 OK ]
-	return
-    }
-    return $result
-}
-
-# Do create a new view
-proc DoCreateView { message gdata} {
-    global dialogListVar
-
-    set viewClasses [ DEVise get view ]
-    set answer [ dialogList .createView "CreateView" $message \
-	    "" 0 { Cancel OK } $viewClasses 0]
-    if {$answer == 0 || $dialogListVar(selected) == ""} {
-	return
-    } else {
-	return [ DoActualCreateView $dialogListVar(selected) \
-		$gdata#$dialogListVar(selected) ]
-    }
-}
-
-proc DoGetView { gdata } {
-    global dialogListVar
-    set viewSet [ ViewSet ]
-
-    # Use this to always create a new view
-    return [ DoCreateView "Select type of view to display\n$gdata" \
-	    $gdata ]
-
-    #	use this when we have overlapping views
-    if { [ llength $viewSet ] == 0 } {
-	return [ DoCreateView "Select type of view to display $gdata" \
-		$gdata ]
-    } else {
-	set answer [ dialogList .getView "GetView" "Select a view to \
-		display $gdata, or press <New> to create a new one" "" 2 \
-		{ Cancel New OK } $viewSet ]
-	if { $answer == 1 } {
-	    return [ DoCreateView  \
-		    "Select type of view to display $gdata" $gdata ]
-	} elseif {$answer == 0 || $dialogListVar(selected) == ""} {
-	    return
-	} else {
-	    return $dialogListVar(selected)
-	}
-    }
-}
-
-proc DoActualCreateWindow { winType } {
-    global dialogParamVar windowName
-    set windowName [UniqueName DEViseWn0]
-    set paramNames [ DEVise getparam window $winType ]
-
-    set button [ dialogParam .windowParam "WindowParam" \
-	    "Enter parameters to create window $winType"\
-	    "" 1 { Cancel OK } $paramNames ]
-    if { $button == 0} {
-	return
-    }
-    set cmd "DEVise create window $winType $dialogParamVar(params)"
-    set result [eval $cmd ]
-    if {$result == ""} {
-	set but [ dialog .winError "winError" \
-		"Can't create window using $winType" "" 0 OK ]
-	return
-    }
-    return $result
-}
-
-# Create a new window
-proc DoCreateWindow { message } {
-    global dialogListVar
-    set winTypes [ DEVise get window ]
-    if { [llength $winTypes] == 1 } {
-	return [ DoActualCreateWindow [lindex $winTypes 0] ]
-    }
-    set answer [ dialogList .createWin "CreateWindow"  \
-	    $message "" "" { Cancel Ok } $winTypes ]
-    if {$answer == 0 || $dialogListVar(selected) == ""} {
-	return
-    } else {
-	return [ DoActualCreateWindow $dialogListVar(selected) ]
-    }
-}
-
-# Get a window 
-proc DoGetWindow {} {
-    global dialogListVar
-
-    set winSet [ WinSet ]
-
-    if { [ llength $winSet ] == 0 } {
-	return [ DoCreateWindow "Select window type" ]
-    }
-
-    set answer [ dialogList .window "Select Window" \
-	    "Select a window to display view in" "" "" \
-	    { Cancel New Ok } $winSet ]
-    if { $answer == 1 } {
-	return [ DoCreateWindow "Select window type" ]
-    }
-
-    if {$answer == 0  || $dialogListVar(selected) == ""} {
-	return 
-    }
-
-    return $dialogListVar(selected)
-}
-
-proc DoVisualizeTData {} {
-    set tdata [ DoSelectTData ]
-    DoActualVisualizeTData $tdata
-}
-
-proc DoVisualizeFile {} {
-    set tdata [ DoSelectFile ]
-    DoActualVisualizeTData $tdata
-}
-
-# Do File/TData command. Return 1 if OK, else return nothing
-proc DoActualVisualizeTData { tdata } {
-    if {$tdata == ""} {
-	# no tdata selected.
-	return
-    }
-    
-    # Do mapping for tdata
-    set gdata [ DoCreateGData $tdata ]
-    if {$gdata == ""} {
-	# no tdata selected.
-	return
-    }
-    
-    # put gdata into view 
-    set view [ DoGetView $gdata ]
-    if {$view == ""} {
-	return
-    }
-    set res [DEVise insertMapping $view $gdata ]
-
-    # Find a window for view
-    set window [ DoGetWindow ]
-    if {$window == ""}  { 
-	return
-    }
-    set res [ DEVise insertWindow $view $window ]
-    
-    ProcessViewSelected $view
-}
-
-proc DoVisualizeGData {} {
-    set gdata [ DoGetGData ]
-    if {$gdata == ""} {
-	return
-    }
-
-    # gdata into view 
-    set view [ DoGetView $gdata ]
-    if {$view == ""} {
-	return
-    }
-    set res [DEVise insertMapping $view $gdata ]
-    
-    # Find a window for view
-    set window [ DoGetWindow ]
-    if {$window == ""}  { 
-	return
-    }
-    set res [ DEVise insertWindow $view $window ]
-    
-    ProcessViewSelected $view
-}
+set backGround DarkOliveGreen
+set foreGround white
 
 # read the .rc file
 # we check the following in sequence:
@@ -1277,29 +371,354 @@ if {$rcFile != ""} {
     source $rcFile
 }
 
+# position main window and set up colors used by user interface
+
+wm geometry . +0+0
+tk_focusFollowsMouse
+
+if {1} {
+    tk_setPalette background $backGround foreground $foreGround \
+	    selectBackground $foreGround selectForeground $backGround
+    . configure -bg $backGround
+}
+
+if {0} {
+    # Keep the following for monochrome model
+    #set backGround white
+    #set foreGround black
+    #tk colormodel . monochrome
+}
+
+frame .mbar  -relief raised -bd 4 -bg green
+frame .panel -bg white
+
+pack .panel -side top -expand 1 -fill both
+pack .mbar  -side top -expand 0 -fill x
+
+menubutton .mbar.session -text Session -underline 0 \
+	-menu .mbar.session.menu
+menubutton .mbar.tdata -text SourceData -underline 0 \
+	-menu .mbar.tdata.menu
+menubutton .mbar.gdata -text GraphData -underline 0 \
+	-menu .mbar.gdata.menu -state disabled
+menubutton .mbar.view -text View -underline 0 \
+	-menu .mbar.view.menu -state disabled
+menubutton .mbar.window -text Window -underline 0 \
+	-menu .mbar.window.menu
+menubutton .mbar.help -text Help -underline 0 \
+	-menu .mbar.help.menu
+
+pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
+	.mbar.window .mbar.help -expand 1 -side left -fill x
+
+menu .mbar.session.menu -tearoff 0
+.mbar.session.menu add command -label "Open" -command {DoOpen 0}
+.mbar.session.menu add command -label "Save" -command DoSave
+.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0}
+.mbar.session.menu add command -label "Close" -command DoClose
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
+.mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Toggle mode" -command { ChangeMode }
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Print" -command PrintView
+.mbar.session.menu add command -label "Quit" -command DoExit
+
+menu .mbar.tdata.menu -tearoff 0
+.mbar.tdata.menu add command -label "Import" -command { MacroImport 0 }
+
+.mbar.tdata.menu add cascade -label "Schema" \
+	-menu .mbar.tdata.menu.schemaMenu 
+
+menu .mbar.tdata.menu.schemaMenu -tearoff 0
+
+.mbar.tdata.menu.schemaMenu add command -label "Browse..." \
+	-command SchemaBrowse
+.mbar.tdata.menu.schemaMenu add separator
+.mbar.tdata.menu.schemaMenu add command -label "Physical..." \
+	-command {SchemaEdit 0}
+.mbar.tdata.menu.schemaMenu add command -label "Logical..." \
+	-command {SchemaEdit 1}
+
+.mbar.tdata.menu add cascade -label "Mapping" \
+	-menu .mbar.tdata.menu.mappingMenu
+
+.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 }
+
+menu .mbar.tdata.menu.mappingMenu -tearoff 0
+
+.mbar.tdata.menu.mappingMenu add command -label "Define" \
+	-command DefineMapping
+.mbar.tdata.menu.mappingMenu add command -label "Resolve" \
+	-command ResolveMapping
+
+menu .mbar.gdata.menu -tearoff 0
+
+.mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
+.mbar.gdata.menu add command -label "Copy/Edit" -command DoViewCopy
+.mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
+
+menu .mbar.view.menu -tearoff 0
+
+#.mbar.view.menu add command -label "XAxis" -command { DoViewAxis x }
+#.mbar.view.menu add command -label "YAxis" -command { DoViewAxis y }
+.mbar.view.menu add cascade -label "Toggle X Axis" \
+	-menu .mbar.view.menu.xaxismenu
+.mbar.view.menu add cascade -label "Toggle Y Axis" \
+	-menu .mbar.view.menu.yaxismenu
+.mbar.view.menu add separator
+
+.mbar.view.menu add cascade -label "Links" \
+	-menu .mbar.view.menu.linkMenu 
+
+menu .mbar.view.menu.linkMenu -tearoff 0
+.mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
+.mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
+.mbar.view.menu add separator
+
+.mbar.view.menu add cascade -label "Cursor" \
+	-menu .mbar.view.menu.cursorMenu 
+
+menu .mbar.view.menu.cursorMenu -tearoff 0
+.mbar.view.menu.cursorMenu add command -label "Create" -command DoCursorCreate
+.mbar.view.menu.cursorMenu add command -label "Delete" -command DoCursorDelete
+.mbar.view.menu.cursorMenu add separator
+.mbar.view.menu.cursorMenu add command -label "Set source" \
+	-command DoSetCursorSrc
+.mbar.view.menu.cursorMenu add command -label "Set destination" \
+	-command DoSetCursorDst
+
+.mbar.view.menu add separator
+.mbar.view.menu add cascade -label "Toggle Statistics" \
+	-menu .mbar.view.menu.statmenu
+.mbar.view.menu add cascade -label "Show KGraph" \
+	-menu .mbar.view.menu.kmenu
+.mbar.view.menu add separator
+#.mbar.view.menu add command -label "Background..." -command DoSetBgColor
+.mbar.view.menu add cascade -label "Dimensions" \
+	-menu .mbar.view.menu.dimmenu
+.mbar.view.menu add command -label "Title" -command DoSetTitle
+.mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
+
+#.mbar.view.menu add command -label "Action" -command DoViewAction
+#.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
+#.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
+
+menu .mbar.view.menu.xaxismenu -tearoff 0 
+.mbar.view.menu.xaxismenu add command -label "Current View"  \
+	-command { DoToggleAxis X }
+.mbar.view.menu.xaxismenu add command -label "All Views" \
+	-command { DoToggleAxisAllViews X }
+
+menu .mbar.view.menu.yaxismenu -tearoff 0 
+.mbar.view.menu.yaxismenu add command -label "Current View" \
+	-command { DoToggleAxis Y }
+.mbar.view.menu.yaxismenu add command -label "All Views" \
+	-command { DoToggleAxisAllViews Y }
+
+menu .mbar.view.menu.statmenu -tearoff 1
+.mbar.view.menu.statmenu add checkbutton -label Mean -variable statmean
+.mbar.view.menu.statmenu add checkbutton -label Max -variable statmax
+.mbar.view.menu.statmenu add checkbutton -label Min -variable statmin
+.mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add radiobutton -label "No Conf. Intervals" \
+	-variable statcilevel -value "000"
+.mbar.view.menu.statmenu add radiobutton -label "85% CI" \
+	-variable statcilevel -value "100"
+.mbar.view.menu.statmenu add radiobutton -label "90% CI" \
+	-variable statcilevel -value "010"
+.mbar.view.menu.statmenu add radiobutton -label "95% CI" \
+	-variable statcilevel -value "001"
+.mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add radiobutton -label "Current View" \
+	-variable statcurr -value 1
+.mbar.view.menu.statmenu add radiobutton -label "All Views" \
+	-variable statcurr -value 0
+.mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add command -label "Apply..." \
+	-command { DoToggleStatistics }
+#defaults
+set statmean 1
+set statmax 0
+set statmin 0
+set statcurr 1
+set statcilevel "000"
+
+menu .mbar.view.menu.kmenu -tearoff 1
+.mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
+.mbar.view.menu.kmenu add radiobutton -label Max -variable kval -value 1
+.mbar.view.menu.kmenu add radiobutton -label Min -variable kval -value 2
+.mbar.view.menu.kmenu add radiobutton -label Count -variable kval -value 3
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add radiobutton -label "Use Current" \
+	-variable kcurr -value 1
+.mbar.view.menu.kmenu add radiobutton -label "Specify Views" \
+	-variable kcurr -value 0
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add radiobutton -label "New Graph" \
+	-variable knew -value 1
+.mbar.view.menu.kmenu add radiobutton -label "Reuse Graph" \
+	-variable knew -value 0
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add command -label "Apply..." \
+	-command {ShowKGraph}
+#defaults
+set kval 0
+set kcurr 1
+set knew 0
+
+menu .mbar.view.menu.dimmenu -tearoff 0
+.mbar.view.menu.dimmenu add command -label "Two Dimensions" \
+	-command { DoSetViewDimensions 2 }
+.mbar.view.menu.dimmenu add command -label "Three Dimensions" \
+	-command { DoSetViewDimensions 3 }
+
+menu .mbar.window.menu -tearoff 0
+.mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
+.mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
+.mbar.window.menu add command -label "Duplicate" -command DupWindow
+.mbar.window.menu add separator
+.mbar.window.menu add command -label "Stack Control" \
+	-command { DoWindowStackControl }
+.mbar.window.menu add separator
+.mbar.window.menu add command -label "Swap Views" -command DoSwapView
+.mbar.window.menu add command -label "Move View" -command DoViewMove
+.mbar.window.menu add command -label "Remove View" -command DoViewRemove
+.mbar.window.menu add command -label "Bring View Back" -command DoBringView
+
+menu .mbar.help.menu -tearoff 0
+.mbar.help.menu add command -label "Demo" -command DoDemo
+.mbar.help.menu add command -label "Help" -command DoHelp
+.mbar.help.menu add command -label "History" -command OpenHistory
+
+tk_menuBar .mbar .mbar.session .mbar.tdata .mbar.view \
+	.mbar.link .mbar.window .mbar.help
+focus .mbar
+
+# build control panel
+
+frame .panel.query    -relief sunken
+frame .panel.center   -relief sunken
+frame .panel.messages -relief sunken
+
+pack .panel.query    -side left -expand 0 -fill y
+pack .panel.center   -side left -expand 1 -fill both
+pack .panel.messages -side left -expand 0 -fill y
+
+button .panel.query.button -text "Query" -width 7 -relief raised \
+	-font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
+	-highlightthickness 0 -bd 3 -command { SetQuery }
+button .panel.query.button2 -text "Mapping" -width 7 -relief raised \
+	-font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
+	-highlightthickness 0 -bd 3 -command { DoEditMapping } \
+	-state disabled
+
+pack   .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
+
+label .panel.center.dummy -text "" -font 5x7 -fg red
+button .panel.center.label -text DEVise \
+        -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
+	-bd 0 -highlightthickness 2 -activebackground $backGround \
+	-highlightcolor red -command { AboutDevise }
+label .panel.center.copyright \
+	-text "Copyright 1996 DEVise Development Team" -font 5x7
+
+pack  .panel.center.dummy -side top -expand 0 -fill x
+pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
+	-pady 0
+pack  .panel.center.copyright -side top -expand 0 -fill x
+
+label .panel.messages.mode -text "" \
+        -font -*-helvetica-bold-o-normal--*-180-*-*-*-*-*-* \
+	-fg red -width 12
+label .panel.messages.status -text "" \
+        -font -*-helvetica-bold-o-normal--*-180-*-*-*-*-*-*
+
+pack .panel.messages.mode   -side top -expand 1 -fill both
+pack .panel.messages.status -side top -expand 1 -fill both
+
 proc ChangeMode {} {
     global mode
     if { $mode == 0 } {
 	set mode 1
-	.status.left.mode configure -text "layout mode"
+        .panel.messages.mode configure -text Layout
     } else {
 	set mode 0
-	.status.left.mode configure -text "display mode"
-	# RefreshAllViews
+        .panel.messages.mode configure -text ""
+	RefreshAllViews
     }
     DEVise changeMode $mode
 }
 
 proc ChangeStatus { status } {
-    global LightBlue red
     if { $status == 0 } {
-	# .status.right configure -background LightGray
-	.status.right.stat_msg configure -bitmap questhead  \
-		-bg LightBlue
+	.panel.messages.status configure -text "" -fg white
     } else {
-	.status.right.stat_msg configure -bitmap hourglass \
-		-background red
-	# .status.right configure -background red
+	.panel.messages.status configure -text "Working..." -fg red
+    }
+}
+
+# Return name of file type, or ""
+proc ImportFileType {} {
+    global fsBox schemadir
+    set fsBox(path) $schemadir/logical
+    set fsBox(pattern) *
+    set ftypeFile [FSBox "Select schema file"]
+    if {$ftypeFile == ""} {
+	return
+    }
+    
+    set result [DEVise importFileType $ftypeFile]
+    if {$result == ""} {
+	dialog .fileTypeError "Schema File Error" \
+		"Error reading schema file $ftypeFile" \
+		"" 0 OK
+	return
+    }
+    return $result
+}
+
+# Check to see if file already exists 
+proc FileExist { file } {
+    foreach tdata [TdataSet] {
+	if {$file == [DEVise tdataFileName $tdata]} {
+	    return 1
+	}
+    }
+    return 0
+}
+
+# Find default X attribute name.
+# The default is the sorted X attribute other than recId, if one exists.
+# Otherwise, it's the recId.
+# otherwise, it's the 0th attribute.
+
+proc FindDefaultXAttr { attrs } {
+    set numAttrs 0
+    foreach attr $attrs {
+	# puts "attr= $attr"
+	if { [lindex $attr 2] > 0 } {
+	    set temp($numAttrs) [lindex $attr 0]
+	    incr numAttrs
+	    if {$numAttrs >= 2 } {
+		break
+	    }
+	}
+    }
+    if { $numAttrs == 0 } {
+	# puts "numAttrs == 0"
+	return [lindex [lindex $attrs 0] 0]
+    } elseif { $numAttrs == 1 } {
+	# puts "numAttrs == 1"
+	return $temp(0)
+    } else {
+	# puts "numAttrs >= 2"
+	if { $temp(0) == "recId"} {
+	    return $temp(1)
+	} else {
+	    return $temp(0)
+	}
     }
 }
 
@@ -1308,9 +727,7 @@ proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
     global sourceList
 
-    if {$curView == ""} {
-	dialog .editMapping "No Current View" \
-		"Select a view first by clicking in it." "" 0 { OK } 
+    if {![CurrentView]} {
 	return
     }
 
@@ -1428,7 +845,7 @@ proc DoEditMapping {} {
 proc DoClose {} {
     global sessionName
 
-    set but [dialog .open "Open Session" "Close Current Session?" \
+    set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
     if { $but == 0 } {
 	return 0
@@ -1527,8 +944,7 @@ proc GetView { tdata mapClass viewClass } {
 	    set viewMapClass [GetClass mapping $map]
 	    set mapParam [DEVise getCreateParam mapping $mapClass $map]
 	    set viewTData [lindex $mapParam 0]
-	    if {[string compare $mapClass $viewMapClass] == 0 && \
-		    [string compare $viewTData $tdata] == 0 } {
+	    if {$mapClass == $viewMapClass && $viewTData == $tdata} {
 		# found
 		return $view
 	    }
@@ -1562,9 +978,7 @@ proc GetMapping { tdata mapClass} {
 proc DoSwitchTData {} {
     global curView sourceList dialogListVar
 
-    if {$curView == ""} {
-	dialog .switchTData "No Current View" \
-		"Select a view by clicking in it first." "" 0 OK
+    if {![CurrentView]} {
 	return
     }
     
@@ -1667,220 +1081,16 @@ proc DoSwitchTData {} {
     }
 }
 
-# remove window
-proc RemoveWindow {win} {
-    global dialogListVar
-
-    if {$win == ""} {
-	set winSet [ WinSet ]
-	set answer [ dialogList .window "Select Window" \
-		"Select window to remove" "" "" \
-		{ Cancel Ok } $winSet ]
-	if {$answer == 0  || $dialogListVar(selected) == ""} {
-	    return 
-	}
-	set win $dialogListVar(selected)
-    }
-
-    set views [DEVise getWinViews $win]
-    if {$views != ""} {
-	dialog .viewsInWindow "Views Still In Window" \
-		"Window contains views. Remove all views first." \
-		"" 0 OK
-	return
-    }
-    
-    DEVise destroy $win
-}
-
-# change layout of window
-proc SetWindowLayout {win} {
-    global curView layoutWin layoutOption verRequested horRequested
-
-    if {$win == ""} {
-	if {$curView == ""} {
-	    dialog .changeLayout "No Current Window" \
-		    "Select a window first by clicking any view in it." \
-		    "" 0 { OK }
-	    return
-	}
-	set win [DEVise getViewWin $curView]
-    }
-
-    set layoutWin $win
-
-    # see if .setLayout window already exists; if so, just return
-    set err [catch {set exists [wm state .setLayout]}]
-    if {!$err} { wm deiconify .setLayout; return }
-
-    toplevel .setLayout
-    wm title .setLayout "Set Window Layout"
-    wm geometry .setLayout +50+50
-
-    frame .setLayout.top
-    frame .setLayout.bot
-    pack .setLayout.top -side top -pady 3m -fill both -expand 1
-    pack .setLayout.bot -side top -pady 5m -fill x
-
-    frame .setLayout.row1
-    frame .setLayout.row2
-    frame .setLayout.row3
-    pack .setLayout.row1 .setLayout.row2 .setLayout.row3 -in .setLayout.top \
-	    -side top -fill x
-
-    frame .setLayout.bot.but
-    pack .setLayout.bot.but -side top
-
-    radiobutton .setLayout.row1.b -text Automatic -variable layoutOption \
-	    -value auto -width 12 -anchor w -command {
-	.setLayout.row2.e configure -state disabled
-	.setLayout.row3.e configure -state disabled
-    }
-    pack .setLayout.row1.b -side left
-
-    radiobutton .setLayout.row2.b -text Vertical \
-	    -variable layoutOption -value fixver -width 12 -anchor w \
-	    -command {
-	.setLayout.row2.e configure -state normal
-	.setLayout.row3.e configure -state disabled
-    }
-    label .setLayout.row2.l -text "Width:" -width 8
-    entry .setLayout.row2.e -relief sunken -textvariable horRequested \
-	    -width 5
-    pack .setLayout.row2.b .setLayout.row2.l .setLayout.row2.e -side left
-
-    radiobutton .setLayout.row3.b -text Horizontal \
-	    -variable layoutOption -value fixhor -width 12 -anchor w \
-	    -command {
-	.setLayout.row3.e configure -state disabled
-	.setLayout.row3.e configure -state normal
-    }
-    label .setLayout.row3.l -text "Height:" -width 8
-    entry .setLayout.row3.e -relief sunken -textvariable verRequested \
-	    -width 5
-    pack .setLayout.row3.b .setLayout.row3.l .setLayout.row3.e -side left
-
-    set verRequested 1
-    set horRequested 1
-    set layoutOption auto
-    .setLayout.row2.e configure -state disabled
-    .setLayout.row3.e configure -state disabled
-
-    set layout [DEVise getWindowLayout $layoutWin]
-    if {[lindex $layout 0] >= 1} {
-	set layoutOption fixhor
-	set verRequested [lindex $layout 0]
-	.setLayout.row3.e configure -state normal
-    } elseif {[lindex $layout 1] >= 1} {
-	set layoutOption fixver
-	set horRequested [lindex $layout 1]
-	.setLayout.row2.e configure -state normal
-    }
-	
-    button .setLayout.bot.but.ok -text OK -width 10 -command {
-	if {$layoutOption == "auto"} {
-	    DEVise setWindowLayout $layoutWin -1 -1
-	} elseif {$layoutOption == "fixver"} {
-	    if {$horRequested < 1} { set horRequested 1 }
-	    DEVise setWindowLayout $layoutWin -1 $horRequested
-	} else {
-	    if {$verRequested < 1} { set verRequested 1 }
-	    DEVise setWindowLayout $layoutWin $verRequested -1
-	}
-	destroy .setLayout
-    }
-    button .setLayout.bot.but.cancel -text Cancel -width 10 -command {
-	destroy .setLayout
-    }
-    pack .setLayout.bot.but.ok .setLayout.bot.but.cancel -side left -padx 3m
-}
-
-# duplicate window
-proc DupWindow {} {
-    global curView
-    if {$curView == ""} {
-	set but [dialog .dupWinError "No Current View" \
-		"Select a window by clicking any view in it." "" 0 OK ]
-	return
-    }
-
-    set win [DEVise getViewWin $curView]
-
-    # Create new window
-    set class [GetClass window $win]
-    set params [DEVise getCreateParam window $class $win]
-    set newWin [UniqueName $win]
-    set newParam [linsert [lrange $params 1 end] 0 $newWin]
-    eval DEVise create window $class $newParam
-
-    set layout [DEVise getWindowLayout $win]
-    eval DEVise setWindowLayout {$newWin} $layout
-
-    set views [DEVise getWinViews $win]
-    
-    # Create mappings for views
-    foreach view $views {
-	# Crete a new view
-	set class [GetClass view $view]
-	set params [DEVise getCreateParam view $class $view]
-	set viewName [lindex $params 0]
-	set newView [UniqueName $viewName]
-
-	# replace name of view by name of new view
-	set newParam [linsert [lrange $params 1 end] 0 $newView]
-	eval DEVise create view $class $newParam
-	
-	set viewLabelParams [DEVise getLabel $view]
-	eval DEVise setLabel {$newView} $viewLabelParams
-	set viewStatParams [DEVise getViewStatistics $view]
-	eval DEVise setViewStatistics {$newView} $viewStatParams
-	set stat [DEVise getAxisDisplay $view X]
-	eval DEVise setAxisDisplay {$newView} X $stat
-	set stat [DEVise getAxisDisplay $view Y]
-	eval DEVise setAxisDisplay {$newView} Y $stat
-	
-	DEVise insertWindow $newView $newWin
-
-	set maps [DEVise getViewMappings $view]
-	foreach map $maps {
-	    DEVise insertMapping $newView $map
-	}
-    }
-}
-
-proc DoSavePixmap {} {
-    global curView
-    if {$curView == ""} {
-	set but [dialog .pixmapError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-    
-    set file [DEVise open pixmap.tmp wb]
-    DEVise savePixmap $curView $file
-    DEVise close $file
-}
-
-proc DoLoadPixmap {} {
-    global curView
-    if {$curView == ""} {
-	set but [dialog .pixmapError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-    
-    set file [DEVise open pixmap.tmp rb]
-    DEVise loadPixmap $curView $file
-    DEVise close $file
-}
-
 ############################################################
 
 proc GetTDataTemplate {type total num} {
     global sourceList
 
     while {1} {
-	set title "Select file $num of $total, type $type"
+	set title ""
+	if {$total > 0} {
+	    set title "Select file $num of $total, type $type"
+	}
 	set sname [selectStream $title]
 
 	if {$sname == ""} {
@@ -2033,6 +1243,8 @@ proc UpdateTkControlMargins {name type w h} {
     }
 }
 
+############################################################
+
 proc ShowKGraph {} {
     global curView kval kcurr knew
 
@@ -2042,14 +1254,12 @@ proc ShowKGraph {} {
 		display is not yet implemented" "" 0 { OK }
 	return
     } else {
-	if {$curView == ""} {
-	    dialog .showKGraph "Show KGraph" \
-		    "Select a view by clicking in it first." "" 0 { OK }
+	if {![CurrentView]} {
 	    return
 	}
 
 	# Form graph out of all the views in the current window
-	set win [ DEVise getViewWin $curView]
+	set win [DEVise getViewWin $curView]
 	set vlist [DEVise getWinViews $win]
     }
 

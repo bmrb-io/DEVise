@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/03/07 16:55:39  jussi
+#  Added support for changing number of dimensions in view.
+#
 #  Revision 1.3  1996/02/02 21:27:03  jussi
 #  User is given a palette of colors to choose from rather than
 #  a list of names of colors.
@@ -52,27 +55,51 @@ proc ProcessViewDestroyed { view } {
 ############################################################
 
 proc ProcessViewSelected { view } {
-    global curView lastView historyWinOpened
+    global curView lastView historyWinOpened queryWinOpened
+    global stackWinOpened
 
     if {$view == $curView} {
 	return
-    } else {
-	set lastView $curView
     }
+
+    set lastView $curView
 
     if {$curView != ""} {
 	# unhighlight old view
 	DEVise highlightView $curView 0
     }
-
-    set curView $view
-    .viewFrame.viewName configure -text $curView
-
+ 
     ClearHistory
 
+    set curView $view
+
     if {$curView == ""} {
+	if {$queryWinOpened} {
+	    .query.title.text configure -text "No View Selected"
+	}
+	if {$stackWinOpened} {
+	    .stack.title.text configure -text "No View Selected"
+	}
+	.mbar.gdata configure -state disabled
+	.mbar.view configure -state disabled
+	.panel.query.button2 configure -state disabled
+
+	# there seems to be a problem restoring a new session when
+	# the editMapping dialog is killed in the previous session
+	# catch { destroy .editMapping }
+
 	return
     }
+
+    if {$queryWinOpened} {
+	.query.title.text configure -text "View: $curView"
+    }
+    if {$stackWinOpened} {
+	.stack.title.text configure -text "View: $curView"
+    }
+    .mbar.gdata configure -state normal
+    .mbar.view configure -state normal
+    .panel.query.button2 configure -state normal
 
     # highlight new view
     DEVise highlightView $curView 1
@@ -88,21 +115,23 @@ proc ProcessViewSelected { view } {
 
 ############################################################
 
-proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
-    global curView historyWinOpened
+proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked } {
+    global curView historyWinOpened queryWinOpened
 
     if {$view != $curView} {
 	return
     }
 
-    # Change the control panel's entry box
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
+    if {$queryWinOpened} {
+	# Change the control panel's entry box
+	foreach i { xlow ylow xhigh yhigh} {
+	    .query.$i delete 0 end
+	}
+	.query.xlow insert 0 $xLow
+	.query.ylow insert 0 $yLow
+	.query.xhigh insert 0 $xHigh
+	.query.yhigh insert 0 $yHigh
     }
-    .history.xlow insert 0 $xLow
-    .history.ylow insert 0 $yLow
-    .history.xhigh insert 0 $xHigh
-    .history.yhigh insert 0 $yHigh
 
     if {$historyWinOpened} {
 	if {$flushed >= 0} {
@@ -128,265 +157,6 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
 
 ############################################################
 
-proc ProcessUseButton {} {
-    global curView
-
-    if {$curView == ""} {
-	return
-    }
-
-    set xlow [DEVise parseDateFloat [.history.xlow get]]
-    set ylow [DEVise parseDateFloat [.history.ylow get]]
-    set xhigh [DEVise parseDateFloat [.history.xhigh get]]
-    set yhigh [DEVise parseDateFloat [.history.yhigh get]]
-
-    if {$xlow >= $xhigh} {
-	dialog .useError "Invalid Visual Filter" \
-		"X low $xlow >= X high $xhigh." \
-		"" 0 Cancel
-	return
-    }
-
-    if {$ylow >= $yhigh} {
-	dialog .useError "Invalid Visual Filter" \
-		"Y low $ylow >= Y high $yhigh." \
-		"" 0 Cancel
-	return
-    }
-
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessLeftButton {} {
-    global curView left_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-
-    if { $left_amount <= 0.0 } {
-	set but [dialog .leftError "Scroll Left Error" \
-		"Cannot scroll left $left_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$left_amount]
-    set xlow [expr $xlow+$scrollAmount]
-    set xhigh [expr $xhigh+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessRightButton {} { 
-    global curView right_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-
-    if { $right_amount <= 0.0 } {
-	set but [dialog .rightError "Scroll Right Error" \
-		"Cannot scroll right $right_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$right_amount]
-    set xlow [expr $xlow-$scrollAmount]
-    set xhigh [expr $xhigh-$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessUpButton {} { 
-    global curView up_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $up_amount <= 0.0 } {
-	set but [dialog .upError "Scroll Up Error" \
-		"Cannot scroll up $up_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set height [expr $yhigh-$ylow]
-    set scrollAmount [expr $height*$up_amount]
-    set ylow [expr $ylow-$scrollAmount]
-    set yhigh [expr $yhigh-$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessDownButton {} {
-    global curView down_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $down_amount <= 0.0 } {
-	set but [dialog .downError "Scroll Down Error" \
-		"Cannot scroll down $up_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set height [expr $yhigh-$ylow]
-    set scrollAmount [expr $height*$down_amount]
-    set ylow [expr $ylow+$scrollAmount]
-    set yhigh [expr $yhigh+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessInButton {} {
-    global curView in_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $in_amount <= 0.0 || $in_amount >= 1.0 } {
-	set but [dialog .inError "Zoom In Error" \
-		"Cannot zoom in $in_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$in_amount]
-    set mid [ expr ($xhigh+$xlow)/2.0]
-    set xlow [expr $mid - ($scrollAmount/2.0) ]
-    set xhigh [expr $xlow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessYInButton {} {
-    global curView in_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $in_amount <= 0.0 || $in_amount >= 1.0 } {
-	set but [dialog .inError "Zoom In Error" \
-		"Cannot zoom in $in_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $yhigh-$ylow]
-    set scrollAmount [expr $width*$in_amount]
-    set mid [ expr ($yhigh+$ylow)/2.0]
-    set ylow [expr $mid - ($scrollAmount/2.0) ]
-    set yhigh [expr $ylow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessOutButton {} { 
-    global curView out_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $out_amount <= 1.0  } {
-	set but [dialog .outError "Zoom Out Error" \
-		"Cannot zoom out $out_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$out_amount]
-    set mid [ expr ($xhigh+$xlow)/2.0]
-    set xlow [expr $mid - ($scrollAmount/2.0) ]
-    set xhigh [expr $xlow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
-proc ProcessYOutButton {} { 
-    global curView out_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $out_amount <= 1.0 } {
-	set but [dialog .outError "Zoom Out Error" \
-		"Cannot zoom out $out_amount screen." \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $yhigh-$ylow]
-    set scrollAmount [expr $width*$out_amount]
-    set mid [ expr ($yhigh+$ylow)/2.0]
-    set ylow [expr $mid - ($scrollAmount/2.0) ]
-    set yhigh [expr $ylow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-############################################################
-
 # Process View/Create menu
 proc DoViewCreate {} {
     set ans [ DoCreateView "Select a view type" ]
@@ -394,12 +164,201 @@ proc DoViewCreate {} {
 
 ############################################################
 
+# Copy/edit view
+proc DoViewCopy {} {
+    global curView tdata window gdata link view
+
+    if {[WindowVisible .copy]} {
+	return
+    }
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set view $curView
+    set newView [UniqueName $view]
+
+    set gdataSet [GdataSet]
+    set tdataSet [TdataSet]
+    set windowSet [WinSet]
+
+    set gdata [lindex [DEVise getViewMappings $view] 0]
+    set gdataClass [GetClass mapping $gdata]
+    set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
+    set tdata [lindex [DEVise getCreateParam mapping $gdataClass $gdata] 0]
+    set window [DEVise getViewWin $view]
+
+    # create default name for new mapping
+
+    set gdataClass [GetClass mapping $gdata]
+    set newGdata [GetMapping $tdata $gdataClass]
+
+    set alwaysNewGdata 1
+
+    if {$alwaysNewGdata || $newGdata == ""} {
+	# create a new mapping
+	set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
+	set newGdata [UniqueName "$tdata#$gdataClass"]
+    }
+
+    toplevel .copy
+    wm title .copy "Copy View"
+    wm geometry .copy +50+50
+
+    frame .copy.top
+    frame .copy.bot
+    pack .copy.top -side top -pady 3m -fill both -expand 1
+    pack .copy.bot -side top -pady 5m -fill x
+
+    frame .copy.top.old -relief groove -bd 2
+    frame .copy.top.new -relief groove -bd 2
+    pack .copy.top.old .copy.top.new -side top -pady 1m -fill both -expand 1
+
+    frame .copy.top.old.tdata
+    frame .copy.top.old.gdata
+    frame .copy.top.old.window
+    pack .copy.top.old.tdata .copy.top.old.gdata .copy.top.old.window \
+	    -pady 3m -side top -fill x -expand 1
+
+    frame .copy.top.new.view
+    frame .copy.top.new.gdata
+    pack .copy.top.new.view .copy.top.new.gdata -pady 3m -side top \
+	    -fill x -expand 1
+
+    label .copy.top.old.tdata.label -text "Source Data:" -width 13
+    menubutton .copy.top.old.tdata.menu -relief raised -textvariable tdata \
+	    -menu .copy.top.old.tdata.menu.list
+    pack .copy.top.old.tdata.label -padx 2m -side left
+    pack .copy.top.old.tdata.menu -padx 2m -side left -fill x -expand 1
+
+    label .copy.top.old.gdata.label -text "Mapping:" -width 13
+    menubutton .copy.top.old.gdata.menu -relief raised -textvariable gdata \
+	    -menu .copy.top.old.gdata.menu.list
+    pack .copy.top.old.gdata.label -padx 2m -side left
+    pack .copy.top.old.gdata.menu -padx 2m -side left -fill x -expand 1
+
+    label .copy.top.old.window.label -text "Window:" -width 13
+    menubutton .copy.top.old.window.menu -relief raised -textvariable window \
+	    -menu .copy.top.old.window.menu.list
+    pack .copy.top.old.window.label -padx 2m -side left
+    pack .copy.top.old.window.menu -padx 2m -side left -fill x -expand 1
+
+    label .copy.top.new.view.label -text "View Name:" -width 13
+    entry .copy.top.new.view.entry -relief sunken
+    .copy.top.new.view.entry insert 0 $newView
+    pack .copy.top.new.view.label -padx 2m -side left
+    pack .copy.top.new.view.entry -padx 2m -side left -fill x -expand 1
+
+    label .copy.top.new.gdata.label -text "Mapping Name:" -width 13
+    entry .copy.top.new.gdata.entry -relief sunken
+    .copy.top.new.gdata.entry insert 0 $newGdata
+    pack .copy.top.new.gdata.label -padx 2m -side left
+    pack .copy.top.new.gdata.entry -padx 2m -side left -fill x -expand 1
+
+    menu .copy.top.old.tdata.menu.list -tearoff 0
+    foreach t $tdataSet {
+	.copy.top.old.tdata.menu.list add command -label $t \
+		-command "set tdata {$t}"
+    }
+    .copy.top.old.tdata.menu.list add separator
+    .copy.top.old.tdata.menu.list add command -label "Other..." -command {
+	set newtdata [OpenNewDataSource]
+	if {$newtdata != ""} {
+	    set tdata $newtdata
+	    .copy.top.old.tdata.menu.list add command -label $tdata \
+		    -command "set tdata {$tdata}"
+	}
+    }
+
+    menu .copy.top.old.gdata.menu.list -tearoff 0
+    foreach g $gdataSet {
+	.copy.top.old.gdata.menu.list add command -label $g \
+		-command "set gdata {$g}"
+    }
+
+    menu .copy.top.old.window.menu.list -tearoff 0
+    foreach w $windowSet {
+	.copy.top.old.window.menu.list add command -label $w \
+		-command "set window {$w}"
+    }
+    .copy.top.old.window.menu.list add separator
+    .copy.top.old.window.menu.list add command -label "New..." -command {
+	set newwin [DoCreateWindow "Select window type"]
+	if {$newwin != ""} {
+	    set window $newwin
+	    .copy.top.old.window.menu.list add command -label $window \
+		    -command "set window {$window}"
+	}
+    }
+
+    frame .copy.bot.but
+    pack .copy.bot.but -side top
+
+    button .copy.bot.but.ok -text OK -width 10 -command {
+	set newView [.copy.top.new.view.entry get]
+	set newGdata [.copy.top.new.gdata.entry get]
+	if {$newView == "" || $newGdata == ""} {
+	    dialog .noViewName "No View or Mapping Name" \
+		    "Please specify view and mapping names." "" 0 OK
+	    return
+	}
+	DoActualViewCopy $view $newView $tdata $gdata $newGdata $window
+	destroy .copy
+    }
+    button .copy.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .copy
+    }
+    pack .copy.bot.but.ok .copy.bot.but.cancel \
+	    -side left -padx 3m
+}
+
+############################################################
+
+proc DoActualViewCopy {view newView tdata gdata newGdata window} {
+
+    # need to add check that tdata(view) is same type as tdata
+
+    if {![DEVise exists $newGdata]} {
+	# create a new mapping
+	set gdataClass [GetClass mapping $gdata]
+	set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
+	set newGdataParam [linsert [lrange $gdataParam 2 end] 0 $tdata \
+		$newGdata]
+	set cmd "DEVise create mapping $gdataClass $newGdataParam"
+	set result [eval $cmd]
+	if {$result == ""} {
+	    dialog .copyError "Mapping Error" \
+		    "Can't create mapping." "" 0 OK
+	    return
+	}
+    }
+
+    set class [GetClass view $view]
+    set params [DEVise getCreateParam view $class $view]
+    set newParams [linsert [lrange $params 1 end] 0 $newView]
+    eval DEVise create view $class $newParams
+
+    set viewLabelParams [DEVise getLabel $view]
+    eval DEVise setLabel {$newView} $viewLabelParams
+    set viewStatParams [DEVise getViewStatistics $view]
+    eval DEVise setViewStatistics {$newView} $viewStatParams
+    set stat [DEVise getAxisDisplay $view X]
+    eval DEVise setAxisDisplay {$newView} X $stat
+    set stat [DEVise getAxisDisplay $view Y]
+    eval DEVise setAxisDisplay {$newView} Y $stat
+	
+    DEVise insertWindow $newView $window
+    DEVise insertMapping $newView $newGdata
+}
+
+############################################################
+
 # Remove view from window
 proc DoViewRemove {} {
     global curView
-    if {$curView == ""} {
-	dialog .removeView "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK
+
+    if {![CurrentView]} {
 	return
     }
 
@@ -422,28 +381,17 @@ proc DoViewRemove {} {
 proc DoViewDestroy {} {
     global curView dialogListVar
 
-    set viewName $curView
-
-    if {$viewName != ""} {
-	set but [ dialog .removeView "Destroy View" \
-		"Okay to destroy view $viewName?" "" 0 \
-		Cancel OK Another ]
-	if {$but == 0} {
-	    return
-	}
-	if {$but == 2} {
-	    set viewName ""
-	}
+    if {![CurrentView]} {
+	return
     }
 
-    if {$viewName == ""} {
-	set answer [ dialogList .removeView "Destroy View" \
-		"Select view to move to a window" "" 0 \
-		{ Cancel OK } [ViewSet] ]
-	if {$answer == 0 || $dialogListVar(selected) == ""} {
-	    return
-	}
-	set viewName $dialogListVar(selected)
+    set viewName $curView
+
+    set but [ dialog .destroyView "Destroy View" \
+	    "Okay to destroy view $viewName?" "" 0 \
+	    Cancel OK Another ]
+    if {$but == 0} {
+	return
     }
 
     set inlink 0
@@ -480,10 +428,6 @@ proc DoViewDestroy {} {
 	return
     }
 
-    foreach gdata [GdataSet] {
-#	puts $gdata
-    }
-
     # Unselect current view
     ProcessViewSelected ""
 
@@ -503,17 +447,11 @@ proc DoViewDestroy {} {
 proc DoViewMove {} {
     global dialogListVar curView
 
-    if {$curView == ""} {
-	set answer [ dialogList .removeView "Move View" \
-		"Select view to move." "" 0 { Cancel OK } \
-		[ViewSet] ]
-	if {$answer == 0} {
-	    return
-	}
-	set viewName $dialogListVar(selected)
-    } else {
-	set viewName $curView
-    }    
+    if {![CurrentView]} {
+	return
+    }
+
+    set viewName $curView
 
     set winName [ DoGetWindow ]
     if {$winName == ""} {
@@ -530,14 +468,14 @@ proc DoViewMove {} {
 proc DoBringView {} {
     global dialogListVar
 
-    set answer [ dialogList .removeView "Move View" \
+    set answer [ dialogList .bringView "Bring View Back" \
 	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
     if {$answer == 0 || $dialogListVar(selected) == ""} {
 	return
     }
     set viewName $dialogListVar(selected)
-    
-    set winName [ DoGetWindow ]
+     
+   set winName [ DoGetWindow ]
     if {$winName == ""} {
 	return
     }
@@ -626,9 +564,7 @@ proc DoGetCursor {label} {
 proc DoSetCursorSrc {} {
     global curView dialogListVar
 
-    if {$curView == ""} {
-	set but [dialog .cursorError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {![CurrentView]} {
 	return
     }
 
@@ -645,12 +581,10 @@ proc DoSetCursorSrc {} {
 proc DoSetCursorDst {} {
     global curView dialogListVar
 
-    if {$curView == ""} {
-	set but [dialog .cursorError "No Current View " \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {![CurrentView]} {
 	return
     }
-    
+
     set cursor [DoGetCursor "Select cursor for view\n$curView"]
     if {$cursor == ""} {
 	return
@@ -715,9 +649,7 @@ proc DisplayLinkInfo { link } {
 proc DoViewLink {} {
     global curView dialogListVar
 
-    if {$curView == ""} {
-	set but [dialog .linkError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {![CurrentView]} {
 	return
     }
 
@@ -764,9 +696,8 @@ proc DoViewLink {} {
 # Unlink current view
 proc DoViewUnlink {} {
     global curView dialogListVar
-    if {$curView == ""} {
-	set but [dialog .unlinkError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+
+    if {![CurrentView]} {
 	return
     }
 
@@ -802,7 +733,7 @@ proc DoModifyLink {} {
     global dialogCkButVar dialogListVar
     set linkSet [LinkSet]
     if { [llength $linkSet ] == 0 } {
-	set but [dialog .linkModError "LinkModError" \
+	set but [dialog .linkModError "Link Modify Error" \
 		"No link has been created yet" "" 0 OK ]
 	return
     }
@@ -835,11 +766,11 @@ proc DoModifyLink {} {
 
 proc CheckView {} {
     global curView
-    if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .viewError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return 0
+
+    if {![CurrentView]} {
+	return
     }
+
     return 1
 }
 
@@ -1014,16 +945,14 @@ proc DoViewAction {} {
 proc DoSetBgColor {} {
     global curView viewColor
 
-    set but [dialog .setTitleWinError "Not Supported Yet" \
+    set but [dialog .setBgColorError "Not Supported Yet" \
 	    "Changing view background color not supported yet." "" 0 OK ]
     return
 
-    if {$curView == ""} {
-	set but [dialog .setTitleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {![CurrentView]} {
 	return
     }
-    
+
     set curViewClass [GetClass view $curView]
     set param [DEVise getCreateParam view $curViewClass $curView]
     set viewColor [lindex $param 5]
@@ -1044,15 +973,13 @@ proc DoSetBgColor {} {
 proc DoSetTitle {} {
     global curView newTitle
 
-    if {$curView == ""} {
-	set but [dialog .setTitleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {[WindowVisible .setTitle]} {
 	return
     }
-    
-    # see if .setTitle window already exists; if so, just return
-    set err [catch {set exists [wm state .setTitle]}]
-    if {!$err} { wm deiconify .setTitle; return }
+
+    if {![CurrentView]} {
+	return
+    }
 
     toplevel .setTitle
     wm title .setTitle "Set View Title"
@@ -1099,14 +1026,65 @@ proc DoSetTitle {} {
 
 ############################################################
 
-proc DoSetViewDimensions { dim } {
-    global curView
-    if {$curView == ""} {
-	set but [dialog .toggleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+proc DoSetOverrideColor {} {
+    global curView DEViseColors newColor newColorActive
+
+    if {[WindowVisible .setColor]} {
 	return
     }
-    
+
+    if {![CurrentView]} {
+	return
+    }
+
+    toplevel .setColor
+    wm title .setColor "Set View Override Color"
+    wm geometry .setColor +50+50
+
+    frame .setColor.top
+    frame .setColor.bot
+    pack .setColor.top -side top -pady 3m -fill both -expand 1
+    pack .setColor.bot -side top -pady 5m -fill x
+
+    frame .setColor.bot.but
+    pack .setColor.bot.but -side top
+
+    set viewColorParams [DEVise getViewOverrideColor $curView]
+    set hasOverrideColor [lindex $viewColorParams 0]
+    set overrideColor [lindex $viewColorParams 1]
+    set newColor [findNameValue $DEViseColors $overrideColor]
+    set newColorActive $hasOverrideColor
+
+    button .setColor.top.b1 -text "Change Color..." -width 20 -bg $newColor \
+	    -command {
+	getColor newColor
+	.setColor.top.b1 configure -background $newColor
+    }
+    checkbutton .setColor.top.c1 -text "Enabled" -variable newColorActive
+    pack .setColor.top.b1 .setColor.top.c1 \
+	    -side left -padx 3m -fill both -expand 1
+
+    button .setColor.bot.but.ok -text OK -width 10 -command {
+	set colorValue [findNumericValue $DEViseColors $newColor]
+	DEVise setViewOverrideColor $curView $newColorActive $colorValue
+	destroy .setColor
+    }
+    button .setColor.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .setColor
+    }
+    pack .setColor.bot.but.ok .setColor.bot.but.cancel \
+	    -side left -padx 3m
+}
+
+############################################################
+
+proc DoSetViewDimensions { dim } {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
     DEVise setViewDimensions $curView $dim
 }
 
@@ -1114,12 +1092,11 @@ proc DoSetViewDimensions { dim } {
 
 proc DoToggleAxis { axis } {
     global curView
-    if {$curView == ""} {
-	set but [dialog .toggleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+
+    if {![CurrentView]} {
 	return
     }
-    
+
     set stat [DEVise getAxisDisplay $curView $axis]
     set stat [expr !$stat]
     DEVise setAxisDisplay $curView $axis $stat
@@ -1129,12 +1106,11 @@ proc DoToggleAxis { axis } {
 
 proc DoToggleAxisAllViews { axis } {
     global curView
-    if {$curView == ""} {
-	set but [dialog .toggleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+
+    if {![CurrentView]} {
 	return
     }
-    
+
     set stat [DEVise getAxisDisplay $curView $axis]
     set stat [expr !$stat]
     
@@ -1160,10 +1136,8 @@ proc DoToggleStatistics {} {
     set stat $statmean$statmax$statmin$statcount$statcilevel
 
     if {$statcurr == 1} {
-	if {$curView == ""} {
-	    set but [dialog .toggleWinError "No Current View" \
-		    "Select a view first by clicking in it." "" 0 OK ]
-	return
+	if {![CurrentView]} {
+	    return
 	}
 	DEVise setViewStatistics $curView $stat
 	return
@@ -1182,10 +1156,9 @@ proc DoToggleStatistics {} {
 
 proc DoSwapView {} {
     global curView lastView dialogListVar
-    if { [ string compare $curView "" ] ==  0  ||
-    [string compare $lastView "" ] == 0 ||
-    [string compare $curView $lastView] == 0 } {
-	set but [dialog .swapViewError "SwapViewError" \
+
+    if {$curView == "" || $lastView == "" || $curView == $lastView} {
+	set but [dialog .swapViewError "Swap View Error" \
 		"Select two views by clicking in them in order.\n\
 		The views must be in the same window." "" 0 OK ]
 	return
@@ -1194,12 +1167,28 @@ proc DoSwapView {} {
     # Find all views in a window
     set win1 [DEVise getViewWin $curView]
     set win2 [DEVise getViewWin $lastView]
-    if { [string  compare $win1 $win2] != 0 } {
-	set but [dialog .swapViewError "SwapViewError" \
-		"Select two views by clicking in them in order.\n\
-		The views must be in the same window." "" 0 OK ]
+    if {$win1 != $win2} {
+	set but [dialog .swapViewError "Swap View Error" \
+		"The views to be swapped must be in the same window." \
+		"" 0 OK ]
 	return
     }
 
     DEVise swapView $win1 $curView $lastView
 }
+
+############################################################
+
+proc CurrentView {} {
+    global curView
+
+    if {$curView != ""} {
+	return 1
+    }
+
+    dialog .noCurrentView "No Current View" \
+	    "Select a view first by clicking in it." "" 0 OK
+
+    return 0
+}
+
