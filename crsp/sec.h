@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:58  ravim
+  Initial revision
+*/
 
 #ifndef _SEC_H_
 #define _SEC_H_
@@ -25,6 +28,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include "tapedrive.h"
+
 // Constant declarations
 const int CRSP_DATA_RLEN=400;
 
@@ -33,7 +38,7 @@ class Security
 public:
   // The file descriptor points to the start of the records corr. to the 
   // current security.
-  Security(int fdes);
+  Security(TapeDrive &tape);
   ~Security();
 
   void print_security();
@@ -131,7 +136,7 @@ public:
 
   
   // Variable declarations
-  int fildes;
+  TapeDrive &tape;
 
   header_t header;
   names_t *names;
@@ -155,6 +160,7 @@ private:
   // private member functions and associated data
   char currec[CRSP_DATA_RLEN];
   int get_next_rec();
+  void trim_string(char *str);
   void get_field(int pos, char type, int len, int pre, void *dst);
 
   int get_header();
