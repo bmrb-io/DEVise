@@ -1,0 +1,168 @@
+			How to Deal with Branches in CVS
+			$Id$
+
+Here are some notes on how to deal with branches in CVS.
+
+NOTE:  all cvs commands shown below MUST be given at the TOP level of
+the sources to establish a branch for all of the sources.  This is
+probably the safest thing to do -- I haven't created branches for only
+part of the sources so far.
+
+NOTE:  the exact form of the tag names that you use is obviously up to
+you; I've found that the form shown below works pretty well for keeping
+track of what's going on.  You end up using a lot of tags on branches,
+so it's good to decide on some form at the beginning of the branch, and
+stick with it.
+
+There are several sections below:
+
+* Creating the branch and getting code onto the branch.
+* Committing and merging.
+* Getting off of the branch.
+
+
+CREATING THE BRANCH AND GETTING CODE ONTO THE BRANCH
+
+Note:  this assumes that you want to create a branch starting from the
+versions of source files that you currently have checked out.  There are
+other ways to create branches, but this document doesn't currently deal
+with them.
+
+* Possibly update your sources.  You should do this only if you're
+  confident that you can update your sources without having too many
+  conflicts (hopefully it hasn't been too long since the last time
+  you updated).
+
+* Put a tag in the cvs trunk.  This tag shows where the branch diverges
+  from the trunk.  Give the command:
+
+    % cvs tag <name>_base
+
+  where <name> is the name that you're using for your branch; for example,
+
+    % cvs tag foobar_base
+
+* Create the branch.  The command given below will create the branch
+  starting at the version of sources you currently have checked out:
+
+    % cvs tag -b <name>_br
+
+  for example,
+
+    % cvs tag -b foobar_br
+
+* Get your sources onto the branch:
+
+    % cvs update -r <name>_br
+
+  Note that doing this command should not actually do any merging or change
+  your source files in any way -- it just puts a sticky tag on them so that
+  CVS knows that you're on the branch.
+
+  If you need another copy of the branch sources, or someone else wants to
+  work on them, do:
+
+    % cvs checkout -r <name>_br
+
+  This will check out the latest version of all sources on the branch.
+
+* Make sure your sources are on the branch.  You can do this by running
+  the 'cvs status' command on some of your source files.  If you are on
+  the branch, cvs status will report that a file's Sticky Tag is the
+  branch tag, for example:
+
+    % cvs status release
+
+    File: release           Status: Up-to-date
+
+       Working revision:    1.21    Fri Mar 13 20:11:25 1998
+       Repository revision: 1.21    /p/devise/cvs/./release,v
+       Sticky Tag:          foobar_br (revision: 1.21)
+       Sticky Date:         (none)
+       Sticky Options:      (none)
+
+* Put a tag on the branch:
+
+    % cvs tag <name>_br_0
+
+  for example,
+
+    % cvs tag foobar_br_0
+
+
+COMMITTING AND MERGING
+
+* Commit code on the branch.  Once your code is on the branch, any commits
+  that you do will automatically be commits on the branch.
+
+* Merging.  You can merge either from the branch to the trunk, or vice
+  versa.  WHEN YOU DO A MERGE IT IS VITAL THAT YOU TAG BOTH THE BRANCH
+  AND THE TRUNK.  If you don't do this, it may not be possible to do
+  subsequent merges without re-merging code that has already been merged,
+  thereby causing errors.  I've been using tags like <name>_br_1, <name>_br_2,
+  etc., on the branch, and mgd_thru_<name>_br_1, etc., on the trunk (merging
+  from branch to trunk).
+
+* Merging from trunk to branch.  Here's what you need to do to do this:
+
+    * Tag the branch; for example:
+
+	% cvs tag <name>_br_1
+
+      (if this is the first merge of the branch code).
+
+    * Check out a fresh copy of the trunk sources, merging the branch changes:
+
+	% cvs checkout -j <name>_br_1 world
+
+      It's best to dump the output of this command into a file, to make
+      the next step easier.
+
+      If this is not the first merge from the branch, you need to do
+      something like:
+
+	% cvs checkout -j <name>_br_1 -j <name>_br_2 world
+
+      THE ORDER OF THE -J OPTIONS IS IMPORTANT.  You generally need to put
+      the older branch tag first.  If you put the new branch tag first, you
+      will REMOVE the changes made between the two tags.
+
+    NOTE:  you can also do the merge with a 'cvs update' command, but I've
+    had better luck doing it with 'cvs checkout'.
+
+    * Fix any conflicts in the merge.  Look through the output of the 'cvs
+      checkout', searching for the word 'conflict'; manually fix any files
+      where there are conflicts.
+
+    * Compile and run DEVise and make sure that all of the changes from the
+      branch have gotten incorporated.
+
+    * Commit the merged version.
+
+    * Tag the trunk:
+
+	% cvs tag mgd_thru_<name>_br_1
+
+* Merging from branch to trunk.  I haven't actually done this yet, and the
+  cvs info isn't totally clear on it, but I suspect that you first need to
+  tag the trunk, and then update the branch, something like:
+
+    (on trunk) % cvs tag xyz
+
+    (on branch) % cvs update -j <name>_base -j xyz
+
+* Other merging.  There are other merging possibilities, such as merging
+  from one branch to another, that are not covered in this document, and
+  can hopefully be avoided.
+
+GETTING OFF OF THE BRANCH
+
+    % cvs update -A
+
+  will get you back to the trunk.  It's best to have all of your branch
+  code committed before you do this.
+
+
+QUESTIONS
+
+If you have questions about CVS or this document, please see Kent Wenger.
