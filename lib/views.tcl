@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1997/03/21 17:49:26  wenger
+#  Fixed bug in Tcl code for link creation.
+#
 #  Revision 1.32  1997/03/21 16:18:00  guangshu
 #  Minor change for Date.
 #
@@ -1777,7 +1780,7 @@ proc DoGroupByStat {} {
 	.groupBy.xsel.xselMenu add radiobutton -label DATE -variable byAttr
 	set byAttr "DATE"
     } else {
-	.groupBy.xsel.xselMenu add radiobutton -label X -variable byAttr
+	.groupBy.xsel.xselMenu add radiobutton -label $t\X -variable byAttr
 	set Xattr "X"
 	set byAttr $t$Xattr
     }
