@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:17  jussi
+  Added/update CVS header.
+*/
 
 #ifndef View_h
 #define View_h
@@ -30,7 +33,7 @@ public:
 	AxisLabel(char *name) {_name = name; }
 	char *GetName() { return _name; }
 	virtual char *GenerateLabel(Coord val)= 0;
-	virtual char *SetFormat(char *format){};
+	virtual char *SetFormat(char *format){return ""};
 	virtual char *GetFormat(){return "";}
 private:
 	char *_name;
