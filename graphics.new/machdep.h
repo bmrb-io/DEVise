@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/25 18:36:52  wenger
+  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
+
   Revision 1.11  1996/07/29 21:40:24  wenger
   Fixed various compile errors and warnings.
 
@@ -386,10 +389,6 @@ union semun {
   #include <arpa/inet.h>
 #else
   EXTERNC char *inet_ntoa(struct in_addr);
-#endif
-
-#if defined(__alpha)
-  EXTERNC struct hostent *gethostbyname(char *);
 #endif
 
 #if !defined(__hpux) && !defined(__alpha) && !defined(__sgi) && \
