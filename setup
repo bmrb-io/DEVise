@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/05/16 19:38:52  jussi
+#  Added AIX and Solaris/Sparc.
+#
 #  Revision 1.3  1996/03/27 18:26:07  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -28,16 +31,16 @@
 
 cd run
 
-if (! -f bin) then
+if (! -d bin) then
   ln -s '@sys' bin
 endif
 
-if (! -f sunx86_54) then
+if (! -d sunx86_54) then
   ln -s ../solaris sunx86_54
 endif
 
-if (! -f sun4m_54) then
-  ln -s ../solsparc sum4m_54
+if (! -d sun4m_54) then
+  ln -s ../solsparc sun4m_54
 endif
 
 if (! -d sun4m_412) then
@@ -52,20 +55,20 @@ if (! -d rs_aix32) then
   ln -s ../aix rs_aix32
 endif
 
-ln -fs /p/devise/dat/*.idx .
-ln -fs /p/devise/dat/dsi94.dat .
+ln -fs /p/devise/dat/*.idx . >& /dev/null
+ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
 
 cd ../solsparc
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 cd ../sun
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 cd ../hp
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 cd ../sgi
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 cd ../linux
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 cd ../aix
-ln -s ../solaris/Makefile .
+ln -s ../solaris/Makefile . >& /dev/null
 
 cd ..
