@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2001/01/31 22:24:31  xuk
+// Fix bugs for wrong collaboration JS ID.
+//
 // Revision 1.46  2001/01/30 03:12:43  xuk
 // Changes for collaboration JS.
 //
@@ -445,7 +448,7 @@ public class DEViseServer implements Runnable
                 while (!isEnd) {
                     try {
 
-			if (client.collabSocket != null 
+			if ( !client.collabSockets.isEmpty() 
 			    && client.collabInit == 1) {
 
       			    pop.pn("We send the save-session command.");
