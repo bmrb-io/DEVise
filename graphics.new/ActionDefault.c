@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/02 00:21:36  flisakow
+  Modified the "drilling down" to data to be more generous.  If the pointer
+  is not positioned over the center of the record, a second scan is
+  performed over the data using the max symbol size to determine the
+  range of the scan.
+
   Revision 1.24  1996/09/13 16:44:55  wenger
   PixelSize in GData now used as multiplier to the size when symbols are
   larger than one screen pixel (makes the '+' and '-' keys more useful).
@@ -359,6 +365,11 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
         filter.yLow  = y - yDiff / 2;
         filter.yHigh = y + yDiff / 2;
     }
+
+#if defined(DEBUG)
+    printf("running query: %d x:(%f,%f) y:(%f,%f)\n",
+           approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
+#endif
 
     Boolean tooMuch = false;
     qp->InitTDataQuery(map, filter, approxFlag);
