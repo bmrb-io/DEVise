@@ -212,7 +212,7 @@ ViewWin.o: WindowRep.h /usr/include/stdlib.h Geom.h /usr/include/math.h
 ViewWin.o: Color.h Transform.h VisualArg.h Pattern.h DevisePixmap.h
 ViewWin.o: Compress.h Display.h Dispatcher.h /usr/include/unistd.h
 ViewWin.o: /usr/include/sys/unistd.h /usr/include/sys/types.h Journal.h
-ViewWin.o: ColorMgr.h Init.h BufPolicy.h
+ViewWin.o: ColorMgr.h ClassDir.h Control.h Init.h BufPolicy.h
 WinClassInfo.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
 WinClassInfo.o: /usr/include/sys/stdsyms.h /usr/include/math.h Color.h
 WinClassInfo.o: Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h

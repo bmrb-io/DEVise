@@ -298,7 +298,8 @@ ViewWin.o: Display.h Dispatcher.h /usr/include/unistd.h
 ViewWin.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ViewWin.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 ViewWin.o: /usr/include/sys/time.h /usr/include/sys/time.h
-ViewWin.o: /usr/include/sys/unistd.h Journal.h ColorMgr.h Init.h BufPolicy.h
+ViewWin.o: /usr/include/sys/unistd.h Journal.h ColorMgr.h ClassDir.h
+ViewWin.o: Control.h Init.h BufPolicy.h
 WinClassInfo.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
 WinClassInfo.o: /usr/include/sys/feature_tests.h /usr/include/math.h
 WinClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h

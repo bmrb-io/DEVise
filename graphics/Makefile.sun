@@ -247,7 +247,7 @@ ViewWin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
 ViewWin.o: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
 ViewWin.o: Display.h Dispatcher.h /usr/include/unistd.h
 ViewWin.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Journal.h
-ViewWin.o: ColorMgr.h Init.h BufPolicy.h
+ViewWin.o: ColorMgr.h ClassDir.h Control.h Init.h BufPolicy.h
 WinClassInfo.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
 WinClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 WinClassInfo.o: /usr/include/sys/ieeefp.h Color.h Dispatcher.h
