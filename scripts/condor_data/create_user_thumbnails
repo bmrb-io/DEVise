@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1999/09/03 16:59:59  wenger
+#  Fixed problems in defining top-level user list data source.
+#
 #  Revision 1.9  1999/08/10 18:30:18  wenger
 #  Reduced font size for user names; user names now drawn by the JavaScreen;
 #  reduced size of user name window.
@@ -159,11 +162,7 @@ sub DefineData {
   #TEMP?
   my $schemaType = "CondorUserList";
 
-  print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
-      "$dataName} oldEntry]\n";
-  print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
-  print SES_OUT "  DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
-  print SES_OUT "}\n";
+  print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
 
   #TEMP?
   $schemaType = "CondorUser";
@@ -174,11 +173,7 @@ sub DefineData {
     $dataName = $data_prefix . $user;
     $dataFile = $user . ".dat";
 
-    print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
-        "$dataName} oldEntry]\n";
-    print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
     print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $data_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
-    print SES_OUT "}\n";
   }
 }
 

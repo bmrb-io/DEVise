@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  1999/08/12 16:03:56  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.75  1999/08/05 21:42:51  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -611,6 +614,9 @@ public:
   virtual void SetHomeInfo(const ViewHomeInfo &info) { _homeInfo = info; }
   virtual void SetImplicitHomeInfo(const ViewHomeInfo &info) {
     _implicitHomeInfo = info;
+  }
+  virtual void GetImplicitHomeInfo(ViewHomeInfo &info) {
+    info = _implicitHomeInfo;
   }
   virtual void GetHorPanInfo(ViewPanInfo &info) { info = _horPanInfo; }
   virtual void SetHorPanInfo(const ViewPanInfo &info) { _horPanInfo = info; }

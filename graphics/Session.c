@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/09/01 19:27:01  wenger
+  Debug logging improved -- directory of log file can now be specified
+  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+  times to help figure out JavaScreen performance bottlenecks.
+
   Revision 1.57  1999/08/13 17:22:31  wenger
   Custom view layouts are now saved to session files; removed now unused
   TileLayout code.
@@ -1068,6 +1074,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getFont", "setFont", instance, "y axis");
 
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
+  status += SaveParams(saveData, "viewGetImplicitHome",
+      "viewSetImplicitHome", instance);
 
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
   status += SaveParams(saveData, "viewGetVerPan", "viewSetVerPan", instance);

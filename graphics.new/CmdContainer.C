@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/08/19 20:46:34  wenger
+  Added JAVAC_ProtocolVersion command.
+
   Revision 1.46  1999/08/19 13:54:23  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -499,6 +502,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setViewGDS)
 	REGISTER_COMMAND(viewSetHome)
 	REGISTER_COMMAND(viewSetImplicitHome)
+	REGISTER_COMMAND(viewGetImplicitHome)
 	REGISTER_COMMAND(playLog)
 	REGISTER_COMMAND(test)
 	REGISTER_COMMAND(getLinkMasterAttr)

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/08/19 20:46:36  wenger
+  Added JAVAC_ProtocolVersion command.
+
   Revision 1.43  1999/08/19 13:54:25  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -1492,6 +1495,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewSetImplicitHome) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetImplicitHome) 
 DECLARE_CLASS_END
 
 //

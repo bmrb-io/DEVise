@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.89  1999/09/02 17:26:06  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.88  1999/07/12 19:02:11  wenger
   Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 
@@ -383,12 +388,6 @@ extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
-extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-/*
-extern int dql_extract(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-*/
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
@@ -488,13 +487,6 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for CRSP data */
   Tcl_CreateCommand(_interp, "crsp_extract", crsp_extract, 0, 0);
-
-  /* Create a new tcl command for SEQ data */
-  Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
-  
-  /* Create a new tcl command for DQL data 
-  Tcl_CreateCommand(_interp, "dql_extract", dql_extract, 0, 0);
-  */
 
   char *controlFile = "control.tk";
   if (Init::BatchFile()) {

@@ -21,13 +21,19 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/11/19 21:13:08  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
  */
 
 #ifndef _DataCatalog_h_
 #define _DataCatalog_h_
 
-
 #include <sys/types.h>
+
+#include "DeviseTypes.h"
 
 class DataCatalog {
 public:
@@ -48,6 +54,10 @@ public:
 
   // Returns 0 if okay, -1 if error.
   int DeleteEntry(char *entryName);
+
+  // Finds the entry name (without quotes) given an entry string.
+  // Returns true if it found a name.
+  static Boolean GetEntryName(const char *entry, char nameBuf[], int bufSize);
 
 protected:
   char *FindEntry(char *entryName, char *catFile);

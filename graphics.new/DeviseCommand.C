@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.79  1999/08/19 20:46:35  wenger
+  Added JAVAC_ProtocolVersion command.
+
   Revision 1.78  1999/08/19 13:54:23  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -1018,19 +1021,64 @@ TAG*/
 int
 DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 {
-    {
-/*TAG
-        {
-          dteInsertCatalogEntry(argv[1], argv[2]);
-          ReturnVal(API_ACK, "");
-    	 return 1;
-        }
-TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
 #endif
+    {
+		//
+		// Construct full name (including catalog) of new entry.
+		//
+		const int nameSize = 128;
+        char entryName[nameSize];
+		char fullName[256];
+		if (DataCatalog::GetEntryName(argv[2], entryName, nameSize)) {
+			char *catName = argv[1];
+			if (!strcmp(catName, ".")) catName = "";
+			sprintf(fullName, "%s.%s", catName, entryName);
+		} else {
+		  char *errMsg = "Error parsing new data catalog entry";
+		  reportErrNosys(errMsg);
+          ReturnVal(API_NAK, errMsg);
+    	  return -1;
+		}
+
+		//
+		// Try to find an entry with this name in the catalog.
+		//
+        char *oldEntry;
 #if !defined(NO_DTE)
-		//TEMP -- should check for existing entry with given name
+        oldEntry = dteShowCatalogEntry(fullName);
+#else
+        oldEntry = DataCatalog::Instance()->ShowEntry(fullName);
+#endif
+
+        if (oldEntry && strlen(oldEntry) > 0) {
+		  //
+		  // Found a matching entry -- return without trying to add the
+		  // entry.
+		  //
+#if defined(DEBUG)
+          printf("Catalog entry for <%s> already exists\n", fullName);
+#endif
+
+		  char buf[1024];
+		  sprintf(buf, "%s ;", argv[2]);
+		  if (strcmp(oldEntry, buf)) {
+			char errBuf[1024];
+		    sprintf(errBuf,
+			    "Warning: existing entry and new entry for <%s> differ\n"
+			    "  Old entry: <%s>\n  New entry: <%s>",
+			    fullName, oldEntry, buf);
+		    reportErrNosys(errBuf);
+		  }
+          ReturnVal(API_ACK, "");
+    	  return 1;
+		}
+
+        //
+		// Didn't find an entry -- go ahead and add the one we've got.
+		//
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
 		int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
@@ -4704,6 +4752,7 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
 {
     // Arguments: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]
     // <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+    // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4749,6 +4798,7 @@ DeviseCommand_viewSetImplicitHome::Run(int argc, char** argv)
 {
     // Arguments: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero>
     // <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+    // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4779,6 +4829,37 @@ DeviseCommand_viewSetImplicitHome::Run(int argc, char** argv)
         return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in viewSetImplicitHome\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+}
+
+int
+DeviseCommand_viewGetImplicitHome::Run(int argc, char** argv)
+{
+    // Arguments: <viewName>
+    // Returns: <doHomeX> <doHomeY> <mode> <autoYMinZero>
+    // <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+	if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+	    ViewHomeInfo info;
+		view->GetImplicitHomeInfo(info);
+		char buf[256];
+		sprintf(buf, "%d %d %d %d %g %g %g %g %g %g", info.homeX, info.homeY,
+		  info.mode, info.autoYMinZero, info.autoXMargin, info.autoYMargin,
+		  info.manXLo, info.manYLo, info.manXHi, info.manYHi);
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewGetImplicitHome\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

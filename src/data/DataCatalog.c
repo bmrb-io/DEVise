@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/03/24 17:26:28  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.3  1999/03/03 18:23:25  wenger
   Added some debug code.
 
@@ -326,6 +332,17 @@ DataCatalog::ShowEntry(char *entryName)
 #if (DEBUG >= 1)
   printf("  found entry {%s}\n", entry ? entry : "NULL");
 #endif
+
+  // Strip trailing space.
+  if (entry) {
+    int index = strlen(entry) - 1;
+    if (index >= 0 && entry[index] == ' ') {
+      entry[index] = '\0';
+    }
+  } else {
+    // Match the DTE.
+    entry = "";
+  }
 
   return entry;
 }
@@ -695,6 +712,18 @@ DataCatalog::DeleteEntry(char *entryName)
   delete [] dirName;
 
   return result;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: DataCatalog::GetEntryName
+ * Find the given entry in the given catalog file.
+ */
+Boolean
+DataCatalog::GetEntryName(const char *entry, char nameBuf[], int bufSize)
+{
+  int tmpResult = ParseQuotedString(entry, nameBuf, bufSize);
+  return tmpResult != 0 ? true : false;
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

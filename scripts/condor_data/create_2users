@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1999/09/03 16:59:46  wenger
+#  Fixed problems in defining top-level user list data source.
+#
 #  Revision 1.12  1999/08/30 20:11:45  wenger
 #  Turned on axes without ticks in user data views.
 #
@@ -211,11 +214,7 @@ sub DefineData {
   #TEMP?
   my $schemaType = "CondorUserList";
 
-  print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
-      "$dataName} oldEntry]\n";
-  print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
-  print SES_OUT "  DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
-  print SES_OUT "}\n";
+  print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
 
   #TEMP?
   $schemaType = "CondorUser";
@@ -226,11 +225,7 @@ sub DefineData {
     $dataName = $data_prefix . $user;
     $dataFile = $user . ".dat";
 
-    print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
-        "$dataName} oldEntry]\n";
-    print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
     print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $data_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
-    print SES_OUT "}\n";
   }
 }
 
