@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2001/01/08 20:31:50  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.65.4.34  2001/01/05 19:15:44  wenger
 // Updated copyright dates.
 //
@@ -406,7 +410,13 @@ public class DEViseCmdDispatcher implements Runnable
 		    }
 		}
 	    }
-	}
+	} else { // in cgi mode, close the socket
+	    if (commSocket != null) {
+		commSocket.closeSocket();
+		commSocket = null;
+	    }	
+	}	
+	
 
 	// If we don't have a connection yet, prepend a connection request
 	// command to whatever was passed in.
@@ -1459,8 +1469,10 @@ public class DEViseCmdDispatcher implements Runnable
         // sending command to server, and expect an immediate response of "JAVAC_Ack"
         jsc.pn("Sending cgi command: \"" + command + "\"");
 	try {
-	    cgiURL = new URL("http", jsc.jsValues.connection.hostname,
-	      jsc.jsValues.connection.cgiURL);
+	    //cgiURL = new URL("http", jsc.jsValues.connection.hostname,
+	    //jsc.jsValues.connection.cgiURL);
+
+	    cgiURL = new URL(jsc.jsValues.connection.cgiURL);
 	    cgiConn = cgiURL.openConnection();
 	    cgiConn.setDoOutput(true);
 	    cgiOutput = new DataOutputStream(cgiConn.getOutputStream());
@@ -1633,10 +1645,10 @@ public class DEViseCmdDispatcher implements Runnable
                dataRead = new byte[10];
                numberRead = 0;
              }
+
              int b;
              for (int i = numberRead; i < 10; i++) {
 		 b = cgiInput.read();
-
                  if (b < 0) {
 		     //TEMP -- is this safe?
 		     return "cgi no response";
