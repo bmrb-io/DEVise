@@ -71,19 +71,26 @@ if ($#argv == 1) then
     set jardir = "/bmrb/htdocs/devise"
     set cgidir = "/bmrb/htdocs/cgi-bin"
     set idstr = "regular"
+  else if ($location == test) then
+    set popdir = "~/tst/jspop_install/jspop"
+    set servdir = "~/tst/jspop_install/jspop"
+    set jardir = "~/tst/jspop_install/www"
+    set cgidir = "~/tst/jspop_install/cgi-bin"
+    set idstr = "test"
   else
     echo "Illegal argument value: $location"
     exit 1
   endif
 else
-    echo "Usage: install_js <cs_reg|cs_soil|cs_test|bmrb>"
+    echo "Usage: install_js <cs_reg|cs_soil|cs_test|bmrb|test>"
     exit 1
 endif
 
 
 # Make sure we have the files we need.
 
-set files = "JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class jsa1.jar jsa2.jar jsb1.jar jsb2.jar devised"
+set files = (JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class \
+    jsa1.jar jsa2.jar jsb1.jar jsb2.jar bin/devised bin/Tasvir)
 foreach file ($files)
   if (! -f $file) then
     echo "File $file missing.  Cannot proceed with install."
@@ -130,33 +137,50 @@ endif
 # in the middle of the install (note that this will cause an error message
 # if the cron job happens to run before the new jspop is installed).
 
-rm $popdir/run_check
+if (-f $popdir/run_check) then
+  rm $popdir/run_check
+endif
 
 
-# Install the jar files.
+# Install the jar and html files.
 
+if (! -d $jardir) then
+  mkdir $jardir
+  chmod 755 $jardir
+endif
 cp -p *.jar $jardir
 chmod 644 $jardir/*.jar
+cp -p jsa.html $jardir
+cp -p jsb.html $jardir
+chmod 644 $jardir/*.html
 
 
 # Install the cgi file.
 
+if (! -d $cgidir) then
+  mkdir $cgidir
+  chmod 755 $cgidir
+endif
 cp -p js.cgi $cgidir
 chmod 755 $cgidir/js.cgi
 
 
-# Install the jss and devised.
+# Install the jss, devised, and Tasvir.
 
+if (! -d $servdir) then
+  mkdir $servdir
+  chmod 755 $servdir
+endif
 if (! -d $servdir/JavaScreen) then
   mkdir $servdir/JavaScreen
   chmod 755 $servdir/JavaScreen
 endif
 cp -p JavaScreen/*.class $servdir/JavaScreen
 chmod 644 $servdir/JavaScreen/*.class
-cp -p *.java $servdir
-chmod 644 $servdir/*.java
 
-set files = "check_jss restart_jss jss DEVise.kill jss.kill ports+files DEVise.jspop DEVise.jspop_soil Tasvir get_timestamp jss_savepid DEVise_savepid"
+set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
+    DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
+    DEVise_savepid)
 foreach file ($files)
   cp -p $file $servdir
   chmod 755 $servdir/$file
@@ -168,21 +192,38 @@ if (! -d $servdir/lib) then
 endif
 cp -p lib/composite.ini $servdir/lib
 
-mv $servdir/devised $servdir/devised.bak
-cp -p devised $servdir
-chmod 755 $servdir/devised
+if (! -d $servdir/bin) then
+  mkdir $servdir/bin
+  chmod 755 $servdir/bin
+endif
+
+if (-f $servdir/bin/devised) then
+  mv $servdir/bin/devised $servdir/bin/devised.bak
+endif
+cp -p bin/devised $servdir/bin
+chmod 755 $servdir/bin/devised
+
+if (-f $servdir/bin/Tasvir) then
+  mv $servdir/bin/Tasvir $servdir/bin/Tasvir.bak
+endif
+cp -p bin/Tasvir $servdir/bin
+chmod 755 $servdir/bin/Tasvir
 
 
 # Install the jspop.
 
+if (! -d $popdir) then
+  mkdir $popdir
+  chmod 755 $popdir
+endif
 if (! -d $popdir/JavaScreen) then
   mkdir $popdir/JavaScreen
   chmod 755 $popdir/JavaScreen
 endif
 cp -p JavaScreen/*.class $popdir/JavaScreen
 chmod 644 $popdir/JavaScreen/*.class
-cp -p *.java $popdir
-chmod 644 $popdir/*.java
+cp -p *.gif $popdir
+chmod 644 $popdir/*.gif
 
 if (! -f $popdir/users.cfg) then
   cp -p users.cfg $popdir
@@ -190,7 +231,9 @@ if (! -f $popdir/users.cfg) then
 endif
 
 # Keep run_check last because of cron job.
-set files = "check_connect check_jsall check_jspop jspop js js_cgi restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp run_top run_check jspop_savepid"
+set files = (check_connect check_jsall check_jspop jspop js js_cgi \
+    restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp \
+    run_top run_check jspop_savepid)
 foreach file ($files)
   cp -p $file $popdir
   chmod 755 $popdir/$file

@@ -75,7 +75,7 @@ export DEVISE_WORK
 
 DEVISE_LIB=lib
 export DEVISE_LIB
-DEVISE_EXEC=./devised
+DEVISE_EXEC=bin/devised
 export DEVISE_EXEC
 
 

@@ -2,4 +2,4 @@
 # Start Tasvir for the JavaScreen.
 
 touch Tasvir.out
-/p/devise/public/bin/Tasvir >>& Tasvir.out
+bin/Tasvir >>& Tasvir.out

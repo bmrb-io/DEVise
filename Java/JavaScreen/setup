@@ -21,12 +21,23 @@
 
 ############################################################
 
-# Note: -e test doesn't work on symlink.
-if (`ls devised` == devised) then
-  rm devised
+#TEMP -- move this to a Makefile
+# have a Makefile.config
+
+if (! -e bin) then
+  mkdir bin
+endif 
+
+if (-e bin/devised) then
+  rm bin/devised
 endif
 
-ln -s ../../$ARCH/generic/devised .
+cd bin
+ln -s ../../../$ARCH/generic/devised .
+if (! -e Tasvir) then
+  ln -s /p/devise/public/bin/Tasvir .
+endif
+cd ..
 
 if (! -e lib) then
   mkdir lib
