@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2001/03/03 20:14:02  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+//
 // Revision 1.44  2001/02/23 17:41:41  xuk
 // Added machine name and session name on the client list sent to collaboration JS.
 //
@@ -1350,7 +1353,7 @@ public class jspop implements Runnable
 			client.addCollabSocket(socket);
 			DEViseServer server = getNextAvailableServer();
 			if (server != null && 
-			    server.getCurrentClient() ! = client) {
+			    (server.getCurrentClient()) != client) {
 			    server.setCurrentClient(client);
 			}
 		    } else { // wrong passwd

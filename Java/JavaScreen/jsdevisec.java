@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2001/03/03 20:03:04  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+// 1.When "Start Collaboration" button is pressed while a normal session is open, send JAVAC_SaveCurSession command to JSpop.
+// 2.When "Socket" button is pressed, after out of collaboration mode, send JAVAC_ReopenSession command to JSpop.
+// 3.Added sessionSaved to remember a user goes into collaboration mode while a normal sesseion is open.
+//
 // Revision 1.89  2001/02/23 17:41:42  xuk
 // Added machine name and session name on the client list sent to collaboration JS.
 //
@@ -774,17 +780,7 @@ System.out.println("Creating new debug window");
     {
 
 	collabMode();
-	/*
-	if (dispatcher.getOnlineStatus()) {
-	    try {
-                pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-                dispatcher.socketSendCom(DEViseCommands.EXIT);
-            } catch (YException e) {
-                showMsg(e.getMsg());
-            }
-	    dispatcher.disconnect();
-	}
-	*/
+
 	specialID = 0;
 	dispatcher.start(null);
     }
@@ -1955,7 +1951,7 @@ class SetModeDlg extends Dialog
     public Button socketButton = new Button("Socket");
     public Button cgiButton = new Button("CGI");
     public Button collabButton = new Button("Start Collaboration");
-    public Button disCollabButton = new Button("Enable Collaboration");
+    public Button enCollabButton = new Button("Enable Collaboration");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -1977,7 +1973,10 @@ class SetModeDlg extends Dialog
         socketButton.setForeground(jsc.jsValues.uiglobals.fg);
         socketButton.setFont(jsc.jsValues.uiglobals.font);
 
-        cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
+	if (jsc.specialID == -1) 
+	    cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
+	else 
+	    cgiButton.setBackground(Color.red);
         cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
         cgiButton.setFont(jsc.jsValues.uiglobals.font);
 
@@ -1985,9 +1984,12 @@ class SetModeDlg extends Dialog
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
 
-        disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
+	if (jsc.specialID == -1)
+	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	else 
+	    enCollabButton.setBackground(Color.red);
+        enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        enCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
         cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
         cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
@@ -2015,8 +2017,8 @@ class SetModeDlg extends Dialog
         add(cgiButton);
         gridbag.setConstraints(collabButton, c);
         add(collabButton);
-        gridbag.setConstraints(disCollabButton, c);
-        add(disCollabButton);
+        gridbag.setConstraints(enCollabButton, c);
+        add(enCollabButton);
         gridbag.setConstraints(cancelButton, c);
         add(cancelButton);
 
@@ -2044,7 +2046,8 @@ class SetModeDlg extends Dialog
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-        cgiButton.addActionListener(new ActionListener()
+	if (jsc.specialID == -1)
+	    cgiButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
@@ -2117,7 +2120,23 @@ class SetModeDlg extends Dialog
 			    } catch (YException e) {
 			    }
                         }
+			// if already in "collabortion" mode,
+			// send JAVAC_Exit to exit from previous collaboration
+			if (jsc.specialID != -1) {
+			    if (jsc.dispatcher.dispatcherThread != null) {
+				jsc.dispatcher.dispatcherThread.stop();
+				jsc.dispatcher.dispatcherThread = null;
+			    }
+			    try {
+				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
+				jsc.dispatcher.socketSendCom(DEViseCommands.EXIT);
+			    } catch (YException e) {
+				jsc.showMsg(e.getMsg());
+			    }
+			}
+
 			close();
+
 			if (jsc.dispatcher.dispatcherThread != null) {
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
@@ -2142,7 +2161,8 @@ class SetModeDlg extends Dialog
                     }
                 });
 
-        disCollabButton.addActionListener(new ActionListener()
+	if (jsc.specialID == -1)
+	    enCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
