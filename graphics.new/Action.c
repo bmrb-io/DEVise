@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/11/20 20:35:18  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.15  1996/08/07 20:11:41  wenger
   Fixed various key event-related bugs (see Bugs file); changed
   direction of camera movement for 3D to be more in agreement
@@ -519,6 +524,11 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::ALT|DeviseKey::KP_DOWN: {
       view->ToggleViewLocks(View::XWIDTH);
       break;
+  }
+
+  case DeviseKey::CONTROL|'C': {
+    Dispatcher::QuitNotify();
+    break;
   }
 
   default:
