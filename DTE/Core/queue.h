@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/09 10:01:54  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.2  1996/12/05 16:06:04  wenger
   Added standard Devise file headers.
 
@@ -79,8 +83,9 @@ public:
 		}
 		numElem++;
 	}
-	void remove(){
+	T remove(){
 		assert(current);
+		T retVal = current->element;
 		if(previous){
 			previous->next = current->next;
 		}
@@ -94,8 +99,10 @@ public:
 		delete current;
 		current = newCurrent;
 		numElem--;
-		if (numElem < 0) 
+		if (numElem < 0){ 
 			currPos = numElem;
+		}
+		return retVal;
 	}
 	void rewind(){
 		current = head;

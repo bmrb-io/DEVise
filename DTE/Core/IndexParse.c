@@ -17,16 +17,21 @@
 #include "listop.h"
 #include "Aggregates.h"
 #include "ParseTree.h"
-#include "RTree.h"
-#include "RTreeRead.h"
+#ifdef NO_RTREE
+	#include "RTreeRead.dummy"
+	#include "RTreeCommon.h"
+#else
+	#include "RTree.h"
+	#include "RTreeRead.h"
+#endif
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
 void IndexParse::resolveNames(){	// throws exception
 	namesToResolve->rewind();
-	String* replacement = tableName;
-	for(int i = 0; i < namesToResolve->cardinality(); i++){
+	String* replacement = indexName;
+	while(!namesToResolve->atEnd()){
 		String* current = namesToResolve->get();
 		*current = *replacement;
 		namesToResolve->step();
@@ -34,24 +39,25 @@ void IndexParse::resolveNames(){	// throws exception
 }
 
 Site* IndexParse::createSite(){
+#ifndef NO_RTREE
 	if(!namesToResolve->isEmpty()){
 		TRY(resolveNames(), 0);
 	}
 	LOG(logFile << "Creating Index " << *indexName;)
-	LOG(logFile << " on " << *tableName << "(";)
+	LOG(logFile << " on ");
+	LOG(tableName->display(logFile));
+	LOG(logFile << " (";)
 	LOG(displayList(logFile, attributeList, ", ");)
 	LOG(logFile << ")" << endl;)
 
-	Catalog catalog;
 	String catalogName;
 	catalogName += getenv("DEVISE_SCHEMA");
 	catalogName += "/catalog.dte";
-	TRY(catalog.read(catalogName), 0);
-	Catalog::Interface* interf = NULL;
-	TRY(interf = catalog.find(*tableName), 0);
-	assert(interf);
-	TRY(Site* site = interf->getSite(), 0);	// can be old site
-	site->addTable(new TableAlias(tableName));
+	Catalog catalog(catalogName);
+	Site* site = NULL;
+	TRY(site = catalog.find(tableName), 0);
+	assert(site);
+	site->addTable(new TableAlias(tableName, indexName));
 
 	List<BaseSelection*>* emptyList = new List<BaseSelection*>;
 	site->filter(attributeList, emptyList);
@@ -139,8 +145,10 @@ Site* IndexParse::createSite(){
 	// note, you MUST keep root page
 
 	RTreeIndex* index = new RTreeIndex(numFlds, types, attrNames, root1.pid);
-	interf->addIndex(index);		// add this index to the catalog
-	catalog.write(catalogName);
 
+	// to do:
+	// interf->addIndex(index);		// add this index to the catalog
+	catalog.write(catalogName);
+#endif
 	return new Site();
 }

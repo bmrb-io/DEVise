@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/18 00:55:59  donjerko
+  Introduced the Operator* parent into the ExecOperator so that
+  getTypeID work.
+
   Revision 1.6  1996/12/15 06:41:09  donjerko
   Added support for RTree indexes
 
@@ -216,6 +220,13 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 	cout << "Could not find: ";
 	selection->display(cout);
 	cout << endl;
+	cout << "Options were:\n";
+	selList->rewind();
+	while(!selList->atEnd()){
+		selList->get()->display(cout);
+		cout << endl;
+		selList->step();
+	}
 	assert(0);
 }
 

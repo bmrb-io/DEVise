@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/19 08:25:47  kmurli
+  Changes to include the with predicate in sequences.
+
   Revision 1.5  1996/12/15 06:41:08  donjerko
   Added support for RTree indexes
 
@@ -86,6 +89,7 @@ LessGreat    ">="|">"|"<="|"<"
 [ \t\n]+     {}
 [Ss][Ee][Ll][Ee][Cc][Tt]       {return SELECT;}
 [Ff][Rr][Oo][Mm]         {return FROM;}
+[Aa][Ss]				{return AS;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
 [Oo][Vv][Ee][rR]         {return OVER;}

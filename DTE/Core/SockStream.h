@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:00  wenger
+  Added standard Devise file headers.
+
  */
 
 //**************************************************************************
@@ -54,8 +57,6 @@
 #define HOSTNAME_LENGTH 100
 
 //**************************************************************************
-
-// #define DEBUG_SOCK_REL
 
 class Cor_sockbuf : public streambuf {
 

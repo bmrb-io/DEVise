@@ -10,8 +10,6 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Makefile for tape.
-
 ############################################################
 
 #  $Id$
@@ -22,39 +20,92 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
+#NO_RTREE =
+NO_RTREE = 1
 
 DTE_INCLUDES = \
 	-I$(DTE_DIR)/Core \
 	-I$(DTE_DIR)/DeviseSpecific \
 	-I$(DTE_DIR)/StandAlone \
 	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
+	-I$(DTE_DIR)/Script \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I../../tape \
-	-I../../devread -I../../attrproj 
+	-I../../attrproj 
 
 CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused \
 	-DUNIX -DATTRPROJ -DLIBCS \
-	-fexternal-templates \
+	-fexternal-templates 
+
+ifdef NO_RTREE
+	CFLAGS += -DNO_RTREE
+endif
 
 CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c \
-	Aggregates.c QueryTree.c IndexParse.c RTreeRead.c
+	Aggregates.c QueryTree.c IndexParse.c 
+
+ifdef NO_RTREE
+	CORE_SRC += RTreeRead.dummy.c
+else
+	CORE_SRC += RTreeRead.c
+endif
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
 	ApParseCat.c TDataDQL.c TDataDQLInterp.c
 	
-#Dql.c DqlInclude.c
+DEVREAD_OBJ = \
+	../attrproj/ApInit.o \
+	../attrproj/ApParseCat.o \
+	../attrproj/Exit.o \
+	../attrproj/TData.o \
+	../attrproj/TDataAscii.o \
+	../attrproj/TDataAsciiInterp.o \
+	../attrproj/TDataBinary.o \
+	../attrproj/TDataBinaryInterp.o \
+	../attrproj/DataSourceSegment.o \
+	../graphics/Parse.o \
+	../graphics/AttrList.o \
+	../graphics/Time.o \
+	../graphics/Util.o \
+	../graphics/DevError.o \
+	../graphics/DevStatus.o \
+	../graphics.new/RecInterp.o \
+	../graphics.new/CompositeParser.o \
+	../graphics.new/FileIndex.o \
+	../graphics.new/Group.o \
+	../graphics.new/GroupDir.o \
+	../graphics.new/ItemList.o \
+	../graphics.new/DataSeg.o \
+	../graphics.new/DataSource.o \
+	../graphics.new/DataSourceFileStream.o \
+	../graphics.new/DataSourceTape.o \
+	../graphics.new/DataSourceBuf.o \
+	../graphics.new/DataSourceDQL.o \
+	../graphics.new/DevFileHeader.o \
+	../graphics.new/Version.o \
+     ../graphics.new/MemMgr.o \
+     ../graphics.new/DCE.o \
+	../tape/tapedrive.o \
+	../generic/CompDate.o 
 
 RTREE_SRC = \
-	bulk_data.C hfpage.C solaris_stats.C \
+	bulk_data.C hfpage.C \
 	RTree.C genrtree.C port_genrtree.C type_compat.C \
 	bitmap.C key.C box.C heap.C
+
+ifdef NO_RTREE
+	RTREE_SRC =
+endif
 
 RTREE_UTIL = FormatVolume.c
 
 STAND_ALONE_SRC = main.c 
+
+SCRIPT_SRC = post-query.c util.c script.c
+
+SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o)
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
@@ -65,8 +116,13 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte FormatVolume
+all: $(LIBNAME) dte script FormatVolume
 lib: $(LIBNAME)
+
+devread: 
+	$(foreach item, $(DEVREAD_OBJ), \
+		cd $(dir $(item)); make $(notdir $(item));) \
+	cd ../devread/; make lib; cd ../DTE
 
 $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)

@@ -16,28 +16,32 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/15 06:41:07  donjerko
+  Added support for RTree indexes
+
   Revision 1.4  1996/12/05 16:06:01  wenger
   Added standard Devise file headers.
 
  */
 
-#include "site.h"
+#include <string.h>
+#include <fstream.h>
+#include <iostream.h>
 #include "catalog.h"
 #include "Iterator.h"
 #include "DevRead.h"
 #include "StandardRead.h"
-#include "string.h"
 #include "url.h"
-#include <iostream.h>
+#include "site.h"
 
-Site* Catalog::DeviseInterface::getSite(){
+Site* DeviseInterface::getSite(){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
 	Iterator* unmarshal = new DevRead(schema, data);
      return new LocalTable("", unmarshal, &indexes);	
 }
 
-Site* Catalog::StandardInterface::getSite(){ // Throws a exception
+Site* StandardInterface::getSite(){ // Throws a exception
 
 	LOG(logFile << "Contacting " << urlString << " @ ");
 	LOG(iTimer.display(logFile) << endl);
@@ -54,7 +58,31 @@ Site* Catalog::StandardInterface::getSite(){ // Throws a exception
      return new LocalTable("", unmarshal, &indexes);	
 }
 
-istream& Catalog::CGIInterface::read(istream& in){  // throws
+Site* CatalogInterface::getSite(){ // Throws a exception
+	Site* retVal = NULL;
+	if(tableName->isEmpty()){
+
+		// If it was not for indexes, this clause could be deleted
+
+		ifstream* catalog = new ifstream(fileName);	
+		assert(catalog);
+		if(!catalog->good()){
+			String msg = "Cannot open catalog: " + fileName;
+			THROW(new Exception(msg), NULL);
+		}
+		StandardRead* iterator = new StandardRead(catalog);
+		TRY(iterator->open(), NULL);
+		retVal = new LocalTable("", iterator, &indexes);
+	}
+	else {
+		Catalog catalog(fileName);
+		TRY(retVal = catalog.find(tableName), NULL);
+		tableName = NULL;
+	}
+	return retVal;
+}
+
+istream& CGIInterface::read(istream& in){  // throws
 	in >> urlString;
 	in >> entryLen;
 	if(!in){
@@ -66,61 +94,43 @@ istream& Catalog::CGIInterface::read(istream& in){  // throws
 	for(int i = 0; i < entryLen; i++){
 		TRY(entries[i].read(in), in);
 	}
-	site = new CGISite(urlString, entries, entryLen);
 	return in;
 }
 
-istream& Catalog::Entry::read(istream& in){ // Throws Exception
-	String typeNm;
-	in >> typeNm;
-	if(!in){
-		String msg = "Interface for table " + tableNm + 
-			" must be specified";
-		THROW(new Exception(msg), in);
-	}
-	if(typeNm == "DeviseTable"){
-		interface = new DeviseInterface(tableNm);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "StandardTable"){
-		interface = new StandardInterface(tableNm);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "QueryInterface"){
-		interface = new QueryInterface(tableNm);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "CGIInterface"){
-		interface = new CGIInterface(tableNm);
-		TRY(interface->read(in), in);
-	}
-	else{
-		String msg = "Table " + tableNm + " interface: " + 
-			typeNm + ", not defined";
-		THROW(new Exception(msg), in);
-	}
-	String indexStr;
-	in >> indexStr;
-	while(in && indexStr != ";"){
-		if(in && indexStr == "index"){
-			TRY(interface->readIndex(in), in);
-		}
-		else {
-			String msg = 
-			"Invalid catalog format: \"index\" or \";\" expected";
-			THROW(new Exception(msg), in);
-		}
-		in >> indexStr;
-	}
-	if(!in){
-		String msg = "Premature end of catalog";
-		THROW(new Exception(msg), in);
-	}
-	return in;
-}
 
-void Catalog::Entry::write(ostream& out){
-	out << tableNm << " ";
-	interface->write(out);
-	out << " ; " << endl;
+Site* Catalog::find(TableName* path){     // Throws Exception
+	ifstream* in = new ifstream(fileName);
+	if(path->isEmpty()){
+		StandardRead* iterator = new StandardRead(in);
+		TRY(iterator->open(), NULL);
+		return new LocalTable("", iterator, NULL);
+	}
+	if(!in->good()){
+		String msg = "Cannot open catalog: " + fileName;
+		THROW(new Exception(msg), NULL);
+	}
+	in->ignore(INFINITY, ';');	// ignore the header
+	if(!in->good()){
+		String msg = "Could not find end of header in: " + fileName;
+		THROW(new Exception(msg), NULL);
+	}
+	String tableNm;
+	*in >> tableNm;
+	while(in->good()){
+		if(path->isEmpty() || tableNm == *path->getFirst()){
+			CatEntry* entry = new CatEntry(path);
+			TRY(entry->read(*in), NULL); 
+			delete in;
+			Site* retVal = entry->getSite();
+			delete entry;
+			return retVal;
+		}
+		else{
+			in->ignore(INFINITY, ';');
+		}
+		*in >> tableNm;
+	}
+	delete in;
+	String msg = "Table " + *path->getFirst() + " not defined";
+	THROW(new Exception(msg), NULL);
 }

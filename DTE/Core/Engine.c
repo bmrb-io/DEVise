@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/19 08:25:46  kmurli
+  Changes to include the with predicate in sequences.
+
   Revision 1.7  1996/12/16 11:13:04  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -50,7 +53,7 @@ extern int yydebug;
 Exception* currExcept;
 
 ParseTree* parseTree = NULL;
-List<String*>* namesToResolve;
+List<String*>* namesToResolve = NULL;
 BaseSelection * sequenceby;
 char* queryString;
 BaseSelection * withPredicate;
@@ -60,13 +63,15 @@ ITimer iTimer;
 int Engine::optimize(){
 	queryString = strdup(query.chars());
 	namesToResolve = new List<String*>;
-	if(yyparse() != 0){
+	TRY(int parseRet = yyparse(), 0);
+	if(parseRet != 0){
 		String msg = "parse error in: " + String(queryString);
 		THROW(new Exception(msg), 0);
 	}
-	delete namesToResolve;
 	assert(parseTree);
 	TRY(topNode = parseTree->createSite(), 0);
+	delete namesToResolve;
+	namesToResolve = NULL;
 	return 0;
 }
 

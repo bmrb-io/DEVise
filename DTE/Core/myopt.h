@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/18 00:55:58  donjerko
+  Introduced the Operator* parent into the ExecOperator so that
+  getTypeID work.
+
   Revision 1.9  1996/12/16 11:13:09  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -1056,22 +1060,94 @@ public:
 	}
 };
 
-class TableAlias {
-	bool _isQuote;
+class TableName {
+	List<String*>* tableName;
 public:
-	String* table;
+	TableName() {
+		tableName = new List<String*>;
+	}
+	TableName(List<String*>* tableName) : tableName(tableName) {}
+	TableName(String* str){	// delete str when done
+		tableName = new List<String*>;
+		tableName->append(str);
+	}
+	~TableName(){
+		delete tableName;
+	}
+	String* getFirst(){
+		assert(tableName);
+		assert(!tableName->isEmpty());
+		tableName->rewind();
+		return tableName->get();
+	}
+	void deleteFirst(){
+		assert(tableName);
+		assert(!tableName->isEmpty());
+		tableName->rewind();
+		String* firstPath = tableName->remove();
+		delete firstPath;
+	}
+	bool isEmpty(){
+		assert(tableName);
+		return tableName->isEmpty();
+	}
+	void display(ostream& out){
+		assert(tableName);
+		out << "/";
+		displayList(out, tableName, "/");
+	}
+	int cardinality(){
+		assert(tableName);
+		return tableName->cardinality();
+	}
+};
+
+class TableAlias {
+protected:
+	TableName* table;
 	String* alias;
-	TableAlias(String* t, String* a = NULL, bool isQuote = false) : 
-		_isQuote(isQuote), table(t), alias(a) {}
-	void display(ostream& out, int detail = 0){
+public:
+	TableAlias(TableName* t, String* a = NULL) : 
+		table(t), alias(a) {
+	}
+	virtual TableName* getTable(){
+		return table;
+	}
+	String* getAlias(){
+		return alias;
+	}
+	virtual void display(ostream& out, int detail = 0){
 		assert(table);
-		out << *table;
+		table->display(out);
+		if(alias){
+			out << " as " << *alias;
+		}
+	}
+	virtual bool isQuote(){
+		return  false;
+	}
+};
+
+class QuoteAlias : public TableAlias {
+	String* quote;
+public:
+	QuoteAlias(String* quote, String* alias = NULL) :
+		TableAlias(new TableName(), alias), quote(quote) {}
+	virtual void display(ostream& out, int detail = 0){
+		assert(quote);
+		out << *quote;
 		if(alias){
 			out << " " << *alias;
 		}
 	}
-	bool isQuote(){
-		return  _isQuote;
+	virtual TableName* getTable(){
+		assert(0);
+	}
+	String* getQuote(){
+		return quote;
+	}
+	virtual bool isQuote(){
+		return  true;
 	}
 };
 

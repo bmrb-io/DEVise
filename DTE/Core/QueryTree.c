@@ -31,7 +31,8 @@ void QueryTree::resolveNames(){	// throws exception
      else{
           tableList->rewind();
           namesToResolve->rewind();
-          String* replacement = tableList->get()->table;
+          String* replacement = tableList->get()->getAlias();
+		assert(replacement);
           for(int i = 0; i < namesToResolve->cardinality(); i++){
                String* current = namesToResolve->get();
 			cout << *current << " " << *replacement << endl;
@@ -73,23 +74,30 @@ Site* QueryTree::createSite(){
 
 	tableList->rewind();
 	int numSites = 0;
-	Catalog catalog;
 	String catalogName;
-	catalogName += getenv("DEVISE_SCHEMA");
-	catalogName += "/catalog.dte";
-	TRY(catalog.read(catalogName), 0);
+	char* dev_schema = getenv("DEVISE_SCHEMA");
+	if(dev_schema){
+		catalogName = String(dev_schema) + "/catalog.dte";
+	}
+	else {
+		catalogName = "catalog.dte";
+	}
+	Catalog catalog(catalogName);
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
 		TableAlias* ta = tableList->get();
-          Catalog::Interface* interf = NULL;
+		Site* site = NULL;
 		if(ta->isQuote()){
-			TRY(interf = catalog.toInterface(*ta->table), 0);
+			QuoteAlias* qa = (QuoteAlias*) ta;
+			// TRY(site = catalog.toSite(*qa->getQuote()), 0);
 		}
 		else{
-			TRY(interf = catalog.find(*ta->table), 0);
+			TRY(site = catalog.find(ta->getTable()), 0);
 		}
-		assert(interf);
-		TRY(Site* site = interf->getSite(), 0);	// can be old site
+		assert(site);
+
+		// To do: check if this site already exists in sites
+
 		site->addTable(ta);
 		if(!sites->exists(site)){
 			sites->append(site);

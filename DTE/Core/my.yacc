@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/19 08:25:47  kmurli
+  Changes to include the with predicate in sequences.
+
   Revision 1.8  1996/12/16 11:13:09  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -38,6 +41,7 @@
 %{
 
 #include "myopt.h"
+#include "exception.h"
 #include "queue.h"
 #include "ParseTree.h"
 #include <iostream.h>
@@ -63,11 +67,13 @@ int yyerror(char* msg);
 	List<BaseSelection*>* selList;
 	List<TableAlias*>* tableList;
 	TableAlias* tabAlias;
+	List<String*>* tableName;
 }
 %token <integer> INT
 %token <real> DOUBLE
 %token SELECT
 %token FROM
+%token AS
 %token WHERE
 %token SEQUENCEBY 
 %token CREATE
@@ -95,9 +101,8 @@ int yyerror(char* msg);
 %type <sel> predicate
 %type <string> optString
 %type <string> optSequenceByClause
-%type <sel> attribute
 %type <string> index_name
-%type <string> table_name
+%type <tableName> table_name
 %%
 input : query
 	| definition
@@ -109,7 +114,17 @@ definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' ';'{
 	;
 index_name : STRING
 	;
-table_name : STRING
+table_name : table_name '/' STRING {
+		$1->append($3);
+		$$ = $1;
+	}
+	| '/' STRING {
+		$$ = new List<String*>;
+		$$->append($2);
+	}
+	| '/' {
+		$$ = new List<String*>;
+	}
 	;
 query : SELECT listOfSelections 
 	   FROM listOfTables optWhereClause optSequenceByClause ';' {
@@ -186,11 +201,7 @@ predicate : predicate OR predicate {
 	}
 	| selection
 	;
-attribute:
-	STRING '.' expression {
-		$$ = new PrimeSelection($1, $3);
-	}
-	;
+
 selection :
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);
@@ -236,11 +247,22 @@ optOverClause:
 	}
 	;
 
-tableAlias : STRING optString {
-		$$ = new TableAlias($1, $2);
+tableAlias : table_name AS STRING {
+		$$ = new TableAlias(new TableName($1), $3);
+	}
+	| table_name {
+		if($1->cardinality() == 1){
+			$1->rewind();
+			String* tmp = new String(*$1->get());
+			$$ = new TableAlias(new TableName($1), tmp);
+		}
+		else{
+			String msg = "Sorry, you need to specify alias";
+			THROW(new Exception(msg), 0);
+		}
 	}
 	| STRING_CONST optString {
-		$$ = new TableAlias($1, $2, true);
+		$$ = new QuoteAlias($1, $2);
 	}
 	;
 optString : STRING {

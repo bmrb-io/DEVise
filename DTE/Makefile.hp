@@ -1,306 +1,38 @@
 depend:
-	makedepend -fMakefile.hp -ICore \
-	-I../graphics -I../graphics.new -I../atrproj *.c;\
+	makedepend -fMakefile.hp \
+	-ICore -IRTree \
+	-I../graphics -I../graphics.new -I../attrproj \
+	-I/s/gcc-2.7.2/lib/g++-include \
+	*.c;\
 	cd Core; \
 	makedepend -a -f../Makefile.hp \
-	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
+	-I../RTree -I../RTree/tools \
+	-I../../graphics -I../../graphics.new -I../../attrproj \
+	-I/s/gcc-2.7.2/lib/g++-include\
+	*.c;\
 	cd ..;\
 	cd StandAlone; \
-	makedepend -a -f../Makefile.hp -I../Core \
-	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
+	makedepend -a -f../Makefile.hp -I../Core -I../RTree \
+	-I../../graphics -I../../graphics.new -I../../attrproj \
+	-I/s/gcc-2.7.2/lib/g++-include\
+	*.c;\
 	cd ..;\
+	cd Script; \
+	makedepend -a -f../Makefile.hp -I../Core -I../RTree -I../Script \
+	-I../../graphics -I../../graphics.new -I../../attrproj \
+	-I/s/gcc-2.7.2/lib/g++-include\
+	*.c;\
+	cd ..;\
+	cd RTree; \
+	makedepend -a -f../Makefile.hp -Itools \
+	-I/s/gcc-2.7.2/lib/g++-include \
+	*.C;\
+	cd tools; \
+	makedepend -a -f../../Makefile.hp -I.. \
+	-I/s/gcc-2.7.2/lib/g++-include\
+	*.C;\
+	cd ..;\
+	cd ..;
+
 
 # DO NOT DELETE
-
-Aggregates.o: Aggregates.h types.h /usr/include/assert.h
-Aggregates.o: /usr/include/sys/stdsyms.h /usr/include/string.h
-Aggregates.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-Aggregates.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-Aggregates.o: /usr/include/limits.h /usr/include/sys/param.h
-Aggregates.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-Aggregates.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-Aggregates.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Aggregates.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Aggregates.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-Aggregates.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-Aggregates.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-Aggregates.o: /usr/include/values.h ../../graphics/DevStatus.h
-Aggregates.o: ../../graphics/DList.h ../../graphics/Exit.h
-Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h myopt.h
-Aggregates.o: queue.h url.h /usr/include/sys/uio.h /usr/include/stdio.h
-Aggregates.o: /usr/include/unistd.h /usr/include/sys/unistd.h SockStream.h
-Aggregates.o: listop.h site.h Iterator.h StandardRead.h RTreeRead.h catalog.h
-DevRead.o: /usr/include/stdio.h /usr/include/string.h
-DevRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-DevRead.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-DevRead.o: /usr/include/sys/param.h /usr/include/machine/param.h
-DevRead.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-DevRead.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-DevRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-DevRead.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/netinet/in.h DevRead.h ../../graphics/DeviseTypes.h
-DevRead.o: /usr/include/values.h ../../graphics/DevStatus.h
-DevRead.o: ../../graphics.new/RecId.h types.h /usr/include/assert.h
-DevRead.o: exception.h ../../graphics/AttrList.h ../../graphics/DList.h
-DevRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-DevRead.o: ../../graphics/BufPolicy.h Iterator.h ../../graphics/Util.h
-DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
-DevRead.o: /usr/include/math.h ../../graphics.new/TData.h
-DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-DevRead.o: ../../graphics.new/DCE.h /usr/include/errno.h
-DevRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
-DevRead.o: ../../graphics.new/DataSeg.h
-Engine.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
-Engine.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h
-Engine.o: /usr/include/stdlib.h queue.h myopt.h types.h
-Engine.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-Engine.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-Engine.o: /usr/include/limits.h /usr/include/sys/param.h
-Engine.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-Engine.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-Engine.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Engine.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Engine.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-Engine.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-Engine.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-Engine.o: /usr/include/values.h ../../graphics/DevStatus.h
-Engine.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-Engine.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-Engine.o: /usr/include/stdio.h /usr/include/unistd.h
-Engine.o: /usr/include/sys/unistd.h SockStream.h listop.h Engine.h site.h
-Engine.o: Iterator.h StandardRead.h RTreeRead.h ParseTree.h
-IndexParse.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
-IndexParse.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h
-IndexParse.o: /usr/include/stdlib.h /usr/include/stdio.h /usr/include/errno.h
-IndexParse.o: /usr/include/sys/errno.h queue.h myopt.h types.h
-IndexParse.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-IndexParse.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-IndexParse.o: /usr/include/limits.h /usr/include/sys/param.h
-IndexParse.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-IndexParse.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-IndexParse.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-IndexParse.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-IndexParse.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-IndexParse.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-IndexParse.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-IndexParse.o: /usr/include/values.h ../../graphics/DevStatus.h
-IndexParse.o: ../../graphics/DList.h ../../graphics/Exit.h
-IndexParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
-IndexParse.o: /usr/include/sys/uio.h /usr/include/unistd.h
-IndexParse.o: /usr/include/sys/unistd.h SockStream.h listop.h site.h
-IndexParse.o: Iterator.h StandardRead.h RTreeRead.h catalog.h DevRead.h
-IndexParse.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h
-QueryTree.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
-QueryTree.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h
-QueryTree.o: /usr/include/stdlib.h queue.h myopt.h types.h
-QueryTree.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-QueryTree.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-QueryTree.o: /usr/include/limits.h /usr/include/sys/param.h
-QueryTree.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-QueryTree.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-QueryTree.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-QueryTree.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-QueryTree.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-QueryTree.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-QueryTree.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-QueryTree.o: /usr/include/values.h ../../graphics/DevStatus.h
-QueryTree.o: ../../graphics/DList.h ../../graphics/Exit.h
-QueryTree.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
-QueryTree.o: /usr/include/sys/uio.h /usr/include/stdio.h
-QueryTree.o: /usr/include/unistd.h /usr/include/sys/unistd.h SockStream.h
-QueryTree.o: listop.h site.h Iterator.h StandardRead.h RTreeRead.h catalog.h
-QueryTree.o: DevRead.h ../../graphics.new/RecId.h Aggregates.h ParseTree.h
-RTreeRead.o: RTreeRead.h StandardRead.h Iterator.h types.h
-RTreeRead.o: /usr/include/assert.h /usr/include/sys/stdsyms.h
-RTreeRead.o: /usr/include/string.h /usr/include/sys/types.h
-RTreeRead.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-RTreeRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-RTreeRead.o: /usr/include/sys/param.h /usr/include/machine/param.h
-RTreeRead.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-RTreeRead.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-RTreeRead.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-RTreeRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-RTreeRead.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-RTreeRead.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-RTreeRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-RTreeRead.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-RTreeRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-RTreeRead.o: ../../graphics/BufPolicy.h myopt.h queue.h url.h
-RTreeRead.o: /usr/include/sys/uio.h /usr/include/stdio.h
-RTreeRead.o: /usr/include/unistd.h /usr/include/sys/unistd.h SockStream.h
-RTreeRead.o: listop.h
-StandardRead.o: /usr/include/string.h StandardRead.h Iterator.h types.h
-StandardRead.o: /usr/include/assert.h /usr/include/sys/stdsyms.h
-StandardRead.o: /usr/include/sys/types.h /usr/include/netinet/in.h
-StandardRead.o: exception.h /usr/include/sys/time.h
-StandardRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-StandardRead.o: /usr/include/sys/param.h /usr/include/machine/param.h
-StandardRead.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-StandardRead.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-StandardRead.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-StandardRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-StandardRead.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-StandardRead.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-StandardRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-StandardRead.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-StandardRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-StandardRead.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-StandardRead.o: /usr/include/stdio.h /usr/include/unistd.h
-StandardRead.o: /usr/include/sys/unistd.h SockStream.h
-catalog.o: site.h /usr/include/assert.h /usr/include/sys/stdsyms.h myopt.h
-catalog.o: queue.h types.h /usr/include/string.h /usr/include/sys/types.h
-catalog.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-catalog.o: ../../graphics.new/machdep.h /usr/include/limits.h
-catalog.o: /usr/include/sys/param.h /usr/include/machine/param.h
-catalog.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-catalog.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-catalog.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-catalog.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-catalog.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-catalog.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-catalog.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-catalog.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-catalog.o: ../../graphics/Exit.h ../../graphics/Init.h
-catalog.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-catalog.o: /usr/include/stdio.h /usr/include/unistd.h
-catalog.o: /usr/include/sys/unistd.h SockStream.h listop.h Iterator.h
-catalog.o: StandardRead.h RTreeRead.h catalog.h DevRead.h
-catalog.o: ../../graphics.new/RecId.h
-lex.yy.o: /usr/include/stdio.h /usr/include/string.h /usr/include/stdlib.h
-lex.yy.o: /usr/include/assert.h /usr/include/sys/stdsyms.h
-lex.yy.o: /usr/include/memory.h myopt.h queue.h types.h
-lex.yy.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-lex.yy.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-lex.yy.o: /usr/include/limits.h /usr/include/sys/param.h
-lex.yy.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-lex.yy.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-lex.yy.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-lex.yy.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-lex.yy.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-lex.yy.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-lex.yy.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-lex.yy.o: /usr/include/values.h ../../graphics/DevStatus.h
-lex.yy.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-lex.yy.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-lex.yy.o: /usr/include/unistd.h /usr/include/sys/unistd.h SockStream.h
-lex.yy.o: listop.h my.yacc.tab.h
-listop.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
-listop.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h
-listop.o: queue.h myopt.h types.h /usr/include/sys/types.h
-listop.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-listop.o: ../../graphics.new/machdep.h /usr/include/limits.h
-listop.o: /usr/include/sys/param.h /usr/include/machine/param.h
-listop.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-listop.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-listop.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-listop.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-listop.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-listop.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-listop.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-listop.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-listop.o: ../../graphics/Exit.h ../../graphics/Init.h
-listop.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-listop.o: /usr/include/stdio.h /usr/include/unistd.h
-listop.o: /usr/include/sys/unistd.h SockStream.h listop.h site.h Iterator.h
-listop.o: StandardRead.h RTreeRead.h catalog.h
-my.yacc.tab.o: myopt.h /usr/include/assert.h /usr/include/sys/stdsyms.h
-my.yacc.tab.o: queue.h types.h /usr/include/string.h /usr/include/sys/types.h
-my.yacc.tab.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-my.yacc.tab.o: ../../graphics.new/machdep.h /usr/include/limits.h
-my.yacc.tab.o: /usr/include/sys/param.h /usr/include/machine/param.h
-my.yacc.tab.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-my.yacc.tab.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-my.yacc.tab.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-my.yacc.tab.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-my.yacc.tab.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-my.yacc.tab.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-my.yacc.tab.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-my.yacc.tab.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-my.yacc.tab.o: ../../graphics/Exit.h ../../graphics/Init.h
-my.yacc.tab.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-my.yacc.tab.o: /usr/include/stdio.h /usr/include/unistd.h
-my.yacc.tab.o: /usr/include/sys/unistd.h SockStream.h listop.h ParseTree.h
-my.yacc.tab.o: site.h Iterator.h StandardRead.h RTreeRead.h
-resolve.o: myopt.h /usr/include/assert.h /usr/include/sys/stdsyms.h queue.h
-resolve.o: types.h /usr/include/string.h /usr/include/sys/types.h
-resolve.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-resolve.o: ../../graphics.new/machdep.h /usr/include/limits.h
-resolve.o: /usr/include/sys/param.h /usr/include/machine/param.h
-resolve.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-resolve.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-resolve.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-resolve.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-resolve.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-resolve.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-resolve.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-resolve.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-resolve.o: ../../graphics/Exit.h ../../graphics/Init.h
-resolve.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-resolve.o: /usr/include/stdio.h /usr/include/unistd.h
-resolve.o: /usr/include/sys/unistd.h SockStream.h listop.h site.h Iterator.h
-resolve.o: StandardRead.h RTreeRead.h
-site.o: /usr/include/string.h site.h /usr/include/assert.h
-site.o: /usr/include/sys/stdsyms.h myopt.h queue.h types.h
-site.o: /usr/include/sys/types.h /usr/include/netinet/in.h exception.h
-site.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-site.o: /usr/include/limits.h /usr/include/sys/param.h
-site.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-site.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-site.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-site.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-site.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-site.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-site.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-site.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-site.o: ../../graphics/Exit.h ../../graphics/Init.h
-site.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-site.o: /usr/include/stdio.h /usr/include/unistd.h /usr/include/sys/unistd.h
-site.o: SockStream.h listop.h Iterator.h StandardRead.h RTreeRead.h
-types.o: types.h /usr/include/assert.h /usr/include/sys/stdsyms.h
-types.o: /usr/include/string.h /usr/include/sys/types.h
-types.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
-types.o: ../../graphics.new/machdep.h /usr/include/limits.h
-types.o: /usr/include/sys/param.h /usr/include/machine/param.h
-types.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-types.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-types.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-types.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-types.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-types.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-types.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-types.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-types.o: ../../graphics/Exit.h ../../graphics/Init.h
-types.o: ../../graphics/BufPolicy.h
-url.o: url.h /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-url.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-url.o: /usr/include/netinet/in.h /usr/include/netdb.h
-url.o: /usr/include/sys/param.h /usr/include/machine/param.h
-url.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-url.o: /usr/include/machine/spl.h /usr/include/sys/bitypes.h
-url.o: /usr/include/sys/cdefs.h /usr/include/string.h /usr/include/assert.h
-url.o: /usr/include/stdio.h /usr/include/unistd.h /usr/include/sys/unistd.h
-url.o: SockStream.h exception.h ../../graphics.new/machdep.h
-url.o: /usr/include/limits.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
-url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-
-main.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
-main.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h
-main.o: ../Core/types.h /usr/include/sys/types.h /usr/include/netinet/in.h
-main.o: ../Core/exception.h /usr/include/sys/time.h
-main.o: ../../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/param.h /usr/include/machine/param.h
-main.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-main.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-main.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
-main.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-main.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-main.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-main.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-main.o: ../../graphics/Exit.h ../../graphics/Init.h
-main.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/site.h
-main.o: ../Core/myopt.h ../Core/queue.h ../Core/url.h /usr/include/sys/uio.h
-main.o: /usr/include/stdio.h /usr/include/unistd.h /usr/include/sys/unistd.h
-main.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
-main.o: ../Core/StandardRead.h ../Core/RTreeRead.h

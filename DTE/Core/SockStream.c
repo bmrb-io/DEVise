@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/05 16:05:59  wenger
+  Added standard Devise file headers.
+
  */
 //**************************************************************************
 //    SockStream.C
@@ -48,6 +51,8 @@
 #endif
 
 extern int errno;
+
+// #define DEBUG_SOCK_REL
 
 // *************************************************************************
 Cor_sockbuf::Cor_sockbuf(int sockfd)

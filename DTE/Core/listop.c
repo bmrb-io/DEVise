@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/15 06:41:08  donjerko
+  Added support for RTree indexes
+
   Revision 1.3  1996/12/07 15:14:27  donjerko
   Introduced new files to support indexes.
 
@@ -99,6 +102,17 @@ void displayList(ostream& out, List<Site*>* list, String sep){
      list->rewind();
      while(!list->atEnd()){
 		list->get()->display(out);
+          list->step();
+		if(!list->atEnd()){
+			out << sep;
+		}
+	}
+}
+
+void displayList(ostream& out, List<String*>* list, String sep){
+     list->rewind();
+     while(!list->atEnd()){
+		out << *list->get();
           list->step();
 		if(!list->atEnd()){
 			out << sep;

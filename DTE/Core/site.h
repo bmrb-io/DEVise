@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/16 11:13:10  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.6  1996/12/15 06:41:10  donjerko
   Added support for RTree indexes
 
@@ -31,16 +35,21 @@
 #define SITE_H
 
 #include <assert.h>
-#include "myopt.h"
 #include "queue.h"
 #include "types.h"
+#include "myopt.h"
 #include "exception.h"
 #include "Iterator.h"
 #include "StandardRead.h"
-#include "RTreeRead.h"
+#ifdef NO_RTREE
+     #include "RTreeRead.dummy"
+#else
+     #include "RTreeRead.h"
+#endif
 #include "url.h"
 
 List<BaseSelection*>* createSelectList(String nm, Iterator* iterator);
+List<BaseSelection*>* createSelectList(Iterator* iterator);
 
 class Site {
 friend class LocalTable;
@@ -74,12 +83,13 @@ public:
 	}
 	virtual void addTable(TableAlias* tabName){
 		myFrom->append(tabName);
-		String* alias = tabName->alias;
+		String* alias = tabName->getAlias();
 		if(alias){
 			tables->append(alias);
 		}
 		else{
-			tables->append(tabName->table);
+			assert(0);
+			// tables->append(tabName->table);
 		}
 	}
 	// Returns the name of the ordering attribute using the
@@ -171,6 +181,8 @@ public:
 		if(iterator)
 			iterator->initialize();
 	}
+	virtual void finalize(){
+	}
 	virtual double evaluateCost(){
 		return 1;
 	}
@@ -228,17 +240,19 @@ public:
 		directSite = new DirectSite(name, iterator);
 	}
 	virtual ~LocalTable(){}
+	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
 		assert(myFrom->isEmpty());
 		myFrom->append(tabName);
-		String* alias = tabName->alias;
+		String* alias = tabName->getAlias();
 		if(alias){
 			tables->append(alias);
 			name = *alias;
 		}
 		else{
-			tables->append(tabName->table);
-			name = *tabName->table;
+			assert(0);
+			// tables->append(tabName->table);
+			// name = *tabName->table;
 		}
 	}
 	virtual void enumerate(){

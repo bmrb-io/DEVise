@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/15 06:41:10  donjerko
+  Added support for RTree indexes
+
   Revision 1.4  1996/12/05 16:06:05  wenger
   Added standard Devise file headers.
 
@@ -24,7 +27,11 @@
 #include <string.h>
 #include "site.h"
 #include "Iterator.h"
-#include "RTreeRead.h"
+#ifdef NO_RTREE
+     #include "RTreeRead.dummy"
+#else
+     #include "RTreeRead.h"
+#endif
 
 List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
 	assert(iterator);
@@ -39,6 +46,26 @@ List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
 		Path* path = new Path(&attNms[i], NULL);
 		retVal->append(new 
 			PrimeSelection(new String(nm), path, types[i], sizes[i], i));
+	}
+	return retVal;
+}
+
+List<BaseSelection*>* createSelectList(Iterator* iterator){
+	assert(iterator);
+	int numFlds = iterator->getNumFlds();
+	String* attNms = iterator->getAttributeNames();
+	String* types = iterator->getTypeIDs();
+	Stats* stats = iterator->getStats();
+	assert(stats);
+	int* sizes = stats->fldSizes;
+	List<BaseSelection*>* retVal = new List<BaseSelection*>;
+	for(int i = 0; i < numFlds; i++){
+		String res[3];
+		int numSplit = split(attNms[i], res, 3, String("."));
+		assert(numSplit == 2);
+		Path* path = new Path(new String(res[1]), NULL);
+		retVal->append(new 
+			PrimeSelection(new String(res[0]), path, types[i], sizes[i], i));
 	}
 	return retVal;
 }
@@ -85,12 +112,14 @@ void Site::typify(String option){	// Throws a exception
 	char buff[100];
 	if(code != 0){
 		ostrstream err;
+		err << code << endl;
 		while(*in){
 			in->read(buff, 100);
 			err.write(buff, in->gcount());
 		} 
 		err << ends;
-		THROW(new Exception(String(err.str())), );
+		String msg = "Wrong code: " + String(err.str());
+		THROW(new Exception(msg), );
 	}
 	in->getline(buff, 100);	// ignore OK msg
 	iterator = new StandardRead(in);	
@@ -101,7 +130,7 @@ void Site::typify(String option){	// Throws a exception
 	assert(stats);
 	numFlds = iterator->getNumFlds();
 	if(mySelect == NULL){
-		mySelect = createSelectList(name, iterator);
+		mySelect = createSelectList(iterator);
 		return;
 	}
 	TypeID* types = iterator->getTypeIDs();

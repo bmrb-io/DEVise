@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/15 06:41:08  donjerko
+  Added support for RTree indexes
+
   Revision 1.3  1996/12/07 15:14:27  donjerko
   Introduced new files to support indexes.
 
@@ -65,6 +68,7 @@ void displayList(ostream& out, List<TableAlias*>* list, String sep = ", ");
 void displayList(ostream& out, List<BaseSelection*>* list, 
 	String sep = ", ", int detail = 0); 
 void displayList(ostream& out, List<Site*>* list, String sep);
+void displayList(ostream& out, List<String*>* list, String sep);
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
 void enumerateList(List<BaseSelection*>* list,

@@ -12,11 +12,11 @@ public:
 
 class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
-	List<TableAlias*>   * tableList;
-	BaseSelection * predicates;
-	String *sequencebyTable;
+	List<TableAlias*>* tableList;
+	BaseSelection* predicates;
+	String* sequencebyTable;
 	BaseSelection* withPredicate;
-	List<String*> * namesToResolve;
+	List<String*>* namesToResolve;
 	void resolveNames();	// throws exception
 public:	
 	QueryTree(
@@ -42,22 +42,22 @@ public:
 
 class IndexParse : public ParseTree {
 	String* indexName;
-	String* tableName;
+	TableName* tableName;
 	List<BaseSelection*>* attributeList;
 	List<String*>* namesToResolve;
 	void resolveNames();	// throws exception
 public:	
 	IndexParse(
 		String* indexName,
-		String* tableName,
+		List<String*>* tableName,
 		List<BaseSelection*>* attributeList,
 		List<String*>* namesToResolve) :
-		indexName(indexName), tableName(tableName),
+		indexName(indexName), tableName(new TableName(tableName)),
 		attributeList(attributeList), namesToResolve(namesToResolve) {}
 	virtual Site* createSite();	// throws exception
 	virtual ~IndexParse(){
 		delete indexName;
-		delete tableName;
+		delete tableName;	// destroy too
 		delete attributeList;	// destroy too
 		delete namesToResolve;	// destroy too
 	}

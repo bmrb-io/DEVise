@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/15 06:41:04  donjerko
+  Added support for RTree indexes
+
   Revision 1.3  1996/12/07 15:14:25  donjerko
   Introduced new files to support indexes.
 
@@ -60,6 +63,9 @@ public:
 	}
 	virtual void initialize(){
 		topNode->initialize();
+	}
+	virtual void finalize(){
+		topNode->finalize();
 	}
 };
 

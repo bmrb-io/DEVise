@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/16 11:13:11  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.4  1996/12/15 06:41:11  donjerko
   Added support for RTree indexes
 
@@ -30,6 +34,8 @@
 
 #include "types.h"
 #include "exception.h"
+#include "myopt.h"		// for TableName
+#include "catalog.h"	// for Interface
 #include <String.h>
 
 Type* intAdd(Type* arg1, Type* arg2){
@@ -225,6 +231,17 @@ Type* boolRead(istream& in){
 	return new IBool(i);
 }
 
+Type* catEntryRead(istream& in){
+	String* nameStr = new String();
+	in >> *nameStr;
+	if(!in){
+		return NULL;
+	}
+	CatEntry* retVal = new CatEntry(new TableName(nameStr));
+	retVal->read(in);
+	return retVal;
+}
+
 int boolSize(int a, int b){
 	return 1;
 }
@@ -260,6 +277,9 @@ void displayAs(ostream& out, void* adt, String type){
 	}
 	else if(type == "double"){
 		((IDouble*) adt)->display(out);
+	}
+	else if(type == "catentry"){
+		((CatEntry*) adt)->display(out);
 	}
 	else{
 		cout << "Don't know how to display type: " << type << endl;
@@ -353,6 +373,9 @@ ReadPtr getReadPtr(TypeID root){
 	}
 	else if(root == "double"){
 		return doubleRead;
+	}
+	else if(root == "catentry"){
+		return catEntryRead;
 	}
 	else{
 		cout << "No such type: " << root << endl;
@@ -461,4 +484,96 @@ Type* createPosInf(TypeID type){
 		String msg = "Don't know what is +Infinity for type: " + type;
 		THROW(new Exception(msg), "");
 	}
+}
+
+Site* CatEntry::getSite(){
+	return interface->getSite();
+}
+
+CatEntry::~CatEntry(){
+	// do not delete tableNm
+	delete interface;
+}
+
+void CatEntry::display(ostream& out){
+     out << singleName << " ";
+     interface->write(out);
+     out << "; ";
+}
+
+istream& CatEntry::read(istream& in){ // Throws Exception
+	assert(tableNm);
+	String* tmp = tableNm->getFirst();
+	singleName = String(*tmp);
+	tableNm->deleteFirst();
+	String typeNm;
+	in >> typeNm;
+	if(!in){
+		String msg = "Interface for table " + singleName + 
+			" must be specified";
+		THROW(new Exception(msg), in);
+	}
+	if(typeNm == "Catalog"){
+		interface = new CatalogInterface(tableNm);
+		tableNm = NULL;
+		TRY(interface->read(in), in);
+		String semicolon;
+		in >> semicolon;
+		if(semicolon != ";"){
+			String msg = "Semicolon expected instead of: " + semicolon;
+			THROW(new Exception(msg), in);
+		}
+		return in;
+	}
+	if(typeNm == "DeviseTable"){
+		if(tableNm->cardinality() > 0){
+			String msg = "Table " + singleName + " is not a catalog";
+			THROW(new Exception(msg), in);
+		}
+		interface = new DeviseInterface(singleName);
+		TRY(interface->read(in), in);
+	}
+	else if(typeNm == "StandardTable"){
+		if(tableNm->cardinality() > 0){
+			String msg = "Table " + singleName + " is not a catalog";
+			THROW(new Exception(msg), in);
+		}
+		interface = new StandardInterface(singleName);
+		TRY(interface->read(in), in);
+	}
+	else if(typeNm == "QueryInterface"){
+		interface = new QueryInterface(tableNm);
+		TRY(interface->read(in), in);
+	}
+	else if(typeNm == "CGIInterface"){
+		if(tableNm->cardinality() > 0){
+			String msg = "Table " + singleName + " is not a catalog";
+			THROW(new Exception(msg), in);
+		}
+		interface = new CGIInterface(singleName);
+		TRY(interface->read(in), in);
+	}
+	else{
+		String msg = "Table " + singleName + " interface: " + 
+			typeNm + ", not defined";
+		THROW(new Exception(msg), in);
+	}
+	String indexStr;
+	in >> indexStr;
+	while(in && indexStr != ";"){
+		if(in && indexStr == "index"){
+			TRY(interface->readIndex(in), in);
+		}
+		else {
+			String msg = 
+			"Invalid catalog format: \"index\" or \";\" expected";
+			THROW(new Exception(msg), in);
+		}
+		in >> indexStr;
+	}
+	if(!in){
+		String msg = "Premature end of catalog";
+		THROW(new Exception(msg), in);
+	}
+	return in;
 }

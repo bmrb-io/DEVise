@@ -4,7 +4,7 @@
 #include<stdio.h>
 #include <iostream.h>
 #include"genrtree.h"
-#include "solaris_stats.h"
+// #include "solaris_stats.h"
 #include<math.h>
 #include<stdlib.h>
 #include <sys/types.h>

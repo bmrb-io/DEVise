@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/16 11:13:12  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.5  1996/12/15 06:41:11  donjerko
   Added support for RTree indexes
 
@@ -39,6 +43,7 @@
 #include <netinet/in.h>
 #include "exception.h"
 #include "AttrList.h"
+#include "queue.h"
 
 class BaseSelection;
 
@@ -155,6 +160,7 @@ Type* intRead(istream&);
 Type* stringRead(istream&);
 Type* doubleRead(istream&);
 Type* boolRead(istream&);
+Type* catEntryRead(istream&);
 
 class IInt {
      int value;
@@ -440,6 +446,22 @@ public:
 			return NULL;
 		}
 	}
+};
+
+class Site;
+class Interface;
+class TableName;
+
+class CatEntry {
+	String singleName;
+	TableName* tableNm;
+	Interface* interface;
+public:
+	CatEntry(TableName* tableNm) : tableNm(tableNm), interface(NULL) {}
+	~CatEntry();
+	istream& read(istream& in); // Throws Exception
+	void display(ostream& out);
+	Site* getSite();
 };
 
 void displayAs(ostream& out, void* adt, String type);

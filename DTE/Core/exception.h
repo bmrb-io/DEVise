@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:01  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef EXCEPTION_H
@@ -25,6 +28,7 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <iomanip.h>
+#include <String.h>
 
 #include "machdep.h"
 
@@ -77,9 +81,6 @@ public:
 		assert(gettimeofday(&initT, NULL) != -1);
 		lastT = initT;
 		isInit = true;
-		cout << "ITimer reset; ";
-		display(cout);
-		cout << endl;
 	}
 	ostream& display(ostream& out){
 		if(!isInit){
@@ -101,4 +102,5 @@ extern ITimer iTimer;
 #define THROW(A,B) assert(!currExcept); currExcept = A; return B 
 #define TRY(A,B) A; if(currExcept){return B;}
 #define CATCH(A) if(currExcept){A; currExcept = NULL;}
+
 #endif
