@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/30 22:44:24  jussi
+  Added ftp and cbstp protocol support.
+
   Revision 1.2  1996/01/26 19:45:38  jussi
   Added TCL_UPDATE statement.
 
@@ -77,6 +80,7 @@ static Tcl_Interp *globalInterp = 0;
 #define FTP_PASSWD_RESP 331
 #define FTP_PASV_RESP	227
 #define FTP_TYPE_RESP	200
+#define FTP_NOFILE_RESP 550
 
 #define ASCII_CR ('M' - ' ')
 #define ASCII_LF ('J' - ' ')
@@ -189,286 +193,302 @@ int condor_bytes_stream_open_ckpt_file( char *name )
 *	A full fledged ftp url looks like:
 *	ftp://[username[:password]@]host/path/file
 *	The current implementation does not support username or password, and
-*	always does transfers in binary mode.  We can also only read from ftp URL's
+*	always does transfers in binary mode.  We can also only read from ftp
+*	URL's
 */
 
 static
 char *get_ftpd_response(int sock_fd, int resp_val)
 {
-	static char	resp[1024];
-	int		ftp_resp_num;
+  static char	resp[1024];
+  int		ftp_resp_num;
+  
+  do {
+    if (readline(sock_fd, resp) < 0) {
+      fprintf(stderr, "Premature end of data from ftp server.\n");
+      return 0;
+    }
+    sscanf(resp, "%d", &ftp_resp_num);
+  } while (ftp_resp_num != resp_val);
 
-	do {
-		if (readline(sock_fd, resp) < 0) {
-			close(sock_fd);
-			return 0;
-		}
-		sscanf(resp, "%d", &ftp_resp_num);
-	} while (ftp_resp_num != resp_val);
-	return resp;
+  return resp;
 }
 
 static
 int open_ftp( const char *name )
 {
-	struct sockaddr_in	sin;
-	int		sock_fd;
-	int		status;
-	char		*port_sep;
-	char		*end_of_addr;
-	int		port_num = FTP_PORT;
-	struct hostent *he;
-	char		ftp_cmd[1024];
-	int		read_count;
-	char		*ftp_resp;
-	int		ip_addr[4];
-	int		port[2];
-	int		rval;
+  struct sockaddr_in	sin;
+  int		sock_fd;
+  int		status;
+  char		*port_sep;
+  char		*end_of_addr;
+  int		port_num = FTP_PORT;
+  struct hostent *he;
+  char		ftp_cmd[1024];
+  int		read_count;
+  char		*ftp_resp;
+  int		ip_addr[4];
+  int		port[2];
+  int		rval;
 
-	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_fd < 0) {
-		fprintf(stderr, "socket() failed, errno = %d\n", errno);
-		return sock_fd;
-	}
+  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock_fd < 0) {
+    perror("socket");
+    return sock_fd;
+  }
 
-	if (strncmp(name,"ftp://",6)) {
-		return -1;
-	}
-	name += 6;
+  if (strncmp(name,"ftp://",6)) {
+    return -1;
+  }
+  name += 6;
 
-	end_of_addr = strchr(name, '/');
-	if (end_of_addr == 0) {
-		return -1;
-	}
-	*end_of_addr = '\0';
+  end_of_addr = strchr(name, '/');
+  if (end_of_addr == 0) {
+    return -1;
+  }
+  *end_of_addr = '\0';
 
-	sin.sin_port = htons(port_num);
+  sin.sin_port = htons(port_num);
 
-	he = gethostbyname( name );
-	if ( he ) {
-		sin.sin_family = he->h_addrtype;
-		sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
-	} else {
-		return -1;
-	}
-
-	status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
-	if (status < 0) {
-		fprintf(stderr, "http connect() FAILED, errno = %d\n", errno);
-		return status;
-	}
+  he = gethostbyname( name );
+  if ( he ) {
+    sin.sin_family = he->h_addrtype;
+    sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
+  } else {
+    fprintf(stderr, "Cannot translate hostname %s.\n", name);
+    return -1;
+  }
+  
+  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
+  if (status < 0) {
+    fprintf(stderr, "Cannot connect to ftp server %s: ", name);
+    perror("connect");
+    return status;
+  }
 
 #ifdef DEBUG
-	printf("ftp: connected to host %s, port %d\n", name, port_num);
+  printf("ftp: connected to host %s, port %d\n", name, port_num);
 #endif
 
-	*end_of_addr = '/';
-	name = end_of_addr;
+  *end_of_addr = '/';
+  name = end_of_addr;
 
-	if (get_ftpd_response(sock_fd, FTP_LOGIN_RESP) == 0) {
-		return -1;
-	}
+  if (get_ftpd_response(sock_fd, FTP_LOGIN_RESP) == 0) {
+    fprintf(stderr, "No login message from ftp server.\n");
+    goto error;
+  }
 	
 #ifdef DEBUG
-	printf("ftp: sending username\n");
+  printf("ftp: sending username\n");
 #endif
 
-	sprintf(ftp_cmd, "USER %s\n", uname);
-	write(sock_fd, ftp_cmd, strlen(ftp_cmd));
-	if (get_ftpd_response(sock_fd, FTP_PASSWD_RESP) == 0) {
-		return -1;
-	}
+  sprintf(ftp_cmd, "USER %s\n", uname);
+  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  if (get_ftpd_response(sock_fd, FTP_PASSWD_RESP) == 0) {
+    fprintf(stderr, "No password message from ftp server.\n");
+    goto error;
+  }
 
 #ifdef DEBUG
-	printf("ftp: sending password\n");
+  printf("ftp: sending password\n");
 #endif
 
-	sprintf(ftp_cmd, "PASS %s\n", passwd);
-	write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(ftp_cmd, "PASS %s\n", passwd);
+  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
 
-	sprintf(ftp_cmd, "PASV\n");
-	write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(ftp_cmd, "PASV\n");
+  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
 
-	ftp_resp = get_ftpd_response(sock_fd, FTP_PASV_RESP);
-	if (ftp_resp == 0) {
-		return -1;
-	}
+  ftp_resp = get_ftpd_response(sock_fd, FTP_PASV_RESP);
+  if (ftp_resp == 0) {
+    fprintf(stderr, "No network address message from ftp server.\n");
+    goto error;
+  }
+  if (sscanf(ftp_resp, "%*[^(](%d,%d,%d,%d,%d,%d)",
+	     &ip_addr[0], &ip_addr[1], &ip_addr[2], &ip_addr[3],
+	     &port[0], &port[1]) != 6) {
+    fprintf(stderr, "Cannot parse network address: %s.\n", ftp_resp);
+    goto error;
+  }
 
 #ifdef DEBUG
-	printf("ftp: setting binary data transfer type\n");
+  printf("ftp: setting binary data transfer type\n");
 #endif
 
-	sprintf(ftp_cmd, "TYPE I\n");
-	write(sock_fd, ftp_cmd, strlen(ftp_cmd));
-	if (get_ftpd_response(sock_fd, FTP_TYPE_RESP) == 0) {
-		return -1;
-	}
+  sprintf(ftp_cmd, "TYPE I\n");
+  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  if (get_ftpd_response(sock_fd, FTP_TYPE_RESP) == 0) {
+    fprintf(stderr, "Cannot set ftp server to binary mode.\n");
+    goto error;
+  }
 
 #ifdef DEBUG
-	printf("ftp: sending retrieve command\n");
+  printf("ftp: sending retrieve command\n");
 #endif
 
-	sprintf(ftp_cmd, "RETR %s\n", name);
-	write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(ftp_cmd, "RETR %s\n", name);
+  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
 
-	for ( ; *ftp_resp != '(' ; ftp_resp++) 
-		;
+  if (readline(sock_fd, ftp_cmd) < 0) {
+    fprintf(stderr, "Premature end of data from ftp server.\n");
+    goto error;
+  }
+  if (atoi(ftp_cmd) == FTP_NOFILE_RESP) {
+    fprintf(stderr, "File not found at ftp server: %s.\n", name);
+    goto error;
+  }
 
-	ftp_resp++;
-	sscanf(ftp_resp, "%d,%d,%d,%d,%d,%d", &ip_addr[0], &ip_addr[1], 
-		   &ip_addr[2], &ip_addr[3], &port[0], &port[1]);
-
-	sprintf(ftp_cmd, "cbstp:<%d.%d.%d.%d:%d>", ip_addr[0], ip_addr[1], 
-		   ip_addr[2], ip_addr[3], port[0] << 8 | port[1]);
-	rval = condor_bytes_stream_open_ckpt_file( ftp_cmd );
-	close(sock_fd);
+  sprintf(ftp_cmd, "cbstp:<%d.%d.%d.%d:%d>", ip_addr[0], ip_addr[1], 
+	  ip_addr[2], ip_addr[3], port[0] << 8 | port[1]);
+  rval = condor_bytes_stream_open_ckpt_file( ftp_cmd );
+  close(sock_fd);
 
 #ifdef DEBUG
-	printf("ftp: closed command socket\n");
+  printf("ftp: closed command socket\n");
 #endif
 
-	return rval;
+  return rval;
+
+ error:
+  close(sock_fd);
+  return -1;
 }
 
 extern
 int open_http( char *name, size_t * bytes_in_body)
 {
+  struct sockaddr_in sin;
+  int	sock_fd;
+  int	status;
+  char	*port_sep;
+  char	*end_of_addr;
+  char  *clength_start;
+  char  *stat_code_start;
+  char  *reason_phrase_start;
+  int	stat_code, l;
+  int	port_num = HTTP_PORT;
+  struct hostent *he;
+  char	http_cmd[BUF_LENGTH];
 
-	struct sockaddr_in	sin;
-	int	sock_fd;
-	int	status;
-	char	*port_sep;
-	char	*end_of_addr;
-	char    *clength_start;
-	char    *stat_code_start, *reason_phrase_start;
-	int	stat_code, l;
-	int	port_num = HTTP_PORT;
-	struct hostent *he;
-	char	http_cmd[BUF_LENGTH];
+  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock_fd < 0) {
+    perror("socket");
+    return sock_fd;
+  }
 
-	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_fd < 0) {
-		fprintf(stderr, "socket() failed, errno = %d\n", errno);
-		return sock_fd;
-	}
+  if (strncmp(name,"http://",7)) {
+    return -1;
+  }
+  name += 7;
 
-	if (strncmp(name,"http://",7)) {
-		return -1;
-	}
-	name += 7;
+  port_sep = strchr(name, ':');
+  end_of_addr = strchr(name, '/');
+  if (end_of_addr == 0) {
+    return -1;
+  }
+  *end_of_addr = '\0';
 
-	port_sep = strchr(name, ':');
-	end_of_addr = strchr(name, '/');
-	if (end_of_addr == 0) {
-		return -1;
-	}
-	*end_of_addr = '\0';
+  if (port_sep) {
+    *port_sep = '\0';
+    port_sep++;
+    port_num = atoi(port_sep);
+  }
+  sin.sin_port = htons(port_num);
 
-	if (port_sep) {
-		*port_sep = '\0';
-		port_sep++;
-		port_num = atoi(port_sep);
-	}
-	sin.sin_port = htons(port_num);
+  he = gethostbyname( name );
+  if ( he ) {
+    sin.sin_family = he->h_addrtype;
+    sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
+  } else {
+    fprintf(stderr, "Cannot translate host name %s.\n", name);
+    return -1;
+  }
 
-	he = gethostbyname( name );
-	if ( he ) {
-		sin.sin_family = he->h_addrtype;
-		sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
-	} else {
-		return -1;
-	}
+  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
+  if (status < 0) {
+    fprintf(stderr, "Cannot connect to http server %s: ", name);
+    perror("connect");
+    return status;
+  }
 
-	*end_of_addr = '/';
+  *end_of_addr = '/';
+  name = end_of_addr;
+  sprintf(http_cmd, HTTP_GET_FORMAT, name);
+  l = strlen(http_cmd);
+  http_cmd[l++] = ASCII_CR;
+  http_cmd[l++] = ASCII_LF;
+  http_cmd[l++] = ASCII_CR;
+  http_cmd[l++] = ASCII_LF;
+  http_cmd[l] = '\0';
+  write(sock_fd, http_cmd, l);
 
-	status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
-	if (status < 0) {
-		fprintf(stderr, "http connect() FAILED, errno = %d\n", errno);
-		return status;
-	}
+  /* get status line */
+  if (readline(sock_fd, http_cmd) <= 0) {
+    fprintf(stderr, "Bad http connection\n");
+    goto error;
+  }
 
-	name = end_of_addr;
-	sprintf(http_cmd, HTTP_GET_FORMAT, name);
-	l = strlen(http_cmd);
-	http_cmd[l++] = ASCII_CR;
-	http_cmd[l++] = ASCII_LF;
-	http_cmd[l++] = ASCII_CR;
-	http_cmd[l++] = ASCII_LF;
-	http_cmd[l] = '\0';
-	write(sock_fd, http_cmd, l);
+  if (strncmp(http_cmd, HTTP_VERSION, HTTP_VERSION_LEN)) {
+    fprintf(stderr, "Bad http header received\n");
+    goto error;
+  }
 
-	/* get status line */
-	if (readline(sock_fd, http_cmd) <= 0) {
-	  fprintf(stderr,"Bad http connection\n");
-	  close(sock_fd);
-	  return(-1);
-	}
+  if (!(stat_code_start = strchr(http_cmd,' '))) { 
+    fprintf(stderr, "Bad http header received\n");
+    goto error;
+  }
+  stat_code_start++;
 
-	if (strncmp(http_cmd, HTTP_VERSION, HTTP_VERSION_LEN)) {
-	  fprintf(stderr,"Bad http header received\n");
-	  close(sock_fd);
-	  return(-1);
-	}
+  if (!(reason_phrase_start = strchr(stat_code_start,' '))) { 
+    fprintf(stderr, "Bad http header received\n");
+    goto error;
+  }
+  *reason_phrase_start = '\0';
+  reason_phrase_start++;
 
-	if (!(stat_code_start = strchr(http_cmd,' '))) { 
-	  fprintf(stderr,"Bad http header received\n");
-	  close(sock_fd);
-	  return(-1);
-	}
-	stat_code_start++;
+  stat_code = atoi(stat_code_start);
+  if (stat_code < 200) {
+    fprintf(stderr, "Unused status code (%d) received\n", stat_code);
+    goto error;
+  }
+  else if (stat_code < 300) {
+    /* cool.. */
+  }
+  else if (stat_code < 400) {
+    fprintf(stderr, "Redirection error: %s\n", reason_phrase_start);
+    goto error;
+  }
+  else if (stat_code < 500) {
+    fprintf(stderr, "Client error: %s\n", reason_phrase_start);
+    goto error;
+  }
+  else if (stat_code < 600) {
+    fprintf(stderr, "Server error: %s\n", reason_phrase_start);
+    goto error;
+  }
+  else {
+    fprintf(stderr, "Strange status code (%d) received\n", stat_code);
+    goto error;
+  }
 
-	if (!(reason_phrase_start = strchr(stat_code_start,' '))) { 
-	  fprintf(stderr,"Bad http header received\n");
-	  close(sock_fd);
-	  return(-1);
-	}
-	*reason_phrase_start = '\0';
-	reason_phrase_start++;
+  /* Skip the header part, but extract Content-Length */
+  *bytes_in_body = 0;
+  while (readline(sock_fd, http_cmd) > 0) {
+    tolowcase(http_cmd);
+    if (!strncmp(http_cmd, HTTP_C_LENGTH, HTTP_C_LENGTH_LEN)) {
+      if ((clength_start = strchr(http_cmd,':'))) {
+	clength_start++;
+	while (*clength_start == ' ') clength_start++;
+	*bytes_in_body = atoi(clength_start);
+      }
+    }  
+  }
 
-	stat_code = atoi(stat_code_start);
-	if (stat_code < 200) {
-	  fprintf(stderr,"Unused status code (%d) received\n", stat_code);
-	  close(sock_fd);
-	  return(-1);
-	}
-	else if (stat_code < 300) {
-	  /* cool.. */
-	}
-	else if (stat_code < 400) {
-	  fprintf(stderr,"Redirection error: %s\n", reason_phrase_start);
-	  close(sock_fd);
-	  return(-1);
-	}
-	else if (stat_code < 500) {
-	  fprintf(stderr,"Client error: %s\n", reason_phrase_start);
-	  close(sock_fd);
-	  return(-1);
-	}
-	else if (stat_code < 600) {
-	  fprintf(stderr,"Server error: %s\n", reason_phrase_start);
-	  close(sock_fd);
-	  return(-1);
-	}
-	else {
-	  fprintf(stderr,"Strange status code (%d) received\n", stat_code);
-	  close(sock_fd);
-	  return(-1);
-	}
+  return sock_fd;
 
-	/* Skip the header part, but extract Content-Length */
-	*bytes_in_body = 0;
-	while (readline(sock_fd, http_cmd) > 0) {
-	  tolowcase(http_cmd);
-	  if (!strncmp(http_cmd, HTTP_C_LENGTH, HTTP_C_LENGTH_LEN)) {
-	    if ((clength_start = strchr(http_cmd,':'))) {
-	      clength_start++;
-	      while (*clength_start == ' ') clength_start++;
-	      *bytes_in_body = atoi(clength_start);
-	    }
-	  }  
-	}
-
-	return sock_fd;
+ error:
+  close(sock_fd);
+  return -1;
 }
 
 int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
@@ -491,7 +511,7 @@ int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   else
     fd = open_http(url, &len);
   if (fd < 0) {
-    fprintf(stderr, "Could not open URL %s\n", url);
+    fprintf(stderr, "Could not open URL %s.\n", url);
     return TCL_ERROR;
   }
 
