@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/03 20:34:12  jussi
+  Updated to reflect new IOTask interfaces.
+
   Revision 1.6  1996/11/15 20:31:41  jussi
   Replaced call to MemMgr::Release() with MemMgr::Deallocate().
 
@@ -250,11 +253,6 @@ int main(int argc, char **argv)
     struct timeval start;
     struct timeval stop;
     double secs;
-
-    // destroy all shared memory segments
-
-    Semaphore::destroyAll();
-    SharedMemory::destroyAll();
 
     // create space for 16 virtual semaphores
 

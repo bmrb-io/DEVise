@@ -31,11 +31,6 @@ int main()
     MemMgr *memMgr;
     CacheMgr *cacheMgr;
 
-    // destroy all shared memory segments
-
-    Semaphore::destroyAll();
-    SharedMemory::destroyAll();
-
     // create space for 16 virtual semaphores
 
     int status = SemaphoreV::create(16);
