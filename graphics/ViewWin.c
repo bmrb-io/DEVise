@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/15 13:47:41  jussi
+  Added SetFgBgColor() which allows Devise to change the view
+  foreground and background colors at runtime.
+
   Revision 1.13  1996/04/11 18:09:19  jussi
   Added window flush after window has been raised or lowered.
 
@@ -208,11 +212,6 @@ void ViewWin::Unmap()
   _windowRep = NULL;
   _hasGeometry = false;
   _mapped = false;
-}
-
-Boolean ViewWin::Mapped()
-{
-  return _mapped;
 }
 
 ViewWin::~ViewWin()

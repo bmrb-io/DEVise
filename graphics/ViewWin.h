@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/10 19:36:23  jussi
+  Cleaned up code.
+
   Revision 1.9  1996/06/15 13:47:50  jussi
   Added SetFgBgColor() which allows Devise to change the view
   foreground and background colors at runtime.
@@ -99,10 +102,8 @@ public:
     virtual void Unmap();
     virtual void Iconify(Boolean iconified) = 0;
 
-    Boolean Mapped();
-
+    Boolean Mapped() { return _mapped; }
     char *GetName(){ return _name; }
-	
     int GetWeight() { return _weight; }
 
     virtual void Raise();
