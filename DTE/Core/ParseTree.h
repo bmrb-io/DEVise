@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/10/15 02:22:58  arvind
+  Sequence by handles multiple attributes
+
   Revision 1.18  1997/10/14 05:16:29  arvind
   Implemented a first version of moving aggregates (without group bys).
 
@@ -62,6 +65,7 @@ class Site;
 class ParseTree {
 public:
 	virtual Site* createSite() = 0;	// throws exception
+	virtual void setTypeCheckOnlyFlag(){assert(0);}
 };
 
 class QueryTree : public ParseTree {
@@ -74,6 +78,7 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* orderBy;
 	List<string*>* namesToResolve;
 	void resolveNames();	// throws exception
+	bool typeCheckOnly;
 public:	
 	QueryTree(
 		List<BaseSelection*>* selectList,
@@ -87,7 +92,7 @@ public:
 		selectList(selectList), tableList(tableList), 
 		predicates(predicates), sequenceby(sequenceby),
 		withPredicate(withPredicate),groupBy(groupBy), orderBy(orderBy),
-		namesToResolve(namesToResolve) {}
+		namesToResolve(namesToResolve), typeCheckOnly(false) {}
 	
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){
@@ -96,7 +101,9 @@ public:
 
 		// predicates should be deleted in createSite
 	}
-	
+	virtual void setTypeCheckOnlyFlag(){
+		typeCheckOnly = true;
+	}
 };
 
 class IndexParse : public ParseTree {

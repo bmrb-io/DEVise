@@ -92,7 +92,8 @@ istream& MaterViewInterface::read(istream& in){
 	for(int i = 0; i < numFlds; i++){
 		ViewInterface::attributeNames[i] = attrs[i];
 	}
-	TRY(stripQuotes(in, query), in);
+	CHECK(stripQuotes(in, query), 
+		"Incorrect MaterViewInterface format", in);
 	ViewInterface::schema = NULL;
 	return in;
 }
@@ -245,7 +246,8 @@ istream& ViewInterface::read(istream& in){ // throws
 	for(int i = 0; i < numFlds; i++){
 		in >> attributeNames[i];
 	}
-	TRY(stripQuotes(in, query), in);
+	CHECK(stripQuotes(in, query), 
+		"Incorrect ViewInterface format", in);
 	schema = NULL;
 	return in;
 }
@@ -335,8 +337,7 @@ void CGIInterface::write(ostream& out) const {
 	assert(entries);
 	out << typeName << " " << urlString << " " << entryLen;
 	for(int i = 0; i < entryLen; i++){
-		out << endl;
-		out << "\t";
+		out << " ";
 		entries[i].write(out);
 	}
 	Interface::write(out);
@@ -429,4 +430,26 @@ void insert(string tableStr, Tuple* tuple){	// throws exception
 
 Interface* CatalogInterface::duplicate() const {
 	return new CatalogInterface(*this);
+}
+
+istream& DummyInterface::read(istream& in){
+	if(!in){
+		THROW(new Exception("Wrong format"), in);
+	}
+	in >> key >> schemaType >> schemaFile;
+	CHECK(stripQuotes(in, cacheFile), 
+		"Incorrect DummyInterface format", in);
+	in >> evaluation >> priority;
+	CHECK(stripQuotes(in, command), 
+		"Incorrect DummyInterface format", in);
+	CHECK(stripQuotes(in, segment), 
+		"Incorrect DummyInterface format", in);
+	return in;
+}
+
+istream& DeviseInterface::read(istream& in){
+	in >> schemaNm >> dataNm;
+	CHECK(stripQuotes(in, viewNm), 
+		"Incorrect ViewInterface format", in);
+	return in;
 }

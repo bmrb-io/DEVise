@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/10/02 02:27:33  donjerko
+  Implementing moving aggregates.
+
   Revision 1.28  1997/09/29 02:51:59  donjerko
   Eliminated class GlobalSelect.
 
@@ -124,12 +127,6 @@ Site::~Site(){
 //	cerr << "deleting select where lists\n";
 	delete tables;
 	delete iterat;
-	if(mySelect){
-		for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
-//			mySelect->get()->destroy();
-//			delete mySelect->get();
-		}
-	}
 	delete mySelect;	// delete only list
 	delete myFrom;
 	for(myWhere->rewind(); !myWhere->atEnd(); myWhere->step()){
@@ -275,14 +272,14 @@ void LocalTable::typify(string option){	// Throws exception
 
 	List<Site*>* tmpL = new List<Site*>;
 	tmpL->append(directSite);
-	TRY(typifyList(myWhere, tmpL), NVOID );
+//	TRY(typifyList(myWhere, tmpL), NVOID );
 	TRY(boolCheckList(myWhere), NVOID );
 	if(mySelect == NULL){
 		assert(directSite);
 		mySelect = createSelectList(name, iterat);
 	}
 	else{
-		TRY(typifyList(mySelect, tmpL), NVOID );
+//		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
 	numFlds = mySelect->cardinality();
 	setStats();
@@ -553,7 +550,7 @@ Iterator* createIteratorFor(
 		"string", strdup(tableStr.c_str()));
 	BaseSelection* predicate = new Operator("=", name, value);
 	assert(predicate);
-	predicate->typify(NULL);
+	predicate->typeCheck();
 
 	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
 	TRY((*where)[0] = predicate->createExec(NULL, NULL), NULL);
@@ -648,14 +645,15 @@ void SiteGroup::typify(string option){	// Throws exception
 	List<Site*>* tmpL = new List<Site*>;
 	tmpL->append(site1);
 	tmpL->append(site2);
+	assert(mySelect);
 	if(mySelect == NULL){
 		mySelect = createSelectList(name, iterat);
 	}
 	else{
-		TRY(typifyList(mySelect, tmpL), NVOID );
+//		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
 	numFlds = mySelect->cardinality();
-	TRY(typifyList(myWhere, tmpL), NVOID );
+//	TRY(typifyList(myWhere, tmpL), NVOID );
 	double selectivity = listSelectivity(myWhere);
 	int card1 = site1->getStats()->cardinality;
 	int card2 = site2->getStats()->cardinality;
@@ -748,4 +746,8 @@ SiteGroup::SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2)
 	}
 	delete tmp1;
 	delete tmp2;
+}
+
+Iterator* ISchemaSite::createExec(){
+	return new ISchemaExec(schema);
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/09/05 22:20:04  donjerko
+  Made changes for port to NT.
+
   Revision 1.19  1997/08/25 15:28:08  donjerko
   Added minmax table
 
@@ -79,7 +82,9 @@
 #include "MinMax.h"
 #include "Interface.h"
 
-#include "RTree.h"
+#include "typed_rtree.h"
+#include "dbJussi.h"
+#include "SBMInit.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
@@ -274,16 +279,24 @@ Site* IndexParse::createSite(){
 		THROW(new Exception(msg), NULL);
 	}
 
-	page_id_t root1;
 	int bulk_file = open(convBulk.c_str(), O_RDWR, 0600);
 
-	genrtree_m rtree_m;
-	rtree_m.bulk_load(bulk_file, root1, false); // example bulkload
+	page_id_t root1;
+
+	const char* fileToContainRTree = "./testRTree";  // fix this later
+
+	db_mgr_jussi db_mgr(fileToContainRTree, cacheMgr);
+
+	typed_rtree_t rtree(&db_mgr);
+
+	rtree.bulk_load(bulk_file, root1, rtreeISchema.c_str());
+
 	// this has created index
 
-	printf("Created index with root page: %d\n", root1.pid);
+	printf("Created index\n");
 
 	close(bulk_file);
+	/*
 	if(remove(bulkfile.c_str()) < 0){
 		perror("remove:");
 		string msg = string("Failed to remove tmp file: ") + bulkfile;
@@ -294,9 +307,7 @@ Site* IndexParse::createSite(){
 		string msg = string("Failed to remove tmp file: ") + convBulk;
 		THROW(new Exception(msg), NULL);
 	}
-//	printf("Dump follows:\n");
-//	rtree_m.olddraw(root1, stdout);
-	// note, you MUST keep root page
+	*/
 
 	TypeID* keyTypes = new TypeID[numKeyFlds];
 	TypeID* addTypes = new TypeID[numAddFlds];
@@ -310,8 +321,12 @@ Site* IndexParse::createSite(){
 	Tuple tuple[3];
 	tuple[0] = (Type*) tablename.c_str();
 	tuple[1] = (Type*) indexName->c_str();
+
+//	assert(!"not implemented");	// add file name here
+
+	int indPgId = *((int*) root1.data);
 	IndexDesc tmpid(numKeyFlds, keyFlds, numAddFlds, addFlds,
-			!standAlone, root1.pid, keyTypes, addTypes);	
+			!standAlone, indPgId, keyTypes, addTypes);	
 	tuple[2] = &tmpid;
 	Inserter inserter;
 	ostream* out = getIndexTableOutStream(ios::app);

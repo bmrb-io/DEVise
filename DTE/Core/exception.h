@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/10/02 02:27:30  donjerko
+  Implementing moving aggregates.
+
   Revision 1.9  1997/09/05 22:20:15  donjerko
   Made changes for port to NT.
 
@@ -72,6 +75,9 @@ public:
 	}
 	void display(ostream& out = cout){
 		out << "1 " << text;
+	}
+	string toString(){
+		return text;
 	}
 };
 
@@ -138,7 +144,7 @@ extern ITimer iTimer;
 	assert(!currExcept); currExcept = A; return B 
 
 #define TRY(A,B) A; if(currExcept){return B;}
-#define CHECK(A,B) if(currExcept){currExcept->append(A); return B;}
+#define CHECK(A,B,C) A; if(currExcept){currExcept->append(B); return C;}
 #define CATCH(A) if(currExcept){A; delete currExcept; currExcept = NULL;}
 
 #endif

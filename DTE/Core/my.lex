@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/09/05 22:20:17  donjerko
+  Made changes for port to NT.
+
   Revision 1.19  1997/08/25 15:28:13  donjerko
   Added minmax table
 
@@ -106,6 +109,7 @@ String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
 %%
 [ \t\n]+     {}
+[Tt][Yy][Pp][Ee][Cc][Hh][Ee][Cc][Kk]	{return TYPE_CHECK;}
 [Ss][Ee][Ll][Ee][Cc][Tt]       {return SELECT;}
 [Ff][Rr][Oo][Mm]         {return FROM;}
 [Aa][Ss]				{return AS;}

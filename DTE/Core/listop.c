@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/09/29 02:51:56  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.16  1997/09/17 02:35:47  donjerko
   Fixed the broken remote DTE interface.
 
@@ -190,6 +193,7 @@ Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
 	return retVal;
 }
 
+/*
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites){
 	assert(list);
 	list->rewind();
@@ -202,6 +206,7 @@ TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites){
 	}
 	return retVal;
 }
+*/
 
 void typifyList(List<Site*>* list, string option){
 	assert(list);

@@ -68,17 +68,7 @@ public:
 		string err = "Operations on old DEVise table are not supported";
 		THROW(new Exception(err), NULL);
 	}
-	virtual istream& read(istream& in){
-		if(!in){
-			THROW(new Exception("Wrong format"), in);
-		}
-		in >> key >> schemaType >> schemaFile;
-		TRY(stripQuotes(in, cacheFile), in);
-		in >> evaluation >> priority;
-		TRY(stripQuotes(in, command), in);
-		TRY(stripQuotes(in, segment), in);
-		return in;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
 		out << " " << key << " " << schemaType << " " << schemaFile; 
@@ -241,16 +231,12 @@ public:
 		return new DeviseInterface(*this);
 	}
 	virtual Site* getSite();
-	virtual istream& read(istream& in){
-		in >> schemaNm >> dataNm;
-		stripQuotes(in, viewNm);
-		return in;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const{
 		out << typeName;
-		out << " " << schemaNm << endl;
-		out << "\t" << dataNm << endl;
-		out << "\t" << addQuotes(viewNm);
+		out << " " << schemaNm;
+		out << " " << dataNm;
+		out << " " << addQuotes(viewNm);
 		Interface::write(out);
 	}
 	virtual const ISchema* getISchema(TableName* table);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/10/14 05:17:28  arvind
+  Implemented a first version of moving aggregates (without group bys).
+
   Revision 1.35  1997/10/02 02:27:30  donjerko
   Implementing moving aggregates.
 
@@ -122,6 +125,7 @@
 #define MYOPT_H
 
 #include <string>
+#include <vector>
 #include <assert.h>
 //#include <iostream.h>   erased for sysdep.h
 //#include <fstream.h>   erased for sysdep.h
@@ -184,12 +188,13 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual TypeID typify(List<Site*>* sites);
+	virtual TypeID typeCheck() = 0;
+	virtual vector<BaseSelection*> getChildren() = 0;
+	virtual void setChildren(const vector<BaseSelection*>& children) = 0;
      virtual bool match(BaseSelection* x) = 0;
      virtual SelectID selectID() = 0;
-	virtual TypeID getTypeID(){
-		assert(0);
-		return ""; // avoid compiler warning
+	TypeID getTypeID(){
+		return typeID;
 	}
 	virtual void setSize(int size){
 		assert(0);
@@ -197,8 +202,8 @@ public:
 	virtual int getSize(){
 		return 10;	// not used really
 	}
-	virtual void setTypeID(TypeID type){
-		assert(0);
+	void setTypeID(TypeID type){
+		typeID = type;
 	}
 	virtual double getSelectivity(){
 		assert(0);
@@ -233,9 +238,17 @@ public:
 		assert(dp);
 		dp(value);
 	} 
-  const Type* getValue() {
-    return value;
-  }  
+	const Type* getValue() {
+		return value;
+	}  
+	virtual TypeID typeCheck(){
+		return typeID;
+	}
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		return tmp;
+	}
+	virtual void setChildren(const vector<BaseSelection*>& children){}
 	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
 		MarshalPtr marshalPtr = getMarshalPtr(typeID);
@@ -296,12 +309,6 @@ public:
 		return (result ? true : false);
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual TypeID typify(List<Site*>* sites){
-		return typeID;
-	}
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
   
 	virtual int getSize(){
 		return packSize(value, typeID);
@@ -329,9 +336,19 @@ public:
 		promotePtr = x.promotePtr;
 	}
 	virtual ~TypeCast(){}
+	virtual TypeID typeCheck();
 	void destroy(){
 		input->destroy();
 		delete input;
+	}
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		tmp.push_back(input);
+		return tmp;
+	}
+	virtual void setChildren(const vector<BaseSelection*>& children){
+		assert(children.size() == 1);
+		input = children.front();
 	}
 	virtual void display(ostream& out, int detail = 0){
 		out << typeID << "(";
@@ -366,24 +383,6 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual TypeID typify(List<Site*>* sites){
-		BaseSelection::typify(sites);
-		if(typeID != ""){
-			return typeID;
-		}
-		if(promotePtr){
-
-			// already typified when consturcted 
-
-			return typeID;
-		}
-		TRY(TypeID inpType = input->typify(sites), "");
-		TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
-		return typeID;
-	}
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
 	virtual int getSize(){
 		return packSize(typeID);
 	}
@@ -418,9 +417,19 @@ public:
 	virtual ~Member(){
 		delete name;
 	}
+	virtual TypeID typeCheck();
 	void destroy(){
 		input->destroy();
 		delete input;
+	}
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		tmp.push_back(input);
+		return tmp;
+	}
+	virtual void setChildren(const vector<BaseSelection*>& children){
+		assert(children.size() == 1);
+		input = children.front();
 	}
 	virtual void display(ostream& out, int detail = 0){
 		input->display(out, detail);
@@ -457,13 +466,6 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual TypeID typify(List<Site*>* sites);
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
-	virtual void setTypeID(TypeID type){
-		typeID = type;
-	}
 	virtual int getSize(){
 		return avgSize;
 	}
@@ -535,19 +537,10 @@ public:
 		assert(!"methods not implemented yet");
 		return NULL;
      }
-     virtual TypeID typify(List<Site*>* sites){
-		assert(0);
-		TRY(TypeID parentType = input->typify(sites), "unknown");
-		GeneralMemberPtr* genPtr;
-		TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
-		assert(genPtr);
-		memberPtr = genPtr->memberPtr;
-		assert(memberPtr);
+	virtual TypeID typeCheck(){
+		assert(!"methods not implemented yet");
 		return typeID;
 	}
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
 	virtual int getSize(){
 		assert(0);
 		return packSize(typeID);
@@ -573,6 +566,8 @@ public:
 	const string* getName(){
 		return name;
 	}
+	virtual vector<BaseSelection*> getChildren();
+	virtual void setChildren(const vector<BaseSelection*>& children);
 	virtual void display(ostream& out, int detail = 0){
 		assert(name);
 		out << *name << "(";
@@ -628,10 +623,7 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual TypeID typify(List<Site*>* sites);
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
+     virtual TypeID typeCheck();
 	virtual int getSize(){
 		assert(!(typeID == UNKN_TYPE));
 		return packSize(typeID);
@@ -647,12 +639,14 @@ class EnumSelection : public BaseSelection {
 public:
 	EnumSelection(int position, TypeID typeID) :
 		BaseSelection(typeID), position(position) {}
-	virtual TypeID getTypeID(){
+	virtual TypeID typeCheck(){
 		return typeID;
 	}
-	virtual TypeID typify(List<Site*>* sites){
-		return typeID;
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		return tmp;
 	}
+	virtual void setChildren(const vector<BaseSelection*>& children){}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual SelectID selectID(){
           return ENUM_SELECT_ID;
@@ -699,6 +693,11 @@ public:
 	const string* getFieldNm(){
 		return fieldNm;
 	}
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		return tmp;
+	}
+	virtual void setChildren(const vector<BaseSelection*>& children){}
      virtual void display(ostream& out, int detail = 0){
 		if(alias){
 			out << *alias;
@@ -721,17 +720,14 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual TypeID typify(List<Site*>* sites);
+	virtual TypeID typeCheck(){
+		string msg = "Table " + *alias + " does not have field " + *fieldNm;
+		THROW(new Exception(msg), "unknown");
+	}
      virtual SelectID selectID(){
           return SELECT_ID;
      }
 	virtual bool match(BaseSelection* x);
-	virtual TypeID getTypeID(){
-		return typeID;
-	}
-     virtual void setTypeID(TypeID type){
-		typeID = type;
-     }
 	virtual void setSize(int size){
 		avgSize = size;
 	}
@@ -773,6 +769,17 @@ public:
 		delete left;
 		right->destroy();
 		delete right;
+	}
+	virtual vector<BaseSelection*> getChildren(){
+		vector<BaseSelection*> tmp;
+		tmp.push_back(left);
+		tmp.push_back(right);
+		return tmp;
+	}
+	virtual void setChildren(const vector<BaseSelection*>& children){
+		assert(children.size() == 2);
+		left = children.front();
+		right = children.back();
 	}
 	virtual void display(ostream& out, int detail = 0){
 		out << "(";
@@ -847,10 +854,7 @@ public:
           return OP_ID;
      }
 	virtual bool match(BaseSelection* x);
-	virtual TypeID typify(List<Site*>* sites);	// throws
-     virtual TypeID getTypeID(){
-          return typeID;
-     }
+	virtual TypeID typeCheck();	// throws
 	virtual int getSize(){
 		return avgSize;
 	}
@@ -947,6 +951,7 @@ public:
 		tableName = new List<string*>;
 	}
 	TableName(List<string*>* tableName) : tableName(tableName) {}
+	TableName(const TableName& arg);
 	TableName(string* str){	// deletes str when done
 		tableName = new List<string*>;
 		tableName->append(str);

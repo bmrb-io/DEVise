@@ -2,18 +2,17 @@
 #include "MemoryMgr.h"
 
 bool Aggregates::isApplicable(){
+	return isApplicableValue;
+}
+
+void Aggregates::typeCheck(TypeCheck& typeCheck){
 	
 	// Are there any aggregates in the selectClause?
 	
-	if (selList == NULL )
-		return false;
 
+	assert(selList);
 	assert(!filteredSelList);
 
-	if (alreadyChecked)		// not necessary
-		return isApplicableValue;
-	
-	alreadyChecked = true;
 	isApplicableValue = false;
 
 	selList->rewind();
@@ -33,6 +32,7 @@ bool Aggregates::isApplicable(){
 	while(!selList->atEnd()){
 		
 		BaseSelection* curr = selList->get();
+		bool resolved = false;
 
 		if(curr->selectID() == CONSTRUCTOR_ID){
 			Constructor* function = (Constructor*) curr;
@@ -45,16 +45,33 @@ bool Aggregates::isApplicable(){
 			  assert(!hasMoving);
 			  isApplicableValue = true;
 			  curr = args->get();
-			  if (*name == "min")
+			  curr = typeCheck.resolve(curr);
+			  args->replace(curr);
+			  if (*name == "min"){
 			    aggFuncs[i] = new MinAggregate();
-			  else if (*name == "max")
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
+			}
+			  else if (*name == "max"){
 			    aggFuncs[i] = new MaxAggregate();
-			  else if (*name == "avg")
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
+			}
+			  else if (*name == "avg"){
 			    aggFuncs[i] = new AvgAggregate();
-			  else if (*name == "sum")
+			    function->setTypeID(DOUBLE_TP);
+			    resolved = true;
+			}
+			  else if (*name == "sum"){
 			    aggFuncs[i] = new SumAggregate();
-			  else if (*name == "count")
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
+			}
+			  else if (*name == "count"){
 			    aggFuncs[i] = new CountAggregate();
+			    function->setTypeID(INT_TP);
+			    resolved = true;
+			}
 			}
 			else if (numArgs == 3) {
 			  // moving aggregates
@@ -73,18 +90,32 @@ bool Aggregates::isApplicable(){
 
 			  assert(windowHigh > windowLow);
 
-			  if (*name == "min")
+			  if (*name == "min"){
 			    aggFuncs[i] = new MovMinAggregate();
-			  else if (*name == "max")
-			    aggFuncs[i] = new MovMaxAggregate();
-			  else if (*name == "avg")
-			    aggFuncs[i] = new MovAvgAggregate();
-			  else if (*name == "sum")
-			    aggFuncs[i] = new MovSumAggregate();
-			  else if (*name == "count")
-			    aggFuncs[i] = new MovCountAggregate();
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
 			}
-			// else error?? 
+			  else if (*name == "max"){
+			    aggFuncs[i] = new MovMaxAggregate();
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
+			}
+			  else if (*name == "avg"){
+			    aggFuncs[i] = new MovAvgAggregate();
+			    function->setTypeID(DOUBLE_TP);
+			    resolved = true;
+			}
+			  else if (*name == "sum"){
+			    aggFuncs[i] = new MovSumAggregate();
+			    function->setTypeID(curr->getTypeID());
+			    resolved = true;
+			}
+			  else if (*name == "count"){
+			    aggFuncs[i] = new MovCountAggregate();
+			    function->setTypeID(INT_TP);
+			    resolved = true;
+			}
+			}
 		}
 		else if(groupBy && !groupBy->isEmpty()){
 
@@ -99,6 +130,10 @@ bool Aggregates::isApplicable(){
 		  isApplicableValue = true;
 		  seqByPos[numSeqByFlds++] = i;
 		  aggFuncs[i] = new SequenceAttribute();  
+		}
+		if(!resolved){
+			curr = typeCheck.resolve(curr);
+			selList->replace(curr);
 		}
 		filteredSelList->append(curr);
 		selList->step();
@@ -147,14 +182,11 @@ bool Aggregates::isApplicable(){
 	assert((numAggs + numGrpByFlds == numFlds) || 
 	       (numAggs + numSeqByFlds == numFlds));
 	       */
-	return isApplicableValue;
 }
 
-void Aggregates::typify(const string& name, Site* inputPlanOp){
-//	this->name = name;
+void Aggregates::typify(const string&, Site* inputPlanOp){
 	this->inputPlanOp = inputPlanOp;
 	int numFlds = inputPlanOp->getNumFlds();
-	assert(numFlds == selList->cardinality());
 	const TypeID* inptypes = inputPlanOp->getTypeIDs();
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = aggFuncs[i]->typify(inptypes[i]);

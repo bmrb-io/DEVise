@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/10/06 22:10:23  donjerko
+  *** empty log message ***
+
   Revision 1.37  1997/10/02 02:27:35  donjerko
   Implementing moving aggregates.
 
@@ -174,8 +177,10 @@ const string INTERVAL_TP = "interval" ;
 const string STRING_TP = "string";
 const string INTERFACE_TP = "interface";
 const string SEQSV_TP = "seqsv";
+const string SCHEMA_TP = "schema";
 
 const string RID_STRING = "recId";
+const string SCHEMA_STR("schema");
 
 class DteEnvVars {
 public:
@@ -516,7 +521,7 @@ class ISeqSimVec {
 public:
 	static GeneralPtr* getOperatorPtr(
 		string name, TypeID arg, TypeID& retType){
-		if(arg != SEQSV_TP){
+		if(!(arg == SEQSV_TP)){
 			return NULL;
 		}
 		if(name == "similar"){
@@ -860,16 +865,16 @@ public:
 	}
 	istream& read(istream& in); // Throws Exception
 	void display(ostream& out);
-	int getNumKeyFlds(){
+	int getNumKeyFlds() const {
 		return numKeyFlds;
 	}
-	int getRootPg(){
+	int getRootPg() const {
 		return rootPg;
 	}
 	const string* getKeyFlds(){
 		return keyFlds;
 	}
-	int getNumAddFlds(){
+	int getNumAddFlds() const {
 		return numAddFlds;
 	}
 	const string* getAddFlds(){
@@ -938,6 +943,9 @@ public:
 	const TypeID* getTypeIDs() const {
 		assert(typeIDs);
 		return typeIDs;
+	}
+	static const ISchema* getISchema(const Type* arg){
+		return (const ISchema*) arg;
 	}
 	friend istream& operator>>(istream& in, ISchema& s);
 	friend ostream& operator<<(ostream& out, const ISchema& s);

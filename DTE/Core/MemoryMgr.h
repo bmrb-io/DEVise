@@ -75,17 +75,6 @@ public:
 	virtual void drop(Type*){}
 };
 
-/*
-class DoubleLoader : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg){
-		IDouble* retVal = (IDouble*) allocate(sizeof(IDouble));
-		*retVal = *((IDouble*) arg);
-		return retVal;
-	}
-};
-*/
-
 class StringLoader : public MemoryLoader {
 public:
 	virtual Type* load(const Type* arg){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/10/02 02:27:25  donjerko
+  Implementing moving aggregates.
+
   Revision 1.12  1997/09/29 02:51:54  donjerko
   Eliminated class GlobalSelect.
 
@@ -67,6 +70,7 @@
 #include "ExecExpr.h"
 #include "sysdep.h"
 #include "MemoryMgr.h"
+#include "TypeCheck.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
@@ -83,11 +87,19 @@ Site* DeleteParse::createSite(){
 	TableAlias ta(tableName, alias);
 	site->addTable(&ta);
 
+	List<TableAlias*>* tableList = new List<TableAlias*>;
+	tableList->append(&ta);
+	TypeCheck typeCheck;
+	TRY(typeCheck.initialize(tableList), 0);
+	vector<BaseSelection*> predicateVec;
+	predicateVec.push_back(predicate);
+	TRY(typeCheck.resolve(predicateVec), NULL);
+
 	TRY(site->typify(""), NULL);
 	bool cond;
 	List<Site*> sites;
 	sites.append(site);
-	TRY(TypeID type = predicate->typify(&sites), NULL);
+	TypeID type = predicate->getTypeID();
 	if(type != "bool"){
 		string msg = "Predicate has type " +  type + " (bool expected)";
 		THROW(new Exception(msg), NULL);

@@ -170,4 +170,26 @@ public:
 		return tuple;
 	}
 };
+
+class ISchemaExec : public Iterator {
+	bool done;
+	ISchema* schema;
+	Tuple retVal[1];
+public:
+	ISchemaExec(ISchema* schema) : done(false), schema(schema) {
+		retVal[0] = (Type*) schema;
+	}
+	virtual ~ISchemaExec(){
+		delete schema;
+	}
+	virtual void initialize(){}
+	virtual const Tuple* getNext(){
+		if(done){
+			return NULL;
+		}
+		done = true;
+		return retVal;
+	}
+};
+
 #endif

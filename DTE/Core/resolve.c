@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/10/02 02:27:33  donjerko
+  Implementing moving aggregates.
+
   Revision 1.26  1997/09/29 02:51:58  donjerko
   Eliminated class GlobalSelect.
 
@@ -162,32 +165,6 @@ ExecExpr* BaseSelection::createExec(Site* site1, Site* site2)
 	return NULL;
 }
 
-TypeID BaseSelection::typify(List<Site*>* sites){
-	assert(sites);
-	Site* exclusiveSite = NULL;
-	for(sites->rewind(); !sites->atEnd(); sites->step()){
-		Site* currSite = sites->get();
-		if(exclusive(currSite)){
-			exclusiveSite = currSite;
-			break;
-		}
-	}
-	if(!exclusiveSite){
-		return TypeID("");
-	}
-	List<BaseSelection*>* selList = exclusiveSite->getSelectList();
-	selList->rewind();
-	while(!selList->atEnd()){
-		if(match(selList->get())){
-			typeID = selList->get()->getTypeID();
-			avgSize = selList->get()->getSize();
-			return typeID;
-		}
-		selList->step();
-	}
-	return TypeID("");
-}
-
 ExecExpr* Operator::createExec(Site* site1, Site* site2)
 {
 	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
@@ -202,28 +179,6 @@ ExecExpr* Operator::createExec(Site* site1, Site* site2)
 	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
 	return new ExecOperator(l, r, opPtr, value, objSz, destroyPtr);
-}
-
-TypeID PrimeSelection::typify(List<Site*>* sites){
-	if(sites && BaseSelection::typify(sites) != ""){
-		return typeID;
-	}
-	assert(alias);
-	if(*alias == ""){
-		assert(!"global functions not implemented");
-	}
-     assert(sites->cardinality() == 1);
-     sites->rewind();
-     Site* current = sites->get();
-	string siteNm = current->getName();
-	List<BaseSelection*>* selList = current->getSelectList();
-	ostringstream tmp;
-	displayList(tmp, selList);
-	tmp << ends;
-	string tmpc = tmp.str();
-	string msg = string("Table ") + siteNm + "(" + tmpc + ")" +
-		" does not have attribute \"" + *alias + "." + *fieldNm + "\"";
-	THROW(new Exception(msg), "PrimeSelection::typify");
 }
 
 ExecExpr* EnumSelection::createExec(Site* site1, Site* site2)
@@ -304,12 +259,7 @@ bool PrimeSelection::match(BaseSelection* x){
 	return true;
 }
 
-TypeID Operator::typify(List<Site*>* sites){
-	if(sites && !(BaseSelection::typify(sites) == "")){
-		return typeID;
-	}
-	TRY(left->typify(sites), "");
-	TRY(right->typify(sites), "");
+TypeID Operator::typeCheck(){
 	TypeID root = left->getTypeID();
 	TypeID arg = right->getTypeID();
 	GeneralPtr* genPtr;
@@ -444,16 +394,13 @@ QuoteAlias::~QuoteAlias(){
 	delete interf;
 }
 
-TypeID Constructor::typify(List<Site*>* sites){
-	if(sites && !(BaseSelection::typify(sites) == "")){
-		return typeID;
-	}
+TypeID Constructor::typeCheck(){
 	assert(args);
 	int numFlds = args->cardinality();
 	TypeID* inpTypes = new TypeID[numFlds];	
 	int i = 0;
 	for(args->rewind(); !args->atEnd(); args->step()){
-		TRY(inpTypes[i] = args->get()->typify(sites), UNKN_TYPE);
+		inpTypes[i] = args->get()->getTypeID();
 		i++;
 	}
 	TRY(consPtr = 
@@ -527,16 +474,49 @@ void Operator::collect(Site* site, List<BaseSelection*>* to){
 	right->collect(site, to);
 }
 
-TypeID Member::typify(List<Site*>* sites){
-	BaseSelection::typify(sites);
-	if(typeID != ""){
-		return typeID;
-	}
-	TRY(TypeID parentType = input->typify(sites), "unknown");
+TypeID Member::typeCheck(){
+	TypeID parentType = input->getTypeID();
 	GeneralMemberPtr* genPtr;
 	TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
 	assert(genPtr);
 	memberPtr = genPtr->memberPtr;
 	assert(memberPtr);
 	return typeID;
+}
+
+TableName::TableName(const TableName& arg){
+	tableName = new List<string*>;
+	List<string*>* other = arg.tableName;
+	for(other->rewind(); !other->atEnd(); other->step()){
+		tableName->append(new string(*other->get()));
+	}
+}
+
+TypeID TypeCast::typeCheck(){
+	if(promotePtr){
+
+		// already typified when consturcted 
+
+		return typeID;
+	}
+	TypeID inpType = input->getTypeID();
+	TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
+	return typeID;
+}
+
+vector<BaseSelection*> Constructor::getChildren(){
+	vector<BaseSelection*> tmp;
+	for(args->rewind(); !args->atEnd(); args->step()){
+		tmp.push_back(args->get());
+	}
+	return tmp;
+}
+
+void Constructor::setChildren(const vector<BaseSelection*>& children){
+	vector<BaseSelection*>::const_iterator it;
+	delete args;
+	args = new List<BaseSelection*>;
+	for(it = children.begin(); it != children.end(); ++it){
+		args->append(*it);
+	}
 }

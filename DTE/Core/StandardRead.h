@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/09/17 02:35:44  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.20  1997/09/09 14:42:16  donjerko
   Bug fix
 
@@ -93,13 +96,14 @@ class StandReadExec : public Iterator {
 	Tuple* tuple;
 	size_t* currentSz;
 	int numFlds;
+	int currentLine;
 public:
 	StandReadExec(istream* in, ReadPtr* readPtrs,
 		DestroyPtr* destroyPtrs, Tuple* tuple,
 		size_t* currentSz, int numFlds) : 
 		in(in), readPtrs(readPtrs),
 		destroyPtrs(destroyPtrs), tuple(tuple), currentSz(currentSz),
-		numFlds(numFlds) {}
+		numFlds(numFlds), currentLine(0) {}
 	StandReadExec(int numFlds, const TypeID* typeIDs, istream* in);
 	virtual ~StandReadExec(){
 		delete [] currentSz;
@@ -116,8 +120,15 @@ public:
 	virtual const Tuple* getNext(){
 		assert(in);
           for(int i = 0; i < numFlds; i++){
-			TRY((readPtrs[i])(*in, tuple[i]), NULL);
+			readPtrs[i](*in, tuple[i]);
+			if(currExcept){
+				ostringstream tmp;
+				tmp << "Line " << currentLine << ends;
+				currExcept->append(tmp.str());
+				return NULL;
+			}
 		}
+		currentLine++;
 		if(in->good()){
 			return tuple;
 		}

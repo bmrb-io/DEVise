@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/09/05 22:20:09  donjerko
+  Made changes for port to NT.
+
   Revision 1.12  1997/08/21 21:04:26  donjerko
   Implemented view materialization
 
@@ -51,53 +54,6 @@
 #include "site.h"
 #include "catalog.h"
 #include "Interface.h"
-
-class ISchemaExec : public Iterator {
-	bool done;
-	ISchema* schema;
-	Tuple retVal[1];
-public:
-	ISchemaExec(ISchema* schema) : done(false), schema(schema) {
-		retVal[0] = (Type*) schema;
-	}
-	virtual ~ISchemaExec(){
-		delete schema;
-	}
-	virtual void initialize(){}
-	virtual const Tuple* getNext(){
-		if(done){
-			return NULL;
-		}
-		done = true;
-		return retVal;
-	}
-};
-
-const string SCHEMA_STR("schema");
-
-class ISchemaSite : public Site {
-	ISchema* schema;	
-public:
-	ISchemaSite(const ISchema* schema) : Site(){
-		assert(schema);
-		this->schema = new ISchema(*schema);
-	}
-	virtual ~ISchemaSite(){
-		// do not delete schema, ISchemaExec is the owner
-	}
-	virtual int getNumFlds(){
-		return 1;
-	}
-     virtual const string* getTypeIDs(){
-		return &SCHEMA_STR;
-     }
-     virtual const string *getAttributeNames(){
-		return &SCHEMA_STR;
-     }
-	Iterator* createExec(){
-		return new ISchemaExec(schema);
-	}
-};
 
 Site* ISchemaParse::createSite(){
 	Interface* interf;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/09/05 22:20:16  donjerko
+  Made changes for port to NT.
+
   Revision 1.10  1997/08/21 21:04:30  donjerko
   Implemented view materialization
 
@@ -44,10 +47,10 @@ void Joins::typify(string  option){
             mySelect = createSelectList(name, iterat);
         }
         else{
-            TRY(typifyList(mySelect, tmpL), NVOID );
+//            TRY(typifyList(mySelect, tmpL), NVOID );
         }
         numFlds = mySelect->cardinality();
-          TRY(typifyList(myWhere, tmpL), NVOID );
+//          TRY(typifyList(myWhere, tmpL), NVOID );
         double selectivity = listSelectivity(myWhere);
         int card1 = site1->getStats()->cardinality;
         int card2 = site2->getStats()->cardinality;

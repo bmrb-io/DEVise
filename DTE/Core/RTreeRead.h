@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/10/02 02:27:28  donjerko
+  Implementing moving aggregates.
+
   Revision 1.13  1997/09/05 22:20:09  donjerko
   Made changes for port to NT.
 
@@ -55,9 +58,10 @@
 using namespace std;
 #endif
 
-class gen_key_t;
-class genrtree_m;
-class gen_rt_cursor_t;
+class typed_key_t;
+class typed_rtree_t;
+class typed_cursor_t;
+class db_mgr_jussi;
 
 struct RTreePred {
 	bool bounded[2];
@@ -190,8 +194,8 @@ struct RTreePred {
 };
 
 class RTreeReadExec : public Iterator {
-	genrtree_m* rtree_m;
-	gen_rt_cursor_t* cursor;
+	typed_rtree_t* rtree;
+	typed_cursor_t* cursor;
 	int dataSize;
 	int numKeyFlds;
 	int numAddFlds;
@@ -200,16 +204,20 @@ class RTreeReadExec : public Iterator {
      int* rtreeFldLens;
 
 	char* dataContent;
-	gen_key_t* ret_key;
+	typed_key_t* ret_key;
 	bool ridInKey;
 	int ridOffset;
+	int rootPgId;
+	typed_key_t* queryBox;
+	db_mgr_jussi* db_mgr;
 public:
-	RTreeReadExec(genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
-		int numKeyFlds, int numAddFlds, Tuple* tuple,
-		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition);
+	RTreeReadExec(const IndexDesc& indexDesc,
+		int dataSize, Tuple* tuple,
+		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
+		typed_key_t* queryBox);
 
 	virtual ~RTreeReadExec();
-	virtual void initialize() {}
+	virtual void initialize();
 	virtual const Tuple* getNext();
 	virtual Offset getNextOffset();
 	RecId getRecId();
@@ -222,7 +230,6 @@ class RTreeIndex : public StandardRead {
 
 	IndexDesc* indexDesc;
 	RTreePred* rTreeQuery;
-	gen_key_t* queryBox;
 	int queryBoxSize();
 public:
 	RTreeIndex(IndexDesc* indexDesc) : 
@@ -235,7 +242,6 @@ public:
 		for(int i = 0; i < indexDesc->getNumKeyFlds(); i++){
 			rTreeQuery[i].setTypeID(typeIDs[i]);
 		}
-		queryBox = NULL;
 	}
 	virtual ~RTreeIndex();
 	bool canUse(BaseSelection* predicate);	// Throws exception

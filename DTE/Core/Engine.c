@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/09/05 22:20:02  donjerko
+  Made changes for port to NT.
+
   Revision 1.17  1997/08/22 23:13:01  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -100,7 +103,7 @@ int Engine::optimize(){
 	namesToResolve = new List<string*>;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
-		string msg = "parse error in: " + string(queryString);
+		string msg = "parse error ";
 		THROW(new Exception(msg), 0);
 	}
 	assert(parseTree);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/10/15 02:23:36  arvind
+  Sequence by handles multiple attributes
+
   Revision 1.31  1997/10/14 05:17:19  arvind
   Implemented a first version of moving aggregates (without group bys).
 
@@ -136,6 +139,7 @@ static int my_yyaccept();
 }
 %token <integer> INT
 %token <real> DOUBLE
+%token TYPE_CHECK
 %token SELECT
 %token FROM
 %token AS
@@ -196,6 +200,11 @@ static int my_yyaccept();
 %%
 input : query {
 		parseTree = $1;
+		return my_yyaccept();
+	}
+	| TYPE_CHECK query {
+		parseTree = $2;
+		parseTree->setTypeCheckOnlyFlag();
 		return my_yyaccept();
 	}
 	| definition

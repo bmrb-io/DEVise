@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/10/14 05:16:34  arvind
+  Implemented a first version of moving aggregates (without group bys).
+
   Revision 1.39  1997/10/07 18:33:37  donjerko
   *** empty log message ***
 
@@ -141,6 +144,25 @@ void QueryTree::resolveNames(){	// throws exception
      }
 }
 
+void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list){
+	delete list;
+	list = new List<BaseSelection*>;
+
+	vector<BaseSelection*>::const_iterator it;
+	for(it = vec.begin(); it != vec.end(); ++it){
+		list->append(*it);
+	}
+}
+
+void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
+	assert(vec.empty()); 
+	if(list){
+		for(list->rewind(); !list->atEnd(); list->step()){
+			vec.push_back(list->get());
+		}
+	}
+}
+
 Site* QueryTree::createSite(){
 	if(!namesToResolve->isEmpty()){
 		TRY(resolveNames(), 0);
@@ -174,13 +196,22 @@ Site* QueryTree::createSite(){
 	// typecheck the query
 
 	TypeCheck typeCheck;
-	vector<TableAlias*> tableVec;		// TableList
-	vector<BaseSelection*> selectVec;		// TableList
-	vector<BaseSelection*> predicateVec;		// TableList
-	vector<BaseSelection*> groupByVec;		// TableList
-	vector<BaseSelection*> orderByVec;		// TableList
 
-	typeCheck.load(tableVec);
+	TRY(typeCheck.initialize(tableList), 0);
+
+	vector<BaseSelection*>& selectVec = *(new vector<BaseSelection*>);
+	vector<BaseSelection*> predicateVec;
+	vector<BaseSelection*> groupByVec;
+	vector<BaseSelection*> orderByVec;
+
+	translate(predicateList, predicateVec);
+	translate(groupBy, groupByVec);
+	translate(orderBy, orderByVec);
+
+	int count = 0;
+	Aggregates **aggregates =new Aggregates*[MAX_AGG];
+	aggregates[0] = NULL;
+
 	if(!selectList){
 
 		// select *
@@ -188,11 +219,34 @@ Site* QueryTree::createSite(){
 		typeCheck.setupSelList(selectVec);
 	}
 	else {
-		typeCheck.load(selectVec);
+
+		aggregates[count] = 
+		new Aggregates(selectList,sequenceby,withPredicate,groupBy);
+
+		TRY(aggregates[count]->typeCheck(typeCheck), 0);
+		translate(selectList, selectVec);
 	}
-	typeCheck.load(predicateVec);
-	typeCheck.load(groupByVec);
-	typeCheck.load(orderByVec);
+	TRY(typeCheck.resolve(predicateVec), 0);
+	TRY(typeCheck.resolve(groupByVec), 0);
+	TRY(typeCheck.resolve(orderByVec), 0);
+
+	if(typeCheckOnly){
+		int numFlds = selectVec.size();
+		TypeID* types = new TypeID[numFlds];
+		string* attrs = new string[numFlds];
+		vector<BaseSelection*>::const_iterator it;
+		int i = 0;
+		for(it = selectVec.begin(); it != selectVec.end(); ++it, i++){
+			types[i] = (*it)->getTypeID();
+			attrs[i] = (*it)->toString();
+		}
+		return new ISchemaSite(numFlds, types, attrs);
+	}
+
+	translate(selectVec, selectList);
+	translate(predicateVec, predicateList);
+	translate(groupByVec, groupBy);
+	translate(orderByVec, orderBy);
 
 	// check if this is the min-max query
 	// if so, lookup a min-max table to see if there exists an entry
@@ -232,38 +286,7 @@ Site* QueryTree::createSite(){
 		tableList->step();
 	}
 
-	// For the sequenceby clause;
-	// find the sequecing attribute..(Only table name is known initially)
-
-	/* The seq attribute is now derived directly from the query
-	BaseSelection * sequenceby = NULL;
-	if (sequencebyTable){
-		sites->rewind();
-		while(!sites->atEnd()){
-		
-			Site * check = sites->get();
-			sites->step();
-			if (check->have(*sequencebyTable)){
-				string * attrib = check->getOrderingAttrib();
-				if (!attrib  || *attrib == ""){
-					string msg = "Table "+*sequencebyTable+" is not a sequence";
-					THROW(new Exception(msg),NULL);
-				} 
-				sequenceby=new PrimeSelection(
-					sequencebyTable, new string(*attrib));
-			}	
-		}
-	}
-	*/
-
-	// Need to fix a mamimum for this..
-	Aggregates **aggregates =new Aggregates*[MAX_AGG];
-	int count = 0;
-    aggregates[count] = 
-    	new Aggregates(selectList,sequenceby,withPredicate,groupBy);
-
-	// while(aggregates[count]->isApplicable())
-	if(aggregates[count]->isApplicable()){
+	if(aggregates[count] && aggregates[count]->isApplicable()){
 			   
 	   	// Change the select list
 		TRY(selectList = aggregates[count]->filterList(),NULL);
@@ -355,14 +378,15 @@ Site* QueryTree::createSite(){
 		LOG(logFile << endl);
           sites->step();
      }
+	assert(selectList);
 	if(!selectList){
 		selectList = createGlobalSelectList(sites);
 		// already typified
 	}
 	else{
-		TRY(typifyList(selectList, sites), 0);
+//		TRY(typifyList(selectList, sites), 0);
 	}
-	TRY(typifyList(predicateList, sites), 0);
+//	TRY(typifyList(predicateList, sites), 0);
 	TRY(boolCheckList(predicateList), 0);
 	
 	// This is to put the sequenceby table in the front
@@ -454,6 +478,5 @@ Site* QueryTree::createSite(){
 	LOG(logFile << endl;)
 	assert(predicateList->cardinality() == 0);
 	delete predicateList;	// destroy list too
-//	delete dirtyDelete;  	// it core dumps
 	return siteGroup;
 }

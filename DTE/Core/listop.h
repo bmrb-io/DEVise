@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/09/29 02:51:57  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.11  1997/09/05 22:20:17  donjerko
   Made changes for port to NT.
 
@@ -99,7 +102,6 @@ void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
 Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list, 
 	Site* site1, Site* site2 = NULL);
-TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);

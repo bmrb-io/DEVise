@@ -5,6 +5,7 @@
 #include "myopt.h"
 #include "site.h"
 #include "MemoryMgr.h"
+#include "TypeCheck.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -187,7 +188,7 @@ public:
 		tupLoad->insert(&input);
 	}
 	virtual void update(const Type* input){
-	  if (tupLoad->empty()) {
+	  if (tupLoad->empty()) {	// is this ever true? DD
 	    ExecMinMax::initialize(input);
 	  }
 	  else {
@@ -858,19 +859,24 @@ public:
 	) : Site(), selList(selectClause),sequenceBy(sequenceby),
 			withPredicate(withPredicate),groupBy(groupBy){
 		
-		Site::mySelect = selList;
 		if(selList){
 			numFlds = selList->cardinality();
 			aggFuncs = new Aggregate*[numFlds];
 			typeIDs = new TypeID[numFlds];
+			attributeNames = new TypeID[numFlds];
+			selList->rewind();
 			for(int i = 0; i < numFlds; i++){
 			  aggFuncs[i] = NULL;
 			  typeIDs[i] = UNKN_TYPE;
+			  attributeNames[i] = selList->get()->toString();
+			  selList->step();
 			}
 		}
 		else {
 			numFlds = 0;
 			aggFuncs = NULL;
+			typeIDs = NULL;
+			attributeNames = NULL;
 		}
 		isApplicableValue = false;
 		alreadyChecked = false;
@@ -890,8 +896,11 @@ public:
 		// delete inputPlanOp;
 		// delete filteredSelList;		// do not destroy
 	}
-	
+	virtual int getNumFlds(){
+		return numFlds;
+	}
 	bool isApplicable();
+	void Aggregates::typeCheck(TypeCheck& typeCheck);
 	virtual List<BaseSelection*>* getSelectList(){
 	     return selList;
 	}
@@ -903,7 +912,6 @@ public:
 	virtual const TypeID* getTypeIDs(){
 		return typeIDs;
 	}
-
 	virtual string *getOrderingAttrib(){
 		return iterat->getOrderingAttrib();
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/09/17 02:35:44  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.16  1997/09/05 22:20:13  donjerko
   Made changes for port to NT.
 
@@ -87,6 +90,7 @@ StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in) :
 		assert(destroyPtrs[i]);
 		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
+	currentLine = 0;
 }
 
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){

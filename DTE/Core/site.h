@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/09/29 02:52:00  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.31  1997/09/17 02:35:51  donjerko
   Fixed the broken remote DTE interface.
 
@@ -426,6 +429,31 @@ public:
 			return NULL;
 		}
 	}
+};
+
+class ISchemaSite : public Site {
+	ISchema* schema;	
+public:
+	ISchemaSite(const ISchema* schema) : Site(){
+		assert(schema);
+		this->schema = new ISchema(*schema);
+	}
+	ISchemaSite(int numFlds, TypeID* types, string* attrs){
+		schema = new ISchema(types, attrs, numFlds);
+	}
+	virtual ~ISchemaSite(){
+		// do not delete schema, ISchemaExec is the owner
+	}
+	virtual int getNumFlds(){
+		return 1;
+	}
+     virtual const string* getTypeIDs(){
+		return &SCHEMA_STR;
+     }
+     virtual const string *getAttributeNames(){
+		return &SCHEMA_STR;
+     }
+	Iterator* createExec();
 };
 
 #endif

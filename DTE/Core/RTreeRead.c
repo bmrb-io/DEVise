@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/25 15:28:11  donjerko
+  Added minmax table
+
   Revision 1.14  1997/08/21 21:04:25  donjerko
   Implemented view materialization
 
@@ -44,23 +47,29 @@
 
  */
 
-// #define DEBUG
+#define DTE_DEBUG
 
 #include "RTreeRead.h"
-#include "RTree.h"
+#include "SBMInit.h"
+#include "typed_rtree.h"
+#include "dbJussi.h"
 
 RTreeReadExec::RTreeReadExec(
-	genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
-	int numKeyFlds, int numAddFlds, Tuple* tuple,
-	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition) :
-	rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
-	numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
+	const IndexDesc& indexDesc, int dataSize,
+	Tuple* tuple,
+	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
+	typed_key_t* queryBox) :
+	rtree(NULL), cursor(NULL), dataSize(dataSize),
 	tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
-	rtreeFldLens(rtreeFldLens){
+	rtreeFldLens(rtreeFldLens), queryBox(queryBox) {
 	
-	ret_key = new gen_key_t;
-	dataContent = new char[dataSize + sizeof(Offset) + 100];
-		// This extra space is required because of some bug in RTree.
+	db_mgr = NULL;
+	numKeyFlds = indexDesc.getNumKeyFlds();
+	numAddFlds = indexDesc.getNumAddFlds();
+	rootPgId = indexDesc.getRootPg();
+
+	ret_key = new typed_key_t;
+	dataContent = NULL;
 	
 	assert(ridPosition >= 0 && ridPosition < numKeyFlds + numAddFlds);
 
@@ -80,17 +89,17 @@ RTreeReadExec::RTreeReadExec(
 }
 
 RTreeReadExec::~RTreeReadExec(){
-	delete rtree_m;
+	delete rtree;
 	delete cursor;
 	delete ret_key;
+	delete queryBox;
+	delete db_mgr;
 	delete [] tuple;
 	delete [] unmarshalPtrs;
 	delete [] rtreeFldLens;
-	delete [] dataContent;
 }
 
 RTreeIndex::~RTreeIndex(){
-	delete queryBox;
 }
 
 Iterator* RTreeIndex::createExec(){
@@ -107,42 +116,30 @@ Iterator* RTreeIndex::createExec(){
 			offset += rTreeQuery[i].values[j]->toBinary(bounds + offset);
 		}
 	}
-	page_id_t* Root = new page_id_t;
-	Root->pid = indexDesc->getRootPg();
-//	cerr << "Root->pid = " << Root->pid << endl;
 	string typeEncS;
 	for(int i = 0; i < numKeyFlds; i++){
 		typeEncS += rTreeEncode(typeIDs[i]);
 	}
 
 	char* typeEnc = strdup(typeEncS.c_str());
-	queryBox = new gen_key_t(
+	typed_key_t* queryBox = new typed_key_t(
 		(char *)bounds, 	// binary representation of the search key
 		numKeyFlds,			// dimensionality 
 		typeEnc, 			// encoded types as char*
 		0				// is point data (bool)
 	);
 
-#ifdef DEBUG
+#ifdef DTE_DEBUG
 	cout << "queryBox = ";
-	queryBox->print();
+	queryBox->debug();
 	cout << "numKeyFlds = " << numKeyFlds << endl;
 	cout << "typeEnc = " << typeEnc << endl;
 #endif
 
-	gen_rt_cursor_t* cursor = new gen_rt_cursor_t(*queryBox);
-	assert(cursor);
-
-	genrtree_m* rtree_m = new genrtree_m;
-	assert(rtree_m);
-	if (rtree_m->fetch_init (*Root, *cursor) != RCOK){
-		printf("error in init\n");
-		assert(0);
-	}
 	int dataSize;
 	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), NULL);
 
-#ifdef DEBUG
+#ifdef DTE_DEBUG
 	cout << "RTree scan initialized with:\n";
 	display(cout);
 #endif
@@ -165,8 +162,8 @@ Iterator* RTreeIndex::createExec(){
 		cerr << "Index must contain recId field\n";
 		exit(1);
 	}
-	return new RTreeReadExec(rtree_m, cursor, dataSize, numKeyFlds, 
-		numAddFlds, tuple, unmarshalPtrs, rtreeFldLens, ridIndex);
+	return new RTreeReadExec(*indexDesc, dataSize,
+		tuple, unmarshalPtrs, rtreeFldLens, ridIndex, queryBox);
 }
 
 int RTreeIndex::queryBoxSize(){
@@ -182,34 +179,60 @@ int RTreeIndex::queryBoxSize(){
 	return size;
 }
 
+void RTreeReadExec::initialize(){
+
+	page_id_t root;
+	memcpy(root.data, &rootPgId, sizeof(int));
+	
+     const char* fileToContainRTree = "./testRTree";  // fix this later
+
+     db_mgr = new db_mgr_jussi(fileToContainRTree, cacheMgr);
+
+	typed_rtree_t* rtree = new typed_rtree_t(db_mgr);
+
+	rtree->open(root);
+
+//	rtree->debug(stderr);
+
+	cursor = new typed_cursor_t();
+
+	if (rtree->fetch_init(*cursor, *queryBox) != RC_OK){
+		printf("error in init\n");
+		assert(0);
+	}
+}
+
 const Tuple* RTreeReadExec::getNext(){
 	bool eof = false;
-	int offsetLen;
+	size_t dataLen;
 
 	assert(cursor);
 	assert(ret_key);
-	if (rtree_m->fetch(*cursor, *ret_key, dataContent, offsetLen, eof) != RCOK){
+	void* dataVoidPtr;
+	if (rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
 		assert(0);
 	}
-	Offset offset;
-	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
-	assert(tuple);
+	dataContent = (char*) dataVoidPtr;
 	if(!eof){
+		Offset offset;
+		assert(dataSize + sizeof(Offset) <= dataLen);
+		memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
+		assert(tuple);
 		// ret_key->print();
-		int offs = 0;
 		int numFlds = numKeyFlds + numAddFlds;
 		for(int i = 0; i < numKeyFlds; i++){
-			char* from = ((char*) ret_key->data) + offs;
-			unmarshalPtrs[i](from, tuple[i]);
-			offs += rtreeFldLens[i];
+			void* from;
+			char* typeEncoding;
+			ret_key->min(i + 1, from, typeEncoding);
+			unmarshalPtrs[i]((char*) from, tuple[i]);
 		}
-		offs = 0;
+		int offs = 0;
 		for(int i = numKeyFlds; i < numFlds; i++){
 			char* from = ((char*) dataContent) + offs;
 			unmarshalPtrs[i](from, tuple[i]);
 			offs += rtreeFldLens[i];
 		}
-		#ifdef DEBUG
+		#ifdef DTE_DEBUG
 		cout << "Offset = " << offset << endl;
 		#endif
 		return tuple;
@@ -221,16 +244,18 @@ const Tuple* RTreeReadExec::getNext(){
 
 Offset RTreeReadExec::getNextOffset(){
 	bool eof = false;
-	int offsetLen;
+	size_t dataLen;
 
 	assert(cursor);
 	assert(ret_key);
-	if (rtree_m->fetch(*cursor, *ret_key, dataContent, offsetLen, eof) != RCOK){
+	void* dataVoidPtr;
+	if (rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
 		assert(0);
 	}
-	Offset offset;
-	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
+	dataContent = (char*) dataVoidPtr;
 	if(!eof){
+		Offset offset;
+		memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 		// cout << "Returning Offset = " << offset << endl;
 		return offset;
 	}
@@ -241,14 +266,16 @@ Offset RTreeReadExec::getNextOffset(){
 
 RecId RTreeReadExec::getRecId(){
 	int recId;
-	char* from = NULL;
+	void* from;
+	char* typeEncoding;
 	if(ridInKey){
-		from = ((char*) ret_key->data) + ridOffset;
+		assert(0);	// ridOffset should be an index
+		ret_key->min(ridOffset + 1, from, typeEncoding);
 	}
 	else{
 		from = ((char*) dataContent) + ridOffset;
 	}
-	memcpy(&recId, from, sizeof(int));
+	memcpy(&recId, (char*) from, sizeof(int));
 	return recId;
 }
 
@@ -260,7 +287,7 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 		int numKeyFlds = getNumKeyFlds();
 		for(int i = 0; i < numKeyFlds; i++){
 			if(attributeNames[i] == attr){
-#ifdef DEBUG
+#ifdef DTE_DEBUG
 				cout << "Updating rtree query on att " << i;
 				cout << " with: " << opName << " ";
 				constant->display(cout);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/09/17 02:35:46  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.29  1997/09/05 22:56:09  donjerko
   *** empty log message ***
 
@@ -146,8 +149,8 @@ Interface* Directory::createInterface(const string& entry) const
 	iterator->initialize();
 
 	const Tuple* tuple;
-	tuple = iterator->getNext();
-	CHECK("Illegal catalog format", NULL);
+	CHECK(tuple = iterator->getNext(), 
+		"Illegal catalog format", NULL);
 	while(tuple){
 		const char* tableNm = IString::getCStr(tuple[0]);
 		if(entry == tableNm){
@@ -156,8 +159,8 @@ Interface* Directory::createInterface(const string& entry) const
 			delete iterator;
 			return retVal;
 		}
-		tuple = iterator->getNext();
-		CHECK("Illegal catalog format", NULL);
+		CHECK(tuple = iterator->getNext(),
+			"Illegal catalog format", NULL);
 	}
 	delete iterator;
 	string msg = "Table " + entry + " not defined in file: " +
