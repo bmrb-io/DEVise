@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/06 02:35:31  donjerko
+  Undefined DEBUG
+
   Revision 1.10  1997/02/25 22:14:55  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -53,6 +56,24 @@
 #include "catalog.h"	// for Interface
 #include "Utility.h"
 #include <String.h>
+
+Type* dateEq(Type* arg1, Type* arg2){
+	time_t val1 = ((IInt*)arg1)->getValue();
+	time_t val2 = ((IInt*)arg2)->getValue();
+     return new IBool(val1 == val2);
+}
+
+Type* dateLT(Type* arg1, Type* arg2){
+	time_t val1 = ((IInt*)arg1)->getValue();
+	time_t val2 = ((IInt*)arg2)->getValue();
+     return new IBool(val1 < val2);
+}
+
+Type* dateGT(Type* arg1, Type* arg2){
+	time_t val1 = ((IInt*)arg1)->getValue();
+	time_t val2 = ((IInt*)arg2)->getValue();
+     return new IBool(val1 > val2);
+}
 
 Type* catEntryName(Type* arg1){
 	CatEntry* entry = (CatEntry*) arg1;
@@ -357,7 +378,7 @@ void displayAs(ostream& out, void* adt, String type){
 	if(type == "int"){
 		((IInt*) adt)->display(out);
 	}
-	else if(type == "string"){
+	else if(type.through(5).contains("string")){
 		((IString*) adt)->display(out);
 	}
 	else if(type == "bool"){
@@ -385,7 +406,7 @@ int packSize(void* adt, String type){
 	else if(type == "double"){
 		return ((IDouble*) adt)->packSize();
 	}
-	else if(type.matches("string")){
+	else if(type.through(5).contains("string")){
 		int len = atoi(type.from(6).chars());
 		return len;
 	}
@@ -405,9 +426,12 @@ int packSize(String type){	// throws exception
 	else if(type == "double"){
 		return sizeof(IDouble);
 	}
-	else if(type.matches("string")){
+	else if(type.through(5).contains("string")){
 		int len = atoi(type.from(6).chars());
 		return len;
+	}
+	else if(type == "date"){
+		return sizeof(IDate);
 	}
 	else{
 		String msg = "Don't know size of " + type; 
@@ -425,7 +449,10 @@ void marshal(Type* adt, char* to, String type){
 	else if(type == "double"){
 		((IDouble*) adt)->marshal(to);
 	}
-	else if(type.matches("string")){
+	else if(type == "date"){
+		((IDate*) adt)->marshal(to);
+	}
+	else if(type.through(5).contains("string")){
 		int len = atoi(type.from(6).chars());
 		((IString*) adt)->marshal(to, len);
 	}
@@ -451,6 +478,11 @@ Type* unmarshal(char* from, String type){
 		adt->unmarshal(from);
 		return adt;
 	}
+	else if(type == "date"){
+		IDate* adt = new IDate;
+		adt->unmarshal(from);
+		return adt;
+	}
 	else{
 		cout << "Don't know how to unmarshal type: " << type << endl;
 		assert(0);
@@ -462,8 +494,8 @@ GeneralPtr* getOperatorPtr(
 	if(root == "int"){
 		return IInt::getOperatorPtr(name, arg, retType);
 	}
-	else if(root == "string"){
-		return IString::getOperatorPtr(name, arg, retType);
+	else if(root.through(5).contains("string")){
+		return IString::getOperatorPtr(name, root, arg, retType);
 	}
 	else if(root == "bool"){
 		return IBool::getOperatorPtr(name, arg, retType);
@@ -471,15 +503,18 @@ GeneralPtr* getOperatorPtr(
 	else if(root == "double"){
 		return IDouble::getOperatorPtr(name, arg, retType);
 	}
+	else if(root == "date"){
+		return IDate::getOperatorPtr(name, root, arg, retType);
+	}
 	else{
-		String msg = "No such type: " + root;
+		String msg = "Cannot find OperatorPtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
 }
 
 GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType){
 	String err;
-	if(root == "int" || root == "string" || 
+	if(root == "int" || root.through(5).contains("string") || 
 		root == "bool" || root == "double"){
 		err = "Type " + root + " does not have a member \"" + name + "\"";
 		THROW(new Exception(err), NULL);
@@ -490,7 +525,7 @@ GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType){
 		return retVal;
 	}
 	else{
-		err = "No such type: " + root;
+		err = "Cannot find MemberPtr for type: " + root;
 		THROW(new Exception(err), NULL);
 	}
 }
@@ -499,7 +534,7 @@ ReadPtr getReadPtr(TypeID root){
 	if(root == "int"){
 		return intRead;
 	}
-	else if(root == "string"){
+	else if(root.through(5).contains("string")){
 		return stringRead;
 	}
 	else if(root == "bool"){
@@ -527,7 +562,7 @@ WritePtr getWritePtr(TypeID root){
 	if(root == "int"){
 		return intWrite;
 	}
-	else if(root == "string"){
+	else if(root.through(5).contains("string")){
 		return stringWrite;
 	}
 	else if(root == "bool"){
@@ -546,7 +581,7 @@ WritePtr getWritePtr(TypeID root){
 		return indexDescWrite;
 	}
 	else{
-		String msg = "No such type: " + root;
+		String msg = "Cannot fine WritePtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
 }
@@ -561,7 +596,7 @@ AttrType getDeviseType(String type){
 	else if(type == "double"){
 		return DoubleAttr;
 	}
-	else if(type == "string"){
+	else if(type.through(5).contains("string")){
 		return StringAttr;
 	}
 	else if(type == "date"){
@@ -577,7 +612,7 @@ Type * getNullValue(TypeID &root){
 	if(root == "int"){
 		return new IInt(0);
 	}
-	else if(root == "string"){
+	else if(root.through(5).contains("string")){
 		return new IString("");
 	}
 	else if(root == "bool"){
@@ -602,7 +637,7 @@ String rTreeEncode(String type){
 	else if(type == "double"){
 		return "d";
 	}
-	else if(type == "string"){
+	else if(type.through(5).contains("string")){
 		String msg = "Don't know how to build index on type: " + type;
 		THROW(new Exception(msg), "");
 	}
@@ -843,7 +878,7 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	if(root == "int"){
 		return intDestroy;
 	}
-	else if(root == "string"){
+	else if(root.through(5).contains("string")){
 		return stringDestroy;
 	}
 	else if(root == "bool"){
@@ -914,7 +949,7 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	else if(adt == "double"){
 		return doubleCopy;
 	}
-	else if(adt == "string"){
+	else if(adt.through(5).contains("string")){
 		return stringCopy;
 	}
 	else{

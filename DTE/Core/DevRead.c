@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.7  1997/03/02 00:01:45  donjerko
+    Changed RecId int recId.
+
     Revision 1.6  1997/02/03 04:11:26  donjerko
     Catalog management moved to DTE
 
@@ -63,6 +66,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <strstream.h>
+#include <time.h>
 
 #include "machdep.h"
 #include "DevRead.h"
@@ -217,6 +222,9 @@ String *DevRead::getTypeIDs()
     AttrList *attrListP = _tDataP->GetAttrList();
 
     attrListP->InitIterator();
+    ostrstream tmp;
+    int len;
+    char* tmpc;
     while (attrListP->More())
     {
         AttrInfo *attrInfoP = attrListP->Next();
@@ -228,7 +236,7 @@ String *DevRead::getTypeIDs()
             break;
 
         case FloatAttr:
-            result[j++] = "float";
+            result[j++] = "double";
             break;
 
         case DoubleAttr:
@@ -236,7 +244,12 @@ String *DevRead::getTypeIDs()
             break;
 
         case StringAttr:
-            result[j++] = "string";
+	   	  len = attrInfoP->length;
+		  assert(len > 0);
+		  tmp << "string" << len << ends;
+		  tmpc = tmp.str();
+            result[j++] = String(tmpc);
+		  delete tmpc;
             break;
 
         case DateAttr:
@@ -348,9 +361,7 @@ Tuple *DevRead::getNext()
                 case DateAttr: {
                         time_t tmp;
                         memcpy(&tmp, attrVal, sizeof(time_t));
-                        // NEW DATE (new date)
-                        // result[attrNum] = (Type*) new IDate(tmp);
-                        result[attrNum] = NULL;
+                        result[attrNum] = (Type*) new IDate(tmp);
                         break;
                     }
 

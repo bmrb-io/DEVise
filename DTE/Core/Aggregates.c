@@ -211,7 +211,7 @@ void Aggregates::typify(Site* inputIterator){
 		while(!selectList->atEnd()){
 			
 			Path *path;
-			if (selectList->get()->match(groupBy->get(),path)){
+			if (selectList->get()->matchFlat(groupBy->get(),path)){
 				if (sequenceAttr && 
 					selectList->get()->match(sequenceAttr,path)){
 					taboo[groupBy->getCurrPos()] =1; 
@@ -229,7 +229,16 @@ void Aggregates::typify(Site* inputIterator){
 			selectList->step();
 		}
 		if (!match){
-			THROW(new Exception(" Unable to find the groupBy attribute "),);
+			ostrstream tmp;
+			tmp << "Selection list (";
+			displayList(tmp, selectList);
+			tmp << ") does not have GROUP BY attribute ";
+			groupBy->get()->display(tmp);
+			tmp << ends;
+			char* tmpc = tmp.str();
+			String msg(tmpc);
+			delete tmpc;
+			THROW(new Exception(msg),);
 		}
 		groupBy->step();
 	}

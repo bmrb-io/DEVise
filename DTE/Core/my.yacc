@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/03/06 02:35:31  donjerko
+  Undefined DEBUG
+
   Revision 1.16  1997/02/21 01:38:07  donjerko
   Fixed some problems with "group by" clause.
 
@@ -87,6 +90,7 @@ static int my_yyaccept();
 	List<TableAlias*>* tableList;
 	TableAlias* tabAlias;
 	List<String*>* listOfStrings;
+	ParseTree* parseTree;
 }
 %token <integer> INT
 %token <real> DOUBLE
@@ -111,6 +115,7 @@ static int my_yyaccept();
 %token DELETE
 %token SCHEMA
 %token ADD
+%token UNION
 %token <string> STRING_CONST
 %left '.'
 %left OR
@@ -143,9 +148,17 @@ static int my_yyaccept();
 %type <listOfStrings> keyAttrs
 %type <listOfStrings> optIndAdd 
 %type <listOfStrings> listOfStrings 
+%type <parseTree> query
 %%
-input : query
+input : query {
+		parseTree = $1;
+		return my_yyaccept();
+	}
 	| definition
+	| query UNION query {
+		parseTree = new UnionParse($1, $3);
+		return my_yyaccept();
+	}
 	;
 definition: CREATE optIndType INDEX index_name ON table_name 
 	'(' keyAttrs ')' optIndAdd {
@@ -213,15 +226,11 @@ table_name : table_name '.' STRING {
 query : SELECT listOfSelections 
 		FROM listOfTables optWhereClause 
 		optSequenceByClause optGroupByClause {
-		parseTree = new QueryTree(
-			$2,$4,$5,$6,withPredicate,$7,namesToResolve);
-		return my_yyaccept();
+		$$ = new QueryTree($2,$4,$5,$6,withPredicate,$7,namesToResolve);
 	}
 	| SELECT '*' FROM listOfTables optWhereClause 
 			optSequenceByClause optGroupByClause  {
-		parseTree = new QueryTree(
-	 	NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
-		return my_yyaccept();
+		$$ = new QueryTree(NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
 	}
      ;
 listOfSelections : listOfSelections ',' predicate {

@@ -133,4 +133,17 @@ public:
 	}
 };
 
+class UnionParse : public ParseTree {
+	ParseTree* query1;
+	ParseTree* query2;
+public:
+	UnionParse(ParseTree* query1, ParseTree* query2) :
+		query1(query1), query2(query2) {}
+	virtual Site* createSite();	// throws exception
+	virtual ~UnionParse(){
+		delete query1;
+		delete query2;
+	}
+};
+
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/06 02:35:32  donjerko
+  Undefined DEBUG
+
   Revision 1.11  1997/02/25 22:14:56  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -42,9 +45,6 @@
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
 
-  Revision 1.3  1996/12/05 16:06:06  wenger
-  Added standard Devise file headers.
-
  */
 
 #ifndef TYPES_H
@@ -56,6 +56,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <time.h>
 #include "exception.h"
 #include "AttrList.h"
 #include "queue.h"
@@ -182,6 +183,10 @@ Type* intEq(Type* arg1, Type* arg2);
 Type* intLT(Type* arg1, Type* arg2);
 Type* intGT(Type* arg1, Type* arg2);
 Type* intComp(Type *arg1,Type *arg2);
+
+Type* dateEq(Type* arg1, Type* arg2);
+Type* dateLT(Type* arg1, Type* arg2);
+Type* dateGT(Type* arg1, Type* arg2);
 
 Type* intDoubleAdd(Type* arg1, Type* arg2);
 Type* intDoubleSub(Type* arg1, Type* arg2);
@@ -594,9 +599,11 @@ public:
 		strcpy(string, from);
 	}
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID arg, TypeID& retType){
-		if(arg != "string"){
-			return NULL;
+		String name, TypeID root, TypeID arg, TypeID& retType){
+		String msg = "No operator " + name + " (" + root + 
+			", " + arg + ") defined";
+		if(!arg.through(5).contains("string")){
+			THROW(new Exception(msg), NULL);
 		}
 		else if(name == "="){
 			retType = "bool";
@@ -611,7 +618,63 @@ public:
 			return new GeneralPtr(stringGT, boolSize, oneOver3);
 		}
 		else{
-			return NULL;
+			THROW(new Exception(msg), NULL);
+		}
+	}
+};
+
+class IDate {
+	time_t date;
+public:
+     IDate() : date(0){}
+	IDate(const time_t date) : date(date) {}
+	IDate(const IDate& arg){
+		date = arg.date;
+	}
+	~IDate(){}
+	void setValue(time_t arg){
+		date = arg;
+	}
+	time_t getValue(){
+		return date;
+	}
+	void display(ostream& out){
+		out << date;
+	}
+	IDate& operator=(IDate& arg){
+		date = arg.date;
+		return *this;
+	}
+	int packSize(){
+		return sizeof(time_t);
+	}
+	void marshal(char* to){
+		memcpy(to, &date, sizeof(time_t));
+	}
+	void unmarshal(char* from){
+		memcpy(&date, from, sizeof(time_t));
+	}
+	static GeneralPtr* getOperatorPtr(
+		String name, TypeID root, TypeID arg, TypeID& retType){
+		String msg = 
+			"No operator " + name + " (" + root + ", " + arg + ") defined";
+		if(arg != "date"){
+			THROW(new Exception(msg), NULL);
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(dateEq, boolSize, oneOver100);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(dateLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(dateGT, boolSize, oneOver3);
+		}
+		else{
+			THROW(new Exception(msg), NULL);
 		}
 	}
 };

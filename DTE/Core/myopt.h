@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/02/25 22:14:53  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.16  1997/02/21 01:38:07  donjerko
   Fixed some problems with "group by" clause.
 
@@ -360,6 +363,9 @@ public:
 		cout << "toStringAttOnly not definded for: " << selectID() << endl;
 		assert(0);
 	}
+     virtual bool matchFlat(BaseSelection* x, Path*& upTo){
+		return match(x, upTo);
+	}
 };
 
 class GlobalSelect : public BaseSelection {
@@ -412,6 +418,9 @@ public:
 		typeID = type;
      }
      virtual bool match(BaseSelection* x, Path*& upTo);
+     virtual bool matchFlat(BaseSelection* x, Path*& upTo){
+		return selection->matchFlat(x, upTo);
+	}
 	virtual void setSize(int size){
 		avgSize = size;
 	}

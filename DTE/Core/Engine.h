@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/03 04:11:27  donjerko
+  Catalog management moved to DTE
+
   Revision 1.5  1996/12/21 22:21:43  donjerko
   Added hierarchical namespace.
 
@@ -73,7 +76,7 @@ public:
 	Stats* getStats(){
 		return topNode->getStats();
 	}
-	WritePtr* getWritePtrs(){
+	WritePtr* getWritePtrs(){	 // throws
 		if(writePtrs){
 			return writePtrs;
 		}

@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/11 22:49:26  donjerko
+  *** empty log message ***
+
   Revision 1.12  1997/02/21 01:38:06  donjerko
   Fixed some problems with "group by" clause.
 
@@ -52,6 +55,7 @@
 #include <assert.h>
 #include <memory.h>
 #include "myopt.h"
+#include "ParseTree.h"
 #include "my.yacc.tab.h"
 #include "Utility.h"
 
@@ -106,6 +110,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETE;}
 [Ss][Cc][Hh][Ee][Mm][Aa]		{return SCHEMA;}
 [Aa][Dd][Dd]				{return ADD;}
+[Uu][Nn][Ii][Oo][Nn]		{return UNION;}
 
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}

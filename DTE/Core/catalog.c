@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/25 22:14:52  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.9  1997/02/18 18:06:03  donjerko
   Added skeleton files for sorting.
 
@@ -289,6 +292,7 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
 	Tuple* tuple;
+//	cout << "searching for " << firstPathNm << " in " << fileName << endl;
 
 	while((tuple = fileRead->getNext())){
 		CatEntry* entry = (CatEntry*) tuple[0];
@@ -302,9 +306,10 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 			entry = NULL;
 			if(interf->getType() == Interface::CATALOG){
 				CatalogInterface* tmp = (CatalogInterface*) interf;
-				TRY(fileName = tmp->getCatalogName(), NULL);
+				TRY(String newFileNm = tmp->getCatalogName(), NULL);
 				delete interf;
-				return findInterface(path);
+				Catalog tmpCat(newFileNm);
+				return tmpCat.findInterface(path);
 			}
 			else if(interf->getType() != Interface::QUERY &&
 					path->cardinality() > 0){
@@ -321,6 +326,7 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 		}
 	}
 	delete in;
-	String msg = "Table " + firstPathNm + " not defined";
+	String msg = "Table " + firstPathNm + " not defined in file: " +
+		fileName;
 	THROW(new Exception(msg), NULL);
 }
