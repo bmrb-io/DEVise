@@ -46,6 +46,7 @@ DTE_INCLUDES = \
 	-I../../graphics.new \
 	-I../../unidata \
 	-I../../DataReader \
+	-I../DataReader \
 	$(PERL_INCL)
 
 #no-comment is for the perl files
