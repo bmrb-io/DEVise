@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  1999/11/11 18:11:51  hongyu
+// *** empty log message ***
+//
 // Revision 1.22  1999/11/03 08:00:48  hongyu
 // *** empty log message ***
 //
@@ -1138,7 +1141,7 @@ public class DEViseCanvas extends Container
 
         if (crystal == null) {
             StringWriter writer = new StringWriter();
-            writer.write("\"Scale Factor\" 5.65 5.65 5.65\n");
+            writer.write("\"Scale Factor\" 1.0 1.0 1.0\n");
             writer.write("\"Base Vector\" 1 0 0 0 1 0 0 0 1\n");
             writer.write("Atoms " + view.viewGDatas.size() + "\n");
 

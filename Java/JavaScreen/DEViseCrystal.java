@@ -13,7 +13,7 @@ public class DEViseCrystal
     Dimension viewArea = new Dimension(0, 0);
     int viewShift = 0;
     double boxLength, viewDistance, halfViewDistance, boxViewRatio = 1.0, pixelToDataUnit = 0.1;
-    double newBoxLength, newTotalX, newTotalY, newTotalZ;
+    double newBoxLength, newTotalX, newTotalY, newTotalZ, maxiX = -1000000.0, miniX = 10000000.0, maxiY = -10000000.0, miniY = 10000000.0, maxiZ = -10000000.0, miniZ = 1000000.0;
 
     double totalX, totalY, totalZ, totalScaleFactor = 1.0, totalXRotation, totalYRotation;
     int shiftedX, shiftedY, totalShiftedX, totalShiftedY, totalAtomNumber;
@@ -53,6 +53,8 @@ public class DEViseCrystal
         for (int i = 0; i < zSortMap.length; i++) {
             zSortMap[i] = -1;
         }
+
+        newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
     public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, double min, double max, String[] atomName, double[][] atomPos)
@@ -80,6 +82,8 @@ public class DEViseCrystal
 
             addAtom(atomName[i], atomPos[i][0], atomPos[i][1], atomPos[i][2], 2);
         }
+        
+        //newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
     public synchronized void paint(Component component, Graphics gc)
@@ -261,9 +265,10 @@ public class DEViseCrystal
 
         // find the bond information for the new atom
         DEViseAtomInCrystal atom = null;
-        double dx, dy, dz, d;
+        //double dx, dy, dz, d;
         double[] pos1 = new double[3], pos2 = new double[3];
         oldlcs.point(newAtom.pos, pos1);
+        /*
         boolean checkBond = (minBondLength > 0.0 && maxBondLength > 0.0 && maxBondLength > minBondLength);
         for (int i = 0; i < atomList.size(); i++) {
             atom = (DEViseAtomInCrystal)atomList.elementAt(i);
@@ -293,11 +298,29 @@ public class DEViseCrystal
                 newBoxLength = d;
             }
         }
-
+        */
         // update the total size
         newTotalX += pos1[0];
         newTotalY += pos1[1];
         newTotalZ += pos1[2];
+        if (pos1[0] > maxiX) {
+            maxiX = pos1[0];
+        } 
+        if (pos1[0] < miniX) {
+            miniX = pos1[0];
+        }
+        if (pos1[1] > maxiY) {
+            maxiY = pos1[1];
+        } 
+        if (pos1[1] < miniY) {
+            miniY = pos1[1];
+        }
+        if (pos1[2] > maxiZ) {
+            maxiZ = pos1[2];
+        } 
+        if (pos1[2] < miniZ) {
+            miniZ = pos1[2];
+        }
         totalAtomNumber++;
 
         // if status = 1, we need to resort the zSortMap
@@ -307,6 +330,14 @@ public class DEViseCrystal
             resort();
             lcs.point(newAtom.pos, newAtom.lcspos);
         } else if (status == 2) {
+            double dx = Math.abs(maxiX - miniX), dy = Math.abs(maxiY - miniY), dz = Math.abs(maxiZ - miniZ), maxi = dx;
+            if (dy > maxi) {
+                maxi = dy;
+            }
+            if (dz > maxi) {
+                maxi = dz;
+            }
+            newBoxLength = maxi;
             resetAll(true);
         }
     }
