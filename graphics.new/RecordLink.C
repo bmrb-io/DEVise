@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/08/04 21:59:51  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.5  1996/07/25 14:25:11  jussi
   Re-enabled record range merging, added checking of empty ranges.
 
@@ -250,7 +257,7 @@ void RecordLink::InsertView(ViewGraph *view)
 
 bool RecordLink::DeleteView(ViewGraph *view)
 {
-#if defined(DEBUG) || 1
+#if defined(DEBUG) 
   printf("RecordLink::DeleteView(0x%p, 0x%p)\n", this, view);
 #endif
   if( view == _masterView ) {
