@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/11 19:08:24  jussi
+  Added replica management.
+
   Revision 1.4  1996/05/11 17:25:39  jussi
   Moved all command parsing to ParseAPI.C so that TkControl.c
   would not have to duplicate the code.
@@ -527,6 +530,7 @@ void ServerAPI::RestartSession()
   DestroySessionData();
 
   if (_socketFd >= 0) {
+    printf("Closing client connection.\n");
     close(_socketFd);
     _socketFd = -1;
   }
