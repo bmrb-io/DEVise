@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/05/07 16:32:14  jussi
+  Moved Action member variable to ViewGraph. Move implementation of
+  HandleKey, HandlePress and HandlePopup to ViewGraph as well.
+
   Revision 1.19  1996/04/20 19:52:21  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -127,14 +131,12 @@ class GenAxisLabel {
 struct AxisInfo {
   Boolean inUse;          /* TRUE if this axis is in use */
   int width;              /* width (for Y axis) or height (X axis)
-			     to draw label,in terms of # of pixels */
-  int fieldWidth;         /* # of characters for label */
-  int decimalPlaces;      /* # of decimal places */
-  int numTicks;           /* # of ticks to use */
-  Coord tickIncrement;    /* tick increment, if not using number of ticks */
+			     to draw label, in terms of # of pixels */
   Color color;            /* color for the ticks */
-  Boolean useNumTicks;    /* TRUE if use numTicks to draw axis,
-			     false if tickIncrement is used to draw axis */
+  int numTicks;           /* # of ticks to use */
+  int significantDigits;  /* # of significant digits */
+  int labelWidth;         /* heigh (for Y axis) or width (X axis)
+			     of tick labels */
 };
 
 struct LabelInfo {
@@ -293,7 +295,7 @@ protected:
 	virtual void SubClassUnmapped(); /* called just before unmapping */
 
 	/* Base class decides when to start/abort a query. Derived
-	class must implement the following: */
+	   class must implement the following methods. */
 	virtual void DerivedStartQuery(VisualFilter &filter,
 				       int timestamp) = 0;
 	virtual void DerivedAbortQuery() = 0;
@@ -316,6 +318,10 @@ protected:
 	void GetXAxisArea(int &x, int &y, int &width, int &height,
 			  int &startX);
 	void GetYAxisArea(int &x, int &y, int &width, int &height);
+
+	/* Optimize spacing and location of tick marks */
+	void OptimizeTickMarks(Coord low, Coord high, int numTicks,
+			       Coord &start, int &num, Coord &inc);
 
 private:
 	void DrawHighlight();

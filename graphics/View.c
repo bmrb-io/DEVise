@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/05/14 18:05:16  jussi
+  Added initialization of view callback list. Added debugging
+  statements.
+
   Revision 1.36  1996/05/09 18:12:19  kmurli
   No change to this makefile.
 
@@ -247,20 +251,18 @@ void View::Init(char *name, VisualFilter &filter,
   _querySent = false;	/* TRUE if query has been sent */
   
   xAxis.inUse = false;
-  xAxis.color = GetFgColor();
   xAxis.width = 15;
-  xAxis.decimalPlaces = 1;
-  xAxis.numTicks = 2;
-  xAxis.useNumTicks = true;
-  xAxis.fieldWidth = 10;
+  xAxis.color = GetFgColor();
+  xAxis.numTicks = 8;
+  xAxis.significantDigits = 6;
+  xAxis.labelWidth = 60;
   
   yAxis.inUse = false;
   yAxis.width = 50;
-  yAxis.decimalPlaces = 1;
-  yAxis.numTicks = 2;
   yAxis.color = GetFgColor();
-  yAxis.useNumTicks = true;
-  yAxis.fieldWidth = 10;
+  yAxis.numTicks = 8;
+  yAxis.significantDigits = 6;
+  yAxis.labelWidth = 40;
   
   _label.occupyTop = false;
   _label.extent = 12;
@@ -697,10 +699,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   Geometry(winX, winY, winW, winH);
   
   /* Make it possible to update the label areas */
-  win->PushTop();
-  win->MakeIdentity();
   win->PushClip(winX, winY, winW - 1, winH - 1);
-  win->PopTransform();
   
   DrawLabel();
 
@@ -771,72 +770,98 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
   int axisMaxX = axisX + axisWidth - 1;
   int axisMaxY = axisY + axisHeight - 1;
-  char *label;
-  char buf[30];
   int maxX = x + w - 1;
   int maxY = y + h - 1;
-  if (!Geom::RectRectIntersect(x,y,maxX,maxY,axisX,axisY,axisMaxX, axisMaxY)) {
+  if (!Geom::RectRectIntersect(x,y,maxX,maxY,axisX,axisY,axisMaxX,axisMaxY)) {
 #ifdef DEBUG
     printf("do not intersect\n");
 #endif
     return;
   }
   
-  win->PushTop();
-  win->MakeIdentity();
   win->SetFgColor(xAxis.color);
-  
-  Coord startWorldX = _filter.xLow;
-  Coord endWorldX = _filter.xHigh;
-  int numMajorTicks = xAxis.numTicks;
-  Coord tickIncrement = (endWorldX - startWorldX) / numMajorTicks;
-  
-  // keep compiler happy until tickIncrement is used for real
-  tickIncrement = tickIncrement;
+  win->SetPattern(Pattern0);
 
-  if (xAxis.numTicks == 2) {
-    /* draw the text */
-    Coord drawWidth = axisWidth - (startX - axisX);
+  /* draw a line from startX to the end of the view */
+  win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
 
-    if (_xAxisLabel)
-      label = _xAxisLabel->GenerateLabel( _filter.xLow);
-    else {
-      if (_xAxisAttrType == DateAttr) {
-	time_t tm = (time_t)_filter.xLow;
-	label = DateString(tm);
-      } else {
-	sprintf(buf, "%*.*f", xAxis.fieldWidth, xAxis.decimalPlaces,
-		_filter.xLow);
-	label = buf;
-      }
-    }
-    
-    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1, axisHeight - 1,
-		      WindowRep::AlignWest, true);
-    
-    if (_xAxisLabel)
-      label = _xAxisLabel->GenerateLabel(_filter.xHigh);
-    else {
-      if (_xAxisAttrType == DateAttr) {
-	time_t tm = (time_t)_filter.xHigh;
-	label = DateString(tm);
-      } else {
-	sprintf(buf, "%*.*f", xAxis.fieldWidth, xAxis.decimalPlaces,
-		_filter.xHigh);
-	label = buf;
-      }
-    }
+  Coord drawWidth = axisWidth - (startX - axisX);
+  int numTicks = (int)(drawWidth / xAxis.labelWidth);
 
+  /* if custom labels requested, draw them and return */
+  if (_xAxisLabel) {
+    char *label = _xAxisLabel->GenerateLabel( _filter.xLow);
+    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignWest, true);
+    label = _xAxisLabel->GenerateLabel(_filter.xHigh);
     win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignEast, true);
+    return;
   }
-  
-  /* draw a line from startX to the end of the view */
 
-  win->SetPattern(Pattern0);
-  win->Line(startX - 1, axisY, axisMaxX, axisY, 1.0);
-  
+  /* if axis is date, draw values and return */
+  if (_xAxisAttrType == DateAttr) {
+    char *label = DateString((time_t)_filter.xLow);
+    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignWest, true);
+    label = DateString((time_t)_filter.xHigh);
+    win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignEast, true);
+    return;
+  }
+
+  /* if just two tick marks, draw start and end points */
+  if (numTicks <= 2) {
+    char buf[32];
+    sprintf(buf, "%.*g", xAxis.significantDigits, _filter.xLow);
+    win->AbsoluteText(buf, startX, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignWest, true);
+    sprintf(buf, "%.*g", xAxis.significantDigits, _filter.xHigh);
+    win->AbsoluteText(buf, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignEast, true);
+    return;
+  }
+
+  /*
+     since neither custom nor date labels are used, we can draw
+     tick marks and label each tick with the corresponding value
+  */
+
+  Coord tickMark;
+  int nTicks;
+  Coord tickInc;
+  OptimizeTickMarks(_filter.xLow, _filter.xHigh, numTicks,
+		    tickMark, nTicks, tickInc);
+
+  /* extract user transformation */
   win->PopTransform();
+  Transform2D transform = *win->TopTransform();
+  win->PushTop();
+  win->MakeIdentity();
+
+  /* draw tick marks */
+  for(int i = 0; i < nTicks; i++) {
+    Coord x, y;
+    transform.Transform(tickMark, 0, x, y);
+    win->Line(x, axisY, x, axisY + 3, 1);
+    char buf[32];
+    sprintf(buf, "%.*g", xAxis.significantDigits, tickMark);
+    Coord xLeft = x - xAxis.labelWidth / 2;
+    /* make sure label doesn't go past left or right edge */
+    if (xLeft < startX) {
+      xLeft = startX;
+      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+			axisHeight - 1, WindowRep::AlignWest, true);
+    } else if (xLeft + xAxis.labelWidth > axisX + axisWidth) {
+      xLeft = axisX + axisWidth - xAxis.labelWidth;
+      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+			axisHeight - 1, WindowRep::AlignEast, true);
+    } else {
+      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+			axisHeight - 1, WindowRep::AlignCenter, true);
+    }
+    tickMark += tickInc;
+  }
 }
 
 void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
@@ -846,8 +871,6 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 #endif
   
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
-
-  char buf[30];
 
   int axisX, axisY, axisWidth, axisHeight;
   Coord startY;
@@ -866,55 +889,145 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     return;
   }
 
-  win->PushTop();
-  win->MakeIdentity();
   win->SetFgColor(yAxis.color);
-
-  char *label;
-  
-  if (yAxis.numTicks == 2) {
-    /* draw lower Y coord */
-    Coord drawHeight = axisHeight - (startY - axisY);
-    if (_yAxisLabel)
-      label = _yAxisLabel->GenerateLabel(_filter.yLow);
-    else {
-      if (_yAxisAttrType == DateAttr) {
-	time_t tm = (time_t)_filter.yLow;
-	label = DateString(tm);
-      } else {
-	sprintf(buf,"%*.*f",yAxis.fieldWidth, yAxis.decimalPlaces,
-		_filter.yLow);
-	label = buf;
-      }
-    }
-
-    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
-    
-    /* draw upper Y coord */
-    if (_yAxisLabel)
-      label = _yAxisLabel->GenerateLabel(_filter.yHigh);
-    else {
-      if (_yAxisAttrType == DateAttr) {
-	time_t tm = (time_t)_filter.yHigh;
-	DateString(tm);
-      } else {
-	sprintf(buf,"%*.*f",yAxis.fieldWidth,
-		yAxis.decimalPlaces,_filter.yHigh);
-	label = buf;
-      }
-    }
-
-    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
-  }
+  win->SetPattern(Pattern0);
 
   /* draw a line from startY to the bottom of the view */
-
-  win->SetPattern(Pattern0);
   win->Line(axisMaxX, startY, axisMaxX, axisMaxY + 1, 1.0);
-  
+
+  Coord drawHeight = axisHeight - (startY - axisY);
+  int numTicks = (int)(drawHeight / yAxis.labelWidth);
+
+  /* if custom labels requested, draw them and return */
+  if (_yAxisLabel) {
+    char *label = _yAxisLabel->GenerateLabel( _filter.yLow);
+    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
+    label = _yAxisLabel->GenerateLabel(_filter.yHigh);
+    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
+    return;
+  }
+
+  /* if axis is date, draw values and return */
+  if (_yAxisAttrType == DateAttr) {
+    char *label = DateString((time_t)_filter.yLow);
+    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
+    label = DateString((time_t)_filter.yHigh);
+    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
+    return;
+  }
+
+  /* if just two tick marks, draw start and end points */
+  if (numTicks <= 2) {
+    char buf[32];
+    sprintf(buf, "%.*g", yAxis.significantDigits, _filter.yLow);
+    win->AbsoluteText(buf, axisX, startY + drawHeight / 2, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
+    sprintf(buf, "%.*g", yAxis.significantDigits, _filter.yHigh);
+    win->AbsoluteText(buf, axisX, startY, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
+    return;
+  }
+
+  /*
+     since neither custom nor date labels are used, we can draw
+     tick marks and label each tick with the corresponding value
+  */
+
+  Coord tickMark;
+  int nTicks;
+  Coord tickInc;
+  OptimizeTickMarks(_filter.yLow, _filter.yHigh, numTicks,
+		    tickMark, nTicks, tickInc);
+
+  /* extract user transformation */
   win->PopTransform();
+  Transform2D transform = *win->TopTransform();
+  win->PushTop();
+  win->MakeIdentity();
+
+  /* draw tick marks */
+  for(int i = 0; i < nTicks; i++) {
+    Coord x, y;
+    transform.Transform(0, tickMark, x, y);
+    win->Line(axisMaxX, y, axisMaxX - 3, y, 1);
+    char buf[32];
+    sprintf(buf, "%.*g", yAxis.significantDigits, tickMark);
+    Coord yTop = y - yAxis.labelWidth / 2;
+    /* make sure label doesn't go past left or right edge */
+    if (yTop < startY) {
+      yTop = startY;
+      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
+			yAxis.labelWidth, WindowRep::AlignNorth, true);
+    } else if (yTop + yAxis.labelWidth > axisY + axisHeight) {
+      yTop = axisY + axisHeight - yAxis.labelWidth;
+      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
+			yAxis.labelWidth, WindowRep::AlignSouth, true);
+    } else {
+      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
+			yAxis.labelWidth, WindowRep::AlignCenter, true);
+    }
+    tickMark += tickInc;
+  }
+}
+
+/* Optimize spacing and location of tick marks */
+
+void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
+			     Coord &start, int &num, Coord &inc)
+{
+  Coord tickIncrement = (high - low) / numTicks;
+
+  /* adjust tick increment so that we get nice tick values */
+  double exponent = log10(tickIncrement);
+  int tickpow = (int)exponent;
+  /* negative exponent must round down, not up */
+  if (exponent < 0 && tickpow > exponent)
+    tickpow--;
+  double mantissa = tickIncrement / pow(10, tickpow);
+  if (mantissa < 1.5)
+    mantissa = 1.0;
+  else if (mantissa < 2.25)
+    mantissa = 2.0;
+  else if (exponent >= 1 && mantissa < 2.75)
+    mantissa = 2.5;
+  else if (mantissa < 3.5)
+    mantissa = 3.0;
+  else if (mantissa < 4.5)
+    mantissa = 4.0;
+  else if (mantissa < 7.5)
+    mantissa = 5.0;
+  else
+    mantissa = 10.0;
+
+  inc = mantissa * pow(10, tickpow);
+#ifdef DEBUG
+  printf("Old tickIncrement %g, new %g\n", tickIncrement, inc);
+#endif
+
+  /*
+     adjust the midpoint of the tick marks so that tick marks end
+     up on nice coordinate values
+  */
+  Coord midPoint = (low + high) / 2.0;
+  Coord multTick = midPoint / inc;
+  Coord newMidPoint = ((int)multTick) * inc;
+  if (multTick - (int)multTick >= 0.5)
+    newMidPoint += inc;
+#ifdef DEBUG
+  printf("Old midpoint %g, new %g\n", midPoint, newMidPoint);
+#endif
+
+  /* calculate first tick mark */
+  start = newMidPoint
+          - ((int)((newMidPoint - low) / inc)) * inc;
+  num = (int)((high - start) / inc) + 1;
+#ifdef DEBUG
+  printf("%d ticks from %g to %g @ %g\n", num, start, high, inc);
+#endif
 }
 
 /* Find world coord given screen coord */
@@ -995,7 +1108,7 @@ void View::Run()
   Dispatcher::FlushMarker(readFd);
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#ifdef DEBUG
+#ifdef DEBUGxxx
   if (mode == ControlPanel::LayoutMode)
     printf("layout mode ");
   else
@@ -1031,7 +1144,7 @@ void View::Run()
   }
   
   if (notMapped || iconified) {
-#ifdef DEBUG
+#ifdef DEBUGxxx
     printf("not mapped %d, iconified %d\n", notMapped, iconified);
 #endif
     return;
@@ -1058,10 +1171,11 @@ void View::Run()
       UpdateTransform(GetWindowRep());
       _updateTransform = false;
     }
-    /* Set up transformation to draw the axes */
+
+    /* Set up identity transformation */
     winRep->PushTop();
     winRep->MakeIdentity();
-    
+
     /* Draw axes */
     DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);
     
@@ -1072,7 +1186,7 @@ void View::Run()
     
     /* Pop the transform */
     winRep->PopTransform();
-    
+
     /* Draw cursors */
     _cursorsOn = false;
     (void)DrawCursors();
@@ -1168,7 +1282,7 @@ void View::Run()
   
   /* Send the new query */
   
-  /* Set up transformation to draw the axes */
+  /* Set up identity transformation */
   winRep->PushTop();
   winRep->MakeIdentity();
   
@@ -2018,7 +2132,7 @@ void View::SavePixmaps(FILE *file)
 
 /* Restore pixmaps from an open file into pixmap buffer*/
 
-void View::LoadPixmaps(FILE  *file)
+void View::LoadPixmaps(FILE *file)
 {
   // The first 4-byte integer contains a known value. Check the value
   // to make sure we're reading data stored in the same endian order
@@ -2057,7 +2171,7 @@ void View::LoadPixmaps(FILE  *file)
   }
 
 #ifdef DEBUG
-  printf("Loading Pixmap for %s\n", GetName());
+  printf("Loading pixmap for %s\n", GetName());
 #endif
 
   DevisePixmap *pixmap = new DevisePixmap();
@@ -2077,7 +2191,7 @@ void View::LoadPixmaps(FILE  *file)
     DOASSERT(0, "Cannot read pixmap file");
   }
   
-  if (fread(pixmap->data, pixmap->compressedBytes, 1, file) != 1 ) {
+  if (fread(pixmap->data, pixmap->compressedBytes, 1, file) != 1) {
     perror("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
