@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.71  1997/12/01 21:22:07  wenger
+#	Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+#	into the trunk.
+#
 #	Revision 1.70  1997/11/12 23:26:53  donjerko
 #	Added some dialog windows for error reporting.
 #
@@ -386,6 +390,26 @@ proc addQuotes {s} {
      return $retVal
 }
 
+proc addSQLQuotes {string quote} {
+
+	# This procedure is not finished yet
+
+     set retVal $guote
+     set len [string length $s]
+     for {set i 0} {$i < $len} {incr i} {
+          set ch [string index $s $i]
+          if {$ch == "\\"} {
+               append retVal "\\\\"
+          } elseif {$ch == "\""} {
+               append retVal "\\\""
+          } else {
+               append retVal $ch
+          }
+     }
+     append retVal "\""
+     return $retVal
+}
+
 proc newViewFile {{schemaFile ""} {dataFile ""}} {
 	global schemadir
 	if {$schemaFile != ""} {
@@ -393,7 +417,7 @@ proc newViewFile {{schemaFile ""} {dataFile ""}} {
 	} else {
 		set logicalAttrlist ""
 	}
-	set result [qbrowse 1 "" $logicalAttrlist]
+	set result [qbrowse 1 ""]
 	if {$result != ""} {
 		set viewName [lindex $result 0]
 		set select [lindex $result 2]
@@ -546,8 +570,11 @@ proc updateStreamDef {} {
     		
 		# this is an insertion, make sure that table does not exist already
 
-		set oldEntry [DEVise dteShowCatalogEntry [CWD] $dispname]
-		set oldEntry [lindex $oldEntry 0]
+		set errCode [catch {DEVise dteShowCatalogEntry [fullPathName $dispname]} oldEntry]
+		if {$errCode != 0} {
+			dialog .noName "DTE Error" $oldEntry "" 0 OK
+			return
+		}
 		if {[llength $oldEntry] > 0} {
 			dialog .sourceExists "Data Stream Exists" \
 			"Data stream \"$dispname\" exists already." \
@@ -730,13 +757,12 @@ proc defineStream {base edit} {
 #	puts "editonly = $editonly\n"
 	set sourcedef ""
 	if {$base != ""} {
-		set sourcedef [DEVise dteShowCatalogEntry [CWD] $base]
+		set errCode [catch {DEVise dteShowCatalogEntry [fullPathName $base]} sourcedef]
+		if {$errCode != 0} {
+			dialog .noName "DTE Error" $sourcedef "" 0 OK
+			return
+		}
 	}
-
-#    set err [catch {set sourcedef $sourceList($base)}]
-
-	# result is only one tuple
-	set sourcedef [lindex $sourcedef 0]	
 
 	if {[llength $sourcedef] == 0} {
 		set err 1
@@ -903,7 +929,7 @@ proc fullPathName {tableName {currentDir ""}} {
 }
 
 proc isDirectory {typeName} {
-	if {$typeName == "Directory" || $typeName == "DEVise"} {
+	if {$typeName == "Directory" || $typeName == "DEVise" || $typeName == "DBServer"} {
 		return 1
 	} else {
 		return 0
@@ -915,7 +941,7 @@ proc defineANY {sourcetype} {
 	global _cwd
 
 	set retVal [define$sourcetype ""]
-#	puts "retVal = $retVal"
+ 	puts "retVal = $retVal"
 	set table [lindex $retVal 0]
 	if {$retVal != ""} {
 		set directory [selectStream "CD to parent directory"]
@@ -1044,53 +1070,21 @@ proc defineDirectory {content} {
 
 proc defineSQLView {content} {
 	# argument 0 stands for "no single table view"
-	global viewName from select as where
+	global viewName from select as where seqby
 	set viewName [lindex $content 0]
 	set type "SQLView"
-	set attrCnt [lindex $content 2]
-	if {$attrCnt != ""} {
-		set queryIndex [expr 3 + $attrCnt]
-	} else {
-		set queryIndex 0
-	}
-	set as [lrange $content 3 [expr $queryIndex - 1]]
-	set as [join $as ", "]
-#	puts "as = $as"
-	set query [lindex $content $queryIndex]
-#	puts "query = $query"
-	set beginSelect [string first select $query]
-	incr beginSelect 7
-	set beginFrom [string first from $query]
-	incr beginFrom -1
-	set select [string range $query $beginSelect $beginFrom]
-#	puts "select = $select"
-	incr beginFrom 6
-	set beginWhere [string first where $query]
-	if {$beginWhere < 0} {
-		set from [string range $query $beginFrom end]
-		set where ""
-	} else {
-		incr beginWhere -1
-		set from [string range $query $beginFrom $beginWhere]
-		incr beginWhere 7
-		set where [string range $query $beginWhere end] 
-	}
-#	puts "from = $from"
-#	puts "where = $where"
-	set retVal [qbrowse 0 $viewName "" $from $select $as $where]
+	set as [lindex $content 2]
+	set select [lindex $content 3]
+	set from [lindex $content 4]
+	set where [lindex $content 5]
+	set groupBy [lindex $content 6]
+	set seqby [lindex $content 7]
+	set orderBy [lindex $content 8]
+
+	set retVal [qbrowse 0 $viewName $from $select $as $where \
+		$groupBy $seqby $orderBy]
 	if {$retVal != ""} {
-#		puts "^^^^^^^^^^ as = $as"
-#		regsub "," $as " " spaceAs
-		set as [split $as ,]
-		set spaceAs [join $as " "]
-#		puts "^^^^^^^^^^ spaceAs = $spaceAs"
-		set attrCnt [llength $as]
-		if {$where == ""} {
-			set query "select $select from $from"
-		} else {
-			set query "select $select from $from where $where"
-		}
-		return "[addQuotes $viewName] $type $attrCnt $spaceAs [addQuotes $query]"
+ 		return $retVal
 	} else {
 		return
 	}
@@ -1941,7 +1935,7 @@ proc selectStream {{title "Select Table"}} {
 
 	set tmp [getSelectedLine]
 
-#	puts "streamsSelected = $tmp"
+ 	puts "streamsSelected = $tmp"
 
 	# check if the selected source is directory (need to change retVal)
 	# if so, update CWD, and list sources
@@ -1955,14 +1949,14 @@ proc selectStream {{title "Select Table"}} {
  	set table_type_pair [lindex $tmp 0]
 	set tableName [lindex $table_type_pair 0]
 	set typeName [lindex $table_type_pair 1]
-#	puts "tableName = $tableName; typeName = $typeName"
+ 	puts "tableName = $tableName; typeName = $typeName"
 	if { [isDirectory $typeName] } {
 		if {$tableName == ".."} {
 			CDup
 		} else {
 			CD $tableName
 		}
-#		updateSources
+ 		updateSources
 	} else {
 #		puts "continuing with streamsSelected = $tableName"
 		set streamsSelected [fullPathName $tableName]
@@ -2102,7 +2096,8 @@ proc addDataSource {dispName source} {
 
 proc updateSources {} {
 
-# This procedure probably does nothing (DD)
+# This procedure should be called when the select table window must be
+# changed in place, for example when we change the directories.
 
     if {[catch {wm state .srcsel}] > 0} {
 	return

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/12/01 21:22:05  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+#  into the trunk.
+#
 #  Revision 1.37  1997/11/24 23:15:47  weaver
 #  Changes for the new ColorManager.
 #
@@ -2016,8 +2020,9 @@ proc gbrowse {} {
 	    -side left -padx 3m -pady 1m -expand 1
 }
 
-proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
-		{_from ""} {_select ""} {_as ""} {_where ""}} {
+proc qbrowse {_isSingle {_viewName ""}
+		{_from ""} {_select ""} {_as ""} {_where ""}
+		{_groupBy ""} {_seqby ""} {_orderBy ""}} {
 	global schemadir
 
 	global isSingle
@@ -2026,11 +2031,14 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
 	global viewName
  	set viewName $_viewName
 
-	global from select as where
+	global from select as where seqby orderBy groupBy
 	set from $_from
 	set select $_select
 	set as $_as
 	set where $_where
+	set seqby $_seqby
+	set orderBy $_orderBy
+	set groupBy $_groupBy
 
 	global fromCnt attrCnt
 
@@ -2049,104 +2057,77 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
     label .gbrowse.fname.label -text "View Name "
     entry .gbrowse.fname.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable viewName
+    button .gbrowse.fname.attr -text "List Attributes" \
+    		-command getSelectedAttributes
 
-#   label .gbrowse.ops.select.label -text "SELECT "
-#   entry .gbrowse.ops.select.entry -width 100 -relief sunken -bd 2 \
-#	    -textvariable select 
-    
+    #this width determines the width of everything
+	frame .gbrowse.fname.placehold -width 400
+
     # Toplevel rows
-    frame .gbrowse.attrs -relief raised
-    frame .gbrowse.list -relief raised
     frame .gbrowse.ops -relief raised
-    pack .gbrowse.fname .gbrowse.attrs .gbrowse.list .gbrowse.ops \
+    pack .gbrowse.fname .gbrowse.ops \
 	    -side top -fill x -padx 3m -pady 1m
 
-    pack .gbrowse.fname.label .gbrowse.fname.entry -side left -padx 1m \
- 	    -pady 1m
+    pack .gbrowse.fname.label .gbrowse.fname.entry -side left -padx 1m -pady 1m
+    pack .gbrowse.fname.placehold -side left -padx 1m \
+ 	    -pady 1m -expand 1
+    pack .gbrowse.fname.attr -side left -padx 1m -pady 1m
 
-	label .gbrowse.attrs.label -text "Available Attributes"
-    pack .gbrowse.attrs.label -side top -fill x
-    listbox .gbrowse.attrs.list -relief raised -bd 1 \
-	    -yscrollcommand ".gbrowse.attrs.scroll set" \
-	    -font 9x15 -selectmode single
-    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview"
-    pack .gbrowse.attrs.scroll -side right -fill y
-    pack .gbrowse.attrs.list -fill x
 
-    # Populate the list with all the attrs 
-    foreach attr $logicalAttrlist {
-	  .gbrowse.attrs.list insert end "t.$attr" 
-	  if {$select == ""} {
-		  append select "t.$attr"
-	  } else {
-	  	 append select ", t.$attr"
-	  }
-	  if {$as == ""} {
-		  append as $attr
-	  } else {
-	  	 append as ", $attr"
-	  }
-    }
-
-    # Bind the mouse click on this list
-    bind .gbrowse.attrs.list <Double-1> {
-	  set where  "$where [.gbrowse.attrs.list get active] "
-    }
-
-    
 	frame .gbrowse.ops.from -relief raised -bd 1
 	frame .gbrowse.ops.select -relief raised -bd 1
 	frame .gbrowse.ops.as -relief raised -bd 1
 	frame .gbrowse.ops.where -relief raised -bd 1
+	frame .gbrowse.ops.groupBy -relief raised -bd 1
+	frame .gbrowse.ops.seqby -relief raised -bd 1
+	frame .gbrowse.ops.orderBy -relief raised -bd 1
 	
     frame .gbrowse.ops.op -relief raised
     if {!$isSingle} {
-    		pack .gbrowse.ops.from -side top
+    		pack .gbrowse.ops.from -side top -fill x
 	}
 
-    pack .gbrowse.ops.select .gbrowse.ops.as .gbrowse.ops.where -side top 
+    pack .gbrowse.ops.select .gbrowse.ops.as .gbrowse.ops.where \
+    .gbrowse.ops.groupBy \
+    .gbrowse.ops.seqby .gbrowse.ops.orderBy -side top -fill x
 
     pack .gbrowse.ops.op -side top -fill x -padx 3m -pady 1m
 
     label .gbrowse.ops.from.label -text "FROM "
-    entry .gbrowse.ops.from.entry -width 85 -relief sunken -bd 2 \
+    entry .gbrowse.ops.from.entry -relief sunken -bd 2 \
 	    -textvariable from 
-    button .gbrowse.ops.from.selbox -text "Select..." -width 10 -command {
+    button .gbrowse.ops.from.selbox -text "Select" -command {
          set table [selectStream]
+	    if {$table == ""} {
+	    		return
+		}
 		if {$from == ""} {
 			append from "$table as t$fromCnt"
 		} else {
 			append from ", $table as t$fromCnt"
 		}
-	    set attrs [DEVise dteListAttributes $table]
-	    foreach attr $attrs {
-	    		set fullAttr "t$fromCnt.$attr"
-	    		set attrName "attr$attrCnt"
-			incr attrCnt
-			.gbrowse.attrs.list insert end $fullAttr 
-			if {$select == ""} {
-				append select $fullAttr
-			} else {
-				append select ", $fullAttr"
-			}
-			if {$as == ""} {
-				append as $attrName
-			} else {
-				append as ", $attrName"
-			}
-	    }
 	    incr fromCnt
     }
 
     label .gbrowse.ops.select.label -text "SELECT "
-    entry .gbrowse.ops.select.entry -width 90 -relief sunken -bd 2 \
+    entry .gbrowse.ops.select.entry -relief sunken -bd 2 \
 	    -textvariable select 
+    button .gbrowse.ops.select.selbox -text "Select All" \
+    		-command {
+			set query "select * from $from"
+			set err [catch {DEVise dteListQueryAttributes $query} attrList]
+			if {$err != 0} {
+				dialog .noName "Error" $attrList "" 0 OK
+				return
+			}
+			set select [join $attrList ", "]
+		}
 
     label .gbrowse.ops.as.label -text "AS "
-    entry .gbrowse.ops.as.entry -width 80 -relief sunken -bd 2 \
+    entry .gbrowse.ops.as.entry -relief sunken -bd 2 \
 	    -textvariable as 
 
-    button .gbrowse.ops.as.selbox -text "Mirror" -width 10 -command {
+    button .gbrowse.ops.as.selbox -text "Mirror" -command {
          set as ""
 	    set selLen [llength $select]
 	    for {set i 0} {$i < $selLen} {incr i} {
@@ -2158,19 +2139,46 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
     }
 
     label .gbrowse.ops.where.label -text "WHERE "
-    entry .gbrowse.ops.where.entry -width 100 -relief sunken -bd 2 \
+    entry .gbrowse.ops.where.entry -relief sunken -bd 2 \
 	    -textvariable where 
 
-    pack .gbrowse.ops.from.label .gbrowse.ops.from.entry \
-         .gbrowse.ops.from.selbox -side left \
-	    -fill x -padx 1m -pady 1m -expand 1
-    pack .gbrowse.ops.select.label .gbrowse.ops.select.entry -side left \
-	    -fill x -padx 1m -pady 1m -expand 1
-    pack .gbrowse.ops.as.label .gbrowse.ops.as.entry \
-         .gbrowse.ops.as.selbox -side left \
-	    -fill x -padx 1m -pady 1m -expand 1
-    pack .gbrowse.ops.where.label .gbrowse.ops.where.entry -side left \
-	    -fill x -padx 1m -pady 1m -expand 1
+    label .gbrowse.ops.groupBy.label -text "GROUP BY "
+    entry .gbrowse.ops.groupBy.entry -relief sunken -bd 2 \
+	    -textvariable groupBy 
+
+    label .gbrowse.ops.seqby.label -text "SEQUENCE BY "
+    entry .gbrowse.ops.seqby.entry -relief sunken -bd 2 \
+	    -textvariable seqby 
+
+    label .gbrowse.ops.orderBy.label -text "ORDER BY "
+    entry .gbrowse.ops.orderBy.entry -relief sunken -bd 2 \
+	    -textvariable orderBy 
+
+    pack .gbrowse.ops.from.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.from.entry -side left -expand 1\
+              -fill x -padx 1m -pady 1m
+    pack .gbrowse.ops.from.selbox -side left -padx 1m -pady 1m
+
+    pack .gbrowse.ops.select.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.select.entry -side left -expand 1\
+    		-fill x -padx 1m -pady 1m
+    pack .gbrowse.ops.select.selbox -side left -padx 1m -pady 1m
+
+    pack .gbrowse.ops.as.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.as.entry -side left -padx 1m -pady 1m -expand 1 -fill x
+    pack .gbrowse.ops.as.selbox -side left -padx 1m -pady 1m
+
+    pack .gbrowse.ops.where.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.where.entry -side left -fill x -padx 1m -pady 1m -expand 1
+
+    pack .gbrowse.ops.groupBy.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.groupBy.entry -side left -fill x -padx 1m -pady 1m -expand 1
+    
+    pack .gbrowse.ops.seqby.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.seqby.entry -side left -fill x -padx 1m -pady 1m -expand 1
+    
+    pack .gbrowse.ops.orderBy.label -side left -padx 1m -pady 1m
+    pack .gbrowse.ops.orderBy.entry -side left -fill x -padx 1m -pady 1m -expand 1
     
     button .gbrowse.ops.op.and -text "AND" -command {
 	    set where "$where AND " 
@@ -2235,13 +2243,66 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
 	}
 
  	tkwait visibility .gbrowse
- 	grab .gbrowse
 	tkwait window .gbrowse
 	return $q_retVal
 }
 
+proc getSelectedAttributes {} {
+
+	global from
+
+	if {$from == "" } {
+		dialog .noName "Error" \
+			"To see the available attributes you need to fill in the FROM clause first" "" 0 OK
+		return
+	}
+	if {![WindowVisible .attrs]} {
+
+		toplevel .attrs
+		wm title .attrs "Attribute List"
+		wm geometry .attrs +50+50
+		wm iconname .attrs "Attributes"
+		frame .attrs.content -relief groove -borderwidth 2
+		label .attrs.label -text "Available Attributes"
+		pack .attrs.label -side top -fill x
+		listbox .attrs.content.list -height 20 -relief raised -bd 1 \
+		    -yscrollcommand ".attrs.content.scroll set" \
+		    -font 9x15 -selectmode single
+		pack .attrs.content -side top -fill both -expand 1
+		scrollbar .attrs.content.scroll -command ".attrs.content.list yview"
+		pack .attrs.content.scroll -side right -fill y
+		pack .attrs.content.list -side left -fill both -expand 1
+
+		frame .attrs.but
+		pack .attrs.but -side top
+
+		button .attrs.but.ok -text "OK" -width 10 -command {
+		    catch {destroy .attrs}
+		}
+
+		pack .attrs.but.ok -side left -padx 7m -pady 2m
+	}
+
+	set query "select * from $from"
+	set err [catch {DEVise dteListQueryAttributes $query} attrList]
+	if {$err != 0} {
+		dialog .noName "Error" $attrList "" 0 OK
+		return
+	}
+
+	# Populate the list with all the attrs
+
+	.attrs.content.list delete 0 end
+
+ 	foreach attr $attrList {
+ 		.attrs.content.list insert end $attr
+ 	}
+
+}
+
 proc qbrowseOKAction {} {
-	global viewName from isSingle select as where q_retVal
+	global viewName from isSingle select as where seqby \
+		groupBy orderBy q_retVal
 
 	if {$viewName == "" || ($from == "" && !$isSingle) || 
 		$select == "" || $as == ""} {
@@ -2249,13 +2310,26 @@ proc qbrowseOKAction {} {
 			"Please Enter All Required Information." "" 0 OK
 		return ""
 	}
-	set query "select $select from $from where $where"
+	set query "select $select from $from"
+	if {$where != ""} {
+		append query " where $where"
+	}
+	if {$groupBy != ""} {
+		append query " group by $groupBy"
+	}
+	if {$seqby != ""} {
+		append query " sequence by $seqby"
+	}
+	if {$orderBy != ""} {
+		append query " order by $orderBy"
+	}
+	puts "Checking query: $query"
+
 	set errmsg [DEVise dteCheckSQLViewEntry $as $query]
 	if {$errmsg != ""} {
 		dialog .noName "Incorrect Input" $errmsg "" 0 OK
 		return ""
 	}
-
         # Don't allow names with dots or spaces in them -- they will cause
         # the DTE problems.
         if {[string match {*[. ]*} $viewName]} {
@@ -2265,7 +2339,12 @@ proc qbrowseOKAction {} {
           return ""
         }
 
-	set q_retVal [list $viewName $from $select $as $where]
+	set as [split $as ,]
+	set spaceAs [join $as " "]
+	set attrCnt [llength $as]
+	set q_retVal "[addQuotes $viewName] SQLView $attrCnt $spaceAs \
+		[addQuotes $query]"
+
 	return "OK"
 }
 

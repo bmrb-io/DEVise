@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.146  1997/11/24 23:15:39  weaver
+#	Changes for the new ColorManager.
+#
 #	Revision 1.145  1997/11/24 16:22:39  wenger
 #	Added GUI for saving GData; turning on GData to socket now forces
 #	redraw of view; GData to socket params now saved in session files;
@@ -931,8 +934,13 @@ proc displayTable {table} {
          dialog .note "Note" "Please select only one table." "" 0 OK
          return
      }
-	set entry [DEVise dteShowCatalogEntry $table]
-	set entry [lindex $entry 0]
+	set fulltn [fullPathName $table]
+	set errCode [catch {DEVise dteShowCatalogEntry $fulltn} entry]
+	if {$errCode != 0} {
+		dialog .noName "DTE Error" $entry "" 0 OK
+		return
+	}
+
 	set oldTableName [lindex $entry 0]
 	set type [lindex $entry 1]
 	set retVal [define$type $entry]
@@ -1042,24 +1050,24 @@ menu .mbar.tdata.menu.indexMenu -tearoff 0
 
 proc getSelectedIndex {} {
 	global dialogListVar
-	set indexes [DEVise dteListAllIndexes]
+	set tablename [selectStream]
+	set indexes [DEVise dteListAllIndexes $tablename]
 	set formated ""
 	foreach pair [lsort $indexes] {
-		set tablename [lindex $pair 0]
-		set indexname [lindex $pair 1]
-		set item [format "%-40.40s  %-10.10s" $tablename $indexname]
-		lappend formated $item
+		set indexname [lindex $pair 0]
+		lappend formated $indexname
 	}
-#DEBUG	puts "formated = $formated"
+#	puts "formated = $formated"
 	set answer [dialogList .selectIndex "Select Index"  \
 			    "Select Index" \
 			   "" 0 { OK Cancel } \
 			   $formated ]
 	if {$answer == 0} {
-		set table_index_pair $dialogListVar(selected)
+		set table_index_pair [list $tablename $dialogListVar(selected)]
 	} else {
 		set table_index_pair ""
 	}
+#	puts "returning ------------------ $table_index_pair"
 	return $table_index_pair
 }
 
@@ -1121,7 +1129,7 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 		set where [lindex $result 2]
 		set viewName [file tail $file]
 #DEBUG		puts "calling qbrowse 1 $viewName $select $as $where"
-		qbrowse 1 $viewName "" "" $select $as $where
+		qbrowse 1 $viewName "" $select $as $where
 #DEBUG		puts "returns qbrowse 1 $viewName $select $as $where"
 		set fileName "$filterdir/$viewName"
 		saveViewFile $fileName $select $as $where

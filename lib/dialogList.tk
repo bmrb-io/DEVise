@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/22 17:33:39  jussi
+#	Added copyright message.
+#
 #	Revision 1.3  1995/09/21 15:35:58  jussi
 #	Minor changes.
 #
@@ -115,6 +118,7 @@ proc dialogList { w title text bitmap default args items {sort 1 } } {
 			set button $default"
 	}
 	set oldFocus [focus]
+	tkwait visibility $w
 	grab set $w
 	focus $w
 
