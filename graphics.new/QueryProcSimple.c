@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 21:18:41  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.2  1995/09/05 22:15:17  jussi
   Added CVS header.
 */
@@ -1021,7 +1024,7 @@ void QueryProcSimple::ResetGData(TData *tdata, GData *gdata){}
 
 
 /* Get minimum X value for mapping. Return true if found */
-virtual Boolean QueryProcSimple::GetMinX(TDataMap *, Coord &){
+Boolean QueryProcSimple::GetMinX(TDataMap *, Coord &){
 	return false;
 }
 
