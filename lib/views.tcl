@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/23 20:50:59  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -985,7 +988,6 @@ proc DoGetAction {} {
 
 ############################################################
 
-# Add an action for view
 proc DoViewAction {} {
     global curView
     if { ! [CheckView] } {
@@ -997,4 +999,178 @@ proc DoViewAction {} {
     }
     
     DEVise setAction $curView $action
+}
+
+############################################################
+
+proc DoSetBgColor {color} {
+    global curView
+
+    set but [dialog .setTitleWinError "Not Supported Yet" \
+	    "Changing view background color not supported yet." "" 0 OK ]
+    return
+
+    if {$curView == ""} {
+	set but [dialog .setTitleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    set curViewClass [GetClass view $curView]
+    set param [DEVise getCreateParam view $curViewClass $curView]
+    set param [linsert [lrange $param 0 4] end $color]
+    set cmd "DEVise changeParam $param"
+    eval $cmd
+}
+
+############################################################
+
+proc DoSetTitle {} {
+    global curView newTitle
+
+    if {$curView == ""} {
+	set but [dialog .setTitleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    # see if .setTitle window already exists; if so, just return
+    set err [catch {set exists [wm state .setTitle]}]
+    if {!$err} { wm deiconify .setTitle; return }
+
+    toplevel .setTitle
+    wm title .setTitle "Set View Title"
+    wm geometry .setTitle +50+50
+
+    frame .setTitle.top
+    frame .setTitle.bot
+    pack .setTitle.top -side top -pady 3m -fill both -expand 1
+    pack .setTitle.bot -side top -pady 5m -fill x
+
+    frame .setTitle.bot.but
+    pack .setTitle.bot.but -side top
+
+    set viewLabelParams [DEVise getLabel $curView]
+    set occupyTop [lindex $viewLabelParams 0]
+    set newTitle [lindex $viewLabelParams 2]
+    if {!$occupyTop && $newTitle == ""} {
+	set newTitle $curView
+    }
+
+    label .setTitle.top.l1 -text "Title:"
+    entry .setTitle.top.e1 -relief sunken -width 30 -textvariable newTitle
+    pack .setTitle.top.l1 .setTitle.top.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    button .setTitle.bot.but.ok -text OK -width 10 -command {
+	DEVise setLabel $curView 1 16 $newTitle
+	destroy .setTitle
+    }
+    button .setTitle.bot.but.clear -text Clear -width 10 -command {
+	set newTitle ""
+    }
+    button .setTitle.bot.but.delete -text Delete -width 10 -command {
+	DEVise setLabel $curView 0 12 ""
+	destroy .setTitle
+    }
+    button .setTitle.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .setTitle
+    }
+    pack .setTitle.bot.but.ok .setTitle.bot.but.clear \
+	    .setTitle.bot.but.delete .setTitle.bot.but.cancel \
+	    -side left -padx 3m
+}
+
+############################################################
+
+proc DoToggleAxis { axis } {
+    global curView
+    if {$curView == ""} {
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    set stat [DEVise getAxisDisplay $curView $axis]
+    set stat [expr !$stat]
+    DEVise setAxisDisplay $curView $axis $stat
+}
+
+############################################################
+
+proc DoToggleAxisAllViews { axis } {
+    global curView
+    if {$curView == ""} {
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    set stat [DEVise getAxisDisplay $curView $axis]
+    set stat [expr !$stat]
+    
+    set viewClasses [ DEVise get view ]
+    foreach viewClass $viewClasses {
+	set views [ DEVise get view $viewClass ]
+	foreach v $views {
+	    DEVise setAxisDisplay $v $axis $stat
+	}
+    }
+}
+
+############################################################
+
+proc DoToggleStatistics {} {
+    global curView statmean statmax statmin statcurr statcilevel
+
+    # The status is formed by as a binary string xxx where 1 means that the 
+    # corr. stat is to be displayed. Further, since "count" which is the 
+    # fourth stat cannot currently be displayed meaningfully on the graph
+    # always append a 0.
+    set statcount 0
+    set stat $statmean$statmax$statmin$statcount$statcilevel
+
+    if {$statcurr == 1} {
+	if {$curView == ""} {
+	    set but [dialog .toggleWinError "No Current View" \
+		    "Select a view first by clicking in it." "" 0 OK ]
+	return
+	}
+	DEVise setViewStatistics $curView $stat
+	return
+    }
+
+    set viewClasses [ DEVise get view ]
+    foreach viewClass $viewClasses {
+	set views [ DEVise get view $viewClass ]
+	foreach v $views {
+	    DEVise setViewStatistics $v $stat
+	}
+    }
+}
+
+############################################################
+
+proc DoSwapView {} {
+    global curView lastView dialogListVar
+    if { [ string compare $curView "" ] ==  0  ||
+    [string compare $lastView "" ] == 0 ||
+    [string compare $curView $lastView] == 0 } {
+	set but [dialog .swapViewError "SwapViewError" \
+		"Select two views by clicking in them in order.\n\
+		The views must be in the same window." "" 0 OK ]
+	return
+    }
+
+    # Find all views in a window
+    set win1 [DEVise getViewWin $curView]
+    set win2 [DEVise getViewWin $lastView]
+    if { [string  compare $win1 $win2] != 0 } {
+	set but [dialog .swapViewError "SwapViewError" \
+		"Select two views by clicking in them in order.\n\
+		The views must be in the same window." "" 0 OK ]
+	return
+    }
+
+    DEVise swapView $win1 $curView $lastView
 }
