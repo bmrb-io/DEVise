@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  2000/03/14 21:51:39  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.69  2000/03/14 17:05:15  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -415,7 +419,7 @@ ViewWin::~ViewWin(void)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-	printf("ViewWin::~ViewWin(%p)\n", this);
+	printf("ViewWin::~ViewWin(%s/0x%p)\n", GetName(), this);
 #endif
 
 	DetachChildren();

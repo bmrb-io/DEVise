@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.218  2000/03/14 21:51:36  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.217  2000/03/14 17:05:11  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -1180,7 +1184,7 @@ View::~View(void)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-	printf("View::~View(%s, this = %p)\n", GetName(), this);
+	printf("View::~View(%s, this = 0x%p)\n", GetName(), this);
 #endif
 
 	_inDestructor = true;
@@ -1197,6 +1201,15 @@ View::~View(void)
 
 	Unmap();
 	DeleteFromParent();
+
+	// This effectively duplicates code in the ViewWin destructor, but
+	// we need to do it here to fix bug 574.  (Probably the parent PileStack
+	// stuff should be moved from ViewWin to View, since a window can't
+	// have a parent at this point.  RKW 2000-03-15.
+	if (GetParentPileStack()) {
+	  GetParentPileStack()->DeleteView(this);
+	}
+
 	ControlPanel::Instance()->DeleteCallback(controlPanelCallback);
 
 	ReportViewDestroyed();
