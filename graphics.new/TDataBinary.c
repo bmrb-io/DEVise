@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/05 15:19:15  jussi
+  Data source object is only deleted in the destructor. The dispatcher
+  now properly destroys all TData objects when it shuts down.
+
   Revision 1.14  1996/07/03 23:13:42  jussi
   Added call to _data->Close() in destructor. Renamed
   _fileOkay to _fileOpen which is more accurate.
@@ -405,13 +409,14 @@ void TDataBinary::Initialize()
     return;
 
   Boolean fileOpened = false;
+  int i;
 
   int indexFd;
   if ((indexFd = open(_indexFileName, O_RDONLY, 0)) < 0)
     goto error;
 
   fileOpened = true;
-  
+ 
   unsigned long magicNumber;
   if (read(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
     perror("read");
@@ -478,7 +483,7 @@ void TDataBinary::Initialize()
     goto error;
   }
   
-  for(int i = 1; i < _totalRecs; i++) {
+  for(i = 1; i < _totalRecs; i++) {
     if (_index[i - 1] > _index[i]) {
       printf("Indexed index inconsistent\n");
       goto error;
