@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.119  2002/03/01 19:58:53  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.118  2002/02/06 23:09:44  xuk
 // Draw the axis labels in the JavaScreen
 //
@@ -695,7 +699,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    cmd = DEViseCommands.CONNECT + " {" +
 		jsc.jsValues.connection.username + "} {" +
 		jsc.jsValues.connection.password + "} {" +
-		DEViseGlobals.PROTOCOL_VERSION + "}\n" + cmd; 
+		DEViseGlobals.PROTOCOL_VERSION + "}\n" + cmd;
 	    
 	    _connectedAlready = true;
 
@@ -996,7 +1000,9 @@ public class DEViseCmdDispatcher implements Runnable
 	// Collabration JavaScreen, waiting for incoming commands
 	else {
 	    try {
-		processCmd(commands[0]); // for the connect command
+		for (int i = 0; i < commands.length; i++) {
+		    processCmd(commands[i]); 
+		}
 		while (jsc.specialID != -1) {
 		    processCmd(null);
 		}
@@ -1224,6 +1230,13 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.UPDATEJS)) {
             // update JS after open_session or close_session
 	    jsc.jscreen.updateScreen(false);
+
+        } else if (args[0].equals(DEViseCommands.RESET_COLLAB_NAME)) {
+            // collaboration name already exist
+	    jsc.showMsg("Already have collaboration name \"" + 
+			jsc.jsValues.session.collabLeaderName + 
+			"\". Please choose another one.");
+	    jsc.showCollabPass();
 
         } else {
             throw new YException("Unsupported command (" + response +

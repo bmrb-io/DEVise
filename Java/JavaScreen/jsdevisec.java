@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.140  2002/03/05 17:49:02  wenger
+// Minor cleanups, documented new JAVAC_UpdateJS command better.
+//
 // Revision 1.139  2002/03/04 19:55:31  xuk
 // Hide JS version string in jsb, due to limited space.
 //
@@ -874,16 +877,15 @@ public class jsdevisec extends Panel
 
         isSessionOpened = false;
 
-		//
-		// Create the one DEViseCmdDispatcher instance we will have.
-		//
+	//
+	// Create the one DEViseCmdDispatcher instance we will have.
+	//
         dispatcher = new DEViseCmdDispatcher(this);
 
-		//
-		// Open the session if a session name was specified.
-		//
+	//
+	// Open the session if a session name was specified.
+	//
         if (sessionName != null) {
-	    pn("sessionname: " + sessionName);
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
                 currentDir = currentDir + "/" + sessionName.substring(0, index);
@@ -891,15 +893,49 @@ public class jsdevisec extends Panel
             } else {
                 currentSession = sessionName;
             }
-
-            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
-	      jsValues.uiglobals.screenSize.width + " " +
-	      jsValues.uiglobals.screenSize.height + " " +
-	      jsValues.uiglobals.screenRes + " " +
-	      jsValues.uiglobals.screenRes + "\n" +
-	      DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
-	      currentSession + "}");
-        }
+	    
+	    String cmd = DEViseCommands.SET_DISPLAY_SIZE + " " +
+		jsValues.uiglobals.screenSize.width + " " +
+		jsValues.uiglobals.screenSize.height + " " +
+		jsValues.uiglobals.screenRes + " " +
+		jsValues.uiglobals.screenRes + "\n" +
+		DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
+		currentSession + "}";
+	    
+	    // For collaboration leader, set collaboration name
+	    if (jsValues.session.collabLeaderName != null) {
+		cmd = cmd + "\n" + DEViseCommands.SET_COLLAB_PASS +
+		    " {" + jsValues.session.collabLeaderName + 
+		    "} {" + jsValues.session.collabLeaderPass +
+		    "}";
+		isCollab = true;
+	    }
+	    
+            dispatcher.start(cmd);
+        } else {
+	    // for collaboration leader, set collaboration name
+	    if (jsValues.session.collabLeaderName != null) {
+		String cmd = DEViseCommands.SET_COLLAB_PASS +
+		    " {" + jsValues.session.collabLeaderName + 
+		    "} {" + jsValues.session.collabLeaderPass +
+		    "}";
+		dispatcher.start(cmd);
+		isCollab = true;
+	    }
+	    
+	    // for automatic collaboration
+	    if (jsValues.session.collabName != null) {
+		String flag = new Integer(2).toString();
+		String id = new Integer(0).toString();
+		String cmd = DEViseCommands.COLLABORATE + 
+		    " {" + flag + "} {" + id + "} {" + 
+		    jsValues.session.collabName + "} {" + 
+		    jsValues.session.collabPass + "}";
+		// temp specialID 
+		specialID = 0;
+		dispatcher.start(cmd);
+	    }
+	}
 
 	if (jv.session.autoPlayback) {
 	    logFileName = jv.session.clientLogName;
@@ -1277,7 +1313,8 @@ public class jsdevisec extends Panel
 	//TEMP We really shouldn't set specialID until here, in case we
 	// didn't succeed in collaborating, but not setting it earlier
 	// somehow goofs things up.  RKW 2001-11-12.
-        // specialID = leaderId;
+        
+	specialID = leaderId;
 
 	collabMode();
     }
@@ -3118,15 +3155,14 @@ class CollabIdDlg extends Frame
 
         //clientList.removeAll();
 
-        for (int i = 1; i <= (clients.length-1)/3; i++) {
+        for (int i = 1; i <= (clients.length-1)/4; i++) {
 	    String list = new String(); 
-	    list = clients[(i-1)*3+1] + clients[(i-1)*3+2] 
-		   + clients[(i-1)*3+3];
+	    list = clients[(i-1)*4+1] + clients[(i-1)*4+2] 
+		   + clients[(i-1)*4+3] + clients[(i-1)*4+4];
 	    clientList.add(list);
 	}
 
 	if (clientList.getItemCount() <= 0) {
-	    // jsc.showMsg("No available JavaScreen for collaboration.");
 	    clientList.add("No available collaboration leader.");
 	    emptyList = true;
 	} else {
@@ -3196,6 +3232,7 @@ class CollabPassDlg extends Dialog
     jsdevisec jsc = null;
 
     public TextField pass = new TextField(20);
+    public TextField name = new TextField(20);
     public Button setButton = new Button("Set");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
@@ -3212,7 +3249,7 @@ class CollabPassDlg extends Dialog
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
-        setTitle("Setting Collaboration Password");
+        setTitle("Setting Collaboration Name & Password");
 
         setButton.setBackground(jsc.jsValues.uiglobals.bg);
         setButton.setForeground(jsc.jsValues.uiglobals.fg);
@@ -3234,7 +3271,7 @@ class CollabPassDlg extends Dialog
         c.weighty = 1.0;
         c.insets = new Insets(10, 10, 10, 10);
 
-	pass.setText(jsc.collabPass);
+	pass.setText(jsc.jsValues.session.collabLeaderPass);
 
         Button [] button = new Button[2];
         button[0] = setButton;
@@ -3244,12 +3281,21 @@ class CollabPassDlg extends Dialog
 
 
         c.gridwidth = 1;
-        Label label = new Label("Set Collaboration Password:");
-        gridbag.setConstraints(label, c);
-        add(label);
+	Label label1 = new Label("Collaboration Name:");
+        gridbag.setConstraints(label1, c);
+        add(label1);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(name, c);
+        add(name); 
+
+	c.gridwidth = 1;
+	Label label2 = new Label("Collaboration Passwd:");
+        gridbag.setConstraints(label2, c);
+        add(label2);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(pass, c);
         add(pass);
+
         gridbag.setConstraints(panel, c);
         add(panel);
 
@@ -3282,13 +3328,16 @@ class CollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.collabPass = pass.getText();
-
+			jsc.jsValues.session.collabLeaderPass = 
+			    pass.getText();
+			jsc.jsValues.session.collabLeaderName = 
+			    name.getText();
 			String command = new String();
-			command = DEViseCommands.SET_COLLAB_PASS + " {" + jsc.collabPass + "}";
-			jsc.dispatcher.start(command);
-			
+			command = DEViseCommands.SET_COLLAB_PASS + 
+			    " {" + jsc.jsValues.session.collabLeaderName + "}" + 
+			    " {" + jsc.jsValues.session.collabLeaderPass + "}";
 			close();
+			jsc.dispatcher.start(command);
                     }
                 });
 
@@ -3428,8 +3477,10 @@ class EnterCollabPassDlg extends Dialog
 			jsc.collabPass = pass.getText();
 
 			String id = new Integer(jsc.specialID).toString();
-			String command = DEViseCommands.COLLABORATE + " {" + 
-			    id + "} {" + jsc.collabPass + "}";
+			String flag = new Integer(1).toString();
+			String command = DEViseCommands.COLLABORATE + 
+			    " {" +  flag + "} {" + id + "} {} {" + 
+			    jsc.collabPass + "}";
 
                         jsc.dispatcher.start(command);
 			close();
