@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  2000/03/14 17:05:14  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.16  1999/12/01 00:09:37  wenger
   Disabled extra debug logging for tracking down Omer's crash.
 
@@ -97,10 +101,14 @@ ViewLayout:: ViewLayout(char* name,  Coord x, Coord y, Coord w, Coord h)
 #if defined(DEBUG)
   printf("ViewLayout(0x%p)::ViewLayout(%s)\n", this, name);
 #endif
+
+  _objectValid.Set();
 }
 
 ViewLayout::~ViewLayout(void)
 {
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
 	DeleteFromParent();
 	Unmap();
 }
@@ -109,6 +117,7 @@ ViewLayout::~ViewLayout(void)
 
 void ViewLayout::Map(int x, int y, unsigned w, unsigned h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewLayout(%s)::Map(%d, %d, %d, %d)\n", GetName(), x, y, w, h);
 #endif
@@ -119,12 +128,14 @@ void ViewLayout::Map(int x, int y, unsigned w, unsigned h)
 
 void ViewLayout::Unmap()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   UnmapChildren();
   ViewWin::Unmap();
 }
 
 void ViewLayout::Append(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewLayout(%s)::Append(%s)\n", GetName(), child->GetName());
 #endif
@@ -143,6 +154,7 @@ void ViewLayout::Append(ViewWin *child)
 
 void ViewLayout::Delete(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   ViewWin::Delete(child);
 
   if (Mapped()) {
@@ -155,6 +167,7 @@ void ViewLayout::Delete(ViewWin *child)
 
 void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewLayout::SwapChildren()\n");
 #endif
@@ -184,6 +197,7 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 
 void ViewLayout::Iconify(Boolean iconified)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   int index;
   for(index = InitIterator(); More(index);) {
     ViewWin *vw = Next(index);
@@ -194,6 +208,7 @@ void ViewLayout::Iconify(Boolean iconified)
 
 void ViewLayout::UnmapChildren()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   int index;
   for(index = InitIterator(); More(index);) {
     ViewWin *vw = Next(index);
@@ -209,6 +224,7 @@ void ViewLayout::UnmapChildren()
 void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 								 unsigned w, unsigned h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
 		   this, x, y, w, h);

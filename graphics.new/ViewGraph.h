@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.81  2000/02/24 18:50:31  wenger
+  F/f ("full" cursor) in a view does home on the source views of any cursors
+  for which the selected view is the destination view.
+
   Revision 1.80  2000/02/15 16:16:25  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -398,6 +402,7 @@
 #include "QueryProc.h"
 #include "GDataSock.h"
 #include "Util.h"
+#include "ObjectValid.h"
 
 #include "Color.h"
 
@@ -910,6 +915,9 @@ public:
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
 									char**& msgs, int& numMsgs);
         static void NiceAxisRange(Coord &low, Coord &high);
+
+    private:
+	    ObjectValid _objectValid;
 };
 
 //******************************************************************************

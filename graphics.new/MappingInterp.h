@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  2000/03/10 16:31:59  wenger
+  Found and fixed bug 572 (problem with switching stations in ASOS and
+  AWON sessions).
+
   Revision 1.51  2000/01/13 23:07:09  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -249,6 +253,7 @@
 #include "Bitmap.h"
 #include "GDataRec.h"
 #include "AttrList.h"
+#include "ObjectValid.h"
 
 class TData;
 class StringStorage;
@@ -467,6 +472,9 @@ private:
   TData *_tdata;
 
   char *_parentValue;
+
+private:
+  ObjectValid _objectValid;
 };
 
 #endif

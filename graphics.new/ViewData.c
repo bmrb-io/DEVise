@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/07/21 18:51:14  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.23  1999/05/28 16:32:46  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -168,11 +171,14 @@ ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp,
 #if defined(DEBUG)
 	printf("ViewData::ViewData(0x%p, %s)\n", this, name);
 #endif
+
+    _objectValid.Set();
 }
 
 //******************************************************************************
 ViewData::~ViewData()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewData::~ViewData(0x%p, %s)\n", this, _name);
 #endif
@@ -198,6 +204,7 @@ ViewData::~ViewData()
 void
 ViewData::QueryInit(void* userData)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewData(%s)::QueryInit()\n", GetName());
 #endif
@@ -223,6 +230,7 @@ void
 ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   TDataMap* map)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewData(%s)::QueryDone(%d)\n", GetName(), bytes);
 #endif
@@ -255,6 +263,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								 Boolean needDrawnList, int& recordsDrawn,
 								 BooleanArray*& drawnList)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewData(%s)::ReturnGData(%d, 0x%p, %d)\n", GetName(), (int)recId,
 	  gdata, numGData);
@@ -595,6 +604,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 Boolean
 ViewData::HasDerivedTable()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewData::HasDerivedTable()\n");
 #endif
@@ -608,6 +618,7 @@ ViewData::HasDerivedTable()
 void
 ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewData::InsertValues(%d)\n", recCount);
 #endif
@@ -629,6 +640,7 @@ ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 char *
 ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewData::CreateDerivedTable(%s)\n", masterAttrName);
 #endif
@@ -661,6 +673,7 @@ ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
 void
 ViewData::DestroyDerivedTable(char *tableName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewData::DestroyDerivedTable(%s)\n", tableName);
 #endif
@@ -689,6 +702,7 @@ ViewData::DestroyDerivedTable(char *tableName)
 DerivedTable *
 ViewData::GetDerivedTable(char *tableName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewData::GetDerivedTable(%s)\n", tableName);
 #endif

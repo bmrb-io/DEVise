@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/03/14 17:05:15  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.7  1999/11/29 21:07:52  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -110,6 +114,9 @@ protected:
 		// Callback methods (WindowRepCallback)
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
+
+private:
+  ObjectValid _objectValid;
 };
 
 //******************************************************************************

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.217  2000/03/14 17:05:11  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.216  2000/02/16 18:51:22  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -1061,6 +1065,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	printf("View::View(%s, this = %p)\n", name, this);
 #endif
 
+    _objectValid.Set();
+
 	_inDestructor = false;
 
 	controlPanelCallback = new View_ControlPanelCallback(this);
@@ -1172,6 +1178,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 View::~View(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("View::~View(%s, this = %p)\n", GetName(), this);
 #endif
@@ -1204,12 +1211,14 @@ View::~View(void)
 
 void    View::SetForeground(PColorID fgid)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	ViewWin::SetForeground(fgid);
 	Refresh();
 }
 
 void    View::SetBackground(PColorID bgid)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	ViewWin::SetBackground(bgid);
 	Refresh();
 }
@@ -1218,6 +1227,7 @@ void    View::SetBackground(PColorID bgid)
 // background are changed.
 void    View::SetColors(PColorID fgid, PColorID bgid)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	ViewWin::SetForeground(fgid);
 	ViewWin::SetBackground(bgid);
 	Refresh();
@@ -1280,6 +1290,7 @@ int View::FindViewId(View *view)
 
 void View::SubClassMapped()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SubClassMapped()\n", GetName());
 #endif
@@ -1302,6 +1313,7 @@ void View::SubClassMapped()
 	
 void View::SubClassUnmapped()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SubClassUnmapped()\n", GetName());
 #endif
@@ -1313,6 +1325,7 @@ void View::SubClassUnmapped()
 void View::SetVisualFilterCommand(const VisualFilter &filter,
     Boolean registerEvent)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilterCommand()\n", GetName());
 #endif
@@ -1348,6 +1361,7 @@ void View::SetVisualFilterCommand(const VisualFilter &filter,
 
 void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
   printf("  Old filter: (%g, %g), (%g, %g) %d\n", _filter.xLow, _filter.yLow,
@@ -1418,21 +1432,25 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 
 void View::GetVisualFilter(VisualFilter &filter)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   filter = _filter;
 }
 
 VisualFilter *View::GetVisualFilter()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return &_filter;
 }
 
 void View::Mark(int index, Boolean marked)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _filterQueue->Mark(index, marked);
 }
 
 Boolean View::CheckCursorOp(int x, int y)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::CheckCursorOp()\n", GetName());
 #endif
@@ -1503,6 +1521,7 @@ Boolean View::CheckCursorOp(int x, int y)
 
 void View::SetNumDimensions(int d, Boolean notifyPile = true)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (d != 2 && d != 3) {
     fprintf(stderr, "View::SetNumDimensions %d invalid\n", d);
     return;
@@ -1526,6 +1545,7 @@ void View::SetNumDimensions(int d, Boolean notifyPile = true)
 
 void View::SetSolid3D(int solid)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (solid == _solid3D)
     return;
 
@@ -1539,6 +1559,7 @@ void View::SetSolid3D(int solid)
 
 void View::SetDisplayDataValues(Boolean disp)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (disp == _dispDataValues)
     return;
 
@@ -1552,6 +1573,7 @@ void View::SetDisplayDataValues(Boolean disp)
 
 void View::SetPileMode(Boolean mode)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SetPileMode(%d)\n", GetName(), mode);
 #endif
@@ -1594,6 +1616,7 @@ void View::SetPileMode(Boolean mode)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(), x, y, wd, ht);
 #endif
@@ -1627,6 +1650,7 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
 
 void View::GetLabelArea(int &x, int &y, int &width, int &height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   unsigned int w, h;
   Geometry(x, y, w, h);
 
@@ -1670,6 +1694,7 @@ area = x,y,width, height, and startX, as follows:
 void View::GetXAxisArea(int &x, int &y, int &width, int &height,
 			int &startX)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   unsigned int windW, winH;
@@ -1721,6 +1746,7 @@ area = x,y,width, height, and startX, as follows:
 
 void View::GetYAxisArea(int &x, int &y, int &width, int &height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   unsigned int winW, winH;
@@ -1754,6 +1780,7 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
 // Note: Y here is up from the bottom, not down from the top!!  RKW 1999-03-15.
 void View::GetDataArea(int &x, int &y, int &width,int &height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   unsigned int winWidth, winHeight;
   Geometry(x, y, winWidth, winHeight);
   
@@ -1807,6 +1834,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
 
 void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::DrawAxesLabel %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
@@ -1863,6 +1891,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   WindowRep*	win = GetWindowRep();
   win->SetGifDirty(true);
 	
@@ -1898,6 +1927,7 @@ void View::DrawLabel()
 void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 		     Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::FindWorld(%d, %d, %d, %d)\n", sx1, sy1, sx2, sy2);
 #endif
@@ -1917,6 +1947,7 @@ void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 
 void View::CalcTransform2(WindowRep *winRep)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -1943,6 +1974,7 @@ void View::CalcTransform2(WindowRep *winRep)
 
 void View::CalcTransform3(WindowRep *winRep)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -1961,6 +1993,7 @@ void View::CalcTransform3(WindowRep *winRep)
 
 void View::ReportQueryDone(int bytes, Boolean aborted)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::ReportQueryDone(%d, %d)\n", _name, bytes, aborted);
 #endif
@@ -2113,6 +2146,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 
 void View::UpdateTransform(WindowRep *winRep)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::UpdateTransform %s\n", GetName());
 #endif
@@ -2131,6 +2165,7 @@ void View::UpdateTransform(WindowRep *winRep)
 
 void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   occupyTop = _label.occupyTop;
   extent = _label.extent;
   name = _label.name;
@@ -2141,6 +2176,7 @@ void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
 void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
     Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_pileMode && notifyPile) {
     GetParentPileStack()->SetLabelParam(occupyTop, extent, name);
 	return;
@@ -2192,6 +2228,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
 
 void View::XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::XAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
@@ -2212,6 +2249,7 @@ void View::XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 
 void View::YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::YAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
@@ -2233,6 +2271,7 @@ void View::YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 
 void View::XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::XAxisTicksOnOff(%d)\n", GetName(), ticksOn);
 #endif
@@ -2255,6 +2294,7 @@ void View::XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
 
 void View::YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::YAxisTicksOnOff(%d)\n", GetName(), ticksOn);
 #endif
@@ -2304,6 +2344,7 @@ Return:
 
 View::UpdateFilterStat View::UpdateFilterWithScroll()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("UpdateFilterWithScroll: _refresh %d, _filterChanged %d, _hasExposure %d\n",
 	 _refresh, _filterChanged, _hasExposure);
@@ -2407,6 +2448,7 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
 
 void View::AbortQuery()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::AbortQuery()\n", _name);
 #endif
@@ -2426,6 +2468,7 @@ void View::AbortQuery()
 
 void View::Refresh(Boolean refreshPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
   printf("  _pileMode = %d, GetParentPileStack() = 0x%p\n", _pileMode,
@@ -2452,6 +2495,7 @@ void View::Refresh(Boolean refreshPile)
 void
 View::CancelRefresh()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::CancelRefresh()\n", GetName());
 #endif
@@ -2461,6 +2505,7 @@ View::CancelRefresh()
 
 void View::ReportViewCreated()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewCallbackList)
     return;
   
@@ -2480,6 +2525,7 @@ void View::ReportViewCreated()
 
 void View::ReportViewRecomputed()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::ReportViewRecomputed()\n");
 #endif
@@ -2504,6 +2550,7 @@ void View::ReportViewRecomputed()
 
 void View::ReportViewDestroyed()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewCallbackList)
     return;
   
@@ -2524,6 +2571,7 @@ void View::ReportViewDestroyed()
 
 void View::ReportFilterAboutToChange()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewCallbackList)
     return;
   
@@ -2542,6 +2590,7 @@ void View::ReportFilterAboutToChange()
 
 void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::ReportFilterChanged()\n", GetName());
 #endif
@@ -2588,6 +2637,7 @@ void View::DeleteViewCallback(ViewCallback *callBack)
 
 void View::Iconify(Boolean iconified)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (iconified) {
     AbortQuery();
   }
@@ -2598,6 +2648,7 @@ void View::Iconify(Boolean iconified)
 
 void View::DoSelect(Boolean flag)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Highlight view %s %d\n", GetName(), flag);
 #endif
@@ -2626,6 +2677,7 @@ void View::DoSelect(Boolean flag)
 
 void View::DrawHighlight()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::DrawHighlight()\n", GetName());
 #endif
@@ -2659,21 +2711,25 @@ void View::DrawHighlight()
 
 void View::SetXAxisAttrType(AttrType type)
 { 
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _xAxis.SetAttrType(type);
 }
 
 void View::SetYAxisAttrType(AttrType type)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _yAxis.SetAttrType(type);
 }
 
 void View::SetZAxisAttrType(AttrType type)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _zAxis.SetAttrType(type);
 }
 
 void View::AppendCursor(DeviseCursor *cursor)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::AppendCursor(%s)\n", GetName(), cursor->GetName());
 #endif
@@ -2683,6 +2739,7 @@ void View::AppendCursor(DeviseCursor *cursor)
 
 void View::DeleteCursor(DeviseCursor *cursor)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::DeleteCursor(%s)\n", GetName(), cursor->GetName());
 #endif
@@ -2694,6 +2751,7 @@ void View::DeleteCursor(DeviseCursor *cursor)
 Boolean
 View::DrawCursors()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::DrawCursors()\n", GetName());
 #endif
@@ -2761,6 +2819,7 @@ View::DrawCursors()
 Boolean
 View::HideCursors()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::HideCursors()\n", GetName());
 #endif
@@ -2800,6 +2859,7 @@ View::HideCursors()
 void
 View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::DoDrawCursor(%s)\n", GetName(), cursor->GetName());
 #endif
@@ -2859,6 +2919,7 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 
 FilterQueue *View::GetHistory()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   // Make sure we've at least got the current filter in the history!
   if (_filterQueue->Size() == 0) {
     _filterQueue->Enqueue(_filter, _filter.marked);
@@ -2869,6 +2930,7 @@ FilterQueue *View::GetHistory()
 void
 View::BackOne()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::BackOne()\n", GetName());
 #endif
@@ -2885,11 +2947,13 @@ View::BackOne()
 
 void View::ClearHistory()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _filterQueue->Clear();
 }
 
 void View::InsertHistory(VisualFilter &filter)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   (void)_filterQueue->Enqueue(filter, filter.marked);
 }
 
@@ -2898,6 +2962,7 @@ void View::InsertHistory(VisualFilter &filter)
 
 void View::CachePixmap(int bytes)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 }
 
 /* Look into pixmap buffer for pixmap that we can use for drawing
@@ -2906,6 +2971,7 @@ void View::CachePixmap(int bytes)
 View::PixmapStat View::RestorePixmap(VisualFilter filter,
 				     VisualFilter &newFilter)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   int x, y;
   unsigned int width, height;
   Geometry(x, y, width, height);
@@ -2941,6 +3007,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
 
 void View::InvalidatePixmaps()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_pixmap)
     return;
 
@@ -2967,6 +3034,7 @@ void	View::RefreshAll(void)
 
 void View::SavePixmaps(FILE *file)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("SavePixmap at bytes %ld\n", ftell(file));
   printf("View SavePixmaps bytes %d\n", _bytes);
@@ -3162,6 +3230,7 @@ void View::SavePixmaps(FILE *file)
 
 void View::LoadPixmaps(FILE *file)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   // The first 4-byte integer contains a known value. Check the value
   // to make sure we're reading data stored in the same endian order
   // as this machine is using.
@@ -3305,6 +3374,7 @@ void View::LoadPixmaps(FILE *file)
 
 void View::PrintStat()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   int total = _jump + _zoomIn + _zoomOut + _scrollLeft + _scrollRight
               + _unknown;
   printf("View %s: total operationss %d\n", GetName(), total);
@@ -3325,6 +3395,7 @@ void View::PrintStat()
 #if 0
 void View::CompRhoPhiTheta()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("<<<< x = %f y = %f z = %f\n",
          _filter.camera.x_, _filter.camera.y_, _filter.camera.z_);
@@ -3402,6 +3473,7 @@ void View::CompRhoPhiTheta()
 
 void View::SetCamera(Camera camera)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   /* see if 3D mapping needs to be updated */
 #if 0
   if (camera.x_ != _filter.camera.x_ ||
@@ -3438,6 +3510,7 @@ void View::SetCamera(Camera camera)
 
 void View::Draw3DAxis()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Drawing 3D axis\n");
 #endif
@@ -3452,6 +3525,7 @@ void View::Draw3DAxis()
 DevStatus
 View::PrintPS()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(0x%p)::PrintPS(%s)\n", this, _name);
 #endif
@@ -3490,6 +3564,7 @@ View::PrintPS()
 DevStatus
 View::PrintPSDone()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::PrintPSDone(%s)\n", _name);
 #endif
@@ -3516,6 +3591,7 @@ void
 View::SetFont(const char *which, int family, float pointSize,
 	      Boolean bold, Boolean italic, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::SetFont(%s, %d, %f, %d, %d)\n", which, family, pointSize,
     bold, italic);
@@ -3562,6 +3638,7 @@ void
 View::GetFont(const char *which, int &family, float &pointSize,
 	      Boolean &bold, Boolean &italic)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::GetFont()\n");
 #endif
@@ -3589,6 +3666,7 @@ View::GetFont(const char *which, int &family, float &pointSize,
 // View::UpdateViewTable(char *name, double X, double Y, PColorID bgid) 
 void View::UpdateViewTable()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DataSourceBuf *vBuf = GetViewTable();
   char line[100];
   int index = _viewList->InitIterator();
@@ -3623,6 +3701,7 @@ void View::UpdateViewTable()
 
 DataSourceBuf* View::GetViewTable()      
 { 
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewTableBuffer) {
     _viewTableBuffer = new DataSourceFixedBuf(3072, "viewTableBuffer");
   }
@@ -3636,6 +3715,7 @@ DataSourceBuf* View::GetViewTable()
 
 void	View::ModeChange(ControlPanel::Mode mode)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("Change mode %d,%d,%d,%d\n", _hasExposure, _filterChanged, _refresh,
 		   _updateTransform);
@@ -3660,6 +3740,7 @@ void	View::ModeChange(ControlPanel::Mode mode)
 
 char*	View::DispatchedName(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	return "View";
 }
 
@@ -3667,6 +3748,7 @@ char*	View::DispatchedName(void)
 // XXX: need to crop exposure against _filter before sending query.
 void	View::Run(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
 	{
       char logBuf[256];
@@ -4144,6 +4226,7 @@ void	View::Run(void)
 void	View::HandleExpose(WindowRep* w, int x, int y, unsigned width, 
 						   unsigned height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("View(%s)::HandleExpose()\n", GetName());
 	printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
@@ -4207,6 +4290,7 @@ void	View::HandleExpose(WindowRep* w, int x, int y, unsigned width,
 void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 						   unsigned width, unsigned height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
 		   width, height);
@@ -4247,6 +4331,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 void
 View::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::IsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
 #endif
@@ -4268,6 +4353,7 @@ View::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 void
 View::DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::DoIsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
 #endif
@@ -4320,6 +4406,7 @@ View::DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 void
 View::MouseDrag(int x1, int y1, int x2, int y2)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::MouseDrag(%d, %d, %d, %d)\n", GetName(), x1, y1, x2, y2);
 #endif
@@ -4352,6 +4439,7 @@ View::MouseDrag(int x1, int y1, int x2, int y2)
 
 void View::SetViewDir(ViewDir dir)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   Camera c;
   c.view_dir=dir;
   c.pan_right=0.0;
@@ -4376,6 +4464,7 @@ View::FindSelectedView()
 void
 View::SelectView(Boolean calledFromPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::SelectView()\n", GetName());
 #endif
@@ -4412,6 +4501,7 @@ View::SetShowNames(Boolean showNames)
 void
 View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_pileMode && notifyPile) {
     GetParentPileStack()->SetXAxisDateFormat(format);
   } else {
@@ -4423,6 +4513,7 @@ View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 void
 View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_pileMode && notifyPile) {
     GetParentPileStack()->SetYAxisDateFormat(format);
   } else {
@@ -4469,6 +4560,7 @@ View::InvalidateCursors()
 void
 View::ShowMouseLocation(int *mouseX, int *mouseY)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View::ShowMouseLocation(");
   if (mouseX) {
@@ -4563,6 +4655,7 @@ View::EnableDrawing(Boolean enable)
 Boolean
 View::ForceIntoDataArea(int &x, int &y)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   Boolean result = false;
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -4596,6 +4689,7 @@ View::ForceIntoDataArea(int &x, int &y)
 void
 View::SetViewHelp(const char *helpStr)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_viewHelp) FreeString((char *)_viewHelp);
   _viewHelp = CopyString(helpStr);
 }

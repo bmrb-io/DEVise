@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.96  2000/03/14 17:05:30  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.95  2000/01/13 23:07:08  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -552,12 +556,15 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _offsets = new GDataAttrOffset;
   SetGDataOffset(_offsets);
 
+  _objectValid.Set();
+
   ChangeCmd(cmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
 }
 
 //--------------------------------------------------------------------------
 MappingInterp::~MappingInterp()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("MappingInterp(%s)::~MappingInterp()\n", GetName());
 #endif
@@ -586,6 +593,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 			      VisualFlag *dimensionInfo,
 			      int numDimensions)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("MappingInterp::ChangeCmd(0x%p, %d dimensions, cmdFlag 0x%lx, "
 	 "attrFlag 0x%lx\n", this, numDimensions, flag, attrFlag);
@@ -637,6 +645,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 					unsigned long int &attrFlag)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   cmdFlag = _cmdFlag;
   attrFlag = _cmdAttrFlag;
   return _cmd;
@@ -646,6 +655,7 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 /* Get the AttrInfo for a GData attribute. */
 AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("MappingInterp::MapGAttr2TAttr()\n");
 #endif
@@ -725,6 +735,7 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 //--------------------------------------------------------------------------
 char *MappingInterp::MapTAttr2GAttr(char *tname)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int i;
     AttrInfo *info;
     char *gname = new char[64];
@@ -759,6 +770,7 @@ char *MappingInterp::MapTAttr2GAttr(char *tname)
 /* Get the AttrInfo for shape attribute i */
 AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("MappingInterp::MapShapeAttr2TAttr()\n");
 #endif
@@ -791,6 +803,7 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   int &recordsProcessed,
 				   Boolean timeoutAllowed)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("MappingInterp::DrawGDataArray(%s, 0x%p, %d)\n", view->GetName(),
     win, num);
@@ -860,6 +873,7 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 				   int numRecs, void *gdataPtr)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("MappingInterp::ConvertToGData id %d numRecs %d, buf 0x%p,"
 	   " gbuf 0x%p\n", (int) startRecId, numRecs, buf, gdataPtr);
@@ -878,6 +892,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 void
 MappingInterp::SetParentValue(const char *value)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("MappingInterp(%s)::SetParentValue(%s)\n", GetName(), value);
 #endif

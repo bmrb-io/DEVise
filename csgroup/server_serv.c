@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2000/03/14 17:04:50  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.5  1998/08/21 22:16:11  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -179,7 +183,7 @@ server_prog_1(int fd)
 			}
 
 			result = groupsend_1_svc(&strArg, cInfoArg, msgArg);
-			FreeString(msgArg.msg);
+			free(msgArg.msg);
 			if (XferRpcReturn(fd, result) <= 0) {
 				ret = -1;
 			}

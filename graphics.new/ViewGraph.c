@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.139  2000/03/14 17:05:35  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.138  2000/03/10 16:32:00  wenger
   Found and fixed bug 572 (problem with switching stations in ASOS and
   AWON sessions).
@@ -823,10 +827,13 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
 
   _viewSymFilterInfo = new ViewSymFilterInfo;
   _viewSymParentVal = NULL;
+
+  _objectValid.Set();
 }
 
 ViewGraph::~ViewGraph(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph::~ViewGraph(0x%p, %s)\n",
 		this, (GetName() != NULL) ? GetName() : "<null>");
@@ -909,6 +916,7 @@ ViewGraph::~ViewGraph(void)
 
 double	ViewGraph::CalcDataColorEntropy(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	Coloring	coloring;
 	IntVector	count;
 
@@ -934,6 +942,7 @@ double	ViewGraph::CalcDataColorEntropy(void)
 
 void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     // add the link as one of the links whose master this view is
     if (!_masterLink.Find(link)) {
 #ifdef DEBUG
@@ -947,6 +956,7 @@ void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
 
 void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (_masterLink.Find(link)) {
         _masterLink.Delete(link);
 #ifdef DEBUG
@@ -959,6 +969,7 @@ void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
 void
 ViewGraph::UnlinkMasterSlave()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	//
 	// For all links that this view is the master of, reset the master view.
 	//
@@ -988,6 +999,7 @@ ViewGraph::UnlinkMasterSlave()
 
 void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (!_slaveLink.Find(link)) {
 #if defined(DEBUG)
         printf("View %s becomes slave of record link %s\n", GetName(),
@@ -1002,6 +1014,7 @@ void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
 
 void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (_slaveLink.Find(link)) {
         _slaveLink.Delete(link);
 #if defined(DEBUG)
@@ -1017,6 +1030,7 @@ void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
 void
 ViewGraph::AddVisualLink(VisualLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::AddVisualLink(%s)\n", GetName(), link->GetName());
 #endif
@@ -1029,6 +1043,7 @@ ViewGraph::AddVisualLink(VisualLink *link)
 void
 ViewGraph::DeleteVisualLink(VisualLink *link)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::DeleteVisualLink(%s)\n", GetName(), link->GetName());
 #endif
@@ -1039,6 +1054,7 @@ ViewGraph::DeleteVisualLink(VisualLink *link)
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::InsertMapping(%s, %s)\n", GetName(),
       map->GetName(), label);
@@ -1108,6 +1124,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 
 void ViewGraph::RemoveMapping(TDataMap *map)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::RemoveMapping(%s)\n", GetName(), map->GetName());
 #endif
@@ -1135,6 +1152,7 @@ void ViewGraph::RemoveMapping(TDataMap *map)
 
 char *ViewGraph::GetMappingLegend(TDataMap *map)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int index = InitMappingIterator();
 
     while(MoreMapping(index)) {
@@ -1152,6 +1170,7 @@ char *ViewGraph::GetMappingLegend(TDataMap *map)
 
 void ViewGraph::SetMappingLegend(TDataMap *map, char *label)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int index = InitMappingIterator();
 
     while(MoreMapping(index)) {
@@ -1168,6 +1187,7 @@ void ViewGraph::SetMappingLegend(TDataMap *map, char *label)
 
 void ViewGraph::DrawLegend()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     WindowRep*	win = GetWindowRep();
 	
     win->PushTop();
@@ -1208,6 +1228,7 @@ void ViewGraph::DrawLegend()
 void
 ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::GetHome2D(%d)\n", GetName(), explicitRequest);
 #endif
@@ -1386,6 +1407,7 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 
 void ViewGraph::GoHome(Boolean explicitRequest)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::GoHome(%d)\n", GetName(), explicitRequest);
 #endif
@@ -1448,6 +1470,7 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 
 void ViewGraph::PanLeftOrRight(PanDirection direction)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(0x%p)::PanLeftOrRight(%d)\n", this, (int) direction);
 #endif
@@ -1506,6 +1529,7 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
 
 void ViewGraph::PanUpOrDown(PanDirection direction)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(0x%p)::PanUpOrDown(%d)\n", this, (int) direction);
 #endif
@@ -1562,6 +1586,7 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
 void
 ViewGraph::CursorHome()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::GoHome()\n", GetName());
 #endif
@@ -1585,6 +1610,7 @@ ViewGraph::CursorHome()
 void
 ViewGraph::TAttrLinkChanged()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     _slaveTAttrTimestamp = TimeStamp::NextTimeStamp();
     Refresh();
 }
@@ -1593,6 +1619,7 @@ ViewGraph::TAttrLinkChanged()
 void
 ViewGraph::UpdatePhysTData()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::UpdatePhysTData()\n", _name);
 #endif
@@ -1602,6 +1629,7 @@ ViewGraph::UpdatePhysTData()
 
 void ViewGraph::WriteMasterLink(RecId start, int num)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     // Insert records into record links whose master this view is
     int index = _masterLink.InitIterator();
     while(_masterLink.More(index)) {
@@ -1617,6 +1645,7 @@ void ViewGraph::WriteMasterLink(RecId start, int num)
 
 Boolean ViewGraph::IsScatterPlot()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int index = InitMappingIterator();
 
     if (MoreMapping(index)) {
@@ -1638,6 +1667,7 @@ Boolean ViewGraph::IsScatterPlot()
 
 void ViewGraph::SetDisplayStats(char *stat)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (strlen(stat) > STAT_NUM) {
         fprintf(stderr, "Incorrect view statistics length: %d\n",
                 (int)strlen(stat));
@@ -1667,6 +1697,7 @@ void ViewGraph::SetDisplayStats(char *stat)
 
 void ViewGraph::MasterRecomputed(ViewGraph* master)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #ifdef DEBUG
     printf("ViewGraph::MasterRecomputed [%s]\n", GetName());
 #endif
@@ -1751,6 +1782,7 @@ char **ExtractDate(const char *string) {
 
 void ViewGraph::SetHistogram(Coord min, Coord max, int buckets)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   AbortQuery();
   _allStats.SetHistogram(min, max, buckets);
   ResetGStatInMem();
@@ -1760,6 +1792,7 @@ void ViewGraph::SetHistogram(Coord min, Coord max, int buckets)
 
 void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     /* initialize statistics buffer */
     _statBuffer->Clear();
     _histBuffer->Clear();
@@ -2088,6 +2121,7 @@ Boolean ViewGraph::IsYDateType(){
 
 void ViewGraph::SetAction(Action *action)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_deleteAction) delete _action;
   _action = action;
   _deleteAction = false;
@@ -2095,6 +2129,7 @@ void ViewGraph::SetAction(Action *action)
 
 void ViewGraph::SetHistogramWidthToFilter()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     VisualFilter filter;
     GetVisualFilter(filter);
     Coord lo = filter.yLow;
@@ -2122,6 +2157,7 @@ void ViewGraph::SetHistogramWidthToFilter()
 
 void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
   {
     char logBuf[256];
@@ -2229,6 +2265,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
 void ViewGraph::DerivedAbortQuery()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
   {
     char logBuf[256];
@@ -2263,6 +2300,7 @@ void ViewGraph::DerivedAbortQuery()
 void
 ViewGraph::SetDrawToScreen(Boolean drawToScreen)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(0x%p)::SetDrawToScreen(%d)\n", this, drawToScreen);
 #endif
@@ -2278,6 +2316,7 @@ ViewGraph::SetDrawToScreen(Boolean drawToScreen)
 void
 ViewGraph::SetSendToSocket(Boolean sendToSocket)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(0x%p)::SetSendToSocket(%d)\n", this, sendToSocket);
 #endif
@@ -2294,6 +2333,7 @@ ViewGraph::SetSendToSocket(Boolean sendToSocket)
 void
 ViewGraph::SetSendParams(const GDataSock::Params &params)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(0x%p)::SetSendParams(%d, %s, %d, '%c')\n", this,
     params.portNum, params.file ? params.file : "NULL", params.sendText,
@@ -2311,6 +2351,7 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
 void	ViewGraph::QueryDone(int bytes, void* userData,
   Boolean allDataReturned,TDataMap* map)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(REPORT_QUERY_TIME)
 	struct timeval queryEndTime;
     gettimeofday(&queryEndTime, NULL);
@@ -2406,6 +2447,7 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 
 void	ViewGraph::PrintLinkInfo(void) 
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	printf("View : %s \n", GetName());
 	printf("Master of ");
 
@@ -2461,6 +2503,7 @@ void	ViewGraph::PrintLinkInfo(void)
 void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
 							   int x2, int y2, int button, int state)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::HandlePress(%d, %d, %d, %d, %d)\n", this,
 	  GetName(), x1, y1, x2, y2, button);
@@ -2504,6 +2547,7 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 							     int x2, int y2, int button, int state,
 								 Boolean allowZoom)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
 	  GetName(), x1, y1, x2, y2, button);
@@ -2593,6 +2637,7 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 
 void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::HandleKey(%d, %d, %d)\n", GetName(), key, x, y);
 #endif
@@ -2614,6 +2659,7 @@ void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
 
 void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::DoHandleKey(%d, %d, %d)\n", GetName(), key, x, y);
 #endif
@@ -2634,6 +2680,7 @@ void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 								   char**& msgs, int& numMsgs)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewGraph::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
 #endif
@@ -2715,6 +2762,7 @@ StrToCountMapAttr(char *attr)
 void
 ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::GetCountMapping()\n", GetName());
 #endif
@@ -2735,6 +2783,7 @@ ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr)
 DevStatus
 ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SetCountMapping(%d, %s, %s)\n", GetName(), enabled,
 	countAttr, putAttr);
@@ -2805,6 +2854,7 @@ ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
 void
 ViewGraph::SetStringTable(TDataMap::TableType type, char *name)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   char **tableNameP = TableType2NameP(type);
 
   FreeString(*tableNameP);
@@ -2825,6 +2875,7 @@ ViewGraph::SetStringTable(TDataMap::TableType type, char *name)
 char **
 ViewGraph::TableType2NameP(TDataMap::TableType type)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   char **tableNameP;
 
   switch (type) {
@@ -2857,6 +2908,7 @@ ViewGraph::TableType2NameP(TDataMap::TableType type)
 void
 ViewGraph::UpdateAxisTypes()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 
   MappingInfo *mapInfo = _mappings.GetLast();
   if (mapInfo) {
@@ -2892,12 +2944,14 @@ ViewGraph::UpdateAxisTypes()
 Boolean
 ViewGraph::GetDupElim()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return _dupElim != NULL;
 }
 
 void
 ViewGraph::SetDupElim(Boolean enable)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (enable) {
     if (!_dupElim) {
       _dupElim = new DupElim();
@@ -2915,6 +2969,7 @@ ViewGraph::SetDupElim(Boolean enable)
 void
 ViewGraph::GetNiceAxes(Boolean &niceX, Boolean &niceY)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::GetNiceAxes()\n", GetName());
 #endif
@@ -2926,6 +2981,7 @@ ViewGraph::GetNiceAxes(Boolean &niceX, Boolean &niceY)
 void
 ViewGraph::SetNiceAxes(Boolean niceX, Boolean niceY)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SetNiceAxes(%d, %d)\n", GetName(), niceX, niceY);
 #endif
@@ -2937,6 +2993,7 @@ ViewGraph::SetNiceAxes(Boolean niceX, Boolean niceY)
 void
 ViewGraph::NiceifyAxes(Boolean xAxis, Boolean yAxis)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::NiceifyAxes(%d, %d)\n", GetName(), xAxis, yAxis);
 #endif
@@ -2987,6 +3044,7 @@ ViewGraph::NiceAxisRange(Coord &low, Coord &high)
 void
 ViewGraph::RefreshAndHome()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::RefreshAndHome()\n", GetName());
 #endif
@@ -2999,6 +3057,7 @@ ViewGraph::RefreshAndHome()
 DevStatus
 ViewGraph::SwitchTData(const char *tdName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SwitchTData(%s)\n", GetName(), tdName);
 #endif
@@ -3153,6 +3212,7 @@ ViewGraph::SwitchTData(const char *tdName)
 DevStatus
 ViewGraph::SetParentValue(const char *parentVal)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SetParentValue(%s)\n", GetName(), parentVal);
 #endif
@@ -3179,6 +3239,7 @@ ViewGraph::SetParentValue(const char *parentVal)
 DevStatus
 ViewGraph::SaveViewSymFilter()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SaveViewSymFilter()\n", GetName());
   VisualFilter *tmpFilter = GetVisualFilter();
@@ -3208,6 +3269,7 @@ ViewGraph::SaveViewSymFilter()
 DevStatus
 ViewGraph::RestoreViewSymFilter()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::RestoreViewSymFilter()\n", GetName());
 #endif
@@ -3234,6 +3296,7 @@ void
 ViewGraph::GetJSSendP(Boolean &drawToScreen, Boolean &sendToSocket,
     GDataSock::Params &params)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::GetJSSendP()\n", GetName());
 #endif
@@ -3248,6 +3311,7 @@ void
 ViewGraph::SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
     const GDataSock::Params &params)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SetJSSendP()\n", GetName());
 #endif

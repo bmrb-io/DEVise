@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/03/03 18:22:04  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.6  1998/04/30 14:24:22  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -51,6 +56,7 @@
 #include "ViewGraph.h"
 #include "GDataBin.h"
 #include "WindowRep.h"
+#include "ObjectValid.h"
 
 #include "Color.h"
 
@@ -104,6 +110,9 @@ class ViewData : public ViewGraph
 		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs);
 
 		DerivedTableList _derivedTables;
+
+    private:
+	    ObjectValid _objectValid;
 };
 
 //******************************************************************************

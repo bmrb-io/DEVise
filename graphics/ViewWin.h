@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  2000/03/14 17:05:15  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.45  1999/11/29 21:07:53  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -248,6 +252,7 @@
 #include "DeviseTypes.h"
 #include "WindowRep.h"
 #include "DualWindowRep.h"
+#include "ObjectValid.h"
 
 #include "Color.h"
 #include "Coloring.h"
@@ -509,6 +514,9 @@ private:
 		
 		// Don't do anything in a window that doesn't have a view.
 		virtual void ShowMouseLocation(int *mouseX, int *mouseY) {}
+
+    private:
+        ObjectValid _objectValid;
 };
 
 //******************************************************************************

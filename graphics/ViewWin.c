@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  2000/03/14 17:05:15  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.68  1999/12/01 00:09:37  wenger
   Disabled extra debug logging for tracking down Omer's crash.
 
@@ -403,10 +407,13 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 	_parentPileStack = NULL;
 
 	_pileZValid = false;
+
+	_objectValid.Set();
 }
 
 ViewWin::~ViewWin(void)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewWin::~ViewWin(%p)\n", this);
 #endif
@@ -433,6 +440,8 @@ ViewWin::~ViewWin(void)
 Boolean
 ViewWin::GetGifDirty()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   WindowRep *winRep = GetWindowRep();
   if (winRep != NULL) {
 	return winRep->GetGifDirty();
@@ -443,6 +452,8 @@ ViewWin::GetGifDirty()
 
 void	ViewWin::SetBackground(PColorID bgid)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
 	if (GetWindowRep())
 		GetWindowRep()->SetBackground(bgid);
 
@@ -453,6 +464,8 @@ void	ViewWin::SetBackground(PColorID bgid)
 
 void ViewWin::Iconify()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   if (GetWindowRep())
     GetWindowRep()->Iconify();
 }
@@ -460,6 +473,7 @@ void ViewWin::Iconify()
 DevStatus
 ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DO_DEBUG(printf("ViewWin(%s)::ExportImage(_parent = %p, filename = %s)\n",
     GetName(), _parent, filename));
 #if defined(VIEWWIN_TIMER)
@@ -546,6 +560,7 @@ ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
 
 void ViewWin::AppendToParent(ViewWin *parent)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::AppendToParent(%s)\n", GetName(), parent->GetName());
 #endif
@@ -567,6 +582,7 @@ void ViewWin::AppendToParent(ViewWin *parent)
 
 void ViewWin::DeleteFromParent()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::DeleteFromParent()\n", GetName());
 #endif
@@ -602,6 +618,7 @@ void ViewWin::DeleteFromParent()
 
 void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(0x%p, %s)::Map(%d, %d, %d, %d)\n", this, GetName(),
       x, y, w, h);
@@ -689,6 +706,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 
 void ViewWin::Unmap()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::Unmap()\n", GetName());
 #endif
@@ -724,6 +742,8 @@ void ViewWin::Unmap()
 
 void ViewWin::DetachChildren()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   /* Ask each child to delete itself from the parent i.e. this object.
      We need to be careful to close the iterator because
      DeleteFromParent() deletes an entry from the list. */
@@ -745,6 +765,7 @@ void ViewWin::DetachChildren()
 
 void ViewWin::Append(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::Append(%s)\n", GetName(), child->GetName());
 #endif
@@ -757,6 +778,7 @@ void ViewWin::Append(ViewWin *child)
 
 void ViewWin::Delete(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::Delete(%s)\n", GetName(), child->GetName());
 #endif
@@ -773,6 +795,7 @@ void ViewWin::Delete(ViewWin *child)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "ViewWin(%s)::GetGeometry(%d, %d, %d, %d)\n", GetName(),
@@ -795,6 +818,7 @@ void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h)
 
 void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::Geometry()\n", GetName());
 #endif
@@ -831,6 +855,8 @@ void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   RealGeometry(x, y, w, h);
 
   unsigned int lm, rm, tm, bm;
@@ -848,6 +874,8 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 
 void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   if (!GetWindowRep()) {
     fprintf(stderr,"ViewWin::AbsoluteOrigin: not mapped\n");
     reportErrNosys("Fatal error");//TEMP -- replace with better message
@@ -860,6 +888,7 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 
 void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n", GetName(),
     this, x, y, w, h);
@@ -888,6 +917,8 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 
 int ViewWin::TotalWeight()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   int w = 0;
   int index;
   for(index = InitIterator(); More(index);) {
@@ -900,6 +931,8 @@ int ViewWin::TotalWeight()
 
 Boolean ViewWin::Iconified()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   if (_parent) {
     /* subwindow must query parent */
     return _parent->Iconified();
@@ -916,6 +949,7 @@ Boolean ViewWin::Iconified()
 
 void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin::SwapChildren()\n");
 #endif
@@ -964,6 +998,7 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 
 void ViewWin::Raise()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(0x%p, %s)::Raise()\n", this, GetName());
 #endif
@@ -978,6 +1013,8 @@ void ViewWin::Raise()
 
 void ViewWin::Lower()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   if (GetWindowRep()) {
     GetWindowRep()->Lower();
     GetWindowRep()->Flush();
@@ -987,6 +1024,8 @@ void ViewWin::Lower()
 void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
 			 unsigned int &tm, unsigned int &bm)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   lm = _leftMargin;
   rm = _rightMargin;
   tm = _topMargin;
@@ -998,6 +1037,7 @@ void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
 
 void ViewWin::DrawMargins()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin::DrawMargins\n");
 #endif
@@ -1047,6 +1087,7 @@ void ViewWin::DrawMargins()
 DevStatus
 ViewWin::PrintPS()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(0x%p)::PrintPS(%s)\n", this, _name);
 #endif
@@ -1109,6 +1150,8 @@ ViewWin::PrintPS()
 void ViewWin::HandleExpose(WindowRep *w, int x, int y,
 			   unsigned width, unsigned height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   if (Init::DisplayLogo())
     DrawMargins();
 }
@@ -1116,6 +1159,7 @@ void ViewWin::HandleExpose(WindowRep *w, int x, int y,
 void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 							  unsigned width, unsigned height)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
 	printf("ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
 		   GetName(), this, xlow, ylow, width, height);
@@ -1144,6 +1188,7 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 
 void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #ifdef DEBUG
 	printf("ViewWin::HandleWindowMappedInfo 0x%p %d\n", this, mapped);
 #endif
@@ -1154,6 +1199,7 @@ void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)
 
 Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #ifdef DEBUG
 	printf("ViewWin <%s> being destroyed\n", _name);
 #endif
@@ -1168,6 +1214,7 @@ Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
 void
 ViewWin::SetMyPileStack(PileStack *ps)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   const char *psName = ps ? ps->GetName() : "(null)";
   printf("ViewWin(%s)::SetMyPileStack(%s)\n", GetName(), psName);
@@ -1179,6 +1226,7 @@ ViewWin::SetMyPileStack(PileStack *ps)
 void
 ViewWin::SetParentPileStack(PileStack *ps)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   char const *psName = ps ? ps->GetName() : "(null)";
   printf("ViewWin(%s)::SetParentPileStack(%s)\n", GetName(), psName);
@@ -1191,6 +1239,7 @@ void
 ViewWin::SetFont(const char *which, int family, float pointSize,
     Boolean bold, Boolean italic, Boolean notifyPile)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("ViewWin(%s)::SetFont()\n", GetName());
 #endif
@@ -1206,6 +1255,8 @@ ViewWin::SetFont(const char *which, int family, float pointSize,
 void
 ViewWin::Dump(FILE *fp)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   fprintf(fp, "  <%s>\n", GetName());
   if (NumChildren() > 0) {
     fprintf(fp, "    children:\n");

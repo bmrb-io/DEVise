@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/03/14 17:04:49  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.12  2000/01/13 23:06:42  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -94,6 +98,7 @@
 
 //#define DEBUG
 #undef DEBUG
+#define DOASSERT(c,r) {if (!(c)) DoAbort(r); }
 static char* errBase[Client::MAX_ERRORS]=
 {
 	"Try to specify more than one group",
@@ -117,8 +122,8 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 {
 	int retval;
 	
-	_name = CopyString(name);
-	_hostname = CopyString(hostname);
+	_name = strdup(name);
+	_hostname = strdup(hostname);
 	DOASSERT(_name && _hostname, "Out of memory");
 	_port = port;
 	csk = NULL;
@@ -157,8 +162,8 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 Client::~Client()
 {
   (void)NetworkClose(_serverFd);
-  FreeString( _name);
-  FreeString(_hostname);
+  free( _name);
+  free(_hostname);
   delete _result;
   delete _cmd;
   delete csk;

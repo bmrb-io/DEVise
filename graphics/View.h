@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.104  2000/03/14 17:05:14  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.103  2000/02/15 16:16:16  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -491,6 +495,7 @@
 #include "ViewDir.h"
 #include "DevAxis.h"
 #include "PileStack.h"
+#include "ObjectValid.h"
 
 //******************************************************************************
 
@@ -1072,6 +1077,9 @@ protected:
 		static Boolean _drawingEnabled;
 		
 		const char *_viewHelp;
+
+    private:
+        ObjectValid _objectValid;
 };
 
 //******************************************************************************
