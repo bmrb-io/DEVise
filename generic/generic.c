@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/08/13 20:04:38  jussi
+  Added DayOfYearComposite parser function.
+
   Revision 1.31  1996/07/23 22:58:22  jussi
   Added BIRCHLE0.
 
@@ -137,6 +140,7 @@
 #ifdef __GNUG__
 #pragma implementation "HashTable.h"
 #endif
+
 
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
@@ -1103,6 +1107,8 @@ int main(int argc, char **argv)
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
+  CompositeParser::Register("VISITS_DATE", new MmDdYyComposite);
+  CompositeParser::Register("PRES_TEMP", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite); 
   CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
   CompositeParser::Register("BIRCHLE0", new LandsendDateDiffComposite);
