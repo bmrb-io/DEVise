@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/08/01 22:45:27  jussi
+  Initial revision.
+*/
 
 #include <memory.h>
 #include <fcntl.h>
@@ -1271,7 +1274,7 @@ int ExtBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty, int size)
         frame.size = size;
 
     // Make decision whether to release page to memory pool or not
-    if (!frame.dirty) {
+    if (!frame.pinCnt && !frame.dirty) {
 #if DEBUGLVL >= 5
         printf("Releasing page 0x%p to memory pool\n", frame.page);
 #endif
