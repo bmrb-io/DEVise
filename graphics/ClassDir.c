@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/11 01:54:35  jussi
+  Added DestroyAllInstances() method.
+
   Revision 1.4  1996/04/16 00:17:33  jussi
   Fixed bug in DestroyInstance() and DestroyTransientClasses(). The
   array of instances/classes was improperly shifted (one-off error).
@@ -43,10 +46,7 @@ ClassDir::ClassDir()
 
 void ClassDir::InsertCategory(char *name)
 {
-  if (_numCategories >= MaxCategories) {
-    fprintf(stderr,"ClassDir::InsertCategory\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(_numCategories < MaxCategories, "Too many categories");
 
   CategoryRec *rec = new CategoryRec;
   rec->name = name;
@@ -58,12 +58,8 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
 {
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
-    if (!strcmp(catRec->name,cInfo->CategoryName())) {
-      /* found */
-      if (catRec->_numClasses >= MaxClasses) {
-	fprintf(stderr, "ClassDir::InsertClass MaxClass\n");
-	Exit::DoExit(1);
-      }
+    if (!strcmp(catRec->name, cInfo->CategoryName())) {
+      DOASSERT(catRec->_numClasses < MaxClasses, "Too many classes");
       ClassRec *classRec = new ClassRec;
       classRec->classInfo = cInfo;
       classRec->_numInstances = 0;
@@ -72,8 +68,7 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
     }
   }
 
-  fprintf(stderr, "ClassDir::InsertClass\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Could not find category");
 }
 
 char *argArray[512];
@@ -86,8 +81,9 @@ void ClassDir::ClassNames(char *category, int &num, char **&names)
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, category)) {
-      for(int j = 0; j < catRec->_numClasses; j++)
+      for(int j = 0; j < catRec->_numClasses; j++) {
 	argArray[num++] = catRec->_classRecs[j]->classInfo->ClassName();
+      }
       return;
     }
   }
@@ -146,7 +142,7 @@ void ClassDir::GetParams(char *category, char *className,
 {
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
-    if (!strcmp(catRec->name,category)) {
+    if (!strcmp(catRec->name, category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
 	ClassRec *classRec = catRec->_classRecs[j];
 	if (!strcmp(classRec->classInfo->ClassName(), className)) {
@@ -169,19 +165,16 @@ void ClassDir::SetDefault(char *category, char *className,
 {
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
-    if (!strcmp(catRec->name,category)) {
+    if (!strcmp(catRec->name, category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
 	ClassRec *classRec = catRec->_classRecs[j];
 	if (!strcmp(classRec->classInfo->ClassName(),className)) {
 	  classRec->classInfo->SetDefaultParams(numParams, params);
-	  return ;
+	  return;
 	}
       }
     }
   }
-
-  /* not found */
-  return ;
 }
 
 /* Create a new instances given the parameters */
@@ -195,10 +188,8 @@ char *ClassDir::CreateWithParams(char *category, char *className,
       for(int j = 0; j < catRec->_numClasses; j++) {
 	ClassRec *classRec = catRec->_classRecs[j];
 	if (!strcmp(classRec->classInfo->ClassName(),className)) {
-	  if (classRec->_numInstances >= MaxInstances) {
-	    fprintf(stderr,"ClassDir::CreateWithParams:MaxInstn\n");
-	    Exit::DoExit(1);
-	  }
+          DOASSERT(classRec->_numInstances < MaxInstances,
+                   "Too many instances");
 	  ClassInfo *iInfo = classRec->classInfo->CreateWithParams(numParams,
 								   paramNames);
 	  if (iInfo) {
@@ -369,15 +360,13 @@ ClassInfo::~ClassInfo()
 
 char *ClassInfo::InstanceName()
 {
-  fprintf(stderr,"ClassInfo::InstanceName(): should not be called\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Invalid function call");
   return NULL; /* to keep compiler happy*/
 }
 
 void *ClassInfo::GetInstance()
 {
-  fprintf(stderr,"ClassInfo::GetInstance(): should not be called\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Invalid function call");
   return NULL; /* to keep compiler happy*/
 }
 
@@ -385,8 +374,7 @@ void *ClassInfo::GetInstance()
 
 void ClassInfo::CreateParams(int &argc, char **&argv)
 {
-  fprintf(stderr,"ClassInfo::CreateParams(): should not be called\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Invalid function call");
 }
 
 /* Set default parameters */
