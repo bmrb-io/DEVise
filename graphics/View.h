@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/08 20:31:01  jussi
+  Added PixmapEnabled() method.
+
   Revision 1.28  1996/07/02 22:44:16  jussi
   Removed unnecessary code.
 
@@ -430,17 +433,13 @@ private:
 	virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
 				    char **&msgs, int &numMsgs) = 0;
 
-	/* Initialize */
-	void Init(char *name, VisualFilter &filter,
-		  AxisLabel *xAxis, AxisLabel *yAxis);
-
 	Boolean  _displaySymbol; /* true if to be displayed */
 	AxisInfo xAxis, yAxis;   /* X and y axis info */
 
 	AxisLabel *_xAxisLabel;
 	AxisLabel *_yAxisLabel;
 
-	int readFd,writeFd;
+	int readFd, writeFd;
 
 	/* TRUE if _filter has changed since last time query was sent */
 	Boolean _filterChanged; 
