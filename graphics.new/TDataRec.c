@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 19:59:24  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/14 17:57:17  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -76,8 +79,8 @@ char *TDataRec::GetName()
 
 void TDataRec::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
-  if (lowId < 0 || (long)lowId >= _totalRecs ||
-      highId < 0 || (long)highId >= _totalRecs || highId < lowId ){
+  if ((long)lowId >= _totalRecs ||
+      (long)highId >= _totalRecs || highId < lowId ){
     fprintf(stderr,"TDataRec::GetRecs: invalid recId %ld, %ld total=%d\n",
 	    lowId, highId, _totalRecs);
     Exit::DoExit(1);

@@ -4,12 +4,17 @@ CPPFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX  -I../../graphics \
 LIBSRC = TDataTape.C TDataTapeInterp.C tapedrive.C QueryProcTape.C \
          Templates.C
 
-LIBOBJ = TDataTape.o TDataTapeInterp.o tapedrive.o QueryProcTape.o \
-         Templates.o
+LIBOBJ = $(LIBSRC:.C=.o)
 
-ALLSRC= $(LIBSRC) $(TESTSRC) 
+all: tapeobj.o
 
-LIBOBJS= $(LIBOBJ)
+tapeobj.o: $(LIBOBJ)
+	ld -r -o $@ $(LIBOBJ)
 
-tapeobj.o: $(LIBOBJS)
-	ld -r -o $@ $(LIBOBJS)
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm tapeobj.o
+
+mostlyclean:
+	-rm $(LIBOBJ)

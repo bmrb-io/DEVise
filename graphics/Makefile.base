@@ -25,17 +25,16 @@ LIBSRC = Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C
 
-LIBOBJ = Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
-	ClassDir.o ColorMgr.o Compress.o Control.o Cursor.o CursorClassInfo.o \
-	DevisePixmap.o Dispatcher.o Display.o DList.o\
-	Exit.o FilterQueue.o Geom.o \
-	Init.o Journal.o Parse.o Selection.o  Time.o Timer.o TimeStamp.o \
-	Util.o View.o ViewWin.o ViewLayout.o VisualLink.o \
-	VisualLinkClassInfo.o XawControl.o XawWidget.o \
-	WindowRep.o WinClassInfo.o XBitmap.o XDisplay.o XWindowRep.o \
-	TileLayout.o
+SRC1 = $(filter %.c,$(LIBSRC))
+SRC2 = $(filter %.C,$(LIBSRC))
+LIBOBJ = $(SRC1:.c=.o)
+LIBOBJ += $(SRC2:.C=.o)
 
 OTHERSRC = testWindowRep.c jstat.c
+
+OTHEROBJ = $(OTHERSRC:.c=.o)
+
+all: allobj.o
 
 allobj.o: $(LIBOBJ)
 	$(LD) -r -o $@ $(LIBOBJ)
@@ -59,4 +58,12 @@ jstat: jstat.o $(LIBOBJ)
 
 testWindowRep: testWindowRep.o allobj.o
 	$(CC) -o testWindowRep testWindowRep.o allobj.o -lXaw -lXmu -lXt \
-		-lXext -lX11 -lm -l44bsd
+		-lXext -lX11 -lm
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm allobj.o $(LIBNAME)
+
+mostlyclean:
+	-rm $(LIBOBJ) $(OTHEROBJ)

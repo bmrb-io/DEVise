@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/02/13 16:21:20  jussi
+  Fixed for AIX.
+
   Revision 1.2  1995/09/05 21:13:08  jussi
   Added/updated CVS header.
 */
@@ -25,6 +28,8 @@
 #include <signal.h>
 
 #include "Timer.h"
+
+#include "../graphics.new/machdep.h"
 
 struct TimerQueueEntry {
   TimerQueueEntry *next;

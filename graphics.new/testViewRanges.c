@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 15:58:42  jussi
+  Replaced WinVertical with TileLayout.
+
   Revision 1.2  1995/09/05 22:16:55  jussi
   Added CVS header.
 */
@@ -49,6 +52,7 @@ public:
 		low = lowArray[_index];
 		high = highArray[_index];
 		_index++;
+		return true;
 	}
 	virtual void DoneRangeSourceIterator(){}
 public:
@@ -56,14 +60,14 @@ public:
 };
 
 main(){
-	Tilelayout *win = new TileLayout("TestViewRanges");
+	TileLayout *win = new TileLayout("TestViewRanges");
 	RangeSource *source = new MyRangeSource();
 
 	VisualFilter filter;
 	filter.flag = VISUAL_LOC;
 	filter.xLow = 0.0; filter.yLow = -1.0;
 	filter.xHigh = 100.0; filter.yHigh =1.0;
-	ViewRanges *view = new ViewRanges("Ranges", win, filter, source);
+	ViewRanges *view = new ViewRanges("Ranges", win, filter, source, false);
 
 	Dispatcher::RunNoReturn();
 }

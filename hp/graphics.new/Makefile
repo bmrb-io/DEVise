@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/01/12 18:00:09  jussi
+#  Switched to newer compiler version with all necessary header files.
+#
 #  Revision 1.2  1996/01/12 16:07:38  jussi
 #  Gcc header files for HP-UX seem to have vanished; substituted
 #  Sun header files instead.
@@ -26,6 +29,7 @@
 ############################################################
 
 ARCH_FLAGS = -DHPUX -I/s/tcl/include
+ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base

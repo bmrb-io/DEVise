@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/12 15:48:14  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.4  1995/09/22 16:01:11  jussi
   Added copyright message.
 
@@ -40,6 +43,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "BufHint.h"
+#include "PageSize.h"
 #include "TDataAppend.h"
 #include "ams.h"
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/02/15 18:01:10  jussi
+  Small fix for ioctl() on AIX.
+
   Revision 1.2  1996/02/13 16:35:44  jussi
   Minor fix for AIX.
 
@@ -171,6 +174,8 @@
   EXTERNC char *shmat(int, char *, int);
   EXTERNC int shmdt(char *);
   EXTERNC int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
+  EXTERNC int setitimer(int which, struct itimerval *value,
+			   struct itimerval *ovalue);
 #endif
 
 #if defined(__alpha) || defined(__sun)

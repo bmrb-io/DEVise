@@ -25,11 +25,7 @@ BufMgrSrc = BufMgr.c BufMgrNull.c VoidArray.c RangeInfo.c RecRange.c \
 	RangeList.c TDataRangeList.c MultiArray.c  RangeCallback.c \
 	GDataRangeSource.c TDataRangeSource.c
 
-BufMgrObj = BufMgr.o BufMgrNull.o VoidArray.o  RangeInfo.o RecRange.o \
-	RangeInfoArray.o BufferFifo.o BufferFocal.o BufferLifo.o \
-	BufferRnd.o BufMgrFull.o \
-	RangeList.o  TDataRangeList.o MultiArray.o  RangeCallback.o \
-	GDataRangeSource.o TDataRangeSource.o
+BufMgrObj = $(BufMgrSrc:.c=.o)
 
 # query processor
 
@@ -43,27 +39,26 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewRanges.c ViewGraph.c TkControl.c QPRange.c \
 	ViewClassInfo.c MapInterpShape.C
 
-QPObj = CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
-	Bitmap.o DispQueryProc.o ParseCat.o Group.o GroupDir.o ItemList.o\
-	QueryProc.o QueryProcSimple.o QueryProcFull.o \
-	RecInterp.o TDataAsciiInterp.o TDataBinaryInterp.o TDataMap.o \
-	TDataMapDispatch.o GDataBin.o TDataAscii.o TDataBinary.o \
-	TDataRec.o TData2DRec.o PageRange.o  RecFile.o UnixRecFile.o \
-	GDataRangeMap.o GData.o Temp.o TData.o TDataViewX.o ViewScatter.o \
-	ViewRanges.o ViewGraph.o TkControl.o QPRange.o \
-	ViewClassInfo.o MapInterpShape.o
+QPSrc1 = $(filter %.c,$(QPSrc))
+QPSrc2 = $(filter %.C,$(QPSrc))
+QPObj = $(QPSrc1:.c=.o)
+QPObj += $(QPSrc2:.C=.o)
 
 # View
 
 VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
 	KGraph.c ViewKGraph.c Seq.C Web.C
-VIEWOBJ = ActionDefault.o ConnectorShape.o Snapshot.o BasicStats.o \
-	KGraph.o ViewKGraph.o Seq.o Web.o
+VIEWSRC1 = $(filter %.c,$(VIEWSRC))
+VIEWSRC2 = $(filter %.C,$(VIEWSRC))
+VIEWSRC3 = $(filter %.h,$(VIEWSRC))
+VIEWOBJ = $(VIEWSRC1:.c=.o)
+VIEWOBJ += $(VIEWSRC2:.C=.o)
+VIEWOBJ += $(VIEWSRC3:.h=.o)
 
 # Command
 
 CMDSRC =  Command.c
-CMDOBJ =  Command.o
+CMDOBJ =  $(CMDSRC:.c=.o)
 
 LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC)
 
@@ -81,6 +76,8 @@ ALLSRC = $(LIBSRC) $(TESTSRC)
 
 LIBOBJS = $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
 
+all: libobj.o
+
 libobj.o: $(LIBOBJS) ../graphics/allobj.o
 	$(LD) -r -o $@ ../graphics/allobj.o $(LIBOBJS)
 
@@ -89,7 +86,8 @@ BufMgrObj.o: $(BufMgrObj)
 
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
-		../graphics/allobj.o -lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+		../graphics/allobj.o $(ARCH_LDFLAGS) \
+		-ltk -lXaw -lXmu -lXt -lXext -lX11 -lm
 
 testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testStr.o StringHash.o
 	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
@@ -99,30 +97,30 @@ testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testStr.o StringHash.o
 genStrData: genStrData.o
 	$(CC) -o $@ $@.o
 
-rstat: rstat.o Parse.o
-	$(CC) -o $@ $@.o Parse.o ../graphics/Exit.o -lm
+rstat: rstat.o ../graphics/Parse.o
+	$(CC) -o $@ $@.o ../graphics/Parse.o ../graphics/Exit.o -lm
 
-TESTBUFMGROBJ =  RangeInfoArray.o MultiArray.o Parse.o \
+TESTBUFMGROBJ =  RangeInfoArray.o MultiArray.o ../graphics/Parse.o \
 	RecRange.o RangeInfo.o VoidArray.o BufferFifo.o BufMgrFull.o \
 	RangeList.o TDataRangeList.o
 
 testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 	$(CC) -o $@ $@.o $(TESTBUFMGROBJ) ../graphics/ExitClean.o
 
-testGDataRange: testGDataRange.o GDataRangeMap.o Parse.o \
+testGDataRange: testGDataRange.o GDataRangeMap.o ../graphics/Parse.o \
 	../graphics/ExitClean.o
-	$(CC) -o $@ $@.o GDataRangeMap.o Parse.o ../graphics/ExitClean.o
+	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o ../graphics/ExitClean.o
 	
-testRangeList: testRangeList.o Parse.o RangeList.o RangeInfo.o \
+testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o RangeInfo.o \
 	../graphics/Exit.o
-	$(CC) -o $@ $@.o Parse.o RangeList.o RangeInfo.o \
+	$(CC) -o $@ $@.o ../graphics/Parse.o RangeList.o RangeInfo.o \
 		../graphics/ExitClean.o
 
-testRecRange: testRecRange.o Parse.o RecRange.o ../graphics/Exit.o
-	$(CC) -o $@ $@.o Parse.o RecRange.o ../graphics/ExitClean.o
+testRecRange: testRecRange.o ../graphics/Parse.o RecRange.o ../graphics/Exit.o
+	$(CC) -o $@ $@.o ../graphics/Parse.o RecRange.o ../graphics/ExitClean.o
 
-testVoidArray: testVoidArray.o Parse.o VoidArray.o ../graphics/Exit.o
-	$(CC) -o $@ $@.o Parse.o VoidArray.o ../graphics/ExitClean.o
+testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o ../graphics/Exit.o
+	$(CC) -o $@ $@.o ../graphics/Parse.o VoidArray.o ../graphics/ExitClean.o
 
 testraw: testraw.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o
 	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
@@ -222,3 +220,12 @@ testbuf: $(BUFOBJ) testbuf.o
 
 testpage: $(LIBOBJ) testpage.o
 	$(CC) -o $@ $@.o $(LIBOBJ)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm libobj.o genStrData strData
+
+mostlyclean:
+	-rm $(LIBOBJ) BufMgrObj.o genStrData.o rstat.o testGDataRange.o \
+		testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/05 23:24:02  jussi
+  Added a destructor which closes an open file.
+
   Revision 1.6  1996/02/13 16:49:28  jussi
   Minor fix for AIX.
 
@@ -52,6 +55,7 @@
 #include "TData.h"
 #include "Control.h"
 #include "Init.h"
+#include "machdep.h"
 
 /****************************************************
 Constuctor, input from stdin

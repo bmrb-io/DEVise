@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/02 20:55:53  jussi
+  Substituted DeviseTime for Time and added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:05  jussi
   Added/updated CVS header.
 */
 
 #include <time.h>
 #include "Time.h"
+#include "../graphics.new/machdep.h"
 
 struct timeval DeviseTime::_beginning;
 

@@ -7,6 +7,6 @@
 MODULES = graphics graphics.new tape issm compustat crsp parser \
 	generic
 
-all:
-	for i in $(MODULES); do echo -- $$i; cd $$i; make; cd ..; done
+all clean mostlyclean:
+	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
 

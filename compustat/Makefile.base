@@ -4,22 +4,30 @@ CPPFLAGS = $(ARCH_FLAGS) -O -I../../graphics.new -I../../tape \
 
 LIBSRC = compustat.c
 
-LIBOBJ = compustat.o
+LIBOBJ = $(LIBSRC:.c=.o)
 
-TESTSRC = index.c extract.c
+TESTSRC = index.c extract.c project.c
 
-ALLSRC= $(LIBSRC) $(TESTSRC) 
+TESTOBJ = $(TESTSRC:.c=.o)
 
-LIBOBJS= $(LIBOBJ)
+all: cstatobj.o
 
-cstatobj.o: $(LIBOBJS)
-	ld -r -o $@ $(LIBOBJS)
+cstatobj.o: $(LIBOBJ)
+	ld -r -o $@ $(LIBOBJ)
 
 index:	index.o
 	$(CC) $(CPPFLAGS) -o $@ $@.o ../tape/tapedrive.o
 
-extract:	extract.o $(LIBOBJS)
-	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS) ../tape/tapedrive.o
+extract:	extract.o $(LIBOBJ)
+	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJ) ../tape/tapedrive.o
 
 project:	project.o
 	$(CC) $(CPPFLAGS) -o $@ $@.o ../tape/tapedrive.o
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm cstatobj.o index extract project
+
+mostlyclean:
+	-rm $(LIBOBJ) $(TESTOBJ)

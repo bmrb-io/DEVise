@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/29 19:58:25  jussi
+  Initial revision.
+*/
 
 #include <iostream.h>
 #include <fstream.h>
@@ -144,7 +147,7 @@ int main(int argc, char **argv)
   if (!tape)
     exit(1);
 
-  const unsigned long numRecs = atol(argv[3]);
+  const long numRecs = atol(argv[3]);
 
   char line[255];
   int t = -time_inc;

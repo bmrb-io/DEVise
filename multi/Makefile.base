@@ -1,8 +1,8 @@
 LD = ld
 CC = g++
 LDFLAGS = $(ARCH_LDFLAGS) ../graphics.new/libobj.o \
-	../tape/tapeobj.o ../issm/issmobj.o ../compustat/cstatobj.o \
-	../crsp/crspobj.o -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	$(OTHEROBJ) \
+	-ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
 	-I../../graphics.new -Wall -Wno-unused -O -DUNIX
@@ -18,16 +18,14 @@ ALLSRC= disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 	CycleSuspendedMappingClassInfo.c \
 	CycleCpuTimeMappingClassInfo.c 
 
-ALLOBJ= disp.o TDataMulti.o TDataHost.o TDataCycle.o Message.o \
-	MappingClassInfo.o HostMappingClassInfo.o \
-	CycleOccMappingClassInfo.o \
-	CycleEffMappingClassInfo.o \
-	CycleWorkingMappingClassInfo.o \
-	CycleSuspendedMappingClassInfo.o \
-	CycleCpuTimeMappingClassInfo.o 
+ALLOBJ = $(ALLSRC:.c=.o)
 
-disp: $(ALLOBJ) ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
+OTHEROBJ = ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
 	../compustat/cstatobj.o ../crsp/crspobj.o
+
+all: disp
+
+disp: $(ALLOBJ) $(OTHEROBJ)
 	$(CC)  -o $@ $(ALLOBJ) $(LDFLAGS)
 
 map_host.h: map_host
@@ -47,3 +45,11 @@ map_cycle_working.h: map_cycle_working
 
 map_cycle_susp.h: map_cycle_susp
 	../parser/parser -o $@ < $?
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm allobj.o
+
+mostlyclean:
+	-rm $(LIBOBJ)

@@ -3,11 +3,17 @@ CPPFLAGS = $(ARCH_FLAGS) -O -I../../graphics.new -I../../tape \
 
 LIBSRC = binconv.C extract.C rectape.C
 
-LIBOBJ = binconv.o extract.o rectape.o
+LIBOBJ = $(LIBSRC:.C=.o)
 
-ALLSRC= $(LIBSRC) $(TESTSRC) 
+all: issmobj.o
 
-LIBOBJS= $(LIBOBJ)
+issmobj.o: $(LIBOBJ)
+	ld -r -o $@ $(LIBOBJ)
 
-issmobj.o: $(LIBOBJS)
-	ld -r -o $@ $(LIBOBJS)
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm issmobj.o
+
+mostlyclean:
+	-rm $(LIBOBJ)

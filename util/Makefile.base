@@ -6,5 +6,19 @@ LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 .C.o:
 	$(CC) -c $(CFLAGS) $<
 
-http_url: http_url.o
-	$(CC) -o $@ $@.o $(LDFLAGS)
+SRC = http_url.c
+
+OBJ = $(SRC:.c=.o)
+
+all: http_url
+
+http_url: $(OBJ)
+	$(CC) -o $@ $(OBJ) $(LDFLAGS)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm http_url
+
+mostlyclean:
+	-rm $(OBJ)

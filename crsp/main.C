@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/09 22:45:02  jussi
+  Converted to use tape drive instead of regular file.
+
   Revision 1.1  1995/11/09 15:30:54  ravim
   Initial revision
 */
@@ -47,5 +50,5 @@ main(int argc, char **argv)
   
   Security *sec = new Security(tape);
 
-  sec->print_security();
+  sec->print_security(cout);
 }

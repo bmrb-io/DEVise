@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/20 16:19:55  jussi
+  Type of offset must be unsigned long int, not just int.
+
   Revision 1.5  1995/11/20 16:12:23  jussi
   Made tape file dependent offset part of data source definition,
   and not part of the offset of the securities. The first security
@@ -97,7 +100,7 @@ void crsp_index(char *tapeName, int fileno, unsigned long int offset,
     cerr << "Error: could not open tape device " << tapeName << endl;
     exit(0);
   }
-  if (tape.seek(offset) != offset) {
+  if ((unsigned) tape.seek(offset) != offset) {
     cerr << "Cannot seek to offset " << offset << endl;
     perror("seek");
     exit(0);
@@ -132,7 +135,7 @@ void crsp_index(char *tapeName, int fileno, unsigned long int offset,
     delete s;
 
     tapepos = offset + CRSP_DATA_RLEN * recno;
-    if (tape.seek(tapepos) != tapepos)
+    if ((unsigned) tape.seek(tapepos) != tapepos)
       break;
     s = new Security(tape);
   }

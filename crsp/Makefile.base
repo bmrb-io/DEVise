@@ -1,15 +1,19 @@
+CC = g++
+
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../graphics.new -I../../tape \
 	-Wall -Wno-unused -fexternal-templates
 
 LIBSRC	= sec.C cal.C crsp_extract.C
 
-LIBOBJ	= sec.o cal.o crsp_extract.o
+LIBOBJ	= $(LIBSRC:.C=.o)
 
 TESTSRC = crsp_index.C main.C
 
 ALLSRC	= $(LIBSRC) $(TESTSRC) 
 
 LIBOBJS	= $(LIBOBJ) ../tape/tapedrive.o
+
+all: crspobj.o
 
 crspobj.o: $(LIBOBJ)
 	ld -r -o $@ $(LIBOBJ)
@@ -19,3 +23,11 @@ main:	main.o $(LIBOBJS)
 
 crsp_index: crsp_index.o $(LIBOBJS)
 	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm crspobj.o main crsp_index
+
+mostlyclean:
+	-rm $(LIBOBJ) main.o crsp_index.o

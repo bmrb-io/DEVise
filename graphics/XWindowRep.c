@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/02/28 17:37:34  yuc
+  Added CompLocationOnViewingSpace, CompProjectionOnViewingPlane,
+  DrawXSegments, MapAllPoints, MapAllSegments, and DrawRefAxis.  These
+  functions are for 3D display.
+
   Revision 1.24  1996/02/26 23:46:08  jussi
   Added GetSmallFontHeight().
 
@@ -2149,7 +2154,8 @@ void XWindowRep::DrawRefAxis()
      POINT sa_pts; // screen axis pts
      XPoint xtmp[4];  // temp XPoints for axis pts
 
-     for (int i = 0; i < 4; i++) {
+	 int i;
+     for (i = 0; i < 4; i++) {
           // clipping alg should goes here or before the loop
           sa_pts = CompLocationOnViewingSpace(_AxisPt[i]);
           xtmp[i]   = CompProjectionOnViewingPlane(sa_pts);

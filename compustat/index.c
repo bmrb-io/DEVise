@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/20 22:40:46  jussi
+  Offset of company excludes base tape offset.
+
   Revision 1.7  1995/11/17 04:07:20  ravim
   New form of index file.
 
@@ -47,7 +50,7 @@ main(int argc, char **argv)
 {
   FILE *outfile;
   int fileno = -1;
-  long unsigned int offset = 0;
+  long int offset = 0;
   char *colon = 0;
 
   if (argc != 3)
@@ -103,7 +106,8 @@ main(int argc, char **argv)
 
 static void trim_string(char *str)
 {
-  for(int i = strlen(str) - 1; i >= 0; i--)
+  int i;
+  for(i = strlen(str) - 1; i >= 0; i--)
     if (!isspace(str[i]))
       break;
   str[i + 1] = 0;
@@ -121,8 +125,8 @@ static void trim_string(char *str)
 void create_index(TapeDrive &tape, FILE *outfile)
 {
   char comp_rec[COMP_REC_LENGTH];	/* buffer to hold a record */
-  unsigned long int offset = tape.tell(); /* Beginning of database */
-  unsigned long int tapepos = offset;     /* Offset of first company */
+  long int offset = tape.tell(); /* Beginning of database */
+  long int tapepos = offset;     /* Offset of first company */
 
   for(;;) {
     if (tape.seek(tapepos) != tapepos)
