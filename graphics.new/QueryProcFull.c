@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/24 17:07:33  jussi
+  Found bug in GetTData(); same buffer alignment problem as in
+  the other gdataDoubleBuf.
+
   Revision 1.25  1996/07/24 01:04:48  jussi
   Added function for checking gdataBuf pointer validity. If the
   pointer value is incorrect, the value is restored and a message
@@ -1029,7 +1033,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
     int numRecs = high-low+1;
     int recsLeft = numRecs;
     int offset = low-_rangeStartId;
-    char *dbuf = (char *)_rangeBuf+ offset*tRecSize;
+    char *dbuf = (char *)_rangeBuf + offset * tRecSize;
     RecId recId = low;
     while (recsLeft > 0) {
       int numToConvert = numRecsPerBatch;
@@ -1054,7 +1058,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
     }
   } else {
     /* return GData */
-    char *ptr = (char *)_rangeBuf + (low- _rangeStartId)*gRecSize;
+    char *ptr = (char *)_rangeBuf + (low - _rangeStartId) * gRecSize;
     _rangeQData->bytes += (high-low+1)*gRecSize;
 
 #ifdef DEBUG
@@ -1569,157 +1573,156 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid,
 				int &retNumRecs, char *&retBuf)
 {
 #ifdef DEBUG
-  printf("GetTdata\n");
+    printf("GetTdata\n");
 #endif
 
-	double gdataDoubleBuf[128]; /* buffer to hold converted GData */
-        char *gdataBuf = (char *)gdataDoubleBuf;
-	TData *tdata = _tqueryQdata->tdata;
-	TDataMap *map = _tqueryQdata->map;
-	void **recs;
-	Boolean isTData;
+    TData *tdata = _tqueryQdata->tdata;
+    TDataMap *map = _tqueryQdata->map;
+    void **recs;
+    Boolean isTData;
 
-	for (; ; ) {
-		if (!_hasTqueryRecs) {
-			/* go to buffer manger to get more records */
-			if (!_mgr->GetRecs(isTData,_tqueryStartRid,
-				_tqueryNumRecs, _tqueryBuf, recs)) {
-				/* done */
-				/*
-				printf("Done with BufMgr\n");
-				*/
-				_mgr->DoneGetRecs();
-				_tqueryQdata->state = QPFull_EndState;
-				return false;
-			}
-			/* 
-			printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
-			*/
-			if (!isTData) {
-				/* pass GData directlry */
-				fprintf(stderr,"QueryProcFull::TData query didn't qet Tdata\n");
-				Exit::DoExit(2);
-			}
-			_tqueryBeginIndex = 0; /* index of record to start searching */
-			_hasTqueryRecs = true;
-		}
-
-		int tRecSize = tdata->RecSize();
-		Coord x, y;
+    for (; ; ) {
+        if (!_hasTqueryRecs) {
+            /* go to buffer manger to get more records */
+            if (!_mgr->GetRecs(isTData,_tqueryStartRid,
+                               _tqueryNumRecs, _tqueryBuf, recs)) {
+                /* done */
+                /*
+                   printf("Done with BufMgr\n");
+                   */
+                _mgr->DoneGetRecs();
+                _tqueryQdata->state = QPFull_EndState;
+                return false;
+            }
+#ifdef DEBUG
+            printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
+#endif
+            DOASSERT(isTData, "Did not get tdata");
+            _tqueryBeginIndex = 0; /* index of record to start searching */
+            _hasTqueryRecs = true;
+        }
+        
+        int tRecSize = tdata->RecSize();
+        Coord x, y;
 	
-		/* Find the 1st record that fits */
-		char *tptr = (char *)_tqueryBuf + _tqueryBeginIndex*tRecSize;
-		RecId recId = _tqueryStartRid + _tqueryBeginIndex;
-		int beginIndex = _tqueryBeginIndex;
-		/*
-		printf("start beginINdex %d\n", beginIndex);
-		*/
-		if (!_tqueryApprox) {
-			/* Find exact match */
-			for (; beginIndex < _tqueryNumRecs; beginIndex++) {
-				map->ConvertToGData(recId,tptr,recs,1,gdataBuf);		
+        /* Find the 1st record that fits */
+        char *tptr = (char *)_tqueryBuf + _tqueryBeginIndex * tRecSize;
+        RecId recId = _tqueryStartRid + _tqueryBeginIndex;
+        int beginIndex = _tqueryBeginIndex;
+#ifdef DEBUG
+        printf("start beginINdex %d\n", beginIndex);
+#endif
+        if (!_tqueryApprox) {
+            /* Find exact match */
+            for (; beginIndex < _tqueryNumRecs; beginIndex++) {
+                map->ConvertToGData(recId,tptr,recs,1,_gdataBuf);
+                Boolean match = true;
+                if ( _tqueryQdata->filter.flag & VISUAL_X) {
+                    if (map->GetDynamicArgs() & VISUAL_X)
+                        x = ((GDataBinRec *)_gdataBuf)->x;
+                    else
+                        x = map->GetDefaultX();
+                    
+                    if (x < _tqueryQdata->filter.xLow ||
+                        x > _tqueryQdata->filter.xHigh)
+                        match = false;
+                }
+                
+                if (_tqueryQdata->filter.flag & VISUAL_Y) {
+                    if (map->GetDynamicArgs() & VISUAL_Y) 
+                        y = ((GDataBinRec *)_gdataBuf)->y;
+                    else
+                        y = map->GetDefaultY();
+                    
+                    if (y < _tqueryQdata->filter.yLow ||
+                        y > _tqueryQdata->filter.yHigh)
+                        match = false;
+                }
+                
+#ifdef DEBUG
+                printf("TData query id %d, x = %f, y = %f\n", recId, x, y);
+#endif
+                
+                recId++;
+                tptr += tRecSize;
+                
+                if (match) {
+                    break;
+                }
+            }
+        }
 
-				Boolean match= true;
-				if ( _tqueryQdata->filter.flag & VISUAL_X) {
-					if (map->GetDynamicArgs() & VISUAL_X)
-						x = ((GDataBinRec *)gdataBuf)->x;
-					else x = map->GetDefaultX();
-	
-					if ( x < _tqueryQdata->filter.xLow ||
-						x > _tqueryQdata->filter.xHigh)
-						match = false;
-				}
-	
-				if (_tqueryQdata->filter.flag & VISUAL_Y) {
-					if (map->GetDynamicArgs() & VISUAL_Y) 
-						y = ((GDataBinRec *)gdataBuf)->y;
-					else y = map->GetDefaultY();
-	
-					if (y < _tqueryQdata->filter.yLow ||
-						y > _tqueryQdata->filter.yHigh)
-					match = false;
-				}
-	
-				/*
-				printf("TData query id %d, x = %f, y = %f\n", recId, x, y);
-				*/
-	
-				recId++;
-				tptr += tRecSize;
-	
-				if (match) {
-					break;
-				}
-			}
-		}
-		if (beginIndex < _tqueryNumRecs) {
-			/* found 1st matching record. keep on searching 
-			for additional matching recods */
-			int endIndex ;
-			if (_tqueryApprox) {
-				endIndex = _tqueryNumRecs;
-			}
-			else {
-				/* find exact match */
-				for (endIndex = beginIndex+1; endIndex < _tqueryNumRecs;
-							endIndex++) {
-					map->ConvertToGData(recId,tptr,recs,1,gdataBuf);		
+        if (beginIndex < _tqueryNumRecs) {
+            /* found 1st matching record. keep on searching 
+               for additional matching recods */
+            int endIndex ;
+            if (_tqueryApprox) {
+                endIndex = _tqueryNumRecs;
+            }
+            else {
+                /* find exact match */
+                for(endIndex = beginIndex + 1; endIndex < _tqueryNumRecs;
+                    endIndex++) {
+                    map->ConvertToGData(recId, tptr, recs, 1, _gdataBuf);
+                    Boolean match = true;
+                    if ( _tqueryQdata->filter.flag & VISUAL_X) {
+                        if (map->GetDynamicArgs() & VISUAL_X)
+                            x = ((GDataBinRec *)_gdataBuf)->x;
+                        else
+                            x = map->GetDefaultX();
+                        
+                        if (x < _tqueryQdata->filter.xLow ||
+                            x > _tqueryQdata->filter.xHigh)
+                            match = false;
+                    }
+                    
+                    if (_tqueryQdata->filter.flag & VISUAL_Y) {
+                        if (map->GetDynamicArgs() & VISUAL_Y) 
+                            y = ((GDataBinRec *)_gdataBuf)->y;
+                        else
+                            y = map->GetDefaultY();
+                        
+                        if (y < _tqueryQdata->filter.yLow ||
+                            y > _tqueryQdata->filter.yHigh)
+                            match = false;
+                    }
+                    
+                    recId++;
+                    tptr += tRecSize;
+                    
+                    if (!match) {
+                        /* does not fit*/
+                        break;
+                    }
+                }
+            }
 
-					Boolean match= true;
-					if ( _tqueryQdata->filter.flag & VISUAL_X) {
-						if (map->GetDynamicArgs() & VISUAL_X)
-							x = ((GDataBinRec *)gdataBuf)->x;
-						else x = map->GetDefaultX();
-
-						if ( x < _tqueryQdata->filter.xLow ||
-							x > _tqueryQdata->filter.xHigh)
-							match = false;
-					}
-
-					if (_tqueryQdata->filter.flag & VISUAL_Y) {
-						if (map->GetDynamicArgs() & VISUAL_Y) 
-							y = ((GDataBinRec *)gdataBuf)->y;
-						else y = map->GetDefaultY();
-
-						if (y < _tqueryQdata->filter.yLow ||
-							y > _tqueryQdata->filter.yHigh)
-							match = false;
-					}
-
-					recId ++; tptr += tRecSize;
-
-					if (!match) {
-						/* does not fit*/
-						break;
-					}
-				}
-			}
-			_tqueryBeginIndex = endIndex;
-			/* everything from [beginIndex..endIndex-1] fits */
-			/* first, free buffer if we have to */
-			/*
-			printf("endIndex = %d\n", endIndex);
-			*/
-			if (endIndex >= _tqueryNumRecs) {
-				_mgr->FreeRecs(_tqueryBuf,NoChange);
-				_hasTqueryRecs = false;
-			}
-			retStartRid = _tqueryStartRid + beginIndex;
-			retNumRecs = endIndex-beginIndex;
-			retBuf = (char *)_tqueryBuf + beginIndex *tRecSize;
-			return true;
-		}
-		else {
-			/* didn't find any record. Get ready for next iteration
-			to fetch more records */
-
-			/*
-			printf("no match\n");
-			*/
-			_mgr->FreeRecs(_tqueryBuf,NoChange);
-			_hasTqueryRecs = false;
-		}
-	}
+            _tqueryBeginIndex = endIndex;
+            /* everything from [beginIndex..endIndex-1] fits */
+            /* first, free buffer if we have to */
+            /*
+               printf("endIndex = %d\n", endIndex);
+               */
+            if (endIndex >= _tqueryNumRecs) {
+                _mgr->FreeRecs(_tqueryBuf, NoChange);
+                _hasTqueryRecs = false;
+            }
+            retStartRid = _tqueryStartRid + beginIndex;
+            retNumRecs = endIndex-beginIndex;
+            retBuf = (char *)_tqueryBuf + beginIndex * tRecSize;
+            return true;
+        }
+        else {
+            /* didn't find any record. Get ready for next iteration
+               to fetch more records */
+            
+            /*
+               printf("no match\n");
+               */
+            _mgr->FreeRecs(_tqueryBuf, NoChange);
+            _hasTqueryRecs = false;
+        }
+    }
 }
 
 void QueryProcFull::DoneTDataQuery()
