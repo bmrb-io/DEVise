@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/13 21:34:38  jussi
+  Added checking of available semaphores and shared memory.
+
   Revision 1.1  1996/12/03 20:28:48  jussi
   Initial revision.
 */
@@ -85,6 +88,8 @@ int MemMgr::SetupSharedMemory()
       return -1;
     }
     _free->setValue(0);
+
+    return 0;
 }
 
 int MemMgr::SetupLocalMemory()
