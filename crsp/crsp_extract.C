@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/17 04:41:02  ravim
+  Fix bug.
+
   Revision 1.4  1995/11/17 04:05:57  ravim
   Extracts only first 6 chars of cusip for comparison.
 
@@ -48,7 +51,7 @@ static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
-int find_offset(FILE *idxfile, char cval[]);
+unsigned long int find_offset(FILE *idxfile, char cval[]);
 
 /*-------------------------------------------------------------------*/
 
@@ -61,16 +64,13 @@ int find_offset(FILE *idxfile, char cval[]);
    every security in turn.
 */
 
-int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
-		char *idxFile, char **argv, int argc)
+int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
+		char *tapeBsize, char *idxFile, char **argv, int argc)
 {
   FILE *idxfile;
-  int *offset_arr;
-  int *spos_arr;
-  int tmp, i, j;
-  int num = argc / 2;
 
   assert(argc % 2 == 0);
+  int num = argc / 2;
 
   // Get the index file pointer
   if ((idxfile = fopen(idxFile, "r")) == NULL)
@@ -80,22 +80,26 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   }
   
   // We will retrieve num offsets and sort them
-  offset_arr = (int *)malloc(num*sizeof(int));
-  spos_arr = (int *)malloc(num*sizeof(int));
+  unsigned long int *offset_arr = (unsigned long int *)
+                                  malloc(num*sizeof(unsigned long int));
+  int *spos_arr = (int *)malloc(num*sizeof(int));
 
-  for (i = 0; i < num; i++) {
+  for (int i = 0; i < num; i++) {
     spos_arr[i] = i * 2;
     // find offset for this security by looking through the index file
-    if ((offset_arr[i] = find_offset(idxfile, argv[i*2])) == -1)
-      printf("ERROR: could not find selected cusip in the index file\n");
+    offset_arr[i] = find_offset(idxfile, argv[i * 2]);
+    // add offset of beginning of tape file
+    offset_arr[i] += atol(tapeOff);
     rewind(idxfile);
   }
 
+  fclose(idxfile);
+
   // Now sort offset_arr - bubble sort for now
   for (i = 0; i < num; i++) {
-    for (j = i+1; j < num; j++) {
+    for (int j = i+1; j < num; j++) {
       if (offset_arr[i] > offset_arr[j]) {
-	tmp = offset_arr[i];
+	unsigned long int tmp = offset_arr[i];
 	offset_arr[i] = offset_arr[j];
 	offset_arr[j] = tmp;
 	tmp = spos_arr[i];
@@ -104,8 +108,6 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
       }
     }
   }
-
-  fclose(idxfile);
 
   TapeDrive tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
   if (!tape)
@@ -156,31 +158,34 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc >= 7);
+  assert(argc >= 8);
 
   // Get parameter values from TCL script
 
   char *tapeDrive = argv[1];
   char *tapeFile = argv[2];
-  char *tapeBsize = argv[3];
-  char *idxFile = argv[4];
+  char *tapeOff = argv[3];
+  char *tapeBsize = argv[4];
+  char *idxFile = argv[5];
 
-  printf("Reading from %s:%s (%s)\n", tapeDrive, tapeFile, tapeBsize);
+  printf("Reading from %s:%s:%s (%s)\n",
+	 tapeDrive, tapeFile, tapeOff, tapeBsize);
 
   // pass pairs of <CUSIP, cachefilename> to extraction routine
 
-  return crsp_create(tapeDrive, tapeFile, tapeBsize, idxFile,
-		     &argv[5], argc - 5);
+  return crsp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+		     &argv[6], argc - 6);
 }
 
 // Searches through the index file and finds the entry for the given 
-// cusip number. Then, returns the tape offset for this security.
-int find_offset(FILE *idxfile, char cval[])
+// CUSIP number. Then, returns the tape offset for this security.
+
+unsigned long int find_offset(FILE *idxfile, char cval[])
 {
   int tmpval1, tmpval2;
   char tmpbuf[200];	// large enough to hold one line of index file
   unsigned long int offval;
-  char fval[10];	// Stores cusip in this
+  char fval[10];	// stores CUSIP in this
 
   do 
   {
@@ -195,5 +200,6 @@ int find_offset(FILE *idxfile, char cval[])
   if (!strcmp(cval, fval))
     return offval;
 
-  return -1;
+  printf("ERROR: could not find CUSIP %s in the index file\n", cval);
+  return 0;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/11/17 03:57:43  ravim
+  New format of index file used. Uses CUSIP number to search for company.
+
   Revision 1.8  1995/11/14 22:55:06  jussi
   Changed interface with Tcl. Tcl scripts now pass both company
   name and cache file where data should be extracted to.
@@ -60,8 +63,8 @@ static Tcl_Interp *globalInterp = 0;
 /* This function interfaces the Compustat extraction routines to
    TCL/TK. The path name for output files is taken from TCL. */
 
-int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
-		char *idxFile, char **, int);
+int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
+		char *tapeBsize, char *idxFile, char **, int);
 int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file);
 
 int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
@@ -70,21 +73,23 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc >= 7);
+  assert(argc >= 8);
 
   /* Get parameter values from TCL script */
 
   char *tapeDrive = argv[1];
   char *tapeFile = argv[2];
-  char *tapeBsize = argv[3];
-  char *idxFile = argv[4];
+  char *tapeOff = argv[3];
+  char *tapeBsize = argv[4];
+  char *idxFile = argv[5];
 
-  printf("Reading from %s:%s (%s)\n", tapeDrive, tapeFile, tapeBsize);
+  printf("Reading from %s:%s:%s (%s)\n",
+	 tapeDrive, tapeFile, tapeOff, tapeBsize);
 
   /* do not pass argv[0] (name of TCL command) */
 
-  return comp_create(tapeDrive, tapeFile, tapeBsize, idxFile,
-		     &argv[5], argc - 5);
+  return comp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+		     &argv[6], argc - 6);
 }
 
 /*-------------------------------------------------------------------*/
@@ -96,16 +101,13 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
    of the corresponding records (since the records are on tape) and calls
    create_comp_dat for every successive symbol. */
 
-int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
-		char *idxFile, char **argv, int argc)
+int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
+		char *tapeBsize, char *idxFile, char **argv, int argc)
 {
   FILE *idxfile;
-  int *offset_arr;
-  int *spos_arr;
-  int tmp, i, j;
-  int num = argc / 2;
 
   assert(argc % 2 == 0);
+  int num = argc / 2;
 
   /* Get the index file pointer */
   if ((idxfile = fopen(idxFile, "r")) == NULL)
@@ -115,23 +117,24 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   }
   
   /* We will retrieve num offsets and sort them */
-  offset_arr = (int *)malloc(num*sizeof(int));
-  spos_arr = (int *)malloc(num*sizeof(int));
+  unsigned long int *offset_arr = (unsigned long int *)
+                                  malloc(num*sizeof(unsigned long int));
+  int *spos_arr = (int *)malloc(num*sizeof(int));
 
-  for (i = 0; i < num; i++)
+  for (int i = 0; i < num; i++)
   {
     spos_arr[i] = i * 2;
-    if ((offset_arr[i] = find_rec(idxfile, argv[i * 2])) == -1)
-      printf("ERROR:could not find selected cusip in the index file\n");
+    offset_arr[i] = find_rec(idxfile, argv[i * 2]);
+    offset_arr[i] += atol(tapeOff);
     rewind(idxfile);
   }
 
   /* Now sort offset_arr - bubble sort for now.*/
   for (i = 0; i < num; i++)
-    for (j = i+1; j < num; j++)
+    for (int j = i+1; j < num; j++)
       if (offset_arr[i] > offset_arr[j])
       {
-	tmp = offset_arr[i];
+	unsigned long int tmp = offset_arr[i];
 	offset_arr[i] = offset_arr[j];
 	offset_arr[j] = tmp;
 	tmp = spos_arr[i];
@@ -248,7 +251,7 @@ int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file)
    passed cusip number.
    In that record, return the OFFSET field. */
 
-int find_rec(FILE *idxfile, char cval[])
+unsigned long int find_rec(FILE *idxfile, char cval[])
 {
   int tmpval;
   char tmpbuf[200];     // large enough to hold one line of index file
@@ -267,12 +270,13 @@ int find_rec(FILE *idxfile, char cval[])
     /* Ignore rest of line */
     fgets(tmpbuf, 200, idxfile);
 
-  }while ((strcmp(cval, fval)) && (!feof(idxfile)));
+  } while ((strcmp(cval, fval)) && (!feof(idxfile)));
 
   if (!strcmp(cval, fval))
     return offval;
   
-  return -1;
+  printf("ERROR: could not find CUSIP %s in the index file\n", cval);
+  return 0;
 }
 
 /*-------------------------------------------------------------------*/
@@ -363,4 +367,3 @@ double comp_get_val(char *str, int len, int pre)
 }
 
 /*-------------------------------------------------------------------*/
-
