@@ -2205,6 +2205,14 @@ Num Date        Status  Description
 			commands get sent to one of the deviseds, and
 			the other one doesn't do any work. (rkw)
 
+565 02/21/00	OPEN	JavaScreen has "Invalid image data for view" errors
+			with bmrb/4096_backbone_var.ds session when jspop
+			and jss are on different machines, and the devised
+			gets switched to a different JavaScreen and back. (rkw)
+
+566 02/21/00	OPEN	Jss can't restart a devised if the jspop and jss
+			are on different machines. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
