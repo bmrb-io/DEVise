@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2001/01/26 22:21:39  wenger
+// Fixed up the jspop because Kai's last commit undid my previous changes.
+//
 // Revision 1.33  2001/01/23 22:58:54  xuk
 // *** empty log message ***
 //
@@ -682,11 +685,12 @@ public class jspop implements Runnable
 	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
 			cgi = socket.cgiFlag;
 			if (cgi != 0) {
+			    //TEMP -- we may never get here?
 			    cgiflag = true;
-			    pn("A CGI client connection.");
+			    pn("Receiving command CGI.");
 			} else {
 			    cgiflag = false;
-			    pn("A direct socket client connection.");
+			    pn("Receiving command via socket.");
 			}
 
 			DEViseClient client = findClientById(id);
