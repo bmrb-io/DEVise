@@ -47,7 +47,7 @@ Num Date        Status  Description
 			lines in the schema files -- tries to interpret them
 			as attributes. (rkw)
 
-014 07/11/96	DUP	Schema editor doesn't allow entry of string lengths
+014 07/11/96	FIXED   Schema editor doesn't allow entry of string lengths
 			(always forces them to 10). (rkw) (duplicate of 004)
 
 015 07/11/96	OPEN	HP version of Devise can't open the condorview1.tk
