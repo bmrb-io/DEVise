@@ -89,6 +89,10 @@ see comments in DEViseCommSocket.java.
         <status>: a string containing a number indicating how many 
 		JavaScreens are collaborating with this user.
 
+    3.6 JAVAC_CollabExit
+    Purpose: Close the collaboration JavaScreens, when the "leader" exits
+    Arguments: 0
+
 4. JavaScreen to devised (via JSPoP)
 
     4.1 JAVAC_GetSessionList
