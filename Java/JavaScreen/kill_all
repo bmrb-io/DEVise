@@ -1,0 +1,41 @@
+#! /bin/csh -f
+
+############################################################
+
+# Kill jspop, jss, and associated devised(s).
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+if ($#argv > 1) then
+  echo "Usage: kill_all [id_string]"
+  exit
+endif
+
+set idString = ""
+if ($#argv == 1) then
+  set idString = $argv[1]
+endif
+
+
+echo "You are about to kill the jspop, jss, and associated devised(s)."
+if ($idString != "") then
+  echo "ID string is <$idString>"
+endif
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer == y || $answer == Y) then
+  if ($idString == "") then
+    jspop.kill
+    jss.kill
+    DEVise.kill
+  else
+    jspop.kill -id$idString
+    jss.kill -id$idString
+    DEVise.kill -id $idString
+  endif
+endif
