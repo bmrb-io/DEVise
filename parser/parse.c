@@ -1,4 +1,8 @@
-/* parse */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "parse.h"
 #include "tokens.h"

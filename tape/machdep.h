@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef MACHDEP_H
 #define MACHDEP_H
 

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TAPEDRIVE_H
 #define TAPEDRIVE_H
 

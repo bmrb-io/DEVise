@@ -1,4 +1,8 @@
-/* codegen.c: code generation */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "parse.h"
 

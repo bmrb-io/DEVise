@@ -1,4 +1,8 @@
-/* TDataTapeInterp.h: interpreted TData using parsed information */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataTapeInterp_h
 #define TDataTapeInterp_h
 #include "DeviseTypes.h"

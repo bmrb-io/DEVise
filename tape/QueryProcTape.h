@@ -1,4 +1,7 @@
-// Tape Query Processor
+/*
+  $Id$
+
+  $Log$*/
 
 #ifndef QueryProcTape_h
 #define QueryProcTape_h

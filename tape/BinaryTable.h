@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BINTABLE_H
 #define BINTABLE_H
 

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* Full Query Processor */
 #ifndef QueryProcFull_h
 #define QueryProcFull_h

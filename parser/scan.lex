@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* definitions */
+
 %{
 #include "tokens.h"
 extern char *malloc();

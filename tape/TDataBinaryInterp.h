@@ -1,4 +1,8 @@
-/* TDataBinaryInterp.h: interpreted TData using parsed information */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataBinaryInterp_h
 #define TDataBinaryInterp_h
 #include "DeviseTypes.h"

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 // QueryProcTape.c
 
 #include <assert.h>

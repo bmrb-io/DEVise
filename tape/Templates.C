@@ -1,4 +1,7 @@
-// Templates.c
+/*
+  $Id$
+
+  $Log$*/
 
 #ifdef __GNUG__
 #pragma implementation "HashTable.h"

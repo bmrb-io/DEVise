@@ -1,4 +1,8 @@
-/* tokens.h*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TOKENS_H
 #define TOKENS_H
 

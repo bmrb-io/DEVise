@@ -1,4 +1,8 @@
-/* TDataBinaryInterp.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <string.h>
 #include "TDataBinaryInterp.h"
 #include "AttrList.h"

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataTape_h
 #define TDataTape_h
 

@@ -1,6 +1,11 @@
-/* codegen.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifdef CODEGEN_H
 #define CODEGEN_H
+
 void CodeGen(MappingRec *rec, FILE *mapFile);
 
 #endif

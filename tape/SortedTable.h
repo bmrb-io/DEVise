@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef SORTEDTABLE_H
 #define SORTEDTABLE_H
 

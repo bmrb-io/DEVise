@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include <iostream.h>
 #include <stdlib.h>
 

@@ -1,4 +1,7 @@
-// TDataTapeInterp.c
+/*
+  $Id$
+
+  $Log$*/
 
 #include <string.h>
 #include <assert.h>
