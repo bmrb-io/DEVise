@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/05/07 17:03:27  jussi
+  Method MapGAttr2TAttr() now returns NULL by default. It used
+  to be a pure virtual method but that would have required changes
+  in some files in ams and multi.
+
   Revision 1.11  1996/05/07 16:39:10  jussi
   Added MapGAttr2TAttr() method for translating GData attributes
   to TData attributes.
@@ -54,8 +59,6 @@
   Added CVS header.
 */
 
-/* Mapping from TData to GData */
-
 #ifndef TDataMap_h
 #define TDataMap_h
 
@@ -81,7 +84,8 @@ class Symbol;
 class WindowRep;
 class Bitmap;
 
-/* Offsets for GData attributes.Not all is valid. */
+/* Offsets for GData attributes. Not all offsets are valid (negative). */
+
 struct GDataAttrOffset {
   int xOffset;
   int yOffset;
@@ -96,7 +100,7 @@ struct GDataAttrOffset {
 
 class TDataMap {
 public:
-  /* initializer. dynamicArgs == attributes that are
+  /* constructor. dynamicArgs == attributes that are
      dynamically alloated. dynamicAttrs: set bit i to 1 if
      ith shape attribute is dynamically allocated.
      name: name of this type of mapping.
@@ -114,7 +118,6 @@ public:
   void SetGDataAttrList(AttrList *gAttrList) { _gdataAttrList = gAttrList; }
   AttrList *GDataAttrList() { return _gdataAttrList; }
 
-  /* Get current defaults */
   /* Get/Set info about the dimensions of the GData */
   void SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions);
   int DimensionInfo(VisualFlag *&dimensionInfo) { 
@@ -138,16 +141,16 @@ public:
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
   Coord GetDefaultZ() { return _z; }
-  Color GetDefaultColor() { return _color;};
-  Coord GetDefaultSize() {return _size; };
-  Pattern GetDefaultPattern() { return _pattern ;};
-  Coord GetDefaultOrientation() { return _orientation ;};
-  ShapeID GetDefaultShape(){ return _shapeId;}
-  int GetDefaultNumShapeAttrs(){ return _numShapeAttr;}
-  ShapeAttr *GetDefaultShapeAttrs(){ return _shapeAttrs;};
+  Color GetDefaultColor() { return _color; }
+  Coord GetDefaultSize() { return _size; }
+  Pattern GetDefaultPattern() { return _pattern; }
+  Coord GetDefaultOrientation() { return _orientation; }
+  ShapeID GetDefaultShape() { return _shapeId; }
+  int GetDefaultNumShapeAttrs() { return _numShapeAttr; }
+  ShapeAttr *GetDefaultShapeAttrs() { return _shapeAttrs; }
 
   int GetPixelWidth() { return _pixelWidth; }
-  void SetPixelWidth(int width) {_pixelWidth = width; }
+  void SetPixelWidth(int width) { _pixelWidth = width; }
   
   /* Map record to symbol by calling user defined Map() function.
      This is called by the query processor.
@@ -167,20 +170,21 @@ public:
   **************************************************************/
 
 #ifdef TDATAMAP_MAP_TO_SYMBOL
-  virtual void Map(TData *, RecId , void * /*rec*/, Symbol *)=0;
+  virtual void Map(TData *, RecId, void * /*rec*/, Symbol *)=0;
 #endif
 
   /* convert from Tdata to Gdata. buf contains
      buffer for data. tRecs are pointers to variable size
      records only. */
-  virtual void ConvertToGData(RecId startRecId,void *buf,
-			      void **tRecs,int numRecs,void *gdataPtr)=0;
+  virtual void ConvertToGData(RecId startRecId, void *buf,
+			      void **tRecs, int numRecs,
+			      void *gdataPtr) = 0;
 
   /* Get the GData file for the mapping */
-  GData *GetGData() { return _gdata;}
+  GData *GetGData() { return _gdata; }
   
   /* Get the TData file for the mapping */
-  TData *GetTData() { return _tdata;}
+  TData *GetTData() { return _tdata; }
   
   /* Get record size for TData */
   int TDataRecordSize();
@@ -222,12 +226,8 @@ public:
   RecId GetFocusId();
   
   /* Setting and getting offsets of GData attributes */
-  void SetGDataOffset(GDataAttrOffset *offset){
-    _gOffset = offset;
-  }
-  GDataAttrOffset *GetGDataOffset() {
-    return _gOffset;
-  }
+  void SetGDataOffset(GDataAttrOffset *offset) { _gOffset = offset; }
+  GDataAttrOffset *GetGDataOffset() { return _gOffset; }
   
   void InsertUserData(void *data) { _userData = data; }
   void *GetUserData() { return _userData; }
@@ -313,7 +313,7 @@ private:
   AttrList *_gdataAttrList;
   int _maxGDataPages; /* max # of GData pages, or -1 if no limit */
   
-  /* user data. (used by QueryProcessor to insert its own info) */
+  /* user data. used by QueryProcessor to insert its own info. */
   void *_userData;
   
   Coord _boundWidth, _boundHeight; /* bounding box width/height */
