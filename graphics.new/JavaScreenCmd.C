@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/01/05 15:06:56  wenger
+  Got "static" (the views displayed don't change once the session is open)
+  view symbols to work in the JavaScreen.
+
   Revision 1.46  1998/12/21 17:07:30  wenger
   Devise views now extend to the borders of the JavaScreen window in both
   X and Y directions, even if this means changing window aspect ratios.
@@ -795,7 +799,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_control  = control;
 	_ctype = ctype;
 	_argc = argc;
-	_argv = new (char*)[argc](NULL);
+	_argv = new (char*)[argc];
 	errmsg = NULL;
 
     for (i=0; i< _argc; ++i)
@@ -806,7 +810,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
  
         startPos = -1;
         endPos = arglen;
-        _argv[i] = new (char)[arglen+1](0);
+        _argv[i] = new (char)[arglen+1];
         while (argv[i][j]&&(
             (argv[i][j]==' ')||
             (argv[i][j]=='\t')&&
@@ -1869,7 +1873,7 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo, int imageSize)
 			+1						// # Views
 			+winInfo._viewCount * 5;	// viewname + coordinaes
 
-	char**	argv = new (char*)[argc](NULL);
+	char**	argv = new (char*)[argc];
 	int		i;
 	int		pos = 0;
 
