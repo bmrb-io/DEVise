@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2001/02/06 16:33:45  xuk
+// Change for multiple collaborate JSs.
+//
 // Revision 1.37  2001/01/31 22:19:02  xuk
 // Modify onCollab(), for wrong collaboration JS ID. Send JAVAC_ERROR to client.
 //
@@ -1259,7 +1262,14 @@ public class jspop implements Runnable
 	
 	try {			
        	    if (client != null) {
-		client.addCollabSocket(socket);
+		// check for enable collaboration status
+		if (client.isAbleCollab) {
+		    client.addCollabSocket(socket);
+		} else { // disable collaboration
+		    socket.sendCmd(DEViseCommands.ERROR + " {Disable to collaborate with client.}");
+		    socket.closeSocket();	
+		    pn("Disable to collaborate with client.");
+		}
 	    } else {
 		pn("No client for ID: " + id);
 		socket.sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
