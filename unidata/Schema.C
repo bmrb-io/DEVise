@@ -19,6 +19,7 @@
 
 #undef    YYSTYPE        // perl has it's own lexer.
 #include  "PerlFrag.h"
+#include "getftime.h"
 
 #undef    assert        // defined by perl includes
 #include  <assert.h>
@@ -1472,7 +1473,7 @@ void Schema::DeepThought(ostream *err)
     assert((sizeof(int) % INT_ALIGN) == 0);
 
       // This one is actually required to be true by ISO C
-    assert((sizeof(struct tm) % TM_ALIGN) == 0);
+    assert((sizeof(TimeT) % TM_ALIGN) == 0);
 
     int offst = 0;
 
@@ -1501,7 +1502,7 @@ void Schema::DeepThought(ostream *err)
     for (j=0; j < _nattrs; j++)
         if (_flat_attrs->ith(j)->type() == DateTime_Attr) {
             _flat_attrs->ith(j)->_offset = offst;
-            offst += sizeof(struct tm);
+            offst += sizeof(TimeT);
         }
 
     // now ints

@@ -23,7 +23,8 @@ LIB_FILES = \
     Traits.C \
     udIndex.C \
     udParam.C \
-    UniData.C
+    UniData.C \
+    DateTime.C
 
 CC_FILES = umain.C
 

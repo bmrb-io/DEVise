@@ -24,7 +24,7 @@
 
 #include   "getftime.h"
 
-/*  #define    VERBOSE_ERROR  */
+#define    VERBOSE_ERROR 
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
@@ -33,6 +33,12 @@
 static char *am_or_pm[] = {
                        "AM",
                        "PM",
+                        NULL
+                      };
+
+static char *bc_or_ad[] = {
+                       "BC",
+                       "AD",
                         NULL
                       };
 
@@ -89,11 +95,13 @@ static char *mnth_abbrs[] = {
                                  NULL
                             };
 
+/*
 static int days_per_mnth[] = {
                                 31, 28, 31, 30, 31, 30,
                                 31, 31, 30, 31, 30, 31,
                                 0
                              };
+*/
 
     // Need to figure out what all these could be.
 static char *time_zones[] = {
@@ -163,7 +171,7 @@ static int atoin( char *s, int n, int *used )
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // returns the number of characters consumed from buf,
 // or 0 on an error.
-int getftime(char *buf, char *format, struct tm *tme)
+int getftime(char *buf, char *format, TimeT *time)
 {
     int  len, tot=0;          // The total chars consumed
     int  v, got_fn=0, repeat, used;
@@ -175,6 +183,10 @@ int getftime(char *buf, char *format, struct tm *tme)
         format = ISO_TIME;
 
     // Initialize fields to zero.
+
+    struct tm tmet;
+    struct tm* tme = &tmet;
+
     tme->tm_sec   =  0;
     tme->tm_min   =  0;
     tme->tm_hour  =  0;
@@ -184,6 +196,7 @@ int getftime(char *buf, char *format, struct tm *tme)
     tme->tm_wday  =  0;
     tme->tm_yday  =  0;
     tme->tm_isdst = -1;
+    int tm_nanosec = 0;
  
     for (; *format && *buf; format++) {
 
@@ -395,6 +408,23 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %S - second, as an int (00-61)
                     //      (allows for up to 2 leap-seconds - 60 and 61)
+
+              case 'N':
+                v = findstr(buf, bc_or_ad);
+			 if(v == 0){
+                    tme->tm_year = -tme->tm_year;
+                }
+			 if(v == 0 || v == 1){
+			     len = 2;
+			     buf += len;
+			     tot += len;
+			 }
+			 else if(isspace(*(buf - 1))){
+			     buf--;   // backtrack if bc/ad is missing, questionable
+			     tot--;
+                }
+		      break;
+
               case 'S':
                 v = atoin(buf,repeat,&used);
                 if ((used == 0) || (v < 0) || (v > 61)) {
@@ -413,6 +443,16 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 buf += len;
                 tot += len;
+			 if(*buf == '.'){ // fractional secs
+			     buf++;
+				len++;
+				tot++;
+                    v = atoin(buf, 0,&used);
+				len += used;
+				buf += used;
+				tot += used;
+				tm_nanosec = v;
+			 }
                 break;
 
                     // %U - week number of the year (00-53)
@@ -517,8 +557,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 #endif
                     return 0;
                 }
-                  // struct tm is offset for some reason.
-                tme->tm_year = v - 1900;  
+
+                tme->tm_year = v;  
 
                 if (repeat)
                     len = repeat;
@@ -615,6 +655,7 @@ int getftime(char *buf, char *format, struct tm *tme)
         tme->tm_hour = hour_sum;
     }
 
+/*	// disabled by DD, cannot use mktime
 
     if (tme->tm_mday == 0) {
 
@@ -676,12 +717,19 @@ int getftime(char *buf, char *format, struct tm *tme)
         }
     }
 
+*/
       // No date was given (only time?), I guess that's okay.
     if (tme->tm_mday == 0)
         tme->tm_mday = 1;
 
       // Sets wday & yday based on the other values.
-    (void) mktime(tme);
+//    (void) mktime(tme);
+
+	// added by DD
+
+	time->setDate(tmet.tm_year, tmet.tm_mon + 1, tmet.tm_mday);
+	time->setTime(tmet.tm_hour, tmet.tm_min, tmet.tm_sec);
+	time->setNanoSec(tm_nanosec);
     return tot;
 }
 

@@ -16,6 +16,9 @@
 
 #include <iostream.h>
 
+#undef assert
+#include <assert.h>
+
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 PerlFrag::PerlFrag(Attr *owner, FragType type)
 {
@@ -108,14 +111,15 @@ void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
         case FT_EXPR:
             if (flat_name) {
                 int len = strlen(flat_name) + 3;
-                char *cmmd = new char[len+strlen(_src)+1];
+                char *cmmd = new char[len+strlen(_src) + 1];
 
-                sprintf(cmmd, "$%s =%s", flat_name, _src);
+                sprintf(cmmd, "%s =%s", flat_name, _src);
                 _code = newSVpv(cmmd,0);
                 delete [] cmmd;
-            } else
+            } else {
                 // Trust the user, the code might have side-effects.
                 _code = newSVpv(_src,0);
+            }
             break;
 
         case FT_SUBR: {
@@ -201,6 +205,7 @@ I32  PerlFrag::Eval()
 
         case FT_GLOB:
         case FT_EXPR:
+	       assert(_code);
             perl_eval_sv(_code, G_DISCARD|G_NOARGS|G_EVAL);
             break;
 

@@ -15,6 +15,14 @@
 #include  "UniData.h"    // For definitions of copying functions.
 #include  "getftime.h"
 
+#undef    assert        // defined by perl includes
+#include  <assert.h>
+
+// perl will not take const char*
+char* DATE_PART_NAMES[NUM_DATE_PARTS] =        
+     {"year", "month", "day", "hour", "min", "sec", "nanosec"};
+
+
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Make a duplicate (deep-copy)
 FuncOf *FuncOf::dup()
@@ -74,6 +82,11 @@ Attr::Attr(char *name)
     _func_of = NULL;
 
     _perl_var = (SV*) NULL;
+    _perl_date = (HV*) NULL;
+
+    for(int i = 0; i < NUM_DATE_PARTS; i++){
+        _perl_date_parts[i] = (SV*) NULL;
+    }    
 
     _sublen  = NULL;
     _sublpos = NULL;
@@ -121,6 +134,9 @@ Attr::~Attr()
 
     delete [] _min;
     delete [] _max;
+
+    // _perl_date and _perl_date_parts should be deleted too,
+    // but I am not sure how to do this.   DD	
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
@@ -153,7 +169,7 @@ size_t  Attr::determ_size()
         break;
 
       case DateTime_Attr:
-        _size = sizeof(struct tm);
+        _size = sizeof(TimeT);
         break;
 
       case UserDefined_Attr:
@@ -215,9 +231,29 @@ void Attr::set_interp(PerlInterpreter *perl)
     if (_subattr)
         for (int j=0; j < _subattr->nAttrs(); j++)
             _subattr->ith(j)->set_interp(perl);
-    else
+    else {
         // leaf values get a corresponding perl var
         _perl_var = perl_get_sv(_flat_name, TRUE);
+        assert(_perl_var);
+
+        // create and init vars that contain date parts
+
+        for(int i = 0; i < NUM_DATE_PARTS; i++){
+            _perl_date_parts[i] = newSViv(DATE_PART_DEF[i]);
+            assert(_perl_date_parts[i]);
+        }
+
+        // creating _perl_date
+
+        _perl_date = perl_get_hv(_flat_name, TRUE);
+        assert(_perl_date);
+        for(int i = 0; i < NUM_DATE_PARTS; i++){
+            char* name = DATE_PART_NAMES[i];		// should be const char*
+            SV** ret =  hv_store(
+                _perl_date, name, strlen(name), _perl_date_parts[i], 0);
+            assert(ret);
+        }
+    }
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
@@ -260,10 +296,28 @@ void Attr::set_var(char *field)
         break;
 
       case DateTime_Attr: {
-            struct tm *dte = (struct tm*) field;
-            char tmpdte[200];
-            strftime(tmpdte, 200, ISO_TIME, dte);
-            sv_setpv(_perl_var, tmpdte);
+
+            // This code is called even when
+            // value option is defined, and then some of 
+            // the _perl_date_parts may be dangling pointers
+ 
+            if(_value){
+
+                // this is computed atribute, nothing to read
+                // has to break or core dump
+
+                break;   
+            }
+
+            TimeT *dte = (TimeT*) field;
+
+            sv_setiv(_perl_date_parts[0], dte->getYear());
+            sv_setiv(_perl_date_parts[1], dte->getMonth());
+            sv_setiv(_perl_date_parts[2], dte->getDay());
+            sv_setiv(_perl_date_parts[3], dte->getHour());
+            sv_setiv(_perl_date_parts[4], dte->getMin());
+            sv_setiv(_perl_date_parts[5], dte->getSec());
+            sv_setiv(_perl_date_parts[6], dte->getNanoSec());
         }
         break;
     }
@@ -309,8 +363,22 @@ void Attr::grab_var(char *field)
         break;
 
       case DateTime_Attr: {
-            struct tm *dte = (struct tm*) field;
-            getftime(SvPV(_perl_var,na), ISO_TIME, dte);
+            TimeT *dte = (TimeT*) field;
+            int values[NUM_DATE_PARTS];
+            for(int i = 0; i < NUM_DATE_PARTS; i++){
+			 // perl will not take const char*
+                char* name = DATE_PART_NAMES[i];
+                SV** ret = hv_fetch(_perl_date, name, strlen(name), FALSE);
+                if(ret){
+                    values[i] = SvIV(*ret);
+                }
+                else{
+                    values[i] = DATE_PART_DEF[i];
+                }
+            }
+		  dte->setDate(values[0], values[1], values[2]);
+		  dte->setTime(values[3], values[4], values[5]);
+		  dte->setNanoSec(values[6]);
         }
         break;
     }
@@ -320,10 +388,23 @@ void Attr::grab_var(char *field)
 // compile all perl subroutines for later use.
 void Attr::compile(unsigned int& subrcnt)
 {
-    _format->compile(subrcnt,_flat_name);
-    _value->compile(subrcnt,_flat_name);
-    _filter->compile(subrcnt,_flat_name);
-    _reader->compile(subrcnt,_flat_name);
+    if(_flat_name){
+        int length = strlen(_flat_name) + 2;
+	   char name[length];  
+        name[0] = (_type == DateTime_Attr ? '%' : '$');
+        strcpy(&name[1], _flat_name);
+        _format->compile(subrcnt, name);
+        _value->compile(subrcnt, name);
+        _filter->compile(subrcnt, name);
+        _reader->compile(subrcnt, name);
+    }
+    else{
+        char* name = NULL;
+        _format->compile(subrcnt, name);
+        _value->compile(subrcnt, name);
+        _filter->compile(subrcnt, name);
+        _reader->compile(subrcnt, name);
+    }
 
     if (_subattr)
         for (int j=0; j < _subattr->nAttrs(); j++)

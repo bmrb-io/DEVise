@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "UniData.h"
+#include "getftime.h"	// for TimeT
 
 #define BUFSZE 2048
 char buff[BUFSZE+1];
@@ -35,8 +36,7 @@ void showRec(char *buf, UniData *ud, UD_Status stat)
     time_t *t;
     ushort *us;
 
-    struct tm *t2;
-    char tmebuf[200];
+    TimeT *t2;
 
     for (j=0; j < n; j++) {
 
@@ -70,9 +70,8 @@ void showRec(char *buf, UniData *ud, UD_Status stat)
             break;
 
           case DateTime_Attr:
-            t2 = (struct tm*) &(buf[at->offset()]);
-            strftime(tmebuf, 200, " '%m/%d/%y at %H:%M:%S' ", t2);
-            cout << tmebuf;
+            t2 = (TimeT*) &(buf[at->offset()]);
+		  cout << *t2;
             break;
 
           default:

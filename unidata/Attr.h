@@ -65,6 +65,11 @@ class AttrStk;
 class udParam;
 class Schema;
 
+const int NUM_DATE_PARTS = 7;	// from year to nanosec
+
+// default values for date parts
+const int DATE_PART_DEF[NUM_DATE_PARTS] = {0, 0, 0, 0, 0, 0, 0};
+
   // This class is for both attributes and typedef's
 class Attr {
 
@@ -113,6 +118,12 @@ class Attr {
     PerlFrag *_filter;     // Perl filter routine.
 
     SV       *_perl_var;   // An equivilent perl variable, if one exists.
+    HV       *_perl_date;  // Perl var that holds datetime
+
+// These variables are used to hold members of _perl_date
+// Members are: year at position 0, month at 1 ..., nanosec at 6
+
+    SV       *_perl_date_parts[NUM_DATE_PARTS];
 
     IntStack *_sublen;     // For temporary storage of lengths,
     IntStack *_sublpos;    // left,

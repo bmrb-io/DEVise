@@ -1353,7 +1353,7 @@ int UniData::TxtCopy_Enum(char *dst, char *src, udParam *ud)
 int UniData::TxtCopy_DateTime(char *dst, char *src, udParam *ud)
 {
                     // guarenteed to be aligned
-    struct tm *t = (struct tm*) &(dst[ud->dst_off]);
+    TimeT *t = (TimeT*) &(dst[ud->dst_off]);
 
     src += strspn(src, ud->attr->whitespace());
     int n = getftime(src, ud->attr->date_format(), t);

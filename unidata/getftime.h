@@ -13,8 +13,6 @@
 #ifndef    _GETFTIME_H
 #define    _GETFTIME_H
 
-#include   <time.h>
-
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
 #ifdef   _NOFUNCNAME
@@ -42,6 +40,7 @@
    %j      day of the year as a decimal number (001-366)
    %m      month, as a decimal number (01-12)
    %M      minute, as a decimal number (00-59)
+   %N      BC/AD for years
    %P      AM/PM designation for 12-hour clock (AM)
    %S      second, as a decimal number (00-61)
                (allows for up to 2 leap-seconds - 60 and 61)
@@ -78,10 +77,15 @@
   // This is the ISO standard format.
 #define  ISO_TIME  "%Y-%m-%d %H:%M:%S"
 
+#include <time.h>
+#include "DateTime.h"
+
+// typedef struct tm TimeT;
+typedef EncodedDTF TimeT;
 
     // returns the number of characters consumed from buf,
     // or 0 on an error.
-int getftime(char *buf, char *format, struct tm *timeptr);
+int getftime(char *buf, char *format, TimeT *timeptr);
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
