@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.32  1996/05/16 21:39:07  wenger
+#	implemented saving schemas ans session file for importing tdata
+#
 #	Revision 1.31  1996/05/11 03:02:06  jussi
 #	Added CRSP_NSDQ data source. Changes made towards making
 #	caching of multiple data streams in one step possible.
@@ -164,7 +167,8 @@ set cacheSize [expr 100 * 1024 * 1024]
 
 # format of items in sourceList: 
 #   sourceList(dispname) = {source key schematype schemafile \
-#                           cachefile evaluation priority command}
+#                           cachefile evaluation priority command \
+#                           dataSegment}
 #
 # dispname is the name of the source as given by the user
 # source is the type of the data source (SEQ, SQL, CRSP, etc.)
@@ -185,6 +189,11 @@ set cacheSize [expr 100 * 1024 * 1024]
 #    for WWW, this field contains the URL of the Web resource
 #    for UNIXFILE, this field contains the root directory while the key
 #      contains the filename appended to the root directory
+# dataSegment defines whether the given data set occupies only a segment
+#    of a file (or whatever the source of data is).  If dataSegment exists,
+#    it is a list consisting of the offset and the length of the data.  If
+#    dataSegment does not exists, the data is assumed to occupy the entire
+#    file, etc.
 
 ############################################################
 
@@ -1006,6 +1015,21 @@ proc selectStream {{title ""}} {
 
     return $streamsSelected
 }
+
+
+############################################################
+# This procedure adds a new source to the data source list,
+# forces the Data Sources window to be updated accordingly.
+
+proc addDataSource {dispName source} {
+    global sourceList
+
+	set sourceList($dispName) $source
+	updateSources
+
+	return
+}
+
 
 ############################################################
 

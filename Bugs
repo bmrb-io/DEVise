@@ -30,3 +30,7 @@ Num Date        Status  Description
 009	05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
 						right list; causes 'make clean' to try to delete
 						source files. (rkw)
+
+010	05/31/96	OPEN	In TDataMap.c, call to ConvertToGData with _tmpPtr
+						as argument may not be work correctly (alignment of
+						_tmpPtr). (rkw)

@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.44  1996/05/11 03:00:01  jussi
+#	Minor improvements. Changes made towards caching multiple
+#	data sources in one step.
+#
 #	Revision 1.43  1996/05/09 18:15:16  kmurli
 #	No changes, just inserted some debugging print statements and
 #	removed them
@@ -1264,6 +1268,10 @@ proc OpenDataSource {dispname} {
     if {$source == ""} {
 	return ""
     }
+
+    # Tell the C++ code whether this data is only a portion of a file.
+	set fileSeg [lindex $sourceList($dispname) 8]
+    DEVise dataSegment $dispname $source [lindex $fileSeg 0] [lindex $fileSeg 1]
 
     return [list $dispname $source]
 }

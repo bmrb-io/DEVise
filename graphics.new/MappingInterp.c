@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/05/22 21:05:09  jussi
+  Added HighLowShape. Added tentative version of GifImageShape.
+
   Revision 1.27  1996/05/07 16:39:08  jussi
   Added MapGAttr2TAttr() method for translating GData attributes
   to TData attributes.
@@ -1339,6 +1342,8 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 #ifdef DEBUG
   printf("ConvertToGdataSimple\n");
 #endif
+
+  DOASSERT(((int) gdataPtr % (int) sizeof(double)) == 0, "gdataPtr misaligned");
 
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();

@@ -5,8 +5,11 @@
 
 CC = g++
 
+OPTFLAG = -O
+#OPTFLAG = -g
+
 CFLAGS = $(ARCH_FLAGS) -Wall -I../../graphics -I../../graphics.new \
-	-I../../tape -fexternal-templates -Wall -Wno-unused -O -DUNIX
+	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lgraphics.new -lgraphics \

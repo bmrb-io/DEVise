@@ -10,7 +10,10 @@ CC = g++
 #		file: QueryProc.c
 #	-DTRACE_GDATA: trace GDATa query, file: QueryProc.c
 
-CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused -O -DUNIX -I../../graphics \
+OPTFLAG = -O
+#OPTFLAG = -g
+
+CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused $(OPTFLAG) -DUNIX -I../../graphics \
 	-I../../graphics.new -I../../tape -fexternal-templates
 
 .c.o: 
@@ -39,7 +42,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
-	DataSourceFileStream.c DataSourceTape.c
+	DataSourceFileStream.c DataSourceTape.c \
+	DataSourceSegment.c DataSeg.c
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))

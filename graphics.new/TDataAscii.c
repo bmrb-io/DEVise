@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/05/31 15:02:25  jussi
+  Replaced a couple of occurrences of _data->isTape with _data->isTape().
+
   Revision 1.20  1996/05/22 17:52:13  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -84,6 +87,8 @@
   Added CVS header.
 */
 
+//#define DEBUG
+
 #include <iostream.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,10 +105,11 @@
 #include "Util.h"
 #include "Init.h"
 #include "DataSourceFileStream.h"
+#include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DevError.h"
+#include "DataSeg.h"
 
-//#define DEBUG
 # define  _STREAM_COMPAT
 
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
@@ -112,17 +118,55 @@ static char *   srcFile = __FILE__;
 
 TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 {
+  DO_DEBUG(printf("TDataAscii::TDataAscii(%s, %s, %d)\n", name, alias,
+	recSize));
+
   _name = name;
   _alias = alias;
   _recSize = recSize;
 
   _data = NULL;
 
+  char *	segLabel;
+  char *	segFile;
+  long		segOffset;
+  long		segLength;
+
+  DataSeg::Get(segLabel, segFile, segOffset, segLength);
+
+  if (strcmp(name, segFile) || strcmp(alias, segLabel))
+  {
+/*TEMPTEMP*/printf("name = %s\n", name);
+/*TEMPTEMP*/printf("segFile = %s\n", segFile);
+/*TEMPTEMP*/printf("alias = %s\n", alias);
+/*TEMPTEMP*/printf("segLabel = %s\n", segLabel);
+    DOASSERT(false, "data segment does not match tdata");
+  }
+
+  DataSeg::Set(NULL, NULL, 0, 0);
+
   if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
-      || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+     || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+
+     if ((segOffset == 0) && (segLength == 0))
+     {
 	_data = new DataSourceTape(name, NULL);
+     }
+     else
+     {
+	_data = new DataSourceSegment<DataSourceTape>(name, NULL,
+	  segOffset, segLength);
+     }
   } else {
+     if ((segOffset == 0) && (segLength == 0))
+     {
 	_data = new DataSourceFileStream(name, NULL);
+     }
+     else
+     {
+	_data = new DataSourceSegment<DataSourceFileStream>(name, NULL,
+	  segOffset, segLength);
+     }
   }
 
   if (_data == NULL)

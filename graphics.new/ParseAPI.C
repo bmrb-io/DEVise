@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/31 17:09:38  jussi
+  Fixed off-by-one error in "showkgraph" command parsing.
+
   Revision 1.8  1996/05/31 15:38:26  jussi
   Added setLinkMaster, resetLinkMaster, and getLinkMaster commands.
 
@@ -61,6 +64,7 @@
 #include "ViewLayout.h"
 #include "VisualLink.h"
 #include "FilterQueue.h"
+#include "DataSeg.h"
 
 //#define DEBUG
 
@@ -1263,6 +1267,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "dataSegment")) {
+      DataSeg::Set(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 6) {
@@ -1306,6 +1315,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
   }
 
+  fprintf(stderr, "Unrecognized command: %s\n", argv[0]);
   control->ReturnVal(API_NAK, "Unrecognized command");
   return -1;
 }

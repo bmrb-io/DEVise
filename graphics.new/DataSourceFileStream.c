@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/22 17:52:03  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
  */
 
 #define _DataSourceFileStream_c_
@@ -35,7 +40,6 @@
 #include "DataSourceFileStream.h"
 #include "Util.h"
 #include "DevError.h"
-#include "tapedrive.h"
 
 
 #if !defined(lint) && defined(RCSID)
