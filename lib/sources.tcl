@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/11/15 19:41:33  ravim
+#	Removed call to cacheData; data is now cached when stream is
+#	selected for visualization.
+#
 #	Revision 1.4  1995/11/14 23:16:41  jussi
 #	Changed default values of source type and schema file when
 #	defining a new data stream. Check for missing information
@@ -39,6 +43,7 @@ if {![file exists $sourceFile]} {
 }
 source $sourceFile
 
+source $libdir/autosrc.tcl
 source $libdir/issm.tk
 source $libdir/cstat.tk
 source $libdir/crsp.tcl
@@ -344,7 +349,7 @@ proc cacheData {dispname} {
     set command [lindex $sourcedef 7]
     
     if {[file exists $cachefile]} {
-	puts "Data stream $source:$key already cached."
+	puts "Data stream \"$dispname\" already cached."
 	if {$source == "UNIXFILE"} {
 	    # first line of command specifies directory
 	    set dir [lindex [split $command \n] 0]
@@ -357,7 +362,7 @@ proc cacheData {dispname} {
     }
 
     set but [dialog .cacheData "Caching Data" \
-	    "Cache source $source:$key to disk now?" \
+	    "Cache \"$dispname\" to disk now?" \
 	    "" 1 Yes No]
     if {$but == 1} {
 	puts "Caching not performed."
@@ -503,7 +508,7 @@ proc selectSourceKey {source} {
 ############################################################
 
 proc selectStream {} {
-    global streamSelected
+    global streamSelected sourceTypes
 
     # see if .srcsel window already exists; if so, just return
     set err [catch {wm state .srcsel}]
@@ -566,6 +571,16 @@ proc selectStream {} {
 	    updateSources
 	}
     }
+
+    .srcsel.mbar.stream.menu add separator
+    .srcsel.mbar.stream.menu add cascade -label "Auto Add" \
+	    -menu .srcsel.mbar.stream.menu.auto
+    menu .srcsel.mbar.stream.menu.auto -tearoff 0
+    foreach sourcetype [lsort [array names sourceTypes]] {
+	.srcsel.mbar.stream.menu.auto add command -label $sourcetype \
+		-command "autoSourceAdd $sourcetype"
+    }
+    
 
     menu .srcsel.mbar.display.menu -tearoff 0
     .srcsel.mbar.display.menu add command -label "Show All" -command {}
