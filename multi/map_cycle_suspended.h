@@ -61,6 +61,10 @@ struct CycleSuspendedMapping_GData {
 
 
 
+
+
+
+
 class CycleSuspendedMapping_RectShape  : public RectShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -93,7 +97,7 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
@@ -248,8 +252,8 @@ public:
 		TDataMap::UpdateBoundingBox(width, height);
 	}
 
-	virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {
-		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, TDataMap::GetPixelWidth());
+	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
 private:
