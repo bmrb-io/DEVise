@@ -9,4 +9,4 @@
 
 setenv DEVISE_PROG    /p/devise/release
 
-source dev_prog.gen
+source $devise_run/dev_prog.gen

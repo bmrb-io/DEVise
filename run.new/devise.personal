@@ -10,7 +10,10 @@
 limit coredumpsize 0
 limit descriptors 256
 
-source dev_prog.std
+#TEMP -- get rid of hard-coded path eventually
+set devise_run = /p/devise/release/run
+
+source $devise_run/dev_prog.std
 source ~/.dev.personal
 
-source start_mono
+source $devise_run/start_mono

@@ -9,4 +9,4 @@
 
 setenv DEVISE_VIS    /p/devise/demo
 
-source dev_vis.gen
+source $DEVISE_PROG/run/dev_vis.gen
