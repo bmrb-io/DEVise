@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.3  1995/10/15 18:36:40  jussi
+  Added HPUX-specific code.
+
   Revision 1.2  1995/09/05 21:13:13  jussi
   Added/update CVS header.
 */
@@ -102,7 +119,7 @@ void CheckAndMakeDirectory(char *dir, int clear ){
 		}
 	} else {
 		/* make new directory */
-		int code = mkdir(dir,0755);
+		int code = mkdir(dir,0777);
 		if (code < 0 ){
 			printf("Init::can't make directory %s\n",dir);
 			perror("");
