@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1996/12/03 20:32:58  jussi
+  Updated to reflect new TData interface. Added support for concurrent I/O.
+
   Revision 1.49  1996/11/23 21:14:23  jussi
   Removed failing support for variable-sized records.
 
@@ -234,6 +237,8 @@
 
 #define DEBUGLVL 0
 
+#define CONCURRENT_IO
+
 static const int LINESIZE = 4096;         /* maximum size of a record */
 
 /* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
@@ -311,9 +316,9 @@ TDataAscii::~TDataAscii()
 #endif
 
   if (_fileOpen) {
-      if (_data->SupportsAsyncIO() &&_data->TerminateProc() < 0)
+      if (_data->SupportsAsyncIO() && _data->TerminateProc() < 0)
           fprintf(stderr, "Could not terminate data source process\n");
-    _data->Close();
+      _data->Close();
   }
 
   Dispatcher::Current()->Unregister(this);
@@ -432,7 +437,13 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
       bytes = _indexP->Get(req->endId + 1) - offset;
   }
 
-  if (!asyncAllowed || !_data->SupportsAsyncIO()) {
+  /*
+     Don't use asynchronous I/O is caller prohibits it, or if
+     data source doesn't support it, or if some other caller is
+     already using it.
+  */
+  if (!asyncAllowed || !_data->SupportsAsyncIO()
+      || _data->NumPipeData() > 0 || _data->IsBusy()) {
 #if DEBUGLVL >= 3
       printf("Retrieving %llu:%lu bytes from TData 0x%p with direct I/O\n",
              offset, bytes, this);
@@ -447,6 +458,7 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
       printf("Retrieving %llu:%lu bytes from TData 0x%p with I/O handle %d\n",
              offset, bytes, this, req->iohandle);
 #endif
+      req->pipeFlushed = false;
       _currPos = offset;
   }
 
@@ -504,7 +516,7 @@ void TDataAscii::DoneGetRecs(TDHandle req)
   if (req->relcb && req->lastOrigChunk)
       req->relcb->ReleaseMemory(MemMgr::Buffer, req->lastOrigChunk, 1);
 
-  if (req->iohandle > 0) {
+  if (!req->pipeFlushed) {
     /*
        Flush data from pipe. We would also like to tell the DataSource
        (which is at the other end of the pipe) to stop, but we can't
@@ -601,6 +613,8 @@ void TDataAscii::Checkpoint()
   if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
     _totalRecs).IsComplete()) goto error;
 
+  /* This seems unnecessary but it is here to improve tape performance */
+  _data->Seek(0, SEEK_SET);
   _currPos = _data->Tell();
 
   return;
@@ -630,6 +644,12 @@ void TDataAscii::BuildIndex()
   int oldTotal = _totalRecs;
   
   _currPos = _lastPos - _lastIncompleteLen;
+
+  /* Don't bother to extend index on tape files */
+  if (_data->isTape() && _currPos > 0) {
+      printf("Not extending index on tape file.\n");
+      return;
+  }
 
   /* First go to last valid position of file */
   if (_data->Seek(_currPos, SEEK_SET) < 0) {
@@ -683,6 +703,10 @@ void TDataAscii::BuildIndex()
   if (_totalRecs <= 0)
       fprintf(stderr, "No valid records for data stream %s\n"
               "    (check schema/data correspondence)\n", _name);
+
+  /* This seems unnecessary but it is here to improve tape performance */
+  _data->Seek(0, SEEK_SET);
+  _currPos = _data->Tell();
 }
 
 /* Rebuild index */
@@ -777,8 +801,10 @@ TD_Status TDataAscii::ReadRecAsync(TDataRequest *req, RecId id,
 
     DOASSERT(chunk && origChunk, "Inconsistent state");
 
-    if (bytes <= 0)
+    if (bytes <= 0) {
+        req->pipeFlushed = true;
         break;
+    }
 
     while (recs < numRecs && bytes > 0) {
       char *eol = (char *)memchr(chunk, '\n', bytes);
