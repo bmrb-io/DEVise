@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/19 13:27:27  jussi
+  Fixed handling of stored points in LineShape.
+
   Revision 1.28  1996/07/19 03:29:46  jussi
   Fixed erroneous coordinate in LineShadeShape.
 
@@ -1246,8 +1249,6 @@ public:
         x0 = x;
         y0 = y;
         c0 = color;
-        if (color == XorColor)
-            win->SetCopyMode();
     }
 
     /* draw line connecting last point of this batch to
