@@ -667,10 +667,19 @@ const ISchema* DBServerInterface::getISchema(){
 	ostr << "schema " << remTableName.toString() << ";" << flush;
 
 	TRY(istream& istr = dteProt.getInStream(), 0);
-	istr >> *schema;
+        const int SCHEMA_LEN = 501;
+        char schemaBuf[SCHEMA_LEN];
+        DteStringAdt schemaString(SCHEMA_LEN-1);
+        bool ok = schemaString.fromAscii(istr, schemaBuf, SCHEMA_LEN);
+        if( !ok ) {
+          string err = "Illegal schema received from the DB server";
+          THROW(new Exception(err), NULL);
+        }
+        istringstream sstr(schemaBuf);
+	sstr >> *schema;
 	if(!istr){
-		string err = "Illegal schema received from the DB server";
-		THROW(new Exception(err), NULL);
+          string err = "Illegal schema received from the DB server";
+          THROW(new Exception(err), NULL);
 	}
 	return schema;
 }
