@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.10  1996/11/23 21:14:22  jussi
+   Removed failing support for variable-sized records.
+
    Revision 1.9  1996/11/22 20:41:06  flisakow
    Made variants of the TDataAscii classes for sequential access,
    which build no indexes.
@@ -66,7 +69,6 @@
 
 #include "DeviseTypes.h"
 #include "RecId.h"
-#include "RecOrder.h"
 #include "DataSource.h"
 
 // A simple Status for TData
@@ -77,6 +79,26 @@ enum TD_Status {
 };
 
 class AttrList;
+
+class ReleaseMemoryCallback {
+  public:
+    virtual void ReleaseMemory(MemMgr::PageType type,
+                               char *buf, int pages) = 0;
+};
+
+class TDataRequest {
+  public:
+    Boolean IsDirectIO() { return (iohandle == 0); }
+
+    RecId nextId;                       // next record to return in GetRecs()
+    RecId endId;                        // where current GetRecs() should end
+    ReleaseMemoryCallback *relcb;       // callback to release pipe memory
+    int iohandle;                       // handle for data source I/O
+
+    char *lastChunk;                    // beginning of unused pipe data chunk
+    char *lastOrigChunk;                // beginning of pipe data chunk
+    int lastChunkBytes;                 // size of pipe data chunk
+};
 
 class TData {
   public:
@@ -95,10 +117,10 @@ class TData {
 
     /* Return # of dimensions and the size of each dimension,
        or -1 if unknown */
-    virtual int Dimensions(int *sizeDimension)=0;
+    virtual int Dimensions(int *sizeDimension) = 0;
 
     /* Return record size, or -1 if variable record size */
-    virtual int RecSize() { return _recSize; };
+    virtual int RecSize() { return _recSize; }
 
     /* Return page size of TData, or -1 if no paging structure */
     virtual int PageSize() { return -1; }
@@ -134,27 +156,29 @@ class TData {
     char *GetName() { return _name; }
 
     /* convert RecId into index */
-    virtual void GetIndex(RecId id, int *&indices)=0;
+    virtual void GetIndex(RecId id, int *&indices) = 0;
 
     virtual Boolean WriteIndex(int fd) { return false; }
     virtual Boolean ReadIndex(int fd) { return false; }
 
-
     /**** Getting record Id's ****/
 
     /* Get RecId of 1st available record, return true if available */
-    virtual Boolean HeadID(RecId &recId)=0;
+    virtual Boolean HeadID(RecId &recId) = 0;
 
     /* Get RecId of last record, return true if available */
-    virtual Boolean LastID(RecId &recId)=0;
-
+    virtual Boolean LastID(RecId &recId) = 0;
 
     /**** Getting Records ****/
 
+    typedef TDataRequest *TDHandle;
+
     /**************************************************************
       Init getting records.
-      ***************************************************************/
-    virtual void InitGetRecs(RecId lowId, RecId highId,RecordOrder order)=0;
+    ***************************************************************/
+    virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+                                 Boolean asyncAllowed = false,
+                                 ReleaseMemoryCallback *callback = NULL) = 0;
 
     /**************************************************************
       Get next batch of records, as much as fits into buffer. 
@@ -167,20 +191,20 @@ class TData {
       numRecs: number of records.
       dataSize: # of bytes taken up by data.
       **************************************************************/
-    virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-			    int &numRecs, int &dataSize) = 0;
+    virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                            RecId &startRid, int &numRecs, int &dataSize) = 0;
 
-    virtual void DoneGetRecs() = 0;
+    virtual void DoneGetRecs(TDHandle handle) = 0;
 
     /* For writing records. Default: not implemented. */
     virtual void WriteRecs(RecId startId, int numRecs, void *buf);
 
     /* get the time file is modified. We only require that
        files modified later has time > files modified earlier. */
-    virtual int GetModTime()= 0;
+    virtual int GetModTime() = 0;
 
     /* Do a checkpoint */
-    virtual void Checkpoint()=0;
+    virtual void Checkpoint() = 0;
 
     /* Save the TData to a TData file. */
     DevStatus Save(char *filename);
@@ -189,16 +213,13 @@ class TData {
 
   protected:
 
-    char *_name;                    // name of data stream
-    char *_type;                    // type of data stream
-    char *_param;                   // parameters of data stream
-    int _recSize;                   // size of record
+    char *_name;                        // name of data stream
+    char *_type;                        // type of data stream
+    char *_param;                       // parameters of data stream
+    int _recSize;                       // size of record
 
-    DataSource* _data;
-    int _version;		    // last _data->Version()
-
-    RecId _lowId, _highId;          // current range to read data
-    RecId _nextId, _endId;          // range of next retrieval
+    DataSource* _data;                  // data source
+    int _version;                       // last _data->Version()
 
     char* MakeCacheFileName(char *name, char *type);
     

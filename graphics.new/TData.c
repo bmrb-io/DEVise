@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/11/23 21:16:01  jussi
+  Fixed detection of tape drive device.
+
   Revision 1.12  1996/11/18 18:10:53  donjerko
   New files and changes to make DTE work with Devise
 
@@ -227,9 +230,8 @@ TData::TData(DataSource* data_source)
  */
 TData::~TData()
 {
-    if( _data && _data->DeleteRef() ) {
-	delete _data;
-    }
+    if( _data && _data->DeleteRef() )
+        delete _data;
     delete _param;
     delete _type;
     delete _name;
@@ -242,8 +244,7 @@ TData::~TData()
 
 void TData::WriteRecs(RecId startId, int numRecs, void *buf)
 {
-  fprintf(stderr, "TData::WRiteRecs: not implemented\n");
-  Exit::DoExit(2);
+  DOASSERT(0, "TData::WriteRecs not implemented");
 }
 
 /*------------------------------------------------------------------------------
