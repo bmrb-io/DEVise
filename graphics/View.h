@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.71  1998/12/22 19:39:14  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.70  1998/12/18 22:20:52  wenger
   Removed axis label code, which doesn't seem to have been fully implemented,
   and is not used; added sanity check on visual filter at view creation.
@@ -440,6 +446,9 @@ class View : public ViewWin
 
 	/* history queue */
 	FilterQueue *GetHistory();
+
+	// Go back one in history queue.
+	void BackOne();
 
 	/* For history initialization only */
 	void ClearHistory();

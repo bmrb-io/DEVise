@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/06/24 14:05:28  beyer
+  changed #ifdef 0 to #if 0
+
   Revision 1.29  1998/05/29 15:18:46  wenger
   Rubberband lines now work in JavaScreen, at least for single-window
   sessions.
@@ -634,6 +637,10 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::CONTROL|'C': {
     Dispatcher::Terminate(0);
     break;
+  }
+
+  case DeviseKey::BACKSPACE: {
+    view->BackOne();
   }
 
   default:

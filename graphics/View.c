@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.152  1999/01/06 21:25:00  wenger
+  Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
+  also added some debug code and code to make sure view filter histories
+  are consistent.
+
   Revision 1.151  1999/01/04 15:33:17  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -1004,10 +1009,10 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
 {
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
-  printf("  Old filter: (%g, %g), (%g, %g)\n", _filter.xLow, _filter.yLow,
-      _filter.xHigh, _filter.yHigh);
-  printf("  New filter: (%g, %g), (%g, %g)\n", filter.xLow, filter.yLow,
-      filter.xHigh, filter.yHigh);
+  printf("  Old filter: (%g, %g), (%g, %g) %d\n", _filter.xLow, _filter.yLow,
+      _filter.xHigh, _filter.yHigh, _filter.flag);
+  printf("  New filter: (%g, %g), (%g, %g) %d\n", filter.xLow, filter.yLow,
+      filter.xHigh, filter.yHigh, filter.flag);
 #endif
 
   /* Just in case record links didn't get re-enabled after printing. */
@@ -2563,6 +2568,22 @@ FilterQueue *View::GetHistory()
   return _filterQueue;
 }
 
+void
+View::BackOne()
+{
+#if defined(DEBUG)
+  printf("View(%s)::BackOne()\n", GetName());
+#endif
+
+  // Don't do anything if there's no previous filter to go back to.
+  if (_filterQueue->Size() > 1) {
+    VisualFilter filter;
+    _filterQueue->Get(_filterQueue->Size() - 2, filter);
+	filter.flag = _filter.flag;
+    SetVisualFilter(filter);
+  }
+}
+
 void View::ClearHistory()
 {
   _filterQueue->Clear();
@@ -3338,7 +3359,8 @@ void	View::Run(void)
 #endif
 
     VisualFilter histFilter;
-	GetHistory()->Get(0, histFilter);
+	FilterQueue *fq = GetHistory();
+	fq->Get(fq->Size() - 1, histFilter);
     if (histFilter.xLow != _filter.xLow ||
 	    histFilter.xHigh != _filter.xHigh ||
 		histFilter.yLow != _filter.yLow ||
