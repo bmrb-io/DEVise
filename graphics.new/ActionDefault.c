@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/08/11 13:43:21  wenger
+  Server responds to KeyAction commands from JavaScreen (still needs event
+  coordinates); did some cleanup of the ActionDefault class.
+
   Revision 1.32  1998/04/28 18:02:50  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -168,7 +172,7 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
 void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
 #if defined(DEBUG)
-  if (view->GetName() == NULL)
+  if (view->GetName() != NULL)
   {
     printf("ActionDefault::KeySelected(%s, 0x%x, %g, %g)\n",
          view->GetName(), (int)key, x, y);

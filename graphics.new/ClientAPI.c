@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/08/10 13:48:01  wenger
+  Possible (not completely tested yet) fix to interruped system call problems
+  being seen in Italy.
+
   Revision 1.17  1998/05/21 18:18:45  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -279,7 +283,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 	  continue;
 	}
     if (res < 0 && errno == EINTR) {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
       printf("Call to recv interrupted, continuing\n");
 #endif
       continue;
@@ -287,7 +291,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     if (block) {
 	  printf("Error at %s: %d: ", __FILE__, __LINE__);
       perror("recv");
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
       printf("errno = %d\n", errno);
       printf("res = %d\n", res);
       printf("sizeof(hdr) = %d\n", sizeof(hdr));

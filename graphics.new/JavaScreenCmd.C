@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/08/13 18:14:45  wenger
+  More updates to JavaScreen support.
+
   Revision 1.18  1998/08/11 18:06:36  wenger
   Switched over to simplified JavaScreen startup protocol; added isDir
   and priority args to session list.
@@ -234,6 +237,10 @@ JavaScreenCmd::OpenSession()
 
 	// Set batch mode so the server makes pixmaps instead of windows.
 	ControlPanel::Instance()->SetBatchMode(true);
+
+	// Turn of collaboration; otherwise the collaboration stuff
+	// interferes with some commands from the JavaScreen.
+	cmdContainerp->setMake(CmdContainer::MONOLITHIC);
 
 	// Open the session.
     DevStatus result = Session::Open(fullpath);
@@ -558,7 +565,7 @@ JavaScreenCmd::KeyAction()
 		errmsg = "{Cannot find given view}";
 		_status = ERROR;
 	} else {
-	    int key = _argv[1][0];
+	    int key = atoi(_argv[1]);
 
 		// TEMP -- pixels or data units?
         Coord xLoc = 0; //TEMP
@@ -566,7 +573,12 @@ JavaScreenCmd::KeyAction()
 
 	    view->GetAction()->KeySelected(view, key, xLoc, yLoc);
 
-	    _status = DONE;
+		// Make sure everything has actually been re-drawn before we
+		// continue.
+		WaitForQueries();
+
+		// Send the updated window image(s).
+		_status = SendChangedWindows();
 	}
 	return;
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/08/03 18:38:36  wenger
+  Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
+  implemented several other new commands for the JavaScreen.
+
   Revision 1.14  1998/07/29 14:20:26  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -128,6 +132,10 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	DeviseServer* server)
 {
+#if defined(DEBUG)
+    printf("CmdContainer::CmdContainer()\n");
+#endif
+
 	DeviseCommand::setDefaultControl(defaultControl);
 	this->make = make;
 	cmdContainerp = this;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/02 09:00:38  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.4  1998/04/07 14:30:18  wenger
   Reduced unnecessary include dependencies.
 
@@ -46,17 +49,23 @@ class CmdContainer
 		typedef enum {MONOLITHIC=0,CSGROUP} Make;
 		CmdContainer(ControlPanel* control, Make make, DeviseServer* server);
 		~CmdContainer();
+
 		int	Run(int argc, char** argv, ControlPanel* control, 
 			CmdDescriptor& cmdDes);
 		int	RunOneCommand(int argc, char** argv, ControlPanel* control);
+
 		void insertCmd(char*, DeviseCommand *,int cmdsize);		
 		DeviseCommand* lookupCmd(char*);
 		void deleteCmd(char* cmdName);
+
 		Make	getMake(){return make;}
+		void	setMake(Make newMake) {make = newMake;}
+
 		char*	getLogName(){ return cmdLogFname;}
 		CmdLogRecord* getCmdLog() const 
 			{ return cmdLog;}
 		DeviseServer* getDeviseServer(){ return _server;}
+
 	private:
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
@@ -67,6 +76,7 @@ class CmdContainer
 		char		*cmdLogFname;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
+//TEMP -- this should be changed to a static method.  RKW Aug 17, 1998.
 extern CmdContainer*	cmdContainerp;
 
 #endif // _CmdContainer_h_
