@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.50  1996/12/15 07:01:39  donjerko
+#	Added the window to create an index on streams.
+#
 #	Revision 1.49  1996/11/15 10:06:26  kmurli
 #	Changed importFile parameters and ParseCat parameters to take in the file type
 #	and data file name so that a whole query can be formed if necessary for calling
@@ -582,7 +585,7 @@ proc defineStream {base edit} {
     }
     tk_menuBar .srcdef .srcdef.sourcemenu
 
-    label .srcdef.top.row3.l1 -text "Schema File:"
+    label .srcdef.top.row3.l1 -text "Schema:"
     entry .srcdef.top.row3.e1 -relief sunken -textvariable schemafile \
 	    -width 40
     button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
@@ -629,7 +632,7 @@ proc defineStream {base edit} {
 proc scanSchema {schemafile} {
     global schemadir
     if {[catch { set f [open $schemafile "r"] }] > 0} {
-	dialog .noFile "No Schema File" \
+	dialog .noFile "No Schema" \
 		"Cannot open schema file $schemafile." \
 		"" 0 OK
 	return ""
@@ -1086,33 +1089,39 @@ proc selectStream {{title ""}} {
     frame .srcsel.bot.but
     pack .srcsel.bot.but -side top
 
-    menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
+#   menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
     menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
-    menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
-    menubutton .srcsel.mbar.follow -text "Follow to" -menu .srcsel.mbar.follow.menu
+
+# Donko's and Shaun's MAD SLASHING spree
+#menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
+#menubutton .srcsel.mbar.follow -text "Follow to" -menu .srcsel.mbar.follow.menu
+
     menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
-    pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
-	    .srcsel.mbar.follow .srcsel.mbar.help -side left
+#   pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
+#    	.srcsel.mbar.follow .srcsel.mbar.help -side left
+    pack .srcsel.mbar.stream .srcsel.mbar.help -side left
 
-    menu .srcsel.mbar.define.menu -tearoff 0
-    .srcsel.mbar.define.menu add command -label "New..." \
-	    -command { defineStream "" 0 }
-    .srcsel.mbar.define.menu add cascade -label "Auto Add" \
-	    -menu .srcsel.mbar.define.menu.auto
+#   menu .srcsel.mbar.define.menu -tearoff 0
+#   .srcsel.mbar.define.menu add command -label "New..." \
+#  	  -command { defineStream "" 0 }
+#   .srcsel.mbar.define.menu add cascade -label "Auto Add" \
+#	    -menu .srcsel.mbar.define.menu.auto
 
-    menu .srcsel.mbar.define.menu.auto -tearoff 0
-    foreach sourcetype [lsort [array names sourceTypes]] {
-	.srcsel.mbar.define.menu.auto add command -label $sourcetype \
-		-command "autoSourceAdd $sourcetype"
-    }
+#   menu .srcsel.mbar.define.menu.auto -tearoff 0
+#   foreach sourcetype [lsort [array names sourceTypes]] {
+#   .srcsel.mbar.define.menu.auto add command -label $sourcetype \
+#		-command "autoSourceAdd $sourcetype"
+#   }
 
-    menu .srcsel.mbar.follow.menu -tearoff 0
-    foreach mtype [lsort [array names MapTable]] {
-	.srcsel.mbar.follow.menu add command -label $mtype \
-		-command "mapFollow $mtype"
-    }
+#   menu .srcsel.mbar.follow.menu -tearoff 0
+#   foreach mtype [lsort [array names MapTable]] {
+#	.srcsel.mbar.follow.menu add command -label $mtype \
+#		-command "mapFollow $mtype"
+#   }
 
     menu .srcsel.mbar.stream.menu -tearoff 0
+    .srcsel.mbar.stream.menu add command -label "New..." \
+  	  -command { defineStream "" 0 }
     .srcsel.mbar.stream.menu add command -label "Edit..." -command {
 	set dispname [getSelectedSource]
 	if {[llength $dispname] != 1} {
@@ -1152,13 +1161,14 @@ proc selectStream {{title ""}} {
 	}
     }
 
-    menu .srcsel.mbar.display.menu -tearoff 0
-    .srcsel.mbar.display.menu add command -label "Show All" -command {}
-    .srcsel.mbar.display.menu add command -label "Limit" -command {}
-    .srcsel.mbar.display.menu add separator
-    .srcsel.mbar.display.menu add command -label "Sort" -command {}
-    .srcsel.mbar.display.menu add separator
-    .srcsel.mbar.display.menu add command -label "Verbose" -command {}
+# Donko's and Shaun's MAD SLASHING spree
+#   menu .srcsel.mbar.display.menu -tearoff 0
+#   .srcsel.mbar.display.menu add command -label "Show All" -command {}
+#   .srcsel.mbar.display.menu add command -label "Limit" -command {}
+#   .srcsel.mbar.display.menu add separator
+#   .srcsel.mbar.display.menu add command -label "Sort" -command {}
+#   .srcsel.mbar.display.menu add separator
+#   .srcsel.mbar.display.menu add command -label "Verbose" -command {}
 
     menu .srcsel.mbar.help.menu -tearoff 0
     .srcsel.mbar.help.menu add command -label Help -command {

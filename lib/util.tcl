@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1996/12/17 05:23:40  beyer
+#  Added missing findNumericCaseValue.
+#
 #  Revision 1.33  1996/11/26 09:45:55  beyer
 #  WindowVisible always puts a window on top, rather than iconify
 #
@@ -418,9 +421,9 @@ proc PrintCategory { category } {
 
 proc DoExit {} {
     set answer [ dialog .quit "Quit" \
-	    "Are you sure you want to quit?" "" 1 \
-	    { Cancel} { Ok } ]
-    if { $answer == 1 } {
+	    "Are you sure you want to quit?" "" 0 \
+	    { OK } { Cancel} ]
+    if { $answer == 0 } {
 	DEVise exit
 	destroy .
     }

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.102  1996/12/20 16:50:35  wenger
+#	Fonts for view label, x axis, and y axis can now be changed.
+#
 #	Revision 1.101  1996/12/15 20:23:52  wenger
 #	Added view name to mapping editor window; added first version of font
 #	selection GUI (currently disabled).
@@ -580,7 +583,7 @@ pack .mbar  -side top -expand 0 -fill x
 
 menubutton .mbar.session -text Session -underline 0 \
 	-menu .mbar.session.menu
-menubutton .mbar.tdata -text SourceData -underline 0 \
+menubutton .mbar.tdata -text Tables -underline 0 \
 	-menu .mbar.tdata.menu
 menubutton .mbar.gdata -text GraphData -underline 0 \
 	-menu .mbar.gdata.menu -state disabled
@@ -654,10 +657,12 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu.schemaMenu add command -label "Query..." \
 	-command {SchemaEdit 2}
 
-.mbar.tdata.menu add cascade -label "Mapping" \
-	-menu .mbar.tdata.menu.mappingMenu
+# Donko's and Shaun's MAD SLASHING spree
+#.mbar.tdata.menu add cascade -label "Mapping" \
+#   -menu .mbar.tdata.menu.mappingMenu
 
-.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
+# .mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
+
 .mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
 .mbar.tdata.menu add separator
 .mbar.tdata.menu add command -label "Derived Data Text" -command { MacroImport 1 1 } 
@@ -909,7 +914,7 @@ proc ImportFileType {} {
     
     set result [DEVise importFileType $ftypeFile]
     if {$result == ""} {
-	dialog .fileTypeError "Schema File Error" \
+	dialog .fileTypeError "Schema Error" \
 		"Error reading schema file $ftypeFile" \
 		"" 0 OK
 	return
@@ -1033,19 +1038,19 @@ proc DoClose {} {
     if {$templateMode} {	
 	set but [dialog .open "Merge Data" \
 	   "If you Close without Merging, you will lose access to this data" \
-	   "" 0 "Cancel" "Close" "Merge, then Close"]
-	if {$but == 0} {
+	   "" 2 "Close" "Merge, then Close" "Cancel"]
+	if {$but == 2} {
 	    return 0
-	} elseif {$but == 1} {
+	} elseif {$but == 0} {
 	    # Just allow the close to continue.
-	} elseif {$but == 2} {
+	} elseif {$but == 1} {
 	    DoTemplateMerge
 	}
     }	
     
     set but [dialog .open "Close Session" "Close Current Session?" \
-	    "" 1 Cancel Ok ]
-    if { $but == 0 } {
+	    "" 0 OK Cancel ]
+    if { $but == 1 } {
 	return 0
     }
     
@@ -1165,11 +1170,11 @@ proc DoSwitchTData {} {
     if {[llength $tdataSet] > 1} {
 	set answer [ dialogList .selectTData "Open Data Streams"  \
 		"Select a data stream" \
-		"" 2 { Other Cancel Ok } $tdataSet ]
-	if {$answer == 1 || $dialogListVar(selected) == ""} {
+		"" 1 { Other OK Cancel } $tdataSet ]
+	if {$answer == 2 || $dialogListVar(selected) == ""} {
 	    return
 	}
-	if {$answer == 2} { 
+	if {$answer == 1} { 
 	    set tdata $dialogListVar(selected)
 	} else {
 	    set tdata ""

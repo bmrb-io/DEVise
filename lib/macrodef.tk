@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.68  1996/12/16 11:14:38  kmurli
+#	No change
+#
 #	Revision 1.67  1996/11/25 22:31:34  beyer
 #	1. extended .devise.rc search
 #	2. added DestroyView command
@@ -389,7 +392,7 @@ proc CacheMultipleDataSources {snames} {
     if {$numnotcached > 0} {
 	set but [dialog .cacheData "Caching Data" \
 		"Will need to cache $numnotcached streams to disk now." \
-		"" 0 Okay Cancel]
+		"" 0 OK Cancel]
 	if {$but == 1} {
 	    dialog .notCached "Cancel Visualization" \
 		    "Cannot visualize data without caching it to disk first." \
@@ -467,8 +470,8 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set topgrps [DEVise getTopGroups [file tail $schemafile]]
         if {[llength $topgrps] == 0} {
             if {![file readable $schemafile]} {
-                dialog .schemaError "Schema File Not Found" \
-                        "Cannot open schema file $schemafile" "" 0 OK
+                dialog .schemaError "Schema Not Found" \
+                        "Cannot open schema $schemafile" "" 0 OK
                 return ""
             }
 			# Send the file type UNIXFILE etc.. 
@@ -657,11 +660,11 @@ proc MacroImport {mode derivedOnly} {
 	if {[llength $tdataSet] > 0} {
 	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
 		    "Select a data stream" \
-		    "" 2 { New Cancel Ok } $tdataSet ]
-	    if {$answer == 1 || $dialogListVar(selected) == ""} {
+		    "" 0 { OK New Cancel } $tdataSet ]
+	    if {$answer == 2 || $dialogListVar(selected) == ""} {
 		return
 	    }
-	    if {$answer == 2} { 
+	    if {$answer == 0} { 
 		set tdata $dialogListVar(selected)
 	    } else {
 		set tdata ""
