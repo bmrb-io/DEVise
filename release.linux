@@ -1,0 +1,204 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.9  1996/10/17 23:30:01  wenger
+#  Added sample data, session, and schema files to sources; modified
+#  the release script so that these files get installed into the target
+#  directory; added gen_dist script to generate tar files for distribution;
+#  changed /p/devise/dist structure (removed Devise-1.1.8 directories,
+#  since this actually contains whatever is the current version of
+#  Devise); tar file of the dist structure committed to CVS.
+#
+#  Revision 1.8  1996/09/05 20:05:23  wenger
+#  Put the 'public' and 'run' files into CVS; the release script now installs
+#  them.
+#
+#  Revision 1.7  1996/08/14 21:22:33  wenger
+#  Minor dispatcher cleanups, etc.  Fixed release script to release
+#  statically-linked executables for HP and Sun.
+#
+#  Revision 1.6  1996/07/08 14:27:48  jussi
+#  Added multi/disp to the list of executables to be released.
+#
+#  Revision 1.5  1996/05/16 19:39:43  jussi
+#  Added Solaris/Sparc. Added tentative support for AIX.
+#
+#  Revision 1.4  1996/03/24 20:48:08  jussi
+#  Fixed *.txt path.
+#
+#  Revision 1.3  1996/03/24 20:47:16  jussi
+#  Added *.txt to documentation copy command.
+#
+#  Revision 1.2  1996/01/27 00:22:32  jussi
+#  Devise executable is now 'generic', not 'issm'.
+#
+#  Revision 1.1  1996/01/23 22:06:45  jussi
+#  Initial revision.
+#
+
+############################################################
+
+set files = "linux/generic/generic \
+        linux/multi/disp \
+	lib/control.tk"
+set target = /p/devise/public
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+foreach file ($files)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  endif
+end
+
+echo You are about to release YOUR copy of Devise to the
+echo general public. The target directory is $target.
+echo ""
+echo The release includes Linux executables,
+echo Tcl/Tk code, and user and other documentation.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+echo ""
+echo Executing release procedures...
+sleep 1
+
+
+echo ""
+echo Releasing new copy of generic Devise executables...
+if (! -d $target) then
+  mkdir $target
+endif
+
+if (! -d $target/bin) then
+  mkdir $target/bin
+endif
+ls -l linux/generic/generic $target/bin/devise
+cp -p linux/generic/generic $target/bin/devise
+
+
+
+echo ""
+echo Releasing new copy of PVM Devise executables...
+ls -l linux/multi/disp $target/bin/multi
+cp -p linux/multi/disp $target/bin/multi
+
+
+echo ""
+echo Releasing new Tcl/Tk code...
+if (! -d $target/lib) then
+  mkdir $target/lib
+endif
+cp -p lib/[a-z]* $target/lib
+cp -p lib/[A-Z]* $target/lib
+
+
+echo ""
+echo Releasing run files...
+
+set run_target = $target/../run
+
+set rundirs = "$run_target/ $run_target/tmp $run_target/work"
+
+foreach dir ($rundirs)
+  if (! -d $dir) then
+    mkdir $dir
+  endif
+end
+
+set runfiles = "run_public/devise run_public/devise.dali \
+	run_public/deviseweb run_public/dumpgif.script \
+	run_public/multi"
+
+foreach file ($runfiles)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  else
+    cp -p $file $run_target
+  endif
+end
+
+set file = compustat.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = crsp_dsm94.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = devise.rc
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s $target/$file $run_target/$file
+
+set file = dsi94.dat
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = issm.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+
+#echo ""
+#echo Releasing documentation...
+#if (! -d $target/doc) then
+  #mkdir $target/doc
+#endif
+#cp -p doc/*.ps doc/*.txt $target/doc
+#cp -p doc/Agreement $target/doc
+#cp -p doc/Copyright $target/doc
+#cp -p doc/Disclaimer $target/doc
+
+
+echo ""
+echo Setting up other files and directories...
+
+tar cv --exclude=CVS public | tar xv --directory=$target/..
+
+cp run_public/devise $target/devisepub
+
+
+echo ""
+echo Done!

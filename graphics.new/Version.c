@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/12/05 15:31:13  wenger
+  Bumped up revision.
+
   Revision 1.17  1996/11/26 15:44:21  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -118,7 +121,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.2";
+static const char *	version = "1.2.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
