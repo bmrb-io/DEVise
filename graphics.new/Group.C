@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/14 00:55:17  jussi
+  Restricted strcpy to name to be up to sizeof name, no more.
+  Some fields in compustat.schema were longer than 50 characters
+  and caused memory corruption.
+
   Revision 1.3  1995/11/07 20:23:52  jussi
   Made output statements be part of DEBUG setup.
 
@@ -35,8 +40,8 @@
 
 Group::Group(char *nm,Group *par, int typ)
 {
-  strncpy(name, nm, sizeof name);
-  name[sizeof name - 1] = 0;
+  name = new char[strlen(nm) + 1];
+  strcpy(name, nm);
   type = typ;
   parent = par;
   subgrps = new(ItemList);
@@ -44,6 +49,7 @@ Group::Group(char *nm,Group *par, int typ)
 
 Group::~Group()
 {
+  delete [] name;
   delete(subgrps);
 }
 

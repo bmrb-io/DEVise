@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/15 07:04:08  ravim
+  Minor changes.
+
   Revision 1.2  1995/09/27 23:59:46  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -49,7 +52,7 @@ class ItemList;
 class Group
 {
 public:
-  char name[MAX_STR_LEN];
+  char *name;
   ItemList *subgrps;
   Group *parent;
   int type;
