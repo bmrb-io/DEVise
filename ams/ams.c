@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/14 18:43:50  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.6  1995/12/14 15:42:46  jussi
   Replaced WinVertical and WinHorizontal with TileLayout.
 
@@ -70,25 +73,28 @@
 int debug = 0;
 
 char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL",
-	"AUG", "SEP", "OCT", "NOV", "DEC" };
+			 "AUG", "SEP", "OCT", "NOV", "DEC" };
 
-/* get month */
-int GetMonth(char *month){
-static int monthHint = -1;
-	if (monthHint >= 0 && strcmp(monthNames[monthHint],month) == 0){
-		return monthHint;
-	} else {
-		int i;
-		for (i=0; i < 12; i++){
-			if (strcmp(monthNames[i],month) == 0) {
-				monthHint = i;
-				return i;
-			}
-		}
-		/* not found */
-		fprintf(stderr,"unknown month %s\n", month);
-		Exit::DoExit(2);
-	}
+int GetMonth(char *month)
+{
+  static int monthHint = -1;
+  if (monthHint >= 0 && strcmp(monthNames[monthHint],month) == 0){
+    return monthHint;
+  }
+
+  for(int i = 0; i < 12; i++) {
+    if (strcmp(monthNames[i],month) == 0) {
+      monthHint = i;
+      return i;
+    }
+  }
+
+  /* not found */
+  fprintf(stderr,"unknown month %s\n", month);
+  Exit::DoExit(2);
+
+  /* keep compiler happy */
+  return 0;
 }
 
 /* name of quality attrbutess */
@@ -285,7 +291,6 @@ public:
 	/* This is called by the Composite parser to parse composite attributes */
 	virtual void Decode(RecInterp *recInterp){
 		char dateBuf[20];
-		int i;
 		AttrInfo *info;
 		char *buf;
 		char *dt ;
@@ -433,14 +438,15 @@ main(int argc, char **argv){
 	Otherwise, we'll get an error */
 	DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
 
-	/* keep compiler happy */
-	disp = disp;
-
 	/* Start session (possibly restoring an old one */
 	ctrl->StartSession();
 
 	/* Create a command class to read input from keyboard */
 	Command *cmd = new Command(QueryProc::Instance());
+
+	/* keep compiler happy */
+	disp = disp;
+	cmd = cmd;
 
 	Dispatcher::RunNoReturn();
 }
