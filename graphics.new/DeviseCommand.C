@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/02/11 19:54:55  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.43  1999/01/04 15:33:28  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -3627,29 +3632,29 @@ DeviseCommand_getMappingLegend::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_insertLink::Run(int argc, char** argv)
 {
-    {
-        {
-          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
-          if (!link) {
-    	ReturnVal(API_NAK, "Cannot find link");
-    	return -1;
-          }
-    //      printf("insertLink %s %s\n", argv[1], argv[2]);
-          ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-          if (!view) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          link->InsertView(view);
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
+  // Don't do anything for old-style pile links.
+  if (!DeviseLink::IsPileLinkName(argv[1])) {
+    DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
+    if (!link) {
+      ReturnVal(API_NAK, "Cannot find link");
+      return -1;
     }
-    return true;
+    //      printf("insertLink %s %s\n", argv[1], argv[2]);
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+    if (!view) {
+      ReturnVal(API_NAK, "Cannot find view");
+      return -1;
+    }
+    link->InsertView(view);
+  }
+  ReturnVal(API_ACK, "done");
+  return 1;
 }
+
 int
 DeviseCommand_viewInLink::Run(int argc, char** argv)
 {
