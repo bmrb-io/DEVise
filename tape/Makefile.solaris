@@ -88,6 +88,8 @@ tapedrive.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h
 tapedrive.o: /usr/include/sys/errno.h /usr/include/assert.h
 tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
+tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
+tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testtape.o: ../graphics.new/machdep.h /usr/include/limits.h
 testtape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -5,7 +5,8 @@ depend:
 
 CompDate.o: CompDate.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/time.h /usr/include/string.h /usr/include/math.h
+generic.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/time.h
+generic.o: /usr/include/string.h /usr/include/math.h
 generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
 generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h

@@ -70,6 +70,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Snapshot.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
@@ -131,6 +132,7 @@ CycleEffMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 CycleEffMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleEffMappingClassInfo.o: ../graphics.new/TData.h
+CycleEffMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleEffMappingClassInfo.o: ../graphics.new/Snapshot.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
@@ -192,6 +194,7 @@ CycleOccMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 CycleOccMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleOccMappingClassInfo.o: ../graphics.new/TData.h
+CycleOccMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleOccMappingClassInfo.o: ../graphics.new/Snapshot.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
@@ -267,6 +270,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Snapshot.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
@@ -337,6 +341,7 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Snapshot.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
@@ -391,6 +396,7 @@ HostMappingClassInfo.o: ../graphics.new/BufMgr.h
 HostMappingClassInfo.o: ../graphics.new/BufferPolicy.h
 HostMappingClassInfo.o: ../graphics.new/RecOrder.h TDataHost.h
 HostMappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+HostMappingClassInfo.o: ../graphics.new/FileIndex.h
 HostMappingClassInfo.o: ../graphics.new/Snapshot.h
 HostMappingClassInfo.o: ../graphics.new/ViewScatter.h HostMappingClassInfo.h
 HostMappingClassInfo.o: HostRec.h map_host.h
@@ -438,9 +444,9 @@ MappingClassInfo.o: ../graphics.new/QueryProcFull.h ../graphics.new/QPRange.h
 MappingClassInfo.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
 MappingClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
 MappingClassInfo.o: TDataMulti.h ../graphics.new/TDataAscii.h
-MappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/Snapshot.h
-MappingClassInfo.o: ../graphics.new/ViewScatter.h MappingClassInfo.h
-MappingClassInfo.o: MultiRec.h mapfile.h
+MappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/FileIndex.h
+MappingClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
+MappingClassInfo.o: MappingClassInfo.h MultiRec.h mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Message.o: /usr/include/sys/time.h /usr/include/sys/types.h
 Message.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -464,10 +470,11 @@ TDataCycle.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataCycle.o: ../graphics/Color.h ../graphics/Pattern.h
 TDataCycle.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataCycle.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
-TDataCycle.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataCycle.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataCycle.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataCycle.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h CycleRec.h
+TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataCycle.o: /usr/include/ctype.h /usr/include/math.h
+TDataCycle.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataHost.o: /usr/include/stdlib.h TDataHost.h ../graphics.new/TDataAscii.h
 TDataHost.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -481,10 +488,11 @@ TDataHost.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataHost.o: ../graphics/Color.h ../graphics/Pattern.h
 TDataHost.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataHost.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
-TDataHost.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataHost.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataHost.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataHost.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h HostRec.h
+TDataHost.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataHost.o: /usr/include/ctype.h /usr/include/math.h
+TDataHost.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataMulti.o: /usr/include/stdlib.h TDataMulti.h ../graphics.new/TDataAscii.h
 TDataMulti.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -498,10 +506,11 @@ TDataMulti.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataMulti.o: ../graphics/Color.h ../graphics/Pattern.h
 TDataMulti.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataMulti.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
-TDataMulti.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataMulti.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataMulti.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataMulti.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h MultiRec.h
+TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataMulti.o: /usr/include/ctype.h /usr/include/math.h
+TDataMulti.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/floatingpoint.h
 disp.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
 disp.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
@@ -530,8 +539,8 @@ disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 disp.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Init.h
 disp.o: ../graphics/BufPolicy.h ../graphics.new/VisualLinkClassInfo.h
 disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
-disp.o: ../graphics.new/RecOrder.h TDataHost.h TDataCycle.h
-disp.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+disp.o: ../graphics.new/RecOrder.h ../graphics.new/FileIndex.h TDataHost.h
+disp.o: TDataCycle.h ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
 disp.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
 disp.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
 disp.o: ../graphics.new/Snapshot.h ../graphics.new/ViewClassInfo.h

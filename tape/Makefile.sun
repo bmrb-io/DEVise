@@ -77,6 +77,8 @@ tapedrive.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h
 tapedrive.o: /usr/include/sys/errno.h /usr/include/assert.h
 tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
+tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
+tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
 testtape.o: tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
 testtape.o: /usr/include/limits.h /usr/include/sys/types.h
 testtape.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h

@@ -134,11 +134,11 @@ DaliPatron.o: /usr/include/sys/netconfig.h /usr/include/netdb.h
 DaliPatron.o: /usr/include/unistd.h /usr/include/errno.h
 DaliPatron.o: /usr/include/sys/errno.h Dali.h
 DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevError.o: DeviseTypes.h /usr/include/values.h DevStatus.h
-DevError.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-DevError.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DevError.o: /usr/include/sys/time.h /usr/include/sys/time.h Init.h
-DevError.o: BufPolicy.h
+DevError.o: /usr/include/errno.h /usr/include/sys/errno.h DeviseTypes.h
+DevError.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
+DevError.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DevError.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DevError.o: /usr/include/sys/time.h Init.h BufPolicy.h
 DevStatus.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevStatus.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 DevStatus.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
@@ -150,7 +150,8 @@ DevisePixmap.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 DevisePixmap.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 DevisePixmap.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 DevisePixmap.o: /usr/include/sys/time.h /usr/include/sys/time.h Color.h
-DevisePixmap.o: Pattern.h Compress.h
+DevisePixmap.o: Pattern.h Compress.h DevError.h /usr/include/errno.h
+DevisePixmap.o: /usr/include/sys/errno.h
 Dispatcher.o: /usr/include/errno.h /usr/include/sys/errno.h
 Dispatcher.o: /usr/include/memory.h /usr/include/sys/time.h
 Dispatcher.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
@@ -250,7 +251,7 @@ Journal.o: /usr/include/stdlib.h DList.h Exit.h ViewWin.h WindowRep.h Geom.h
 Journal.o: /usr/include/math.h /usr/include/floatingpoint.h
 Journal.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
 Journal.o: Control.h ClassDir.h ViewCallback.h AttrList.h Config.h Cursor.h
-Journal.o: Time.h
+Journal.o: Time.h DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 NullDisplay.o: NullDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 NullDisplay.o: DevStatus.h /usr/include/sys/types.h
 NullDisplay.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
@@ -403,7 +404,8 @@ View.o: ViewCallback.h AttrList.h Config.h Cursor.h FilterQueue.h TimeStamp.h
 View.o: Parse.h Map3D.h Display.h ColorMgr.h PSDisplay.h Init.h BufPolicy.h
 View.o: DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 View.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h DevError.h
+View.o: /usr/include/errno.h /usr/include/sys/errno.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewWin.o: /usr/include/string.h /usr/include/errno.h
 ViewWin.o: /usr/include/sys/errno.h ViewWin.h DList.h Exit.h DeviseTypes.h

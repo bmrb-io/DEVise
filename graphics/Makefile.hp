@@ -101,14 +101,16 @@ DaliPatron.o: /usr/include/sys/socket.h /usr/include/netdb.h
 DaliPatron.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 DaliPatron.o: /usr/include/errno.h /usr/include/sys/errno.h Dali.h
 DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
-DevError.o: DeviseTypes.h /usr/include/values.h DevStatus.h
-DevError.o: /usr/include/sys/types.h Init.h BufPolicy.h
+DevError.o: /usr/include/errno.h /usr/include/sys/errno.h DeviseTypes.h
+DevError.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h Init.h
+DevError.o: BufPolicy.h
 DevStatus.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DevStatus.h
 DevStatus.o: /usr/include/sys/types.h DeviseTypes.h /usr/include/values.h
 DevisePixmap.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DevisePixmap.o: /usr/include/stdlib.h Exit.h DevisePixmap.h VisualArg.h
 DevisePixmap.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 DevisePixmap.o: /usr/include/sys/types.h Color.h Pattern.h Compress.h
+DevisePixmap.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 Dispatcher.o: /usr/include/errno.h /usr/include/sys/errno.h
 Dispatcher.o: /usr/include/sys/stdsyms.h /usr/include/memory.h
 Dispatcher.o: /usr/include/string.h /usr/include/sys/time.h
@@ -176,7 +178,7 @@ Journal.o: Init.h BufPolicy.h Selection.h View.h Dispatcher.h
 Journal.o: /usr/include/stdlib.h DList.h Exit.h ViewWin.h WindowRep.h Geom.h
 Journal.o: /usr/include/math.h Transform.h DevisePixmap.h Compress.h
 Journal.o: Control.h ClassDir.h ViewCallback.h AttrList.h Config.h Cursor.h
-Journal.o: Time.h
+Journal.o: Time.h DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 NullDisplay.o: NullDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 NullDisplay.o: DevStatus.h /usr/include/sys/types.h
 NullDisplay.o: /usr/include/sys/stdsyms.h Geom.h /usr/include/stdio.h
@@ -274,7 +276,8 @@ View.o: ViewCallback.h AttrList.h Config.h Cursor.h FilterQueue.h TimeStamp.h
 View.o: Parse.h Map3D.h Display.h ColorMgr.h PSDisplay.h Init.h BufPolicy.h
 View.o: DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 View.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h DevError.h
+View.o: /usr/include/errno.h /usr/include/sys/errno.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ViewWin.o: /usr/include/string.h /usr/include/errno.h
 ViewWin.o: /usr/include/sys/errno.h ViewWin.h DList.h Exit.h DeviseTypes.h

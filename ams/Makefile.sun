@@ -102,6 +102,9 @@ extendAms.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 extendAms.o: /usr/include/limits.h /usr/include/unistd.h
 extendAms.o: /usr/include/sys/uio.h ../graphics.new/ams.h /usr/include/math.h
 extendAms.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+extendAms.o: ../graphics/DevError.h /usr/include/errno.h
+extendAms.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
+extendAms.o: /usr/include/values.h ../graphics/DevStatus.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/types.h
 testdir.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 testdir.o: /usr/include/sys/dir.h

@@ -110,6 +110,9 @@ extendAms.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 extendAms.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
 extendAms.o: ../graphics.new/ams.h /usr/include/math.h
 extendAms.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+extendAms.o: ../graphics/DevError.h /usr/include/errno.h
+extendAms.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
+extendAms.o: /usr/include/values.h ../graphics/DevStatus.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testdir.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 testdir.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h

@@ -357,6 +357,7 @@ DevFileHeader.o: /usr/include/sys/time.h /usr/include/string.h
 DevFileHeader.o: /usr/include/ctype.h /usr/include/math.h
 DevFileHeader.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DevFileHeader.o: ../graphics/Exit.h ../graphics/DevError.h
+DevFileHeader.o: /usr/include/errno.h /usr/include/sys/errno.h
 DictGroup.o: /usr/include/stdio.h DictGroup.h ../graphics/DeviseTypes.h
 DictGroup.o: /usr/include/values.h ../graphics/DevStatus.h
 DictGroup.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -377,6 +378,18 @@ DispQueryProc.o: ../graphics/VisualArg.h ../graphics/Color.h
 DispQueryProc.o: ../graphics/Pattern.h QueryProcSimple.h ../graphics/Config.h
 DispQueryProc.o: QueryProc.h RecId.h ../graphics/BufPolicy.h BufHint.h
 DispQueryProc.o: QueryProcFull.h QPRange.h ../graphics/Timer.h
+FileIndex.o: /usr/include/stdio.h /usr/include/sys/types.h
+FileIndex.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+FileIndex.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
+FileIndex.o: /usr/include/unistd.h /usr/include/fcntl.h
+FileIndex.o: /usr/include/sys/fcntlcom.h FileIndex.h RecId.h DataSource.h
+FileIndex.o: ../graphics/DeviseTypes.h /usr/include/values.h
+FileIndex.o: ../graphics/DevStatus.h ../graphics/Exit.h TData.h RecOrder.h
+FileIndex.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
+FileIndex.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+FileIndex.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+FileIndex.o: ../graphics/DevError.h /usr/include/errno.h
+FileIndex.o: /usr/include/sys/errno.h
 GData.o: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
 GData.o: /usr/include/values.h ../graphics/DevStatus.h
 GData.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -527,13 +540,15 @@ ParseCat.o: ../graphics/Exit.h TDataAsciiInterp.h TDataAscii.h
 ParseCat.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 ParseCat.o: /usr/include/string.h ../graphics/Journal.h
 ParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ParseCat.o: TData.h RecId.h RecOrder.h DataSource.h TDataBinaryInterp.h
-ParseCat.o: TDataBinary.h ../graphics/Parse.h ../graphics/Control.h
-ParseCat.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
-ParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ParseCat.o: ../graphics/Init.h ../graphics/BufPolicy.h Group.h
-ParseCat.o: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
-ParseCat.o: DataSourceFileStream.h ../graphics/DevError.h
+ParseCat.o: TData.h RecId.h RecOrder.h DataSource.h FileIndex.h
+ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
+ParseCat.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
+ParseCat.o: /usr/include/math.h /usr/include/floatingpoint.h
+ParseCat.o: /usr/include/sys/ieeefp.h ../graphics/Init.h
+ParseCat.o: ../graphics/BufPolicy.h Group.h MapInterpClassInfo.h GroupDir.h
+ParseCat.o: ItemList.h DataSourceBuf.h DataSourceFileStream.h
+ParseCat.o: ../graphics/DevError.h /usr/include/errno.h
+ParseCat.o: /usr/include/sys/errno.h
 QPRange.o: /usr/include/stdio.h ../graphics/Exit.h QPRange.h
 QPRange.o: ../graphics/DeviseTypes.h /usr/include/values.h
 QPRange.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -724,7 +739,7 @@ TData.o: ../graphics/Compress.h ../graphics/Control.h ../graphics/ClassDir.h
 TData.o: ../graphics/ViewCallback.h ../graphics/Cursor.h BasicStats.h
 TData.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 TData.o: UpdateLink.h VisualLink.h Action.h PointStorage.h QueryProc.h
-TData.o: DataSourceWeb.h
+TData.o: DataSourceWeb.h ../graphics/Init.h ../graphics/BufPolicy.h
 TData2DRec.o: /usr/include/stdio.h TData2DRec.h TDataRec.h TData.h
 TData2DRec.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TData2DRec.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -749,12 +764,12 @@ TDataAscii.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 TDataAscii.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 TDataAscii.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataAscii.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
-TDataAscii.o: RecOrder.h DataSource.h ../graphics/Util.h /usr/include/ctype.h
-TDataAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataAscii.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
-TDataAscii.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h
-TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h ../graphics/Init.h
-TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h
+TDataAscii.o: RecOrder.h DataSource.h FileIndex.h ../graphics/Util.h
+TDataAscii.o: /usr/include/ctype.h /usr/include/math.h
+TDataAscii.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
+TDataAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
+TDataAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -765,12 +780,14 @@ TDataAsciiInterp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 TDataAsciiInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataAsciiInterp.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataAsciiInterp.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
-TDataAsciiInterp.o: RecOrder.h DataSource.h ../graphics/AttrList.h
-TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
-TDataAsciiInterp.o: ../graphics/Config.h RecInterp.h CompositeParser.h
-TDataAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
-TDataAsciiInterp.o: ../graphics/Util.h /usr/include/math.h
-TDataAsciiInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataAsciiInterp.o: RecOrder.h DataSource.h FileIndex.h
+TDataAsciiInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
+TDataAsciiInterp.o: /usr/include/sys/time.h ../graphics/Config.h RecInterp.h
+TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
+TDataAsciiInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataAsciiInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
+TDataAsciiInterp.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
+TDataAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
 TDataAsciiInterp.o: StringStorage.h ../tape/HashTable.h
 TDataBinary.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataBinary.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
@@ -784,7 +801,7 @@ TDataBinary.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 TDataBinary.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 TDataBinary.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataBinary.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
-TDataBinary.o: RecOrder.h DataSource.h ../graphics/Util.h
+TDataBinary.o: RecOrder.h DataSource.h FileIndex.h ../graphics/Util.h
 TDataBinary.o: /usr/include/ctype.h /usr/include/math.h
 TDataBinary.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TDataBinary.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
@@ -800,13 +817,15 @@ TDataBinaryInterp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 TDataBinaryInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataBinaryInterp.o: ../graphics/Journal.h ../graphics/VisualArg.h
 TDataBinaryInterp.o: ../graphics/Color.h ../graphics/Pattern.h TData.h
-TDataBinaryInterp.o: RecId.h RecOrder.h DataSource.h ../graphics/AttrList.h
-TDataBinaryInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
-TDataBinaryInterp.o: ../graphics/Config.h RecInterp.h CompositeParser.h
-TDataBinaryInterp.o: ../graphics/Parse.h ../graphics/Control.h
-TDataBinaryInterp.o: ../graphics/Util.h /usr/include/ctype.h
-TDataBinaryInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataBinaryInterp.o: /usr/include/sys/ieeefp.h StringStorage.h
+TDataBinaryInterp.o: RecId.h RecOrder.h DataSource.h FileIndex.h
+TDataBinaryInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
+TDataBinaryInterp.o: /usr/include/sys/time.h ../graphics/Config.h RecInterp.h
+TDataBinaryInterp.o: CompositeParser.h ../graphics/Parse.h
+TDataBinaryInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataBinaryInterp.o: /usr/include/ctype.h /usr/include/math.h
+TDataBinaryInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataBinaryInterp.o: ../graphics/DevError.h /usr/include/errno.h
+TDataBinaryInterp.o: /usr/include/sys/errno.h StringStorage.h
 TDataBinaryInterp.o: ../tape/HashTable.h
 TDataMap.o: /usr/include/stdio.h /usr/include/string.h
 TDataMap.o: /usr/include/sys/stdtypes.h ../graphics/Config.h
@@ -912,6 +931,7 @@ UnixDiskFile.o: /usr/include/limits.h /usr/include/unistd.h UnixDiskFile.h
 UnixDiskFile.o: /usr/include/errno.h /usr/include/sys/errno.h DiskFile.h
 UnixDiskFile.o: ../graphics/DeviseTypes.h /usr/include/values.h
 UnixDiskFile.o: ../graphics/DevStatus.h ../graphics/Exit.h PageSize.h
+UnixDiskFile.o: ../graphics/DevError.h
 UnixRecFile.o: /usr/include/stdio.h /usr/include/stdlib.h
 UnixRecFile.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 UnixRecFile.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -923,6 +943,7 @@ UnixRecFile.o: ../graphics/DevStatus.h DataSource.h ../graphics/Exit.h
 UnixRecFile.o: ../graphics/Util.h /usr/include/sys/time.h
 UnixRecFile.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 UnixRecFile.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+UnixRecFile.o: ../graphics/DevError.h
 Version.o: /usr/include/stdio.h Version.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1056,14 +1077,20 @@ VoidHash.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 VoidHash.o: /usr/include/sys/sysmacros.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 genAms.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
-genAms.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h ams.h
-genAms.o: /usr/include/math.h /usr/include/floatingpoint.h
-genAms.o: /usr/include/sys/ieeefp.h
+genAms.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
+genAms.o: /usr/include/unistd.h ams.h /usr/include/math.h
+genAms.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+genAms.o: ../graphics/DevError.h /usr/include/stdio.h /usr/include/errno.h
+genAms.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
+genAms.o: /usr/include/values.h ../graphics/DevStatus.h
 genStrData.o: /usr/include/stdio.h /usr/include/stdlib.h
 genStrData.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 genStrData.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
 genStrData.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 genStrData.o: /usr/include/limits.h /usr/include/unistd.h StrData.h
+genStrData.o: ../graphics/DevError.h /usr/include/errno.h
+genStrData.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
+genStrData.o: /usr/include/values.h ../graphics/DevStatus.h
 makeBackTest.o: /usr/include/stdio.h /usr/include/stdlib.h
 makeBackTest.o: /usr/include/sys/stdtypes.h
 makeGData.o: /usr/include/stdio.h /usr/include/stdlib.h
@@ -1395,7 +1422,8 @@ MapInterpShape.o: DataSource.h UpdateLink.h VisualLink.h Action.h
 MapInterpShape.o: PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
 MapInterpShape.o: StringStorage.h ../graphics/Init.h ../graphics/BufPolicy.h
 MapInterpShape.o: ../graphics/Util.h /usr/include/ctype.h
-MapInterpShape.o: ../graphics/DevError.h
+MapInterpShape.o: ../graphics/DevError.h /usr/include/errno.h
+MapInterpShape.o: /usr/include/sys/errno.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/ctype.h /usr/include/assert.h
 ParseAPI.o: ParseAPI.h ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 ParseAPI.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1420,7 +1448,8 @@ ParseAPI.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
 ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h
 ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
 ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
-ParseAPI.o: ../graphics/DevError.h
+ParseAPI.o: FileIndex.h ../graphics/DevError.h /usr/include/errno.h
+ParseAPI.o: /usr/include/sys/errno.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1472,6 +1501,7 @@ SBufMgr.o: /usr/include/netinet/in.h ../graphics/DeviseTypes.h
 SBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h ../tape/HashTable.h
 SBufMgr.o: DCE.h /usr/include/errno.h /usr/include/sys/errno.h
 SBufMgr.o: /usr/include/assert.h ../graphics/DList.h ../graphics/Exit.h Web.h
+SBufMgr.o: ../graphics/DevError.h
 Seq.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/types.h
 Seq.o: /usr/include/sys/sysmacros.h /usr/include/ctype.h /s/tcl/include/tcl.h
@@ -1494,6 +1524,7 @@ Seq.o: /usr/include/netinet/in.h ../graphics/Util.h /usr/include/math.h
 Seq.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Seq.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Seq.o: ../graphics/DevStatus.h ../graphics/Exit.h ../graphics/Parse.h
+Seq.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 StringStorage.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 StringStorage.o: StringStorage.h ../tape/HashTable.h
 UpdateLink.o: /usr/include/unistd.h /usr/include/sys/types.h

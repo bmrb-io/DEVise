@@ -96,6 +96,9 @@ extendAms.o: /usr/include/sys/stdsyms.h /usr/include/sys/fcntl.h
 extendAms.o: /usr/include/limits.h /usr/include/unistd.h
 extendAms.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
 extendAms.o: /usr/include/sys/types.h /usr/include/sys/stat.h
-extendAms.o: ../graphics.new/ams.h /usr/include/math.h
+extendAms.o: ../graphics.new/ams.h /usr/include/math.h ../graphics/DevError.h
+extendAms.o: /usr/include/errno.h /usr/include/sys/errno.h
+extendAms.o: ../graphics/DeviseTypes.h /usr/include/values.h
+extendAms.o: ../graphics/DevStatus.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/types.h
 testdir.o: /usr/include/sys/stdsyms.h /usr/include/sys/dir.h
