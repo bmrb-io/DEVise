@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/06/28 21:47:34  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.2  1998/06/04 23:06:45  donjerko
   Added DataReader.
 
@@ -176,7 +180,9 @@ const Tuple* DataReadExec::getNext()
   if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
     return NULL;
   }
-  assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
+  if (stat != OK && stat != FOUNDEOL && stat != FOUNDEOF) {
+    return NULL;
+  }
   intCopy((Type*) recId, tuple[0]);
   for(int i = 1; i < numFlds; i++){
     unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
