@@ -1,7 +1,7 @@
 ############################################################
 
-# Define the environment variables needed to run the "standard"
-# version of DEVise (released in /p/devise).
+# Define the environment variables needed to run the local
+# version of DEVise.
 
 # $Id$
 
