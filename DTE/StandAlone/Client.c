@@ -15,18 +15,24 @@
 #include "SockStream.h"
 #include "sysdep.h"
 
-const unsigned short PORT = 6571;
-const char* HOST = "quarg.cs.wisc.edu";
-
-int main(int argc, char** argv){
-
-	Cor_sockbuf* sockBuf = new Cor_sockbuf(HOST, PORT);
+int main(int argc, char** argv)
+{
+  unsigned short port = 6571;
+  const char* host = "localhost";
+  if( argc > 1 ) {
+    host = argv[1];
+  }
+  if( argc > 2 ) {
+    port = atoi(argv[2]);
+  }
+  cerr << "connecting to " << host << ':' << port << '\n';
+	Cor_sockbuf* sockBuf = new Cor_sockbuf(host, port);
 
 	assert(sockBuf);
 
 	if(!sockBuf->valid()){
-		cerr << "Could not open connection to `" << HOST 
-			<< "' at port " << PORT << endl;
+		cerr << "Could not open connection to `" << host 
+			<< "' at port " << port << endl;
 		cerr << "Server might be down" << endl;
 		exit(1);
 	}
