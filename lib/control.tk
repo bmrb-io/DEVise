@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.92  1996/09/13 23:08:00  guangshu
+#	Changed print menu to "print with map" and "print without map".
+#
 #	Revision 1.91  1996/08/29 22:27:35  guangshu
 #	Changed puts to proc Puts in case the client wants to be quiet.
 #
@@ -580,6 +583,10 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command PrintWithMap
 
 .mbar.session.menu add command -label "Quit" -command DoExit
+
+#.mbar.session.menu add separator
+#.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
+#.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
 menu .mbar.tdata.menu -tearoff 0
 .mbar.tdata.menu add command -label "Import" -command { MacroImport 0 0 }

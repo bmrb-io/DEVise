@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/09/18 20:18:50  guangshu
+  Added API command saveDisplayView to save each view in the window.
+
   Revision 1.31  1996/09/13 23:06:06  guangshu
   Added saveDisplayImageAndMap for saving map files.
 
@@ -160,6 +163,15 @@
 #include "Display.h"
 #include "TDataAscii.h"
 #include "DevError.h"
+
+#define PURIFY 0
+
+#if PURIFY
+extern "C" int purify_is_running();
+extern "C" int purify_new_leaks();
+extern "C" int purify_new_inuse();
+#endif
+
 
 //#define DEBUG
 
@@ -320,6 +332,22 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, (char *) CompDate::Get());
       return 1;
     }
+#if PURIFY
+    if (!strcmp(argv[0], "new_leaks")) {
+      if (purify_is_running()) {
+	purify_new_leaks();
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "new_inuse")) {
+      if (purify_is_running()) {
+	purify_new_inuse();
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+#endif
   }
 
   if (argc == 2) {
