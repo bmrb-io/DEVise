@@ -160,8 +160,8 @@ mozilla_remote_find_window (Display *dpy)
     }
   else
     {
-      fprintf (stderr, "%s: not running on display %s\n", progname,
-	       DisplayString (dpy));
+      fprintf (stderr, "%s: Netscape? is not running on display %s\n",
+	       progname, DisplayString (dpy));
       exit (1);
     }
 }
