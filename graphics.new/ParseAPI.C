@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.81  1997/11/24 23:15:11  weaver
+  Changes for the new ColorManager.
+
   Revision 1.80  1997/11/24 16:22:28  wenger
   Added GUI for saving GData; turning on GData to socket now forces
   redraw of view; GData to socket params now saved in session files;
@@ -34,6 +37,9 @@
   Revision 1.78  1997/11/12 15:46:38  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.77.2.2  1997/11/14 17:31:17  wenger
+  More error messages for sending images to socket.
 
   Revision 1.77.2.1  1997/11/11 19:13:58  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
@@ -2243,6 +2249,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->OpenDataChannel(port);
       int fd = control->getFd();
       if (fd < 0) {
+	reportErrSys("Cannot open data channel");
         control->ReturnVal(API_NAK, "Invalid socket to write");
         return -1;
       }
@@ -2365,6 +2372,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->OpenDataChannel(port);
       int fd = control->getFd();
       if (fd < 0) {
+	reportErrSys("Cannot open data channel");
         control->ReturnVal(API_NAK, "Invalid socket to write");
         return -1;
       }
@@ -2751,8 +2759,10 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
   (void) tmpnam(tmpFile);
   FILE *tmpfp = fopen(tmpFile, "w");
   if (tmpfp == NULL) {
-    reportErrSys("Can't open temp file");
-    control->ReturnVal(API_NAK, "Can't open temp file");
+    char errBuf[2096];
+    sprintf("Can't open temp file (%s)", tmpFile);
+    reportErrSys(errBuf);
+    control->ReturnVal(API_NAK, errBuf);
     return -1;
   }
   DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
@@ -2843,6 +2853,7 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
 
   control->OpenDataChannel(port);
   if (control->getFd() < 0) {
+    reportErrSys("Cannot open data channel");
     control->ReturnVal(API_NAK, "Invalid socket to write");
     return -1;
   }

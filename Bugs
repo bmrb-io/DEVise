@@ -972,7 +972,7 @@ Num Date        Status  Description
 245 12/01/97	OPEN	Dots or spaces in data source names goof up the DTE.
 			(dk/rkw)
 
-246 12/01/97	OPEN	Data source definition GUI shouldn't let you add
+246 12/01/97	FIXED	Data source definition GUI shouldn't let you add
 			data source names with dots or spaces. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.

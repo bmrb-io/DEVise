@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/11/19 17:02:11  wenger
+  Fixed error in OpenDataChannel().
+
+  Revision 1.29.12.1  1997/11/14 17:31:19  wenger
+  More error messages for sending images to socket.
+
   Revision 1.29  1997/04/03 16:36:47  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -528,7 +534,7 @@ void ServerAPI::RestartSession()
 void ServerAPI::OpenDataChannel(int port){
   _dataFd = socket(AF_INET, SOCK_STREAM, 0);
   if (_dataFd < 0) {
-      perror("Cannot create socket in OpenDataChannel");
+      reportErrSys("Cannot create socket in OpenDataChannel");
       return;
   }
   
@@ -541,7 +547,7 @@ void ServerAPI::OpenDataChannel(int port){
       ind = connect(_dataFd, (struct sockaddr *)&clientAddr,
 			 sizeof(struct sockaddr));
       if (ind < 0) {
-	  perror("Cannot open the data channel");
+	  reportErrSys("Cannot open the data channel");
 	  close(_dataFd);
 	  _dataFd = -1;
 	  return;

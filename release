@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1997/11/12 15:42:25  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
+#  Revision 1.16.2.2  1997/11/18 23:07:37  wenger
+#  Fixed paths to devisec and devised scripts.
+#
 #  Revision 1.16.2.1  1997/11/06 17:59:54  wenger
 #  Added scripts for starting up devisec and devised.
 #
@@ -218,7 +225,8 @@ set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
 	run_public/multi run_public/devise.etk run_public/devise.demo \
 	run_public/devise1.3.demo run_public/multi.demo \
-	run_public/multi1.3.demo run_public/tk2ds.tcl devisec devised"
+	run_public/multi1.3.demo run_public/tk2ds.tcl  run_public/devisec \
+	run_public/devised"
 
 foreach file ($runfiles)
   if ($file == "") then

@@ -15,6 +15,18 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.70  1997/11/12 23:26:53  donjerko
+#	Added some dialog windows for error reporting.
+#
+#	Revision 1.69.4.2  1997/12/01 18:35:03  wenger
+#	Fixed bug 246 (GUI no longer allows data source names containing dots
+#	or spaces).
+#
+#	Revision 1.69.4.1  1997/11/26 23:43:44  wenger
+#	Added the option to create a new schema in the data source editing
+#	GUIs for UNIXFILES and Tables; fixed a few bugs in the data source
+#	and schema GUIs.
+#
 #	Revision 1.69  1997/09/09 23:25:20  donjerko
 #	*** empty log message ***
 #
@@ -444,6 +456,15 @@ proc updateStreamDef {} {
     global sourceList sourceTypes editonly oldDispName
     global dispname source key schemafile evaluation priority command
 
+    # Don't allow names with dots or spaces in them -- they will cause
+    # the DTE problems.
+    if {[string match {*[. ]*} $dispname]} {
+      dialog .winError "Name error" \
+	"Data source name cannot contain <dot> or <space>.  Please change data source name." \
+	"" 0 OK
+      return
+    }
+
 #	if {$source == "SEQ"} {
 #	set schemafile [format "%s/%s.%s.schema" $schemadir/physical \
 #		[string trim $source] [string trim $key]]
@@ -731,6 +752,7 @@ proc defineStream {base edit} {
      set source [lindex $sourcedef 1]
      set key [lindex $sourcedef 2]
      set schemafile [lindex $sourcedef 4]
+puts "schemafile = $schemafile"
      set cachefile [lindex $sourcedef 5]
      set evaluation [lindex $sourcedef 6]
      set priority [lindex $sourcedef 7]
@@ -777,12 +799,7 @@ proc defineStream {base edit} {
 
     # Create menu of valid source types
     menu .srcdef.top.row2.e1.menu -tearoff 0
-    foreach sourcetype [lsort [array names sourceTypes]] {
-	.srcdef.top.row2.e1.menu add radiobutton -label $sourcetype \
-		-variable source -value $sourcetype -command {
-	    set schemafile [lindex $sourceTypes($source) 1]
-	}
-    }
+    .srcdef.top.row2.e1.menu add radiobutton -label "UNIXFILE"
     tk_menuBar .srcdef .srcdef.sourcemenu
 
     label .srcdef.top.row3.l1 -text "Schema:"
@@ -798,7 +815,14 @@ proc defineStream {base edit} {
 	set file [FSBox "Select schema file"]
 	if {$file != ""} { set schemafile $file }
     }
+    button .srcdef.top.row3.new -text "New..." -width 10 \
+	    -command {
+		global is_unidata
+		set is_unidata 0
+	        set schemafile [newschema]
+	    }
     pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
+	    .srcdef.top.row3.new \
 	    -side left -padx 2m -fill x -expand 1
 
     scale .srcdef.top.row4.s1 -label "Evaluation Factor" -from 0 -to 100 \
@@ -983,6 +1007,14 @@ proc defineStandardTable {content} {
 			dialog .noName "Missing Information" \
 				"Please enter all requested information." "" 0 OK
 		} else {
+                        # Don't allow names with dots or spaces in them -- they will cause
+                        # the DTE problems.
+                        if {[string match {*[. ]*} $tableName]} {
+                          dialog .winError "Name error" \
+	                    "Data source name cannot contain <dot> or <space>.  Please change data source name." \
+	                    "" 0 OK
+                          return
+                        }
 			set retVal "[addQuotes $tableName] $sourceType $url"
 			destroy .srcdef
 		}
@@ -1142,7 +1174,14 @@ proc defineTable {content} {
 	set file [FSBox "Select schema file" "newschema"]
 	if {$file != ""} { set schemaFile $file }
     }
+    button .srcdef.top.row3.new -text "New..." -width 10 \
+	    -command {
+		global is_unidata
+		set is_unidata 1
+	        set schemaFile [unidata_newschema]
+	    }
     pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
+	    .srcdef.top.row3.new \
 	    -side left -padx 2m -fill x -expand 1
 
     label .srcdef.top.row4.l1 -text "View:"
@@ -1189,6 +1228,15 @@ proc defineTable {content} {
 proc defineTableOKAction {} {
 
 	global retVal tableName sourceType schemaFile dataFile viewFile
+
+        # Don't allow names with dots or spaces in them -- they will cause
+        # the DTE problems.
+        if {[string match {*[. ]*} $tableName]} {
+          dialog .winError "Name error" \
+	    "Data source name cannot contain <dot> or <space>.  Please change data source name." \
+	    "" 0 OK
+          return
+        }
 
 	if {$tableName == "" || $schemaFile == "" || $dataFile == ""} {
 		dialog .noName "Missing Information" \
@@ -1278,6 +1326,14 @@ proc defineDEViseOrDir {sourcetype label content} {
 			dialog .noName "Missing Information" \
 				"Please enter all requested information." "" 0 OK
 		} else {
+    # Don't allow names with dots or spaces in them -- they will cause
+    # the DTE problems.
+    if {[string match {*[. ]*} $tableName]} {
+      dialog .winError "Name error" \
+	"Data source name cannot contain <dot> or <space>.  Please change data source name." \
+	"" 0 OK
+      return
+    }
 			set retVal "[addQuotes $tableName] $sourceType $url"
 			destroy .srcdef
 		}
@@ -1517,6 +1573,7 @@ proc cacheData {dispname startrec endrec} {
     set key [lindex $sourcedef 1]
     set schematype [lindex $sourcedef 2]
     set schemafile [lindex $sourcedef 3]
+puts "schemafile = $schemafile"
     set cachefile [lindex $sourcedef 4]
     set priority [lindex $sourcedef 6]
     set command [lindex $sourcedef 7]
@@ -1796,9 +1853,8 @@ proc selectUnixFile {} {
     set fsBox(pattern) *
     set file2 [FSBox "Select schema file"]
     
-    if {$file2 == ""} {
-	return ""
-    }
+    # Note: code was removed here that prevented the data file being
+    # set if you didn't also select a schema.  RKW Nov. 26, 1997.
 
     set schemafile $file2
     # command is a text widget so we must insert the text

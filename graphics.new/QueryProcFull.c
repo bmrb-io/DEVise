@@ -16,9 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.70  1997/11/25 22:04:03  wenger
+  Fixed drill-down problem.
+
   Revision 1.69  1997/11/18 23:26:59  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
+
+  Revision 1.68.2.1  1997/11/26 23:42:58  wenger
+  Migrated drill-down fix to 1.4.7 branch.
 
   Revision 1.68  1997/10/10 21:13:44  liping
   The interface between TData and BufMgr and the interface between BufMgr and

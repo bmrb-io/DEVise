@@ -15,6 +15,13 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.36  1997/11/24 23:15:41  weaver
+#       Changes for the new ColorManager.
+#
+#       Revision 1.35.2.1  1997/11/26 23:43:25  wenger
+#       Fixed bug 241 (shape attribute names not updated when symbol type
+#       changed).
+#
 #       Revision 1.35  1997/10/07 15:28:25  wenger
 #       Changed "Shape" to "SymbolType" in mapping GUI (note that "Symbol Type"
 #       won't work because of the space).
@@ -256,7 +263,7 @@ proc BringUpMappingDialog { w curview } {
 				-menu $w.mapping.value.p$itemname.menu.constant
 		}
 
-		if {$itemname == "Shape"} {
+		if {$itemname == "SymbolType"} {
 			$w.mapping.value.p$itemname.menu add cascade -label Variable \
 				-menu $w.mapping.value.p$itemname.menu.variable
 			$w.mapping.value.p$itemname.menu add command \
@@ -289,7 +296,7 @@ proc BringUpMappingDialog { w curview } {
 				set value [lindex $val 1]
 			}
 
-			if {$itemname == "Shape"} {
+			if {$itemname == "SymbolType"} {
 				$w.mapping.value.p$itemname.menu.constant add radiobutton \
 					-label $value -variable mappingValue$itemname \
 					-value $value \
