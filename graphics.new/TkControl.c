@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1995/12/04 18:07:35  jussi
+  Added getLabel and getViewStatistics. Replaced ToggleStatistics with
+  SetViewStatistics.
+
   Revision 1.15  1995/12/02 21:06:30  jussi
   Added support for TK_WINDOW, added Set Label command, and fixed
   error checking in insertWindow.
@@ -868,7 +872,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 		}
 		else if (strcmp(argv[1], "getViewStatistics") == 0) {
-		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[2]);
 		    if (vg == NULL) {
 			interp->result = "Can't find view in GetViewStatistics";
 			goto error;
@@ -905,7 +909,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(interp->result,"%ld",(long)file);
 		}
 		else if (strcmp(argv[1], "setViewStatistics") == 0) {
-		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[2]);
 		    if (vg == NULL) {
 			interp->result = "Can't find view in SetViewStatistics";
 			goto error;
