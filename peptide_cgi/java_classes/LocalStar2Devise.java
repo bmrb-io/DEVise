@@ -1,8 +1,26 @@
-// Richard Chang
-// 17 January 2000
+// ========================================================================
+// DEVise Data Visualization Software
+// (c) Copyright 2000
+// By the DEVise Development Group
+// Madison, Wisconsin
+// All Rights Reserved.
+// ========================================================================
 
-// Processes NMR-Star Files for DEVise.
-// version 1.2
+// Under no circumstances is this software to be copied, distributed,
+// or altered in any way without prior permission from the DEVise
+// Development Group.
+
+// ------------------------------------------------------------------------
+
+// Reads a local star file and outputs data for DEVise.
+
+// ------------------------------------------------------------------------
+
+// $Id$
+
+// $Log$
+
+// ========================================================================
 
 import java.io.*;
 import EDU.bmrb.starlibj.*;

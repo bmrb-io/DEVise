@@ -1,3 +1,27 @@
+// ========================================================================
+// DEVise Data Visualization Software
+// (c) Copyright 2000
+// By the DEVise Development Group
+// Madison, Wisconsin
+// All Rights Reserved.
+// ========================================================================
+
+// Under no circumstances is this software to be copied, distributed,
+// or altered in any way without prior permission from the DEVise
+// Development Group.
+
+// ------------------------------------------------------------------------
+
+// Reads a chemical shift file for calculating delta shift info.
+
+// ------------------------------------------------------------------------
+
+// $Id$
+
+// $Log$
+
+// ========================================================================
+
 import java.io.*;
 import java.text.ParseException;
 
