@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/11/12 23:17:38  donjerko
+  Improved error checking.
+
   Revision 1.31  1997/11/05 00:19:44  donjerko
   Separated typechecking from optimization.
 
@@ -195,12 +198,14 @@ Interface* Catalog::createInterface(TableName* path) const {
 		Catalog tmpCat(newFileNm);
 		return tmpCat.createInterface(path);
 	}
+	/*
 	else if(interf->getType() != Interface::QUERY &&
 			path->cardinality() > 0){
 		string msg = "Table " + firstPathNm + " is not a catalog";
 		THROW(new Exception(msg), NULL);
 		// throw Exception(msg);
 	}
+	*/
 	return interf;
 }
 

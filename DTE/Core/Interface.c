@@ -16,6 +16,7 @@ string StandardInterface::typeName = "StandardTable";
 string CatalogInterface::typeName = "Directory";
 string DeviseInterface::typeName = "Table";
 string DummyInterface::typeName = "UNIXFILE";
+string ODBCInterface::typeName = "ODBC";
 
 inline int MAX_VAL(int i, int j){
 	return (i > j ? i : j);
@@ -480,4 +481,43 @@ const ISchema* CGIInterface::getISchema(TableName* table){
 	string msg = "ISchema lookup not yet implemented for CGIs";
 	THROW(new Exception(msg), NULL);
 //	throw Exception(msg);
+}
+
+istream& ODBCInterface::read(istream& in){
+	in >> dataSourceName;
+	in >> userName >> passwd;
+	if(!in){
+		THROW(new Exception("Incorrect ODBCInterface format"), in);
+	}
+	return in;
+}
+
+void ODBCInterface::write(ostream& out) const {
+	out << typeName << "  ";
+	out << dataSourceName << "   " << userName << "  " << passwd;
+}
+
+const ISchema* ODBCInterface::getISchema(TableName* table){
+
+	cerr << "table = " << table->toString() << endl;
+
+	if(table->isEmpty()){
+		return &DIR_SCHEMA;
+	}
+
+//	TRY(int i = connect(), NULL);
+
+	// otherwise
+	// connect to ODBC driver
+	// tmp = new ISchema(numberOfFlds, string* attrs, string* types);
+
+	string types[] = {"int"};
+	string attrs[] = {"i"};
+	tmp = ISchema(1, types, attrs);
+
+	// if something is wrong, create msg and do:
+	string msg = "something wrong with ODBC driver";
+	THROW(new Exception(msg), NULL);
+
+	return &tmp;
 }

@@ -16,7 +16,7 @@ class ISchema;
 
 class Interface{
 public:
-	enum Type {UNKNOWN, CATALOG, QUERY, VIEW};
+	enum Type {UNKNOWN, CATALOG, QUERY, VIEW, ODBC};
 	Interface() {}
 	virtual Interface* duplicate() const = 0;
 	virtual ~Interface(){}
@@ -344,6 +344,33 @@ public:
 	virtual const ISchema* getISchema(TableName* table);	// throws exception
 	virtual Interface* copyTo(void* space){
 		return new (space) CatalogInterface(*this);
+	}
+};
+
+class ODBCInterface : public Interface {
+	string dataSourceName;
+	string userName;
+	string passwd;
+	ISchema tmp;
+public:
+	static string typeName;
+	ODBCInterface() {}
+	ODBCInterface(const ODBCInterface& x){
+	}
+	virtual ~ODBCInterface(){
+	}
+	virtual string getTypeNm(){
+		return typeName;
+	}
+	virtual Interface* duplicate() const {
+		return new ODBCInterface(*this);
+	}
+	virtual Site* getSite(){assert(0); return NULL;}
+	virtual istream& read(istream& in);
+	virtual void write(ostream& out) const;
+	virtual const ISchema* getISchema(TableName* table);
+	virtual Interface* copyTo(void* space){
+		return new (space) ODBCInterface(*this);
 	}
 };
 

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/13 22:19:26  okan
+  Changes about compilation on NT
+
   Revision 1.38  1997/11/12 15:42:54  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -531,6 +534,10 @@ void interfaceRead(istream& in, Type*& adt){
 	}
 	else if(typeNm == MaterViewInterface::typeName){
 		interf = (ViewInterface*) new (adt) MaterViewInterface();
+		TRY(interf->read(in), NVOID );
+	}
+	else if(typeNm == ODBCInterface::typeName){
+		interf = (ODBCInterface*) new (adt) ODBCInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else{
