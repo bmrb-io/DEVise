@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.67  2000/01/11 22:28:33  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.66  1999/11/30 22:28:29  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -414,6 +420,10 @@ TDataAscii::~TDataAscii()
 
 void TDataAscii::BuildIndex()
 {
+#if defined(DEBUG)
+  printf("TDataAscii(%s)::BuildIndex()\n", GetName());
+#endif
+
   char buf[LINESIZE];
   char recBuf[_recSize];
   int oldTotal = _totalRecs;

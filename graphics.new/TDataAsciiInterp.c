@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  2000/02/16 18:51:44  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.40  2000/01/11 22:28:33  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -405,7 +408,7 @@ TDataAsciiInterp::~TDataAsciiInterp()
 Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 {
 #if defined(DEBUG)
-  printf("TDataAsciiInterp::Decode(%s)\n", line);
+  printf("TDataAsciiInterp(%s)::Decode(%s)\n", GetName(), line);
 #endif
 
   /* set buffer for interpreted record */

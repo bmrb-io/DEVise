@@ -1,0 +1,41 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  TEMPTEMP -- add description
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+# Usage: devise_ext_script <program> [arguments] <output file>
+
+# Get program name, remove it from arguments.
+$program = shift(@ARGV);
+
+# Get output file name, remove it from arguments.
+$outfile = $ARGV[$#ARGV];
+$#ARGV--;
+
+#TEMPTEMP -- more checking here?
+#TEMPTEMP -- do something with stderr?
+if (system("$program @ARGV > $outfile")) {
+  print "Running $program failed\n";
+  exit 1;
+}
+
+

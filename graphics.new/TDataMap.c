@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.38  2000/01/13 23:07:13  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -602,6 +606,10 @@ TDataMap::HasAttr(const char *attrName)
 Boolean
 TDataMap::HasShapeAttr(int attrNum)
 {
+#if defined(CHECK_ATTR_NUMS)
+  DOASSERT(attrNum >= 0 && attrNum < MAX_SHAPE_ATTRS, "Illegal attrNum");
+#endif
+
   return (_gdataAttrList->FindShapeAttr(attrNum) != NULL);
 }
 
@@ -621,11 +629,95 @@ TDataMap::GetAttrType(const char *attrName)
 AttrType
 TDataMap::GetShapeAttrType(int attrNum)
 {
+#if defined(CHECK_ATTR_NUMS)
+  DOASSERT(attrNum >= 0 && attrNum < MAX_SHAPE_ATTRS, "Illegal attrNum");
+#endif
+
   AttrType result = InvalidAttr;
 
   AttrInfo *info = _gdataAttrList->FindShapeAttr(attrNum);
   if (info) {
     result = info->type;
+  }
+
+  return result;
+}
+
+const char *
+TDataMap::GetShapeAttrAsStr(const char *gdataRecP, int attrNum,
+    const char *defaultVal, const char *format, char buf[], int bufLen)
+{
+#if defined(DEBUG)
+  printf("TDataMap(%s)::GetShapeAttrAsStr(0x%p, %d, %s, %s)\n", GetName(),
+    gdataRecP, attrNum, defaultVal ? defaultVal : "null",
+    format ? format : "null");
+#endif
+
+  const char *result = defaultVal;
+
+  const int tmpBufLen = 64;
+  static char tmpBuf[tmpBufLen];
+  if (buf == NULL || bufLen <= 0) {
+    buf = tmpBuf;
+    bufLen = tmpBufLen;
+  }
+
+  StringStorage *stringTable = GetStringTable(TDataMap::TableGen);
+
+  AttrType type = GetShapeAttrType(attrNum);
+
+  switch (type) {
+  case IntAttr:
+    if (format == NULL) format = "%d";
+    if (snprintf(buf, bufLen, format,
+        (int)GetShapeAttr(gdataRecP, attrNum)) >= bufLen) {
+      reportErrNosys("Warning: string too long for buffer");
+    }
+    buf[bufLen-1] = '\0';
+    result = buf;
+    break;
+
+  case FloatAttr:
+  case DoubleAttr:
+    if (format == NULL) format = "%g";
+    if (snprintf(buf, bufLen, format,
+        GetShapeAttr(gdataRecP, attrNum)) >= bufLen) {
+      reportErrNosys("Warning: string too long for buffer");
+    }
+    buf[bufLen-1] = '\0';
+    result = buf;
+    break;
+
+  case StringAttr:
+    {
+      int key = (int)GetShapeAttr(gdataRecP, attrNum);
+      //TEMP -- get rid of typecast on result if possible
+      int code = stringTable->Lookup(key, (char *)result);
+      if (code < 0) {
+        // No entry for the given key.
+#if defined(DEBUG)
+        printf("No string table entry for key %d; using default (%s)\n",
+	    key, defaultVal ? defaultVal : "null");
+#endif
+      }
+    }
+    break;
+
+  case DateAttr:
+    {
+      const char *tmpStr = DateString((time_t)GetShapeAttr(gdataRecP, attrNum),
+          format);
+      (void)nice_strncpy(buf, tmpStr, bufLen);
+      result = buf;
+    }
+    break;
+
+  case InvalidAttr:
+    break;
+
+  default:
+    reportErrNosys("Illegal AttrType");
+    break;
   }
 
   return result;

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2000/04/25 16:38:54  wenger
+#  Updated this, added client/server stuff.
+#
 #  Revision 1.1  1998/06/03 21:12:35  wenger
 #  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
 #  'ToDo' into 'design_doc' to clean up the top-level directory; changed
@@ -167,7 +170,7 @@ end
 
 set runfiles = "run_public/devise \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/kill_devised2"
+	run_public/kill_devised2 run_public/devise_ext_script"
 
 foreach file ($runfiles)
   if ($file == "") then

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  2001/01/08 20:32:42  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.62.2.1  2000/12/14 00:42:53  wenger
   Devise doesn't listen when image port is set to -1; jss starts devised
   that way so we don't use up extra ports.
@@ -288,6 +292,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/param.h>
 
 #include "Dispatcher.h"
 #include "Exit.h"
@@ -298,6 +303,7 @@
 #include "ETkIfc.h"
 #include "ClientAPI.h"
 #include "DebugLog.h"
+#include "DevError.h"
 
 Boolean Init::_savePopup = false;
 
@@ -479,11 +485,23 @@ void Init::DoInit(int &argc, char **argv)
 
   CheckAndMakeDirectory(tmpDir);
   pid_t pid = getpid();
-  char buf[512];
+  const int bufSize = MAXPATHLEN;
+  char buf[bufSize];
   DOASSERT(strlen(tmpDir) + 20 <= 512, "String space too small");
   sprintf(buf, "%s/DEVise_%ld", tmpDir, (long)pid);
   CheckAndMakeDirectory(buf, true);
   _tmpDir = CopyString(buf);
+
+  // Set the DEVISE_EXACT_TMP for use in data source definitions for
+  // data generated 'on-the-fly' by an external process.
+  if (snprintf(buf, bufSize, "DEVISE_EXACT_TMP=%s", _tmpDir) >= bufSize) {
+    reportErrNosys("String for setting DEVISE_EXACT_TMP environment "
+        "variable is too long");
+  } else {
+    if (putenv(buf) != 0) {
+      reportErrSys("Can't set DEVISE_EXACT_TMP environment variable");
+    }
+  }
   CheckDirSpace(tmpDir, "DEVISE_TMP", 1024 * 1024, 0);
 
   /* parse parameters */

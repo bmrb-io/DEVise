@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:33  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.21  1998/02/02 18:25:31  wenger
 #  Strings file can now be loaded manually; name of strings file is now
 #  stored in session file; added 'serverExit' command and kill_devised
@@ -242,7 +247,8 @@ set runfiles = "run_public/devise \
 	run_public/multi run_public/devise.demo \
 	run_public/devise1.3.demo run_public/multi.demo \
 	run_public/multi1.3.demo run_public/tk2ds.tcl  run_public/devisec \
-	run_public/devised run_public/kill_devised RTree/src/Progs/rmmem"
+	run_public/devised run_public/kill_devised2 RTree/src/Progs/rmmem \
+	run_public/devise_ext_script"
 
 foreach file ($runfiles)
   if ($file == "") then

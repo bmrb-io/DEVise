@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/05/05 15:14:53  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.11  1998/04/10 18:29:12  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -86,9 +91,10 @@ const unsigned VISUAL_COLOR_INDEX = 4;
 const unsigned VISUAL_ORIENTATION_INDEX = 5;
 const unsigned VISUAL_SHAPE_INDEX = 6;
 const unsigned VISUAL_RECORD_INDEX = 7;
-const unsigned VISUAL_CAMERA_INDEX = 8;
-const unsigned VISUAL_ANTICAMERA_INDEX = 9;
+// const unsigned VISUAL_CAMERA_INDEX = 8;
+// const unsigned VISUAL_ANTICAMERA_INDEX = 9;
 const unsigned VISUAL_TATTR_INDEX = 10;
+const unsigned VISUAL_EXTDATA_INDEX = 11;
 
 /*
    A VisualFlag is the union of visual attributes.
@@ -109,6 +115,7 @@ const unsigned VISUAL_SHAPE       = (1 << VISUAL_SHAPE_INDEX);
 
 const unsigned VISUAL_RECORD      = (1 << VISUAL_RECORD_INDEX);
 const unsigned VISUAL_TATTR       = (1 << VISUAL_TATTR_INDEX);
+const unsigned VISUAL_EXTDATA     = (1 << VISUAL_EXTDATA_INDEX);
 
 // Note that this doesn't include RECORD or TATTR bits.
 const unsigned VISUAL_ALLBITS     = (VISUAL_X | VISUAL_Y | VISUAL_LOC |

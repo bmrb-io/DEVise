@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.41  2000/03/10 16:32:00  wenger
   Found and fixed bug 572 (problem with switching stations in ASOS and
   AWON sessions).
@@ -220,6 +224,8 @@
 #include "XColor.h"
 #include "Coloring.h"
 #include "ObjectValid.h"
+
+//#define CHECK_ATTR_NUMS
 
 class AttrList;
 
@@ -519,6 +525,9 @@ class TDataMap
 
   inline Coord GetShapeAttr(const char *gdataRecP, int attrNum) const
   {
+#if defined(CHECK_ATTR_NUMS)
+    DOASSERT(attrNum >= 0 && attrNum < MAX_SHAPE_ATTRS, "Illegal attrNum");
+#endif
     if (_gOffset->_shapeAttrOffset[attrNum] < 0) {
       const ShapeAttr *attrs = GetDefaultShapeAttrs();
       return attrs[attrNum];
@@ -576,6 +585,13 @@ class TDataMap
   {
     return int(GetShapeAttr4(gdataRecP)+0.5);
   }
+
+  // Get the value of a shape attribute as a string; returns "" if the
+  // attribute is undefined.  Note: this method may use a static buffer
+  // if no buffer is specified.
+  const char *GetShapeAttrAsStr(const char *gdataRecP, int attrNum,
+      const char *defaultVal = "", const char *format = NULL,
+      char buf[] = NULL, int bufLen = 0);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

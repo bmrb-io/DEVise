@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/10/18 15:40:29  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.1  1998/06/17 17:20:49  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -47,14 +53,21 @@ public:
 
   int GetCount() { return _argc; }
   const char *const *GetArgs() { return _argv; }
+
+  // For quoting args that contain whitespace; set to ' ' (space) to turn off
+  // quoting.  (Defaults to space to preserve existing behavior.)
+  void SetQuoteChar(char quote);
     
 private:
   DevStatus Enlarge();
+  Boolean ContainsWhitespace(const char *str);
 
   int _argc;
   char **_argv;
   int _argvSize;
   char *_buf;
+
+  char _quote;
 
   ObjectValid _objectValid;
 };

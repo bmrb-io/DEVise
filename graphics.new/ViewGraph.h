@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.85  2001/02/20 20:02:55  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.84.2.1  2001/02/16 21:38:00  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -828,7 +832,7 @@ public:
   Action *_action;                 /* action in this view */
   Boolean _deleteAction;           /* delete _action when this is destroyed? */
   MSLinkList _masterLink;      /* links whose master this view is */
-  MSLinkList _slaveLink;       /* slave record link list */
+  MSLinkList _slaveLink;       /* links this view is a slave of */
   int _slaveTAttrTimestamp;	// changed when linked or unlinked from
 				// TAttrLink, or master views TData changed
   SlaveTable *_slaveTable;

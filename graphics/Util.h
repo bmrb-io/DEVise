@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/06/20 22:16:55  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.27  2000/04/26 19:38:51  wenger
   JavaScreen caching code is largely implemented except for checking
   the validity of the cache files; committing with caching disabled
@@ -211,7 +214,7 @@ inline void StripTrailingNewline(char *string)
 
 /* Determine whether a string is blank (consists only of whitespace
  * characters). */
-inline Boolean IsBlank(char *string)
+inline Boolean IsBlank(const char *string)
 {
     while (*string != '\0')
     {
@@ -220,6 +223,18 @@ inline Boolean IsBlank(char *string)
     }
 
     return true;
+}
+
+// Determine whether a string contains any whitespace characters.
+inline Boolean ContainsSpace(const char *string)
+{
+    while (*string != '\0')
+    {
+	if (isspace(*string)) return true;
+	string++;
+    }
+
+    return false;
 }
 
 const char *GetDefaultDateFormat();

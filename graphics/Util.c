@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  2000/06/20 22:16:55  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.39  2000/04/26 19:38:50  wenger
   JavaScreen caching code is largely implemented except for checking
   the validity of the cache files; committing with caching disabled
@@ -286,8 +289,7 @@ char *CopyString(const char *str)
   // for Purify to show.  RKW 1999-03-01.
   char *result = (char *)malloc(strlen(str) + 1);
   if (!result) {
-    fprintf(stderr, "Insufficient memory for new string\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    reportErrNosys("Fatal error: out of memory");
     Exit::DoExit(2);
   }
   strcpy(result, str);

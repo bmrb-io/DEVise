@@ -21,6 +21,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:36  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.4  1998/02/09 17:25:53  wenger
 #  Removed multi from default compile and Solaris release script.
 #
@@ -143,7 +148,7 @@ end
 
 set runfiles = "run_public/devise \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi run_public/kill_devised"
+	run_public/multi run_public/kill_devised2 run_public/devise_ext_script"
 
 foreach file ($runfiles)
   if ($file == "") then

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  2001/01/08 20:32:55  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.9.2.1  2000/10/18 20:32:17  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -76,6 +80,7 @@
 #include "VisualLink.h"
 #include "RecordLink.h"
 #include "TAttrLink.h"
+#include "ExtDataLink.h"
 #include "ViewGraph.h"
 #include "Util.h"
 #include "Exit.h"
@@ -216,6 +221,15 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
     TAttrLink *link = new TAttrLink(name, argv[2], argv[3]);
     return new VisualLinkClassInfo(name, flag, link);
 #endif
+  }
+
+  if (flag & VISUAL_EXTDATA) {
+    if (flag & ~VISUAL_EXTDATA) {
+      reportErrNosys("Warning: external data link also has other link "
+          "attributes -- they will be ignored");
+    }
+    ExtDataLink *link = new ExtDataLink(name);
+    return new VisualLinkClassInfo(name, flag, link);
   }
 
   VisualLink *link = new VisualLink(name, flag);

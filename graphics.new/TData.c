@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/05/10 16:10:00  wenger
+  Minor cleanup of debug conditionals.
+
   Revision 1.27  2000/01/13 23:07:12  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -612,6 +615,16 @@ TData::InvalidateTData()
 {
     DO_DEBUG(printf("invaliding tdata version %d for %d\n",
 		    _version, _data->Version()));
+
+    if (_data->IsOk()) {
+      if (_data->Close().IsError()) {
+        reportErrNosys("Error closing data source");
+      }
+    }
+
+    if (_data->Open("r").IsError()) {
+      reportErrNosys("Error re-opening data source");
+    }
 
     if (_data->IsOk()) {
       RebuildIndex();

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.75  2001/04/03 19:57:39  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.74  2000/08/10 16:10:51  wenger
   Phase 1 of getting rid of shared-memory-related code.
 
@@ -630,8 +634,14 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->FillPixelRect(tx, ty, width, height, 1.0, 1.0,
 	  WindowRep::AlignCenter, orientation);
 
-	if (view->GetDisplayDataValues())
+	if (view->GetDisplayDataValues()) {
 	  DisplayDataLabel(win, x, y, y);
+        }
+
+	  //
+	  // Run an external process to generate data if necessary.
+	  //
+	  ExtProc::GetInstance()->Run(map, (const char *)gdataArray[i]);
 	}
 
 	win->SetPattern(Pattern0);
@@ -2012,55 +2022,22 @@ GetTextAttrInfo(AttrList *attrList,
   }
 }
 
-static char *
+static const char *
 GetLabelText(char *gdata, TDataMap *map, 
     Boolean labelAttrValid, AttrType labelAttrType,
 	Boolean labelFormatValid, AttrType labelFormatType, char labelBuf[])
 {
-    const GDataAttrOffset *offset = map->GetGDataOffset();
-    StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
-
-    //TEMP -- should be const char * for assignment from DateString() --
-    // RKW 1999-07-16.
-    char *label;
-
-    if (!labelAttrValid) {
-      label = "X";
-    } else if (labelAttrType == StringAttr) {
-      /* Label attribute is a string.  Get the string value from the
-       * StringStorage class. */
-      int key = (int) map->GetShapeAttr0(gdata);
-      int code = stringTable->Lookup(key, label);
-      if( code < 0 ) {        // key not found
-        label = "X";
 #if defined(DEBUG)
-        printf("Using default label \"%s\"\n", label);
+    printf("GetLabelText()\n");
 #endif
-      } else {
-#if defined(DEBUG)
-        printf("Key %d returns \"%s\", code %d\n", key, label, code);
-#endif
-      }
-    } else if (labelAttrType == DateAttr) {
-      /* Label attribute is a date.  Convert the UNIX date (stored as a
-       * double in the GData) to a date string. */
-      label = (char *)DateString((time_t) map->GetShapeAttr0(gdata));
-    } else {
-      /* Label attribute is a numerical value (stored as a double in the
-       * GData).  Print it with the appropriate format string. */
-      char *labelFormat = NULL;
-      if (labelFormatValid && (labelFormatType == StringAttr)) {
-        int labelKey = (int) map->GetShapeAttr1(gdata);
-        int labelCode = stringTable->Lookup(labelKey, labelFormat);
-        if (labelCode < 0) {	// key not found
-          labelFormat = NULL;
-        }
-      }
 
-      if (labelFormat == NULL) labelFormat = "%g";
-      sprintf(labelBuf, labelFormat, map->GetShapeAttr0(gdata));
-      label = labelBuf;
-    }
+    const char *labelFormat = NULL;
+    if (labelFormatValid && (labelFormatType == StringAttr)) {
+	  labelFormat = map->GetShapeAttrAsStr(gdata, 1, NULL);
+	}
+
+    const char *label;
+	label = map->GetShapeAttrAsStr(gdata, 0, "X", labelFormat);
 
 	return label;
 }
@@ -2229,8 +2206,8 @@ FullMapping_TextLabelShape::FindBoundingBoxes(void *gdataArray,
 	if (symWidth < 0.0) {
 	  // This is a really rough estimate!!
       char labelBuf[128];
-      char *label = GetLabelText(dataP, tdMap, labelAttrValid, labelAttrType,
-	    labelFormatValid, labelFormatType, labelBuf);
+      const char *label = GetLabelText(dataP, tdMap, labelAttrValid,
+	    labelAttrType, labelFormatValid, labelFormatType, labelBuf);
 	  symWidth = symHeight * strlen(label);
 	}
 
@@ -2357,8 +2334,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 
     /* Find or generate the label string. */
     char labelBuf[128];
-    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
-	  labelFormatValid, labelFormatType, labelBuf);
+    const char *label = GetLabelText(gdata, map, labelAttrValid,
+	  labelAttrType, labelFormatValid, labelFormatType, labelBuf);
 
 
     win->SetForeground(map->GetColor(gdata));
@@ -2455,8 +2432,8 @@ FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
   for (int recNum = 0; recNum < numRecs; recNum++) {
     Coord symSize = tdMap->GetSize(dataP);
 	char labelBuf[128];
-    char *label = GetLabelText(dataP, tdMap, labelAttrValid, labelAttrType,
-	    labelFormatValid, labelFormatType, labelBuf);
+    const char *label = GetLabelText(dataP, tdMap, labelAttrValid,
+	    labelAttrType, labelFormatValid, labelFormatType, labelBuf);
     Coord symWidth = strlen(label);
 
 	tmpMaxW = MAX(tmpMaxW, symWidth);
@@ -2579,8 +2556,8 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
     /* Find or generate the label string. */
     char labelBuf[128];
-    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
-	  labelFormatValid, labelFormatType, labelBuf);
+    const char *label = GetLabelText(gdata, map, labelAttrValid,
+	  labelAttrType, labelFormatValid, labelFormatType, labelBuf);
 
 
     win->SetForeground(map->GetColor(gdata));
@@ -2737,8 +2714,8 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 
     /* Find or generate the label string. */
     char labelBuf[128];
-    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
-	  labelFormatValid, labelFormatType, labelBuf);
+    const char *label = GetLabelText(gdata, map, labelAttrValid,
+	  labelAttrType, labelFormatValid, labelFormatType, labelBuf);
 
 
 	win->SetForeground(map->GetColor(gdata));

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2000
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.99  2000/08/10 16:10:49  wenger
+#  Phase 1 of getting rid of shared-memory-related code.
+#
 #  Revision 1.98  2000/06/05 16:22:43  wenger
 #  Basically finished command/GData/GIF caching for JavaScreen support
 #  (there are a few refinements that could still be added); changed the
@@ -351,7 +354,7 @@ VIEWSRC = ActionDefault.c ConnectorShape.h BasicStats.c \
 	KGraph.c ViewKGraph.c Web.C Action.c ActionClassInfo.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
 	MapIntToInt.C MasterSlaveLink.c TAttrLink.c DerivedTable.c \
-	SlaveTable.c
+	SlaveTable.c ExtProc.c ExtDataLink.c
 
 VIEWSRCc = $(filter %.c,$(VIEWSRC))
 VIEWSRCC = $(filter %.C,$(VIEWSRC))

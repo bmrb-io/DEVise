@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/03/14 17:05:46  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.4  1999/10/18 15:40:29  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -60,6 +64,7 @@ ArgList::ArgList(int size)
 #endif
 
   _buf = NULL;
+  _quote = ' ';
 
   _argc = 0;
 
@@ -146,10 +151,38 @@ ArgList::AddArg(const char *arg)
       }
     }
 
-    _argv[_argc++] = CopyString(arg);
+	if (_quote != ' ' && arg != NULL && ContainsSpace(arg)) {
+	  int bufLen = strlen(arg) + 3;
+	  char *buf = (char *)malloc(bufLen);
+	  if (!buf) {
+        reportErrNosys("Fatal error: out of memory");
+	    Exit::DoExit(2);
+	  }
+	  if (snprintf(buf, bufLen, "%c%s%c", _quote, arg, _quote) >= bufLen) {
+	    reportErrNosys("String to long!");
+	  }
+      _argv[_argc++] = buf;
+	} else {
+      _argv[_argc++] = CopyString(arg);
+	}
   }
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ArgList::SetQuoteChar
+ * Set the quote character to use for arguments containing whitespace.
+ */
+void
+ArgList::SetQuoteChar(char quote)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("ArgList(0x%p)::SetQuoteChar(%c)\n", this, quote);
+#endif
+
+  _quote = quote;
 }
 
 static int
