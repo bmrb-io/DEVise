@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 7.0.
+version 6.1.
 
 
 For the details of the format in which commands are send on the socket,
