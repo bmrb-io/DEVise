@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1996/07/13 17:31:17  jussi
+#  Moved statusWindow procedure from macrodef.tk to util.tcl.
+#
 #  Revision 1.24  1996/07/05 14:41:33  jussi
 #  Added error message to GetClass procedure.
 #
@@ -455,7 +458,7 @@ proc getColor {varname} {
 ############################################################
 
 proc PrintView {} {
-    global toprinter printcmd filename allviews formatsel
+    global toprinter printcmd filename printsrc formatsel
 
     if {[WindowVisible .printdef]} {
 	return
@@ -469,7 +472,7 @@ proc PrintView {} {
     set toprinter 1
     set printcmd "lpr "
     set filename "/tmp/devise"
-    set allviews 0
+    set printsrc 0
 
     frame .printdef.top -relief groove -borderwidth 2
     frame .printdef.bot
@@ -512,19 +515,21 @@ proc PrintView {} {
     set formatsel Postscript
 
     label .printdef.top.row3.l1 -text "Print Views:"
-    radiobutton .printdef.top.row3.r1 -text "All Views" \
-	    -variable allviews -value 1
-    radiobutton .printdef.top.row3.r2 -text "Selected View" \
-	    -variable allviews -value 0
+    radiobutton .printdef.top.row3.r1 -text "Display" \
+	    -variable printsrc -value 2
+    radiobutton .printdef.top.row3.r2 -text "All Windows" \
+	    -variable printsrc -value 1
+    radiobutton .printdef.top.row3.r3 -text "Selected Window" \
+	    -variable printsrc -value 0
     pack .printdef.top.row3.l1 .printdef.top.row3.r1 .printdef.top.row3.r2 \
-	    -side left -padx 2m -fill x -expand 1
+	    .printdef.top.row3.r3 -side left -padx 2m -fill x -expand 1
 
     frame .printdef.bot.but
     pack .printdef.bot.but -side top
 
     button .printdef.bot.but.ok -text OK -width 10 \
 	    -command {
-	PrintActual $toprinter $printcmd $filename $allviews $formatsel; \
+	PrintActual $toprinter $printcmd $filename $printsrc $formatsel; \
 	destroy .printdef
     }
     button .printdef.bot.but.cancel -text Cancel -width 10 \
@@ -536,15 +541,48 @@ proc PrintView {} {
 
 ############################################################
 
-proc PrintActual {toprinter printcmd filename allviews format} {
+proc PrintActual {toprinter printcmd filename printsrc fmt} {
     global curView
+
+    set format [string tolower $fmt]
+
+    set suffix ".ps"
+    if {$format != "postscript"} {
+	set suffix ".$format"
+    }
+
+    if {$toprinter} {
+	set format postscript
+	set template [format "/tmp/devise.%s.%%d.ps" [pid]]
+    } else {
+	set template "$filename.%d$suffix"
+    }
+
+    if {$printsrc == 2} {
+        if {$format != "gif"} {
+            dialog .printError "Not Supported Yet" \
+                    "Saving entire display as $fmt is not supported yet." \
+                    "" OK
+            return
+        }
+	set file "$filename$suffix"
+	puts "Saving entire display to file $file"
+	set err [ catch { DEVise saveDisplayImage $format $file } ]
+	if {$err > 0} {
+	    dialog .printError "Display Image Save Error" \
+		    "An error occurred while saving display image to file." \
+		    "" 0 OK
+	    return
+	}
+        return
+    }
 
     set windowlist ""
 
-    if {!$allviews} {
+    if {!$printsrc} {
 	if {$curView == ""} {
-	    dialog .printView "Print Selected View" \
-		    "Please select a view by clicking in it first." "" 0 OK
+	    dialog .printView "Print Selected Window" \
+		    "Please select a window by clicking in it first." "" 0 OK
 	    return
 	}
 	set windowlist [list [DEVise getViewWin $curView]]
@@ -563,24 +601,10 @@ proc PrintActual {toprinter printcmd filename allviews format} {
 	}
     }
 
-    set format [string tolower $format]
-
-    set suffix ".ps"
-    if {$format != "postscript"} {
-	set suffix ".$format"
-    }
-
-    if {$toprinter} {
-	set format postscript
-	set template [format "/tmp/devise.%s.%%d$suffix" [pid]]
-    } else {
-	set template [format "%s.%%d$suffix" $filename]
-    }
-
     set i 0
     foreach win $windowlist {
 	set file [format $template $i]
-	puts "Save window $win to file $file"
+	puts "Saving window $win to file $file"
 	set err [ catch { DEVise saveWindowImage $format $win $file } ]
 	if {$err > 0} {
 	    dialog .printError "Window Image Save Error" \
@@ -589,9 +613,10 @@ proc PrintActual {toprinter printcmd filename allviews format} {
 	    return
 	}
 	if {$toprinter} {
-	    puts "File $file not actually printed. To print file, do:"
-	    puts "  $printcmd $file"
-	    puts "  rm $file"
+	    puts "Printing file $file to printer"
+            set pcmd [ lindex $printcmd 0 ]
+            set parg [ lrange $printcmd 1 end ]
+	    eval [ exec $pcmd $parg $file ]
 	}
 	incr i
     }
