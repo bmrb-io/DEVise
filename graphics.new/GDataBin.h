@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/19 03:22:35  jussi
+  Added RecId to GDataBinRec.
+
   Revision 1.6  1995/12/29 22:42:20  jussi
   Added support for line connectors.
 
@@ -87,15 +90,16 @@ public:
 	    Boolean dispSymbol, Boolean dispConnector, TDataCMap *cMap,
 	    GDataBinCallback *callback);
 
-  /* finalize */
-  void Final(){ ReturnSymbols();}
+  /* Finalize */
+  void Final() { ReturnSymbols(); }
 
   /* Insert symbol into bin. The bin will push the symbols to Gdata
      when done */
-  void InsertSymbol(RecId rid, void *recs,
-		    int numRecs, int startIndex=0, int incr=1);
+  void InsertSymbol(RecId rid, void *recs, int numRecs,
+                    int startIndex = 0, int incr = 1,
+                    Boolean canElimRecords = true);
   
-  /* print statistics */
+  /* Print statistics */
   void PrintStat();
 
 private:
