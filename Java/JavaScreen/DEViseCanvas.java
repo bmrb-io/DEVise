@@ -13,11 +13,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2000/01/12 14:37:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.28  1999/12/10 15:30:12  wenger
 // Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.29  2000/01/12 14:37:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.27  1999/12/07 23:18:20  hongyu
 // *** empty log message ***
 //
@@ -1293,7 +1299,12 @@ public class DEViseCanvas extends Container
 		        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
 		        for (int j = 0; j < v.viewGDatas.size(); j++) {
                     DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
-                    crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color);
+                    if (gdata.string.equals("bond")) {
+                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color, true);
+                        crystal.setSelect(gdata.x1, gdata.y1, gdata.z1, gdata.color, true);
+                    } else {
+                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color, false);
+                    }
                 }
             }
         }

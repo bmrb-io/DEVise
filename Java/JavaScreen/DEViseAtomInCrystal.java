@@ -13,6 +13,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  1999/12/10 15:37:00  wenger
+// Added standard headers to source files.
+//
+
+import java.awt.*;
 
 public class DEViseAtomInCrystal
 {
@@ -20,6 +25,7 @@ public class DEViseAtomInCrystal
 
     public boolean status;
     public int isSelected;
+    public Color color = null;
 
     double[] pos = new double[3], lcspos = new double[3];
 

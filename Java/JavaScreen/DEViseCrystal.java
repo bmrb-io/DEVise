@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/01/12 14:37:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.8  1999/12/10 15:37:01  wenger
 // Added standard headers to source files.
 //
@@ -188,7 +191,12 @@ public class DEViseCrystal
 
             flag[index] = 1;
 
-            color = atom.type.color;
+            if (atom.color == null) {
+                color = atom.type.color;
+            } else {
+                color = atom.color;
+            }
+
             isBond = false;
 
             // draw the bond first
@@ -800,10 +808,11 @@ public class DEViseCrystal
             }
 
             atom.isSelected = 0;
+            atom.color = null;
         }
     }
 
-    public void setSelect(double x, double y, double z, Color c)
+    public void setSelect(double x, double y, double z, Color c, boolean isBond)
     {
         DEViseAtomInCrystal atom = null;
         double xx, yy, zz;
@@ -819,8 +828,13 @@ public class DEViseCrystal
             yy = Math.abs(y - atom.pos[1]);
             zz = Math.abs(z - atom.pos[2]);
             if (xx < 1.0e-5 && yy < 1.0e-5 && zz < 1.0e-5) {
-                atom.isSelected = 1;
-                atom.type.setSelectColor(c);
+                if (!isBond) {
+                    atom.isSelected = 1;
+                    atom.type.setSelectColor(c);
+                } else {
+                    //atom.type.setColor(c);
+                    atom.color = c;
+                }
             }
         }
     }
