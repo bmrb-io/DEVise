@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/31 15:31:24  jussi
+  Added VISUAL_RECORD visual argument.
+
   Revision 1.2  1995/09/05 21:13:23  jussi
   Added/updated CVS header.
 */
@@ -83,6 +86,28 @@ struct VisualFilter {
   
   Boolean marked;                  /* TRUE if this is marked in the
 				      control panel list box */
+};
+
+/* A CameraFlag indicates whether the attributes are changeable or tested */
+typedef unsigned CameraFlag;
+
+/* A camera; used to store view point, perspective, etc */
+struct Camera {
+	CameraFlag flag;    /* true = recompute, false = exit */
+	Coord _rho, _phi, _theta;
+	Coord _twist_angle;
+	int _perspective;
+	int _dvs;
+	int fix_focus;		/* TRUE = focus is fixed */
+					/* FALSE = focus moves with the camera */
+	int spherical_coord;/* TRUE = use spherical coordinate */
+					/* FALSE = use rectangular coordinate */
+	Coord x_, y_, z_;	/* camera location */
+	Coord fx, fy, fz;	/* view direction, a point of intereset*/
+	Coord H, V;		/* H and V are the translation wrt to
+					   the original screen coordiate sys, 
+					   original screen coordinate sys is at the
+					   upper lefthand corner of the screen */
 };
 
 #endif
