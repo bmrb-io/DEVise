@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/01 20:23:16  jussi
+  Added #ifdef conditionals to exclude the Web data source from
+  being compiled into the Attribute Projection executable.
+
   Revision 1.11  1996/07/01 19:28:09  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -249,7 +253,6 @@ Boolean TDataBinary::CheckFileStatus()
     }
     printf("Data stream %s has become available\n", _name);
     _fileOkay = true;
-    Dispatcher::Current()->Unregister(this);
     Dispatcher::Current()->Register(this, 10, AllState,
                                     false, _data->AsyncFd());
   }
