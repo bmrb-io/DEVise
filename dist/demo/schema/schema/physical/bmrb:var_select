@@ -1,0 +1,13 @@
+#Schema for selecting variable to show in BMRB peptide sessions.
+
+type bmrb:var_select ascii
+comment #
+whitespace '	'
+
+attr name string 40
+attr data_attr string 30
+attr ylow float
+attr yhigh float
+attr cursor_ylow float
+attr cursor_yhigh float
+attr marker_height float

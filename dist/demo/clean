@@ -20,34 +20,8 @@
 
 ############################################################
 
-\rm dist_sw
-\rm html
+\rm session.js
 
-cd common
-clean
-cd ..
-
-
-# \rm -r hpux-hppa
-
-cd solaris-intel
-clean
-cd ..
-
-cd solaris-sparc
-clean
-cd ..
-
-# \rm -r sunos-sparc
-
-cd linux-intel
-clean
-cd ..
-
-\rm -r JavaScreen
-
-cd demo
-./clean
-cd ..
-
-rm *.log
+cd schema/schema
+\rm catalog.js.dte
+cd ../../

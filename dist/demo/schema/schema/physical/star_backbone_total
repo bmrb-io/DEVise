@@ -1,0 +1,57 @@
+# Schema for backbone of peptide from star files, with extra variables
+# as requested by BMRB people.
+
+type star_atom.schema ascii
+comment #
+whitespace ' ''	'
+
+attr _Atom_ID int
+attr _Mol_system_component_name string 5
+attr _Residue_seq_code int
+attr _Residue_label string 4
+attr _Atom_name string 5
+attr _Atom_type string 3
+attr _Atom_coord_x float
+attr _Atom_coord_y float
+attr _Atom_coord_z float
+
+attr x_vec float
+attr y_vec float
+attr z_vec float
+
+attr perc_1H_assign_per_res float
+attr perc_13C_assign_per_res float
+attr perc_15N_assign_per_res float
+
+attr HA_delta_chem_shift float
+attr CA_delta_chem_shift float
+attr C_delta_chem_shift float
+attr CB_delta_chem_shift float
+attr consen_chem_shift_index float
+
+attr 3JHNHA_coupling_const float
+attr coupling_const_error float
+
+attr H_exchanges_rates float
+attr H_echange_prot_factors float
+
+attr S2_values float
+attr S2_error float
+
+attr Tau_e_value float
+attr Tau_e_error float
+
+attr Rex_value float
+attr Rex_error float
+
+attr Heteronuclear_NOE_750 float
+
+attr T2_relaxation_values_600 float
+attr T2_relaxation_values_600_error float
+attr T2_relaxation_values_750 float
+attr T2_relaxation_values_750_error float
+
+attr T1_relaxation_values_750 float
+attr T1_relaxation_values_750_error float
+
+attr dist_contraints_per_res int

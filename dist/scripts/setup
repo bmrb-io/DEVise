@@ -85,3 +85,8 @@ cd JavaScreen
 tar cX $dist_home/scripts/tar_js_exclude --directory=$js_src . | tar xv \
     > $logfile
 cd ..
+
+echo "Setting up demo directory"
+cd demo
+./setup
+cd ..

@@ -1,0 +1,10 @@
+type ZONE ascii
+comment //
+separator ' '
+sorted attr time float
+sorted attr enterState double
+attr timeInState double
+attr count int
+attr personID double
+attr personEnterTime double
+attr personTime double

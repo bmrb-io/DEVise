@@ -111,5 +111,14 @@ set src = JavaScreen
 set dest = $target/JavaScreen.tar.gz
 tar cvfz $dest $src > $logfile
 
+echo "Generating demo distribution"
+set logfile = $dist_home/demo.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = demo
+set dest = $target/demo.tar.gz
+tar cvfz $dest $src > $logfile
+
 echo ""
 echo Done!

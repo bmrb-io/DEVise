@@ -1,0 +1,749 @@
+# DEVise startHeader
+# file type: session
+# file date: Aug 30 2001 14:32:15
+# DEVise version: 1.7.4
+# DEVise date: Aug 28 2001
+# DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {}
+
+# Load color palette
+DEVise color SessionPalette {#000000000000  black
+#000000008b00  DarkBlue
+#00000000cd00  MediumBlue
+#00000000ff00  blue
+#000064000000  DarkGreen
+#00008b000000  green4
+#0000bf00ff00  DeepSkyBlue1
+#0000ff000000  green
+#0000ff00ff00  cyan
+#190019007000  MidnightBlue
+#1e009000ff00  DodgerBlue
+#1f001f001f00  gray12
+#22008b002200  ForestGreen
+#400040004000  gray25
+#610061006100  gray38
+#7f007f007f00  gray50
+#8b0000000000  DarkRed
+#8b0045001300  SaddleBrown
+#99003200cc00  DarkOrchid
+#a100a100a100  gray63
+#b20022002200  firebrick
+#b4005200cd00  MediumOrchid3
+#bf00bf00bf00  gray75
+#c000ff003e00  OliveDrab
+#e000e000e000  gray88
+#ee00ad000e00  Goldenrod2
+#ee00e800aa00  PaleGoldenrod
+#f000e6008c00  khaki
+#f500de00b300  wheat
+#fa00fa00d200  LightGoldenrodYellow
+#fd00f500e600  OldLace
+#ff0000000000  red
+#ff000000ff00  magenta
+#ff007f000000  DarkOrange1
+#ff00a5000000  orange
+#ff00d7000000  gold
+#ff00ff000000  yellow
+#ffffffffffff  white
+}
+
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
+# Create views
+DEVise create {view} {SortedX} {timeInState vs. time} 761.232360 791.720797 -1.000000 7.000000 4 37
+DEVise setLabel {timeInState vs. time} 0 12 {}
+DEVise setViewStatistics {timeInState vs. time} 0000000
+DEVise setViewDimensions {timeInState vs. time} 2
+DEVise setViewSolid3D {timeInState vs. time} 2
+DEVise setViewXYZoom {timeInState vs. time} 1
+DEVise setViewDisplayDataValues {timeInState vs. time} 0
+DEVise setFont {timeInState vs. time} {title} 0 12 0 0
+DEVise setFont {timeInState vs. time} {x axis} 0 12 0 0
+DEVise setFont {timeInState vs. time} {y axis} 0 12 0 0
+DEVise viewSetHome {timeInState vs. time} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {timeInState vs. time} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {timeInState vs. time} 1 0.500000 1.000000
+DEVise viewSetVerPan {timeInState vs. time} 1 0.500000 1.000000
+DEVise setViewGDS {timeInState vs. time} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {timeInState vs. time} 1 0 0 "" 1 " " 1
+DEVise setHistogram {timeInState vs. time} 0 5 10
+DEVise setCountMapping {timeInState vs. time} 0 {} {}
+DEVise viewSetIsHighlight {timeInState vs. time} 0
+DEVise setXAxisDateFormat {timeInState vs. time} {%b %d %Y %T}
+DEVise setYAxisDateFormat {timeInState vs. time} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {timeInState vs. time} {%.4g}
+DEVise setYAxisFloatFormat {timeInState vs. time} {%.4g}
+DEVise setViewAutoFilter {timeInState vs. time} {0}
+DEVise setDupElim {timeInState vs. time} {0}
+DEVise setNiceAxes {timeInState vs. time} 0 0
+DEVise viewSetDisabledActions {timeInState vs. time} 0 0 0 0
+DEVise setShowMouseLocation {timeInState vs. time} {1}
+DEVise create {view} {SortedX} {count vs. time} 761.232360 791.720797 -1.000000 7.000000 4 37
+DEVise setLabel {count vs. time} 0 12 {}
+DEVise setViewStatistics {count vs. time} 0000000
+DEVise setViewDimensions {count vs. time} 2
+DEVise setViewSolid3D {count vs. time} 2
+DEVise setViewXYZoom {count vs. time} 1
+DEVise setViewDisplayDataValues {count vs. time} 0
+DEVise setFont {count vs. time} {title} 0 12 0 0
+DEVise setFont {count vs. time} {x axis} 0 12 0 0
+DEVise setFont {count vs. time} {y axis} 0 12 0 0
+DEVise viewSetHome {count vs. time} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {count vs. time} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {count vs. time} 1 0.500000 1.000000
+DEVise viewSetVerPan {count vs. time} 1 0.500000 1.000000
+DEVise setViewGDS {count vs. time} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {count vs. time} 1 0 0 "" 1 " " 1
+DEVise setHistogram {count vs. time} 0 5 10
+DEVise setCountMapping {count vs. time} 0 {} {}
+DEVise viewSetIsHighlight {count vs. time} 0
+DEVise setXAxisDateFormat {count vs. time} {%b %d %Y %T}
+DEVise setYAxisDateFormat {count vs. time} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {count vs. time} {%.4g}
+DEVise setYAxisFloatFormat {count vs. time} {%.4g}
+DEVise setViewAutoFilter {count vs. time} {0}
+DEVise setDupElim {count vs. time} {0}
+DEVise setNiceAxes {count vs. time} 0 0
+DEVise viewSetDisabledActions {count vs. time} 0 0 0 0
+DEVise setShowMouseLocation {count vs. time} {1}
+DEVise create {view} {SortedX} {timeInState vs. time 2} 761.232360 791.720797 -1.000000 7.000000 4 37
+DEVise setLabel {timeInState vs. time 2} 0 12 {}
+DEVise setViewStatistics {timeInState vs. time 2} 0000000
+DEVise setViewDimensions {timeInState vs. time 2} 2
+DEVise setViewSolid3D {timeInState vs. time 2} 2
+DEVise setViewXYZoom {timeInState vs. time 2} 1
+DEVise setViewDisplayDataValues {timeInState vs. time 2} 0
+DEVise setFont {timeInState vs. time 2} {title} 0 12 0 0
+DEVise setFont {timeInState vs. time 2} {x axis} 0 12 0 0
+DEVise setFont {timeInState vs. time 2} {y axis} 0 12 0 0
+DEVise viewSetHome {timeInState vs. time 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {timeInState vs. time 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {timeInState vs. time 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {timeInState vs. time 2} 1 0.500000 1.000000
+DEVise setViewGDS {timeInState vs. time 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {timeInState vs. time 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {timeInState vs. time 2} 0 5 10
+DEVise setCountMapping {timeInState vs. time 2} 0 {} {}
+DEVise viewSetIsHighlight {timeInState vs. time 2} 0
+DEVise setXAxisDateFormat {timeInState vs. time 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {timeInState vs. time 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {timeInState vs. time 2} {%.4g}
+DEVise setYAxisFloatFormat {timeInState vs. time 2} {%.4g}
+DEVise setViewAutoFilter {timeInState vs. time 2} {0}
+DEVise setDupElim {timeInState vs. time 2} {0}
+DEVise setNiceAxes {timeInState vs. time 2} 0 0
+DEVise viewSetDisabledActions {timeInState vs. time 2} 0 0 0 0
+DEVise setShowMouseLocation {timeInState vs. time 2} {1}
+DEVise create {view} {SortedX} {personTime vs. time} 761.232360 791.720797 0.000000 2.000000 4 37
+DEVise setLabel {personTime vs. time} 0 12 {}
+DEVise setViewStatistics {personTime vs. time} 0000000
+DEVise setViewDimensions {personTime vs. time} 2
+DEVise setViewSolid3D {personTime vs. time} 2
+DEVise setViewXYZoom {personTime vs. time} 1
+DEVise setViewDisplayDataValues {personTime vs. time} 0
+DEVise setFont {personTime vs. time} {title} 0 12 0 0
+DEVise setFont {personTime vs. time} {x axis} 0 12 0 0
+DEVise setFont {personTime vs. time} {y axis} 0 12 0 0
+DEVise viewSetHome {personTime vs. time} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personTime vs. time} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personTime vs. time} 1 0.500000 1.000000
+DEVise viewSetVerPan {personTime vs. time} 1 0.500000 1.000000
+DEVise setViewGDS {personTime vs. time} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personTime vs. time} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personTime vs. time} 0 2 10
+DEVise setCountMapping {personTime vs. time} 0 {} {}
+DEVise viewSetIsHighlight {personTime vs. time} 0
+DEVise setXAxisDateFormat {personTime vs. time} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personTime vs. time} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personTime vs. time} {%.4g}
+DEVise setYAxisFloatFormat {personTime vs. time} {%.4g}
+DEVise setViewAutoFilter {personTime vs. time} {0}
+DEVise setDupElim {personTime vs. time} {0}
+DEVise setNiceAxes {personTime vs. time} 0 0
+DEVise viewSetDisabledActions {personTime vs. time} 0 0 0 0
+DEVise setShowMouseLocation {personTime vs. time} {1}
+DEVise create {view} {SortedX} {personTime vs. time 2} 980.480102 997.716670 0.000000 1.000000 4 37
+DEVise setLabel {personTime vs. time 2} 0 12 {}
+DEVise setViewStatistics {personTime vs. time 2} 0000000
+DEVise setViewDimensions {personTime vs. time 2} 2
+DEVise setViewSolid3D {personTime vs. time 2} 2
+DEVise setViewXYZoom {personTime vs. time 2} 1
+DEVise setViewDisplayDataValues {personTime vs. time 2} 0
+DEVise setFont {personTime vs. time 2} {title} 0 12 0 0
+DEVise setFont {personTime vs. time 2} {x axis} 0 12 0 0
+DEVise setFont {personTime vs. time 2} {y axis} 0 12 0 0
+DEVise viewSetHome {personTime vs. time 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personTime vs. time 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personTime vs. time 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {personTime vs. time 2} 1 0.500000 1.000000
+DEVise setViewGDS {personTime vs. time 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personTime vs. time 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personTime vs. time 2} 0 0.888593 10
+DEVise setCountMapping {personTime vs. time 2} 0 {} {}
+DEVise viewSetIsHighlight {personTime vs. time 2} 0
+DEVise setXAxisDateFormat {personTime vs. time 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personTime vs. time 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personTime vs. time 2} {%.4g}
+DEVise setYAxisFloatFormat {personTime vs. time 2} {%.4g}
+DEVise setViewAutoFilter {personTime vs. time 2} {0}
+DEVise setDupElim {personTime vs. time 2} {0}
+DEVise setNiceAxes {personTime vs. time 2} 0 0
+DEVise viewSetDisabledActions {personTime vs. time 2} 0 0 0 0
+DEVise setShowMouseLocation {personTime vs. time 2} {1}
+DEVise create {view} {SortedX} {personTime vs. time 3} 761.232360 791.720797 0.000000 2.000000 4 37
+DEVise setLabel {personTime vs. time 3} 0 12 {}
+DEVise setViewStatistics {personTime vs. time 3} 0000000
+DEVise setViewDimensions {personTime vs. time 3} 2
+DEVise setViewSolid3D {personTime vs. time 3} 2
+DEVise setViewXYZoom {personTime vs. time 3} 1
+DEVise setViewDisplayDataValues {personTime vs. time 3} 0
+DEVise setFont {personTime vs. time 3} {title} 0 12 0 0
+DEVise setFont {personTime vs. time 3} {x axis} 0 12 0 0
+DEVise setFont {personTime vs. time 3} {y axis} 0 12 0 0
+DEVise viewSetHome {personTime vs. time 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personTime vs. time 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personTime vs. time 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {personTime vs. time 3} 1 0.500000 1.000000
+DEVise setViewGDS {personTime vs. time 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personTime vs. time 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personTime vs. time 3} 0 0.943049 10
+DEVise setCountMapping {personTime vs. time 3} 0 {} {}
+DEVise viewSetIsHighlight {personTime vs. time 3} 0
+DEVise setXAxisDateFormat {personTime vs. time 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personTime vs. time 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personTime vs. time 3} {%.4g}
+DEVise setYAxisFloatFormat {personTime vs. time 3} {%.4g}
+DEVise setViewAutoFilter {personTime vs. time 3} {0}
+DEVise setDupElim {personTime vs. time 3} {0}
+DEVise setNiceAxes {personTime vs. time 3} 0 0
+DEVise viewSetDisabledActions {personTime vs. time 3} 0 0 0 0
+DEVise setShowMouseLocation {personTime vs. time 3} {1}
+DEVise create {view} {SortedX} {personTime vs. time 4} 761.232360 791.720797 0.000000 2.000000 4 37
+DEVise setLabel {personTime vs. time 4} 0 12 {}
+DEVise setViewStatistics {personTime vs. time 4} 0000000
+DEVise setViewDimensions {personTime vs. time 4} 2
+DEVise setViewSolid3D {personTime vs. time 4} 2
+DEVise setViewXYZoom {personTime vs. time 4} 1
+DEVise setViewDisplayDataValues {personTime vs. time 4} 0
+DEVise setFont {personTime vs. time 4} {title} 0 12 0 0
+DEVise setFont {personTime vs. time 4} {x axis} 0 12 0 0
+DEVise setFont {personTime vs. time 4} {y axis} 0 12 0 0
+DEVise viewSetHome {personTime vs. time 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personTime vs. time 4} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personTime vs. time 4} 1 0.500000 1.000000
+DEVise viewSetVerPan {personTime vs. time 4} 1 0.500000 1.000000
+DEVise setViewGDS {personTime vs. time 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personTime vs. time 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personTime vs. time 4} 0 0.888593 10
+DEVise setCountMapping {personTime vs. time 4} 0 {} {}
+DEVise viewSetIsHighlight {personTime vs. time 4} 0
+DEVise setXAxisDateFormat {personTime vs. time 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personTime vs. time 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personTime vs. time 4} {%.4g}
+DEVise setYAxisFloatFormat {personTime vs. time 4} {%.4g}
+DEVise setViewAutoFilter {personTime vs. time 4} {0}
+DEVise setDupElim {personTime vs. time 4} {0}
+DEVise setNiceAxes {personTime vs. time 4} 0 0
+DEVise viewSetDisabledActions {personTime vs. time 4} 0 0 0 0
+DEVise setShowMouseLocation {personTime vs. time 4} {1}
+DEVise create {view} {SortedX} {personTime vs. time 5} 0.000000 1000.000000 0.000000 2.000000 4 37
+DEVise setLabel {personTime vs. time 5} 0 12 {}
+DEVise setViewStatistics {personTime vs. time 5} 0000000
+DEVise setViewDimensions {personTime vs. time 5} 2
+DEVise setViewSolid3D {personTime vs. time 5} 2
+DEVise setViewXYZoom {personTime vs. time 5} 1
+DEVise setViewDisplayDataValues {personTime vs. time 5} 0
+DEVise setFont {personTime vs. time 5} {title} 0 12 0 0
+DEVise setFont {personTime vs. time 5} {x axis} 0 12 0 0
+DEVise setFont {personTime vs. time 5} {y axis} 0 12 0 0
+DEVise viewSetHome {personTime vs. time 5} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personTime vs. time 5} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personTime vs. time 5} 1 0.500000 1.000000
+DEVise viewSetVerPan {personTime vs. time 5} 1 0.500000 1.000000
+DEVise setViewGDS {personTime vs. time 5} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personTime vs. time 5} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personTime vs. time 5} 0 2 10
+DEVise setCountMapping {personTime vs. time 5} 0 {} {}
+DEVise viewSetIsHighlight {personTime vs. time 5} 0
+DEVise setXAxisDateFormat {personTime vs. time 5} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personTime vs. time 5} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personTime vs. time 5} {%.4g}
+DEVise setYAxisFloatFormat {personTime vs. time 5} {%.4g}
+DEVise setViewAutoFilter {personTime vs. time 5} {0}
+DEVise setDupElim {personTime vs. time 5} {0}
+DEVise setNiceAxes {personTime vs. time 5} 0 0
+DEVise viewSetDisabledActions {personTime vs. time 5} 0 0 0 0
+DEVise setShowMouseLocation {personTime vs. time 5} {1}
+DEVise create {view} {Scatter} {timeInState vs. enterState} 0.000000 1000.000000 0.000000 1.000000 4 37
+DEVise setLabel {timeInState vs. enterState} 0 12 {}
+DEVise setViewStatistics {timeInState vs. enterState} 0000000
+DEVise setViewDimensions {timeInState vs. enterState} 2
+DEVise setViewSolid3D {timeInState vs. enterState} 2
+DEVise setViewXYZoom {timeInState vs. enterState} 1
+DEVise setViewDisplayDataValues {timeInState vs. enterState} 0
+DEVise setFont {timeInState vs. enterState} {title} 0 12 0 0
+DEVise setFont {timeInState vs. enterState} {x axis} 0 12 0 0
+DEVise setFont {timeInState vs. enterState} {y axis} 0 12 0 0
+DEVise viewSetHome {timeInState vs. enterState} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {timeInState vs. enterState} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {timeInState vs. enterState} 1 0.500000 1.000000
+DEVise viewSetVerPan {timeInState vs. enterState} 1 0.500000 1.000000
+DEVise setViewGDS {timeInState vs. enterState} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {timeInState vs. enterState} 1 0 0 "" 1 " " 1
+DEVise setHistogram {timeInState vs. enterState} 0 14.237 10
+DEVise setCountMapping {timeInState vs. enterState} 0 {} {}
+DEVise viewSetIsHighlight {timeInState vs. enterState} 0
+DEVise setXAxisDateFormat {timeInState vs. enterState} {%b %d %Y %T}
+DEVise setYAxisDateFormat {timeInState vs. enterState} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {timeInState vs. enterState} {%.4g}
+DEVise setYAxisFloatFormat {timeInState vs. enterState} {%.4g}
+DEVise setViewAutoFilter {timeInState vs. enterState} {0}
+DEVise setDupElim {timeInState vs. enterState} {0}
+DEVise setNiceAxes {timeInState vs. enterState} 0 0
+DEVise viewSetDisabledActions {timeInState vs. enterState} 0 0 0 0
+DEVise setShowMouseLocation {timeInState vs. enterState} {1}
+DEVise create {view} {Scatter} {personID vs. personEnterTime} 761.232360 791.720797 -1.000000 7.000000 4 37
+DEVise setLabel {personID vs. personEnterTime} 0 12 {}
+DEVise setViewStatistics {personID vs. personEnterTime} 0000000
+DEVise setViewDimensions {personID vs. personEnterTime} 2
+DEVise setViewSolid3D {personID vs. personEnterTime} 2
+DEVise setViewXYZoom {personID vs. personEnterTime} 1
+DEVise setViewDisplayDataValues {personID vs. personEnterTime} 0
+DEVise setFont {personID vs. personEnterTime} {title} 0 12 0 0
+DEVise setFont {personID vs. personEnterTime} {x axis} 0 12 0 0
+DEVise setFont {personID vs. personEnterTime} {y axis} 0 12 0 0
+DEVise viewSetHome {personID vs. personEnterTime} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personID vs. personEnterTime} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personID vs. personEnterTime} 1 0.500000 1.000000
+DEVise viewSetVerPan {personID vs. personEnterTime} 1 0.500000 1.000000
+DEVise setViewGDS {personID vs. personEnterTime} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personID vs. personEnterTime} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personID vs. personEnterTime} 2 6 10
+DEVise setCountMapping {personID vs. personEnterTime} 0 {} {}
+DEVise viewSetIsHighlight {personID vs. personEnterTime} 0
+DEVise setXAxisDateFormat {personID vs. personEnterTime} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personID vs. personEnterTime} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personID vs. personEnterTime} {%.4g}
+DEVise setYAxisFloatFormat {personID vs. personEnterTime} {%.4g}
+DEVise setViewAutoFilter {personID vs. personEnterTime} {0}
+DEVise setDupElim {personID vs. personEnterTime} {0}
+DEVise setNiceAxes {personID vs. personEnterTime} 0 0
+DEVise viewSetDisabledActions {personID vs. personEnterTime} 0 0 0 0
+DEVise setShowMouseLocation {personID vs. personEnterTime} {1}
+DEVise create {view} {Scatter} {personID vs. personEnterTime 2} 185.463221 293.432421 -1.000000 4.000000 4 37
+DEVise setLabel {personID vs. personEnterTime 2} 0 12 {}
+DEVise setViewStatistics {personID vs. personEnterTime 2} 0000000
+DEVise setViewDimensions {personID vs. personEnterTime 2} 2
+DEVise setViewSolid3D {personID vs. personEnterTime 2} 2
+DEVise setViewXYZoom {personID vs. personEnterTime 2} 1
+DEVise setViewDisplayDataValues {personID vs. personEnterTime 2} 0
+DEVise setFont {personID vs. personEnterTime 2} {title} 0 12 0 0
+DEVise setFont {personID vs. personEnterTime 2} {x axis} 0 12 0 0
+DEVise setFont {personID vs. personEnterTime 2} {y axis} 0 12 0 0
+DEVise viewSetHome {personID vs. personEnterTime 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {personID vs. personEnterTime 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {personID vs. personEnterTime 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {personID vs. personEnterTime 2} 1 0.500000 1.000000
+DEVise setViewGDS {personID vs. personEnterTime 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {personID vs. personEnterTime 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {personID vs. personEnterTime 2} 2 6 10
+DEVise setCountMapping {personID vs. personEnterTime 2} 0 {} {}
+DEVise viewSetIsHighlight {personID vs. personEnterTime 2} 0
+DEVise setXAxisDateFormat {personID vs. personEnterTime 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {personID vs. personEnterTime 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {personID vs. personEnterTime 2} {%.4g}
+DEVise setYAxisFloatFormat {personID vs. personEnterTime 2} {%.4g}
+DEVise setViewAutoFilter {personID vs. personEnterTime 2} {0}
+DEVise setDupElim {personID vs. personEnterTime 2} {0}
+DEVise setNiceAxes {personID vs. personEnterTime 2} 0 0
+DEVise viewSetDisabledActions {personID vs. personEnterTime 2} 0 0 0 0
+DEVise setShowMouseLocation {personID vs. personEnterTime 2} {1}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {timeInState_vs_enterState}
+DEVise createMappingClass {timeInState_vs_time}
+DEVise createMappingClass {count_vs_time}
+DEVise createMappingClass {personID_vs_personEnterTime}
+DEVise createMappingClass {personTime_vs_time}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {timeInState_vs_enterState} .zone1 .zone1#timeInState_vs_enterState {} {$time} {$timeInState} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#timeInState_vs_enterState} 1
+DEVise create {mapping} {timeInState_vs_time} .zone2 .zone2#timeInState_vs_time {} {$enterState} {$count} {} {$personID} 1 0 0 6 {$timeInState} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone2#timeInState_vs_time} 1
+DEVise create {mapping} {timeInState_vs_time} .zone1 .zone1#timeInState_vs_time {} {$enterState} {$count} {} {$personID} 1 0 0 0 {$timeInState} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#timeInState_vs_time} 1
+DEVise create {mapping} {count_vs_time} .zone1 .zone1#count_vs_time {} {$enterState} {$count} {} 28 1 0 0 2 {$timeInState} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#count_vs_time} 1
+DEVise create {mapping} {personID_vs_personEnterTime} .zone1 .zone1#personID_vs_personEnterTime {} {$personEnterTime} {$personID} {} {$personID} 1 0 0 0 {$personTime} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#personID_vs_personEnterTime} 1
+DEVise create {mapping} {personID_vs_personEnterTime} .zone2 .zone2#personID_vs_personEnterTime {} {$personEnterTime} {$personID} {} {$personID} 1 0 0 6 {$personTime} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone2#personID_vs_personEnterTime} 1
+DEVise create {mapping} {personTime_vs_time} .zone1 .zone1#personTime_vs_time {} {$time} {$personTime} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#personTime_vs_time} 1
+DEVise create {mapping} {personTime_vs_time} .zone2 .zone2#personTime_vs_time {} {$enterState} {$personTime} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone2#personTime_vs_time} 1
+DEVise create {mapping} {personTime_vs_time} .zone3 .zone3#personTime_vs_time {} {$time} {$personTime} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone3#personTime_vs_time} 1
+DEVise create {mapping} {personTime_vs_time} .zone2 {.zone2#personTime_vs_time 2} {} {$time} {$personTime} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone2#personTime_vs_time 2} 1
+DEVise create {mapping} {personTime_vs_time} .zone1 {.zone1#personTime_vs_time 2} {} {$time} {$personTime} {} {$personID} 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.zone1#personTime_vs_time 2} 1
+
+# Create windows
+DEVise create {window} {TileLayout} {Zones 2} 0.103906 0.189453 0.839844 0.527344 0 0
+DEVise create {window} {TileLayout} Person 0.054688 0.755859 0.536719 0.156250 0 0
+DEVise create {window} {TileLayout} {Global View} 0.065625 0.013672 0.891406 0.117188 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {Zones 2} -1 1 0
+DEVise setWindowLayout {Person} -1 1 0
+DEVise setWindowLayout {Global View} -1 1 0
+
+# Create links
+DEVise create {link} {Visual_Link} {enterState Link} 1
+DEVise create {link} {Visual_Link} {time Link} 1
+DEVise create {link} {Visual_Link} fulll 3
+DEVise create {link} {Visual_Link} {personEnterTime Link} 1
+
+# Create cursors
+DEVise create {cursor} {Cursor} pointer 1 0 1.000000 1.000000 0
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {timeInState vs. time} {X} 1
+DEVise setAxisDisplay {timeInState vs. time} {Y} 0
+DEVise setAxisTicks {timeInState vs. time} {X} 1
+DEVise setAxisTicks {timeInState vs. time} {Y} 1
+DEVise setAxisMultFact {timeInState vs. time} {X} 1
+DEVise setAxisMultFact {timeInState vs. time} {Y} 1
+DEVise setAxisDisplay {count vs. time} {X} 1
+DEVise setAxisDisplay {count vs. time} {Y} 0
+DEVise setAxisTicks {count vs. time} {X} 1
+DEVise setAxisTicks {count vs. time} {Y} 1
+DEVise setAxisMultFact {count vs. time} {X} 1
+DEVise setAxisMultFact {count vs. time} {Y} 1
+DEVise setAxisDisplay {timeInState vs. time 2} {X} 0
+DEVise setAxisDisplay {timeInState vs. time 2} {Y} 0
+DEVise setAxisTicks {timeInState vs. time 2} {X} 1
+DEVise setAxisTicks {timeInState vs. time 2} {Y} 1
+DEVise setAxisMultFact {timeInState vs. time 2} {X} 1
+DEVise setAxisMultFact {timeInState vs. time 2} {Y} 1
+DEVise setAxisDisplay {personTime vs. time} {X} 0
+DEVise setAxisDisplay {personTime vs. time} {Y} 0
+DEVise setAxisTicks {personTime vs. time} {X} 1
+DEVise setAxisTicks {personTime vs. time} {Y} 1
+DEVise setAxisMultFact {personTime vs. time} {X} 1
+DEVise setAxisMultFact {personTime vs. time} {Y} 1
+DEVise setAxisDisplay {personTime vs. time 2} {X} 0
+DEVise setAxisDisplay {personTime vs. time 2} {Y} 1
+DEVise setAxisTicks {personTime vs. time 2} {X} 1
+DEVise setAxisTicks {personTime vs. time 2} {Y} 1
+DEVise setAxisMultFact {personTime vs. time 2} {X} 1
+DEVise setAxisMultFact {personTime vs. time 2} {Y} 1
+DEVise setAxisDisplay {personTime vs. time 3} {X} 0
+DEVise setAxisDisplay {personTime vs. time 3} {Y} 0
+DEVise setAxisTicks {personTime vs. time 3} {X} 1
+DEVise setAxisTicks {personTime vs. time 3} {Y} 1
+DEVise setAxisMultFact {personTime vs. time 3} {X} 1
+DEVise setAxisMultFact {personTime vs. time 3} {Y} 1
+DEVise setAxisDisplay {personTime vs. time 4} {X} 0
+DEVise setAxisDisplay {personTime vs. time 4} {Y} 0
+DEVise setAxisTicks {personTime vs. time 4} {X} 1
+DEVise setAxisTicks {personTime vs. time 4} {Y} 1
+DEVise setAxisMultFact {personTime vs. time 4} {X} 1
+DEVise setAxisMultFact {personTime vs. time 4} {Y} 1
+DEVise setAxisDisplay {personTime vs. time 5} {X} 1
+DEVise setAxisDisplay {personTime vs. time 5} {Y} 0
+DEVise setAxisTicks {personTime vs. time 5} {X} 1
+DEVise setAxisTicks {personTime vs. time 5} {Y} 1
+DEVise setAxisMultFact {personTime vs. time 5} {X} 1
+DEVise setAxisMultFact {personTime vs. time 5} {Y} 1
+DEVise setAxisDisplay {timeInState vs. enterState} {X} 0
+DEVise setAxisDisplay {timeInState vs. enterState} {Y} 1
+DEVise setAxisTicks {timeInState vs. enterState} {X} 1
+DEVise setAxisTicks {timeInState vs. enterState} {Y} 1
+DEVise setAxisMultFact {timeInState vs. enterState} {X} 1
+DEVise setAxisMultFact {timeInState vs. enterState} {Y} 1
+DEVise setAxisDisplay {personID vs. personEnterTime} {X} 0
+DEVise setAxisDisplay {personID vs. personEnterTime} {Y} 0
+DEVise setAxisTicks {personID vs. personEnterTime} {X} 1
+DEVise setAxisTicks {personID vs. personEnterTime} {Y} 1
+DEVise setAxisMultFact {personID vs. personEnterTime} {X} 1
+DEVise setAxisMultFact {personID vs. personEnterTime} {Y} 1
+DEVise setAxisDisplay {personID vs. personEnterTime 2} {X} 0
+DEVise setAxisDisplay {personID vs. personEnterTime 2} {Y} 0
+DEVise setAxisTicks {personID vs. personEnterTime 2} {X} 1
+DEVise setAxisTicks {personID vs. personEnterTime 2} {Y} 1
+DEVise setAxisMultFact {personID vs. personEnterTime 2} {X} 1
+DEVise setAxisMultFact {personID vs. personEnterTime 2} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+DEVise setCursorSrc {pointer} {count vs. time}
+DEVise setCursorDst {pointer} {personTime vs. time 5}
+DEVise color SetCursorColor {pointer} #ffffffffffff
+DEVise setCursorConstraints {pointer} 0 1 0
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {timeInState vs. time} {.zone2#timeInState_vs_time}
+DEVise insertMapping {count vs. time} {.zone1#count_vs_time}
+DEVise insertMapping {timeInState vs. time 2} {.zone1#timeInState_vs_time}
+DEVise insertMapping {personTime vs. time} {.zone1#personTime_vs_time}
+DEVise insertMapping {personTime vs. time 2} {.zone2#personTime_vs_time}
+DEVise insertMapping {personTime vs. time 3} {.zone3#personTime_vs_time}
+DEVise insertMapping {personTime vs. time 4} {.zone2#personTime_vs_time 2}
+DEVise insertMapping {personTime vs. time 5} {.zone1#personTime_vs_time 2}
+DEVise insertMapping {timeInState vs. enterState} {.zone1#timeInState_vs_enterState}
+DEVise insertMapping {personID vs. personEnterTime} {.zone1#personID_vs_personEnterTime}
+DEVise insertMapping {personID vs. personEnterTime 2} {.zone2#personID_vs_personEnterTime}
+
+# Link views
+DEVise insertLink {enterState Link} {timeInState vs. enterState}
+DEVise insertLink {time Link} {timeInState vs. time}
+DEVise insertLink {time Link} {count vs. time}
+DEVise insertLink {time Link} {personTime vs. time}
+DEVise insertLink {time Link} {timeInState vs. time 2}
+DEVise insertLink {time Link} {personTime vs. time 3}
+DEVise insertLink {time Link} {personTime vs. time 4}
+DEVise insertLink {fulll} {count vs. time}
+DEVise insertLink {fulll} {timeInState vs. time}
+DEVise insertLink {fulll} {timeInState vs. time 2}
+DEVise insertLink {fulll} {personID vs. personEnterTime}
+DEVise insertLink {personEnterTime Link} {personID vs. personEnterTime}
+
+# Insert views into windows
+DEVise insertWindow {timeInState vs. time 2} {Zones 2}
+DEVise insertWindow {personID vs. personEnterTime} {Zones 2}
+DEVise insertWindow {count vs. time} {Zones 2}
+DEVise insertWindow {personTime vs. time} {Person}
+DEVise insertWindow {personTime vs. time 3} {Person}
+DEVise insertWindow {personTime vs. time 4} {Person}
+DEVise insertWindow {personTime vs. time 5} {Global View}
+
+# Set window pile/stack state
+DEVise setPileStackState {Zones 2} 1
+DEVise setPileStackState {Person} 1
+DEVise setPileStackState {Global View} 1
+
+# Init history of view
+DEVise clearViewHistory {timeInState vs. time}
+DEVise insertViewHistory {timeInState vs. time} {182.93} {-1.00} {304.88} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {213.42} {-1.00} {274.40} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {228.66} {-1.00} {259.15} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {236.29} {-1.00} {251.53} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {240.10} {-1.00} {247.72} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {264.39} {-1.00} {268.20} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {258.67} {-1.00} {273.92} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {251.05} {-1.00} {281.54} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {323.35} {-1.00} {353.84} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {402.78} {-1.00} {433.27} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {493.41} {-1.00} {523.90} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {619.68} {-1.00} {650.17} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {766.32} {-1.00} {796.81} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {191.99} {-1.00} {222.47} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {179.77} {-1.00} {210.25} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {256.14} {-1.00} {286.63} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {761.23} {-1.00} {791.72} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time} {761.23} {-1.00} {791.72} {7.00} 18
+DEVise clearViewHistory {count vs. time}
+DEVise insertViewHistory {count vs. time} {182.93} {-1.00} {304.88} {7.00} 0
+DEVise insertViewHistory {count vs. time} {213.42} {-1.00} {274.40} {7.00} 0
+DEVise insertViewHistory {count vs. time} {228.66} {-1.00} {259.15} {7.00} 0
+DEVise insertViewHistory {count vs. time} {236.29} {-1.00} {251.53} {7.00} 0
+DEVise insertViewHistory {count vs. time} {240.10} {-1.00} {247.72} {7.00} 0
+DEVise insertViewHistory {count vs. time} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {count vs. time} {264.39} {-1.00} {268.20} {7.00} 0
+DEVise insertViewHistory {count vs. time} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {count vs. time} {258.67} {-1.00} {273.92} {7.00} 0
+DEVise insertViewHistory {count vs. time} {251.05} {-1.00} {281.54} {7.00} 0
+DEVise insertViewHistory {count vs. time} {323.35} {-1.00} {353.84} {7.00} 0
+DEVise insertViewHistory {count vs. time} {402.78} {-1.00} {433.27} {7.00} 0
+DEVise insertViewHistory {count vs. time} {493.41} {-1.00} {523.90} {7.00} 0
+DEVise insertViewHistory {count vs. time} {619.68} {-1.00} {650.17} {7.00} 0
+DEVise insertViewHistory {count vs. time} {766.32} {-1.00} {796.81} {7.00} 0
+DEVise insertViewHistory {count vs. time} {191.99} {-1.00} {222.47} {7.00} 0
+DEVise insertViewHistory {count vs. time} {179.77} {-1.00} {210.25} {7.00} 0
+DEVise insertViewHistory {count vs. time} {256.14} {-1.00} {286.63} {7.00} 0
+DEVise insertViewHistory {count vs. time} {761.23} {-1.00} {791.72} {7.00} 0
+DEVise insertViewHistory {count vs. time} {761.23} {-1.00} {791.72} {7.00} 18
+DEVise clearViewHistory {timeInState vs. time 2}
+DEVise insertViewHistory {timeInState vs. time 2} {182.93} {-1.00} {304.88} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {213.42} {-1.00} {274.40} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {228.66} {-1.00} {259.15} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {236.29} {-1.00} {251.53} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {240.10} {-1.00} {247.72} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {264.39} {-1.00} {268.20} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {258.67} {-1.00} {273.92} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {251.05} {-1.00} {281.54} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {323.35} {-1.00} {353.84} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {402.78} {-1.00} {433.27} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {493.41} {-1.00} {523.90} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {619.68} {-1.00} {650.17} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {766.32} {-1.00} {796.81} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {191.99} {-1.00} {222.47} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {179.77} {-1.00} {210.25} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {256.14} {-1.00} {286.63} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {761.23} {-1.00} {791.72} {7.00} 0
+DEVise insertViewHistory {timeInState vs. time 2} {761.23} {-1.00} {791.72} {7.00} 18
+DEVise clearViewHistory {personTime vs. time}
+DEVise insertViewHistory {personTime vs. time} {182.93} {0.00} {304.88} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {213.42} {0.00} {274.40} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {228.66} {0.00} {259.15} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {236.29} {0.00} {251.53} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {240.10} {0.00} {247.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {264.39} {0.00} {268.20} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {258.67} {0.00} {273.92} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {251.05} {0.00} {281.54} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {323.35} {0.00} {353.84} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {402.78} {0.00} {433.27} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {493.41} {0.00} {523.90} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {619.68} {0.00} {650.17} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {766.32} {0.00} {796.81} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {191.99} {0.00} {222.47} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {179.77} {0.00} {210.25} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {256.14} {0.00} {286.63} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {761.23} {0.00} {791.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time} {761.23} {0.00} {791.72} {2.00} 18
+DEVise clearViewHistory {personTime vs. time 2}
+DEVise insertViewHistory {personTime vs. time 2} {1760.54} {0.00} {2934.23} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {1173.69} {0.00} {2347.38} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {586.85} {0.00} {1760.54} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {0.00} {0.00} {1173.69} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {0.00} {0.00} {1173.69} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {946.01} {0.00} {1014.95} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {911.53} {0.00} {1049.43} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {946.01} {0.00} {1014.95} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {963.24} {0.00} {997.72} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {971.86} {0.00} {989.10} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {963.24} {0.00} {980.48} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {967.55} {0.00} {976.17} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {963.24} {0.00} {980.48} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {954.63} {0.00} {971.86} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {946.01} {0.00} {963.24} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {954.63} {0.00} {971.86} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {963.24} {0.00} {980.48} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {971.86} {0.00} {989.10} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {980.48} {0.00} {997.72} {1.00} 0
+DEVise insertViewHistory {personTime vs. time 2} {980.48} {0.00} {997.72} {1.00} 18
+DEVise clearViewHistory {personTime vs. time 3}
+DEVise insertViewHistory {personTime vs. time 3} {182.93} {0.00} {304.88} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {213.42} {0.00} {274.40} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {228.66} {0.00} {259.15} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {236.29} {0.00} {251.53} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {240.10} {0.00} {247.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {264.39} {0.00} {268.20} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {258.67} {0.00} {273.92} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {251.05} {0.00} {281.54} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {323.35} {0.00} {353.84} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {402.78} {0.00} {433.27} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {493.41} {0.00} {523.90} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {619.68} {0.00} {650.17} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {766.32} {0.00} {796.81} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {191.99} {0.00} {222.47} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {179.77} {0.00} {210.25} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {256.14} {0.00} {286.63} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {761.23} {0.00} {791.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 3} {761.23} {0.00} {791.72} {2.00} 18
+DEVise clearViewHistory {personTime vs. time 4}
+DEVise insertViewHistory {personTime vs. time 4} {182.93} {0.00} {304.88} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {213.42} {0.00} {274.40} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {228.66} {0.00} {259.15} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {236.29} {0.00} {251.53} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {240.10} {0.00} {247.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {264.39} {0.00} {268.20} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {262.48} {0.00} {270.10} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {258.67} {0.00} {273.92} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {251.05} {0.00} {281.54} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {323.35} {0.00} {353.84} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {402.78} {0.00} {433.27} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {493.41} {0.00} {523.90} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {619.68} {0.00} {650.17} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {766.32} {0.00} {796.81} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {191.99} {0.00} {222.47} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {179.77} {0.00} {210.25} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {256.14} {0.00} {286.63} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {761.23} {0.00} {791.72} {2.00} 0
+DEVise insertViewHistory {personTime vs. time 4} {761.23} {0.00} {791.72} {2.00} 18
+DEVise clearViewHistory {personTime vs. time 5}
+DEVise insertViewHistory {personTime vs. time 5} {0.00} {0.00} {500.00} {100.00} 0
+DEVise insertViewHistory {personTime vs. time 5} {0.00} {0.00} {1000.00} {100.00} 0
+DEVise insertViewHistory {personTime vs. time 5} {0.00} {0.00} {1000.00} {2.00} 0
+DEVise clearViewHistory {timeInState vs. enterState}
+DEVise insertViewHistory {timeInState vs. enterState} {59.56} {0.00} {363.09} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-92.21} {0.00} {514.85} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-395.74} {0.00} {818.38} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-1002.79} {0.00} {1425.44} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-2216.91} {0.00} {2639.56} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-4645.15} {0.00} {5067.79} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-9501.62} {0.00} {9924.26} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-19214.56} {0.00} {211.32} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-28927.50} {0.00} {-9501.62} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-38640.44} {0.00} {-19214.56} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-28927.50} {0.00} {-9501.62} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-19214.56} {0.00} {211.32} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-9501.62} {0.00} {9924.26} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {211.32} {0.00} {19637.21} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-9501.62} {0.00} {9924.26} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-19214.56} {0.00} {211.32} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {-9501.62} {0.00} {9924.26} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {0.00} {0.00} {9924.26} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {0.00} {0.00} {1000.00} {20.00} 0
+DEVise insertViewHistory {timeInState vs. enterState} {0.00} {0.00} {1000.00} {1.00} 0
+DEVise clearViewHistory {personID vs. personEnterTime}
+DEVise insertViewHistory {personID vs. personEnterTime} {182.93} {-1.00} {304.88} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {213.42} {-1.00} {274.40} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {228.66} {-1.00} {259.15} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {236.29} {-1.00} {251.53} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {240.10} {-1.00} {247.72} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {264.39} {-1.00} {268.20} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {262.48} {-1.00} {270.10} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {258.67} {-1.00} {273.92} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {251.05} {-1.00} {281.54} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {323.35} {-1.00} {353.84} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {402.78} {-1.00} {433.27} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {493.41} {-1.00} {523.90} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {619.68} {-1.00} {650.17} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {766.32} {-1.00} {796.81} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {191.99} {-1.00} {222.47} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {179.77} {-1.00} {210.25} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {256.14} {-1.00} {286.63} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {761.23} {-1.00} {791.72} {7.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime} {761.23} {-1.00} {791.72} {7.00} 18
+DEVise clearViewHistory {personID vs. personEnterTime 2}
+DEVise insertViewHistory {personID vs. personEnterTime 2} {185.46} {-1.00} {293.43} {4.00} 0
+DEVise insertViewHistory {personID vs. personEnterTime 2} {185.46} {-1.00} {293.43} {4.00} 18
+
+# Set camera location for each view
+DEVise set3DLocation {timeInState vs. time} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {count vs. time} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {timeInState vs. time 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personTime vs. time} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personTime vs. time 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personTime vs. time 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personTime vs. time 4} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personTime vs. time 5} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {timeInState vs. enterState} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personID vs. personEnterTime} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {personID vs. personEnterTime 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+
+# Set string tables for each view

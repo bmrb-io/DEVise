@@ -12,7 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to clean up the distribution area.
+#  Run this script to set up the distribution area.
 
 ############################################################
 
@@ -20,34 +20,6 @@
 
 ############################################################
 
-\rm dist_sw
-\rm html
-
-cd common
-clean
-cd ..
-
-
-# \rm -r hpux-hppa
-
-cd solaris-intel
-clean
-cd ..
-
-cd solaris-sparc
-clean
-cd ..
-
-# \rm -r sunos-sparc
-
-cd linux-intel
-clean
-cd ..
-
-\rm -r JavaScreen
-
-cd demo
-./clean
-cd ..
-
-rm *.log
+ln -s session session.js
+cd schema/schema
+ln -s catalog.dte catalog.js.dte
