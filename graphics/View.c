@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.186  1999/08/05 21:42:35  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.185  1999/07/30 21:27:02  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -1913,6 +1918,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 		    tickMark, nTicks, tickInc);
 
   /* draw tick marks */
+  Coord oldTop = -100.0;
   for(int i = 0; i < nTicks; i++) {
     // Note: it would be better to use the WindowRep's transform here, but
     // Zhenhai's inversion makes that a pain.  RKW 1999-04-20.
@@ -1942,16 +1948,25 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     }
 
     if (!pastBottom && !pastTop) {
-      win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			yAxis.labelWidth, WindowRep::AlignCenter, true);
+	  if (labelY > oldTop) {
+        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
+			  yAxis.labelWidth, WindowRep::AlignCenter, true);
+	    oldTop = labelY + yAxis.labelWidth;
+	  }
     } else if (pastBottom && !pastTop) {
       labelY = startY;
-      win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			yAxis.labelWidth, WindowRep::AlignSouth, true);
+	  if (labelY > oldTop) {
+        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
+			  yAxis.labelWidth, WindowRep::AlignSouth, true);
+	    oldTop = labelY + yAxis.labelWidth;
+	  }
     } else if (!pastBottom && pastTop) {
       labelY = axisMaxY - yAxis.labelWidth;
-      win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			yAxis.labelWidth, WindowRep::AlignNorth, true);
+	  if (labelY > oldTop) {
+        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
+			  yAxis.labelWidth, WindowRep::AlignNorth, true);
+	    oldTop = labelY + yAxis.labelWidth;
+	  }
     } else {
       // Don't draw the label.
     }
