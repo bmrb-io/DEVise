@@ -651,8 +651,9 @@ int RangeBufferManagerAccessMethod::insertRecord(void *lowLevelRec)
 	    /* If not able to create page, try replace some victim object out */
 	    if (newBuf == NULL)
 	    {
-		ObjectDescriptor *victim =
-			globalRBM->_replacementPolicy->pickVictim();
+		ObjectDescriptor *objd;
+		BBoxEntry *victim =
+			globalRBM->_replacementPolicy->pickVictimBBox(objd);
 
 		if (!victim)
 		{
@@ -664,7 +665,7 @@ int RangeBufferManagerAccessMethod::insertRecord(void *lowLevelRec)
 		    /* Victim found. */
 		    /* Kick victim out and try _mem again. */
 		    /* Should find something if the victim had some pages */
-		    globalRBM->kickOutVictim(victim);
+		    globalRBM->kickOutVictimBBox(objd, victim);
 		    newBuf = (char*)globalRBM->_mem->generateNewPage();
 		}
    	    }

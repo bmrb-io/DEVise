@@ -37,7 +37,7 @@ public:
 
     /* delete the victim object from RBM */
     /* return all pages used by victim to _mem's free page list */
-    void kickOutVictim(ObjectDescriptor *victim);
+    void kickOutVictimBBox(ObjectDescriptor *od, BBoxEntry *victim);
 
     /* print out info about this instance */
     /* be concise if verbose == 0 */

@@ -18,6 +18,11 @@ public:
     /* return NULL if no victim found */
     virtual ObjectDescriptor *pickVictim();
 
+    /* BBOX level victim */
+    /* should make sure that victim's object is not pinned */
+    /* return NULL if no victim available */
+    virtual BBoxEntry *pickVictimBBox(ObjectDescriptor *&objd);
+
     virtual void output(int verbose);
 
 private:

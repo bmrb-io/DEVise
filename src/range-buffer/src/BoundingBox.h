@@ -43,6 +43,7 @@ public:
     friend class RangeBufferManagerAccessMethod;
     friend class BoundingBoxList;
     friend class ObjectDescriptor;
+    friend class ReplacementPolicyRandom;
 
 private:
 

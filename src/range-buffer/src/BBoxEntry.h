@@ -31,6 +31,7 @@ public:
     friend class RangeBufferManager;
     friend class RangeBufferManagerAccessMethod;
     friend class ObjectDescriptor;
+    friend class ReplacementPolicyRandom;
 
 private:
 

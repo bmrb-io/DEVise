@@ -121,43 +121,50 @@ ObjectDescriptor* RangeBufferManager::isCaching(RBMObject obj)
     return ret;
 }
 
-void RangeBufferManager::kickOutVictim(ObjectDescriptor *victim)
+void RangeBufferManager::kickOutVictimBBox(ObjectDescriptor *od,
+					   BBoxEntry *victim)
 {
-    BBoxEntry *bbe;
     PageEntry *pe;
 
-    /* no one should be using this object */
-    assert (victim->_pinCount == 0);
-
-    /* First recycle all pages used by this object */
+    /* First recycle all pages used by this bbox */
     /* Has to do this explicitely since PageEntry doesn't worry about _buf */
     /* at all */
     /* whoever wants to delete PageEntry must worry about it! */
-    bbe = victim->_list;
-    while (bbe)
+    pe = victim->_datapages;
+    while (pe)
     {
-	pe = bbe->_datapages;
-	while (pe)
-	{
-	    _mem->recyclePage(pe->_buf);
+        _mem->recyclePage(pe->_buf);
 	
-	    pe = pe->_next;
-	}
-
-	bbe = bbe->_next;
+        pe = pe->_next;
     }
 
-    /* Now take the victim ObjectDescriptor out of the list */
+    /* Now take the victim BBoxEntry out of the list */
     if (victim->_next)
 	victim->_next->_prev = victim->_prev;
 
     if (victim->_prev)
 	victim->_prev->_next = victim->_next;
     else
-	_objectDescriptors[RBM_HASH(victim->_obj)] = victim->_next;
+	od->_list = victim->_next;
 
     /* finally destroy victim itself */
     delete victim;
+
+    (od->_numBBoxes)--;
+
+    /* delete od if od->_numBBoxes drops to 0 */
+    if (od->_numBBoxes == 0)
+    {
+	if (od->_next)
+	    od->_next->_prev = od->_prev;
+	
+	if (od->_prev)
+	    od->_prev->_next = od->_next;
+	else
+	    _objectDescriptors[RBM_HASH(od->_obj)] = od->_next;
+
+	delete od;
+    }
 
     /* one less object cached */
     _numObjects--;
