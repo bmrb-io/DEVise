@@ -5,13 +5,19 @@ import java.io.*;
 /** Type Descriptor is implemented as a String that cointains names like
     "int", "double", etc. */
 
-public class TypeDesc {
-	String name;
-	public TypeDesc(String typeName){
-		name = typeName;
-	}
-	public String getString(){
-		return name;
+public interface TypeDesc {
+	EvalOperator getOperator(String opStr, TypeDesc arg);
+}
+
+public class IntDesc implements TypeDesc {
+	public static final String name = "int";
+	public EvalOperator getOperator(String opStr, TypeDesc arg){
+		if(opStr.equals("=") && arg.name.equals(name)){
+			return new IntEqualOp();
+		}
+		else{
+			// throw exception
+		}
 	}
 }
 
