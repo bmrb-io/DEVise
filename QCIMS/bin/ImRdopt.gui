@@ -1,0 +1,1922 @@
+#!/bin/sh
+# next line restarts using tcl \
+exec wish "$0" "$@"
+
+
+# Variables
+set currimdir "."
+set curroutdir "."
+
+# RDOPT params
+set pbppmax 2.0
+set pbppmin 0.0
+set pbpprange 2.1
+set plotexists 0
+set plotpoints 20
+set threshspan 10
+set coarseness 6
+set DCclamp 255
+set imfname "<Not yet set>"
+set imfnameisset 0
+
+set tname [lindex $argv 0]
+if {[string compare $tname ""] != 0} {
+  set currimdir [file dirname $tname]
+  set imfname [file tail $tname]
+  set imfnameisset 1
+  set f [open "|ImIdentify $currimdir/$imfname" r]
+  gets $f id
+  catch "close $f"
+  set pl 0
+  set id [string range $id [expr [string first : $id]+1] end]
+  set id [string range $id [expr [string first : $id]+1] end]
+  scan "$id" "%d x %d x %d" wid ht pl
+  if {$pl==1} {
+    set ImInfo($imfname,Planes) 1
+    set ImInfo($imfname,Width) $wid
+    set ImInfo($imfname,Height) $ht
+  } elseif ($pl==3) {
+    set ImInfo($imfname,Planes) 3
+    set ImInfo($imfname,Width) $wid
+    set ImInfo($imfname,Height) $ht
+  } else {
+    puts "Unknown image format"
+    ExitProc
+  }
+}
+
+set weighted 0
+set pweights "1,1,1"
+set mint_def 1
+set maxt_def 255
+set usemint 0
+set usemaxt 0
+
+set sel_x ""
+set sel_x_bpp ""
+set sel_x_cf ""
+set sel_y ""
+
+set currImwinId -1
+
+set currIdList {}
+
+
+# plot params
+set SelectX 1;# selectY is false
+set SeeXasCF 1;# see x-axis as compression factor
+set userealBpp 0
+
+# compression params
+set TargetIsFile 0;# targetIsDisplay is true
+set outfname ""
+set outfnameisset 0
+set UsePJPEG 0;# use sequential jpeg 1-use p-jpeg
+set numACscans 4
+
+# misc plot params: internal
+set psnrmax 40
+set psnrmin 20
+set psnrrange 22
+
+set fprefix /tmp/RDOPT
+set plotfile ${fprefix}PF
+set weightfile ${fprefix}WF
+set qfile_pref ${fprefix}QF
+set imfile_pref ${fprefix}IF
+set scans_file ${fprefix}SF
+set mint_file ${fprefix}mint
+set maxt_file ${fprefix}maxt
+
+set pwidth 500 ;# plot width in pixels
+set pheight 350 ;# plot width in pixels
+set pboxwidth [expr $pwidth+50]
+set pboxheight [expr $pheight+50]
+
+set prognum 0;# used at various places. sigh.
+
+wm title . "RD-OPT: Qclic Author"
+wm geometry . +400+400
+frame .mbar -relief raised -bd 2
+canvas .plot -width ${pboxwidth} -height ${pboxheight}
+
+pack .mbar .plot -side top -fill x
+
+# menubar buttons
+menubutton .mbar.files -text "File" -menu .mbar.files.menu  \
+  -relief raised
+menubutton .mbar.params -text "Params" -menu .mbar.params.menu \
+  -relief raised
+menubutton .mbar.weights -text "Quality" -menu .mbar.weights.wmenu \
+  -relief raised
+menubutton .mbar.plot -text "Plot" -menu .mbar.plot.menu \
+  -relief raised
+menubutton .mbar.mode -text "JPEG mode" -menu .mbar.mode.pmenu \
+  -relief raised
+#menubutton .mbar.colors -text "Colors" -menu .mbar.colors.menu \
+#  -relief raised
+
+button .mbar.help -text Help -command "ShowError {No help yet.. send mail to ratnakar@cs.wisc.edu}" \
+  -relief raised
+button .mbar.run -text Run -command Run \
+  -relief raised
+
+pack .mbar.files .mbar.params .mbar.weights .mbar.plot .mbar.mode .mbar.run  -side left
+pack  .mbar.help -side right
+
+menu .mbar.files.menu
+.mbar.files.menu add command  -label "Image File" \
+  -command {SetImFileName}
+.mbar.files.menu add command -label "Show Image" \
+  -command {ShowImage}
+.mbar.files.menu add cascade -label "Compressed File" \
+   -menu .mbar.files.menu.cmenu
+.mbar.files.menu add separator
+.mbar.files.menu add command -label "Quit" -command {ExitProc}
+
+
+menu .mbar.files.menu.cmenu
+.mbar.files.menu.cmenu add radiobutton -label "Screen display" \
+   -variable TargetIsFile -value 0
+.mbar.files.menu.cmenu add radiobutton -label "File" \
+   -variable TargetIsFile -value 1 -command {SetOutFileName}
+.mbar.files.menu.cmenu add radiobutton -label "QclicImage" \
+   -variable TargetIsFile -value 2
+
+menu .mbar.params.menu
+.mbar.params.menu add cascade -label "Min/Max Q-tables" \
+   -menu .mbar.params.menu.pmenu
+.mbar.params.menu add command -label "Other Params" \
+   -command {GetParams}
+
+menu .mbar.params.menu.pmenu
+.mbar.params.menu.pmenu add command -label "Plane 0" \
+   -command {SetMinMaxT 0}
+.mbar.params.menu.pmenu add command -label "Plane 1" \
+   -command {SetMinMaxT 1}
+.mbar.params.menu.pmenu add command -label "Plane 2" \
+   -command {SetMinMaxT 2}
+
+menu .mbar.weights.wmenu
+.mbar.weights.wmenu add radiobutton -label "Equal Weights" \
+   -variable weighted -value 0
+.mbar.weights.wmenu add radiobutton -label "Edit Weights" \
+   -variable weighted -value 1 -command SetWeights
+
+menu .mbar.mode.pmenu
+.mbar.mode.pmenu add radiobutton -label "Sequential JPEG" \
+   -variable UsePJPEG -value 0
+.mbar.mode.pmenu add radiobutton -label "Progressive JPEG" \
+   -variable UsePJPEG -value 1
+
+
+focus .mbar
+
+menu .mbar.plot.menu
+.mbar.plot.menu add cascade -label "View X-axis as:" \
+   -menu .mbar.plot.menu.xmenu
+.mbar.plot.menu add cascade -label "Select point using:" \
+   -menu .mbar.plot.menu.pmenu
+.mbar.plot.menu add command -label "Set plot range" \
+   -command SetPlotRange
+.mbar.plot.menu add command -label "Two-line fit" \
+   -command FitPlot
+
+menu .mbar.plot.menu.xmenu
+.mbar.plot.menu.xmenu add radiobutton -label "Compression Factor" \
+   -variable SeeXasCF -value 1 -command {if {$plotexists} DrawXscale}
+.mbar.plot.menu.xmenu add radiobutton -label "Bits Per Pixel" \
+   -variable SeeXasCF -value 0 -command {if {$plotexists} DrawXscale}
+
+menu .mbar.plot.menu.pmenu
+.mbar.plot.menu.pmenu add radiobutton -label "X axis" \
+  -variable SelectX -value 1
+.mbar.plot.menu.pmenu add radiobutton -label "Y axis" \
+  -variable SelectX -value 0
+
+
+proc GetPlotParams {} {
+  global SelectX SeeXasCF plotexists
+
+  catch {destroy .pparamsw}
+  toplevel .pparamsw
+  wm title .pparamsw "RD-OPT plot parameters"
+  wm geometry .pparamsw +300+300
+
+  frame .pparamsw.f -width 250 
+  pack .pparamsw.f
+
+  label .pparamsw.f.xl -text "View X-axis as:"
+  radiobutton .pparamsw.f.xb1 -text "Compression Factor" -variable \
+    SeeXasCF -value 1 -command {if {$plotexists} DrawXscale}
+  radiobutton .pparamsw.f.xb2 -text "Bits Per Pixel" -variable \
+    SeeXasCF -value 0 -command {if {$plotexists} DrawXscale}
+
+
+  label .pparamsw.f.l -text "Select plot point using:"
+  radiobutton .pparamsw.f.b1 -text "X axis" -variable SelectX \
+    -value 1
+  radiobutton .pparamsw.f.b2 -text "Y axis" -variable SelectX \
+    -value 0
+
+  button .pparamsw.f.q -text "OK" -command "catch {destroy .pparamsw}"
+
+  pack .pparamsw.f.xl
+  pack .pparamsw.f.xb1 .pparamsw.f.xb2
+  pack .pparamsw.f.l
+  pack .pparamsw.f.b1 .pparamsw.f.b2
+  pack .pparamsw.f.q
+
+  tkwait window .pparamsw
+
+}
+
+proc GetParams {} {
+  global DCclamp numtables bppscale method threshspan \
+    coarseness
+
+  set olddcclamp $DCclamp
+  set oldcoarse $coarseness
+  set oldthresh $threshspan
+
+  catch {destroy .paramsw}
+  toplevel .paramsw
+  wm title .paramsw  "RD-OPT parameters"
+  wm geometry .paramsw +300+300
+
+  frame .paramsw.f
+
+
+
+  scale .paramsw.f.coarse -from 0 -to 8 -resolution 1 \
+	-length 7c -variable coarseness -label Coarseness -orient horizontal 
+  scale .paramsw.f.dcclamp -from 1 -to 255 -resolution 1 \
+	-length 7c -variable DCclamp -label "DC clamp" \
+	-orient horizontal 
+  scale .paramsw.f.thresh -from 0 -to 255 -resolution 1 \
+	-length 7c -variable threshspan -label ThreshSpan -orient horizontal 
+
+
+  button .paramsw.f.done -text Done -command "destroy .paramsw"
+  button .paramsw.f.reset -text Reset -command \
+     "set coarseness $oldcoarse; \
+      set threshspan $oldthresh; \
+      set DCclamp $olddcclamp"
+
+  pack .paramsw.f 
+  pack .paramsw.f.coarse
+  pack .paramsw.f.dcclamp
+  pack .paramsw.f.thresh
+  pack .paramsw.f.reset .paramsw.f.done -side left -expand 1
+
+  tkwait window .paramsw
+} 
+
+
+set imfnamedone 0
+
+proc SetImFileName {} {
+  global imfname imfnameisset ImInfo f id currimdir i \
+     ff plotexists imfnamedone
+  catch {destroy .imfilew}
+  toplevel .imfilew
+
+  wm title .imfilew "RD-OPT Image Files"
+  wm geometry .imfilew +300+300
+  wm minsize .imfilew 1 1
+
+  set imfnamedone 0
+
+  frame .imfilew.f -width 30 -height 60
+  frame .imfilew.df -width 30 -height 60
+
+  scrollbar .imfilew.f.scroll -command ".imfilew.f.list yview"
+  listbox .imfilew.f.list -yscroll ".imfilew.f.scroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+  
+  scrollbar .imfilew.df.dscroll -command ".imfilew.df.dlist yview"
+  listbox .imfilew.df.dlist -yscroll ".imfilew.df.dscroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+
+  
+  set bscript \
+    "if {!\[catch {set ff \[lsort \[glob \$currimdir/*\]\]}\]} { \
+      .imfilew.f.list delete 0 end; \
+      .imfilew.df.dlist delete 0 end; \
+      .imfilew.df.dlist insert end \"..\"; \
+      foreach i \$ff { \
+        if {\[file isdirectory \$i\]} { \
+	  .imfilew.df.dlist insert end \[file tail \$i\] \
+        } else { \
+          set f \[open \"|ImIdentify \$i\" r\]; \
+          gets \$f id; \
+          if {!\[string match *RAW* \$id\]} { \
+            .imfilew.f.list insert end \[file tail \$i\] \
+          }; \
+          catch \"close \$f\"; \
+	} \
+      } \
+    }"
+
+  eval $bscript
+  
+  set tempbscript "set currimdir \$currimdir/\[selection get\]; \
+    if {\[string match .. \[file tail \$currimdir\]\]} { \
+      set currimdir \[file dirname \[file dirname \$currimdir\]\]; \
+    }; \
+    $bscript"
+
+  bind .imfilew.df.dlist <Double-Button-1> $tempbscript
+  bind .imfilew.f.list <Double-Button-1> {
+    set imfname [selection get]
+      ShowLogo 
+      set plotexists 0
+      bind .plot <Double-Button-1> {}
+      bind .plot <Button-1> {}
+
+      if {![catch {set ff [winfo children .]}]} {
+        foreach i $ff {
+	  if {[string match .imw_* $i]} {
+	    bind $i.f <ButtonPress> {}
+	    bind $i.f <Button1-Motion> {}
+	    bind $i.f <Button1Release> {}
+          }
+	}
+      }
+
+      set f [open "|ImIdentify $currimdir/$imfname" r]
+      gets $f id
+      catch "close $f"
+      set pl 0
+      set id [string range $id [expr [string first : $id]+1] end]
+      set id [string range $id [expr [string first : $id]+1] end]
+      scan "$id" "%%d x %%d x %%d" wid ht pl
+      if {$pl==1} {
+        set ImInfo($imfname,Planes) 1
+        set ImInfo($imfname,Width) $wid
+        set ImInfo($imfname,Height) $ht
+        set imfnameisset 1
+        set imfnamedone 1
+      } elseif ($pl==3) {
+        set ImInfo($imfname,Planes) 3
+        set ImInfo($imfname,Width) $wid
+        set ImInfo($imfname,Height) $ht
+        set imfnameisset 1
+        set imfnamedone 1
+      } else {
+	ShowError "Unknown image file: $imfname"
+      }
+  } 
+
+
+  frame .imfilew.dbuttons 
+  frame .imfilew.fbuttons 
+
+  label .imfilew.dbuttons.dir -text "Directory: "
+  entry .imfilew.dbuttons.dire -width 20 -textvariable currimdir
+  bind .imfilew.dbuttons.dire <Return> $bscript
+
+  label .imfilew.fbuttons.label -text "File name:"
+  entry .imfilew.fbuttons.e -width 20 -textvariable imfname
+  bind .imfilew.fbuttons.e <Return> {
+     set imfnameisset 1
+     set imfnamedone 1
+  }
+
+  pack append  .imfilew.df \
+       .imfilew.df.dscroll {right filly} \
+       .imfilew.df.dlist {left fill expand}
+  pack append  .imfilew.f \
+       .imfilew.f.scroll {right filly} \
+       .imfilew.f.list {left fill expand}
+
+  pack append .imfilew.dbuttons \
+        .imfilew.dbuttons.dir {left} \
+	.imfilew.dbuttons.dire {left fill expand} 
+  button .imfilew.fbuttons.ok -text OK -command {set imfnamedone 1}
+  pack append .imfilew.fbuttons \
+        .imfilew.fbuttons.label {left} \
+	.imfilew.fbuttons.e {left fill expand}  \
+	.imfilew.fbuttons.ok {left fill expand}
+
+  pack append .imfilew \
+	.imfilew.fbuttons {bottom fill} \
+	.imfilew.dbuttons {bottom fill} \
+	.imfilew.df {left fill expand} \
+	.imfilew.f {right fill expand}
+
+  tkwait variable imfnamedone
+  catch "destroy .imfilew"
+
+}
+
+set outfnamedone 0
+
+proc SetOutFileName {} {
+  global outfname outfnameisset ImInfo  \
+       imfname imfnameisset curroutdir ff i id currimdir outfnamedone
+  catch {destroy .outfilew}
+  toplevel .outfilew
+
+  wm title .outfilew "RD-OPT Compressed Files"
+  wm geometry .outfilew +300+300
+  wm minsize .outfilew 1 1
+
+  set outfnamedone 0
+
+  frame .outfilew.f -width 30 -height 60
+  frame .outfilew.df -width 30 -height 60
+
+  scrollbar .outfilew.f.scroll -command ".outfilew.f.list yview"
+  listbox .outfilew.f.list -yscroll ".outfilew.f.scroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+  
+  scrollbar .outfilew.df.scroll -command ".outfilew.df.list yview"
+  listbox .outfilew.df.list -yscroll ".outfilew.df.scroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+  if {$imfnameisset && !$outfnameisset} {
+    set curroutdir $currimdir
+  }
+
+
+
+  if {!$outfnameisset && $imfnameisset} {
+    set outfname $imfname.jpg
+    set outfnameisset 1
+  }
+
+  set bscript \
+    "if {!\[catch {set ff \[lsort \[glob \$curroutdir/*\]\]}\]} { \
+      .outfilew.f.list delete 0 end; \
+      .outfilew.df.list delete 0 end; \
+      .outfilew.df.list insert end \"..\"; \
+      foreach i \$ff { \
+        if {\[file isdirectory \$i\]} { \
+	  .outfilew.df.list insert end \[file tail \$i\] \
+        } else { \
+          if {\[string match *.jpg \$i\]} { \
+            .outfilew.f.list insert end \[file tail \$i\] \
+          }; \
+	} \
+      } \
+    }"
+  eval $bscript
+
+  set tempbscript "set curroutdir \$curroutdir/\[selection get\]; \
+    if {\[string match .. \[file tail \$curroutdir\]\]} { \
+      set curroutdir \[file dirname \[file dirname \$curroutdir\]\]; \
+    }; \
+    $bscript"
+
+  bind .outfilew.df.list <Double-Button-1> $tempbscript
+
+  bind .outfilew.f.list <Double-Button-1> {
+    set outfname [selection get]
+    set outfnameisset 1
+    set outfnamedone 1
+  } 
+
+
+  frame .outfilew.dbuttons 
+  frame .outfilew.fbuttons 
+
+  label .outfilew.dbuttons.dir -text "Directory: "
+  entry .outfilew.dbuttons.dire -width 20 -textvariable curroutdir
+  bind .outfilew.dbuttons.dire <Return> $bscript
+
+
+  label .outfilew.fbuttons.label -text "File name:"
+  entry .outfilew.fbuttons.e -width 20 -textvariable outfname
+  bind .outfilew.fbuttons.e <Return> {
+    set outfnameisset 1
+    set outfnamedone 1
+  }
+
+
+
+
+  pack append  .outfilew.df \
+       .outfilew.df.scroll {right filly} \
+       .outfilew.df.list {left fill expand}
+
+
+  pack append  .outfilew.f \
+       .outfilew.f.scroll {right filly} \
+       .outfilew.f.list {left fill expand}
+
+  pack append .outfilew.dbuttons \
+        .outfilew.dbuttons.dir {left} \
+	.outfilew.dbuttons.dire {left fill expand} 
+  button .outfilew.fbuttons.ok -text OK -command {set outfnamedone 1}
+  pack append .outfilew.fbuttons \
+        .outfilew.fbuttons.label {left} \
+	.outfilew.fbuttons.e {left fill expand}  \
+	.outfilew.fbuttons.ok {left fill expand}
+
+  pack append .outfilew \
+	.outfilew.fbuttons {bottom fill} \
+	.outfilew.dbuttons {bottom fill} \
+	.outfilew.df {left fill expand} \
+	.outfilew.f {right fill expand}  
+
+  tkwait variable outfnamedone
+  catch "destroy .outfilew"
+}
+
+
+
+pack .plot
+
+set logoisset 0
+proc ShowLogo {} {
+  global logoisset pboxwidth pboxheight 
+  catch {.plot delete all} 
+  if {!$logoisset} {
+    set logoisset 1
+    image create photo logoimage -file /p/qclic/Code/Qclic/bin.common/logo.gif
+  }
+  .plot create image [expr $pboxwidth/2] [expr $pboxheight/2] -image logoimage
+}
+
+ShowLogo 
+
+proc bppToCF {b} {
+  global imfname ImInfo
+  if {$ImInfo($imfname,Planes) == 1} {
+    expr (8.0/(0.0+$b))
+  } else {
+    expr (24.0/(0.0+$b))
+  }
+}
+
+proc cfToBpp {c} {
+  global imfname ImInfo
+  if {$ImInfo($imfname,Planes) == 1} {
+    expr (8.0/(0.0+$c))
+  } else {
+    expr (24.0/(0.0+$c))
+  }
+}
+
+proc bppToX {b} {
+  global pwidth pbppmax pbppmin pbpprange
+  expr ((0.0+$b-$pbppmin)*$pwidth/$pbpprange)+50.0
+}
+
+proc psnrToY {p} {
+  global pheight psnrrange psnrmax
+  expr ($psnrmax+1.0-$p)*$pheight/($psnrrange)
+}
+
+proc XTobpp {x} {
+  global pwidth pbppmax pbppmin pbpprange
+  expr $pbppmin+($pbpprange*($x-50.0)/$pwidth)
+}
+
+proc YTopsnr {y} {
+  global pheight psnrrange psnrmax
+  expr $psnrmax+1.0-($psnrrange*$y/$pheight)
+}
+
+proc DrawXscale {} {
+  global pbppmax SeeXasCF pheight pboxwidth sel_x sel_x_bpp sel_x_cf \
+    pbppmin pbpprange
+
+  catch {.plot delete xplottag}
+  if {!$SeeXasCF} {
+    .plot create text [expr $pboxwidth/2] [expr $pheight - 25] \
+      -text "Rate (bpp)" -anchor sw -tag xplottag
+    set sel_x $sel_x_bpp
+  } else {
+    .plot create text [expr $pboxwidth/2] [expr $pheight - 25] \
+      -text "Compression Factor" -anchor sw -tag xplottag
+    set sel_x $sel_x_cf
+  }
+  if {$pbpprange < 0.6} {
+    set bincr 0.05
+  } elseif {$pbpprange < 1.5} {
+    set bincr 0.1
+  } elseif {$pbpprange < 2.5} {
+    set bincr 0.2
+  } else {
+    set bincr 0.4
+  }
+
+  for {set b $bincr} {$b <= $pbppmax} {set b [expr $b+$bincr]} {
+    if {$b >= $pbppmin} { 
+      set bx [bppToX $b]
+      .plot create line ${bx} ${pheight} ${bx} [expr $pheight + 10] \
+        -tag xplottag
+      if {$SeeXasCF} {
+        set cfx [bppToCF $b]
+        .plot create line [expr $bx-6] [expr $pheight + 25] \
+	   [expr $bx+6] [expr $pheight + 25] \
+	     -tag xplottag
+        .plot create text ${bx} [expr $pheight + 26] -text 1 -anchor s \
+	  -tag xplottag
+        .plot create text ${bx} [expr $pheight + 26] -text \
+	  [expr round($cfx)] -anchor n -tag xplottag
+      } else {
+        .plot create text ${bx} [expr $pheight + 10] -text $b -anchor n \
+	  -tag xplottag
+      }
+    }
+  }
+}
+
+proc FillPlot {fname} {
+  global psnrmax psnrmin psnrrange pheight pboxwidth  \
+	 pboxheight pbppmin pbppmax plotpoints weighted SeeXasCF \
+	 sel_x sel_y sel_x_bpp sel_x_cf ifp pbpprange \
+	 bpppsnrData bpppsnrPoints userealBpp
+  
+  puts $ifp "curve $fname $pbppmin $pbppmax $plotpoints $userealBpp"
+  flush $ifp
+  while {[set foo [read $ifp 1]] != { }} {};
+
+  if {$weighted} {
+    set weightlabel "Weighted"
+  } else {
+    set weightlabel ""
+  }
+
+  catch {.plot delete all}
+  catch {destroy .plot.selx}
+  catch {destroy .plot.sely}
+  frame .plot.selx -width 10 -height 8 -bd 0
+  frame .plot.sely -width 10 -height 8 -bd 0
+
+  set sel_x ""
+  set sel_x_bpp ""
+  set sel_x_cf ""
+  set sel_y ""
+
+  entry .plot.sely.val -textvariable sel_y -width 8
+  entry .plot.selx.val -textvariable sel_x -width 8
+  pack .plot.sely.val
+  pack .plot.selx.val
+
+  .plot create rectangle 0 0 ${pboxwidth} ${pboxheight} -fill white
+  .plot create line 0 ${pheight} ${pboxwidth} ${pheight} 
+  .plot create line 50 0 50 ${pboxheight} 
+  .plot create text 60 30 -text "$weightlabel PSNR (dB)" -anchor sw
+  .plot create window 60 40 -anchor w -window .plot.sely
+
+  bind .plot.sely.val <Return> {
+    if {[string compare $sel_y ""] != 0} {
+      ShowSelFromVal 0 $sel_y
+    }
+  }
+
+  set fd [open $fname r]
+  set points {}
+  set isfirst 1
+  while {[gets $fd line] >= 0} {
+    if {![string match \#* $line]} {
+      scan $line "%f %s %f" b foo p
+      set pt [list $b $p]
+      lappend points $pt
+      if {$isfirst} {
+        set isfirst 0
+        set psnrmin $p
+	set pbppmin $b
+      }
+    }
+  }
+
+  close $fd
+  catch "exec /bin/rm $fname"
+
+  set psnrmax $p
+  set psnrrange [expr $psnrmax - $psnrmin + 2]
+  set pbppmax $b
+  set pbpprange [expr $pbppmax - $pbppmin + 0.1]
+  # psnrrange = pheight
+  # pbppmax-pbppmin+0.1 = pwidth
+  # (b,p) translates to (bppToX(b),psnrToY(p))
+
+  # draw scales
+  DrawXscale
+  .plot create window [expr $pboxwidth/2] [expr $pheight - 15] \
+      -window .plot.selx -anchor w
+
+  bind .plot.selx.val <Return> {
+    if {[string compare $sel_x ""] != 0} {
+    if {$SeeXasCF} { \
+      set sel_x_cf $sel_x; \
+      set sel_x_bpp [cfToBpp $sel_x]; \
+    } else { \
+      set sel_x_bpp $sel_x; \
+      set sel_x_cf [bppToCF $sel_x]; \
+    }
+    ShowSelFromVal 1 $sel_x_bpp
+    }
+  }
+
+  if {$psnrrange < 10} {
+    set pincr 0.5
+  } elseif {$psnrrange < 20} {
+    set pincr 1
+  } elseif {$psnrrange < 30} {
+    set pincr 2
+  } else {
+    set pincr 4
+  }
+
+  for {set p [expr round($psnrmin)]} {$p <= $psnrmax} {set p [expr $pincr + $p]} {
+    set py [psnrToY $p]
+    .plot create line 40 ${py} 50 ${py}
+    .plot create text 40 ${py} -text $p -anchor e
+  }
+
+
+
+  set len [llength $points]
+  set ppoints {}
+  for {set i 0} {$i < $len} {incr i 1} {
+    set pt [lindex $points $i]
+    set b [lindex $pt 0]
+    set p [lindex $pt 1]
+    set bpppsnrData($i,bpp) $b
+    set bpppsnrData($i,psnr) $p
+    set bx [bppToX $b]
+    set py [psnrToY $p]
+    set ppoints [concat $ppoints ${bx} ${py}]
+  }
+  set bpppsnrPoints $len
+  
+  eval  {.plot create line} $ppoints \
+    {-tag line -smooth true -joinstyle round -fill blue -width 2}
+  
+  bind .plot <Button-1> {MarkSel %x %y}
+  bind .plot <Double-Button-1> {MarkSel %x %y; FlashSel %x %y; ShowSel %x %y}
+}
+
+proc FitPlot {} {
+  global bpppsnrData plotexists bpppsnrPoints
+  
+  if {!$plotexists} {
+    ShowError "RD-OPT plot is not being shown"
+    return
+  }
+
+  if {$bpppsnrPoints < 4} {
+    ShowError "Need at least four plot points to fit"
+    return
+  }
+
+  catch ".plot delete fitline"
+  if {[catch {set fp [open "|fitcurve" r+]}]} {
+    ShowError "Could not find the program fitcurve"
+    return
+  }
+
+  puts $fp $bpppsnrPoints
+  for {set i 0} {$i < $bpppsnrPoints} {incr i 1} {
+    puts $fp "$bpppsnrData($i,bpp) $bpppsnrData($i,psnr)"
+  }
+  flush $fp
+  gets $fp line1
+  gets $fp line2
+  gets $fp line3
+  if {[catch "close $fp"]} {
+    ShowError "Error running fitcurve"
+    return
+  }
+
+  scan $line1 "%f%f" b1 p1
+  scan $line2 "%f%f" b2 p2
+  scan $line3 "%f%f" b3 p3
+  
+  set pp {}
+  set pp [concat $pp [bppToX $b1] [psnrToY $p1]]
+  set pp [concat $pp [bppToX $b2] [psnrToY $p2]]
+  set pp [concat $pp [bppToX $b3] [psnrToY $p3]]
+
+  catch ".plot delete fitline"
+
+  eval {.plot create line} $pp \
+    {-tag fitline -smooth false -joinstyle miter -fill brown}
+
+}
+
+proc ShowProgress {} {
+  global prognum progtext proghead imfname
+
+  set proghead "RD-OPT"
+  set progtext "Monitoring progress for image $imfname"
+
+  catch {destroy .progress}
+  toplevel .progress
+  wm title .progress "RD-OPT Progress"
+  wm geometry .progress 350x150+400+50
+  wm resizable .progress 0 0
+
+  frame .progress.f -width 350 -height 150 
+  pack .progress.f
+
+  label .progress.f.head -textvariable proghead -width 40
+  label .progress.f.msg -textvariable progtext -width 40
+  pack .progress.f.head  .progress.f.msg -side top -fill x 
+
+  frame .progress.f.sf -width 350 -height 80
+  pack .progress.f.sf
+
+  scale .progress.f.sf.scale -from 0 -to 63 -resolution 1 \
+	-length 200 -variable prognum \
+	-label "Row number:" -orient horizontal 
+
+  button .progress.f.quit -text "Dismiss" -command {destroy .progress}
+  pack .progress.f.quit -side bottom
+
+}
+
+proc Run {} {
+  global DCclamp plotfile imfname prognum progtext ifp \
+  imfnameisset ImInfo proghead currimdir weighted weights \
+  weightfile plotexists pweights threshspan \
+  mint maxt mint_file maxt_file coarseness usemint usemaxt
+
+  if {!$imfnameisset} {
+    ShowError "No image has been selected"
+    return
+  }
+
+  ShowProgress
+
+  .plot configure -cursor watch
+  update idletasks
+
+  set prognum 0
+
+  catch {puts $ifp "quit";close $ifp}
+
+  set cmd "|ImRdopt -v -v -v \
+    -coarse $coarseness \
+    -clampDC $DCclamp -errfile - \
+    -thresh $threshspan -pweights $pweights"
+
+  if {$weighted} {
+    set cmd "$cmd \
+     -weights $weightfile"
+  }
+
+  set usemint 0
+  set usemaxt 0
+  for {set num 0} {$num < $ImInfo($imfname,Planes)} {incr num 1} {
+    for {set j 0} {$j < 64} {incr j 1} {
+      if {$mint($num,$j) != 1} {
+	set usemint 1
+      }
+      if {$maxt($num,$j) != 1} {
+	set usemaxt 1
+      }
+      if {$usemint && $usemaxt} {
+	break
+      }
+    }
+  }
+
+  if {$usemint == 1} {
+      WriteMintFile 
+      set cmd "$cmd -mintable $mint_file"
+  }
+
+  if {$usemaxt == 1} {
+      WriteMaxtFile
+      set cmd "$cmd -maxtable $maxt_file"
+  }
+
+  set cmd "$cmd -im $currimdir/$imfname"
+
+  set ifp [open $cmd r+]
+
+
+  gets $ifp line;# image line
+
+  for {set n 0} {$n < $ImInfo($imfname,Planes)} {incr n 1} { 
+    set proghead "Color plane $n"
+    catch {pack forget .progress.f.sf.scale} 
+    set progtext "Computing statistics"
+    update idletasks
+
+    gets $ifp line
+    gets $ifp line
+    gets $ifp line
+
+    set progtext "Filling rate-distortion tables"
+    update idletasks
+
+    for {set i 0} {$i < 11} {incr i 1} {gets $ifp line}
+
+
+    set progtext "Running Lagrangian optimization"
+    pack .progress.f.sf.scale
+    update idletasks
+
+    set i 0
+    while {$i < 64} {
+      set prognum $i
+      gets $ifp line
+      update idletasks
+      incr i 1
+    } 
+  }
+
+  catch {pack forget .progress.f.sf.scale}
+
+  if {$ImInfo($imfname,Planes) > 1} {
+    gets $ifp line 
+    set proghead "Combining Units"
+    for {set n 0} {$n < $ImInfo($imfname,Planes)} {incr n 1} {
+      set progtext "Incorporating Unit Number $n"
+      update idletasks
+      gets $ifp line 
+      gets $ifp line 
+    }
+  }
+
+  for {set i 0} {$i < $ImInfo($imfname,Planes)} {incr i 1} {
+    if {$usemint==1} {
+      catch "exec /bin/rm $mint_file"
+    }
+    if {$usemaxt==1} {
+      catch "exec /bin/rm $maxt_file"
+    }
+  }
+
+  set proghead "Done!"
+  set progtext "R-D profile for $imfname"
+  update idletasks 
+
+  gets $ifp line
+
+  while {[read $ifp 1] != { }} {};
+
+  
+  FillPlot $plotfile
+  set plotexists 1
+
+  puts $ifp "stats"
+  flush $ifp
+  while {[set foo [read $ifp 1]] != { }} {};
+
+
+  .plot configure -cursor arrow
+  update idletasks
+}
+
+focus .plot
+proc ShowImage {} {
+  global imfname ImInfo currimdir \
+    tf imfnameisset
+
+  if {!$imfnameisset} {
+    ShowError "Image has not yet been selected"
+    return
+  }
+
+  set wname .imw_[DotToDash $imfname]
+
+
+  catch {destroy $wname}
+  toplevel $wname
+  wm title $wname "RD-OPT: $imfname (uncompressed)"
+  wm geometry $wname +400+50
+  frame $wname.f -width $ImInfo($imfname,Width) -height $ImInfo($imfname,Height)
+  
+
+
+  frame $wname.bf
+  pack $wname.bf
+  set tscript "destroy $wname"
+  button $wname.bf.q -text Close -command $tscript
+  bind $wname <KeyPress-q> $tscript
+  pack $wname.bf.q
+
+}
+
+set lastNewNumber 0
+
+proc NewNumber {} {
+  global lastNewNumber
+  incr lastNewNumber 1
+  if {$lastNewNumber > 5000} {
+    set lastNewNumber 0
+  }
+  expr $lastNewNumber
+}
+
+proc FreeId {id} {
+  global currIdList
+  set loc [lsearch $currIdList $id]
+  if {$loc >= 0} {
+    set currIdList [lreplace $currIdList $loc $loc]
+  }
+}
+
+proc InsertId {id} {
+  global currIdList
+  set loc [lsearch $currIdList $id]
+  if {$loc < 0} {
+    set currIdList [linsert $currIdList 0 $id]
+  }
+}
+
+
+proc GetQclicParams {} {
+  global qclicDir qclicName qclicPlotPoints \
+    imfname currimdir numACscans qclicGoAhead
+  set qclicDir $currimdir
+  set qclicName $imfname.qclic
+  set qclicNscans $numACscans
+  set qclicPlotPoints 20
+
+  set qclicGoAhead 1
+  catch "destroy .qclicw"
+  toplevel .qclicw
+  wm title .qclicw "QclicImage saving options"
+  wm geometry .qclicw +200+200
+  frame .qclicw.f
+
+  frame .qclicw.f.dirf
+  frame .qclicw.f.sep1 -height 2 -bg black -width 100
+  frame .qclicw.f.namef
+  frame .qclicw.f.sep2 -height 2 -bg black -width 100
+  frame .qclicw.f.ppointsf
+  frame .qclicw.f.sep3 -height 2 -bg black -width 100
+  frame .qclicw.f.okf
+
+  label .qclicw.f.dirf.l -text "Directory: "
+  entry .qclicw.f.dirf.e -textvariable qclicDir
+  pack .qclicw.f.dirf.l .qclicw.f.dirf.e -side left -anchor w
+
+  label .qclicw.f.namef.l -text "QclicImage Name: "
+  entry .qclicw.f.namef.e -textvariable qclicName
+  pack .qclicw.f.namef.l .qclicw.f.namef.e -side left -anchor w
+
+  label .qclicw.f.ppointsf.l -text "Number of aux tables to create: "
+  entry .qclicw.f.ppointsf.e -textvariable qclicPlotPoints -width 4
+  pack .qclicw.f.ppointsf.l .qclicw.f.ppointsf.e -side left -anchor w
+  
+  button .qclicw.f.okf.ok -text OK -command "catch {destroy .qclicw}"
+  button .qclicw.f.okf.cancel -text Cancel -command "set qclicGoAhead 0;catch {destroy .qclicw}"
+  pack .qclicw.f.okf.ok .qclicw.f.okf.cancel -side left
+
+  pack  \
+    .qclicw.f.dirf \
+    -side top -anchor nw
+  pack \
+    .qclicw.f.sep1 \
+    -side top -anchor c -fill x -expand true
+
+  pack \
+    .qclicw.f.namef \
+    -side top -anchor nw
+  pack \
+    .qclicw.f.sep2 \
+    -side top -anchor c -fill x -expand true
+
+  pack \
+    .qclicw.f.ppointsf \
+    -side top -anchor nw
+  pack \
+    .qclicw.f.sep3 \
+    -side top -anchor c -fill x -expand true
+
+  pack \
+    .qclicw.f.okf \
+    -side top -anchor c
+  
+  pack .qclicw.f
+
+  tkwait window .qclicw
+  return $qclicGoAhead
+}
+
+proc AvgPsnr {ypsnr cbpsnr crpsnr} {
+  set yD [expr (65025.0/pow(10.0,(0.0+$ypsnr)/10.0))]
+  set cbD [expr (65025.0/pow(10.0,(0.0+$cbpsnr)/10.0))]
+  set crD [expr (65025.0/pow(10.0,(0.0+$crpsnr)/10.0))]
+  set D [expr (0.0+$yD+($cbD/4.0)+($crD/4.0))/1.5]
+  return [expr 10.0*log10(65025.0/D)]
+}
+
+proc fullPath {dir} {
+  if {![string match "/*" $dir]} {
+    return [pwd]/$dir
+  } else {
+    return $dir
+  }
+}
+
+proc CompressToQclicImage {com1 com2} {
+  global qclicDir qclicName qclicNscans qclicPlotPoints \
+    qclicRetain \
+    qfile_pref imfname imfile_pref \
+    currimdir curroutdir \
+    SeeXasCF pbppmax \
+    threshspan UsePJPEG scans_file numACscans ImInfo \
+    sel_x sel_y sel_x_bpp sel_x_cf ifp
+
+  if {![GetQclicParams]} {
+    return
+  }
+
+  set qclicDirName $qclicDir/$qclicName
+
+  if {[catch "exec mkdir $qclicDirName"]} {
+    ShowError "Cannot create directory: $qclicDirName"
+    return
+  }
+
+
+  set cimfname $qclicDirName/$qclicName.jpg
+  set qfilename $qclicDirName/rdopt.Q
+
+  if {[catch "exec /bin/cp $qfile_pref.$imfname.$com1.$com2 $qfilename"]} {
+    ShowError "Cannot create file: $qfilename"
+    return
+  }
+
+  . configure -cursor watch
+
+  set scanfilename $qclicDirName/$qclicName.scans
+  exec QTtoSF $qclicNscans $qfilename $scanfilename
+
+
+  set ntables $ImInfo($imfname,Planes)
+
+  if {$ntables == 1} {
+      set gray_opt "-grayscale"
+      set gray_opt_val "-optimize"
+  } else {
+      set gray_opt "-qslots"
+      set gray_opt_val "0,1,2"
+  }
+
+  if {$threshspan > 0} {
+      set thresh_opt "-thresh"
+      set thresh_opt_val $qfilename
+  } else {
+      set thresh_opt "-optimize"
+      set thresh_opt_val "-optimize"
+  }
+
+  set scans_opt "-scans"
+  set scans_opt_val $scanfilename
+    
+  exec cjpeg -optimize -qtables $qfilename -dct float \
+      $gray_opt $gray_opt_val $thresh_opt $thresh_opt_val \
+      $scans_opt $scans_opt_val -outfile $cimfname \
+      $currimdir/$imfname
+  
+  exec jscans $cimfname
+  exec jpegqual $cimfname $currimdir/$imfname >> $qclicDirName/$qclicName.jpg.jsdir
+
+  # get size and psnr
+  set fp [open $qclicDirName/$qclicName.jpg.jsdir r]
+  gets $fp idline
+  while {![string match "end*" $idline]} {
+    gets $fp idline
+  }
+  scan $idline "%s%s%d" foo foo1 csize
+  set nlim [expr (1+($qclicNscans*$ntables))]
+  for {set n 0} {$n < $nlim} {incr n 1} {
+    gets $fp idline
+  }
+  close $fp
+  if {$ntables == 1} {
+    scan $idline "%s%lf" foo qual
+  } else {
+    set qual 0.0
+    scan $idline "%s%lf%s%s%lf%s%s%lf%s%s%lf" foo qual1 foo1 foo2 qual2 foo3 \
+      foo4 qual3 foo5 foo6 qual
+    if {([string compare $qual ""] == 0) || ($qual == 0.0)} {
+      set qual [AvgPsnr $qual1 $qual2 $qual3]
+    }
+  }
+  set qual [expr (0.0+round($qual*100.0))/100.0]
+
+  set fp [open $qclicDirName/.qclicId w]
+  if {$ntables == 1} {
+    set graytag "Grayscale"
+  } else {
+    set graytag "Color"
+  }
+  set idline [format "%-15s %4dx%-4d %-9s %2d %6d %5.2lf" \
+        $qclicName $ImInfo($imfname,Width) $ImInfo($imfname,Height) $graytag $nlim $csize $qual]
+  puts $fp $idline
+  close $fp
+
+  #create more qtables
+  set tempbpp 0.0
+
+  set fp [open $qclicDirName/rdopt.plot w]
+  puts $fp "#bpp      psnr"
+
+  for {set n 0} {$n <= $qclicPlotPoints} {incr n 1} {
+    puts $ifp "qfile $qclicDirName/rdopt.Q.$n"
+    flush $ifp
+    while {[read $ifp 1] != { }} {};
+
+    if {$n == $qclicPlotPoints} {
+      set tempbpp $pbppmax
+    }
+
+    puts $ifp "bpp $tempbpp"
+    flush $ifp
+    while {[read $ifp 1] != { }} {};
+ 
+    set qfp [open $qclicDirName/rdopt.Q.$n r]
+    set tbpp 0
+    set tpsnr 0
+    while {[gets $qfp line] >= 0} {
+      if {[string match "#Bpp =*" $line]} {
+        scan $line "%s%s%lf" foo foo1 tbpp
+      }
+      if {[string match "#PSNR =*" $line]} {
+        scan $line "%s%s%lf" foo foo1 tpsnr
+      }
+    }
+    close $qfp
+    puts $fp "$tbpp  $tpsnr"
+
+    if {$n == 0} {
+      set bppincr [expr (0.0-$tbpp+$pbppmax)/(0.0+$qclicPlotPoints)]
+      set tempbpp $tbpp
+    }
+    set tempbpp [expr $tempbpp + $bppincr]
+
+  }
+
+  #add selected bpp-psnr line to plotfile
+  set qfp [open $qclicDirName/rdopt.Q r]
+  set tbpp 0
+  set tpsnr 0
+  while {[gets $qfp line] >= 0} {
+    if {[string match "#Bpp =*" $line]} {
+      scan $line "%s%s%lf" foo foo1 tbpp
+    }
+    if {[string match "#PSNR =*" $line]} {
+      scan $line "%s%s%lf" foo foo1 tpsnr
+    }
+  }
+  close $qfp
+
+  puts $fp ""
+  puts $fp "#selected-point:"
+  puts $fp "$tbpp  $tpsnr"
+  close $fp
+
+  catch "exec imsig -im $currimdir/$imfname > $qclicDirName/$qclicName.imsig"
+
+  if {$qclicRetain == "LINK"} {
+    catch "exec ln -s [fullPath $currimdir]/$imfname $qclicDirName/$qclicName"
+  } elseif {$qclicRetain == "COPY"} {
+    catch "exec cp $currimdir/$imfname $qclicDirName/$qclicName"
+  }  
+
+  set tbpp_orig $tbpp
+
+
+  set tsize $csize
+  set tbpp [expr (0.0+$tsize)*8.0/(0.0+($ImInfo($imfname,Width)* \
+     $ImInfo($imfname,Height)))]
+  
+  set sel_x_bpp $tbpp
+  set sel_x_cf [cfToBpp $tbpp]
+
+  if {$SeeXasCF} {
+    set sel_x $sel_x_cf
+  } else {
+    set sel_x $sel_x_bpp
+  }
+  set sel_y $tpsnr
+
+  set tx [bppToX $tbpp]
+  set tx_orig [bppToX $tbpp_orig]
+  set ty [psnrToY $tpsnr]
+  .plot create oval [expr $tx - 1.0] [expr $ty - 1.0] \
+		    [expr $tx + 1.0] [expr $ty + 1.0] \
+		    -fill gray
+  .plot create oval [expr $tx_orig - 1.0] [expr $ty - 1.0] \
+		    [expr $tx_orig + 1.0] [expr $ty + 1.0] \
+		    -fill black
+  .plot create line $tx_orig $ty $tx $ty -fill gray
+
+  . configure -cursor arrow
+
+}
+
+proc Compress {com1 com2} {
+  global qfile_pref imfname imfile_pref outfname TargetIsFile \
+  outfnameisset currimdir curroutdir pid \
+  focusisset focusx1 focusy1 focusx2 focusy2 SeeXasCF \
+  threshspan UsePJPEG scans_file numACscans ImWinfo ImInfo \
+  sel_x sel_y sel_x_bpp sel_x_cf currImwinId ifp
+
+
+  if {$TargetIsFile == 0} { 
+    set cimfname $imfile_pref.$imfname.$com1.$com2
+  } elseif {$TargetIsFile == 1} {
+    set cimfname $curroutdir/$outfname
+  } else { 
+    CompressToQclicImage $com1 $com2
+    return
+  }
+
+  set qfilename $qfile_pref.$imfname.$com1.$com2
+  
+  catch {exec /bin/rm $cimfname}; 
+
+  puts $ifp "cfile $cimfname"
+  flush $ifp
+  while {[read $ifp 1] != { }} {};
+
+  puts $ifp "compress $com1 $com2"
+  flush $ifp
+
+  gets $ifp line
+  scan $line "Predicted %d bytes (%f bpp), %f dB PSNR (%f rmse)." \
+    foo1 tbpp_orig tpsnr foo2
+  gets $ifp line
+  scan $line "Saved %d bytes (%f bpp)." foo1 tbpp
+  while {[read $ifp 1] != { }} {};
+
+  set sel_x_bpp $tbpp
+  set sel_x_cf [cfToBpp $tbpp]
+
+  if {$SeeXasCF} {
+    set sel_x $sel_x_cf
+  } else {
+    set sel_x $sel_x_bpp
+  }
+  set sel_y $tpsnr
+
+  set tx [bppToX $tbpp]
+  set tx_orig [bppToX $tbpp_orig]
+  set ty [psnrToY $tpsnr]
+  .plot create oval [expr $tx - 1.0] [expr $ty - 1.0] \
+		    [expr $tx + 1.0] [expr $ty + 1.0] \
+		    -fill gray
+  .plot create oval [expr $tx_orig - 1.0] [expr $ty - 1.0] \
+		    [expr $tx_orig + 1.0] [expr $ty + 1.0] \
+		    -fill black
+  .plot create line $tx_orig $ty $tx $ty -fill gray
+
+  if {![expr $TargetIsFile]} { 
+    if {$currImwinId < 0} {
+      set currImwinId [NewNumber]
+    }
+
+    InsertId $currImwinId
+
+    set wname .imw_${currImwinId}
+    set wwidth $ImInfo($imfname,Width)
+    set wheight $ImInfo($imfname,Height)
+
+    if {![winfo exists $wname]} {
+      toplevel $wname -bd 0
+      frame $wname.f -width $wwidth -height $wheight
+
+      frame $wname.bf -width $wwidth -height 30
+
+      button $wname.bf.q -text Close
+      button $wname.bf.i -text "Q-Info"
+      button $wname.bf.r -text Retain
+
+      pack append $wname.bf \
+	$wname.bf.q left \
+	$wname.bf.r left \
+	$wname.bf.i right
+      
+      pack append $wname \
+	$wname.f top \
+	$wname.bf bottom
+    } else {
+      $wname.f configure -width $wwidth -height $wheight
+      $wname.bf configure -width $wwidth -height 30
+
+      foreach pid $ImWinfo($wname,Pids) {
+	catch {exec kill -9 $pid}
+      }
+      catch "close $ImWinfo($wname,Fp)"
+    }
+
+    wm geometry $wname \
+       ${wwidth}x[expr $wheight +30]+400+50; 
+
+    if {[string match bpp $com1]} {
+	if {$SeeXasCF} {
+          wm title $wname "RD-OPT: $imfname $sel_x_cf:1 Compression";
+	} else {
+	  wm title $wname "RD-OPT: $imfname bpp $sel_x_bpp"
+	}
+      } else {
+        wm title $wname "RD-OPT: $imfname PSNR $sel_y";
+    }
+
+    update
+
+    set ImWinfo($wname,Id) [winfo id $wname.f]
+
+    if {$UsePJPEG==1} {
+      set cmdtag "-qual %2 -popctrl -dither"
+    } else {
+      set cmdtag "-dither"
+    }
+    set ImWinfo($wname,Fp) [open \
+        "|TasvirLocal $cimfname $ImWinfo($wname,Id) 0 0 0 0 -refresh -xbacking -control buttonpress-1 $cmdtag" r+]
+    
+    set ImWinfo($wname,Pids) [pid $ImWinfo($wname,Fp)]
+    set bscript \
+	"foreach pid $ImWinfo($wname,Pids) { \
+	  catch \"exec kill -9 \$pid\" \
+	}; \
+        catch \"close $ImWinfo($wname,Fp)\"; \
+	FreeId $currImwinId; \
+ 	destroy $wname"
+
+    bind $wname <KeyPress-q> $bscript
+    $wname.bf.q configure -command $bscript
+
+    set bscript "ShowFile $qfilename"
+    bind $wname <KeyPress-i> $bscript
+    $wname.bf.i configure -command $bscript
+
+
+    set bscript "\
+      set currImwinId -1; \
+      wm geometry $wname +650+50; \
+      pack forget $wname.bf.r; \
+      bind $wname <KeyPress-r> \"\"; \
+      update" 
+
+    bind $wname <KeyPress-r> $bscript
+    $wname.bf.r configure -command $bscript
+
+  } 
+}
+
+proc ShowSel {x y} {
+  global ifp qfile_pref  pheight SelectX imfname \
+    sel_x sel_y sel_x_bpp sel_x_cf UsePJPEG
+  
+  set bpp [XTobpp $x];
+  set psnr [YTopsnr $y]
+
+  if {$SelectX} {set com1 bpp; set com2 $bpp} \
+  else {set com1 psnr; set com2 $psnr}
+
+  set qfilename $qfile_pref.$imfname.$com1.$com2
+
+  if {$UsePJPEG==0} {
+    puts $ifp "sequential"
+    flush $ifp
+    while {[set foo [read $ifp 1]] != { }} {};
+  } else {
+    puts $ifp "progressive"
+    flush $ifp
+    while {[set foo [read $ifp 1]] != { }} {};
+  }
+
+  puts $ifp "qfile $qfilename"
+  flush $ifp
+  while {[set foo [read $ifp 1]] != { }} {};
+
+  puts $ifp "$com1 $com2"
+
+  flush $ifp
+
+  set badsel 0
+  if {[string match S [read $ifp 1]]} {
+    ShowError "Selection out of range"
+    set badsel 1
+    gets $ifp foo
+  }
+  while {[set foo [read $ifp 1]] != { }} {};
+
+  if {!$badsel} {
+    Compress $com1 $com2
+  }
+  .plot configure -cursor arrow
+}
+
+proc ShowSelFromVal {isBpp val} {
+  global ifp qfile_pref  pheight SelectX imfname \
+    sel_x sel_y sel_x_bpp sel_x_cf
+  
+
+  .plot configure -cursor watch
+
+  if {$isBpp} {set com1 bpp; set com2 $val} \
+  else {set com1 psnr; set com2 $val}
+
+  set qfilename $qfile_pref.$imfname.$com1.$com2
+
+  puts $ifp "qfile $qfilename"
+  flush $ifp
+  while {[set foo [read $ifp 1]] != { }} {};
+
+  puts $ifp "$com1 $com2"
+
+  flush $ifp
+
+  set badsel 0
+  if {[string match S [read $ifp 1]]} {
+    ShowError "Selection out of range"
+    set badsel 1
+    gets $ifp foo
+  }
+  while {[set foo [read $ifp 1]] != { }} {};
+
+  if {!$badsel} {
+    Compress $com1 $com2
+  }
+  .plot configure -cursor arrow
+}
+
+proc FlashSel {x y} {
+  global SelectX pwidth pheight
+
+  .plot configure -cursor watch
+#  if {$SelectX} {
+#    .plot create line $x $pheight $x [expr $pheight-60] -arrow last
+#  } else {
+#    .plot create line 50 $y 110 $y -arrow last
+#  }
+  update idletasks
+}
+
+proc MarkSel {x y} {
+  global SelectX pwidth pheight
+
+#  if {$SelectX} {
+#    .plot create line $x $pheight $x [expr $pheight-50] -arrow last
+#  } else {
+#    .plot create line 50 $y 100 $y -arrow last
+#  }
+#  update idletasks
+}
+
+proc ShowError {s} {
+  catch {destroy .errwin}
+  toplevel .errwin
+  wm title .errwin "RD-OPT Error"
+  wm geometry .errwin +400+400
+
+  frame .errwin.f -width 100 -height 100
+  pack .errwin.f
+  label .errwin.f.l -text "$s"
+
+  button .errwin.f.b -text "Dismiss" -command "catch {destroy .errwin}"
+
+  pack .errwin.f.l -side top -pady 20
+  pack .errwin.f.b -side bottom
+}
+
+
+
+
+proc ShowFile thefile {
+
+    set wfname fw_[DotToDash $thefile]
+    if ![winfo exists .$wfname] {
+	toplevel .$wfname
+	frame .$wfname.buttons
+	pack .$wfname.buttons -side bottom -expand 1 -fill x
+	button .$wfname.buttons.dismiss -text Dismiss -command "destroy .$wfname"
+	pack .$wfname.buttons.dismiss 
+	text .$wfname.text -height 20 -yscrollcommand ".$wfname.scroll set" -setgrid 1
+	pack .$wfname.text -side left -expand 1 -fill both
+	scrollbar .$wfname.scroll -command ".$wfname.text yview"
+	pack .$wfname.scroll -side right -fill y
+    } else {
+	wm deiconify .$wfname
+	raise .$wfname
+    }
+    wm title .$wfname "RD-OPT: Quantization Info"
+    wm iconname .$wfname "RD-OPT"
+    .$wfname.text delete 1.0 end
+    .$wfname.text insert 1.0 [exec cat $thefile]
+    .$wfname.text mark set insert 1.0
+}
+
+
+
+proc DotToDash {str} {
+  set tstr $str
+  while {[set idx [string first "." $tstr]] != -1} {
+    set ttstr [string range $tstr 0 [expr $idx-1]]_[string range $tstr [expr $idx+1] end]
+    set tstr $ttstr
+  }
+  return $tstr
+}
+
+proc ExitProc {} {
+  global ifp fprefix currIdList ImWinfo
+  catch {puts $ifp quit;close $ifp}
+
+  if {![catch {set ff [glob $fprefix*]}]} {
+    foreach i $ff { 
+      catch {exec /bin/rm $i}
+    }
+  }
+  foreach i $currIdList {
+    foreach pid $ImWinfo(.imw_$i,Pids) {
+	catch {exec kill -9 $pid}
+    }
+    catch "close $ImWinfo(.imw_$i,Fp)"
+  }
+  exit
+} 
+
+# set default weights 
+for {set i 0} {$i < 64} {incr i 1} {
+  set defweights($i) 1
+}
+set defweights(0) 8
+set defweights(1) 6
+set defweights(8) 6
+set defweights(9) 6
+set defweights(2) 4
+set defweights(10) 4
+set defweights(16) 4
+set defweights(17) 4
+set defweights(18) 4
+set defweights(3) 2
+set defweights(11) 2
+set defweights(19) 2
+set defweights(24) 2
+set defweights(25) 2
+set defweights(26) 2
+set defweights(27) 2
+
+proc WriteWeightsFile {} {
+  global weights weightfile
+
+  set f [open $weightfile w]
+
+  for {set num 0} {$num < 3} {incr num 1} {
+    set n 0
+    for {set i 0} {$i < 8} {incr i 1} {
+      puts $f "$weights($num,[expr $n+0]) $weights($num,[expr $n+1]) $weights($num,[expr $n+2]) $weights($num,[expr $n+3]) $weights($num,[expr $n+4]) $weights($num,[expr $n+5]) $weights($num,[expr $n+6]) $weights($num,[expr $n+7])"
+       incr n 8
+    }
+  }
+  close $f
+}
+
+proc SetPlotRange {} {
+  global pbppmin pbppmax plotpoints plotexists plotfile \
+    userealBpp didsetplotrange
+
+  catch {destroy .prangewin}
+  toplevel .prangewin
+  wm title .prangewin "RD-OPT Plot Range"
+  wm geometry .prangewin +300+300
+
+  set didsetplotrange 0
+
+  frame .prangewin.f
+  pack .prangewin.f
+
+  
+  label .prangewin.f.bminl -text "Min Bpp:"
+  entry .prangewin.f.bmin -textvariable pbppmin
+  pack  .prangewin.f.bminl .prangewin.f.bmin
+
+  label .prangewin.f.bmaxl -text "Max Bpp:"
+  entry .prangewin.f.bmax -textvariable pbppmax
+  pack  .prangewin.f.bmaxl .prangewin.f.bmax
+
+  label .prangewin.f.ptsl -text "Points used:"
+  entry .prangewin.f.pts -textvariable plotpoints
+  pack  .prangewin.f.ptsl .prangewin.f.pts
+
+  radiobutton .prangewin.f.modelbpp -text "Estimate Bpp" \
+    -variable userealBpp -value 0
+  radiobutton .prangewin.f.realbpp -text "Actual Bpp (SLOW!)" \
+    -variable userealBpp -value 1
+  pack .prangewin.f.modelbpp .prangewin.f.realbpp
+
+  button .prangewin.f.q -text OK -command {set didsetplotrange 1;destroy .prangewin}
+  button .prangewin.f.c -text Cancel -command {destroy .prangewin}
+  pack .prangewin.f.c .prangewin.f.q
+
+  tkwait window .prangewin
+  if {$plotexists && $didsetplotrange} {
+    FillPlot $plotfile
+  }
+}
+
+set wtswereset 0
+
+proc SetWeights {} {
+  global weights defweights  wtswereset i pweights n
+
+  if {!$wtswereset} {
+    for {set n 0} {$n < 3} {incr n 1} {
+      for {set i 0} {$i < 64} {incr i 1} {
+        set weights($n,$i) $defweights($i)
+      }
+    }
+    set wtswereset 1
+  }
+  catch {destroy .weightsw}
+  toplevel .weightsw
+  wm title .weightsw "RD-OPT Weights"
+  wm geometry .weightsw +300+300
+
+  frame .weightsw.f
+  pack .weightsw.f
+
+  
+  label .weightsw.f.pwlabel -text "Plane Weights: "
+  entry .weightsw.f.pweights -textvariable pweights 
+  pack  .weightsw.f.pwlabel .weightsw.f.pweights
+
+  label .weightsw.f.l -text "DCT coefficient weights for calculating \
+    distortion"
+  pack .weightsw.f.l
+
+  for {set num 0} {$num < 3} {incr num 1} {
+
+  label .weightsw.f.l$num -text "Weights for Color plane $num"
+  pack .weightsw.f.l$num
+
+  set n 0
+  for {set i 0} {$i < 8} {incr i 1} {
+    frame .weightsw.f.p${num}line$i 
+    pack .weightsw.f.p${num}line$i
+    for {set j 0} {$j < 8} {incr j 1} {
+      entry .weightsw.f.p${num}line$i.e$n -width 4 -textvariable weights($num,$n)
+      incr n 1
+    }
+  }
+
+  set n 0
+  for {set i 0} {$i < 8} {incr i 1} {
+    pack .weightsw.f.p${num}line$i.e[expr $n+0] \
+         .weightsw.f.p${num}line$i.e[expr $n+1] \
+         .weightsw.f.p${num}line$i.e[expr $n+2] \
+         .weightsw.f.p${num}line$i.e[expr $n+3] \
+         .weightsw.f.p${num}line$i.e[expr $n+4] \
+         .weightsw.f.p${num}line$i.e[expr $n+5] \
+         .weightsw.f.p${num}line$i.e[expr $n+6] \
+         .weightsw.f.p${num}line$i.e[expr $n+7] -side left
+     incr n 8
+  }
+  }
+
+  button .weightsw.f.res -text Reset -command { \
+    for {set n 0} {$n < 3} {incr n 1} { \
+      for {set i 0} {$i < 64} {incr i 1} {\
+        set weights($n,$i) $defweights($i)}}}
+
+  button .weightsw.f.q -text OK -command {WriteWeightsFile;destroy .weightsw}
+  button .weightsw.f.c -text Cancel -command {destroy .weightsw}
+  pack .weightsw.f.c .weightsw.f.res .weightsw.f.q
+}
+
+# set min-max tables
+for {set j 0} {$j < 3} {incr j 1} {
+  for {set i 0} {$i < 64} {incr i 1} {
+    set mint($j,$i) $mint_def
+    set maxt($j,$i) $maxt_def
+  }
+}
+
+
+proc WriteMintFile {} {
+  global mint mint_file
+
+  set f [open $mint_file w]
+
+  for {set num 0} {$num < 3} {incr num 1} { 
+    set n 0
+    for {set i 0} {$i < 8} {incr i 1} {
+      puts $f "$mint($num,[expr $n+0]) $mint($num,[expr $n+1]) $mint($num,[expr $n+2]) $mint($num,[expr $n+3]) $mint($num,[expr $n+4]) $mint($num,[expr $n+5]) $mint($num,[expr $n+6]) $mint($num,[expr $n+7])"
+       incr n 8
+    }
+  }
+
+  close $f
+}
+
+proc WriteMaxtFile {} {
+  global maxt maxt_file
+
+  set f [open $maxt_file w]
+
+  for {set num 0} {$num < 3} {incr num 1} { 
+    set n 0
+    for {set i 0} {$i < 8} {incr i 1} {
+      puts $f "$maxt($num,[expr $n+0]) $maxt($num,[expr $n+1]) $maxt($num,[expr $n+2]) $maxt($num,[expr $n+3]) $maxt($num,[expr $n+4]) $maxt($num,[expr $n+5]) $maxt($num,[expr $n+6]) $maxt($num,[expr $n+7])"
+       incr n 8
+    }
+  }
+  close $f
+}
+
+set minqt_temp(0) ""
+set minqt_temp(1) ""
+set minqt_temp(2) ""
+set maxqt_temp(0) ""
+set maxqt_temp(1) ""
+set maxqt_temp(2) ""
+
+proc SetMinT {num} {
+  global mint minqt_temp
+
+  for {set i 0} {$i < 64} {incr i 1} {
+    set mint($num,$i) $minqt_temp($num)
+  }
+  set minqt_temp($num) ""
+}
+
+proc SetMaxT {num} {
+  global maxt maxqt_temp
+
+  for {set i 0} {$i < 64} {incr i 1} {
+    set maxt($num,$i) $maxqt_temp($num)
+  }
+  set maxqt_temp($num) ""
+}
+
+proc SetMinMaxT {num} {
+  global mint maxt minqt_temp maxqt_temp usemint usemaxt
+
+  catch {destroy .minmaxt$num}
+  toplevel .minmaxt$num
+  wm title .minmaxt$num "RD-OPT Min/Max Q-tables for plane $num"
+  wm geometry .minmaxt$num +[expr 350 + 50*$num]+350
+
+  frame .minmaxt$num.f
+  pack .minmaxt$num.f
+
+
+  button .minmaxt$num.f.q -text OK -command "destroy .minmaxt$num"
+  pack .minmaxt$num.f.q -side bottom
+
+  frame .minmaxt$num.f.mint 
+  frame .minmaxt$num.f.sep -width 5 -height 100
+  frame .minmaxt$num.f.maxt 
+  pack .minmaxt$num.f.mint .minmaxt$num.f.sep .minmaxt$num.f.maxt -side left
+
+
+
+  label .minmaxt$num.f.mint.l$num -text "MinTable for Color plane $num "
+  label .minmaxt$num.f.mint.setl$num -text "Set each to:"
+  entry .minmaxt$num.f.mint.sete$num -width 4 -textvariable minqt_temp($num)
+  bind .minmaxt$num.f.mint.sete$num <Return> "SetMinT $num"
+  pack .minmaxt$num.f.mint.l$num .minmaxt$num.f.mint.setl$num .minmaxt$num.f.mint.sete$num 
+
+  label .minmaxt$num.f.maxt.l$num -text "MaxTable for Color plane $num"
+  label .minmaxt$num.f.maxt.setl$num -text "Set each to:"
+  entry .minmaxt$num.f.maxt.sete$num -width 4 -textvariable maxqt_temp($num)
+  bind .minmaxt$num.f.maxt.sete$num <Return> "SetMaxT $num"
+  pack .minmaxt$num.f.maxt.l$num .minmaxt$num.f.maxt.setl$num .minmaxt$num.f.maxt.sete$num 
+
+  set n 0
+  for {set i 0} {$i < 8} {incr i 1} {
+      frame .minmaxt$num.f.mint.t${num}line$i 
+      pack .minmaxt$num.f.mint.t${num}line$i
+      frame .minmaxt$num.f.maxt.t${num}line$i 
+      pack .minmaxt$num.f.maxt.t${num}line$i
+      for {set j 0} {$j < 8} {incr j 1} {
+        entry .minmaxt$num.f.mint.t${num}line$i.e$n -width 4 -textvariable mint($num,$n)
+        entry .minmaxt$num.f.maxt.t${num}line$i.e$n -width 4 -textvariable maxt($num,$n)
+        incr n 1
+      }
+  }
+
+  set n 0
+  for {set i 0} {$i < 8} {incr i 1} {
+      pack .minmaxt$num.f.mint.t${num}line$i.e[expr $n+0] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+1] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+2] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+3] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+4] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+5] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+6] \
+           .minmaxt$num.f.mint.t${num}line$i.e[expr $n+7] -side left
+      pack .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+0] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+1] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+2] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+3] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+4] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+5] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+6] \
+           .minmaxt$num.f.maxt.t${num}line$i.e[expr $n+7] -side left
+       incr n 8
+  }
+  frame .minmaxt$num.f.mint.sep$num -height 10
+  pack .minmaxt$num.f.mint.sep$num -side bottom
+  frame .minmaxt$num.f.maxt.sep$num -height 10
+  pack .minmaxt$num.f.maxt.sep$num -side bottom
+
+}
+
+

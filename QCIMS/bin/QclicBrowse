@@ -1,0 +1,3640 @@
+#!/bin/csh -f
+
+#add stuff to path if needed \
+if ("$path" !~ *Qclic*) then
+#assume we need to modify path \
+setenv MTYPE `uname -m`
+#force wish to treat as comment: \
+set binname=bin.RS6000
+#\
+if ($MTYPE == sun4m) set binname=bin.SUN
+#\
+if ($MTYPE == i86pc) set binname=bin.PENTIUM
+#\
+if ($MTYPE == RISC) set binname=bin.DEC
+#\
+if ($MTYPE == hp9000s700) set binname=bin.HP
+#\
+set path = ( /p/qclic/Code/jpeg/$binname /p/qclic/Code/Qclic/$binname /p/qclic/Code/Qclic/bin.common $path )
+#\
+# export path
+#\
+endif
+# check first arg to see if -zoo is present \
+if ("$*" =~ *-zoo*) then
+# restart using zoo-wish \
+exec zoo-wish $0 $*
+#\
+else
+#\
+exec wish $0 $*
+#\
+endif
+
+#
+# Procedures...
+#
+
+# Andy 9/16:
+# Here's a proc from the Tcl faq to make the entire application go 'Busy'
+# while it's doing something. Just call it with the commands you want to
+# execute, and the watch cursor will be displayed for the time it takes
+# the commands to complete.  Note that any new windows will have their
+# normal cursor.
+proc Busy {cmds} {
+    global errorInfo
+    set Busy { . }
+    set list [winfo children .]
+    while {$list != ""} {
+        set next {}
+        foreach w $list {
+            set oldcursor [lindex [$w config -cursor] 4]
+            if {[winfo toplevel $w] == $w || $oldcursor != ""} {
+                lappend Busy [list $w $oldcursor]
+            }
+            set next [concat $next [winfo children $w]]
+        }
+        set list $next
+    }
+    foreach w $Busy {
+        catch {[lindex $w 0] config -cursor watch}
+    }
+    update
+    set error [catch {uplevel eval [list $cmds]} result]
+    set ei $errorInfo
+    foreach w $Busy {
+        catch {[lindex $w 0] config -cursor [lindex $w 1]}
+    }
+    if $error {
+        error $result $ei
+    } else {
+        return $result
+    }
+}
+
+proc setImParams {} {
+  global showafter cmapping ctrlvisib browseOnWhat \
+     BrowsePsnr BrowseSize smallfont \
+     ImMaxc ImCcube ImDither alwaysTrue
+
+  catch {destroy .imparamsw}
+  toplevel .imparamsw
+  wm title .imparamsw "Qclic: Image Options"
+
+  wm geometry .imparamsw +300+300
+
+  frame .imparamsw.frSperc
+
+  scale .imparamsw.frSperc.sascale -from 1 -to 100 -resolution 1 -length 5c \
+    -variable showafter -orient horizontal -font $smallfont
+  radiobutton .imparamsw.frSperc.label -font $smallfont \
+    -text "Start showing after (percent):  " \
+    -variable alwaysTrue -value 1
+
+
+  frame .imparamsw.frRemap
+
+  radiobutton .imparamsw.frRemap.cm0 -variable cmapping -value 0 \
+    -font $smallfont -text "No re-mapping"
+  radiobutton .imparamsw.frRemap.cm1 -variable cmapping -value 1 \
+    -font $smallfont -text "Shared re-mapping"
+  radiobutton .imparamsw.frRemap.cm2 -variable cmapping -value 2 \
+    -font $smallfont -text "Private re-mapping"
+  
+  frame .imparamsw.frCtrl
+  radiobutton .imparamsw.frCtrl.visib -variable ctrlvisib -value 1 \
+    -font $smallfont -text "Default Ctrl-win state: visible"
+  radiobutton .imparamsw.frCtrl.invisib -variable ctrlvisib -value 0 \
+    -font $smallfont -text "Default Ctrl-win state: invisible"
+
+  frame .imparamsw.frOk
+  button .imparamsw.frOk.ok -font $smallfont -text OK -command "catch {destroy .imparamsw}"
+
+  frame .imparamsw.frBrowse
+
+  frame .imparamsw.frBrowse.qf
+  scale .imparamsw.frBrowse.qf.qscale -from 15 -to 40 -resolution 1 \
+    -length 5c -variable BrowsePsnr \
+    -font $smallfont -orient horizontal 
+  if {$browseOnWhat != 1} {
+    .imparamsw.frBrowse.qf.qscale configure -state disabled
+  }
+  frame .imparamsw.frBrowse.sf
+  scale .imparamsw.frBrowse.sf.sscale -from 1 -to 50 -resolution 0.5 \
+    -length 5c -variable BrowseSize \
+    -font $smallfont -orient horizontal 
+  if {$browseOnWhat != 2} {
+    .imparamsw.frBrowse.sf.sscale configure -state disabled
+  }
+
+  radiobutton .imparamsw.frBrowse.browseLow -variable browseOnWhat -value 0 \
+    -font $smallfont -text "Browse at lowest quality" \
+    -command ".imparamsw.frBrowse.qf.qscale configure -state disabled;.imparamsw.frBrowse.sf.sscale configure -state disabled"
+  radiobutton .imparamsw.frBrowse.qf.browseQ -variable browseOnWhat -value 1 \
+    -font $smallfont -text "Browse at quality (dB) at least:" \
+    -command ".imparamsw.frBrowse.qf.qscale configure -state normal;.imparamsw.frBrowse.sf.sscale configure -state disabled"
+  radiobutton .imparamsw.frBrowse.sf.browseS -variable browseOnWhat -value 2 \
+    -font $smallfont -text "Browse at size (kB) at most:    " \
+    -command ".imparamsw.frBrowse.qf.qscale configure -state disabled;.imparamsw.frBrowse.sf.sscale configure -state normal"
+  radiobutton .imparamsw.frBrowse.lossless -variable browseOnWhat -value 4 \
+    -font $smallfont -text "Browse uncompressed images" \
+    -command ".imparamsw.frBrowse.qf.qscale configure -state disabled;.imparamsw.frBrowse.sf.sscale configure -state disabled"
+
+
+  frame .imparamsw.frMaxc
+  scale .imparamsw.frMaxc.immaxc -from 2 -to 256 -resolution 1 \
+     -length 5c -variable ImMaxc -orient horizontal \
+     -font $smallfont
+
+  radiobutton .imparamsw.frMaxc.label -font $smallfont \
+     -text "Max colors per image display:   " \
+     -variable alwaysTrue -value 1
+
+  frame .imparamsw.frDither
+  checkbutton .imparamsw.frDither.dither -variable ImDither \
+     -font $smallfont -text "Do Dithering"
+
+  frame .imparamsw.frCcube
+  frame .imparamsw.frCcube.icc
+  radiobutton .imparamsw.frCcube.icc.label -font $smallfont \
+    -text "R,G,B bits for color images" \
+    -variable alwaysTrue -value 1
+  radiobutton .imparamsw.frCcube.icc.cc1 -variable ImCcube -value 1 -font $smallfont -text low
+  radiobutton .imparamsw.frCcube.icc.cc2 -variable ImCcube -value 2
+  radiobutton .imparamsw.frCcube.icc.cc3 -variable ImCcube -value 3
+  radiobutton .imparamsw.frCcube.icc.cc4 -variable ImCcube -value 4
+  radiobutton .imparamsw.frCcube.icc.cc5 -variable ImCcube -value 5
+  radiobutton .imparamsw.frCcube.icc.cc6 -variable ImCcube -value 6 -font $smallfont -text high
+
+  #labels and lines
+  #
+  label .imparamsw.labBrowse -fg firebrick \
+      -text "** Browsing options: **"
+  label .imparamsw.labCtrl -fg firebrick \
+      -text "** Control-window options: **"
+  label .imparamsw.labColor -fg firebrick \
+      -text "** Color/display options: **"
+  frame .imparamsw.endBrowse -bg firebrick \
+      -width 2 -height 2
+  frame .imparamsw.endCtrl -bg firebrick \
+      -width 2 -height 2
+  frame .imparamsw.endColor -bg firebrick \
+      -width 2 -height 2
+
+
+  #packing:
+
+  pack .imparamsw.frSperc.label -side left -anchor w
+  pack .imparamsw.frSperc.sascale -side left -anchor nw
+
+  pack .imparamsw.frRemap.cm0 .imparamsw.frRemap.cm1 .imparamsw.frRemap.cm2 -side left -anchor w
+
+  pack .imparamsw.frCtrl.visib .imparamsw.frCtrl.invisib -side left -anchor w
+
+  pack .imparamsw.frOk.ok -side top -anchor c
+
+  pack .imparamsw.frBrowse.qf.browseQ -side left -anchor w
+  pack .imparamsw.frBrowse.qf.qscale -side left -anchor nw
+
+  pack .imparamsw.frBrowse.sf.browseS -side left -anchor w
+  pack .imparamsw.frBrowse.sf.sscale -side left -anchor nw
+
+  pack .imparamsw.frBrowse.browseLow \
+     .imparamsw.frBrowse.lossless \
+     .imparamsw.frBrowse.qf \
+     .imparamsw.frBrowse.sf \
+     -side top -anchor w
+
+  pack .imparamsw.frMaxc.label -side left -anchor w
+  pack .imparamsw.frMaxc.immaxc -side left -anchor nw
+
+
+  pack .imparamsw.frCcube.icc.label  -side left -anchor w -fill x
+
+  pack .imparamsw.frCcube.icc.cc1 \
+     .imparamsw.frCcube.icc.cc2 \
+     .imparamsw.frCcube.icc.cc3 \
+     .imparamsw.frCcube.icc.cc4 \
+     .imparamsw.frCcube.icc.cc5 \
+     .imparamsw.frCcube.icc.cc6 \
+     -side left -anchor w
+
+  pack .imparamsw.frCcube.icc -side left -anchor w
+
+  pack .imparamsw.frDither.dither -side top -anchor c
+
+  pack .imparamsw.labBrowse \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .imparamsw.frBrowse \
+      -side top -expand true -anchor w -padx 10
+  pack .imparamsw.endBrowse \
+     -side top -expand true -fill x
+
+  pack .imparamsw.labCtrl \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .imparamsw.frCtrl \
+      -side top -expand true -anchor w -padx 10 -pady 5
+  pack .imparamsw.endCtrl \
+     -side top -expand true -fill x
+
+  pack .imparamsw.labColor \
+     -side top -expand true -anchor w -padx 10 -pady 5
+
+  pack .imparamsw.frSperc \
+     .imparamsw.frRemap \
+     .imparamsw.frMaxc \
+     .imparamsw.frCcube \
+     -side top -expand true -anchor w -padx 10
+
+  pack .imparamsw.frDither -side top \
+     -expand true -anchor c -padx 10
+  pack .imparamsw.endColor \
+     -side top -expand true -fill x
+
+  pack .imparamsw.frOk \
+     -side top -expand true -anchor c \
+     -padx 10 -pady 5
+
+}
+
+proc setPhotoParams {} {
+  global photo_size PhotoMaxc PhotoCcube smallfont PhotoDither
+
+  catch {destroy .phparamsw}
+  toplevel .phparamsw
+  wm title .phparamsw "Qclic: Photo Options"
+
+  wm geometry .phparamsw +350+300
+
+  frame .phparamsw.frOk
+  button .phparamsw.frOk.ok -font $smallfont -text OK -command "catch {destroy .phparamsw}"
+
+  frame .phparamsw.frDim
+  scale .phparamsw.frDim.photoxscale -from 10 -to 400 -resolution 4 \
+     -length 5c -variable photo_size(x) \
+     -font $smallfont -orient horizontal -label "Photo width"
+  scale .phparamsw.frDim.photoyscale -from 10 -to 400 -resolution 4 \
+     -length 5c -variable photo_size(y) \
+     -font $smallfont -orient horizontal -label "Photo height"
+
+  frame .phparamsw.frMaxc
+  scale .phparamsw.frMaxc.photomaxc -from 2 -to 256 -resolution 1 \
+     -length 5c -variable PhotoMaxc \
+     -font $smallfont -orient horizontal -label "Max colors per Photo display:"
+
+  frame .phparamsw.frDither
+  checkbutton .phparamsw.frDither.dither -variable PhotoDither -font $smallfont -text "Do Dithering"
+
+  frame .phparamsw.frCcube
+  frame .phparamsw.frCcube.pcc
+  label .phparamsw.frCcube.pcc.label -font $smallfont -text "R,G,B bits for color Photos:"
+  radiobutton .phparamsw.frCcube.pcc.cc1 -variable PhotoCcube -value 1 -font $smallfont -text low
+  radiobutton .phparamsw.frCcube.pcc.cc2 -variable PhotoCcube -value 2
+  radiobutton .phparamsw.frCcube.pcc.cc3 -variable PhotoCcube -value 3
+  radiobutton .phparamsw.frCcube.pcc.cc4 -variable PhotoCcube -value 4
+  radiobutton .phparamsw.frCcube.pcc.cc5 -variable PhotoCcube -value 5
+  radiobutton .phparamsw.frCcube.pcc.cc6 -variable PhotoCcube -value 6 -font $smallfont -text high
+
+  #labels and lines
+  #
+  label .phparamsw.labDims -fg firebrick \
+      -text "** Photo Dimensions: **"
+  label .phparamsw.labColor -fg firebrick \
+      -text "** Color/display options: **"
+  frame .phparamsw.endDims -bg firebrick \
+      -width 2 -height 2
+  frame .phparamsw.endColor -bg firebrick \
+      -width 2 -height 2
+
+
+  #packing:
+
+  pack .phparamsw.frDim.photoxscale \
+       .phparamsw.frDim.photoyscale \
+       -side left -anchor w
+
+  pack .phparamsw.frMaxc.photomaxc \
+	-side left -anchor w
+
+  pack .phparamsw.frCcube.pcc.label \
+       -side left -anchor w -fill x -expand true
+
+  pack .phparamsw.frCcube.pcc.cc1 \
+       .phparamsw.frCcube.pcc.cc2 \
+       .phparamsw.frCcube.pcc.cc3 \
+       .phparamsw.frCcube.pcc.cc4 \
+       .phparamsw.frCcube.pcc.cc5 \
+       .phparamsw.frCcube.pcc.cc6 \
+       -side left -anchor w
+
+  pack .phparamsw.frCcube.pcc -side left -anchor w
+
+  pack .phparamsw.frDither.dither \
+    -side top -anchor c
+  
+
+  pack .phparamsw.frOk.ok \
+    -side top -anchor c
+  
+  pack .phparamsw.labDims \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .phparamsw.frDim \
+      -side top -expand true -anchor w -padx 10
+  pack .phparamsw.endDims \
+     -side top -expand true -fill x
+
+
+  pack .phparamsw.labColor \
+     -side top -expand true -anchor w -padx 10 -pady 5
+
+  pack .phparamsw.frMaxc \
+     .phparamsw.frCcube \
+     -side top -expand true -anchor w -padx 10
+
+  pack .phparamsw.frDither -side top \
+     -expand true -anchor c -padx 10
+  pack .phparamsw.endColor \
+     -side top -expand true -fill x
+
+  pack .phparamsw.frOk \
+     -side top -expand true -anchor c \
+     -padx 10 -pady 5
+
+
+}
+
+proc setMovieParams {} {
+  global MovieDimFromImage MovieDim MovieMaxc MovieCcube smallfont \
+	 MovieFromWhat MoviePsnr MovieSize MoviePauseAfterFirst MovieDither
+
+  #MovieFromWhat values:
+  # 0: photos
+  # 1: compressed images, all scans
+  # 2: compressed images, psnr >= MoviePsnr
+  # 3: compressed images, size >= MovieSize (kB)
+  # 4: compressed images, lowest quality
+  # 5: uncompressed images
+
+  catch {destroy .movparamsw}
+  toplevel .movparamsw
+  wm title .movparamsw "Qclic: Movie Options"
+
+  wm geometry .movparamsw +400+300
+
+  frame .movparamsw.frOk
+  button .movparamsw.frOk.ok -font $smallfont -text OK -command \
+     "catch {destroy .movparamsw}"
+
+  frame .movparamsw.frBrowse
+
+  frame .movparamsw.frBrowse.qf
+  scale .movparamsw.frBrowse.qf.qscale -from 15 -to 50 -resolution 1 \
+    -length 5c -variable MoviePsnr \
+    -font $smallfont -orient horizontal 
+  if {$MovieFromWhat != 2} {
+    .movparamsw.frBrowse.qf.qscale configure -state disabled
+  }
+  frame .movparamsw.frBrowse.sf
+  scale .movparamsw.frBrowse.sf.sscale -from 1 -to 50 -resolution 0.5 \
+    -length 5c -variable MovieSize \
+    -font $smallfont -orient horizontal 
+  if {$MovieFromWhat != 3} {
+    .movparamsw.frBrowse.sf.sscale configure -state disabled
+  }
+  
+  radiobutton .movparamsw.frBrowse.browseLow -variable MovieFromWhat \
+    -value 4 \
+    -font $smallfont -text "Movie at lowest quality" \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state disabled; \
+       .movparamsw.frBrowse.sf.sscale configure -state disabled"
+
+  radiobutton .movparamsw.frBrowse.qf.browseQ -variable MovieFromWhat \
+    -value 2 \
+    -font $smallfont -text "Movie at quality (dB) at least:" \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state normal; \
+      .movparamsw.frBrowse.sf.sscale configure -state disabled"
+
+  radiobutton .movparamsw.frBrowse.sf.browseS -variable MovieFromWhat \
+    -value 3 \
+    -font $smallfont -text "Movie at size (kB) at most:    " \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state disabled; \
+      .movparamsw.frBrowse.sf.sscale configure -state normal"
+
+  radiobutton .movparamsw.frBrowse.lossless -variable MovieFromWhat \
+    -value 5 \
+    -font $smallfont -text "Movie of uncompressed images" \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state disabled; \
+      .movparamsw.frBrowse.sf.sscale configure -state disabled"
+
+  radiobutton .movparamsw.frBrowse.photo -variable MovieFromWhat \
+    -value 0 \
+    -font $smallfont -text "Movie of photos" \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state disabled; \
+      .movparamsw.frBrowse.sf.sscale configure -state disabled"
+
+  radiobutton .movparamsw.frBrowse.comp -variable MovieFromWhat \
+    -value 1 \
+    -font $smallfont -text "Movie of compressed images (full)" \
+    -command ".movparamsw.frBrowse.qf.qscale configure -state disabled; \
+      .movparamsw.frBrowse.sf.sscale configure -state disabled"
+
+  frame .movparamsw.frDim
+  radiobutton .movparamsw.frDim.fromim -variable MovieDimFromImage \
+    -value 1 \
+    -font $smallfont -text "Movie dimensions from image" \
+    -command ".movparamsw.frDim.notfromim.xscale configure -state disabled; \
+	      .movparamsw.frDim.notfromim.yscale configure -state disabled"
+
+  frame .movparamsw.frDim.notfromim
+  radiobutton .movparamsw.frDim.notfromim.notfromim \
+    -variable MovieDimFromImage -value 0 \
+    -font $smallfont -text "Movie dimensions:" \
+    -command \
+      ".movparamsw.frDim.notfromim.xscale configure -state normal; \
+       .movparamsw.frDim.notfromim.yscale configure -state normal"
+
+
+  scale .movparamsw.frDim.notfromim.xscale -from 10 -to 1050 \
+     -resolution 10 \
+     -length 5c -variable MovieDim(x) \
+     -font $smallfont -orient horizontal -label "Width"
+  scale .movparamsw.frDim.notfromim.yscale -from 10 -to 1050 \
+     -resolution 10 \
+     -length 5c -variable MovieDim(y) \
+     -font $smallfont -orient horizontal -label "Height"
+
+  if {$MovieDimFromImage} {
+    .movparamsw.frDim.notfromim.xscale configure -state disabled
+    .movparamsw.frDim.notfromim.yscale configure -state disabled
+  }
+
+
+  frame .movparamsw.frMaxc
+  scale .movparamsw.frMaxc.maxc -from 2 -to 256 -resolution 1 \
+     -length 5c -variable MovieMaxc \
+     -font $smallfont -orient horizontal
+  radiobutton .movparamsw.frMaxc.label -font $smallfont \
+    -text "Max colors per movie:"
+
+  frame .movparamsw.frDither
+  checkbutton .movparamsw.frDither.dither -variable MovieDither -font $smallfont -text "Do Dithering"
+
+  frame .movparamsw.frCcube
+  frame .movparamsw.frCcube.cc
+  radiobutton .movparamsw.frCcube.cc.label -font $smallfont -text "R,G,B bits for color movies"
+  radiobutton .movparamsw.frCcube.cc.cc1 -variable MovieCcube -value 1 -font $smallfont -text low
+  radiobutton .movparamsw.frCcube.cc.cc2 -variable MovieCcube -value 2
+  radiobutton .movparamsw.frCcube.cc.cc3 -variable MovieCcube -value 3
+  radiobutton .movparamsw.frCcube.cc.cc4 -variable MovieCcube -value 4
+  radiobutton .movparamsw.frCcube.cc.cc5 -variable MovieCcube -value 5
+  radiobutton .movparamsw.frCcube.cc.cc6 -variable MovieCcube -value 6 -font $smallfont -text high
+  
+  frame .movparamsw.frPause
+  radiobutton .movparamsw.frPause.pause -variable MoviePauseAfterFirst \
+    -value 1 -font $smallfont -text "Pause after first frame"
+  radiobutton .movparamsw.frPause.nopause -variable MoviePauseAfterFirst \
+    -value 0 -font $smallfont -text "Don't pause"
+
+  #labels and lines
+  #
+  label .movparamsw.labBrowse -fg firebrick \
+      -text "** Quality/Size options: **"
+  label .movparamsw.labDim -fg firebrick \
+      -text "** Movie dimensions: **"
+  label .movparamsw.labPause -fg firebrick \
+      -text "** Pausing options: **"
+  label .movparamsw.labColor -fg firebrick \
+      -text "** Color/display options: **"
+  frame .movparamsw.endBrowse -bg firebrick \
+      -width 2 -height 2
+  frame .movparamsw.endDim -bg firebrick \
+      -width 2 -height 2
+  frame .movparamsw.endPause -bg firebrick \
+      -width 2 -height 2
+  frame .movparamsw.endColor -bg firebrick \
+      -width 2 -height 2
+
+
+  #packing:
+
+
+  pack .movparamsw.frOk.ok -side top -anchor c
+
+  pack .movparamsw.frBrowse.qf.browseQ -side left -anchor w
+  pack .movparamsw.frBrowse.qf.qscale -side left -anchor nw
+
+  pack .movparamsw.frBrowse.sf.browseS -side left -anchor w
+  pack .movparamsw.frBrowse.sf.sscale -side left -anchor nw
+
+  pack .movparamsw.frBrowse.photo \
+     .movparamsw.frBrowse.browseLow \
+     .movparamsw.frBrowse.comp \
+     .movparamsw.frBrowse.qf \
+     .movparamsw.frBrowse.sf \
+     .movparamsw.frBrowse.lossless \
+     -side top -anchor w
+
+  pack .movparamsw.frMaxc.label -side left -anchor w
+  pack .movparamsw.frMaxc.maxc -side left -anchor nw
+
+  pack .movparamsw.frDim.notfromim.notfromim \
+    -side top -anchor w
+  pack .movparamsw.frDim.notfromim.xscale \
+       .movparamsw.frDim.notfromim.yscale \
+       -side top -anchor nw -padx 30
+
+  pack .movparamsw.frDim.fromim \
+       .movparamsw.frDim.notfromim \
+       -side top -anchor w
+
+  pack .movparamsw.frPause.pause \
+       .movparamsw.frPause.nopause \
+       -side left -anchor w
+
+  pack .movparamsw.frCcube.cc.label  -side left -anchor w -fill x
+
+  pack .movparamsw.frCcube.cc.cc1 \
+     .movparamsw.frCcube.cc.cc2 \
+     .movparamsw.frCcube.cc.cc3 \
+     .movparamsw.frCcube.cc.cc4 \
+     .movparamsw.frCcube.cc.cc5 \
+     .movparamsw.frCcube.cc.cc6 \
+     -side left -anchor w
+
+  pack .movparamsw.frCcube.cc -side left -anchor w
+
+  pack .movparamsw.frDither.dither -side top -anchor c
+
+  pack .movparamsw.labBrowse \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .movparamsw.frBrowse \
+      -side top -expand true -anchor w -padx 10
+  pack .movparamsw.endBrowse \
+     -side top -expand true -fill x
+
+  pack .movparamsw.labDim \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .movparamsw.frDim \
+      -side top -expand true -anchor w -padx 10 -pady 5
+  pack .movparamsw.endDim \
+     -side top -expand true -fill x
+
+  pack .movparamsw.labPause \
+     -side top -expand true -anchor w -padx 10 -pady 5
+  pack .movparamsw.frPause \
+      -side top -expand true -anchor w -padx 10 -pady 5
+  pack .movparamsw.endPause \
+     -side top -expand true -fill x
+
+  pack .movparamsw.labColor \
+     -side top -expand true -anchor w -padx 10 -pady 5
+
+  pack .movparamsw.frMaxc \
+     .movparamsw.frCcube \
+     -side top -expand true -anchor w -padx 10
+
+  pack .movparamsw.frDither -side top \
+     -expand true -anchor c -padx 10
+  pack .movparamsw.endColor \
+     -side top -expand true -fill x
+
+  pack .movparamsw.frOk \
+     -side top -expand true -anchor c \
+     -padx 10 -pady 5
+
+  
+}
+
+proc ExitProc {} {
+  global NumImages MaxImages ImInUse zoo RanExitProc
+
+  if $zoo(UseDB) {
+    ZooCleanup
+  }
+
+  ClosePhotoBoard
+  CloseMovie
+
+  if {$NumImages > 0} {
+    for {set id 0} {$id < $MaxImages} {incr id 1} {
+      if {$ImInUse($id) == 1} {
+	CloseImage $id
+      }
+    }
+  }
+  set RanExitProc 1
+  exit
+}
+
+#
+# Image file selection...
+#
+
+proc GetHomeDir {remHost} {
+  if {[catch {set fp [open "|cat_url ${remHost}homedir" r]}]} {
+    return "."
+  }
+  set ans [gets $fp]
+  catch {close $fp}
+  return $ans
+}
+
+
+proc GetDirectories {} {
+  global isURL remoteHttpHost imageDir stopfilenames zoo
+
+  ClosePhotoBoard
+
+  if $zoo(UseDB) {
+    ZooGetDirectories
+    return
+  }
+
+  . configure -cursor watch 
+  update idletasks
+
+  catch {.imf.lists.dlist delete 0 end} 
+
+  if {$isURL} {
+    set cmd "|cat_url $remoteHttpHost/dirlist?$imageDir" 
+  } else {
+    set cmd "|dirlist $imageDir"
+  } 
+
+  set stopfilenames 0
+  .mbar.stop configure -state normal
+  .mbar.stop configure -command "set stopfilenames 1"
+  update
+
+  set f [open $cmd r] 
+  while {!$stopfilenames && ([gets $f dname] > 0)} { 
+    .imf.lists.dlist insert end "$dname"
+    update
+  }
+  catch "close $f"
+
+  .mbar.stop configure -state disabled
+
+  . configure -cursor arrow
+  update idletasks
+}
+
+
+proc GetFileNames {} {
+  global isURL remoteHttpHost imageDir lastSelected stopfilenames \
+    zoo
+
+  . configure -cursor watch 
+  update idletasks
+  catch {.imf.lists.flist delete 0 end} 
+  set lastSelected -1
+
+  # Andy 9/3
+  if $zoo(UseDB) {
+
+      ZooGetFileNames
+      
+  } else  {
+
+      if {$isURL} {
+	  set cmd "|cat_url $remoteHttpHost/imlist?$imageDir" 
+      } else {
+	  set cmd "|imlist $imageDir"
+      } 
+      
+      set stopfilenames 0
+      .mbar.stop configure -state normal
+      .mbar.stop configure -command "set stopfilenames 1"
+      update
+      
+      set f [open $cmd r] 
+      while {!$stopfilenames && ([gets $f fname] > 0)} { 
+	  set iname "??????"
+	  set idim  "0x0"
+	  set icolor "????"
+	  set iscans 0
+	  set ibytes 0
+	  set ipsnr  0
+	  scan $fname "%s%s%s%d%d%lf" iname idim icolor iscans ibytes ipsnr
+	  set fname [format "%-15s %-9s %-9s %2d %6d %5.2lf" \
+		  $iname $idim $icolor $iscans $ibytes $ipsnr]
+	  .imf.lists.flist insert end "$fname"
+	  update
+      }
+      catch "close $f"
+      
+  }
+
+  .mbar.stop configure -state disabled
+  
+  if {[.imf.lists.flist size] == 0} {
+      .mbar.photob configure -state disabled
+      .mbar.sel configure -state disabled
+  } else {
+      .mbar.photob configure -state normal
+      .mbar.sel configure -state normal
+  }
+  .mbar.movie configure -state disabled
+  .mbar.nextim configure -state disabled
+  .mbar.previm configure -state disabled
+  
+  . configure -cursor arrow
+  update idletasks
+  
+}
+
+
+#
+# resetSrc
+#
+# Side effects: 
+#     update globals: isURL = 0 or 1
+#                     imageDir = current directory
+#                     EntrImageDir = current directory display text
+#                     zoo(UseDB) = 0 or 1
+#                     lastSelected = -1 (id of most recently displayed image)
+#     calls: GetDirectories
+#            GetFileNames
+#            ZooStartup or ZooCleanup
+#
+# Modified for ZOO
+
+proc resetSrc {} {
+
+    global imageDir startupDir startupDirWasGiven remoteHostWasGiven \
+	    lastSelected isURL remoteHttpHost \
+	    EntrImageDir zoo imageSource imageSourcePrevious resetSrcCount
+    
+    incr resetSrcCount
+    
+    # Andy 9/3: Don't do anything if the value of imageSource has not
+    # changed.
+    if {![info exists imageSourcePrevious]} { set imageSourcePrevious {} }
+    if {$imageSource == $imageSourcePrevious} { return }
+    
+    if {$imageSource == "Remote"} {
+	set isURL 1
+	if {$zoo(UseDB)} {
+	    ZooCleanup
+	}
+	if {$startupDirWasGiven && $remoteHostWasGiven} {
+	    set imageDir $startupDir
+	} else {
+	    set imageDir [GetHomeDir $remoteHttpHost]
+	}
+	set EntrImageDir $imageDir
+    } elseif {$imageSource == "Local"} {
+	set isURL 0
+	if {$zoo(UseDB)} {
+	    ZooCleanup
+	}
+	if {$startupDirWasGiven && $resetSrcCount == 1} {
+	    # Change to the user-specified directory only if this is
+	    # the first time through this function
+	    set imageDir $startupDir
+	    catch {cd $startupDir}
+	} else {
+	    set imageDir [pwd]
+	}
+	set EntrImageDir $imageDir
+    } elseif {$imageSource == "ZooDB"} {
+	set isURL 0
+	ZooStartup
+    }
+
+    set imageSourcePrevious $imageSource
+    set lastSelected -1
+    GetDirectories
+    GetFileNames
+    
+}
+
+proc ShowError {s} {
+  catch {destroy .errwin}
+  toplevel .errwin
+  wm title .errwin "Qclic: Error message"
+  wm geometry .errwin +400+400
+
+  frame .errwin.f -width 100 -height 100 
+  pack .errwin.f
+  label .errwin.f.l -text "$s"
+
+  button .errwin.f.b -text "Dismiss" -command "catch {destroy .errwin}"
+
+  pack .errwin.f.l -side top -pady 20
+  pack .errwin.f.b -side bottom
+}
+
+proc NewId {} {
+  global NumImages MaxImages ImInUse 
+  if {$NumImages >= $MaxImages}  {
+    return -1
+  }
+  for {set id 0} {$id < $MaxImages} {incr id 1} {
+    if {($ImInUse($id) == 0) && (![winfo exists .imwin$id])} {
+      incr NumImages 1
+      set ImInUse($id) 1
+      return $id
+    }
+  }
+  return -1
+}
+
+proc ResetImage {id} {
+  global ImFile ImInUse lastImageShown \
+    mainImWinExists  ImState ImViewerPid
+
+  if {$ImInUse($id) == 1} {
+    if {$ImState($id) == 0} {
+      catch {puts $ImFile($id) quit}
+      catch {flush $ImFile($id)}
+      catch {close $ImFile($id)}
+    }
+    if {($ImState($id) == 1) || ($ImState($id) == 2)} {
+      foreach pid $ImViewerPid($id) {
+        catch {exec kill -9 $pid}
+      }
+      catch {close $ImFile($id)}
+    }
+  }
+}
+
+
+proc FreeId {id} {
+  global NumImages ImInUse 
+  if {$ImInUse($id) == 1} {
+    incr NumImages -1
+    set ImInUse($id) 0
+  }
+}
+
+proc FreeImage {id} {
+  global ImFile NumImages ImInUse lastImageShown \
+    mainImWinExists  ImState ImViewerPid ImCtrl mainCtrlGeom \
+    currXloc currYloc ImWindow zoo
+
+  if {$ImInUse($id) == 1} {
+    if {$ImState($id) == 0} {
+      puts $ImFile($id) quit
+      catch "flush $ImFile($id)"
+      catch {close $ImFile($id)}
+    }
+    if {($ImState($id) == 1) || ($ImState($id) == 2)} {
+      foreach pid $ImViewerPid($id) {
+        catch {exec kill -9 $pid}
+      }
+      catch {close $ImFile($id)}
+    }
+    if {$id == $lastImageShown} {
+      if {([winfo exists $ImCtrl($id)]) && \
+	  ([winfo ismapped $ImCtrl($id)])} {
+	set mainCtrlGeom [winfo geometry $ImCtrl($id)]
+      }
+      set gtemp [winfo geometry $ImWindow($id)]
+      scan $gtemp "%dx%d+%d+%d" foo1 foo2 currXloc currYloc
+    }
+    incr NumImages -1
+    set ImInUse($id) 0
+
+    # Andy 9/3:
+    catch {unset zoo(Uncompressed,$id)}
+  
+  }
+
+}
+
+proc CloseImage {id} {
+  global ImFile NumImages ImInUse lastImageShown \
+    mainImWinExists ImWindow ImCtrl ImState ImViewerPid \
+    mainCtrlGeom currXloc currYloc fileNameWasGiven zoo
+
+  if {$ImInUse($id) == 1} {
+    if {$ImState($id) == 0} {
+      puts $ImFile($id) quit
+      catch "flush $ImFile($id)"
+    }
+    if {($ImState($id) == 1) || ($ImState($id) == 2)} {
+      foreach pid $ImViewerPid($id) {
+        catch {exec kill -9 $pid}
+      }
+    }
+    set ImInUse($id) 0
+    if {$id == $lastImageShown} {
+      if {([winfo exists $ImCtrl($id)]) && \
+	  ([winfo ismapped $ImCtrl($id)])} {
+	set mainCtrlGeom [winfo geometry $ImCtrl($id)]
+      }
+      set gtemp [winfo geometry $ImWindow($id)]
+      scan $gtemp "%dx%d+%d+%d" foo1 foo2 currXloc currYloc
+      set lastImageShown -1
+      if {!$fileNameWasGiven} {
+	  .mbar.saveim configure -state disabled
+      }
+      set mainImWinExists 0
+    }
+    catch {close $ImFile($id)}
+    catch {destroy $ImCtrl($id)}
+    catch {destroy $ImWindow($id)}
+    incr NumImages -1
+
+    # Andy 9/3:
+    catch {unset zoo(Uncompressed,$id)}
+  
+  }
+
+}
+
+
+proc sizeToX {size maxsize width} {
+  return [expr 5.0+((0.0+$size)*(0.0+$width)/(0.0+$maxsize))]
+} 
+
+proc bppToX {bpp maxbpp width} {
+  return [expr 35.0+((0.0+$bpp)*(0.0+$width)/(0.0+$maxbpp))]
+} 
+
+proc psnrToY {psnr maxpsnr height} {
+  return [expr 0.0+$height - ((0.0+$psnr)*(0.0+$height)/(0.0+$maxpsnr))]
+}
+
+proc AvgPsnr {ypsnr cbpsnr crpsnr} {
+  set yD [expr (65025.0/pow(10.0,(0.0+$ypsnr)/10.0))]
+  set cbD [expr (65025.0/pow(10.0,(0.0+$cbpsnr)/10.0))]
+  set crD [expr (65025.0/pow(10.0,(0.0+$crpsnr)/10.0))]
+  set D [expr (0.0+$yD+($cbD/4.0)+($crD/4.0))/1.5]
+  
+  return [expr 10.0*log10(65025.0/$D)]
+}
+
+proc printPsnr {psnr} {
+  return [expr (0.0+round(10.0*$psnr))/10.0]
+}
+
+# Andy 8/28: added optional imnumber parameter
+proc ShowImagePlot { id fname iwidth iheight {imnumber {}} } {
+
+    global ImNumScans ImLastScanShown ImScanSize \
+	    ImScanPsnr ImScanYPsnr ImScanCbPsnr ImScanCrPsnr ImFile \
+	    glbi glbnum ImCtrlVisible ctrlvisib \
+	    ImCtrl GeomTemp ImWindow  isURL remoteHttpHost \
+	    imageDir ImCtrlState showafter ImWindowId ImFname \
+	    smallfont ctrlswitch ImViewerPid TmpFp TmpLine \
+	    ImTitle mainCtrlGeom ImMaxc ImCcube ImDither zoo \
+	    fileNameWasGiven
+    
+  if {$ImScanPsnr($id,1) > 0} {
+    set psnr_exists 1
+    if {$ImScanCbPsnr($id,1) > 0} {
+      set gpsnr_exists 1
+    } else {
+      set gpsnr_exists 0
+    }
+  } else {
+    set psnr_exists 0
+    set gpsnr_exists 0
+  }
+
+  if {$gpsnr_exists == 0} {
+    set totsize $ImScanSize($id,1)
+    set minsize $totsize 
+    set maxpsnr $ImScanPsnr($id,1)
+    for {set i 2} {$i <= $ImNumScans($id)} {incr i 1} {
+      incr totsize $ImScanSize($id,$i)
+      if {$minsize > $ImScanSize($id,$i)} {
+        set minsize $ImScanSize($id,$i)
+      }
+      if {$maxpsnr < $ImScanPsnr($id,$i)} {
+        set maxpsnr $ImScanPsnr($id,$i)
+      }
+    }
+  } else {
+    set totsize $ImScanSize($id,1)
+    set minsize $totsize
+    set maxpsnr $ImScanPsnr($id,1)
+    for {set i 2} {($i + 2) <= $ImNumScans($id)} {incr i 3} {
+      set tempsize [expr $ImScanSize($id,$i)+ \
+	 $ImScanSize($id,[expr $i+1])+$ImScanSize($id,[expr $i+2])]
+      incr totsize $tempsize
+      if {$minsize > $tempsize} {
+        set minsize $tempsize
+      }
+      set temppsnr $ImScanPsnr($id,[expr $i+2])
+      if {$maxpsnr < $temppsnr} {
+        set maxpsnr $temppsnr
+      }
+    }
+    while {$i <= $ImNumScans($id)} {
+      # this shouldn't happen usually
+      incr totsize $ImScanSize($id,$i)
+      incr i 1
+    }
+  }
+  set maxpsnr [expr 1.2*$maxpsnr]
+
+  # minsize must accommodate 1 psnr number
+
+  set pwinwidth 400
+
+  set pwidth [expr 25.0*(0.0+$totsize)/(0.0+$minsize)]
+
+  if {$pwidth < ($pwinwidth - 10)} {
+    set pwidth [expr $pwinwidth - 10]
+  }
+  set pboxwidth [expr $pwidth+10]
+
+  set deltah 20
+  
+  set pheight 200 ;# plot height in pixels
+  set pboxheight 235
+  set pwinheight 295
+
+  set ImCtrl($id) $ImWindow($id)ctrl
+  set winname $ImCtrl($id).f
+  set plotname $winname.plot
+
+  if {![winfo exists $ImCtrl($id)]} {
+    #catch {destroy $ImCtrl($id)}
+    toplevel $ImCtrl($id) -width $pwinwidth -height $pwinheight
+  } else {
+    catch {destroy $winname}
+  }
+
+  wm title $ImCtrl($id) "$fname: controls"
+  wm withdraw $ImCtrl($id)
+
+  frame $winname -width $pwinwidth \
+    -height $pwinheight
+
+  scrollbar $winname.xscroll -command "$plotname xview" \
+      -orient horizontal
+  canvas $plotname -width [expr ${pwinwidth} - 8] \
+      -height [expr ${pboxheight} -4] \
+      -background white -bd 2 -relief sunken \
+      -xscrollcommand "$winname.xscroll set"
+
+  $plotname create text 10 $pboxheight \
+      -text "Size (K bytes)" -anchor sw 
+
+  set widthinsize [expr (0.0+$pwinwidth)*(0.0+$totsize)/(0.0+$pboxwidth)]
+  if {$widthinsize < 5000} {
+    set sincr 500
+  } elseif {$widthinsize < 10000} { 
+    set sincr 1000 
+  } elseif {$widthinsize < 40000} { 
+    set sincr 4000 
+  } elseif {$widthinsize < 100000} { 
+    set sincr 10000
+  } else {
+    set sincr 20000 
+  }
+
+  for {set s $sincr} {$s <= $totsize} {set s [expr $s+$sincr]} {
+    set sx [sizeToX $s $totsize $pwidth] 
+    $plotname create line ${sx} ${pheight} ${sx} [expr $pheight + 10] 
+    $plotname create text ${sx} [expr $pheight + 10] \
+      -text [expr (0.0+round((0.0+$s)/100.0))/10.0] -anchor n 
+  }
+
+  $plotname create line 0 ${pheight} ${pboxwidth} ${pheight} 
+
+  if {$psnr_exists == 0} {
+    set lastx 5
+    set currsize 0
+    for {set i 1} {$i <= $ImNumScans($id)} {incr i 1} {
+      set currsize [expr $currsize + $ImScanSize($id,$i)]
+      set nextx [sizeToX $currsize $totsize $pwidth] 
+      $plotname create rectangle $lastx 50 $nextx $pheight \
+	 -tags tag$id$i  -fill white
+      set lastx $nextx
+      set bindscript \
+	"if {\$ImLastScanShown($id) < $i} { \
+	    $plotname configure -cursor watch; \
+	    set glbnum \[expr $i - \$ImLastScanShown($id)\]; \
+	    puts $ImFile($id) \"next \$glbnum\"; \
+	    catch \"flush $ImFile($id)\"; \
+            for {set glbi \[expr \$ImLastScanShown($id) + 1\]} \
+		   {\$glbi <= $i} {incr glbi 1} { \
+	      $plotname itemconfigure tag$id\$glbi -fill gray; \
+	    }; \
+	    set ImLastScanShown($id) $i; \
+	    $plotname configure -cursor arrow; \
+	    wm title $ImWindow($id) \"$ImTitle($id,$i)\"; \
+	  }"
+       $plotname bind tag$id$i <Button-1> [list Busy $bindscript]
+    }
+    for {set i 1} {$i <= $ImLastScanShown($id)} {incr i 1} {
+      $plotname itemconfigure tag${id}$i -fill gray
+    }
+  } else {
+    $plotname create text 10 30 -text "PSNR (dB)" -anchor sw
+    if {$gpsnr_exists == 0} {
+      set lastx 5
+      set currsize 0
+      for {set i 1} {$i <= $ImNumScans($id)} {incr i 1} {
+        set currsize [expr $currsize + $ImScanSize($id,$i)]
+        set nextx [sizeToX $currsize $totsize $pwidth] 
+        set nexty [psnrToY $ImScanPsnr($id,$i) $maxpsnr $pheight] 
+        $plotname create rectangle $lastx $nexty \
+	   $nextx $pheight \
+  	   -tags tag$id$i -fill white
+        $plotname create text [expr $lastx +  2] [expr $nexty -5] \
+	  -text [printPsnr $ImScanPsnr($id,$i)] \
+	  -anchor w 
+        set lastx $nextx
+        set bindscript \
+  	  "if {\$ImLastScanShown($id) < $i} { \
+	    $plotname configure -cursor watch; \
+	    set glbnum \[expr $i - \$ImLastScanShown($id)\]; \
+	    puts $ImFile($id) \"next \$glbnum\"; \
+	    catch \"flush $ImFile($id)\"; \
+            for {set glbi \[expr \$ImLastScanShown($id) + 1\]} \
+		   {\$glbi <= $i} {incr glbi 1} { \
+	      $plotname itemconfigure tag$id\$glbi -fill gray; \
+	    }; \
+	    set ImLastScanShown($id) $i; \
+	    $plotname configure -cursor arrow; \
+	    wm title $ImWindow($id) \"$ImTitle($id,$i)\"; \
+	    }"
+         $plotname bind tag$id$i <Button-1> [list Busy $bindscript]
+      }
+      for {set i 1} {$i <= $ImLastScanShown($id)} {incr i 1} {
+        $plotname itemconfigure tag${id}$i -fill gray
+      }
+   } else {
+      set lastx 5
+      set currsize 0
+      for {set i 1} {$i <= $ImNumScans($id)} {incr i 1} {
+        set currsize [expr $currsize + $ImScanSize($id,$i)]
+        set nextx [sizeToX $currsize $totsize $pwidth] 
+        set nexty [psnrToY $ImScanPsnr($id,$i) $maxpsnr $pheight] 
+        $plotname create rectangle $lastx $nexty \
+	   $nextx $pheight \
+  	   -tags tag$id$i -fill white
+	if {$i == 1} {
+	  set j 0
+          $plotname create text [expr $lastx +  2] [expr $nexty -5] \
+	    -text [printPsnr $ImScanPsnr($id,$i)] \
+	    -anchor w 
+	} else {
+          incr j 1
+	  if {$j == 1} {
+	    set xlocfortag [expr $lastx +  2]
+	  } elseif {$j == 3} {
+	    set j 0
+	    $plotname create text $xlocfortag [expr $nexty -5] \
+	      -text [printPsnr $ImScanPsnr($id,$i)] \
+	      -anchor w
+	  }
+	}
+
+        set lastx $nextx
+        set bindscript \
+  	  "if {\$ImLastScanShown($id) < $i} { \
+	    $plotname configure -cursor watch; \
+	    set glbnum \[expr $i - \$ImLastScanShown($id)\]; \
+	    puts $ImFile($id) \"next \$glbnum\"; \
+	    catch \"flush $ImFile($id)\"; \
+            for {set glbi \[expr \$ImLastScanShown($id) + 1\]} \
+		   {\$glbi <= $i} {incr glbi 1} { \
+	      $plotname itemconfigure tag$id\$glbi -fill gray; \
+	    }; \
+	    set ImLastScanShown($id) $i; \
+	    $plotname configure -cursor arrow; \
+	    wm title $ImWindow($id) \"$ImTitle($id,$i)\"; \
+	    }"
+         $plotname bind tag$id$i <Button-1> [list Busy $bindscript]
+      }
+      for {set i 1} {$i <= $ImLastScanShown($id)} {incr i 1} {
+        $plotname itemconfigure tag${id}$i -fill gray
+      }
+   }
+
+  }
+
+  frame $winname.buttons -width $pwinwidth -height 40
+
+  button $winname.buttons.quit -text "Close" -command \
+    [list Busy "CloseImage $id"] -font $smallfont
+
+  button $winname.buttons.dismiss -text "Dismiss" -command \
+      "wm withdraw $ImCtrl($id); set ImCtrlVisible($id) 0"  -font $smallfont
+  
+  set totimsize [expr $iwidth*$iheight]
+  if {$gpsnr_exists != 0} {
+    set totimsize [expr $totimsize*3]
+  }
+  set totimsize [expr round((0.0+$totimsize)/1000.0)]
+
+  button $winname.buttons.lossless -text "Lossless ($totimsize Kb)" \
+    -command [list Busy "GetLossless $id"] -font $smallfont
+
+  set ctrlswitch($id) "Q-Curve"
+  button $winname.buttons.qcurve -textvariable ctrlswitch($id) \
+    -command "SwitchCtrlState $id" -font $smallfont
+
+  pack append $winname.buttons \
+    $winname.buttons.quit {left} \
+    $winname.buttons.lossless {left} \
+    $winname.buttons.qcurve {left} \
+    $winname.buttons.dismiss {right} 
+
+  pack append $winname \
+      $plotname {top} \
+      $winname.buttons {bottom filly expand} \
+      $winname.xscroll {bottom fillx expand}
+
+  pack append $ImCtrl($id) \
+     $winname {bottom}
+
+  if {$ctrlvisib == 1} {
+      if {[string compare $mainCtrlGeom ""] == 0} {
+	  set GeomTemp(geom) [wm geometry $ImWindow($id)]
+	  scan $GeomTemp(geom) "%dx%d+%d+%d" \
+		  GeomTemp(width) GeomTemp(height) \
+		  GeomTemp(xloc) GeomTemp(yloc)
+#	  set mainCtrlGeom ${pwinwidth}x${pwinheight}+[expr \
+#		  $GeomTemp(xloc) + ($GeomTemp(width)/2)]+[expr \
+#		  $GeomTemp(yloc) + ($GeomTemp(height)/2)]
+	  set mainCtrlGeom ${pwinwidth}x${pwinheight}+[expr \
+		  $GeomTemp(xloc)]+[expr \
+		  $GeomTemp(yloc) + $GeomTemp(height) + 32]
+      }
+      wm geometry $ImCtrl($id) $mainCtrlGeom
+      wm deiconify $ImCtrl($id)
+  }
+
+  set ImCtrlVisible($id) $ctrlvisib
+
+  set bindscript \
+    "if {\$ImCtrlVisible($id) == 1} { \
+      set mainCtrlGeom \[winfo geometry $ImCtrl($id)\]; \
+      wm withdraw $ImCtrl($id); \
+      set ImCtrlVisible($id) 0; \
+     } else { \
+      if {\[string compare \$mainCtrlGeom \"\"\] == 0} { \
+        set GeomTemp(geom) \[winfo geometry $ImWindow($id)\]; \
+        scan \$GeomTemp(geom) {%%dx%%d+%%d+%%d} \
+          GeomTemp(width) GeomTemp(height) GeomTemp(xloc) GeomTemp(yloc); \
+	set mainCtrlGeom ${pwinwidth}x${pwinheight}+\[expr \$GeomTemp(xloc) + (\$GeomTemp(width)/2)]+\[expr \$GeomTemp(yloc) + (\$GeomTemp(height)/2)];\
+      }; \
+      wm geometry $ImCtrl($id) \$mainCtrlGeom; \
+      pack append $ImCtrl($id) $winname {bottom}; \
+      wm deiconify $ImCtrl($id); \
+      set ImCtrlVisible($id) 1; \
+     }"
+   bind $ImWindow($id) <Button-1> [list Busy $bindscript]
+
+   set bindscript \
+  	  "if {\$ImLastScanShown($id) < $ImNumScans($id)} { \
+	    set glbnum \[expr $ImNumScans($id) - \$ImLastScanShown($id)\]; \
+	    puts $ImFile($id) \"next \$glbnum\"; \
+	    catch \"flush $ImFile($id)\"; \
+            for {set glbi \[expr \$ImLastScanShown($id) + 1\]} \
+		   {\$glbi <= $ImNumScans($id)} {incr glbi 1} { \
+	      $plotname itemconfigure tag$id\$glbi -fill gray; \
+	    }; \
+	    set ImLastScanShown($id) $ImNumScans($id); \
+	    wm title $ImWindow($id) \"$ImTitle($id,$ImNumScans($id))\"; \
+	    }"
+   bind $ImWindow($id) <Button-3> [list Busy $bindscript]
+
+   set bindscript \
+  	  "if {\$ImLastScanShown($id) < $ImNumScans($id)} { \
+	    puts $ImFile($id) \"next 1\"; \
+	    catch \"flush $ImFile($id)\"; \
+            set glbi \[expr \$ImLastScanShown($id) + 1\]; \
+	    $plotname itemconfigure tag$id\$glbi -fill gray; \
+	    set ImLastScanShown($id) \$glbi; \
+	    wm title $ImWindow($id) \"\$ImTitle($id,\$glbi)\"; \
+	    }"
+   bind $ImWindow($id) <Button-2> [list Busy $bindscript]
+
+  set ImCtrlState($id) 0
+
+# Get RD-OPT plot
+  set plotname $winname.rdplot
+  set pboxwidth [expr ${pwinwidth} - 8]
+  set pboxheight [expr ${pboxheight} -4]
+  set pwidth [expr ${pboxwidth} - 35]
+  set pheight [expr ${pboxheight} - 20]
+
+  canvas $plotname -width $pboxwidth -height $pboxheight \
+      -background white -bd 2 -relief sunken 
+  
+  $plotname create line 0 ${pheight} ${pboxwidth} ${pheight} 
+  $plotname create line 35 0 35 ${pboxheight} 
+  $plotname create text 60 30 -text "PSNR (dB)" -anchor sw
+
+  set points {}
+  set isfirst 1
+  set selexists 0
+  
+  # Andy 8/28
+  # After this loop, points should be a list of <bitrate,psnr> pairs,
+  # selexists should be 0 or 1, and psnrmax, psnrmin, and pbppmax
+  # should be set. If selexists = 1, then bsel and psel should be set.
+  
+  if {$zoo(UseDB)} {
+      
+      set psnrmin {}
+      set psnrmax {}
+      set pbppmax {}
+      
+      set points [ZooGetCompProfile $imnumber 0 end]
+
+      foreach point $points {
+      
+	  set b [lindex $point 0]
+	  set p [lindex $point 1]
+
+	  if {$isfirst} {
+	      set pbppmax $b
+	      set psnrmin $p
+	      set psnrmax $p
+	      set isfirst 0
+	  } else {
+	      if {$b > $pbppmax} { set pbppmax $b }
+	      if {$p < $psnrmin} { set psnrmin $p }
+	      if {$p > $psnrmax} { set psnrmax $p }
+	  }
+      }
+      
+      # Don't know why
+      set pbppmax [expr 0.1 + $pbppmax]
+
+      # Example qclic string: football000 720x486 Color 10 41233 36.62      
+      set selexists 1
+      if $fileNameWasGiven {
+	  set info [lindex [ZooQuery_ImageMetaData \
+		  [lindex $zoo(ImageOIDs) 0]] 0]
+      } else {
+	  set info [.imf.lists.flist get $imnumber]
+      }
+      scan $info "%s %dx%d %s %d %d %f" \
+	      junk temp1 temp2 junk junk temp3 psel
+      set bsel [expr (8.0 * $temp3) / ($temp1 * $temp2)]
+      
+  } else {
+      
+      if {$isURL == 1} {
+	  set cmd [list |cat_url \
+		  ${remoteHttpHost}nph-cat?$imageDir/$ImFname($id)/rdopt.plot]
+      } else {
+	  set cmd "$imageDir/$ImFname($id)/rdopt.plot"
+      }
+      
+      if {[catch {set fp [open $cmd r]}]} {
+	  return
+      }
+  
+      while {[gets $fp line] >= 0} {
+	  if {(![string match "#*" $line]) && \
+		  (![string match "*bpp*" $line]) && \
+		  ([string compare $line ""] != 0)} {
+	      scan $line "%lf%lf" b p
+	      set pt [list $b $p]
+	      lappend points $pt
+	      if {$isfirst} {
+		  set isfirst 0
+		  set psnrmin $p
+	      }
+	  } else {
+	      if {[string match "#selected*" $line]} {
+		  if {[gets $fp line] >= 0} {
+		      scan $line "%lf%lf" bsel psel
+		      set selexists 1
+		  }
+	      }
+	  }
+      }
+      
+      catch "close $fp"
+      set psnrmax $p
+      set pbppmax [expr 0.1 + $b]
+      # psnrrange = pheight
+      # pbppmax = pwidth
+      # (b,p) translates to:
+      #    (bppToX(b pbppmax pwidth),psnrToY(p-psnrmin+1,psnrrange,pheight))
+      
+  }
+  
+  set psnrrange [expr 2.0 + $psnrmax - $psnrmin]
+
+  if {$selexists == 1} {
+      set selx [bppToX $bsel $pbppmax $pwidth]
+      set sely [psnrToY [expr 1.0 + $psel -$psnrmin] $psnrrange $pheight]
+      $plotname create line 35 $sely $selx $sely \
+	      $selx $pheight -tags selpoint
+  }
+  
+  # draw scales
+  $plotname create text [expr $pboxwidth/2] [expr $pheight - 10] \
+      -text "Rate (bpp)" -anchor sw 
+  if {$pbppmax < 0.6} {
+    set bincr 0.05
+  } elseif {$pbppmax < 1.5} {
+    set bincr 0.1
+  } elseif {$pbppmax < 2.5} {
+    set bincr 0.2
+  } else {
+    set bincr 0.4
+  }
+
+  for {set b $bincr} {$b <= $pbppmax} {set b [expr $b+$bincr]} {
+    set bx [bppToX $b $pbppmax $pwidth]
+    $plotname create line ${bx} ${pheight} ${bx} [expr $pheight + 10]
+    $plotname create text ${bx} [expr $pheight + 10] -text $b -anchor n
+  }
+
+  if {$psnrrange < 10} {
+    set pincr 1.0
+  } elseif {$psnrrange < 20} {
+    set pincr 2.0
+  } elseif {$psnrrange < 30} {
+    set pincr 3.0
+  } else {
+    set pincr 4.0
+  }
+
+  for {set p [expr $pincr + round($psnrmin) -1]} {$p <= $psnrmax} {set p [expr 0.0 + $p + $pincr]} {
+    set py [psnrToY [expr 1.0 + $p - $psnrmin] $psnrrange $pheight]
+    $plotname create line 30 ${py} 35 ${py}
+    $plotname create text 30 ${py} -text $p -anchor e
+  }
+
+  set len [llength $points]
+  set ppoints {}
+  for {set i 0} {$i < $len} {incr i 1} {
+
+      # Andy 9/6: add hooks for Zoo compression-on-demand. Currently
+      # this feature is not supported, but I decided to go ahead and
+      # put hooks in now.
+      if {$zoo(UseDB)} {
+
+	  set cmd ""
+	  
+      } elseif {$isURL == 1} {
+	  set cmd "|cat_url ${remoteHttpHost}nph-cjpeg?$imageDir/$ImFname($id)/$ImFname($id)+$imageDir/$ImFname($id)/rdopt.Q.$i"
+      } else {
+	  set cmd "|cjpeg -dct float -optimize"
+	  set cmd "$cmd -qtables $imageDir/$ImFname($id)/rdopt.Q.$i"
+	  set cmd "$cmd -thresh $imageDir/$ImFname($id)/rdopt.Q.$i"
+	  if {$gpsnr_exists == 0} {
+	      set cmd "$cmd -grayscale"
+	  } else {
+	      set cmd "$cmd -qslots 0,1,2"
+	  }
+	  set cmd "$cmd $imageDir/$ImFname($id)/$ImFname($id)"
+      }
+      
+      set cmd "$cmd | xdjpeg -showafter $showafter -ccube $ImCcube -maxc $ImMaxc -ack -win $ImWindowId($id) -tryXback"
+      
+      # no remapping for compressed-on-demand images
+      #if {$cmapping == 1} {
+      #  set cmd "$cmd -remap"
+      #} elseif {$cmapping == 2} {
+      #  set cmd "$cmd -privremap"
+      #}
+	      
+      if {$ImDither} {
+	  set cmd "$cmd -dither"
+      }
+      
+      # Andy 8/28: Enlarge points, and make the cursor turn into a "hand"
+      # when it's over one of the points.
+      # Original values: radius=2.5, fill=gray
+      set radius 3.5
+      set fill red
+      $plotname bind qcurve$i <Enter> \
+	      [concat $ImCtrl($id) config -cursor hand2]
+      $plotname bind qcurve$i <Leave> \
+	      [concat $ImCtrl($id) config -cursor arrow]
+      
+      set pt [lindex $points $i]
+      set b [lindex $pt 0]
+      set p [lindex $pt 1]
+      set bx [bppToX $b $pbppmax $pwidth]
+      set py [psnrToY [expr 1.0 + $p - $psnrmin] $psnrrange $pheight]
+      set ppoints [concat $ppoints ${bx} ${py}]
+      $plotname create oval [expr $bx - $radius] [expr $py - $radius] \
+	      [expr $bx + $radius] [expr $py + $radius] \
+	      -fill $fill -tags qcurve$i
+      set bindscript \
+	      "$ImCtrl($id) configure -cursor watch; \
+	      update idletasks; \
+	      if {\[catch {set TmpFp($id) \[open \"$cmd\" r+\]}\]} { \
+	      $ImCtrl($id) configure -cursor arrow; \
+	      update idletasks; \
+	      ShowError \"Selection not available\" \
+	      } elseif {\[gets \$TmpFp($id) TmpLine($id)\] < 0} { \
+	      $ImCtrl($id) configure -cursor arrow; \
+	      update idletasks; \
+	      catch {close \$TmpFp($id)}; \
+	      ShowError \"Selection not available\" \
+	      } elseif {\[string compare \$TmpLine($id) OK\] != 0} { \
+	      $ImCtrl($id) configure -cursor arrow; \
+	      update idletasks; \
+	      catch {close \$TmpFp($id)}; \
+	      ShowError \"Selection not available\" \
+	      } else { \
+	      $ImCtrl($id) configure -cursor arrow; \
+	      update idletasks; \
+	      ResetImage $id; \
+	      set ImCtrlState($id) 1; \
+	      set ImState($id) 1; \
+	      pack forget $winname.buttons.qcurve; \
+	      set ImFile($id) \$TmpFp($id); \
+	      set ImViewerPid($id) \[pid \$ImFile($id)\]; \
+	      catch {$plotname delete selpoint}; \
+	      bind $ImWindow($id) <Button-2> \"\"; \
+	      bind $ImWindow($id) <Button-3> \"\"; \
+	      wm title $ImWindow($id) \"$ImFname($id) psnr: $p bpp: $b\"; \
+	      $plotname create line 35 $py $bx $py $bx $pheight -tags selpoint; \
+	      $plotname lower selpoint; }"
+
+      # Andy 9/6:
+      if {$zoo(UseDB)} {
+	  set bindscript [list ShowError [list Compression-on-demand \
+		  is not supported for Zoo images]]
+      }
+      
+      $plotname bind qcurve$i <Button-1> [list Busy $bindscript]
+  
+  }
+	  
+  eval {$plotname create line} $ppoints {-smooth true} -tags TheLine
+  $plotname lower TheLine
+  $plotname lower selpoint
+  
+}
+
+proc RetainImage {} {
+  global lastImageShown savedXloc savedYloc \
+  mainImWinExists mainImWin ImCtrl ImState ImCtrlGeom \
+  ImCtrlVisible ImWindow fileNameWasGiven
+
+  if {$lastImageShown >= 0} {
+    wm withdraw $mainImWin
+    wm geometry $mainImWin +$savedXloc+$savedYloc
+    bind $mainImWin <KeyPress-r> ""
+    wm deiconify $mainImWin
+    if {$ImState($lastImageShown) != 2} {
+      set GeomTemp(geom) [winfo geometry $mainImWin]
+      scan $GeomTemp(geom) "%dx%d+%d+%d" \
+        GeomTemp(width) GeomTemp(height) GeomTemp(xloc) GeomTemp(yloc)
+      set xoff [expr $savedXloc + ($GeomTemp(width)/2)]
+      set yoff [expr $savedYloc + ($GeomTemp(height)/2)]
+      wm geometry $ImCtrl($lastImageShown) 400x295+$xoff+$yoff
+      set ImCtrlGeom($lastImageShown) 400x295+$xoff+$yoff
+      set bindscript \
+        "if {\$ImCtrlVisible($lastImageShown) == 1} { \
+          set ImCtrlGeom($lastImageShown) \[winfo geometry $ImCtrl($lastImageShown)\]; \
+          wm withdraw $ImCtrl($lastImageShown); \
+          set ImCtrlVisible($lastImageShown) 0; \
+         } else { \
+          wm geometry $ImCtrl($lastImageShown) \$ImCtrlGeom($lastImageShown); \
+          wm deiconify $ImCtrl($lastImageShown); \
+          set ImCtrlVisible($lastImageShown) 1; \
+         }"
+      bind $ImWindow($lastImageShown) <Button-1> [list Busy $bindscript]
+    }
+
+    set lastImageShown -1
+    set mainImWinExists 0
+    if {!$fileNameWasGiven} {
+	.mbar.saveim configure -state disabled
+    }
+  }
+}
+
+#
+# modified for ZOO
+#
+proc ShowImage {fname width height imnumber} {
+  global isURL showafter cmapping remoteHttpHost imageDir \
+    ImNumScans ImScanSize ImScanPsnr ImScanYPsnr ImScanCbPsnr ImScanCrPsnr \
+    ImFile ImLastScanShown ImWindowId ImWindow \
+    currXloc currYloc lastImageShown \
+    mainImWinExists mainImWin mainImWinId \
+    browseOnWhat BrowsePsnr BrowseSize ImageWasURL \
+    ImageDirWas ImageHostWas ImState ImFname \
+    ImTitle fileNameWasGiven ImMaxc xpnmboardshows photoLocs \
+    xpnmboardwin ImCcube ImDither zoo lastSelected \
+    imageSource ImageSourceWas
+
+  set Id [NewId]
+
+  if {$Id < 0} {
+    ShowError "Too many images on screen"
+    return
+  }
+
+  set idtemp $lastImageShown
+  set lastSelected $imnumber
+  set lastImageShown $Id
+  set ImageWasURL($Id) $isURL
+  set ImageSourceWas($Id) $imageSource
+  set ImageDirWas($Id) $imageDir
+  set ImageHostWas($Id) $remoteHttpHost
+  set ImFname($Id) $fname
+
+  # Andy 9/3: add support for lossless images
+  if {$zoo(UseDB)} {
+      set zoo(Uncompressed,$Id) [lindex $zoo(UncompressedOIDs) $imnumber]
+  }
+  
+  if {![winfo exists $mainImWin]} {
+    set mainImWinExists 0
+  }
+
+  if {$mainImWinExists == 0} {
+      set oldtitle "No Image"
+      set mainImWin .imwin$Id
+      toplevel $mainImWin -bd 0 -background ""
+      set mainImWinId [winfo id $mainImWin]
+      set mainImWinExists 1
+  } else {
+      set oldtitle [wm title $mainImWin]
+  }
+  
+  # Andy 9/12
+  set oldCursor [$mainImWin cget -cursor]
+  catch {$mainImWin configure -cursor watch}
+  wm geometry $mainImWin ${width}x${height}+$currXloc+$currYloc
+  update
+
+  if {($imnumber >= 0)} {
+    .imf.lists.flist activate $imnumber
+    catch "$xpnmboardwin.alternate delete selImage"
+    if {[info exists xpnmboardshows($imnumber)]} {
+      if {$xpnmboardshows($imnumber)} {
+	 catch "$xpnmboardwin.alternate create rectangle \
+	   [expr $photoLocs($imnumber,x1) -3] \
+	   [expr $photoLocs($imnumber,y1) -3] \
+	   [expr $photoLocs($imnumber,x2) +3] \
+	   [expr $photoLocs($imnumber,y2) +3] \
+	   -outline brown -width 2 -tags selImage"
+      }
+    }
+  }
+
+  set ImWindowId($Id) $mainImWinId
+  set ImWindow($Id) $mainImWin
+
+  if {$browseOnWhat == 4} {
+    set ImState($Id) -1
+    if {[GetLossless $Id] == 0} {
+      FreeId $Id
+      set lastImageShown $idtemp
+      wm title $mainImWin $oldtitle
+      return
+    }
+    if {!$fileNameWasGiven} {
+	.mbar.saveim configure -state normal 
+    }
+    #wm geometry $mainImWin ${width}x${height}+$currXloc+$currYloc
+    return
+  }
+
+  set ImState($Id) 0;# meaning scan-mode
+  if {!$fileNameWasGiven} {
+      .mbar.saveim configure -state normal 
+  }
+
+  # Andy 8/28
+  if {$zoo(UseDB)} {
+      set cmd [list |zjview -zoo \
+	      $zoo(HorseServer):$zoo(HorsePort):$zoo(ImagePort)]
+  } else {
+      set cmd "|jview"
+  }
+  
+  set cmd "$cmd -showafter $showafter -ccube $ImCcube -maxc $ImMaxc -win $mainImWinId -silent -echo -tryXback"
+
+  if {$isURL} {
+    set cmd "$cmd -url $remoteHttpHost"
+  }
+  if {$cmapping == 1} {
+    set cmd "$cmd -remap"
+  } elseif {$cmapping == 2} {
+    set cmd "$cmd -privremap"
+  }
+
+  if {$ImDither} {
+    set cmd "$cmd -dither"
+  }
+
+  # Andy 8/28
+  if {$zoo(UseDB)} {
+      set index $imnumber
+      if {$index < 0} {
+	  set index 0
+      }
+      set cmd "$cmd [lindex $zoo(PJPEGOIDs) $index]"
+  } else {
+      set cmd "$cmd $imageDir/$fname/$fname.jpg"
+  }
+
+  # With Andy's improvement... test for gets==-1
+  
+  if {[catch {set ImFile($Id) [open $cmd r+]}] || 
+      [set n [gets $ImFile($Id) infoline]] == -1} {
+      ShowError "Compressed file not available"
+      FreeId $Id
+      set lastImageShown $idtemp
+      wm title $mainImWin $oldtitle
+      return
+  }
+
+  #wm geometry $mainImWin ${width}x${height}+$currXloc+$currYloc
+  #update
+
+  set ImNumScans($Id) 0
+
+  #set n [gets $ImFile($Id) infoline]
+  # first line has already been read
+
+  set totsize 0
+  while {($n > 0) && (![string match END $infoline])} {
+    incr ImNumScans($Id) 1
+    set idx $ImNumScans($Id) 
+    set ImScanPsnr($Id,$idx) 0 
+    set ImScanYPsnr($Id,$idx) 0 
+    set ImScanCbPsnr($Id,$idx) 0 
+    set ImScanCrPsnr($Id,$idx) 0 
+    scan $infoline "%d%s%s%f%s%s%f%s%s%f" \
+      ImScanSize($Id,$idx) foo1 foo2  \
+      ImScanPsnr($Id,$idx) foo3 foo4  \
+      ImScanCbPsnr($Id,$idx) foo5 foo6  \
+      ImScanCrPsnr($Id,$idx)
+    if {$ImScanCbPsnr($Id,$idx) > 0} {
+      set ImScanYPsnr($Id,$idx) $ImScanPsnr($Id,$idx)
+      set ImScanPsnr($Id,$idx) [AvgPsnr $ImScanYPsnr($Id,$idx) \
+					$ImScanCbPsnr($Id,$idx) \
+					$ImScanCrPsnr($Id,$idx)]
+    }
+    incr totsize $ImScanSize($Id,$idx)
+    set n [gets $ImFile($Id) infoline]
+  }
+
+  set ImLastScanShown($Id) 1
+
+  set currsize 0
+
+  for {set n 1} {$n <= $ImNumScans($Id)} {incr n 1} {
+    incr currsize $ImScanSize($Id,$n)
+
+    set ImTitle($Id,$n) "$fname ($n/$ImNumScans($Id))"
+    if {$ImScanPsnr($Id,$n) > 0} {
+      set ImTitle($Id,$n) "$ImTitle($Id,$n) psnr: [printPsnr $ImScanPsnr($Id,$n)]/[printPsnr $ImScanPsnr($Id,$ImNumScans($Id))]"
+    }
+    set ImTitle($Id,$n) "$ImTitle($Id,$n) size: $currsize/$totsize"
+  }
+
+  set currsize $ImScanSize($Id,1)
+
+  if {($browseOnWhat == 1) && ($ImScanPsnr($Id,1) > 0)} {
+      set n 1
+      while {($ImScanPsnr($Id,$n) < $BrowsePsnr) && \
+	     ($n < $ImNumScans($Id))} {
+	incr n 1
+	incr currsize $ImScanSize($Id,$n)
+      }
+      if {$n > 1} {
+	puts $ImFile($Id) "next [expr $n - 1]"
+	catch "flush $ImFile($Id)"
+      }
+      set ImLastScanShown($Id) $n
+  } elseif {$browseOnWhat == 2} {
+      set n 1
+      set targ [expr $BrowseSize*1000.0]
+      while {($currsize < $targ) && \
+	     ($n < $ImNumScans($Id)) && \
+	     (($currsize + $ImScanSize($Id,[expr $n + 1])) <= $targ )} {
+	incr n 1
+	incr currsize $ImScanSize($Id,$n)
+      }
+      if {$n > 1} {
+	puts $ImFile($Id) "next [expr $n - 1]"
+	catch "flush $ImFile($Id)"
+      }
+      set ImLastScanShown($Id) $n
+  }
+
+  wm title $mainImWin $ImTitle($Id,$ImLastScanShown($Id))
+
+  # make plot and button bindings
+  # Andy 8/28: add optional imnumber parameter
+  ShowImagePlot $Id $fname $width $height $imnumber
+
+  # key bindings
+  set bindscript "CloseImage $Id"
+  bind $mainImWin <KeyPress-q> [list Busy $bindscript]
+
+  set bindscript "GetLossless $Id"
+  bind $mainImWin <KeyPress-l> [list Busy $bindscript]
+
+  if {!$fileNameWasGiven} {
+
+    bind $mainImWin <KeyPress-n> [list Busy NextImage]
+
+    bind $mainImWin <KeyPress-p> [list Busy PrevImage]
+
+    bind $mainImWin <KeyPress-r> [list Busy RetainImage]
+  }
+
+  # Andy 9/12
+  catch {$mainImWin configure -cursor $oldCursor}
+  
+}
+
+proc SetSelection {first last} {
+  global xpnmboardwin xpnmboardshows photoLocs
+  .imf.lists.flist selection set $first $last
+  if {[string match end $last]} {
+    set last [expr [.imf.lists.flist size] - 1]
+  }
+  for {set i $first} {$i <= $last} {incr i 1} {
+    if {[info exists xpnmboardshows($i)]} {
+      if {$xpnmboardshows($i)} {
+       catch "$xpnmboardwin.alternate create rectangle \
+          [expr $photoLocs($i,x1) -2] \
+          [expr $photoLocs($i,y1) -2] \
+          [expr $photoLocs($i,x2) +2] \
+          [expr $photoLocs($i,y2) +2] \
+            -outline DarkSalmon -width 2 -tags selImage$i"
+      }
+    }
+  }
+  .mbar.movie configure -state normal
+  .mbar.nextim configure -state normal
+  .mbar.previm configure -state normal
+  update
+}
+
+proc ClearSelection {first last} {
+  global xpnmboardwin xpnmboardshows photoLocs
+  .imf.lists.flist selection clear $first $last
+  if {[string match end $last]} {
+    set last [expr [.imf.lists.flist size] - 1]
+  }
+  for {set i $first} {$i <= $last} {incr i 1} {
+    catch "$xpnmboardwin.alternate delete selImage$i"
+  }
+  if {[string match "" [.imf.lists.flist curselection]]} { 
+    .mbar.movie configure -state disabled
+    .mbar.nextim configure -state disabled
+    .mbar.previm configure -state disabled
+  }
+  update
+}
+
+proc ToggleSelection {idx} {
+  if {[.imf.lists.flist selection includes $idx]} {
+    ClearSelection $idx $idx
+  } else {
+    SetSelection $idx $idx
+  }
+}
+
+proc ReflectSelection {idx} {
+  if {[.imf.lists.flist selection includes $idx]} {
+    SetSelection $idx $idx
+  } else {
+    ClearSelection $idx $idx
+  }
+}
+
+
+proc NextImage {} {
+  global lastSelected lastImageShown mainImWin ImCtrl xpnmboardwin \
+    zoo
+
+  set lastitem [expr [.imf.lists.flist size] - 1]
+
+  set done 0
+  set cnt 0
+
+  while {!$done} {
+    if {$cnt > $lastitem} { 
+      ShowError "No more selected images"
+      return
+    }
+    incr cnt 1 
+    incr lastSelected 1
+    if {$lastSelected > $lastitem} {
+      set lastSelected 0 
+    }
+    if {[.imf.lists.flist selection includes $lastSelected]} {
+      set done 1
+    }
+  }
+  
+  catch {$mainImWin configure -cursor watch}
+  catch {$xpnmboardwin configure -cursor watch}
+  catch {$ImCtrl($lastImageShown) configure -cursor watch}
+  catch {. configure -cursor watch}
+
+  set selString [.imf.lists.flist get $lastSelected]
+  set delimit [string first " " $selString]
+  set fname [string range $selString 0 [expr $delimit - 1]]
+  set xloc [string first x $selString]
+  set delimit [string wordstart $selString $xloc]
+  set width [string range $selString $delimit [expr $xloc - 1]]
+  set delimit [string wordend $selString $xloc]
+  set height [string range $selString [expr $xloc + 1] [expr $delimit - 1]]
+
+
+  if {$lastImageShown >= 0} {
+    FreeImage $lastImageShown
+    set lastImageShown -1
+  }
+
+  ShowImage $fname $width $height $lastSelected
+
+  catch {$mainImWin configure -cursor arrow}
+  catch {$xpnmboardwin configure -cursor arrow}
+  catch {$ImCtrl($lastImageShown) configure -cursor arrow}
+  catch {. configure -cursor arrow}
+
+}
+
+
+proc PrevImage {} {
+  global lastSelected lastImageShown mainImWin ImCtrl xpnmboardwin \
+    zoo
+
+  set lastitem [expr [.imf.lists.flist size] - 1]
+
+  set done 0
+  set cnt 0
+
+  while {!$done} {
+    if {$cnt > $lastitem} { 
+      ShowError "No more selected images"
+      return
+    }
+    incr cnt 1 
+    incr lastSelected -1
+    if {$lastSelected < 0} {
+      set lastSelected $lastitem 
+    }
+    if {[.imf.lists.flist selection includes $lastSelected]} {
+      set done 1
+    }
+  }
+  
+  catch {$mainImWin configure -cursor watch}
+  catch {$xpnmboardwin configure -cursor watch}
+  catch {$ImCtrl($lastImageShown) configure -cursor watch}
+  catch {. configure -cursor watch}
+
+  set selString [.imf.lists.flist get $lastSelected]
+  set delimit [string first " " $selString]
+  set fname [string range $selString 0 [expr $delimit - 1]]
+  set xloc [string first x $selString]
+  set delimit [string wordstart $selString $xloc]
+  set width [string range $selString $delimit [expr $xloc - 1]]
+  set delimit [string wordend $selString $xloc]
+  set height [string range $selString [expr $xloc + 1] [expr $delimit - 1]]
+
+
+  if {$lastImageShown >= 0} {
+    FreeImage $lastImageShown
+    set lastImageShown -1
+  }
+
+  ShowImage $fname $width $height $lastSelected
+
+  catch {$mainImWin configure -cursor arrow}
+  catch {$xpnmboardwin configure -cursor arrow}
+  catch {$ImCtrl($lastImageShown) configure -cursor arrow}
+  catch {. configure -cursor arrow}
+
+}
+
+
+proc GetLossless {id} {
+
+    global ImFile ImWindowId ImWindow \
+	    ImageWasURL ImageDirWas ImageHostWas ImState \
+	    ImCtrl ImViewerPid ImFname ImCtrlState ImMaxc ImCcube ImDither \
+	    ImageSourceWas zoo
+    
+    # Andy 9/3: Add Zoo support
+    if {$ImageSourceWas($id) == "ZooDB"} {
+
+	# Abort if uncompressed image is not there
+	if {$zoo(Uncompressed,$id) == {}} {
+	    ShowError "Lossless image not available"
+	    return 0
+	}
+	# Pipe the file to xpnm
+	if {0} {
+	    # Used for testing with an image from the filesystem
+	    set cmd [list |cat /p/qclic/Images/USC/lena.ppm/lena.ppm | \
+		    xpnm -win $ImWindowId($id) -maxc $ImMaxc -ack -tryXback \
+		    -ccube $ImCcube]
+	}
+	set cmd [list |zgblob -server $zoo(ImageServer) \
+		-port $zoo(ImagePort) -oid $zoo(Uncompressed,$id) | \
+		xpnm -win $ImWindowId($id) -maxc $ImMaxc -ack -tryXback \
+		-ccube $ImCcube]
+#	set cmd "|zgblob -server jerry -port $zoo(ImagePort) -oid $zoo(Uncompressed,$id) | xpnm -win $ImWindowId($id) -maxc $ImMaxc -ack -tryXback -ccube $ImCcube"	
+	if {$ImDither} {
+	    lappend cmd "-dither"
+	}
+	
+    } elseif {$ImageWasURL($id) == 1} {
+	
+	#
+	# Remote Web server
+	#
+	
+	# Test to see if the lossless file exists
+	set cmd "|cat_url $ImageHostWas($id)exists?$ImageDirWas($id)/$ImFname($id)/$ImFname($id)"
+	if {[catch {set fp [open $cmd r]}]} {
+	    ShowError "Lossless file not available (bad connection)"
+	    return 0
+	}
+	if {[gets $fp line] <= 0} {
+	    ShowError "Lossless file not available (read failed)"
+	    catch "close $fp"
+	    return 0
+	}
+	catch "close $fp"
+	if {[string match "*No*" $line]} {
+	    ShowError "Lossless file not available (file missing)"
+	    return 0
+	}
+	
+	# Pipe the file to xpnm
+	set cmd "|cat_url $ImageHostWas($id)nph-cat?$ImageDirWas($id)/$ImFname($id)/$ImFname($id) | xpnm -win $ImWindowId($id) -maxc $ImMaxc -ack -tryXback"
+	
+	set cmd "$cmd -ccube $ImCcube"
+	
+	if {$ImDither} {
+	    set cmd "$cmd -dither"
+	}
+	
+    } else {
+	
+	#
+	# Local file system
+	#
+	
+	if {![file exists $ImageDirWas($id)/$ImFname($id)/$ImFname($id)]} {
+	    ShowError "Lossless file not available"
+	    return 0
+	}
+	set cmd "|xpnm -win $ImWindowId($id) -maxc $ImMaxc -ack -tryXback"
+	
+	set cmd "$cmd -ccube $ImCcube"
+	
+	if {$ImDither} {
+	    set cmd "$cmd -dither"
+	}
+	
+	set cmd "$cmd $ImageDirWas($id)/$ImFname($id)/$ImFname($id)"
+    }
+    
+    $ImWindow($id) configure -cursor watch
+    update idletasks
+    if {[catch {set fp [open $cmd r+]}]} {
+	$ImWindow($id) configure -cursor arrow
+	update idletasks
+	ShowError "Lossless file not available"
+	return 0
+    }
+    
+    if {$ImageSourceWas($id) == "ZooDB"} {
+	# Andy: the gets() call hangs for zoo images. Don't know why yet,
+	# so I'm bypassing it for now.
+	set statline OK
+	set nchars 2
+    } else {
+	set nchars [gets $fp statline]
+    }
+    
+    if {$nchars < 0} {
+	$ImWindow($id) configure -cursor arrow
+	update idletasks
+	catch {close $fp}
+	ShowError "Lossless file not available"
+	return 0
+    } elseif {[string compare $statline OK] != 0} {
+	$ImWindow($id) configure -cursor arrow
+	update idletasks
+	catch {close $fp}
+	ShowError "Lossless file not available"
+	return 0
+    }
+    
+    $ImWindow($id) configure -cursor arrow
+    wm title $ImWindow($id) "$ImFname($id) (uncompressed)"
+    
+    update idletasks
+    ResetImage $id
+    
+    set ImViewerPid($id) [pid $fp]
+    
+    set ImState($id) 2;# lossless has been reached
+    set ImFile($id) $fp
+    catch {destroy $ImCtrl($id)}
+    set ImCtrl($id) .nonextant
+    set ImCtrlState($id) 0
+    
+    # key bindings
+    set bindscript "CloseImage $id"
+    bind $ImWindow($id) <KeyPress-q> [list Busy $bindscript]
+    
+    bind $ImWindow($id) <KeyPress-n> [list Busy NextImage]
+    
+    bind $ImWindow($id) <KeyPress-p> [list Busy PrevImage]
+    
+    bind $ImWindow($id) <KeyPress-r> [list Busy RetainImage]
+    
+    bind $ImWindow($id) <Button-1> ""
+    bind $ImWindow($id) <Button-2> ""
+    bind $ImWindow($id) <Button-3> ""
+    bind $ImWindow($id) <KeyPress-l> ""
+    
+    return 1
+    
+}
+
+proc SwitchCtrlState {id} {
+
+  global ImCtrl ImCtrlState ctrlswitch
+  
+  if {$ImCtrlState($id) == 0} {
+    set ctrlswitch($id) "Scans"
+    pack forget $ImCtrl($id).f.plot
+    pack append $ImCtrl($id).f $ImCtrl($id).f.rdplot {top expand}
+    set ImCtrlState($id) 1
+  } else {
+    set ctrlswitch($id) "Q-Curve"
+    pack forget $ImCtrl($id).f.rdplot
+    pack append $ImCtrl($id).f $ImCtrl($id).f.plot {top expand}
+    set ImCtrlState($id) 0
+  }
+}
+
+proc ClosePhotoBoard {} {
+  global xpnmboardpid xpnmboardwin xpnmboardfp photo_loc
+  if {[winfo exists $xpnmboardwin]} {
+    set gtemp [winfo geometry $xpnmboardwin]
+    scan $gtemp "%dx%d+%d+%d" foo1 foo2 photo_loc(x) photo_loc(y)
+  }
+  catch "destroy $xpnmboardwin"
+  #foreach pid $xpnmboardpid {
+  #  catch {kill -9 $pid}
+  #}
+  if {![string match "" $xpnmboardfp]} { 
+    catch "puts $xpnmboardfp q"
+    catch "close $xpnmboardfp"
+    set xpnmboardfp ""
+  }
+}
+
+
+
+proc ShowPhotoBoard {} {
+  
+    global xpnmboardpid xpnmboardwin xpnmboardfp isURL remoteHttpHost \
+	    imageDir lastImageShown stopphotob xpnmboardshows smallfont \
+	    photo_size photo_loc PhotoMaxc photoLocs PhotoCcube \
+	    PhotoDither zoo
+
+  ClosePhotoBoard
+
+  set lastitem [.imf.lists.flist size]
+
+
+  set hskip 6
+  set vskip 6
+
+  # figure out reductions
+  set total_area 0
+
+  for {set cnt 0} {$cnt < $lastitem} {incr cnt 1} {
+
+    set xpnmboardshows($cnt) 0
+
+    set selString [.imf.lists.flist get $cnt]
+    set delimit [string first " " $selString]
+    set fname($cnt) [string range $selString 0 [expr $delimit - 1]]
+    set xloc [string first x $selString]
+    set delimit [string wordstart $selString $xloc]
+    set iwidth($cnt) [string range $selString $delimit [expr $xloc - 1]]
+    set delimit [string wordend $selString $xloc]
+    set iheight($cnt) [string range $selString [expr $xloc + 1] [expr $delimit - 1]]
+    
+    set width($cnt) [expr $iwidth($cnt)/8]
+    if {($width($cnt)*8) < $iwidth($cnt)} {
+      incr width($cnt) 1
+    }
+    set height($cnt) [expr $iheight($cnt)/8]
+    if {($height($cnt)*8) < $iheight($cnt)} {
+      incr height($cnt) 1
+    }
+    set reduce($cnt) 1
+    while {($width($cnt)/$reduce($cnt) > $photo_size(x)) || \
+	   ($height($cnt)/$reduce($cnt) > $photo_size(y))} {
+      incr reduce($cnt) 1
+    }
+
+    set width($cnt) [expr $width($cnt)/$reduce($cnt)]
+    set height($cnt) [expr $height($cnt)/$reduce($cnt)]
+
+    incr total_area [expr ($width($cnt)+$hskip)*($height($cnt)+$hskip)]
+  }
+
+  #find first square greater than total_area
+  set bw [expr int(ceil(sqrt(0.0+$total_area)))+10]
+  set bh $bw
+
+  # figure exact dimensions
+  set currrow $vskip
+  set currcol $hskip
+  set imsinrow 0
+  set htofrow 0
+
+  set bwnew 0
+  set bhnew 0
+
+  for {set cnt 0} {$cnt < $lastitem} {incr cnt 1} {
+    if {($imsinrow > 0) && (($currcol + $width($cnt)) > $bw)} {
+      incr currrow [expr $htofrow + $vskip]
+      set currcol $hskip
+      set htofrow 0
+      set imsinrow 0
+    }
+
+    if {$height($cnt) > $htofrow} {
+      set htofrow $height($cnt)
+    }
+
+    if {$bwnew < ($currcol + $width($cnt) + $hskip)} {
+      set bwnew [expr $currcol + $width($cnt) + $hskip]
+    }
+    if {$bhnew < ($currrow + $height($cnt) + $vskip)} {
+      set bhnew [expr $currrow + $height($cnt) + $vskip]
+    }
+
+    incr currcol [expr $width($cnt) + $hskip]
+    incr imsinrow 1
+  }
+
+  set bw $bwnew
+  set bh $bhnew
+
+  toplevel $xpnmboardwin
+  wm title $xpnmboardwin "PhotoClic: [file tail $imageDir]"
+
+  wm geometry $xpnmboardwin ${bw}x$bh+$photo_loc(x)+$photo_loc(y)
+
+  canvas $xpnmboardwin.alternate -width ${bw} -height $bh -bd 0
+
+  pack append $xpnmboardwin \
+    $xpnmboardwin.alternate {top left}
+
+  . configure -cursor watch 
+  
+  set stopphotob 0
+  .mbar.stop configure -state normal
+  .mbar.stop configure -command "set stopphotob 1"
+
+  update
+
+  set wid [winfo id $xpnmboardwin]
+
+  set cmd "|xpnmboard -ccube $PhotoCcube -tryXback \
+	 -bwidth $bw -bheight $bh -parwin $wid \
+	 -hskip $hskip -vskip $vskip -maxc $PhotoMaxc \
+	 -numimages $lastitem"
+  if {$PhotoDither} {
+    set cmd "$cmd -dither"
+  }
+
+  set xpnmboardfp [open $cmd a]
+  set xpnmboardpid [pid $xpnmboardfp]
+
+  set currrow $vskip
+  set currcol $hskip
+  set imsinrow 0
+  set htofrow 0
+
+  for {set cnt 0} {!$stopphotob && ($cnt < $lastitem)} {incr cnt 1} {
+
+    if {($imsinrow > 0) && (($currcol + $width($cnt)) > $bw)} {
+      incr currrow [expr $htofrow + $vskip]
+      set currcol $hskip
+      set htofrow 0
+      set imsinrow 0
+    }
+
+    if {$height($cnt) > $htofrow} {
+      set htofrow $height($cnt)
+    }
+
+    # Andy 8/29: add support for Zoo photos
+    if {$zoo(UseDB)} {
+	exec zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) $cnt] -scans 1 1 -term \
+		| jpgtodc - -reduce $reduce($cnt) >@ $xpnmboardfp
+    } elseif {!$isURL} {
+	exec jpgtodc $imageDir/$fname($cnt)/$fname($cnt).jpg \
+		-reduce $reduce($cnt) >@ $xpnmboardfp
+    } else {
+	exec cat_url \
+	  $remoteHttpHost/nph-jgscan?$imageDir/$fname($cnt)/$fname($cnt).jpg+1+1+-term \
+	  | jpgtodc - -reduce $reduce($cnt) >@ $xpnmboardfp
+    }
+
+    catch "flush $xpnmboardfp"
+
+    set xpnmboardshows($cnt) 1
+    set photoLocs($cnt,x1) $currcol
+    set photoLocs($cnt,x2) [expr $currcol + $width($cnt)]
+    set photoLocs($cnt,y1) [expr $currrow]
+    set photoLocs($cnt,y2) [expr $currrow + $height($cnt)]
+
+    set bindscript \
+      "if {(%x >= $currcol) && (%x < ($currcol + $width($cnt) + $hskip)) && \
+           (%y >= $currrow) && (%y < ($currrow + $height($cnt) + $vskip))} { \
+	     . configure -cursor watch; \
+	     $xpnmboardwin configure -cursor watch; \
+	     update idletasks; \
+	     if {\$lastImageShown >= 0} { \
+	       FreeImage \$lastImageShown; \
+	       set lastImageShown -1; \
+	     }; \
+	     ShowImage $fname($cnt) $iwidth($cnt) $iheight($cnt) $cnt; \
+	     $xpnmboardwin configure -cursor arrow; \
+	     . configure -cursor arrow; \
+	     update idletasks; \
+	};"
+    bind $xpnmboardwin <Double-Button-1><ButtonRelease-1> \
+	    +$bindscript
+
+    set bindscript \
+      "if {(\$xpnmboardshows($cnt) == 1) && \
+	   (%x >= $currcol) && (%x < ($currcol + $width($cnt) + $hskip)) && \
+           (%y >= $currrow) && (%y < ($currrow + $height($cnt) + $vskip))} { \
+        set xpnmboardshows($cnt) 2; \
+	$xpnmboardwin.alternate create rectangle \
+	  [expr $currcol -1] [expr $currrow -1] \
+	  [expr $currcol + $width($cnt)+1] \
+	  [expr $currrow + $height($cnt)+1]; \
+	$xpnmboardwin.alternate create text \
+	   [expr $currcol + ($width($cnt)/2)] \
+	   [expr $currrow + ($height($cnt)/2)] \
+	   -width $width($cnt) -font $smallfont \
+	   -text \"$fname($cnt) $iwidth($cnt) x $iheight($cnt)\"; \
+       };"
+
+    bind $xpnmboardwin.alternate <KeyRelease-q> +$bindscript
+
+    set bindscript \
+      "if {(%x >= $currcol) && (%x < ($currcol + $width($cnt) + $hskip)) && \
+           (%y >= $currrow) && (%y < ($currrow + $height($cnt) + $vskip))} { \
+	     ToggleSelection $cnt; \
+	};"
+    bind $xpnmboardwin <ButtonPress-1> +$bindscript
+
+    if {[.imf.lists.flist selection includes $cnt]} {
+      SetSelection $cnt $cnt
+    }
+
+    incr currcol [expr $width($cnt) + $hskip]
+    incr imsinrow 1
+    update
+  }
+
+  bind $xpnmboardwin.alternate <KeyRelease-Q> \
+	  [list Busy ClosePhotoBoard]
+  bind $xpnmboardwin.alternate <KeyRelease-s> \
+	  [list Busy "SetSelection 0 end"]
+  bind $xpnmboardwin.alternate <KeyRelease-c> \
+	  [list Busy "ClearSelection 0 end"]
+  bind $xpnmboardwin.alternate <KeyRelease-n> \
+	  [list Busy NextImage]
+  bind $xpnmboardwin.alternate <KeyRelease-p> \
+	  [list Busy PrevImage]
+
+  if {$cnt < $lastitem} {
+    #  stop button was used... send junk on xpnmboardfp to
+    #  make sure xpnmboard enters its XEvent loop 
+    puts -nonewline $xpnmboardfp "XXXXX"
+    catch "flush $xpnmboardfp"
+    set gtemp [winfo geometry $xpnmboardwin]
+    scan $gtemp "%dx%d+%d+%d" foo1 foo2 photo_loc(x) photo_loc(y)
+    wm geometry $xpnmboardwin ${bw}x[expr $currrow+$htofrow+$vskip]+$photo_loc(x)+$photo_loc(y)
+  }
+  . configure -cursor arrow
+  .mbar.stop configure -state disabled
+
+  update
+
+
+}
+
+proc CloseMovie {} {
+  global MovieWin MovieFp MovieLoc
+
+  if {[winfo exists $MovieWin]} {
+    set gtemp [winfo geometry $MovieWin]
+    scan $gtemp "%dx%d+%d+%d" foo1 foo2 MovieLoc(x) MovieLoc(y)
+  }
+
+  catch "destroy $MovieWin"
+
+  if {![string match "" $MovieFp]} { 
+    catch "puts -nonewline $MovieFp XXXXX"
+    catch "flush $MovieFp" 
+    catch "puts -nonewline $MovieFp XXXXX"
+    catch "flush $MovieFp" 
+    catch "puts $MovieFp q"
+    catch "close $MovieFp"
+    set MovieFp ""
+  }
+
+}
+
+
+proc ShowMovie {} {
+  #show movie of selected images
+  global MovieDimFromImage MovieDim MovieMaxc MovieCcube smallfont \
+	 MovieFromWhat MoviePsnr MovieSize \
+	 MovieNumImages MovieIsURL MovieImDir MovieImages \
+	 MovieFilters MovieLastImageShown \
+	 isURL remoteHttpHost MovieRemoteHost imageDir \
+	 MovieMessage MovieWin MovieFp MovieLoc stopmovie \
+	 MovieWidth MovieHeight MoviePauseAfterFirst MovieDither \
+	 zoo
+
+  # Andy 8/29: add support for Zoo movies
+  if {$zoo(UseDB)} {
+      if {$MovieFromWhat == 5} {
+	  ShowError "Zoo movies cannot display uncompressed images"
+	  return
+      }
+  }
+
+  set imlist [.imf.lists.flist curselection]
+  set ll [llength $imlist]
+
+  if {$ll <= 0} {
+    ShowError "No selected images: cannot show movie"
+    return
+  }
+
+  CloseMovie
+
+  set MovieNumImages $ll
+  set MovieImDir $imageDir
+  set MovieIsURL $isURL
+  set MovieRemoteHost $remoteHttpHost
+  set MovieMessage "Getting image info..."
+
+  for {set i 0} {$i < $MovieNumImages} {incr i 1} {
+    set selString [.imf.lists.flist get [lindex $imlist $i]]
+    set delimit [string first " " $selString]
+    set MovieImages($i,Name) [string range $selString 0 [expr $delimit - 1]]
+    set xloc [string first x $selString]
+    set delimit [string wordstart $selString $xloc]
+    set MovieImages($i,Width) \
+      [string range $selString $delimit [expr $xloc - 1]]
+    set delimit [string wordend $selString $xloc]
+    set MovieImages($i,Height) \
+      [string range $selString [expr $xloc + 1] [expr $delimit - 1]]
+  }
+
+  if {$MovieFromWhat == 0} {
+    #  photo movies 
+    for {set i 0} {$i < $MovieNumImages} {incr i 1} {
+      set w [expr $MovieImages($i,Width)/8]
+      if {($w*8) < $MovieImages($i,Width)} {
+	incr w 1
+      }
+      set MovieImages($i,Width) $w
+      set h [expr $MovieImages($i,Height)/8]
+      if {($h*8) < $MovieImages($i,Height)} {
+	incr h 1
+      }
+      set MovieImages($i,Height) $h
+    }
+  }
+
+  toplevel $MovieWin
+  wm title $MovieWin "MovieClic: [file tail $imageDir]"
+
+  if {$MovieDimFromImage} {
+    set MovieWidth $MovieImages(0,Width)
+    set MovieHeight $MovieImages(0,Height)
+  } else {
+    set MovieWidth $MovieDim(x)
+    set MovieHeight $MovieDim(y)
+  }
+
+  if {$MovieWidth < 360} {
+    # need to see all buttons!
+    set MovieWidth 360
+  }
+
+  wm geometry $MovieWin ${MovieWidth}x[expr $MovieHeight + 40]+$MovieLoc(x)+$MovieLoc(y)
+
+  frame $MovieWin.mov -width $MovieWidth -height $MovieHeight
+  frame $MovieWin.console -width $MovieWidth -height 20
+  label $MovieWin.console.msg -textvariable MovieMessage 
+  frame $MovieWin.console.buts
+  button $MovieWin.console.buts.pause -text Pause \
+    -state disabled
+  button $MovieWin.console.buts.resume -text Resume \
+    -state disabled
+  button $MovieWin.console.buts.step -text Step \
+    -state disabled
+  button $MovieWin.console.buts.restart -text Restart \
+    -state disabled
+  button $MovieWin.console.buts.close -text Close \
+    -state disabled
+
+  pack append $MovieWin.console.buts \
+    $MovieWin.console.buts.pause {top left} \
+    $MovieWin.console.buts.resume {top left} \
+    $MovieWin.console.buts.step {top left} \
+    $MovieWin.console.buts.restart {top left} \
+    $MovieWin.console.buts.close {top right fillx}
+
+  pack append $MovieWin.console \
+    $MovieWin.console.msg {top fillx expand} \
+    $MovieWin.console.buts {bottom fillx expand}
+
+  pack append $MovieWin \
+    $MovieWin.mov {top fillx filly expand} \
+    $MovieWin.console {bottom fillx expand}
+  
+  update
+
+  #MovieFromWhat values:
+  # 0: photos
+  # 1: compressed images, all scans
+  # 2: compressed images, psnr >= MoviePsnr
+  # 3: compressed images, size >= MovieSize
+  # 4: compressed images, lowest quality
+  # 5: uncompressed images
+
+  # set filters
+
+      
+  # Andy 8/29: add support for Zoo movies
+  if  {$MovieFromWhat == 0} {
+    # 0: photos
+    for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      set reduce 1
+      while {(($MovieImages($i,Width)/$reduce) > $MovieWidth) || \
+	     (($MovieImages($i,Height)/$reduce) > $MovieHeight)} {  
+	incr reduce 1 
+      } 
+      if {$zoo(UseDB)} { 
+	set MovieFilters($i) \
+		[list zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) [lindex $imlist $i]] \
+		-scans 1 1 -term | jpgtodc - -reduce $reduce]
+      } elseif {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-jgscan?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg+1+1+-term | jpgtodc - -reduce $reduce"
+      } else { 
+	set MovieFilters($i) \
+	  "jgetscan $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg 1 1 -term | jpgtodc - -reduce $reduce"
+      } 
+    } 
+  } elseif {$MovieFromWhat == 1} {
+      # 1: compressed images, all scans
+      for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      set reduce 8 
+      while {($reduce > 1) && \
+	  ((($MovieImages($i,Width)*$reduce/8) > $MovieWidth) || \
+	   (($MovieImages($i,Height)*$reduce/8) > $MovieHeight))} {  
+	set reduce [expr $reduce/2]
+      } 
+      if {$zoo(UseDB)} { 
+	set MovieFilters($i) \
+		[list zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) [lindex $imlist $i]] \
+		-scans 1 end -term | djpeg -scale $reduce/8]
+      } elseif {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-cat?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg | djpeg -scale $reduce/8"
+      } else { 
+	set MovieFilters($i) \
+	  "cat $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg | djpeg -scale $reduce/8"
+      } 
+    }  
+  } elseif {$MovieFromWhat == 2} {  
+    # 2: compressed images, psnr >= MoviePsnr
+    for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      set reduce 8 
+      while {($reduce > 1) && \
+	  ((($MovieImages($i,Width)*$reduce/8) > $MovieWidth) || \
+	   (($MovieImages($i,Height)*$reduce/8) > $MovieHeight))} {  
+	set reduce [expr $reduce/2]
+      }
+      if {$zoo(UseDB)} {
+	set MovieFilters($i) \
+		[list zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) [lindex $imlist $i]] \
+		-psnr $MoviePsnr -term | djpeg -scale $reduce/8]
+      } elseif {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-jgSorQ?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg+$MoviePsnr+-psnr | djpeg -scale $reduce/8"
+      } else { 
+	set MovieFilters($i) \
+	  "jgSorQ $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg $MoviePsnr -psnr | djpeg -scale $reduce/8"
+      } 
+    } 
+  } elseif {$MovieFromWhat == 3} {  
+    # 3: compressed images, size >= MovieSize
+    for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      set reduce 8 
+      while {($reduce > 1) && \
+	  ((($MovieImages($i,Width)*$reduce/8) > $MovieWidth) || \
+	   (($MovieImages($i,Height)*$reduce/8) > $MovieHeight))} {  
+	set reduce [expr $reduce/2]
+      } 
+      if {$zoo(UseDB)} {
+	set MovieFilters($i) \
+		[list zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) [lindex $imlist $i]] \
+		-size [expr $MovieSize * 1000] -term | djpeg -scale $reduce/8]
+      } elseif {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-jgSorQ?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg+[expr $MovieSize *1000] | djpeg -scale $reduce/8"
+      } else { 
+	set MovieFilters($i) \
+	  "jgSorQ $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg [expr $MovieSize *1000] | djpeg -scale $reduce/8"
+      } 
+    } 
+  } elseif {$MovieFromWhat == 4} {  
+    # 4: compressed images, lowest quality
+    for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      set reduce 8 
+      while {($reduce > 1) && \
+	  ((($MovieImages($i,Width)*$reduce/8) > $MovieWidth) || \
+	   (($MovieImages($i,Height)*$reduce/8) > $MovieHeight))} {  
+	set reduce [expr $reduce/2]
+      } 
+      if {$zoo(UseDB)} { 
+	set MovieFilters($i) \
+		[list zgscan -server $zoo(HorseServer) \
+		-ports $zoo(HorsePort) $zoo(ImagePort) \
+		-oid [lindex $zoo(PJPEGOIDs) [lindex $imlist $i]] \
+		-scans 1 1 -term | djpeg -scale $reduce/8]
+      } elseif {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-jgscan?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg+1+1+-term | djpeg -scale $reduce/8"
+      } else { 
+	set MovieFilters($i) \
+	  "jgetscan $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name).jpg 1 1 -term | djpeg -scale $reduce/8"
+      } 
+    } 
+  } elseif {$MovieFromWhat == 5} {  
+    # 5: uncompressed images
+    for {set i 0} {$i < $MovieNumImages} { incr i 1} {
+      if {$MovieIsURL} { 
+	set MovieFilters($i) \
+	  "cat_url ${MovieRemoteHost}nph-cat?$MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name)"
+      } else { 
+	set MovieFilters($i) \
+	  "cat $MovieImDir/$MovieImages($i,Name)/$MovieImages($i,Name)"
+      } 
+    } 
+  } else {
+    # shouldn't happen
+    return
+  } 
+
+  set cmd "|xpnmmovie -bwidth $MovieWidth -bheight $MovieHeight -numimages \
+    $MovieNumImages -ccube $MovieCcube -maxc $MovieMaxc -tryXback \
+    -parwin [winfo id $MovieWin.mov]"
+  if {$MovieDither} {
+    set cmd "$cmd -dither"
+  }
+
+  set MovieFp [open $cmd a]
+  
+  set MovieMessage "Building colormap..."
+  update idletasks
+
+  if {$MoviePauseAfterFirst} {
+    set uplim 1
+  } else {
+    set uplim $MovieNumImages
+  }
+
+  set stopmovie 0
+  for {set i 0} {!$stopmovie && \
+     ($i < $uplim)} {incr i 1} {
+    catch "exec $MovieFilters($i) >@ $MovieFp 2> /dev/null"
+    catch "flush $MovieFp" 
+    if {($i == 0) && ($uplim > 1)} { 
+      $MovieWin.console.buts.pause configure -state normal \
+	-command "set stopmovie 1"
+      $MovieWin.console.buts.close configure -state normal \
+	-command "set stopmovie 2"
+      bind $MovieWin <KeyPress-q> \
+	"set stopmovie 2"
+    } 
+    if {($i == 1) || ($uplim == 1)}  {
+      set MovieMessage "Showing movie" 
+    }
+    update
+  } 
+
+  $MovieWin.console.buts.pause configure -state disabled 
+
+
+  if {$i < $MovieNumImages} {
+    if {$stopmovie == 2} { 
+      CloseMovie
+      return
+    } else { 
+      catch "puts -nonewline $MovieFp XXXXX"
+      catch "flush $MovieFp"
+      set MovieLastImageShown [expr $i - 1] 
+      set MovieMessage "Pausing at $MovieImages($MovieLastImageShown,Name): $i/$MovieNumImages" 
+      $MovieWin.console.buts.step configure \
+          -command StepMovie  -state normal
+      $MovieWin.console.buts.resume configure \
+          -command ResumeMovie  -state normal
+    } 
+  } else {
+    set MovieMessage "Done!"
+    set MovieLastImageShown [expr $i - 1] 
+  } 
+
+  update idletasks
+
+  $MovieWin.console.buts.close configure -state normal \
+    -command CloseMovie 
+  bind $MovieWin <KeyPress-q> [list Busy CloseMovie]
+  $MovieWin.console.buts.restart configure \
+    -command RestartMovie  -state normal
+}
+
+proc StepMovie {} {
+  global MovieFilters MovieLastImageShown \
+         MovieImages MovieMessage MovieFp MovieNumImages MovieWin
+
+  set i [expr $MovieLastImageShown + 1]
+  if {$i < $MovieNumImages} { 
+    $MovieWin.console.buts.step configure -state disabled
+    $MovieWin.console.buts.resume configure -state disabled
+    $MovieWin.console.buts.restart configure -state disabled
+    $MovieWin.console.buts.close configure -state disabled
+    bind $MovieWin <KeyPress-q> ""
+    $MovieWin.console.buts.pause configure -state disabled
+    catch "exec $MovieFilters($i) >@ $MovieFp 2> /dev/null"
+    catch "flush $MovieFp" 
+    catch "puts -nonewline $MovieFp XXXXX"
+    catch "flush $MovieFp"
+    set MovieLastImageShown $i
+    if {$i < ($MovieNumImages-1)} { 
+      set MovieMessage "Pausing at $MovieImages($MovieLastImageShown,Name): [expr $i+1]/$MovieNumImages" 
+      $MovieWin.console.buts.step configure -state normal
+      $MovieWin.console.buts.resume configure -state normal
+    } else {
+      set MovieMessage "Done!"
+    } 
+    $MovieWin.console.buts.restart configure -state normal
+    $MovieWin.console.buts.close configure -state normal
+    bind $MovieWin <KeyPress-q> [list Busy CloseMovie]
+  } 
+}
+
+proc ResumeMovie {} {
+  global MovieFilters MovieLastImageShown \
+         MovieImages MovieMessage MovieFp MovieNumImages \
+	 stopmovie MovieWin
+
+  set start [expr $MovieLastImageShown + 1]
+
+  if {$start >= $MovieNumImages} {
+    return
+  }
+
+  set stopmovie 0
+  $MovieWin.console.buts.step configure -state disabled
+  $MovieWin.console.buts.resume configure -state disabled
+  $MovieWin.console.buts.close configure -state disabled
+  $MovieWin.console.buts.pause configure -state disabled
+  $MovieWin.console.buts.restart configure -state disabled
+  bind $MovieWin <KeyPress-q> ""
+
+  set MovieMessage "Showing movie"
+
+  for {set i $start} {!$stopmovie && \
+     ($i < $MovieNumImages)} {incr i 1} {
+    catch "exec $MovieFilters($i) >@ $MovieFp 2> /dev/null"
+    catch "flush $MovieFp" 
+    if {$i == $start} { 
+      $MovieWin.console.buts.pause configure -state normal \
+	-command "set stopmovie 1"
+      $MovieWin.console.buts.close configure -state normal \
+	-command "set stopmovie 2"
+      bind $MovieWin <KeyPress-q> "set stopmovie 2"
+    } 
+    update
+  } 
+
+  $MovieWin.console.buts.pause configure -state disabled 
+
+
+  if {$i < $MovieNumImages} {
+    if {$stopmovie == 2} { 
+      CloseMovie
+      return
+    } else { 
+      puts -nonewline $MovieFp "XXXXX"
+      flush $MovieFp
+      set MovieLastImageShown [expr $i - 1] 
+      set MovieMessage "Pausing at $MovieImages($MovieLastImageShown,Name): $i/$MovieNumImages" 
+      $MovieWin.console.buts.step configure \
+          -command StepMovie  -state normal
+      $MovieWin.console.buts.resume configure \
+          -command ResumeMovie  -state normal
+    } 
+  } else {
+    set MovieMessage "Done!"
+    set MovieLastImageShown [expr $i - 1] 
+  } 
+
+  update idletasks
+
+  $MovieWin.console.buts.close configure -state normal \
+    -command CloseMovie 
+  bind $MovieWin <KeyPress-q> [list Busy CloseMovie]
+  $MovieWin.console.buts.restart configure \
+    -command RestartMovie  -state normal
+}
+
+proc RestartMovie {} {
+  global MovieFilters MovieLastImageShown \
+         MovieImages MovieMessage MovieFp MovieNumImages \
+	 stopmovie MovieWidth MovieHeight MovieCcube MovieWin \
+	 MovieMaxc MoviePauseAfterFirst MovieDither
+
+  if {![string match "" $MovieFp]} { 
+    catch "puts -nonewline $MovieFp XXXXX"
+    catch "flush $MovieFp" 
+    catch "puts -nonewline $MovieFp XXXXX"
+    catch "flush $MovieFp" 
+    catch "puts $MovieFp q"
+    catch "close $MovieFp"
+    set MovieFp ""
+  }
+
+  set MovieMessage "Building colormap..."
+  update idletasks
+
+  set cmd "|xpnmmovie -bwidth $MovieWidth -bheight $MovieHeight -numimages \
+    $MovieNumImages -ccube $MovieCcube -maxc $MovieMaxc -tryXback \
+    -parwin [winfo id $MovieWin.mov]"
+  if {$MovieDither} {
+    set cmd "$cmd -dither"
+  }
+
+  set MovieFp [open $cmd a]
+  
+  if {$MoviePauseAfterFirst} {
+    set uplim 1
+  } else {
+    set uplim $MovieNumImages
+  }
+
+  set stopmovie 0
+  $MovieWin.console.buts.step configure -state disabled
+  $MovieWin.console.buts.resume configure -state disabled
+  $MovieWin.console.buts.close configure -state disabled
+  bind $MovieWin <KeyPress-q> ""
+  $MovieWin.console.buts.pause configure -state disabled
+  $MovieWin.console.buts.restart configure -state disabled
+
+  for {set i 0} {!$stopmovie && \
+     ($i < $uplim)} {incr i 1} {
+    catch "exec $MovieFilters($i) >@ $MovieFp 2> /dev/null"
+    catch "flush $MovieFp" 
+    if {($i == 0) && ($uplim > 1)} { 
+      $MovieWin.console.buts.pause configure -state normal \
+	-command "set stopmovie 1"
+      $MovieWin.console.buts.close configure -state normal \
+	-command "set stopmovie 2"
+      bind $MovieWin <KeyPress-q> "set stopmovie 2"
+    }
+    if {($i == 1) || ($uplim == 0)}  {
+      set MovieMessage "Showing movie" 
+    }
+    update
+  } 
+
+  $MovieWin.console.buts.pause configure -state disabled 
+
+
+  if {$i < $MovieNumImages} {
+    if {$stopmovie == 2} { 
+      CloseMovie
+      return
+    } else { 
+      puts -nonewline $MovieFp "XXXXX"
+      flush $MovieFp
+      set MovieLastImageShown [expr $i - 1] 
+      set MovieMessage "Pausing at $MovieImages($MovieLastImageShown,Name): $i/$MovieNumImages" 
+      $MovieWin.console.buts.step configure \
+          -command StepMovie  -state normal
+      $MovieWin.console.buts.resume configure \
+          -command ResumeMovie  -state normal
+    } 
+  } else {
+    set MovieMessage "Done!"
+    set MovieLastImageShown [expr $i - 1] 
+  } 
+
+  update idletasks
+
+  $MovieWin.console.buts.close configure -state normal \
+    -command CloseMovie 
+  bind $MovieWin <KeyPress-q> [list Busy CloseMovie]
+  $MovieWin.console.buts.restart configure \
+    -command RestartMovie  -state normal
+}
+
+
+proc ShowHelp {} {
+    set winname helpwin
+    if ![winfo exists .$winname] {
+        toplevel .$winname
+        frame .$winname.buttons
+        pack .$winname.buttons -side bottom -expand 1 -fill x
+        button .$winname.buttons.dismiss -text Dismiss -command "destroy .$winname"
+        pack .$winname.buttons.dismiss
+        text .$winname.text -height 40 -yscrollcommand ".$winname.scroll set" -setgrid 1
+        pack .$winname.text -side left -expand 1 -fill both
+        scrollbar .$winname.scroll -command ".$winname.text yview"
+        pack .$winname.scroll -side right -fill y
+        wm title .$winname "Qclic: Help"
+        wm iconname .$winname "Qclic"
+        .$winname.text delete 1.0 end
+        .$winname.text insert 1.0 \
+"\n    Qclic: Quality-Controlled Lossy Image Compression\
+\n           Help on Incremental JPEG Browser\
+\n           --------------------------------\
+\n\
+\nSummary of key/button bindings:\
+\n------------------------\
+\n\
+\nMain window:\
+\n\
+\n  s		select all images\
+\n  c		clear all selections\
+\n  n		next image\
+\n  q		quit\
+\n\
+\nImage window, while viewing scans:\
+\n\
+\n  Button-1	toggle control window visibility\
+\n  Button-2	get next scan\
+\n  Button-3	get all scans\
+\n  l		get lossless (uncompressed) image\
+\n  q		close image\
+\n  r		retain image\
+\n  n		next image\
+\n\
+\nImage window, while viewing `compressed-on-demand' image:\
+\n\
+\n  l		get lossless (uncompressed) image\
+\n  q		close image\
+\n  r		retain image\
+\n  n		next image\
+\n  \
+\nImage window, while viewing uncompressed image:\
+\n\
+\n  q		close image\
+\n  r		retain image\
+\n  n		next image\
+\n\
+\nControl window, showing scans:\
+\n\
+\n  Button-1	get scans upto this one\
+\n\
+\nControl window, showing Q-Curve:\
+\n\
+\n  Button-1	get image `compressed-on-demand' to this\
+\n		rate-quality point\
+\n\
+\nPhotoClic window:\
+\n\
+\n  s		select all images\
+\n  c		clear all selections\
+\n  n		next image\
+\n  q		clear the photo where cursor is\
+\n  Q		close PhotoClic window\
+\n\
+\nMovieClic window:\
+\n\
+\n  q		close MovieClic window\
+\n\
+\nDetails:\
+\n--------\
+\n\
+\nThe Qclic Incremental JPEG Browser is a tool for browsing\
+\nthrough JPEG images in a quality-controlled manner. The\
+\nimages may be located locally or at a remote WWW site. The\
+\nimage server needs to store some auxiliary info about the images,\
+\nthis is done by the Qclic program.\
+\n\
+\nIn any directory, the available images are listed with the\
+\nfollowing attributes:\
+\n  name  width x height  Color/Grayscale #scans size psnr\
+\nAn image is viewed by double clicking on its entry. Clicking\
+\non <Next Image>  will run through the selected images in cyclic \
+\norder. All images are displayed in one window, called the browsing\
+\nwindow. New images overwrite previous ones. However, any image\
+\ncan be `retained' by pressing <Retain Image>.\
+\n\
+\nOptions:\
+\n\
+\n1. Start showing after <X> percent:\
+\n   Create a color map for the image as soon as X percent of\
+\n   the first scan has been obtained. Set this to a high value\
+\n   for images with plain and large backgrounds\
+\n\
+\n2. Colormapping:\
+\n   Once an entire image has been read in, a new colormap will be\
+\n   used for viewing, if the Shared re-mapping or\
+\n   Private re-mapping option is set. In case of the latter, the\
+\n   new color map may be a private one.\
+\n\
+\n3. Default Ctrl-win state:\
+\n   For each image, a control window can be brought up by\
+\n   clicking the left button on the image. By default, this\
+\n   can be set to be visible or invisible.\
+\n\
+\n4. Browsing options:\
+\n   4.1 Browse at size: read in scans as long as the total size \
+\n       is less than this value.\
+\n   4.2 Browse at quality: read in scans as long as the PSNR is less\
+\n       than this value.\
+\n   4.3 Browse uncompressed images: very slow, for comparison only!\
+\n   4.4 Browse at lowest quality: read in only the first scan.\
+\n\
+\nImage Control Windows:\
+\n\
+\nThere are three ways of viewing an image. The first, and\
+\nthe default way is to read in the multi-scan compressed\
+\nJPEG image stored at the server, incrementally. The control\
+\nwindow shows how many scans have been read in, and the\
+\nincremental size and quality of each scan. Clicking the left\
+\nbutton on any scan will read in all the scans upto and\
+\nincluding that one.\
+\n\
+\nThe control window shows a button labeled `Q-curve'. Pressing\
+\nthis switched the view in the control window to the PSNR-bitrate\
+\ngraph for the image. The user cn return to the previous view\
+\nby pressing the `Scans' button in this state. The PSNR-bitrate\
+\ncurve shows several points which can be clicked on. This would\
+\nrequest the server to compress the image to that rate-quality\
+\nspecification and send it. This compressed image would be in\
+\nsequential JPEG format (single scan). One cannot go back to the\
+\n`Scans' view after this.\
+\n\
+\nThe uncompressed original image can also be seen by pressing the\
+\n`Lossless' button in the control window.\
+\n"
+        .$winname.text mark set insert 1.0
+    } else {
+        wm deiconify .$winname
+        raise .$winname
+    }
+
+}
+
+#
+# Begin executing...
+#
+
+#
+# Parameter Variables
+#
+set alwaysTrue   1
+set showafter   80
+set cmapping     1; # 1==remap, 2==privremap, 0==noremap
+set ctrlvisib    0; # 1==ctrl window visible 0==invisible on starting
+set browseOnWhat 0; # 0 => lowest quality scan will be shown
+                    # 1 => BrowsePsnr quality will be demanded
+                    # 2 => BrowseSize size will be demanded
+		    # 3 => lossless browsing
+set BrowsePsnr 20
+set BrowseSize 2
+
+#MovieFromWhat values:
+# 0: photos
+# 1: compressed images, all scans
+# 2: compressed images, psnr >= MoviePsnr
+# 3: compressed images, size >= MovieSize
+# 4: compressed images, lowest quality
+# 5: uncompressed images
+
+set MovieFromWhat 1
+set MoviePsnr 30
+set MovieSize 4
+set MovieDim(x) 400
+set MovieDim(y) 400
+set MovieDimFromImage 1
+set MovieMaxc 200
+set MovieCcube 4
+set MovieDither 1
+set MoviePauseAfterFirst 0
+
+set MovieWin ".qclicmov"
+set MovieFp ""
+set MovieLoc(x) 200
+set MovieLoc(y) 200
+
+set isURL 0
+set imageSource Local
+set zoo(UseDB) 0
+
+set startupDirWasGiven 0
+set startupDir ""
+
+set imageDir [pwd]
+set imageDirSuffix ""
+
+set remoteHostWasGiven 0
+set remoteHttpHost "http://cgi.cs.wisc.edu/scripts/ratnakar/"
+
+set lastSelected -1
+
+set smallfont "*-times-medium-r-normal--*-120-*-*-*-*-*-*"
+
+set fileNameWasGiven 0
+set fileNameGiven ""
+
+set MaxImages 100
+set NumImages 0
+
+set glbi 0
+set glbnum 0
+
+set currXloc 100 
+set savedXloc 500
+set currYloc 50
+set savedYloc 50
+
+set lastImageShown -1
+
+set mainImWinExists 0
+set mainImWin ""
+set mainCtrlGeom ""
+
+for {set i 0} {$i < $MaxImages} {incr i 1} {set ImInUse($i) 0} 
+
+set doLocal 0
+set doZoo 0
+
+tk_focusFollowsMouse
+
+wm geometry . +500+500
+
+wm title . "Qclic JPEG Browser"
+
+set xpnmboardpid {}
+set xpnmboardwin .qclicphotob
+set xpnmboardfp ""
+set photo_size(x) 64
+set photo_size(y) 64
+set photo_loc(x) 50
+set photo_loc(y) 50
+
+set ImMaxc 200
+set PhotoMaxc 50
+set ImCcube 4
+set PhotoCcube 3
+set ImDither 1
+set PhotoDither 1
+
+#
+# Parse command-line arguments
+#
+if {$argc > 0} {
+    set i 0 
+    while {$i < $argc} {
+	if {([string match "-si*" [lindex $argv $i]]) && ($i < ($argc - 1))} {
+	    incr i 1
+	    set browseOnWhat 2
+	    set BrowseSize [lindex $argv $i]
+	} elseif {([string match "-qu*" [lindex $argv $i]]) && \
+		($i < ($argc -1))} {
+	    incr i 1
+	    set browseOnWhat 1
+	    set BrowsePsnr [lindex $argv $i]
+	} elseif {([string match "-opt*" [lindex $argv $i]]) && \
+		($i < ($argc -1))} {
+	    incr i 1
+	    set optionsfile [lindex $argv $i]
+	    if {[catch "source $optionsfile"]} {
+	      ShowError "Options file $optionsfile not found"
+	    }
+	} elseif {[string match "-loc*" [lindex $argv $i]]} { 
+	    set doLocal 1
+	} elseif {[string match "-zoo" [lindex $argv $i]]} { 
+	    set doZoo 1
+	} elseif {[string match "-ctrlvis*" [lindex $argv $i]]} { 
+	    set ctrlvisib 1
+	} elseif {([string match "-zooservers" [lindex $argv $i]]) && \
+		($i < ($argc - 1))} {
+
+	    incr i 1
+
+	    set temp [split [lindex $argv $i] :]
+	    
+	    set temp2 [lindex $temp 0]
+	    if {$temp2 != {}} {
+		set zoo(HorseServer) $temp2
+	    }
+
+	    set temp2 [lindex $temp 1]
+	    if {$temp2 != {}} {
+		set zoo(HorsePort) $temp2
+	    }
+
+	    set temp2 [lindex $temp 2]
+	    if {$temp2 != {}} {
+		set zoo(ImageServer) $temp2
+	    }
+
+	    set temp2 [lindex $temp 3]
+	    if {$temp2 != {}} {
+		set zoo(ImagePort) $temp2
+	    }
+
+	} elseif {([string match "-remote*" [lindex $argv $i]]) && \
+		($i < ($argc - 1))} {
+	    incr i 1
+	    set remoteHostWasGiven 1
+	    set remoteHttpHost [lindex $argv $i]
+	} elseif {([string match "-dir*" [lindex $argv $i]]) && \
+		($i < ($argc - 1))} {
+	    incr i 1
+	    set startupDirWasGiven 1
+	    set startupDir [lindex $argv $i]
+	    set imageDir [lindex $argv $i]
+	} elseif {$i == ($argc - 1)} {
+	    set fileNameGiven [lindex $argv $i]
+	    if {[string compare $fileNameGiven ""] != 0} {
+		set fileNameWasGiven 1
+	    }
+	} else {
+	    puts "Usage: QclicBrowse \[-remote host\] \[-dir dir\] \[-local\] \[-zoo\]"
+	    puts "   Or: QclicBrowse \[-size <size>\] \[-quality <psnr>\] filename"
+	    exit
+	}
+	incr i 1
+    }
+}
+
+#
+# Load Zoo commands
+#
+if {$doZoo} {
+    if [info exists LocalZooTclFile] {
+	source $LocalZooTclFile
+    } else {
+	source "/p/qclic/Code/Qclic/bin.common/zoo.tcl"
+    }
+    ZooSetDefaults
+    set RanExitProc 0
+}
+
+#
+# If an image was specified on command line, just display that image
+#
+if {$fileNameWasGiven == 1} {
+
+    wm withdraw .
+    set imageIndex -1
+
+    if {$doZoo} {
+	set oid $fileNameGiven
+	set metadata [ZooQuery_ImageMetaData $oid]
+	set idline [lindex $metadata 0]
+	set zoo(ImageOIDs) $oid
+	set zoo(PJPEGOIDs) [lindex $metadata 1]
+	set zoo(ProfileOIDs) [lindex $metadata 2]
+	set zoo(UncompressedOIDs) [lindex $metadata 3]
+	set zoo(UseDB) 1
+    } else {
+	if {$isURL} {
+	    set filename $remoteHttpHost/$imageDir/$fileNameGiven/.qclicId
+	    set cmd "|cat_url $filename"
+	} else {
+	    set filename $imageDir/$fileNameGiven/.qclicId
+	    set cmd "|cat $filename"
+	}
+	if {[catch {set f [open $cmd r]}]} {
+	    puts "File not found: $filename"
+	    exit
+	}
+	gets $f idline
+	if {[catch {close $f}]} {
+	    puts "Error opening file $filename"
+	    exit
+	}
+    }
+
+    set delimit [string first " " $idline]
+    set fname [string range $idline 0 [expr $delimit - 1]]
+    set xloc [string first x $idline]
+    set delimit [string wordstart $idline $xloc]
+    set width [string range $idline $delimit [expr $xloc - 1]]
+    set delimit [string wordend $idline $xloc]
+    set height [string range $idline [expr $xloc + 1] [expr $delimit - 1]]
+    
+    Busy "ShowImage $fname $width $height $imageIndex"
+    tkwait window $mainImWin
+    exit
+    
+}
+
+frame .mbar -relief raised -bd 2 
+
+menubutton .mbar.opt -font $smallfont -text Options  -menu .mbar.opt.menu \
+  -relief raised
+menubutton .mbar.sel -font $smallfont -text "Select" -menu .mbar.sel.menu \
+  -relief raised
+button .mbar.nextim -font $smallfont -text "Next" \
+  -relief raised -command [list Busy NextImage]
+button .mbar.previm -font $smallfont -text "Prev" \
+  -relief raised -command [list Busy PrevImage]
+button .mbar.saveim -font $smallfont -text "Retain" \
+  -relief raised \
+  -command [list Busy RetainImage] -state disabled
+button .mbar.photob -font $smallfont -text "PhotoClic" \
+  -relief raised \
+  -command ShowPhotoBoard 
+button .mbar.movie -font $smallfont -text "MovieClic" \
+  -relief raised \
+  -command ShowMovie -state disabled
+button .mbar.stop -font $smallfont -text "Stop" \
+  -relief raised -state disabled
+button .mbar.help -font $smallfont -text "Help" \
+  -relief raised \
+  -command ShowHelp
+
+button .mbar.quit -font $smallfont -text "Quit" \
+  -relief raised -command "ExitProc"
+
+menu .mbar.sel.menu
+.mbar.sel.menu add command -font $smallfont -label "Select all  " -accelerator s \
+  -command "SetSelection 0 end"
+.mbar.sel.menu add command -font $smallfont -label "Clear all   " -accelerator c \
+  -command "ClearSelection 0 end"
+
+menu .mbar.opt.menu
+.mbar.opt.menu add command -font $smallfont -label "Image options" \
+  -command setImParams
+.mbar.opt.menu add command -font $smallfont -label "Photo options" \
+  -command setPhotoParams
+.mbar.opt.menu add command -font $smallfont -label "Movie options" \
+  -command setMovieParams
+
+if {$doZoo} {
+    .mbar.opt.menu add command -font $smallfont -label "Zoo options" \
+	    -command ZooSetOptions
+}
+
+frame .imf  
+frame .imf.lists 
+
+# file list 
+scrollbar .imf.lists.fscroll -command ".imf.lists.flist yview"
+listbox .imf.lists.flist -yscroll ".imf.lists.fscroll set" \
+    -relief sunken -width 51 -height 15 -setgrid yes \
+    -selectmode multiple 
+# directory list 
+scrollbar .imf.lists.dscroll -command ".imf.lists.dlist yview"
+listbox .imf.lists.dlist -yscroll ".imf.lists.dscroll set" \
+    -relief sunken -width 20 -height 15 -setgrid yes \
+    -selectmode browse 
+  
+bind .imf.lists.flist <KeyPress-s> "SetSelection 0 end"
+bind .imf.lists.flist <KeyPress-c> "ClearSelection 0 end"
+
+set bscr "ReflectSelection \[.imf.lists.flist index @%x,%y\]"
+bind .imf.lists.flist <ButtonRelease-1> +$bscr
+
+bind .imf.lists.flist <KeyPress-n> [list Busy NextImage]
+bind .imf.lists.flist <KeyPress-p> [list Busy PrevImage]
+
+# Modified for zoo
+bind .imf.lists.dlist <Double-Button-1> [list Busy {
+    set imageDirSuffix [selection get]
+    if {$imageSource == "ZooDB"} {
+      if {[string match ".." $imageDirSuffix]} {
+        set imageDir [file dirname $imageDir]
+        set EntrImageDir [file dirname $EntrImageDir]
+      } else {
+        set imageDir $imageDir/$imageDirSuffix
+        set EntrImageDir [string trimright $EntrImageDir "/"]/$imageDirSuffix
+      } 
+    } else { 
+      if {[string match ".." $imageDirSuffix]} {
+        set imageDir [file dirname $imageDir]
+      } else {
+        set imageDir $imageDir/$imageDirSuffix
+      } 
+      set EntrImageDir $imageDir
+    } 
+
+    if $zoo(UseDB) {
+	ZooChangeDirectory [%W nearest %y]
+    }
+
+    GetDirectories
+    GetFileNames
+}]
+
+#globals for bindscript
+set tmp(selString) ""
+set tmp(delimit) ""
+set tmp(fname) ""
+set tmp(xloc) ""
+set tmp(width) ""
+set tmp(height) ""
+
+# Modified for zoo
+bind .imf.lists.flist <Double-Button-1><ButtonRelease-1> [list Busy {
+  set tmp(selString) [.imf.lists.flist get @%x,%y]
+  set tmp(delimit) [string first " " $tmp(selString)]
+  set tmp(fname) [string range $tmp(selString) 0 [expr $tmp(delimit) - 1]]
+  set tmp(xloc) [string first x $tmp(selString)]
+  set tmp(delimit) [string wordstart $tmp(selString) $tmp(xloc)]
+  set tmp(width) [string range $tmp(selString) $tmp(delimit) [expr $tmp(xloc) - 1]]
+  set tmp(delimit) [string wordend $tmp(selString) $tmp(xloc)]
+  set tmp(height) [string range $tmp(selString) [expr $tmp(xloc) + 1] [expr $tmp(delimit) - 1]]
+
+  if {$lastImageShown >= 0} {
+    FreeImage $lastImageShown
+    set lastImageShown -1
+  }
+
+  set imnum [.imf.lists.flist index @%x,%y]
+
+  ShowImage $tmp(fname) $tmp(width) $tmp(height) $imnum
+  ReflectSelection $imnum
+}]
+
+frame .imf.rh  
+label .imf.rh.label -text "Remote host:"
+set EntrRemoteHttpHost $remoteHttpHost
+entry .imf.rh.entry -width 60 -textvariable EntrRemoteHttpHost
+bind .imf.rh.entry <Return> [list Busy {
+  set remoteHttpHost $EntrRemoteHttpHost
+  if {$isURL == 1} {
+    GetDirectories
+    GetFileNames
+  }
+}]
+
+frame .imf.urlf 
+
+#
+# Modified for ZOO
+#
+radiobutton .imf.urlf.isurl -variable imageSource -value Remote \
+	-text "Use remote host" -command [list Busy resetSrc]
+radiobutton .imf.urlf.islocal -variable imageSource -value Local \
+	-text "Use local host" -command [list Busy resetSrc]
+if {$doZoo} {
+  radiobutton .imf.urlf.isdb -variable imageSource -value ZooDB \
+	-text "Use Zoo Database" -command [list Busy resetSrc]
+}
+
+frame .imf.dir 
+label .imf.dir.label -text "Current Directory"
+set EntrImageDir $imageDir
+entry .imf.dir.entry -width 50 -textvariable EntrImageDir
+
+bind .imf.dir.entry <Return> [list Busy {
+  set imageDir $EntrImageDir
+  GetDirectories
+  GetFileNames
+}]
+
+frame .imf.headings 
+label .imf.headings.dlabel -text "Directories            "
+label .imf.headings.flabel -text "Images"
+
+#
+# packing
+#
+pack append .mbar \
+  .mbar.quit {left} \
+  .mbar.opt {left} \
+  .mbar.sel {left} \
+  .mbar.nextim {left} \
+  .mbar.previm {left} \
+  .mbar.saveim {left} \
+  .mbar.photob {left} \
+  .mbar.movie {left} \
+  .mbar.stop {left} \
+  .mbar.help {right expand}
+
+pack .imf.urlf.isurl \
+  .imf.urlf.islocal \
+  -side left
+
+if {$doZoo} {
+    pack .imf.urlf.isdb -side left
+}
+
+#
+# flist and dlist packing as re-done by Andy
+#
+# Here's a better (but sloppy) way to label the lists...
+#
+frame .imf.lists.dirframe
+frame .imf.lists.fileframe
+label .imf.lists.dlabel -text "Directories"
+label .imf.lists.flabel -text "Images"
+pack .imf.lists.dlabel -in .imf.lists.dirframe -side top -anchor nw
+pack .imf.lists.flabel -in .imf.lists.fileframe -side top -anchor nw
+pack .imf.lists.dlist .imf.lists.dscroll -in .imf.lists.dirframe \
+	-side left -fill y -expand true 
+pack .imf.lists.flist .imf.lists.fscroll -in .imf.lists.fileframe \
+	-side left -fill y -expand true
+pack .imf.lists.dirframe .imf.lists.fileframe -side left -anchor nw \
+	-fill y -expand true
+raise .imf.lists.dlist
+raise .imf.lists.dscroll
+raise .imf.lists.dlabel
+raise .imf.lists.flist
+raise .imf.lists.fscroll
+raise .imf.lists.flabel
+
+#pack append .imf.headings \
+#  .imf.headings.dlabel {left filly} \
+#  .imf.headings.flabel {left filly}
+#
+#pack append .imf.lists \
+#  .imf.lists.dlist {left} \
+#  .imf.lists.dscroll {left filly} \
+#  .imf.lists.flist {left} \
+#  .imf.lists.fscroll {left fill}
+
+pack .imf.rh.label \
+  .imf.rh.entry \
+  -side left
+
+pack append .imf.dir \
+  .imf.dir.label {left} \
+  .imf.dir.entry {left fill expand}
+
+#pack append .imf \
+#  .imf.rh {bottom} \
+#  .imf.urlf {bottom} \
+#  .imf.lists {bottom} \
+#  .imf.headings {bottom fill expand} \
+#  .imf.dir {bottom} 
+pack .imf.rh -side bottom -pady 5
+pack .imf.urlf -side bottom
+pack .imf.lists -side bottom
+pack .imf.dir -side bottom -fill x -expand true -pady 5 -padx 10
+
+#pack append . \
+#  .mbar {top fill expand} \
+#  .imf {bottom fill}
+pack .mbar -side top -fill x -anchor nw
+pack .imf -side top -fill both -anchor nw
+
+if {!$doLocal} {
+  if {!$doZoo} {
+    set imageSource Remote
+  } else {
+    set imageSource ZooDB
+  }
+} else {
+  # -loc takes precedence over -zoo. zoo button will be there,
+  # but we will start with local image source
+  set imageSource Local
+}
+
+set resetSrcCount 0
+Busy resetSrc
+

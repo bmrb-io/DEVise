@@ -1,0 +1,255 @@
+#!/bin/sh -f
+
+
+# \
+exec wish "$0" "$@"
+
+proc ShowMesg {s} {
+  global machine
+  catch {destroy .msgwin}
+  toplevel .msgwin
+  wm title .msgwin "TasvirPatron $machine: Message"
+
+  frame .msgwin.f -width 100 -height 100 -bg white
+  pack .msgwin.f
+  label .msgwin.f.l -text "$s" -bg white
+
+  button .msgwin.f.b -text "Dismiss" -command "catch {destroy .msgwin}" -bg white
+
+  pack .msgwin.f.l -side top -pady 20
+  pack .msgwin.f.b -side top
+}
+
+proc ShowError {s} {
+  global machine
+  catch {destroy .errwin}
+  toplevel .errwin
+  wm title .errwin "TasvirPatron $machine: Error"
+
+  frame .errwin.f -width 100 -height 100 -bg white
+  pack .errwin.f
+  label .errwin.f.l -text "$s" -bg white
+
+  button .errwin.f.b -text "Dismiss" -command "catch {destroy .errwin}" -bg white
+
+  pack .errwin.f.l -side top -pady 20
+  pack .errwin.f.b -side top
+}
+
+
+
+proc SendCommand {cmd} {
+  global tpfp flist
+  if {[catch "read $tpfp 2"]} {
+    ShowError "Error talking to TasvirPatron"
+    exit
+  }
+  . configure -cursor watch
+  puts $tpfp $cmd
+  flush $tpfp
+  gets $tpfp ans
+  . configure -cursor arrow
+  if {[string match "*ERROR*" $ans] || [string match "*Error*" $ans]} {
+    if {[string match "*apply*query*" $cmd]} {
+      catch "$flist delete 0 end"
+      return 0
+    }
+    ShowError $ans
+    return 0
+  } else {
+    if {[string match "*apply*query*" $cmd]} {
+      scan $ans "%s%s%s%d" foo foo1 foo2 nhandles
+      catch "$flist delete 0 end"
+      for {set i 0} {$i < $nhandles} {incr i 1} {
+        read $tpfp 2
+        gets $tpfp ans
+        if {[string match "*OK*" $ans]} {
+          catch {scan $ans "%s%s%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%s" \
+            foo foo1 foo2 handle colors_used boo imexists \
+            imcomplete bytesread width height maxc ccube \
+            aspected smoothed dithered privcolors imname}
+	  set descstr [format "%-3d %-30s %-2dx%d %3d-colors" \
+	    $handle $imname $width $height $colors_used]
+	  if {$imcomplete} {
+	    set descstr "$descstr Complete"
+          } else {
+	    set descstr "$descstr Incomplete"
+	  }
+	  $flist insert end $descstr
+        }
+      }
+      update
+    } elseif {[string match "*apply*" $cmd]} {
+      scan $ans "%s%s%s%d" foo foo1 foo2 nhandles
+      for {set i 0} {$i < $nhandles} {incr i 1} {
+	gets $tpfp ans
+      }
+    }
+  }
+}
+
+proc GetHandleList {} {
+  global flist
+  set sellist [$flist curselection]
+  set ans [llength $sellist]
+  if {$ans == 0} {
+    return $ans
+  }
+  set nh $ans
+  for {set i 0} {$i < $nh} {incr i 1} {
+    scan [$flist get [lindex $sellist $i]] "%d" h
+    set ans "$ans $h"
+  }  
+  return $ans
+}
+
+proc SendDefQual {} {
+  global defq
+  SendCommand "defqual %$defq"
+}
+
+proc SendAddQual {} {
+  global addq 
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist add . . -quality %$addq"
+}
+proc SendCtrl {} {
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist ctrl ."
+}
+
+proc SendNoCtrl {} {
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist noctrl ."
+}
+
+proc SendContrast {} {
+  global contr
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist contr . $contr"
+}
+
+proc SendBrightness {} {
+  global brite
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist bright . $brite"
+}
+
+proc SendNormal {} {
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist pixnormal ."
+}
+
+proc SendReshow {} {
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist reshow ."
+}
+
+proc SendRemap {} {
+  set hlist [GetHandleList]
+  if {[string match "0*" $hlist]} {
+    ShowError "No selected images"
+    return
+  }
+  SendCommand "apply $hlist reshow . -remap"
+}
+
+proc SendClose {} {
+  global tpfp
+  catch {SendCommand "close"}
+  catch "close $tpfp"
+  exit
+}
+
+proc SendQuery {} {
+  SendCommand "apply -1 query ."
+}
+
+set machine ""
+set machine [lindex $argv 0]
+puts "Starting TasvirPatron for $machine"
+if {![string compare $machine ""]} {
+  exit
+}
+
+if {[catch {set tpfp [open "|TasvirPatron $machine" r+]}]} {
+  exit
+}
+
+wm title . "TasvirPatron: $machine"
+
+
+frame .ctrl 
+
+frame .ctrl.lists
+scrollbar .ctrl.lists.scroll -command ".ctrl.lists.flist yview"
+
+listbox .ctrl.lists.flist -yscroll ".ctrl.lists.scroll set" \
+  -relief sunken -width 60 -height 5 -setgrid yes -selectmode extended
+
+set flist .ctrl.lists.flist
+pack .ctrl.lists.flist \
+  .ctrl.lists.scroll -side left -padx 4 -fill y -expand true
+pack .ctrl.lists
+
+SendQuery
+
+frame .ctrl.apply
+
+frame .ctrl.apply.aq
+set addq 20
+button .ctrl.apply.aq.go -text "AddQual" -command SendAddQual
+pack .ctrl.apply.aq.go -side left -padx 4 -ipadx 4
+
+
+frame .ctrl.apply.ctrls
+button .ctrl.apply.ctrls.show -text "ShowCtrlWins" -command SendCtrl
+button .ctrl.apply.ctrls.noshow -text "HideCtrlWins" -command SendNoCtrl
+pack .ctrl.apply.ctrls.show .ctrl.apply.ctrls.noshow \
+  -side left -padx 4 -ipadx 4
+pack .ctrl.apply.ctrls .ctrl.apply.aq -side left -padx 4 -ipadx 4
+
+pack .ctrl.apply
+
+frame .ctrl.dq
+set defq 100
+scale .ctrl.dq.defqual -label "Load quality default:" \
+-orient horizontal -from 1 -to 100 -variable defq
+button .ctrl.dq.go -text "Do!" -command SendDefQual
+pack .ctrl.dq.defqual .ctrl.dq.go -side left -padx 4 -ipadx 4
+
+button .ctrl.rescan -text "Rescan image list" -command SendQuery
+button .ctrl.close -text "Close" -command SendClose
+
+pack .ctrl.dq .ctrl.rescan .ctrl.close -side left -padx 4 -ipadx 4
+
+pack .ctrl
+

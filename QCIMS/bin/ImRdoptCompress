@@ -1,0 +1,328 @@
+#!/bin/sh
+# next line restarts using tcl \
+exec tclsh "$0" "$@"
+
+proc ShowError {s} {
+  puts "Error: $s"
+  exit
+}
+
+proc didAlready {val} {
+  global didList try
+  set ans 0
+  for {set i 1} {$i < $try} {incr i 1} {
+    if {$didList($i)==$val} {
+      set ans 1
+      break
+    }
+  }
+  expr $ans
+}
+
+
+set rdoptArgs ""
+
+set target 1.0
+set targetKind bpp
+set outfile cfile.jpg
+set jpegKind sequential 
+set attempts 5
+set postolerance 0
+set negtolerance 0
+set findbestabs 0
+
+
+
+set i 0
+while {$i < $argc} { 
+  set nextarg [lindex $argv $i]
+  if {[string match "--*" $nextarg]} {
+    if {[string match "--tar*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --target"
+      }
+      set target [lindex $argv $i]
+    } elseif {[string match "--bes*" $nextarg]} { 
+      set findbestabs 1 
+    } elseif {[string match "--siz*" $nextarg]} { 
+      set targetKind size
+    } elseif {[string match "--bp*" $nextarg]} { 
+      set targetKind bpp 
+    } elseif {[string match "--se*" $nextarg]} { 
+      set jpegKind sequential
+    } elseif {[string match "--pr*" $nextarg]} { 
+      set jpegKind progressive
+    } elseif {[string match "--out*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --outfile"
+      }
+      set outfile [lindex $argv $i]
+    } elseif {[string match "--at*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --attempts"
+      }
+      set attempts [lindex $argv $i]
+    } elseif {[string match "--tol*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --tolerance" 
+      }
+      set postolerance [lindex $argv $i]
+      set negtolerance $postolerance
+    } elseif {[string match "--postol*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --postolerance" 
+      }
+      set postolerance [lindex $argv $i]
+    } elseif {[string match "--negtol*" $nextarg]} {
+      incr i 1
+      if {$i >= $argc} {
+	ShowError "Missing argument for --negtolerance" 
+      }
+      set negtolerance [lindex $argv $i]
+    } else {
+      ShowError "Unknown option: $nextarg" 
+    } 
+  } else {
+    set rdoptArgs "$rdoptArgs $nextarg"
+  } 
+  incr i 1
+}
+
+puts "Target ($targetKind): $target Output ($jpegKind JPEG): $outfile"
+
+puts "Running ImRdopt ..." 
+
+set cmd "|ImRdopt $rdoptArgs 2>@ stdout"
+
+if {[catch "set ifp [open $cmd r+]"]} {
+  ShowError "ImRdopt not found!"
+}
+
+
+set done 0
+
+while {!$done} {
+  set pref [read $ifp 9]
+  if {[string match "Command> " $pref]} {
+    break
+  } else {
+    if {[string match "*\n" $pref]} {
+      puts -nonewline $pref
+    } else {
+      gets $ifp suff
+      set outline "$pref$suff"
+      if {[string match "Usage*" $outline] || [string match "Could not*" $outline]} {
+	puts $outline
+	while {[gets $ifp outline] >= 0} {
+	  puts $outline
+	}
+	catch "close $ifp"
+	exit
+
+      }
+
+      puts "$outline" 
+    } 
+  }
+}
+
+puts $ifp "$jpegKind"
+flush $ifp
+read $ifp 9
+puts $ifp "stats"
+flush $ifp
+read $ifp 9
+puts $ifp "cfile $outfile"
+flush $ifp
+read $ifp 9
+
+puts $ifp "compress $targetKind $target"
+flush $ifp
+
+gets $ifp psnrLine
+scan $psnrLine "%s%s%s%s%s%f" foo1 foo2 foo3 foo4 foo5 ansPsnr
+
+gets $ifp rateLine
+scan $rateLine "Saved %d bytes (%f bpp)." ansSize ansBpp
+
+read $ifp 9
+
+puts "  Attempt #1: $ansSize bytes ($ansBpp bpp), PSNR = $ansPsnr dB."
+
+
+if {[string match $targetKind size]} {
+  set lastAchieved $ansSize
+} else { 
+  set lastAchieved $ansBpp
+}
+
+set didList(1) $lastAchieved
+
+set lasttarget $target
+
+set bestErr [expr $lastAchieved - $target]
+
+set bestAchievedUnder -1
+set bestAbsErrOver [expr 1000*$target]
+set bestAchievedOver -1
+set bestAbsErrUnder $bestAbsErrOver
+
+if {$bestErr < 0} {
+  set bestAbsErr [expr - $bestErr]
+  set bestAbsErrUnder $bestAbsErr
+  set besttargetUnder $target
+  set bestAchievedUnder $lastAchieved
+  set bestSizeUnder $ansSize
+  set bestBppUnder $ansBpp
+  set bestPsnrUnder $ansPsnr
+} else {
+  set bestAbsErr $bestErr
+  set bestAbsErrOver $bestAbsErr
+  set besttargetOver $target
+  set bestAchievedOver $lastAchieved
+  set bestSizeOver $ansSize
+  set bestBppOver $ansBpp
+  set bestPsnrOver $ansPsnr
+}
+
+
+for {set try 2} {$try <= $attempts} {incr try 1} {
+
+  if {($bestAchievedOver > 0) && ($bestAbsErrOver <= $postolerance)} {
+    break
+  }
+  if {($bestAchievedUnder > 0) && ($bestAbsErrUnder <= $negtolerance)} {
+    break
+  }
+
+  if {($bestAchievedOver > 0) && ($bestAchievedUnder > 0)} {
+    set nexttarget [expr ($besttargetUnder + $besttargetOver)/2]
+  } elseif {$bestAchievedOver > 0} {
+    set nexttarget [expr $besttargetOver - $bestAbsErrOver]
+  } else {
+    set nexttarget [expr $besttargetUnder + $bestAbsErrUnder]
+  }
+  
+
+  puts $ifp "compress $targetKind $nexttarget"
+  flush $ifp
+
+  gets $ifp psnrLine
+  scan $psnrLine "%s%s%s%s%s%f" foo1 foo2 foo3 foo4 foo5 ansPsnr
+
+  gets $ifp rateLine
+  scan $rateLine "Saved %d bytes (%f bpp)." ansSize ansBpp
+
+  read $ifp 9
+  
+  puts "  Attempt #$try: $ansSize bytes ($ansBpp bpp), PSNR = $ansPsnr dB."
+
+  if {[string match $targetKind size]} {
+    set lastAchieved $ansSize
+    if {[didAlready $ansSize]==1} {
+      break
+    } 
+  } else { 
+    set lastAchieved $ansBpp
+    if {[didAlready $ansBpp]==1} {
+      break
+    } 
+  }
+
+  set didList($try) $lastAchieved
+
+  set lasttarget $nexttarget
+
+  set err [expr $lastAchieved - $target]
+  if {$err < 0} {
+    set err [expr - $err]
+    if {$err < $bestAbsErrUnder} {
+      set bestAbsErrUnder $err
+      set besttargetUnder $lasttarget
+      set bestAchievedUnder $lastAchieved
+      set bestSizeUnder $ansSize
+      set bestBppUnder $ansBpp
+      set bestPsnrUnder $ansPsnr
+    }
+  } else {
+    if {$err < $bestAbsErrOver} {
+      set bestAbsErrOver $err
+      set besttargetOver $lasttarget
+      set bestAchievedOver $lastAchieved
+      set bestSizeOver $ansSize
+      set bestBppOver $ansBpp
+      set bestPsnrOver $ansPsnr
+    }
+  }
+}
+
+puts "-------------------------------------------------------"
+
+if {($bestAchievedOver > 0) && ($bestAbsErrOver <= $postolerance)} {
+  set bestSize $bestSizeOver
+  set bestBpp $bestBppOver
+  set bestPsnr $bestPsnrOver
+  set besttarget $besttargetOver
+  set bestAchieved $bestAchievedOver
+} elseif {($bestAchievedUnder > 0) && ($bestAbsErrUnder <= $negtolerance)} {
+  set bestSize $bestSizeUnder
+  set bestBpp $bestBppUnder
+  set bestPsnr $bestPsnrUnder
+  set besttarget $besttargetUnder
+  set bestAchieved $bestAchievedUnder
+} else {
+  if {$findbestabs} {
+      set bestErr [expr 1000*$target]
+      if {($bestAchievedOver > 0) && ($bestAbsErrOver <= $bestErr)} {
+        set bestErr $bestAbsErrOver
+        set bestSize $bestSizeOver
+        set bestBpp $bestBppOver
+        set bestPsnr $bestPsnrOver
+        set besttarget $besttargetOver
+        set bestAchieved $bestAchievedOver
+      } 
+      if {($bestAchievedUnder > 0) && ($bestAbsErrUnder <= $bestErr)} {
+        set bestSize $bestSizeUnder
+        set bestBpp $bestBppUnder
+        set bestPsnr $bestPsnrUnder
+        set besttarget $besttargetUnder
+        set bestAchieved $bestAchievedUnder
+      }
+  } else {
+      if {$bestAchievedUnder > 0} {
+        set bestSize $bestSizeUnder
+        set bestBpp $bestBppUnder
+        set bestPsnr $bestPsnrUnder
+        set besttarget $besttargetUnder
+        set bestAchieved $bestAchievedUnder
+      } else {
+        set bestSize $bestSizeOver
+        set bestBpp $bestBppOver
+        set bestPsnr $bestPsnrOver
+        set besttarget $besttargetOver
+        set bestAchieved $bestAchievedOver
+      } 
+  }
+}
+
+puts "Best result: $bestSize bytes ($bestBpp bpp), PSNR = $bestPsnr dB."
+
+if {$lastAchieved != $bestAchieved} {
+  puts "Recompressing for the best case..."
+  puts $ifp "compress $targetKind $besttarget"
+  flush $ifp
+  gets $ifp l1
+  gets $ifp l2
+  read $ifp 9
+}
+
+puts $ifp quit
+catch "close $ifp"
+
+
+

@@ -1,0 +1,59 @@
+
+
+ImRdoptCompress is a tcl interface to ImRdopt for
+compressing as closely to a target size (or target bpp)
+as possible. The script calls ImRdopt, so make sure
+it is on your path.
+
+
+Usage:
+Pass the entire command-line as you would for ImRdopt.
+ImRdoptCompress can accept some additional flags, which
+are explained below:
+
+--size
+--bpp
+     Specify what kind of target you want: size or bpp.
+     Default is bpp, and the default target is 1.0 (see --target)
+
+--target T
+    Specify that you want target T (which is either a size in
+    bytes or a bpp value, determined by --size or --bpp).
+    Default is 1.0
+
+--attempts N
+    How many attempts to make to acheive the target.
+    Default is 5.
+    The program also terminates if it starts cycling.
+
+--tolerance tol
+--postolerance ptol
+--negtolerance ntol
+--bestabserr
+    How much error you are willing to accept in achieving the
+    target. Default is 0. You can set this to a higher value,
+    and increase "attempts". --tolerance sets both positive
+    and negative tolerance to tol. If the target cannot be achieved
+    within the prescribed tolerance, by default, the best result
+    *under* the target will be used. This behavior can be changed
+    by specifying --bestabserr, in which case the the case that
+    gave the best absolute error will be used.
+
+--outfile fname
+    The compressed file will be "fname".
+    Default is cfile.jpg
+
+--sequential
+--progressive
+    Determines sequential or progressive JPEG. Default is sequential.
+
+Example
+----------
+
+If you have an image foo.ppm that you want to compress to a
+sequntial JPEG file foo.jpg with size nearly 10000 bytes, you
+might do:
+
+ImRdoptCompress -coarse 4 -thresh 20 foo.ppm --size --target 10000 \
+    --attempts 10 --tolerance 50 --outfile foo.jpg --sequential
+

@@ -1,0 +1,40 @@
+#Required parameters:
+
+SRC_DIR		<directory of images>
+TARGET_DIR	<directory to be created for compressed images>
+
+#Optional:
+
+# Objective function:
+
+#specify one of the next three parameters. 
+SEL_BPP		<target compression rate for image set> [default 1.0]
+SEL_PSNR	<target PSNR for image set>
+TOTAL_SIZE	<available space in bytes>
+
+# Constraints:
+BPP_MIN		<min bpp for indvl images>
+BPP_MAX		<max bpp for indvl images>
+PSNR_MIN	<min psnr for indvl images>
+PSNR_MAX	<max psnr for indvl images>
+
+
+# number of R-Q pts per image to use 
+NUM_POINTS	<integer> [default; 50]
+
+# method to be used in rdopt
+METHOD		l[agrangian] OR d[ynamic_programming] [default: l] 
+
+THRESH_SPAN	<threshspan for rdopt> [default: 25]
+
+
+BPPSCALE	<bppscale to be used in optimization and in rdopt if
+		 dynamic_prog is being used> [default: 5000]
+
+AVG_BPP
+AVG_SIZE	[default: average the total compressed sizes]
+
+CORRECT		[default: no correction. if specified, then rdopt
+		 bpp's would be corrected]
+
+

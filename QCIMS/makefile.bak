@@ -1,0 +1,43 @@
+CC = gcc
+
+BINPATH = ../bin.PENTIUM
+
+XLIBPATH = -L/s/X11/lib -R/s/X11/lib
+
+XLIBINCLUDE = -I/s/X11/include
+
+XLIB = -lX11
+
+LIBPATHS = $(XLIBPATH)
+
+INCLUDES = $(XLIBINCLUDE)
+
+CFLAGS = -D_PENTIUM -g $(INCLUDES)
+
+SRC = VR_Main.c VR_Translator.c VR_Xglue.c VR_Icon.c VR_Globals.c
+
+OBJ = VR_Main.o VR_Translator.o VR_Xglue.o VR_Globals.o
+
+# library (.a) file creation command
+AR= ar rc
+# second step in .a creation (use "touch" if not needed)
+AR2= ranlib
+
+libVR.a:  $(OBJ) VR.h VR_Icon.c
+	$(RM) $(BINPATH)/libVR.a
+	$(AR) $(BINPATH)/libVR.a  $(OBJ)
+	$(AR2) $(BINPATH)/libVR.a
+
+
+clean:
+	/bin/rm *.o
+
+depend:
+	makedepend $(SRC)
+
+# DO NOT DELETE
+
+VR_Main.o: VR.h VR_Icon.c
+VR_Translator.o: VR.h
+VR_Xglue.o: VR.h
+VR_Globals.o: VR.h
