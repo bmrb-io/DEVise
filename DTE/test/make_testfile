@@ -1,0 +1,28 @@
+#!/s/perl/bin/perl -w
+
+
+$recs = shift;
+
+srand(2038497);
+
+open(OUT, ">testfile");
+
+for($i = 0 ; $i < $recs ; $i++) {
+    @f = ($i, int(rand(2)), int(rand(100)), rand(100), rand_str(20)) ;
+    printf(OUT "%d %d %d %5.2f %s\n", @f);
+}
+
+
+
+sub rand_char {
+    pack('c', int(rand(26)) + ord('a'));
+}
+
+sub rand_str {
+    my($len) = @_;
+    my($x) = '"';
+    while($len-- > 0) {
+        $x .= rand_char();
+    }
+    $x . '"';
+}

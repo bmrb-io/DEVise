@@ -1,0 +1,85 @@
+select * from . as t;
+
+# why does unidata and datareader automatically apply recid??
+
+schema .stdtab;
+select * from .stdtab as t;
+
+schema .unitab;
+select * from .unitab as t;
+
+schema .ddrtab;
+select * from .ddrtab as t;
+
+
+# doesn't parse: select count(*) from .stdtab as t;
+
+select count(t.id) from .stdtab as t;
+select avg(t.id) from .stdtab as t;
+select min(t.id), max(t.id) from .stdtab as t;
+select * from .stdtab as t order by t.rand100;
+select * from .stdtab as t order by t.randf100;
+select * from .stdtab as t order by t.randstring;
+select 1 from .stdtab;
+
+# multiplication not defined: select t.rand100 * t.id + 1 from .stdtab as t;
+
+select t.id + 1 from .stdtab as t;
+select * from .stdtab as t, .unitab as s where t.id = s.id;
+select * from .stdtab as t, .unitab as s where t.id < s.rand100;
+select count(t.id) from .stdtab as t, .unitab as s where t.id = s.id;
+select count(t.id) from .stdtab as t, .unitab as s where t.id < s.rand100;
+
+
+select  t.rand2, t.rand100, t.randf100 from .stdtab as t;
+1       21      41.1
+1       17      16.42
+1       55      62.23
+0       6       80.73
+0       7       41.17
+1       81      72.68
+1       82      58.67
+0       18      93.22
+0       7       2.87
+0       3       41.82
+
+select t.rand100, t.randf100 from .stdtab as t order by t.rand100;
+select  t.rand2, t.rand100, t.randf100 from .stdtab as t order by t.rand2, t.rand100;
+0       3       41.82
+0       6       80.73
+0       7       2.87
+0       7       41.17
+0       18      93.22
+1       17      16.42
+1       21      41.1
+1       55      62.23
+1       81      72.68
+1       82      58.67
+select t.rand2, count(t.randf100) from .stdtab as t group by t.rand2;
+0       5
+1       5
+select t.rand100, sum(t.randf100,0,1) from .stdtab as t sequence by t.rand100;
+3       41.82
+6       80.73
+7       44.04
+17      16.42
+18      93.22
+21      41.1
+55      62.23
+81      72.68
+82      58.67
+select t.rand2, t.rand100, sum(t.randf100,0,1) from .stdtab as t group by t.rand2 sequence by t.rand100;
+0       3       41.82
+0       6       80.73
+0       7       44.04
+0       18      93.22
+1       17      16.42
+1       21      41.1
+1       55      62.23
+1       81      72.68
+1       82      58.67
+
+
+select t.rand100, sum(t.randf100,0,2) from .stdtab as t sequence by t.rand100;
+select t.rand100, avg(t.randf100,0,3) from .stdtab as t sequence by t.rand100;
+select t.rand100, avg(t.randf100,-1,3) from .stdtab as t sequence by t.rand100;

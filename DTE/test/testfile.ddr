@@ -1,0 +1,28 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 10 1997 11:04:10
+# DEVise version: 1.4.4
+# DEVise date: Jun 13 1997
+# DEVise endHeader
+
+schema testfile {
+        separator = [ ]+ ;
+        delimiter = [\n];       
+	attr id {
+		type = int;
+	}
+	attr rand2 {
+		type = int;
+	}
+	attr rand100 {
+		type = int;
+	}
+	attr randf100 {
+		type = double;
+	}
+	attr randstring {
+		type = string;
+		quote = ["];
+		maxlen = 25;
+	}
+}

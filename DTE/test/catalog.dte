@@ -1,0 +1,7 @@
+"stdtab" StandardTable 5 int id int rand2 int rand100 double randf100 string25 randstring ./testfile ;
+"unitab" Table testfile.uni ./testfile "" ; 
+"ddrtab" Table testfile.ddr ./testfile "" ; 
+
+"test" Table /p/devise/schema/schema/physical/LoadLeveler.uni /p/coral/people/donjerko/Devise/solaris/DTE/histdata.tiny.dat "" ; 
+"testxx" Table /p/devise/schema/schema/physical/LoadLeveler.uni /p/coral/people/donjerko/Devise/solaris/DTE/histdata.tiny.dat "" ; 
+"ddr" Table /p/devise/schema/schema/physical/LoadLeveler.ddr /p/coral/people/donjerko/Devise/solaris/DTE/histdata.tiny.dat "" ; 
