@@ -56,13 +56,13 @@ Num Date        Status  Description
 017 08/05/96	OPEN	Numeric keypad keys now work only if num lock is
 			off. (rkw)
 
-018 08/05/96	OPEN	Data segment stuff is broken. (rkw)
+018 08/05/96	FIXED	Data segment stuff is broken. (rkw)
 
 019 08/05/96	OPEN	demo/COD1.tk core dumps (at least on HPs). (rkw)
 
 020 08/05/96	OPEN	Numeric keypad keys only work in solaris version? (rkw)
 
-021 08/05/96	OPEN	'5' key doesn't work. (rkw)
+021 08/05/96	FIXED	'5' key doesn't work. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
