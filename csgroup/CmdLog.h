@@ -11,11 +11,11 @@ ostream& operator << (ostream& os, const CmdLogRecord& cmd);
 //
 // command log structure:
 //		logId, timeStamp, DeviseCommand, #args, arg1, arg2, ....
-class TimeStamp:public Serializable
+class CSGTimeStamp:public Serializable
 {
 	public:
-		TimeStamp();
-		~TimeStamp();
+		CSGTimeStamp();
+		~CSGTimeStamp();
 		void setCurTime();
 		string getTime() const;
 		string	Serialize();
@@ -106,7 +106,7 @@ class CmdLogRecord: public Serializable, DispatcherCallback
 		enum {
 			NUM_ARGS = 3 // logrecordBoundary, 
 		};
-		TimeStamp	ts;
+		CSGTimeStamp	ts;
 		vector<string> cmd;
 };
 #endif

@@ -17,15 +17,15 @@
 
 //#define DEBUG
 
-TimeStamp::TimeStamp()
+CSGTimeStamp::CSGTimeStamp()
 {
 }
-TimeStamp::~TimeStamp()
+CSGTimeStamp::~CSGTimeStamp()
 {
 }
 
 void
-TimeStamp::setCurTime()
+CSGTimeStamp::setCurTime()
 {
 	struct timeval tv;
 	struct timezone tz;
@@ -35,7 +35,7 @@ TimeStamp::setCurTime()
 }
 
 string
-TimeStamp::getTime() const
+CSGTimeStamp::getTime() const
 {
 	char	buf[10];
 	sprintf(buf, "%ld", tv_sec);
@@ -44,13 +44,13 @@ TimeStamp::getTime() const
 }
 
 string
-TimeStamp::Serialize()
+CSGTimeStamp::Serialize()
 {
 	return serialize(tv_sec);
 }
 
 void
-TimeStamp::setTime(string val)
+CSGTimeStamp::setTime(string val)
 {
 	int	typeId;
 
