@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/18 01:22:50  jussi
+  Added GetRootGeometry() method.
+
   Revision 1.20  1996/07/10 16:21:14  jussi
   Improvements and simplifications to the code.
 
@@ -158,9 +161,19 @@ public:
 	virtual void ScrollAbsolute(int x, int y, unsigned width,
 				    unsigned height, int dstX, int dstY);
 
+        /* Color selection interface using Devise colormap */
 	virtual void SetFgColor(Color fg);
 	virtual void SetBgColor(Color bg);
 	virtual void SetWindowBgColor(Color bg);
+
+#ifdef LIBCS
+        /* Color selection interface using specific colors */
+        virtual void SetFgRGB(float r, float g, float b);
+        virtual void SetBgRGB(float r, float g, float b);
+        virtual void GetFgRGB(float &r, float &g, float &b);
+        virtual void GetBgRGB(float &r, float &g, float &b);
+        virtual void SetWindowBgRGB(float r, float g, float b);
+#endif
 
 	virtual void SetPattern(Pattern p);
 
@@ -332,6 +345,12 @@ private:
 	Display *_display;
 	Window _win;
 	GC _gc;
+
+#ifdef LIBCS
+        /* current foreground/background color pixel values */
+        Color _rgbForeground;
+        Color _rgbBackground;
+#endif
 
 	/* pixmap and child/parent links for pixmaps */
 	Pixmap _pixmap;

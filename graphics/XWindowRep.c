@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1996/07/22 19:32:04  jussi
+  Requesting a pixmap of a window that is partially off the screen
+  no longer causes Devise to crash.
+
   Revision 1.49  1996/07/18 01:24:10  jussi
   Added GetRootGeometry() and FindTopWindow() methods.
 
@@ -628,7 +632,8 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
   root->_children.DoneIterator(index);
 }
 
-/* drawing primitives */
+/* color selection interface using Devise colormap */
+
 void XWindowRep::SetFgColor(Color fg)
 {
   WindowRep::SetFgColor(fg);
@@ -654,6 +659,57 @@ void XWindowRep::SetWindowBgColor(Color bg)
     XSetWindowBackground(_display, _win, WindowRep::GetLocalColor(bg));
 #endif
 }
+
+#ifdef LIBCS
+/* color selection interface using local colors */
+
+void XWindowRep::SetFgRGB(float r, float g, float b)
+{
+  _rgbForeground = GetDisplay()->FindLocalColor(r, g, b);
+#ifdef GRAPHICS
+  if (_dispGraphics)
+    XSetForeground(_display, _gc, _rgbForeground);
+#endif
+}
+
+void XWindowRep::SetBgRGB(float r, float g, float b)
+{
+  _rgbBackground = GetDisplay()->FindLocalColor(r, g, b);
+#ifdef GRAPHICS
+  if (_dispGraphics)
+    XSetBackground(_display, _gc, _rgbBackground);
+#endif
+}
+
+void XWindowRep::GetFgRGB(float &r, float &g, float &b)
+{
+  GetDisplay()->FindLocalColor(_rgbForeground, r, g, b);
+#ifdef DEBUG
+  printf("Current foreground color is %lu: %.2f,%.2f,%.2f\n",
+         _rgbForeground, r, g, b);
+#endif
+}
+
+void XWindowRep::GetBgRGB(float &r, float &g, float &b)
+{
+  GetDisplay()->FindLocalColor(_rgbBackground, r, g, b);
+#ifdef DEBUG
+  printf("Current background color is %lu: %.2f,%.2f,%.2f\n",
+         _rgbBackground, r, g, b);
+#endif
+}
+
+void XWindowRep::SetWindowBgRGB(float r, float g, float b)
+{
+  Color color = GetDisplay()->FindLocalColor(r, g, b);
+#ifdef GRAPHICS
+  if (_dispGraphics)
+    XSetWindowBackground(_display, _win, color);
+#endif
+}
+#endif
+
+/* drawing primitives */
 
 void XWindowRep::DrawPixel(Coord x, Coord y)
 {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/21 02:15:32  jussi
+  Changed value of backing_store from Always to WhenMapped.
+
   Revision 1.26  1996/07/18 01:21:59  jussi
   Added ExportImage() and ConvertAndWriteGIF() methods. XWindowRep's
   that are actual windows (as opposed to pixmaps) are now inserted
@@ -384,7 +387,8 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 }
 
 /*******************************************************************
-Allocate closest matching color
+  Allocate closest matching color;
+  grayscales will only be matched with grayscales
 ********************************************************************/
 
 Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
@@ -396,50 +400,126 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
     return true;
   }
 
-  // if exact color match is not found, try allocating a color that
-  // is close enough; maxDeviation specifies maximum distance in each
-  // of the RGB directions (X color values are between 0 and 65535);
-  // increment specifies the hop size between each attempt
+  int scr_num = DefaultScreen(_display);
+  Visual *vis = DefaultVisual(_display, scr_num);
 
-  const int maxDeviation = (int)(0.05 * 65535);   // +-5% max deviation
-  const int incFraction = 4;                      // number of probes per color
-    
-  const long int lwr = MAX(color.red - maxDeviation, 0);
-  const long int hir = MIN(color.red + maxDeviation, 65535);
-  const long int lwg = MAX(color.green - maxDeviation, 0);
-  const long int hig = MIN(color.green + maxDeviation, 65535);
-  const long int lwb = MAX(color.blue - maxDeviation, 0);
-  const long int hib = MIN(color.blue + maxDeviation, 65535);
+  if (vis->c_class != PseudoColor || DefaultDepth(_display, scr_num) != 8) {
+    // Haven't thought through / don't have machines to try / don't want
+    // to do this case
+    return false;
+  } 
+  
+  const int cmapSize = 256;
+  XColor cols_in_map[cmapSize];
 
-  const int rstep = MAX((hir - lwr) / incFraction, 1);
-  const int gstep = MAX((hig - lwg) / incFraction, 1);
-  const int bstep = MAX((hib - lwb) / incFraction, 1);
+  for(int i = 0; i < cmapSize; i++)
+    cols_in_map[i].pixel = (unsigned long)i;
 
-  for(int r = lwr; r <= hir; r += rstep) {
-    for(int g = lwg; g <= hig; g += gstep) {
-      for(int b = lwb; b <= hib; b += bstep) {
-	XColor ctry;
-	ctry.red   = (unsigned short)r;
-	ctry.green = (unsigned short)g;
-	ctry.blue  = (unsigned short)b;
-#ifdef DEBUG_xxx
-	printf("Trying to allocate color %d,%d,%d\n", ctry.red,
-	       ctry.green, ctry.blue);
-#endif
-	if (XAllocColor(_display, map, &ctry)) {
-	  c = ctry.pixel;
-	  float rerr = (ctry.red - color.red) / 65535;
-	  float gerr = (ctry.green - color.green) / 65535;
-	  float berr = (ctry.blue - color.blue) / 65535;
-	  error = sqrt(rerr * rerr + gerr * gerr + berr * berr);
-	  return true;
-	}
-      }
-    }
+  XQueryColors(_display, map, cols_in_map, cmapSize);
+
+  Boolean is_gray = false;
+  if (color.red == color.green && color.green == color.blue) {
+    // grayscale is needed.. 
+    is_gray = true; 
   }
 
+  // After finding the best match, we will try to XAllocColor it
+  // This may, however, fail (for several reasons, for instance
+  // if the app that had alloc'ed this color has exited and
+  // someone else has grabbed the colormap entry; or if it's not
+  // a shareable color cell). In such cases we will retry, with upto
+  // NUM_COLS_TO_TRY closest colors. 
+
+  // allow absolute error of 50*255 in each r/g/b value
+  // (i.e., plusminus50 in the original unscaled r/g/b value).
+  // actually, the error might be upto three times this,
+  // so you might want to set this to a lower value.
+  // for a must-have-a-color situation, set this to
+  // 257*255
+
+  const float err_tolerance = 50.0 * 255.0;
+
+  const int NUM_COLS_TO_TRY = 4;
+  int best_index[NUM_COLS_TO_TRY];
+  float best_error[NUM_COLS_TO_TRY]; 
+
+  for(int n = 0; n < NUM_COLS_TO_TRY; n++) {
+      best_index[n] = -1;
+      best_error[n] = err_tolerance; 
+  } 
+
+  if (is_gray) { 
+    // only match against grayscales ie, colors where r=g=b
+
+    for(int n = 0; n < cmapSize; n++) {
+      if (cols_in_map[n].red != cols_in_map[n].green ||
+	  cols_in_map[n].green != cols_in_map[n].blue)
+        continue;
+
+      float err = fabs(cols_in_map[n].red - color.red);
+          
+      if (err < best_error[NUM_COLS_TO_TRY - 1]) {
+	// this is one of the best matches we have seen..
+	// find position in sorted order
+	int i = NUM_COLS_TO_TRY - 2;
+        while ((i >= 0) && (err < best_error[i]))
+          i--;
+        i++; // the correct position of this color is i
+        for(int j = NUM_COLS_TO_TRY - 1; j > i; j--) {
+	  best_error[j] = best_error[j - 1];
+          best_index[j] = best_index[j - 1];
+        }
+        best_error[i] = err;
+        best_index[i] = n;
+      }
+    } 
+  } else {
+    // full-color
+  
+    for(int n = 0; n < cmapSize; n++) {
+
+      float rerr = cols_in_map[n].red - color.red;
+      float gerr = cols_in_map[n].green - color.green;
+      float berr = cols_in_map[n].blue - color.blue;
+      float err = (rerr * rerr + gerr * gerr + berr * berr) / 3.0;
+
+      err = (float)sqrt((double)err);
+          
+      if (err < best_error[NUM_COLS_TO_TRY - 1]) {
+        // this is one of the best matches we have seen..
+        // find position in sorted order
+        int i = NUM_COLS_TO_TRY  -2;
+        while ((i >= 0) && (err < best_error[i]))
+          i--;
+        i++; // the correct position of this color is i
+        for(int j = NUM_COLS_TO_TRY - 1; j > i; j--) {
+          best_error[j] = best_error[j - 1];
+          best_index[j] = best_index[j - 1];
+        }
+        best_error[i] = err;
+        best_index[i] = n;
+      }
+    }
+  } 
+
+  for(int i = 0; i < NUM_COLS_TO_TRY; i++) {
+    if (best_index[i] < 0)
+      return false;
+    if (XAllocColor(_display, map, &cols_in_map[best_index[i]])) {
+      c = cols_in_map[best_index[i]].pixel;
+      error = best_error[i] * 1.732050808 / 65535.0;
+      // this return value of error conforms with what
+      // Jussi used to compute, which is:
+      //  float rerr = (ctry.red - color.red) / 65535;
+      //  float gerr = (ctry.green - color.green) / 65535;
+      //  float berr = (ctry.blue - color.blue) / 65535;
+      //  error = sqrt(rerr * rerr + gerr * gerr + berr * berr);
+      return true;
+    }
+  } 
+
   return false;
-}
+} 
 
 /*******************************************************************
 Alloc color by name
@@ -477,7 +557,7 @@ void XDisplay::AllocColor(char *name, Color globalColor)
 Alloc color by RGB
 *********************************************************************/
 
-void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
+void XDisplay::AllocColor(float r, float g, float b, Color globalColor)
 {
 #ifdef DEBUG
   printf("XDisplay::AllocColor(%.2f,%.2f,%.2f)\n",r,g,b);
@@ -511,6 +591,36 @@ void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
   printf("Color <%.2f,%.2f,%.2f> mapped to color %s\n",
 	 r, g, b, baseColorName);
 }
+
+#ifdef LIBCS
+Color XDisplay::FindLocalColor(float r, float g, float b)
+{
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+
+  Color c;
+  float error;
+  XColor color;
+  color.red = (unsigned short)(r * 65535); 
+  color.green = (unsigned short)(g * 65535);
+  color.blue = (unsigned short)(b * 65535);
+
+  if (ClosestColor(cmap, color, c, error))
+    return c;
+
+  return 0;
+}
+
+void XDisplay::FindLocalColor(Color c, float &r, float &g, float &b)
+{
+  XColor color;
+  color.pixel = c;
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+  XQueryColor(_display, cmap, &color);
+  r = color.red / 65535.0;
+  g = color.green / 65535.0;
+  b = color.blue / 65535.0;
+}
+#endif
 
 /*
  * This structure forms the WMHINTS property of the window,

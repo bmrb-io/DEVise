@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/14 16:17:27  jussi
+  Added destroyPending flag and IsDestroyPending() method.
+
   Revision 1.23  1996/07/14 04:03:24  jussi
   HandleWindowDestroy() now destroys the window, conditionally.
   Moved the destructor from the header file to the .c file.
@@ -252,11 +255,21 @@ public:
   virtual void ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 			      int dstX, int dstY) = 0;
 
+  /* Color selection interface using Devise colormap */
   virtual void SetFgColor(Color fg) { _fgndColor = fg; }
   virtual void SetBgColor(Color bg) { _bgndColor = bg; }
-  Color GetFgColor() { return _fgndColor; }
-  Color GetBgColor() { return _bgndColor; }
+  virtual Color GetFgColor() { return _fgndColor; }
+  virtual Color GetBgColor() { return _bgndColor; }
   virtual void SetWindowBgColor(Color bg) = 0;
+
+#ifdef LIBCS
+  /* Color selection interface using specific colors */
+  virtual void SetFgRGB(float r, float g, float b) = 0;
+  virtual void SetBgRGB(float r, float g, float b) = 0;
+  virtual void GetFgRGB(float &r, float &g, float &b) = 0;
+  virtual void GetBgRGB(float &r, float &g, float &b) = 0;
+  virtual void SetWindowBgRGB(float r, float g, float b) = 0;
+#endif
 
   virtual void SetPattern(Pattern p) { _pattern = p; }
   Pattern GetPattern(){ return _pattern; }
@@ -547,10 +560,9 @@ protected:
   Color GetLocalColor(Color globalColor);
   
   /* constructor */
-  WindowRep(DeviseDisplay *disp, Color fgndColor=ForegroundColor,
-	    Color bgndColor=BackgroundColor, Pattern p = Pattern0);
+  WindowRep(DeviseDisplay *disp, Color fgndColor = ForegroundColor,
+	    Color bgndColor = BackgroundColor, Pattern p = Pattern0);
   
-private:
   WindowRepCallbackList  *_callbackList;
 
   Transform2D _transforms[WindowRepTransformDepth];

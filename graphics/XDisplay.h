@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/18 01:20:14  jussi
+  Added ExportImage() and ConvertAndWriteGIF() methods.
+
   Revision 1.14  1996/06/24 19:37:19  jussi
   Cleaned up a little.
 
@@ -126,6 +129,12 @@ public:
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+#ifdef LIBCS
+    /* Translate RGB colors to pixel values and back */
+    virtual Color FindLocalColor(float r, float g, float b);
+    virtual void FindLocalColor(Color c, float &r, float &g, float &b);
+#endif
+
 protected:
 #ifndef LIBCS
     /* Register display with the dispatcher */
@@ -140,8 +149,7 @@ protected:
     Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
 			 float &error);
     virtual void AllocColor(char *name, Color globalColor);
-    virtual void AllocColor(double r, double g, double b,
-			    Color globalColor);
+    virtual void AllocColor(float r, float g, float b, Color globalColor);
     
     friend class XWindowRep;
 

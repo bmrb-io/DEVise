@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/21 02:21:47  jussi
+  Made Run() a public method which View::SubclassMapped() can call.
+
   Revision 1.11  1996/07/18 01:19:32  jussi
   Added ExportImage method.
 
@@ -125,6 +128,15 @@ public:
   /* Process windowing events */
   void Run() { InternalProcessing(); }
 
+  /* Get local color given global color. */
+  Color GetLocalColor(Color globalColor);
+
+#ifdef LIBCS
+  /* Translate RGB colors to pixel values and back */
+  virtual Color FindLocalColor(float r, float g, float b) = 0;
+  virtual void FindLocalColor(Color c, float &r, float &g, float &b) = 0;
+#endif
+
 protected:
 #ifndef LIBCS
   /*
@@ -145,9 +157,9 @@ protected:
   /* allocate internal colors for the given global color */
   virtual void AllocColor(char *name, Color globalColor) = 0;
 
-  /* allocate internal color by rgb, from 0.0 to 1.0, for the 
+  /* allocate internal color by RGB, from 0.0 to 1.0, for the 
      given global color. */
-  virtual void AllocColor(double r, double g, double b, Color golbalColor) = 0;
+  virtual void AllocColor(float r, float g, float b, Color globalColor) = 0;
 
   /* functions for derived classes to facilitate color processing.
      Each display instance must match the global color to its own
@@ -159,10 +171,6 @@ protected:
 
   friend class WindowRep;
 
-  /* get local color given global color. */
-  Color GetLocalColor(Color globalColor);
-
-private:
   virtual char *DispatchedName();
   
   static DeviseDisplayList _displays; /* list of all displays */
