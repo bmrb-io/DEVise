@@ -2,6 +2,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/13 14:43:39  jussi
+  Found one more instance vhere name of view was used without protecting
+  braces or quotes.
+
   Revision 1.4  1995/09/12 16:06:15  jussi
   Modified SelectView() and other view-related TCL calls which
   did not work if view name had spaces in it.
@@ -33,6 +37,11 @@
 #include "Parse.h"
 #include "QueryProc.h"
 #include "Cursor.h"
+
+extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
+extern "C" int comp_extract(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = NULL;
@@ -125,10 +134,11 @@ void TkControlPanel::StartSession(){
 	Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
 
 	/* Create a new tcl command for ISSM stock data */
-	extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
-				    int argc, char *argv[]);
 	Tcl_CreateCommand(_interp, "issm_extractStocks", extractStocksCmd,
 			  0, 0);
+
+	/* Create a new tcl command for Compustat data */
+	Tcl_CreateCommand(_interp, "cstat_extract", comp_extract, 0, 0);
 
 	char *envPath = getenv("DEVISE_LIB");
 	char *control;
