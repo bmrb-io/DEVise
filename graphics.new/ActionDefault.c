@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/24 19:43:52  jussi
+  Querying records of a 3D view now produces a popup
+  window that tells the user that 3D queries are not
+  yet supported.
+
   Revision 1.18  1996/06/21 19:17:10  jussi
   Added correct values for theta, phi, and rho when '5' is pressed
   in radial coordinate mode.
@@ -94,149 +99,92 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
 			     Boolean useRightFlag):
      Action(name)
 {
-  left = leftEdge;
-  right = rightEdge;
-  useLeft = useLeftFlag;
-  useRight = useRightFlag;
+    left = leftEdge;
+    right = rightEdge;
+    useLeft = useLeftFlag;
+    useRight = useRightFlag;
 }
 
 void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 {
-  ControlPanel::Instance()->SelectView(view);
-  VisualFilter filter;
+    ControlPanel::Instance()->SelectView(view);
+    VisualFilter filter;
 
-  Boolean isScatterPlot = view->IsScatterPlot();
-  isScatterPlot |= (view->GetNumDimensions() != 2);
+    Boolean isScatterPlot = view->IsScatterPlot();
+    isScatterPlot |= (view->GetNumDimensions() != 2);
 
-  if (key == '+') {
-    /* increase pixel size */
-    Boolean changed = false;
-    int index = view->InitMappingIterator();
-    while(view->MoreMapping(index)) {
-      TDataMap *map = view->NextMapping(index)->map;
-      if (map->GetPixelWidth() < 30) {
-	changed = true;
-	map->SetPixelWidth(map->GetPixelWidth() + 1);
-      }
+    if (key == '+') {
+        /* increase pixel size */
+        Boolean changed = false;
+        int index = view->InitMappingIterator();
+        while(view->MoreMapping(index)) {
+            TDataMap *map = view->NextMapping(index)->map;
+            if (map->GetPixelWidth() < 30) {
+                changed = true;
+                map->SetPixelWidth(map->GetPixelWidth() + 1);
+            }
+        }
+        view->DoneMappingIterator(index);
+        if (changed)
+          view->Refresh();
     }
-    view->DoneMappingIterator(index);
-    if (changed)
-      view->Refresh();
-  }
 
-  else if (key == '-') {
-    /* decrease pixel size */
-    Boolean changed = false;
-    int index = view->InitMappingIterator();
-    while(view->MoreMapping(index)) {
-      TDataMap *map = view->NextMapping(index)->map;
-      if (map->GetPixelWidth() > 1) { 
-	changed = true;
-	map->SetPixelWidth(map->GetPixelWidth() - 1);
-      }
+    else if (key == '-') {
+        /* decrease pixel size */
+        Boolean changed = false;
+        int index = view->InitMappingIterator();
+        while(view->MoreMapping(index)) {
+            TDataMap *map = view->NextMapping(index)->map;
+            if (map->GetPixelWidth() > 1) { 
+                changed = true;
+                map->SetPixelWidth(map->GetPixelWidth() - 1);
+            }
+        }
+        view->DoneMappingIterator(index);
+        if (changed)
+          view->Refresh();
     }
-    view->DoneMappingIterator(index);
-    if (changed)
-      view->Refresh();
-  }
 
-  else if (key == '5') {
-    /* show all data records in view i.e. set filter to use the
-       actual min/max X values and the actual min/max Y values;
-       for 3D graphs, move camera to (0,0,Z) where Z is twice
-       the min Z value */
-    int index = view->InitMappingIterator();
-    if (view->MoreMapping(index)) {
-      TDataMap *map = view->NextMapping(index)->map;
-      AttrInfo *xAttr = map->MapGAttr2TAttr("x");
-      AttrInfo *yAttr = map->MapGAttr2TAttr("y");
-      AttrInfo *zAttr = map->MapGAttr2TAttr("z");
-      if (view->GetNumDimensions() == 2) {
-	view->GetVisualFilter(filter);
-	if (xAttr) {
-	  if (xAttr->hasHiVal)
-	    filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
-	  if (xAttr->hasLoVal)
-	    filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
-	  if (filter.xHigh == filter.xLow) {
-	    filter.xHigh += 1.0;
-	    filter.xLow -= 1.0;
-	  }
-	}
-	if (yAttr) {
-	  if (yAttr->hasHiVal)
-	    filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-	  if (yAttr->hasLoVal)
-	    filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-	  if (filter.yHigh == filter.yLow) {
-	    filter.yHigh += 1.0;
-	    filter.yLow -= 1.0;
-	  }
-	}
-	if (!isScatterPlot)
-	  filter.yLow = 0;
-	view->SetVisualFilter(filter);
-      } else {
-	Camera c = view->GetCamera();
-	c.fx = 0;
-	c.fy = 0;
-	c.fz = 0;
-	double minZ = -4.0;
-	if (zAttr && zAttr->hasLoVal)
-	  minZ = 2 * AttrList::GetVal(&zAttr->loVal, zAttr->type);
-	if (minZ > -4.0)
-	  minZ = -4.0;
-	if (!c.spherical_coord) {
-	  c.x_ = 0;
-	  c.y_ = 0;
-	  c.z_ = minZ;
-	} else {
-	  c._theta = 0;
-	  c._phi = M_PI_2;
-	  c._rho = fabs(minZ);
-	}
-	view->SetCamera(c);
-      }
-      view->DoneMappingIterator(index);
+    else if (key == '5') {
+        view->UpdateAutoScale();
     }
-  }
 
-  else if (!isScatterPlot && (key == '<' || key == ',' || key == '4')) {
-    /* scroll data left */
-    view->GetVisualFilter(filter);
-    Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-    filter.xLow += halfWidth;
-    filter.xHigh = filter.xLow + width;
-    if (useRight && filter.xHigh > right) {
-      filter.xHigh = right;
-      filter.xLow = filter.xHigh - width;
+    else if (!isScatterPlot && (key == '<' || key == ',' || key == '4')) {
+        /* scroll data left */
+        view->GetVisualFilter(filter);
+        Coord width = filter.xHigh - filter.xLow;
+        Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+        filter.xLow += halfWidth;
+        filter.xHigh = filter.xLow + width;
+        if (useRight && filter.xHigh > right) {
+            filter.xHigh = right;
+            filter.xLow = filter.xHigh - width;
+        }
+        view->SetVisualFilter(filter);
     }
-    view->SetVisualFilter(filter);
-  }
 
-  else if (!isScatterPlot && key == '9') {
-    /* zoom out */
-    view->GetVisualFilter(filter);
-    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-    if (halfWidth == 0.0)
-      halfWidth = 1.0;
-    filter.xLow -= halfWidth;
-    filter.xHigh += halfWidth;
-    Coord xMin;
-    if (view->GetXMin(xMin) && filter.xLow < xMin)
-      filter.xLow = xMin;
-    /*
-       if (useLeft && filter.xLow < left)
-       filter.xLow = left;
-    */
-    if (useRight && filter.xHigh > right)
-      filter.xHigh = right;
-    view->SetVisualFilter(filter);
-  }
+    else if (!isScatterPlot && key == '9') {
+        /* zoom out */
+        view->GetVisualFilter(filter);
+        Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+        if (halfWidth == 0.0)
+          halfWidth = 1.0;
+        filter.xLow -= halfWidth;
+        filter.xHigh += halfWidth;
+        Coord xMin;
+        if (view->GetXMin(xMin) && filter.xLow < xMin)
+          filter.xLow = xMin;
+        /*
+           if (useLeft && filter.xLow < left)
+           filter.xLow = left;
+           */
+        if (useRight && filter.xHigh > right)
+          filter.xHigh = right;
+        view->SetVisualFilter(filter);
+    }
 
-  else
-    Action::KeySelected(view, key, x, y);
+    else
+      Action::KeySelected(view, key, x, y);
 }
 
 static const int MAX_MSGS = 50;
@@ -248,209 +196,209 @@ static int numMsgs;
 
 static Boolean CheckParams()
 {
-  if (numMsgs >= MAX_MSGS || msgIndex >= MSG_BUF_SIZE)
-    return false;
-  return true;
+    if (numMsgs >= MAX_MSGS || msgIndex >= MSG_BUF_SIZE)
+      return false;
+    return true;
 }
 
 static Boolean PutMessage(char *msg)
 {
-  if (!CheckParams())
-    return false;
-  
-  int len = strlen(msg) + 1;
-  if (msgIndex + len > MSG_BUF_SIZE)
-    return false;
-  sprintf(&msgBuf[msgIndex], "%s", msg);
-  msgPtr[numMsgs++] = &msgBuf[msgIndex];
-  msgIndex += len;
-  return true;
+    if (!CheckParams())
+      return false;
+    
+    int len = strlen(msg) + 1;
+    if (msgIndex + len > MSG_BUF_SIZE)
+      return false;
+    sprintf(&msgBuf[msgIndex], "%s", msg);
+    msgPtr[numMsgs++] = &msgBuf[msgIndex];
+    msgIndex += len;
+    return true;
 }
 
 static Boolean InitPutMessage(double x, AttrType xAttr,
 			      double y, AttrType yAttr)
 {
-  msgIndex = 0;
-  numMsgs = 0;
-  char buf[128];
-  
-  if (xAttr == DateAttr) {
-    time_t clock = (time_t)x;
-    sprintf(buf,"x: %s", DateString(clock));
-  } else {
-    sprintf(buf,"x: %.2f", x);
-  }
-  if (!PutMessage(buf))
-    return false;
-  
-  if (yAttr == DateAttr) {
-    time_t clock = (time_t)y;
-    sprintf(buf,"y: %s", DateString(clock));
-  }
-  else {
-    sprintf(buf,"y: %.2f", y);
-  }
-  return PutMessage(buf);
+    msgIndex = 0;
+    numMsgs = 0;
+    char buf[128];
+    
+    if (xAttr == DateAttr) {
+        time_t clock = (time_t)x;
+        sprintf(buf,"x: %s", DateString(clock));
+    } else {
+        sprintf(buf,"x: %.2f", x);
+    }
+    if (!PutMessage(buf))
+      return false;
+    
+    if (yAttr == DateAttr) {
+        time_t clock = (time_t)y;
+        sprintf(buf,"y: %s", DateString(clock));
+    } else {
+        sprintf(buf,"y: %.2f", y);
+    }
+
+    return PutMessage(buf);
 }
 
 static void EndPutMessage(int &numMessages, char **&msgs)
 {
-  numMessages = numMsgs;
-  msgs = msgPtr;
+    numMessages = numMsgs;
+    msgs = msgPtr;
 }
 
 /* print contents of message buffer */
 
 static void PrintMsgBuf()
 {
-  for(int i = 0; i < numMsgs; i++)
-    puts(msgPtr[i]);
+    for(int i = 0; i < numMsgs; i++)
+      puts(msgPtr[i]);
 }
 
 Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 			     Coord yHigh, int button, char **& msgs,
 			     int &numMsgs)
 {
-  ControlPanel::Instance()->SelectView(view);
-  
-  AttrType xAttr = view->GetXAxisAttrType();
-  AttrType yAttr = view->GetYAxisAttrType();
-  
-  InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
-  
-  if (view->GetNumDimensions() != 2) {
-    PutMessage("");
-    PutMessage("Record query not supported yet");
-    PutMessage("for this type of view.");
-    EndPutMessage(numMsgs, msgs);
-    return true;
-  }
-
-  char *errorMsg;
-  if (!PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
+    ControlPanel::Instance()->SelectView(view);
+    
+    AttrType xAttr = view->GetXAxisAttrType();
+    AttrType yAttr = view->GetYAxisAttrType();
+    
     InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
-    PutMessage("");
-    PutMessage(errorMsg);
-  }
+    
+    if (view->GetNumDimensions() != 2) {
+        PutMessage("");
+        PutMessage("Record query not supported yet");
+        PutMessage("for this type of view.");
+        EndPutMessage(numMsgs, msgs);
+        return true;
+    }
 
-  EndPutMessage(numMsgs, msgs);
+    char *errorMsg;
+    if (!PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
+        InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
+        PutMessage("");
+        PutMessage(errorMsg);
+    }
 
-  return true;
+    EndPutMessage(numMsgs, msgs);
+
+    return true;
 }
 
 Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y, 
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
 #ifdef DEBUG
-  printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
-	 view->GetName(), x, y, xHigh, yHigh);
+    printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
+           view->GetName(), x, y, xHigh, yHigh);
 #endif
 
-  static RecInterp *recInterp = NULL;
-  
-  if (!recInterp)
-    recInterp = new RecInterp;
-  
-  /* get mapping */
-  int index = view->InitMappingIterator();
-  if (!view->MoreMapping(index)) {
-    errorMsg = "No mapping found!";
-    view->DoneMappingIterator(index);
-    return false;
-  }
+    static RecInterp *recInterp = NULL;
+    
+    if (!recInterp)
+      recInterp = new RecInterp;
+    
+    /* get mapping */
+    int index = view->InitMappingIterator();
+    if (!view->MoreMapping(index)) {
+        errorMsg = "No mapping found!";
+        view->DoneMappingIterator(index);
+        return false;
+    }
 
-  TDataMap *map = view->NextMapping(index)->map;
-  view->DoneMappingIterator(index);
-  
-  RecId startRid;
-  int numRecs;
-  char *buf;
-  QueryProc *qp = QueryProc::Instance();
+    TDataMap *map = view->NextMapping(index)->map;
+    view->DoneMappingIterator(index);
+    
+    RecId startRid;
+    int numRecs;
+    char *buf;
+    QueryProc *qp = QueryProc::Instance();
 
 #ifdef DEBUG
-  printf("ActionDefault::PrintRecords: getting TData\n");
+    printf("ActionDefault::PrintRecords: getting TData\n");
 #endif
 
-  int numDimensions;
-  VisualFlag *dimensionInfo;
-  numDimensions = map->DimensionInfo(dimensionInfo);
-  Boolean approxFlag = (numDimensions == 1 && dimensionInfo[0] == VISUAL_X);
-  
-  TData *tdata = map->GetTData();
-  AttrList *attrs = tdata->GetAttrList();
-  if (!attrs) {
-    errorMsg = "No attribute info!";
-    return false;
-  }
-
-  recInterp->SetAttrs(attrs);
-#if 0
-  recInterp->PrintAttrHeading();
-#endif
-
-  VisualFilter filter;
-  filter.flag = VISUAL_X;
-  filter.xLow = x;
-  filter.xHigh = xHigh;
-
-  if (!approxFlag) {
-    // for scatter plot, we filter using Y coordinates as well;
-    // allow user inaccuracy that is five times larger than for
-    // sortedX views (where approximation is used anyway), that is,
-    // roughly five pixels in each direction
-    filter.flag = VISUAL_X | VISUAL_Y;
-    float xDiff = 10 * fabs(xHigh - x);
-    float yDiff = 10 * fabs(yHigh - y);
-    filter.xLow  = x - xDiff / 2;
-    filter.xHigh = x + xDiff / 2;
-    filter.yLow  = y - yDiff / 2;
-    filter.yHigh = y + yDiff / 2;
-  }
-
-  Boolean tooMuch = false;
-  qp->InitTDataQuery(map, filter, approxFlag);
-
-  int linesDisplayed = 0;
-
-  while (qp->GetTData(startRid, numRecs, buf)) {
-    char *ptr = buf;
-    for(int i = 0; i< numRecs; i++) {
-      recInterp->SetBuf(ptr);
-      ptr += tdata->RecSize();
-      
-      if (tooMuch)
-	puts("");
-      else
-	PutMessage("");
-
-      /* set up for display inside the window */
-
-      for(int j = 0; j < attrs->NumAttrs(); j++) {
-	char buf[128];
-	recInterp->PrintAttr(buf, j, true);
-	if (!tooMuch) {
-	  if (!PutMessage(buf)) {
-	    PrintMsgBuf();
-	    errorMsg = "see text window";
-	    tooMuch = true;
-	  }
-	} else {
-	  puts(buf);
-	}
-	++linesDisplayed;
-      }
-
-      if (linesDisplayed > 500) {
-	printf("\nToo many records to display\n");
-	break;
-      }
-    }
+    int numDimensions;
+    VisualFlag *dimensionInfo;
+    numDimensions = map->DimensionInfo(dimensionInfo);
+    Boolean approxFlag = (numDimensions == 1 && dimensionInfo[0] == VISUAL_X);
     
-    if (linesDisplayed > 500)
-      break;
-  }
+    TData *tdata = map->GetTData();
+    AttrList *attrs = tdata->GetAttrList();
+    if (!attrs) {
+        errorMsg = "No attribute info!";
+        return false;
+    }
 
-  qp->DoneTDataQuery();
+    recInterp->SetAttrs(attrs);
+#if 0
+    recInterp->PrintAttrHeading();
+#endif
 
-  return !tooMuch;
+    VisualFilter filter;
+    filter.flag = VISUAL_X;
+    filter.xLow = x;
+    filter.xHigh = xHigh;
+
+    if (!approxFlag) {
+        // for scatter plot, we filter using Y coordinates as well;
+        // allow user inaccuracy that is five times larger than for
+        // sortedX views (where approximation is used anyway), that is,
+        // roughly five pixels in each direction
+        filter.flag = VISUAL_X | VISUAL_Y;
+        float xDiff = 10 * fabs(xHigh - x);
+        float yDiff = 10 * fabs(yHigh - y);
+        filter.xLow  = x - xDiff / 2;
+        filter.xHigh = x + xDiff / 2;
+        filter.yLow  = y - yDiff / 2;
+        filter.yHigh = y + yDiff / 2;
+    }
+
+    Boolean tooMuch = false;
+    qp->InitTDataQuery(map, filter, approxFlag);
+
+    int linesDisplayed = 0;
+
+    while (qp->GetTData(startRid, numRecs, buf)) {
+        char *ptr = buf;
+        for(int i = 0; i< numRecs; i++) {
+            recInterp->SetBuf(ptr);
+            ptr += tdata->RecSize();
+            
+            if (tooMuch)
+              puts("");
+            else
+              PutMessage("");
+
+            /* set up for display inside the window */
+
+            for(int j = 0; j < attrs->NumAttrs(); j++) {
+                char buf[128];
+                recInterp->PrintAttr(buf, j, true);
+                if (!tooMuch) {
+                    if (!PutMessage(buf)) {
+                        PrintMsgBuf();
+                        errorMsg = "see text window";
+                        tooMuch = true;
+                    }
+                } else {
+                    puts(buf);
+                }
+                ++linesDisplayed;
+            }
+
+            if (linesDisplayed > 500) {
+                printf("\nToo many records to display\n");
+                break;
+            }
+        }
+        
+        if (linesDisplayed > 500)
+          break;
+    }
+
+    qp->DoneTDataQuery();
+
+    return !tooMuch;
 }

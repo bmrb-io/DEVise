@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/20 17:10:26  guangshu
+  Added support for color statistics.
+
   Revision 1.16  1996/06/15 13:51:28  jussi
   Added SetMappingLegend() method.
 
@@ -138,6 +141,11 @@ public:
   /* Draw legend */
   virtual void DrawLegend();
 
+  /* Update automatic scaling information */
+  virtual void UpdateAutoScale();
+  virtual void SetAutoScale(Boolean autoScale) { _autoScale = autoScale; }
+  virtual Boolean GetAutoScale() { return _autoScale; }
+
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
   void SetDisplayStats(char *stat);
@@ -172,6 +180,8 @@ public:
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */
   RecordLinkList _slaveLink;       /* slave record link list */
+
+  Boolean _autoScale;              /* true if auto scaling in effect */
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
