@@ -1058,6 +1058,9 @@ Num Date        Status  Description
 270 01/14/98	OPEN	dev/mul script doesn't work for starting multi on
 			Linux. (rkw)
 
+271 01/23/98	OPEN	Color allocation fails on anything but 8 bit displays.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
