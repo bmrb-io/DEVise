@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/05/06 21:57:39  wenger
+  New 'fixed-size-cursor' argument added to JS communication protocol.
+
   Revision 1.54  1999/05/04 17:17:07  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -298,6 +301,7 @@
 #include "ArgList.h"
 #include "Cursor.h"
 #include "CursorClassInfo.h"
+#include "PileStack.h"
 
 #define DEBUG
 #define JS_TIMER 0
@@ -1142,11 +1146,27 @@ JavaScreenCmd::MouseAction_RubberBand()
 
 	// Update the visual filter of the view that the
 	// rubberband line started in.
-	VisualFilter filter;
-	view->GetVisualFilter(filter);
-	view->FindWorld(startX, startY, endX,
-	  endY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
-	view->SetVisualFilter(filter);
+	PileStack *ps = view->GetParentPileStack();
+	if (ps && ps->GetState() == PileStack::PSPiledNoLink) {
+	  // Unlinked pile -- need to update all views in the pile individually.
+	  int index = ps->InitIterator();
+	  while (ps->More(index)) {
+	    View *tmpView = (View *)ps->Next(index);
+	    VisualFilter filter;
+	    tmpView->GetVisualFilter(filter);
+	    tmpView->FindWorld(startX, startY, endX,
+	      endY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+	    tmpView->SetVisualFilter(filter);
+	  }
+	  ps->DoneIterator(index);
+	  
+	} else {
+	  VisualFilter filter;
+	  view->GetVisualFilter(filter);
+	  view->FindWorld(startX, startY, endX,
+	    endY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+	  view->SetVisualFilter(filter);
+	}
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.

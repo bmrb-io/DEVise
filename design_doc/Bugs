@@ -1778,8 +1778,9 @@ Num Date        Status  Description
 			doesn't force a redraw when it should. (rkw)
 			(Fixed by rkw, 2/19/99.)
 
-462 02/16/99	OPEN	Rubberband line on an unlinked pile in the JavaScreen
+462 02/16/99	FIXED	Rubberband line on an unlinked pile in the JavaScreen
 			zooms only the top view. (rkw)
+			(Fixed by rkw, 5/14/99.)
 
 463 02/16/99	FIXED	Data in piled views sometimes overdraws the axes if
 			some views have axes and others don't. (ml/rkw)
@@ -1815,7 +1816,7 @@ Num Date        Status  Description
 470 03/16/99	OPEN	Open a session while queries for an existing session
 			are running -> QueryProc fails an assertion. (rkw)
 
-471 03/17/99	OPEN	Resizing a piled window sometimes causes the window
+471 03/17/99	CD	Resizing a piled window sometimes causes the window
 			to become blank. (rkw)
 
 472 03/17/99	OPEN	When you've set global foreground and background
@@ -1839,14 +1840,15 @@ Num Date        Status  Description
 			JavaScreen, something goes wrong and Tasvir images
 			no longer get displayed. (rkw)
 
-478 04/01/99	OPEN	Open Demo/colors.ds, do '9', then <backspace>:
+478 04/01/99	FIXED	Open Demo/colors.ds, do '9', then <backspace>:
 			visual filter doesn't go back to where it was. (rkw)
+			(Fixed by rkw, 5/14/99.)
 
 479 04/01/99	OPEN	Protocol for sending GData to the JavaScreen can't
 			handle arguments with spaces (separator characters)
 			in them. (rkw)
 
-480 04/01/99	OPEN	Setting title and axis fonts does not work right in
+480 04/01/99	FIXED	Setting title and axis fonts does not work right in
 			piled views. (rkw)
 
 481 04/06/99	FIXED	Copying a view doesn't copy the state of duplicate
@@ -1860,16 +1862,20 @@ Num Date        Status  Description
 			to drag the cursor in the bottom window -> JS reports
 			cursor movement in the wrong view. (rkw)
 
-484 04/19/99	OPEN	Load JS demo session test/bug484.ds in JS and drag
+484 04/19/99	FIXED	Load JS demo session test/bug484.ds in JS and drag
 			cursor (clicking to move it doesn't have the same
 			effect) -> view images don't get properly updated.
 			(rkw)
+			(Fixed by new JS protocol for view symbols.)
 
 485 04/21/99	OPEN	Home ('5') won't function properly if one of the
 			axes has a sorted attribute. (rkw)
 
 486 04/26/99	FIXED	kent5.ds session in Tim Wilson's area works with non-
 			DTE Devise but not with DTE Devise (crashes). (rkw)
+
+487 05/14/99	OPEN	Closing a session does not destroy Kiviat graphs.
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1999/05/14 16:46:48  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.31  1999/02/01 23:13:41  wenger
   Backspace key in a view goes back one in the visual filter history.
 
@@ -223,7 +226,6 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     printf("Action::KeySelected(0x%x, %g, %g)\n", (int)key, x, y);
   }
 #endif
-  VisualFilter filter;
   Boolean symbolsOn = view->DisplaySymbols();
   Boolean connectorsOn = view->DisplayConnectors();
 
@@ -588,190 +590,113 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     break;
   } // end switch
   
-  if (zoomInX) {
-    /* zoom in X */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord delta = (filter.xHigh - filter.xLow) / _magnification;
-      bool left_locked = view->IsViewLocked(View::LEFT_SIDE);
-      bool right_locked = view->IsViewLocked(View::RIGHT_SIDE);
-      if( left_locked && right_locked ) {
-	  // do nothing
-      } else if( left_locked ) {
-	  filter.xHigh -= delta;
-      } else if( right_locked ) {
-	  filter.xLow += delta;
-      } else {
-	  delta /= 2.0;
-	  filter.xLow += delta;
-	  filter.xHigh -= delta;
-      }
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
-    } else {
-#if 0
-      Camera camera = view->GetCamera();
-      double incr_ = camera._dvs / STEP_SIZE;
-      if (incr_ < 1)
-	incr_ = 1;
-#ifdef DEBUG
-      printf("old dvs = %d\n", camera._dvs);
-#endif
-      if (camera._dvs < incr_)
-	/* make sure we don't go behind the screen */
-	camera._dvs = 0;
-      else
-	camera._dvs -= (int)incr_;
-#ifdef DEBUG
-      printf("old-new dvs = %d   incr = %f\n",camera._dvs,incr_);
-#endif
-      view->SetCamera(camera);
-#endif
-      Camera camera = view->GetCamera();
-      Coord center_x=(camera.min_x+camera.max_x)/2;
-      camera.min_x=center_x+(camera.min_x-center_x)*ZOOM_IN_FACTOR;
-      camera.max_x=center_x+(camera.max_x-center_x)*ZOOM_IN_FACTOR;
-      view->SetCamera(camera);
-    }
-  } else if (zoomOutX) {
-    /* zoom out X */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord delta = (filter.xHigh - filter.xLow) * (_magnification - 1.0);
-      if (delta == 0.0) delta = 1.0;
-      bool left_locked = view->IsViewLocked(View::LEFT_SIDE);
-      bool right_locked = view->IsViewLocked(View::RIGHT_SIDE);
-      if( left_locked && right_locked ) {
-	  // do nothing
-      } else if( left_locked ) {
-	  filter.xHigh += delta;
-      } else if( right_locked ) {
-	  filter.xLow -= delta;
-      } else {
-	  delta /= 2.0;
-	  filter.xLow -= delta;
-	  filter.xHigh += delta;
-      }
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
-    } else {
-#if 0
-      Camera camera = view->GetCamera();
-      double incr_ = camera._dvs / STEP_SIZE;
-      if (incr_ < 1)
-	incr_ = 1;
-      camera._dvs += (int)incr_;
-      view->SetCamera(camera);
-#endif
-      Camera camera = view->GetCamera();
-      Coord center_x=(camera.min_x+camera.max_x)/2;
-      camera.min_x=center_x+(camera.min_x-center_x)*ZOOM_OUT_FACTOR;
-      camera.max_x=center_x+(camera.max_x-center_x)*ZOOM_OUT_FACTOR;
-      view->SetCamera(camera);
-    }
-  }
 
-  if (zoomInY) {
-    /* zoom in Y */
+  if (zoomInX || zoomOutX || zoomInY || zoomOutY) {
+    VisualFilter filter;
+    Camera camera;
+
+    //
+    // Get the visual filter or camera.
+    //
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
-      Coord delta = (filter.yHigh - filter.yLow) / _magnification;
-      bool top_locked = view->IsViewLocked(View::TOP_SIDE);
-      bool bottom_locked = view->IsViewLocked(View::BOTTOM_SIDE);
-      if( top_locked && bottom_locked ) {
-	  // do nothing
-      } else if( top_locked ) {
-	  filter.yLow += delta;
-      } else if( bottom_locked ) {
-	  filter.yHigh -= delta;
-      } else {
-	  delta /= 2.0;
-	  filter.yLow += delta;
-	  filter.yHigh -= delta;
-      }
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
     } else {
-#if 0
       Camera camera = view->GetCamera();
-      double incr_ = camera._dvs / STEP_SIZE;
-      if (incr_ < 1)
-	incr_ = 1;
-      if (camera._dvs < incr_)
-	/* make sure we don't go behind the screen */
-	camera._dvs = 0;
-      else
-	camera._dvs -= (int)incr_;
-      view->SetCamera(camera);
-#endif
-      Camera camera = view->GetCamera();
-      Coord center_y=(camera.min_y+camera.max_y)/2;
-      camera.min_y=center_y+(camera.min_y-center_y)*ZOOM_IN_FACTOR;
-      camera.max_y=center_y+(camera.max_y-center_y)*ZOOM_IN_FACTOR;
-      view->SetCamera(camera);
     }
-  } else if (zoomOutY) {
-    /* zoom out Y */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord delta = (filter.yHigh - filter.yLow) * (_magnification - 1.0);
-      if (delta == 0.0) delta = 1.0;
-      bool top_locked = view->IsViewLocked(View::TOP_SIDE);
-      bool bottom_locked = view->IsViewLocked(View::BOTTOM_SIDE);
-      if( top_locked && bottom_locked ) {
+
+    //
+    // Adjust the X values if necessary.
+    //
+    if (zoomInX || zoomOutX) {
+      if (view->GetNumDimensions() == 2) {
+        Coord delta;
+	if (zoomInX) {
+          delta = (filter.xHigh - filter.xLow) / _magnification;
+	} else {
+          delta = -1.0 * (filter.xHigh - filter.xLow) * (_magnification - 1.0);
+	}
+        if (delta == 0.0) delta = 1.0;
+        bool left_locked = view->IsViewLocked(View::LEFT_SIDE);
+        bool right_locked = view->IsViewLocked(View::RIGHT_SIDE);
+        if( left_locked && right_locked ) {
 	  // do nothing
-      } else if( top_locked ) {
-	  filter.yLow -= delta;
-      } else if( bottom_locked ) {
-	  filter.yHigh += delta;
-      } else {
+        } else if( left_locked ) {
+	  filter.xHigh -= delta;
+        } else if( right_locked ) {
+	  filter.xLow += delta;
+        } else {
 	  delta /= 2.0;
-	  filter.yLow -= delta;
-	  filter.yHigh += delta;
+	  filter.xLow += delta;
+	  filter.xHigh -= delta;
+        }
+      } else {
+        Coord center_x = (camera.min_x + camera.max_x) / 2.0;
+	Coord factor;
+	if (zoomInX) {
+	  factor = ZOOM_IN_FACTOR;
+	} else {
+	  factor = ZOOM_OUT_FACTOR;
+	}
+        camera.min_x = center_x + (camera.min_x - center_x) * factor;
+        camera.max_x = center_x + (camera.max_x - center_x) * factor;
       }
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
+    }
+
+    //
+    // Adjust the Y values if necessary.
+    //
+    if (zoomInY || zoomOutY) {
+      if (view->GetNumDimensions() == 2) {
+	Coord delta;
+	if (zoomInY) {
+          delta = (filter.yHigh - filter.yLow) / _magnification;
+	} else {
+          delta = -1.0 * (filter.yHigh - filter.yLow) * (_magnification - 1.0);
 	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
+        if (delta == 0.0) delta = 1.0;
+        bool top_locked = view->IsViewLocked(View::TOP_SIDE);
+        bool bottom_locked = view->IsViewLocked(View::BOTTOM_SIDE);
+        if( top_locked && bottom_locked ) {
+	    // do nothing
+        } else if( top_locked ) {
+	    filter.yLow += delta;
+        } else if( bottom_locked ) {
+	    filter.yHigh -= delta;
+        } else {
+	    delta /= 2.0;
+	    filter.yLow += delta;
+	    filter.yHigh -= delta;
+        }
+      } else {
+        Coord center_y = (camera.min_y + camera.max_y) / 2.0;
+	Coord factor;
+	if (zoomInX) {
+	  factor = ZOOM_IN_FACTOR;
+	} else {
+	  factor = ZOOM_OUT_FACTOR;
 	}
+        camera.min_y = center_y + (camera.min_y - center_y) * factor;
+        camera.max_y = center_y + (camera.max_y - center_y) * factor;
+      }
+    }
+
+    //
+    // Set the filter or camera, setting both X and Y values at once so that
+    // this counts only as one filter change even if we're changing X and Y
+    // (fixes bug 478).
+    //
+    if (view->GetNumDimensions() == 2) {
+      if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+      {
+  	CommandObj *	cmdObj = GetCommandObj();
+	cmdObj->SetVisualFilter(view, &filter);
+      }
+      if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+      {
+	view->SetVisualFilter(filter);
+      }
     } else {
-#if 0
-      Camera camera = view->GetCamera();
-      double incr_ = camera._dvs / STEP_SIZE;
-      if (incr_ < 1)
-	incr_ = 1;
-      camera._dvs += (int)incr_;
-      view->SetCamera(camera);
-#endif
-      Camera camera = view->GetCamera();
-      Coord center_y=(camera.min_y+camera.max_y)/2;
-      camera.min_y=center_y+(camera.min_y-center_y)*ZOOM_OUT_FACTOR;
-      camera.max_y=center_y+(camera.max_y-center_y)*ZOOM_OUT_FACTOR;
+      // Note: this won't work right for collaboration.  RKW 1999-05-14.
       view->SetCamera(camera);
     }
   }
