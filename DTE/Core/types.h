@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/07/30 21:39:28  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.25  1997/07/26 01:24:26  okan
   *** empty log message ***
 
@@ -102,6 +105,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <time.h>
+#include <new.h>
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
@@ -119,6 +123,7 @@ const String DOUBLE_TP = "double";
 const String DATE_TP = "date";
 const String INTERVAL_TP = "interval" ;
 const String STRING_TP = "string";
+const String CAT_ENTRY_TP = "catentry";
 
 struct Stats{
 	int* fldSizes;
@@ -830,6 +835,7 @@ public:
 };
 
 class MemoryLoader {
+protected:
 	const size_t PAGE_SZ = 4 * 1024;
 	size_t remainSpace;
 	List<void*> pagePtrs;
@@ -886,6 +892,27 @@ public:
 		IDouble* retVal = (IDouble*) allocate(sizeof(IDouble));
 		*retVal = *((IDouble*) arg);
 		return retVal;
+	}
+};
+
+template <class T>
+class MemoryLoaderTemplate : public MemoryLoader {
+public:
+	virtual Type* load(const Type* arg){
+		assert(sizeof(T) % sizeof(int) == 0);
+		void* space = allocate(sizeof(T));
+		T* retVal = new (space) T;
+		*retVal = *((T*) arg);
+		return retVal;
+	}
+	~MemoryLoaderTemplate(){
+		for(pagePtrs.rewind(); !pagePtrs.atEnd(); pagePtrs.step()){
+			void* base = pagePtrs.get();
+			for(int i = 0; i <= PAGE_SZ - sizeof(T); i += sizeof(T)){
+				((T*) (base + i))->~T();
+			}
+		}
+		//	delete [] pagePtrs.get();
 	}
 };
 

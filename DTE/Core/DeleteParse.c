@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/07/30 21:39:14  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.6  1997/06/21 22:47:56  donjerko
   Separated type-checking and execution into different classes.
 
@@ -67,7 +70,6 @@ Site* DeleteParse::createSite(){
 	site->addTable(&ta);
 
 	TRY(site->typify(""), NULL);
-	List<Tuple*> tupleList;
 	bool cond;
 	List<Site*> sites;
 	sites.append(site);
@@ -83,14 +85,17 @@ Site* DeleteParse::createSite(){
 		predicate->createExec(*alias, siteISchema, "", NULL), NULL); 
 	assert(execPred);
 	int inputNumFlds = site->getNumFlds();
+	const TypeID* types = site->getTypeIDs();
 	TRY(Iterator* iter = site->createExec(), NULL);
 	iter->initialize();
 	const Tuple* tmpTuple;
+	List<Tuple*> tupleList;
+	TupleLoader tupleLoader;
+	TRY(tupleLoader.open(inputNumFlds, types), NULL);
 	while((tmpTuple = iter->getNext())){
 		cond = execPred->evaluate(tmpTuple, NULL);
 		if(!cond){
-			Tuple* copy = new Tuple[inputNumFlds];
-			memcpy(copy, tmpTuple, inputNumFlds * sizeof(Type*));
+			Tuple* copy = tupleLoader.insert(tmpTuple);
 			tupleList.append(copy);
 		}
 	}
@@ -99,7 +104,6 @@ Site* DeleteParse::createSite(){
 		Tuple* tuple;
 		tuple = tupleList.get();
 		site->write(tuple);
-		delete tuple;
 	}
 	site->writeClose();
 	delete site;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/07/31 14:17:47  donjerko
+  *** empty log message ***
+
   Revision 1.24  1997/07/30 21:39:27  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -353,9 +356,10 @@ public:
 		*fout << content << endl;
 	}
 	virtual void write(Tuple* tuple){
-		assert(fout);
+		assert(fout && fout->good());
 		assert(writePtrs);
 		for(int i = 0; i < numFlds; i++){
+			assert(writePtrs[i]);
 			writePtrs[i](*fout, tuple[i]);
 		}
 		*fout << endl;

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/07/30 21:39:27  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.25  1997/07/26 01:24:25  okan
   *** empty log message ***
 
@@ -1443,8 +1446,12 @@ MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
 		else if(types[i] == DOUBLE_TP){
 			retVal[i] = new DoubleLoader();
 		}
+		else if(types[i] == CAT_ENTRY_TP){
+			retVal[i] = new MemoryLoaderTemplate<CatEntry>();
+		}
 		else{
-			assert(!"loader not implemented for this type");
+			cerr << "Loader not implemented for type: " << types[i] << endl;
+			exit(1);
 		}
 	}
 	return retVal;

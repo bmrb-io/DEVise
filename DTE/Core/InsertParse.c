@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/07/30 21:39:17  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.2  1997/03/28 16:07:24  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -42,6 +45,8 @@
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
+
+#define DEBUG
 
 Site* InsertParse::createSite(){
 	LOG(logFile << "Inserting into ");
@@ -73,6 +78,9 @@ Site* InsertParse::createSite(){
 	strstream tmp;
 	sel->display(tmp);
 	String inStr = stripQuotes(tmp);
+#if defined(DEBUG)
+	cerr << "Appending to the file: " << inStr << endl;
+#endif
 	TRY(site->writeOpen(), NULL);
 	site->write(inStr);
 	site->writeClose();
