@@ -15,6 +15,12 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
 
 ******************************************************************/
 
+/*
+  $Id$
+
+  $Log$
+ */
+
 #include "global.h"
 //#include "util.h"
 #include "vector.h"

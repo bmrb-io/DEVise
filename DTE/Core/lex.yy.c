@@ -438,7 +438,7 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #line 1 "../../DTE/Core/my.lex"
 #define INITIAL 0
-/*  ======================================================================== 
+/*======================================================================== 
 	DEVise Data Visualization Software
   (c) Copyright 1992-1996
   By the DEVise Development Group

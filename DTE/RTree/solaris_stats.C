@@ -4,6 +4,11 @@
 /* -- and conditions given in the file COPYRIGHT.  All Rights   -- */
 /* -- Reserved.                                                 -- */
 /* --------------------------------------------------------------- */
+/*
+  $Id$
+
+  $Log$
+ */
 
 #ifdef __GNUC__
 #pragma implementation "solaris_stats.h"

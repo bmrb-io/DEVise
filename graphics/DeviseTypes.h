@@ -1,7 +1,28 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1997
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/18 18:52:01  wenger
+  Devise requests Tasvir not to use subwindows for its images; sizing of
+  Tasvir images now basically works like a RectX, except that the aspect
+  ratio is fixed by the image itself; fixed a bug in action of +/- keys
+  for RectX shapes; Devise won't request Tasvir images smaller than two
+  pixels (causes error in Tasvir).
+
   Revision 1.11  1996/08/23 16:55:32  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work

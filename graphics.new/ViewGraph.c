@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/03/21 23:57:41  guangshu
+  Write null records to statBuf when there is no record in the view to
+  make the dataSourceBuf valid.
+
   Revision 1.49  1997/03/20 22:24:55  guangshu
   Enhanced statistics to support user specified number of buckets in histograms,
   group by X and Y, support for date type in group by.
@@ -828,7 +832,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     while(_glistX.More(index)) {
 	double i = _glistX.Next(index); 
 	char *date_string;
-	char **date;
+	char **date = NULL;
 	if(x_is_date) {
 		date_string = DateString(i);
 		date = ExtractDate(date_string);

@@ -1,4 +1,10 @@
 #! /bin/csh
+############################################################
+
+# $Id$
+
+############################################################
+
 # test time to scan with just 1 buffer
 ams -restore -session disp.tk -iconify 0 -convert 0 -buffer 4 < scan.cmd >>! scanRnd.out
 ams -restore -session disp.tk -iconify 0 -convert 0 -buffer 4 < scan.cmd >>! scanRnd.out

@@ -15,6 +15,12 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
 
 ******************************************************************/
 
+/*
+  $Id$
+
+  $Log$
+ */
+
 #ifndef VECTOR_H
 #define VECTOR_H
 

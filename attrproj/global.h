@@ -15,6 +15,12 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
 
 ******************************************************************/
 
+/*
+  $Id$
+
+  $Log$
+ */
+
 #ifndef GLOBAL_H
 #define GLOBAL_H
 

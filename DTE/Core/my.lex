@@ -1,4 +1,4 @@
-/*  ======================================================================== 
+/*======================================================================== 
 	DEVise Data Visualization Software
   (c) Copyright 1992-1996
   By the DEVise Development Group
@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/03/14 18:36:11  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.13  1997/03/11 22:49:26  donjerko
   *** empty log message ***
 

@@ -1,4 +1,10 @@
 #! /bin/csh
+############################################################
+
+# $Id$
+
+############################################################
+
 # test time to scan with just 1 buffer
 set buffer=15000
 ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 -norandom  < vm.cmd >>! vm.out

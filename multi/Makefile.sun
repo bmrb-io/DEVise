@@ -1,3 +1,23 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+
+############################################################
+
 depend:
 	makedepend -fMakefile.sun \
 		-I../multi -I../graphics -I../graphics.new \
@@ -73,6 +93,7 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/VisualLink.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/AssoArray.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Action.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
@@ -148,7 +169,7 @@ CycleEffMappingClassInfo.o: /usr/include/sys/socket.h
 CycleEffMappingClassInfo.o: /usr/include/netinet/in.h
 CycleEffMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleEffMappingClassInfo.o: ../graphics.new/VisualLink.h
-CycleEffMappingClassInfo.o: ../graphics.new/Action.h
+CycleEffMappingClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
 CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
 CycleEffMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ConnectorShape.h
@@ -222,7 +243,7 @@ CycleOccMappingClassInfo.o: /usr/include/sys/socket.h
 CycleOccMappingClassInfo.o: /usr/include/netinet/in.h
 CycleOccMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleOccMappingClassInfo.o: ../graphics.new/VisualLink.h
-CycleOccMappingClassInfo.o: ../graphics.new/Action.h
+CycleOccMappingClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
 CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
 CycleOccMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ConnectorShape.h
@@ -313,6 +334,7 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
 CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/VisualLink.h
+CycleSuspendedMappingClassInfo.o: ../graphics/AssoArray.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Action.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
@@ -398,6 +420,7 @@ CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
 CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/VisualLink.h
+CycleWorkingMappingClassInfo.o: ../graphics/AssoArray.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Action.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleWorkingMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
@@ -462,7 +485,8 @@ HostMappingClassInfo.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 HostMappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/socket.h
 HostMappingClassInfo.o: /usr/include/netinet/in.h
 HostMappingClassInfo.o: ../graphics.new/UpdateLink.h
-HostMappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
+HostMappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
+HostMappingClassInfo.o: ../graphics.new/Action.h
 HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
 HostMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
 HostMappingClassInfo.o: ../graphics.new/ConnectorShape.h
@@ -519,9 +543,9 @@ MappingClassInfo.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 MappingClassInfo.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 MappingClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 MappingClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
-MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
-MappingClassInfo.o: ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
+MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
+MappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
@@ -683,8 +707,9 @@ disp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 disp.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 disp.o: /usr/include/netdb.h /usr/include/sys/socket.h
 disp.o: /usr/include/netinet/in.h ../graphics.new/UpdateLink.h
-disp.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-disp.o: ../graphics.new/PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
+disp.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
+disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+disp.o: ../graphics/Temp.h ../graphics/Map3D.h
 disp.o: ../graphics.new/VisualLinkClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/FileIndex.h TDataHost.h TDataCycle.h

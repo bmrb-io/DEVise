@@ -1,3 +1,23 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+
+############################################################
+
 depend:
 	makedepend -fMakefile.sun -I../graphics -I../graphics.new \
 		-I../tape -I/s/tcl/include *.c
@@ -47,14 +67,15 @@ MapClassInfo.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 MapClassInfo.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 MapClassInfo.o: /usr/include/netdb.h /usr/include/sys/socket.h
 MapClassInfo.o: /usr/include/netinet/in.h ../graphics.new/UpdateLink.h
-MapClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-MapClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
-MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
-MapClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics.new/ViewScatter.h
-MapClassInfo.o: ../graphics.new/QueryProc.h MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
+MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
+MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
+MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics.new/ViewScatter.h ../graphics.new/QueryProc.h
+MapClassInfo.o: MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -92,17 +113,17 @@ ams.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 ams.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
-ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
-ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
-ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
-ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
-ams.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
-ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
-ams.o: ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics/AssoArray.h ../graphics.new/Action.h
+ams.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
+ams.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+ams.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+ams.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+ams.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+ams.o: ../graphics.new/ViewLens.h ../graphics.new/CompositeParser.h
+ams.o: ../graphics.new/RecInterp.h ../graphics.new/TDataMap.h
+ams.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h
 amsStat.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h

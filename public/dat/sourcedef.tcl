@@ -1,3 +1,8 @@
+############################################################
+
+# $Id$
+
+############################################################
 # Data source types
 
 set "sourceTypes(UNIXFILE)" {{Unix File} ../schema/schema/logical/UNIXFILE}

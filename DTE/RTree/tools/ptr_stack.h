@@ -6,8 +6,11 @@
 /* --------------------------------------------------------------- */
 
 /*
- *  /p/shore/shore_cvs/src/common/mystack_t.h,v 1.6 1995/04/24 19:28:46 zwilling Exp
+  $Id$
+
+  $Log$
  */
+
 #ifndef PTRSTACK_T2_H
 #define PTRSTACK_T2_H
 
