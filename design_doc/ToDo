@@ -528,6 +528,13 @@ view (force one-to-one correspondence between views and mappings).
 
 Add info to user manual about how to create 3D views. (qh/rkw 10/30/98)
 
+JavaScreen should allow user to look at mappings (read-only). (rr/rkw 3/31/99)
+
+JavaScreen should have a help button that lists key shortcuts. (rr/rkw 3/31/99)
+
+Java buttons in JavaScreen (i.e., search engine demo) shouldn't create a
+new Netscape window each time they're clicked. (rr/rkw 3/31/99)
+
 
 COMPLETED
 ---------
