@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/23 20:56:06  jussi
+  Cleaned up the code a little bit.
+
   Revision 1.3  1995/11/22 17:05:00  jussi
   Added IsValid() method and cleaned up code. Added copyright notice.
 
@@ -97,15 +100,12 @@ public:
   AttrList *GetAttrList(){ return _attrList; };
 
 protected:
-  /* Decode a record; return false if this line is not valid. */
-  virtual Boolean IsValid(char *line);
-
   /* Decode a record and put data into buffer. Return false if
      this line is not valid. */
-  virtual Boolean Decode(RecId id, void *recordBuf, char *line);
+  virtual Boolean Decode(void *recordBuf, char *line);
   
-  virtual Boolean WriteCache(int fd){ return true; }
-  virtual Boolean ReadCache(int fd){ return true;}
+  virtual Boolean WriteCache(int fd);
+  virtual Boolean ReadCache(int fd);
 
 private:
   AttrList *_attrList; /* list of attributes */
