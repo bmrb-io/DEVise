@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/12/03 16:56:51  wenger
+#  Set up src/color and src/utils to compile "normally" for sun, hp, and linux.
+#
 #  Revision 1.1  1997/12/02 17:36:09  wenger
 #  Set up src/color and src/utils to compile "normally" for solaris and
 #  solsparc.
@@ -28,4 +31,4 @@ ARCH_LDPOST  =
 
 VPATH = ../../src/utils
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include Makefile.depend

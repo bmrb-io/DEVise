@@ -7,6 +7,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/12/03 16:57:15  wenger
+#  Set up src/color and src/utils to compile "normally" for sun, hp, and linux.
+#
 #  Revision 1.1  1997/12/02 17:36:25  wenger
 #  Set up src/color and src/utils to compile "normally" for solaris and
 #  solsparc.
@@ -52,6 +55,12 @@ lib:	$(UTILS_LIB)
 $(UTILS_LIB):	$(UTILS_OBJ)
 	$(AR) cr $@ $(UTILS_OBJ)
 
+
+Makefile.depend: $(VPATH)/*.[cCh]
+	-rm Makefile.depend
+	-$(CC) -M $(ARCH_FLAGS) $(UTILS_INCLUDES) $(VPATH)/*.[cC] \
+		> Makefile.depend
+
 # Note: special compile rule is needed here so templates get instantiated
 # correctly.  RKW Dec. 2, 1997.
 templates.o:
@@ -61,4 +70,4 @@ clean:	mostlyclean
 	-rm $(UTILS_LIB)
 
 mostlyclean:
-	-rm $(UTILS_OBJ) templates.o
+	-rm $(UTILS_OBJ) templates.o Makefile.depend
