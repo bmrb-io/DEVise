@@ -18,8 +18,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I../../parser
+ARCH_FLAGS = -DPENTIUM -I/usr/X11R6/include -I/s/tcl/include
 
-VPATH = ../../parser
+VPATH = ../../compustat
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sun
+include $(VPATH)/Makefile.solaris
