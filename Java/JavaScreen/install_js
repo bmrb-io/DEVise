@@ -1,0 +1,191 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+# Check argument and set install destination directories.
+
+if ($#argv == 1) then
+  set location = $1
+  if ($location == cs_reg || $location == cs_soil) then
+    if (`hostname` != "pumori.cs.wisc.edu") then
+      echo "cs installation is normally done on pumori."
+      echo -n "Are you sure you want to continue? [n] "
+
+      set answer = $<
+      if ($answer != y && $answer != Y) then
+        echo Aborted.
+        exit 1
+      endif
+    endif
+
+    if ($location == cs_reg) then
+      set popdir = "/local.pumori/devise/js.regular"
+      set servdir = "/local.pumori/devise/js.regular"
+      set jardir = "/var/home/www/public"
+      set cgidir = "/var/home/www/cgi-bin"
+      set idstr = "regular"
+
+      #TEMPTEMP
+      set popdir = "/local.pumori/devise/js.test"
+      set servdir = "/local.pumori/devise/js.test"
+      set jardir = "/var/home/www/public/test2"
+      set idstr = "test"
+    else if ($location == cs_soil) then
+      set popdir = "/local.pumori/devise/js.soil"
+      set servdir = "/local.pumori/devise/js.soil"
+      set jardir = "/var/home/www/public/soil_sci"
+      set cgidir = "/var/home/www/cgi-bin"
+      set idstr = "soil"
+    endif
+
+  else if ($location == bmrb) then
+    if (`hostname` != "aden.bmrb.wisc.edu") then
+      echo "cs installation is normally done on aden."
+      echo -n "Are you sure you want to continue? [n] "
+
+      set answer = $<
+      if ($answer != y && $answer != Y) then
+        echo Aborted.
+        exit 1
+      endif
+    endif
+
+    set popdir = "/bmrb/htdocs/devise/jspop"
+    set servdir = "/p/devise/js.installed"
+    set jardir = "/bmrb/htdocs/devise"
+    set cgidir = "/bmrb/htdocs/cgi-bin"
+    set idstr = "regular"
+  else
+    echo "Illegal argument value: $location"
+    exit 1
+  endif
+else
+    echo "Usage: install_js <cs_reg|cs_soil|bmrb>"
+    exit 1
+endif
+
+
+# Make sure we have the files we need.
+
+set files = "jspop.class jss.class js.class jsa1.jar jsa2.jar jsb1.jar jsb2.jar devised"
+foreach file ($files)
+  if (! -f $file) then
+    echo "File $file missing.  Cannot proceed with install."
+    exit 1
+  endif
+end
+
+
+# Make sure we've sent an appropriate warning email.
+
+echo -n "Have you send an appropriate email warning? [n] "
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo "Please send a warning before continuing"
+  exit 1
+endif
+
+
+# Make sure the jspop has been killed.
+
+echo -n "Have you killed the appropriate jspop and associated processes? [n] "
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo "Please kill these processes before continuing"
+  exit 1
+endif
+
+
+# Final confirmation.
+
+echo ""
+echo "This process will install files to $popdir,"
+echo "  $servdir, $jardir,"
+echo "  and $cgidir for the $idstr JavaScreen"
+echo -n "Are you sure you want to continue? [n] "
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo "Aborted."
+  exit 1
+endif
+
+
+# Temporarily disable the cron checking so that we don't get a restart
+# in the middle of the install (note that this will cause an error message
+# if the cron job happens to run before the new jspop is installed).
+
+rm $popdir/run_check
+
+
+# Install the jar files.
+
+cp -p *.jar $jardir
+chmod 644 $jardir/*.jar
+
+
+# Install the cgi file.
+
+cp -p js.cgi $cgidir
+chmod 755 $cgidir/js.cgi
+
+
+# Install the jss and devised.
+
+cp -p *.class $servdir
+chmod 644 $servdir/*.class
+
+set files = "check_jss restart_jss jss DEVise.kill jss.kill ports+files DEVise.jspop DEVise.jspop_soil Tasvir get_timestamp"
+foreach file ($files)
+  cp -p $file $servdir
+  chmod 755 $servdir/$file
+end
+
+if (! -d $servdir/lib) then
+  mkdir $servdir/lib
+  chmod 755 $servdir/lib
+endif
+cp -p lib/composite.ini $servdir/lib
+
+mv $servdir/devised $servdir/devised.bak
+cp -p devised $servdir
+chmod 755 $servdir/devised
+
+
+# Install the jspop.
+
+cp -p *.class $popdir
+chmod 644 $popdir/*.class
+
+if (! -f $popdir/users.cfg) then
+  cp -p users.cfg $popdir
+  chmod 644 $popdir/users.cfg
+endif
+
+# Keep run_check last because of cron job.
+set files = "check_connect check_jsall check_jspop jspop js js_cgi restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp run_top run_check"
+foreach file ($files)
+  cp -p $file $popdir
+  chmod 755 $popdir/$file
+end
+
+#TEMP -- js_log?
+
+echo ""
+echo "Please be sure that the jspop and all associated processes are"
+echo "correctly restarted by the cron job"
