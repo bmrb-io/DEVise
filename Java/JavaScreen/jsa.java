@@ -62,6 +62,7 @@ public class jsa extends Applet
     {
         YGlobals.YISAPPLET = true;
         YGlobals.YISGUI = true;
+        DEViseGlobals.browser = getAppletContext();
 
         //baseURL = getDocumentBase();
         baseURL = getCodeBase();

@@ -78,7 +78,7 @@ public class jsdevisec extends Frame
                 Toolkit toolkit = this.getToolkit();
                 images = new Vector();
                 Image image = null;
-                for (int i = 0; i < 11; i++) {
+                for (int i = 0; i < 7; i++) {
                     image = toolkit.getImage("devise" + i + ".gif");
                     tracker.addImage(image, 0);
                     try  {
@@ -109,6 +109,7 @@ public class jsdevisec extends Frame
         Toolkit kit = Toolkit.getDefaultToolkit();
         DEViseGlobals.SCREENSIZE = kit.getScreenSize();
         int width = DEViseGlobals.SCREENSIZE.width;
+        int height = DEViseGlobals.SCREENSIZE.height;
         if (width < 1000 && width >= 800 ) {
             DEViseGlobals.uifont = new Font("Serif", Font.PLAIN, 12);
             DEViseGlobals.dialogfont = new Font("Serif", Font.PLAIN, 12);
@@ -166,10 +167,21 @@ public class jsdevisec extends Frame
 
         addEventHandler(this);
 
-        setUI(false);
+        isSessionOpened = false;
 
         setTitle("DEVise Java Screen");
         pack();
+        
+        Point loc = new Point(0, 0); 
+        Dimension size = getSize();
+        loc.y = loc.y + height / 2 - size.height / 2;
+        loc.x = loc.x + width / 2 - size.width / 2;
+        if (loc.y < 0) 
+            loc.y = 0;        
+        if (loc.x < 0) 
+            loc.x = 0;
+        setLocation(loc);
+            
         show();
 
         dispatcher = new DEViseCmdDispatcher(this, host, user, pass);
@@ -184,36 +196,6 @@ public class jsdevisec extends Frame
         }
     }
 
-    public void setUI(boolean flag)
-    {
-        isSessionOpened = flag;
-
-        if (isSessionOpened) {
-            queryButton.setEnabled(true);
-            saveButton.setEnabled(true);
-            closeButton.setEnabled(true);
-            refreshButton.setEnabled(true);
-            openButton.setEnabled(false);
-            viewControl.updateControl(false);
-        } else {
-            queryButton.setEnabled(false);
-            stopButton.setEnabled(false);
-            saveButton.setEnabled(false);
-            closeButton.setEnabled(false);
-            refreshButton.setEnabled(false);
-            openButton.setEnabled(true);
-            viewControl.updateControl(true);
-        }
-
-        viewInfo.updateInfo();
-    }
-    
-    public void repaintActive()
-    {
-        if (jscreen != null && jscreen.getCurrentWindow() != null)
-            jscreen.getCurrentWindow().repaint();
-    }
-    
     public void addEventHandler(jsdevisec what)
     {
         final jsdevisec jsc = what;
@@ -221,7 +203,12 @@ public class jsdevisec extends Frame
         openButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {   
+                    {                 
+                        if (isSessionOpened) {
+                            YGlobals.Yshowinfo(jsc, "You already have a session opened!\nPlease close current session first!");
+                            return;
+                        }
+                        
                         if (dispatcher.getStatus() == 0)
                             return;
                         
@@ -232,12 +219,15 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        if (dispatcher.getStatus() == 0) {
-                            repaintActive();
+                        if (!isSessionOpened) {
+                            YGlobals.Yshowinfo(jsc, "You do not have any opened session!");
                             return;
-                        }
-
-                        if (isSessionOpened) {
+                        } else {
+                            if (dispatcher.getStatus() == 0) {
+                                YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
+                                return;
+                            }
+                            
                             dispatcher.insertCmd("JAVAC_CloseCurrentSession");
                         }
                     }
@@ -246,13 +236,16 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {  
-                        repaintActive();
-                        
-                        if (dispatcher.getStatus() == 0)
-                            return;
-
                         if (isSessionOpened) {
+                            if (dispatcher.getStatus() == 0) {
+                                YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
+                                return;
+                            }
+                        
                             dispatcher.insertCmd("JAVAC_SaveCurrentState");
+                        } else {
+                            YGlobals.Yshowinfo(jsc, "You do not have any opened session!");
+                            return;
                         }
                     }
                 });
@@ -260,31 +253,42 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        repaintActive();
-                        
-                        if (dispatcher.getStatus() == 0)
+                        if (isSessionOpened) {
+                            if (dispatcher.getStatus() == 0) {
+                                YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
+                                return;
+                            }
+                            
+                            YGlobals.Yshowinfo(jsc, "Sorry, this command is not implemented yet!");
+                            //dispatcher.insertCmd("JAVAC_SaveCurrentState");
+                        } else {
+                            YGlobals.Yshowinfo(jsc, "You do not have any opened session!");
                             return;
-
+                        }
                     }
                 });
         statButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        repaintActive();
+                        if (isSessionOpened) {
+                            if (dispatcher.getStatus() == 0) {
+                                YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
+                                return;
+                            }
                         
-                        if (dispatcher.getStatus() == 0)
+                            YGlobals.Yshowinfo(jsc, "Sorry, this command is not implemented yet!");
+                            //dispatcher.insertCmd("JAVAC_SaveCurrentState");
+                        } else {
+                            YGlobals.Yshowinfo(jsc, "You do not have any opened session!");
                             return;
-
-                        //dispatcher.insertCmd("JAVAC_GetStat");
+                        }
                     }
                 });
         stopButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        repaintActive();
-                        
                         if (dispatcher.isAbort())
                             return;
 
@@ -295,24 +299,15 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        repaintActive();
-                        
-                        if (dispatcher.getStatus() == 0)
-                            return;
-                        
                         jscreen.updateScreen(true);
-                        //if (isSessionOpened) {
-                        //    dispatcher.insertCmd("JAVAC_Refresh");
-                        //}
                     }
                 });
         exitButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {   
-                        repaintActive();
-                        
+                    {                           
                         if (dispatcher.getStatus() == 0) {
+                            YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
                             return;
                         }
 

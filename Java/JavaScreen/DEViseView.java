@@ -75,7 +75,7 @@ public class DEViseView
 
         viewGData = new DEViseGData[gdata.size()];
         for (int i = 0; i < viewGData.length; i++)
-            viewGData[i] = (DEViseGData)gdata.elementAt(i);
+            viewGData[i] = (DEViseGData)gdata.elementAt(i);            
     }
 
     public DEViseGData[] getGData()

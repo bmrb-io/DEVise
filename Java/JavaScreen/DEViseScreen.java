@@ -34,17 +34,23 @@ import java.util.*;
 
 public class DEViseScreen extends Panel
 {
-    jsdevisec jsc = null;
+    jsdevisec jsc = null; 
+    public Image offScrImg = null;
     Dimension screenDim = null;
     Dimension screenEdge = new Dimension(2, 2);
     Dimension screenSize = null;
     Color screenColor = DEViseGlobals.uibgcolor;
     Font screenFont = DEViseGlobals.uifont;
     boolean isDimChanged = false;
-    boolean isUpdate = false;
+    public boolean isUpdate = false;
     public boolean isGrid = false;
     Vector allWindows = new Vector();
     DEViseWindow currentWindow = null;
+    DEViseWindow clickWindow = null;
+    Rectangle newWinLoc = new Rectangle(0, 0, 0, 0);
+    boolean isDrawPos = false;  
+    Label buttonLabel = null;  
+    Rectangle buttonLabelLoc = null;
 
     public DEViseScreen(jsdevisec what)
     {
@@ -75,6 +81,22 @@ public class DEViseScreen extends Panel
         setForeground(screenColor);
         setFont(screenFont);
         screenSize = new Dimension(screenDim.width + 2 * screenEdge.width, screenDim.height + 2 *screenEdge.height);
+
+        addMouseMotionListener(new MouseMotionAdapter()
+            {
+                public void mouseMoved(MouseEvent event)
+                {   
+                    Point p = event.getPoint();
+                    if (jsc.dispatcher.getStatus() == 0) {
+                        setCursor(DEViseGlobals.waitcursor);
+                    } else {
+                        setCursor(DEViseGlobals.handcursor);
+                    }
+                    jsc.viewInfo.updateInfo(null, null, p.x, p.y);                    
+                    setCurrentWindow(null);
+                    //requestFocus();
+                }
+            });
     }
 
     public Dimension getPreferredSize()
@@ -158,7 +180,17 @@ public class DEViseScreen extends Panel
     {
         return currentWindow;
     }
-
+    
+    public synchronized DEViseWindow getClickWindow()
+    {
+        return clickWindow;
+    }
+    
+    public synchronized void setClickWindow(DEViseWindow win)
+    {
+        clickWindow = win;
+    }
+    
     public void updateGData(String name, Vector rect)
     {
         DEViseView view = getView(name);
@@ -196,18 +228,29 @@ public class DEViseScreen extends Panel
 
     public synchronized void setCurrentWindow(DEViseWindow win)
     {
-        if (win == null)
-            return;
-
         if (currentWindow != null)
             currentWindow.setCurrent(false);
-
+        
         currentWindow = win;
-        remove(currentWindow);
-        add(currentWindow, 0);
-        currentWindow.setCurrent(true);
+        
+        if (win == null) {
+            return;
+        } else {
+            remove(currentWindow);
+            add(currentWindow, 0);
+            currentWindow.setCurrent(true);
+        }
     }
-
+    
+    public void setFocusToCurrentWindow()
+    {   
+        if (!DEViseGlobals.isShowingProgramInfo) {        
+            requestFocus();
+            if (currentWindow != null)
+                currentWindow.requestFocus();
+        }
+    }
+    
     public synchronized Vector getAllWindows()
     {
         return allWindows;
@@ -266,14 +309,86 @@ public class DEViseScreen extends Panel
                 add((DEViseWindow)allWindows.elementAt(i));
 
             isUpdate = true;
-            jsc.setUI(flag);
+            jsc.isSessionOpened = true;
+            jsc.viewInfo.updateInfo();
+            offScrImg = null;
             repaint();
         } else {
             allWindows.removeAllElements();
             currentWindow = null;
-            jsc.setUI(flag);
+            jsc.isSessionOpened = false;
+            jsc.viewInfo.updateInfo();
+            offScrImg = null;
             repaint();
         }
+    }
+    
+    public void updateWindowPos(DEViseWindow win, int x, int y, boolean isFinal)
+    {
+        if (win == null)
+            return;
+        
+        if (!isFinal) {   
+            Rectangle loc = win.getLoc();
+            newWinLoc.x = loc.x + x;
+            newWinLoc.y = loc.y + y;
+            newWinLoc.width = loc.width;
+            newWinLoc.height = loc.height;
+            isDrawPos = true;        
+            offScrImg = null;
+            repaint(); 
+        } else {
+            win.windowLoc = new Rectangle(newWinLoc.x, newWinLoc.y, newWinLoc.width, newWinLoc.height);
+            win.setBounds(newWinLoc);
+            offScrImg = null;
+            repaint();
+        }           
+    }
+    
+    public synchronized void drawButtonLabel(boolean isDraw, Component c, Point pt)
+    {   
+        if (isDraw) {
+            if (c != null && pt != null) {
+                DEViseWindow win = getCurrentWindow();
+                if (win == null)
+                    return;
+                    
+                Button button = (Button)c;
+                Point p = button.getLocation();
+                //Dimension dim = button.getMinimumSize();
+                Rectangle loc = win.getLoc();
+                int x = p.x + pt.x + loc.x;
+                int y = p.y + pt.y + loc.y;
+                buttonLabel = new Label(button.getLabel());
+                buttonLabel.setFont(new Font("Serif", Font.PLAIN, 10));
+                buttonLabel.setBackground(Color.yellow);
+                buttonLabel.setForeground(Color.black);
+                add(buttonLabel, 0);                
+                buttonLabelLoc = new Rectangle(new Point(x, y), new Dimension(buttonLabel.getPreferredSize())); 
+                //buttonLabel.setLocation(x, y); 
+                repaint(); 
+            } else { 
+                return;
+            }
+        } else {
+            if (buttonLabel != null) {
+                remove(buttonLabel);
+                buttonLabel = null;
+                repaint();
+            }
+        }
+    }
+                        
+    // Enable double-buffering
+    public void update(Graphics g)
+    {
+        if (offScrImg == null)
+            offScrImg = createImage(screenSize.width, screenSize.height);
+
+        Graphics og = offScrImg.getGraphics();
+        paint(og);
+        g.drawImage(offScrImg, 0, 0, this);
+        og.dispose();
     }
 
     public void paint(Graphics g)
@@ -296,6 +411,7 @@ public class DEViseScreen extends Panel
                 bound = win.getLoc();
                 bound.x += screenEdge.width;
                 bound.y += screenEdge.height;
+                //YGlobals.Ydebugpn(win.getName() + " x " + bound.x + " y " + bound.y);
                 if (bound != null)
                     win.setBounds(bound);
             }
@@ -307,7 +423,19 @@ public class DEViseScreen extends Panel
 
         if (currentWindow != null)
             currentWindow.repaint();
-
+        
+        if (isDrawPos) {
+            Color oldColor = g.getColor();
+            g.setColor(Color.white);
+            g.drawRect(newWinLoc.x, newWinLoc.y, newWinLoc.width, newWinLoc.height);
+            g.setColor(oldColor);
+            isDrawPos = false;
+        }
+        
+        if (buttonLabel != null && buttonLabelLoc != null) {
+            buttonLabel.setBounds(buttonLabelLoc);
+        }
+        
         Color oldColor = g.getColor();
         g.setColor(Color.white);
         for (int i = 0; i < screenEdge.width; i++) {

@@ -1,5 +1,6 @@
 import java.util.*;
-import java.awt.*;
+import java.awt.*;  
+import java.applet.*;
 
 public final class DEViseGlobals
 {
@@ -14,8 +15,14 @@ public final class DEViseGlobals
     // global variables
     public static int DEBUGLEVEL = -1; // no debug information is written
     public static int CMDPORT = DEFAULTCMDPORT, IMGPORT = DEFAULTIMGPORT;
+    public static AppletContext browser = null;
     // GUI parameter used by js and jsa
     public static Dimension SCREENSIZE = new Dimension(640, 480); // physical screen size
+    public static Cursor waitcursor = new Cursor(Cursor.WAIT_CURSOR);
+    public static Cursor pointercursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    public static Cursor handcursor = new Cursor(Cursor.HAND_CURSOR);
+    public static Cursor movecursor = new Cursor(Cursor.MOVE_CURSOR);
+    public static boolean isShowingProgramInfo = false;
     public static Color uibgcolor = new Color(64, 96, 0);
     public static Color uifgcolor = Color.white;
     public static Color dialogbgcolor = new Color(64, 96, 0);

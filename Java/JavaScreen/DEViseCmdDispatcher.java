@@ -268,7 +268,9 @@ public class DEViseCmdDispatcher implements Runnable
                 clearCmdBuffer();
             } else {
                 jsc.animPanel.start();
-                jsc.viewControl.updateImage(2, 1);
+                jsc.jscreen.setCursor(DEViseGlobals.waitcursor);
+                jsc.viewControl.updateImage(1, 1);
+                jsc.viewControl.updateCount(1);
 
                 if (command.equals("ExitDispatcher")) {
                     if (cmdSocket != null) { // normal exit
@@ -308,7 +310,15 @@ public class DEViseCmdDispatcher implements Runnable
                         YGlobals.Ydebugpn("Dispatcher finished processing command: " + command + "!");
                     } catch (YException e) {
                         jsc.animPanel.stop();
+
+                        DEViseWindow win = jscreen.getCurrentWindow();
+                        jscreen.setCursor(DEViseGlobals.handcursor);
+                        if (win != null) {
+                            win.setCursor(DEViseGlobals.pointercursor);
+                        }
+
                         jsc.viewControl.updateImage(0, 0);
+                        jsc.viewControl.updateCount(0);
 
                         int id = e.getID();
                         YGlobals.Ydebugpn(e.getMessage());
@@ -413,7 +423,15 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 jsc.animPanel.stop();
+
+                DEViseWindow win = jscreen.getCurrentWindow();
+                jscreen.setCursor(DEViseGlobals.handcursor);
+                if (win != null) {
+                    win.setCursor(DEViseGlobals.pointercursor);
+                }
+
                 jsc.viewControl.updateImage(0, 0);
+                jsc.viewControl.updateCount(0);
 
                 // Except for the abort events that actually been catched, some of them
                 // might not been catched, so we need to reset abort on every run
@@ -447,9 +465,10 @@ public class DEViseCmdDispatcher implements Runnable
         // it is ensured that rsp will not be null after calling sendCommand
         String[] rsp = sendCommand(command);
 
-        String[] cmd = null;
+        String[] cmd = null;  
+        jsc.viewControl.updateImage(4, 1);
         for (int i = 0; i < rsp.length; i++) {
-            jsc.viewControl.updateImage(1, rsp.length - 1 - i);
+            jsc.viewControl.updateCount(rsp.length - 1 - i);
 
             if (rsp[i].startsWith("JAVAC_Done")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
@@ -544,7 +563,9 @@ public class DEViseCmdDispatcher implements Runnable
                     }
 
                     YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
+                    jsc.viewControl.updateImage(3, 1);
                     byte[] imageData = receiveImg(imageSize);
+                    jsc.viewControl.updateImage(3, 0);
                     YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                     if (imageData == null)
@@ -592,7 +613,9 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
+                jsc.viewControl.updateImage(3, 1);
                 byte[] imageData = receiveImg(imageSize);
+                jsc.viewControl.updateImage(3, 0);
                 YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                 if (imageData == null)
@@ -628,7 +651,9 @@ public class DEViseCmdDispatcher implements Runnable
                     int gdataSize = Integer.parseInt(cmd[6]);
 
                     YGlobals.Ydebugpn("Retrieving GData for view " + viewname + " ... ");
+                    jsc.viewControl.updateImage(3, 1);
                     byte[] gdata = receiveImg(gdataSize);
+                    jsc.viewControl.updateImage(3, 0);
                     YGlobals.Ydebugpn("Successfully retrieve GData for view " + viewname);
 
                     if (gdata == null || gdata.length != gdataSize)
@@ -643,17 +668,17 @@ public class DEViseCmdDispatcher implements Runnable
                         if (GData == null || GData.length != 1) {
                             throw new YException("Invalid GData received for view " + viewname + "!", 6);
                         }
-                    
+
                         Vector rect = new Vector();
                         for (int j = 0; j < GData.length; j++) {
                             if (GData[j] == null)
                                 throw new YException("Invalid GData received for view " + viewname + "!", 6);
-                    
+
                             //YGlobals.Ydebugpn(GData[j]);
                             String[] results = DEViseGlobals.parseStr(GData[j]);
                             if (results == null || results.length == 0)
                                 throw new YException("Invalid GData received for view " + viewname + "!", 6);
-                    
+
                             for (int k = 0; k < results.length; k++) {
                                 DEViseGData data = null;
                                 try {
@@ -661,10 +686,10 @@ public class DEViseCmdDispatcher implements Runnable
                                 } catch (YException e1) {
                                     throw new YException("Invalid GData received for view " + viewname + "!", 6);
                                 }
-                    
+
                                 rect.addElement(data);
                             }
-                    
+
                             //YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
                             jscreen.updateGData(viewname, rect);
                         }
@@ -754,6 +779,8 @@ public class DEViseCmdDispatcher implements Runnable
                 throw new YException("Unrecognized command " + rsp[i] + "!", 5);
             }
         }
+        
+        jsc.viewControl.updateImage(4, 0);
     }
 
     private byte[] receiveImg(int size) throws YException
@@ -787,12 +814,15 @@ public class DEViseCmdDispatcher implements Runnable
         cmdSocket.sendCmd(command);
 
         jsc.viewControl.updateImage(1, 0);
-
+        jsc.viewControl.updateCount(0);
+        jsc.viewControl.updateImage(2, 1);        
+        jsc.viewControl.updateImage(3, 1);
         while (!isEnd) {
             isFinish = false;
-
+            
             while (!isFinish) {
                 try {
+                    //jsc.viewControl.updateImage(3, 0);  
                     response = cmdSocket.receiveRsp();
                     isRead = true;
                     isFinish = true;
@@ -802,7 +832,9 @@ public class DEViseCmdDispatcher implements Runnable
                     }
                 }
             }
-
+            
+            jsc.viewControl.updateImage(2, 0);
+            
             if (response == null || response.length() == 0) {
                 throw new YException("Null response received!", 5);
             } else {
@@ -823,14 +855,17 @@ public class DEViseCmdDispatcher implements Runnable
                         }
 
                         rspbuf.addElement(cmd);
-
-                        jsc.viewControl.updateImage(1, rspbuf.size());
+                        
+                        jsc.viewControl.updateCount(rspbuf.size());
                     } else {
                         throw new YException("Unrecognized command " + response + "!", 5);
                     }
                 }
             }
         }
+
+        //jsc.viewControl.updateImage(2, 0);
+        jsc.viewControl.updateImage(3, 0);
 
         if (rspbuf.size() > 0) {
             String[] rspstr = new String[rspbuf.size()];
@@ -854,7 +889,9 @@ class RecordDlg extends Frame
     {
         jsc = what;
         attrs = data;
-
+        
+        DEViseGlobals.isShowingProgramInfo = true;
+        
         setBackground(DEViseGlobals.uibgcolor);
         setForeground(DEViseGlobals.uifgcolor);
         setFont(DEViseGlobals.uifont);
@@ -941,7 +978,9 @@ class RecordDlg extends Frame
         okButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {          
+                        DEViseGlobals.isShowingProgramInfo = false;
+                        
                         dispose();
                     }
                 });
@@ -954,6 +993,8 @@ class RecordDlg extends Frame
     protected void processEvent(AWTEvent event)
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            DEViseGlobals.isShowingProgramInfo = false;
+            
             dispose();
         }
 
@@ -1065,6 +1106,7 @@ class DEViseOpenDlg extends Frame
                                     dispose();
                                     jsc.dispatcher.insertCmd("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
                                                              + "\nJAVAC_OpenSession {" + sessionName + "}");
+                                    //jsc.jscreen.setCursor(DEViseGlobals.waitcursor);
                                 }
                             }
                         }

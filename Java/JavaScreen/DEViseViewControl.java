@@ -43,7 +43,8 @@ public class DEViseViewControl extends Panel
     public TextField count = new TextField(2);
     public Button setButton = new Button("Set");
     Label screenSizeTitle = new Label("Screen Size"); 
-    canvas imgCanvas = null;
+    YImageCanvas canvas = null;
+    TrafficLight light = null;    
 
     boolean isEditable = true;
 
@@ -51,6 +52,7 @@ public class DEViseViewControl extends Panel
     {
         jsc = what;
         jscreen = jsc.jscreen;
+        // the length of array should be 3
         images = array;
 
         setBackground(DEViseGlobals.uibgcolor);
@@ -72,14 +74,38 @@ public class DEViseViewControl extends Panel
         count.setBackground(DEViseGlobals.textbgcolor);
         count.setForeground(DEViseGlobals.textfgcolor);
         count.setFont(DEViseGlobals.textfont);
-        imgCanvas = new canvas(images);
+        boolean isCanvas = false;
+        if (images != null && images.size() > 4) {
+            try {
+                canvas = new YImageCanvas((Image)images.elementAt(4)); 
+                isCanvas = true;
+            } catch (YException e) {
+                canvas = null;
+            }
+        }                    
         
-        Panel upPanel = new Panel();
-        upPanel.add(imgCanvas);
-        upPanel.add(count);
+        Panel lowPanel = new Panel();
+        if (isCanvas) {
+            lowPanel.add(canvas);
+        }
+        lowPanel.add(count);
         
-        add(upPanel, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
+        isCanvas = false;
+        if (images != null && images.size() > 6) {
+            try {
+                light = new TrafficLight((Image)images.elementAt(5), (Image)images.elementAt(6));
+                isCanvas = true;
+            } catch (YException e) {
+                light = null;
+            }
+        }
+        
+        if (isCanvas) {
+            add(light, BorderLayout.NORTH);
+        }
+        
+        add(lowPanel, BorderLayout.CENTER);
+        add(panel, BorderLayout.SOUTH);
 
         setButton.addActionListener(new ActionListener()
             {
@@ -112,127 +138,72 @@ public class DEViseViewControl extends Panel
         validate();
     } 
     
-    public void updateImage(int type, int number)
+    // type = 0, idle
+    // type = 1, sending
+    // type = 2, waiting 
+    // type = 3, receiving
+    // type = 4, processing
+    public void updateImage(int type, int isOn)
     {   
-        imgCanvas.updateImage(type);
+        if (light != null) {
+            light.updateImage(type, isOn);
+            validate();
+        }
+    }
+    
+    public void updateCount(int number)
+    {
         count.setText("" + number);
         validate();
     }        
 }
 
-class canvas extends Canvas implements Runnable
-{   
-    Vector images = null;
-    int imageStart = 4, imageEnd = 11, imageCount = 1;
-    int imageWidth, imageHeight;
-    int oldtype = 0;
-    Dimension minSize = null;
-    Image currentImg = null, offScrImg = null;
-    Thread animator = null;
-    boolean isAnimated = false;
+class TrafficLight extends Panel
+{          
+    Image onImage = null, offImage = null;
+    YImageCanvas [] canvas = new YImageCanvas[4];
+    Label [] label = new Label[4];
+    String[] c = {"S", "W", "R", "P"};    
     
-    public canvas(Vector array)
-    {   
-        images = array;
-        if (images != null && images.size() == 11) {
-            currentImg = (Image)images.elementAt(imageStart);
-            isAnimated = true;
-        } else {
-            isAnimated = false;
-        }
-        
-        imageWidth = 32;
-        imageHeight = 32;
-        minSize = new Dimension(imageWidth, imageHeight);
-    }
-    
-    public Dimension getPreferredSize()
+    public TrafficLight(Image offi, Image oni) throws YException
     {
-        return minSize;
-    }
-
-    public Dimension getMinimumSize()
-    {
-        return minSize;
-    }
-    
-    public void updateImage(int type)
-    {
-        if (type < 0 || type > 2)
-            return;
+        onImage = oni;
+        offImage = offi;
         
-        if (!isAnimated)            
-            return;
-            
-        if (type != oldtype) {
-            if (animator != null) {
-                if (animator.isAlive())
-                    animator.stop();
-                
-                animator = null;
-            }
-            
-            offScrImg = null;
-            imageCount = 1;
-            oldtype = type;                        
+        for (int i = 0; i < 4; i++) {
+            canvas[i] = new YImageCanvas(onImage);
+            if (!canvas[i].setImage(offImage))
+                throw new YException("Invalid Image!");
+            label[i] = new Label(c[i]);            
+        } 
         
-            int pos;
-            if (oldtype == 0)
-                pos = imageStart;                
-            else 
-                pos = imageStart + imageCount + (oldtype - 1) * 3;
-            
-            currentImg = (Image)images.elementAt(pos);
-            
-            if (oldtype == 0) {
-                repaint();
-            } else {
-                animator = new Thread(this);
-                animator.start();
-            }
-        }
+        setFont(new Font("Monospaced", Font.BOLD, 14));
+        setBackground(DEViseGlobals.uibgcolor);
+        setForeground(DEViseGlobals.uifgcolor);
+        
+        setLayout(new GridLayout(2, 4));
+        for (int i = 0; i < 4; i++)
+            add(label[i]);
+        for (int i = 0; i < 4; i++)
+            add(canvas[i]);                    
     } 
     
-    public void run()
-    {
-        Thread me = Thread.currentThread();
+    public void updateImage(int type, int isOn)
+    {  
+        if (type < 0 || type > 4)
+            return;
         
-        while (animator == me) {
-            repaint();
-            
-            imageCount++;
-            if (imageCount > 3)
-                imageCount = 1;
-            
-            int pos = imageStart + imageCount + (oldtype - 1) * 3;            
-            currentImg = (Image)images.elementAt(pos);
-            
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
+        if (type == 0) {
+            for (int i = 0; i < 4; i++) {
+                canvas[i].setImage(offImage);
+            } 
+        } else {             
+            if (isOn == 1) {
+                canvas[type - 1].setImage(onImage);
+            } else {
+                canvas[type - 1].setImage(offImage);
             }
-        }
-    }
-                
-    // implement double-buffering, set offScrImg = null if you want to restart double-buffering
-    public void update(Graphics g)
-    {
-        if (offScrImg == null)
-            offScrImg = createImage(imageWidth, imageHeight);
-
-        Graphics og = offScrImg.getGraphics();
-        paint(og);
-        g.drawImage(offScrImg, 0, 0, this);
-        og.dispose();
-    }
-
-    public void paint(Graphics g)
-    {   
-        if (currentImg != null) {
-            g.drawImage(currentImg, 0, 0, this);
-        } else {
-            g.setColor(DEViseGlobals.uibgcolor);
-            g.fillRect(0, 0, imageWidth, imageHeight);
-        }
-    }
-}    
+        }               
+    }       
+}
+    

@@ -76,6 +76,12 @@ public final class YGlobals
         System.out.println(msg);
     }
 
+    public static void Yshowinfo(Frame frame, String info)
+    {
+        YInfoPanel panel = new YInfoPanel(frame, info);
+        panel.show();
+    }
+
     public static String Yshowmsg(Frame frame, String msg, String title, int style, boolean isCenterScreen, boolean isModal)
     {
         YMSGDlg dlg = new YMSGDlg(frame, msg, title, style, isCenterScreen, isModal);
@@ -366,6 +372,125 @@ public final class YGlobals
         return Yparsestring(inputStr, startChar, endChar, false);
     }
 
+}
+
+final class YInfoPanel extends Frame
+{
+    private Color bgcolor = new Color(64, 96, 0);
+    private Color fgcolor = Color.white;
+    private Font font = new Font("Serif", Font.PLAIN, 14);
+
+    public YInfoPanel(Frame frame, String info)
+    {
+        setBackground(bgcolor);
+        setForeground(fgcolor);
+        setFont(font);
+
+        Button button = new Button("   OK   ");
+        button.setBackground(bgcolor);
+        button.setForeground(fgcolor);
+        button.setFont(font);
+
+        Label[] label = null;
+        if (info == null) {
+            label = new Label[1];
+            label[0] = new Label(" ");
+        } else {
+            String [] infos = YGlobals.Yparsestr(info, "\n");
+            if (infos == null || infos.length == 0) {
+                label = new Label[1];
+                label[0] = new Label(" ");
+            } else {
+                label = new Label[infos.length];
+                for (int i = 0; i < infos.length; i++) {
+                    if (infos[i] != null) {
+                        label[i] = new Label(infos[i]);
+                    } else {
+                        label[i] = new Label(" ");
+                    }
+                }
+            }
+        }
+
+        // building the panel that display messages
+        Panel panel = new Panel();
+        panel.setLayout(new GridLayout(0, 1, 0, 0));
+        for (int i = 0; i < label.length; i++) {
+            panel.add(label[i]);
+        }
+
+        // set new gridbag layout
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(10, 10, 0, 0);
+        c.ipadx = 0;
+        c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        //c.weightx = 1.0;
+        //c.weighty = 1.0;
+
+        setLayout(gridbag);
+
+        gridbag.setConstraints(panel, c);
+        add(panel);
+        gridbag.setConstraints(button, c);
+        add(button);
+
+        pack();
+        setTitle("Program Information");
+
+        // reposition the dialog
+        Point parentLoc = null;
+        Dimension parentSize = null;
+        if (frame == null) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = frame.getLocation();
+            parentSize = frame.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        // event handler
+        button.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)  {
+                        dispose();
+                    }
+                });
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        button.addFocusListener(new FocusAdapter()
+            {
+                public void focusLost(FocusEvent event)
+                {
+                    dispose();
+                }
+            });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            dispose();
+            return;
+        }
+
+        super.processEvent(event);
+    }
 }
 
 final class YMSGDlg extends Dialog

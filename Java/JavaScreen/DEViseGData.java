@@ -4,6 +4,7 @@ public class DEViseGData
 {   
     float x0 = 0, y0 = 0, size = 0;
     public int x = 0, y = 0, width = 0, height = 0;
+    String label = null;
    
     public DEViseGData(String data, float xm, float xo, float ym, float yo) throws YException
     {
@@ -27,14 +28,16 @@ public class DEViseGData
             if (height < 0) 
                 height = -height;
             x = x - width / 2;    
-            y = y - height / 2;
+            y = y - height / 2; 
             if (x < 0)
                 x = 0;
             if (y < 0)
                 y = 0;    
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData!");
-        }
+        } 
+        
+        label = value[10];
     }
         
     public float getSize()
@@ -52,8 +55,17 @@ public class DEViseGData
         return y0;
     }
     
-    public Rectangle getRectangle()
+    public Rectangle getBounds()
     {
         return new Rectangle(x, y, width, height);
+    } 
+    
+    public String getLabel()
+    {
+        if (label == null) {
+            return new String("");
+        } else {
+            return label;
+        }
     }
 }

@@ -29,9 +29,11 @@
 // ------------------------------------------------------------------------
 
 import  java.awt.*;
+import  java.applet.*;
 import  java.awt.event.*;
 import  java.awt.image.*;
 import  java.util.*;
+import  java.net.*;
 
 // This class represent a image view in DEVise
 public class DEViseWindow extends Container
@@ -54,6 +56,8 @@ public class DEViseWindow extends Container
 
     DEViseGData[] viewGData = null;
     DEViseCursor[] viewCursor = null;
+    int GDataType = 1; // 0: drawing     1: javabutton
+    Button[] GDataButton = null;
     Image[] GDataImage = null, cursorImage = null;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
@@ -72,7 +76,8 @@ public class DEViseWindow extends Container
         windowLoc.height = imageHeight;
         windowLoc.width = imageWidth;
 
-        //this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
+        this.enableEvents(AWTEvent.MOUSE_EVENT_MASK); 
+        this.enableEvents(AWTEvent.KEY_EVENT_MASK);
         addMouseListener(new ViewMouseListener());
         addMouseMotionListener(new ViewMouseMotionListener());
         addKeyListener(new ViewKeyListener());
@@ -165,45 +170,28 @@ public class DEViseWindow extends Container
         repaint();
     }
 
-    public synchronized void setCurrentView(Point point)
-    {
-        if (point == null) {
-            return;
-        }
-
-        if (currentView != null && currentView.isCurrent(point)) {
-            isViewFirstTime = false;
-            jsc.viewInfo.updateInfo(point.x, point.y);
-            return;
-        } else {
-            isViewFirstTime = true;
-        }
-
-        currentView = null;
-        int number = allViews.size();
-        DEViseView view = null;
-
-        for (int i = 0; i < number; i++) {
-            view = (DEViseView)allViews.elementAt(i);
-            if (view.isCurrent(point)) {
-                currentView = view;
-                break;
+    protected void processMouseEvent(MouseEvent event)
+    {   
+        int id = event.getID();
+        if (id == MouseEvent.MOUSE_CLICKED|| id == MouseEvent.MOUSE_DRAGGED || id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED) {        
+            if (dispatcher.getStatus() == 0) {
+                YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");                
+                return;
             }
         }
-
-        if (currentView == null) {
-            jsc.viewInfo.updateInfo(windowName, null, point.x, point.y);
-        } else {
-            jsc.viewInfo.updateInfo(windowName, currentView.getName(), point.x, point.y);
-        }
+        
+        super.processMouseEvent(event);
     }
 
-    //protected void processEvent(AWTEvent event)
-    //{
-    //    if (dispatcher.getStatus() == 0)
-    //        return;
-    //    super.processEvent(event);
-    //}
+    protected void processKeyEvent(KeyEvent event)
+    {
+        if (dispatcher.getStatus() == 0) {
+            YGlobals.Yshowinfo(jsc, "Java Screen still talking to the Server!\nPlease wait or press STOP button!");
+            return;
+        }
+        
+        super.processKeyEvent(event);
+    }
     
     public void updateCursor()
     {
@@ -263,13 +251,18 @@ public class DEViseWindow extends Container
     
     public void updateGData()
     {
-        viewGData = null; 
-        GDataImage = null;
+        viewGData = null;
+        if (GDataType == 0) { 
+            GDataImage = null;
+        } else if (GDataType == 1) {
+            removeAll();
+            GDataButton = null;
+        }            
         
         Vector tmp = new Vector();
         for (int i = 0; i < allViews.size(); i++) {
             DEViseView view = (DEViseView)allViews.elementAt(i);
-            DEViseGData[] data = view.getGData();
+            DEViseGData[] data = view.getGData();            
             if (data != null) {
                 for (int j = 0; j < data.length; j++) {
                     tmp.addElement(data[j]);
@@ -280,7 +273,7 @@ public class DEViseWindow extends Container
         if (tmp.size() != 0) {        
             viewGData = new DEViseGData[tmp.size()];
             
-            for (int i = 0; i < viewGData.length; i++) 
+            for (int i = 0; i < viewGData.length; i++)
                 viewGData[i] = (DEViseGData)tmp.elementAt(i);
         }
         
@@ -311,6 +304,66 @@ public class DEViseWindow extends Container
         }
     }
     
+    public void buildGDataButton()
+    {
+        if (viewGData == null || viewGData.length == 0) {
+            removeAll();
+            GDataButton = null;
+            return;
+        }
+        
+        GDataButton = new Button[viewGData.length];
+        for (int i = 0; i < viewGData.length; i++) {             
+            GDataButton[i] = new Button(viewGData[i].getLabel());
+            GDataButton[i].setBounds(viewGData[i].getBounds());
+            GDataButton[i].setActionCommand(viewGData[i].getLabel());
+            GDataButton[i].setFont(new Font("Monospaced", Font.PLAIN, 12));            
+            //GDataButton[i].setBackground();
+            //GDataButton[i].setForeground();            
+            GDataButton[i].addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (YGlobals.YISAPPLET) {
+                            if (DEViseGlobals.browser != null) {
+                                try {
+                                    URL url = new URL(event.getActionCommand());
+                                    DEViseGlobals.browser.showDocument(url, "_blank");
+                                } catch (MalformedURLException e) {
+                                }
+                            }
+                        }
+                    }
+                });
+            GDataButton[i].addMouseListener(new MouseAdapter() 
+                {              
+                    boolean isDrawn = false;
+                    public void mouseEntered(MouseEvent event)
+                    {   
+                        //YGlobals.Ydebugpn("Mouse entered!");
+                                               
+                        Component c = event.getComponent(); 
+                        Point p = event.getPoint();         
+                        isDrawn = true;
+                        jscreen.drawButtonLabel(true, c, p);                        
+                    }
+                    
+                    public void mouseExited(MouseEvent event)
+                    {   
+                        //YGlobals.Ydebugpn("mouse exit!");
+                        
+                        if (isDrawn) {
+                            isDrawn = false;
+                            jscreen.drawButtonLabel(false, null, null);
+                        }
+                    }
+                });
+                
+            add(GDataButton[i]);
+        }   
+    }
+    
+    
     // Enable reliable light weight component paint
     public void repaint()
     {
@@ -340,13 +393,19 @@ public class DEViseWindow extends Container
             g.drawImage(winImage, 0, 0, this);
 
             if (viewGData != null) {
-                if (GDataImage == null) {
-                    buildGDataImage();
-                }
+                if (GDataType == 0) {
+                    if (GDataImage == null) {
+                        buildGDataImage();
+                    }
 
-                if (GDataImage != null) {
-                    for (int i = 0; i < GDataImage.length; i++) {
-                        g.drawImage(GDataImage[i], viewGData[i].x, viewGData[i].y, this);
+                    if (GDataImage != null) {
+                        for (int i = 0; i < GDataImage.length; i++) {
+                            g.drawImage(GDataImage[i], viewGData[i].x, viewGData[i].y, this);
+                        }                        
+                    }
+                } else if (GDataType == 1) {
+                    if (GDataButton == null) {
+                        buildGDataButton();
                     }
                 }
             }
@@ -364,9 +423,6 @@ public class DEViseWindow extends Container
             }
 
             if (isCurrent) {
-                jscreen.requestFocus();
-                requestFocus();
-
                 if (currentView != null) {
                     // It is guranteed in other place that cropP, ep and sp
                     // will within the rectangle of currentView
@@ -389,6 +445,7 @@ public class DEViseWindow extends Container
                         }
 
                         g.drawRect(x0, y0, w, h);
+                        userAction = 0;
                     }
 
                     Color oldColor = g.getColor();
@@ -410,7 +467,7 @@ public class DEViseWindow extends Container
 
                     g.drawRect(x0, y0, w - 1, h - 1);
                     g.setColor(oldColor);
-                }  else {
+                } else {                 
                     Color oldColor = g.getColor();
                     g.setColor(Color.red);
                     g.drawRect(0, 0, windowDim.width - 1, windowDim.height - 1);
@@ -580,6 +637,7 @@ public class DEViseWindow extends Container
                     //userAction = 0;
                     //repaint();
                     dispatcher.insertCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + actualKey);
+                    setCursor(DEViseGlobals.waitcursor);
                 }
             }
         }
@@ -589,7 +647,7 @@ public class DEViseWindow extends Container
     // start of class ViewMouseListener
     class ViewMouseListener extends MouseAdapter
     {
-        WaitThread wt = new WaitThread(dispatcher);
+        WaitThread wt = new WaitThread(dispatcher, DEViseWindow.this);
 
         // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
@@ -603,16 +661,9 @@ public class DEViseWindow extends Container
             ep = sp;
 
             //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount() + "!");
+            isMouseDragged = false; 
+            jscreen.setClickWindow(DEViseWindow.this);
 
-            if (!isCurrent) {
-                jscreen.setCurrentWindow(DEViseWindow.this);
-            }
-
-            isMouseDragged = false;
-
-            setCurrentView(sp);
-
-            userAction = 0;
             repaint();
         }
 
@@ -623,22 +674,28 @@ public class DEViseWindow extends Container
             // and before the mouseClick event is reported.
 
             //YGlobals.Ydebugpn("Mouse released!");
+            
+            if (isMouseDragged) {
+                if (currentView != null) {
+                    // clear the mouse drag box
+                    repaint();
 
-            if (currentView != null && isMouseDragged) {
-                // clear the mouse drag box
-                userAction = 0;
-                repaint();
-
-                ep = adjustViewPoint(event.getPoint());
-                if (sp.x == ep.x || sp.y == ep.y) {
-                    dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
-                } else {
-                    if (isViewFirstTime) {
-                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
-                                             + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                    ep = adjustViewPoint(event.getPoint());
+                    if (sp.x == ep.x || sp.y == ep.y) {
+                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
                     } else {
-                        dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                        if (isViewFirstTime) {
+                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
+                                             + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                            isViewFirstTime = false;
+                            setCursor(DEViseGlobals.waitcursor);
+                        } else {
+                            dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                            setCursor(DEViseGlobals.waitcursor);
+                        }
                     }
+                } else {
+                    jscreen.updateWindowPos(DEViseWindow.this, 0, 0, true);
                 }
             }
         }
@@ -658,8 +715,11 @@ public class DEViseWindow extends Container
                     if (isViewFirstTime) {
                         dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + p.x + " " + p.y
                                              + "\nJAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
+                        isViewFirstTime = false;  
+                        setCursor(DEViseGlobals.waitcursor);
                     } else {
                         dispatcher.insertCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
+                        setCursor(DEViseGlobals.waitcursor);
                     }
                 } else {
                     Point p = event.getPoint();
@@ -679,30 +739,62 @@ public class DEViseWindow extends Container
     {
         public void mouseDragged(MouseEvent event)
         {
-            //YGlobals.Ydebugpn("Mouse Dragged!");
-
+            //YGlobals.Ydebugpn("Mouse Dragged!"); 
+            Point p = event.getPoint();
+            isMouseDragged = true;
+            
             if (currentView != null) {
-                isMouseDragged = true;
-
-                ep = adjustViewPoint(event.getPoint());
+                ep = adjustViewPoint(p);
                 jsc.viewInfo.updateInfo(ep.x, ep.y);
 
                 userAction = 2;
                 repaint();
             } else {
-                Point point = adjustPoint(event.getPoint());
-                jsc.viewInfo.updateInfo(point.x, point.y);
+                jscreen.updateWindowPos(DEViseWindow.this, p.x - sp.x, p.y - sp.y, false);
             }
         }
 
         public void mouseMoved(MouseEvent event)
-        {
-            //YGlobals.Ydebugpn("Mouse Moved!");
+        {    
+            Point p = event.getPoint(); 
+            if (!isCurrent) {
+                jscreen.setCurrentWindow(DEViseWindow.this); 
+                jscreen.setFocusToCurrentWindow();
+            }
+            
+            if (currentView != null && currentView.isCurrent(p)) {
+                //isViewFirstTime = false;
+                jsc.viewInfo.updateInfo(p.x, p.y);
+                return;
+            } else {
+                if (jscreen.getClickWindow() != DEViseWindow.this) {
+                    isViewFirstTime = true;
+                }
+                currentView = null;
+            }
 
-            Point point = adjustPoint(event.getPoint());
-
-            if (isCurrent)
-                jsc.viewInfo.updateInfo(point.x, point.y);
+            for (int j = 0; j < allViews.size(); j++) {
+                DEViseView view = (DEViseView)allViews.elementAt(j);
+                if (view.isCurrent(p)) {
+                    if (jsc.dispatcher.getStatus() == 0) {
+                        setCursor(DEViseGlobals.waitcursor);
+                    } else {
+                        setCursor(DEViseGlobals.pointercursor);
+                    }
+                    jsc.viewInfo.updateInfo(getName(), view.getName(), p.x, p.y);
+                    currentView = view;
+                    repaint();
+                    return;
+                }                                
+            }
+            
+            if (jsc.dispatcher.getStatus() == 0) {
+                setCursor(DEViseGlobals.waitcursor);
+            } else {    
+                setCursor(DEViseGlobals.movecursor);
+            }
+            jsc.viewInfo.updateInfo(getName(), null, p.x, p.y);
+            repaint();
         }
     }
     // end of class ViewMouseMotionListener
@@ -711,13 +803,15 @@ public class DEViseWindow extends Container
 class WaitThread implements Runnable
 {
     private DEViseCmdDispatcher dispatcher = null;
+    private DEViseWindow window = null;
     private boolean dc = false;
     private String view = null;
     private int viewx, viewy;
 
-    public WaitThread(DEViseCmdDispatcher dp)
+    public WaitThread(DEViseCmdDispatcher dp, DEViseWindow win)
     {
         dispatcher = dp;
+        window = win;
     }
 
     public synchronized boolean getDC()
@@ -748,7 +842,15 @@ class WaitThread implements Runnable
     public void run()
     {
         if (!getDC()) {
-            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy);
+            if (window.isViewFirstTime) { 
+                dispatcher.insertCmd("JAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy
+                    + "\nJAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy);
+                window.isViewFirstTime = false;
+                window.setCursor(DEViseGlobals.waitcursor);
+            } else {
+                dispatcher.insertCmd("JAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy);
+                window.setCursor(DEViseGlobals.waitcursor);
+            }
         }
     }
 }
