@@ -15,16 +15,21 @@
 
 # $Id$
 
-all: js jsa
+all: js jsa jspop
 js: js.class
 
 jsa: jsa.class
+
+jspop: jspop.class
 
 js.class: *.java
 	javac js.java
 
 jsa.class: *.java
 	javac jsa.java
+
+jspop.class: *.java
+	javac jspop.java
 
 jar: js jsa
 	jar cf jsa.jar *.class *.gif
