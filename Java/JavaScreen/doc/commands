@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 4.2.
+version 4.3.
 
 
 0. Convention
@@ -125,6 +125,9 @@ version 4.2.
                         relative to the top edge of the view.
         <zoom factor>: optional. 1 if view is to be zoomed out, 0 if zoomed
                        in. default is 0 if empty.
+
+        <x-only zoom>: optional.  1 if zoom should be x-only, 0 if zoom
+	               should be xy.
 
     4.8 JAVAC_SetDisplaySize
     Purpose: tells the devised the size of the area in which the JavaScreen

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.106  2000/07/20 17:11:39  wenger
+  Turned on sending of mouse display format info to the JavaScreen.
+
   Revision 1.105  2000/06/21 15:20:06  wenger
   Added arguments to commands to JS telling whether to display mouse
   location, and format to use when doing so (currently conditionaled
@@ -509,7 +512,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 4;
-static const int protocolMinorVersion = 2;
+static const int protocolMinorVersion = 3;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -1401,10 +1404,10 @@ JavaScreenCmd::MouseAction_RubberBand()
 	  "JavaScreenCmd::MouseAction_RubberBand(", _argc, _argv, ")\n");
 #endif
 
-	if (_argc != 5 && _argc != 6)
+	if (_argc < 5 || _argc > 7)
 	{
 		errmsg = "Usage: MouseAction_RubberBand <view name>"
-				 " <x1> <y1> <x2> <y2> [zoom out]";
+				 " <x1> <y1> <x2> <y2> [zoom out] [x-only zoom]";
 		// Note: (x1, y1) is where mouse started; Y is down from the top of
 		// the view/GIF.
 		_status = ERROR;
@@ -1427,6 +1430,13 @@ JavaScreenCmd::MouseAction_RubberBand()
 	    state = 0;
 	}
 
+	Boolean xOnly;
+	if (_argc > 6) {
+	    xOnly = (atoi(_argv[6]) != 0);
+	} else {
+	    xOnly = false;
+	}
+	
     ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Can't find specified view";
@@ -1448,8 +1458,8 @@ JavaScreenCmd::MouseAction_RubberBand()
 	int yLow = MIN(startY, endY);
 	int xHigh = MAX(startX, endX);
 	int yHigh = MAX(startY, endY);
-	// button = 3 for XY zoom
-    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3, state);
+	int button = xOnly ? 1 : 3;
+    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, button, state);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
