@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/06/06 16:59:06  wenger
+  Added a new composite parser for the fourth set of IBM traces.
+
   Revision 1.23  1996/05/22 21:06:24  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -705,6 +708,7 @@ private:
 
 class IBMAddressTraceComposite2 : public UserComposite {
 public:
+//TEMPTEMP
 
   IBMAddressTraceComposite2() {
     _init = false;
@@ -715,13 +719,34 @@ public:
     delete attrOffset;
   }
 
+  enum ref_type {
+    SIM_NO_MISS=0,
+    SIM_ITLB_IR_MISS=1, /* I-ref causes ITLB miss. */
+    SIM_DTLB_IR_MISS=2,     /* I-ref causes DTLB miss. */
+    SIM_DTLB_DR_MISS=4, /* D-ref causes DTLB miss. */
+
+    SIM_IC_IR_MISS=8,   /* I-ref causes L1-Icache miss. */
+    SIM_DC_IR_MISS=16,  /* I-ref causes L1-Dcache miss. */
+    SIM_DC_DR_MISS=32,  /* D-ref causes L1-Dcache miss. */
+
+    SIM_L2_IR_MISS=64,  /* I-ref causes L2cache miss. */
+    SIM_L2_DR_MISS=128,     /* D-ref causes L2cache miss. */
+    SIM_L2_CO_MISS=256, /* L1 Castout causes L2cache miss. */
+
+    SIM_IREF=(1<<16),   /* This is an I-ref. */
+    SIM_LREF=(2<<16),   /* This is a data load ref. */
+    SIM_SREF=(4<<16)    /* This is a data store ref. */
+  };
+
+
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
       char *primAttrs[] = { "Address", "Ref", "RecNum", "Tag", "X", "Y",
-        "Color", "Misses" };
+        "Color", "Misses", "L2miss", "ICmiss", "DCmiss", "ITmiss", "DTmiss",
+		"COmiss", "TotalMisses" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -746,6 +771,13 @@ public:
     float *YPtr = (float *)(buf + attrOffset[5]);
     int *colorPtr = (int *)(buf + attrOffset[6]);
     int *missesP = (int *)(buf + attrOffset[7]);
+    int *L2missP = (int *) (buf + attrOffset[8]);
+    int *ICmissP = (int *) (buf + attrOffset[9]);
+    int *DCmissP = (int *) (buf + attrOffset[10]);
+    int *ITmissP = (int *) (buf + attrOffset[11]);
+    int *DTmissP = (int *) (buf + attrOffset[12]);
+    int *COmissP = (int *) (buf + attrOffset[13]);
+    int *totalMissesP = (int *) (buf + attrOffset[14]);
 
     // Record number is passed to us via the record interpreter
     *recPtr = recInterp->GetRecPos();
@@ -789,6 +821,68 @@ public:
 
     // The third and fourth bytes tell us the cache miss, if any.
     *missesP = refP[2] << 8 | refP[3];
+
+    *L2missP = 0;
+    *ICmissP = 0;
+    *DCmissP = 0;
+    *ITmissP = 0;
+    *DTmissP = 0;
+    *COmissP = 0;
+    *totalMissesP = 0;
+
+    if (*missesP & SIM_ITLB_IR_MISS)
+    {
+	*ITmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_DTLB_IR_MISS)
+    {
+	*DTmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_DTLB_DR_MISS)
+    {
+	*DTmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_IC_IR_MISS)
+    {
+	*ICmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_DC_IR_MISS)
+    {
+	*DCmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_DC_DR_MISS)
+    {
+	*DCmissP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_L2_IR_MISS)
+    {
+	*L2missP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_L2_DR_MISS)
+    {
+	*L2missP = 1;
+	(*totalMissesP)++;
+    }
+
+    if (*missesP & SIM_L2_CO_MISS)
+    {
+	*COmissP = 1;
+	(*totalMissesP)++;
+    }
 
     //printf("%d: %02x %02x  %02x %04x\n", *recPtr, address[0], address[1], *tagPtr, *missesP);
   }
