@@ -1,0 +1,116 @@
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 2001
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<HTML>
+<HEAD>
+<TITLE>DEVise JavaScreen Collaboration</TITLE>
+</HEAD>
+
+<body background="logo_background.gif">
+
+<h3>Introduction</h3>
+
+<p>The DEVise JavaScreen collaboration feature allows users to work together
+interactively, even if they are widely separated geographically.
+
+<p>The essence of JavaScreen collaboration is as follows: one user is the
+"leader", and the other users are "followers".  The leader interacts
+normally with their JavaScreen applet; whatever actions they perform
+are mirrored by the followers' applets.  For example, if the leader
+moves a cursor, the same cursor will be moved in the followers' applets,
+and the results of that movement will be the same.
+
+<p>While in collaboration mode, the followers' JavaScreen applets do not
+accept most user input (cursor moves, for example).
+
+<h3>Starting Collaboration</h3>
+
+<p>Starting collaboration is a two-part process: first, the leader JavaScreen
+must enable collaboration; second, the follower or followers must start
+collaboration.
+
+<h4>Leader</h4>
+
+<p>At the present time, the leader must have a session open to successfully
+allow collaboration.  To enable collaboration once a session is open,
+perform the following procedure:
+<ul>
+<li>Click the "Collaborate" button.
+<li>Then click the "Enable Collaboration" button within the dialog.
+<li>When you click the "Enable Collaboration" button, a new dialog will
+be shown in which you can set a collaboration password.  If you don't want
+third parties "eavesdropping" on your collaboration, you should change the
+password to something other than the default.
+</ul>
+
+<h4>Followers</h4>
+
+<p>Once the leader has enabled collaboration, the followers can connect to
+that leader and start the actual collaboration.  To do so, perform this
+procedure:
+
+<ul>
+<li>Click the "Collaborate" button in the follower JavaScreen.
+<li>Then click the "Start Collaboration" button in the dialog.
+<li>A new dialog will be show with a list of available collaboration leaders.
+For each leader, its client ID, host name, and session name are shown.
+Select the appropriate leader in the dialog, and click "OK".
+<li>A new dialog will be shown in which you must enter the collaboration
+password.  If you enter the correct password, you will become a
+collaboration follower. 
+</ul>
+
+<h3>Stopping Collaboration</h3>
+
+<h4>Leader</h4>
+
+<p>The leader can end the collaboration as follows:
+<ul>
+<li>Click the "Collaborate" button.
+<li>Click the "Disable Collaboration" button.
+</ul>
+
+<p>The leader can also end the collaboration by simply exiting.  In
+either of these cases, the followers will all return to their pre-
+collaboration state.
+
+<h4>Followers</h4>
+
+Any follower can exit from collaboration mode as follows:
+<ul>
+<li>Click the "Collaborate" button.
+<li>Then click the "Finish Collaboration" button in the dialog.
+</ul>
+This will return you to your pre-collaboration state.
+
+any follower can quit
+leader can disable or quit
+
+<h3>Notes</h3>
+
+<p>At the present time, collaboration does not work in CGI communication mode.
+
+<p>At the present time, you must exit and restart the collaboration to
+switch leaders.
+
+<hr>
+
+<p><i>Last updated 2001-12-03.</i>
+
+</body>
+</HTML>
