@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/12/04 04:05:08  donjerko
+  *** empty log message ***
+
   Revision 1.18  1997/11/24 23:13:14  weaver
   Changes for the new ColorManager.
 
@@ -97,9 +100,13 @@ Iterator* DeleteParse::createExec(){
 	LOG(predicate->display(logFile));
 	LOG(logFile << endl;)
 
+	TableName* tableNameCopy = new TableName(*tableName);
+
+	// the above line is needed because the find function changes its argument
+
 	TRY(Site* site = ROOT_CATALOG.find(tableName), NULL);
 	assert(site);
-	TableAlias ta(tableName, alias);
+	TableAlias ta(tableNameCopy, alias);
 	site->addTable(&ta);
 
 	vector<TableAlias*> tableList;
