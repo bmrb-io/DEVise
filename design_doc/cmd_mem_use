@@ -1,0 +1,29 @@
+			Memory Usage in Command Code
+		$Id$
+
+The memory is getting used because the CmdContainer constructor instantiates
+a DeviseCommand object for every DEVise command; each object contains a 10k
+byte buffer for the result.
+
+- Does the result buffer have to be 10k?  I tried reducing it to 1k and
+  initially DEVise core dumped, but this seems to have been a problem
+  with the dependencies.
+
+- Why is there a separate result buffer for each command?  I think this is
+  Dongbin's solution for one command calling another (as in opening a
+  session); but there is at least one problem beyond the memory usage -- if
+  one command calls the *same* command again, I think the results will get
+  scrambled.
+
+- I need to better understand the process of how commands get called.
+    - Do we really *need* a separate class for each command?
+
+- Possible fixes:
+    - Reduce size of result buffers.
+	- This is undoubtedly the simplest "fix", but it doesn't really
+	  fix the problem, and might lead to more chance of the result
+	  buffers getting overflowed.
+    - Instantiate command object *when command is called*.
+	- This is probably the most elegant fix, but probably also requires
+	  the greatest amount of modification to the current code.
+    - Instantiate result buffer *when command is called*.
