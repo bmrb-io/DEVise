@@ -7,5 +7,5 @@ set "sourceConfig(COMMAND)" {}
 set "sourceConfig(COMPUSTAT)" {/dev/nrst4 23 512 32768}
 set "sourceConfig(CRSP)" {/dev/nrst4 20 512 32768}
 set "sourceConfig(ISSM)" {/dev/nrst4 4 0 32768}
-set "sourceConfig(SEQ)" {seq_client quarg 1115}
+set "sourceConfig(SEQ)" {paradise 6003}
 set "sourceConfig(SQL)" {sql_client paradise 130}
