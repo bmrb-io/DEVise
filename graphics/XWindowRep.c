@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/07/14 16:50:49  jussi
+  Added handling of DestroyNotify events.
+
   Revision 1.45  1996/07/14 04:08:50  jussi
   Added handling of ReparentNotify events and WM_DELETE_WINDOW
   messages from the window manager.
@@ -1227,6 +1230,7 @@ void XWindowRep::HandleEvent(XEvent &event)
     }
     break;
 
+  case ButtonRelease:
   case MotionNotify:
     break;
 #endif
