@@ -56,7 +56,8 @@ public class XManDataPanel
 	if (row.length > 0) {
 	    dirName = new String[row.length];
 	    for (int i=0; i < row.length; i++) {
-		dirName[i] = ((XManTableModel) getModel()).getValue(i, index);
+		dirName[i] = ((XManTableModel) getModel()).getValue(row[i], 
+								    index);
 	    }
 	}
 	return dirName;
@@ -107,9 +108,10 @@ public class XManDataPanel
 	    // For now, arg is going to be ignored
 	    XManImportBase newData = (XManImportBase) observed;
 
+	    // Are we displaying partial result (from search)?
 	    System.out.println(attributes_.size());
 	    System.out.println(getColumnCount());
-
+		
 	    if (getColumnCount() < newData.visualIndex().size()) {
 		attributes_  = new Vector(newData.attributes());
 		visualIndex_ = new Vector(newData.visualIndex());
@@ -117,12 +119,20 @@ public class XManDataPanel
 		fireTableStructureChanged();
 		repaint();
 	    }
-	    
-	    if (getRowCount() < newData.data().size()) {
-		data_ = new Vector(newData.data());
-		System.out.println("Rows inserted!");
-		fireTableRowsInserted(getRowCount(), data_.size());
+
+	    if (newData.partialMode()) {
+		
+		data_ = new Vector(newData.partialData());
+		fireTableDataChanged();
 		repaint();
+	    }
+	    else {
+		//	if (getRowCount() < newData.data().size()) {
+		    data_ = new Vector(newData.data());
+		    System.out.println("Rows inserted/updated!");
+		    fireTableDataChanged();
+		    repaint();
+		    //	}
 	    }
 	}
 

@@ -72,7 +72,7 @@ public class XManFrame extends JFrame
 				    xmanControl_,
    				    panel_);
 
-	splitPane_.setDividerLocation(400);
+	splitPane_.setDividerLocation(450);
 	splitPane_.setAutoscrolls(true);
 
 	getContentPane().add(splitPane_, BorderLayout.CENTER);
@@ -117,6 +117,9 @@ public class XManFrame extends JFrame
 		    selectedData_.notify(dirName);
 		}
 	    }
+	}
+	else if (e.getActionCommand() == "RESET") {
+	    dataManager_.setPartialMode(false);
 	}
 	else   {
 	}

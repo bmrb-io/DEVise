@@ -20,8 +20,9 @@ import java.util.*;
 import java.text.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import javax.swing.JScrollPane;
-
+import javax.swing.JOptionPane;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Font;
@@ -129,16 +130,18 @@ public class XManAddData extends JPanel {
             public void actionPerformed(ActionEvent e) {
 
 		finString_  = new String(importDir_.getText());
-
+		
                 if (finString_.length() > 0) {
 		    try {
 			importer_.addNewExperiment(attrTable_.getData(), 
 						   finString_);
 		    }
-		    catch (java.io.IOException ioe) {
-			
+		    catch(Exception exception) {
+			JOptionPane.showMessageDialog(XManAddData.this, 
+						      exception.getMessage(), 
+						      "alert",
+						      JOptionPane.ERROR_MESSAGE);
 		    }
-		    
                 } 
 		else {
                 }

@@ -97,7 +97,7 @@ public class XManAddTable
 	}
 
 	public void update(Observable observed, Object arg) {
-	    System.out.println("Received notification!");
+	    System.out.println("Add Table received notification!");
 	    // For now, arg is going to be ignored
 	    XManImportBase newData = (XManImportBase) observed;
 
@@ -130,12 +130,12 @@ public class XManAddTable
     
     public Dimension getPreferredSize()
     {
-	return new Dimension(300, 200);
+	return new Dimension(350, 200);
     }
 
     public Dimension getMinimumSize()
     {
-	return new Dimension(300, 200);
+	return new Dimension(350, 200);
     }
 }
 

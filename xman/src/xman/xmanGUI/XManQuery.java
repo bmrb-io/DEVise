@@ -90,6 +90,7 @@ public class XManQuery extends JPanel
 	    System.out.println("Searching....");
 	    if (importer_.search(queryPanel_.queryData())) {
 		System.out.println("Good");
+		importer_.setPartialMode(true);
 	    }
 	}
 	else if (action == XMAN_COMMAND_CLEAR) {

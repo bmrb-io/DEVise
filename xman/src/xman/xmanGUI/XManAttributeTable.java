@@ -49,6 +49,8 @@ public class XManAttributeTable
     class XManAttributeModel extends AbstractTableModel 
 	implements Observer {
 	private Vector attributes_;
+	private XManImportBase dataCenter_;
+
 	private String[] cols = {"Attribute Name", 
 				 "Default Value",
 				 "Editable", 
@@ -105,6 +107,7 @@ public class XManAttributeTable
 
 	public void initialize(XManImportBase data) {
 	    attributes_ = data.attributes();
+	    dataCenter_ = data;
 	}
 
 	public void update(Observable observed, Object arg) {
@@ -135,6 +138,8 @@ public class XManAttributeTable
 	    switch(col) {
 	    case 1:
 		atr.setDefaultValue( (String) value);
+		dataCenter_.setDefaultValue(atr.attributeName(), 
+					    (String) value);
 		break;
 	    case 2:
 		b = ((Boolean) value).booleanValue();

@@ -43,7 +43,7 @@ public class XManButtonPanel
 
     //protected JButton okayButton   = new JButton(Resources.STR_OKAY);
     protected JButton viewButton   = new JButton("View Selected Data");
-    protected JButton selectAllButton = new JButton("Select All");
+    protected JButton selectAllButton = new JButton("Display All Data");
     protected JButton deselectAllButton = new JButton("Unselect All");
 
     public XManButtonPanel(ActionListener listener) {
@@ -59,27 +59,16 @@ public class XManButtonPanel
 	selectAllButton.setFont(defaultFont);
 	deselectAllButton.setFont(defaultFont);
 	viewButton.setActionCommand("SELECT");
+	selectAllButton.setActionCommand("RESET");
         //add(okayButton);
 	add(viewButton);
 	add(selectAllButton);
-	add(deselectAllButton);
+	//add(deselectAllButton);
 	//add(changeButton);
 
 	//setLayout();
     }
 
-    public void actionPerformed(ActionEvent e) {
-	if (e.getActionCommand() == "SELECT")
-	    {
-		JFrame frame = new ThreadInterface();
-		frame.setSize(750, 650);
-		//frame.pack();
-		frame.setVisible(true);
-	    }
-	else
-	    {
-	    }
-    }
 }
 
 
