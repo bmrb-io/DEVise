@@ -16,12 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 16:40:59  jussi
+  Added copyright notice and cleaned up a bit.
+
   Revision 1.2  1995/09/05 22:16:20  jussi
   Added CVS header.
 */
 
 #include "ViewScatter.h"
 #include "TDataMap.h"
+
+//#define DEBUG
 
 ViewScatter::ViewScatter(char *name, 
 			 VisualFilter &initFilter, QueryProc *qp,  
@@ -37,7 +42,7 @@ ViewScatter::ViewScatter(char *name,
 void ViewScatter::InsertMapping(TDataMap *map)
 {
   if (_map != NULL){
-    fprintf(stderr,"ViewScatter: cna't handle > 1 mapping\n");
+    fprintf(stderr,"ViewScatter: can't handle > 1 mapping\n");
     return;
   }
   _map = map;
@@ -55,11 +60,10 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
   GetVisualFilter(filter);
 
   int scrnX, scrnY;
-  unsigned int scrnWidth, scrnHeight;
-  Geometry(scrnX,scrnY,scrnWidth,scrnHeight);
-
-  _xPerPixel = (filter.xHigh - filter.xLow + 1) / scrnWidth;
-  _yPerPixel= (filter.yHigh - filter.yLow + 1) / scrnHeight;
+  int scrnWidth, scrnHeight;
+  GetDataArea(scrnX, scrnY, scrnWidth, scrnHeight);
+  _xPerPixel = (filter.xHigh - filter.xLow) / scrnWidth;
+  _yPerPixel= (filter.yHigh - filter.yLow) / scrnHeight;
   
   _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
 }
@@ -83,22 +87,23 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 {
   int gRecSize = mapping->GDataRecordSize();
   
-  /*
-     printf("ViewScatter %d recs buf start 0x%x, end 0x%x\n", numGData,
-     gdata, ((char *)gdata)+numGData*gRecSize);
-  */
+#ifdef DEBUG
+  printf("ViewScatter %d recs buf start 0x%x, end 0x%x\n", numGData,
+	 gdata, ((char *)gdata) + numGData * gRecSize - 1);
+#endif
 
   char *ptr = (char *)gdata;
   int recIndex = 0;
   VisualFilter *filter = GetVisualFilter();
   Coord maxWidth, maxHeight;
   mapping->MaxBoundingBox(maxWidth, maxHeight);
+
   for(int i = 0; i < numGData; i++) {
     GDataTemp *gdata = (GDataTemp *)ptr;
-    if (gdata->x < (filter->xLow-maxWidth) || 
-	gdata->x > (filter->xHigh+maxWidth) || 
-	gdata->y < (filter->yLow-maxHeight) || 
-	gdata->y > (filter->yHigh+maxHeight)) {
+    if (gdata->x < (filter->xLow - maxWidth) || 
+	gdata->x > (filter->xHigh + maxWidth) || 
+	gdata->y < (filter->yLow - maxHeight) || 
+	gdata->y > (filter->yHigh + maxHeight)) {
       ptr += gRecSize;
       continue;
     }
