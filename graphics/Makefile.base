@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.78  1999/08/18 20:45:50  wenger
+#  First step for axis drawing improvement: moved code to new DevAxis
+#  class with unchanged functionality.
+#
 #  Revision 1.77  1999/08/13 17:22:30  wenger
 #  Custom view layouts are now saved to session files; removed now unused
 #  TileLayout code.
@@ -273,7 +277,7 @@ LIBSRC = AttrList.c \
 	ClassDir.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
-	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
+	Init.c Parse.c Timer.c TimeStamp.c \
 	Util.c View.c ViewWin.c ViewLayout.C \
 	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
@@ -290,7 +294,7 @@ SRCC = $(filter %.C,$(LIBSRC))
 LIBOBJ = $(SRCc:.c=.o)
 LIBOBJ += $(SRCC:.C=.o)
 
-OTHERSRC = testWindowRep.c jstat.c TestDevStatus.c
+OTHERSRC = testWindowRep.c TestDevStatus.c
 
 OTHEROBJ = $(OTHERSRC:.c=.o)
 
@@ -330,9 +334,6 @@ xvgrab.o:	xvgrab.c
 #	$(AR) r $@ $%
 #	$(RM) $%
 
-jstat: jstat.o $(LIBOBJ)
-	$(CC) -o jstat jstat.o $(LIBOBJ) -lXmu -lXt -lXext -lX11 -lm
-
 testWindowRep: $(TESTOBJ) $(LIBNAME)
 	$(CC) -o $@ $(TESTOBJ) $(ARCH_LDFLAGS) -L. -lgraphics \
 		-lXmu -lXt -lXext -lX11 -lm $(ARCH_LDPOST)
@@ -349,7 +350,7 @@ Makefile.depend:
 	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
-	-rm $(LIBNAME) libopengldum.a jstat testWindowRep TestDevStatus \
+	-rm $(LIBNAME) libopengldum.a testWindowRep TestDevStatus \
 		Makefile.depend
 
 mostlyclean:

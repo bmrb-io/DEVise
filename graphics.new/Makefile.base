@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.96  1999/09/07 19:00:56  wenger
+#  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+#  duplicate entries without causing a problem (to allow us to get rid of
+#  Tcl in session files); changed Condor session scripts to take out Tcl
+#  control statements in data source definitions; added viewGetImplicitHome
+#  and related code in Session class so this gets saved in session files
+#  (still no GUI for setting this, though); removed SEQ-related code.
+#
 #  Revision 1.95  1999/03/12 18:46:04  wenger
 #  Implemented duplicate symbol elimination.
 #
@@ -343,19 +351,14 @@ VIEWOBJ = $(VIEWSRCc:.c=.o)
 VIEWOBJ += $(VIEWSRCC:.C=.o)
 VIEWOBJ += $(VIEWSRCh:.h=.o)
 
-# Command
-
-CMDSRC =  Command.c
-CMDOBJ =  $(CMDSRC:.c=.o)
-
 # Misc.
 
 MISCSRC =  Version.c DevFileHeader.c
 MISCOBJ =  $(MISCSRC:.c=.o)
 
-LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC) $(MISCSRC)
+LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(MISCSRC)
 
-LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(CMDOBJ) $(MISCOBJ)
+LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(MISCOBJ)
 
 TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testTdata.c testbit.c testPageRange.c testPageRangeMap.c \
@@ -428,20 +431,20 @@ testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o \
 	$(CC) -o $@ $@.o ../graphics/Parse.o VoidArray.o \
 		../graphics/ExitClean.o
 
-testraw: testraw.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a
-	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+testraw: testraw.o $(VIEWOBJ) $(QPObj) libbufmgr.a
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) \
 		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-test2d: test2d.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a
-	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+test2d: test2d.o $(VIEWOBJ) $(QPObj) libbufmgr.a
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) \
 		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-testAms1: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testAms1.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+testAms1: $(VIEWOBJ) $(QPObj) libbufmgr.a testAms1.o
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) \
 		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-testXY: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testXY.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+testXY: $(VIEWOBJ) $(QPObj) libbufmgr.a testXY.o
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) \
 		-lbufmgr -L../graphics -lgraphics-lX11 -lm
 
 testRecFile: testRecFile.o RecFile.o UnixRecFile.o
