@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/22 21:05:11  jussi
+  Added HighLowShape. Added tentative version of GifImageShape.
+
   Revision 1.8  1996/04/23 20:35:42  jussi
   Added Segment shape which just connects two end points.
 
@@ -59,12 +62,12 @@ class RectXShape : public Shape {};
 
 class BarShape : public Shape {};
 
-/* PolygonShape: an elliptical polygon whose center is at (x,y) and whose
-   width and height are 0th and 1st shape attribute, respectively. The
-   oval shape is drawn using a small number of segments, currently set
+/* RegularPolygonShape: an elliptical polygon whose center is at (x,y)
+   and whose width and height are 0th and 1st shape attribute, respectively.
+   The oval shape is drawn using a small number of segments, currently set
    at 16. */
 
-class PolygonShape : public Shape {};
+class RegularPolygonShape : public Shape {};
 
 /* OvalShape: an ellipse whose center is at (x,y) and whose width and
    height are 0th and 1st shape attribute, respectively. Compared to
@@ -91,7 +94,8 @@ class BlockShape : public Shape {};
 
 class HorLineShape : public Shape {};
 
-/* Segment: just a plain line segment from (x,y) to (x+w,y+h).
+/* Segment: just a plain line segment from (x,y) to (x+w,y+h)
+   where w = shape attribute 0 and h = shape attribute 1.   
    Basically the same as a vector but without the arrow head. */
 
 class SegmentShape : public Shape {};
@@ -103,9 +107,27 @@ class SegmentShape : public Shape {};
 
 class HighLowShape : public Shape {};
 
+/* Polyline: draws a polyline whose first point is at (X,Y) and
+   whose additional data points are given in shape attributes 1
+   through 2n (including X and Y) where n is given in shape
+   attribute 0. */
+
+class PolylineShape : public Shape {};
+
 /* GifImage: draws a GIF image whose filename is given in shape
    attribute 0 at (X,Y). */
 
 class GifImageShape : public Shape {};
+
+/* PolylineFile: draws a polygon whose origin is at (X,Y) and whose
+   data points are read from a file given in shape attribute 0.
+   Data points are relative to (X,Y). The scanf format is given
+   in shape attribute 1 (a la gnuplot). */
+
+class PolylineFileShape : public Shape {};
+
+/* TextLabel: draws a text label given by shape attribute 0 at (X,Y). */
+
+class TextLabelShape : public Shape {};
 
 #endif

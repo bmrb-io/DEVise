@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.72  1996/06/15 14:26:01  jussi
+#	Added View/Foreground and View/Background menu commands.
+#
 #	Revision 1.71  1996/06/15 07:15:33  yuc
 #	Add 3D query to the system.
 #
@@ -289,7 +292,8 @@ set DEViseColors \
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 {Regular Polygon}} {4 Oval} \
 	{5 Vector} {6 Block} {7 3DVector} {8 HorLine} {9 Segment} \
-	{10 HighLow} {11 {GIF Image}} {12 Polygon}}
+	{10 HighLow} {11 Polyline} {12 {GIF Image}} \
+	{13 {Polyline File}} {14 {Text Label}}}
 
 # global variables:
 # restoring: true if restoring session or template
