@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/02/07 23:26:53  donjerko
+#  Removed XawControl.c and XawWidget.c from object list, AGAIN!
+#  Jussi's changes were obviously lost.
+#
 #  Revision 1.38  1997/02/03 19:39:55  ssl
 #  1) Added a new Layout interface which handles user defined layouts
 #  2) Added functions to set geometry and remap views as changes in the
@@ -79,7 +83,8 @@
 
 include ../../Makefile.common
 
-CFLAGS = -gstabs $(ARCH_FLAGS)  -I../../graphics.new -I../../generic \
+CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
+	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/RTree \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT
