@@ -72,6 +72,9 @@ struct CycleWorkingMapping_GData {
 
 
 
+
+
+
 class CycleWorkingMapping_RectShape  : public RectShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -239,16 +242,15 @@ public:
 	_shapes[0] = new CycleWorkingMapping_RectShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				CycleWorkingMapping_GData *symbol = (CycleWorkingMapping_GData *)gBuf;
-				CycleRec *data = (CycleRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			CycleWorkingMapping_GData *symbol = (CycleWorkingMapping_GData *)gBuf;
+			CycleRec *data = (CycleRec *)tptr;
+			tptr += tRecSize;
 
     symbol->x = (((float)(data->time + data->last_time)) / 2.0);
     symbol->shapeAttr_0 = data->time - data->last_time;
@@ -256,23 +258,8 @@ public:
     /*		symbol->shapeAttr_1 = symbol->y / 20; */
     symbol->shapeAttr_1 = 300;
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				CycleWorkingMapping_GData *symbol = (CycleWorkingMapping_GData *)gBuf;
-				CycleRec *data = (CycleRec *)tRecs[i];
-
-    symbol->x = (((float)(data->time + data->last_time)) / 2.0);
-    symbol->shapeAttr_0 = data->time - data->last_time;
-    symbol->y = data->working;
-    /*		symbol->shapeAttr_1 = symbol->y / 20; */
-    symbol->shapeAttr_1 = 300;
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 

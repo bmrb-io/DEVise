@@ -71,6 +71,9 @@ struct CycleSuspendedMapping_GData {
 
 
 
+
+
+
 class CycleSuspendedMapping_RectShape  : public RectShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -237,36 +240,22 @@ public:
 	_shapes[0] = new CycleSuspendedMapping_RectShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				CycleSuspendedMapping_GData *symbol = (CycleSuspendedMapping_GData *)gBuf;
-				CycleRec *data = (CycleRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			CycleSuspendedMapping_GData *symbol = (CycleSuspendedMapping_GData *)gBuf;
+			CycleRec *data = (CycleRec *)tptr;
+			tptr += tRecSize;
 
     symbol->x = (((float)(data->time + data->last_time)) / 2.0);
     symbol->shapeAttr_0 = data->time - data->last_time;
     symbol->y = data->suspended;
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				CycleSuspendedMapping_GData *symbol = (CycleSuspendedMapping_GData *)gBuf;
-				CycleRec *data = (CycleRec *)tRecs[i];
-
-    symbol->x = (((float)(data->time + data->last_time)) / 2.0);
-    symbol->shapeAttr_0 = data->time - data->last_time;
-    symbol->y = data->suspended;
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 

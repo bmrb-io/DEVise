@@ -73,6 +73,9 @@ struct HostMapping_GData {
 
 
 
+
+
+
 class HostMapping_RectShape  : public RectShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -241,16 +244,15 @@ public:
 	_shapes[0] = new HostMapping_RectShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				HostMapping_GData *symbol = (HostMapping_GData *)gBuf;
-				HostRec *data = (HostRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			HostMapping_GData *symbol = (HostMapping_GData *)gBuf;
+			HostRec *data = (HostRec *)tptr;
+			tptr += tRecSize;
 
     static int last_time = 10000;
     static int last_working = -1;
@@ -295,60 +297,8 @@ public:
        symbol->color);
     */
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				HostMapping_GData *symbol = (HostMapping_GData *)gBuf;
-				HostRec *data = (HostRec *)tRecs[i];
-
-    static int last_time = 10000;
-    static int last_working = -1;
-    /*
-       MapInfo *mapInfo = (MapInfo *)userData;
-    */
-#if 1
-    if (data->time > last_time) {
-      symbol->x = (((float)(data->time + last_time)) / 2.0);
-      symbol->shapeAttr_0 = data->time - last_time;
-    } else {
-      symbol->x = (float)(data->time);
-      symbol->shapeAttr_0 = 2;
-    }
-    last_time = data->time;
-    if (last_working > 0) {
-      symbol->y = (((float)(data->hosts + last_working)) / 2.0 );
-      symbol->shapeAttr_1 = data->hosts - last_working;
-    } else {
-      symbol->y = (((float) (data->hosts + data->working)) / 2.0 );
-      symbol->shapeAttr_1 = data->hosts - data->working;
-    }
-    last_working = data->working;
-#else
-    
-    symbol->shapeAttr_0 = 1;
-    symbol->shapeAttr_1 = data->hosts - data->working;
-    symbol->x = data->time;
-    symbol->y = (((float) (data->hosts + data->working)) / 2.0 );
-#endif
-    
-    symbol->color = some_idleColor;
-    if (symbol->shapeAttr_1 < 1) {
-      symbol->shapeAttr_1 = 0.5;
-      symbol->y -= 0.25;
-      symbol->color = all_busyColor;
-    }
-    
-    /*
-       printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
-       symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
-       symbol->color);
-    */
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 

@@ -73,6 +73,9 @@ struct MultiMapping_GData {
 
 
 
+
+
+
 class MultiMapping_RectShape  : public RectShape {
 public:
   virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
@@ -240,16 +243,15 @@ public:
 	_shapes[0] = new MultiMapping_RectShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				MultiMapping_GData *symbol = (MultiMapping_GData *)gBuf;
-				MultiRec *data = (MultiRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			MultiMapping_GData *symbol = (MultiMapping_GData *)gBuf;
+			MultiRec *data = (MultiRec *)tptr;
+			tptr += tRecSize;
 
     MapInfo *mapInfo = (MapInfo *)userData;
     symbol->x = (((float)(data->begin+data->end))/2.0);
@@ -280,46 +282,8 @@ public:
 	   symbol->color);
 #endif
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				MultiMapping_GData *symbol = (MultiMapping_GData *)gBuf;
-				MultiRec *data = (MultiRec *)tRecs[i];
-
-    MapInfo *mapInfo = (MapInfo *)userData;
-    symbol->x = (((float)(data->begin+data->end))/2.0);
-    symbol->y = (float)data->node + 0.5;
-    if (data->job == 0 )
-      /* suspended*/
-      symbol->color = suspendColor;
-    else if (data->job <0)
-      /* aborted? */
-      symbol->color = abortColor;
-    else {
-      int index = data->cycles % 6;
-      symbol->color = 
-	mapInfo->colorArrays[index][mapInfo->job_ordering[data->job]];
-    }
-#if 0
-    printf("color %d job %d \n", symbol->color, data->job);
-#endif
-
-    symbol->shapeAttr_0 = data->end-data->begin+1;
-    if (data->job == -1)
-      symbol->shapeAttr_1 = 0.9;
-    else
-      symbol->shapeAttr_1 = 0.9;
-#if 0
-    printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
-	   symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
-	   symbol->color);
-#endif
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 
