@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/07/29 14:19:40  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.6  1998/05/02 08:38:56  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -51,6 +55,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+
+//#define USE_START_PROTOCOL // Whether to use startup protocol as defined
+							 // by API.txt (server sends slot number to
+							 // client, etc.).
 
 #if !defined(LINUX) && !defined(OSF)
 extern "C" {

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/07/29 14:19:38  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.6  1998/05/02 08:38:50  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -470,11 +474,13 @@ Client::SendServerCmd(int args, ...)
 	int rargc;
 	char **rargv;
 
+#if defined(USE_START_PROTOCOL)
 	// retrieve the slotno from the server
 	if (!strcmp(argv[1], CS_Init_Req))
 	{
 		readInteger(_serverFd, _serverSlot);
 	}
+#endif // USE_START_PROTOCOL
 
 	// the client will potentially hangs, if he does not receive 
 	// any acknowledgement information from the server
@@ -496,10 +502,11 @@ Client::SendServerCmd(int args, ...)
 	printf("Received reply: \"%s\"\n", _result);
 #endif
 	}
-	if (flag == API_ACK)
+	if (flag == API_ACK) {
 		return 1;
-	else
+	} else {
 		return -1;
+	}
 }
 
 int 

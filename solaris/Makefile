@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.43  1998/06/10 18:04:31  wenger
+# Added DataReader to list of modules to build.
+#
 # Revision 1.42  1998/06/03 21:12:44  wenger
 # Moved various scripts into the new 'scripts' directory, and 'Bugs' and
 # 'ToDo' into 'design_doc' to clean up the top-level directory; changed
@@ -174,6 +177,12 @@ generic: libs
 
 devised: libs
 	cd generic; make devised; cd ..
+
+devisec: libs
+	cd generic; make devise; cd ..
+
+deviseb: libs
+	cd generic; make deviseb; cd ..
 
 multi: libs
 	cd multi; make disp; cd ..

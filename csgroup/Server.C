@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/08/13 18:14:34  wenger
+  More updates to JavaScreen support.
+
   Revision 1.17  1998/08/11 18:06:29  wenger
   Switched over to simplified JavaScreen startup protocol; added isDir
   and priority args to session list.
@@ -146,9 +149,7 @@
 #include "Util.h"
 #include "Init.h"
 
-//#define USE_JS_PROTOCOL // Whether to use protocol as defined by API.txt.
-
-#if !defined(USE_JS_PROTOCOL)
+#if !defined(USE_START_PROTOCOL)
 int _clientSlot = CLIENT_INVALID;
 #endif
 
@@ -170,9 +171,11 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 {
 	return _ThisServer->_ExecCheckpoint(fname, cinfo);
 }
+
 //#define DEBUG
-#undef DEBUG
+
 char *NoError = "NONE";
+
 #define DO_ASSERT(c,r) {if (!(c)) DoAbort(r); }
 Server::Server(char *name,int image_port, 
 	int swt_port, int clnt_port, char* swtname,
@@ -481,7 +484,7 @@ void Server::WaitForConnection()
     	_numClients++;
 	}
 
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 	// echo back the "slot" number as a handle for the client
 	// a JAVA client will later use this handle to identify a connection
 	int nbytes = writeInteger(clientfd, slot);
@@ -493,7 +496,7 @@ void Server::WaitForConnection()
 		fprintf(stderr, "WARNING: Too many clients. Connection denied\n");
 		close(clientfd);
     }
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 	if (nbytes <0)
 	{
 		printf("Failed to send back slot number to the client\n");
@@ -501,7 +504,7 @@ void Server::WaitForConnection()
 			CloseClient(slot);
 	}
 #endif
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 	if ((nbytes>0)&&(slot >=0))
 #else
 	if (slot >= 0)
@@ -592,7 +595,7 @@ Server::WaitForImageportConnection()
 	}
 	*/
 
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 	//
 	// this blocking read should be moved to scheduler later
 	// because we cannot have the server blocking for a malicious client
@@ -609,7 +612,7 @@ Server::WaitForImageportConnection()
 #else
         slotno = _clientSlot;
 		_clientSlot = CLIENT_INVALID;
-#endif // USE_JS_PROTOCOL
+#endif // USE_START_PROTOCOL
 		if ((slotno <0)||(slotno >= _maxClients))
 		{
 			fprintf(stderr, "Invalid slot no\n");
@@ -630,7 +633,7 @@ Server::WaitForImageportConnection()
 			char*	retval=
 				JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::DONE);
 
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 			// send confirmation to client's image port
 			writeInteger(imagefd, slotno);
 
@@ -639,11 +642,11 @@ Server::WaitForImageportConnection()
 			char* argv[1]={buf};
 			sprintf(buf, "%s", retval);
 			ReturnVal(slotno, API_JAVACMD, 1, &argv[0], false);
-#endif // USE_JS_PROTOCOL
+#endif // USE_START_PROTOCOL
 		}
-#if defined(USE_JS_PROTOCOL)
+#if defined(USE_START_PROTOCOL)
 	}
-#endif // USE_JS_PROTOCOL
+#endif // USE_START_PROTOCOL
 }
 
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
