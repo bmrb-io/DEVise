@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/24 15:49:14  beyer
+  changed include for egcs 2.90.27
+
   Revision 1.3  1998/03/11 18:25:19  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -80,6 +83,10 @@
 #include <unistd.h> /* setsid */
 #include <sys/types.h>
 #include <memory.h>
+#if defined(SUN)
+#   include <sys/time.h>
+#   include "machdep.h"
+#endif
 #include <sys/resource.h> /* rlimit */
 #include <syslog.h>
 #include <strings.h>

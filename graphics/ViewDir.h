@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/05 18:20:00  wenger
+  Committed changes Zhenhai made, but his copy of this file wasn't in CVS
+  somehow.
+
   Revision 1.1  1998/03/18 19:27:22  wenger
   Zhenhai forgot to commit this.
 
@@ -30,6 +34,9 @@
 #define ViewDir_h_
 
 #include <string.h>
+#if defined(SUN)
+extern "C" int strcasecmp(const char *s1, const char *s2);
+#endif
 
 // viewing direction
 // need modification later

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/20 18:42:31  jussi
+  Merged with ClientServer library code.
+
   Revision 1.2  1996/05/11 01:57:28  jussi
   Added copyright notice and changed the prototypes of
   the functions defined here.
@@ -38,7 +41,7 @@ extern int bind(int, struct sockaddr *, int);
 extern int connect(int, struct sockaddr *, int);
 extern int getpeername(int, struct sockaddr *, int *);
 extern int getsockname(int, struct sockaddr *, int *);
-extern int getsockopt(int, int, int, char *, int *);
+extern int getsockopt(int, int, int, void *, int *);
 extern int listen(int, int);
 extern int recv(int, char *, int, int);
 extern int recvfrom(int, char *, int, int, struct sockaddr *, int *);

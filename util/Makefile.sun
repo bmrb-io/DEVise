@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.28  1998/01/07 19:32:43  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.27  1997/11/12 15:52:05  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -63,6 +68,42 @@ http_url.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 http_url.o: /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
 http_url.o: /usr/include/limits.h /usr/include/sys/param.h
+http_url.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+http_url.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+http_url.o: /usr/include/sys/time.h /usr/include/time.h
+http_url.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+http_url.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+http_url.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+http_url.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+http_url.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+mk3dstruct.o: /usr/include/math.h /usr/include/floatingpoint.h
+mk3dstruct.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mk3dstruct.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
+mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mkbinfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/math.h /usr/include/floatingpoint.h
+mkparfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mkparfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+atof.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
+atof.o: /usr/include/math.h /usr/include/floatingpoint.h
+atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h
+atof.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+atof.o: ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
+http_url.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+http_url.o: /usr/include/string.h /usr/include/errno.h
+http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
+http_url.o: /usr/include/limits.h /usr/include/sys/types.h
+http_url.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
 http_url.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
 http_url.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 http_url.o: /usr/include/sys/time.h /usr/include/time.h

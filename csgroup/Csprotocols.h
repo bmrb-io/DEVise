@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/08/17 21:03:38  wenger
+  Changed deviseb and devisec to work properly with current devised
+  (clients don't expect to be sent slot number at startup).
+
   Revision 1.7  1998/07/29 14:19:40  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -54,7 +58,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#if !defined(SUN)
 #include <netdb.h>
+#endif
 
 //#define USE_START_PROTOCOL // Whether to use startup protocol as defined
 							 // by API.txt (server sends slot number to

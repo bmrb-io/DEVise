@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/08/17 21:03:38  wenger
+  Changed deviseb and devisec to work properly with current devised
+  (clients don't expect to be sent slot number at startup).
+
   Revision 1.18  1998/08/13 18:14:34  wenger
   More updates to JavaScreen support.
 
@@ -119,19 +123,22 @@
 #if defined(SGI)
 #include <stdarg.h>
 #endif
-#if defined(SGI) || defined(OSF)
+#if defined(SGI) || defined(OSF) || defined(SUN)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif
 #if defined(OSF)
 #   include <rpcsvc/showfh.h> // for MAXNAMELEN
 #endif
 #include "devise_varargs.h"
-#if defined(LINUX)
-#define MAXNAMELEN 1024
+#if defined(LINUX) || defined(SUN)
+#   define MAXNAMELEN 1024
 #endif
 
-#if defined(LINUX)
-#include <sys/time.h>
+#if defined(LINUX) || defined(SUN)
+#   include <sys/time.h>
+#endif
+#if defined(SUN)
+#  include "machdep.h"
 #endif
 
 #include "JavaScreenCmd.h"

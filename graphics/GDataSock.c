@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/03 23:46:01  wenger
+  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+  283 and 285 (resulted from problems in color manager merge);
+  conditionaled out some debug output.
+
   Revision 1.3  1998/01/31 20:02:02  wenger
   Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
   written at the end.
@@ -330,7 +335,11 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 	// through.  RKW Nov. 18, 1997.
 	if (tmpResult.IsComplete()) {
 	  size_t byteCount = (size_t) offset;
-	  if (write(_fd, buf, byteCount) != (ssize_t) byteCount) {
+	  if (write(_fd, buf, byteCount) !=
+#if defined(SOLARIS)
+	      (ssize_t)
+#endif // SOLARIS
+	      byteCount) {
 	    reportErrSys("Error writing to data channel");
 	    result = StatusFailed;
 	  }

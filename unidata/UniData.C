@@ -34,6 +34,10 @@ extern "C" {
 #undef    assert        // defined by perl includes
 #include  <assert.h>
 
+#if defined(valid)
+#undef valid
+#endif // valid
+
 // #define   DEBUG_UNIDATA
 
 extern SlideBuf *yyslbuf;

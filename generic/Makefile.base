@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.54  1998/07/29 14:20:11  wenger
+#  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+#  allow static linking on Linux.
+#
 #  Revision 1.53  1998/06/29 17:18:09  wenger
 #  Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
 #
@@ -283,8 +287,8 @@ devise.pure: devise.o $(CLIENTLIB) DeviseClient.o
 	$(PURIFY) $(PURE_OPT) $(DEVISE)
 
 COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o $(ARCH_LDFLAGS) \
-	-L../csgroup -L../graphics.new $(ARCH_SYSLIBS) -lcsgroup -lclient\
-	$(ARCH_LDPOST) 
+	-L../csgroup -L../graphics.new -L../graphics $(ARCH_SYSLIBS) \
+	-lcsgroup -lclient $(ARCH_LDPOST) 
 
 collaborator: collaborator.o $(SERVERLIB) 
 	$(COLLABORATOR)

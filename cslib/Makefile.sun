@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/01/09 20:45:08  wenger
+# Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+# previous merge.
+#
 # Revision 1.10  1998/01/07 19:27:50  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -75,7 +79,7 @@ Server.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 Server.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 Server.o: /usr/include/sys/param.h /usr/include/machine/param.h
 Server.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-Server.o: /usr/include/vm/faultcode.h Server.h
+Server.o: /usr/include/vm/faultcode.h Server.h ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 TclClient.o: /usr/include/sys/sysmacros.h TclClient.h /s/tcl/include/tcl.h
@@ -98,20 +102,21 @@ TkClient.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h TkClient.h
 TkClient.o: TclClient.h Client.h
 WinServer.o: /usr/include/sys/param.h /usr/include/machine/param.h
 WinServer.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-WinServer.o: /usr/include/vm/faultcode.h /usr/include/sys/stdtypes.h
-WinServer.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-WinServer.o: WinServer.h Server.h ../graphics/Display.h
-WinServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
-WinServer.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/stdio.h
-WinServer.o: /usr/include/math.h /usr/include/floatingpoint.h
-WinServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
-WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-WinServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+WinServer.o: /usr/include/vm/faultcode.h WinServer.h Server.h
+WinServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+WinServer.o: /usr/include/values.h ../graphics/DevStatus.h
+WinServer.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+WinServer.o: /usr/include/sys/sysmacros.h ../graphics/Geom.h
+WinServer.o: /usr/include/stdio.h /usr/include/math.h
+WinServer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/ViewDir.h /usr/include/string.h
 WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-WinServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
-WinServer.o: /usr/include/errno.h /usr/include/sys/errno.h
-WinServer.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
+WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 WinServer.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
 WinServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 WinServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
@@ -131,10 +136,11 @@ server.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 server.o: /usr/include/sys/sysmacros.h ../graphics/Geom.h /usr/include/math.h
 server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
 server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: ../graphics/Transform.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h

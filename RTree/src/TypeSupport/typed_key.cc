@@ -18,7 +18,7 @@ inline long long htonll(long long x)
   x = *(long long*)p;
 #elif defined(_BIG_ENDIAN)
   // nada
-#elif
+#else
 # error "what endian??"
 #endif;
   return x;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/08/17 21:03:37  wenger
+  Changed deviseb and devisec to work properly with current devised
+  (clients don't expect to be sent slot number at startup).
+
   Revision 1.7  1998/07/29 14:19:38  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -64,7 +68,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "devise_varargs.h"
-#if defined(SGI) || defined(LINUX)
+#if defined(SGI) || defined(LINUX) || defined(SUN)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif
 

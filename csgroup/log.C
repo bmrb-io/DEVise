@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/11 18:25:13  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/02/19 23:24:09  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -95,6 +101,7 @@
 // Commented this out so we get strdup() definition. RKW Feb. 17, 1998.
 //#define _POSIX_SOURCE
 
+#include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/07/29 14:19:42  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.5  1998/03/11 18:25:10  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -73,6 +77,7 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
+#include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
 #include <errno.h>

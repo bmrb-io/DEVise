@@ -7,11 +7,15 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#if defined(SUN)
+#  include "machdep.h"
+#endif
 
 #include "CmdLog.h"
 #include "CmdContainer.h"
 #include "Scheduler.h"
-#define DEBUG
+
+//#define DEBUG
 
 TimeStamp::TimeStamp()
 {

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/03/04 18:41:55  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.3  1997/11/12 15:51:20  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -51,7 +57,7 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
+ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl7.4/lib
 ARCH_LDPOST  =
 
 VPATH = ../../devread:../../graphics:../../graphics.new

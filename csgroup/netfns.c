@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/07/29 14:19:43  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.6  1998/03/30 22:32:55  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -83,6 +87,7 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,7 +108,11 @@
 #endif
 #include <sys/time.h>
 #include <netinet/in.h>
-#include <netdb.h>
+#if defined(SUN)
+#   include "machdep.h"
+#else
+#   include <netdb.h>
+#endif
 
 #include "netfns.h"
 #include "error.h"

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,27 +15,16 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.3  1998/03/04 18:41:54  wenger
-#  Added <arch>/Makefile.config files that now hold stuff like the
-#  PERL_CORE definitions so those don't have to be repeated in all
-#  of the lower level makefiles; various other compile fixes; changed
-#  version to 1.5.2.
-#
-#  Revision 1.2  1997/01/18 20:49:15  jussi
-#  Removed inclusion of Xaw and related X extensions.
-#
-#  Revision 1.1  1996/10/17 20:50:38  jussi
-#  Initial revision.
-#
 
 ############################################################
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl7.4/lib
+#ARCH_FLAGS += -DDEBUG
+ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl7.4/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
-ARCH_LDPOST =
+ARCH_LDPOST = -lsocket -lnsl
 
-VPATH = ../../cslib
+VPATH = ../../csgroup
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.sun

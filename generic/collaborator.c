@@ -31,6 +31,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/08/18 15:22:15  wenger
+  Found and fixed bug 384 (devisec not quitting).
+
   Revision 1.5  1998/03/24 20:42:27  wenger
   Minor cleanups and additional error messages.
 
@@ -49,8 +52,15 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <memory.h>
-#include <sys/resource.h> /* rlimit */
+#if !defined(SUN)
+#   include <sys/resource.h> /* rlimit */
+#endif
 #include <syslog.h>
+#if defined(SUN)
+#   include <sys/time.h>
+#   include "machdep.h"
+    extern "C" void syslog(int, const char *, ...);
+#endif
 
 #ifdef __tcltk
 #include <ctype.h>
@@ -154,10 +164,10 @@ int
 main(int argc, char *argv[])
 {
 
-#if !defined(LINUX)
-	(void) sigset(SIGPIPE, SIG_IGN); 
-#else
+#if defined(LINUX) || defined(SUN)
 	(void) signal(SIGPIPE, SIG_IGN); 
+#else
+	(void) sigset(SIGPIPE, SIG_IGN); 
 #endif
 	/*
 	 * If stdin looks like a TLI endpoint, we assume

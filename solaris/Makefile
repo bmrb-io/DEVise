@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.44  1998/08/17 21:03:49  wenger
+# Changed deviseb and devisec to work properly with current devised
+# (clients don't expect to be sent slot number at startup).
+#
 # Revision 1.43  1998/06/10 18:04:31  wenger
 # Added DataReader to list of modules to build.
 #
@@ -209,7 +213,6 @@ collaborator:
 strip:
 	- strip generic/generic generic/generic.static
 	- strip generic/devise generic/deviseb generic/devised
-	- strip multi/disp
 	- strip generic/collaborator
 
 # DO NOT DELETE

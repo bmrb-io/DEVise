@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1998/03/04 18:41:56  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.13  1997/08/12 18:49:21  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -46,8 +52,8 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS =  -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_LDFLAGS =  -L/s/tcl7.4/lib
+ARCH_SYSLIBS = -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 

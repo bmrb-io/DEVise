@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/07/29 14:21:07  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
  */
 
 #ifndef _devise_varargs_h_
@@ -30,6 +34,8 @@
 #   include <sys/param.h>
 #   include <stdarg.h>
 #elif defined(SGI) || defined(LINUX)
+#   include <stdarg.h>
+#elif defined(SUN)
 #   include <stdarg.h>
 #else
 #   include <sys/varargs.h>

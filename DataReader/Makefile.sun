@@ -1,0 +1,16 @@
+
+depend:
+	cd ../../DataReader; \
+	makedepend -f Makefile.sun *.c *.C *.cc
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+Buffer.o: Buffer.h DRSchema.h /usr/include/math.h
+Buffer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h DateTime.h
+DataReader.o: DataReader.h Buffer.h DRSchema.h DataReaderParser.h
+DataReader.o: /usr/include/assert.h
+DateTime.o: DateTime.h
+Schema.o: DRSchema.h DateTime.h
+datareader.tab.o: DataReaderParser.h /usr/include/assert.h DRSchema.h
+datareader.tab.o: /usr/include/stdio.h
+testParser.o: DataReader.h Buffer.h DRSchema.h

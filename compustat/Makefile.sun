@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.25  1998/01/07 19:27:21  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.24  1997/11/12 15:44:04  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -50,30 +55,29 @@ depend:
 
 compustat.o: /usr/include/stdio.h /usr/include/stdlib.h
 compustat.o: /usr/include/sys/stdtypes.h /usr/include/string.h
-compustat.o: /usr/include/ctype.h /usr/include/unistd.h
+compustat.o: /usr/include/ctype.h /usr/include/unistd.h /s/tcl/include/tcl.h
+compustat.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 compustat.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
-compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
-compustat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-compustat.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-compustat.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-compustat.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-compustat.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-compustat.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-compustat.o: /usr/include/netdb.h /usr/include/sys/socket.h
-compustat.o: /usr/include/netinet/in.h
+compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
+compustat.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+compustat.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+compustat.o: /usr/include/sys/time.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+compustat.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+compustat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+compustat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+compustat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h
 index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
-index.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
-index.o: /usr/include/sys/sysmacros.h index.h ../tape/tapedrive.h
-index.o: ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/ctype.h /usr/include/unistd.h index.h
+index.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 index.o: /usr/include/sys/param.h /usr/include/machine/param.h
 index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 index.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
@@ -88,19 +92,18 @@ index.o: /usr/include/netdb.h /usr/include/sys/socket.h
 index.o: /usr/include/netinet/in.h
 project.o: /usr/include/stdio.h /usr/include/stdlib.h
 project.o: /usr/include/sys/stdtypes.h /usr/include/string.h
-project.o: /usr/include/ctype.h /usr/include/unistd.h
-project.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
-project.o: ../graphics.new/machdep.h /usr/include/limits.h
-project.o: /usr/include/sys/param.h /usr/include/machine/param.h
-project.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-project.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-project.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-project.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-project.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-project.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-project.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-project.o: /usr/include/netdb.h /usr/include/sys/socket.h
-project.o: /usr/include/netinet/in.h
+project.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/assert.h
+project.o: compustat.h index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+project.o: /usr/include/limits.h /usr/include/sys/types.h
+project.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+project.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+project.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+project.o: /usr/include/sys/time.h /usr/include/sys/time.h
+project.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+project.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+project.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+project.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+project.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+project.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+project.o: /usr/include/sys/socket.h /usr/include/netinet/in.h

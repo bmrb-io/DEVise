@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/30 22:32:53  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.3.2.2  1998/03/25 23:04:58  wenger
   Removed all stuff setting internet address to INADDR_ANY (not needed).
 
@@ -77,8 +82,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <sys/param.h>
+#if defined(SUN)
+#  include "machdep.h"
+#else
+#  include <netdb.h>
+#endif
 
 #include "error.h"
 #include "colbr.h"

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/03/04 18:41:58  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.8  1998/02/20 17:03:46  wenger
 #  Updated all architectures to use new dependency scheme in graphics and
 #  graphics.new directories.
@@ -32,7 +38,7 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_LDFLAGS = -L/s/tcl7.4/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base

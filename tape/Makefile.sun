@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.37  1998/01/07 19:32:21  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.36  1997/11/12 15:51:44  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -55,7 +60,8 @@ Templates.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
 Templates.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-Templates.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+Templates.o: ../graphics/VisualArg.h /usr/include/stdio.h
+Templates.o: ../graphics/ViewDir.h /usr/include/string.h
 Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
@@ -69,24 +75,24 @@ Templates.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
 Templates.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 Templates.o: /usr/include/machine/mmu.h /usr/include/errno.h
 Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
-Templates.o: /usr/include/stdio.h /usr/include/limits.h
-Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-Templates.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Templates.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Templates.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Templates.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Templates.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
-Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
-Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
+Templates.o: /usr/include/limits.h /usr/include/sys/stat.h
+Templates.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
+Templates.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Templates.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Templates.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Templates.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Templates.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Templates.o: /usr/include/netinet/in.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/AttrList.h ../graphics/Init.h
+Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 devtype.o: /usr/include/sys/sysmacros.h
-tapedrive.o: /usr/include/unistd.h /usr/include/sys/types.h
-tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
+tapedrive.o: /usr/include/unistd.h /usr/include/string.h
+tapedrive.o: /usr/include/sys/stdtypes.h tapedrive.h /usr/include/stdio.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
+tapedrive.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 tapedrive.o: /usr/include/sys/param.h /usr/include/machine/param.h
 tapedrive.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 tapedrive.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h

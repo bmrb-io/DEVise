@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/07/29 14:20:27  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.23  1998/06/16 18:21:19  wenger
   Got DEVise to compile on Solaris 2.6.
 
@@ -458,6 +462,8 @@ union semun {
   EXTERNC int accept(int, struct sockaddr *, int *);
   EXTERNC int connect(int, struct sockaddr *, int);
   EXTERNC int shutdown(int, int);
+  EXTERNC int getsockopt(int, int, int, void *, int *);
+  EXTERNC int setsockopt(int, int, int, const char *, int);
 #endif
 
 /*

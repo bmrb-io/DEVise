@@ -15,6 +15,13 @@
 #define maximum(A, B) ((A) > (B) ? (A) : (B))
 
 
+#if defined(SUN)
+    extern "C" int msync(void *, size_t, int);
+    extern "C" madvise(caddr_t, size_t, int);
+    extern "C" munmap(void *, size_t);
+#endif
+
+
 cut_map_t::cut_map_t(int in_max_cuts)
 {
   max_cuts=in_max_cuts;
@@ -212,7 +219,13 @@ void bulk_data_t::sort_and_cut (int         start,
 	       entry_sz, (int(*)(const void *, const void *))SortCmp);
       beg_entry_num += entries_per_bucket;
       msync((char *)key(beg_entry_num), entry_sz* 
-	    minimum(entries_per_bucket, (n+start-beg_entry_num)), MS_SYNC);
+	    minimum(entries_per_bucket, (n+start-beg_entry_num)),
+#if defined(SUN)
+	    MS_ASYNC
+#else
+	    MS_SYNC
+#endif
+	    );
     }
 
   // Keep track of place in sorted sublists

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/30 22:32:57  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.5.2.2  1998/03/25 23:04:59  wenger
   Removed all stuff setting internet address to INADDR_ANY (not needed).
 
@@ -87,7 +92,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
+#if !defined(SUN)
+#   include <netdb.h>
+#endif
 #include <errno.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -96,6 +103,10 @@
 #include <stdlib.h>
 
 #include <unistd.h> /* this might change later for close funtion call */
+
+#if defined(SUN)
+#   include "machdep.h"
+#endif
 
 #include "error.h"
 #include "ClientAPI.h"
@@ -108,6 +119,10 @@
 #include "Init.h"
 #include "Server.h"
 #include "ckptfile.h"
+
+#if defined(SUN)
+extern int h_errno;
+#endif
 
 char GroupDBServer[40] = "";
 ConnectInfo SwitchAddress;

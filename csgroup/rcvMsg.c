@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/30 22:32:56  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.3.2.1  1998/03/25 15:56:51  wenger
   Committing debug version of collaboration code.
 
@@ -75,6 +80,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#if defined(SUN)
+#   include "machdep.h"
+#endif
 
 #include "rcvMsg.h"
 #include "codec.h"

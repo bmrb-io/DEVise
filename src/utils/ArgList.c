@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/06/17 17:20:49  wenger
+  Devised now sends "real" session file list to JavaScreen.
+
  */
 
 #include <stdio.h>
@@ -103,9 +106,11 @@ ArgList::AddArg(const char *arg)
 }
 
 static int
-compare(char **arg1, char **arg2)
+compare(const void *arg1, const void *arg2)
 {
-  return strcmp(*arg1, *arg2);
+  char *s1 = *((char **)arg1);
+  char *s2 = *((char **)arg2);
+  return strcmp(s1, s2);
 }
 
 /*------------------------------------------------------------------------------
