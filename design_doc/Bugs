@@ -1631,6 +1631,8 @@ Num Date        Status  Description
 
 426 10/21/98	OPEN	Doing the '5' (home) key on a view with a constant
 			mapping does not work and may cause a crash. (rkw)
+			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
+			but doesn't crash.)
 
 427 10/27/98	OPEN	It's impossible to add a data source to an empty
 			directory with the GUI, because you always get the
@@ -1652,6 +1654,8 @@ Num Date        Status  Description
 432 11/03/98	OPEN	Doing the '5' (home) key on a view with a mapping
 			with expressions does not work and may cause a crash.
 			(rkw)
+			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
+			but doesn't crash.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

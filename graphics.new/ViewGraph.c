@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.87  1998/10/29 21:46:09  wenger
+  Added "proof-of-concept" code for filter links; added warning when
+  more than one mapping is inserted into a view; updated bug and to-do
+  lists.
+
   Revision 1.86  1998/10/21 17:16:53  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -914,8 +919,8 @@ void ViewGraph::GoHome()
 
     Boolean hasFirstRec, hasLastRec;
     RecId firstRec, lastRec;
-    if (!strcmp(xAttr->name, REC_ID_NAME) ||
-	!strcmp(yAttr->name, REC_ID_NAME)) {
+    if ((xAttr && !strcmp(xAttr->name, REC_ID_NAME)) ||
+	(yAttr && !strcmp(yAttr->name, REC_ID_NAME))) {
       TData *tdata = map->GetPhysTData();
       hasFirstRec = tdata->HeadID(firstRec);
       hasLastRec = tdata->LastID(lastRec);
