@@ -2,8 +2,6 @@
 #define OPTIMIZER_H
 
 #include <vector>
-#include <map.h>
-
 #include <string>
 
 #include "types.h"
