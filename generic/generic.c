@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/04/23 14:03:06  jussi
+  Refined StateLatLon composite parser. It now disperses multiple
+  records from the same state with some randomness, forming a
+  cloud. Also added the Color and TotalAmountDegree fields.
+
   Revision 1.15  1996/04/22 22:03:24  jussi
   Added StateLatLon composite parser and associated the LANDSEND
   schema with it.
@@ -584,6 +589,78 @@ private:
 				     for unknown state codes */
 };
 
+/*
+   User composite function for geographical locations that translates
+   integer latitude/longitude numbers, measured in millionths of
+   degrees, to floating point numbers.
+*/
+
+class LatLonComposite : public UserComposite {
+public:
+
+  LatLonComposite() {
+    _init = false;
+    attrOffset = 0;
+    latAttr = 0;
+    lonAttr = 0;
+  }
+
+  virtual ~LatLonComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "LatitudeInt", "LongitudeInt", "Latitude",
+			    "Longitude" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "Latitude"))
+	  latAttr = info;
+	else if (!strcmp(primAttrs[i], "Longitude"))
+	  lonAttr = info;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    int   *latIntPtr = (int *)(buf + attrOffset[0]);
+    int   *lonIntPtr = (int *)(buf + attrOffset[1]);
+    float *latPtr = (float *)(buf + attrOffset[2]);
+    float *lonPtr = (float *)(buf + attrOffset[3]);
+
+    *latPtr = *latIntPtr / 1e6;
+    *lonPtr = *lonIntPtr / 1e6;
+
+    if (!latAttr->hasHiVal || *latPtr > latAttr->hiVal.floatVal) {
+      latAttr->hiVal.floatVal = *latPtr;
+      latAttr->hasHiVal = true;
+    }
+    if (!lonAttr->hasLoVal || *lonPtr < lonAttr->loVal.floatVal) {
+      lonAttr->loVal.floatVal = *lonPtr;
+      lonAttr->hasLoVal = true;
+    }
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *latAttr;             /* latitude attribute info */
+  AttrInfo  *lonAttr;             /* longitude attribute info */
+  Boolean   _init;                /* true when instance initialized */
+};
+
 QueryProc *genQueryProcTape()
 {
   return new QueryProcTape;
@@ -601,6 +678,8 @@ main(int argc, char **argv)
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite);
+  CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
+  CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
 
 #if 0
   /* Register parser for tape */
