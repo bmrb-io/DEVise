@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/09/30 17:44:32  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.30  1998/09/22 17:23:42  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -839,6 +843,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getHistogram", "setHistogram", instance);
 
   status += SaveParams(saveData, "viewGetAlign", "viewSetAlign", instance);
+
+  status += SaveParams(saveData, "getCountMapping", "setCountMapping",
+      instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

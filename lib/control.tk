@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.167  1998/07/17 15:33:47  wenger
+#	Improved link creation GUI as per request from Raghu; started on
+#	DataReader schema GUI; changed version to 1.5.4.
+#
 #	Revision 1.166  1998/06/12 19:55:39  wenger
 #	Attribute of TAttr/set links can now be changed; GUI has menu of available
 #	attributes; attribute is set when master view is set instead of at link
@@ -849,6 +853,7 @@ source $libdir/symbol_align.tcl
 source $libdir/group.tk
 source $libdir/dr_schema.tcl
 source $libdir/link.tcl
+source $libdir/count_mapping.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -988,6 +993,9 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command { GetStringCount }
 .mbar.session.menu add command -label "Save String Space" \
 	-command { SaveStringSpace }
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Show Link/Cursor Info" \
+	-command { ShowLinkCursorInfo }
 .mbar.session.menu add command -label "Dump Link/Cursor Info" \
 	-command { DumpLinksCursors }
 .mbar.session.menu add cascade -label "Save Session Description" \
@@ -1334,6 +1342,7 @@ menu .mbar.tdata.menu.mappingMenu -tearoff 0
 menu .mbar.gdata.menu -tearoff 0
 
 .mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
+.mbar.gdata.menu add command -label "Count Mapping" -command EditCountMapping
 .mbar.gdata.menu add command -label "Copy/Edit" -command DoViewCopy
 .mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
 .mbar.gdata.menu add command -label "Flush TData" -command DoFlushTData
@@ -1348,6 +1357,7 @@ menu .mbar.view.menu -tearoff 0
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Title" -command DoSetTitle
+.mbar.view.menu add command -label "Toggle View Names" -command ToggleViewNames
 .mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 
 .mbar.view.menu add separator
@@ -1804,6 +1814,7 @@ proc DoClose {{askUser 1}} {
 	DEVise clearAll
 
     ClearDescription
+    UpdateLinkCursorInfo
     set sessionName "session.tk"
 
     if {$templateMode} {
@@ -1861,6 +1872,8 @@ proc DoOpen { asTemplate } {
 	puts "Could not restore session"
         puts $errorInfo
     }
+
+    UpdateLinkCursorInfo
 }
 
 # Allow user to delete a session file.
@@ -2274,3 +2287,9 @@ proc ShowKGraph {} {
 #	set layoutManagerUp 1
 #    } 
 #}
+
+# Toggle the visibility of view names.
+proc ToggleViewNames {} {
+    set viewNamesOn [expr ! [DEVise getShowViewNames]]
+    DEVise setShowViewNames $viewNamesOn
+}

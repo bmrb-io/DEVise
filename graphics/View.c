@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.146  1998/09/28 20:06:04  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.145  1998/09/25 20:52:55  wenger
   Fixed bug 390 (cursor drawn in slightly wrong location) (partly caused
   by problems in JavaScreenCmd code and partly by problems in XWindowRep).
@@ -698,6 +704,7 @@ DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 
 Boolean View::_drawCursors = true;
 Boolean View::_jsCursors = false;
+Boolean View::_showNames = false;
 
 //******************************************************************************
 // Constructors and Destructors
@@ -1421,7 +1428,6 @@ void View::DrawLabel()
     win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
 
     win->SetForeground(GetForeground());
-//    win->SetBackground(GetBackground());
 
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
@@ -1818,7 +1824,50 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   _hasLastFilter = false;
 
   WindowRep *win = GetWindowRep();
+  if (_pileMode) {
+    /* The piled view was actually drawn into this WindowRep. */
+    win = GetFirstSibling()->GetWindowRep();
+  }
   win->SetGifDirty(true);
+
+  // Show the view name, if necessary.  Note that the view name is drawn
+  // *inside* the data area, because it's considered a temporary measure
+  // and not part of a "finished" presentation (titles should be used for
+  // that, since the view names are often pretty ugly).
+  if (_showNames) {
+    win->PushTop();
+    win->MakeIdentity();
+  
+    win->SetNormalFont();
+    _titleFont.SetWinFont(win);
+    win->SetForeground(GetForeground());
+
+    int xloc, yloc, width, height;
+    GetDataArea(xloc, yloc, width, height);
+    char buf[1024];
+    sprintf(buf, "<%s>", GetName());
+
+    // Show the names of all views in piled mode, but keep them from
+    // overlapping.
+    if (_pileMode) {
+      ViewWin *parent = GetParent();
+      int index = parent->InitIterator();
+      while (parent->More(index)) {
+	ViewWin *sibling = parent->Next(index);
+	if (this == sibling) {
+	  break;
+	} else {
+	  yloc -= 15; // Warning: constant depends on font size.
+	}
+      }
+      parent->DoneIterator(index);
+    }
+
+    win->AbsoluteText(buf, xloc, yloc, width, height,
+	  WindowRep::AlignNorth, true);
+
+    win->PopTransform();
+  }
 
   /* if view is on top of a pile, it has to wake the other views
      up and ask them to refresh; the bottom views might not have
@@ -1836,9 +1885,6 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
    * RKW June 25, 1997. */
 
   if (_pileMode) {
-    /* The piled view was actually drawn into this window */
-    win = GetFirstSibling()->GetWindowRep();
-
     if (!aborted) {
       ViewWin *parent = GetParent();
       DOASSERT(parent, "View has no parent");
@@ -3120,7 +3166,7 @@ View::PrintPS()
   psDispP->GetScreenPrintRegion(parentGeom);
 
   /* If we're in piled mode, the drawing will actually be done using
-   * the WindowRep of the _top_ view in the pile, so that's the one
+   * the WindowRep of the *bottom* view in the pile, so that's the one
    * that has to be set for file output. */
   if (_pileMode) {
     GetFirstSibling()->SetFileOutput(viewGeom, parentGeom);
@@ -3350,7 +3396,9 @@ void	View::Run(void)
 			printf("Top pile view %s continues\n", GetName());
 #endif
 
-			GetWindowRep()->Raise();	// Assure top view is visible
+			// Assure that the bottom view's window rep (the one used to
+			// draw the pile) is visible.
+			GetWindowRep()->Raise();
 		}
 	}
 
@@ -3436,8 +3484,9 @@ void	View::Run(void)
 	unsigned int	sW, sH;
     VisualFilter	newFilter;
 
-	if (_pileMode)
+	if (_pileMode) {
 		winRep = GetFirstSibling()->GetWindowRep();
+	}
 
 	winRep->SetGifDirty(true);
 
@@ -3637,10 +3686,11 @@ void	View::Run(void)
 	// Push clip region using this transform
 	int		dataX, dataY, dataW, dataH;
 
-	if (_pileMode)
+	if (_pileMode) {
 		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
-	else
+	} else {
 		GetDataArea(dataX, dataY, dataW, dataH);
+	}
 
 #if !FILL_WHOLE_BACKGROUND
 	if (_hasExposure)					// Use exposure rectangle if needed
@@ -3755,7 +3805,9 @@ void	View::Run2(void)
 		}
 		else
 		{
-			GetWindowRep()->Raise();	// Assure top view is visible
+			// Assure that the bottom view's window rep (the one used to
+			// draw the pile) is visible.
+			GetWindowRep()->Raise();
 		}
 	}
 
@@ -3800,8 +3852,9 @@ void	View::Run2(void)
 	unsigned int	sW, sH;
     VisualFilter	newFilter;
 
-	if (_pileMode)
+	if (_pileMode) {
 		winRep = GetFirstSibling()->GetWindowRep();
+	}
 
 	Geometry(scrnX, scrnY, sW, sH);
 
@@ -3941,10 +3994,11 @@ void	View::Run2(void)
 	// Push clip region using this transform
 	int		dataX, dataY, dataW, dataH;
 
-	if (_pileMode)
+	if (_pileMode) {
 		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
-	else
+	} else {
 		GetDataArea(dataX, dataY, dataW, dataH);
+	}
 
 #if !FILL_WHOLE_BACKGROUND
 	if (_hasExposure)					// Use exposure rectangle if needed
@@ -4140,6 +4194,20 @@ View::SelectView()
     Highlight(true);
   }
   ControlPanel::Instance()->SelectView(this);
+}
+
+void
+View::SetShowNames(Boolean showNames)
+{
+#if defined(DEBUG)
+  printf("View::SetShowNames(%d)\n", showNames);
+#endif
+
+  if (showNames != false) showNames = true;
+  if (showNames != _showNames) {
+	_showNames = showNames;
+	RefreshAll();
+  }
 }
 
 //******************************************************************************

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/10/13 19:40:42  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.26  1998/09/30 17:44:42  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -1718,7 +1722,7 @@ DeviseCommand_clearViewHistory::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           FilterQueue *queue = view->GetHistory();
@@ -4491,6 +4495,8 @@ IMPLEMENT_COMMAND_BEGIN(test)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(getLinkMasterAttr)
+    // Arguments: <linkName>
+    // Returns: <attrName>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4511,6 +4517,8 @@ IMPLEMENT_COMMAND_BEGIN(getLinkMasterAttr)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(getLinkSlaveAttr)
+    // Arguments: <linkName>
+    // Returns: <attrName>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4531,6 +4539,8 @@ IMPLEMENT_COMMAND_BEGIN(getLinkSlaveAttr)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
+    // Arguments: <linkName> <attrName>
+    // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4552,6 +4562,8 @@ IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
+    // Arguments: <linkName> <attrName>
+    // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4573,6 +4585,8 @@ IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(selectView)
+    // Arguments: <viewName>
+    // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -4589,6 +4603,138 @@ IMPLEMENT_COMMAND_BEGIN(selectView)
 		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in selectView\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setShowViewNames)
+    // Arguments: <showViewNames (boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+		View::SetShowNames(atoi(argv[1]));
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setShowViewNames\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getShowViewNames)
+    // Arguments: none
+    // Returns: <showViewNames (boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 1) {
+		char buf[128];
+		sprintf(buf, "%d", View::GetShowNames());
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getShowViewNames\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getCountMapping)
+    // Arguments: <view name>
+    // Returns: <enabled> <count attr> <put attr>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		Boolean enabled;
+		char *countAttr;
+		char *putAttr;
+		view->GetCountMapping(enabled, countAttr, putAttr);
+
+		char buf[128];
+		sprintf(buf, "%d %s %s", enabled, countAttr, putAttr);
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getCountMapping\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCountMapping)
+    // Arguments: <view name> <enabled> <count attr> <put attr>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 5) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		Boolean enabled = atoi(argv[2]);
+		if (view->SetCountMapping(enabled, argv[3], argv[4]).IsComplete()) {
+          ReturnVal(API_ACK, "done");
+	      return 1;
+		} else {
+    	  ReturnVal(API_NAK, "Error setting count mapping");
+    	  return -1;
+		}
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setCountMapping\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getCursorType)
+    // Arguments: <cursor name>
+    // Returns: <cursor type>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        DeviseCursor *cursor = (DeviseCursor *)classDir->FindInstance(argv[1]);
+        if (!cursor) {
+        	ReturnVal(API_NAK, "Cannot find cursor");
+        	return -1;
+		}
+
+		VisualFlag flag = cursor->GetFlag();
+
+		char buf[128];
+		if (flag == VISUAL_X) {
+			sprintf(buf, "VisualX");
+		} else if (flag == VISUAL_Y) {
+			sprintf(buf, "VisualY");
+		} else if (flag == (VISUAL_X | VISUAL_Y)) {
+			sprintf(buf, "VisualXY");
+		} else {
+			sprintf(buf, "unknown");
+		}
+
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getCursorType\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

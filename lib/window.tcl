@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1998/03/05 20:36:30  wenger
+#  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+#  problems related to *ClassInfo classes.
+#
 #  Revision 1.32  1997/07/15 14:59:30  wenger
 #  Fixed a bug in the view destroying Tcl code; user can now destroy a window
 #  that contains views (DEVise asks for confirmation, destroys the views).
@@ -819,8 +823,6 @@ proc EnableStackControl {} {
     global stackEnabled
     set stackEnabled 1
 
-    EnableMappingFlip
-
     if {![WindowExists .stack]} {
 	return
     }
@@ -837,8 +839,6 @@ proc EnableStackControl {} {
 proc DisableStackControl {} {
     global stackEnabled
     set stackEnabled 0
-
-    DisableMappingFlip
 
     if {![WindowExists .stack]} {
 	return
@@ -1045,7 +1045,6 @@ proc DoWindowUnpile {} {
     DEVise refreshView $curView
     DEVise highlightView $curView 1
     UpdateMappingDialog .editMapping $curView
-
 }
 
 ############################################################

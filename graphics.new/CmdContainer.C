@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/09/08 20:26:13  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.16  1998/08/17 17:12:01  wenger
   Devised now responds to KeyAction commands from JavaScreen.
 
@@ -360,6 +364,11 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setLinkMasterAttr)
 	REGISTER_COMMAND(setLinkSlaveAttr)
 	REGISTER_COMMAND(selectView)
+	REGISTER_COMMAND(setShowViewNames)
+	REGISTER_COMMAND(getShowViewNames)
+	REGISTER_COMMAND(getCountMapping)
+	REGISTER_COMMAND(setCountMapping)
+	REGISTER_COMMAND(getCursorType)
 }
 
 CmdContainer::~CmdContainer()

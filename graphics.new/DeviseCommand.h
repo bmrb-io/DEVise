@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/09/22 17:23:55  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.14  1998/09/21 16:47:43  wenger
   Fixed bug 395 (Condorview GIF dumping problem) (caused by waitForQueries
   not returning a value); made Dispatcher::WaitForQueries a little safer;
@@ -1392,5 +1400,36 @@ DECLARE_CLASS_END
 //
 DECLARE_CLASS_DeviseCommand_(selectView) 
 DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setShowViewNames) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getShowViewNames) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCountMapping) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCountMapping) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCursorType) 
+DECLARE_CLASS_END
+
 
 #endif // _DeviseCommand_h_

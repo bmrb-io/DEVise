@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.41  1998/04/16 21:51:55  wenger
+#       Committed Sanjay's text code.
+#
 #       Revision 1.40  1998/02/20 08:46:25  beyer
 #       resurected histograms
 #
@@ -162,6 +165,9 @@
 
 ############################################################
 
+# Global holding name of view currently being edited.
+set curMappingView ""
+
 #SSL - new mapping box implementation
 # Do editing for mapping
 
@@ -199,12 +205,18 @@ proc BringUpMappingDialog { w curview } {
     wm geometry $w +50+50
     wm title $w "Edit Mapping"
     frame $w.message
+    frame $w.message2
     label $w.message.txt
+    label $w.message2.tdata
     
 #currently only enabled for piled views
+#TEMP -- these should be enabled for stacks as well as piles
     button $w.message.flip -text Flip -state disabled \
 			-command { FlipStackedView }
     
+    button $w.message2.next -text "Next in Pile" -state disabled \
+	-command { NextInPile }
+
     frame $w.mapping
     frame $w.mapping.label
     frame $w.mapping.value
@@ -342,13 +354,15 @@ proc BringUpMappingDialog { w curview } {
     pack $w.mapping.value -side right -fill x
     
     pack $w.message.txt $w.message.flip -side left -expand 1 -pady 0.7m
-    pack $w.message $w.mapping -side top -fill x -pady 2m
+    pack $w.message2.tdata $w.message2.next -side left -expand 1 -pady 0.7m
+    pack $w.message $w.message2 $w.mapping -side top -fill x -pady 2m
     pack $w.but -side top -pady 3m
     
- }
+}
 
-proc UpdateMappingDialog { w curView } {
+proc UpdateMappingDialog { w curView {goToTop 1} } {
 	global DEViseShapes
+	global curMappingView
 
 	if {! [winfo exists $w] } {
 		return
@@ -356,17 +370,27 @@ proc UpdateMappingDialog { w curView } {
 
 	if { $curView == "" } {
 		ClearMappingDialog $w
+		return
 	} 	 
  
 	if {[DEVise getViewPileMode $curView]} {
-		set win [DEVise getViewWin $curView]
-		set curView [lindex [DEVise getWinViews $win] end]
+		# Note: because of the way the C++ code handles piles, when
+		# a pile is selected, the "bottom" (drawn first) view is
+		# the one that is actually selected.  The default here is
+		# to find the top view in the pile, and edit the mapping
+		# of that view, so that we affect the symbols that are on
+		# top.
+		if {$goToTop} {
+			set curView [FindTopView $curView]
+		}
 		$w.message.flip configure -state normal
+		$w.message2.next configure -state normal
 	} else {
 		$w.message.flip configure -state disabled
+		$w.message2.next configure -state disabled
 	}
 
-	$w.message.txt configure -text "Edit Mapping for : $curView"
+	$w.message.txt configure -text "Edit Mapping for: $curView"
 
 	# Get mapping for the view (first one)
 	set map [lindex [DEVise getViewMappings $curView] 0]
@@ -398,6 +422,10 @@ proc UpdateMappingDialog { w curView } {
      
 	#     puts "params ========== $params"
 	set tdata [lindex [lindex $params 0] 1]
+
+#puts "TData = $tdata"
+	$w.message2.tdata configure -text "TData: $tdata"
+
         set schemaname [GetSchema $tdata]
         if { $schemaname == "" } {
             return
@@ -465,13 +493,24 @@ proc UpdateMappingDialog { w curView } {
 			" UpdateMappings {$map} {$params} {$mappings} "
 
 	UpdateShapeAttrs $w $shapeParm
+
+	set curMappingView $curView
 }
 
 
 proc ClearMappingDialog { w } {
+	global curMappingView
+	set curMappingView ""
+
 	if {! [WindowVisible $w ] } {
 		return
 	}
+
+	$w.message.flip configure -state disabled
+	$w.message2.next configure -state disabled
+
+	$w.message.txt configure -text "Edit Mapping for:"
+	$w.message2.tdata configure -text "TData:"
 
 	set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4"
@@ -759,21 +798,26 @@ proc DoShapeHelp {} {
 }
 
 #*******************************************************************************
-# Note: these procedures assume that BringUpMappingDialog is called with
-# .editMapping as the top-level window name.
+# Edit the mapping of the next view in a pile (or stack) *without actually
+# flipping* the pile or stack.
 
-proc EnableMappingFlip {} {
-    if {![WindowExists .editMapping]} {
-      return
-    }
-    .editMapping.message.flip config -state normal
-}
+proc NextInPile {} {
+	global curView
+	global curMappingView
 
-proc DisableMappingFlip {} {
-    if {![WindowExists .editMapping]} {
-      return
-    }
-    .editMapping.message.flip config -state disabled
+	# Find the view we're currently editing in the view list; then
+	# edit the *previous* view (work our way down thru the pile).
+	# When we get to the "bottom" (drawn first) view (first on the
+	# list), go back to the end.
+	set win [DEVise getViewWin $curView]
+	set views [DEVise getWinViews $win]
+	set index [lsearch -exact $views $curMappingView]
+	if {$index == 0} {
+		set view [lindex $views end]
+	} else {
+		set view [lindex $views [expr $index - 1]]
+	}
+	UpdateMappingDialog .editMapping $view 0
 }
 
 #*******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/08/24 14:51:43  wenger
+  Implemented support for JavaScreen drill-down.
+
   Revision 1.52  1998/07/30 15:31:24  wenger
   Fixed bug 381 (problem with setting master and slave of a link to the same
   view); generally cleaned up some of the master-slave link related code.
@@ -509,6 +512,9 @@ public:
   virtual DerivedTable *GetDerivedTable(char *tableName) { return NULL; }
 
   virtual void TAttrLinkChanged();
+
+  void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr);
+  DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr);
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

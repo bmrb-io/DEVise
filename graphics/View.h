@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.67  1998/09/08 20:26:02  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.66  1998/08/25 20:56:25  wenger
   Implemented support for JavaScreen cursors (not yet fully tested).
 
@@ -632,6 +636,8 @@ class View : public ViewWin
 
 	static void SetDrawCursors(Boolean draw) { _drawCursors = draw; }
 	static void SetJSCursors(Boolean js) { _jsCursors = js; }
+	static Boolean GetShowNames() { return _showNames; }
+	static void SetShowNames(Boolean showNames);
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
@@ -825,6 +831,7 @@ protected:
 
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;
+		static Boolean _showNames;
 };
 
 //******************************************************************************

@@ -1345,9 +1345,10 @@ Num Date        Status  Description
 
 354 05/22/98	OPEN	3D: flipping piled views changes visual filter. (rkw)
 
-355 05/22/98	OPEN	You should be able to modify the mappings for all
+355 05/22/98	FIXED	You should be able to modify the mappings for all
 			views in a pile without actually forcing the views
 			to be redrawn. (rkw)
+			(Fixed by rkw, 10/14/98)
 
 356 05/22/98	FIXED	2D views often don't work when running with OpenGL
 			(particularly when running on the SGI as opposed to
@@ -1593,9 +1594,10 @@ Num Date        Status  Description
 417 10/12/98	OPEN	DTE should not exit if DataReader schema cannot be
 			parsed. (rkw)
 
-418 10/14/98	OPEN	If mapping dialog is shown and you open a new session,
+418 10/14/98	FIXED	If mapping dialog is shown and you open a new session,
 			the mapping dialog doesn't get properly updated
 			until you select a view in the new session. (rkw)
+			(Fixed by rkw, 10/14/98.)
 
 419 10/14/98	OPEN	When selecting a piled view, the mapping dialog selects
 			the "top" (drawn last) view, while everything else

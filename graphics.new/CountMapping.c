@@ -28,6 +28,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/08/17 18:51:49  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.1  1998/02/26 22:59:46  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -55,6 +59,7 @@ CountMapping::CountMapping(CountMapping::Attr countAttr,
       (int) countAttr, (int) putAttr);
 #endif
 
+  _valid = false;
   _countAttr = countAttr;
   _putAttr = putAttr;
   _binCount = 0;
@@ -63,6 +68,8 @@ CountMapping::CountMapping(CountMapping::Attr countAttr,
   if (countAttr == putAttr) {
     reportErrNosys("Attribute to count should be different than attribute "
 	"to put count into");
+  } else {
+    _valid = true;
   }
 }
 
@@ -73,7 +80,20 @@ CountMapping::~CountMapping()
   printf("CountMapping(0x%p)::~CountMapping()\n", this);
 #endif
 
+  _valid = false;
   delete [] _bins;
+}
+
+/*----------------------------------------------------------------------------*/
+void
+CountMapping::GetAttrs(Attr &countAttr, Attr &putAttr)
+{
+#if defined(DEBUG)
+  printf("CountMapping(0x%p)::GetAttrs()\n", this);
+#endif
+
+  countAttr = _countAttr;
+  putAttr = _putAttr;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -86,8 +106,13 @@ CountMapping::Init(ViewGraph *view)
 
   DevStatus result = StatusOk;
 
+  if (!_valid) {
+    reportErrNosys("Invalid CountMapping object");
+    result += StatusFailed;
+  }
+
   // Make sure we're doing this on a two-dimensional view.
-  if (view->GetNumDimensions() != 2) {
+  if (result.IsComplete() && view->GetNumDimensions() != 2) {
     reportErrNosys("Cannot do count mapping on a non-two-dimensional view");
     result += StatusFailed;
   }
@@ -185,69 +210,77 @@ CountMapping::ProcessRecord(void *gdataRec)
 
   DevStatus result = StatusOk;
 
-  // Note: we are assuming that the GData is aligned on double (8-bit)
-  // boundaries.
-  double *xP = (double *)((char *)gdataRec + _xOffset);
-  double *yP = (double *)((char *)gdataRec + _yOffset);
-  double *putP = (double *)((char *)gdataRec + _putOffset);
+  if (!_valid) {
+    reportErrNosys("Invalid CountMapping object");
+    result += StatusFailed;
+  } else {
+    // Note: we are assuming that the GData is aligned on double (8-bit)
+    // boundaries.
+    double *xP = (double *)((char *)gdataRec + _xOffset);
+    double *yP = (double *)((char *)gdataRec + _yOffset);
+    double *putP = (double *)((char *)gdataRec + _putOffset);
 
-  Coord oldX = (Coord)(*xP);
-  Coord oldY = (Coord)(*yP);
+    Coord oldX = (Coord)(*xP);
+    Coord oldY = (Coord)(*yP);
 #if defined(DEBUG)
-  printf("oldX = %g, oldY = %g\n", oldX, oldY);
+    printf("  oldX = %g, oldY = %g\n", oldX, oldY);
 #endif
 
-  // Find out if this record is within the visual filter (force the attribute
-  // that's getting the count to the center of the visual filter).
-  Boolean inFilter;
-  switch (_putAttr) {
-  case AttrX: {
-    Coord tmpX = (_filter->xLow + _filter->xHigh) / 2.0;
-    inFilter = View::InVisualFilter(*_filter, tmpX, oldY);
-    break;
-  }
-
-  case AttrY: {
-    Coord tmpY = (_filter->yLow + _filter->yHigh) / 2.0;
-    inFilter = View::InVisualFilter(*_filter, oldX, tmpY);
-    break;
-  }
-
-  default:
-    inFilter = false;
-    reportErrNosys("Illegal GData attribute");
-    result += StatusFailed;
-    break;
-  }
-
-  if (inFilter) {
-    // Do the WindowRep's transform to get the counted attribute in terms
-    // of pixels.
-    Coord newVal;
-    switch (_countAttr) {
-    case AttrX:
-      _transform->TransformX(oldX, oldY, newVal);
+    // Find out if this record is within the visual filter (force the attribute
+    // that's getting the count to the center of the visual filter).
+    Boolean inFilter;
+    switch (_putAttr) {
+    case AttrX: {
+      Coord tmpX = (_filter->xLow + _filter->xHigh) / 2.0;
+      inFilter = View::InVisualFilter(*_filter, tmpX, oldY);
       break;
+    }
 
-    case AttrY:
-      _transform->TransformY(oldX, oldY, newVal);
+    case AttrY: {
+      Coord tmpY = (_filter->yLow + _filter->yHigh) / 2.0;
+      inFilter = View::InVisualFilter(*_filter, oldX, tmpY);
       break;
+    }
 
     default:
+      inFilter = false;
       reportErrNosys("Illegal GData attribute");
       result += StatusFailed;
       break;
     }
 
-    // Put the count into the appropriate attribute and increment the bin
-    // count.
-    if (result.IsComplete()) {
-      int index = (int) newVal;
-      if (index < 0 || index >= _binCount) {
-	reportErrNosys("Internal error in CountMapping: index outside bins");
-      } else {
-        *putP = (double) _bins[index];
-        _bins[index]++;
+    if (inFilter) {
+      // Do the WindowRep's transform to get the counted attribute in terms
+      // of pixels.
+      Coord newVal;
+      switch (_countAttr) {
+      case AttrX:
+        _transform->TransformX(oldX, oldY, newVal);
+        break;
+
+      case AttrY:
+        _transform->TransformY(oldX, oldY, newVal);
+        break;
+
+      default:
+        reportErrNosys("Illegal GData attribute");
+        result += StatusFailed;
+        break;
+      }
+
+      // Put the count into the appropriate attribute and increment the bin
+      // count.
+      if (result.IsComplete()) {
+        int index = (int) newVal;
+        if (index < 0 || index >= _binCount) {
+	  reportErrNosys("Internal error in CountMapping: index outside bins");
+        } else {
+          *putP = (double) _bins[index];
+#if defined(DEBUG)
+          printf("  newX = %g, newY = %g\n", *xP, *yP);
+#endif
+          _bins[index]++;
+        }
       }
     }
   }

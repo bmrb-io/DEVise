@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/07/30 15:31:21  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.2  1998/04/14 21:03:14  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -180,7 +184,7 @@ MasterSlaveLink::Done()
        * symbols were actually drawn in the lower view, we don't really have
        * to redraw the upper view).  However, it seems like an awful lot of
        * work to keep track of whether we really have to redraw the upper
-       * view(s), so for now we refresh the top view in the pile, which
+       * view(s), so for now we refresh the bottom view in the pile, which
        * refreshes the whole pile. RKW 1/9/97. */
       View *slave = View::FindViewByName(view->GetFirstSibling()->GetName());
 #ifdef DEBUG

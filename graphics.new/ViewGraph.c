@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1998/10/01 17:54:18  wenger
+  Implemented the sending of GData to the JavaScreen.
+
   Revision 1.83  1998/09/08 20:26:19  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -538,10 +541,6 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gdsParams.separator = ' ';
 
   _countMapping = NULL;
-#if 0 // TEMP: This is for testing only; remove it when "count mapping" GUI is
-      // added.
-  _countMapping = new CountMapping(CountMapping::AttrY, CountMapping::AttrX);
-#endif
 
   _slaveTable = new SlaveTable(this);
 }
@@ -1659,7 +1658,6 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
   if (_countMapping) {
     DevStatus result = _countMapping->Init(this);
-    DOASSERT(result.IsComplete(), "Initialization of CountMapping failed");
   }
 }
 
@@ -1896,6 +1894,136 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 	}
 
 	return false;
+}
+
+static char *
+CountMapAttrToStr(CountMapping::Attr attr)
+{
+  char *result;
+
+  switch (attr) {
+  case CountMapping::AttrX:
+	result = "X";
+	break;
+
+  case CountMapping::AttrY:
+	result = "Y";
+	break;
+
+  default:
+	result = "";
+	reportErrNosys("Illegal or invalid CountMapping attribute");
+	break;
+  }
+
+  return result;
+}
+
+static CountMapping::Attr
+StrToCountMapAttr(char *attr)
+{
+  CountMapping::Attr result;
+
+  if (!strcmp(attr, "X") || !strcmp(attr, "x")) {
+	result = CountMapping::AttrX;
+  } else if (!strcmp(attr, "Y") || !strcmp(attr, "y")) {
+	result = CountMapping::AttrY;
+  } else {
+	result = CountMapping::AttrInvalid;
+	reportErrNosys("Illegal or invalid CountMapping attribute");
+  }
+
+  return result;
+}
+
+void
+ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::GetCountMapping()\n", GetName());
+#endif
+
+  if (_countMapping != NULL) {
+	enabled = true;
+	CountMapping::Attr count, put;
+	_countMapping->GetAttrs(count, put);
+	countAttr = CountMapAttrToStr(count);
+	putAttr = CountMapAttrToStr(put);
+  } else {
+	enabled = false;
+	countAttr = "";
+	putAttr = "";
+  }
+}
+
+DevStatus
+ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SetCountMapping(%d, %s, %s)\n", GetName(), enabled,
+	countAttr, putAttr);
+#endif
+
+  DevStatus status = StatusOk;
+
+  Boolean deleteOld = false;
+  Boolean createNew = false;
+  Boolean refresh = false;
+
+  CountMapping::Attr newCount;
+  CountMapping::Attr newPut;
+
+  if (enabled) {
+    newCount = StrToCountMapAttr(countAttr);
+    newPut = StrToCountMapAttr(putAttr);
+    if (newCount == CountMapping::AttrInvalid ||
+	    newPut == CountMapping::AttrInvalid) {
+	  //
+	  // Bad value(s) for new count attribute(s).
+	  //
+	  status = StatusFailed;
+    } else {
+	  if (_countMapping != NULL) {
+	    CountMapping::Attr oldCount, oldPut;
+	    _countMapping->GetAttrs(oldCount, oldPut);
+	    if (newCount != oldCount || newPut != oldPut) {
+		  //
+		  // Both enabled, attributes differ.
+		  //
+		  deleteOld = true;
+		  createNew = true;
+		  refresh = true;
+		}
+	  } else {
+		//
+		// Old disabled, new enabled.
+		//
+		createNew = true;
+		refresh = true;
+	  }
+	}
+  } else {
+	if (_countMapping != NULL) {
+	  //
+	  // Old enabled, new disabled.
+	  //
+	  deleteOld = true;
+	  refresh = true;
+	}
+  }
+
+  if (deleteOld) {
+    delete _countMapping;
+    _countMapping = NULL;
+  }
+  if (createNew) {
+    _countMapping = new CountMapping(newCount, newPut);
+  }
+  if (refresh) {
+    Refresh();
+  }
+
+  return status;
 }
 
 //******************************************************************************

@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/26 22:59:46  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
  */
 
 #ifndef _CountMapping_h_
@@ -51,6 +56,8 @@ public:
   CountMapping(Attr countAttr, Attr putAttr);
   ~CountMapping();
 
+  void GetAttrs(Attr &countAttr, Attr &putAttr);
+
   // Initializer -- must be called each time the view is drawn, before
   // any GData records are processed.
   DevStatus Init(ViewGraph *view);
@@ -71,6 +78,8 @@ private:
 
   int _binCount;;
   int *_bins;
+
+  Boolean _valid;
 };
 
 #endif /* _CountMapping_h_ */

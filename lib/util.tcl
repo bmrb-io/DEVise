@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.59  1998/08/18 15:22:31  wenger
+#  Found and fixed bug 384 (devisec not quitting).
+#
 #  Revision 1.58  1998/06/12 19:55:43  wenger
 #  Attribute of TAttr/set links can now be changed; GUI has menu of available
 #  attributes; attribute is set when master view is set instead of at link
@@ -1135,3 +1138,226 @@ proc SaveSessionDesc {physical} {
     DEVise writeDesc $filename $physical
   }
 }
+
+############################################################
+# Show info about links and cursors.
+
+proc ShowLinkCursorInfo {} {
+
+  # If this window already exists, raise it to the top and return.
+  if {[WindowVisible .lcInfo]} {
+    return
+  }
+
+  # Create the top level widget and the frames we'll later use for
+  # positioning.
+  toplevel .lcInfo
+  wm title .lcInfo "Link/Cursor Info"
+
+  frame .lcInfo.row1
+  frame .lcInfo.row2
+  frame .lcInfo.row3
+  frame .lcInfo.listframe -relief raised -borderwidth 2
+
+  # Create the various widgets.
+  set listWidth 100
+  button .lcInfo.ok -text "OK" -width 10 \
+    -command {destroy .lcInfo}
+
+  set listHeight 10
+
+  set listWidth 12
+  label .lcInfo.lchead -text "Link/cursor" -width $listWidth
+  listbox .lcInfo.lclist -relief raised -width $listWidth -height $listHeight \
+    -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  set listWidth 20
+  label .lcInfo.namehead -text "Name" -width $listWidth
+  listbox .lcInfo.namelist -relief raised -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  set listWidth 10
+  label .lcInfo.typehead -text "Type" -width $listWidth
+  listbox .lcInfo.typelist -relief raised -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  set listWidth 20
+  label .lcInfo.vnamehead -text "View name" -width $listWidth
+  listbox .lcInfo.vnamelist -relief raised -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  set listWidth 20
+  label .lcInfo.vtitlehead -text "View title" -width $listWidth
+  listbox .lcInfo.vtitlelist -relief raised -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  set listWidth 12
+  label .lcInfo.mshead -text "Master/slave" -width $listWidth
+  listbox .lcInfo.mslist -relief raised -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+
+  #TEMP Dragging one listbox doesn't move the others.  It looks like there's
+  # a way to make that happen, but I don't want to go to the trouble right
+  # now.  RKW 1998-10-20.
+  scrollbar .lcInfo.scroll -command [list BindYview [list \
+    .lcInfo.lclist .lcInfo.typelist .lcInfo.namelist \
+    .lcInfo.vnamelist .lcInfo.vtitlelist .lcInfo.mslist ]]
+
+  UpdateLinkCursorInfo
+
+  # Pack everything.
+  pack .lcInfo.row1 -side bottom -pady 4m
+  pack .lcInfo.row2 -side bottom
+  pack .lcInfo.row3 -side left
+
+  pack .lcInfo.listframe -in .lcInfo.row2 -side left
+
+  pack .lcInfo.ok -in .lcInfo.row1 -side left -padx 3m
+  pack .lcInfo.lclist .lcInfo.namelist .lcInfo.typelist .lcInfo.vnamelist \
+    .lcInfo.vtitlelist .lcInfo.mslist -in .lcInfo.listframe -side left -padx 0
+  pack .lcInfo.scroll -in .lcInfo.row2 -side right -fill y
+  pack .lcInfo.lchead .lcInfo.namehead .lcInfo.typehead .lcInfo.vnamehead \
+    .lcInfo.vtitlehead .lcInfo.mshead -in .lcInfo.row3 -side left
+
+  # *Don't* grab input focus here, because we want the user to be able
+  # to do other stuff while having the link/cursor info showing.
+}
+
+############################################################
+# Update the link/cursor info, if it's currently shown.
+
+proc UpdateLinkCursorInfo {} {
+
+  if {![winfo exists .lcInfo]} {
+    return
+  }
+
+  # Clear out the listbox.
+  .lcInfo.lclist delete 0 end
+  .lcInfo.namelist delete 0 end
+  .lcInfo.typelist delete 0 end
+  .lcInfo.vnamelist delete 0 end
+  .lcInfo.vtitlelist delete 0 end
+  .lcInfo.mslist delete 0 end
+
+  set links [NonPileLinkSet]
+  set links [lsort $links]
+
+  foreach link $links {
+    set flag [DEVise getLinkFlag $link]
+    set views [DEVise getLinkViews $link]
+
+    set masterView ""
+    set slaveStr ""
+
+    if {$flag == 1} {
+      set type "VisualX"
+    } elseif {$flag == 2} {
+      set type "VisualY"
+    } elseif {$flag == 3} {
+      set type "VisualXY"
+    } elseif {$flag == 128} {
+      if {[DEVise getLinkType $link] == 1} {
+        set type "Record+"
+      } else {
+        set type "Record-"
+      }
+      set masterView [DEVise getLinkMaster $link]
+      set slaveStr "slave"
+    } elseif {$flag == 1024} {
+      set masterAttr [DEVise getLinkMasterAttr $link]
+      set slaveAttr [DEVise getLinkSlaveAttr $link]
+      set type "Set ($masterAttr/$slaveAttr)"
+      set masterView [DEVise getLinkMaster $link]
+      set slaveStr "slave"
+    } else {
+      set type "unknown"
+    } 
+
+    if {$masterView == "" && [llength $views] == 0} {
+      # Link has no views.
+      .lcInfo.lclist insert end "link"
+      .lcInfo.namelist insert end $link
+      .lcInfo.typelist insert end $type
+      .lcInfo.vnamelist insert end ""
+      .lcInfo.vtitlelist insert end ""
+      .lcInfo.mslist insert end ""
+    } else {
+      # Link has views.
+      if {$masterView != ""} {
+        set labelParams [DEVise getLabel $masterView]
+        set viewTitle [lindex $labelParams 2]
+
+        .lcInfo.lclist insert end "link"
+        .lcInfo.namelist insert end $link
+        .lcInfo.typelist insert end $type
+        .lcInfo.vnamelist insert end $masterView
+        .lcInfo.vtitlelist insert end $viewTitle
+        .lcInfo.mslist insert end "master"
+      }
+
+      foreach view $views {
+        set labelParams [DEVise getLabel $view]
+        set viewTitle [lindex $labelParams 2]
+
+        .lcInfo.lclist insert end "link"
+        .lcInfo.namelist insert end $link
+        .lcInfo.typelist insert end $type
+        .lcInfo.vnamelist insert end $view
+        .lcInfo.vtitlelist insert end $viewTitle
+        .lcInfo.mslist insert end $slaveStr
+      }
+    }
+  }
+
+  set cursors [CategoryInstances "cursor"]
+  set cursors [lsort $cursors]
+
+  foreach cursor $cursors {
+    set views [DEVise getCursorViews $cursor]
+    set type [DEVise getCursorType $cursor]
+
+    if {[lindex $views 0] == {} && [lindex $views 1] == {}} {
+      # Cursor has no views.
+      .lcInfo.lclist insert end "cursor"
+      .lcInfo.namelist insert end $cursor
+      .lcInfo.typelist insert end $type
+      .lcInfo.vnamelist insert end ""
+      .lcInfo.vtitlelist insert end ""
+      .lcInfo.mslist insert end ""
+    } else {
+      # Cursor has views.
+      # First view is source.
+      set srcdest "source"
+      foreach view $views {
+	if {$view != {}} {
+          set labelParams [DEVise getLabel $view]
+          set viewTitle [lindex $labelParams 2]
+
+          .lcInfo.lclist insert end "cursor"
+          .lcInfo.namelist insert end $cursor
+          .lcInfo.typelist insert end $type
+          .lcInfo.vnamelist insert end $view
+          .lcInfo.vtitlelist insert end $viewTitle
+          .lcInfo.mslist insert end $srcdest
+
+	  # Second view is destination.
+	  set srcdest "destination"
+	}
+      }
+    }
+  }
+}
+
+############################################################
+# Control all of the damn listboxes with one scrollbar.
+#
+# Note: this procedure is taken from the examples in _Practical Programming
+# in Tcl and Tk_ by Brent Welch.
+
+proc BindYview { lists args } {
+  foreach l $lists {
+    eval {$l yview} $args
+  }
+}
+

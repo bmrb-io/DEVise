@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/07/10 21:20:08  wenger
+  Minor cleanups and improvements.
+
   Revision 1.9  1998/05/06 22:05:01  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -213,7 +216,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	for (int recNum = 0; recNum < numGData; recNum++) {
       if (_countMapping) {
 	    DevStatus result = _countMapping->ProcessRecord(dataP);
-		DOASSERT(result.IsComplete(), "CountMapping::ProcessRecord() failed");
 	  }
 
 	  Coord x = symArray[recNum].x = ShapeGetX(dataP, mapping, offset);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/09/30 17:44:34  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.30  1998/09/10 23:24:29  wenger
   Fixed JavaScreen client switch GIF geometry problem.
 
@@ -313,7 +317,9 @@ class ViewWin : public Coloring
     void DoneIterator(int index) { _children.DoneIterator(index); }
 
     /* Get the first sibling of this ViewWin (the first sibling is the
-     * one that's on top when views are piled, stacked, etc. */
+     * one that's on the *bottom* when views are piled, stacked, etc.,
+     * because the views are drawn in the order that they're on the
+     * list). */
     ViewWin *GetFirstSibling() {
       ViewWin *parent = GetParent();
       DOASSERT(parent, "View has no parent");
@@ -324,7 +330,6 @@ class ViewWin : public Coloring
       return sibling;
     }
 
-    
     ViewWin *GetParent() { return _parent; }
     
     /* Return true if window is iconified */

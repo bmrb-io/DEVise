@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.53  1998/08/03 15:35:25  wenger
+#  Added note about disabling menus.
+#
 #  Revision 1.52  1998/07/17 15:33:57  wenger
 #  Improved link creation GUI as per request from Raghu; started on
 #  DataReader schema GUI; changed version to 1.5.4.
@@ -302,6 +305,10 @@ proc ProcessViewSelected { view } {
     Update2DBasicStatWindow
     UpdateHistoryWindow
 
+    # Moved this up to here so the mapping dialog gets cleared if no view
+    # is selected (when closing a session, for example).  RKW 1998-10-14.
+    UpdateMappingDialog .editMapping $curView
+
     if {$curView == ""} {
 	if {[WindowExists .stack]} {
 	    .stack.title.text configure -text "No View Selected"
@@ -316,7 +323,6 @@ proc ProcessViewSelected { view } {
 
 	return
     }
-    UpdateMappingDialog .editMapping $curView
 
     if {[WindowExists .stack]} {
 	.stack.title.text configure -text "View: $curView"
@@ -616,6 +622,8 @@ proc DoViewDestroy {} {
     }
 
     DEVise destroy $viewName
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -695,6 +703,8 @@ proc DoCursorCreate {} {
 	return
     }
 
+    UpdateLinkCursorInfo
+
     return $name
 }
 
@@ -713,6 +723,8 @@ proc DoCursorDelete {} {
     }
     
     DEVise destroy $cursor
+
+    UpdateLinkCursorInfo
 }
 
 proc DoGetCursor {label} {
@@ -751,6 +763,8 @@ proc DoSetCursorSrc {} {
     }
 
     set answer [DEVise setCursorSrc $cursor $curView]
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -768,6 +782,8 @@ proc DoSetCursorDst {} {
     }
     
     set answer [DEVise setCursorDst $cursor $curView]
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -807,6 +823,8 @@ proc CreateAndLinkLink {} {
         set linkViewStatus 1
         LinkViewMsg
     }
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -879,6 +897,9 @@ proc DoLinkCreate { isRec } {
 	    break
 	}
     }
+
+    UpdateLinkCursorInfo
+
     return $name
 }
 
@@ -985,6 +1006,8 @@ proc DoViewLink {} {
     if { $check } {
 	DEVise insertLink $link $curView
     }
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1027,6 +1050,8 @@ proc DoViewUnlink {} {
 	    }
 	}
     }
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1056,6 +1081,8 @@ proc DoLinkDestroy {} {
 	    DeleteLink $dialogListVar(selected) 
 	}
     }
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1080,6 +1107,7 @@ proc DoSetLinkType {} {
     }
     set linkMaster [DEVise getLinkMaster $linkname]
     DEVise refreshView $linkMaster
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1098,6 +1126,8 @@ proc DoSetLinkAttr {} {
     	set linkname $dialogListVar(selected)
 	SetLinkAttr $linkname
     }
+
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1137,6 +1167,7 @@ proc DeleteLink { link } {
 	}
     }
     DEVise destroy $link
+    UpdateLinkCursorInfo
 }
 
 
@@ -1181,6 +1212,7 @@ proc DoSetLinkMaster {} {
 	    SetLinkAttr $link
 	}
     }
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1227,6 +1259,7 @@ proc DoResetLinkMaster {} {
     }
 
     DEVise resetLinkMaster $link
+    UpdateLinkCursorInfo
 }
 
 
@@ -1264,6 +1297,7 @@ proc DoModifyLink {} {
     }
     set flag $dialogCkButVar(selected)
     DEVise setLinkFlag $link $flag
+    UpdateLinkCursorInfo
 }
 
 ############################################################
@@ -1346,6 +1380,7 @@ proc SetLinkAttr {linkname} {
 	# For now, we force the master and slave attributes to be the same.
 	DEVise setLinkMasterAttr $linkname $attrName
 	DEVise setLinkSlaveAttr $linkname $attrName
+	UpdateLinkCursorInfo
     }
 }
 
@@ -1561,15 +1596,15 @@ proc DoSetTitle { {perWindow 0} } {
     pack .setTitle.top.l1 .setTitle.top.e1 -side left -padx 3m \
 	    -fill x -expand 1
 
-    button .setTitle.bot.but.ok -text OK -width 10 -command {
+    button .setTitle.bot.but.ok -text Show -width 10 -command {
 	DEVise setLabel $curView 1 16 $newTitle
 	destroy .setTitle
     }
     button .setTitle.bot.but.clear -text Clear -width 10 -command {
 	set newTitle ""
     }
-    button .setTitle.bot.but.delete -text Delete -width 10 -command {
-	DEVise setLabel $curView 0 12 ""
+    button .setTitle.bot.but.delete -text Hide -width 10 -command {
+	DEVise setLabel $curView 0 12 $newTitle
 	destroy .setTitle
     }
     button .setTitle.bot.but.cancel -text Cancel -width 10 -command {
@@ -2436,6 +2471,7 @@ proc DestroyView {view} {
     if {$view == ""} { return 1 }
     DEVise removeView $view
     DEVise destroy $view
+    UpdateLinkCursorInfo
     if { $view == $curView } { set curView "" }
     return 0
 }
@@ -2484,6 +2520,7 @@ proc LinkViewMsg {} {
     set answer [dialog .getLinkView "Select View" $message "" 0 OK Cancel]
     if { $answer == 1 } {
 	set linkViewStatus 0
+	UpdateLinkCursorInfo
     }
     #TEMP -- it would be good to disable all of the other menus, etc., here
 }
@@ -2548,6 +2585,7 @@ proc LinkSelectedView {} {
 	    if {$answer == 1} {
 		set linkViewStatus 0
 	    }
+	    UpdateLinkCursorInfo
 	    return
 	}
 
@@ -2566,5 +2604,21 @@ proc LinkSelectedView {} {
 	# We're done.
 	#
 	set linkViewStatus 0
+	UpdateLinkCursorInfo
     }
+}
+
+############################################################
+# Finds and returns the "top" (last drawn) view in the pile containing
+# the given view; if the given view isn't in a pile, it just returns the
+# given view.
+
+proc FindTopView { view } {
+
+    if {[DEVise getViewPileMode $view]} {
+	set win [DEVise getViewWin $view]
+	set view [lindex [DEVise getWinViews $win] end]
+    }
+
+    return $view
 }
