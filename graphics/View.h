@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.106  2000/03/21 16:24:47  wenger
+  'f' or 'F' key in a view now flips the appropriate pile or stack, if
+  there is one.
+
   Revision 1.105  2000/03/14 21:51:38  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -570,11 +574,6 @@ class View : public ViewWin
 	public:
 
 		// Constructors and Destructors
-//		View(char* name, VisualFilter& initFilter,
-//			 PColorID fgid = nullPColorID,
-//			 PColorID bgid = nullPColorID,
-//			 AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
-//			 int weight = 1, Boolean boundary = false);
 		View(char* name, VisualFilter& initFilter,
 			 PColorID fgid = GetPColorID(defForeColor),
 			 PColorID bgid = GetPColorID(defBackColor),
@@ -595,8 +594,6 @@ class View : public ViewWin
 
 		/* Highlight a view of depending on flag.*/
 	void DoSelect(Boolean flag);
-
-	int GetId() { return _id; }
 
 	/* setting/getting visual filter */
 	// Set visual filter, generating a command.
@@ -622,8 +619,6 @@ class View : public ViewWin
 	void Mark(int index, Boolean true_false);
 
 	static View *FindViewByName(char *name);
-	static View *FindViewById(int viewId);
-	static int FindViewId(View *view);
 
 	/* iterate through all views */
 	static int InitViewIterator() { return _viewList->InitIterator(); }
@@ -738,31 +733,14 @@ class View : public ViewWin
 
 	Boolean DoneRefresh() { return _doneRefresh;}
 
-	/* This isn't used anywhere. RKW 1/7/97. */
-	//void SetPileViewHold(Boolean mode) { _pileViewHold = mode;}
-	/* Draw View on XOR Layer */
-	void SetXORFlag(Boolean active) {
-	  if (! active) {
-	    _XORflag = active;
-	  }
-	  return;
-	}
-	Boolean GetXORFlag() {
-	  return _XORflag;
-	}
-
 	virtual void SetGeometry(int x, int y, unsigned wd, unsigned ht); 
+
 	/******** Pixmap manipulations *********/
-
-	/* Put current pixmap into buffer. bytes == # of bytes
-	used to create the pixmap. */
-	void CachePixmap(int bytes);
-
-	/* Look into pixmap buffer for pixmap that we can use for drawing
+    /* Look into pixmap buffer for pixmap that we can use for drawing
 	filter.  Restore the pixmap, and return a new visual filter. */
 	enum PixmapStat { PixmapTotal , PixmapPartial, PixmapNone };
 	PixmapStat RestorePixmap(VisualFilter filter, VisualFilter &newFilter);
-        virtual Boolean PixmapEnabled() { return true; }
+    virtual Boolean PixmapEnabled() { return true; }
 
 	/* Append pixmaps in pixmap buffer into file.*/
 	void SavePixmaps(FILE *file);

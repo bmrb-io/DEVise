@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.220  2000/03/21 16:24:35  wenger
+  'f' or 'F' key in a view now flips the appropriate pile or stack, if
+  there is one.
+
   Revision 1.219  2000/03/15 22:53:57  wenger
   Found and fixed bug 574 (invalid object access).
 
@@ -1161,8 +1165,6 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_filter.camera.pan_right = 0.0;
 	_filter.camera.pan_up = 0.0;
 
-	_id = ++_nextId;
-
 	_autoUpdate = false;
 
     _viewHelp = NULL;
@@ -1271,37 +1273,6 @@ View *View::FindViewByName(char *name)
   
   fprintf(stderr, "View %s not found\n", name);
   return NULL;
-}
-
-/***************************************************************
-Find view by id
-****************************************************************/
-
-View *View::FindViewById(int id)
-{
-  if (!id)
-    return NULL;
-  
-  DOASSERT(_viewList, "Invalid view list");
-  
-  for(int index = _viewList->InitIterator(); _viewList->More(index); ) {
-    View *view = _viewList->Next(index);
-    if (view->GetId() == id) {
-      _viewList->DoneIterator(index);
-      return view;
-    }
-  }
-  
-  fprintf(stderr,"View %d not found\n", id);
-  return NULL;
-}
-
-int View::FindViewId(View *view)
-{
-  if (!view)
-    return 0;
-
-  return view->GetId();
 }
 
 void View::SubClassMapped()
@@ -3003,14 +2974,6 @@ void View::InsertHistory(VisualFilter &filter)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   (void)_filterQueue->Enqueue(filter, filter.marked);
-}
-
-/* Put current pixmap into buffer. bytes == # of bytes
-   used to create the pixmap. */
-
-void View::CachePixmap(int bytes)
-{
-  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 }
 
 /* Look into pixmap buffer for pixmap that we can use for drawing
