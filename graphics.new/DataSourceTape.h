@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/01 19:31:35  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.2  1996/06/27 15:51:00  jussi
   Added IsOk() method which is used by TDataAscii and TDataBinary
   to determine if a file is still accessible. Also moved GetModTime()
@@ -38,9 +44,8 @@
 
 
 #include "DataSource.h"
+#include "tapedrive.h"
 
-
-class TapeDrive;
 
 class DataSourceTape : public DataSource
 {
@@ -76,6 +81,11 @@ public:
 	virtual Boolean isTape() {return true;};
 
 private:
+        // Synchronize before issuing asynchronous I/Os
+        virtual void SynchronizeBeforeAsyncIO() {
+            _tapeP->waitForChildProcess();
+        }
+
 	char *		_filename;
 	TapeDrive *	_tapeP;
 };
