@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/01/28 19:46:31  wenger
+  Fixed bug 139; better testing of ScaledText() in client/server example;
+  fixes to Exit class for client/server library.
+
   Revision 1.22  1997/01/28 16:50:38  wenger
   Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
   doesn't draw over them); Devise now returns a status of 0 when exiting
@@ -1134,141 +1138,7 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 	 text, x, y, width, height);
 #endif
 
-  /* transform into window coords */
-  Coord tx1, ty1, tx2, ty2;
-  Transform(x, y, tx1, ty1);
-  Transform(x + width, y + height, tx2, ty2);
-  Coord winX, winY, winWidth, winHeight;
-  winX = MIN(tx1, tx2);
-  winY = MIN(ty1, ty2);
-  winWidth = MAX(tx1, tx2) - winX + 1;
-  winHeight = MAX(ty1, ty2) - winY + 1;
-  
-  if (skipLeadingSpace) {
-    /* skip leading spaces before drawing text */
-    while (*text == ' ')
-      text++;
-  }
-  
-  int textLength = strlen(text);
-  if (textLength <= 0) return;
-
-  char *comment = "";
-  char *calculation = "";
-
-  /* Here, instead of actually calculating the text position, we generate
-   * the correct PostScript code to calculate the position. */
-  switch(alignment) {
-  case AlignNorthWest:
-    comment = "% AlignNorthWest";
-    calculation = "/textX winX def\n"
-      "/textY winY heightDiff add def\n";
-    break;
-
-  case AlignNorth:
-    comment = "% AlignNorth";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY heightDiff add def\n";
-    break;
-
-  case AlignNorthEast:
-    comment = "% AlignNorthEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY heightDiff add def\n";
-    break;
-
-  case AlignWest: 
-    comment = "% AlignWest";
-    calculation = "/textX winX def\n"
-      "/textY winY halfHeightDiff add def\n";
-    break;
-
-  case AlignCenter: 
-    comment = "% AlignCenter";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY halfHeightDiff add def\n";
-    break;
-
-  case AlignEast:
-    comment = "% AlignEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY halfHeightDiff add def\n";
-    break;
-
-  case AlignSouthWest:
-    comment = "% AlignSouthWest";
-    calculation = "/textX winX def\n"
-      "/textY winY def\n";
-    break;
-
-  case AlignSouth:
-    comment = "% AlignSouth";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY def\n";
-    break;
-
-  case AlignSouthEast:
-    comment = "% AlignSouthEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY def\n";
-    break;
-
-  default:
-    comment = "error";
-    DOASSERT(false, "Illegal alignment option");
-    break;
-  }
-
-#ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
-
-#if defined(PS_DEBUG)
-  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
-#endif
-
-#if defined(PS_DEBUG)
-  /* Draw the "text window" within which the text is positioned -- for
-   * debugging purposes. */
-  fprintf(printFile, "[3] 0 setdash\n");
-  DrawLine(printFile, tx1, ty1, tx1, ty2);
-  DrawLine(printFile, tx1, ty2, tx2, ty2);
-  DrawLine(printFile, tx2, ty2, tx2, ty1);
-  DrawLine(printFile, tx2, ty1, tx1, ty1);
-  fprintf(printFile, "[] 0 setdash\n");
-#endif
-
-  fprintf(printFile, "newpath\n");
-
-  /* Get the width and height of the given string in the given font. */
-  fprintf(printFile, "(%s) DevTextExtents\n", text);
-  fprintf(printFile, "/textHeight exch def\n");
-  fprintf(printFile, "/textWidth exch def\n");
-
-  fprintf(printFile, "/winX %f def\n", winX);
-  fprintf(printFile, "/winY %f def\n", winY);
-  fprintf(printFile, "/winWidth %f def\n", winWidth);
-  fprintf(printFile, "/winHeight %f def\n", winHeight);
-
-  /* Calculate some values based on the "text window" size and the size
-   * of the text. */
-  fprintf(printFile, "/widthDiff winWidth textWidth sub def\n");
-  fprintf(printFile, "/halfWidthDiff widthDiff 0.5 mul def\n");
-  fprintf(printFile, "/heightDiff winHeight textHeight sub def\n");
-  fprintf(printFile, "/halfHeightDiff heightDiff 0.5 mul def\n");
-
-#if defined(PS_DEBUG)
-  /* Print the comment if necessary to help debug the PostScript output. */
-  fprintf(printFile, "%s\n", comment);
-#endif
-
-  /* Now calculate the location of the text according to the
-   * specified alignment and the size of the text. */
-  fprintf(printFile, "%s", calculation);
-
-  /* Move to the actual location and print the text. */
-  fprintf(printFile, "textX textY moveto\n");
-  fprintf(printFile, "(%s) show\n", text);
-#endif
+  DrawText(false, text, x, y, width, height, alignment, skipLeadingSpace);
 }
 
 
@@ -1281,45 +1151,11 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		       Boolean skipLeadingSpace)
 {
 #if defined(DEBUG)
-  printf("PSWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",
+  printf("PSWindowRep::ScaledText: %s at %.2f,%.2f,%.2f,%.2f\n",
 	 text, x, y, width, height);
 #endif
 
-  /* transform into window coords */
-  Coord tx1, ty1, tx2, ty2;
-  Transform(x, y, tx1, ty1);
-  Transform(x + width, y + height, tx2, ty2);
-  int winX, winY, winWidth, winHeight; /* box in window coord */
-  winX = ROUND(int, MIN(tx1, tx2));
-  winY = ROUND(int, MIN(ty1, ty2));
-  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
-
-  if (skipLeadingSpace) {
-    /* skip leading spaces before drawing text */
-    while (*text == ' ')
-      text++;
-  }
-  
-  int textLength = strlen(text);
-  if (!textLength)
-    return;
-
-#ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
-
-#if defined(PS_DEBUG)
-  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
-#endif
-
-  /* Note: this is a temporary expedient only -- does not scale or
-   * properly position the text. RKW 11/6/96. */
-  fprintf(printFile, "/Times-Roman findfont\n");
-  fprintf(printFile, "15 scalefont\n");
-  fprintf(printFile, "setfont\n");
-  fprintf(printFile, "%f %f moveto\n", tx1, ty1);
-  fprintf(printFile, "(%s) show\n", text);
-#endif
+  DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace);
 }
 
 
@@ -1692,4 +1528,192 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 #endif
 
   return;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Draw scaled or absolute text */
+
+void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
+		       Coord width, Coord height, TextAlignment alignment,
+		       Boolean skipLeadingSpace)
+{
+  /* transform into window coords */
+  Coord tx1, ty1, tx2, ty2;
+  Transform(x, y, tx1, ty1);
+  Transform(x + width, y + height, tx2, ty2);
+  Coord winX, winY, winWidth, winHeight; /* box in window coord */
+  winX = ROUND(int, MIN(tx1, tx2));
+  winY = ROUND(int, MIN(ty1, ty2));
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
+
+  if (skipLeadingSpace) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+  
+  int textLength = strlen(text);
+  if (textLength <= 0) return;
+
+  char *comment;
+  char *calculation;
+
+  /* Here, instead of actually calculating the text position, we generate
+   * the correct PostScript code to calculate the position. */
+  GetAlignmentStrings(alignment, comment, calculation);
+
+#ifdef GRAPHICS
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", scaled ? "ScaledText" :
+    "AbsoluteText");
+#endif
+
+#if defined(PS_DEBUG)
+  /* Draw the "text window" within which the text is positioned -- for
+   * debugging purposes. */
+  fprintf(printFile, "[3] 0 setdash\n");
+  DrawLine(printFile, tx1, ty1, tx1, ty2);
+  DrawLine(printFile, tx1, ty2, tx2, ty2);
+  DrawLine(printFile, tx2, ty2, tx2, ty1);
+  DrawLine(printFile, tx2, ty1, tx1, ty1);
+  fprintf(printFile, "[] 0 setdash\n");
+#endif
+
+  fprintf(printFile, "newpath\n");
+
+  /* Get the width and height of the given string in the given font. */
+  fprintf(printFile, "(%s) DevTextExtents\n", text);
+  fprintf(printFile, "/textHeight exch def\n");
+  fprintf(printFile, "/textWidth exch def\n");
+
+  fprintf(printFile, "/winX %f def\n", winX);
+  fprintf(printFile, "/winY %f def\n", winY);
+  fprintf(printFile, "/winWidth %f def\n", winWidth);
+  fprintf(printFile, "/winHeight %f def\n", winHeight);
+
+  if (scaled) {
+    /* Now scale the text to fit the window. */
+    fprintf(printFile, "%f textWidth div\n", winWidth);
+    fprintf(printFile, "/xScale exch def\n");
+    fprintf(printFile, "%f textHeight div\n", winHeight);
+    fprintf(printFile, "/yScale exch def\n");
+    fprintf(printFile, "xScale yScale gt\n");
+    fprintf(printFile, "{/xyScale yScale def} {/xyScale xScale def} ifelse\n");
+
+    /* Adjust the text width and height values by the scale factor. */
+    fprintf(printFile, "textWidth xyScale mul\n");
+    fprintf(printFile, "/textWidth exch def\n");
+    fprintf(printFile, "textHeight xyScale mul\n");
+    fprintf(printFile, "/textHeight exch def\n");
+  }
+
+  /* Calculate some values based on the "text window" size and the size
+   * of the text. */
+  fprintf(printFile, "/widthDiff winWidth textWidth sub def\n");
+  fprintf(printFile, "/halfWidthDiff widthDiff 0.5 mul def\n");
+  fprintf(printFile, "/heightDiff winHeight textHeight sub def\n");
+  fprintf(printFile, "/halfHeightDiff heightDiff 0.5 mul def\n");
+
+#if defined(PS_DEBUG)
+  /* Print the comment if necessary to help debug the PostScript output. */
+  fprintf(printFile, "%s\n", comment);
+#endif
+
+  /* Now calculate the location of the text according to the
+   * specified alignment and the size of the text. */
+  fprintf(printFile, "%s", calculation);
+
+  /* Move to the calculation location. */
+  fprintf(printFile, "textX textY moveto\n");
+
+  if (scaled) {
+    /* Save the graphics state and then set the scaling so that the text
+     * will fit the window. */
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "xyScale xyScale scale\n");
+  }
+
+  fprintf(printFile, "(%s) show\n", text);
+
+  if (scaled) {
+    /* Set the coordinate system back the way it was. */
+    fprintf(printFile, "grestore\n");
+  }
+#endif
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Draw a dot (coordinates must have already been scaled if
+ * that is necessary). */
+void PSWindowRep::GetAlignmentStrings(TextAlignment alignment, char *&comment,
+    char *&calculation)
+{
+  comment = "";
+  calculation = "";
+
+  switch(alignment) {
+  case AlignNorthWest:
+    comment = "% AlignNorthWest";
+    calculation = "/textX winX def\n"
+      "/textY winY heightDiff add def\n";
+    break;
+
+  case AlignNorth:
+    comment = "% AlignNorth";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY heightDiff add def\n";
+    break;
+
+  case AlignNorthEast:
+    comment = "% AlignNorthEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY heightDiff add def\n";
+    break;
+
+  case AlignWest: 
+    comment = "% AlignWest";
+    calculation = "/textX winX def\n"
+      "/textY winY halfHeightDiff add def\n";
+    break;
+
+  case AlignCenter: 
+    comment = "% AlignCenter";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY halfHeightDiff add def\n";
+    break;
+
+  case AlignEast:
+    comment = "% AlignEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY halfHeightDiff add def\n";
+    break;
+
+  case AlignSouthWest:
+    comment = "% AlignSouthWest";
+    calculation = "/textX winX def\n"
+      "/textY winY def\n";
+    break;
+
+  case AlignSouth:
+    comment = "% AlignSouth";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY def\n";
+    break;
+
+  case AlignSouthEast:
+    comment = "% AlignSouthEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY def\n";
+    break;
+
+  default:
+    comment = "error";
+    DOASSERT(false, "Illegal alignment option");
+    break;
+  }
 }

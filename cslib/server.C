@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/01/28 19:46:18  wenger
+  Fixed bug 139; better testing of ScaledText() in client/server example;
+  fixes to Exit class for client/server library.
+
   Revision 1.8  1997/01/17 20:31:29  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -147,16 +151,16 @@ class SampleWinServer : public WinServer {
 		       WindowRep::AlignWest, false);
 
     _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
-    _winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/8);
+    _winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/45);
     _winReps.GetWindowRep()->SetFgColor(BlackColor);
     _winReps.GetWindowRep()->SetBgColor(PurpleColor);
-    _winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4, w/3, h/8,
+    _winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4, w/3, h/45,
 		       WindowRep::AlignCenter, false);
 
     _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
     _winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
     _winReps.GetWindowRep()->SetFgColor(RedColor);
-    _winReps.GetWindowRep()->SetBgColor(ChocolateColor);
+    _winReps.GetWindowRep()->SetBgColor(DarkSeaGreen);
     _winReps.GetWindowRep()->ScaledText("abcdefg", x + w/2, y + h/4, w/2,
 		       h/8, WindowRep::AlignNorthEast, false);
 

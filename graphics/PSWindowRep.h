@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/01/17 20:31:44  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.17  1996/12/30 23:51:10  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -350,6 +357,14 @@ private:
     void SetClipPath(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
     void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 1.0);
+
+    virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+		      Coord width, Coord height,
+		      TextAlignment alignment = AlignCenter,
+                      Boolean skipLeadingSpaces = false);
+
+    void GetAlignmentStrings(TextAlignment alignment, char *&comment,
+      char *&calculation);
 
     /* current dimensions of window */
     int _x, _y;
