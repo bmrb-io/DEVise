@@ -10,48 +10,37 @@ compustat.o: /usr/include/unistd.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 compustat.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
-compustat.o: index.h ../tape/tapedrive.h /usr/include/tar.h
-compustat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-compustat.o: /usr/include/sys/signal.h /usr/include/sys/smp_lock.h
-compustat.o: /usr/include/sys/stat.h /usr/include/sys/file.h
-compustat.o: /usr/include/sys/dir.h /usr/include/grp.h /usr/include/pwd.h
-compustat.o: /usr/include/errno.h /usr/include/a.out.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
-compustat.o: /usr/include/sys/ttydev.h /usr/include/sys/devio.h
-compustat.o: /usr/include/sys/mtio.h ../graphics.new/machdep.h
-compustat.o: /usr/include/limits.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-compustat.o: /usr/include/sys/sem.h /usr/include/netdb.h
-compustat.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-compustat.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+compustat.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+compustat.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+compustat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
+compustat.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
+compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 index.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
-index.o: /usr/include/unistd.h index.h ../tape/tapedrive.h /usr/include/tar.h
-index.o: /usr/include/sys/param.h /usr/include/machine/param.h
-index.o: /usr/include/sys/signal.h /usr/include/sys/types.h
-index.o: /usr/include/sys/smp_lock.h /usr/include/sys/stat.h
-index.o: /usr/include/sys/file.h /usr/include/sys/dir.h /usr/include/grp.h
-index.o: /usr/include/pwd.h /usr/include/errno.h /usr/include/a.out.h
-index.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
-index.o: /usr/include/sys/ttydev.h /usr/include/sys/devio.h
-index.o: /usr/include/sys/mtio.h ../graphics.new/machdep.h
-index.o: /usr/include/limits.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
-index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/netdb.h
-index.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-index.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+index.o: /usr/include/unistd.h index.h ../tape/tapedrive.h
+index.o: ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/types.h /usr/include/sys/param.h
+index.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+index.o: /usr/include/sys/smp_lock.h /usr/include/sys/time.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
+index.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
+index.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 project.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 project.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 project.o: /usr/include/unistd.h /usr/include/assert.h compustat.h index.h
-project.o: ../tape/tapedrive.h /usr/include/tar.h /usr/include/sys/param.h
-project.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-project.o: /usr/include/sys/types.h /usr/include/sys/smp_lock.h
-project.o: /usr/include/sys/stat.h /usr/include/sys/file.h
-project.o: /usr/include/sys/dir.h /usr/include/grp.h /usr/include/pwd.h
-project.o: /usr/include/errno.h /usr/include/a.out.h /usr/include/sys/time.h
-project.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
-project.o: /usr/include/sys/devio.h /usr/include/sys/mtio.h
-project.o: ../graphics.new/machdep.h /usr/include/limits.h
-project.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-project.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/netdb.h
+project.o: ../tape/tapedrive.h ../graphics.new/machdep.h
+project.o: /usr/include/limits.h /usr/include/sys/types.h
+project.o: /usr/include/sys/param.h /usr/include/machine/param.h
+project.o: /usr/include/sys/signal.h /usr/include/sys/smp_lock.h
+project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+project.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 project.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-project.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+project.o: /usr/include/netinet/in.h

@@ -9,7 +9,10 @@ CycleCpuTimeMappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 CycleCpuTimeMappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleCpuTimeMappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 CycleCpuTimeMappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleCpuTimeMappingClassInfo: ../graphics/ColorMgr.h
+CycleCpuTimeMappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+CycleCpuTimeMappingClassInfo: ../graphics/Transform.h
+CycleCpuTimeMappingClassInfo: ../graphics/DevisePixmap.h
+CycleCpuTimeMappingClassInfo: ../graphics/Compress.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/TDataMap.h
@@ -17,10 +20,7 @@ CycleCpuTimeMappingClassInfo: ../graphics.new/ShapeID.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/RecId.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/GDataRec.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleCpuTimeMappingClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
-CycleCpuTimeMappingClassInfo: ../graphics/Transform.h
-CycleCpuTimeMappingClassInfo: ../graphics/DevisePixmap.h
-CycleCpuTimeMappingClassInfo: ../graphics/Compress.h ../graphics/Control.h
+CycleCpuTimeMappingClassInfo: ../graphics/ViewWin.h ../graphics/Control.h
 CycleCpuTimeMappingClassInfo: ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo: ../graphics/ViewCallback.h
 CycleCpuTimeMappingClassInfo: ../graphics/AttrList.h ../graphics/Config.h
@@ -57,14 +57,14 @@ CycleEffMappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 CycleEffMappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleEffMappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 CycleEffMappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleEffMappingClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+CycleEffMappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+CycleEffMappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
+CycleEffMappingClassInfo: ../graphics/Compress.h ../graphics.new/RectShape.h
 CycleEffMappingClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleEffMappingClassInfo: ../graphics.new/GDataRec.h
 CycleEffMappingClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleEffMappingClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
-CycleEffMappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
-CycleEffMappingClassInfo: ../graphics/Compress.h ../graphics/Control.h
+CycleEffMappingClassInfo: ../graphics/ViewWin.h ../graphics/Control.h
 CycleEffMappingClassInfo: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 CycleEffMappingClassInfo: ../graphics/AttrList.h ../graphics/Config.h
 CycleEffMappingClassInfo: ../graphics/Cursor.h ../graphics.new/BasicStats.h
@@ -99,14 +99,14 @@ CycleOccMappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 CycleOccMappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleOccMappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 CycleOccMappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleOccMappingClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+CycleOccMappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+CycleOccMappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
+CycleOccMappingClassInfo: ../graphics/Compress.h ../graphics.new/RectShape.h
 CycleOccMappingClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleOccMappingClassInfo: ../graphics.new/GDataRec.h
 CycleOccMappingClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleOccMappingClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
-CycleOccMappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
-CycleOccMappingClassInfo: ../graphics/Compress.h ../graphics/Control.h
+CycleOccMappingClassInfo: ../graphics/ViewWin.h ../graphics/Control.h
 CycleOccMappingClassInfo: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 CycleOccMappingClassInfo: ../graphics/AttrList.h ../graphics/Config.h
 CycleOccMappingClassInfo: ../graphics/Cursor.h ../graphics.new/BasicStats.h
@@ -142,6 +142,10 @@ CycleSuspendedMappingClassInfo: ../graphics/Color.h ../graphics/Dispatcher.h
 CycleSuspendedMappingClassInfo: ../graphics/DList.h ../graphics/Exit.h
 CycleSuspendedMappingClassInfo: ../graphics/Journal.h ../graphics/VisualArg.h
 CycleSuspendedMappingClassInfo: ../graphics/Pattern.h ../graphics/ColorMgr.h
+CycleSuspendedMappingClassInfo: ../graphics/WindowRep.h
+CycleSuspendedMappingClassInfo: ../graphics/Transform.h
+CycleSuspendedMappingClassInfo: ../graphics/DevisePixmap.h
+CycleSuspendedMappingClassInfo: ../graphics/Compress.h
 CycleSuspendedMappingClassInfo: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo: ../graphics.new/TDataMap.h
@@ -150,11 +154,7 @@ CycleSuspendedMappingClassInfo: ../graphics.new/RecId.h
 CycleSuspendedMappingClassInfo: ../graphics.new/GDataRec.h
 CycleSuspendedMappingClassInfo: ../graphics.new/ViewGraph.h
 CycleSuspendedMappingClassInfo: ../graphics/View.h ../graphics/ViewWin.h
-CycleSuspendedMappingClassInfo: ../graphics/WindowRep.h
-CycleSuspendedMappingClassInfo: ../graphics/Transform.h
-CycleSuspendedMappingClassInfo: ../graphics/DevisePixmap.h
-CycleSuspendedMappingClassInfo: ../graphics/Compress.h ../graphics/Control.h
-CycleSuspendedMappingClassInfo: ../graphics/ClassDir.h
+CycleSuspendedMappingClassInfo: ../graphics/Control.h ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo: ../graphics/ViewCallback.h
 CycleSuspendedMappingClassInfo: ../graphics/AttrList.h ../graphics/Config.h
 CycleSuspendedMappingClassInfo: ../graphics/Cursor.h
@@ -191,7 +191,10 @@ CycleWorkingMappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 CycleWorkingMappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleWorkingMappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 CycleWorkingMappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleWorkingMappingClassInfo: ../graphics/ColorMgr.h
+CycleWorkingMappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+CycleWorkingMappingClassInfo: ../graphics/Transform.h
+CycleWorkingMappingClassInfo: ../graphics/DevisePixmap.h
+CycleWorkingMappingClassInfo: ../graphics/Compress.h
 CycleWorkingMappingClassInfo: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo: ../graphics.new/TDataMap.h
@@ -199,10 +202,7 @@ CycleWorkingMappingClassInfo: ../graphics.new/ShapeID.h
 CycleWorkingMappingClassInfo: ../graphics.new/RecId.h
 CycleWorkingMappingClassInfo: ../graphics.new/GDataRec.h
 CycleWorkingMappingClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleWorkingMappingClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
-CycleWorkingMappingClassInfo: ../graphics/Transform.h
-CycleWorkingMappingClassInfo: ../graphics/DevisePixmap.h
-CycleWorkingMappingClassInfo: ../graphics/Compress.h ../graphics/Control.h
+CycleWorkingMappingClassInfo: ../graphics/ViewWin.h ../graphics/Control.h
 CycleWorkingMappingClassInfo: ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo: ../graphics/ViewCallback.h
 CycleWorkingMappingClassInfo: ../graphics/AttrList.h ../graphics/Config.h
@@ -239,13 +239,13 @@ HostMappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 HostMappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 HostMappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 HostMappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-HostMappingClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+HostMappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+HostMappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
+HostMappingClassInfo: ../graphics/Compress.h ../graphics.new/RectShape.h
 HostMappingClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 HostMappingClassInfo: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 HostMappingClassInfo: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 HostMappingClassInfo: ../graphics/View.h ../graphics/ViewWin.h
-HostMappingClassInfo: ../graphics/WindowRep.h ../graphics/Transform.h
-HostMappingClassInfo: ../graphics/DevisePixmap.h ../graphics/Compress.h
 HostMappingClassInfo: ../graphics/Control.h ../graphics/ClassDir.h
 HostMappingClassInfo: ../graphics/ViewCallback.h ../graphics/AttrList.h
 HostMappingClassInfo: ../graphics/Config.h ../graphics/Cursor.h
@@ -274,13 +274,13 @@ MappingClassInfo: ../graphics/Geom.h ../graphics/Color.h
 MappingClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
 MappingClassInfo: ../graphics/Exit.h ../graphics/Journal.h
 MappingClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
-MappingClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+MappingClassInfo: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+MappingClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MappingClassInfo: ../graphics/Compress.h ../graphics.new/RectShape.h
 MappingClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 MappingClassInfo: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 MappingClassInfo: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 MappingClassInfo: ../graphics/View.h ../graphics/ViewWin.h
-MappingClassInfo: ../graphics/WindowRep.h ../graphics/Transform.h
-MappingClassInfo: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MappingClassInfo: ../graphics/Control.h ../graphics/ClassDir.h
 MappingClassInfo: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MappingClassInfo: ../graphics/Config.h ../graphics/Cursor.h
@@ -334,13 +334,13 @@ TDataMulti: ../graphics.new/DataSeg.h
 disp: ../graphics/DeviseTypes.h ../graphics/Display.h ../graphics/Geom.h
 disp: ../graphics/Color.h ../graphics/Dispatcher.h ../graphics/DList.h
 disp: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-disp: ../graphics/Pattern.h ../graphics/ColorMgr.h
-disp: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-disp: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-disp: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-disp: ../graphics.new/ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-disp: ../graphics/WindowRep.h ../graphics/Transform.h
-disp: ../graphics/DevisePixmap.h ../graphics/Compress.h ../graphics/Control.h
+disp: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
+disp: ../graphics/Transform.h ../graphics/DevisePixmap.h
+disp: ../graphics/Compress.h ../graphics.new/RectShape.h
+disp: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+disp: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+disp: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+disp: ../graphics/View.h ../graphics/ViewWin.h ../graphics/Control.h
 disp: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 disp: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 disp: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h

@@ -9,13 +9,13 @@ generic: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 generic: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 generic: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 generic: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
+generic: ../graphics/WindowRep.h ../graphics/Transform.h
+generic: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic: ../graphics.new/MapInterpClassInfo.h
 generic: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic: ../graphics/Transform.h ../graphics/DevisePixmap.h
-generic: ../graphics/Compress.h ../graphics/ViewCallback.h
+generic: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 generic: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h

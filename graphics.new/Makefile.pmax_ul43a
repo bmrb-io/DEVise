@@ -117,10 +117,17 @@ ClientAPI.o: /usr/include/fcntl.h /usr/include/sys/file.h ClientAPI.h
 ClientAPI.o: ParseAPI.h
 Command.o: /usr/include/sys/types.h /usr/include/ansi_compat.h
 Command.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/string.h
-Command.o: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
-Command.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-Command.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/View.h
-Command.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+Command.o: machdep.h /usr/include/limits.h /usr/include/sys/param.h
+Command.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+Command.o: /usr/include/sys/smp_lock.h /usr/include/sys/wait.h
+Command.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Command.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Command.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+Command.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+Command.o: /usr/include/netinet/in.h ../graphics/Exit.h ../graphics/Time.h
+Command.o: ../graphics/Journal.h ../graphics/DeviseTypes.h
+Command.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+Command.o: ../graphics/View.h ../graphics/Dispatcher.h /usr/include/stdlib.h
 Command.o: /usr/include/unistd.h ../graphics/DList.h ../graphics/ViewWin.h
 Command.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 Command.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -130,15 +137,7 @@ Command.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 Command.o: Command.h ../graphics/Timer.h ../graphics/Parse.h
 Command.o: /usr/include/time.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
 Command.o: RecId.h BufferPolicy.h RecOrder.h QueryProc.h TData.h
-Command.o: ../graphics/Init.h machdep.h /usr/include/limits.h
-Command.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Command.o: /usr/include/sys/signal.h /usr/include/sys/smp_lock.h
-Command.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Command.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-Command.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
-Command.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
-Command.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-Command.o: /usr/include/arpa/inet.h
+Command.o: ../graphics/Init.h
 CompositeParser.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 CompositeParser.o: RecInterp.h /usr/include/sys/types.h
 CompositeParser.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -396,12 +395,12 @@ QueryProcFull.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 QueryProcFull.o: /usr/include/math.h ../graphics/Dispatcher.h
 QueryProcFull.o: /usr/include/stdlib.h /usr/include/unistd.h
 QueryProcFull.o: /usr/include/sys/types.h ../graphics/Journal.h
-QueryProcFull.o: ../graphics/ColorMgr.h ../graphics/Init.h BufMgrFull.h
+QueryProcFull.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+QueryProcFull.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+QueryProcFull.o: ../graphics/Compress.h ../graphics/Init.h BufMgrFull.h
 QueryProcFull.o: BufMgr.h BufHint.h BufferPolicy.h RecOrder.h RangeInfo.h
 QueryProcFull.o: BufMgrNull.h TDataMap.h ShapeID.h GDataRec.h ViewGraph.h
 QueryProcFull.o: ../graphics/View.h ../graphics/ViewWin.h
-QueryProcFull.o: ../graphics/WindowRep.h ../graphics/Transform.h
-QueryProcFull.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcFull.o: /usr/include/sys/time.h ../graphics/Config.h
@@ -945,7 +944,7 @@ BasicStats.o: ../graphics/AttrList.h /usr/include/sys/time.h
 BasicStats.o: ../graphics/Config.h ../graphics/Cursor.h DerivedDataSource.h
 BasicStats.o: /usr/include/string.h Action.h RecId.h
 DCE.o: /usr/include/stdio.h /usr/include/ansi_compat.h /usr/include/assert.h
-DCE.o: /usr/include/sys/stat.h DCE.h /usr/include/sys/types.h
+DCE.o: /usr/include/sys/types.h /usr/include/sys/stat.h DCE.h
 DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DCE.o: /usr/include/sys/smp_lock.h /usr/include/sys/shm.h
 DCE.o: /usr/include/errno.h machdep.h /usr/include/limits.h
@@ -954,7 +953,7 @@ DCE.o: /usr/include/sys/signal.h /usr/include/sys/time.h
 DCE.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 DCE.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 DCE.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-DCE.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Exit.h
+DCE.o: /usr/include/netinet/in.h ../graphics/Exit.h
 DerivedDataSource.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 DerivedDataSource.o: DerivedDataSource.h /usr/include/string.h
 DerivedDataSource.o: ../graphics/DeviseTypes.h ViewGraph.h ../graphics/View.h
@@ -1031,6 +1030,7 @@ ParseAPI.o: ParseCat.h TData.h RecOrder.h TDataMap.h ShapeID.h GDataRec.h
 ParseAPI.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
 ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
 ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
+ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h
 RecordLink.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 RecordLink.o: /usr/include/stdlib.h RecordLink.h RecId.h RecFile.h
 RecordLink.o: ../graphics/DeviseTypes.h VisualLink.h ViewGraph.h
@@ -1060,9 +1060,9 @@ Seq.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
 Seq.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 Seq.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 Seq.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-Seq.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Util.h
-Seq.o: /usr/include/time.h /usr/include/math.h ../graphics/DeviseTypes.h
-Seq.o: ../graphics/Exit.h ../graphics/Parse.h
+Seq.o: /usr/include/netinet/in.h ../graphics/Util.h /usr/include/time.h
+Seq.o: /usr/include/math.h ../graphics/DeviseTypes.h ../graphics/Exit.h
+Seq.o: ../graphics/Parse.h
 StringStorage.o: /usr/include/string.h StringStorage.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph.o: ../graphics/View.h ../graphics/Dispatcher.h
@@ -1090,4 +1090,4 @@ Web.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
 Web.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 Web.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 Web.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-Web.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+Web.o: /usr/include/netinet/in.h

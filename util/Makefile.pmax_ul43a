@@ -50,6 +50,6 @@ http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 http_url.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 http_url.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-http_url.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+http_url.o: /usr/include/netinet/in.h
 mkbinfile.o: /usr/include/math.h /usr/include/ansi_compat.h
 mkbinfile.o: /usr/include/time.h /usr/include/stdlib.h
