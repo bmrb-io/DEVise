@@ -280,6 +280,8 @@ Num Date        Status  Description
 			the session test/sales1.tk, must be on tiger to
 			use this). (ml/rkw)
 
+082 11/25/96	OPEN	Load session test/a2.tk -> core dump. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
