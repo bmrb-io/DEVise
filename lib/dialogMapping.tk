@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.20  1997/03/20 20:46:02  donjerko
+#       DTE Tdata generates unique names by appending sequential numbers to the
+#       end of the table name. This way, same table can be opened multiple times.
+#
 #       Revision 1.19  1997/03/20 01:32:18  wenger
 #       Fixed a bug in color allocation; color chooser for data shows old colors
 #       (temporarily); background conversion of GData defaults to off.
@@ -298,32 +302,32 @@ proc UpdateMappingDialog { w curView } {
 	 return
      }
 
-	puts "params ========== $params"
+     puts "params ========== $params"
      set tdata [lindex [lindex $params 0] 1]
+     set error [catch {set sfname [lindex $derivedSourceList($tdata) 3]}]
+
+     if {$error > 0} {
+
+        set sourcedef [DEVise dteShowCatalogEntry $tdata]
+#	puts "********** tdata: $tdata  sourcedef: $sourcedef"
+	set sourcedef [lindex $sourcedef 0]
+
 	set nextToLast [string length $tdata]
 	set nextToLast [expr $nextToLast - 2]
 	set tdata [string range $tdata 0 $nextToLast]
 
-	puts "tdata = $tdata"
-     set sourcedef [DEVise dteShowCatalogEntry $tdata]
  	set err [expr [llength $sourcedef] == 0]
 
 	if {$err == 0} {
-		
 		# file exists
 		set stype [lindex $sourcedef 1]
 		if {[isDTEType $stype]} {
 			set schemaname $tdata
-		} {
-			set sfname [lindex $sourcedef 4]
-			set schemaname [file tail $sfname]
-		}
-	} else {
-
-		# file is not found in the catalog, it must be derived one
-	   set sfname [lindex $derivedSourceList($tdata) 3]
-        set schemaname [file tail $sfname]
+		} 
+		set sfname [lindex $sourcedef 4]
+	} 
      }
+     set schemaname [file tail $sfname]
 
      set xParm [lindex [lindex $params 3] 1]
      set yParm [lindex [lindex $params 4] 1]
