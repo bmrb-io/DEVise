@@ -2277,6 +2277,20 @@ Num Date        Status  Description
 
 582 04/25/00	OPEN	View help in the JavaScreen doesn't wrap lines. (rkw)
 
+583 04/27/00	OPEN	Drill-down in the JavaScreen doesn't seem to work
+			in views with cursors (moves the cursor instead
+			of showing record values.) (rkw)
+
+584 04/28/00	OPEN	Pixmaps for JavaScreen support don't work right
+			with latest X server (Solaris 2.7) (rkw)
+
+585 05/01/00	OPEN	In the JavaScreen, a parent view cursor that overlaps
+			a child view is drawn incorrectly (the bits of the
+			child view are also XOR'ed). (rkw)
+
+586 05/01/00	OPEN	Cursors with spaces in their names do not work right
+			in the JavaScreen (cannot be moved). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
