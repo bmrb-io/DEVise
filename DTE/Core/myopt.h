@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/07/24 04:37:59  donjerko
+  *** empty log message ***
+
   Revision 1.48  1998/06/24 22:14:07  donjerko
   *** empty log message ***
 
@@ -1105,6 +1108,9 @@ public:
 	int cardinality(){
 		assert(tableName);
 		return tableName->cardinality();
+	}
+	List<string*>* returnAsList () {
+	  	return tableName;
 	}
 };
 

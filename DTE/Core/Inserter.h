@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/08/17 18:51:32  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.12  1998/07/24 04:37:50  donjerko
   *** empty log message ***
 
@@ -77,7 +81,7 @@ public:
 	virtual ~Inserter(){
 		delete out;
 	}
-	void open(const ISchema& schema, string urlstring, int mode = ios::app); 
+	void open(const ISchema& schema, string urlstring, int mode = ios::app);
 		// throws
 
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
@@ -99,6 +103,8 @@ public:
 		out = NULL;
 	}
 };
+
+typedef Inserter GestaltInserter; // *** YL
 
 class UniqueInserter : public Inserter {
 	string finalFile;

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1998/08/06 23:06:09  beyer
+  fixes to get rtree's working
+
   Revision 1.59  1998/07/24 04:38:03  donjerko
   *** empty log message ***
 
@@ -656,6 +659,10 @@ void interfaceRead(istream& in, Type*& adt){
 	else if(typeNm == ODBCInterface::typeName){
 		interf =  new (adt) ODBCInterface();
 		TRY(interf->read(in), NVOID );
+	}
+	else if(typeNm == GestaltInterface::typeName){ // *** YL
+	        interf = new (adt) GestaltInterface();
+		TRY(interf->read(in), NVOID);
 	}
 	else{
 		interf = NULL;
