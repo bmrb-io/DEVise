@@ -172,9 +172,9 @@ public:
 
 const int SolDnCompiled_RectXShapeID = 0;
 
-class SolDnCompiled : public TDataMapDispatch {
+class SolDnCompiled : public TDataMap {
 public:
-	SolDnCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("SolDnCompiled", tdata, gdataName, sizeof(SolDnCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
+	SolDnCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("SolDnCompiled", tdata, gdataName, sizeof(SolDnCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 
@@ -371,9 +371,9 @@ public:
 
 const int RainCompiled_BarShapeID = 0;
 
-class RainCompiled : public TDataMapDispatch {
+class RainCompiled : public TDataMap {
 public:
-	RainCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("RainCompiled", tdata, gdataName, sizeof(RainCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
+	RainCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("RainCompiled", tdata, gdataName, sizeof(RainCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 
@@ -612,9 +612,9 @@ public:
 
 const int TempCompiled_RectXShapeID = 0;
 
-class TempCompiled : public TDataMapDispatch {
+class TempCompiled : public TDataMap {
 public:
-	TempCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("TempCompiled", tdata, gdataName, sizeof(TempCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
+	TempCompiled(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("TempCompiled", tdata, gdataName, sizeof(TempCompiled_GData), 0|VISUAL_X|VISUAL_Y, 0, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 

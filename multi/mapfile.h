@@ -203,9 +203,9 @@ public:
 
 const int MultiMapping_RectShapeID = 0;
 
-class MultiMapping : public TDataMapDispatch {
+class MultiMapping : public TDataMap {
 public:
-	MultiMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("MultiMapping", tdata, gdataName, sizeof(MultiMapping_GData), 0|VISUAL_X|VISUAL_Y|VISUAL_COLOR, 3, maxGDataPages, dimensionInfo, numDimensions) {
+	MultiMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("MultiMapping", tdata, gdataName, sizeof(MultiMapping_GData), 0|VISUAL_X|VISUAL_Y|VISUAL_COLOR, 3, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 

@@ -202,9 +202,9 @@ public:
 
 const int CycleWorkingMapping_RectShapeID = 0;
 
-class CycleWorkingMapping : public TDataMapDispatch {
+class CycleWorkingMapping : public TDataMap {
 public:
-	CycleWorkingMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("CycleWorkingMapping", tdata, gdataName, sizeof(CycleWorkingMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
+	CycleWorkingMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("CycleWorkingMapping", tdata, gdataName, sizeof(CycleWorkingMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 

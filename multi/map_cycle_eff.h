@@ -202,9 +202,9 @@ public:
 
 const int CycleEffMapping_RectShapeID = 0;
 
-class CycleEffMapping : public TDataMapDispatch {
+class CycleEffMapping : public TDataMap {
 public:
-	CycleEffMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("CycleEffMapping", tdata, gdataName, sizeof(CycleEffMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
+	CycleEffMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("CycleEffMapping", tdata, gdataName, sizeof(CycleEffMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 

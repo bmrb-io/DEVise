@@ -201,9 +201,9 @@ public:
 
 const int CycleSuspendedMapping_RectShapeID = 0;
 
-class CycleSuspendedMapping : public TDataMapDispatch {
+class CycleSuspendedMapping : public TDataMap {
 public:
-	CycleSuspendedMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("CycleSuspendedMapping", tdata, gdataName, sizeof(CycleSuspendedMapping_GData), 0|VISUAL_X|VISUAL_Y, 1, maxGDataPages, dimensionInfo, numDimensions) {
+	CycleSuspendedMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("CycleSuspendedMapping", tdata, gdataName, sizeof(CycleSuspendedMapping_GData), 0|VISUAL_X|VISUAL_Y, 1, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 

@@ -202,9 +202,9 @@ public:
 
 const int CycleCpuTimeMapping_RectShapeID = 0;
 
-class CycleCpuTimeMapping : public TDataMapDispatch {
+class CycleCpuTimeMapping : public TDataMap {
 public:
-	CycleCpuTimeMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch("CycleCpuTimeMapping", tdata, gdataName, sizeof(CycleCpuTimeMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
+	CycleCpuTimeMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap("CycleCpuTimeMapping", tdata, gdataName, sizeof(CycleCpuTimeMapping_GData), 0|VISUAL_X|VISUAL_Y, 3, maxGDataPages, dimensionInfo, numDimensions) {
 
 		userData = uData;
 
