@@ -20,4 +20,4 @@
 
 ############################################################
 
-scripts/release /p/devise solaris solsparc linux
+scripts/release /p/devise solaris solsparc linux linux_rh62
