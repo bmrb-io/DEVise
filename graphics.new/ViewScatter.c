@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/20 17:10:27  guangshu
+  Added support for color statistics.
+
   Revision 1.14  1996/06/16 01:54:11  jussi
   Added calls to IsComplexShape().
 
@@ -177,60 +180,62 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   int gRecSize = mapping->GDataRecordSize();
   int recIndex = 0;
   
-  // Collect statistics and update record links only for last mapping
-  if (!MoreMapping(_index)) {
+  char *ptr = (char *)gdata;
+  Coord maxWidth, maxHeight;
+  mapping->MaxBoundingBox(maxWidth, maxHeight);
+  GDataAttrOffset *offset = mapping->GetGDataOffset();
 
-    char *ptr = (char *)gdata;
-    Coord maxWidth, maxHeight;
-    mapping->MaxBoundingBox(maxWidth, maxHeight);
-    GDataAttrOffset *offset = mapping->GetGDataOffset();
+  int firstRec = 0;
 
-    int firstRec = 0;
+  for(int i = 0; i < numGData; i++) {
 
-    for(int i = 0; i < numGData; i++) {
+    // Extract X, Y, shape, and color information from gdata record
+    Coord x = GetX(ptr, mapping, offset);
+    Coord y = GetY(ptr, mapping, offset);
+    ShapeID shape = GetShape(ptr, mapping, offset);
+    Boolean complexShape = mapping->IsComplexShape(shape);
+    Color color = mapping->GetDefaultColor();
+    if (offset->colorOffset >= 0)
+      color = *(Color *)(ptr + offset->colorOffset);
 
-      // Extract X, Y, shape, and color information from gdata record
-      Coord x = GetX(ptr, mapping, offset);
-      Coord y = GetY(ptr, mapping, offset);
-      ShapeID shape = GetShape(ptr, mapping, offset);
-      Boolean complexShape = mapping->IsComplexShape(shape);
-      Color color = mapping->GetDefaultColor();
-      if (offset->colorOffset >= 0)
-	color = *(Color *)(ptr + offset->colorOffset);
-
-      // Eliminate records which don't match the filter's X and Y range
-      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
-	  y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
-	if (color < MAXCOLOR)
-	  _stats[color].Sample(x, y);
-	_allStats.Sample(x, y);
-      }
-
-      // Contiguous ranges which match the filter's X and Y range
-      // are stored in the record link
-      if (!complexShape &&
-	  (x + maxWidth / 2 < _queryFilter.xLow || 
-	   x - maxWidth / 2 > _queryFilter.xHigh || 
-	   y + maxHeight / 2 < _queryFilter.yLow || 
-	   y - maxHeight / 2 > _queryFilter.yHigh)) {
-	if (i > firstRec)
-	  WriteMasterLink(recId + firstRec, i - firstRec);
-
-	// Next contiguous batch of record id's starts at i+1
-	firstRec = i + 1;
-
-	ptr += gRecSize;
-	continue;
-      }
-    
-      _recs[recIndex++] = ptr;
-      if (recIndex == WINDOWREP_BATCH_SIZE) {
-	mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
-	recIndex = 0;
-      }
-      ptr += gRecSize;
+    // Collect statistics from last mapping and only those records
+    // that match the filter's X and Y range
+    if (!MoreMapping(_index) &&
+	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
+	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
+      if (color < MAXCOLOR)
+	_stats[color].Sample(x, y);
+      _allStats.Sample(x, y);
     }
 
+    // Contiguous ranges which match the filter's X and Y range
+    // are stored in the record link
+    if (!complexShape &&
+	(x + maxWidth / 2 < _queryFilter.xLow || 
+	 x - maxWidth / 2 > _queryFilter.xHigh || 
+	 y + maxHeight / 2 < _queryFilter.yLow || 
+	 y - maxHeight / 2 > _queryFilter.yHigh)) {
+      if (!MoreMapping(_index)) {
+	if (i > firstRec)
+	  WriteMasterLink(recId + firstRec, i - firstRec);
+	// Next contiguous batch of record id's starts at i+1
+	firstRec = i + 1;
+      }
+      
+      ptr += gRecSize;
+      continue;
+    }    
+
+    _recs[recIndex++] = ptr;
+    if (recIndex == WINDOWREP_BATCH_SIZE) {
+      mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+      recIndex = 0;
+    }
+
+    ptr += gRecSize;
+  }
+
+  if (!MoreMapping(_index)) {
     if (numGData > firstRec)
       WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
