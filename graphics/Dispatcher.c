@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/11/26 09:28:54  beyer
+  Dispatcher now calls the display callback every time through its run loop
+  because the display might have events to be processed that are in memory
+  rather than in a file.
+
   Revision 1.28  1996/08/29 21:32:20  guangshu
   Refixed the bugs when dumping the gif files in batch mode.
 
@@ -482,6 +487,8 @@ void Dispatcher::Run1()
 
 void Dispatcher::DoCleanup()
 {
+  ControlPanel::Instance()->DestroySessionData();
+
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *callback = _callbacks.Next(index);
@@ -489,8 +496,6 @@ void Dispatcher::DoCleanup()
       callback->callBack->Cleanup();
   }
   _callbacks.DoneIterator(index);
-
-  ControlPanel::Instance()->DestroySessionData();
 }
 
 
