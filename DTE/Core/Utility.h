@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/09/05 22:20:14  donjerko
+  Made changes for port to NT.
+
   Revision 1.7  1997/08/21 21:04:28  donjerko
   Implemented view materialization
 
@@ -55,11 +58,11 @@ string selectFileName(const string& env, const string& def);
 istream* getIndexTableStream();
 ostream* getIndexTableOutStream(int mode = ios::out);
 
-string stripQuotes(char* str);	// can throw excetion
+void stripQuotes(const char* from, char* to, size_t len); // can throw excetion
 
 void stripQuotes(istream& in, string& val);	// obsolete, can throw excetion
 
-void stripQuotes(istream& in, char* buf, int bufsz);// can throw excetion
+void stripQuotes(istream& in, char* buf, size_t bufsz);// can throw excetion
 
 string addQuotes(const string& in);
 

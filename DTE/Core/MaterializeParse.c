@@ -22,11 +22,13 @@ Site* MaterializeParse::createSite(){
 		string err("Collection ");
 		err += dirName.toString() + " does not exists";
 		THROW(new Exception(err), NULL);
+		// throw Exception(err);
 	}
 	if(interf->getType() != Interface::CATALOG){
 		string err("View ");
 		err += nameStr + " is not defined within a directroy file";
 		THROW(new Exception(err), NULL);
+		// throw Exception(err);
 	}
 	CatalogInterface* catInterf = (CatalogInterface*) interf;
 	string dirPath = catInterf->getFileName();
@@ -39,6 +41,7 @@ Site* MaterializeParse::createSite(){
 	if(interf->getType() != Interface::VIEW){
 		string err = nameStr + " is not a view";
 		THROW(new Exception(err), NULL);
+		// throw Exception(err);
 	}
 
 	ViewInterface* viewInterf = (ViewInterface*) interf;
@@ -58,6 +61,7 @@ Site* MaterializeParse::createSite(){
 	if(!outf || !outf->good()){
 		string err = string("Could not open file: ") + materFile;
 		THROW(new Exception(err), NULL);
+		// throw Exception(err);
 	}
 
 	Inserter inserter;

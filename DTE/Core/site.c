@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/11/05 00:19:48  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.29  1997/10/02 02:27:33  donjerko
   Implementing moving aggregates.
 
@@ -200,6 +203,9 @@ void LocalTable::addTable(TableAlias* tabName){
 	assert(alias);
 	tables->insert(*alias);
 	name = *alias;
+	if(!directSite){
+		directSite = new DirectSite(name, iterat);
+	}
 }
 
 List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterat){
@@ -259,42 +265,24 @@ List<BaseSelection*>* createSelectList(PlanOp* iterat){
 }
 */
 
-void LocalTable::typify(string option){	// Throws exception
+void LocalTable::typify(string){	// Throws exception
 	
-	// option is ignored since the execution = profile + getNext
+     if(!directSite){
+		
+		// used to create executable etc ...
 
-//	LOG(logFile << "Header: ");
-//	LOG(iterat->display(logFile));	// iterat may be NULL
+          directSite = new DirectSite(name, iterat);
+     }
 
-	if(!directSite){
-		directSite = new DirectSite(name, iterat);
-	}
-
-	List<Site*>* tmpL = new List<Site*>;
-	tmpL->append(directSite);
-//	TRY(typifyList(myWhere, tmpL), NVOID );
 	TRY(boolCheckList(myWhere), NVOID );
 	if(mySelect == NULL){
-		assert(directSite);
+		
+		// this is done only for updates, queries always have mySelect
+
 		mySelect = createSelectList(name, iterat);
-	}
-	else{
-//		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
 	numFlds = mySelect->cardinality();
 	setStats();
-	myFrom->rewind();
-	TableAlias* ta = myFrom->get();
-	if(ta && ta->getFunction()){
-		string* function = ta->getFunction();
-		int shiftVal = ta->getShiftVal();
-		assert(!"Need to convert iterator to site");
-		assert(iterat);
-		assert(!"not implemented");
-		// iterat = new FunctionRead(iterat, function, shiftVal);
-		assert(iterat);
-		// TRY(iterat->initialize(), NVOID );
-	}
 }
 
 void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
@@ -522,6 +510,17 @@ void LocalTable::writeOpen(int mode){
 	for(int i = 0; i < numFlds; i++){
 		TRY(writePtrs[i] = getWritePtr(types[i]), NVOID );
 	}
+}
+
+void LocalTable::write(string content){
+	assert(fout);
+	*fout << content << endl;
+}
+
+void LocalTable::append(string content){
+	fout = new ofstream(fileToWrite.c_str(), ios::app);
+	assert(fout);
+	*fout << content << endl;
 }
 
 void LocalTable::setStats(){

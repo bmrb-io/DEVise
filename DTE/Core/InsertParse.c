@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/09/05 22:56:08  donjerko
+  *** empty log message ***
+
   Revision 1.7  1997/09/05 22:20:04  donjerko
   Made changes for port to NT.
 
@@ -59,7 +62,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-#define DEBUG
+// #define DEBUG
 
 Site* InsertParse::createSite(){
 	LOG(logFile << "Inserting into ");
@@ -72,15 +75,15 @@ Site* InsertParse::createSite(){
 
 	assert(site);
 
-	TRY(site->typify(""), NULL);
-	int numFlds = site->getNumFlds();
+//	TRY(site->typify(""), NULL);
+//	int numFlds = site->getNumFlds();
 /*
 	// this is not satisfied because we are inserting strings
 	if(numFlds != fieldList->cardinality()){
 		THROW(new Exception("Number of fields do not match"), NULL);
 	}
 */
-	const string* types = site->getTypeIDs();
+//	const string* types = site->getTypeIDs();
 
 // What follows is just a temporary kludge. 
 // One should construct a tuple and inset it
@@ -88,16 +91,17 @@ Site* InsertParse::createSite(){
 	fieldList->rewind();
 	assert(fieldList->cardinality() == 1);
 	ConstantSelection* sel = fieldList->get();
-	stringstream tmp;
-	sel->display(tmp);
-	string inStr;
-	stripQuotes(tmp, inStr);
+	string tmp = sel->toString();
+	size_t bufLen = tmp.size() + 1;
+	char* inStr = new char[bufLen];
+	stripQuotes(tmp.c_str(), inStr, bufLen);
 #if defined(DEBUG)
 	cerr << "Appending to the file: " << inStr << endl;
 #endif
-	TRY(site->writeOpen(), NULL);
-	site->write(inStr);
+//	TRY(site->writeOpen(), NULL);
+	site->append(inStr);
 	site->writeClose();
 	delete site;
+	delete [] inStr;
 	return new Site();
 }

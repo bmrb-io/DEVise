@@ -5,16 +5,11 @@
 #include "queue.h"
 #include <string>
 #include <map.h>
+#include "StringLess.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
-
-struct StringLess {
-	bool operator()(const string& s1, const string& s2) const {
-		return s1 < s2;
-	}
-};
 
 // This class is the owner of all BaseSelection objects
 

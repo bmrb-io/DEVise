@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/11/05 00:19:41  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.17  1997/09/17 02:35:44  donjerko
   Fixed the broken remote DTE interface.
 
@@ -76,8 +79,8 @@
 #include "url.h"
 #include "ExecOp.h"
 
-StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in) :
-	in(in)
+StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
+	string urlStr) : in(in), urlStr(urlStr)
 {
 	this->numFlds = numFlds;
 	readPtrs = new ReadPtr[numFlds];
@@ -90,7 +93,7 @@ StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in) :
 		assert(destroyPtrs[i]);
 		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
-	currentLine = 0;
+	currentLine = 1;
 }
 
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
@@ -103,10 +106,13 @@ void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	}
 }
 
-void StandardRead::open(const ISchema& schema, istream* in){
+void StandardRead::open(const ISchema& schema, istream* in, 
+	const string& urlStr)
+{
 	this->numFlds = schema.getNumFlds();
 	this->typeIDs = new TypeID[numFlds];
 	this->attributeNames = new string[numFlds];
+	this->urlStr = urlStr;
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = schema.getTypeIDs()[i];
 		attributeNames[i] = schema.getAttributeNames()[i];
@@ -140,7 +146,8 @@ void NCDCRead::open(istream* in){	// Throws exception
           if(!tmp){
                string msg = "Unexpected response from the NCDC server:\n" +
                     response;
-               THROW(new Exception(msg), );
+			THROW(new Exception(msg), );
+			// throw Exception(msg);
           }
      }
      int j = 0;
@@ -171,4 +178,18 @@ void NCDCRead::open(istream* in){	// Throws exception
 	attributeNames[1] = "temp";
 	stats = new Stats(numFlds);
 	in = tablein;
+}
+
+RidAdder::RidAdder(PlanOp* input) : input(input) {
+	numFlds = input->getNumFlds() + 1;
+	typeIDs = new TypeID[numFlds];
+	attributeNames = new string[numFlds];
+	const TypeID* inpTypes = input->getTypeIDs();
+	const string* inpAttrs = input->getAttributeNames();
+	typeIDs[0] = INT_TP;
+	attributeNames[0] = RID_STRING;
+	for(int i = 1; i < numFlds; i++){
+		typeIDs[i] = inpTypes[i - 1];
+		attributeNames[i] = inpAttrs[i - 1];
+	}
 }

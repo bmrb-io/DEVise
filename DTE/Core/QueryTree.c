@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/11/08 21:02:27  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.41  1997/11/05 00:19:40  donjerko
   Separated typechecking from optimization.
 
@@ -131,7 +134,8 @@ LOG(ofstream logFile("log_file.txt");)
 void QueryTree::resolveNames(){	// throws exception
      if(tableList->cardinality() > 1){
           string msg = "cannot resolve attribute referencies";
-          THROW(new Exception(msg), NVOID );
+		THROW(new Exception(msg), NVOID );
+		// throw Exception(msg);
      }
      else{
           tableList->rewind();
@@ -202,7 +206,8 @@ Site* QueryTree::createSite(){
 
 	TRY(typeCheck.initialize(tableList), 0);
 
-	vector<BaseSelection*>& selectVec = *(new vector<BaseSelection*>);
+	vector<BaseSelection*> selectVec;
+
 	vector<BaseSelection*> predicateVec;
 	vector<BaseSelection*> groupByVec;
 	vector<BaseSelection*> orderByVec;
@@ -302,6 +307,7 @@ Site* QueryTree::createSite(){
 		count ++;
 		if (count == MAX_AGG){
 			THROW(new Exception(" Numbr of nesting levels too high "),NULL);
+			// throw Exception(" Numbr of nesting levels too high ");
 		}
 		aggregates[count] = new Aggregates(selectList,sequenceby,withPredicate,groupBy, havingPredicate);
 	}

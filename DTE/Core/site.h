@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/11/05 00:19:49  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.32  1997/09/29 02:52:00  donjerko
   Eliminated class GlobalSelect.
 
@@ -217,6 +220,9 @@ public:
 	virtual void write(string content){
 		assert(0);
 	}
+	virtual void append(string content){
+		assert(0);
+	}
 	virtual void write(Tuple* tuple){
 		assert(0);
 	}
@@ -308,10 +314,8 @@ public:
 		delete fout;	
 		fout = NULL;
 	}
-	virtual void write(string content){
-		assert(fout);
-		*fout << content << endl;
-	}
+	virtual void write(string content);
+	virtual void append(string content);
 	virtual void write(Tuple* tuple){
 		assert(fout && fout->good());
 		assert(writePtrs);

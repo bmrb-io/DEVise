@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/09/17 02:35:46  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.10  1997/09/05 22:20:14  donjerko
   Made changes for port to NT.
 
@@ -93,62 +96,21 @@ ostream* getIndexTableOutStream(int mode){
 	return in;
 }
 
-string stripQuotes(char* str){
+void stripQuotes(const char* from, char* to, size_t len){ // can throw excetion
 	stringstream tmp;
-	tmp << str << ends;
-	string tmpstr;
-	stripQuotes(tmp, tmpstr);
-	return tmpstr;
+	tmp << from << ends;
+	stripQuotes(tmp, to, len);
 }
 
 void stripQuotes(istream& in, string& value){	// can throw excetion
-
-	// use the other version
-
-	// strips backslashes from the string (and outer quotes)
-
-	value = "";
-	char tmp;
-	in >> tmp;
-	if(!in){
-		return;
-	}
-	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), NVOID );
-	}
-	bool escape = false;
-	while(1){
-		in.get(tmp);
-		if(!in){
-			string e = "Closing \" expected";
-			THROW(new Exception(e), NVOID );
-		}
-		if(escape){
-			escape = false;
-			switch(tmp){
-			case '\\':
-				value += '\\';
-				break;
-			case '"':
-				value += '"';
-				break;
-			default:
-				assert(0);
-			}
-		}
-		else if(tmp == '\\'){
-			escape = true;
-		}
-		else if(tmp == '"'){
-			break;
-		}
-		else{
-			value += tmp;
-		}
-	}
+	const int bufSz = 2000;
+	char* tmp = new char[bufSz];
+	stripQuotes(in, tmp, bufSz);
+	value = tmp;
+	delete [] tmp;
 }
 
-void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
+void stripQuotes(istream& in, char* buf, size_t bufsz){// can throw excetion
 
 	// strips backslashes from the string (and outer quotes)
 
@@ -160,10 +122,14 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 		return;
 	}
 	if(tmp != '"'){
-		string err("Leading \" expected instead of: ");
+		string err("Token `");
 		string junkread;
 		in >> junkread;
-		THROW(new Exception(err + junkread), NVOID );
+		junkread = tmp + junkread;
+		err += junkread + 
+			"' should be of type `string' but does not have leading '\"'";
+		THROW(new Exception(err), NVOID );
+		// throw Exception(err);
 	}
 	bool escape = false;
 	while(1){
@@ -173,6 +139,7 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 			string e = "Closing \" expected";
 			buf[length] = '\0';
 			THROW(new Exception(e), NVOID );
+			// throw Exception(e);
 		}
 		if(escape){
 			escape = false;
@@ -197,6 +164,7 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 			buf[length++] = tmp;
 		}
 	}
+	assert(length < bufsz);
 	buf[length] = '\0';
 }
 

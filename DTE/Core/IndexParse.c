@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/05 00:19:37  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.20  1997/09/05 22:20:04  donjerko
   Made changes for port to NT.
 
@@ -277,6 +280,7 @@ Site* IndexParse::createSite(){
 		perror("system:");
 		string msg = "Failed to convert bulk data";
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 
 	int bulk_file = open(convBulk.c_str(), O_RDWR, 0600);
@@ -296,18 +300,18 @@ Site* IndexParse::createSite(){
 	printf("Created index\n");
 
 	close(bulk_file);
-	/*
 	if(remove(bulkfile.c_str()) < 0){
 		perror("remove:");
 		string msg = string("Failed to remove tmp file: ") + bulkfile;
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 	if(remove(convBulk.c_str()) < 0){
 		perror("remove:");
 		string msg = string("Failed to remove tmp file: ") + convBulk;
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
-	*/
 
 	TypeID* keyTypes = new TypeID[numKeyFlds];
 	TypeID* addTypes = new TypeID[numAddFlds];
@@ -350,7 +354,7 @@ Site* IndexParse::createSite(){
 
 	StandardInterface interf(tableSchema, mmFilePath);
 	MinMax::replace(tablename, &interf);
-	CATCH(cerr << "Warning: "; currExcept->display(cerr); cerr << endl;);
+	CATCH(cerr << "Warning: "; cerr << currExcept->toString() << endl;);
 
 	for(int i = 0; i < numTFlds; i++){
 		delete minExs[i];

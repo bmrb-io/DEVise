@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/11/05 00:19:35  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.13  1997/10/02 02:27:25  donjerko
   Implementing moving aggregates.
 
@@ -103,6 +106,7 @@ Site* DeleteParse::createSite(){
 	if(type != "bool"){
 		string msg = "Predicate has type " +  type + " (bool expected)";
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 	List<BaseSelection*>* siteISchema = site->getSelectList();
 	assert(siteISchema);

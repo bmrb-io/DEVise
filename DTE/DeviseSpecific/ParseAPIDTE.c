@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/11/05 00:20:27  donjerko
+  Added some error checking calls to the DTE.
+
   Revision 1.7  1997/10/02 18:46:14  wenger
   Opening and saving batch-style sessions in back end now fully working;
   added tk2ds.tcl script for conversion.
@@ -99,9 +102,16 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
     }
 
     if(!strcmp(argv[0], "dteListCatalog")){
-      char* catListing = dteListCatalog(argv[1]);
-      control->ReturnVal(API_ACK, catListing);
-      return 1;
+    	 int errorCode;	// 0 means OK
+      char* catListing = dteListCatalog(argv[1], errorCode);
+	 if(errorCode){
+	 	control->ReturnVal(API_NAK, catListing);
+		return -1;
+	}
+	 else{
+		 control->ReturnVal(API_ACK, catListing);
+		 return 1;
+	}
     }
 
     if(!strcmp(argv[0], "dteListAttributes")){

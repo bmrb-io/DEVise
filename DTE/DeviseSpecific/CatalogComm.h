@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/05 00:20:25  donjerko
+  Added some error checking calls to the DTE.
+
   Revision 1.5  1997/09/23 19:58:19  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -37,7 +40,7 @@
 
 char* executeQuery(const char* query); // throws exception
 
-char* dteListCatalog(const char* catName);
+char* dteListCatalog(const char* catName, int& errorCode);
 
 char* dteShowCatalogEntry(const char* catName, const char* entryName);
 

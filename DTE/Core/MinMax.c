@@ -40,7 +40,7 @@ TableAlias* MinMax::createReplacement(TableAlias* table){
 	string tableName = table->getTable()->toString();
 	cerr << "looking for replacement " << tableName << endl;
 	Interface* interf = MINMAX_DIR.createInterface(tableName);
-	CATCH(cerr << "Warning: "; currExcept->display(cerr); cerr << endl;);
+	CATCH(cerr << "Warning: "; cerr << currExcept->toString() << endl;);
 	if(interf){
 		return new QuoteAlias(interf, alias);
 	}

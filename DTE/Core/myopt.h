@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/11/05 00:19:47  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.36  1997/10/14 05:17:28  arvind
   Implemented a first version of moving aggregates (without group bys).
 
@@ -164,7 +167,7 @@ public:
 		ostringstream os;
 		display(os);
 		os << ends;
-		string retVal(os.str());
+		string retVal(os.str());		// do not delete, works for NT
 		return retVal;
 	}
      virtual void display(ostream& out, int detail = 0){

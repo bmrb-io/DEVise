@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/09/05 22:20:02  donjerko
+  Made changes for port to NT.
+
   Revision 1.17  1997/08/21 21:04:17  donjerko
   Implemented view materialization
 
@@ -141,17 +144,7 @@ class ViewEngine : public Engine {
 	TypeID* typeIDs;
 	int numFlds;
 public:
-	ViewEngine(string query, const string* attrs, int numInpFlds) : 
-		Engine(query), attributeNames(NULL), typeIDs(NULL) {
-
-		numFlds = numInpFlds + 1;
-		attributeNames = new string[numFlds];
-		attributeNames[0] = RID_STRING;
-		for(int i = 1; i < numFlds; i++){
-			assert(attrs[i - 1] != "recId");
-			attributeNames[i] = attrs[i - 1];
-		}
-	}
+	ViewEngine(string query, const string* attrs, int numInpFlds);
 	~ViewEngine(){
 		delete [] attributeNames;
 		delete [] typeIDs;

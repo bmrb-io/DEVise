@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/11/05 00:20:28  donjerko
+  Added some error checking calls to the DTE.
+
   Revision 1.24  1997/10/10 21:07:27  liping
   The interface provided by TData::InitGetRecs and TData::GetRecs was changed
   The new interface carries the information of 1. LowId 2. HighId 3. AttrName
@@ -158,6 +161,10 @@ void TDataDQL::runQuery(){
 	}
 	Timer::StopTimer();
      TRY(engine->optimize(_query), );
+     if(_numFlds != engine->getNumFlds() / 2){
+		cerr << "_numFlds = " << _numFlds << endl;
+		cerr << "engine->getNumFlds() = " << engine->getNumFlds() << endl;
+	}
      assert(_numFlds == engine->getNumFlds() / 2);
 	_types = new TypeID[_numFlds];
 	const TypeID* tmpTypes = engine->getTypeIDs();
@@ -280,7 +287,7 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	CATCH(
 		cout << "DTE error coused by query: \n";
 		cout << "   " << _query << endl;
-		currExcept->display(); 
+		cout << currExcept->toString(); 
 		currExcept = NULL; 
 		cout << endl;
 		exit(0);
@@ -377,7 +384,7 @@ TData::TDHandle TDataDQL::InitGetRecs(Range *range,
 CATCH(
      cout << "DTE error coused by query: \n";
      cout << "   " << query << endl;
-     currExcept->display();
+     cout << currExcept->toString();
      currExcept = NULL;
      cout << endl;
      exit(0);
@@ -387,7 +394,7 @@ CATCH(
 CATCH(
      cout << "DTE error coused by query: \n";
      cout << "   " << query << endl;
-     currExcept->display();
+     cout << currExcept->toString();
      currExcept = NULL;
      cout << endl;
      exit(0);
@@ -504,7 +511,7 @@ void TDataDQL::InvalidateTData()
 	CATCH(
 		cout << "DTE error coused by query: \n";
 		cout << "   " << _query << endl;
-		currExcept->display(); 
+		cout << currExcept->toString(); 
 		currExcept = NULL; 
 		cout << endl;
 		exit(0);

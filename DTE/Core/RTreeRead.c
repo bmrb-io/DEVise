@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/07 16:51:53  donjerko
+  *** empty log message ***
+
   Revision 1.16  1997/11/05 00:19:40  donjerko
   Separated typechecking from optimization.
 
@@ -327,6 +330,7 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 	if(!catalogStr){
 		string msg = "Number of index attributes expected";
 		THROW(new Exception(msg), catalogStr);
+		// throw Exception(msg);
 	}
 	attributeNames = new string[numFlds];
 	typeIDs = new TypeID[numFlds];
@@ -337,12 +341,14 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 			string msg = 
 				"Type and name of the index attribute expected";
 			THROW(new Exception(msg), catalogStr);
+			// throw Exception(msg);
 		}
 	}
 //	catalogStr >> pageId;
 	if(!catalogStr){
 		string msg = "PageId expected in RTree index";
 		THROW(new Exception(msg), catalogStr);
+		// throw Exception(msg);
 	}
 	rTreeQuery = new RTreePred[numFlds];
 	for(int i = 0; i < numFlds; i++){
@@ -351,3 +357,76 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 	return catalogStr;
 }
 */
+
+RTreePred::RTreePred(string opName, ConstantSelection* constant){
+	bounded[0] = bounded[1] = false;
+	closed[0] = closed[1] = true;
+	values[0] = values[1] = NULL;
+	if(opName == "="){
+		bounded[0] = bounded[1] = true;
+		values[0] = values[1] = constant;
+	}
+	else if(opName == "<="){
+		bounded[1] = true;
+		values[1] = constant;
+	}
+	else if(opName == ">="){
+		bounded[0] = true;
+		values[0] = constant;
+	}
+	else if(opName == "<"){
+		bounded[1] = true;
+		closed[1] = false;
+		values[1] = constant;
+	}
+	else if(opName == ">"){
+		bounded[0] = true;
+		closed[0] = false;
+		values[0] = constant;
+	}
+	else {
+		cout << "Operator \"" << opName; 
+		cout << "\" should not be passed to this function\n";
+		assert(0);
+	}
+}
+
+void RTreePred::intersect(const RTreePred& pred){
+
+	if(pred.bounded[0] && !bounded[0]){
+		bounded[0] = true;
+		closed[0] = pred.closed[0];
+		values[0] = pred.values[0];
+	}
+	else if(pred.bounded[0] && bounded[0]){
+		assert(pred.values[0]);
+		assert(values[0]);
+		if(!(*pred.values[0] < *values[0])){
+			values[0] = pred.values[0];
+			closed[0] = pred.closed[0];
+		}
+		else if(*pred.values[0] == *values[0]){
+			if(!pred.closed[0]){
+				closed[0] = false;
+			}
+		}
+	}
+	if(pred.bounded[1] && !bounded[1]){
+		bounded[1] = true;
+		closed[1] = pred.closed[1];
+		values[1] = pred.values[1];
+	}
+	else if(pred.bounded[1] && bounded[1]){
+		assert(pred.values[1]);
+		assert(values[1]);
+		if(*pred.values[1] < *values[1]){
+			values[1] = pred.values[1];
+			closed[1] = pred.closed[1];
+		}
+		else if(*pred.values[1] == *values[1]){
+			if(!pred.closed[1]){
+				closed[1] = false;
+			}
+		}
+	}
+}

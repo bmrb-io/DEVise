@@ -38,9 +38,7 @@ public:
 		return UNKNOWN;
 	}
 	virtual const ISchema* getISchema(TableName* table) = 0;	// throws
-	virtual Inserter* getInserter(TableName* table){ // throws
-		THROW(new Exception("Insertion not supported"), NULL);
-	}
+	virtual Inserter* getInserter(TableName* table); // throws
 	virtual string getTypeNm() = 0;
 	virtual Interface* copyTo(void* space) = 0;
 };
@@ -64,10 +62,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new DummyInterface(*this);	
 	}
-	virtual Site* getSite(){
-		string err = "Operations on old DEVise table are not supported";
-		THROW(new Exception(err), NULL);
-	}
+	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
@@ -77,10 +72,7 @@ public:
 		out << " " << addQuotes(segment);
 		Interface::write(out);
 	}
-	virtual const ISchema* getISchema(TableName* table){
-		string msg = "ISchema lookup not supported for UNIXFILEs";
-		THROW(new Exception(msg), NULL);
-	}
+	virtual const ISchema* getISchema(TableName* table);
 	virtual Interface* copyTo(void* space){
 		return new (space) DummyInterface(*this);
 	}
@@ -315,10 +307,7 @@ public:
 	virtual Site* getSite();
 	virtual istream& read(istream& in);  // throws
 	virtual void write(ostream& out) const;
-	virtual const ISchema* getISchema(TableName* table){
-		string msg = "ISchema lookup not yet implemented for CGIs";
-		THROW(new Exception(msg), NULL);
-	}
+	virtual const ISchema* getISchema(TableName* table);
 	virtual Interface* copyTo(void* space){
 		return new (space) CGIInterface(*this);
 	}

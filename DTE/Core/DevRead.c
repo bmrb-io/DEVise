@@ -47,6 +47,7 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 		string msg = string("Cannot create table(") +
 			dataFile + ", " + schemaFile + ")";
 		THROW(new Exception(msg), );
+		// throw Exception(msg);
 	}
 	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
 	typeIDs = new TypeID[numFlds];

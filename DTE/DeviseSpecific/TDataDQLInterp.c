@@ -170,6 +170,8 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 
   TDataDQLInterp *tdata = new TDataDQLInterp(_name, attrList, _query);
 
+//  bool tdataFailed = tdata->fail();
+
   _tdata = NULL;	// cannot put _tdata = tdata (core dump?)
 
   return new TDataDQLInterpClassInfo(

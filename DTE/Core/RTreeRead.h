@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/11/05 00:19:41  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.14  1997/10/02 02:27:28  donjerko
   Implementing moving aggregates.
 
@@ -73,38 +76,7 @@ struct RTreePred {
 		closed[0] = closed[1] = true;
 		values[0] = values[1] = NULL;
 	}
-	RTreePred(string opName, ConstantSelection* constant){
-		bounded[0] = bounded[1] = false;
-		closed[0] = closed[1] = true;
-		values[0] = values[1] = NULL;
-		if(opName == "="){
-			bounded[0] = bounded[1] = true;
-			values[0] = values[1] = constant;
-		}
-		else if(opName == "<="){
-			bounded[1] = true;
-			values[1] = constant;
-		}
-		else if(opName == ">="){
-			bounded[0] = true;
-			values[0] = constant;
-		}
-		else if(opName == "<"){
-			bounded[1] = true;
-			closed[1] = false;
-			values[1] = constant;
-		}
-		else if(opName == ">"){
-			bounded[0] = true;
-			closed[0] = false;
-			values[0] = constant;
-		}
-		else {
-			cout << "Operator \"" << opName; 
-			cout << "\" should not be passed to this function\n";
-			assert(0);
-		}
-	}
+	RTreePred(string opName, ConstantSelection* constant);
 	~RTreePred(){
 		// do not delete values;
 	}
@@ -123,45 +95,7 @@ struct RTreePred {
 		RTreePred tmp(opName, cconstant);
 		intersect(tmp);
 	}
-	void intersect(const RTreePred& pred){
-
-		if(pred.bounded[0] && !bounded[0]){
-			bounded[0] = true;
-			closed[0] = pred.closed[0];
-			values[0] = pred.values[0];
-		}
-		else if(pred.bounded[0] && bounded[0]){
-			assert(pred.values[0]);
-			assert(values[0]);
-			if(!(*pred.values[0] < *values[0])){
-				values[0] = pred.values[0];
-				closed[0] = pred.closed[0];
-			}
-			else if(*pred.values[0] == *values[0]){
-				if(!pred.closed[0]){
-					closed[0] = false;
-				}
-			}
-		}
-		if(pred.bounded[1] && !bounded[1]){
-			bounded[1] = true;
-			closed[1] = pred.closed[1];
-			values[1] = pred.values[1];
-		}
-		else if(pred.bounded[1] && bounded[1]){
-			assert(pred.values[1]);
-			assert(values[1]);
-			if(*pred.values[1] < *values[1]){
-				values[1] = pred.values[1];
-				closed[1] = pred.closed[1];
-			}
-			else if(*pred.values[1] == *values[1]){
-				if(!pred.closed[1]){
-					closed[1] = false;
-				}
-			}
-		}
-	}
+	void intersect(const RTreePred& pred);
 	string toString() const {
 		string retVal;
 		if(closed[0]){

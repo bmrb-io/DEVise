@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/11/05 00:19:44  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.30  1997/09/17 02:35:46  donjerko
   Fixed the broken remote DTE interface.
 
@@ -100,18 +103,21 @@ void readFilter(string viewNm, string& select,
 	if(!vin){
 		string msg = "Could not open view file \"" + viewNm + "\"";
 		THROW(new Exception(msg), NVOID );
+		// throw Exception(msg);
 	}
 	vin >> numFlds;
 	if(!vin){
 		string msg = "Number of fieds expected in file \"" + viewNm + "\"";
 		THROW(new Exception(msg), NVOID );
+		// throw Exception(msg);
 	}
 	attributeNames = new string[numFlds];
      for(int i = 0; i < numFlds; i++){
           vin >> attributeNames[i];
      }
-     TRY(stripQuotes(vin, select), NVOID );
-     TRY(stripQuotes(vin, where), NVOID );
+	assert(!"SQLFilters are not supported any more");
+//     TRY(stripQuotes(vin, select), NVOID );
+//     TRY(stripQuotes(vin, where), NVOID );
 }
 
 Site* Catalog::find(TableName* path) const { // Throws Exception
@@ -141,6 +147,7 @@ Interface* Directory::createInterface(const string& entry) const
 		delete in;
 		string msg = "Could not open file " + fileName;
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 	int dsnf = DIR_SCHEMA.getNumFlds();
 	const TypeID* dst = DIR_SCHEMA.getTypeIDs();
@@ -149,9 +156,12 @@ Interface* Directory::createInterface(const string& entry) const
 	iterator->initialize();
 
 	const Tuple* tuple;
-	CHECK(tuple = iterator->getNext(), 
-		"Illegal catalog format", NULL);
-	while(tuple){
+	string errStr = "Cannot read catalog file: " + fileName;
+	while(true){
+		CHECK(tuple = iterator->getNext(), errStr, NULL);
+		if(!tuple){
+			break;
+		}
 		const char* tableNm = IString::getCStr(tuple[0]);
 		if(entry == tableNm){
 			const Interface* tmp = InterfWrapper::getInterface(tuple[1]);
@@ -159,13 +169,12 @@ Interface* Directory::createInterface(const string& entry) const
 			delete iterator;
 			return retVal;
 		}
-		CHECK(tuple = iterator->getNext(),
-			"Illegal catalog format", NULL);
 	}
 	delete iterator;
 	string msg = "Table " + entry + " not defined in file: " +
 		fileName;
 	THROW(new Exception(msg), NULL);
+	// throw Exception(msg);
 }
 
 Interface* Catalog::createInterface(TableName* path) const { 
@@ -190,6 +199,7 @@ Interface* Catalog::createInterface(TableName* path) const {
 			path->cardinality() > 0){
 		string msg = "Table " + firstPathNm + " is not a catalog";
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 	return interf;
 }

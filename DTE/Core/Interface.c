@@ -114,7 +114,7 @@ Site* MaterViewInterface::getSite(){ // Throws a exception
 	delete url;
 
 	StandardRead* sr = new StandardRead();
-	TRY(sr->open(StandardInterface::schema, in), NULL);
+	TRY(sr->open(StandardInterface::schema, in, urlString), NULL);
 
 	RidAdder* planOp = new RidAdder(sr);
      return new LocalTable("", planOp, urlString);	
@@ -190,7 +190,7 @@ Site* StandardInterface::getSite(){ // Throws a exception
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
 	StandardRead* unmarshal = new StandardRead();
-	TRY(unmarshal->open(schema, in), NULL);
+	TRY(unmarshal->open(schema, in, urlString), NULL);
 
 	delete url;
      return new LocalTable("", unmarshal, urlString);	
@@ -227,6 +227,7 @@ istream& CGIInterface::read(istream& in){  // throws
 	if(!in){
 		string e = "Catalog error: number of entries expected";
 		THROW(new Exception(e), in);
+		// throw Exception(e);
 	}
 
 	entries = new CGIEntry[entryLen];
@@ -241,6 +242,7 @@ istream& ViewInterface::read(istream& in){ // throws
 	if(!in){
 		string e = "Number of attributes expected";
 		THROW(new Exception(e), in);
+		// throw Exception(e);
 	}
 	attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
@@ -278,6 +280,7 @@ Site* ViewInterface::getSite(){
 		estr << "(" << numEngFlds << ")" << ends;
 		string except = estr.str();
 		THROW(new Exception(except), NULL);
+		// throw Exception(except);
 	}
 	return new LocalTable("", engine); 
 }
@@ -366,8 +369,8 @@ istream& CGIEntry::read(istream& in){	// throws
 	char tmp;
 	in >> tmp;
 	if(tmp != '"'){
-		THROW(new Exception(
-			"Wrong format in the CGIInterface"), in);
+		THROW(new Exception("Wrong format in the CGIInterface"), in);
+		// throw Exception("Wrong format in the CGIInterface");
 	}
 	bool escape = false;
 	while(1){
@@ -375,6 +378,7 @@ istream& CGIEntry::read(istream& in){	// throws
 		if(!in){
 			string e = "Catalog ends while reading CGIInterface";
 			THROW(new Exception(e), in);
+			// throw Exception(e);
 		}
 		if(tmp == '\\'){
 			if(escape){
@@ -435,6 +439,7 @@ Interface* CatalogInterface::duplicate() const {
 istream& DummyInterface::read(istream& in){
 	if(!in){
 		THROW(new Exception("Wrong format"), in);
+		// throw Exception("Wrong format");
 	}
 	in >> key >> schemaType >> schemaFile;
 	CHECK(stripQuotes(in, cacheFile), 
@@ -452,4 +457,27 @@ istream& DeviseInterface::read(istream& in){
 	CHECK(stripQuotes(in, viewNm), 
 		"Incorrect ViewInterface format", in);
 	return in;
+}
+
+Inserter* Interface::getInserter(TableName* table){ // throws
+	THROW(new Exception("Insertion not supported"), NULL);
+//	throw Exception("Insertion not supported");
+}
+
+Site* DummyInterface::getSite(){
+	string err = "Operations on old DEVise table are not supported";
+	THROW(new Exception(err), NULL);
+//	throw Exception(err);
+}
+
+const ISchema* DummyInterface::getISchema(TableName* table){
+	string msg = "ISchema lookup not supported for UNIXFILEs";
+	THROW(new Exception(msg), NULL);
+//	throw Exception(msg);
+}
+
+const ISchema* CGIInterface::getISchema(TableName* table){
+	string msg = "ISchema lookup not yet implemented for CGIs";
+	THROW(new Exception(msg), NULL);
+//	throw Exception(msg);
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/11/08 21:02:25  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.19  1997/11/05 00:19:36  donjerko
   Separated typechecking from optimization.
 
@@ -106,6 +109,7 @@ int Engine::optimize(){
 	if(parseRet != 0){
 		string msg = "parse error ";
 		THROW(new Exception(msg), 0);
+		// throw Exception(msg);
 	}
 	assert(parseTree);
 	TRY(topNode = parseTree->createSite(), 0);
@@ -116,4 +120,16 @@ int Engine::optimize(){
 
 Iterator* ViewEngine::createExec(){
 	return new RidAdderExec(topNode->createExec(), numFlds);
+}
+
+ViewEngine::ViewEngine(string query, const string* attrs, int numInpFlds) : 
+	Engine(query), attributeNames(NULL), typeIDs(NULL) {
+
+	numFlds = numInpFlds + 1;
+	attributeNames = new string[numFlds];
+	attributeNames[0] = RID_STRING;
+	for(int i = 1; i < numFlds; i++){
+		assert(attrs[i - 1] != "recId");
+		attributeNames[i] = attrs[i - 1];
+	}
 }

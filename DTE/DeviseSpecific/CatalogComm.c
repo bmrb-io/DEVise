@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/05 00:20:24  donjerko
+  Added some error checking calls to the DTE.
+
   Revision 1.16  1997/09/29 02:52:12  donjerko
   *** empty log message ***
 
@@ -118,21 +121,21 @@ char* executeQuery(const string& query){
 	return retVal;
 }
 
-char* dteListCatalog(const char* catName){
+char* dteListCatalog(const char* catName, int& errorCode){
 
 #if defined(DEBUG)
 	cout << "in dteListCatalog(" << catName << ")\n";
 #endif
+	errorCode = 0;
 	string query = "select cat.name, cat.interf.type from " +
 		string(catName) + " as cat";
 	char* retVal = executeQuery(query);
      CATCH(
-          cout << "DTE error coused by query: \n";
-          cout << "   " << query << endl;
-          currExcept->display();
+		string err = "DTE error coused by query: \n";
+		err += query + "\n" + currExcept->toString() + "\n";
           currExcept = NULL;
-          cout << endl;
-          exit(0);
+		errorCode = 1;
+		return strdup(err.c_str());
      )
 	return retVal;
 }
@@ -158,7 +161,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 	CATCH(
 		cout << "DTE error coused by query: \n";
 		cout << "   " << query << endl;
-		currExcept->display();
+          cout << currExcept->toString();
 		currExcept = NULL;
 		cout << endl;
 		exit(0);
@@ -186,7 +189,7 @@ void dteMaterializeCatalogEntry(const char* tableName){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -206,7 +209,7 @@ void dteDeleteCatalogEntry(const char* catName, const char* entryName){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -225,7 +228,7 @@ int dteInsertCatalogEntry(const char* catName, const char* values){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -308,7 +311,7 @@ char* dteListAttributes(const char* tableName){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -349,7 +352,7 @@ char* dteReadSQLFilter(const char* fileName){
 	readFilter(fileName, select, attributeNames, numFlds, where);
      CATCH(
           cout << "DTE error while reading SQLFilter: " << fileName << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -386,7 +389,7 @@ void dteCreateIndex(const char* tableName, const char* indexName,
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -417,7 +420,7 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -460,7 +463,7 @@ char* dteListAllIndexes(){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);
@@ -475,7 +478,7 @@ void dteDeleteIndex(const char* tableName, const char* indexName){
      CATCH(
           cout << "DTE error coused by query: \n";
           cout << "   " << query << endl;
-          currExcept->display();
+          cout << currExcept->toString();
           currExcept = NULL;
           cout << endl;
           exit(0);

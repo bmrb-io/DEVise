@@ -41,8 +41,7 @@ public:
           return Offset();
      }
      virtual void reset(int lowRid, int highRid){
-          string msg = "reset not implemented for this reader";
-          THROW(new Exception(msg), NVOID );
+          assert(!"reset not implemented for this reader");
      }
 	virtual void finalize(){}
 	virtual ~Iterator(){}

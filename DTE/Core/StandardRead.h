@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/05 00:19:42  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.21  1997/09/17 02:35:44  donjerko
   Fixed the broken remote DTE interface.
 
@@ -97,14 +100,10 @@ class StandReadExec : public Iterator {
 	size_t* currentSz;
 	int numFlds;
 	int currentLine;
+	string urlStr;
 public:
-	StandReadExec(istream* in, ReadPtr* readPtrs,
-		DestroyPtr* destroyPtrs, Tuple* tuple,
-		size_t* currentSz, int numFlds) : 
-		in(in), readPtrs(readPtrs),
-		destroyPtrs(destroyPtrs), tuple(tuple), currentSz(currentSz),
-		numFlds(numFlds), currentLine(0) {}
-	StandReadExec(int numFlds, const TypeID* typeIDs, istream* in);
+	StandReadExec(int numFlds, const TypeID* typeIDs, istream* in, 
+		string = "");
 	virtual ~StandReadExec(){
 		delete [] currentSz;
 		delete [] readPtrs;
@@ -123,7 +122,7 @@ public:
 			readPtrs[i](*in, tuple[i]);
 			if(currExcept){
 				ostringstream tmp;
-				tmp << "Line " << currentLine << ends;
+				tmp << "Line " << currentLine << " of " << urlStr << ends;
 				currExcept->append(tmp.str());
 				return NULL;
 			}
@@ -146,6 +145,7 @@ protected:
 	string* attributeNames;
 	string* order;
 	Stats* stats;
+	string urlStr;
 public:
      StandardRead() : 
 		in(NULL), numFlds(0), typeIDs(NULL), 
@@ -160,7 +160,7 @@ public:
 	void open(istream* in, int numFlds, const TypeID* typeIDs); 
 		// throws, used for tmp tables
 
-	void open(const ISchema& schema, istream* in); 
+	void open(const ISchema& schema, istream* in, const string& urlStr); 
 
 	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){
@@ -197,18 +197,7 @@ public:
 		return out;
 	}
 	virtual Iterator* createExec(){
-		ReadPtr* readPtrs = new ReadPtr[numFlds];
-		DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
-		size_t* currentSz = new size_t[numFlds];
-		Tuple* tuple = new Tuple[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			readPtrs[i] = getReadPtr(typeIDs[i]);
-			destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
-			assert(destroyPtrs[i]);
-			tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
-		}
-		return new StandReadExec(
-			in, readPtrs, destroyPtrs, tuple, currentSz, numFlds);
+		return new StandReadExec(numFlds, typeIDs, in, urlStr);
 	}
 };
 
@@ -218,19 +207,7 @@ class RidAdder : public PlanOp {
 	TypeID* typeIDs;
 	string* attributeNames;
 public:
-	RidAdder(PlanOp* input) : input(input) {
-		numFlds = input->getNumFlds() + 1;
-		typeIDs = new TypeID[numFlds];
-		attributeNames = new string[numFlds];
-		const TypeID* inpTypes = input->getTypeIDs();
-		const string* inpAttrs = input->getAttributeNames();
-		typeIDs[0] = INT_TP;
-		attributeNames[0] = RID_STRING;
-		for(int i = 1; i < numFlds; i++){
-			typeIDs[i] = inpTypes[i - 1];
-			attributeNames[i] = inpAttrs[i - 1];
-		}
-	}
+	RidAdder(PlanOp* input);
 	virtual ~RidAdder(){
 		delete input;
 		delete [] typeIDs;

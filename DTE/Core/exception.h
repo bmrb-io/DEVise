@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/05 00:19:44  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.10  1997/10/02 02:27:30  donjerko
   Implementing moving aggregates.
 
@@ -73,10 +76,7 @@ public:
 	void append(const string& more){
 		text += string("\n") + more;
 	}
-	void display(ostream& out = cout){
-		out << "1 " << text;
-	}
-	string toString(){
+	const string& toString(){
 		return text;
 	}
 };
@@ -87,7 +87,7 @@ class DefaultExceptHndl{
 public:
 	~DefaultExceptHndl(){
 		if(currExcept){
-			currExcept->display();
+			cout << currExcept->toString();
 			cout << endl;
 		}
 	}
@@ -138,7 +138,7 @@ extern ITimer iTimer;
 #define THROW(A,B)\
 	if(currExcept){\
 		cout << "\nUncaught exception found:\n";\
-		currExcept->display();\
+		cout << currExcept->toString();\
 		cout << endl;\
 	}\
 	assert(!currExcept); currExcept = A; return B 

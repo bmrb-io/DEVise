@@ -21,6 +21,7 @@ void Modifier::replace
 	if(!ins->good()){
 		string msg = "Could not open file: " + fileName;
 		THROW(new Exception(msg), );
+		// throw Exception(msg);
 	}
 	assert(ins && ins->good());
 	int numFlds = schema.getNumFlds();

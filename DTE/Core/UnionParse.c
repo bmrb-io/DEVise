@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/02 02:27:29  donjerko
+  Implementing moving aggregates.
+
   Revision 1.6  1997/08/21 21:04:27  donjerko
   Implemented view materialization
 
@@ -49,6 +52,7 @@ Site* UnionParse::createSite(){	// throws exception;
 		string msg = 
 			"Cannot do UNION because numbers of fields do not match";
 		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
 	}
 	const TypeID* types1 = iter1->getTypeIDs();
 	const TypeID* types2 = iter2->getTypeIDs();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/08 21:02:26  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.20  1997/11/05 00:19:39  donjerko
   Separated typechecking from optimization.
 
@@ -102,13 +105,14 @@ public:
 		havingPredicate(havingPredicate),
 		sequenceby(sequenceby), withPredicate(withPredicate), 
 		orderBy(orderBy), sortOrdering(sortOrdering),
-		namesToResolve(namesToResolve) {}
+		namesToResolve(namesToResolve), typeCheckOnly(false),
+		grpAndSeqFields(NULL) {}
 	
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){
 		delete selectList;      // destroy list too
 		delete tableList;
-		if (grpAndSeqFields) {delete grpAndSeqFields; }
+		delete grpAndSeqFields;
 		// predicates should be deleted in createSite
 	}
 	virtual void setTypeCheckOnlyFlag(){

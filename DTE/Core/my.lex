@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/08 21:02:29  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.21  1997/11/05 00:19:46  donjerko
   Separated typechecking from optimization.
 
@@ -149,7 +152,11 @@ LessGreat    ">="|">"|"<="|"<"
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {
-             yylval.stringLit = new string(stripQuotes(yytext)); 
+             size_t textLen = strlen(yytext) + 1;
+             char* tmp = new char[textLen];
+             stripQuotes(yytext, tmp, textLen);
+             yylval.stringLit = new string(tmp); 
+             delete [] tmp;
 		   return STRING_CONST;
 		   }
 .            {return yytext[0];}
