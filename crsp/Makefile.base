@@ -1,9 +1,9 @@
 CC = g++
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
 
-LIBSRC	= sec.C cal.C
+LIBSRC	= sec.C cal.C crsp_extract.C
 
-LIBOBJ	= sec.o cal.o
+LIBOBJ	= sec.o cal.o crsp_extract.o
 
 TESTSRC = crsp_index.C main.C
 
