@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.125  2001/10/30 17:35:43  xuk
+// Created DEViseClient object for collaborating clients in jspop.
+// 1. Deleted showCollab();
+// 2. In setModeDlg class, modified socketButton and collabButton actions;
+// 3. In enterCollabPassDlg class, sends JAVAC_Collaborate {ID} {passwd} to
+// jspop, don't disconnect socket.
+//
 // Revision 1.124  2001/10/24 22:15:33  wenger
 // More collaboration-related fixes.
 //
@@ -393,6 +400,8 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
+    private Button collabButton = new Button("Collaborate");
+    private Button playbackButton = new Button("Playback");
     private final String displayLogStr = "Show Log";
     private final String closeLogStr = "Hide Log";
     private Button logButton = new Button(displayLogStr);
@@ -412,6 +421,7 @@ public class jsdevisec extends Panel
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetLogFileDlg setlogfiledlg = null;
     private SetModeDlg setmodedlg = null;
+    private ShowCollabDlg showcollabdlg = null;
     public CollabDlg collabdlg = null;
     public CollabPassDlg collabpassdlg = null;
     public EnterCollabPassDlg entercollabpassdlg = null;
@@ -555,7 +565,7 @@ public class jsdevisec extends Panel
             button[3] = logButton;
             button[4] = helpButton;
         } else {
-            button = new Component[10];
+            button = new Component[12];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
@@ -563,13 +573,15 @@ public class jsdevisec extends Panel
             button[4] = setButton;
             button[5] = filterButton;
             button[6] = modeButton;
-	    button[7] = logButton;
-            button[8] = helpButton;
-            button[9] = exitButton;
+	    button[7] = collabButton;
+	    button[8] = playbackButton;
+	    button[9] = logButton;
+            button[10] = helpButton;
+            button[11] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 5,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
 	  DEViseComponentPanel.ALIGN_LEFT, this);
 	if (jsValues.connection.cgi) {
 	    cgiMode();
@@ -731,6 +743,22 @@ public class jsdevisec extends Panel
 			setMode();
                     }
                 });
+
+        collabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			showCollab();
+                    }
+                });	
+
+        playbackButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			setLogFile();
+                    }
+                });	
 
         logButton.addActionListener(new ActionListener()
                 {
@@ -1027,6 +1055,13 @@ public class jsdevisec extends Panel
         setmodedlg = new SetModeDlg(this, parentFrame, isCenterScreen);
         setmodedlg.open();
         setmodedlg = null;
+    }
+
+    public void showCollab()
+    {
+        showcollabdlg = new ShowCollabDlg(this, parentFrame, isCenterScreen);
+        showcollabdlg.open();
+        showcollabdlg = null;
     }
 
     public boolean isShowingMsg()
@@ -2377,10 +2412,6 @@ class SetModeDlg extends Dialog
     jsdevisec jsc = null;
     public Button socketButton = new Button("Socket");
     public Button cgiButton = new Button("CGI");
-    public Button collabButton = new Button("Start Collaboration");
-    public Button enCollabButton = new Button("Enable Collaboration");
-    public Button disCollabButton = new Button("Disable Collaboration");
-    public Button playbackButton = new Button("Playback");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -2410,30 +2441,6 @@ class SetModeDlg extends Dialog
         cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
         cgiButton.setFont(jsc.jsValues.uiglobals.font);
 
-        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
-        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        collabButton.setFont(jsc.jsValues.uiglobals.font);
-
-	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
-	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    enCollabButton.setBackground(Color.red);
-	}
-        enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        enCollabButton.setFont(jsc.jsValues.uiglobals.font);
-
-	if ((jsc.specialID == -1) && (jsc.isCollab)) {
-	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    disCollabButton.setBackground(Color.red);
-	}
-        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
-
-        playbackButton.setBackground(jsc.jsValues.uiglobals.bg);
-        playbackButton.setForeground(jsc.jsValues.uiglobals.fg);
-        playbackButton.setFont(jsc.jsValues.uiglobals.font);
-
         cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
         cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
         cancelButton.setFont(jsc.jsValues.uiglobals.font);
@@ -2458,14 +2465,6 @@ class SetModeDlg extends Dialog
         add(socketButton);
         gridbag.setConstraints(cgiButton, c);
         add(cgiButton);
-        gridbag.setConstraints(collabButton, c);
-        add(collabButton);
-        gridbag.setConstraints(enCollabButton, c);
-        add(enCollabButton);
-        gridbag.setConstraints(disCollabButton, c);
-        add(disCollabButton);
-        gridbag.setConstraints(playbackButton, c);
-        add(playbackButton);
         gridbag.setConstraints(cancelButton, c);
         add(cancelButton);
 
@@ -2536,73 +2535,8 @@ class SetModeDlg extends Dialog
                     }
                 });
 
-        collabButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			String command = new String();
 
-			// if switch from "socket" mode, save current 
-			// session.
-                        if (jsc.isSessionOpened) {
-			    jsc.sessionSaved = true;
-			    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
-                        }
-
-			// if already in "collaboration" mode,
-			// send JAVAC_CollabExit to exit from previous collaboration
-			if (jsc.specialID != -1) {
-			    if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
-				jsc.collabinterrupted = true;
-				jsc.dispatcher.dispatcherThread.interrupt();
-			    }
-			    jsc.specialID = -1;
-			}
-
-			command = command + DEViseCommands.ASK_COLLAB_LEADER;
-			jsc.dispatcher.start(command);
-
-			close();
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-			jsc.dispatcher.setStatus(0);
-			jsc.collabMode();
-                    }
-                });
-
-	if ((jsc.specialID == -1) && (!jsc.isCollab))
-	    enCollabButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			jsc.isCollab = true;
-			close();
-			jsc.showCollabPass();
-                    }
-                });
-
-	if ((jsc.specialID == -1) && (jsc.isCollab))
-	    disCollabButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			jsc.isCollab = false;
-			close();
-			jsc.disableCollab();
-                    }
-                });
-
-	playbackButton.addActionListener(new ActionListener()
-	    {
-		public void actionPerformed(ActionEvent event)
-		{
-		    close();
-		    jsc.setLogFile();
-		}
-	    });
-	
-        cancelButton.addActionListener(new ActionListener()
+	cancelButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
@@ -2652,6 +2586,253 @@ class SetModeDlg extends Dialog
     }
 }
 
+// ------------------------------------------------------------------------
+
+// Dialog for collaboration.
+class ShowCollabDlg extends Dialog
+{
+    jsdevisec jsc = null;
+
+    public Button collabButton = new Button("Start Collaboration");
+    public Button endButton = new Button("Finish Collaboration");
+    public Button enCollabButton = new Button("Enable Collaboration");
+    public Button disCollabButton = new Button("Disable Collaboration");
+    public Button cancelButton = new Button("Cancel");
+    private boolean status = false; // true means this dialog is showing
+
+    public ShowCollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating SetModeDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("JavaScreen Collaboration");
+
+	if (jsc.specialID == -1) {
+	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	} else {
+	    collabButton.setBackground(Color.red);
+	}
+        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        collabButton.setFont(jsc.jsValues.uiglobals.font);
+
+	if (jsc.specialID != -1) {
+	    endButton.setBackground(jsc.jsValues.uiglobals.bg);
+	} else {
+	    endButton.setBackground(Color.red);
+	}
+        endButton.setForeground(jsc.jsValues.uiglobals.fg);
+        endButton.setFont(jsc.jsValues.uiglobals.font);
+
+	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
+	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	} else {
+	    enCollabButton.setBackground(Color.red);
+	}
+        enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        enCollabButton.setFont(jsc.jsValues.uiglobals.font);
+
+	if ((jsc.specialID == -1) && (jsc.isCollab)) {
+	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	} else {
+	    disCollabButton.setBackground(Color.red);
+	}
+        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
+
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(10, 10, 10, 10);
+
+        Label label = new Label("Collaboration Setting:");
+        gridbag.setConstraints(label, c);
+        add(label);
+
+        gridbag.setConstraints(collabButton, c);
+        add(collabButton);
+        gridbag.setConstraints(endButton, c);
+        add(endButton);
+        gridbag.setConstraints(enCollabButton, c);
+        add(enCollabButton);
+        gridbag.setConstraints(disCollabButton, c);
+        add(disCollabButton);
+        gridbag.setConstraints(cancelButton, c);
+        add(cancelButton);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+	if (jsc.specialID == -1) 
+	    collabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			String command = new String();
+			
+			// if switch from "socket" mode, save current 
+			// session.
+                        if (jsc.isSessionOpened) {
+			    jsc.sessionSaved = true;
+			    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
+                        }
+
+			// if already in "collaboration" mode,
+			// send JAVAC_CollabExit to exit from previous collaboration
+			if (jsc.specialID != -1) {
+			    if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
+				jsc.collabinterrupted = true;
+				jsc.dispatcher.dispatcherThread.interrupt();
+			    }
+			    jsc.specialID = -1;
+			}
+			
+			command = command + DEViseCommands.ASK_COLLAB_LEADER;
+			jsc.dispatcher.start(command);
+			
+			close();
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+			jsc.dispatcher.setStatus(0);
+			jsc.collabMode();
+                    }
+                });
+
+	if (jsc.specialID != -1)
+	    endButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.socketMode();
+			jsc.specialID = -1;
+			jsc.collabinterrupted = true;
+			jsc.dispatcher.dispatcherThread.interrupt();
+			
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+			jsc.dispatcher.setStatus(0);
+			
+			if (jsc.sessionSaved) {
+			    jsc.isSessionOpened = true;
+			    jsc.dispatcher.start(DEViseCommands.REOPEN_SESSION);
+			    jsc.sessionSaved = false;
+			}
+
+ 			close();
+                    }
+                });
+
+	if ((jsc.specialID == -1) && (!jsc.isCollab))
+	    enCollabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.isCollab = true;
+			close();
+			jsc.showCollabPass();
+                    }
+                });
+
+	if ((jsc.specialID == -1) && (jsc.isCollab))
+	    disCollabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.isCollab = false;
+			close();
+			jsc.disableCollab();
+                    }
+                });
+
+	cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
+                    }
+                });
+
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    // If this dialog is a modal dialog, the show() or setVisible(true) method
+    // will block current thread(i.e. the thread that access this method, may
+    // be the event dispatcher thread) until setVisible(false) or dispose() is
+    // called
+    // In JDK1.1, any thread that access AWT method is acting as a event
+    // dispatcher thread
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening ShowCollabDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed ShowCollabDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
 
 // ------------------------------------------------------------------------
 // Dialog for setting collabrated JavaScreen ID.
