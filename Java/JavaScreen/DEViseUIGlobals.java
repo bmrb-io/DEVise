@@ -12,9 +12,19 @@
 
 // ------------------------------------------------------------------------
 
+// This class contains GUI-related constants and utility functions.
+// It was split out from DEViseGlobals.java so that the jspop wouldn't
+// need an X server to run.
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/06/22 20:51:25  wenger
+// Changed colors and font in drill-down dialog to make text more
+// readable.
+//
 // Revision 1.6  2000/05/24 14:07:10  wenger
 // Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
 // DEViseAtomInCrystal, DEVise3DLCS).
