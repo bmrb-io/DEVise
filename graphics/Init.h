@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/07 22:53:50  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.9  1996/09/12 18:37:45  wenger
   Added optional delay before drawing images.
 
@@ -54,119 +58,111 @@
 #include "DeviseTypes.h"
 #include "BufPolicy.h"
 
+const int DEVISE_MAX_TDATA_ATTRS = 512;
+
 class Init {
-public:
-  static void DoInit(int &argc, char **argv);
-  static Boolean DoPlayback() { return _doPlayback; }
-  static char *PlaybackFileName(){ return _playbackFile; }
+  public:
+    static void DoInit(int &argc, char **argv);
+
+    static Boolean SavePopup() { return _savePopup;}
+
+    static char *PlaybackFileName(){ return _playbackFile; }
+    static Boolean DoPlayback() { return _doPlayback; }
   
-  /* get buffer manager policies.
-     bufSize = buffer size, in # of pages
-     prefetch: true if prefetch while idling.
-     policy : buffer policy to use
-     existing: true if pages already in mem should be checked first for
-     an incoming query */
-  static void BufPolicies(int &bufSize, Boolean &prefetch,
-			  BufPolicy::policy &policy, Boolean &existing);
+    /* get buffer manager policies.
+       bufSize = buffer size, in # of pages
+       prefetch: true if prefetch while idling.
+       policy : buffer policy to use
+       existing: true if pages already in mem should be checked first for
+       an incoming query */
+    static void BufPolicies(int &bufSize, Boolean &prefetch,
+                            BufPolicy::policy &policy, Boolean &existing);
+    static BufPolicy::policy Policy() { return _policy; }
 	
-  static Boolean SavePopup() { return _savePopup;}
-  static Boolean TDataQuery(){ return _tdataQuery; }
-  static Boolean ConvertGData() { return _convertGData; }
-  static int MaxGDataPages() { return _gdataPages; }
-  static Boolean Randomize(){ return _randomize;}
-  static Boolean DoAbort() { return _abort; }
-  static char *ProgName() { return _progName; }
-  static char *QueryProc(){ return _qpName;}
+    static Boolean TDataQuery(){ return _tdataQuery; }
+    static Boolean ConvertGData() { return _convertGData; }
+    static int MaxGDataPages() { return _gdataPages; }
+    static Boolean Randomize(){ return _randomize;}
 
-  static char *SessionName() { return _sessionName; }
-  static void SetSessionName(char *name) {
-    _sessionName = name;
-  }
+    static char *ProgName() { return _progName; }
+    static long ProgModTime() { return _progModTime; }
+    static Boolean DisplayLogo() { return _dispLogo; }
+    static Boolean DoAbort() { return _abort; }
 
-  /* true if windows are iconified when restoring a session */
-  static Boolean Iconify() { return _iconify; }
-
-  /* Return name of work directory */
-  static char *WorkDir() { return _workDir; }
-
-  /* Return name of Tmp directory */
-  static char *TmpDir() { return _tmpDir; }
-
-  /* Return name of Cache directory */
-  static char *CacheDir() { return _cacheDir; }
+    static char *WorkDir() { return _workDir; }
+    static char *TmpDir() { return _tmpDir; }
+    static char *CacheDir() { return _cacheDir; }
   
-  static Boolean Restore() { return _restore; }
-  static long ProgModTime();
-  static int PageSize();
-  static BufPolicy::policy Policy();
-  static Boolean GetXLow(Coord &);
-  static Boolean GetYLow(Coord &);
-  static Boolean GetXHigh(Coord &);
-  static Boolean GetYHigh(Coord &);
-  static Boolean ElimOverlap() { return _elimOverlap; }
-  
-  static Boolean UseSimpleInterpreter() { return _simpleInterpreter; }
-  static Boolean PrintTDataAttr() { return _printTDataAttr; }
-  static Boolean DispGraphics() { return _dispGraphics; }
-  static Boolean BatchRecs() { return _batchRecs; }
-  static Boolean PrintViewStat() { return _printViewStat; }
-  static Boolean DisplayLogo() { return _dispLogo; }
+    static char *SessionName() { return _sessionName; }
+    static void SetSessionName(char *name) { _sessionName = name; }
+    static Boolean Restore() { return _restore; }
+    static Boolean Iconify() { return _iconify; }
 
-  static char *BatchFile() { return _batchFile; }
+    static int PageSize() { return _pageSize; }
+    static Boolean ElimOverlap() { return _elimOverlap; }
 
-  static char *DaliServer() { return _daliServer; }
-  static Boolean DaliQuit() { return _daliQuit; }
+    static Boolean UseSimpleInterpreter() { return _simpleInterpreter; }
+    static Boolean PrintTDataAttr() { return _printTDataAttr; }
+    static Boolean DispGraphics() { return _dispGraphics; }
+    static Boolean BatchRecs() { return _batchRecs; }
+    static Boolean PrintViewStat() { return _printViewStat; }
+    
+    static char *BatchFile() { return _batchFile; }
+    
+    static char *DaliServer() { return _daliServer; }
+    static Boolean DaliQuit() { return _daliQuit; }
+    static int ImageDelay() { return _imageDelay; }
+    
+    static int ScreenWidth() { return _screenWidth; }
+    static int ScreenHeight() { return _screenHeight; }
+    
+protected:
+    static Boolean _savePopup;     /* true if pop-up window should be saved and
+                                      wait for button even to remove it */
 
+    static char *_playbackFile;    /* name of the playback file */
+    static Boolean _doPlayback;    /* true if playback requested */
 
-  static int ScreenWidth() { return _screenWidth; }
-  static int ScreenHeight() { return _screenHeight; }
+    static Boolean _prefetch;      /* true if prefetch enabled */
+    static int _bufferSize;        /* buffer size */
+    static BufPolicy::policy _policy;
+    static Boolean _existing;
 
-  static int ImageDelay() { return _imageDelay; }
+    static Boolean _tdataQuery; 
+    static Boolean _convertGData;  /* true if bg GData conversion enabled */
+    static int _gdataPages;        /* amount of GData space available */
+    static Boolean _randomize;     /* TRUE if TData retrieval is randomized */
 
-private:
+    static char *_progName;        /* name of program */
+    static long _progModTime;      /* last time program was modified */
+    static Boolean _dispLogo;      /* true if Devise logo displayed */
+    static Boolean _abort;         /* true if Devise should abort on error */
 
-  static Boolean _savePopup; /* true if pop-up window should be saved and
-				wait for button even to remove it */
-  static char *_playbackFile; /* name of the playback file */
-  static Boolean _doPlayback;
-  static Boolean _prefetch;
-  static int _bufferSize;
-  static BufPolicy::policy _policy;
-  static Boolean _existing;
-  static Boolean _tdataQuery;
-  static Boolean _convertGData;
-  static Boolean _abort;
-  static int _gdataPages;
-  static char *_progName;	/* name of program */
-  static char *_workDir;    /* name of work directory */
-  static char *_tmpDir;    /* name of temp directory */
-  static char *_cacheDir;    /* name of cache directory */
-  static char *_sessionName;
-  static Boolean _dispLogo;
-  static char *_batchFile;
-  static long _progModTime; /* last time program was modified */
-  static Boolean _randomize; /* TRUE if TData retrieval is randomized */
-  static int _pageSize;
-  static Boolean _restore;
-  static Boolean _iconify;
-  
-  static Boolean _hasXLow, _hasYLow, _hasXHigh, _hasYHigh;
-  static Coord _xLow, _yLow, _xHigh, _yHigh;
-  static char *_qpName;
-  static Boolean _simpleInterpreter;
-  static Boolean _printTDataAttr;
-  static Boolean _elimOverlap;
-  static Boolean _dispGraphics;
-  static Boolean _batchRecs;
-  static Boolean _printViewStat;
+    static char *_workDir;         /* name of work directory */
+    static char *_tmpDir;          /* name of temp directory */
+    static char *_cacheDir;        /* name of cache directory */
 
-  static char *_daliServer;
-  static Boolean _daliQuit;
+    static char *_sessionName;     /* name of current session */
+    static Boolean _restore;       /* true if Devise is in restore mode */
+    static Boolean _iconify;       /* true if session restored iconified */
 
-  static int _screenWidth;
-  static int _screenHeight;
+    static int _pageSize;          /* page size */
+    static Boolean _elimOverlap;   /* true if overlap elimination enabled */
 
-  static int _imageDelay;
+    static Boolean _simpleInterpreter;/* true if simple mapping interpreter */
+    static Boolean _printTDataAttr;/* true if TData attributes printed */
+    static Boolean _dispGraphics;  /* true if graphics should be displayed */
+    static Boolean _batchRecs;     /* true if records processed in batches */
+    static Boolean _printViewStat; /* true if view statistics printed */
+    
+    static char *_batchFile;       /* name of batch file */
+    
+    static char *_daliServer;      /* host name of Tasvir image server */
+    static Boolean _daliQuit;      /* true if Tasvir abort requested */
+    static int _imageDelay;        /* delay before displaying Tasvir image */
+    
+    static int _screenWidth;       /* requested screen width */
+    static int _screenHeight;      /* requested screen height */
 };
 
 #endif

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/11/13 16:56:07  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.22  1996/10/07 22:53:49  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -134,53 +144,51 @@ static char *CreateUniqueFileName(char *progname)
   return NULL; /* keep compiler happy */
 }
 
-Boolean Init::_savePopup = false; /* TRUE if save pop up window 
-						and wait for button event */
-Boolean Init::_doPlayback = false; /* TRUE if do journal playback */
-char *Init::_playbackFile = "";	/* name of playback file */
-Boolean Init::_prefetch = true; /* TRUE if buffer manager does prefetch */
-int Init::_bufferSize= 1536;		/* size of buffer */
-BufPolicy::policy Init::_policy= BufPolicy::FIFO; /* policy for buffer manager*/
-/* TRUE if existing buffers should be checked first in query processing */
+Boolean Init::_savePopup = false;
+
+Boolean Init::_doPlayback = false;
+char *Init::_playbackFile = "";
+
+Boolean Init::_prefetch = true;
+int Init::_bufferSize = 1536;
+BufPolicy::policy Init::_policy = BufPolicy::FIFO;
 Boolean Init::_existing = true;	
-Boolean Init::_tdataQuery = false; /* TRUE if file is tdata, else gdata */
-Boolean Init::_convertGData = true; /* true if TData is converted into G
-									while system is idle */
-Boolean Init::_abort = false; /* TRUE if abort instead of exit() on program 
-							exit */
-Boolean Init::_iconify= false; /* TRUE if windows are iconified when
-							restoring a session */
-int Init::_gdataPages = -1; /* max # of disk pages for gdata */
-char *Init::_progName = 0; /* name of program */
-char *Init::_workDir = 0; /* name of work directory */
-char *Init::_tmpDir = 0;/* name of temp directory */
-char *Init::_cacheDir = 0;/* name of cache directory */
-char *Init::_sessionName = "session.tk";	/* name of program */
+
+Boolean Init::_tdataQuery = false;
+Boolean Init::_convertGData = true;
+int Init::_gdataPages = -1;
+Boolean Init::_randomize = true;
+
+char *Init::_progName = 0;
+long Init::_progModTime;
 Boolean Init::_dispLogo = true;
+Boolean Init::_abort = false;
+
+char *Init::_workDir = 0;
+char *Init::_tmpDir = 0;
+char *Init::_cacheDir = 0;
+
+char *Init::_sessionName = "session.tk";
+Boolean Init::_restore = false;
+Boolean Init::_iconify= false;
+
+int Init::_pageSize = 16384;
+Boolean Init::_elimOverlap = true;
+
+Boolean Init::_simpleInterpreter = true;
+Boolean Init::_printTDataAttr = false;
+Boolean Init::_dispGraphics = true;
+Boolean Init::_batchRecs = true;
+Boolean Init::_printViewStat = false;
+
 char *Init::_batchFile = 0;
-char *Init::_qpName = "default"; /* name of query processor */
-Boolean Init::_restore = false; /* TRUE if we need to restore a session file */
-long Init::_progModTime;	/* when program was modified */
-Boolean Init::_randomize = true; /* true if TData fetches are randomized */
-int Init::_pageSize = 16384;	/* size of page */
-Boolean Init::_hasXLow=false, Init::_hasYLow = false;
-Boolean Init::_hasXHigh=false, Init::_hasYHigh = false;
-Coord Init::_xLow, Init::_yLow, Init::_xHigh, Init::_yHigh;
-Boolean Init::_simpleInterpreter = true; /* true if interpreted
-	mapping should use its own interpreter to process
-	simple commands instead of calling tcl */
-Boolean Init::_printTDataAttr = false; /* true to print
-	TData attribute list when it's created */
-Boolean Init::_elimOverlap = true; /* true if overlapping
-	GData should be eliminated while drawing */
-Boolean Init::_dispGraphics = true; /* true to display graphics */
-Boolean Init::_batchRecs = true; /* true if batching records */
-Boolean Init::_printViewStat = false;  /* true to print view statistics */
+
 char * Init::_daliServer = NULL;
 Boolean Init::_daliQuit = false;
-int Init::_screenWidth = -1;      /* screen width (batch mode) */
-int Init::_screenHeight = -1;     /* screen height (batch mode) */
-int Init::_imageDelay = 0; /* delay before drawing an image */
+int Init::_imageDelay = 0;
+
+int Init::_screenWidth = -1;
+int Init::_screenHeight = -1;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -230,10 +238,6 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-nologo: don't display logo\n");
   fprintf(stderr, "\t-abort: abort instead of exit when program quits\n");
   fprintf(stderr, "\t-savePopup: save popup window and wait for button event\n");
-  fprintf(stderr, "\t-xlow <value>: not yet implemented\n");
-  fprintf(stderr, "\t-ylow <value>: not yet implemented\n");
-  fprintf(stderr, "\t-xhigh <value>: not yet implemented\n");
-  fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-tasvir <name>: specify name of tasvir server\n");
   fprintf(stderr, "\t-tasvirquit: kills tasvir server when Devise exits\n");
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
@@ -300,16 +304,7 @@ void Init::DoInit(int &argc, char **argv)
   while (i < argc) {
     if (argv[i][0] == '-') {
 
-      if (strcmp(&argv[i][1], "queryProc") == 0) {
-	if (i >= argc-1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_qpName = CopyString(argv[i+1]);
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "batch") == 0) {
+      if (strcmp(&argv[i][1], "batch") == 0) {
 	if (i >= argc - 1) {
 	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
@@ -536,46 +531,6 @@ void Init::DoInit(int &argc, char **argv)
 	Usage(argv[0]);
       }
 
-      else if (strcmp(&argv[i][1], "xlow") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_xLow = atof(argv[i+1]);
-	_hasXLow = true;
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "ylow") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_yLow = atof(argv[i+1]);
-	_hasYLow = true;
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "xhigh") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_xHigh = atof(argv[i+1]);
-	_hasXHigh = true;
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "yhigh") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_yHigh = atof(argv[i+1]);
-	_hasYHigh = true;
-	MoveArg(argc,argv,i,2);
-      }
-
       else if (strcmp(&argv[i][1], "tasvir") == 0) {
 	if (i >= argc -1) {
 	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
@@ -647,43 +602,4 @@ void Init::BufPolicies(int &bufSize, Boolean &prefetch,
   prefetch = _prefetch;
   policy = _policy;
   existing = _existing;
-}
-
-long Init::ProgModTime()
-{
-  return _progModTime;
-}
-
-int Init::PageSize()
-{
-  return _pageSize;
-}
-
-BufPolicy::policy Init::Policy()
-{
-  return _policy;
-}
-
-Boolean Init::GetXLow(Coord &xLow)
-{ 
-  xLow = _xLow;
-  return _hasXLow;
-}
-
-Boolean Init::GetYLow(Coord &yLow)
-{
-  yLow = _yLow;
-  return _hasYLow;
-}
-
-Boolean Init::GetXHigh(Coord &xHigh)
-{
-  xHigh = _xHigh;
-  return _hasXHigh;
-}
-
-Boolean Init::GetYHigh(Coord &yHigh)
-{
-  yHigh = _yHigh;
-  return _hasYHigh;
 }
