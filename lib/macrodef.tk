@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.19  1995/11/22 17:53:46  jussi
+#	Added view type selection in automatic view generation. User can
+#	now choose between a bar chart, an image, and a scatter plot.
+#
 #	Revision 1.18  1995/11/20 22:22:54  jussi
 #	Changed sequence of caching data from tape to disk.
 #	Restored missing history log.
@@ -212,9 +216,7 @@ proc MacroDef {} {
 
     toplevel .map
     wm title .map "Define Visualization"
-    wm minsize .map 600 320
-    wm maxsize .map 800 400
-    wm geometry .map =600x320+50+50
+    wm geometry .map +50+50
     selection clear .map
 
     frame .map.top
@@ -418,7 +420,7 @@ proc MacroDefAuto {tdata} {
 	# Create window to show list of top level group names
 	toplevel .topgrps
 	wm title .topgrps "Choose AttributeGroup"
-	wm geometry .topgrps 300x200+100+100
+	wm geometry .topgrps +100+100
 	selection clear .topgrps
 	listbox .topgrps.list -relief raised -borderwidth 2 \
 		-yscrollcommand ".topgrps.scroll set" \
