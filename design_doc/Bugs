@@ -3015,6 +3015,10 @@ Num Date        Status  Description
 748 1/11/02	OPEN	Y-only home sets Y axis based on all data, not just
 			the data within the current X range. (rkw)
 
+749 1/17/02	OPEN	Y-only link on a view prevents home from happening
+			in the X direction, even if home configuration
+			says it should (see Test/Bug749.ds). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
