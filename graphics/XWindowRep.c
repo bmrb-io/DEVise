@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/07/10 16:21:12  jussi
+  Improvements and simplifications to the code.
+
   Revision 1.43  1996/06/21 21:33:43  jussi
   Changed xpr parameters so that a grayscale Postscript image is
   produced instead of black and white.
@@ -1179,6 +1182,7 @@ void XWindowRep::HandleEvent(XEvent &event)
   char buf[40];
   XEvent ev;
   int count;
+  Atom protocol;
 
   switch(event.xany.type) {
   case KeyPress:
@@ -1301,6 +1305,34 @@ void XWindowRep::HandleEvent(XEvent &event)
     printf("XWin 0x%lx unmapped\n", event.xunmap.window);
 #endif
     WindowRep::HandleWindowMappedInfo(false);
+    break;
+
+  case ReparentNotify:
+#ifdef DEBUG
+    printf("XWin 0x%lx reparented\n", event.xunmap.window);
+#endif
+    break;
+
+  case ClientMessage:
+    protocol = (Atom)event.xclient.data.l[0];
+#ifdef DEBUG
+    printf("XWin 0x%lx receives client message %ld\n",
+           event.xclient.window, protocol);
+#endif
+    if (protocol == XInternAtom(_display, "WM_DELETE_WINDOW", False)) {
+#ifdef DEBUG
+      printf("Client message is WM_DELETE_WINDOW\n");
+#endif
+      WindowRep::HandleWindowDestroy();
+    } else {
+      printf("Unrecognized client message %ld for window 0x%lx\n",
+             protocol, event.xclient.window);
+    }
+    break;
+
+  default:
+    printf("Unexpected event %d for window 0x%lx\n",
+           event.xany.type, event.xany.window);
     break;
   }
 }
