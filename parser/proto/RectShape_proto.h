@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/27 15:38:58  jussi
+  Initial revision.
+*/
 
 #ifdef DYNAMIC_X
 #define GDATA_X (gdata->x)
@@ -108,7 +111,8 @@ public:
 	Color lastColor = GDATA_COLOR;
 #endif
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  GDATANAME *gdata = (GDATANAME *)gdataArray[colorIndex];
 #ifdef DYNAMIC_COLOR
 	  if (GDATA_COLOR != lastColor)
@@ -146,7 +150,8 @@ public:
 	Color lastColor = GDATA_COLOR;
 #endif
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  GDATANAME *gdata = (GDATANAME *)gdataArray[colorIndex];
 #ifdef DYNAMIC_COLOR
 	  if (GDATA_COLOR != lastColor)
