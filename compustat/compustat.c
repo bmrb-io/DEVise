@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/10/18 21:03:36  ravim
+  Extracts all the attrs from compustat database.
+
   Revision 1.6  1995/09/29 21:23:31  ravim
   Added support for precision 6.
 
@@ -37,6 +40,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <assert.h>
 #include <tcl.h>
 #include <tk.h>
 
@@ -47,19 +51,15 @@ static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
-#define IDXFILE_NAME "compustat.idx"
-static char *outfile_path = 0;
-static char *tapeDrive = 0;
-static char *tapeFile = 0;
-static char *tapeBsize = 0;
-
 /*-------------------------------------------------------------------*/
 
 /* This function interfaces the Compustat extraction routines to
    TCL/TK. The path name for output files is taken from TCL. */
 
-int comp_create(char **, int);
-int create_comp_dat(char *, char *);
+int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
+		char *idxFile, char **, int);
+int create_comp_dat(TapeDrive &tape, char *idxFile, char *fname,
+		    char *fvalue, char *file);
 
 int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
@@ -67,49 +67,48 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
+  assert(argc >= 7);
+
   /* Get parameter values from TCL script */
 
-  tapeDrive = Tcl_GetVar(interp, "cstat_tapeDrive", TCL_GLOBAL_ONLY);
-  tapeFile = Tcl_GetVar(interp, "cstat_tapeFile", TCL_GLOBAL_ONLY);
-  tapeBsize = Tcl_GetVar(interp, "cstat_tapeBsize", TCL_GLOBAL_ONLY);
-  outfile_path = Tcl_GetVar(interp, "cstat_diskPath", TCL_GLOBAL_ONLY);
-  if (!tapeDrive || !tapeFile || !tapeBsize || !outfile_path) {
-    fprintf(stderr, "One of cstat_tapeDrive, cstat_tapeFile,\n");
-    fprintf(stderr, "cstat_tapeBsize, or cstat_diskPath is undefined.\n");
-    fprintf(stderr, "Define these values in $(DEVISE_LIB)/cstat.tk.\n");
-    return TCL_ERROR;
-  }
+  char *tapeDrive = argv[1];
+  char *tapeFile = argv[2];
+  char *tapeBsize = argv[3];
+  char *idxFile = argv[4];
 
-  printf("Reading from %s:%s (%s) to %s\n", tapeDrive, tapeFile,
-	 tapeBsize, outfile_path);
+  printf("Reading from %s:%s (%s)\n", tapeDrive, tapeFile, tapeBsize);
 
   /* do not pass argv[0] (name of TCL command) */
 
-  return comp_create(&argv[1], argc - 1);
+  return comp_create(tapeDrive, tapeFile, tapeBsize, idxFile,
+		     &argv[5], argc - 5);
 }
 
 /*-------------------------------------------------------------------*/
 
 /* This is a wrapper function that makes the assumption that data files
    are to be created based on the ticker symbol. This function takes
-   as parameter a set of ticker symbols (character strings). It reads the
+   as parameter pairs of <ticker symbol, cachefilename>. It reads the
    index file and arranges these symbols in the increasing order of offsets
    of the corresponding records (since the records are on tape) and calls
    create_comp_dat for every successive symbol. */
-/* syms is the array of character strings and num is the number of strings
-   passed */
-int comp_create(char **syms, int num)
+
+int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
+		char *idxFile, char **argv, int argc)
 {
   FILE *idxfile;
   int *offset_arr;
   int *spos_arr;
   int tmp, i, j;
   char tmpp[COMP_MAX_STR_LEN];
+  int num = argc / 2;
+
+  assert(argc % 2 == 0);
 
   /* Get the index file pointer */
-  if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
+  if ((idxfile = fopen(idxFile, "r")) == NULL)
   {
-    printf("Error: could not open index file\n");
+    printf("Error: could not open index file: %s\n", idxFile);
     return TCL_ERROR;
   }
   
@@ -119,8 +118,8 @@ int comp_create(char **syms, int num)
 
   for (i = 0; i < num; i++)
   {
-    spos_arr[i] = i;
-    find_rec(idxfile, "SMBL", syms[i], &offset_arr[i], &tmp, tmpp);
+    spos_arr[i] = i * 2;
+    find_rec(idxfile, "SMBL", argv[i * 2], &offset_arr[i], &tmp, tmpp);
     rewind(idxfile);
   }
 
@@ -137,17 +136,19 @@ int comp_create(char **syms, int num)
 	spos_arr[j] = tmp;
       }
 
+  TapeDrive tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
+  if (!tape)
+  {
+    fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);
+    return TCL_ERROR;
+  }
+
   /* Call create_comp_dat for every symbol in turn */
   for (i = 0; i < num; i++)
   {
-    char tclCmd[255];
-    if (create_comp_dat("SMBL", syms[spos_arr[i]]) != TCL_OK) {
-      fprintf(stderr, "Error in extracting %s\n", syms[spos_arr[i]]);
-    } else {
-      sprintf(tclCmd, "cstat_tapeToDisk %s", syms[spos_arr[i]]);
-      if (Tcl_Eval(globalInterp, tclCmd) != TCL_OK)
-	fprintf(stderr, "Error: %s\n", globalInterp->result);
-      UPDATE_TCL;
+    if (create_comp_dat(tape, idxFile, "SMBL", argv[spos_arr[i]],
+			argv[spos_arr[i] + 1]) != TCL_OK) {
+      fprintf(stderr, "Error in extracting %s\n", argv[spos_arr[i]]);
     }
   }
 
@@ -163,7 +164,8 @@ int comp_create(char **syms, int num)
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
 */
-int create_comp_dat(char *fname, char *fvalue)
+int create_comp_dat(TapeDrive &tape, char *idxFile,
+		    char *fname, char *fvalue, char *file)
 {
   FILE *idxfile;
   FILE *outfile;
@@ -172,19 +174,11 @@ int create_comp_dat(char *fname, char *fvalue)
   char recbuf1[COMP_REC_LENGTH];
   char recbuf2[COMP_REC_LENGTH];
   char smbl_val[COMP_MAX_STR_LEN];
-  char tmpval[COMP_MAX_STR_LEN];
-
-  TapeDrive tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
-  if (!tape)
-  {
-    fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);
-    return TCL_ERROR;
-  }
 
   /* Get the index file pointer */
-  if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
+  if ((idxfile = fopen(idxFile, "r")) == NULL)
   {
-    printf("Error: could not open index file\n");
+    printf("Error: could not open index file: %s\n", idxFile);
     return TCL_ERROR;
   }
 
@@ -197,15 +191,10 @@ int create_comp_dat(char *fname, char *fvalue)
     return TCL_ERROR;
   }
 
-  /* Create a name of the file based on the value of SMBL field.
-     Create the output file and return the file pointer. */
-  /* Create name for the data file to be generated */
-  sprintf(tmpval, "%s/%s.dat", outfile_path, smbl_val);
-
-  printf("Creating Compustat file %s\n", tmpval);
+  printf("Creating Compustat file %s for %s %s\n", file, fname, fvalue);
 
   /* Open file pointer for the data file */
-  if ((outfile = fopen(tmpval, "w")) == NULL)
+  if ((outfile = fopen(file, "w")) == NULL)
   {
     printf("Error: could not create file for writing data\n");
     return TCL_ERROR;
