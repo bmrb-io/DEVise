@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/05/28 15:38:58  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.50.4.1  1997/05/20 16:10:52  ssl
   Added layout manager to DEVise
 
@@ -321,7 +324,7 @@ class View
 	VisualFilter *GetVisualFilter();
 
 	/* history queue */
-	FilterQueue *GetHistory() { return _filterQueue; }
+	FilterQueue *GetHistory();
 
 	/* For history initialization only */
 	void ClearHistory();

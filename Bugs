@@ -843,6 +843,10 @@ Num Date        Status  Description
 206 07/17/97	OPEN	Print output should correspond to stacking order on
 			the screen. (ml/rkw)
 
+207 07/17/97	FIXED	Visual filter values are not displayed in the Query
+			Window unless you've done an 'execute' on that window
+			when running the session test/canopy.tk. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

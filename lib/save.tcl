@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/07/15 19:15:36  wenger
+#  All session files now saved as batch scripts instead of Tcl scripts.
+#
 #  Revision 1.38  1997/06/18 21:06:40  wenger
 #  Fixed problems saving to batch scripts.
 #
@@ -1043,12 +1046,21 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict asBatchScript } {
             set viewName "\$$viewVar"
         }
 	puts $fileId "DEVise clearViewHistory $viewName"
+
 	if {$asTemplate || $asExport || $asBatchScript} {
+          foreach hist [ DEVise getVisualFilters $view ] {
+            puts $fileId "DEVise insertViewHistory $viewName \
+	      {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} \
+	      {[lindex $hist 3]} {[lindex $hist 4]}"
 	    continue
+	  }
+	} else {
+          foreach hist [ DEVise getVisualFilters $view ] {
+            puts $fileId "DEVise insertViewHistory \$$viewVar \
+	      {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} \
+	      {[lindex $hist 3]} {[lindex $hist 4]}"
+          }
 	}
-        foreach hist [ DEVise getVisualFilters $view ] {
-            puts $fileId "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
-        }
     }
 
     puts $fileId ""

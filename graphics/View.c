@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.113  1997/06/25 17:05:27  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.112  1997/06/04 15:50:29  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -2689,6 +2694,15 @@ void View::DoDrawCursors()
   _cursors->DoneIterator(index);
 
   winRep->SetCopyMode();
+}
+
+FilterQueue *View::GetHistory()
+{
+  // Make sure we've at least got the current filter in the history!
+  if (_filterQueue->Size() == 0) {
+    _filterQueue->Enqueue(_filter, _filter.marked);
+  }
+  return _filterQueue;
 }
 
 void View::ClearHistory()
