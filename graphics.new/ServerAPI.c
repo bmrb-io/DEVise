@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/13 21:55:43  jussi
+  Moved initialization of _mode to Control.c.
+
   Revision 1.8  1996/05/13 20:25:03  jussi
   Improved support for replicas. Commands are echoed to replicas
   before being executed locally. See comments in ReadSocket()
@@ -278,9 +281,15 @@ void ServerAPI::Run()
 
   if (_socketFd >= 0) {
     // We are connected so just keep reading from the socket
-    if (ReadSocket() < 0) {
-      fprintf(stderr, "Cannot communicate with client. Closing connection.\n");
-      RestartSession();
+    while(_socketFd >= 0) {
+      int result = ReadSocket();
+      if (!result)
+	break;
+      if (result < 0) {
+	fprintf(stderr,
+		"Cannot communicate with client. Closing connection.\n");
+	RestartSession();
+      }
     }
     return;
   }
@@ -340,6 +349,7 @@ int ServerAPI::ReadSocket()
 
   static u_short maxSize = 0;
   static char **buff = 0;
+  const int maxElemSize = 64;
 
 #ifdef DEBUG9
   printf("Getting flag\n");
@@ -352,7 +362,7 @@ int ServerAPI::ReadSocket()
     perror("recv");
 #endif
     if (errno == EAGAIN)
-      return 1;
+      return 0;
     return -1;
   }
 
@@ -397,11 +407,17 @@ int ServerAPI::ReadSocket()
 #endif
 
   if (numElements > maxSize) {
-    if (buff) 
-      delete buff;
+    int i;
+    for(i = 0; i < maxSize; i++)
+      delete buff[i];
+    delete buff;
     buff = new char * [numElements];
     DOASSERT(buff, "Out of memory");
     maxSize = numElements;
+    for(i = 0; i < maxSize; i++) {
+      buff[i] = new char [maxElemSize];
+      DOASSERT(buff[i], "Out of memory");
+    }
   }
 
   int i;
@@ -419,9 +435,7 @@ int ServerAPI::ReadSocket()
 #ifdef DEBUG
     printf("Getting element %d (%d bytes)\n", i, size);
 #endif
-    buff[i] = new char [size];
-    DOASSERT(buff[i], "Out of memory");
-    buff[i][0] = 0;
+    DOASSERT(size <= maxElemSize, "Protocol element too large");
     if (size > 0) {
       result = recv(_socketFd, buff[i], size, 0);
       if (result < size) {
@@ -460,9 +474,6 @@ int ServerAPI::ReadSocket()
 #ifdef DEBUG
   printf("Done executing command\n");
 #endif
-
-  for(i = 0; i < numElements; i++)
-    delete buff[i];
 
   // go back to non-blocking mode
   (void)NonBlockingMode(_socketFd);
