@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.30  1997/05/28 15:39:51  wenger
+#       Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #       Revision 1.29.4.1  1997/05/20 16:11:26  ssl
 #       Added layout manager to DEVise
 #
@@ -179,7 +182,7 @@ proc BringUpMappingDialog { w curview } {
 	    [list Color $DEViseOldColors ] \
 	    [list Size {0 1 2 3 4} ] \
 	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10}] \
-	    [list Orientation {1} ] \
+	    [list Orientation {0 90 180 270} ] \
 	    [list Shape $DEViseShapes ] \
 	    [list "ShapeAttr0" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2}] \
@@ -238,12 +241,18 @@ proc BringUpMappingDialog { w curview } {
 				-label "Expression..." \
 				-command " editExpression $itemname
 			               UpdateShapeAttrs $w {} "
+			$w.mapping.value.p$itemname.menu add command \
+				-label "Clear" \
+				-command "set mappingValue$itemname {}"
 		} else {
 			$w.mapping.value.p$itemname.menu add cascade -label Variable \
 				-menu $w.mapping.value.p$itemname.menu.variable
 			$w.mapping.value.p$itemname.menu add command \
 				-label "Expression..." \
 				-command " editExpression $itemname"
+			$w.mapping.value.p$itemname.menu add command \
+				-label "Clear" \
+				-command "set mappingValue$itemname {}"
 		}
 
 		if {$itemname == "Color"} {
@@ -493,14 +502,20 @@ proc editExpression {varname} {
     entry $winname.top.e1 -relief sunken -textvariable edit$varname -width 30
     pack $winname.top.e1 -side left -padx 2m -pady 5m -fill x -expand 1
 
-    button $winname.bot.but.ok -text OK -width 10 -command \
+    button $winname.bot.but.ok -text OK -width 8 -command \
 	    "SetExpression mappingValue$varname edit$varname $winname"
-    button $winname.bot.but.clear -text Clear -width 10 -command \
+#    button $winname.bot.but.apply -text Apply -width 8 -command \
+#	    "SetExpression mappingValue$varname edit$varname $winname; \
+#	    UpdateMappings {$map} {$params} {$mappings}"
+    button $winname.bot.but.clear -text Clear -width 8 -command \
 	    "set edit$varname {}"
-    button $winname.bot.but.cancel -text Cancel -width 10 -command \
+    button $winname.bot.but.cancel -text Cancel -width 8 -command \
 	    "destroy $winname"
     pack $winname.bot.but.ok $winname.bot.but.clear \
-	    $winname.bot.but.cancel -side left -padx 5m
+	    $winname.bot.but.cancel -side left -padx 3m
+#    pack $winname.bot.but.ok $winname.bot.but.apply \
+#	    $winname.bot.but.clear \
+#	    $winname.bot.but.cancel -side left -padx 3m
     tkwait visibility $winname
     grab set $winname
     tkwait window $winname
