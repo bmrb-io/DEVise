@@ -1,0 +1,30 @@
+#! /bin/csh -f
+
+cd run
+
+if (! -f bin) then
+  ln -s '@sys' bin
+endif
+
+if (! -f sunx86_54) then
+  ln -s ../solaris sunx86_54
+endif
+
+if (! -d sun4m_412) then
+  ln -s ../sun sun4m_412
+endif
+
+if (! -d hp700_ux90) then
+  ln -s ../hp hp700_ux90
+endif
+
+ln -fs /p/devise/dat/*.idx .
+
+cd ../sun
+ln -s ../solaris/Makefile .
+cd ../hp
+ln -s ../solaris/Makefile .
+cd ../sgi
+ln -s ../solaris/Makefile .
+
+cd ..
