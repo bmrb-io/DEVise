@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/12/22 19:39:29  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.22  1998/12/18 22:21:02  wenger
   Removed axis label code, which doesn't seem to have been fully implemented,
   and is not used; added sanity check on visual filter at view creation.
@@ -1507,6 +1513,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(updateAxisTypes) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setViewGeometry) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

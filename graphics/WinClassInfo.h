@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/09/10 23:24:30  wenger
+  Fixed JavaScreen client switch GIF geometry problem.
+
   Revision 1.8  1997/05/30 20:42:55  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -80,24 +83,15 @@ protected:
   static DevWinList _windowList;
 };
 
-#ifndef NEW_LAYOUT
-class TileLayout;
-#else
 class Layout;
-#endif
 
 class TileLayoutInfo: public ClassInfo {
 public:
   TileLayoutInfo();			       /* class constructor */
 
   // Instance constructor.
-#ifndef NEW_LAYOUT
-  TileLayoutInfo(char *name, TileLayout *win, double relativeX,
-    double relativeY, double relativeWidth, double relativeHeight);
-#else 
   TileLayoutInfo(char *name, Layout *win, double relativeX, double relativeY,
     double relativeWidth, double relativeHeight);
-#endif
 
   virtual ~TileLayoutInfo();		       /* class destructor */
 
@@ -122,11 +116,7 @@ public:
 private:
   char *arg[7];
   char *_name;
-#ifndef NEW_LAYOUT
-  TileLayout *_win;
-#else
   Layout *_win;
-#endif
 
   // Save creation parameters to avoid roundoff problems if window is not
   // resized.

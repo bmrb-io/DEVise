@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/12/22 19:39:26  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.25  1998/12/18 22:21:00  wenger
   Removed axis label code, which doesn't seem to have been fully implemented,
   and is not used; added sanity check on visual filter at view creation.
@@ -418,6 +424,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setXAxisDateFormat)
 	REGISTER_COMMAND(setYAxisDateFormat)
 	REGISTER_COMMAND(updateAxisTypes)
+	REGISTER_COMMAND(setViewGeometry)
 }
 
 CmdContainer::~CmdContainer()

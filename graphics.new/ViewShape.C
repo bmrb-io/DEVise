@@ -1,4 +1,27 @@
-#ifdef VIEW_SHAPE
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Implementation of the ViewShape class.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 #include <sys/param.h>
 #include <iostream.h>
 
@@ -12,7 +35,7 @@
 #include "StringStorage.h"
 
 #include "Color.h"
-//#define DEBUG 1
+//#define DEBUG
 
 int FullMapping_ViewShape::NumShapeAttrs()
 {
@@ -44,161 +67,101 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       recordsProcessed);
     return;
   }
+
+//TEMP -- should we have the drawing timeout here??
+  recordsProcessed = numSyms;
+
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
 
-  //TEMP TEMP
-  
-  // For now display a rectangular shape with the bgcolor being the 
-  // color of the view specified
-
-  Coord x0, y0, x1, y1;
-  win->Transform(0, 0, x0, y0);
-  win->Transform(1, 1, x1, y1);
-  Coord pixelWidth = 1 / fabs(x1 - x0);
-  Coord pixelHeight = 1 / fabs(y1 - y0);
-  //TEMP TEMP
-  
   //
   // Shape attributes should store:
   //   attr[0] = name of view
   //   attr[1] = width of symbol to be drawn 
   //   attr[2] = height of symbol to be drawn 
-  
-  ShapeAttr *defaultAttrs = map->GetDefaultShapeAttrs();
+  //
   unsigned long attrflags = map->GetDynamicShapeAttrs();
-  Coord attrValue;
-  AttrInfo *attrinfo;
-  int gdataOffset;
+  if (!(attrflags & (1 << 0))) {
+    reportErrNosys("No view name specified in GData");
+    return;
+  } 
+
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
-  char *gdata, *viewname;
 
-  Coord x, y;
   for (int i = 0; i < numSyms; i++) {
-    gdata = (char *) gdataArray[i];
-    x = ShapeGetX(gdata, map, offset);
-    y = ShapeGetY(gdata, map, offset);
+    char *gdata = (char *) gdataArray[i];
     
-    viewname = NULL;
+    //
+    // Do transformations to get width and height.
+    //
+    Coord dataX = ShapeGetX(gdata, map, offset);
+    Coord dataY = ShapeGetY(gdata, map, offset);
+    Coord dataSize = GetSize(gdata, map, offset);
+    dataSize *= pixelSize; // +/- keys in view
+    Coord dataWd = GetShapeAttr1(gdata, map, offset) * dataSize;
+    Coord dataHt = GetShapeAttr2(gdata, map, offset) * dataSize;
+
+    Coord pixX1, pixY1, pixX2, pixY2;
+
+    //
+    // dataX, dataY are center; pixX, pixY are upper left corner.
+    //
+    win->Transform(dataX - dataWd / 2.0, dataY - dataHt / 2.0, pixX1, pixY1);
+    win->Transform(dataX + dataWd / 2.0, dataY + dataHt / 2.0, pixX2, pixY2);
+    int pixX = (int)MIN(pixX1, pixX2);
+    int pixY = (int)MIN(pixY1, pixY2);
+    unsigned pixWd = (unsigned)ABS(pixX1 - pixX2) + 1;
+    unsigned pixHt = (unsigned)ABS(pixY1 - pixY2) + 1;
+
+
+    //
+    // Find the view name for the symbol from the GData.
+    //
+    char *viewname = NULL;
     
-    // The color is obtained from the viewname 
-    if (!(attrflags & (1 << 0))) {
-      reportError("No view name specified" , devNoSyserr);
-    } 
-    char *label;
-    //    if ((offset->shapeAttrOffset[0] >= 0)  ||
-    //	isStr(((MappingInterp *)map)->GetMappingCmd()->shapeAttrCmd[0])) {
     int key = (int)GetShapeAttr0(gdata, map, offset);
     int code = stringTable->Lookup(key, viewname);
     if (code < 0) {
-      label = "X";
-#ifdef DEBUG
-      printf("Key %d returns \"%s\", code %d\n", key, viewname, code);
-#endif
-    } else {
-#ifdef DEBUG
-      // Should not occur any more
-      printf("Using default label \"%s\"\n",viewname);
-#endif
+      reportErrNosys("Can't find view name in string table");
+      continue;
     }
-    if (viewname == NULL)
-      {
-	reportError("No view name specified", devNoSyserr);
-	continue;
-      }
-    //    Coord width = GetShapeAttr1(gdata, map, offset);
-    //    Coord height = GetShapeAttr2(gdata, map, offset);
-    //#ifdef DEBUG
-    //    printf("viewname = %s, width = %f , height = %f \n",
-    //	   viewname, width, height );
-    //#endif
-    
-    // TEMP TEMP
-    // Do transformations to get width and height
-    // For now display a rectangular shape with the bgcolor being the 
-    // color of the view specified
+    if (viewname == NULL) {
+      reportError("No view name specified", devNoSyserr);
+      continue;
+    }
 
-    Coord tx, ty;
-    Coord width, height;
+    //
+    // Find the actual view object for the symbol.
+    //
+    ViewGraph *viewsym = (ViewGraph *)classDir->FindInstance(viewname);
+    if (!viewsym) {
+      char errBuf[1024];
+      sprintf(errBuf, "View <%s> not found", viewname);
+      reportErrNosys(errBuf);
+      continue;
+    }
 
-    win->Transform(x, y, tx, ty);
-    win->Transform(fabs(GetSize(gdata, map, offset) 
-			* GetShapeAttr1(gdata, map, offset)),
-		   0.0, x1, y1);
-    width = x1 - x0;
-    width = ABS(width);
-    
-    height = fabs(GetShapeAttr2(gdata, map, offset)) /
-      fabs(GetShapeAttr1(gdata, map, offset)) * width;
-    height = ABS(height);
-    
-    width *= pixelSize;
-    height *= pixelSize;
-    
-    width = MAX(width, pixelSize);
-    height = MAX(height, pixelSize);
-    //TEMP TEMP
-    
-    ViewWin *viewsym = (ViewWin *)classDir->FindInstance(viewname);
-    DOASSERT(viewsym, "View not found");
-
-	PColorID	pcid = viewsym->GetBackground();
-//    printf("Color = %ld \n", pcid);
-
-	win->SetForeground(pcid);
-    win->SetPattern(GetPattern(gdata, map, offset));
-    win->SetLineWidth(GetLineWidth(gdata, map, offset));
-    
-    /*    win->FillPixelRect(tx, ty, width, height); */
-    
-    if (view->GetDisplayDataValues())
-      DisplayDataLabel(win, x, y, y);
 
 #if 0
-    int argc;
-    char **argv;
-    
-    classDir->CreateParams("view" , "Scatter",  viewsym->GetName(), 
-			   argc, argv);
-    printf("Printing view parameters");
-    for (int j = 0; j < argc; j++) {
-      cout << "argv[" << j << "] = " << argv[j] << endl;
-    }
-    sprintf(argv[0], "new%s", viewsym->GetName());
-    classDir->CreateWithParams("view", "Scatter", argc, argv);
-    ViewGraph *newview = (ViewGraph *) classDir->FindInstance(argv[0]);
-
-    /* check last mapping only */
-    TDataMap *mmap;
-    int index = ((ViewGraph *)viewsym)->InitMappingIterator();
-    while(((ViewGraph *)viewsym)->MoreMapping(index)) {
-      mmap = ((ViewGraph *)viewsym)->NextMapping(index)->map;
-    }
-    ((ViewGraph *)viewsym)->DoneMappingIterator(index);
-    
-    newview->InsertMapping(mmap);
-    newview->AppendToParent(view);
-    newview->Map(tx, ty, width, height);
-    newview->Refresh();
+    // Draw rectangle for debugging.
+    PColorID	pcid = viewsym->GetBackground();
+    win->SetForeground(pcid);
+    win->SetPattern(GetPattern(gdata, map, offset));
+    win->SetLineWidth(GetLineWidth(gdata, map, offset));
+    win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.0, dataWd, dataHt);
 #endif
+    
+    if (view->GetDisplayDataValues()) {
+      win->SetForeground(view->GetForeground());
+      DisplayDataLabel(win, dataX, dataY, dataY);
+    }
+
+
+    //
+    // Now put the view symbol into its parent view.
+    //
     viewsym->AppendToParent(view);
-    viewsym->Map((int)tx, (int)ty, (unsigned int) width, (unsigned int)height);
-    ((View *)viewsym)->Refresh();
+    viewsym->Map(pixX, pixY, pixWd, pixHt);
+    viewsym->Refresh();
   }
-  
-  recordsProcessed = numSyms;
 }
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-

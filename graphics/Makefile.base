@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.72  1998/12/18 22:20:49  wenger
+#  Removed axis label code, which doesn't seem to have been fully implemented,
+#  and is not used; added sanity check on visual filter at view creation.
+#
 #  Revision 1.71  1998/12/15 14:54:54  wenger
 #  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
 #  Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -236,7 +240,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../src/data/export \
 	$(GLINCLUDE) \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) \
-	$(DEBUGFLAGS) -DUNIX -DGRAPHICS -DNEW_LAYOUT
+	$(DEBUGFLAGS) -DUNIX -DGRAPHICS
 
 # -fexternal-templates 
 

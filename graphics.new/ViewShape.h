@@ -1,4 +1,27 @@
-#ifdef VIEW_SHAPE 
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Declaration of ViewShape class (views as symbols within another view).
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 #ifndef VIEW_SHAPE_H
 #define VIEW_SHAPE_H
 
@@ -19,6 +42,4 @@ class FullMapping_ViewShape
 			       ViewGraph *view, int pixelSize,
 			       int &recordsProcessed);
 };
-#endif
-
 #endif

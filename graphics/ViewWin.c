@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/12/02 23:46:30  wenger
+  Changes as per request from Miron: minimum window size is now 1x1; default
+  is to not show trademark notice in windows.
+
   Revision 1.49  1998/09/30 17:44:34  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -281,7 +285,9 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 				 int weight, Boolean boundary)
 	: Coloring(fgid, bgid)
 {
-	DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
+#if defined(DEBUG)
+	printf("ViewWin::ViewWin(%s, this = %p)\n", name, this);
+#endif
 
 	windowRepCallback = new ViewWin_WindowRepCallback(this);
 
@@ -632,6 +638,7 @@ void ViewWin::Delete(ViewWin *child)
   }
 }
 /* Set geometry of view */
+// Note: I'm not sure what this really does that MoveResize() doesn't do.
 void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
 {
   _x = x;
@@ -711,7 +718,8 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 {
 #if defined(DEBUG)
-  printf("ViewWin::MoveResize 0x%p, %d, %d, %u, %u\n", this, x, y, w, h);
+  printf("ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n", GetName(),
+    this, x, y, w, h);
 #endif
 
   if (!_mapped) {
@@ -999,7 +1007,7 @@ void ViewWin::ReparentMarginControl(char *side, int xoff, int yoff)
 void ViewWin::ResizeMargins(unsigned int w, unsigned int h)
 {
 #if defined(DEBUG)
-  printf("ViewWin::ResizeMargins()\n");
+  printf("ViewWin(%s)::ResizeMargins()\n", GetName());
 #endif
 
   char cmd[256];
@@ -1116,8 +1124,8 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 							  unsigned width, unsigned height)
 {
 #if defined(DEBUG)
-	printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
-		   this, xlow, ylow, width, height);
+	printf("ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
+		   GetName(), this, xlow, ylow, width, height);
 #endif
 
 	_hasGeometry = true;

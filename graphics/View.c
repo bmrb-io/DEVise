@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.150  1998/12/22 19:39:12  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.149  1998/12/18 22:20:51  wenger
   Removed axis label code, which doesn't seem to have been fully implemented,
   and is not used; added sanity check on visual filter at view creation.
@@ -1160,6 +1166,7 @@ void View::SetPileMode(Boolean mode)
 }
 
 /* set view geometry */
+// Note: I'm not sure what this really does that MoveResize() doesn't do.
 void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
 {
   /*ViewWin::SetGeometry(x,y,wd,ht); */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/04/16 21:51:43  wenger
+  Committed Sanjay's text code.
+
   Revision 1.16  1997/05/28 15:39:28  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -179,11 +182,9 @@ class FixedTextLabelShape : public Shape {};
 
 
 
-#ifdef VIEW_SHAPE 
 /* ViewShape : displays an embedded Devise View at (X, Y) whose name is 
  * given as shape attr 0 and width and height as shape atrs 1 and 2.
  */
 class ViewShape : public Shape {};
-#endif
 
 #endif

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/11/11 14:31:00  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.40  1998/11/06 17:59:51  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -256,11 +262,7 @@ class CGraphicExpr;
 
 class Shape;
 class AttrList;
-#ifdef VIEW_SHAPE 
 const unsigned int MaxInterpShapes = 19;
-#else 
-const unsigned int MaxInterpShapes = 18;
-#endif
 
 
 class MappingInterp: public TDataMap {

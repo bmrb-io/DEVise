@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.80  1998/11/25 22:31:17  wenger
+  Reduced the amount of memory allocated in the MappingInterp constructor,
+  mainly by improving the AttrList class.
+
   Revision 1.79  1998/11/20 18:38:52  wenger
   Fixed bug 440 (crash caused by empty mapping command for X in combination
   with other errors).
@@ -383,9 +387,7 @@
 #include "MappingInterp.h"
 #include "ViewGraph.h"
 #include "MapInterpShape.h"
-#ifdef VIEW_SHAPE
 #include "ViewShape.h"
-#endif
 #include "ETkWindowShape.h"
 #include "Exit.h"
 #include "Util.h"
@@ -562,9 +564,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[14] = new FullMapping_LineShadeShape;
     _shapes[15] = new FullMapping_ETkWindowShape;
     _shapes[16] = new FullMapping_FixedTextLabelShape;
-#ifdef VIEW_SHAPE
     _shapes[17] = new FullMapping_ViewShape;
-#endif
     _shapes[18] = new FullMapping_TextDataLabelShape;
   }
 

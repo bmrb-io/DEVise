@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/12/22 19:39:27  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.41  1998/12/18 22:21:01  wenger
   Removed axis label code, which doesn't seem to have been fully implemented,
   and is not used; added sanity check on visual filter at view creation.
@@ -235,6 +241,7 @@
 #include "TAttrLink.h"
 #include "RangeDesc.h"
 #include "DataCatalog.h"
+#include "Layout.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -4544,24 +4551,11 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-		int index = DevWindow::InitIterator();
-		while (DevWindow::More(index)) {
-			ClassInfo *info = DevWindow::Next(index);
-			ViewWin *window = (ViewWin *)info->GetInstance();
-			if (window != NULL) {
-				printf("Window <%s>; dirty = %d\n", window->GetName(),
-				  window->GetGifDirty());
-			}
+        View *view = (View *)classDir->FindInstance("Y vs. X");
+		if (view != NULL) {
+		  view->MoveResize(10, 10, 100, 100);
+		  ((Layout *)(view->GetParent()))->SetLayoutProperties(CUSTOM, 0, 0);
 		}
-		DevWindow::DoneIterator(index);
-
-		index = View::InitViewIterator();
-		while (View::MoreView(index)) {
-			View *view = View::NextView(index);
-			printf("View <%s>; dirty = %d\n", view->GetName(),
-			  view->GetGifDirty());
-		}
-		View::DoneViewIterator(index);
 		
        	ReturnVal(API_ACK, "done");
 		return 1;
@@ -5120,6 +5114,44 @@ IMPLEMENT_COMMAND_BEGIN(updateAxisTypes)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in updateAxisTypes\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
+    // Arguments: <view name> <x> <y> <width> <height>
+	//   (x, y, width, and height are expressed as a fraction of the
+	//   window size)
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 6) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		int winX, winY;
+		unsigned winWidth, winHeight;
+		Layout *win = (Layout *)(view->GetParent());
+		win->Geometry(winX, winY, winWidth, winHeight);
+
+		int viewX = (int)(atof(argv[2]) * winWidth);
+		int viewY = (int)(atof(argv[3]) * winHeight);
+		int viewWidth = (int)(atof(argv[4]) * winWidth);
+		int viewHeight = (int)(atof(argv[5]) * winHeight);
+
+		view->MoveResize(viewX, viewY, viewWidth, viewHeight);
+		view->SetGeometry(viewX, viewY, viewWidth, viewHeight);
+		win->SetLayoutProperties(CUSTOM, 0, 0);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setViewGeom\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/10/20 19:39:47  wenger
+  Various small code cleanups.
+
   Revision 1.5  1998/02/26 00:18:57  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -52,6 +55,10 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
 			   Boolean printExclude, Boolean printPixmap)
 	: ViewLayout(name)
 {
+#if defined(DEBUG)
+  printf("Layout(0x%p)::Layout(%s)\n", this, name);
+#endif
+
   Coord rootWidth, rootHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
   Map((int) ( x * rootWidth), (int) (y * rootHeight),
@@ -66,6 +73,11 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
 /* for backward compatibility - to set STACKED, HOR and VERT layouts */
 void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
 {
+#if defined(DEBUG)
+  printf("Layout(%s, 0x%p)::SetPreferredLayout(%d, %d, %d)\n", GetName(),
+    this, v, h, stacked);
+#endif
+
   _mode = AUTOMATIC;
   _stacked = stacked;       /* backward compatibility */
 
@@ -97,6 +109,11 @@ void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
 
 void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
 {
+#if defined(DEBUG)
+  printf("Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n", GetName(),
+    this, mode, rows, columns);
+#endif
+
   _mode = mode;
   if (_mode == HORIZONTAL) {
     verRequested = (rows < 1) ? 1 : columns;
@@ -114,6 +131,10 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
 
 void Layout::Append(ViewWin *child)
 {
+#if defined(DEBUG)
+  printf("Layout(%s, 0x%p)::Append(%s)\n", GetName(), this, child->GetName());
+#endif
+
   /* Geometries of the children would have been set from the Layout
    * editor for CUSTOM MODE 
    * add the child to the list
@@ -135,6 +156,11 @@ void Layout::Append(ViewWin *child)
 
 void Layout::Delete(ViewWin *child)
 {
+#if defined(DEBUG)
+  printf("Layout(%s, 0x%p)::Delete(%s)\n", GetName(), this, child->GetName());
+#endif
+//TEMP -- should we make sure child is really a child of this object?
+
   ViewWin::Delete(child);
   if (_mode != CUSTOM) { 
     /* Geometries of the children would have been set from the Layout
@@ -155,7 +181,8 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
 			 unsigned int *w, unsigned int *h)
 {
 #if defined(DEBUG)
-  printf("Layout: MapChildren 0x%p mapping children\n", this);
+  printf("Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
+    this, single, resize);
 #endif
   
   if ( _mode == CUSTOM) {
@@ -196,7 +223,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
   int horViews, verViews;
   ComputeLayout(_w, _h, numViews, horViews, verViews);
 #ifdef DEBUG
-  printf("TileLayout::MapChildren: using %dx%d layout for %d views\n",
+  printf("Layout::MapChildren: using %dx%d layout for %d views\n",
 	 verViews, horViews, numViews);
 #endif
   DOASSERT((unsigned int) (verViews * horViews) >= numViews, "Incorrect number of views");
@@ -221,10 +248,11 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     // see if we're instructed to ignore all but one child
     if (!single || single == vw) {
       // see which method to call, resize or map
-      if (resize)
+      if (resize) {
 	vw->MoveResize(_x + xoff, _y + yoff, width, height);
-      else
+      } else {
 	vw->Map(_x + xoff, _y + yoff, width, height);
+      }
     }
 
     // compute position of next view
@@ -265,8 +293,16 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
 			   unsigned int numViews,
 			   int &horViews, int &verViews)
 {
+#if defined(DEBUG)
+  printf("Layout::ComputeLayout(%s, 0x%p)::ComputeLayout(%u %u %u)\n",
+    GetName(), this, w, h, numViews);
+#endif
+
   if (numViews <= 1) {
     horViews = verViews = 1;
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
     return;
   }
   
@@ -276,6 +312,9 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
     if (numViews % horViews) {
       verViews++;
     }
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
     return;
   }
 
@@ -285,6 +324,9 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
     if (numViews % verViews)  {
       horViews++;
     }
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
     return;
   }
   
@@ -298,6 +340,9 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
   if (h >= 1.5 * w) {
     horViews = 1;
     verViews = numViews;
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
     return;
   }
 
@@ -310,6 +355,9 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
   if (w >= 3 * h) {
     horViews = numViews;
     verViews = 1;
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
     return;
   }
 
@@ -323,6 +371,9 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
   }
 
   verViews = numViews / horViews;
+#if defined(DEBUG)
+    printf("  horViews = %d, viewViews = %d\n", horViews, verViews);
+#endif
 }
 
 
@@ -412,8 +463,8 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 							 unsigned w, unsigned h)
 {
 #ifdef DEBUG
-	printf("Layout::HandleResize 0x%x at %d,%d, size %u,%u\n",
-		   this, x, y, w, h);
+	printf("Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
+		   GetName(), this, x, y, w, h);
 #endif
 	int			oldX, oldY, oldX0, oldY0;
 	unsigned	oldH, oldW;
@@ -424,19 +475,17 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 
 	if (Mapped())
 	{
-		if (_mode == CUSTOM) 
+		if (_mode == CUSTOM) {
 			ScaleChildren(oldX, oldY, oldW, oldH, oldX0, oldY0);
-		else
+		} else {
 			MapChildren(0, true);
+        }
 
 		char	buf[100];
-
 		sprintf(buf,"DEViseWindowResize {%s}", GetName());
-
 #ifdef DEBUG
 		printf("%s\n", buf);
 #endif
-
 		ControlPanel::Instance()->NotifyFrontEnd(buf);
 	}
 }

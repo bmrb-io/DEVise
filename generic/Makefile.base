@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.58  1998/12/07 19:44:21  wenger
+#  Removed "old" layout manager code.
+#
 #  Revision 1.57  1998/11/30 22:17:39  wenger
 #  Added -lmalloc to link line so DEVise doesn't use perl's malloc.
 #
@@ -200,7 +203,7 @@ include ../../Makefile.common
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../src/color/export -I../../src/utils/export -I../../tape \
 	$(GLINCLUDE)\
-	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup/export
 BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup

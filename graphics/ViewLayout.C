@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/02/26 00:19:06  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.9  1997/11/24 23:14:35  weaver
   Changes for the new ColorManager.
 
@@ -63,6 +66,9 @@
 ViewLayout:: ViewLayout(char* name,  Coord x, Coord y, Coord w, Coord h)
 	: ViewWin(name), verRequested(-1), horRequested(-1), _stacked(false)
 {
+#if defined(DEBUG)
+  printf("ViewLayout(0x%p)::ViewLayout(%s)\n", this, name);
+#endif
 }
 
 ViewLayout::~ViewLayout(void)
@@ -190,8 +196,9 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 								 unsigned w, unsigned h)
 {
 #if defined(DEBUG)
-	printf("ViewLayout::HandleResize 0x%x at %d,%d, size %u,%u\n",
+	printf("ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
 		   this, x, y, w, h);
+    printf("  name = %s\n", GetName());
 #endif
 
 	ViewWin::HandleResize(win, x, y, w, h);

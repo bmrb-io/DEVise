@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.176  1998/12/22 19:39:41  wenger
+#	User can now change date format for axis labels; fixed bug 041 (axis
+#	type not being changed between float and date when attribute is changed);
+#	got dates to work semi-decently as Y axis labels; view highlight is now
+#	always drawn by outlining the view; fixed some bugs in drawing the highight.
+#
 #	Revision 1.175  1998/11/23 19:19:56  donjerko
 #	*** empty log message ***
 #
@@ -893,6 +899,7 @@ source $libdir/link.tcl
 source $libdir/count_mapping.tcl
 source $libdir/string_table.tcl
 source $libdir/dateformat.tcl
+source $libdir/viewgeom.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1470,6 +1477,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 #.mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
+#.mbar.view.menu add command -label "Geometry" -command { EditViewGeom }
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add cascade -label "Keypad Config"  \
     -menu .mbar.view.menu.configmenu

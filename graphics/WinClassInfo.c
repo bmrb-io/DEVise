@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/09/30 17:44:35  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.17  1998/09/10 23:24:30  wenger
   Fixed JavaScreen client switch GIF geometry problem.
 
@@ -87,11 +91,7 @@
 #include "Display.h"
 #include "Control.h"
 #include "WinClassInfo.h"
-#ifndef NEW_LAYOUT
-#include "TileLayout.h"
-#else
 #include "Layout.h"
-#endif
 #include "Util.h"
 #include "Session.h"
 
@@ -115,21 +115,6 @@ TileLayoutInfo::TileLayoutInfo()
   DevWindow::_windowList.Insert(this);
 }
 
-#ifndef NEW_LAYOUT
-TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win, double relativeX,
-  double relativeY, double relativeWidth, double relativeHeight)
-{
-  _name = name;
-  _win = win;
-
-  _relativeX = relativeX;
-  _relativeY = relativeY;
-  _relativeWidth = relativeWidth;
-  _relativeHeight = relativeHeight;
-
-  DevWindow::_windowList.Insert(this);
-}
-#else 
 TileLayoutInfo::TileLayoutInfo(char *name, Layout *win, double relativeX,
   double relativeY, double relativeWidth, double relativeHeight)
 {
@@ -143,7 +128,6 @@ TileLayoutInfo::TileLayoutInfo(char *name, Layout *win, double relativeX,
 
   DevWindow::_windowList.Insert(this);
 }
-#endif
 
 TileLayoutInfo::~TileLayoutInfo()
 {
@@ -211,15 +195,12 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
   double relativeY = atof(argv[2]);
   double relativeWidth = atof(argv[3]);
   double relativeHeight = atof(argv[4]);
-#ifndef NEW_LAYOUT
-  TileLayout *win = new TileLayout(name, relativeX, relativeY,
-				   relativeWidth, relativeHeight, printExclude,
-				   printPixmap);
-#else 
+  // Note: the Layout class is a newer version of the TileLayout class.
+  // For a while there was a conditional compile here to make one or the
+  // other, but I'm getting rid of it.  RKW 1998-12-30.
   Layout *win = new Layout(name, relativeX, relativeY, 
 			   relativeWidth, relativeHeight, printExclude,
 			   printPixmap);
-#endif
   return new TileLayoutInfo(name, win, relativeX, relativeY, relativeWidth,
     relativeHeight);
 }
