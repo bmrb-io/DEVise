@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1996/07/23 17:27:00  jussi
+#  Fixed bug in ViewUnlink.
+#
 #  Revision 1.16  1996/07/13 17:30:59  jussi
 #  Minor change.
 #
@@ -144,6 +147,17 @@ proc ProcessViewSelected { view } {
 		[lindex $filter 0] [lindex $filter 1] \
 		[lindex $filter 2] [lindex $filter 3] [lindex $filter 4]
     }
+    #update allStats
+    if {$queryWinOpened} {
+	set stat [DEVise getAllStats $curView]
+	foreach i { max mean min count} {
+	     .query.$i delete 0 end
+        }
+	.query.max insert 0 [lindex $stat 0]
+	.query.mean insert 0 [lindex $stat 1]
+	.query.min insert 0 [lindex $stat 2]
+	.query.count insert 0 [lindex $stat 3]
+     }
 }
 
 ############################################################
@@ -168,7 +182,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked } {
 	.query.ylow insert 0 $yLow
 	.query.xhigh insert 0 $xHigh
 	.query.yhigh insert 0 $yHigh
-    }
+   }
 
     if {$historyWinOpened} {
 	if {$flushed >= 0} {
@@ -1245,7 +1259,7 @@ proc DoToggleAxisAllViews { axis } {
 ############################################################
 
 proc DoToggleStatistics {} {
-    global curView statmean statmax statmin statcurr statcilevel
+    global curView statmean statmax statmin statline statcurr statcilevel
 
     # The status is formed by as a binary string xxx where 1 means that the 
     # corr. stat is to be displayed. Further, since "count" which is the 
@@ -1253,7 +1267,7 @@ proc DoToggleStatistics {} {
     # always append a 0.
 
     set statcount 0
-    set stat $statmean$statmax$statmin$statcount$statcilevel
+    set stat $statmean$statmax$statmin$statline$statcount$statcilevel
 
     if {$statcurr == 1} {
 	if {![CurrentView]} {
@@ -1275,7 +1289,7 @@ proc DoToggleStatistics {} {
 ############################################################
 
 proc DoStat {} {
-    global statmean statmax statmin statcurr statcilevel
+    global statmean statmax statmin statline statcurr statcilevel
 
     if {[WindowVisible .statWin]} { return }
 
@@ -1292,8 +1306,9 @@ proc DoStat {} {
     frame .statWin.m.mean
     frame .statWin.m.max
     frame .statWin.m.min
+    frame .statWin.m.line
     pack .statWin.m.mean .statWin.m.max .statWin.m.min \
-	    -expand 1 -side top -fill y
+	    .statWin.m.line -expand 1 -side top -fill y
     
     frame .statWin.ci.no
     frame .statWin.ci.ci1
@@ -1314,7 +1329,9 @@ proc DoStat {} {
 	    -anchor w -variable statmax
     checkbutton .statWin.m.min.but -text "Min" -width 10 \
 	    -anchor w -variable statmin
-    pack .statWin.m.mean.but .statWin.m.max.but .statWin.m.min.but -side top 
+    checkbutton .statWin.m.line.but -text "Line" -width 10 \
+	    -anchor w -variable statline
+    pack .statWin.m.mean.but .statWin.m.max.but .statWin.m.min.but .statWin.m.line.but -side top 
     
     radiobutton .statWin.ci.no.but -text "No CIs" -width 10 \
 	    -variable statcilevel -value "000"
