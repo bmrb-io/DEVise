@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/14 20:44:17  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.14  1997/04/10 21:50:30  donjerko
   Made integers inlined, added type cast operator.
 
@@ -203,14 +206,14 @@ Type* stringLT(Type* arg1, Type* arg2){
 	char* val1 = ((IString*)arg1)->getValue();
 	char* val2 = ((IString*)arg2)->getValue();
 	int cmp = strcmp(val1, val2);
-	return (Type*)(cmp == -1);
+	return (Type*)(cmp < 0);
 }
 
 Type* stringGT(Type* arg1, Type* arg2){
 	char* val1 = ((IString*)arg1)->getValue();
 	char* val2 = ((IString*)arg2)->getValue();
 	int cmp = strcmp(val1, val2);
-	return (Type*)(cmp == 1);
+	return (Type*)(cmp > 0);
 }
 
 
@@ -826,6 +829,26 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 		delete tuple[i];
 	}
 }
+
+int tupleCompare(int *compare_flds, int num_compare_flds, 
+                 GeneralPtr **comparePtrs, Tuple *left, Tuple *right)
+{
+  // Returns 1 if compare(left, right) = 1 on any compare_fld 
+  //         0 otherwise
+
+  assert(right);
+  assert(left);
+
+  for(int i = 0; i < num_compare_flds; i++)
+    {
+      assert (compare_flds[i] >= 0 );
+      if (comparePtrs[compare_flds[i]]->opPtr(left[compare_flds[i]],
+                                              right[compare_flds[i]]))
+	 return 1;
+     }
+  return 0;
+}
+
 
 DestroyPtr getDestroyPtr(TypeID root){ // throws
 	if(root == "int"){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/04/14 20:44:17  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.15  1997/04/10 21:50:31  donjerko
   Made integers inlined, added type cast operator.
 
@@ -234,11 +237,42 @@ void schemaWrite(ostream&, Type*);
 void indexDescWrite(ostream&, Type*);
 
 class IInt {
+     int value;
+public:
+     IInt() {}
+	IInt(const IInt& arg){
+		value = arg.value;
+	}
+     IInt(int i) : value(i) {}
+	int getValue(){
+		return value;
+	}
+	void setValue(int i){
+		value = i;
+	}
+	void display(ostream& out){
+		out << value;
+	}
+	int packSize(){
+		return sizeof(int);
+	}
+	void marshal(char* to){
 
+		// int tmp = htonl(value);
+		// memcpy(to, &tmp, sizeof(int));
+		memcpy(to, &value, sizeof(int));
+	}
+	void unmarshal(const char* from){
+		// int tmp;
+		// memcpy(&tmp, from, sizeof(int));
+		// value = ntohl(tmp);
+	}
+     
 	// This class is "intupled", meaning that the void* from the tuple
 	// caries the value.
 	// This solution is a bit dirty but the fast execution of
 	// relational operators is critical for reasonable performance
+
 
 public:
 	static GeneralPtr* getOperatorPtr(
@@ -755,6 +789,10 @@ Type* createPosInf(TypeID typeID);
 
 void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers); // throws
 
+int tupleCompare(int *compare_flds, int num_compare_flds, 
+       GeneralPtr **comparePtrs, Tuple *left, Tuple *right); 
+// returns 1 if compare(left,right) = 1 on any compare_fld, else returns 0
+
 DestroyPtr getDestroyPtr(TypeID root); // throws
 
 PromotePtr getPromotePtr(TypeID from, TypeID to); // throws
@@ -764,5 +802,7 @@ ADTCopyPtr getADTCopyPtr(TypeID adt); // throws
 void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs, 
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
 	Tuple* highTup, Tuple* lowTup);
+
+
 
 #endif
