@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.29  1998/01/15 19:45:48  taodb
+# Replaced cslib with csgroup
+#
 # Revision 1.28  1998/01/14 22:25:16  wenger
 # Improved 'strip' target.
 #
@@ -76,7 +79,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext color utils csgroup
+	unidata DTE RTree xvertext color utils cslib
 
 #devread is obsolete
 #attrproj is broken
