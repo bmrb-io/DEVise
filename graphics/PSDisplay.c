@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/05/14 18:21:04  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.24  1998/02/16 15:41:19  wenger
   Fixed (I believe) bug 287.
 
@@ -164,7 +168,6 @@
 #include "DevError.h"
 #ifndef LIBCS
 #include "Control.h"
-#include "Journal.h"
 #include "Init.h"
 #endif
 

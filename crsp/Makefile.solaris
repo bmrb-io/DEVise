@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.26  1999/01/28 22:39:53  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.25  1998/06/24 22:14:56  donjerko
 # *** empty log message ***
 #
@@ -47,15 +50,12 @@ cal.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 cal.o: /usr/include/sys/va_list.h /usr/include/stdlib.h cal.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 crsp_extract.o: /usr/include/string.h /s/tcl/include/tcl.h
-crsp_extract.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-crsp_extract.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
-crsp_extract.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-crsp_extract.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-crsp_extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
-crsp_extract.o: /usr/include/time.h /s/X11/include/X11/X.h
-crsp_extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-crsp_extract.o: /usr/include/stddef.h sec.h ../tape/tapedrive.h
-crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/stdio.h /usr/include/sys/va_list.h sec.h
+crsp_extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
+crsp_extract.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+crsp_extract.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+crsp_extract.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+crsp_extract.o: /usr/include/sys/time.h /usr/include/time.h
 crsp_extract.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 crsp_extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h

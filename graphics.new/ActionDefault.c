@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/08/23 21:22:54  wenger
+  Added special provisions for drill-down on views with fixed text symbols,
+  because bounding boxes don't work.
+
   Revision 1.45  1999/08/11 16:51:12  wenger
   Point query for drill-down now makes use of symbol bounding boxes.
 
@@ -210,7 +214,6 @@
 
 #include "ActionDefault.h"
 #include "TDataMap.h"
-#include "Selection.h"
 #include "ViewGraph.h"
 #include "RecInterp.h"
 #include "QueryProc.h"

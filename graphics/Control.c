@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/11/04 20:33:44  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.18  1998/09/28 20:06:03  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -90,7 +95,6 @@
 #include "Control.h"
 #include "StringArray.h"
 #include "Dispatcher.h"
-#include "Journal.h"
 #include "Util.h"
 #include "Display.h"
 #include "QueryProc.h"
@@ -200,8 +204,6 @@ ControlPanel *ControlPanel::Instance()
 
 void ControlPanel::DoQuit()
 {
-  Journal::StopRecording();	
-   
   Dispatcher::Cleanup();
   
   Exit::DoExit(0);
@@ -219,10 +221,8 @@ void ControlPanel::DoReturn()
 void ControlPanel::DoGo(Boolean state)
 {
   if (state) {
-    Journal::RecordEvent(Journal::Start, NULL,NULL,NULL,NULL,0,0,0,0);
     Dispatcher::Current()->ChangeState(GoState);
   } else {
-    Journal::RecordEvent(Journal::Stop, NULL,NULL,NULL,NULL,0,0,0,0);
     Dispatcher::Current()->ChangeState(StopState);
   }
 }
@@ -231,7 +231,6 @@ void ControlPanel::DoGo(Boolean state)
 
 void ControlPanel::DoStep()
 {
-  Journal::RecordEvent(Journal::Step, NULL,NULL,NULL,NULL,0,0,0,0);
   Dispatcher *dispatcher = Dispatcher::Current();
   if (dispatcher->GetState() == StopState) {
     dispatcher->ChangeState(GoState);

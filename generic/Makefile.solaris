@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.60  1999/01/28 22:40:14  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.59  1998/12/15 14:54:43  wenger
 # Reduced DEVise memory usage in initialization by about 6 MB: eliminated
 # Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -141,12 +144,13 @@ generic.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
 generic.o: /usr/include/values.h ../graphics/DevStatus.h
 generic.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-generic.o: ../graphics/Journal.h ../graphics/VisualArg.h
-generic.o: ../graphics/ViewDir.h ../graphics/Display.h ../graphics/Geom.h
-generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/Pattern.h
+generic.o: ../src/utils/ObjectValid.h ../graphics/Display.h
+generic.o: ../graphics/Geom.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/VisualArg.h
+generic.o: ../graphics/ViewDir.h ../graphics/Pattern.h
 generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+generic.o: ../graphics/DevError.h /usr/include/sys/param.h
+generic.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h ../graphics/ETk.h
 generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
@@ -159,11 +163,11 @@ generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 generic.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-generic.o: ../src/utils/ObjectValid.h ../graphics.new/ViewData.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics/CursorClassInfo.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
-generic.o: /usr/include/ctype.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/HangCheck.h
+generic.o: ../graphics/Timer.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h
 testWindowSpeed.o: /usr/include/sys/time.h /usr/include/sys/types.h
@@ -176,12 +180,13 @@ testWindowSpeed.o: ../graphics/ViewDir.h /usr/include/string.h
 testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
 testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
 testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
-testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+testWindowSpeed.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
 testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 testWindowSpeed.o: ../graphics/Transform.h ../graphics/Pattern.h
 testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
-testWindowSpeed.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+testWindowSpeed.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+testWindowSpeed.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h
 testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h

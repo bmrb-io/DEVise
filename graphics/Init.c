@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/11/16 17:01:44  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.55  1999/10/14 16:07:24  wenger
   Improvements to debug logging.
 
@@ -258,7 +263,6 @@
 #include "Dispatcher.h"
 #include "Exit.h"
 #include "Init.h"
-#include "Time.h"
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
@@ -377,8 +381,6 @@ static void Usage(char *prog)
 {
   fprintf(stderr, "Usage: %s [options]\n", prog);
   fprintf(stderr, "\nOptions are:\n");
-  fprintf(stderr, "\t-journal <file>: name of journal file\n");
-  fprintf(stderr, "\t-playback <file>: journal file to play back\n");
   fprintf(stderr, "\t-buffer <size>: buffer size in 4k pages\n");
   fprintf(stderr, "\t-sbuffer <size>: stream buffer size in pages\n");
   fprintf(stderr, "\t-policy <policy>: buffer replacement policy, one of:\n");
@@ -456,7 +458,6 @@ void Init::DoInit(int &argc, char **argv)
   _cacheDir = CopyString(cacheDir);
   CheckDirSpace(cacheDir, "DEVISE_CACHE", 1024 * 1024, 0);
 
-  char *journalName = NULL;
 #define MAXARGS 512
   char *args[512];
 
@@ -465,9 +466,6 @@ void Init::DoInit(int &argc, char **argv)
   for(int j = 0; j < argc; j++)
     args[j] = argv[j];
   
-  /* init current time */
-  DeviseTime::Init();
-
   _progName = CopyString(argv[0]);
   _progModTime = ModTime(argv[0]);
 
@@ -505,25 +503,6 @@ void Init::DoInit(int &argc, char **argv)
 	}
 	_sessionName = CopyString(argv[i + 1]);
 	_restore = true;
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "playback") == 0) {
-	if (i >= argc-1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_playbackFile = CopyString(argv[i+1]);
-	_doPlayback = true;
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "journal") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	journalName = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
@@ -920,13 +899,6 @@ void Init::DoInit(int &argc, char **argv)
       i++;
     }
   }
-
-  if (!journalName)
-    journalName = CreateUniqueFileName(argv[0]);
-
-#if 0
-  Journal::Init(journalName, argc, args);
-#endif
 }
 
 void Init::SetDaliServer(const char *server)

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.48  1999/01/28 22:40:26  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.47  1998/06/24 22:15:37  donjerko
 # *** empty log message ***
 #
@@ -84,7 +87,7 @@ Templates.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 Templates.o: ../graphics/ViewDir.h /usr/include/string.h
 Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
+Templates.o: ../src/utils/ObjectValid.h SortedTable.h ../graphics/Timer.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
 Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.97  1999/10/08 19:57:56  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.96  1999/08/11 16:51:12  wenger
   Point query for drill-down now makes use of symbol bounding boxes.
 
@@ -448,7 +454,6 @@
 #include "QueryProcFull.h"
 #include "Display.h"
 #include "Init.h"
-#include "Journal.h"
 #include "BufMgrFull.h"
 #include "TDataMap.h"
 #include "MappingInterp.h"
@@ -1521,7 +1526,6 @@ void QueryProcFull::EndQuery(QPFullData *query)
   printf("****************************EndQuery %p (slave : %d) \n", query,
 	 query->isRecLinkSlave);
 #endif
-  JournalReport();
 }
 
 void QueryProcFull::ReportQueryElapsedTime(QPFullData *query)
@@ -2049,22 +2053,6 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
 /*********************************************************
 Keep track of journal report
 **********************************************************/
-
-void QueryProcFull::JournalReport()
-{
-    int numGetPage = 0;
-    int numHits = 0;
-    int numPrefetch = 0;
-    int numPrefetchHits = 0;
-
-    Journal::EventType lastEvent = Journal::LastEvent();
-    if (lastEvent == Journal::PushSelection ||
-        lastEvent == Journal::PopSelection ||
-        lastEvent == Journal::ChangeSelection)
-        Journal::RecordEvent(Journal::Completion, NULL, NULL, NULL, NULL,
-                             numGetPage, numHits, numPrefetch,
-                             numPrefetchHits);
-}
 
 Boolean QueryProcFull::Idle()
 {

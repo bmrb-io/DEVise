@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.17  1999/01/28 22:40:00  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.16  1998/09/22 17:20:55  wenger
 # Updated Solaris dependencies (on Intel/Solaris 2.6).
 #
@@ -302,9 +305,7 @@ server_locfns.o: timeOut.h netfns.h ../graphics/Init.h
 server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
-server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
+server_locfns.o: ../graphics/Exit.h CmdDescriptor.h CmdSerialize.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/types.h
 server_rmtfns.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 server_rmtfns.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -409,8 +410,7 @@ CmdLog.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
 CmdLog.o: /usr/include/sys/stat.h CmdLog.h CmdSerialize.h
 CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
-CmdLog.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-CmdLog.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Scheduler.h
+CmdLog.o: ../graphics/Exit.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 CmdSerialize.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 CmdSerialize.o: CmdSerialize.h
@@ -474,8 +474,8 @@ Server.o: /usr/include/math.h /usr/include/signal.h /usr/include/sys/signal.h
 Server.o: Server.h CollabTypes.h ../graphics/Dispatcher.h
 Server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
+Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
 Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
 Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h

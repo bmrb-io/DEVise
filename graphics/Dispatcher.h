@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/10/12 17:59:26  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.36  1999/07/19 19:46:32  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -184,9 +191,7 @@
 
 #include "DeviseTypes.h"
 #include "DList.h"
-#include "Journal.h"
 #include "ObjectValid.h"
-//#include "Exit.h"
 
 
 class DispatcherCallback {
@@ -221,7 +226,6 @@ typedef DispatcherInfo* DispatcherID;
 //class DeviseWindow;
 class Dispatcher;
 class View;
-class Selection;
 
 //DefinePtrDList(DeviseWindowList, DeviseWindow *);
 DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
@@ -328,18 +332,6 @@ private:
 
   void Unregister(DispatcherCallback *c, DispatcherID id);
 
-  long _oldTime;		/* time when clock was read last */
-  long _playTime;		/* time last read for playback */
-  Boolean _playback;		/* TRUE if doing playback */
-
-  /* Next event to be played back */
-  long _playInterval;
-  Journal::EventType _nextEvent;
-  Selection *_nextSelection;
-  View *_nextView;
-  VisualFilter _nextFilter;
-  VisualFilter _nextHint;
-
   /* Callback list for this dispatcher */
   DispatcherInfoList _callbacks;
   int                _callback_requests;
@@ -362,23 +354,5 @@ private:
 
   ObjectValid _objectValid;
 };
-
-#if 0
-// This isn't currently used anywhere.  RKW Aug. 27, 1997.
-/*********************************************************
-A class that automatically registers with the dispatcher
-*********************************************************/
-
-class DispatcherAutoRegister: public DispatcherCallback {
-public:
-  DispatcherAutoRegister() {
-    Dispatcher::Current()->Register(this);
-  }
-
-  virtual ~DispatcherAutoRegister() {
-    Dispatcher::Current()->Unregister(this);
-  }
-};
-#endif
 
 #endif

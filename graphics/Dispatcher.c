@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/11/15 22:54:40  wenger
+  Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
+  caused by highlight view/pile problems).
+
   Revision 1.59  1999/10/14 16:07:23  wenger
   Improvements to debug logging.
 
@@ -293,8 +297,6 @@
 #include "Dispatcher.h"
 #include "Control.h"
 #include "Init.h"
-#include "Selection.h"
-#include "Time.h"
 #include "Display.h"
 #include "DebugLog.h"
 #include "Timer.h"
@@ -355,23 +357,6 @@ Dispatcher::Dispatcher(StateFlag state)
 
   _processingDepth = 0;
   _waitingForQueries = false;
-
-  /* init current time */
-  _oldTime = DeviseTime::Now();
-  _playTime = _oldTime;
-  _playback = Init::DoPlayback();
-
-  if (_playback) { 
-    /* init playback */ 
-    Journal::InitPlayback(Init::PlaybackFileName()); /* get first event */ 
-  
-    int d1, d2, d3, d4; /* dummy vars that we don't need */ 
-  
-    _playback = ! Journal::NextEvent(_playInterval, _nextEvent,
-				     _nextSelection, _nextView,
-				     _nextFilter, _nextHint,
-				     d1, d2, d3, d4);
-  }
 
   _tag = 0;
 
@@ -781,7 +766,7 @@ void Dispatcher::Run1()
   timeout.tv_sec = waitfor_secs;
   timeout.tv_usec = 0;
   struct timeval* timeoutp = NULL;
-  if ( _callback_requests > 0 || _playback ) {
+  if ( _callback_requests > 0) {
     timeoutp = &timeout;
   } else if (Init::ClientTimeout() > 0) {
     // Don't allow select() to block for more than one minute if client
@@ -846,66 +831,6 @@ void Dispatcher::Run1()
 
   /* end of call backs */
 
-  if (!_playback) {
-    return ;
-  }
-
-  long now = DeviseTime::Now();
-  long playdiff = now - _playTime;
-  if (playdiff < _playInterval) {
-    return ;
-  }
-
-  switch(_nextEvent) {
-
-  case Journal::Start:
-    ControlPanel::Instance()->DoGo(true);
-    break;
-
-  case Journal::Stop:
-    ControlPanel::Instance()->DoGo(false);
-    break;
-
-  case Journal::Step:
-    ControlPanel::Instance()->DoStep();
-    break;
-
-  case Journal::PushSelection:
-    /* XXX: need to store visual flag here */
-    _nextSelection->PushSelection(_nextView, _nextFilter,
-				  _nextHint, VISUAL_X|VISUAL_Y);
-    break;
-
-  case Journal::PopSelection:
-    _nextSelection->PopSelection(_nextView, _nextHint,
-				 VISUAL_X|VISUAL_Y);
-    break;
-
-  case Journal::ChangeSelection:
-    _nextSelection->ChangeSelection(_nextView, _nextFilter,
-				    _nextHint, VISUAL_X|VISUAL_Y);
-    break;
-
-  case Journal::Completion:
-    /* do nothing. wait for Journal::NextEvent() to
-       become Journal::Completion */
-    break;
-
-  default:
-    DOASSERT(0, "Unexpected event in journal");
-  }
-
-  /* get next event */
-  if ((_nextEvent != Journal::Completion) ||
-      (_nextEvent == Journal::Completion && 
-       Journal::LastEvent() == Journal::Completion)) {
-    /* ready to read next event */
-    int d1, d2, d3, d4;
-    _playback = ! Journal::NextEvent(_playInterval, _nextEvent,
-				     _nextSelection, _nextView, _nextFilter,
-				     _nextHint, d1, d2, d3, d4);
-    _playTime = DeviseTime::Now();
-  }
   return ;
 }
 

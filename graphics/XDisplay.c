@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.81  1999/10/08 19:57:47  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.80  1999/10/04 19:37:00  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -384,7 +390,6 @@
 #include "XWindowRep.h"
 #if !defined(LIBCS)
 #include "Control.h"
-#include "Journal.h"
 #include "Init.h"
 #endif
 #include "Version.h"

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/10/08 19:57:57  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.30  1999/06/01 17:37:42  wenger
   Fixed various compiler warnings.
 
@@ -340,9 +346,6 @@ protected:
   /* Do gdata convertion */
   void DoGDataConvert();
   
-  /* Report to journal */
-  void JournalReport();
-
   /* Advance the query state */
   void AdvanceState(QPFullData* query, QPFullState state);
 

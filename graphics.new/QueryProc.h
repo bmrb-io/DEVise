@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/10/08 19:57:56  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.21  1999/03/03 18:21:57  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -119,7 +125,6 @@
 class BufMgr;
 class TData;
 class TDataMap;
-class Selection;
 class GData;
 class RecordLink;
 class MSLinkList;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/09/02 17:25:48  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.6  1999/07/16 21:35:49  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -42,7 +47,6 @@
 #include "GLWindowRep.h"
 #if !defined(LIBCS)
 #include "Control.h"
-#include "Journal.h"
 #include "Init.h"
 #endif
 #include "Version.h"
