@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/18 01:19:32  jussi
+  Added ExportImage method.
+
   Revision 1.10  1996/06/24 19:36:43  jussi
   Removed unnecessary code that stored a pointer to the
   dispatcher in a member variable.
@@ -119,6 +122,9 @@ public:
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
   static void DoneIterator(int index) { _displays.DoneIterator(index); }
 
+  /* Process windowing events */
+  void Run() { InternalProcessing(); }
+
 protected:
 #ifndef LIBCS
   /*
@@ -158,7 +164,6 @@ protected:
 
 private:
   virtual char *DispatchedName();
-  void Run() { InternalProcessing(); }
   
   static DeviseDisplayList _displays; /* list of all displays */
   
