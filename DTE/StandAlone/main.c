@@ -7,6 +7,7 @@
 #include "exception.h"
 #include "Engine.h"
 #include "ApInit.h" /* for DoInit */
+#include "RTree.h"
 
 const int DETAIL = 1;
 
@@ -26,28 +27,36 @@ int main(int argc, char** argv){
 	}
 	iTimer.reset();
 	cout << "Query in main is: " << query << endl; 
+
+     int RTreeFile;
+     initialize_system(VolumeName, RTreeFile, VolumeSize);
+
 	Engine engine(query);
 	TRY(engine.optimize(), 0);
 	int numFlds = engine.getNumFlds();
-	if(numFlds == 0){
-		return 0;
-	}
-	String* types = engine.getTypeIDs();
-	String* attrs = engine.getAttributeNames();
-	for(int i = 0; i < numFlds; i++){
-		cout << attrs[i] << " ";
-	}
-	cout << endl << "---------------------------------" << endl;
-	Tuple* tup;
-
-	while((tup = engine.getNext())){
+	if(numFlds > 0){
+		String* types = engine.getTypeIDs();
+		String* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
-			//cout << " Tuple typ == " << types[i] <<"\n";
-			displayAs(cout, tup[i], types[i]);
-			cout << '\t';
+			cout << attrs[i] << " ";
 		}
-		cout << endl;
+		cout << endl << "---------------------------------" << endl;
+		Tuple* tup;
+
+		engine.initialize();
+		while((tup = engine.getNext())){
+			for(int i = 0; i < numFlds; i++){
+				//cout << " Tuple typ == " << types[i] <<"\n";
+				displayAs(cout, tup[i], types[i]);
+				cout << '\t';
+			}
+			cout << endl;
+		}
 	}
+
+     // shutdown
+     shutdown_system(VolumeName, RTreeFile, VolumeSize);
+
 	LOG(logFile << "Query completed at ");
 	LOG(iTimer.display(logFile));
 }

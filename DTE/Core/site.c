@@ -16,13 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/05 16:06:05  wenger
+  Added standard Devise file headers.
+
  */
 
 #include <string.h>
 #include "site.h"
-#include "GeneralRead.h"
+#include "Iterator.h"
+#include "RTreeRead.h"
 
-List<BaseSelection*>* createSelectList(String nm, GeneralRead* iterator){
+List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
 	String* attNms = iterator->getAttributeNames();
@@ -213,22 +217,77 @@ istream& CGISite::Entry::read(istream& in){	// throws
 	return in;
 }
 
+void CGISite::Entry::write(ostream& out){
+	assert(!value.contains('"'));		// encode these characters!
+	assert(!value.contains('\\'));
+	out << option << " " << "\"" << value << "\"";
+}
 
-bool IndexScan::isIndexable(BaseSelection* predicate){
-	String attr;
-	String opName;
-	BaseSelection* constant;
-	if(predicate->isIndexable(attr, opName, constant)){
-		for(int i = 0; i < index->numAttrs; i++){
-			if(index->attrNames[i] == attr){
-				cout << "Updating rtree query on att " << i;
-				cout << "with: " << opName << " ";
-				constant->display(cout);
-				cout << endl;
-				rTreeQuery[i].update(opName, constant);
-				return true;
+
+List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
+	List<Site*>* retVal = new List<Site*>;
+	indexes.rewind();
+	int totalNumPreds = myWhere->cardinality();
+	while(!indexes.atEnd()){
+		RTreeIndex* currInd = indexes.get();
+		int numIndFlds = currInd->getNumFlds();
+		String* indAttrNms = currInd->getAttributeNames();
+
+		// This is the point where to get real aternatives
+
+		myWhere->rewind();
+		int usablePredCnt = 0;
+		List<BaseSelection*> indexOnlyPreds;
+		while(!myWhere->atEnd()){
+			BaseSelection* currPred = myWhere->get();
+			if(currInd->canUse(currPred)){
+				usablePredCnt++;
 			}
+			if(currPred->exclusive(indAttrNms, numIndFlds)){
+				indexOnlyPreds.append(currPred);
+			}
+			myWhere->step();
 		}
+
+		int indexOnlyPredCnt = indexOnlyPreds.cardinality();
+		Site* newAlt = NULL;
+		bool selectInc = exclusiveList(mySelect, indAttrNms, numIndFlds);
+		cout << "indexOnlyPredCnt = " << indexOnlyPredCnt << endl;
+		cout << "selectInc = " << selectInc << endl;
+		if(indexOnlyPredCnt == totalNumPreds && selectInc){
+			
+			// Can do index only scan
+
+			newAlt = new LocalTable(name, mySelect, myWhere, currInd);
+			cout << "Chose Index only scan" << endl;
+
+		}
+		/*
+		else if(indexOnlyPredCnt > 0){
+
+			// Can use index, insert Filter above index
+
+			Site* filter = new LocalTable(
+
+		}
+		*/
+		else if(usablePredCnt > 0){
+
+			// Can use index, hook it directly to the indexscan
+
+			newAlt = new IndexScan(
+					name, mySelect, myWhere, currInd, iterator);
+		}
+		else {
+
+			// Cannot do anything with this index
+			cout << "Index is useless" << endl;
+		}
+
+		if(newAlt){
+			retVal->append(newAlt);
+		}
+		indexes.step();
 	}
-	return false;
+	return retVal;
 }

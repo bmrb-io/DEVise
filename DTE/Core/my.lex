@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/09 10:01:52  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.3  1996/12/07 15:14:27  donjerko
   Introduced new files to support indexes.
 
@@ -71,6 +75,7 @@ char* stripquotes(char* text){
 
 Digit        [0-9]
 IntLit       {Digit}+
+DecLit       {Digit}*"."{Digit}+
 SignedIntLit [+\-]{Digit}+
 String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
@@ -87,6 +92,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Oo][Nn]				{return ON;}
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}
+{DecLit}     {yylval.real = atof(yytext); return DOUBLE;}
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
 {LessGreat}  {yylval.string = new String(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {

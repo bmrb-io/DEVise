@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/09 10:01:53  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.6  1996/12/07 15:14:28  donjerko
   Introduced new files to support indexes.
 
@@ -54,7 +58,7 @@ protected:
 public:
 	Path(String* p, Path* n = NULL) : 
           path(p), nextPath(n) {}
-	 Path(Path &newPath):
+	Path(Path &newPath):
 		 path(newPath.path),nextPath(newPath.nextPath){}
 	virtual void display(ostream& out, int detail = 0){
 		assert(path);
@@ -62,6 +66,14 @@ public:
 		if(nextPath){
 			nextPath->display(out, detail);
 		}
+	}
+	String toString(){
+		ostrstream os;
+		display(os);
+		char* tmp = os.str();
+		String retVal(tmp);
+		delete tmp;
+		return retVal;
 	}
 	virtual Path* filter(Site* site){
 		if(nextPath){
@@ -95,6 +107,10 @@ public:
 		else{
 			return true;
 		}
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		assert(!"not implemented");
+		return false;
 	}
 	virtual Path* duplicate(){
 		if(nextPath){
@@ -179,6 +195,7 @@ public:
 	}
 	virtual BaseSelection* filter(Site* site) = 0;
 	virtual bool exclusive(Site* site) = 0;
+	virtual bool exclusive(String* attributeNames, int numFlds) = 0;
 	void append(Path* np){
 		Path* next = nextPath;
 		Path* prevPath = NULL;
@@ -301,6 +318,10 @@ public:
 
 		return false;
 	}
+	virtual String toStringAttOnly(){
+		cout << "toStringAttOnly not definded for: " << selectID() << endl;
+		assert(0);
+	}
 };
 
 class GlobalSelect : public BaseSelection {
@@ -323,6 +344,10 @@ public:
 	}
 	virtual BaseSelection* filter(Site* siteGroup);
 	virtual bool exclusive(Site* s);
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		assert(!"not implemented");
+		return false;
+	}
 	virtual BaseSelection* duplicate(){
 		cerr << "Error: GlobalSelect::duplicate called\n";
 		exit(1);
@@ -386,6 +411,7 @@ public:
 	}
 	virtual BaseSelection* filter(Site* siteGroup){assert(0);}
 	virtual bool exclusive(Site* s){assert(0);}
+	virtual bool exclusive(String* attributeNames, int numFlds){assert(0);}
 	virtual BaseSelection* duplicate(){
 		assert(0);
 	}
@@ -409,6 +435,13 @@ class ConstantSelection : public BaseSelection {
 public:
 	ConstantSelection(TypeID typeID, Type* value) : 
 		BaseSelection(NULL), typeID(typeID), value(value) {}
+	int toBinary(char* to){
+		marshal(value, to, typeID);
+		return packSize(value, typeID);
+	}
+	int binarySize(){
+		return packSize(value, typeID);
+	}
 	virtual bool operator <(ConstantSelection arg){
 		assert(0);
 	}
@@ -435,6 +468,14 @@ public:
 	virtual bool exclusive(Site* site){
 		if(nextPath){
 			return nextPath->exclusive(site);
+		}
+		else{
+			return true;
+		}
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		if(nextPath){
+			return nextPath->exclusive(attributeNames, numFlds);
 		}
 		else{
 			return true;
@@ -587,6 +628,20 @@ public:
 		}
 		else if(nextPath){
 			return nextPath->exclusive(site);
+		}
+		else{
+			return true;
+		}
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		if(!left->exclusive(attributeNames, numFlds)){
+			return false;
+		}
+		else if(!right->exclusive(attributeNames, numFlds)){
+			return false;
+		}
+		else if(nextPath){
+			return nextPath->exclusive(attributeNames, numFlds);
 		}
 		else{
 			return true;
@@ -892,6 +947,7 @@ public:
 	}
 	virtual BaseSelection* filter(Site* site);
 	virtual bool exclusive(Site* site);
+	virtual bool exclusive(String* attributeNames, int numFlds);
 	virtual BaseSelection* duplicate(){
 		String* dupAlias = (alias ? new String(*alias) : (String*) NULL);
 		if(nextPath){
@@ -919,7 +975,7 @@ public:
                Path* upTo = NULL;
 			if(match(selList->get(), upTo)){
 				BaseSelection* retVal;
-				assert(i == position);
+				// assert(i == position); failed for RTreeIndex
                     retVal = new ExecSelect(this, leftRight, i, upTo);
 				TRY(BaseSelection::enumerate(site1, list1, site2, list2),
 					NULL);
@@ -970,6 +1026,9 @@ public:
 	}
 	virtual bool isGlobal(){
 		return *alias == "";
+	}
+	virtual String toStringAttOnly(){
+		return nextPath->toString();
 	}
 };
 

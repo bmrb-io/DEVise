@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/07 15:14:29  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.4  1996/12/04 22:09:54  donjerko
   Removed the IntegerConstant and StringConstant and replaced them with
   ConstantSelection
@@ -78,6 +81,18 @@ bool PrimeSelection::exclusive(Site* site){
 	else{
 		return false;
 	}
+}
+
+bool PrimeSelection::exclusive(String* attributeNames, int numFlds){
+	String me = toStringAttOnly();
+	for(int i = 0; i < numFlds; i++){
+		cout << "attr = " << attributeNames[i] << endl;
+		if(me == attributeNames[i]){
+			return true;
+		}
+	}
+	cout << "me = " << me << endl;
+	return false;
 }
 
 void GlobalSelect::display(ostream& out, int detail = 0){

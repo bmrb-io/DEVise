@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/07 15:14:27  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.2  1996/12/05 16:06:02  wenger
   Added standard Devise file headers.
 
@@ -55,6 +58,7 @@ class Site;
 class TableAlias;
 
 bool exclusiveF(List<BaseSelection*>* list, Site* site);
+bool exclusiveList(List<BaseSelection*>* list, String* attNms, int n);
 List<BaseSelection*>* duplicateF(List<BaseSelection*>* list);
 void filterList(List<BaseSelection*>* list, Site* site);
 void displayList(ostream& out, List<TableAlias*>* list, String sep = ", ");
@@ -79,5 +83,6 @@ int* sizesFromList(List<BaseSelection*>* list);
 void checkOrphanInList(List<BaseSelection*>* list);
 String* getStringsFrom(List<BaseSelection*>* list);
 List<BaseSelection*>* createGlobalSelectList(List<Site*>* sites);
+String* getAttStringsOnly(List<BaseSelection*>* list);
 
 #endif

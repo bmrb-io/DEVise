@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.3  1996/12/03 20:25:37  jussi
+    Updated to reflect new TData interfaces.
+
     Revision 1.2  1996/11/23 22:10:19  jussi
     Minor change to reflect new TData::GetRecs() parameter list.
 
@@ -113,6 +116,10 @@ void DevRead::reset(int lowRid, int highRid){
     _tDataP->InitGetRecs(lowRid, highRid);
     _nxtRecId = lowRid;
     _lastRecId = highRid;
+}
+
+void DevRead::setOffset(Offset offset){
+	reset(offset.getOffset(), offset.getOffset());
 }
 
 /*------------------------------------------------------------------------------

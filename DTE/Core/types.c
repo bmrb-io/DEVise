@@ -16,12 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/09 10:01:54  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.2  1996/12/05 16:06:05  wenger
   Added standard Devise file headers.
 
  */
 
 #include "types.h"
+#include "exception.h"
 #include <String.h>
 
 Type* intAdd(Type* arg1, Type* arg2){
@@ -297,6 +302,11 @@ Type* unmarshal(char* from, String type){
 		adt->unmarshal(from);
 		return adt;
 	}
+	else if(type == "double"){
+		IDouble* adt = new IDouble;
+		adt->unmarshal(from);
+		return adt;
+	}
 	else{
 		cout << "Don't know how to unmarshal type: " << type << endl;
 		assert(0);
@@ -361,5 +371,67 @@ AttrType getDeviseType(String type){
 	else{
 		cout << "Don't know DEVise type for: " << type << endl;
 		assert(0);
+	}
+}
+
+String rTreeEncode(String type){
+	if(type == "int"){
+		return "i";
+	}
+	else if(type == "float"){
+		return "f";
+	}
+	else if(type == "double"){
+		return "d";
+	}
+	else if(type == "string"){
+		String msg = "Don't know how to build index on type: " + type;
+		THROW(new Exception(msg), "");
+	}
+	else{
+		String msg = "Don't know how to build index on type: " + type;
+		THROW(new Exception(msg), "");
+	}
+}
+
+int packSize(Tuple* tup, TypeID* types, int numFlds){
+	int retVal = 0;
+	for(int i = 0; i < numFlds; i++){
+		retVal += packSize(tup[i], types[i]);
+	}
+	return retVal;
+}
+
+void marshal(Tuple* tup, char* to, TypeID* types, int numFlds){
+	int offset = 0;
+	for(int i = 0; i < numFlds; i++){
+		marshal(tup[i], to + offset, types[i]);
+		offset += packSize(tup[i], types[i]);
+	}
+}
+
+Type* createNegInf(TypeID type){
+	if(type == "int"){
+		return new IInt(INT_MIN);
+	}
+	else if(type == "double"){
+		return new IDouble(-DBL_MAX);
+	}
+	else{
+		String msg = "Don't know what is -Infinity for type: " + type;
+		THROW(new Exception(msg), "");
+	}
+}
+
+Type* createPosInf(TypeID type){
+	if(type == "int"){
+		return new IInt(INT_MAX);
+	}
+	else if(type == "double"){
+		return new IDouble(DBL_MAX);
+	}
+	else{
+		String msg = "Don't know what is +Infinity for type: " + type;
+		THROW(new Exception(msg), "");
 	}
 }

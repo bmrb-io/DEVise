@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/09 10:01:55  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.3  1996/12/05 16:06:06  wenger
   Added standard Devise file headers.
 
@@ -66,6 +70,24 @@ struct Stats{
 		}
 	}
 };
+
+class Offset{
+	int offset;
+	friend ostream& operator<<(ostream& out, Offset offset);
+public:
+	Offset() : offset(-1){}
+	Offset(int offset) : offset(offset){}
+	int getOffset(){
+		return offset;
+	}
+	bool isNull(){
+		return offset == -1;
+	}
+};
+
+inline ostream& operator<<(ostream& out, Offset off){
+	return out << off.offset;
+}
 
 typedef void Type;
 typedef String TypeID;
@@ -152,9 +174,11 @@ public:
 		memcpy(to, &value, sizeof(int));
 	}
 	void unmarshal(const char* from){
-		int tmp;
-		memcpy(&tmp, from, sizeof(int));
-		value = ntohl(tmp);
+		// int tmp;
+		// memcpy(&tmp, from, sizeof(int));
+		// value = ntohl(tmp);
+
+		memcpy(&value, from, sizeof(int));
 	}
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID arg, TypeID& retType){
@@ -258,7 +282,7 @@ class IDouble {
 private:
 	double value;
 public:
-	IDouble(double val) : value(val){}
+	IDouble(double val = 0) : value(val){}
 	double getValue(){
 		return value;
 	}
@@ -274,6 +298,9 @@ public:
 		// memcpy(to, &tmp, sizeof(int));
 
 		memcpy(to, &value, sizeof(double));
+	}
+	void unmarshal(const char* from){
+		memcpy(&value, from, sizeof(double));
 	}
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID arg, TypeID& retType){
@@ -399,7 +426,13 @@ void displayAs(ostream& out, void* adt, String type);
 
 int packSize(void* adt, String type);
 
+int packSize(Tuple* tup, TypeID* types, int numFlds);
+
+String rTreeEncode(String type);
+
 void marshal(Type* adt, char* to, String type);
+
+void marshal(Tuple* tup, char* to, TypeID* types, int numFlds);
 
 Type* unmarshal(char* from, String type);
 
@@ -409,5 +442,9 @@ GeneralPtr* getOperatorPtr(
 ReadPtr getReadPtr(TypeID root);
 
 AttrType getDeviseType(String type);
+
+Type* createNegInf(TypeID typeID);
+
+Type* createPosInf(TypeID typeID);
 
 #endif

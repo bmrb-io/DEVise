@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/07 15:14:29  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.4  1996/12/05 16:06:05  wenger
   Added standard Devise file headers.
 
@@ -29,43 +32,19 @@
 #include "queue.h"
 #include "types.h"
 #include "exception.h"
-#include "GeneralRead.h"
+#include "Iterator.h"
 #include "StandardRead.h"
+#include "RTreeRead.h"
 #include "url.h"
 
-class RTreeIndex {
-public:
-	int numAttrs;
-	String* attrNames;
-public:
-	RTreeIndex(){}
-	istream& read(istream& in){	// throws exception
-		assert(in);
-		in >> numAttrs;
-		if(!in){
-			String msg = "Number of index attributes expected";
-			THROW(new Exception(msg), in);
-		}
-		attrNames = new String[numAttrs];
-		for(int i = 0; i < numAttrs; i++){
-			in >> attrNames[i];
-			if(!in){
-				String msg = "Name of the index attribute expected";
-				THROW(new Exception(msg), in);
-			}
-		}
-		return in;
-	}
-};
-
-List<BaseSelection*>* createSelectList(String nm, GeneralRead* iterator);
+List<BaseSelection*>* createSelectList(String nm, Iterator* iterator);
 
 class Site {
 friend class LocalTable;
 friend class SiteGroup;
 protected:
 	String name;
-	GeneralRead* iterator;
+	Iterator* iterator;
 	int numFlds;
 	List<String*>* tables;
 	List<BaseSelection*>* mySelect;
@@ -148,11 +127,18 @@ public:
 		return iterator->getNext();
 	}
 	virtual int getNumFlds(){
+		assert(numFlds == mySelect->cardinality());
 		return numFlds;
 	}
      virtual String* getTypeIDs(){
           return getTypesFromList(mySelect);
      }
+	virtual String *getAttributeNames(){
+		return getStringsFrom(mySelect);
+	}
+	virtual String *getAttNamesOnly(){
+		return getAttStringsOnly(mySelect);
+	}
 	List<BaseSelection*>* getSelectList(){
 		return mySelect;
 	}
@@ -169,190 +155,21 @@ public:
 		List<Site*>* retVal = new List<Site*>;
 		return retVal;
 	}
-};
-
-struct RTreePred {
-	bool bounded[2];
-	bool closed[2];
-	ConstantSelection* values[2];
-	RTreePred(){
-		bounded[0] = bounded[1] = false;
-		closed[0] = closed[1] = true;
-		values[0] = values[1] = NULL;
+	virtual void initialize(){
+		iterator->initialize();
 	}
-	RTreePred(String opName, ConstantSelection* constant){
-		bounded[0] = bounded[1] = false;
-		closed[0] = closed[1] = true;
-		values[0] = values[1] = NULL;
-		if(opName == "="){
-			bounded[0] = bounded[1] = true;
-			values[0] = values[1] = constant;
-		}
-		else if(opName == "<="){
-			bounded[1] = true;
-			values[1] = constant;
-		}
-		else if(opName == ">="){
-			bounded[0] = true;
-			values[1] = constant;
-		}
-		else if(opName == "<"){
-			bounded[1] = true;
-			closed[1] = false;
-			values[1] = constant;
-		}
-		else if(opName == ">"){
-			bounded[0] = true;
-			closed[0] = false;
-			values[0] = constant;
-		}
-		else {
-			cout << "Operator \"" << opName; 
-			cout << "\" should not be passed to this function\n";
-			assert(0);
-		}
+	virtual double evaluateCost(){
+		return 1;
 	}
-	~RTreePred(){
-		// do not delete values;
-	}
-	void update(String opName, BaseSelection* constant){
-		assert(constant->selectID() == CONST_ID);
-		RTreePred tmp(opName, (ConstantSelection*) constant);
-		intersect(tmp);
-	}
-	void intersect(const RTreePred& pred){
-		if(pred.bounded[0] && !bounded[0]){
-			bounded[0] = true;
-			closed[0] = pred.closed[0];
-			values[0] = pred.values[0];
-		}
-		else if(pred.bounded[0] && bounded[0]){
-			assert(pred.values[0]);
-			assert(values[0]);
-			if(*pred.values[0] > *values[0]){
-				values[0] = pred.values[0];
-				closed[0] = pred.closed[0];
-			}
-			else if(*pred.values[0] == *values[0]){
-				if(!pred.closed[0]){
-					closed[0] = false;
-				}
-			}
-		}
-		if(pred.bounded[1] && !bounded[1]){
-			bounded[1] = true;
-			closed[1] = pred.closed[1];
-			values[1] = pred.values[1];
-		}
-		else if(pred.bounded[1] && bounded[1]){
-			assert(pred.values[1]);
-			assert(values[1]);
-			if(*pred.values[1] < *values[1]){
-				values[1] = pred.values[1];
-				closed[1] = pred.closed[1];
-			}
-			else if(*pred.values[1] == *values[1]){
-				if(!pred.closed[1]){
-					closed[1] = false;
-				}
-			}
-		}
-	}
-	String toString(){
-		String retVal;
-		if(closed[0]){
-			retVal += "[";
-		}
-		else {
-			retVal += "<";
-		}
-		if(bounded[0]){
-			retVal += values[0]->toString();
-		}
-		else {
-			retVal += "-Infinity";
-		}
-		retVal += ", ";
-		if(bounded[1]){
-			retVal += values[1]->toString();
-		}
-		else {
-			retVal += "Infinity";
-		}
-		if(closed[1]){
-			retVal += "]";
-		}
-		else {
-			retVal += ">";
-		}
-		return retVal;
-	}
-};
-
-class IndexScan : public Site {
-	RTreePred* rTreeQuery;	// query is an array of RTree predicates
-	Site* parent;
-	RTreeIndex* index;
-	int numAttrs;
-	bool isIndexable(BaseSelection* predicate);
-public:
-	IndexScan(Site* parent, RTreeIndex* index) : 
-		Site(), parent(parent), index(index) {
-		numAttrs = index->numAttrs;
-		rTreeQuery = new RTreePred[numAttrs];
-	}
-	virtual void display(ostream& out, int detail = 0){
-		if(detail > 0){
-			 out << "Site " << name << ":\n"; 
-			 if(stats){
-				 out	<< " stats: ";
-				 stats->display(out);
-			 }
-			 out << "\n query:";
-		}
-		out << "   select ";
-		displayList(out, mySelect, ", ", detail);
-		out << "\n   from ";
-		displayList(out, myFrom, ", ");
-		if(!myWhere->isEmpty()){
-			out << "\n   where ";
-			displayList(out, myWhere, " and ", detail);
-		}
-		out << ';' << endl;
-		String tmp;
-		for(int i = 0; i < numAttrs; i++){
-			tmp += "Attr " + index->attrNames[i] + ": ";
-			tmp += rTreeQuery[i].toString() + "\n";
-		}
-		out << tmp;
-	}
-	bool isApplicable(){
-		bool retVal = false;
-		List<BaseSelection*>* parentWhere = parent->getWhereList();	
-		parentWhere->rewind();
-		while(!parentWhere->atEnd()){
-			BaseSelection* currPred = parentWhere->get();
-			if(isIndexable(currPred)){
-				retVal = true;
-			}
-			else{
-				myWhere->append(currPred);
-			}
-			parentWhere->step();
-		}
-		return retVal;
-	}
-	double evaluateCost(){
-		return 0;
-	}
-	virtual Tuple* getNext(){
-		return NULL;
-	}
+     virtual Offset getOffset(){
+          assert(!"getOffset not supported for this iterator");
+          return Offset();
+     }
 };
 
 class DirectSite : public Site {
 public:
-	DirectSite(String nm, GeneralRead* iterator) : Site(nm) {
+	DirectSite(String nm, Iterator* iterator) : Site(nm) {
 		
 		// Used only for typifying LocalTable
 
@@ -366,7 +183,6 @@ public:
 };
 
 class LocalTable : public Site {
-	Site* directSite;
 	List<RTreeIndex*> indexes;
 	void setStats(){
 		double selectivity = listSelectivity(myWhere);
@@ -377,13 +193,26 @@ class LocalTable : public Site {
 		int* sizes = sizesFromList(mySelect);
 		stats = new Stats(numFlds, sizes, cardinality);
 	}
+protected:
+	Site* directSite;
 public:
-     LocalTable(String nm, GeneralRead* marsh, List<RTreeIndex*>* indx) : 
+     LocalTable(String nm, Iterator* marsh, List<RTreeIndex*>* indx) : 
 		Site(nm), directSite(NULL) {
 		if(indx){
 			indexes.addList(indx);
 		}
 		iterator = marsh;
+	}
+	LocalTable(String nm, List<BaseSelection*>* select, 
+		List<BaseSelection*>* where, Iterator* iterator) : Site(nm) {
+
+		// Used as a simple filter, not as a real site
+
+		mySelect->addList(select);
+		myWhere->addList(where);
+		this->iterator = iterator;
+		numFlds = mySelect->cardinality();
+		directSite = new DirectSite(name, iterator);
 	}
 	virtual ~LocalTable(){}
 	virtual void addTable(TableAlias* tabName){
@@ -435,27 +264,48 @@ public:
 			}
 			cond = evaluateList(myWhere, input);
 		}
-		if(input){
-			return tupleFromList(mySelect, input);
-		}
-		else{
-			return NULL;
-		}
+		assert(input);
+		return tupleFromList(mySelect, input);
 	}
-	virtual int getNumFlds(){
-		return numFlds;
+	virtual List<Site*>* generateAlternatives();
+     virtual Offset getOffset(){
+          return iterator->getOffset();
+     }
+};
+
+class IndexScan : public LocalTable {
+	RTreeIndex* index;
+	int numIndexablePreds;
+public:
+	IndexScan(String name, List<BaseSelection*>* select,
+		List<BaseSelection*>* where, RTreeIndex* index, Iterator* iterator) :
+		LocalTable(name, select, where, iterator), index(index) {
+		numIndexablePreds = 0;
 	}
-	virtual List<Site*>* generateAlternatives(){
-		List<Site*>* retVal = new List<Site*>;
-		indexes.rewind();
-		while(!indexes.atEnd()){
-			IndexScan* newAlt = new IndexScan(this, indexes.get());
-			if(newAlt->isApplicable()){
-				retVal->append(newAlt);
+	virtual double evaluateCost(){
+		// return 1.0 / (1 + numIndexablePreds);
+		return 2;	// to be worse than index only scan (LocalTable)
+	}
+	virtual void initialize(){
+		assert(index);
+		index->initialize();
+		Site::initialize();
+	}
+	virtual Tuple* getNext(){
+		bool cond = false;
+		Tuple* input = NULL;
+		while(!cond){
+			Offset offset = index->getNextOffset();
+			if(offset.isNull()){
+				return NULL;
 			}
-			indexes.step();
+			iterator->setOffset(offset);
+			input = iterator->getNext();
+			assert(input);
+			cond = evaluateList(myWhere, input);
 		}
-		return retVal;
+		assert(input);
+		return tupleFromList(mySelect, input);
 	}
 };
 
@@ -465,6 +315,7 @@ class CGISite : public LocalTable {
 		String option;
 		String value;
 		istream& read(istream& in);	// throws
+		void write(ostream& out);
 	};
 
 	Entry* entry;
@@ -475,7 +326,7 @@ public:
 		LocalTable("", NULL, NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
-		delete [] entry;
+		// do not delete entries, they are deleted in catalog
 	}
 	virtual void typify(String option);
 };

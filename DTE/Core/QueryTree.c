@@ -34,6 +34,7 @@ void QueryTree::resolveNames(){	// throws exception
           String* replacement = tableList->get()->table;
           for(int i = 0; i < namesToResolve->cardinality(); i++){
                String* current = namesToResolve->get();
+			cout << *current << " " << *replacement << endl;
                *current = *replacement;
                namesToResolve->step();
           }
@@ -101,9 +102,8 @@ Site* QueryTree::createSite(){
 			   
 	   	// Change the select list
 		selectList = aggregates->filterList();
-		selectList->rewind();
-		LOG( logFile << " Inserting selecList " );
-		LOG(selectList->get()->display(logFile));
+		LOG( logFile << " Removing aggregates from the list\n" );
+		LOG(displayList(logFile, selectList, ", "));
 		LOG(logFile << endl);
 	}
 	
@@ -135,11 +135,32 @@ Site* QueryTree::createSite(){
 	sites->rewind();
 	LOG(logFile << "Typified sites\n");
      while(!sites->atEnd()){
-          Site* current = sites->get();
-		List<Site*>* alters = current->generateAlternatives();
+		TRY(List<Site*>* alters = 
+			sites->get()->generateAlternatives(), NULL);
 		assert(alters);
-		cout << "Alternatives for \"" << current->getName() << "\" are:\n";
-		displayList(cout, alters, "\n");
+		if(!alters->isEmpty()){
+			Site* current = sites->get();
+			cout << "Alters for \"" << current->getName() << "\" are:\n";
+			displayList(cout, alters, "\n");
+			alters->rewind();
+			Site* minCostAlt = alters->get();
+			double minCost = minCostAlt->evaluateCost();
+			while(!alters->atEnd()){
+				Site* currAlt = alters->get();
+				double currCost = currAlt->evaluateCost();
+				if(currCost < minCost){
+					minCost = currCost;
+					minCostAlt = currAlt;
+				}
+				alters->step();
+			}
+			sites->replace(minCostAlt);
+
+			// must not delete current because it is used to
+			// typify the global query
+
+		}
+		Site* current = sites->get();
 		LOG(logFile << current->getName());
           LOG(current->display(logFile));
 		LOG(logFile << endl);

@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.1  1996/11/23 02:00:35  donjerko
+    Restructered DTE directory
+
     Revision 1.1  1996/11/18 18:08:46  donjerko
     Initial DTE release.
 
@@ -36,11 +39,11 @@
 #include "RecId.h"
 
 #include "types.h"
-#include "GeneralRead.h"
+#include "Iterator.h"
 
 class TData;
 
-class DevRead : public GeneralRead
+class DevRead : public Iterator
 {
   public:
 
@@ -76,6 +79,12 @@ class DevRead : public GeneralRead
 	virtual Tuple  *getNext();
 
 	virtual void reset(int lowRid, int highRid);
+
+	virtual void setOffset(Offset offset);
+
+	virtual Offset getOffset(){
+		return Offset((int) _nxtRecId);
+	}
 
   private:
 

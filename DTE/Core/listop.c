@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/07 15:14:27  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.2  1996/12/05 16:06:02  wenger
   Added standard Devise file headers.
 
@@ -37,6 +40,17 @@ bool exclusiveF(List<BaseSelection*>* list, Site* site){
 	list->rewind();
 	while(!list->atEnd()){
 		if(!list->get()->exclusive(site)){
+			return false;
+		}
+		list->step();
+	}
+	return true;
+}
+
+bool exclusiveList(List<BaseSelection*>* list, String* attNms, int n){
+	list->rewind();
+	while(!list->atEnd()){
+		if(!list->get()->exclusive(attNms, n)){
 			return false;
 		}
 		list->step();
@@ -249,7 +263,20 @@ String* getStringsFrom(List<BaseSelection*>* list){
 		ostrstream tmp;
 		list->get()->displayFlat(tmp);
 		tmp << ends;
-		retVal[i] = tmp.str();
+		retVal[i] = String(tmp.str());
+		i++;
+		list->step();
+	}
+	return retVal;
+}
+
+String* getAttStringsOnly(List<BaseSelection*>* list){
+	String* retVal = new String[list->cardinality()];
+	list->rewind();
+	int i = 0;
+	while(!list->atEnd()){
+		ostrstream tmp;
+		retVal[i] = list->get()->toStringAttOnly();
 		i++;
 		list->step();
 	}

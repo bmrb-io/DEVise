@@ -4,6 +4,8 @@
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>
+#include<stdio.h>	// for perror
+#include<errno.h>
 
 #include "queue.h"
 #include "myopt.h"
@@ -15,6 +17,8 @@
 #include "listop.h"
 #include "Aggregates.h"
 #include "ParseTree.h"
+#include "RTree.h"
+#include "RTreeRead.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
@@ -33,118 +37,110 @@ Site* IndexParse::createSite(){
 	if(!namesToResolve->isEmpty()){
 		TRY(resolveNames(), 0);
 	}
-/*
-	LOG(logFile << "Query was:\n";)
-	LOG(logFile << "   select ";)
-	LOG(displayList(logFile, selectList, ", ");)
-	LOG(logFile << endl << "   from ";)
-	LOG(displayList(logFile, tableList);)
-	List<BaseSelection*>* predicateList = new List<BaseSelection*>;
-	LOG(logFile << endl << "Predicate list:\n   ";)
-	LOG(displayList(logFile, predicateList);)
-	LOG(logFile << endl;)
+	LOG(logFile << "Creating Index " << *indexName;)
+	LOG(logFile << " on " << *tableName << "(";)
+	LOG(displayList(logFile, attributeList, ", ");)
+	LOG(logFile << ")" << endl;)
 
-	tableList->rewind();
-	int numSites = 0;
 	Catalog catalog;
 	String catalogName;
 	catalogName += getenv("DEVISE_SCHEMA");
 	catalogName += "/catalog.dte";
 	TRY(catalog.read(catalogName), 0);
-     List<Site*>* sites = new List<Site*>;
-	while(!tableList->atEnd()){
-		TableAlias* ta = tableList->get();
-          Catalog::Interface* interf = NULL;
-		if(ta->isQuote()){
-			TRY(interf = catalog.toInterface(*ta->table), 0);
-		}
-		else{
-			TRY(interf = catalog.find(*ta->table), 0);
-		}
-		assert(interf);
-		TRY(Site* site = interf->getSite(), 0);	// can be old site
-		site->addTable(ta);
-		if(!sites->exists(site)){
-			sites->append(site);
-			numSites++;
-		}
-		tableList->step();
-	}
-	Aggregates aggregates(selectList);
-	if(aggregates.isApplicable()){
-		cout << "Aggregates not implemented\n";
-		exit(1);
-	}
-	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
-     sites->rewind();
-     while(!sites->atEnd()){
-          Site* current = sites->get();
-          current->filter(selectList, predicateList);
-		LOG(logFile << current->getName());
-          LOG(current->display(logFile));
-		LOG(logFile << endl);
-          sites->step();
-     }
-	TRY(checkOrphanInList(selectList), 0);
-	TRY(checkOrphanInList(predicateList), 0);
-	if(!selectList){
-		APPLY(makeNonComposite(), predicateList);
-	}
-     LOG(logFile << "Global query:\n";)
-	LOG(logFile << "   select ";)
-     LOG(displayList(logFile, selectList, ", "));
-     LOG(logFile << "\n   where ";)
-     LOG(displayList(logFile, predicateList, ", "));
-	LOG(logFile << endl;)
-	String* types;
+	Catalog::Interface* interf = NULL;
+	TRY(interf = catalog.find(*tableName), 0);
+	assert(interf);
+	TRY(Site* site = interf->getSite(), 0);	// can be old site
+	site->addTable(new TableAlias(tableName));
+
+	List<BaseSelection*>* emptyList = new List<BaseSelection*>;
+	site->filter(attributeList, emptyList);
+	delete emptyList;
+	TRY(checkOrphanInList(attributeList), 0);
+
 	String option = "execute";
-	TRY(typifyList(sites, option), 0);
-	sites->rewind();
+	TRY(site->typify(option), 0);
 	LOG(logFile << "Typified sites\n");
-     while(!sites->atEnd()){
-          Site* current = sites->get();
-		List<Site*>* alters = current->generateAlternatives();
-		assert(alters);
-		cout << "Alternatives for \"" << current->getName() << "\" are:\n";
-		displayList(cout, alters, "\n");
-		LOG(logFile << current->getName());
-          LOG(current->display(logFile));
-		LOG(logFile << endl);
-          sites->step();
-     }
-	if(!selectList){
-		selectList = createGlobalSelectList(sites);
-		// already typified
-	}
-	else{
-		TRY(typifyList(selectList, sites), 0);
-	}
-	TRY(typifyList(predicateList, sites), 0);
-	TRY(boolCheckList(predicateList), 0);
-	sites->rewind();
-	Site* inner = sites->get();
-	sites->step();
-	Site* siteGroup = NULL;
-	while(!sites->atEnd()){
-		Site* outer = sites->get();
-		siteGroup = new SiteGroup(inner, outer);
-		inner = siteGroup;
-		siteGroup->filter(selectList, predicateList);
-		siteGroup->typify(option);
-		sites->step();
-	}
-	if(!siteGroup){
-		siteGroup = inner;
-	}
-	LOG(logFile << "Plan: \n";)
-	LOG(siteGroup->display(logFile, DETAIL);)
-	LOG(logFile << endl;)
-	assert(predicateList->cardinality() == 0);
+	LOG(logFile << site->getName());
+	LOG(site->display(logFile));
+	LOG(logFile << endl);
+
+	String* attrNames = site->getAttNamesOnly();
 	LOG(logFile << "Enumeration:\n";)
-	TRY(siteGroup->enumerate(), 0);
-	LOG(siteGroup->display(logFile, DETAIL);)
+	TRY(site->enumerate(), 0);
+	LOG(site->display(logFile, DETAIL);)
 	LOG(logFile << endl;)
-	delete predicateList;	// destroy list too
-*/
+
+	int numFlds = site->getNumFlds();
+	String* types = site->getTypeIDs();
+	String rtreeSchema;
+	for(int i = 0; i < numFlds; i++){
+		rtreeSchema += rTreeEncode(types[i]);
+	}
+
+	ostrstream line1;
+	int recIDSize = sizeof(Offset);	// for now
+	int points = 1; // set to 0 for rectangles
+	line1 << numFlds << " " << recIDSize << " " << points << " ";
+	line1 << rtreeSchema;
+	int fillSize  = (line1.pcount() + 1) % 8;	// allign on 8 byte boundary
+	for(int i = 0; i < fillSize; i++){
+		line1 << " ";
+	}
+	line1 << endl;
+	String bulkfile = *indexName + ".bulk";
+	ofstream ind(bulkfile);
+	assert(ind);
+	ind << line1.rdbuf();
+	Tuple* tup;
+	int fixedSize; 
+	int tupSize;
+	Offset offset = site->getOffset();
+	cout << "offset = " << offset << endl;
+     tup = site->getNext();
+	assert(tup); // make sure this is not empty
+	fixedSize = packSize(tup, types, numFlds);
+	char* flatTup = new char[fixedSize];
+	marshal(tup, flatTup, types, numFlds);
+	ind.write(flatTup, fixedSize);
+	ind.write((char*) &offset, sizeof(Offset));
+	offset = site->getOffset();
+	cout << "offset = " << offset << endl;
+     while((tup = site->getNext())){
+		tupSize = packSize(tup, types, numFlds);
+		if(tupSize != fixedSize){
+			assert(0);
+		}
+		marshal(tup, flatTup, types, numFlds);
+		ind.write(flatTup, fixedSize);
+		ind.write((char*) &offset, sizeof(Offset));
+		offset = site->getOffset();
+		cout << "offset = " << offset << endl;
+     }
+	delete flatTup;
+	ind.close();
+	String convBulk = bulkfile + ".conv";
+	String cmd = "convert_bulk < " + bulkfile + " > " + convBulk;
+	if(system(cmd) == -1){
+		perror("system:");
+		String msg = "Failed to convert bulk data";
+		THROW(new Exception(msg), NULL);
+	}
+
+	page_id_t root1;
+	int bulk_file = open(convBulk.chars(), O_RDWR, 0600);
+
+	genrtree_m rtree_m;
+	rtree_m.bulk_load(bulk_file, root1, false); // example bulkload
+	// this has created index
+
+	close(bulk_file);
+	printf("Created index with root page: %d\n", root1.pid);
+	// note, you MUST keep root page
+
+	RTreeIndex* index = new RTreeIndex(numFlds, types, attrNames, root1.pid);
+	interf->addIndex(index);		// add this index to the catalog
+	catalog.write(catalogName);
+
 	return new Site();
 }

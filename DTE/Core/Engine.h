@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/07 15:14:25  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.2  1996/12/05 16:05:59  wenger
   Added standard Devise file headers.
 
@@ -47,13 +50,16 @@ public:
 		return topNode->getNext();
 	}
 	virtual String* getAttributeNames(){
-		return getStringsFrom(topNode->getSelectList());
+		return topNode->getAttributeNames();
 	}
 	Stats* getStats(){
 		return topNode->getStats();
 	}
 	void reset(int lowRid, int highRid){
 		TRY(topNode->reset(lowRid, highRid), );
+	}
+	virtual void initialize(){
+		topNode->initialize();
 	}
 };
 

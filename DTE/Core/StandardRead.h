@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:00  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef STANDARD_READ_H
@@ -23,10 +26,10 @@
 
 #include <iostream.h>
 #include <String.h>
-#include "GeneralRead.h"
+#include "Iterator.h"
 #include "types.h"
 
-class StandardRead : public GeneralRead {
+class StandardRead : public Iterator {
 protected:
 	istream* in;
 	int numFlds;

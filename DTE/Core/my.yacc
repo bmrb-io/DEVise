@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/09 10:01:52  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.5  1996/12/07 15:14:28  donjerko
   Introduced new files to support indexes.
 
@@ -44,6 +48,7 @@ int yyerror(char* msg);
 %union{
      String* string;
 	int integer;
+	double real;
 	BaseSelection* sel;
 	Path* path;
 	List<BaseSelection*>* selList;
@@ -51,6 +56,7 @@ int yyerror(char* msg);
 	TableAlias* tabAlias;
 }
 %token <integer> INT
+%token <real> DOUBLE
 %token SELECT
 %token FROM
 %token WHERE
@@ -92,12 +98,13 @@ index_name : STRING
 	;
 table_name : STRING
 	;
-query : SELECT listOfSelections FROM listOfTables optWhereClause optSequenceByClause';' {
-		parseTree = new QueryTree($2, $4, $5,$6,namesToResolve);
+query : SELECT listOfSelections 
+	   FROM listOfTables optWhereClause optSequenceByClause ';' {
+		parseTree = new QueryTree($2, $4, $5, $6, namesToResolve);
 		return 0;
 	}
 	| SELECT '*' FROM listOfTables optWhereClause optSequenceByClause ';' {
-		parseTree = new QueryTree(NULL, $4, $5,$6,namesToResolve);
+		parseTree = new QueryTree(NULL, $4, $5, $6, namesToResolve);
 		return 0;
 	}
      ;
@@ -167,7 +174,7 @@ selection :
 		$$ = new PrimeSelection($1, $3);
 	}
 	| STRING {
-		String* dummy = new String;
+		String* dummy = new String("");
 		namesToResolve->append(dummy); 
 		$$ = new PrimeSelection(dummy, new Path($1, NULL));
 	}
@@ -180,6 +187,9 @@ selection :
 	}
 	| INT {
 		$$ = new ConstantSelection("int", new IInt($1));
+	}
+	| DOUBLE {
+		$$ = new ConstantSelection("double", new IDouble($1));
 	}
 	| '(' predicate ')' {
 		$$ = $2;

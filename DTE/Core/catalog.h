@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/07 15:14:27  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.4  1996/12/05 16:06:01  wenger
   Added standard Devise file headers.
 
@@ -37,11 +40,23 @@ class Catalog {
 		Interface() {}
 		virtual Site* getSite() = 0;
 		virtual istream& read(istream& in) = 0;
+		virtual void write(ostream& out){
+			indexes.rewind();
+			while(!indexes.atEnd()){
+				out << "index ";
+				indexes.get()->write(out);
+				indexes.step();
+				out << " ";
+			}
+		}
 		istream& readIndex(istream& in){	// throws exception
 			RTreeIndex* rTreeIndex = new RTreeIndex();
 			TRY(rTreeIndex->read(in), in);
 			indexes.append(rTreeIndex);
 			return in;
+		}
+		void addIndex(RTreeIndex* index){
+			indexes.append(index);
 		}
 	};
 	class DeviseInterface : public Interface{
@@ -54,6 +69,10 @@ class Catalog {
 		virtual istream& read(istream& in){
 			return in >> schemaNm >> dataNm;
 		}
+		virtual void write(ostream& out){
+			out << "DeviseTable " << schemaNm << " " << dataNm << " ";
+			Interface::write(out);
+		}
 	};
 
 	class StandardInterface : public Interface{
@@ -64,6 +83,10 @@ class Catalog {
 		virtual Site* getSite();
 		virtual istream& read(istream& in){
 			return in >> urlString;
+		}
+		virtual void write(ostream& out){
+			out << "StandardTable " << urlString << " ";
+			Interface::write(out);
 		}
 	};
 
@@ -81,75 +104,44 @@ class Catalog {
 			site = new Site(urlString);
 			return in;
 		}
+		virtual void write(ostream& out){
+			out << "QueryInterface " << urlString << " ";
+			Interface::write(out);
+		}
 	};
 
 	class CGIInterface : public Interface{
 		String tableNm;
 		String urlString;
+		int entryLen;
+		CGISite::Entry* entries;
 		Site* site;
 	public:
-		CGIInterface(String tableNm) : tableNm(tableNm){}
+		CGIInterface(String tableNm) : tableNm(tableNm), entries(NULL) {}
 		virtual ~CGIInterface(){
 			delete site;
+			delete [] entries;
 		}
 		virtual Site* getSite(){
 			return site;
 		}
 		virtual istream& read(istream& in);  // throws
+		virtual void write(ostream& out){
+			out << "CGIInterface " << urlString << " " << entryLen;
+			for(int i = 0; i < entryLen; i++){
+				out << " ";
+				entries[i].write(out);
+			}
+			Interface::write(out);
+		}
 	};
 
 	struct Entry {
 		String tableNm;
 		Interface* interface;
 		Entry(String tableNm) : tableNm(tableNm), interface(NULL) {};
-		istream& read(istream& in){ // Throws Exception
-			String typeNm;
-			in >> typeNm;
-			if(!in){
-				String msg = "Interface for table " + tableNm + 
-					" must be specified";
-				THROW(new Exception(msg), in);
-			}
-			if(typeNm == "DeviseTable"){
-				interface = new DeviseInterface(tableNm);
-				TRY(interface->read(in), in);
-			}
-			else if(typeNm == "StandardTable"){
-				interface = new StandardInterface(tableNm);
-				TRY(interface->read(in), in);
-			}
-			else if(typeNm == "QueryInterface"){
-				interface = new QueryInterface(tableNm);
-				TRY(interface->read(in), in);
-			}
-			else if(typeNm == "CGIInterface"){
-				interface = new CGIInterface(tableNm);
-				TRY(interface->read(in), in);
-			}
-			else{
-				String msg = "Table " + tableNm + " interface: " + 
-					typeNm + ", not defined";
-				THROW(new Exception(msg), in);
-			}
-			String indexStr;
-			in >> indexStr;
-			while(in && indexStr != ";"){
-				if(in && indexStr == "index"){
-					TRY(interface->readIndex(in), in);
-				}
-				else {
-					String msg = 
-					"Invalid catalog format: \"index\" or \";\" expected";
-					THROW(new Exception(msg), in);
-				}
-				in >> indexStr;
-			}
-			if(!in){
-				String msg = "Premature end of catalog";
-				THROW(new Exception(msg), in);
-			}
-			return in;
-		}
+		istream& read(istream& in); // Throws Exception
+		void write(ostream& out);
 		~Entry(){}
 	};
 private:
@@ -178,6 +170,15 @@ public:
 			else{
 				break;
 			}
+		}
+	}
+	void write(String fileNm){
+		ofstream out(fileNm);
+		assert(out);
+		catList.rewind();
+		while(!catList.atEnd()){
+			catList.get()->write(out);
+			catList.step();
 		}
 	}
 	Interface* find(String name){     // Throws Exception
