@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.28  1999/02/15 09:55:20  hongyu
+// *** empty log message ***
+//
 // Revision 1.6  1998/08/14 17:48:05  hongyu
 // *** empty log message ***
 //
@@ -671,7 +674,7 @@ public class DEViseCmdDispatcher implements Runnable
                     YGlobals.Ydebugpn("Successfully retrieve GData for view " + viewname);
 
                     if (gdata == null || gdata.length != gdataSize)
-                        throw new YException("Null GData received for view " + viewname + "!", 6);
+                        throw new YException("Null GData received for view " + viewname + "--1!", 6);
 
                     String gdataStr = new String(gdata);
                     if (gdataStr.equals("\u0004")) {
@@ -680,25 +683,25 @@ public class DEViseCmdDispatcher implements Runnable
                         //YGlobals.Ydebugpn(gdataStr);
                         String[] GData = YGlobals.Yparsestr(gdataStr, "\u0004");
                         if (GData == null || GData.length != 1) {
-                            throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                            throw new YException("Invalid GData received for view " + viewname + "--2!", 6);
                         }
 
                         Vector rect = new Vector();
                         for (int j = 0; j < GData.length; j++) {
                             if (GData[j] == null)
-                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                                throw new YException("Invalid GData received for view " + viewname + "--3!", 6);
 
                             //YGlobals.Ydebugpn(GData[j]);
                             String[] results = DEViseGlobals.parseStr(GData[j]);
                             if (results == null || results.length == 0)
-                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                                throw new YException("Invalid GData received for view " + viewname + "--4!", 6);
 
                             for (int k = 0; k < results.length; k++) {
                                 DEViseGData data = null;
                                 try {
                                     data = new DEViseGData(results[k], xm, xo, ym, yo);
                                 } catch (YException e1) {
-                                    throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                                    throw new YException("Invalid GData received for view " + viewname + "---" + e1.getMessage() + "!", 6);
                                 }
 
                                 rect.addElement(data);

@@ -13,7 +13,7 @@ public class DEViseGData
 
         String[] value = YGlobals.Yparsestr(data);
         if (value == null || value.length != 18)
-            throw new YException("Invalid GData!");
+            throw new YException("Invalid GData = " + data + "!");
 
         try {
             x0 = (Float.valueOf(value[0])).floatValue();
