@@ -15,6 +15,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.39  1998/03/04 18:40:56  wenger
+# Added <arch>/Makefile.config files that now hold stuff like the
+# PERL_CORE definitions so those don't have to be repeated in all
+# of the lower level makefiles; various other compile fixes; changed
+# version to 1.5.2.
+#
 # Revision 1.38  1998/02/26 23:00:17  wenger
 # Added "count mappings" to views, except for API and GUI (waiting for
 # Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -153,9 +159,6 @@ generic: libs
 
 devised: libs
 	cd generic; make devised; cd ..
-
-devise: libs
-	cd generic; make all; cd ..
 
 multi: libs
 	cd multi; make disp; cd ..

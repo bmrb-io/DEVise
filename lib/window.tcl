@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1997/07/15 14:59:30  wenger
+#  Fixed a bug in the view destroying Tcl code; user can now destroy a window
+#  that contains views (DEVise asks for confirmation, destroys the views).
+#
 #  Revision 1.31  1997/06/18 15:33:36  wenger
 #  Fixed bug 177; improved workaround of bug 137; incremented version
 #  number (because of Unidata being added).
@@ -448,7 +452,7 @@ proc DoCreateWindow { message { createdFromLM 0 } args } {
     global dialogListVar
 
     set winTypes [ DEVise get window ]
-    puts " createdFromLM = $createdFromLM  types = $winTypes"
+#    puts " createdFromLM = $createdFromLM  types = $winTypes"
 
     if { [llength $winTypes] == 1 } {
 	return [ DoActualCreateWindow [lindex $winTypes 0] \
@@ -470,7 +474,7 @@ proc DoActualCreateWindow { winType {createdFromLM 1} args } {
     global dialogParamVar windowName
 
     set windowName [UniqueName DEViseWn0]
-    puts "args = $args"
+#    puts "args = $args"
     if { $createdFromLM } {    
 	set paramNames [list \
 		[list Name $windowName] \
@@ -485,7 +489,7 @@ proc DoActualCreateWindow { winType {createdFromLM 1} args } {
 	set paramNames [lreplace $paramNames 0 0 $nameParm]
     }
     
-    puts "$paramNames"
+#    puts "$paramNames"
     set button [ dialogParam .windowParam "Create Window" \
 	    "Enter window parameters"\
 	    "" 0 { OK Cancel } $paramNames ]

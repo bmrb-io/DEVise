@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/03/04 19:11:06  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.15  1998/02/12 17:17:11  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -90,18 +93,9 @@
 */
 
 #include <stdio.h>
-#include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
 
-#include "VisualArg.h"
-#include "ViewData.h"
 #include "ViewClassInfo.h"
-#include "Selection.h"
-#include "Control.h"
-#include "Util.h"
-#include "ActionDefault.h"
-#include "VisualLink.h"
 #include "QueryProc.h"
 #include "Parse.h"
 
@@ -110,6 +104,13 @@
 //#define DEBUG
 
 //******************************************************************************
+
+// Note: because ViewScatter and TDataViewX have been combined into
+// ViewData, ViewXInfo and ViewScatterInfo now are effectively the
+// same, except for the name.  However, old session files and the user
+// interface still expect both names (SortedX and Scatter) to be
+// available, and the easiest way to do this is to still have both
+// ViewXInfo and ViewScatterInfo.  RKW Mar. 5, 1998.
 
 static char buf[7][64];
 static char *args[7];
@@ -121,6 +122,33 @@ QueryProc *GetQueryProc()
     qp = QueryProc::Instance();
   }
   return qp;
+}
+
+void SetViewColors(ViewGraph *view, int argc, char **argv)
+{
+  // Note: the only vintage of session files for which this will end up
+  // setting anything is 1.5 session files saved since this fix was put
+  // in place.  Pre-fix 1.5 session files have only 5 arguments; 1.3
+  // and 1.4 session files have color names instead of numbers, so the
+  // sscanf's will fail; and there is supposedly some kind of "old"
+  // session fil that had 6 arguments because it specified background
+  // color but not foreground color; however we don't have to deal with
+  // that because the color would be specified in terms of name anyhow.
+
+  PColorID foreColor = GetPColorID(defForeColor);
+  PColorID backColor = GetPColorID(defBackColor);
+
+  if (argc == 7) {
+    if (sscanf(argv[5], "%ld", &foreColor) == 0) {
+      foreColor = GetPColorID(defForeColor);
+    }
+
+    if (sscanf(argv[6], "%ld", &backColor) == 0) {
+      backColor = GetPColorID(defBackColor);
+    }
+  }
+  
+  view->SetColors(foreColor, backColor);
 }
 
 ViewClassInfo::ViewClassInfo()
@@ -149,7 +177,7 @@ void ViewClassInfo::ParamNames(int &argc, char **&argv)
   char **defaults;
   GetDefaultParams(numDefaults, defaults);
 
-  argc = 5;
+  argc = 7;
   argv = args;
 
   for(int i = 0; i < argc; i++)
@@ -168,11 +196,14 @@ void ViewClassInfo::ParamNames(int &argc, char **&argv)
     strcpy(buf[3], "ylow -10.0");
     strcpy(buf[4], "yhigh 10.0");
   }
+
+  sprintf(buf[5], "fgcolor {%ld}", GetPColorID(defForeColor));
+  sprintf(buf[6], "bgcolor {%ld}", GetPColorID(defBackColor));
 }
 
 void ViewClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 5;
+  argc = 7;
   argv = args;
 
   for(int i = 0; i < argc; i++)
@@ -197,19 +228,12 @@ void ViewClassInfo::CreateParams(int &argc, char **&argv)
     sprintf(buf[3], "%f", filter->yLow);
     sprintf(buf[4], "%f", filter->yHigh);
   }
-}
 
-void ViewClassInfo::ChangeParams(int argc, char **argv)
-{
-  if (!_view)
-    return;
+  PColorID foreColor = _view->GetForeground();
+  sprintf(buf[5], "%ld", foreColor);
 
-  if (argc != 4) {
-    fprintf(stderr, "ViewClassInfo::ChangeParams: wrong args\n");
-    return;
-  }
-
-  _view->SetColors(GetPColorID(defForeColor), GetPColorID(defBackColor));
+  PColorID backColor = _view->GetBackground();
+  sprintf(buf[6], "%ld", backColor);
 }
 
 ViewXInfo::ViewXInfo(char *name, ViewData *view)
@@ -232,8 +256,10 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[3], filter.yLow);
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
-  
+
   ViewData *view = new ViewData(name, filter, GetQueryProc());
+  SetViewColors(view, argc, argv);
+
   return new ViewXInfo(name, view);
 }
 
@@ -257,8 +283,10 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[3], filter.yLow);
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
-  
+
   ViewData *view = new ViewData(name, filter, GetQueryProc());
+  SetViewColors(view, argc, argv);
+
   return new ViewScatterInfo(name, view);
 }
 
@@ -284,6 +312,8 @@ ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
   filter.flag = VISUAL_LOC;
   
   ViewLens *view = new ViewLens(name, filter,  GetQueryProc());
+  SetViewColors(view, argc, argv);
+
   return new ViewLensInfo(name, view);
 }
 

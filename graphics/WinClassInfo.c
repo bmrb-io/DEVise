@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/11/24 23:14:37  weaver
+  Changes for the new ColorManager.
+
   Revision 1.14  1997/06/10 19:34:39  wenger
   Fixed names of print control attributes.
 
@@ -157,8 +160,8 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
     sprintf(buf5, "Height 0.5");
   }
 
-  sprintf(buf6, "{Exclude from Print}");
-  sprintf(buf7, "{Print Pixmap}");
+  sprintf(buf6, "{Exclude from Print} 0");
+  sprintf(buf7, "{Print Pixmap} 0");
 }
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
@@ -238,10 +241,3 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
   sprintf(buf6, "%d", _win->GetPrintExclude());
   sprintf(buf7, "%d", _win->GetPrintPixmap());
 }
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/02/09 18:11:00  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
   Revision 1.6  1997/11/24 23:15:22  weaver
   Changes for the new ColorManager.
 
@@ -58,7 +63,6 @@ public:
   virtual void ParamNames(int &argc, char **&argv);
   virtual void CreateParams(int &argc, char **&argv);
   virtual Boolean Changeable() { return true; }
-  virtual void ChangeParams(int argc, char **argv);
 
 protected:
   char *_name;

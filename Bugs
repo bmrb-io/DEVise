@@ -1159,7 +1159,7 @@ Num Date        Status  Description
                         problems for histograms (see ViewGraph.c search for
                         BUG 303.)
 
-304 03/02/98	OPEN	Background and foreground color settings don't get
+304 03/02/98	FIXED	Background and foreground color settings don't get
 			saved in sessions. (ad/rkw)
 
 305 03/02/98	OPEN	New DeviseCommand module doesn't check argument counts.
@@ -1172,8 +1172,10 @@ Num Date        Status  Description
 
 308 03/03/98	OPEN	devised uses lots of CPU when idle. (sm/rkw)
 
-309 03/04/98	OPEN	Copying a view does not copy the background color
+309 03/04/98	FIXED	Copying a view does not copy the background color
 			to the new view. (ml/rkw)
+
+310 03/04/98	OPEN	The collaborator uses lots of CPU when idle. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
