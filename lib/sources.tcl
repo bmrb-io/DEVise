@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.13  1995/12/29 17:26:35  jussi
+#	Replaced absolute path names to schema dir with $schemadir.
+#
 #	Revision 1.12  1995/12/12 01:46:46  ravim
 #	Physical/logical schema support.
 #
@@ -429,13 +432,13 @@ proc cacheData {dispname startrec endrec} {
 	set prog [lindex $sourceConfig($source) 0]
 	set cmd "exec $prog $command > $cachefile"
     } elseif {$source == "SEQ"} {
-	set prog [lindex $sourceConfig($source) 0]
+	set host [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
-	set cmd "exec $prog $port $command > $cachefile"
+	set cmd "seq_extract $host $port \{$command\} $cachefile /dev/null"
     } elseif {$source == "SQL"} {
 	set prog [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
-	set cmd "exec $prog $port $command > $cachefile"
+	set cmd "exec $prog $port \{$command\} > $cachefile"
     } elseif {$source == "NETWORK"} {
 	set prog [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
