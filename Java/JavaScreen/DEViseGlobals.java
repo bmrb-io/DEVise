@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2000/02/16 08:53:58  hongyu
+// *** empty log message ***
+//
 // Revision 1.31  2000/01/17 07:50:17  hongyu
 // *** empty log message ***
 //
@@ -71,8 +74,8 @@ public final class DEViseGlobals
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
-    public static final String JSPOPHOST = new String("biron.cs.wisc.edu");
-    public static final String VERSION = new String("4.0");
+    public static final String JSPOPHOST = new String("localhost");
+    public static final String VERSION = new String("3.2");
     public static final String PROTOCOL_VERSION = new String("4.0");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
