@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/08/29 21:43:39  guangshu
+  Added Tcl command SetGetImage to set up data channel then ask server
+  to ship the gif files. The gif files can be either put to stdout,
+  stderr or saved to files.
+  Added -q option for DEVise client to make it quiet. So the gif files
+  can be sent to web browser directly.
+
   Revision 1.12  1996/07/15 14:22:38  jussi
   This code is now compatible with Tcl 7.5 and Tk 4.1. Compatibility
   with older Tcl/Tk code maintained for a short while.
@@ -168,7 +175,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 }
 
 int SetGetImage(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]) 
+                int argc, char *argv[]) 
 { 
    _dataFd = socket(AF_INET, SOCK_STREAM, 0);
    if(_dataFd < 0) 
@@ -189,70 +196,61 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
    int result = bind(_dataFd, (struct sockaddr *)&dataAddr,
 			sizeof(struct sockaddr));
    if (result < 0) {
-      perror("bind");
-//      close(_dataFd);
+       perror("bind");
+       close(_dataFd);
    }
    DOASSERT(result >= 0, "Cannot bind to address");
 
    result = listen(_dataFd, 1);
    if (result < 0) {
-  	perror("listen");
-//	close(_dataFd);
+       perror("listen");
+       close(_dataFd);
    }
    DOASSERT(result >= 0, "Cannot listen");
 
 #ifdef DEBUG
-   printf("\nData Client waiting for server to connect\n");
+   printf("\nData client waiting for server to connect\n");
 #endif
 
-   int len = sizeof(dataAddr);
-
-   char *mArgv[4];
-   for(int i = 0; i < 4; i++) {
-      mArgv[i] = new char[100];
-      DOASSERT(mArgv[i], "Run out of memory.");
-   }
-
-   sprintf(mArgv[0], "%s", "connectData");
-   mArgv[0][11] = '\0';
-   sprintf(mArgv[1], "%s", "0");
-   sprintf(mArgv[2], "%s", argv[1]);
-   sprintf(mArgv[3], "%s", argv[2]);
-   if (NetworkSend(_deviseFd, API_CMD, 0, 4, mArgv) < 0) {
-        fprintf(stderr, "Server has terminated. Client exits.\n");
-//	close(_dataFd);
-        exit(1);
+   char *mArgv[3] = { "getDisplayImage", "0", argv[1] };
+   if (NetworkSend(_deviseFd, API_CMD, 0, 3, mArgv) < 0) {
+       fprintf(stderr, "Server has terminated. Client exits.\n");
+       close(_dataFd);
+       exit(1);
    }
 
    struct sockaddr_in servAddr;
    memset(&servAddr, 0, sizeof(struct sockaddr));
-   len = sizeof(servAddr);
+   int len = sizeof(servAddr);
+
 #ifdef DEBUG
-   printf("Waiting for server to connect data Channnel.\n");
+   printf("Waiting for server to connect data channnel.\n");
 #endif
    do {
       _dataNewFd = accept(_dataFd, (struct sockaddr *)&servAddr, &len);
    } while (_dataNewFd < 0 && errno == EINTR);
+
    close(_dataFd);
+
    if (_dataNewFd < 0) {
       perror("data accept");
-//      close(_dataFd);
+      close(_dataFd);
       DOASSERT(0, "Error in network interface when connecting data channel");
    }
 #ifdef DEBUG
-   printf("Data Channel established.\n");
+   printf("Data channel established.\n");
 #endif
    
    int file;
-   if (!strcmp(argv[3], "stderr")) file = 2;
-   else if(!strcmp(argv[3],"stdout")) file = 1; 
-   else {
-      file = open(argv[3], O_WRONLY);
-/*      printf("argv[3]=%s\n",argv[1]);
-      perror("Unrecognized output stream");
-      return TCL_ERROR;
- */  }
+   if (!strcmp(argv[2], "stderr"))
+       file = 2;
+   else if(!strcmp(argv[2],"stdout"))
+       file = 1; 
+   else
+       file = open(argv[2], O_WRONLY);
+
    char buf[BUF_SIZE];
+
    do {
       result = read(_dataNewFd, buf, BUF_SIZE);
 #ifdef DEBUG
@@ -260,13 +258,15 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
 #endif
       if (result > 0) write(file, buf, result);
    } while (result > 0);
+
    close(_dataNewFd);
+
    if (result < 0) {
       perror("Read error when read data from the data channel.\n");
       return TCL_ERROR;
    }
 #ifdef DEBUG
-   printf("Done getting gif file");
+   printf("Done getting GIF file");
 #endif
 
    u_short flag;
@@ -352,7 +352,7 @@ void SetupConnection()
     Tcl_LinkVar(_interp, "argv0", (char *)&_progName, TCL_LINK_STRING);
     Tcl_LinkVar(_interp, "quiet", (char *)&_quiet, TCL_LINK_INT);
     Tcl_CreateCommand(_interp, "DEVise", DEViseCmd, 0, 0);
-    Tcl_CreateCommand(_interp, "DEVGetImage", SetGetImage, 0, 0);
+    Tcl_CreateCommand(_interp, "DEViseGetImage", SetGetImage, 0, 0);
     
     if(!_quiet) {
 	 printf("Client running.\n");
