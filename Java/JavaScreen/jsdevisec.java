@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2001/02/15 03:21:35  xuk
+// Fixed bugs for collaboration JavaScreen.
+//
 // Revision 1.81  2001/02/12 02:46:57  xuk
 // JavaScreen can prevent from collaboration.
 // Added isAbleCollab; Changes in setModeDlg().
@@ -230,7 +233,7 @@ public class jsdevisec extends Panel
     private SettingDlg settingdlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetModeDlg setmodedlg = null;
-    private CollabDlg collabdlg = null;
+    public CollabDlg collabdlg = null;
 
     public boolean isSessionOpened = false;
 
@@ -247,8 +250,11 @@ public class jsdevisec extends Panel
 
     public DEViseJSValues jsValues = null;
 
-    // collabrated JS ID
-    public int specialID = 0;
+    // collaborated JS ID
+    // -1: normal JS
+    // 0: before the first round connection
+    // >0: collaborated JS ID
+    public int specialID = -1;
     // enable collaboration defaultly
     public boolean isAbleCollab = true;
 
@@ -663,6 +669,13 @@ public class jsdevisec extends Panel
         }
     }
 
+    public void showClientList(String msg)
+    {
+        collabdlg = new CollabDlg(this, parentFrame, isCenterScreen, msg);
+        collabdlg.open();
+	collabdlg = null;
+    }
+
     public void showRecord(String[] msg)
     {
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
@@ -696,10 +709,9 @@ public class jsdevisec extends Panel
 
     public void showCollab()
     {
-        collabdlg = new CollabDlg(this, parentFrame, isCenterScreen);
-        collabdlg.open();
+
 	collabMode();
-        collabdlg = null;
+
 	if (dispatcher.getOnlineStatus()) {
 	    try {
                 pn("Sending: \"" + DEViseCommands.EXIT +"\"");
@@ -709,6 +721,7 @@ public class jsdevisec extends Panel
             }
 	    dispatcher.disconnect();
 	}
+	specialID = 0;
 	dispatcher.start(null);
     }
 
@@ -740,7 +753,7 @@ public class jsdevisec extends Panel
     {
         boolean reallyQuit = true;
 
-	if (specialID == 0) { 
+	if (specialID == -1) { 
 	    if (dispatcher.getStatus() != 0) {
 		String result = confirmMsg("JavaScreen still busy talking " +
 					   "to server!\nDo you wish to exit anyway?");
@@ -777,7 +790,7 @@ public class jsdevisec extends Panel
 
         if (dispatcher != null) {
 
-	    if (specialID != 0 && dispatcher.dispatcherThread != null) {
+	    if (specialID != -1 && dispatcher.dispatcherThread != null) {
 		dispatcher.dispatcherThread.stop();
 		dispatcher.dispatcherThread = null;
 	    }
@@ -1927,14 +1940,14 @@ class SetModeDlg extends Dialog
 			jsc.socketMode();
 
 			// switch out off the collaboration mode
-			if (jsc.specialID != 0) {
+			if (jsc.specialID != -1) {
 			    if (jsc.dispatcher.dispatcherThread != null) {
 				jsc.dispatcher.dispatcherThread.stop();
 				jsc.dispatcher.dispatcherThread = null;
 			    }
 			    jsc.dispatcher.destroy();
 			    jsc.dispatcher.setAbortStatus(false);
-			    jsc.specialID = 0;
+			    jsc.specialID = -1;
 			}
  
 			close();
@@ -2008,17 +2021,24 @@ class SetModeDlg extends Dialog
 
 // ------------------------------------------------------------------------
 // Dialog for setting collabrated JavaScreen ID.
-class CollabDlg extends Dialog
+class CollabDlg extends Frame
 {
-    jsdevisec jsc = null;
-    public TextField screenX = new TextField(4);
-    public Button setButton = new Button("   Set   ");
+    private jsdevisec jsc = null;
+
+    //private String sessionName = null;
+    private java.awt.List clientList = null;
+    private Label label = new Label("Current active clients: ");
+    //private Label directory = new Label("");
+    private Button okButton = new Button("OK");
+    private Button cancelButton = new Button("Cancel");
+    private String[] clients = null;
+    //private boolean[] sessionTypes = null;
+    //private String[] sessionNames = null;
+
     private boolean status = false; // true means this dialog is showing
 
-    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String data)
     {
-        super(owner, true);
-
 	what.jsValues.debug.log("Creating CollabDlg");
 
         jsc = what;
@@ -2027,27 +2047,27 @@ class CollabDlg extends Dialog
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
-        setTitle("Collabration JavaScreen");
+        setTitle("Collaboration JavaScreen Dialog");
 
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
+        label.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
 
-        screenX.setBackground(jsc.jsValues.uiglobals.textBg);
-        screenX.setForeground(jsc.jsValues.uiglobals.textFg);
-        screenX.setFont(jsc.jsValues.uiglobals.textFont);
-        screenX.setText("1");
+        clientList = new java.awt.List(8, false);
+        clientList.setBackground(jsc.jsValues.uiglobals.textBg);
+        clientList.setForeground(jsc.jsValues.uiglobals.textFg);
+        clientList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        if (jsc.jsValues.uiglobals.inBrowser) {
-            screenX.setEditable(false);
-            setButton.setEnabled(false);
-        }
+        setClientList(data);
+
+        Button [] button = new Button[2];
+        button[0] = okButton;
+        button[1] = cancelButton;
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
         setLayout(gridbag);
-
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
@@ -2055,43 +2075,128 @@ class CollabDlg extends Dialog
         c.weightx = 1.0;
         c.weighty = 1.0;
 
-        c.insets = new Insets(10, 10, 0, 0);
-        c.gridwidth = 1;
-        Label label1 = new Label("JavaScreen ID:");
-        gridbag.setConstraints(label1, c);
-        add(label1);
-
-        c.insets = new Insets(10, 0, 0, 5);
-        gridbag.setConstraints(screenX, c);
-        add(screenX);
-
-        c.insets = new Insets(10, 10, 0, 10);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(setButton, c);
-        add(setButton);
+        c.insets = new Insets(5, 10, 0, 10);
+        gridbag.setConstraints(label, c);
+        add(label);
+        c.insets = new Insets(5, 10, 5, 10);
+        gridbag.setConstraints(clientList, c);
+        add(clientList);
+        gridbag.setConstraints(panel, c);
+        add(panel);
 
         pack();
 
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-        setButton.addActionListener(new ActionListener()
+	//TEMP -- this has too damn many levels of indentation!
+        clientList.addMouseListener(new MouseAdapter()
                 {
-                    public void actionPerformed(ActionEvent event)
+                    public void mouseClicked(MouseEvent event)
                     {
-                        if (jsc.isSessionOpened) {
-                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
-                        }
+                        if (event.getClickCount() > 1) {
+                            if (clientList.getItemCount() > 0) {
+                                int idx = clientList.getSelectedIndex();
+                                if (idx != -1) {
+				    String clientID = clientList.getItem(idx);
+				    jsc.specialID = Integer.parseInt(clientID);
 
-                        try {
-                            jsc.specialID = Integer.parseInt(screenX.getText());
-			    close();
-                        } catch (NumberFormatException e) {
-                            jsc.showMsg("Invalid JavaScreen ID specified!");
+				    if (jsc.dispatcher.dispatcherThread != null) {
+					jsc.dispatcher.dispatcherThread.stop();
+					jsc.dispatcher.dispatcherThread = null;
+				    }
+				    jsc.dispatcher.disconnect();
+
+				    jsc.animPanel.stop();
+				    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+				    jsc.jscreen.updateScreen(false);
+
+				    if (jsc.dispatcher.getStatus() != 0) {
+					jsc.dispatcher.setAbortStatus(true);
+				    }
+				    jsc.dispatcher.setStatus(0);
+
+                                    jsc.dispatcher.start(null);
+                                    close();
+                                }
+                            }
                         }
                     }
                 });
+
+        okButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (clientList.getItemCount() > 0) {
+                            int idx = clientList.getSelectedIndex();
+                            if (idx != -1) {
+                                    String clientID = clientList.getItem(idx);
+				    jsc.specialID = Integer.parseInt(clientID);
+
+				    if (jsc.dispatcher.dispatcherThread != null) {
+					jsc.dispatcher.dispatcherThread.stop();
+					jsc.dispatcher.dispatcherThread = null;
+				    }
+				    jsc.dispatcher.disconnect();
+
+				    jsc.animPanel.stop();
+				    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+				    jsc.jscreen.updateScreen(false);
+
+				    if (jsc.dispatcher.getStatus() != 0) {
+					jsc.dispatcher.setAbortStatus(true);
+				    }
+				    jsc.dispatcher.setStatus(0);
+
+				    jsc.dispatcher.start(null);
+                                    close();
+                            }
+                        }
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
+                    }
+                });
+
     }
+
+    public void setClientList(String data)
+    {
+      	clients = DEViseGlobals.parseString(data);	
+
+        clientList.removeAll();
+
+        for (int i = 1; i < clients.length; i++) 
+	    clientList.add(clients[i]);
+
+        validate();
+    }
+
     protected void processEvent(AWTEvent event)
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING) {
@@ -2102,12 +2207,6 @@ class CollabDlg extends Dialog
         super.processEvent(event);
     }
 
-    // If this dialog is a modal dialog, the show() or setVisible(true) method
-    // will block current thread(i.e. the thread that access this method, may
-    // be the event dispatcher thread) until setVisible(false) or dispose() is
-    // called
-    // In JDK1.1, any thread that access AWT method is acting as a event
-    // dispatcher thread
     public void open()
     {
 	jsc.jsValues.debug.log("Opening CollabDlg");
@@ -2119,8 +2218,8 @@ class CollabDlg extends Dialog
     {
         if (status) {
             dispose();
-
             status = false;
+            jsc.collabdlg = null;
         }
 	jsc.jsValues.debug.log("Closed CollabDlg");
     }
@@ -2131,3 +2230,5 @@ class CollabDlg extends Dialog
         return status;
     }
 }
+
+
