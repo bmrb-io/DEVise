@@ -1,7 +1,7 @@
 #!/s/std/bin/perl -w
 
-#$ENV{'DEVISE_HOME_TABLE'} = "./catalog.dte";
-$ENV{'DEVISE_HOME_TABLE'} = "/u/d/o/donjerko/public/Client/catalog.dte";
+$ENV{'DEVISE_HOME_TABLE'} = "./catalog.dte";
+#$ENV{'DEVISE_HOME_TABLE'} = "/u/d/o/donjerko/public/Client/catalog.dte";
 
 $rm = 'ipcrm';
 foreach (grep(/$ENV{'USER'}/, `ipcs`)) {

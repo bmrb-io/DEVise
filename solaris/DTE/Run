@@ -1,7 +1,10 @@
 #!/s/std/bin/perl -w
 
-#$ENV{'DEVISE_HOME_TABLE'} = "./catalog.dte";
-$ENV{'DEVISE_HOME_TABLE'} = "/p/devise/schema/schema/catalog.dte";
+$ENV{'DEVISE_HOME_TABLE'} = "./catalog.dte";
+#$ENV{'DEVISE_HOME_TABLE'} = "./catalog.dte.demo";
+#$ENV{'DEVISE_HOME_TABLE'} = "/p/devise/schema/schema/catalog.dte";
+
+$ENV{'DEVISE_MINMAX_TABLE'} =  "./minmax.dte";
 
 $rm = 'ipcrm';
 foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
@@ -10,3 +13,5 @@ foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
 system($rm);
 
 exec 'dte';
+#exec '/tmp/dte.pure';
+#exec 'gdb dte';
