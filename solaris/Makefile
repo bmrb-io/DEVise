@@ -7,7 +7,8 @@ LIBMODULES = graphics graphics.new tape issm compustat crsp \
 
 MODULES = $(LIBMODULES) parser generic multi
 
-.PHONY: clean mostlyclean date libs generic devise multi attrproj devread
+.PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
+	cslib
 
 all clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
@@ -38,5 +39,10 @@ pure: libs
 	
 static: libs
 	cd generic; make static; cd ..
+
+cslib:
+	cd graphics; make lib; cd ..
+	cd graphics.new; make ClientAPI.o Version.o MapIntToInt.o; cd ..
+	cd cslib; make lib; cd ..
 
 # DO NOT DELETE

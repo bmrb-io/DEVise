@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/08/12 18:43:49  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.8  1996/08/06 20:12:05  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -36,6 +39,7 @@ LIBOBJ = $(LIBSRC:.C=.o)
 LIBNAME = libissm.a
 
 all: $(LIBNAME)
+lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50  1996/12/03 20:37:05  jussi
+#  Removed some files.
+#
 #  Revision 1.49  1996/11/26 16:51:29  ssl
 #  Added support for piled viws
 #
@@ -123,6 +126,7 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 LIBNAME = libgraphicsnew.a
 
 all: $(LIBNAME) libclient.a libserver.a libmonolith.a
+lib: $(LIBNAME) libclient.a libserver.a libmonolith.a
 
 libmonolith.a: TkControl.o
 	$(AR) cr $@ TkControl.o

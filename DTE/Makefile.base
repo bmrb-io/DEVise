@@ -49,6 +49,7 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o)
 LIBNAME = libdte.a
 
 all: $(LIBNAME) dte
+lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)

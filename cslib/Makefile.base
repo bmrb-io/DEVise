@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/23 00:24:01  wenger
+#  Incorporated all of the PostScript-related stuff into the client/server
+#  library; added printing to PostScript to the example client and server;
+#  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+#  a result of testing with client/server stuff.
+#
 #  Revision 1.3  1996/11/20 18:50:50  jussi
 #  Added Util.c.
 #
@@ -75,6 +81,8 @@ LIBOBJ = \
 LIB = libcs.a
 
 all: client server
+
+lib: $(LIB)
 
 pure: client.pure server.pure
 

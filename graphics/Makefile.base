@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1996/11/26 16:47:43  ssl
+#  Added support for Stacked Opaque and Transparent views
+#
 #  Revision 1.30  1996/11/01 19:04:38  kmurli
 #  Makefile changed to include DQL sources
 #
@@ -77,6 +80,7 @@ ALLSRC = $(LIBSRC) $(OTHERSRC)
 LIBNAME = libgraphics.a
 
 all: $(LIBNAME)
+lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ) 
 	$(AR) cr $@ $(LIBOBJ)

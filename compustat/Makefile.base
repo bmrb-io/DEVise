@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/08/12 18:43:23  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.11  1996/08/06 20:11:17  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -41,6 +44,7 @@ TESTOBJ = $(TESTSRC:.c=.o)
 LIBNAME = libcstat.a
 
 all: $(LIBNAME)
+lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)
