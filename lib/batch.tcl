@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/04/18 18:18:02  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -32,6 +35,17 @@ set DEViseColors \
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
 	{6 Block} {7 3DVector} {8 HorLine}}
+
+set restoring 0
+set template 0
+set sessionName "session.tk"
+set curView ""
+set lastView ""
+set historyWinOpened 0
+set queryWinOpened 0
+set stackWinOpened 0
+set helpWindowCreated 0
+set UserMode 1
 
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
