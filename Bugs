@@ -556,6 +556,11 @@ Num Date        Status  Description
 
 133 01/22/97	FIXED	Buttons in the Stack dialog are not aligned. (jpm)
 
+134 01/23/97	OPEN	Load session /p/devise/session/test/birch.tk; bring
+			up the 'Edit Mapping' dialog -> you cannot get any
+			attributes to show up in the 'Variable' menu for
+			changing a GData attribute. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
