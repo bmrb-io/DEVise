@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.138  2002/03/01 19:58:53  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.137  2002/02/22 21:47:42  xuk
 // Added GUI in "Option" menu to allow user to find out the client ID.
 //
@@ -672,8 +676,8 @@ public class jsdevisec extends Panel
 
         if (jsValues.uiglobals.inBrowser) {
             topPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
-            topPanel.add(new Label("                       " +
-	      DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
+            //topPanel.add(new Label("      " +
+	    //     DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
 	//
@@ -910,7 +914,7 @@ public class jsdevisec extends Panel
 
     public void restartSession()
     {
-        if (!isSessionOpened) {
+        if (!isSessionOpened && !jsValues.uiglobals.inBrowser) {
 	    showMsg("You do not have any opened session!");
 	    return;
 	}
