@@ -1,0 +1,4 @@
+#! /bin/csh -f
+\rm generic/generic
+make generic
+dev p
