@@ -177,24 +177,27 @@ proc MacroDef {} {
     selection clear .map
 
     frame .map.top
-    frame .map.but
+    frame .map.bot
     pack .map.top -side top -pady 3m -fill both -expand 1
-    pack .map.but -side top -pady 5m -fill x
+    pack .map.bot -side top -pady 5m -fill x
 
-    button .map.but.close -text Close -width 10 -command {
+    frame .map.bot.but
+    pack .map.bot.but -side top
+
+    button .map.bot.but.close -text Close -width 10 -command {
 	destroy .map
     }
-    button .map.but.create -text Create -width 10 -command {
+    button .map.bot.but.create -text Create -width 10 -command {
 	MacroDefNewMapping
     }
-    button .map.but.auto -text "Auto..." -width 10 -command {
+    button .map.bot.but.auto -text "Auto..." -width 10 -command {
 	MacroDefAuto $tdata
     }
 
-    CreateBitmapButton .map.but.help help.gif Help MacroDefHelp
-#    button .map.but.help -text Help -width 40 -command MacroDefHelp
-    pack .map.but.close .map.but.create .map.but.auto .map.but.help \
-	    -side left -padx 7m
+    CreateBitmapButton .map.bot.but.help help.gif Help MacroDefHelp
+#    button .map.bot.but.help -text Help -width 40 -command MacroDefHelp
+    pack .map.bot.but.close .map.bot.but.create .map.bot.but.auto \
+	    .map.bot.but.help -side left -padx 5m
 
     frame .map.left -relief groove -borderwidth 2
     frame .map.right -relief groove -borderwidth 2
@@ -692,8 +695,8 @@ proc MacroDefTdata {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable tdata \
-	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor \
-	    -activebackground $macroActiveColor
+	    -menu $m.mbar.menu -width 24 -background $macroUnselectedColor \
+	    -activebackground $macroActiveColor -justify left
     CreateTextBitmap $m.label file.gif Source
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
@@ -715,12 +718,12 @@ proc MacroDefTdata {m default} {
     }
 
     if {$tdata != $none} {
-	# fix: .map.but.auto should be a parameter
-	.map.but.auto configure -state normal
+	# fix: .map.bot.but.auto should be a parameter
+	.map.bot.but.auto configure -state normal
 	$m.mbar configure -background $macroSelectedColor \
 		-activebackground $macroActiveColor
     } else {
-	.map.but.auto configure -state disabled
+	.map.bot.but.auto configure -state disabled
     }
 
     $m.mbar.menu add command -label "Open..." \
@@ -750,8 +753,8 @@ proc MacroDefWindows {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable window \
-	    -menu $m.mbar.menu -width 20 \
-	    -background $macroUnselectedColor
+	    -menu $m.mbar.menu -width 24 \
+	    -background $macroUnselectedColor -justify left
     CreateTextBitmap $m.label window.gif Window
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
@@ -961,165 +964,116 @@ proc MacroDefLinks {m default} {
 ############################################################
 
 proc DefSource {} {
-    global tdatas schemas maps fsBox sname datadir dialogListVar topgrps \
-	selgrp
+    global sourceList
+    global tdatas schemas maps fsBox sname datadir dialogListVar
+    global topgrps selgrp
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
     if {!$err} { wm deiconify .source; return }
 
-    set fsBox(path) $datadir
-    set fsBox(pattern) *
-    set source [FSBox]
+    # ask user to select a data stream
+    set sname [selectStream]
 
-    if {$source == ""} { return }
-    if {![file isfile $source]} { return }
-
+    # return if no data stream selected, or user selected
+    # a data stream already on the list of streams
+    if {$sname == ""} { return }
     foreach tdata $tdatas {
 	set name [lindex $tdata 0]
-	set file [lindex $tdata 1]
-	if {$source == $file} {
-	    set fname [file tail $source]
-	    dialog .sourceExists "Source Exists" \
-		    "Source file $fname is already open\n\
-		    under source name $name." \
-		    "" 0 {OK}
+	if {$sname == $name} {
 	    return
 	}
     }
 
+    set schema [lindex $sourceList($sname) 2]
+    set schemafile [lindex $sourceList($sname) 3]
+
+    # load schema file if necessary
     set schemaTypes [DEVise get tdata]
-    set schema ""
-    if {![llength $schemaTypes]} {
-	set schema [ImportFileType]
-    } else {
-	set fname [file tail $source]
-	set but [dialogList .schemaType "Schema" \
-		"Select schema type for file $fname." \
-		"" 2 {OK New Cancel} $schemaTypes]
-	if {!$but} {
-	    set schema $dialogListVar(selected)
-	} elseif {$but == 1} {
-	    set schema [ImportFileType]
+    if {[lsearch $schemaTypes $schema] < 0} {
+	set result [readSchema $schemafile]
+	if {$result == ""} {
+	    return
+	}
+	if {$result != $schema} {
+	    puts "File $schemafile appears to contain schema $result,\
+		    not $schema"
+	    set schema $result
 	}
     }
-    if {$schema == ""} { return }
 
+    # initialize element in schema definition array if necessary
     set err [catch {set sdef $maps($schema)}]
     if {$err > 0} {
 	set maps($schema) ""
     }
 
-    toplevel .source
-    wm title .source "Define Source"
-    wm geometry .source +100+100
-    selection clear .source
+    # cache data to disk right now
+    set source [cacheData $sname]
+    if {$source == ""} {
+	dialog .notCached "Must Cache Data Stream" \
+		"Cannot visualize data without caching it to disk first." \
+		"" 0 OK
+	return
+    }
 
-    CreateTitleBitmap .source.label file.gif "Enter Data Source Name"
-    frame .source.mid -relief groove -borderwidth 2
-    frame .source.but
-    pack .source.label .source.mid .source.but -side top -pady 3m \
-	    -padx 3m -fill both -expand 1
+    statusWindow .info "Status" \
+	    "Creating an index on \"$sname\".\n\n\This may take a while."
 
-    frame .source.left
-    frame .source.right
-    pack .source.left -in .source.mid -side left
-    pack .source.right -in .source.mid -side left -padx 3m -fill x -expand 1
+    # ask DEVise to create tdata
+    puts "Adding source \"$sname\","
+    puts "  file $source, schema $schema"
+    set result [DEVise create tdata $schema $source $sname]
+    catch {destroy .info}
+    if {$result == ""} {
+	dialog .fileError "File Error" \
+		"Error reading file $source" "" 0 OK
+	return ""
+    }
 
-    label .source.left.sname -text "Source name" -width 15
-    label .source.left.source -text "Source file" -width 15
-    label .source.left.schema -text "Schema" -width 15
-    pack .source.left.sname -side top -fill x -pady 3m
-    pack .source.left.source .source.left.schema -side top -fill x
+    # get the list of top level group names from DEVise
+    set topgrps [DEVise getTopGroups]
 
-    set sname [file tail $source]
-    entry .source.right.sname -relief sunken -textvariable sname
-    label .source.right.source -text [file tail $source] -anchor w
-    label .source.right.schema -text $schema -anchor w
-    pack .source.right.sname -side top -fill x -pady 3m
-    pack .source.right.source .source.right.schema -side top -fill x
-
-    button .source.but.ok -text OK -width 10 \
-	    -command {
-	if {$sname == ""} {
-	    dialog .needSource "No Source Name" \
-		    "Please enter name of source data." \
-		    "" 0 {OK}
-	} else {
-	    set err [catch {set exists $schemas($sname)}]
-	    if {!$err} {
-		dialog .sourceExists "Source Name Exists" \
-			"Source name $sname exists already." \
-			"" 0 {OK}
-	    } else {
-		destroy .source
-	    }
+    if {[llength $topgrps] == 0} {
+	set selgrp "__default"
+	DEVise defaultGroup $sname
+    } elseif {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
+	set selgrp "__default"
+	DEVise defaultGroup $sname
+    } else {
+	# Create window to show list of top level group names
+	toplevel .topgrps
+	wm title .topgrps "Choose AttributeGroup"
+	wm geometry .topgrps +100+100
+	selection clear .topgrps
+	listbox .topgrps.list -relief raised -borderwidth 2 \
+		-yscrollcommand ".topgrps.scroll set"
+	scrollbar .topgrps.scroll -command ".topgrps.list yview"
+	button .topgrps.ok -text OK -command {
+	    set selgrp [.topgrps.list get active]
+	    destroy .topgrps
 	}
-    }
-    button .source.but.clear -text Clear -width 10 \
-	    -command { set sname "" }
-    button .source.but.cancel -text Cancel -width 10 \
-	    -command {
-	set sname ""
-	destroy .source
-    }
-    pack .source.but.ok .source.but.clear .source.but.cancel -side left \
-	    -padx 3m -expand 1
-
-    tkwait visibility .source
-    grab set .source
-    tkwait window .source
-
-    if {$sname != ""} {
-	set fname [file tail $source]
-	statusWindow .info "Status" \
-		"Creating an index on $fname.\n\n\
-		This may take a while."
-	# ask DEVise to create tdata
-	set result [DEVise create tdata $schema $source $sname]
-	catch {destroy .info}
-	if {$result == ""} {
-	    dialog .fileError "File Error" \
-		    "Error reading file $fname" "" 0 OK
-	    return ""
+	pack .topgrps.ok -side bottom
+	pack .topgrps.list -side left
+	pack .topgrps.scroll -side right -fill y
+	
+	bind .topgrps.list <Double-Button-1> {
+	    set selgrp [.topgrps.list get active]
+	    destroy .topgrps
 	}
 
-	# get the list of top level group names from DEVise
-	set topgrps [DEVise getTopGroups]
-
-        if {[llength $topgrps] == 0} {
-            set selgrp "__default"
-            DEVise defaultGroup $sname
-        } else {
-	    # Create window to show list of top level group names
-	    toplevel .topgrps
-	    wm title .topgrps "Choose Group"
-	    wm geometry .topgrps +100+100
-	    selection clear .topgrps
-	    listbox .topgrps.list -relief raised -borderwidth 2 \
-		    -yscrollcommand ".topgrps.scroll set"
-	    scrollbar .topgrps.scroll -command ".topgrps.list yview"
-	    button .topgrps.ok -text "OK" -command {
-		set selgrp [.topgrps.list get active]
-		destroy .topgrps
-	    }
-	    pack .topgrps.ok -side bottom
-	    pack .topgrps.list -side left
-	    pack .topgrps.scroll -side right -fill y
-	    
-	    foreach i $topgrps {
-		.topgrps.list insert end $i
-	    }
-
-	    tkwait visibility .topgrps
-	    grab set .topgrps
-	    tkwait window .topgrps
-        }
-		
-	set sdef [DEVise getSchema $sname]
-	lappend tdatas [list $sname $source]
-	set schemas($sname) [list $schema $sdef]
+	foreach i $topgrps {
+	    .topgrps.list insert end $i
+	}
+	
+	tkwait visibility .topgrps
+	grab set .topgrps
+	tkwait window .topgrps
     }
+    
+    set sdef [DEVise getSchema $sname]
+    lappend tdatas [list $sname $source]
+    set schemas($sname) [list $schema $sdef]
 
     return $sname
 }
