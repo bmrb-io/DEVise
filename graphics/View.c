@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/05 22:05:00  jussi
+  A constant integer value is saved at the head of a pixmap file
+  to make sure that a machine which tries to load the pixmap has
+  the same endianness.
+
   Revision 1.10  1995/12/05 17:02:00  jussi
   Moved _stats to ViewGraph (superclass) so that statistics can be
   turned on and displayed without having to redisplay the data itself.
@@ -502,6 +507,14 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   width = windW;
   height = xAxis.width;
   
+  // if label is at top, view is highlighted by a rectangle that is
+  // 3 pixels wide; make width of X axis label area a little narrower
+  // so that X high label doesn't get overdrawn (and erased) by the
+  // highlight rectangle
+
+  if (_label.occupyTop)
+    width -= 2;
+
   if (yAxis.inUse)
     startX = x + yAxis.width;
   else
@@ -595,7 +608,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
       width -= yAxis.width;
     } else {
       /* room for cursor */
-      x += VIEW_CURSOR_WIDTH * 3;
+      x += 3 * VIEW_CURSOR_WIDTH;
       width -= 3 * VIEW_CURSOR_WIDTH;
     }
   }
@@ -621,7 +634,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   /* Make it possible to update the label areas */
   win->PushTop();
   win->MakeIdentity();
-  win->PushClip(winX, winY, winW, winH);
+  win->PushClip(winX, winY, winW - 1, winH - 1);
   win->PopTransform();
   
   DoDrawCursors(x, y, w, h);
@@ -632,33 +645,34 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
     if (yAxis.inUse)
       DrawYAxis(win, x, y, w, h);
   }
+
   win->PopClip();
 }
 
 void View::DrawLabel(WindowRep *win, int x, int y, int w, int h)
 {
-  /* draw label */
-
   if (_label.occupyTop) {
-    int labelX,labelY,labelWidth,labelHeight;
-    GetLabelArea(labelX,labelY,labelWidth,labelHeight);
+    /* draw label */
+    int labelX, labelY, labelWidth, labelHeight;
+    GetLabelArea(labelX, labelY, labelWidth, labelHeight);
     win->SetFgColor(win->GetBgColor());
-    win->FillRect(labelX,labelY,labelWidth,labelHeight);
+    win->FillRect(labelX, labelY, labelWidth, labelHeight);
     win->SetFgColor(BlackColor);
-    win->AbsoluteText(_label.name,labelX, labelY, labelWidth, labelHeight,
-		      WindowRep::AlignCenter,true);
+    win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
+		      labelHeight - 1, WindowRep::AlignCenter, true);
   } else {
+    /* draw square with cross mark in top-left corner of view */
     int x, y, w, h;
     GetLabelArea(x, y, w, h);
     win->SetFgColor(HighlightColor);
-    win->AbsoluteLine(x,y,x+_label.extent-1,y,1);
-    win->AbsoluteLine(x+_label.extent-1,y,
-		      x+_label.extent-1,y+_label.extent-1, 1);
-    win->AbsoluteLine(x+_label.extent-1,y+_label.extent-1,
-		      x, y+_label.extent-1,1);
-    win->AbsoluteLine(x,y+_label.extent-1,x,y,1);
-    win->AbsoluteLine(x,y,x+_label.extent-1,y+_label.extent-1,1);
-    win->AbsoluteLine(x+_label.extent-1,y,x,y+_label.extent-1,1);
+    win->AbsoluteLine(x, y, x + _label.extent - 1, y, 1);
+    win->AbsoluteLine(x + _label.extent-1, y,
+		      x + _label.extent-1, y + _label.extent-1, 1);
+    win->AbsoluteLine(x + _label.extent-1, y + _label.extent-1,
+		      x, y + _label.extent-1, 1);
+    win->AbsoluteLine(x, y + _label.extent-1, x, y, 1);
+    win->AbsoluteLine(x, y, x + _label.extent-1, y + _label.extent-1, 1);
+    win->AbsoluteLine(x + _label.extent-1, y, x, y + _label.extent-1, 1);
   }
 }
 
@@ -689,7 +703,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   Coord startWorldX = _filter.xLow;
   Coord endWorldX = _filter.xHigh;
   int numMajorTicks = xAxis.numTicks;
-  Coord tickIncrement = (endWorldX-startWorldX)/numMajorTicks;
+  Coord tickIncrement = (endWorldX - startWorldX) / numMajorTicks;
   
   if (xAxis.numTicks == 2) {
     /* draw the text */
@@ -703,7 +717,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 	label = DateString(tm);
       }
       else {
-	sprintf(buf, "%-*.*f", xAxis.fieldWidth,
+	sprintf(buf, "%*.*f", xAxis.fieldWidth,
 		xAxis.decimalPlaces, _filter.xLow);
 	label= buf;
       }
@@ -716,8 +730,8 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     */
 
     win->SetFgColor(xAxis.color);
-    win->AbsoluteText(label,startX, axisY, drawWidth/2, axisHeight,
-		      WindowRep::AlignWest,false);
+    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1, axisHeight - 1,
+		      WindowRep::AlignWest, true);
     
     if (_xAxisLabel != NULL)
       label= _xAxisLabel->GenerateLabel(_filter.xHigh);
@@ -739,15 +753,15 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     */
 
     win->SetFgColor(xAxis.color);
-    win->AbsoluteText(label,startX+drawWidth/2, axisY, drawWidth/2,
-		      axisHeight, WindowRep::AlignEast,false);
+    win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+		      axisHeight - 1, WindowRep::AlignEast, true);
   }
   
   /* draw a line from startX to the end of the view */
 
   win->SetFgColor(xAxis.color);
   win->SetPattern(Pattern0);
-  win->Line(startX,axisY,axisMaxX, axisY, 1.0);
+  win->Line(startX - 1, axisY, axisMaxX, axisY, 1.0);
   
   win->PopTransform();
 }
@@ -806,8 +820,8 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     */
 
     win->SetFgColor(yAxis.color);
-    win->AbsoluteText(label, axisX, startY+drawHeight/2, axisWidth,
-		      drawHeight/2, WindowRep::AlignSouth, true);
+    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
     
     /* draw upper Y coord */
     if (_yAxisLabel != NULL)
@@ -830,15 +844,15 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     */
 
     win->SetFgColor(yAxis.color);
-    win->AbsoluteText(label, axisX, startY, axisWidth,
-		      drawHeight/2, WindowRep::AlignNorth, true);
+    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
   }
 
   /* draw a line from startY to the bottom of the view */
 
   win->SetFgColor(yAxis.color);
   win->SetPattern(Pattern0);
-  win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 1.0);
+  win->Line(axisMaxX, startY, axisMaxX, axisMaxY + 1, 1.0);
   
   win->PopTransform();
 }
@@ -1092,23 +1106,23 @@ void View::Run()
   winRep->PushTop();
   winRep->MakeIdentity();
   
+  /* Draw highlight border */
+  DrawHighlight();
+
   /* Draw axes */
   DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
-  
-  /* Draw highlight border */
-   DrawHighlight();
   
   /* push clip region using this transform */
   int dataX, dataY, dataW, dataH;
   GetDataArea(dataX, dataY, dataW, dataH);
-  winRep->PushClip(dataX, dataY, dataW, dataH);
+  winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
   
   /* pop the transform */
   winRep->PopTransform();
   
 #ifdef DEBUG
   Coord tx, ty;
-  winRep->Transform(100.0, 100.0, tx,ty);
+  winRep->Transform(100.0, 100.0, tx, ty);
   printf("scrn w/h = %d,%d after postmultiply 100,100 --> %f,%f\n",
 	 scrnWidth, scrnHeight, tx,ty);
 #endif
@@ -1116,12 +1130,13 @@ void View::Run()
   /* blank out area to be drawn */
   winRep->SetFgColor(winRep->GetBgColor());
   winRep->FillRect(_queryFilter.xLow, _queryFilter.yLow,
-		   _queryFilter.xHigh - _queryFilter.xLow + 1,
-		   _queryFilter.yHigh - _queryFilter.yLow + 1);
+		   _queryFilter.xHigh - _queryFilter.xLow,
+		   _queryFilter.yHigh - _queryFilter.yLow);
   
   _hasExposure = false;
   _filterChanged = false;
   _refresh = false;
+
   if (mode == ControlPanel::DisplayMode) {
     _querySent = true;
     /* now sending query for events that occurred while in
@@ -1468,6 +1483,7 @@ void View::DrawHighlight()
     winRep->SetFgColor(HighlightColor);
   } else
     winRep->SetFgColor(ViewWin::GetBgColor());
+
   int x,y;
   unsigned int w,h;
   
@@ -1609,23 +1625,26 @@ void View::DoDrawCursors(int drawX, int drawY, int drawW,int drawH)
   
   Point points[4];
   
+  // Clear the X label area by painting it with the bg color
+
   if (doXCursor) {
-    /* Clear X rectangle */
     points[0].x = x; points[0].y = y;
-    points[1].x = x+w; points[1].y = y;
-    points[2].x = x+w; points[2].y = y+h;
-    points[3].x = x; points[3].y = y+h;
+    points[1].x = x + w - 1; points[1].y = y;
+    points[2].x = x + w - 1; points[2].y = y + h - 1;
+    points[3].x = x; points[3].y = y + h - 1;
     winRep->SetFgColor(GetBgColor());
-    winRep->FillPixelPoly(points,4);
+    winRep->FillPixelPoly(points, 4);
   }
+
+  // Clear the Y label area by painting it with the bg color
 
   if (doYCursor) {
     points[0].x = yCursorX; points[0].y = yCursorY;
-    points[1].x = yCursorX+yCursorW; points[1].y = yCursorY;
-    points[2].x = yCursorX+yCursorW; points[2].y = yCursorY+yCursorH;
-    points[3].x = yCursorX; points[3].y = yCursorY+yCursorH;
+    points[1].x = yCursorX + yCursorW - 1; points[1].y = yCursorY;
+    points[2].x = yCursorX + yCursorW - 1; points[2].y = yCursorY + yCursorH - 1;
+    points[3].x = yCursorX; points[3].y = yCursorY + yCursorH - 1;
     winRep->SetFgColor(GetBgColor());
-    winRep->FillPixelPoly(points,4);
+    winRep->FillPixelPoly(points, 4);
   }
 
   Transform2D transform;
