@@ -1,43 +1,11 @@
-# DEVise startHeader
-# file type: physSchema
-# file date: Sep 14 1997 16:12:40
-# DEVise version: 1.4.6
-# DEVise date: Sep  9 1997
-# DEVise endHeader
+datareader 2.0;
 
-schema BankOneSchema {
-	type = text ;
-	comment = '//' ;
-	whitespace = ' 	' ;
+comment = "//";
+field_separator = [ 	]+;
 
-
-	attr FromAccount {
-		type = string ;
-		maxlen = 10 ;
-	}
-
-	attr Control1 {
-		type = int ;
-	}
-
-	attr ToAccount {
-		type = string ;
-		maxlen = 10 ;
-	}
-
-	attr Control2 {
-		type = int ;
-	}
-
-
-	attr Amount {
-		type = double ;
-	}
-
-	attr Date {
-		type = datetime ;
-		date_format = '%Y-%m-%d' ;
-	}
-
-
-}
+string FromAccount  maxlen = 10;
+int Control1;
+string ToAccount  maxlen = 10;
+int Control2;
+double Amount;
+date Date  date_format = "%Y-%m-%d";
