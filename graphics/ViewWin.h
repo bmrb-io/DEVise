@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/14 04:06:04  jussi
+  Added HandleWindowDestroy() method.
+
   Revision 1.11  1996/07/13 17:26:31  jussi
   Moved Mapped() method to header file.
 
@@ -131,7 +134,10 @@ public:
     virtual void MoveResize(int x, int y, unsigned w, unsigned h);
     
     /* Get the Window Rep of this View window */
-    WindowRep *GetWindowRep(){ return _windowRep; }
+    WindowRep *GetWindowRep() { return _windowRep; }
+
+    /* Detach all children from this view */
+    void DetachChildren();
 
     /* Append child. Base class just inserts the child.
        Derived class should implement functions to MoveResize() child.*/
@@ -181,7 +187,7 @@ protected:
     virtual void HandleResize(WindowRep *w, int xlow, int ylow,
                               unsigned width, unsigned height);
     virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped);
-    virtual Boolean HandleWindowDestroy(WindowRep *w) { return false; }
+    virtual Boolean HandleWindowDestroy(WindowRep *w);
 
     /* Get total weight of children */
     int TotalWeight();
@@ -193,10 +199,10 @@ protected:
     unsigned int _width;  /* current width */
     unsigned int _height; /* current height */
     ViewWinList _children;
-    ViewWin *_parent;
+    ViewWin *_parent;     /* parent window */
     WindowRep *_windowRep;
-    char *_name;
-    int _weight;
+    char *_name;          /* name of window */
+    int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */
     Color _background;    /* background color */
     Color _foreground;    /* foreground color */

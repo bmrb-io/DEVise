@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/13 17:25:58  jussi
+  Moved Mapped() method to header file.
+
   Revision 1.14  1996/06/15 13:47:41  jussi
   Added SetFgBgColor() which allows Devise to change the view
   foreground and background colors at runtime.
@@ -68,6 +71,8 @@
 #include "ViewWin.h"
 #include "Display.h"
 #include "WindowRep.h"
+#include "ClassDir.h"
+#include "Control.h"
 #include "Init.h"
 
 #ifdef TK_WINDOW
@@ -208,7 +213,10 @@ void ViewWin::Unmap()
 #endif
 
   SubClassUnmapped();
-  DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_windowRep);
+
+  if (!WindowRep::IsDestroyPending())
+    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_windowRep);
+
   _windowRep = NULL;
   _hasGeometry = false;
   _mapped = false;
@@ -220,8 +228,30 @@ ViewWin::~ViewWin()
   printf("ViewWin destructor\n");
 #endif
 
+  DetachChildren();
   DeleteFromParent();
   Unmap();
+}
+
+/* Detach all children from this view */
+
+void ViewWin::DetachChildren()
+{
+  /* Ask each child to delete itself from the parent i.e. this object.
+     We need to be careful to close the iterator because
+     DeleteFromParent() deletes an entry from the list. */
+
+  while (1) {
+    int index = _children.InitIterator();
+    if (_children.More(index)) {
+      ViewWin *vw = _children.Next(index);
+      _children.DoneIterator(index);
+      vw->DeleteFromParent();
+    } else {
+      _children.DoneIterator(index);
+      break;
+    }
+  }
 }
 
 /* Append child */
@@ -323,6 +353,18 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
     _windowRep->MoveResize(x, y, w, h);
     HandleResize(_windowRep, x, y, w, h);
   }
+}
+
+Boolean ViewWin::HandleWindowDestroy(WindowRep *w)
+{
+#ifdef DEBUG
+  printf("ViewWin %s being destroyed\n", _name);
+#endif
+
+  ClassDir *classDir = ControlPanel::GetClassDir();
+  classDir->DestroyInstance(_name);
+
+  return true;
 }
 
 int ViewWin::TotalWeight()
