@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/11 04:00:39  jussi
+  Minor improvement in code readability.
+
   Revision 1.2  1995/12/14 18:36:01  jussi
   Small fix to get rid of g++ -Wall warning.
 
@@ -84,7 +87,7 @@ void Calendar::print_day()
 int Calendar::get_rec(int recno) 
 {
   // Seek to the appropriate record
-  if (fseek(fp, REC_LEN * recno, SEEK_SET) != 0) {
+  if (fseek(fp, REC_LEN * (recno - 1), SEEK_SET) != 0) {
     perror("fseek");
     return 0;
   }
