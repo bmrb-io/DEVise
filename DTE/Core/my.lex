@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/07 15:14:27  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.2  1996/12/05 16:06:02  wenger
   Added standard Devise file headers.
 
@@ -68,6 +71,7 @@ char* stripquotes(char* text){
 
 Digit        [0-9]
 IntLit       {Digit}+
+SignedIntLit [+\-]{Digit}+
 String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
 %%
@@ -75,6 +79,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Ss][Ee][Ll][Ee][Cc][Tt]       {return SELECT;}
 [Ff][Rr][Oo][Mm]         {return FROM;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
+[Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
@@ -82,6 +87,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Oo][Nn]				{return ON;}
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}
+{SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
 {LessGreat}  {yylval.string = new String(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {
              yylval.string = new String(stripquotes(yytext)); 

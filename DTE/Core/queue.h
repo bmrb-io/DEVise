@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:04  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef QUEUE_H
@@ -40,9 +43,10 @@ private:
 	Cell* current;
 	Cell* previous;
 	int numElem;
+	int currPos;
 public:
      List() : head(NULL), tail(NULL), current(NULL), previous(NULL),
-		numElem(0) {};
+		numElem(0),currPos(0) {};
 	~List(){
 		current = head;
 		while(current){
@@ -90,10 +94,13 @@ public:
 		delete current;
 		current = newCurrent;
 		numElem--;
+		if (numElem < 0) 
+			currPos = numElem;
 	}
 	void rewind(){
 		current = head;
 		previous = NULL;
+		currPos = 0;
 	}
 	bool atEnd(){
 		return current == NULL;
@@ -102,13 +109,20 @@ public:
 		return head == NULL;
 	}
 	T get(){
-		assert(current);
+		if (!current)
+			return NULL;
+		//assert(current);
 		return current->element;
 	}
 	void step(){
-		assert(current);
+		if (!current){
+			previous = NULL;
+			return;
+		}
+		//assert(current);
 		previous = current;
 		current = current->next;
+		currPos ++;
 	}
 	void replace(T newElem){
 		assert(current);
@@ -138,6 +152,92 @@ public:
 			step();
 		}
 		return false;
+	}
+	
+	int getCurrPos(){
+		
+		return currPos;
+	}
+	bool setPos(T item){
+
+		rewind();
+		int pos = 0;
+		while(!atEnd()){
+			if(get() != item){
+			pos ++;
+			step();
+			}
+			else
+				return true;
+		}
+		// Not found
+		return false;
+	}
+
+	bool setPos(int position){
+
+		rewind();
+		int pos = 0;
+		while(!atEnd() && pos < position){
+			pos ++;
+			step();
+		}
+		if (atEnd())
+			return false;
+		// found
+		return true;
+	}
+	int getPos(T item){
+		
+		Cell * curr = current;
+		Cell * prev = previous;
+		int savePos = currPos;
+		rewind();
+		int pos = 0;
+		while(!atEnd()){
+			if(get() == item){
+				current = curr;
+				previous = prev;
+				currPos = savePos;
+				return pos;
+			}
+			pos ++;
+			step();
+		}
+		// Not found
+		current = curr;
+		previous = prev;
+		currPos = savePos;
+		return -1;
+	}
+	T getVal(int position)
+	{
+		
+		if (position < 0 )
+			return NULL;
+
+		Cell * curr = current;
+		Cell * prev = previous;
+		int savePos = currPos;
+		rewind();
+		int pos = 0;
+		while(!atEnd() && pos < position){
+			step();
+			pos++;
+		}
+		if (atEnd()){
+			current = curr;
+			previous = prev;
+			currPos = savePos;
+			return NULL;
+		}
+		else{
+			T tmp = current->element;
+			current = curr;
+			previous = prev;
+			currPos = savePos;
+			return tmp;
+		}
 	}
 };
 

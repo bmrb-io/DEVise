@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/07 15:14:28  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.4  1996/12/05 16:06:02  wenger
   Added standard Devise file headers.
 
@@ -34,6 +37,7 @@
 extern int yylex();
 extern ParseTree* parseTree;
 extern List<String*>* namesToResolve;
+extern BaseSelection * sequenceby;
 int yyerror(char* msg);
 
 %}
@@ -50,6 +54,7 @@ int yyerror(char* msg);
 %token SELECT
 %token FROM
 %token WHERE
+%token SEQUENCEBY 
 %token CREATE
 %token INDEX
 %token ON
@@ -70,10 +75,11 @@ int yyerror(char* msg);
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <string> optString
+%type <sel> optSequenceByClause
+%type <sel> attribute
 %type <string> index_name
 %type <string> table_name
 %%
-
 input : query
 	| definition
 	;
@@ -86,12 +92,12 @@ index_name : STRING
 	;
 table_name : STRING
 	;
-query : SELECT listOfSelections FROM listOfTables optWhereClause ';' {
-		parseTree = new QueryTree($2, $4, $5, namesToResolve);
+query : SELECT listOfSelections FROM listOfTables optWhereClause optSequenceByClause';' {
+		parseTree = new QueryTree($2, $4, $5,$6,namesToResolve);
 		return 0;
 	}
-	| SELECT '*' FROM listOfTables optWhereClause ';' {
-		parseTree = new QueryTree(NULL, $4, $5, namesToResolve);
+	| SELECT '*' FROM listOfTables optWhereClause optSequenceByClause ';' {
+		parseTree = new QueryTree(NULL, $4, $5,$6,namesToResolve);
 		return 0;
 	}
      ;
@@ -117,7 +123,15 @@ listOfTables : listOfTables ',' tableAlias {
 	}
 	;
 optWhereClause : WHERE predicate {
-          $$ = $2;
+         $$ = $2;
+	}
+	| {
+		$$ = NULL;
+	}
+	;
+
+optSequenceByClause : SEQUENCEBY attribute{
+        $$ = $2;
 	}
 	| {
 		$$ = NULL;
@@ -143,6 +157,11 @@ predicate : predicate OR predicate {
 	}
 	| selection
 	;
+attribute:
+	STRING '.' expression {
+		$$ = new PrimeSelection($1, $3);
+	}
+
 selection :
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);

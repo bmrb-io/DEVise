@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/07 15:14:24  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.4  1996/12/05 16:05:58  wenger
   Added standard Devise file headers.
 
@@ -40,6 +43,7 @@ Exception* currExcept;
 
 ParseTree* parseTree = NULL;
 List<String*>* namesToResolve;
+BaseSelection * sequenceby;
 char* queryString;
 
 DefaultExceptHndl defaultExceptHndl;

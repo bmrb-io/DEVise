@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/05 16:06:06  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef TYPES_H
@@ -94,11 +97,15 @@ Type* intSub(Type* arg1, Type* arg2);
 Type* intEq(Type* arg1, Type* arg2);
 Type* intLT(Type* arg1, Type* arg2);
 Type* intGT(Type* arg1, Type* arg2);
+Type* intComp(Type *arg1,Type *arg2);
+
 Type* intDoubleAdd(Type* arg1, Type* arg2);
 Type* intDoubleSub(Type* arg1, Type* arg2);
 Type* intDoubleEq(Type* arg1, Type* arg2);
 Type* intDoubleLT(Type* arg1, Type* arg2);
 Type* intDoubleGT(Type* arg1, Type* arg2);
+Type* intDoubleDiv(Type *arg1,Type* arg2);
+
 Type* doubleAdd(Type* arg1, Type* arg2);
 Type* doubleIntAdd(Type* arg1, Type* arg2);
 Type* doubleSub(Type* arg1, Type* arg2);
@@ -108,7 +115,9 @@ Type* doubleIntEq(Type* arg1, Type* arg2);
 Type* doubleLT(Type* arg1, Type* arg2);
 Type* doubleIntLT(Type* arg1, Type* arg2);
 Type* doubleGT(Type* arg1, Type* arg2);
+
 Type* doubleIntGT(Type* arg1, Type* arg2);
+
 Type* stringEq(Type* arg1, Type* arg2);
 Type* stringLT(Type* arg1, Type* arg2);
 Type* stringGT(Type* arg1, Type* arg2);
@@ -170,6 +179,10 @@ public:
 				retType = "bool";
 				return new GeneralPtr(intGT, boolSize, oneOver3);
 			}
+			else if(name == "compReturnInt"){
+				retType = "int";
+				return new GeneralPtr(intSub, sameSize );
+			}
 			else{
 				return NULL;
 			}
@@ -194,6 +207,10 @@ public:
 			else if(name == ">"){
 				retType = "bool";
 				return new GeneralPtr(intDoubleGT, boolSize, oneOver3);
+			}
+			else if(name == "/"){
+				retType = "double";
+				return new GeneralPtr(intDoubleDiv, sameSize );
 			}
 			else{
 				return NULL;

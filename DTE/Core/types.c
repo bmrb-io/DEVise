@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:05  wenger
+  Added standard Devise file headers.
+
  */
 
 #include "types.h"
@@ -75,6 +78,11 @@ Type* intGT(Type* arg1, Type* arg2){
      return new IBool(val1 > val2);
 }
 
+Type* intDoubleDiv(Type* arg1, Type* arg2){
+	int val1 = ((IInt*)arg1)->getValue();
+	double val2 = ((IDouble*)arg2)->getValue();
+     return new IDouble(val1 / val2);
+}
 Type* intDoubleGT(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();

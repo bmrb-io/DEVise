@@ -96,11 +96,17 @@ Site* QueryTree::createSite(){
 		}
 		tableList->step();
 	}
-	Aggregates aggregates(selectList);
-	if(aggregates.isApplicable()){
-		cout << "Aggregates not implemented\n";
-		exit(1);
+	Aggregates *aggregates = new Aggregates(selectList,sequenceby);
+	if(aggregates->isApplicable()){
+			   
+	   	// Change the select list
+		selectList = aggregates->filterList();
+		selectList->rewind();
+		LOG( logFile << " Inserting selecList " );
+		LOG(selectList->get()->display(logFile));
+		LOG(logFile << endl);
 	}
+	
 	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
      sites->rewind();
      while(!sites->atEnd()){
@@ -110,7 +116,8 @@ Site* QueryTree::createSite(){
           LOG(current->display(logFile));
 		LOG(logFile << endl);
           sites->step();
-     }
+    }
+
 	TRY(checkOrphanInList(selectList), 0);
 	TRY(checkOrphanInList(predicateList), 0);
 	if(!selectList){
@@ -162,6 +169,12 @@ Site* QueryTree::createSite(){
 	if(!siteGroup){
 		siteGroup = inner;
 	}
+	if (aggregates->isApplicable()){
+
+		aggregates->typify(siteGroup);
+		siteGroup = aggregates;
+	}
+
 	LOG(logFile << "Plan: \n";)
 	LOG(siteGroup->display(logFile, DETAIL);)
 	LOG(logFile << endl;)

@@ -12,21 +12,24 @@ public:
 
 class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
-	List<TableAlias*>* tableList;
-	BaseSelection* predicates;
-	List<String*>* namesToResolve;
+	List<TableAlias*>   * tableList;
+	BaseSelection * predicates;
+	BaseSelection * sequenceby;
+	List<String*> * namesToResolve;
 	void resolveNames();	// throws exception
 public:	
 	QueryTree(
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
+		BaseSelection *sequenceby,
 		List<String*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
-		predicates(predicates), namesToResolve(namesToResolve) {}
+		predicates(predicates), sequenceby(sequenceby),
+		namesToResolve(namesToResolve) {}
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){
-		delete selectList;  // destroy list too
+		delete selectList;      // destroy list too
 		delete tableList;
 
 		// predicates should be deleted in createSite

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/07 15:14:28  donjerko
+  Introduced new files to support indexes.
+
   Revision 1.5  1996/12/05 16:06:04  wenger
   Added standard Devise file headers.
 
@@ -51,6 +54,8 @@ protected:
 public:
 	Path(String* p, Path* n = NULL) : 
           path(p), nextPath(n) {}
+	 Path(Path &newPath):
+		 path(newPath.path),nextPath(newPath.nextPath){}
 	virtual void display(ostream& out, int detail = 0){
 		assert(path);
 		out << *path;
@@ -72,6 +77,12 @@ public:
 			return this;
 		}
 	}
+	virtual BaseSelection * getSelectList(){
+
+		assert(!"SelecList cannot be given by Path");
+		return NULL;
+	}
+
 	virtual void propagate(Site* site){
 		if(nextPath){
 			nextPath->propagate(site);
@@ -770,6 +781,17 @@ public:
 	virtual List<BaseSelection*>* getArgs(){
 		return args;
 	}
+	virtual BaseSelection * getSelectList(){
+
+		// Need to check if this is fine..??
+		// Get the nextpath from arg 0 of the sel list
+		String *dummy = new String;
+
+		args->rewind();
+		return args->get();
+
+	}
+
 };
 
 class ArithmeticOp : public Operator {
@@ -855,7 +877,7 @@ class PrimeSelection : public BaseSelection{
 	int position;  // position of this selection in a tuple
 public:
 	PrimeSelection(String* a, Path* n = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0, int position = 0) : 
+		int avgSize = 0, int position = 0): 
           BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize),
 		position(position) {}
      virtual void display(ostream& out, int detail = 0){
