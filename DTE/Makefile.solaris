@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.83  1998/03/31 16:38:15  wenger
+# Added an 'export' directory to csgroup and re-made solaris dependencies
+# accordingly.
+#
 # Revision 1.82  1998/03/17 17:18:38  donjerko
 # Added new namespace management through relation ids.
 #
@@ -1725,7 +1729,7 @@ lex.yy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h TableUtils.h
 lex.yy.o: url.h SockStream.h RelationId.h listop.h ParseTree.h TypeCheck.h
 lex.yy.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
 lex.yy.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-lex.yy.o: StringLess.h
+lex.yy.o: StringLess.h my.yacc.tab.h
 listop.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 listop.o: /s/gcc/lib/g++-include/std/bastring.h
 listop.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -1752,6 +1756,39 @@ listop.o: SockStream.h RelationId.h listop.h site.h Iterator.h
 listop.o: /s/gcc/lib/g++-include/set /s/gcc/lib/g++-include/set.h
 listop.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
 listop.o: catalog.h ExecExpr.h
+my.yacc.tab.o: myopt.h /s/gcc/lib/g++-include/string
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/bastring.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/straits.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+my.yacc.tab.o: /usr/include/sys/feature_tests.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/cassert
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/sinst.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/function.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/bool.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/algobase.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/pair.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iterator.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iostream.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/streambuf.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/libio.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/defalloc.h /s/gcc/lib/g++-include/new.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/new.h /usr/include/stdlib.h
+my.yacc.tab.o: /usr/include/limits.h /usr/include/sys/isa_defs.h queue.h
+my.yacc.tab.o: ../../unidata/sysdep.h /usr/include/varargs.h
+my.yacc.tab.o: /usr/include/sys/va_list.h types.h exception.h Utility.h
+my.yacc.tab.o: Array.h SeqSimVec.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+my.yacc.tab.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+my.yacc.tab.o: ParseTree.h TypeCheck.h /s/gcc/lib/g++-include/map
+my.yacc.tab.o: /s/gcc/lib/g++-include/map.h /s/gcc/lib/g++-include/tree.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
+my.yacc.tab.o: /usr/include/stdio.h
 resolve.o: types.h /s/gcc/lib/g++-include/string
 resolve.o: /s/gcc/lib/g++-include/std/string.h
 resolve.o: /s/gcc/lib/g++-include/std/bastring.h
