@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/11 19:10:14  jussi
+  Added null support for replica management.
+
   Revision 1.8  1996/05/11 17:28:39  jussi
   Reorganized the code somewhat in order to match the ParseAPI
   interface.
@@ -50,6 +53,7 @@
 #include "Control.h"
 #include "ViewCallback.h"
 #include "GroupDir.h"
+#include "QueryProc.h"
 #include "ParseAPI.h"
 
 class View;
@@ -80,6 +84,8 @@ public:
   virtual void DestroySessionData();
   virtual void RestartSession() {
     DestroySessionData();
+    QueryProc::Instance()->PrintStat();
+    DoQuit();
   }
 
   /* Execute script */
@@ -132,7 +138,7 @@ private:
   char *_argv0;
 
   virtual int ReturnVal(int flag, char *result) {
-    strcpy(_interp->result, result);
+    Tcl_SetResult(_interp, result, TCL_VOLATILE);
     return flag;
   }
   virtual int ReturnVal(int argc, char **argv) {
