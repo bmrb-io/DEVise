@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/11/05 18:23:11  wenger
+  Minor mods to get things to compile on SGI systems.
+
   Revision 1.16  1996/10/18 20:34:08  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -91,8 +94,10 @@
 
   #if defined(SUN)
     extern "C" int statfs(const char *, struct statfs *);
-  #else if defined(SGI)
-    #include <sys/statfs.h>
+  #else
+    #if defined(SGI)
+      #include <sys/statfs.h>
+    #endif
   #endif
 #endif
 

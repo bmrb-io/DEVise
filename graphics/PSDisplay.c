@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/18 23:11:17  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.5  1996/11/13 16:56:09  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -54,6 +61,7 @@
 #include "PSWindowRep.h"
 #include "Util.h"
 #include "DevError.h"
+#include "machdep.h"
 #ifndef LIBCS
 #include "Control.h"
 #include "Journal.h"
@@ -191,8 +199,8 @@ void PSDisplay::PrintPSHeader()
 
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  DateString(tv.tv_sec);
-  fprintf(_printFile, "%%%%CreationDate: %s\n", DateString(tv.tv_sec));
+  fprintf(_printFile, "%%%%CreationDate: %s\n",
+    DateString((time_t) tv.tv_sec));
 
   fprintf(_printFile, "%%%%EndComments\n");
   fprintf(_printFile, "%%%%Pages: 1\n");
