@@ -1,48 +1,75 @@
-CPP = g++
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile for util.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+include ../../Makefile.common
+
+# Note: this overrides Makefile.common
+CCC = g++
 CC = gcc
 
-CFLAGS = $(ARCH_FLAGS) -O -Wall -Wno-unused -I../../graphics.new \
-	-I../../graphics
+CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
+	-Wall -Wno-unused $(OPTFLAG)
+
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 
+# Note: this overrides Makefile.common
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 .C.o:
-	$(CPP) -c $(CFLAGS) $<
+	$(CCC) -c $(CFLAGS) $<
 
 SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
 	tardump.c lc.c dbcext.c addlatlon.c mk3dstruct.C
 
-SRC1 = $(filter %.c,$(SRC))
-SRC2 = $(filter %.C,$(SRC))
+SRCc = $(filter %.c,$(SRC))
+SRCC = $(filter %.C,$(SRC))
 
-OBJ = $(SRC1:.c=.o)
-OBJ += $(SRC2:.C=.o)
+OBJ = $(SRCc:.c=.o)
+OBJ += $(SRCC:.C=.o)
 
 TARGET = $(OBJ:.o=)
 
 all: $(TARGET)
 
 http_url: http_url.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 atof: atof.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 mkbinfile: mkbinfile.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 gendots: gendots.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 genimage: genimage.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 addlatlon: addlatlon.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 mk3dstruct: mk3dstruct.o
-	$(CPP) -o $@ $@.o $(LDFLAGS)
+	$(CCC) -o $@ $@.o $(LDFLAGS)
 
 issm2bin: issm2bin.o
 	$(CC) -o $@ $@.o $(LDFLAGS)

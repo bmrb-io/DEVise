@@ -1,17 +1,30 @@
-LD = ld
-CC = g++
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-#OPTFLAG = -O
-#OPTFLAG = -g
-OPTFLAG = -gstabs
+#  Makefile for graphics.new.
 
-CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused $(OPTFLAG) -DUNIX -I../../graphics \
-	-I../../graphics.new -I../../tape -I../../generic -fexternal-templates
+############################################################
 
-.c.o: 
-	$(CC) $(CFLAGS) -c $<
-.C.o: 
-	$(CC) $(CFLAGS) -c $<
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+include ../../Makefile.common
+
+CFLAGS =  $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-I../../generic -fexternal-templates -Wall -Wno-unused $(OPTFLAG) \
+	-DUNIX
 
 # Buffer manager
 
@@ -38,10 +51,10 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
         StringStorage.C PointStorage.C ExtBufMgr.C MapIntToInt.C
 	
-QPSrc1 = $(filter %.c,$(QPSrc))
-QPSrc2 = $(filter %.C,$(QPSrc))
-QPObj = $(QPSrc1:.c=.o)
-QPObj += $(QPSrc2:.C=.o)
+QPSrcc = $(filter %.c,$(QPSrc))
+QPSrcC = $(filter %.C,$(QPSrc))
+QPObj = $(QPSrcc:.c=.o)
+QPObj += $(QPSrcC:.C=.o)
 
 # View
 
@@ -50,12 +63,12 @@ VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
 	MapIntToInt.C
 
-VIEWSRC1 = $(filter %.c,$(VIEWSRC))
-VIEWSRC2 = $(filter %.C,$(VIEWSRC))
-VIEWSRC3 = $(filter %.h,$(VIEWSRC))
-VIEWOBJ = $(VIEWSRC1:.c=.o)
-VIEWOBJ += $(VIEWSRC2:.C=.o)
-VIEWOBJ += $(VIEWSRC3:.h=.o)
+VIEWSRCc = $(filter %.c,$(VIEWSRC))
+VIEWSRCC = $(filter %.C,$(VIEWSRC))
+VIEWSRCh = $(filter %.h,$(VIEWSRC))
+VIEWOBJ = $(VIEWSRCc:.c=.o)
+VIEWOBJ += $(VIEWSRCC:.C=.o)
+VIEWOBJ += $(VIEWSRCh:.h=.o)
 
 # Command
 

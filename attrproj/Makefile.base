@@ -1,14 +1,33 @@
-.c.o:
-	$(CC) -c $(CFLAGS) $< -o $@
-.C.o:
-	$(CC) -c $(CFLAGS) $< -o $@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-CC = g++
+#  Makefile for attribute projection code.
 
-#LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+include ../../Makefile.common
+
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
 	-I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused -O -DUNIX -DATTRPROJ -DLIBCS
+	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
+	-DATTRPROJ -DLIBCS
+
+#LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
 
 TESTSRC = aptest.c vector.c
 TESTOBJ = $(TESTSRC:.c=.o)
@@ -22,10 +41,10 @@ LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
 	TDataBinaryInterp.c DataSourceSegment.c
 
-SRC1 = $(filter %.c,$(LOCALSRC))
-SRC2 = $(filter %.C,$(LOCALSRC))
-LOCALOBJ = $(SRC1:.c=.o)
-LOCALOBJ += $(SRC2:.C=.o)
+SRCc = $(filter %.c,$(LOCALSRC))
+SRCC = $(filter %.C,$(LOCALSRC))
+LOCALOBJ = $(SRCc:.c=.o)
+LOCALOBJ += $(SRCC:.C=.o)
 
 LIBOBJ = \
 	../graphics/Parse.o \

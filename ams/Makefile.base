@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/07/18 14:20:09  jussi
+#  Replaced name libgraphics.new.a with libgraphicsnew.a.
+#
 #  Revision 1.11  1996/07/09 23:58:36  jussi
 #  Added CompDate.o as a compile target.
 #
@@ -50,13 +53,16 @@
 
 ############################################################
 
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+include ../../Makefile.common
 
-.C.o:
-	$(CC) $(CFLAGS) -c $<
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
-CC = g++
+LDFLAGS = $(ARCH_LDFLAGS) \
+	-L../graphics.new -L../graphics -L../tape -L../issm \
+	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
+	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
+	$(ARCH_LDPOST)
 
 SRC = ams.c MapClassInfo.c
 
@@ -68,15 +74,6 @@ OTHERSRC1 = $(filter %.c,$(OTHERSRC))
 OTHERSRC2 = $(filter %.C,$(OTHERSRC))
 OTHEROBJ = $(OTHERSRC1:.c=.o)
 OTHEROBJ += $(OTHERSRC2:.C=.o)
-
-CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused -O -DUNIX
-
-LDFLAGS = $(ARCH_LDFLAGS) \
-	-L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
-	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
-	$(ARCH_LDPOST)
 
 ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
@@ -107,5 +104,5 @@ clean: mostlyclean
 	-rm ams extend exttape extendAms amsStat
 
 mostlyclean:
-	-rm $(OBJ) $(OTHEROBJ)
+	-rm $(OBJ) $(OTHEROBJ) CompDate.o
 

@@ -10,7 +10,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Makefile for parser.
+#  Makefile for things common to all of the lower-level makefiles.
 
 ############################################################
 
@@ -20,37 +20,21 @@
 
 ############################################################
 
-include ../../Makefile.common
+# Define our linker and compiler.
+LD = ld
+CC = g++
 
-CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused $(OPTFLAG) -DUNIX
-LDFLAGS = $(ARCH_LDFLAGS) -ll $(ARCH_LDPOST)
+# Set up for optimize or debug compiling.
+ifeq ($(DEV_DEBUG),)
+	OPTFLAG = -O
+else
+	OPTFLAG = -g
+endif
+#OPTFLAG = -gstabs
 
-SRC = main.c parse.c codegen.c
+# Compile rules.
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+.C.o:
+	$(CC) -c $(CFLAGS) $<
 
-OBJ = $(SRC:.c=.o)
-
-GENSRC = lex.yy.c
-
-GENOBJ = $(GENSRC:.c=.o)
-
-ALLOBJ = $(OBJ) $(GENOBJ)
-
-TARGET = parser
-
-all: $(TARGET)
-
-parser: $(ALLOBJ)
-	$(CC) -o $@ $(ALLOBJ) $(LDFLAGS)
-
-#lex.yy.o: lex.yy.c
-
-lex.yy.c: scan.lex tokens.h
-	flex $(VPATH)/scan.lex
-
-.PHONY: clean mostlyclean
-
-clean: mostlyclean
-	-rm $(TARGET)
-
-mostlyclean:
-	-rm $(ALLOBJ) $(GENSRC)

@@ -1,13 +1,26 @@
-.c.o:
-	$(CC) -c $(CFLAGS) $<
-.C.o: 
-	$(CC) -c  $(CFLAGS) $<
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-CC = g++
+#  Makefile generic sources.
 
-OPTFLAG = -O
-#OPTFLAG = -g
-#OPTFLAG = -gstabs
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
@@ -18,10 +31,12 @@ LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lgraphicsnew -lgraphics -lgraphicsnew \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
-SRC = generic.c devise.C deviseb.C
+SRC = generic.c devise.C deviseb.C CompDate.c
 
-OBJ = $(SRC:.c=.o)
-OBJ += $(SRC:.C=.o)
+SRCc = $(filter %.c,$(SRC))
+SRCC = $(filter %.C,$(SRC))
+OBJ = $(SRCc:.c=.o)
+OBJ += $(SRCC:.C=.o)
 
 ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1996/08/05 19:51:59  wenger
+#  Fixed compile errors caused by some of Kevin's recent changes; changed
+#  the attrproj stuff to make a .a file instead of a .o; added some more
+#  TData file writing stuff; misc. cleanup.
+#
 #  Revision 1.15  1996/07/18 14:19:59  jussi
 #  Replaced name libgraphics.new.a with libgraphicsnew.a.
 #
@@ -36,10 +41,10 @@
 
 ############################################################
 
-CC = g++
+include ../../Makefile.common
 
-CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
-	-I../../graphics.new -I../../tape -Wall -Wno-unused -O -DUNIX
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 # Kevin created a dependency that means that graphicsnew must be included
 # twice below.
@@ -49,16 +54,13 @@ LDFLAGS = $(ARCH_LDFLAGS) \
 	-lgraphicsnew -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
 	$(ARCH_LDPOST)
 
-.c.o:
-	$(CC) $(CFLAGS) -c $<
-
 ALLSRC = disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 	MappingClassInfo.c HostMappingClassInfo.c \
 	CycleOccMappingClassInfo.c \
 	CycleEffMappingClassInfo.c \
 	CycleWorkingMappingClassInfo.c \
 	CycleSuspendedMappingClassInfo.c \
-	CycleCpuTimeMappingClassInfo.c 
+	CycleCpuTimeMappingClassInfo.c
 
 ALLOBJ = $(ALLSRC:.c=.o)
 
@@ -99,4 +101,4 @@ clean: mostlyclean
 	-rm disp
 
 mostlyclean:
-	-rm $(ALLOBJ)
+	-rm $(ALLOBJ) CompDate.o
