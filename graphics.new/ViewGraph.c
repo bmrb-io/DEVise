@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/06/10 19:22:08  wenger
+  Removed (some) debug output.
+
   Revision 1.56  1997/06/05 21:08:41  wenger
   User-configurability of '4', '5', and '6' keys is now completed.
 
@@ -309,6 +312,10 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     _homeInfo.mode = HomeAuto;
     _homeInfo.autoXMargin = 0.0;
     _homeInfo.autoYMargin = 0.0;
+    _homeInfo.manXLo = 0.0;
+    _homeInfo.manYLo = 0.0;
+    _homeInfo.manXHi = 100.0;
+    _homeInfo.manYHi = 100.0;
 
     _horPanInfo.mode = PanModeRelative;
     _horPanInfo.relPan = 0.5;

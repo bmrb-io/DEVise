@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/04/30 18:27:22  wenger
+# Added session text description capability.
+#
 
 ############################################################
 
@@ -84,8 +87,12 @@ proc ViewDescription {} {
 
 ############################################################
 # Save the session description to the given fileId.
-proc SaveDescription {fileId} {
+proc SaveDescription {fileId asBatchScript} {
   global sessionDescription
+
+  if {$asBatchScript} {
+    return
+  }
 
   puts $fileId ""
   puts $fileId "# Set session description"

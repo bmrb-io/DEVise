@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1997/05/30 15:41:37  wenger
+#  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+#  this stuff now so it doesn't get mixed up with special stuff for printing
+#  Mitre demo.
+#
 #  Revision 1.36  1997/04/30 18:27:24  wenger
 #  Added session text description capability.
 #
@@ -333,11 +338,12 @@ proc SaveCursorViews { file dict asBatchScript } {
 	set src [lindex $views 0]
 	set dst [lindex $views 1]
 	if {$src != ""} {
-            set viewName ""
             if {!$asBatchScript} {
                 set viewVar [DictLookup $dict $src]
                 set viewName "\$$viewVar"
-            }
+            } else {
+		set viewName "\{$src\}"
+	    }
 	    puts $file "DEVise setCursorSrc \{$cursor\} $viewName"
 	}
 	if {$dst != ""} {
@@ -345,7 +351,9 @@ proc SaveCursorViews { file dict asBatchScript } {
             if {!$asBatchScript} {
                 set viewVar [DictLookup $dict $dst]
                 set viewName "\$$viewVar"
-            }
+            } else {
+		set viewName "\{$dst\}"
+	    }
 	    puts $file "DEVise setCursorDst \{$cursor\} $viewName"
 	}
     }
@@ -441,7 +449,7 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
 
     SaveMisc $f $asTemplate $asExport $viewDict $mapDict $asBatchScript
 
-    SaveDescription $f
+    SaveDescription $f $asBatchScript
 
     if {$asTemplate || $asExport} {
         puts $f ""
