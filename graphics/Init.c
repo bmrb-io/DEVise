@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/09/12 18:37:43  wenger
+  Added optional delay before drawing images.
+
   Revision 1.17  1996/09/05 20:00:05  jussi
   Added screenWidth and screenHeight command line arguments.
 
@@ -589,6 +592,8 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_imageDelay = atoi(argv[i+1]);
+	// Make sure delay value is non-negative.
+	_imageDelay = max(0, _imageDelay);
 	MoveArg(argc,argv,i,2);
       }
 
