@@ -2908,10 +2908,11 @@ Num Date        Status  Description
 			in client. (rkw)
 			(Fixed by rkw, 11/07/01.)
 
-726 11/01/01	OPEN	JavaScreen: if the jspop is running, but there is
+726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			no devised, and a client connects, the JSPoP should
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
+			(Fixed by xuk, 01/24/02.)
 
 727 11/20/01	FIXED	Line graphs don't work in DEVise if the records are
 			not in order of the X axis attribute. (rkw)
@@ -2970,14 +2971,16 @@ Num Date        Status  Description
 			(rkw)
 			(Fixed by rkw, 11/30/01.)
 
-738 11/30/01	OPEN	JavaScreen: attempting to start collaboration when
+738 11/30/01	FIXED	JavaScreen: attempting to start collaboration when
 			the leader does not have a session open causes
 			problems. (rkw)
+			(Fixed by xuk, 01/24/02.)
 
-739 11/30/01	OPEN	JavaScreen: pre-collaboration state is not restored
+739 11/30/01	FIXED	JavaScreen: pre-collaboration state is not restored
 			if you cancel before completely going into
 			collaboration mode or enter the wrong collaboration
 			password. (rkw)
+			(Fixed by xuk, 01/24/02.)
 
 740 12/10/01	FIXED	When saving a session file with per-session data
 			source definitions, environment variable names should
