@@ -31,3 +31,6 @@ http_url.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 http_url.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 http_url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 http_url.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
+mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
+mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mkbinfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h

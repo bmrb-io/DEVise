@@ -124,13 +124,13 @@ ApTDataBinaryInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ApTDataBinaryInterp.o: ../graphics/Config.h ../graphics.new/CompositeParser.h
 ApTDataBinaryInterp.o: ../graphics/Parse.h ../graphics/Util.h
 ApTDataBinaryInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
-AttrProj.o: /usr/include/stdio.h AttrProj.h ../graphics/DeviseTypes.h
+AttrProj.o: /usr/include/stdio.h /usr/include/string.h
+AttrProj.o: /usr/include/sys/stdtypes.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 AttrProj.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
 AttrProj.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
 AttrProj.o: VectorArray.h ApParseCat.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-AttrProj.o: /usr/include/sys/time.h /usr/include/string.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/sys/time.h
 AttrProj.o: /usr/include/ctype.h ../graphics/AttrList.h
 AttrProj.o: /usr/include/sys/time.h ../graphics/Config.h
 VectorArray.o: /usr/include/stdio.h VectorArray.h ../graphics/DeviseTypes.h

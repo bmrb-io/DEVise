@@ -11,3 +11,6 @@ http_url.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/unistd.h /usr/include/string.h
 http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
+mkbinfile.o: /usr/include/math.h /usr/include/sys/stdsyms.h
+mkbinfile.o: /usr/include/time.h /usr/include/sys/time.h
+mkbinfile.o: /usr/include/stdlib.h
