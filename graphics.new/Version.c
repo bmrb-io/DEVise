@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/07/16 16:15:55  wenger
+  Incremented version because of UniData in DTE.
+
   Revision 1.32  1997/06/18 15:33:17  wenger
   Fixed bug 177; improved workaround of bug 137; incremented version
   number (because of Unidata being added).
@@ -194,7 +197,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.6";
+static const char *	version = "1.4.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";
