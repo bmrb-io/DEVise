@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/06/28 21:47:41  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.17  1998/03/17 17:18:59  donjerko
   Added new namespace management through relation ids.
 
@@ -73,6 +77,14 @@ class typed_key_t;
 class typed_rtree_t;
 class typed_cursor_t;
 class db_mgr_jussi;
+
+
+//kb: definition is in IndexParse.c, but should probably be moved...
+int create_rtree(const string& filename, Iterator* input,
+                 const vector<int>& key_fields, 
+                 const vector<int>& add_fields);
+
+
 
 struct RTreePred {
 	bool bounded[2];

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/06/28 21:47:41  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.19  1998/03/17 17:18:59  donjerko
   Added new namespace management through relation ids.
 
@@ -81,7 +85,13 @@ RTreeReadExec::RTreeReadExec(const string& _filename, int _root_page,
   rtree = new typed_rtree_t(db_mgr);
   page_id_t root;
   memcpy(root.data, &root_page, sizeof(int));
-  assert( rtree->open(root) == RC_OK );
+  rc x = rtree->open(root);
+  assert( x == RC_OK );
+
+  //cout << "rtree: " << filename << ' ' << *(int*)root.data << endl;;
+  //cout << "rtree debug:\n";
+  //rtree->debug(stdout);
+  //cout << endl;
 
   numKeyFlds = bbox->dims();
   numAddFlds = added_types.size();
@@ -122,12 +132,15 @@ RTreeReadExec::~RTreeReadExec()
 
 void RTreeReadExec::initialize()
 {
-  // rtree->debug(stderr);
-
   // kb: cursor should probably be closed if this is the second call,
   // but I can't find a way to do that...
+
+  // rtree->debug(stderr);
+  //cerr << "initializing rtree query: " << rtree << endl;
+  //queryBox->debug();
+  //cout << endl;
   if (rtree->fetch_init(*cursor, *queryBox) != RC_OK){
-    printf("error in init\n");
+    cerr << "error in init\n";
     assert(0);
   }
 }
