@@ -242,6 +242,8 @@ public class jsdevisec extends Panel
 
     // collabrated JS ID
     public int specialID = 0;
+    // enable collaboration defaultly
+    public boolean isAbleCollab = true;
 
 
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
@@ -1810,7 +1812,8 @@ class SetModeDlg extends Dialog
     jsdevisec jsc = null;
     public Button socketButton = new Button("Socket");
     public Button cgiButton = new Button("CGI");
-    public Button collabButton = new Button("Collaboration");
+    public Button collabButton = new Button("Start Collaboration");
+    public Button disCollabButton = new Button("Disable Collaboration");
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -1839,6 +1842,10 @@ class SetModeDlg extends Dialog
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
 
+        disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
+
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
@@ -1861,6 +1868,8 @@ class SetModeDlg extends Dialog
         add(cgiButton);
         gridbag.setConstraints(collabButton, c);
         add(collabButton);
+        gridbag.setConstraints(disCollabButton, c);
+        add(disCollabButton);
 
         pack();
 
@@ -1929,6 +1938,15 @@ class SetModeDlg extends Dialog
                         }
 			close();
                         jsc.showCollab();
+                    }
+                });
+
+        disCollabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.isAbleCollab = false;
+			close();
                     }
                 });
 
