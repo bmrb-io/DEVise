@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.93  1999/07/21 18:47:43  wenger
+  Fixed bug in control of view symbol mappings by parent; fixed problem of
+  GData values not getting properly reset when a mapping command is cleared.
+
   Revision 1.92  1999/07/13 17:32:43  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -431,7 +435,6 @@
 //#define DEBUG
 
 #include <stdio.h>
-#include <tcl.h>
 #include <assert.h>
 
 #include "DeviseTypes.h"

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/07/16 21:35:50  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.15  1999/03/01 17:47:31  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -134,17 +142,6 @@ public:
   // Utility Functions
   virtual void    SetWindowBackground(PColorID bgid);
   void    ClearPixmap(void);
-
-
-#ifdef TK_WINDOW_old
-  /* Decorate window */
-  virtual void Decorate(WindowRep *parent, char *name,
-			unsigned int min_width,
-			unsigned int min_height);
-
-  /* Undecorate window */
-  virtual void Undecorate();
-#endif
 
   /* Reparent this window to 'other' or vice versa. */
   virtual void Reparent(Boolean child, void *other, int x, int y);
@@ -429,11 +426,6 @@ public:
 
   Compression *GetCompress() {return _compress;}
 	
-#ifdef TK_WINDOW_old
-  /* Tk window size changed -- update size of this window */
-  virtual void TkWindowSizeChanged();
-#endif
-
 	//TEMP -- what should these do??
     virtual void SetOutput(WindowRep *winRep) {}
     virtual void ResetOutput() {}
@@ -447,28 +439,6 @@ protected:
 
 
   void HandleEvent(XEvent &event);
-
-#ifdef TK_WINDOW_old
-  /* Assign window to a new parent. */
-  virtual void Reparent(Window newParent, int x, int y);
-
-  /* Build Tk window around this window */
-  virtual void EmbedInTkWindow(GLWindowRep *parent,
-			       const char *name,
-			       unsigned int min_width,
-			       unsigned int min_height);
-
-  /* Detach window from Tk window */
-  virtual void DetachFromTkWindow();
-
-  /* Return true if window is inside a Tk window */
-  Boolean isInTkWindow() {
-    return (strlen(_tkPathName) > 0 ? true : false);
-  }
-
-  char      _tkPathName[32];
-  Tk_Window _tkWindow;
-#endif
 
   /* return window identifier */
   Window GetWinId() { return _win; }

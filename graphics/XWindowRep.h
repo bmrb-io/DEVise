@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/08/05 21:42:42  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.62  1999/07/30 21:27:08  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -361,16 +366,6 @@ class XWindowRep : public WindowRep
 		virtual void	SetWindowBackground(PColorID bgid);
 		void	ClearPixmap(void);
 
-#ifdef TK_WINDOW_old
-	/* Decorate window */
-	virtual void Decorate(WindowRep *parent, char *name,
-			      unsigned int min_width,
-			      unsigned int min_height);
-
-	/* Undecorate window */
-	virtual void Undecorate();
-#endif
-
 	/* Reparent this window to 'other' or vice versa. */
 	virtual void Reparent(Boolean child, void *other, int x, int y);
 
@@ -600,11 +595,6 @@ class XWindowRep : public WindowRep
 
 	Compression *GetCompress() {return _compress;}
 	
-#ifdef TK_WINDOW_old
-	/* Tk window size changed -- update size of this window */
-	virtual void TkWindowSizeChanged();
-#endif
-
     virtual void SetGifDirty(Boolean dirty);
 
     virtual void SetOutput(WindowRep *winRep);
@@ -616,28 +606,6 @@ protected:
 	void Init();
 
 	void HandleEvent(XEvent &event);
-
-#ifdef TK_WINDOW_old
-	/* Assign window to a new parent. */
-	virtual void Reparent(Window newParent, int x, int y);
-
-	/* Build Tk window around this window */
-	virtual void EmbedInTkWindow(XWindowRep *parent,
-				     const char *name,
-				     unsigned int min_width,
-				     unsigned int min_height);
-
-	/* Detach window from Tk window */
-	virtual void DetachFromTkWindow();
-
-	/* Return true if window is inside a Tk window */
-	Boolean isInTkWindow() {
-	  return (strlen(_tkPathName) > 0 ? true : false);
-	}
-
-	char      _tkPathName[32];
-	Tk_Window _tkWindow;
-#endif
 
 	/* return window identifier */
 	Window GetWinId() { return _win; }

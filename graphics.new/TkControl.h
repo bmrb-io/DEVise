@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/09/28 20:05:55  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.24  1998/09/22 17:24:00  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -146,11 +152,6 @@ class TkControlPanel: public ControlPanel, public DispatcherCallback,
 public:
   TkControlPanel();
   virtual ~TkControlPanel();
-
-#ifdef TK_WINDOW
-  virtual Tcl_Interp *GetInterp() { return _interp; }
-  virtual Tk_Window GetMainWindow() { return _mainWindow; }
-#endif
 
   virtual void SelectView(View *view);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.131  1999/08/12 16:02:49  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.130  1999/08/05 21:42:41  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -939,11 +942,6 @@ void XWindowRep::Init()
   AllocBitmap(_dstBitmap, 3 * bitmapWidth, 3 * bitmapHeight);
 
   _outWR = NULL; // drawing to our own X window
-
-#ifdef TK_WINDOW_old
-  _tkPathName[0] = 0;
-  _tkWindow = 0;
-#endif
 }
 
 /******************************************************************
@@ -3910,204 +3908,6 @@ void XWindowRep::FreePixmap(DevisePixmap *pixmap)
   free(pixmap->data);
   delete pixmap;
 }
-
-#ifdef TK_WINDOW_old
-void XWindowRep::Decorate(WindowRep *parent, char *name,
-			  unsigned int min_width, unsigned int min_height)
-{
-  DOASSERT(!isInTkWindow(), "Invalid Tk window");
-  EmbedInTkWindow((XWindowRep *)parent, name, min_width, min_height);
-}
-
-void XWindowRep::Undecorate()
-{
-  if (isInTkWindow())
-    DetachFromTkWindow();
-}
-
-static void HandleTkEvents(ClientData win, XEvent *eventPtr)
-{
-#ifdef DEBUG
-  printf("HandleTkEvents: received event %d\n", eventPtr->type);
-#endif
-
-  if (eventPtr->type != ConfigureNotify)
-    return;
-
-  ((XWindowRep *)win)->TkWindowSizeChanged();
-}
-
-void XWindowRep::TkWindowSizeChanged()
-{
-  extern Tcl_Interp *ControlPanelTclInterp;
-
-  // first find out new size of Tk window
-
-  DOASSERT(_tkWindow, "Invalid Tk window");
-  unsigned int w = (unsigned int)Tk_Width(_tkWindow);
-  unsigned int h = (unsigned int)Tk_Height(_tkWindow);
-
-  // adjust with margins
-
-  int x = _leftMargin;
-  w -= _leftMargin + _rightMargin;
-  int y = _topMargin;
-  h -= _topMargin + _bottomMargin;
-
-  MoveResize(x, y, w, h);
-  WindowRep::HandleResize(x, y, w, h);
-
-  char cmd[256];
-  sprintf(cmd, "ResizeTkDataWindow %s %u %u", _tkPathName, w, h);
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  DOASSERT(status == TCL_OK, "Cannot resize Tk window");
-}
-
-static const unsigned int TkRootLeftMargin   = 0;
-static const unsigned int TkRootRightMargin  = 0;
-static const unsigned int TkRootTopMargin    = 0;
-static const unsigned int TkRootBottomMargin = 20;
-
-static const unsigned int TkViewLeftMargin   = 40;
-static const unsigned int TkViewRightMargin  = 0;
-static const unsigned int TkViewTopMargin    = 0;
-static const unsigned int TkViewBottomMargin = 20;
-
-void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
-				 const char *name,
-				 unsigned int min_width,
-				 unsigned int min_height)
-{
-  DOASSERT(_win, "Cannot embed pixmap in Tk window");
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-  extern Tk_Window ControlPanelMainWindow;
-
-  // get location and size of window
-
-  int x, y;
-  unsigned int w, h;
-  Origin(x, y);
-  Dimensions(w, h);
-
-  // figure out the correct margins for this type of window
-
-  // default: root data display window
-
-  _leftMargin   = TkRootLeftMargin;
-  _rightMargin  = TkRootRightMargin;
-  _topMargin    = TkRootTopMargin;
-  _bottomMargin = TkRootBottomMargin;
-
-  // for views: left and bottom margin
-
-  if (parent) {
-    _leftMargin   = TkViewLeftMargin;
-    _rightMargin  = TkViewRightMargin;
-    _topMargin    = TkViewTopMargin;
-    _bottomMargin = TkViewBottomMargin;
-  }
-
-  static int tkWinCount = 1;
-  char cmd[256];
-  sprintf(_tkPathName, ".devisewin%d", tkWinCount++);
-  sprintf(cmd, "CreateTkDataWindow %s {%s} %d %d %u %u %u %u %u %u %u %u",
-	  _tkPathName, name, x, y, w, h, _leftMargin,
-	  _rightMargin, _topMargin, _bottomMargin,
-	  min_width, min_height);
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  DOASSERT(status == TCL_OK, "Cannot create Tk window");
-
-  _tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
-			      _tkPathName,
-			      ControlPanelMainWindow);
-  DOASSERT(_tkWindow, "Cannot get name of Tk window");
-
-#ifdef DEBUG
-  printf("Created %s, id 0x%p, X id 0x%p, at %d,%d size %u,%u\n",
-	 _tkPathName, _tkWindow, Tk_WindowId(_tkWindow),
-	 x, y, w, h);
-#endif
-
-  unsigned long mask = StructureNotifyMask;
-  Tk_CreateEventHandler(_tkWindow, mask, HandleTkEvents, this);
-
-  // first make this window a child of the new Tk window
-
-#ifdef DEBUG
-  printf("XWindowRep::Reparenting 0x%p to 0x%p at %d,%d\n",
-	 _win, Tk_WindowId(_tkWindow), _leftMargin, _topMargin);
-#endif
-  XReparentWindow(_display, _win, Tk_WindowId(_tkWindow),
-		  _leftMargin, _topMargin);
-
-  // make this window smaller so that margins have space inside Tk window
-
-  w -= _leftMargin + _rightMargin;
-  h -= _topMargin + _bottomMargin;
-  MoveResize(_leftMargin, _topMargin, w, h);
-
-  // then optionally make the Tk window a child of this window's parent
-  // i.e. the Tk window gets inserted between this window and its parent
-  
-  if (parent) {
-#ifdef DEBUG
-    printf("XWindowRep::Reparenting 0x%p to 0x%p at %d,%d\n",
-	   Tk_WindowId(_tkWindow), parent->_win, x, y);
-#endif
-    XReparentWindow(_display, Tk_WindowId(_tkWindow), parent->_win, x, y);
-  }
-}
-
-void XWindowRep::DetachFromTkWindow()
-{
-  DOASSERT(_win, "Cannot detach pixmap from Tk window");
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-
-#ifdef DEBUG
-  printf("ViewWin::Detaching 0x%p from 0x%0x\n", this, _tkWindow);
-#endif
-
-  DOASSERT(_tkWindow, "Invalid Tk window");
-  unsigned long mask = StructureNotifyMask;
-  Tk_DeleteEventHandler(_tkWindow, mask, HandleTkEvents, this);
-
-  // get location and size of window
-
-  int x, y;
-  unsigned int w, h;
-  Origin(x, y);
-  Dimensions(w, h);
-
-  // adjust location and size since margins are disappearing
-
-  x -= _leftMargin;
-  w += _leftMargin + _rightMargin;
-  y -= _topMargin;
-  H += _topMargin + _bottomMargin;
-  MoveResize(x, y, w, h);
-
-  XReparentWindow(_display, _win, DefaultRootWindow(_display), x, y);
-
-  // destroy Tk window
-
-  char cmd[256];
-  sprintf(cmd, "destroy %s", _tkPathName);
-  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  DOASSERT(status == TCL_OK, "Cannot destroy Tk window");
-
-  _tkPathName[0] = 0;
-  _tkWindow = 0;
-}
-
-#endif
 
 void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
 			       int height, Boolean filled,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/03 20:33:22  jussi
+  Moved readn() to Util.c.
+
   Revision 1.10  1996/10/02 15:23:50  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -60,7 +63,6 @@
 #include <ctype.h>
 
 #include <tcl.h>
-#include <tk.h>
 
 #include "machdep.h"
 #include "Util.h"

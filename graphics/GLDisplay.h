@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/07/16 21:35:49  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.5  1999/01/04 15:30:25  wenger
   Misc. code cleanups.
 
@@ -32,11 +40,6 @@
 #include "XBitmap.h"
 #include "Pattern.h"
 
-#ifdef TK_WINDOW_EV2
-#include <tcl.h>
-#include <tk.h>
-#endif
-
 #ifndef LINE_SIZECONST
 #define LINE_SIZECONST
 const int LINE_SIZE = 512;
@@ -46,11 +49,6 @@ class GLDisplay: public DeviseDisplay {
 public:
     GLDisplay(char *name = 0);
     ~GLDisplay();
-
-#ifdef TK_WINDOW_EV2
-    virtual ~GLDisplay();
-    virtual int HandleXEvent(XEvent &event);
-#endif
 
     /* get file descriptor for connection */
     virtual int fd() {

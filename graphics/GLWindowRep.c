@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/07/16 21:35:50  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.21  1999/01/05 20:53:48  wenger
   Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
   of the text symbol code.
@@ -274,25 +282,6 @@ GLWindowRepInit::GLWindowRepInit()
 
 static GLWindowRepInit glwindowrep_initializer;
 
-
-/* Decorate window */
-#ifdef TK_WINDOW_old
-void GLWindowRep::Decorate(WindowRep *parent, char *name,
-			   unsigned int min_width,
-			   unsigned int min_height)
-{ 
-  DOASSERT(!isInTkWindow(), "Invalid Tk window");
-  EmbedInTkWindow((GLWindowRep *)parent, name, min_width, min_height);
-}
-
-/* Undecorate window */
-void GLWindowRep::Undecorate()
-{
-  if (isInTkWindow())
-    DetachFromTkWindow();
-
-}
-#endif
 
 /* Reparent this window to 'other' or vice versa. */
 void GLWindowRep::Reparent(Boolean child, void *other, int x, int y)
@@ -2007,15 +1996,6 @@ void GLWindowRep::FreePixmap(DevisePixmap *pixmap)
 }
 
 
-#ifdef TK_WINDOW_old
-/* Tk window size changed -- update size of this window */
-void GLWindowRep::TkWindowSizeChanged()
-{
-  DOASSERT(!isInTkWindow(), "Invalid Tk window");
-  EmbedInTkWindow((GLWindowRep *)parent, name, min_width, min_height);
-}
-#endif
-
 /* called by GLDisplay to create new X window */
 GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
 	GLWindowRep *parent, GLXContext gc, GLboolean double_buffer):
@@ -2494,144 +2474,6 @@ void GLWindowRep::HandleEvent(XEvent &event)
     break;
   }
 }
-
-/* Assign window to a new parent. */
-#if defined(TK_WINDOW_OLD)
-/* Build Tk window around this window */
-void GLWindowRep::EmbedInTkWindow(GLWindowRep *parent,
-				  const char *name,
-				  unsigned int min_width,
-				  unsigned int min_height)
-{
-  DOASSERT(_win, "Cannot embed pixmap in Tk window");
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-  extern Tk_Window ControlPanelMainWindow;
-
-  // get location and size of window
-
-  int x, y;
-  unsigned int w, h;
-  Origin(x, y);
-  Dimensions(w, h);
-
-  // figure out the correct margins for this type of window
-
-  // default: root data display window
-
-  _leftMargin   = TkRootLeftMargin;
-  _rightMargin  = TkRootRightMargin;
-  _topMargin    = TkRootTopMargin;
-  _bottomMargin = TkRootBottomMargin;
-
-  // for views: left and bottom margin
-
-  if (parent) {
-    _leftMargin   = TkViewLeftMargin;
-    _rightMargin  = TkViewRightMargin;
-    _topMargin    = TkViewTopMargin;
-    _bottomMargin = TkViewBottomMargin;
-  }
-
-  static int tkWinCount = 1;
-  char cmd[256];
-  sprintf(_tkPathName, ".devisewin%d", tkWinCount++);
-  sprintf(cmd, "CreateTkDataWindow %s {%s} %d %d %u %u %u %u %u %u %u %u",
-	  _tkPathName, name, x, y, w, h, _leftMargin,
-	  _rightMargin, _topMargin, _bottomMargin,
-	  min_width, min_height);
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  DOASSERT(status == TCL_OK, "Cannot create Tk window");
-
-  _tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
-			      _tkPathName,
-			      ControlPanelMainWindow);
-  DOASSERT(_tkWindow, "Cannot get name of Tk window");
-
-#ifdef DEBUG
-  printf("Created %s, id 0x%p, X id 0x%p, at %d,%d size %u,%u\n",
-	 _tkPathName, _tkWindow, Tk_WindowId(_tkWindow),
-	 x, y, w, h);
-#endif
-
-  unsigned long mask = StructureNotifyMask;
-  Tk_CreateEventHandler(_tkWindow, mask, HandleTkEvents, this);
-
-  // first make this window a child of the new Tk window
-
-#ifdef DEBUG
-  printf("GLWindowRep(0x%p)::Reparenting 0x%p to 0x%p at %d,%d\n",this,
-	 _win, Tk_WindowId(_tkWindow), _leftMargin, _topMargin);
-#endif
-  XReparentWindow(_display, _win, Tk_WindowId(_tkWindow),
-		  _leftMargin, _topMargin);
-
-  // make this window smaller so that margins have space inside Tk window
-
-  w -= _leftMargin + _rightMargin;
-  h -= _topMargin + _bottomMargin;
-  MoveResize(_leftMargin, _topMargin, w, h);
-
-  // then optionally make the Tk window a child of this window's parent
-  // i.e. the Tk window gets inserted between this window and its parent
-  
-  if (parent) {
-#ifdef DEBUG
-    printf("GLWindowRep(0x%p)::Reparenting 0x%p to 0x%p at %d,%d\n",this,
-	   Tk_WindowId(_tkWindow), parent->_win, x, y);
-#endif
-    XReparentWindow(_display, Tk_WindowId(_tkWindow), parent->_win, x, y);
-  }
-}
-
-/* Detach window from Tk window */
-void GLWindowRep::DetachFromTkWindow()
-{
-  DOASSERT(_win, "Cannot detach pixmap from Tk window");
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-
-#ifdef DEBUG
-  printf("ViewWin::Detaching 0x%p from 0x%0x\n", this, _tkWindow);
-#endif
-
-  DOASSERT(_tkWindow, "Invalid Tk window");
-  unsigned long mask = StructureNotifyMask;
-  Tk_DeleteEventHandler(_tkWindow, mask, HandleTkEvents, this);
-
-  // get location and size of window
-
-  int x, y;
-  unsigned int w, h;
-  Origin(x, y);
-  Dimensions(w, h);
-
-  // adjust location and size since margins are disappearing
-
-  x -= _leftMargin;
-  w += _leftMargin + _rightMargin;
-  y -= _topMargin;
-  H += _topMargin + _bottomMargin;
-  MoveResize(x, y, w, h);
-
-  XReparentWindow(_display, _win, DefaultRootWindow(_display), x, y);
-
-  // destroy Tk window
-
-  char cmd[256];
-  sprintf(cmd, "destroy %s", _tkPathName);
-  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  DOASSERT(status == TCL_OK, "Cannot destroy Tk window");
-
-  _tkPathName[0] = 0;
-  _tkWindow = 0;
-
-}
-
-#endif
 
 /* get geometry of root window enclosing this window */
 void GLWindowRep::GetRootGeometry(int &x, int &y, unsigned int &w, unsigned int &h)

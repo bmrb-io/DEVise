@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.88  1999/07/12 19:02:11  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.87  1999/06/25 15:58:24  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -374,11 +377,6 @@
 
 //#define DEBUG
 
-#ifdef TK_WINDOW
-Tcl_Interp *ControlPanelTclInterp = 0;
-Tk_Window ControlPanelMainWindow = 0;
-#endif
-
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
@@ -419,10 +417,6 @@ TkControlPanel::TkControlPanel()
     Exit::DoExit(1);
   }
 
-#ifdef TK_WINDOW
-  ControlPanelTclInterp = _interp;
-#endif
-
   if (!Init::UseSharedMem()) {
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
@@ -430,9 +424,6 @@ TkControlPanel::TkControlPanel()
   if (Init::BatchFile()) {
     // In batch mode, we don't need a Tk main window
     _mainWindow = 0;
-#ifdef TK_WINDOW
-    ControlPanelMainWindow = _mainWindow;
-#endif
     return;
   }
 
@@ -458,11 +449,6 @@ TkControlPanel::TkControlPanel()
 
 #if TK_MAJOR_VERSION != 4
   _mainWindow = Tk_MainWindow(_interp);
-#endif
-
-
-#ifdef TK_WINDOW
-  ControlPanelMainWindow = _mainWindow;
 #endif
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/09/01 19:27:02  wenger
+  Debug logging improved -- directory of log file can now be specified
+  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+  times to help figure out JavaScreen performance bottlenecks.
+
   Revision 1.60  1999/06/15 18:09:44  wenger
   Added dumping of ViewWin objects to help with pile debugging.
 
@@ -323,11 +329,6 @@
 #include "PileStack.h"
 #include "ElapsedTime.h"
 
-#ifdef TK_WINDOW
-#include <tcl.h>
-#include <tk.h>
-#endif
-
 //******************************************************************************
 
 #define DIRECT_POSTSCRIPT 1
@@ -357,15 +358,8 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 	_hasPrintIndex = false;
 
-#ifdef MARGINS
 	_leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
-#endif
 //	_alternate = NULL;
-#ifdef TK_WINDOW
-	_marginsOn = false;
-	_leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
-	_tkPathName[0] = 0;
-#endif
 
 	_excludeFromPrint = false;
 	_printAsPixmap = false;
@@ -640,7 +634,6 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 
   _winReps.SetScreenOutput();
 
-#ifdef MARGINS
   if (!_parent) {
     if (Init::DisplayLogo()) {
       /* Allocate top margin */
@@ -649,17 +642,6 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
       DrawMargins();
     }
   }
-#endif
-
-#ifdef TK_WINDOW_old
-    GetWindowRep()->Decorate(parentWinRep, _name, (unsigned int)min_width,
-			 (unsigned int)min_height);
-#endif
-
-#ifdef TK_WINDOW
-  /* Get and set appropriate margins */
-  AddMarginControls();
-#endif
 
   _mapped = true;
   _iconified = false;
@@ -685,16 +667,6 @@ void ViewWin::Unmap()
     vw->Unmap();
   } 
   _children.DoneIterator(index);
-
-#ifdef TK_WINDOW_old
-  GetWindowRep()->Undecorate();
-#endif
-
-#ifdef TK_WINDOWxxx
-  /* Drop margin controls */
-  if (_marginsOn)
-    DropMarginControls();
-#endif
 
   SubClassUnmapped();
   //TEMP?_winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
@@ -772,11 +744,7 @@ void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h)
 
 /* Get current geometry of child w. r. t. parent */
 
-#if defined(MARGINS) || defined(TK_WINDOW)
 void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
-#else
-void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
-#endif
 {
 #if defined(DEBUG)
   printf("ViewWin(%s)::Geometry()\n", GetName());
@@ -809,7 +777,6 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
 }
 
-#if defined(MARGINS) || defined(TK_WINDOW)
 /* Get current geometry of child w. r. t. parent */
 
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
@@ -828,7 +795,6 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 	 x, y, w, h);
 #endif
 }
-#endif
 
 void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
@@ -981,7 +947,6 @@ void ViewWin::Lower()
   }
 }
 
-#if defined(MARGINS) || defined(TK_WINDOW)
 void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
 			 unsigned int &tm, unsigned int &bm)
 {
@@ -993,9 +958,7 @@ void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
   printf("ViewWin::GetMargins %u, %u, %u, %u\n", lm, rm, tm, bm);
 #endif
 }
-#endif
 
-#ifdef MARGINS
 void ViewWin::DrawMargins()
 {
 #if defined(DEBUG)
@@ -1033,137 +996,6 @@ void ViewWin::DrawMargins()
 		    WindowRep::AlignNorth, true);
   win->SetNormalFont();
 }
-#endif
-
-#ifdef TK_WINDOW
-void ViewWin::AddMarginControls()
-{
-  static int tkWinCnt = 1;
-  char cmd[256];
-
-  sprintf(_tkPathName, ".tkMarginControl%d", tkWinCnt++);
-  sprintf(cmd, "CreateTkMarginControls %s %s %u %u",
-	  _tkPathName, (_parent ? "View" : "Window"),
-	  _width, _height);
-
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-
-  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
-    fprintf(stderr, "Cannot execute %s: %s\n",
-	    cmd, ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
-
-  _leftMargin = atoi(ControlPanelTclInterp->result);
-  char *space = strchr(ControlPanelTclInterp->result, ' ');
-  _rightMargin = atoi(space + 1);
-  space = strchr(space + 1, ' ');
-  _topMargin = atoi(space + 1);
-  space = strchr(space + 1, ' ');
-  _bottomMargin = atoi(space + 1);
-
-  if (_leftMargin > 0)
-    ReparentMarginControl("left", 0, _topMargin);
-  if (_rightMargin > 0)
-    ReparentMarginControl("right", _width - _rightMargin, _topMargin);
-  if (_topMargin > 0)
-    ReparentMarginControl("top", 0, 0);
-  if (_bottomMargin > 0)
-    ReparentMarginControl("bottom", 0, _height - _bottomMargin);
-
-  _marginsOn = true;
-}
-
-void ViewWin::DropMarginControls()
-{
-  if (_leftMargin > 0)
-    DestroyMarginControl("left");
-  if (_rightMargin > 0)
-    DestroyMarginControl("right");
-  if (_topMargin > 0)
-    DestroyMarginControl("top");
-  if (_bottomMargin > 0)
-    DestroyMarginControl("bottom");
-
-  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
-  _marginsOn = false;
-}
-
-void ViewWin::DestroyMarginControl(char *side)
-{
-  char cmd[256];
-  sprintf(cmd, "destroy %s-%s", _tkPathName, side);
-
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-
-  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
-    fprintf(stderr, "Cannot execute %s: %s\n",
-	    cmd, ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
-}
-
-void ViewWin::ReparentMarginControl(char *side, int xoff, int yoff)
-{
-  char tkWinName[256];
-  sprintf(tkWinName, "%s-%s", _tkPathName, side);
-
-  extern Tcl_Interp *ControlPanelTclInterp;
-  extern Tk_Window ControlPanelMainWindow;
-
-  Tk_Window tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
-				       tkWinName,
-				       ControlPanelMainWindow);
-  if (!tkWindow) {
-    fprintf(stderr, "Cannot convert %s to window: %s\n",
-	    tkWinName, ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
-
-  // make Tk window a child of current window
-  GetWindowRep()->Reparent(true, (void *)Tk_WindowId(tkWindow), xoff, yoff);
-}
-
-void ViewWin::ResizeMargins(unsigned int w, unsigned int h)
-{
-#if defined(DEBUG)
-  printf("ViewWin(%s)::ResizeMargins()\n", GetName());
-#endif
-
-  char cmd[256];
-  sprintf(cmd, "UpdateTkControlMargins %s %s %u %u",
-	  _tkPathName, (_parent ? "View" : "Window"),
-	  _width, _height);
-  
-#ifdef DEBUG
-  printf("Executing: %s\n", cmd);
-#endif
-  
-  extern Tcl_Interp *ControlPanelTclInterp;
-  
-  if (Tcl_Eval(ControlPanelTclInterp, cmd) != TCL_OK) {
-    fprintf(stderr, "Cannot execute %s: %s\n",
-	    cmd, ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
-}
-
-void ViewWin::ToggleMargins()
-{
-  if (_marginsOn)
-    DropMarginControls();
-  else
-    AddMarginControls();
-}
-#endif
 
 /*------------------------------------------------------------------------------
  * function: ViewWin::PrintPS
@@ -1185,7 +1017,6 @@ ViewWin::PrintPS()
 
   if (!_hasPrintIndex)
   {
-#ifdef MARGINS
   if (Init::DisplayLogo()) {
     Rectangle geom;
     int xVal, yVal;
@@ -1205,7 +1036,6 @@ ViewWin::PrintPS()
     DrawMargins();
     SetScreenOutput();
   }
-#endif
 
 #if defined(DEBUG)
     printf("Starting printing of window/view <%s>\n", _name);
@@ -1242,10 +1072,8 @@ ViewWin::PrintPS()
 void ViewWin::HandleExpose(WindowRep *w, int x, int y,
 			   unsigned width, unsigned height)
 {
-#ifdef MARGINS
   if (Init::DisplayLogo())
     DrawMargins();
-#endif
 }
 
 void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
@@ -1261,15 +1089,8 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 	_width = width;
 	_height = height;
 
-#ifdef MARGINS
 	if (Init::DisplayLogo())
 		DrawMargins();
-#endif
-
-#ifdef TK_WINDOW
-	if (_marginsOn)			// Resize margin controls
-		ResizeMargins(_width, _height);
-#endif
 }
 
 void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)

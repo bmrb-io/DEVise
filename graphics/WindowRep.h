@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.81  1999/08/12 16:02:48  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.80  1999/08/05 21:42:38  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -541,16 +544,6 @@ class WindowRep
 		virtual void	SetWindowBackground(PColorID bgid) = 0;
 
 public:
-
-#ifdef TK_WINDOW_old
-  /* Decorate window */
-  virtual void Decorate(WindowRep *parent, char *name,
-			unsigned int min_width,
-			unsigned int min_height) = 0;
-
-  /* Undecorate window */
-  virtual void Undecorate() = 0;
-#endif
 
   /* Reparent this window to 'other' or vice versa. */
   virtual void Reparent(Boolean child, void *other, int x, int y) = 0;

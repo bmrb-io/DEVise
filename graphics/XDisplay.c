@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.78  1999/08/05 21:42:38  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.77  1999/07/30 21:27:06  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -398,13 +403,6 @@ extern "C" {
 /* The maximum intensity of red, green, and blue. */
 const int MaxColorIntensity = 65535;
 
-#ifdef TK_WINDOW_EV2
-static int HandleTkEvent(ClientData data, XEvent *event)
-{
-  return ((XDisplay *)data)->HandleXEvent(*event);
-}
-#endif
-
 /*******************************************************************
 Open a new X display
 ********************************************************************/
@@ -440,11 +438,6 @@ XDisplay::XDisplay(char *name)
   }
 
   XDestroyWindow(_display, win);
-
-#ifdef TK_WINDOW_EV2
-  /* tell Tk to pass all X events to us */
-  Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
-#endif
 
 #ifndef LIBCS
   Register();
@@ -1267,11 +1260,6 @@ Internal non-blocking event processing
 
 void XDisplay::InternalProcessing()
 {
-#ifdef TK_WINDOW_EV2
-  /* X events are handled in HandleTkEvent */
-  return;
-#endif
-
 #if defined(DEBUG_MORE)
   printf("XDisplay:: Received callback\n");
 #endif
@@ -1320,44 +1308,6 @@ void XDisplay::InternalProcessing()
   printf("X event queue length = %d\n", XQLength(_display));
 #endif
 }
-
-#ifdef TK_WINDOW_EV2
-int XDisplay::HandleXEvent(XEvent &event)
-{
-#ifdef DEBUG
-  printf("XDisplay received X event %d from Tk\n", event.type);
-#endif
-
-  /* dispatch event to appropriate window.*/
-  Boolean found = false;
-  int index;
-  for(index = _winList.InitIterator(); _winList.More(index);) {
-    XWindowRep *win = _winList.Next(index);
-    if (win->_win == event.xany.window) {
-      /* Note: got to be careful here. We need to
-	 call DoneIterator() before informing the WindowRep
-	 because it might trigger a call to DestroyWindowRep() to
-	 delete the window. Delete() can't be called
-	 when the iterator is active. */
-      _winList.DoneIterator(index);
-      found = true;
-      win->HandleEvent(event);
-      break;
-    }
-  }
-
-  if (!found) {
-    _winList.DoneIterator(index);
-#ifdef DEBUG
-    printf("XDisplay::InternalProcessing: window for event %d not found\n",
-	   event.type);
-#endif
-    return 0;
-  }
-
-  return 1;
-}
-#endif
 
 Coord XDisplay::PointsPerPixel()
 {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/04/20 14:13:32  wenger
+  Improved debug output.
+
   Revision 1.11  1999/01/04 15:33:18  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -156,13 +159,8 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 
   int x1, y1, x2, y2;
   unsigned w1, w2, h1, h2;
-#if defined(MARGINS) || defined(TK_WINDOW)
   child1->RealGeometry(x1, y1, w1, h1);
   child2->RealGeometry(x2, y2, w2, h2);
-#else
-  child1->Geometry(x1, y1, w1, h1);
-  child2->Geometry(x2, y2, w2, h2);
-#endif
   child1->GetWindowRep()->Origin(x1, y1);
   child2->GetWindowRep()->Origin(x2, y2);
 

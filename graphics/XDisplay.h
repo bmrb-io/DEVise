@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/07/16 21:35:57  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.34  1998/12/15 18:47:13  wenger
   New option in fixed text symbol: if size is <=1, it is assumed to be a
   fraction of the screen height, rather than the font size in points.
@@ -165,11 +173,6 @@
 #include "XBitmap.h"
 #include "Pattern.h"
 
-#ifdef TK_WINDOW_EV2
-#include <tcl.h>
-#include <tk.h>
-#endif
-
 #ifndef LINE_SIZECONST
 #define LINE_SIZECONST
 const int LINE_SIZE = 512;
@@ -187,11 +190,6 @@ class XDisplay : public DeviseDisplay
     Display* GetDisplay(void)  { return _display;	}
     const Display* GetDisplay(void) const { return _display;	}
 		
-#ifdef TK_WINDOW_EV2
-    virtual ~XDisplay();
-    virtual int HandleXEvent(XEvent &event);
-#endif
-
     /* get file descriptor for connection */
     virtual int fd() {
       return ConnectionNumber(_display);

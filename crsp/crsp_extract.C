@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/11 03:23:23  jussi
+  Minor improvements for robustness.
+
   Revision 1.8  1996/04/16 20:57:10  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -48,7 +51,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <tcl.h>
-#include <tk.h>
 
 #include "sec.h"
 #include "tapedrive.h"

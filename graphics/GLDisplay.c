@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/07/16 21:35:49  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.5  1999/01/04 15:30:24  wenger
   Misc. code cleanups.
 
@@ -59,13 +67,6 @@ extern "C" {
 /* The maximum intensity of red, green, and blue. */
 const int MaxColorIntensity = 65535;
 
-#ifdef TK_WINDOW_EV2
-static int HandleTkEvent(ClientData data, XEvent *event)
-{
-  return ((GLDisplay *)data)->HandleXEvent(*event);
-}
-#endif
-
 /*******************************************************************
 Open a new X display
 ********************************************************************/
@@ -101,11 +102,6 @@ GLDisplay::GLDisplay(char *name)
   }
 
   XDestroyWindow(_display, win);
-
-#ifdef TK_WINDOW_EV2
-  /* tell Tk to pass all X events to us */
-  Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
-#endif
 
 #ifndef LIBCS
   Register();
@@ -947,11 +943,6 @@ Internal non-blocking event processing
 
 void GLDisplay::InternalProcessing()
 {
-#ifdef TK_WINDOW_EV2
-  /* X events are handled in HandleTkEvent */
-  return;
-#endif
-
 #if defined(DEBUG)
   printf("GLDisplay:: Received callback\n");
 #endif
@@ -997,41 +988,3 @@ void GLDisplay::InternalProcessing()
   printf("X event queue length = %d\n", XQLength(_display));
 #endif
 }
-
-#ifdef TK_WINDOW_EV2
-int GLDisplay::HandleXEvent(XEvent &event)
-{
-#ifdef DEBUG
-  printf("GLDisplay received X event %d from Tk\n", event.type);
-#endif
-
-  /* dispatch event to appropriate window.*/
-  Boolean found = false;
-  int index;
-  for(index = _winList.InitIterator(); _winList.More(index);) {
-    GLWindowRep *win = _winList.Next(index);
-    if (win->_win == event.xany.window) {
-      /* Note: got to be careful here. We need to
-	 call DoneIterator() before informing the WindowRep
-	 because it might trigger a call to DestroyWindowRep() to
-	 delete the window. Delete() can't be called
-	 when the iterator is active. */
-      _winList.DoneIterator(index);
-      found = true;
-      win->HandleEvent(event);
-      break;
-    }
-  }
-
-  if (!found) {
-    _winList.DoneIterator(index);
-#ifdef DEBUG
-    printf("GLDisplay::InternalProcessing: window for event %d not found\n",
-	   event.type);
-#endif
-    return 0;
-  }
-
-  return 1;
-}
-#endif

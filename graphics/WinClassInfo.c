@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/06/15 18:09:45  wenger
+  Added dumping of ViewWin objects to help with pile debugging.
+
   Revision 1.21  1999/05/07 14:13:46  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -287,11 +290,7 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 
   int x, y;
   unsigned int w, h;
-#if defined(MARGINS) || defined(TK_WINDOW)
   _win->RealGeometry(x, y, w, h);
-#else
-  _win->Geometry(x, y, w, h);
-#endif
   _win->AbsoluteOrigin(x, y); /* need to use offset from top-left of screen*/
 
   // need to allow for window manager's borders; the height of the title

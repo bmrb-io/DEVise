@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/07/13 17:32:44  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.48  1999/05/28 16:32:45  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -232,8 +236,6 @@
 
 #ifndef MappingInterp_h
 #define MappingInterp_h
-
-#include <tcl.h>
 
 #include "TDataMap.h"
 #include "Bitmap.h"

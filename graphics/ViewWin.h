@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/08/12 16:02:48  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.41  1999/08/05 21:42:37  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -229,17 +232,10 @@
 // Libraries
 //******************************************************************************
 
-#define MARGINS
-
 #include "DList.h"
 #include "DeviseTypes.h"
 #include "WindowRep.h"
 #include "DualWindowRep.h"
-
-#ifdef TK_WINDOW
-#include <tcl.h>
-#include <tk.h>
-#endif
 
 #include "Color.h"
 #include "Coloring.h"
@@ -313,13 +309,11 @@ class ViewWin : public Coloring
     virtual void Raise();
     virtual void Lower();
 
-#if defined(MARGINS) || defined(TK_WINDOW)
     /* Get size of margin controls */
     void GetMargins(unsigned int &lm, unsigned int &rm,
                     unsigned int &tm, unsigned int &bm);
     /* Get real (non-margin-adjusted) geometry of window */
     void RealGeometry(int &x, int &y, unsigned &w, unsigned &h);
-#endif
     
     /* Set geometry of window */
     void SetGeometry(int x, int y, unsigned w, unsigned h);
@@ -450,28 +444,12 @@ protected:
     int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */
 
-#ifdef MARGINS
     void DrawMargins();
-#endif
 
-#ifdef TK_WINDOW
-    void AddMarginControls();
-    void DropMarginControls();
-    void DestroyMarginControl(char *side);
-    void ReparentMarginControl(char *side, int xoff, int yoff);
-    void ResizeMargins(unsigned int w, unsigned int h);
-    void ToggleMargins();
-    
-    Boolean _marginsOn;
-    char    _tkPathName[32];
-#endif
-    
-#if defined(MARGINS) || defined(TK_WINDOW)
     unsigned int _leftMargin;
     unsigned int _rightMargin;
     unsigned int _topMargin;
     unsigned int _bottomMargin;
-#endif
 
 private:
     Boolean _hasPrintIndex;
