@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.202  1999/11/10 18:48:32  wenger
+  Changing view dimenion now changes all views in a pile; PileStack makes
+  sure all views in pile have the same number of dimensions; fixed 'bad
+  query' problem with highlight views.
+
   Revision 1.201  1999/10/30 19:08:24  wenger
   Kludgey fix for bug 527 (problems with Condor/UserWeek.ds session).
 
@@ -3716,6 +3721,8 @@ void	View::Run(void)
 	scrnHeight = sH;
         if (_updateNumDim) {
 	  winRep->SetNumDim(_numDimensions);
+	  UpdateTransform(GetWindowRep());
+	  _updateTransform = false;
 	}
     
 	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
