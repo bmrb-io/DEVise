@@ -1,6 +1,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.5  1995/09/07 20:34:21  jussi
+#	Finished an intermediate stage in designing an integrated
+#	tdata/window/map/view/link definition.
+#
 #	Revision 1.4  1995/09/05 22:47:55  jussi
 #	Added/updated CVS header.
 #
@@ -3063,39 +3067,17 @@ proc GetTDataTemplate { type total num} {
 }
 
 proc NotImplemented {} {
-    set but [ dialog .notImplemented "Not Implemented" \
+    dialog .notImplemented "Not Implemented" \
 	    "This feature not implemented yet." \
-	    "" 0 {OK} ]
+	    "" 0 OK
 }
 
 proc TestMacroDef {} {
-    global tdatas schemas maps mappings views links windows session
+    global tdatas schemas maps mappings views links windows session modified
 
-    set session "Test"
-
-    set tdatas {{tdata1 tdata1.dat} {tdata2 tdata2.dat} \
-	        {tdata3 tdata3.dat}}
-
-    set schemas(tdata1) {schema1.schema {{Xattr double 1} {Yattr int 0}}}
-    set schemas(tdata2) {schema2.schema {{Gattr int 0} {Hattr int 0}}}
-    set schemas(tdata3) {schema1.schema {{Xattr double 1} {Yattr int 0}}}
-
-    set maps(schema1.schema) {map0 map2}
-    set maps(schema2.schema) {map1}
-
-    set mappings(map0) {Xattr Yattr 2 2 1 0 0}
-    set mappings(map1) {Gattr Hattr 5 2 1 0 0}
-    set mappings(map2) {Yattr Xattr 7 1 1 0 0}
-
-    set views(view0) {0.0 100.0 0.0 10.0}
-    set views(view1) {50.0 250.0 -10.0 10.0}
-
-    set links(link0) {1 0 0 0 0 0 0}
-    set links(link1) {0 1 0 0 0 1 0}
-
-    set windows(win0) {0.5 0.5 0.7 0.7}
-    set windows(win1) {0.1 0.5 0.4 0.7}
-
+    MacroDefClear
+    source Test.tk
+    set modified 0
     MacroDef
 }
 
@@ -3110,37 +3092,16 @@ proc MacroDef {} {
     set none "-- None --"
 
     toplevel .map
-    wm minsize .map 500 400
-    wm maxsize .map 500 400
+    wm minsize .map 500 350
+    wm maxsize .map 500 350
     MacroDefTitle .map
-    wm geometry .map =500x400+50+50
+    wm geometry .map =500x350+50+50
     selection clear .map
 
-    frame .map.top -relief groove -borderwidth 2
-    frame .map.but -relief groove -borderwidth 2
+    frame .map.top
+    frame .map.but
     pack .map.top -side top -pady 3m -fill both -expand 1
     pack .map.but -side top -pady 3m -fill x
-
-    frame .map.left -relief groove -borderwidth 2
-    frame .map.right -relief groove -borderwidth 2
-    pack .map.left .map.right -in .map.top -side left \
-	    -fill both -expand 1
-
-    frame .map.tdata -relief groove -borderwidth 2
-    frame .map.window -relief groove -borderwidth 2
-    frame .map.gdata -relief groove -borderwidth 2
-    frame .map.view -relief groove -borderwidth 2
-    frame .map.link -relief groove -borderwidth 2
-    pack .map.tdata .map.window -in .map.left -side top -pady 3m \
-	    -fill both -expand 1
-    pack .map.gdata .map.view .map.link -in .map.right -side top -pady 3m \
-	    -fill both -expand 1
-
-    MacroDefTdata .map.tdata "$none"
-    MacroDefWindows .map.window "$none"
-    MacroDefMaps .map.gdata "$none"
-    MacroDefViews .map.view "$none"
-    MacroDefLinks .map.link "$none"
 
     frame .map.but.row1
     frame .map.but.row2
@@ -3154,13 +3115,15 @@ proc MacroDef {} {
 	}
     }
     button .map.but.saveas -text "Save as..." -width 10 -command {
-	if {[MacroDefSession] > 0} {
+	if {[MacroDefSession "Save Session"] > 0} {
 	    MacroDefTitle .map
 	    MacroDefSave $session.tk
 	}
     }
     button .map.but.load -text "Load..." -width 10 -command MacroDefLoad
-    button .map.but.auto -text "Auto..." -width 10 -command NotImplemented
+    button .map.but.auto -text "Auto..." -width 10 -state disabled -command {
+	MacroDefAuto $tdata
+    }
     pack .map.but.save .map.but.saveas .map.but.load .map.but.auto \
 	    -in .map.but.row1 -side left -padx 5m
 
@@ -3170,6 +3133,27 @@ proc MacroDef {} {
     button .map.but.help -text Help -width 10 -command MacroDefHelp
     pack .map.but.ok .map.but.apply .map.but.cancel .map.but.help \
 	    -in .map.but.row2 -side left -padx 5m
+
+    frame .map.left -relief groove -borderwidth 2
+    frame .map.right -relief groove -borderwidth 2
+    pack .map.left .map.right -in .map.top -side left \
+	    -fill both -expand 1
+
+    frame .map.tdata
+    frame .map.window
+    frame .map.gdata
+    frame .map.view
+    frame .map.link
+    pack .map.tdata .map.window -in .map.left -side top -pady 3m \
+	    -fill both -expand 1
+    pack .map.gdata .map.view .map.link -in .map.right -side top -pady 3m \
+	    -fill both -expand 1
+
+    MacroDefTdata .map.tdata "$none"
+    MacroDefWindows .map.window "$none"
+    MacroDefMaps .map.gdata "$none"
+    MacroDefViews .map.view "$none"
+    MacroDefLinks .map.link "$none"
 
     tkwait visibility .map
     grab set .map
@@ -3186,7 +3170,7 @@ proc MacroDefTitle {m} {
     }
 }
 
-proc MacroDefSession {} {
+proc MacroDefSession {title} {
     global session newsession
 
     # see if .session window already exists; if so, just return
@@ -3196,12 +3180,12 @@ proc MacroDefSession {} {
     toplevel .session
     wm minsize .session 300 100
     wm maxsize .session 300 100
-    wm title .session "Session Name"
+    wm title .session $title
     wm geometry .session =300x100+100+100
     selection clear .session
 
-    frame .session.entry -relief groove -borderwidth 2
-    frame .session.but -relief groove -borderwidth 2
+    frame .session.entry
+    frame .session.but
     pack .session.entry .session.but -side top -pady 3m -fill both -expand 1
 
     set newsession $session
@@ -3230,49 +3214,119 @@ proc MacroDefSession {} {
 }
 
 proc MacroDefSave {fname} {
-    global tdatas schemas maps mappings views links windows session
+    global tdatas schemas maps mappings views links windows session modified
 
-    set f [open $fname w]
+    if {[file readable $fname]} {
+	set but [dialog .fileExists "File Exists" \
+		"Warning: File $fname exists already." \
+		"" 0 Overwrite Cancel]
+	if {$but == 1} { return }
+    }
+
+    set err [catch {set f [open $fname w]} ]
+    if {$err > 0} {
+	dialog .cannotWrite "Cannot Open File" \
+		"Cannot open file $fname for writing." \
+		"" 0 OK
+	return
+    }
+
     puts $f "set session \"$session\""
     puts $f "set tdatas \"$tdatas\""
-    foreach schema [array names schemas] {
-	puts $f "set schemas($schema) \"$schemas($schema)\""
+    foreach tdata [array names schemas] {
+	puts $f "set tdata \"$tdata\""
+	puts $f "set schemas(\$tdata) \"$schemas($tdata)\""
     }
     foreach m [array names maps] {
-	puts $f "set maps($m) \"$maps($m)\""
+	puts $f "set m \"$m\""
+	puts $f "set maps(\$m) \"$maps($m)\""
     }
     foreach m [array names mappings] {
-	puts $f "set mappings($m) \"$mappings($m)\""
+	puts $f "set m \"$m\""
+	puts $f "set mappings(\$m) \"$mappings($m)\""
     }
     foreach v [array names views] {
-	puts $f "set views($v) \"$views($v)\""
+	puts $f "set v \"$v\""
+	puts $f "set views(\$v) \"$views($v)\""
     }
     foreach l [array names links] {
-	puts $f "set links($l) \"$links($l)\""
+	puts $f "set l \"$l\""
+	puts $f "set links(\$l) \"$links($l)\""
     }
     foreach win [array names windows] {
-	puts $f "set windows($win) \"$windows($win)\""
+	puts $f "set win \"$win\""
+	puts $f "set windows(\$win) \"$windows($win)\""
     }
 
     close $f
+
+    set modified 0
 }
 
 proc MacroDefLoad {} {
-    global tdatas schemas maps mappings views links windows session none
-    if {[MacroDefSession] > 0} {
-	MacroDefTitle .map
-	unset tdatas
-	unset schemas
-	unset maps
-	unset mappings
-	unset views
-	unset links
-	unset windows
-	source $session.tk
-	MacroDefMaps .map.gdata $none
-	MacroDefViews .map.view $none
-	MacroDefLinks .map.link $none
+    global tdatas schemas maps mappings views links windows session modified
+    global none
+
+    if {$modified > 0} {
+	set but [dialog .modified "Session Modified" \
+		"Warning: Current session modified." \
+		"" 0 Save Discard Cancel]
+	if {$but == 0} {
+	    .map.but.save invoke
+	} elseif {$but == 2} {
+	    return
+	}
     }
+
+    if {[MacroDefSession "Load Session"] == 0} { return }
+
+    set fname $session.tk
+    MacroDefClear
+    if {![file readable $fname]} {
+	dialog .noFile "No File" \
+		"File $fname does not exist." \
+		"" 0 OK
+    } else {
+	source $fname
+    }
+    MacroDefTitle .map
+    MacroDefTdata .map.tdata $none
+    MacroDefWindows .map.window $none
+    MacroDefMaps .map.gdata $none
+    MacroDefViews .map.view $none
+    MacroDefLinks .map.link $none
+
+    set modified 0
+}
+
+proc MacroDefClear {} {
+    global tdatas schemas maps mappings views links windows session
+
+    set session ""
+    set tdatas ""
+
+    catch {unset schemas}
+    catch {unset maps}
+    catch {unset mappings}
+    catch {unset views}
+    catch {unset links}
+    catch {unset windows}
+
+    # the following are required for the old Tcl to work properly;
+    # these define arrays with zero elements
+
+    set schemas(a) a
+    unset schemas(a)
+    set maps(a) a
+    unset maps(a)
+    set mappings(a) a
+    unset mappings(a)
+    set views(a) a
+    unset views(a)
+    set links(a) a
+    unset links(a)
+    set windows(a) a
+    unset windows(a)
 }
 
 proc MacroDefHelp {} {
@@ -3293,8 +3347,126 @@ proc MacroDefHelp {} {
     tkwait window .help
 }
 
+proc MacroDefAuto {tdata} {
+    global schemas modified x
+
+    # see if .auto window already exists; if so, just return
+    set err [catch {set exists [wm state .auto]}]
+    if {!$err} { return }
+
+    toplevel .auto
+    wm minsize .auto 250 150
+    wm maxsize .auto 250 150
+    wm title .auto "Automatic Views"
+    wm geometry .auto =250x150+100+100
+    selection clear .auto
+
+    label .auto.label -text "Select Auto Parameters"
+    frame .auto.sel
+    frame .auto.but
+    pack .auto.label -side top -pady 3m
+    pack .auto.sel -side top -padx 3m -fill both -expand 1
+    pack .auto.but -side top -fill x -expand 1
+
+    label .auto.sel.label -text X -width 8
+    menubutton .auto.sel.attr -relief raised \
+	    -textvariable x -menu .auto.sel.attr.menu -width 15
+    pack .auto.sel.label .auto.sel.attr -side left -fill x -expand 1
+
+    menu .auto.sel.attr.menu
+    set sname [lindex $schemas($tdata) 0]
+    set schema [lindex $schemas($tdata) 1]
+    set x ""
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
+	.auto.sel.attr.menu add radiobutton -label $name \
+		-variable x -value $name
+	if {$sorted > 0 && $x == ""} {
+	    set x $name
+	}
+    }
+    if {$x == ""} {
+	set x [lindex [lindex $schema 0] 0]
+    }
+
+    tk_menuBar .auto.sel .auto.sel.attr
+
+    button .auto.but.ok -text OK -width 10 -command {
+	MacroDefAutoActual $tdata $x
+	destroy .auto
+    }
+    button .auto.but.cancel -text Cancel -width 10 -command { destroy .auto }
+    pack .auto.but.ok .auto.but.cancel -side left -expand 1
+
+    tkwait visibility .auto
+    grab set .auto
+    tkwait window .auto
+}
+
+proc MacroDefAutoActual {tdata x} {
+    global schemas maps mappings views links windows modified none
+
+    set window "$tdata Auto"
+    set err [catch {set exists $windows($window)}]
+    if {$err > 0} {
+	set windows($window) {0.1 0.3 0.7 0.7}
+    }
+    
+    # scan x in file and compute xlo and xhi
+    set xlo 0.0
+    set xhi 100.0
+
+    set linkname "$x link"
+    set err [catch {set exists $links($linkname)}]
+    if {$err > 0} {
+	set defn [list 1 0 0 0 0 0 0]
+	set links($linkname) $defn
+    }
+
+    set sname [lindex $schemas($tdata) 0]
+    set schema [lindex $schemas($tdata) 1]
+    set color 0
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
+	if {$name == $x} { continue }
+
+	set mapname "$name vs $x"
+	set err [catch {set exists $mappings($mapname)}]
+	if {$err > 0} {
+	    set defn [list $x $name $color 2 1 0 0]
+	    set mappings($mapname) $defn
+	    lappend maps($sname) $mapname
+	    incr color
+	}
+
+	set viewname "$name view"
+	set err [catch {set exists $views($viewname)}]
+	if {$err > 0} {
+	    # scan y in file and compute ylo and yhi
+	    set ylo 0.0
+	    set yhi 100.0
+	    set defn [list $xlo $xhi $ylo $yhi]
+	    set views($viewname) $defn
+	}
+
+	# insert $viewname to $window using $mapname
+	# apply $linkname to $viewname
+    }
+
+    MacroDefWindows .map.window $none
+    MacroDefMaps .map.gdata $none
+    MacroDefViews .map.view $none
+    MacroDefLinks .map.link $none
+
+    set modified 1
+}
+
 proc MacroDefTdata {m default} {
-    global tdatas tdata none
+    global tdatas tdata modified none
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -3324,13 +3496,20 @@ proc MacroDefTdata {m default} {
 	set tdata $default
     }
 
-    $m.mbar.menu add command -label "Other..." \
-	    -command NotImplemented
+    if {$tdata != $none} {
+	# fix: .map.but.auto s.b. a parameter
+	.map.but.auto configure -state normal
+    }
+
+    $m.mbar.menu add command -label "Other..." -command {
+	NotImplemented
+	# set modified 1
+    }
     tk_menuBar $m $m.mbar
 }
 
 proc MacroDefWindows {m default} {
-    global windows window none
+    global windows window modified none
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -3343,7 +3522,7 @@ proc MacroDefWindows {m default} {
     label .map.window.label -text "Window:" -width 8
     pack .map.window.label .map.window.mbar -side left -padx 2m
     menu .map.window.mbar.menu
-    foreach win [array names windows] {
+    foreach win [lsort [array names windows]] {
 	.map.window.mbar.menu add command -label $win \
 		-command "set window \"$win\""
 	if {$window == $none} {
@@ -3358,13 +3537,15 @@ proc MacroDefWindows {m default} {
 	set window $default
     }
 
-    .map.window.mbar.menu add command -label "New..." \
-	    -command NotImplemented
+    .map.window.mbar.menu add command -label "New..." -command {
+	NotImplemented
+	# set modified 1
+    }
     tk_menuBar .map.window .map.window.mbar
 }
 
 proc MacroDefMaps {m default} {
-    global schemas maps tdata gdata none
+    global schemas maps tdata gdata modified none
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -3379,7 +3560,7 @@ proc MacroDefMaps {m default} {
     menu $m.mbar.menu
     if {$tdata != $none} {
 	set schema [lindex $schemas($tdata) 0]
-	foreach map $maps($schema) {
+	foreach map [lsort $maps($schema)] {
 	    $m.mbar.menu add command -label $map \
 		    -command "set gdata \"$map\""
 	    if {$gdata == $none} {
@@ -3395,26 +3576,25 @@ proc MacroDefMaps {m default} {
 	set gdata $default
     }
 
-    $m.mbar.menu add command -label "New..." \
-	    -command {
-	if {$tdata == $none} {
-	    puts "Error: TData is $tdata"
-	    exit 1
-	}
-	set sname [lindex $schemas($tdata) 0]
-	set schema [lindex $schemas($tdata) 1]
-	set mapname [DefMapping $schema]
-	if {$mapname != ""} {
-	    lappend maps($sname) $mapname
-	    # fix this: .map.gdata s.b. $m
-	    MacroDefMaps .map.gdata $mapname
+    if {$tdata != $none} {
+	$m.mbar.menu add command -label "New..." \
+		-command {
+	    set sname [lindex $schemas($tdata) 0]
+	    set schema [lindex $schemas($tdata) 1]
+	    set mapname [DefMapping $schema]
+	    if {$mapname != ""} {
+		lappend maps($sname) $mapname
+		# fix this: .map.gdata s.b. $m
+		MacroDefMaps .map.gdata $mapname
+		set modified 1
+	    }
 	}
     }
     tk_menuBar $m $m.mbar
 }
 
 proc MacroDefViews {m default} {
-    global views view none
+    global views view modified none
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -3427,7 +3607,7 @@ proc MacroDefViews {m default} {
     label $m.label -text "View:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
-    foreach v [array names views] {
+    foreach v [lsort [array names views]] {
 	$m.mbar.menu add command -label $v \
 		    -command "set view \"$v\""
 	if {$view == $none} {
@@ -3448,13 +3628,14 @@ proc MacroDefViews {m default} {
 	if {$viewname != ""} {
 	    # fix this: .map.view s.b. $m
 	    MacroDefViews .map.view $viewname
+	    set modified 1
 	}
     }
     tk_menuBar $m $m.mbar
 }
 
 proc MacroDefLinks {m default} {
-    global links link none
+    global links link modified none
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -3467,7 +3648,7 @@ proc MacroDefLinks {m default} {
     label $m.label -text "Link:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
-    foreach l [array names links] {
+    foreach l [lsort [array names links]] {
 	$m.mbar.menu add command -label $l \
 		    -command "set link \"$l\""
 	if {$link == $none} {
@@ -3488,12 +3669,10 @@ proc MacroDefLinks {m default} {
 	if {$linkname != ""} {
 	    # fix this: .map.link s.b. $m
 	    MacroDefLinks .map.link $linkname
+	    set modified 1
 	}
     }
     tk_menuBar $m $m.mbar
-}
-
-proc MacroEdit {} {
 }
 
 proc DefMapping {schema} {
@@ -3501,7 +3680,7 @@ proc DefMapping {schema} {
     global mappings devcolors devshapes
     global mapname x y color shape size pattern orient
 
-    # see if .map window already exists; if so, just return
+    # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
     if {!$err} { return }
 
@@ -3515,8 +3694,8 @@ proc DefMapping {schema} {
     set mapname "Default"
 
     label .def.label -text "Enter mapping parameters"
-    frame .def.map -relief groove -borderwidth 2
-    frame .def.but -relief groove -borderwidth 2
+    frame .def.map
+    frame .def.but
     pack .def.label -side top -pady 3m
     pack .def.map -side top -fill both -expand 1
     pack .def.but -side top -fill x -expand 1
@@ -3680,8 +3859,8 @@ proc DefView {} {
     set yhi "100.0"
 
     label .def.label -text "Enter view parameters"
-    frame .def.view -relief groove -borderwidth 2
-    frame .def.but -relief groove -borderwidth 2
+    frame .def.view
+    frame .def.but
     pack .def.label -side top -pady 3m
     pack .def.view -side top -fill both -expand 1
     pack .def.but -side top -fill x -expand 1
@@ -3763,9 +3942,9 @@ proc DefLink {} {
     set orientation 0
 
     label .def.label -text "Enter link parameters"
-    frame .def.link -relief groove -borderwidth 2
+    frame .def.link
     frame .def.name
-    frame .def.but -relief groove -borderwidth 2
+    frame .def.but
     pack .def.label -side top -pady 3m
     pack .def.link -side top -fill both -expand 1
     pack .def.name -side top -fill x -expand 1
