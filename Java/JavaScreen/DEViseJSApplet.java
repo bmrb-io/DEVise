@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2002/02/22 21:51:10  xuk
+// Added an applet parameter to hide all of the applet buttons in browser.
+// param name="disablebuttons" value="true|false"
+//
 // Revision 1.7  2001/10/10 19:28:24  xuk
 // Added display control command line argument/parameter for auto playback.
 // For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
@@ -331,6 +335,17 @@ public class DEViseJSApplet extends Applet
 	    }
         } else {
             jsValues.session.disableButtons = false;
+        }
+
+        String reloadString = getParameter("reloadapplet");
+        if (reloadString != null) {
+	    if (reloadString.equals("true")) {
+		jsValues.session.reloadApplet = true;
+	    } else {
+		jsValues.session.reloadApplet = false;
+	    }
+        } else {
+            jsValues.session.reloadApplet = true;
         }
     }
 

@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2002/02/22 21:51:10  xuk
+// Added an applet parameter to hide all of the applet buttons in browser.
+// param name="disablebuttons" value="true|false"
+//
 // Revision 1.9  2001/11/07 22:31:29  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -158,6 +162,7 @@ public final class DEViseJSValues
 	public boolean playbackOriginal = false;
 	public boolean playbackDisplay = true;
 	public boolean disableButtons = false;
+	public boolean reloadApplet = true;
     }
 
     public Canvas canvas = new Canvas();
