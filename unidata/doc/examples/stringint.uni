@@ -1,0 +1,23 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Mar 17 1997 13:06:11
+# DEVise version: 1.4.1
+# DEVise date: Mar 16 1997
+# DEVise endHeader
+
+schema stringint {
+
+    type = text;
+    comment = '//';
+    whitespace = ' \t';
+
+    attr str {
+        type = string;
+	   maxlen = 10;
+    }
+
+    attr i1 {
+        type = int;
+ 	   value = $str;
+    }
+}
