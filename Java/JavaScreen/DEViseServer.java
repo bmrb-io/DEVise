@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2001/03/03 20:08:20  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+// 1.Added cmdSaveSession() to process JAVAC_SaveCurSession command.
+// 2.Added cmdReopenSession() to process JAVAC_ReopenSession command.
+// 3.Changes in switchClient() to avoid unnecessary sending JAVAC_SaveSession command.
+//
 // Revision 1.50  2001/02/20 20:02:23  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -538,6 +544,7 @@ public class DEViseServer implements Runnable
 			
       			continue;
                     }
+		    pop.pn("We got: " + clientCmd); 
 		    processServerCmd(serverDatas);
                 } catch (YException e) {
                     pop.pn("DEViseServer failed1");
@@ -719,6 +726,9 @@ public class DEViseServer implements Runnable
             sendCmd(DEViseCommands.CLOSE_SESSION);
             currentDir = new Vector();
             currentDir.addElement(rootDir);
+        } else {
+            serverCmds = new String[1];
+            serverCmds[0] = DEViseCommands.DONE;
         }
     }
 
