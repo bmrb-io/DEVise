@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:13  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include "Config.h"
@@ -20,6 +37,9 @@
 #include "BufferFocal.h"
 #include "BufferLifo.h"
 #include "BufferRnd.h"
+
+//#define DEBUG
+
 extern int debug;
 int BUFMGR_FULL_PAGESIZE = DEVISE_PAGESIZE;
 static int _rangeHistSize[RANGE_ALLOC_HIST_SIZE] = {
@@ -110,6 +130,10 @@ Boolean BufMgrFull::GetNextRangeInMem(RangeInfo *&rangeInfo){
 
 /* Init Getting GData in memory */
 void BufMgrFull::InitGetGDataInMem(){
+#ifdef DEBUG
+	printf("BufMgrFull:InitGetGDataInMem\n");
+#endif
+
 	int numRanges;
 	RangeInfo *listHead;
 	_gRangeList->GetRangeList(numRanges,listHead);
@@ -131,6 +155,10 @@ Boolean BufMgrFull::GetGDataInMem(RecId &startRecId, int &numRecs,void *&buf ){
 void BufMgrFull::DoneGetGDataInMem() {}
 
 void BufMgrFull::InitGetTDataInMem(){
+#ifdef DEBUG
+	printf("BufMgrFull:InitGetTDataInMem\n");
+#endif
+
 	int numRanges;
 	RangeInfo *listHead;
 	_tRangeList->GetRangeList(numRanges,listHead);
@@ -355,12 +383,10 @@ void BufMgrFull::DoneTDataScan(){
 void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 	RecId lowId, RecId highId, RecordOrder recOrder,
 	Boolean tdataOnly){
-/*
-if (debug){
-	printf("BufMgrFull::InitGetRecs(%d,%d)\n",lowId,highId);
-	Print(tdata);
-}
-*/
+#ifdef DEBUG
+  printf("BufMgrFull::InitGetRecs (%d,%d) with tdata 0x%x, gdata 0x%x\n",
+	 lowId, highId, tdata, gdata);
+#endif
 
 	RangeInfo *info;
 	if (tdata->RecSize() < 0){
@@ -389,7 +415,7 @@ if (debug){
 		_gRangeList = _tdataRangeList->Get(gdata);
 
 	if (!_tdataOnly && gdata != NULL){
-		/* start with getting in memoy GData */
+		/* start with getting in memory GData */
 		InitGetGDataInMem();
 		_state = DoGDataInMem;
 	}
