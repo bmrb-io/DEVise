@@ -1148,6 +1148,9 @@ Num Date        Status  Description
 300 02/18/98	OPEN	When printing to PostScript, views within a window
 			are printed in reversed order top-to-bottom. (rkw)
 
+301 02/19/98	OPEN	Sometimes get a 'Bad free() ignored.' error from
+			server when you do 'kill_devised'. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
