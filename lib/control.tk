@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.16  1995/10/11 17:03:27  ravim
+#	Schema browser invoked from the main menu bar.
+#
 #	Revision 1.15  1995/09/28 17:45:16  jussi
 #	Added 'Save as Template' command. Minor other improvements.
 #
@@ -288,27 +291,30 @@ menu .mbar.file.menu -tearoff 0
 .mbar.file.menu add command -label "Definitions" -command MacroDefStart
 
 menu .mbar.view.menu -tearoff 0
-.mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
+.mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
+.mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Swap View Position" -command DoSwapView
 .mbar.view.menu add command -label "Move To Window" -command DoViewMove
+.mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
+.mbar.view.menu add command -label "Bring Back To Window" -command DoBringView
+.mbar.view.menu add separator
 .mbar.view.menu add command -label "Link" -command DoViewLink
 .mbar.view.menu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu add command -label "XAxis" -command {DoViewAxis x}
 .mbar.view.menu add command -label "YAxis" -command {DoViewAxis y}
-.mbar.view.menu add command -label "Action" -command DoViewAction
-.mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
-.mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
 .mbar.view.menu add command -label "Toggle X Axes" \
 	-command {DoToggleAxisAllViews X}
 .mbar.view.menu add command -label "Toggle Y Axes" \
 	-command {DoToggleAxisAllViews Y}
-.mbar.view.menu add command -label "Swap Position" -command DoSwapView
-# .mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
-# .mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
+#.mbar.view.menu add command -label "Action" -command DoViewAction
+#.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
+#.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
 
 # menu .mbar.link.menu -tearoff 0
-# .mbar.link.menu add command -label "Create" -command DoLinkCreate
-# .mbar.link.menu add command -label "Modify" -command DoModifyLink
-# .mbar.link.menu add command -label "Link View" -command DoViewLink
+#.mbar.link.menu add command -label "Create" -command DoLinkCreate
+#.mbar.link.menu add command -label "Modify" -command DoModifyLink
+#.mbar.link.menu add command -label "Link View" -command DoViewLink
 
 menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Create" -command DoCursorCreate
@@ -1097,42 +1103,64 @@ proc DoViewDestroy {} {
     }
 }
 
-# remove view from window
+# Remove view from window
 proc DoViewRemove {} {
     global curView
-    if { [string compare $curView ""] == 0 } {
+    if {$curView == ""} {
 	dialog .removeView "Remove View" \
 		"Please select a view by clicking in it first." "" 0 { OK }
 	return
     }
-    set answer [ dialog .removeView "Remove View" \
-	    "Remove view $curView from its window?" "" 1 Cancel Ok]
-    if { $answer == 0 } {
+
+    # Remove view
+    set ans [DEVise removeView $curView]
+    if {$ans != ""} {
+	dialogList .removeError "RemoveError" $ans "" 0 {OK}
 	return
-    } else {
-	# Remove view
-	set ans [DEVise removeView $curView ]
-	if { [string compare $ans "" ] != 0 } {
-	    dialogList .removeError "RemoveError" $ans "" 0 {OK}
-	    return
-	}
-	# Unselect current view
-	ProcessViewSelected ""
     }
+
+    # Unselect current view
+    ProcessViewSelected ""
 }
 
-# Move view to window
+# Move view to another window
 proc DoViewMove {} {
-    global dialogListVar 
+    global dialogListVar curView
+
+    if {$curView == ""} {
+	set answer [ dialogList .removeView "Move View" \
+		"Select view to move to a window" "" 0 { Cancel OK } \
+		[ViewSet] ]
+	if {$answer == 0} {
+	    return
+	}
+	set viewName $dialogListVar(selected)
+    } else {
+	set viewName $curView
+    }    
+
+    set winName [ DoGetWindow ]
+    if {$winName == ""} {
+	return
+    }
+    
+    DEVise insertWindow $viewName $winName
+    ProcessViewSelected $viewName
+}
+
+# Bring back view to window
+proc DoBringView {} {
+    global dialogListVar
+
     set answer [ dialogList .removeView "Move View" \
 	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
-    if { $answer == 0 } {
+    if {$answer == 0} {
 	return
     }
     set viewName $dialogListVar(selected)
     
     set winName [ DoGetWindow ]
-    if { [string compare $winName "" ] == 0 } {
+    if {$winName == ""} {
 	return
     }
     
@@ -1697,7 +1725,7 @@ proc ProcessViewSelected { view } {
 # Process filter changed in a view
 proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
     # puts "ProcessViewFilterChange { $view $flushed $xLow \
-	    $yLow $xHigh $yHigh $marked}" 
+    #    $yLow $xHigh $yHigh $marked}" 
     global curView historyWinOpened
 
     if {$view != $curView} {
