@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/09/05 20:00:12  jussi
+  Added screenWidth and screenHeight command line arguments.
+
   Revision 1.7  1996/09/04 21:24:49  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -112,6 +115,8 @@ public:
   static int ScreenWidth() { return _screenWidth; }
   static int ScreenHeight() { return _screenHeight; }
 
+  static int ImageDelay() { return _imageDelay; }
+
 private:
 
   static Boolean _savePopup; /* true if pop-up window should be saved and
@@ -153,6 +158,8 @@ private:
 
   static int _screenWidth;
   static int _screenHeight;
+
+  static int _imageDelay;
 };
 
 #endif

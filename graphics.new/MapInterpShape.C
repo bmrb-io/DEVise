@@ -17,6 +17,13 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/06 07:00:11  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.16  1996/09/04 21:25:01  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -1283,6 +1290,8 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 #ifdef DEBUG
 	printf("Drawing image %s at %.2f,%.2f\n", file, tx, ty);
 #endif
+
+	if (Init::ImageDelay() != 0) sleep(Init::ImageDelay());
 
 	// Display the image.
 	if (dali)

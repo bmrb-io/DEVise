@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/05 20:00:05  jussi
+  Added screenWidth and screenHeight command line arguments.
+
   Revision 1.16  1996/09/04 21:24:49  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -160,6 +163,7 @@ char * Init::_daliServer = NULL;
 Boolean Init::_daliQuit = false;
 int Init::_screenWidth = -1;      /* screen width (batch mode) */
 int Init::_screenHeight = -1;     /* screen height (batch mode) */
+int Init::_imageDelay = 0; /* delay before drawing an image */
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -217,6 +221,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-daliquit: kills dali server when Devise exits\n");
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
+  fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
 
   Exit::DoExit(1);
 }
@@ -575,6 +580,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_screenHeight = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "imageDelay") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_imageDelay = atoi(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
