@@ -60,11 +60,6 @@
 
 #include "Color.h"
 
-#include "types.h"
-#include "DateTime.h"
-#include "ExecExpr.h"
-#include "MemoryMgr.h"
-
 #include <stl.h>
 #include <string>
 
@@ -72,9 +67,7 @@
 // Template Instantiations (Easy Stuff, Main Code)
 //******************************************************************************
 
-#include "queue.h"
 #include "HashTable.h"
-#include "Array.h"
 
 // From Exit.h, needed for a #define dependency in SortedTable.h
 #define DOASSERT(c,r)	{}
