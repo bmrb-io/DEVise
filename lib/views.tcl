@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1997/02/03 04:12:42  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.23  1997/01/22 23:46:26  jussi
 #  Removed references to queryWinOpened, query3dWinOpened,
 #  historyWinOpened and stackWinOpened. Replaced them with
@@ -604,8 +607,8 @@ proc DoLinkCreate {} {
 
     set but [dialogCkBut .createLink "Create Link" \
 	    "Enter parameters for creating a new link" "" \
-	    0 { OK Cancel } name \
-	    {x y color size pattern orientation shape record} {3}]
+	     0 { OK Cancel } name \
+	    {x y color size pattern orientation shape record_positive record_negative } {3}]
     if { $but != 0 } {
 	return ""
     }
@@ -623,17 +626,27 @@ proc DoLinkCreate {} {
 		"Link $name already exists" "" 0 OK]
 	return 
     }
-
+    set type -1
+    if {[ expr ($flag & 128) ] }  {
+	set type 0
+	puts " link type + " 
+	set flag 128
+    } else if { [ expr ($flag & 256) } {
+	set type 1
+	puts " link type - " 
+	set flag 128
+    }
     set result [DEVise create link Visual_Link $name $flag]
+    if { $flag == 128  } {
+	DEVise setLinkType $name $type
+    }
     if {$result == ""} {
 	set but [ dialog .linkError "Link Error" \
 		"Cannot create link $name" "" 0 OK]
 	return
     }
-
     return $name
 }
-
 ############################################################
 
 # Display the views in a link 
@@ -706,7 +719,6 @@ proc DoViewUnlink {} {
 	    lappend viewLinks $link
 	}
     }
-
     if { [llength $viewLinks ] == 0 } {
 	set but [ dialog .removeLink "No Links" \
 		"View has no established link" "" 0 OK ]
@@ -725,6 +737,29 @@ proc DoViewUnlink {} {
 }
 
 ############################################################
+proc DoSetLinkType {} {
+    global dialogListVar
+
+    set linkSet [RecordLinkSet]
+    if { [llength $linkSet] == 0 } {
+	dialog .noLinks "No Links" "There are no links." "" 0 OK
+	return
+    }
+    set answer [ dialogList .getLink "Select Link" \
+	    "Select a link" "" 0 \
+	    { + - Cancel} $linkSet ]		
+    set linkname $dialogListVar(selected)
+    if { $answer == 0} {
+	DEVise setLinkType $linkname 0
+    } elseif { $answer == 1} {
+	DEVise setLinkType $linkname 1
+    } elseif { $answer == 2} {
+	return
+    }
+    set linkMaster [DEVise getLinkMaster $linkname]
+    DEVise refreshView $linkMaster
+}
+
 
 # Set current view as master
 proc DoSetLinkMaster {} {
@@ -764,6 +799,7 @@ proc DoSetLinkMaster {} {
     DEVise setLinkMaster $link $curView
 }
 
+
 ############################################################
 
 # Set link to be without a master
@@ -794,6 +830,7 @@ proc DoResetLinkMaster {} {
 
     DEVise resetLinkMaster $link
 }
+
 
 ############################################################
 

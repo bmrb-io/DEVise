@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/01/30 02:12:02  beyer
+#  added stringCaseCmp for case insensitive string comparisons and
+#  lsortCase for case insensitive list sorting.
+#
 #  Revision 1.38  1997/01/23 00:07:14  jussi
 #  Added WindowExists procedure.
 #
@@ -303,7 +307,6 @@ proc CategoryInstances {category } {
     }
     return $inst
 }
-
 ############################################################
 
 # Get the class of an instance belonging to category
@@ -359,6 +362,25 @@ proc InterpretedGData {} {
 
 ############################################################
 
+# list of all lenses 
+
+proc ViewLensSet {} {
+    return [ DEVise get "view" "ViewLens" ]
+}
+############################################################
+
+# list of all views other than lenses 
+
+proc ViewExceptLensSet {} {
+    set tmp [concat [ DEVise get "view" "Scatter" ] \
+		[ DEVise get "view" "SortedX"] ]
+    puts "ViewExceptLensSet = $tmp"
+    return $tmp
+}
+
+
+############################################################
+
 # list of all views
 
 proc ViewSet {} {
@@ -381,6 +403,19 @@ proc LinkSet {} {
     return [ CategoryInstances "link" ]
 }
 
+############################################################
+#list of all record links
+proc RecordLinkSet {} {
+    set linkSet [ CategoryInstances "link"]
+    set recLinkSet {}
+    foreach link $linkSet {
+	set flag [DEVise getLinkFlag $linkSet]
+	if { [expr $flag & 128] } {
+	    set recLinkSet [lappend $recLinkSet $link]
+	}
+    }
+    return $recLinkSet
+}
 ############################################################
 
 # list of all windows
@@ -834,7 +869,6 @@ proc WindowExists {w} {
     return 1
 }
 
-############################################################
 
 proc AbortProgram {reason} {
     if {[WindowVisible .abort]} {

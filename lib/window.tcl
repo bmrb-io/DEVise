@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1997/01/27 22:39:38  wenger
+#  Fixed workaround to bug 137 so it doesn't mess things up in batch mode.
+#
 #  Revision 1.25  1997/01/27 20:15:25  wenger
 #  Workaround to bug 137: disables Stack Control dialog buttons while drawing.
 #
@@ -162,8 +165,10 @@ proc SetWindowLayout {win} {
     frame .setLayout.row2
     frame .setLayout.row3
     frame .setLayout.row4
+    frame .setLayout.row5
+
     pack .setLayout.row1 .setLayout.row2 .setLayout.row3 .setLayout.row4 \
-	    -in .setLayout.top -side top -fill x
+	    .setLayout.row5 -in .setLayout.top -side top -fill x
 
     frame .setLayout.bot.but
     pack .setLayout.bot.but -side top
@@ -172,6 +177,7 @@ proc SetWindowLayout {win} {
 	    -value auto -width 12 -anchor w -command {
 	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state disabled
+	.setLayout.row5.edit configure -state disabled
     }
     pack .setLayout.row1.b -side left
 
@@ -180,6 +186,7 @@ proc SetWindowLayout {win} {
 	    -command {
 	.setLayout.row2.e configure -state normal
 	.setLayout.row3.e configure -state disabled
+	.setLayout.row5.edit configure -state disabled
     }
     label .setLayout.row2.l -text "Width:" -width 8
     entry .setLayout.row2.e -relief sunken -textvariable horRequested \
@@ -189,8 +196,9 @@ proc SetWindowLayout {win} {
     radiobutton .setLayout.row3.b -text Horizontal \
 	    -variable layoutOption -value fixhor -width 12 -anchor w \
 	    -command {
-	.setLayout.row3.e configure -state disabled
+	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state normal
+	.setLayout.row5.edit configure -state disabled
     }
     label .setLayout.row3.l -text "Height:" -width 8
     entry .setLayout.row3.e -relief sunken -textvariable verRequested \
@@ -201,14 +209,24 @@ proc SetWindowLayout {win} {
 	    -value stacked -width 12 -anchor w -command {
 	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state disabled
+	.setLayout.row5.edit configure -state disabled
     }
     pack .setLayout.row4.b -side left
+    radiobutton .setLayout.row5.b -text UserDefined  -variable layoutOption \
+	    -value  custom  -width 12 -anchor w -command {
+	.setLayout.row2.e configure -state disabled
+	.setLayout.row3.e configure -state disabled
+	.setLayout.row5.edit configure -state normal
+    }
+    button .setLayout.row5.edit -text "Editor" -command { RootLayout } 
+    pack .setLayout.row5.b .setLayout.row5.edit -side left
 
     set verRequested 1
     set horRequested 1
     set layoutOption auto
     .setLayout.row2.e configure -state disabled
     .setLayout.row3.e configure -state disabled
+    .setLayout.row5.edit configure -state disabled
 
     set layout [DEVise getWindowLayout $layoutWin]
     if {[lindex $layout 0] >= 1} {
@@ -224,8 +242,11 @@ proc SetWindowLayout {win} {
     } elseif {[lindex $layout 1] >= 1} {
 	set layoutOption fixver
 	.setLayout.row2.e configure -state normal
+    } elseif {[lindex $layout 0] == 0 && [lindex $layout 1] == 0 } {
+	set layoutOption custom
+	.setLayout.row5.edit configure -state normal
     }
-	
+
     button .setLayout.bot.but.ok -text OK -width 10 -command {
 	if {$layoutOption == "auto"} {
 	    DEVise setWindowLayout $layoutWin -1 -1 0
@@ -235,6 +256,8 @@ proc SetWindowLayout {win} {
 	} elseif {$layoutOption == "fixhor"} {
 	    if {$verRequested < 1} { set verRequested 1 }
 	    DEVise setWindowLayout $layoutWin $verRequested -1 0
+        } elseif {$layoutOption == "custom"} {
+	    DEVise setWindowLayout $layoutWin 0  0  0
 	} else {
 	    DEVise setWindowLayout $layoutWin -1 -1 1
 	}
@@ -385,7 +408,7 @@ proc DoActualCreateWindow { winType } {
     if { $button == 1} {
 	return
     }
-
+    
     set cmd "DEVise create window $winType $dialogParamVar(params)"
     set result [eval $cmd]
     if {$result == ""} {
