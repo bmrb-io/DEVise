@@ -51,6 +51,12 @@ else
     set popPort = 8822
     set jssPort = 7811
 
+  # Not test2 so that we avoid having searches for "test" hit it.
+  else if ($idStr == "tst2") then
+    set cmdPort = 6366
+    set popPort = 8322
+    set jssPort = 7311
+
   else
     #TEMP -- needs to go to stderr
     #echo "Warning: unrecognized ID string; using standard port numbers"

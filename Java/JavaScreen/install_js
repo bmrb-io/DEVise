@@ -22,7 +22,7 @@
 
 if ($#argv == 1) then
   set location = $1
-  if ($location == cs_reg || $location == cs_soil) then
+  if ($location == cs_reg || $location == cs_soil || $location == cs_test) then
     if (`hostname` != "pumori.cs.wisc.edu") then
       echo "cs installation is normally done on pumori."
       echo -n "Are you sure you want to continue? [n] "
@@ -46,6 +46,12 @@ if ($#argv == 1) then
       set jardir = "/var/home/www/public/soil_sci"
       set cgidir = "/var/home/www/cgi-bin"
       set idstr = "soil"
+    else if ($location == cs_test) then
+      set popdir = "/local.pumori/devise/js.test"
+      set servdir = "/local.pumori/devise/js.test"
+      set jardir = "/var/home/www/public/test"
+      set cgidir = "/var/home/www/cgi-bin"
+      set idstr = "test"
     endif
 
   else if ($location == bmrb) then
@@ -70,7 +76,7 @@ if ($#argv == 1) then
     exit 1
   endif
 else
-    echo "Usage: install_js <cs_reg|cs_soil|bmrb>"
+    echo "Usage: install_js <cs_reg|cs_soil|cs_test|bmrb>"
     exit 1
 endif
 

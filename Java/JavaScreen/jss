@@ -24,6 +24,9 @@ foreach arg ($argv[*])
   else if (xxx$arg == "xxx-idtest") then
     set idStr = "test"
     break
+  else if (xxx$arg == "xxx-idtst2") then
+    set idStr = "tst2"
+    break
   endif
 end
 
