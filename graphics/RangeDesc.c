@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/11/02 19:22:33  wenger
+  Added "range/MQL" session description capability.
+
  */
 
 #include <stdio.h>
@@ -38,11 +41,7 @@
 
 //#define DEBUG
 
-struct foo {
-  // One or the other must be NULL.
-  View *_view;
-  DeviseLink *_link;
-};
+#define SafeNullStr(str) ( (str) ? (str) : "" )
 
 static void PrintViewList(FILE *file, RangeDesc::ViewList &views);
 static void PrintLinkList(FILE *file, RangeDesc::LinkList &links);
@@ -180,6 +179,7 @@ RangeDesc::Build()
 
   result += BuildTDataList();
   result += BuildViewInfoList();
+  result += BuildColorInfo();
 
   return result;
 }
@@ -231,7 +231,7 @@ RangeDesc::Print(FILE *file)
   printf("RangeDesc(0x%p)::Print()\n", this);
 #endif
 
-  fprintf(file, "X Ranges:\n");
+  fprintf(file, "X Ranges (<range name>: <list of views>):\n");
   int index = InitXRangeIterator();
   while (MoreXRanges(index)) {
     Range *xRange = NextXRange(index);
@@ -240,7 +240,7 @@ RangeDesc::Print(FILE *file)
   }
   XRangeDone(index);
 
-  fprintf(file, "Y Ranges:\n");
+  fprintf(file, "Y Ranges (<range name>: <list of views>):\n");
   index = InitYRangeIterator();
   while (MoreYRanges(index)) {
     Range *yRange = NextYRange(index);
@@ -249,7 +249,7 @@ RangeDesc::Print(FILE *file)
   }
   YRangeDone(index);
 
-  fprintf(file, "Tables:\n");
+  fprintf(file, "Tables (<table name>: <view list>):\n");
   index = InitTDIterator();
   while (MoreTD(index)) {
     TdInfo *info = NextTD(index);
@@ -258,14 +258,18 @@ RangeDesc::Print(FILE *file)
   }
   TDDone(index);
 
-  fprintf(file, "Views:\n");
+  fprintf(file, "Views (<view name>: <table name> <x mapping> <y mapping> "
+    "<z mapping> <color mapping> <size mapping> <pattern mapping> "
+    "<orientation mapping> <symbol type mapping> <shape mappings>):\n");
   index = InitViewIterator();
   while (MoreViews(index)) {
     ViewInfo *info = NextView(index);
-    fprintf(file, "  %s: {%s} {%s}\n", info->_view->GetName(),
-      info->_xMapping, info->_yMapping);
+    info->Print(file);
   }
   ViewsDone(index);
+
+  fprintf(file, "Color Palette:\n");
+  fprintf(file, "%s\n", _paletteColors);
 }
 
 /*------------------------------------------------------------------------------
@@ -508,10 +512,11 @@ RangeDesc::BuildViewInfoList()
     while (view->MoreMapping(mapIndex)) {
       mappingCount++;
       MappingInfo *mapInfo = view->NextMapping(mapIndex);
+      TData *tData = mapInfo->map->GetLogTData();
       MappingInterpCmd *mapCmd =
         ((MappingInterp *)mapInfo->map)->GetMappingCmd();
 
-      ViewInfo *viewInfo = new ViewInfo(view, mapCmd->xCmd, mapCmd->yCmd);
+      ViewInfo *viewInfo = new ViewInfo(view, tData, mapCmd);
       DOASSERT(viewInfo != NULL, "Out of memory");
       _views.Append(viewInfo);
     }
@@ -525,6 +530,93 @@ RangeDesc::BuildViewInfoList()
   View::DoneViewIterator(viewIndex);
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: RangeDesc::BuildColorInfo
+ * Build up info about the color palette.
+ */
+DevStatus
+RangeDesc::BuildColorInfo()
+{
+  DevStatus result = StatusOk;
+
+  PaletteID pid = PM_GetCurrentPalette();
+  if (pid == nullPaletteID) {
+    result += StatusFailed;
+  } else {
+    Palette *palette = PM_GetPalette(pid);
+    if (palette == NULL) {
+      result += StatusFailed;
+    } else {
+      string colors = palette->ToString();
+      _paletteColors = CopyString(colors.c_str());
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: RangeDesc::ViewInfo::ViewInfo
+ * Constructor.
+ */
+RangeDesc::ViewInfo::ViewInfo(View *view, TData *tData, MappingInterpCmd *cmd)
+{
+  _view = view;
+  _tData = tData;
+
+  _xMapping = CopyString(cmd->xCmd);
+  _yMapping = CopyString(cmd->yCmd);
+  _zMapping = CopyString(cmd->zCmd);
+  _colorMapping = CopyString(cmd->colorCmd);
+  _sizeMapping = CopyString(cmd->sizeCmd);
+  _patternMapping = CopyString(cmd->patternCmd);
+  _orientMapping = CopyString(cmd->orientationCmd);
+  _symTypeMapping = CopyString(cmd->shapeCmd);
+  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
+    _shapeMappings[index] = CopyString(cmd->shapeAttrCmd[index]);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: RangeDesc::ViewInfo::~ViewInfo
+ * Destructor.
+ */
+RangeDesc::ViewInfo::~ViewInfo()
+{
+  _view = NULL;
+  _tData = NULL;
+
+  DeleteAndNull(_xMapping, true);
+  DeleteAndNull(_yMapping, true);
+  DeleteAndNull(_zMapping, true);
+  DeleteAndNull(_colorMapping, true);
+  DeleteAndNull(_sizeMapping, true);
+  DeleteAndNull(_patternMapping, true);
+  DeleteAndNull(_orientMapping, true);
+  DeleteAndNull(_symTypeMapping, true);
+  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
+    DeleteAndNull(_shapeMappings[index], true);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: RangeDesc::ViewInfo::Print
+ * Print this object.
+ */
+void
+RangeDesc::ViewInfo::Print(FILE *file)
+{
+  fprintf(file, "  %s: {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%s}",
+    _view->GetName(), SafeNullStr(_tData->GetName()), SafeNullStr(_xMapping),
+    SafeNullStr(_yMapping), SafeNullStr(_zMapping), SafeNullStr(_colorMapping),
+    SafeNullStr(_sizeMapping), SafeNullStr(_patternMapping),
+    SafeNullStr(_orientMapping), SafeNullStr(_symTypeMapping));
+  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
+    fprintf(file, " {%s}", SafeNullStr(_shapeMappings[index]));
+  }
+  fprintf(file, "\n");
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/11/02 19:22:33  wenger
+  Added "range/MQL" session description capability.
+
  */
 
 #ifndef _RangeDesc_h_
@@ -31,10 +34,22 @@
 #include "DevStatus.h"
 #include "DList.h"
 #include "Util.h"
+#include "GDataRec.h"
+
+#define DeleteAndNull(ptr, isArray) { \
+  if (isArray) { \
+    delete [] (ptr); \
+  } else { \
+    delete (ptr); \
+  } \
+  (ptr) = NULL; \
+}
+
 
 class View;
 class DeviseLink;
 class TData;
+class MappingInterpCmd;
 
 class RangeDesc {
 public:
@@ -88,22 +103,23 @@ public:
 
   class ViewInfo {
   public:
-    ViewInfo(View *view, char *xMapping, char *yMapping) {
-      _view = view;
-      _xMapping = CopyString(xMapping);
-      _yMapping = CopyString(yMapping);
-    }
-    ~ViewInfo () {
-      _view = NULL;
-      delete [] _xMapping;
-      _xMapping = NULL;
-      delete [] _yMapping;
-      _yMapping = NULL;
-    }
+    ViewInfo(View *view, TData *tData, MappingInterpCmd *cmd);
+    ~ViewInfo ();
+
+    void Print(FILE *file);
 
     View *_view;
+    TData *_tData;
+
     char *_xMapping;
     char *_yMapping;
+    char *_zMapping;
+    char *_colorMapping;
+    char *_sizeMapping;
+    char *_patternMapping;
+    char *_orientMapping;
+    char *_symTypeMapping;
+    char *_shapeMappings[MAX_GDATA_ATTRS];
   };
 
   //
@@ -152,12 +168,14 @@ private:
 
   DevStatus BuildTDataList();
   DevStatus BuildViewInfoList();
+  DevStatus BuildColorInfo();
 
   // These lists are the final result of the Build method.
   RangeList _xRanges;
   RangeList _yRanges;
   TdInfoList _tDatas;
   ViewInfoList _views;
+  char *_paletteColors;
 
   // These are temporary lists used to construct the range lists.
   ViewList _unassignedXViews;
