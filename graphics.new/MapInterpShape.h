@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/15 18:22:29  jussi
+  Fixed stupid bug introduced in last check-in.
+
   Revision 1.24  1996/07/15 17:20:51  jussi
   Added code to extract string data from StringStorage.
 
@@ -166,19 +169,27 @@ public:
     while (i < numSyms) {
 
       Color firstColor = 0;
+      Pattern firstPattern = Pattern0;
+
       int count = 0;
 
       for(; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
 
-	if (count > 0 && GetColor(view, gdata, map, offset) != firstColor)
+        Color color = GetColor(view, gdata, map, offset);
+        Coord size = GetSize(gdata, map, offset);
+        Pattern pattern = GetPattern(gdata, map, offset);
+
+	if (count > 0 && (color != firstColor || pattern != firstPattern))
 	  break;
 	
-	if (count == 0)
+	if (count == 0) {
 	  firstColor = GetColor(view, gdata, map, offset);
+          firstPattern = GetPattern(gdata, map, offset);
+        }
 
-	_width[count] = fabs(GetShapeAttr0(gdata, map, offset));
-	_height[count] = fabs(GetShapeAttr1(gdata, map, offset));
+	_width[count] = fabs(size * GetShapeAttr0(gdata, map, offset));
+	_height[count] = fabs(size * GetShapeAttr1(gdata, map, offset));
 	_x[count] = GetX(gdata, map, offset);
 	if (_width[count] > pixelWidth)
 	  _x[count] -= _width[count] / 2.0;
@@ -193,6 +204,7 @@ public:
         win->SetXorMode();
       else
         win->SetFgColor(firstColor);
+      win->SetPattern(firstPattern);
       win->FillRectArray(_x, _y, _width, _height, count);
       if (firstColor == XorColor)
         win->SetCopyMode();
@@ -249,7 +261,8 @@ public:
       Coord width, height;
       win->Transform(GetX(gdata, map, offset), GetY(gdata, map, offset),
                      tx, ty);
-      win->Transform(fabs(GetShapeAttr0(gdata, map, offset)), 0.0,
+      win->Transform(fabs(GetSize(gdata, map, offset)
+                          * GetShapeAttr0(gdata, map, offset)), 0.0,
 		     x1, y1);
       width = x1 - x0;
       if (width < 0.0)
@@ -288,7 +301,8 @@ public:
     char *ptr = (char *)gdata;
 
     for(int i = 0; i < numSyms; i++) {
-      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
+      Coord temp = fabs(GetSize(ptr, map, offset)
+                        * GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
       temp = fabs(GetY(ptr, map, offset));
       if (temp > height) height = temp;
@@ -318,7 +332,8 @@ public:
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
-      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord width = fabs(GetSize(gdata, map, offset)
+                         * GetShapeAttr0(gdata, map, offset));
 #if 0
       // experiment with 2-pixel wide bars to prevent white vertical
       // lines from showing up
@@ -384,8 +399,10 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
-      Coord height = fabs(GetShapeAttr1(gdata, map, offset));
+      Coord width = fabs(GetSize(gdata, map, offset)
+                         * GetShapeAttr0(gdata, map, offset));
+      Coord height = fabs(GetSize(gdata, map, offset)
+                          * GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       
@@ -452,8 +469,10 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
-      Coord height = fabs(GetShapeAttr1(gdata, map, offset));
+      Coord width = fabs(GetSize(gdata, map, offset)
+                         * GetShapeAttr0(gdata, map, offset));
+      Coord height = fabs(GetSize(gdata, map, offset)
+                          * GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
@@ -509,8 +528,8 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord w = GetShapeAttr0(gdata, map, offset);
-      Coord h = GetShapeAttr1(gdata, map, offset);
+      Coord w = GetSize(gdata, map, offset) * GetShapeAttr0(gdata, map, offset);
+      Coord h = GetSize(gdata, map, offset) * GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
@@ -619,8 +638,10 @@ public:
     for(int i = 0; i < numSyms; i++) {
       // double the width and height because segment starts at
       // at (X,Y) and is not centered at (X,Y)
-      Coord w = 2 * GetShapeAttr0(ptr, map, offset);
-      Coord h = 2 * GetShapeAttr1(ptr, map, offset);
+          Coord w = 2 * GetSize(ptr, map, offset)
+                      * GetShapeAttr0(ptr, map, offset);
+      Coord h = 2 * GetSize(ptr, map, offset)
+                  * GetShapeAttr1(ptr, map, offset);
       if (w > width) width = w;
       if (h > height) height = h;
       ptr += gRecSize;
@@ -663,8 +684,8 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord w = GetShapeAttr0(gdata, map, offset);
-      Coord h = GetShapeAttr1(gdata, map, offset);
+      Coord w = GetSize(gdata, map, offset) * GetShapeAttr0(gdata, map, offset);
+      Coord h = GetSize(gdata, map, offset) * GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
@@ -694,7 +715,8 @@ public:
     char *ptr = (char *)gdata;
 
     for(int i = 0; i < numSyms; i++) {
-      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
+      Coord temp = fabs(GetSize(ptr, map, offset)
+                        * GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
       temp = GetShapeAttr1(ptr, map, offset);
       temp -= GetShapeAttr2(ptr, map, offset);
@@ -742,7 +764,8 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord width = fabs(GetSize(gdata, map, offset)
+                         * GetShapeAttr0(gdata, map, offset));
       Coord high = GetShapeAttr1(gdata, map, offset);
       Coord low = GetShapeAttr2(gdata, map, offset);
       Coord tw = width / 20.0;
