@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/07/29 14:20:12  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.55  1998/06/28 21:39:59  beyer
   changed from gcc String to stl string
 
@@ -1563,6 +1567,9 @@ private:
 
 int main(int argc, char **argv)
 {
+  /* Disable buffering of stdout (makes debugging easier) */
+  (void)setbuf(stdout, NULL);
+
   Init::DoInit(argc,argv);
 	
  // Reads the composite file from the DEVISE_LIB directory
@@ -1641,9 +1648,6 @@ int main(int argc, char **argv)
 
   /* Keep compiler happy */
   disp = disp;
-
-  /* Disable buffering of stdout (makes debugging easier) */
-  (void)setbuf(stdout, NULL);
 
   /* Populate string storage space from init file */
   StringStorage::PopulateFromInitFile();
