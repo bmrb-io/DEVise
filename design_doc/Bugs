@@ -1386,6 +1386,19 @@ Num Date        Status  Description
 
 366 06/15/98	OPEN	cslib test client core dumps on Linux. (rkw)
 
+367 06/19/98	OPEN	Piled views sometimes do not show up correctly in
+			the JavaScreen (see
+			/p/devise/demo/session/FamMed_visits.tk).  (rkw)
+
+368 06/19/98	OPEN	JavaScreen won't run without appropriate GIF files
+			in the working directory, gives deceptive error
+			message. (rkw)
+
+369 06/22/98	OPEN	When you select 'Session->Open' with an existing
+			session, the prompt to close the existing session
+			should be shown after, rather than before, you select
+			the new session.  (rr/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
