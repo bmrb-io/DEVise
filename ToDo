@@ -257,8 +257,6 @@ X-specific code. (rkw 11/19/96)
 If query window is open, it should be updated as you change other things.
 (ml/rkw 11/20/96)
 
-Show name of view in mapping window. (ml/rkw 11/21/96)
-
 RecId should be in the TData attribute lists so you can find the min and
 max (needed if RecId is mapped to X, Y, or Z in GData). (kb/rkw 11/25/96)
 
@@ -280,6 +278,15 @@ view is open).  (ds/rkw 12/09/96).
 
 Put info about batch and client/server modes in the user documentation.
 (rkw 12/09/96)
+
+Be able to store some kind of comment or explanation in a session file.
+(rkw 12/12/96)
+
+Perhaps allow colors to be specified by RGB value (have RGB value in
+a data attribute). (jpm/rkw 12/12/96)
+
+Allow data from stdin to be used (maybe stick it into a buffer DataSource).
+(ml/jpm/rkw 12/12/96)
 
 
 COMPLETED
@@ -315,6 +322,8 @@ Add true PostScript printing capability. (yi/rkw 7/9/96)
 Composite parsers for dates should make sure the dates being converted
 are within the legal range of Unix dates; possible also check that the
 attribute being written to is of type 'date'. (rkw 9/25/96)
+
+Show name of view in mapping window. (ml/rkw 11/21/96)
 
 
 CANCELLED
