@@ -21,9 +21,14 @@ public class DTE_Int extends DTE_Type implements Cloneable
     return new IntDesc( );
   }
 
-  public Object get_val( )
+  public int getValue( )
   {
-    return new Integer( val );
+    return val;
+  }
+
+  public void setValue( int i )
+  {
+    val = i;
   }
 
   public boolean read(StreamTokenizer st) throws IOException 

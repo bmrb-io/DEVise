@@ -9,6 +9,7 @@ import Operators.*;
 
 public interface TypeDesc {
     public String getString( );
-    public EvalOperator getOperator( String opStr, TypeDesc arg );
+    public EvalOperator getOperator( String opStr, TypeDesc arg )
+	throws IllegalArgumentException;
 }
 

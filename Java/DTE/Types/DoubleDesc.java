@@ -3,8 +3,8 @@ package Types;
 import java.io.*;
 import Operators.*;
 
-public class IntDesc implements TypeDesc {
-    static final String name = "int";
+public class DoubleDesc implements TypeDesc {
+    static final String name = "double";
 
     public String getString( ) {
         return name;
@@ -14,14 +14,15 @@ public class IntDesc implements TypeDesc {
 	throws IllegalArgumentException
     {
         if ( arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("give me an int!\n"); 
+	    throw new IllegalArgumentException("give me an double!\n"); 
 
         if ( opStr.equals("==") ) 
-            return new IntEqualOp( );
+            return new DoubleEqualOp( );
 
+/*
         if ( opStr.equals("!=") ) 
             return new IntNotEqualOp( );
-/*
+
         if ( opStr.equals(">") ) 
             return new IntGreaterOp( );
 
@@ -42,10 +43,10 @@ public class IntDesc implements TypeDesc {
 
         if ( opStr.equals("*") ) 
             return new IntMulOp( );
-
 */
+
         if ( opStr.equals("/") ) 
-            return new IntDivOp( );
+            return new DoubleDivOp( );
 
 	throw new IllegalArgumentException("give me an int!\n"); 
     }

@@ -4,7 +4,7 @@ import java.io.*;
 import Operators.*;
 
 public class IntDesc implements TypeDesc {
-    static final String name = "int";
+    static final String name = "string";
 
     public String getString( ) {
         return name;
@@ -17,11 +17,12 @@ public class IntDesc implements TypeDesc {
 	    throw new IllegalArgumentException("give me an int!\n"); 
 
         if ( opStr.equals("==") ) 
-            return new IntEqualOp( );
+            return new StringEqualOp( );
 
+*/
         if ( opStr.equals("!=") ) 
             return new IntNotEqualOp( );
-/*
+
         if ( opStr.equals(">") ) 
             return new IntGreaterOp( );
 
@@ -34,19 +35,7 @@ public class IntDesc implements TypeDesc {
         if ( opStr.equals("<=") ) 
             return new IntLeqOp( );
 
-        if ( opStr.equals("+") ) 
-            return new IntAddOp( );
-
-        if ( opStr.equals("-") ) 
-            return new IntSubOp( );
-
-        if ( opStr.equals("*") ) 
-            return new IntMulOp( );
-
 */
-        if ( opStr.equals("/") ) 
-            return new IntDivOp( );
-
 	throw new IllegalArgumentException("give me an int!\n"); 
     }
 }

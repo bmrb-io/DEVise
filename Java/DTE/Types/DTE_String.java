@@ -59,7 +59,6 @@ public class DTE_String extends DTE_Type implements Cloneable
     ps.print(" ");   
   }
 
-
   public Object clone()
   {
     return new DTE_String(val);
