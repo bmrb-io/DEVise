@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/30 00:03:38  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.5  1995/12/29 22:41:54  jussi
   Corrected type of GetFgColor() method.
 
@@ -44,6 +48,8 @@
    1) If parent == NULL, a top level WindowRep is created.
    2) if parent != NULL: a lower level windowRep is created.
 */
+
+#define MARGINS
 
 #ifndef ViewWin_h
 #define ViewWin_h
@@ -91,7 +97,7 @@ public:
 
 	int GetWeight() { return _weight; }
 
-#ifdef TK_WINDOW
+#if defined(MARGINS) || defined(TK_WINDOW)
 	/* Get size of margin controls */
 	void GetMargins(unsigned int &lm, unsigned int &rm,
 			unsigned int &tm, unsigned int &bm);
@@ -179,6 +185,10 @@ private:
 	Boolean _mapped; /* TRUE if this window is mapped */
 	Color _background, _foreground;
 
+#ifdef MARGINS
+	void DrawMargins();
+#endif
+
 #ifdef TK_WINDOW
 	void AddMarginControls();
 	void DropMarginControls();
@@ -188,11 +198,15 @@ private:
 	void ToggleMargins();
 
 	Boolean      _marginsOn;
+	char         _tkPathName[32];
+#endif
+
+#if defined(MARGINS) || defined(TK_WINDOW)
 	unsigned int _leftMargin;
 	unsigned int _rightMargin;
 	unsigned int _topMargin;
 	unsigned int _bottomMargin;
-	char         _tkPathName[32];
 #endif
 };
+
 #endif

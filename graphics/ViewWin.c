@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/30 00:02:48  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.7  1995/12/28 18:52:30  jussi
   Small fix to remove compiler warning.
 
@@ -42,6 +46,7 @@
 #include "ViewWin.h"
 #include "Display.h"
 #include "WindowRep.h"
+#include "Init.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -61,6 +66,10 @@ ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
   _iconified = true;
   _background = bg;
   _foreground = fg;
+
+#ifdef MARGINS
+  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
+#endif
 
 #ifdef TK_WINDOW
   _marginsOn = false;
@@ -103,8 +112,10 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
     Exit::DoExit(1);
   }
 
+  _hasGeometry = false;
+
   Boolean relativeMinSize = false;
-  Coord min_width = 100;
+  Coord min_width = 170;
   Coord min_height = 100;
 
   if (_parent != NULL) {
@@ -131,6 +142,14 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 		    x, y, w, h, ForegroundColor, BackgroundColor, NULL,
 		    min_width, min_height, relativeMinSize, _winBoundary);
     _windowRep->RegisterCallback(this);
+#ifdef MARGINS
+    if (Init::DisplayLogo()) {
+      /* Allocate top margin */
+      _topMargin = 9;
+      /* Draw margins */
+      DrawMargins();
+    }
+#endif
 #ifdef TK_WINDOW_old
     _windowRep->Decorate(NULL, _name, (unsigned int)min_width,
 			 (unsigned int)min_height);
@@ -138,14 +157,10 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   }
 
 #ifdef TK_WINDOW
-  /* Update size of window */
-  _width = w;
-  _height = h;
   /* Get and set appropriate margins */
   AddMarginControls();
 #endif
 
-  _hasGeometry = false;
   _mapped = true;
   SubClassMapped();
 }
@@ -209,7 +224,7 @@ void ViewWin::Delete(ViewWin *child)
 
 /* Get current geometry of child w. r. t. parent */
 
-#ifdef TK_WINDOW
+#if defined(MARGINS) || defined(TK_WINDOW)
 void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 #else
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
@@ -226,7 +241,6 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
     _windowRep->Dimensions(_width, _height);
     _x = _y = 0;
-    // _windowRep->Origin(_x, _y);
     _hasGeometry = true;
   } else {
 #ifdef DEBUG
@@ -244,7 +258,7 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
 }
 
-#ifdef TK_WINDOW
+#if defined(MARGINS) || defined(TK_WINDOW)
 /* Get current geometry of child w. r. t. parent */
 
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
@@ -310,11 +324,14 @@ void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
 #endif
 
   _hasGeometry = true;
-  // _x = xlow;
-  // _y = ylow;
   _x = _y = 0;
   _width = width;
   _height = height;
+
+#ifdef MARGINS
+  if (Init::DisplayLogo())
+    DrawMargins();
+#endif
 
 #ifdef TK_WINDOW
   /* Resize margin controls */
@@ -352,7 +369,7 @@ void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
   printf("ViewWin::Replace 0x%p with 0x%p\n", child1, child2);
 #endif
 
-for(int index = InitIterator(); More(index);) {
+  for(int index = InitIterator(); More(index);) {
     ViewWin *win = Next(index);
     if (win == child1) {
       _children.InsertBeforeCurrent(index, child2);
@@ -364,7 +381,8 @@ for(int index = InitIterator(); More(index);) {
       return;
     }
   }
-  fprintf(stderr,"ViewWin::Replace: can't find child1\n");
+
+  fprintf(stderr, "ViewWin::Replace: can't find child1\n");
   Exit::DoExit(2);
 }
 
@@ -375,7 +393,7 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
   _children.Swap(child1, child2);
 }
 
-#ifdef TK_WINDOW
+#if defined(MARGINS) || defined(TK_WINDOW)
 void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
 			 unsigned int &tm, unsigned int &bm)
 {
@@ -387,7 +405,39 @@ void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
   printf("ViewWin::GetMargins %u, %u, %u, %u\n", lm, rm, tm, bm);
 #endif
 }
+#endif
 
+#ifdef MARGINS
+void ViewWin::DrawMargins()
+{
+#ifdef DEBUG
+  printf("ViewWin::DrawMargins\n");
+#endif
+
+  if (!_topMargin)
+    return;
+
+  char *logo = "Visualization by DEVise (c) 1996";
+
+  int x, y;
+  unsigned int w, h;
+  RealGeometry(x, y, w, h);
+
+  // draw logo
+  WindowRep *win = GetWindowRep();
+  win->SetSmallFont();
+  win->SetFgColor(GetFgColor());
+  win->FillRect(x, y, w - 1, _topMargin - 1);
+  win->SetFgColor(GetBgColor());
+  win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
+  win->SetFgColor(GetFgColor());
+  win->AbsoluteText(logo, x + 1, y + 1, w - 2, _topMargin - 2,
+		    WindowRep::AlignNorth, true);
+  win->SetNormalFont();
+}
+#endif
+
+#ifdef TK_WINDOW
 void ViewWin::AddMarginControls()
 {
   static int tkWinCnt = 1;
