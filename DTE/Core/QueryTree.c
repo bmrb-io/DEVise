@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/04/28 06:56:05  donjerko
+  *** empty log message ***
+
   Revision 1.22  1997/04/18 20:46:17  donjerko
   Added function pointers to marshall types.
 
@@ -308,13 +311,17 @@ Site* QueryTree::createSite(){
 		siteGroup = inner;
 	}
 
-	// Every site has taken what belongs to it.
-	// Create top site that takes everything left over (constants or nothing)
-
 	assert(predicateList->isEmpty());
-	siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
-	siteGroup->filter(selectList);
-	TRY(siteGroup->typify(option), NULL);
+	if(selectList->cardinality() > siteGroup->getSelectList()->cardinality()){
+
+		// Every site has taken what belongs to it.
+		// Create top site that takes everything left over 
+		// (constants or nothing)
+
+		siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
+		siteGroup->filterAll(selectList);
+		TRY(siteGroup->typify(option), NULL);
+	}
 
 	for(int k = count; k >= 0;k--){
 		TRY(aggregates[k]->typify(siteGroup), NULL);
@@ -324,7 +331,7 @@ Site* QueryTree::createSite(){
 	assert(orderBy);
 	if(!orderBy->isEmpty()){
 		siteGroup = new Sort(siteGroup->getName(), orderBy, siteGroup);
-		siteGroup->filter(selectList);
+		siteGroup->filterAll(selectList);
 		TRY(siteGroup->typify(option), NULL);
 	}
 
