@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1996/08/29 22:31:28  guangshu
+#  Added option for client to get the gif files from the server and changed
+#  puts to proc Puts.
+#
 #  Revision 1.26  1996/07/18 02:20:31  jussi
 #  Added Print Display option.
 #
@@ -564,11 +568,11 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
         if {$format != "gif"} {
             dialog .printError "Not Supported Yet" \
                     "Saving entire display as $fmt is not supported yet." \
-                    "" OK
+                    "" 0 OK
             return
         }
 	set file "$filename$suffix"
-	Puts "Saving entire display to file $file"
+	puts "Saving entire display to file $file"
 	set err [ catch { DEVise saveDisplayImage $format $file } ]
 	if {$err > 0} {
 	    dialog .printError "Display Image Save Error" \
