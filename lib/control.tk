@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.23  1995/11/21 23:36:19  jussi
+#	Made complex mappings editable. Edit Mapping function now allows the
+#	user to edit all parameters of an interpreted mapping. E.g. color can
+#	be made to depend on an attribute in user data or constant. Made pixel
+#	width and height information visible to the user.
+#
 #	Revision 1.22  1995/11/20 22:21:33  jussi
 #	Added schemadir, cachedir, and sessiondir.
 #
@@ -1373,14 +1379,14 @@ proc DoActualSave { infile asTemplate } {
 
     set f [open $infile w ]
 
-    puts $f "# import file types"
+    puts $f "# Import file types"
     set catFiles [DEVise catFiles]
     foreach file $catFiles {
 	puts $f "DEVise importFileType $file"
     }
     puts $f ""
 
-    puts $f "# layout mode"
+    puts $f "# Layout mode"
     puts $f "DEVise changeMode 0"
     puts $f ""
 
@@ -1499,7 +1505,7 @@ proc DoActualSave { infile asTemplate } {
     SaveCategory $f "cursor"
     puts $f ""
 
-    puts $f "#Create axislabel"
+    puts $f "# Create axislabel"
     puts $f "# format: DEVise create axisLabel type name format"
     SaveCategory $f "axisLabel"
     puts $f ""
@@ -1511,17 +1517,22 @@ proc DoActualSave { infile asTemplate } {
 
     puts $f "# Put labels into views"
     SaveAllViewAxisLabel $f $viewDict
+    puts $f ""
 
     puts $f "# put action into view"
     SaveAllViewAction $f $viewDict
+    puts $f ""
 
     puts $f "# Link views"
     SaveLinkViews $f $viewDict
+    puts $f ""
 
     puts $f "# Put views in cursors"
     SaveCursorViews $f $viewDict
+    puts $f ""
 
     puts $f "# Put axis label into views"
+    puts $f ""
 
     puts $f "# Insert mappings into views"
     puts $f "# format: DEVise insertMapping viewName gdataName"
@@ -1548,11 +1559,13 @@ proc DoActualSave { infile asTemplate } {
     }
 
     if { $mode == 1 } {
-	puts $f "# display mode"
+        puts $f ""
+	puts $f "# Display mode"
 	puts $f "DEVise changeMode 1"
     }
 
     if {$asTemplate} {
+        puts $f ""
 	puts $f "return 1"
 	ChangeStatus 0
 	close $f
@@ -1576,25 +1589,27 @@ proc DoActualSave { infile asTemplate } {
     set savedCurView $curView
     ProcessViewSelected ""
 
-    puts $f "#load pixmaps from views"
+    puts $f ""
+    puts $f "# Load pixmaps from views"
     puts $f "set pixmapName $bitmapFile"
-    puts $f " if \{ !\$template && \[ file exists \$pixmapName \] \} \{"
-    puts $f "set pixmapFile \[ DEVise open \$pixmapName rb \]"
-    puts $f "set fileDate \[ DEVise readLine \$pixmapFile \]"
-    puts $f "set sessionDate \{$date\}"
-    puts $f "if \{\$fileDate == \$sessionDate\} \{ "
+    puts $f "if \{ !\$template && \[ file exists \$pixmapName \] \} \{"
+    puts $f "	set pixmapFile \[ DEVise open \$pixmapName rb \]"
+    puts $f "	set fileDate \[ DEVise readLine \$pixmapFile \]"
+    puts $f "	set sessionDate \{$date\}"
+    puts $f "	if \{\$fileDate == \$sessionDate\} \{ "
     set viewSet [ViewSet]
     foreach view $viewSet {
 	DEVise savePixmap $view $bitF
-	puts $f "DEVise loadPixmap $view \$pixmapFile"
+	puts $f "		DEVise loadPixmap \{$view\} \$pixmapFile"
     }
-    puts $f "\}"
-    puts $f "DEVise close \$pixmapFile"
+    puts $f "	\}"
+    puts $f "	DEVise close \$pixmapFile"
     puts $f "\}"
     DEVise close $bitF
 
     ProcessViewSelected $savedCurView
 
+    puts $f ""
     puts $f "return 1"
 
     ChangeStatus 0
