@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.47  1998/11/23 20:04:25  donjerko
+# *** empty log message ***
+#
 # Revision 1.46  1998/11/19 21:12:59  wenger
 # Implemented non-DTE version of DEVise (new code handles data source catalog
 # functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -159,7 +162,7 @@
 #
 
 LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
-	unidata DataReader RTree DTE xvertext csgroup data
+	DataReader RTree DTE xvertext csgroup data
 
 #devread is obsolete
 #attrproj is broken

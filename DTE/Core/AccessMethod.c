@@ -8,7 +8,6 @@
 #include "DataRead.h"
 #include "DevRead.h"
 #include "DataReader.h"
-#include "UniData.h"
 #include "DTE/types/DteIntAdt.h"
 #include "DTE/types/DteDoubleAdt.h"
 #include "DTE/types/DteStringAdt.h"
@@ -58,11 +57,10 @@ vector<OptExpr*> StandardAM::getProjectList(const string& alias) const
 }
 
 DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
-  : dr(NULL), ud(NULL)
+  : dr(NULL)
 {
 	//
-	// Try opening the data source as a DataReader; if that doesn't work,
-	// try opening it as a UniData.
+	// Open the data source as a DataReader.
 	//
 	dr = new DataReader(dataFile.c_str(), schemaFile.c_str());
 	if (dr && dr->isOk()) {
@@ -73,25 +71,7 @@ DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
 			dr = NULL;
 		}
 
-		cout << "Cannot create DataReader table(" << dataFile << ", " <<
-		  schemaFile << ")\nTrying to create UniData table\n";
-
-		ud = new UniData(dataFile.c_str(), schemaFile.c_str());
-		if (ud && ud->isOk()) {
-			DevReadExec::translateSchema(ud, schema);
-		} else {
-			if (ud) {
-				delete ud;
-				ud = NULL;
-			}
-
-			cout << "Cannot create UniData table(" << dataFile << ", " <<
-			  schemaFile << ")\nTrying to create UniData table\n";
-		}
-	}
-
-	if (!dr && !ud) {
-		string msg = string("Cannot create DataReader or Unidata table(") +
+		string msg = string("Cannot create DataReader table(") +
 			dataFile + ", " + schemaFile + ")";
 		CON_THROW(new Exception(msg));
 		// throw Exception(msg);
@@ -142,42 +122,15 @@ void DataReaderAM::translateDRInfo() {
 }
 #endif
 
-#if 0
-void DataReaderAM::translateUDInfo() {
-
-	// this function is same as translateDRInfor, except it is for unidata
-
-	numFlds = ud->schema()->NumFlatAttrs() + 1; // for recId
-    typeIDs = new TypeID[numFlds];
-    attributeNames = new string[numFlds];
-    AttrStk *stk = ud->schema()->GetFlatAttrs();
-    typeIDs[0] = INT_TP;
-	typeIDlist.push_back(INT_TP);
-    attributeNames[0] = string("recId");
-    for(int i = 1; i < numFlds; i++){
-        Attr *at = stk->ith(i - 1);
-        typeIDs[i] = translateUDType(at);
-		typeIDlist.push_back(typeIDs[i]);
-        attributeNames[i] = string(at->flat_name());
-    }
-}
-#endif
-
 Iterator* DataReaderAM::createExec()
 {
-	if(dr){
-		DataReadExec* retVal = new DataReadExec(dr);
-		dr = 0;	// not the owner any more
-		return retVal;
-	}
-        DevReadExec* retVal = new DevReadExec(ud);
-        ud = 0;	// not the owner any more
-        return retVal;
+	DataReadExec* retVal = new DataReadExec(dr);
+	dr = 0;	// not the owner any more
+	return retVal;
 }
 
 DataReaderAM::~DataReaderAM()
 {
-        delete ud;
 	delete dr;
 }
 

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60  1999/01/05 15:31:06  wenger
+#  Automatically links or doesn't link libperl as necessary.
+#
 #  Revision 1.59  1999/01/04 15:33:06  wenger
 #  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
 #  compiles; added code (GUI is currently disabled) to manually set view
@@ -213,14 +216,6 @@ BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup/export
 BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 
-# Don't link in Perl library if NO_DTE is part of DEBUG_FLAGS (so we don't
-# get Perl's malloc).
-ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
-    PERL_STUFF = -L$(PERL_CORE) -lperl
-else
-    PERL_STUFF = 
-endif
-
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
@@ -232,10 +227,9 @@ LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-ldte -lrtree -lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
-	-L../unidata -lunidata \
 	-L../DataReader -ldatareader \
 	-L../data -ldevdata \
-	$(PERL_STUFF) $(ARCH_SYSLIBS)
+	$(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
 
@@ -255,7 +249,7 @@ OBJ += $(SRCC:.C=.o)
 
 ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../graphics/libgraphics.a \
-	../graphics.new/libgraphicsnew.a ../unidata/libunidata.a \
+	../graphics.new/libgraphicsnew.a \
 	../DTE/libdte.a \
 	../RTree/librtree.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/01/20 22:46:05  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.6  1998/07/24 04:37:46  donjerko
   *** empty log message ***
 
@@ -68,7 +74,7 @@ void DevRead::Close(){
 }
 #endif
 
-DevReadExec::DevReadExec(UniData* ud, const DteTupleAdt& adt)
+DevReadExec::DevReadExec(UniData* ud)
 {
   assert(ud == NULL);
 }

@@ -49,12 +49,10 @@ public:
 };
 
 class DataReader;
-class UniData;
 class Attr;
 
 class DataReaderAM : public AccessMethod {
   DataReader* dr;
-  UniData* ud;
   ISchema schema;
   string order;
 private:
