@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.174  1999/06/04 16:31:59  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.173  1999/06/01 17:37:26  wenger
   Fixed various compiler warnings.
 
@@ -987,6 +994,11 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_viewZ = -1.0; // invalid -- needs to be set later
 
+	_rubberbandDisabled = false;
+	_cursorMoveDisabled = false;
+	_drillDownDisabled = false;
+	_keysDisabled = false;
+
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
 	_dispatcherID = Dispatcher::Current()->Register(dispatcherCallback, 10,
@@ -1242,6 +1254,11 @@ Boolean View::CheckCursorOp(int x, int y)
 #endif
       return false;
     }
+  }
+
+  if (GetCursorMoveDisabled()) {
+    printf("  Cursor moving disabled in view <%s>\n", GetName());
+    return false;
   }
 
 #if defined(DEBUG)

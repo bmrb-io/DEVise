@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/05/14 20:10:03  wenger
+  Fixed bugs 462 and 478 (both related to setting visual filters).
+
   Revision 1.32  1999/05/14 16:46:48  wenger
   View vertical scroll can now be configured by the user.
 
@@ -177,6 +180,14 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 #endif
 
   if (xlow == xhigh || ylow == yhigh) {
+#if defined(DEBUG)
+    printf("Both points are the same\n");
+#endif
+    return;
+  }
+
+  if (view->GetRubberbandDisabled()) {
+    printf("Rubberband disabled in view <%s>\n", view->GetName());
     return;
   }
 

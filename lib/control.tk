@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.194  1999/06/10 21:17:35  wenger
+#	Added '...' to appropriate menu items; added confirmation before doing
+#	automated data source checking.
+#	
 #	Revision 1.193  1999/05/17 18:38:07  wenger
 #	Views now have GData sending configuration that is only employed when
 #	connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -1000,6 +1004,7 @@ source $libdir/auto_filter.tcl
 source $libdir/dup_elim.tcl
 source $libdir/nice_axes.tcl
 source $libdir/fixed_cursor.tcl
+source $libdir/action_disable.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1603,6 +1608,8 @@ menu .mbar.view.menu.statMenu -tearoff 0
 .mbar.view.menu add command -label "Symbol Alignment..." -command EditSymbolAlignment
 .mbar.view.menu add command -label "Assign String Tables..." -command EditStringTables 
 .mbar.view.menu add command -label "Auto Filter Update..." -command EditAutoFilter
+.mbar.view.menu add command -label "Disable Actions..." \
+  -command EditActionDisable
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView

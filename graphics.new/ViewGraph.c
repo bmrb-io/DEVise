@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.115  1999/06/04 16:32:31  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.114  1999/05/28 16:32:47  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -2328,6 +2335,11 @@ void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 	    SelectView();
 	}
 
+	if (GetKeysDisabled()) {
+      printf("Key actions disabled in view <%s>\n", GetName());
+	  return;
+	}
+
 	if (_action)				// Convert from screen to world coordinates
 	{
 		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
@@ -2340,7 +2352,7 @@ void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 								   char**& msgs, int& numMsgs)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("ViewGraph::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
 #endif
 
@@ -2348,6 +2360,12 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 	static char*	buf[10];
 
 	SelectView();
+
+	if (GetDrillDownDisabled()) {
+      printf("Drill down disabled in view <%s>\n", GetName());
+      return false;
+	}
+
 	GetLabelArea(labelX, labelY, labelW, labelH);
 
 	if ((x >= labelX) && (x <= labelX + labelW - 1) &&

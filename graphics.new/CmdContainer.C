@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/05/17 18:37:57  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.38  1999/05/14 16:46:48  wenger
   View vertical scroll can now be configured by the user.
 
@@ -510,6 +515,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewSetVerPan)
 	REGISTER_COMMAND(viewGetJSSendP)
 	REGISTER_COMMAND(viewSetJSSendP)
+	REGISTER_COMMAND(viewGetDisabledActions)
+	REGISTER_COMMAND(viewSetDisabledActions)
 }
 
 CmdContainer::~CmdContainer()

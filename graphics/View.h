@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.87  1999/06/04 16:32:01  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.86  1999/05/14 13:59:54  wenger
   User can now control data font family, weight, and slant, on a per-view
   basis.
@@ -747,6 +754,28 @@ class View : public ViewWin
 
 	DevFont &GetDataFont() { return _dataFont; }
 
+	// Disable certain actions in a view (mainly for JavaScreen).
+	void GetDisabledActions(Boolean &rubberbandDisabled,
+	    Boolean &cursorMoveDisabled, Boolean &drillDownDisabled,
+		Boolean &keysDisabled) {
+	  rubberbandDisabled = _rubberbandDisabled;
+	  cursorMoveDisabled = _cursorMoveDisabled;
+	  drillDownDisabled = _drillDownDisabled;
+	  keysDisabled = _keysDisabled;
+    }
+	Boolean GetRubberbandDisabled() { return _rubberbandDisabled; }
+	Boolean GetCursorMoveDisabled() { return _cursorMoveDisabled; }
+	Boolean GetDrillDownDisabled() { return _drillDownDisabled; }
+	Boolean GetKeysDisabled() { return _keysDisabled; }
+	void SetDisabledActions(Boolean disableRubberband,
+	    Boolean disableCursorMove, Boolean disableDrillDown,
+		Boolean disableKeys) {
+	  _rubberbandDisabled = disableRubberband;
+	  _cursorMoveDisabled = disableCursorMove;
+	  _drillDownDisabled = disableDrillDown;
+	  _keysDisabled = disableKeys;
+    }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -945,6 +974,11 @@ protected:
 		Boolean _inDestructor;
 
 		float _viewZ;
+
+	    Boolean _rubberbandDisabled;
+	    Boolean _cursorMoveDisabled;
+	    Boolean _drillDownDisabled;
+		Boolean _keysDisabled;
 };
 
 //******************************************************************************

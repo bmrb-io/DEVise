@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/06/10 19:59:21  wenger
+  Devised sends axis type info to JS even if axes aren't drawn (so JS can
+  display cursor position properly); added code to send cursor grid info
+  and action disabling info (conditionaled out until the JS is ready for it);
+  fixed bug with cursor Y grid value in cursor creation.
+
   Revision 1.59  1999/06/04 16:32:30  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -1122,9 +1128,9 @@ JavaScreenCmd::MouseAction_DoubleClick()
 	char **msgs;
 	int msgCount;
 
-    view->HandlePopUp(NULL, xPix, yPix, 2, msgs, msgCount);
-
-	_status = RequestUpdateRecordValue(msgCount, msgs);
+    if (view->HandlePopUp(NULL, xPix, yPix, 2, msgs, msgCount)) {
+		_status = RequestUpdateRecordValue(msgCount, msgs);
+	}
 }
 
 //====================================================================
@@ -1414,10 +1420,11 @@ JavaScreenCmd::CursorChanged()
 	printf("  cursor is <%s>\n", cursor->GetName());
 #endif
 
-    View *srcView = cursor->GetSource();
-#if defined(DEBUG)
-	printf("  source view is <%s>\n", srcView->GetName());
-#endif
+	if (view->GetCursorMoveDisabled()) {
+		printf("  Cursor moving disabled in view <%s>\n", view->GetName());
+		DrawCursor(view, cursor);
+	    return;
+	}
 
 	_postponeCursorCmds = true;
 
@@ -2464,25 +2471,27 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 
 #if 0 //TEMPTEMP
 	{ // limit variable scopes
-	  Boolean rubberbandDisabled, clickDisabled, doubleclickDisabled;
-	  view->GetDisabledActions(rubberbandDisabled, clickDisabled,
-	      doubleclickDisabled);
+	  Boolean rubberbandDisabled, cursorMoveDisabled, drillDownDisabled,
+	    keysDisabled;
+	  view->GetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
+	    drillDownDisabled, keysDisabled);
 
-	  const int argCount = 5;
+	  const int argCount = 6;
 	  char *argv[argCount];
 	  int	pos = 0;
 	  argv[pos++] = _controlCmdName[DISABLEACTIONS];
 	  argv[pos++] = view->GetName();
 	  FillInt(argv, pos, rubberbandDisabled);
-	  FillInt(argv, pos, clickDisabled);
-	  FillInt(argv, pos, doubleclickDisabled);
-//TEMPTEMP -- need to disable keys?
+	  FillInt(argv, pos, cursorMoveDisabled);
+	  FillInt(argv, pos, drillDownDisabled);
+	  FillInt(argv, pos, keysDisabled);
 
 	  ReturnVal(argCount, argv);
 
 	  delete [] argv[2];
 	  delete [] argv[3];
 	  delete [] argv[4];
+	  delete [] argv[5];
 	}
 #endif //TEMPTEMP
 }

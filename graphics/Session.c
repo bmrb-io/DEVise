@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/05/17 18:37:35  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.52  1999/05/14 16:46:33  wenger
   View vertical scroll can now be configured by the user.
 
@@ -1065,6 +1070,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "getNiceAxes", "setNiceAxes",
       instance, NULL, NULL, false);
+
+  status += SaveParams(saveData, "viewGetDisabledActions",
+      "viewSetDisabledActions", instance, NULL, NULL, false);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

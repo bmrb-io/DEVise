@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/05/17 18:37:57  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.63  1999/05/14 16:46:49  wenger
   View vertical scroll can now be configured by the user.
 
@@ -4385,7 +4390,8 @@ DeviseCommand_setCursorGrid::Run(int argc, char** argv)
         {
           // Arguments: <cursorName> <useGrid> <gridX> <gridY>
     #if defined(DEBUG)
-          printf("setCursorGrid <%s>\n", argv[1]);
+          printf("setCursorGrid <%s> <%s> <%s> <%s>\n", argv[1], argv[2],
+		    argv[3], argv[4]);
     #endif
           DeviseCursor *cursor = (DeviseCursor *) _classDir->FindInstance(argv[1]);
           if (!cursor) {
@@ -5873,6 +5879,67 @@ IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in viewSetJSSendP\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetDisabledActions)
+    // Arguments: <viewName>
+	// Returns: <rubberband disabled> <cursor move disabled>
+	// <drill down disabled> <keys disabled>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean rubberbandDisabled, cursorMoveDisabled, drillDownDisabled,
+		  keysDisabled;
+		view->GetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
+		  drillDownDisabled, keysDisabled);
+        char buf[1024];
+		sprintf(buf, "%d %d %d %d", rubberbandDisabled, cursorMoveDisabled,
+		  drillDownDisabled, keysDisabled);
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewGetDisabledActions\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewSetDisabledActions)
+    // Arguments: <viewName> <rubberband disabled> <cursor move disabled>
+	// <drill down disabled> <keys disabled>
+	// Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 6) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean rubberbandDisabled = atoi(argv[2]);
+		Boolean cursorMoveDisabled = atoi(argv[3]);
+		Boolean drillDownDisabled = atoi(argv[4]);
+		Boolean keysDisabled = atoi(argv[5]);
+		view->SetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
+		  drillDownDisabled, keysDisabled);
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewSetDisabledActions\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
