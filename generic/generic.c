@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  2001/04/10 17:13:18  wenger
+  Minor cleanups and additions of debug code to string table-related stuff.
+
   Revision 1.64  1999/11/30 22:27:53  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -300,6 +303,7 @@
 #include "StateMap.h"
 #include "Util.h"
 #include "HangCheck.h"
+#include "DebugLog.h"
 
 static time_t GetTime(struct tm &now)
 {
@@ -1698,6 +1702,8 @@ int main(int argc, char **argv)
   (void)setbuf(stdout, NULL);
 
   Init::DoInit(argc,argv);
+
+  printf("DEVise debug log file is: %s\n", DebugLog::DefaultLog()->LogFile());
 
   HangCheck::CreateDefault();
 	

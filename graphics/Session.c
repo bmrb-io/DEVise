@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.98  2001/09/24 15:28:57  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.97  2001/08/28 18:30:11  wenger
   Added 'robustOpen' option (default is true) -- this allows a session
   open to succeed even if there are unrecognized commands (useful for
@@ -1618,8 +1622,6 @@ Session::DEViseCmd(ControlPanel *control, int argc, const char * const *argv)
     if (CmdContainer::GetCmdContainer()->RunOneCommand(argc-1, &argv[1],
 	    control) <= 0) {
       status = StatusFailed;
-      fprintf(stderr, "Error in command: ");
-      PrintArgs(stderr, argc, argv);
     }
   }
 

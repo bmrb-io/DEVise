@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2001/05/27 18:51:07  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.7  1999/09/08 20:56:21  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -64,8 +67,14 @@ const int	devNoSyserr = -9999;
 
 #define		reportError(message, syserr) DevError::ReportError((message), \
 	__FILE__, __LINE__, (syserr))
+
+#define		reportErrArgs(message, argc, argv, syserr) \
+    DevError::ReportError((message), (argc), (argv), __FILE__, __LINE__, \
+	(syserr))
+
 #define		reportErrSys(message) DevError::ReportError((message), \
 	__FILE__, __LINE__, errno)
+
 #define		reportErrNosys(message) DevError::ReportError((message), \
 	__FILE__, __LINE__, devNoSyserr)
 
@@ -75,6 +84,8 @@ class DevError
 public:
     static void ReportError(const char *message, const char *file, int line,
       int errnum);
+    static void ReportError(const char *message, int argc,
+      const char * const *argv, const char *file, int line, int errnum);
     static Boolean SetEnabled(Boolean enabled) {
         Boolean old = _enabled;
         _enabled = enabled;

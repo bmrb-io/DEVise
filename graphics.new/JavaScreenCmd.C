@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.118  2001/09/27 19:52:46  wenger
+  Fixed bug 688 (problem dealing with links in session directories);
+  improved JS error handling for session open; eliminated a bunch of
+  duplicate code in the JS.
+
   Revision 1.117  2001/08/20 18:20:33  wenger
   Fixes to various font problems: XDisplay calculates point sizes correctly
   and uses screen resolution in specifying font; JS passes *its* screen
@@ -1081,7 +1086,7 @@ JavaScreenCmd::~JavaScreenCmd()
 }
 
 //====================================================================
-int
+int // 1 = OK, -1 = error
 JavaScreenCmd::Run()
 {
 #if defined(DEBUG_LOG)
@@ -1989,7 +1994,7 @@ JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 }
 
 //====================================================================
-int
+int // 1 = OK, -1 = error
 JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 {
 	// return either DONE/ERROR/FAIL to current JAVA client
@@ -2024,7 +2029,7 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 		fprintf(stderr, "Return value is not DONE/FAIL/ERROR\n");
 		return -1;
 	}
-	return DONE;
+	return 1;
 }
 
 //====================================================================

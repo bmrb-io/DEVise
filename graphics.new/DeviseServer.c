@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  2001/09/24 15:29:11  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.15  2001/01/08 20:32:54  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -216,8 +220,9 @@ DeviseServer::Run()
 void 
 DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
 {
-    //TEMP -- should we look at return value here???
-    CmdContainer::GetCmdContainer()->Run(argc, argv, _control, cmdDes);
+    // Note: an error will be logged at a lower level if the return value
+    // indicates an error.
+    (void)CmdContainer::GetCmdContainer()->Run(argc, argv, _control, cmdDes);
 }
 
 /*------------------------------------------------------------------------------

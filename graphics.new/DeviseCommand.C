@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.121  2001/09/24 15:29:11  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.120  2001/06/12 15:29:45  wenger
   Implemented a choice of modulus (default) or truncate color modes.
 
@@ -747,6 +751,10 @@ DeviseCommand::ReturnVal(u_short flag, const char *result)
 #if defined(DEBUG)
     printf("DeviseCommand::ReturnVal(%d, %s)\n", flag, result);
 #endif
+
+    if (flag == API_NAK && strlen(DevError::GetLatestError()) == 0) {
+	    reportErrNosys(result);
+	}
 
     return _control->ReturnVal(flag, result);
 }

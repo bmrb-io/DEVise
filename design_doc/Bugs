@@ -2775,6 +2775,17 @@ Num Date        Status  Description
 			the devised. (rkw)
 			(Fixed by rkw, 09/26/01.)
 
+696 10/02/01	OPEN	JavaScreen: atom type shouldn't be required as
+			ShapeAttr2 for 3D views. (rkw)
+
+697 10/03/01	FIXED	Errors that occur when opening a session are not
+			generally recorded well in the log files. (rkw)
+			(The problem is that errors generated in
+			DeviseCommand.C are not logged, and only the top-
+			level error gets passed back up to the GUI (JS
+			or Tcl/Tk.)
+			(Fixed by rkw, 10/03/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

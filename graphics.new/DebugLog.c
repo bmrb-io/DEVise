@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  2001/05/27 18:51:15  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.14  2000/03/14 17:05:28  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -132,7 +135,6 @@ DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
       write(_fd, logBuf, strlen(logBuf));
 
       _filename = CopyString(filename);
-      printf("DEVise debug log file is: %s\n", _filename);
     }
     _maxSize = maxSize;
     _logNum = 0;

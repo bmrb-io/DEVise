@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  2001/04/02 16:09:58  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.41  2001/01/08 20:32:54  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -279,7 +284,7 @@ class JavaScreenCmd
 			ServiceCmdType ctype, int argc, char** argv);
 		~JavaScreenCmd();
 
-		int Run();
+		int Run(); // 1 = OK, -1 = error
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 
 	protected:

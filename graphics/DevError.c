@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  2001/05/27 18:51:07  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.9  1999/10/05 17:55:36  wenger
   Added debug log level.
 
@@ -96,14 +99,31 @@ void
 DevError::ReportError(const char *message, const char *file, int line,
   int errnum)
 {
+    ReportError(message, 0, NULL, file, line, errnum);
+}
+
+/*------------------------------------------------------------------------------
+ * function: DevError::ReportError
+ * Reports an error.  Right now, just prints info to stderr; we might want
+ * to do something more sophisticated eventually.
+ */
+void
+DevError::ReportError(const char *message, int argc, const char * const *argv,
+  const char *file, int line, int errnum)
+{
     char * progName = "DEVise";
 
-    if (!_enabled)
+    if (!_enabled) {
         return;
+    }
 
     ostrstream errStr;
 
-    errStr << endl << progName << " error: " << message << endl;
+    errStr << endl << progName << " error: " << message;
+    for (int count = 0; count < argc; count++) {
+        errStr << argv[count] << " ";
+    }
+    errStr << endl;
     if (errnum != devNoSyserr) {
         char *sysStr = strerror(errnum);
 	errStr << "  syserr: " << errnum;

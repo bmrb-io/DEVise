@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  2001/09/24 15:29:11  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.75  2001/08/28 18:30:19  wenger
   Added 'robustOpen' option (default is true) -- this allows a session
   open to succeed even if there are unrecognized commands (useful for
@@ -388,7 +392,6 @@
 #include "DeviseCommand.h"
 #include "Util.h"
 #include "DevError.h"
-#include "DebugLog.h"
 #include "ControlPanelSimple.h"
 #include "Session.h"
 #include "Init.h"
@@ -885,13 +888,7 @@ CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* con
 	cmd = lookupCmd(argv[0]);
 	if (cmd == NULL)
 	{
-        reportErrNosys("Unrecognized command");
-		fprintf(stderr, "Command is: ");
-        PrintArgs(stderr, argc, argv, true);
-#if defined(DEBUG_LOG)
-		DebugLog::DefaultLog()->Message(DebugLog::LevelError, "Command: ",
-		  argc, argv);
-#endif
+        reportErrArgs("Unrecognized command: ", argc, argv, devNoSyserr);
 		control->ReturnVal(API_NAK, "Unrecognized command");
 		retval = -1;
 		if (Session::OpeningSession() && Init::RobustOpen()) {
@@ -903,6 +900,9 @@ CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* con
 	{
 		//TEMP -- remove typecast on argv
 		retval = cmd->Run(argc, (char **)argv, control);
+		if (retval != 1) {
+		    reportErrArgs("Error in command: ", argc, argv, devNoSyserr);
+		}
 	}
 	return retval;
 }

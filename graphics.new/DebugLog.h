@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/02/23 23:32:53  wenger
+  Fixed bug 567 (problem with JAVAC_ResetFilters command; added LogFileLine()
+  macro to DebugLog.
+
   Revision 1.8  1999/11/16 20:13:00  wenger
   Improvements to debug logging: the beginning of the log isn't overwritten
   when the log wraps around; the values of important environment variables
@@ -78,6 +82,8 @@ public:
       const char * const *argv, const char *msg2 = "\n");
 
   void SetLogLevel(Level logLevel);
+
+  const char *LogFile() { return _filename; }
 
   static DebugLog *DefaultLog();
   static void DeleteAll();
