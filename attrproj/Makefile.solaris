@@ -6,18 +6,61 @@ depend:
 
 ApExit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApExit.o: /usr/include/stdlib.h ../graphics/Exit.h
-ApGroup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h ApGroup.h
-ApGroup.o: /usr/include/stdlib.h ApItemList.h
+ApGroup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApGroup.o: ../graphics.new/Group.h /usr/include/stdlib.h
+ApGroup.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
+ApGroup.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+ApGroup.o: ../graphics/Dispatcher.h /usr/include/sys/types.h
+ApGroup.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ApGroup.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ApGroup.o: /usr/include/sys/time.h ../graphics/DList.h ../graphics/Exit.h
+ApGroup.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ApGroup.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ApGroup.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ApGroup.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ApGroup.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ApGroup.o: ../graphics/Compress.h ../graphics/Control.h
+ApGroup.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ApGroup.o: ../graphics/Config.h ../graphics/Cursor.h
+ApGroup.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ApGroup.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ApGroup.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+ApGroup.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+ApGroup.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+ApGroup.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+ApGroup.o: /usr/include/string.h /usr/include/ctype.h
+ApGroup.o: ../graphics.new/MapInterpClassInfo.h ../graphics.new/ItemList.h
 ApGroupDir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ApGroupDir.o: /usr/include/string.h ApGroupDir.h ApItemList.h ApGroup.h
-ApGroupDir.o: /usr/include/stdlib.h ../graphics/Util.h /usr/include/time.h
-ApGroupDir.o: /usr/include/ctype.h ../graphics/Exit.h
+ApGroupDir.o: /usr/include/string.h ../graphics.new/GroupDir.h
+ApGroupDir.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApGroupDir.o: /usr/include/stdlib.h ../graphics/ClassDir.h
+ApGroupDir.o: ../graphics/DeviseTypes.h ../graphics.new/ViewGraph.h
+ApGroupDir.o: ../graphics/View.h ../graphics/Dispatcher.h
+ApGroupDir.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ApGroupDir.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ApGroupDir.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ApGroupDir.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+ApGroupDir.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
+ApGroupDir.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ApGroupDir.o: ../graphics/Geom.h /usr/include/math.h
+ApGroupDir.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ApGroupDir.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ApGroupDir.o: ../graphics/Compress.h ../graphics/Control.h
+ApGroupDir.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ApGroupDir.o: ../graphics/Config.h ../graphics/Cursor.h
+ApGroupDir.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ApGroupDir.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ApGroupDir.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+ApGroupDir.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+ApGroupDir.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+ApGroupDir.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+ApGroupDir.o: /usr/include/ctype.h ../graphics.new/MapInterpClassInfo.h
 ApInit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApInit.o: /usr/include/unistd.h /usr/include/sys/types.h
 ApInit.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 ApInit.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ApInit.o: /usr/include/time.h /usr/include/sys/unistd.h /usr/include/fcntl.h
-ApInit.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h
+ApInit.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/stdlib.h
 ApInit.o: /usr/include/string.h /usr/include/signal.h
 ApInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
 ApInit.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -26,7 +69,30 @@ ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
 ApInit.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
 ApItemList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ApItemList.o: ApItemList.h ApGroup.h /usr/include/stdlib.h
+ApItemList.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApItemList.o: /usr/include/stdlib.h ../graphics/ClassDir.h
+ApItemList.o: ../graphics/DeviseTypes.h ../graphics.new/ViewGraph.h
+ApItemList.o: ../graphics/View.h ../graphics/Dispatcher.h
+ApItemList.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ApItemList.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ApItemList.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ApItemList.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+ApItemList.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
+ApItemList.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ApItemList.o: ../graphics/Geom.h /usr/include/math.h
+ApItemList.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ApItemList.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ApItemList.o: ../graphics/Compress.h ../graphics/Control.h
+ApItemList.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ApItemList.o: ../graphics/Config.h ../graphics/Cursor.h
+ApItemList.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ApItemList.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ApItemList.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+ApItemList.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+ApItemList.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+ApItemList.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+ApItemList.o: /usr/include/string.h /usr/include/ctype.h
+ApItemList.o: ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApParseCat.o: ApParseCat.h ../graphics/DeviseTypes.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
@@ -35,45 +101,59 @@ ApParseCat.o: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
 ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ApParseCat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ApParseCat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApParseCat.o: /usr/include/time.h ../graphics/Config.h ApGroupDir.h
-ApParseCat.o: ApItemList.h ApGroup.h /usr/include/stdlib.h
-ApParseCat.o: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
-ApParseCat.o: ApTDataAsciiInterp.h ApTDataAscii.h ../tape/tapedrive.h
-ApParseCat.o: /usr/include/tar.h ../graphics.new/machdep.h
-ApParseCat.o: /usr/include/limits.h /usr/include/sys/param.h
-ApParseCat.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-ApParseCat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-ApParseCat.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-ApParseCat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ApParseCat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-ApParseCat.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ApParseCat.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-ApParseCat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-ApParseCat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-ApParseCat.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-ApParseCat.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-ApParseCat.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-ApParseCat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-ApParseCat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-ApParseCat.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-ApParseCat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-ApParseCat.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
-ApParseCat.o: ApTDataBinaryInterp.h ApTDataBinary.h ../graphics/Util.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
+ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
+ApParseCat.o: ../graphics/ClassDir.h ../graphics.new/ViewGraph.h
+ApParseCat.o: ../graphics/View.h ../graphics/Dispatcher.h
+ApParseCat.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ApParseCat.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ApParseCat.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ApParseCat.o: ../graphics/Compress.h ../graphics/Control.h
+ApParseCat.o: ../graphics/ViewCallback.h ../graphics/Cursor.h
+ApParseCat.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ApParseCat.o: ../graphics.new/Action.h ../graphics.new/TDataMap.h
+ApParseCat.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+ApParseCat.o: ../graphics.new/GDataRec.h ../graphics/Init.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h
+ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/Parse.h
+ApParseCat.o: ApInit.h ApTDataAsciiInterp.h ApTDataAscii.h ApDispatcher.h
+ApParseCat.o: ../tape/tapedrive.h /usr/include/tar.h
+ApParseCat.o: ../graphics.new/machdep.h /usr/include/limits.h
+ApParseCat.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+ApParseCat.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+ApParseCat.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+ApParseCat.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+ApParseCat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+ApParseCat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+ApParseCat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+ApParseCat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+ApParseCat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+ApParseCat.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+ApParseCat.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+ApParseCat.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+ApParseCat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ApParseCat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ApParseCat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+ApParseCat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ApParseCat.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+ApParseCat.o: /usr/include/arpa/inet.h ApTDataBinaryInterp.h ApTDataBinary.h
 ApTDataAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApTDataAscii.o: /usr/include/stdlib.h /usr/include/fcntl.h
 ApTDataAscii.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ApTDataAscii.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApTDataAscii.o: /usr/include/sys/time.h /usr/include/time.h
+ApTDataAscii.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ApTDataAscii.o: /usr/include/sys/fcntl.h /usr/include/limits.h
 ApTDataAscii.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 ApTDataAscii.o: /usr/include/errno.h /usr/include/sys/errno.h
 ApTDataAscii.o: /usr/include/sys/stat.h ../graphics/Parse.h ApTDataAscii.h
-ApTDataAscii.o: ../graphics/DeviseTypes.h ../graphics.new/TData.h
-ApTDataAscii.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApTDataAscii.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApTDataAscii.o: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
-ApTDataAscii.o: ../tape/tapedrive.h /usr/include/tar.h
+ApTDataAscii.o: ../graphics/DeviseTypes.h ApDispatcher.h
+ApTDataAscii.o: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApTDataAscii.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
+ApTDataAscii.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
+ApTDataAscii.o: ../graphics/Exit.h ../tape/tapedrive.h /usr/include/tar.h
 ApTDataAscii.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 ApTDataAscii.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 ApTDataAscii.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -98,25 +178,25 @@ ApTDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 ApTDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 ApTDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ApTDataAsciiInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApTDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/time.h
+ApTDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ApTDataAsciiInterp.o: /usr/include/sys/unistd.h ApTDataAsciiInterp.h
-ApTDataAsciiInterp.o: ../graphics/DeviseTypes.h ApTDataAscii.h
-ApTDataAsciiInterp.o: /usr/include/stdio.h ../graphics.new/TData.h
-ApTDataAsciiInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApTDataAsciiInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApTDataAsciiInterp.o: ../graphics/Pattern.h ../graphics/DList.h
-ApTDataAsciiInterp.o: ../graphics/Exit.h ../tape/tapedrive.h
-ApTDataAsciiInterp.o: /usr/include/tar.h ../graphics.new/machdep.h
-ApTDataAsciiInterp.o: /usr/include/limits.h /usr/include/sys/param.h
-ApTDataAsciiInterp.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-ApTDataAsciiInterp.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ApTDataAsciiInterp.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-ApTDataAsciiInterp.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-ApTDataAsciiInterp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ApTDataAsciiInterp.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ApTDataAsciiInterp.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ApTDataAsciiInterp.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ApTDataAsciiInterp.o: /usr/include/sys/machlock.h
+ApTDataAsciiInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
+ApTDataAsciiInterp.o: ApTDataAscii.h /usr/include/stdio.h ApDispatcher.h
+ApTDataAsciiInterp.o: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApTDataAsciiInterp.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
+ApTDataAsciiInterp.o: ../graphics/Color.h ../graphics/Pattern.h
+ApTDataAsciiInterp.o: ../graphics/DList.h ../graphics/Exit.h
+ApTDataAsciiInterp.o: ../tape/tapedrive.h /usr/include/tar.h
+ApTDataAsciiInterp.o: ../graphics.new/machdep.h /usr/include/limits.h
+ApTDataAsciiInterp.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+ApTDataAsciiInterp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+ApTDataAsciiInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+ApTDataAsciiInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+ApTDataAsciiInterp.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+ApTDataAsciiInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ApTDataAsciiInterp.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ApTDataAsciiInterp.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ApTDataAsciiInterp.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
 ApTDataAsciiInterp.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
 ApTDataAsciiInterp.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 ApTDataAsciiInterp.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
@@ -133,7 +213,7 @@ ApTDataBinary.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApTDataBinary.o: /usr/include/stdlib.h /usr/include/fcntl.h
 ApTDataBinary.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ApTDataBinary.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApTDataBinary.o: /usr/include/sys/time.h /usr/include/time.h
+ApTDataBinary.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ApTDataBinary.o: /usr/include/sys/fcntl.h /usr/include/limits.h
 ApTDataBinary.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 ApTDataBinary.o: /usr/include/sys/stat.h ../graphics/Parse.h ApTDataBinary.h
@@ -153,28 +233,30 @@ ApTDataBinaryInterp.o: ../graphics/DList.h ../graphics/Exit.h
 ApTDataBinaryInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ApTDataBinaryInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ApTDataBinaryInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApTDataBinaryInterp.o: /usr/include/time.h ../graphics/Config.h
+ApTDataBinaryInterp.o: /usr/include/sys/time.h ../graphics/Config.h
 ApTDataBinaryInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
 ApTDataBinaryInterp.o: ../graphics/Util.h /usr/include/stdlib.h
 ApTDataBinaryInterp.o: /usr/include/ctype.h
 AttrProj.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
-AttrProj.o: ../graphics.new/RecId.h VectorArray.h ApParseCat.h
-AttrProj.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
+AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
 AttrProj.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 AttrProj.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
-AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-AttrProj.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-AttrProj.o: ../graphics/Config.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/sys/time.h
+AttrProj.o: /usr/include/ctype.h ../graphics/AttrList.h
+AttrProj.o: /usr/include/sys/time.h /usr/include/sys/types.h
+AttrProj.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+AttrProj.o: /usr/include/sys/select.h ../graphics/Config.h
+ProjectionList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ProjectionList.o: ProjectionList.h ../graphics/DeviseTypes.h
 VectorArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h ../graphics/Util.h
-VectorArray.o: /usr/include/stdlib.h /usr/include/time.h
+VectorArray.o: /usr/include/stdlib.h /usr/include/sys/time.h
 VectorArray.o: /usr/include/string.h /usr/include/ctype.h ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 aptest.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 aptest.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-aptest.o: /usr/include/sys/time.h /usr/include/time.h AttrProj.h
+aptest.o: /usr/include/sys/time.h /usr/include/sys/time.h AttrProj.h
 aptest.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h VectorArray.h
-aptest.o: ApInit.h ../graphics/BufPolicy.h
+aptest.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h

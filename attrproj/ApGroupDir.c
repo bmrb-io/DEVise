@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/22 18:50:37  wenger
+  Greatly simplified Init::DoInit() to only do what's necessary for
+  attribute projection; other minor changes.
+
   Revision 1.1  1996/04/22 18:01:40  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -28,7 +32,7 @@
 #include <string.h>
 #include <iostream.h>
 
-#include "ApGroupDir.h"
+#include "GroupDir.h"
 #include "Util.h"
 
 GroupDir::GroupDir()

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/30 15:31:37  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.2  1996/04/25 19:25:10  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -34,7 +38,7 @@
 
 #include "ApParseCat.h"
 #include "AttrList.h"
-#include "ApGroupDir.h"
+#include "GroupDir.h"
 #include "Parse.h"
 #include "ApInit.h"
 #include "DeviseTypes.h"

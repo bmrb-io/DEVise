@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/11 17:29:55  jussi
+  Removed subitems() function that used Tcl_Interp arguments.
+
   Revision 1.6  1996/05/09 18:14:31  kmurli
   Modified Group.C and GroupDir.C to include an oiverloaded functions for
   get_items, subitems to take in a char * instead of Tcp_interp *. This
@@ -42,6 +45,7 @@
 
 #include <stdlib.h>
 
+#ifndef ATTRPROJ
 #include "ClassDir.h"
 #include "ViewGraph.h"
 #include "View.h"
@@ -50,6 +54,7 @@
 #include "Init.h"
 #include "Util.h"
 #include "MapInterpClassInfo.h"
+#endif
 
 #define MAX_STR_LEN 200
 
