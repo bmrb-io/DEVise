@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 20:47:21  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:02  jussi
   Added CVS header.
 */
@@ -35,14 +38,14 @@ public:
 		Boolean useLeftFlag = false,
 		Coord rightEdge = 0.0, Boolean useRightFlag = false);
 
-  void KeySelected(View *, char c, Coord x, Coord y);
+  void KeySelected(ViewGraph *view, char c, Coord x, Coord y);
 
-  Boolean PopUp(View *view, Coord x, Coord y, Coord xHigh,
+  Boolean PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 		Coord yHigh, int button, char **& msgs, int & numMsgs);
 
 private:
-  Boolean PrintRecords(View *view, Coord x, Coord y, Coord xHigh, Coord yHigh,
-		       char *&errorMsg);
+  Boolean PrintRecords(ViewGraph *view, Coord x, Coord y, Coord xHigh,
+		       Coord yHigh, char *&errorMsg);
 
   Coord left, right;
   Boolean useLeft, useRight;
@@ -51,4 +54,5 @@ private:
   char buf2[80];
   char *msgBuf[2];
 };
+
 #endif

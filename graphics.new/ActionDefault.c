@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/23 21:58:23  jussi
+  A scatter plot now uses both Y and X coordinates when executing
+  a TData query.
+
   Revision 1.12  1996/04/23 19:50:43  jussi
   Enabled queries of scatter plot data. Limited text window dump
   size to 500 lines.
@@ -28,8 +32,8 @@
   now gets its own iterator.
 
   Revision 1.10  1996/04/20 19:56:34  kmurli
-  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
-  needed instead of being continuosly polled by the Dispatcher.
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
 
   Revision 1.9  1996/04/15 15:06:47  jussi
   Interface to ViewGraph's mapping iterator has changed.
@@ -78,24 +82,25 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
   useRight = useRightFlag;
 }
 
-void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
+void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 {
   ControlPanel::Instance()->SelectView(view);
   VisualFilter filter;
-  ViewGraph *vg = (ViewGraph *)view;
+
+  Boolean isScatterPlot = view->IsScatterPlot();
 
   if (key == '+') {
     /* increase pixel size */
     Boolean changed = false;
-    int index = vg->InitMappingIterator();
-    while(vg->MoreMapping(index)) {
-      TDataMap *map = vg->NextMapping(index)->map;
+    int index = view->InitMappingIterator();
+    while(view->MoreMapping(index)) {
+      TDataMap *map = view->NextMapping(index)->map;
       if (map->GetPixelWidth() < 30) {
 	changed = true;
 	map->SetPixelWidth(map->GetPixelWidth() + 1);
       }
     }
-    vg->DoneMappingIterator(index);
+    view->DoneMappingIterator(index);
     if (changed)
       view->Refresh();
   }
@@ -103,20 +108,48 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
   else if (key == '-') {
     /* decrease pixel size */
     Boolean changed = false;
-    int index = vg->InitMappingIterator();
-    while(vg->MoreMapping(index)) {
-      TDataMap *map = vg->NextMapping(index)->map;
+    int index = view->InitMappingIterator();
+    while(view->MoreMapping(index)) {
+      TDataMap *map = view->NextMapping(index)->map;
       if (map->GetPixelWidth() > 1) { 
 	changed = true;
 	map->SetPixelWidth(map->GetPixelWidth() - 1);
       }
     }
-    vg->DoneMappingIterator(index);
+    view->DoneMappingIterator(index);
     if (changed)
       view->Refresh();
   }
 
-  else if (key == '<' || key == ',' || key == '4') {
+  else if (key == '5') {
+    /* show all data records in view i.e. set filter to use the
+       actual min/max X values and the actual min/max Y values */
+    int index = view->InitMappingIterator();
+    if (view->MoreMapping(index)) {
+      view->GetVisualFilter(filter);
+      TDataMap *map = view->NextMapping(index)->map;
+      AttrInfo *xAttr = map->MapGAttr2TAttr("x");
+      AttrInfo *yAttr = map->MapGAttr2TAttr("y");
+      if (xAttr) {
+	if (xAttr->hasHiVal)
+	  filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
+	if (xAttr->hasLoVal)
+	  filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
+      }
+      if (yAttr) {
+	if (yAttr->hasHiVal)
+	  filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+	if (yAttr->hasLoVal)
+	  filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+      }
+      if (!isScatterPlot)
+	filter.yLow = 0;
+      view->SetVisualFilter(filter);
+    }
+    view->DoneMappingIterator(index);
+  }
+
+  else if (!isScatterPlot && (key == '<' || key == ',' || key == '4')) {
     /* scroll data left */
     view->GetVisualFilter(filter);
     Coord width = filter.xHigh - filter.xLow;
@@ -130,7 +163,7 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
     view->SetVisualFilter(filter);
   }
 
-  else if (key == 'z' || key == 'z' || key == '9') {
+  else if (!isScatterPlot && (key == 'z' || key == 'Z' || key == '9')) {
     /* zoom out */
     view->GetVisualFilter(filter);
     Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
@@ -220,7 +253,7 @@ static void PrintMsgBuf()
     puts(msgPtr[i]);
 }
 
-Boolean ActionDefault::PopUp(View *view, Coord x, Coord y, Coord xHigh,
+Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 			     Coord yHigh, int button, char **& msgs,
 			     int &numMsgs)
 {
@@ -243,7 +276,7 @@ Boolean ActionDefault::PopUp(View *view, Coord x, Coord y, Coord xHigh,
   return true;
 }
 
-Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y, 
+Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y, 
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
 #ifdef DEBUG
@@ -257,16 +290,15 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
     recInterp = new RecInterp;
   
   /* get mapping */
-  ViewGraph *vg = (ViewGraph *)view;
-  int index = vg->InitMappingIterator();
-  if (!vg->MoreMapping(index)) {
+  int index = view->InitMappingIterator();
+  if (!view->MoreMapping(index)) {
     errorMsg = "No mapping found!";
-    vg->DoneMappingIterator(index);
+    view->DoneMappingIterator(index);
     return false;
   }
 
-  TDataMap *map = vg->NextMapping(index)->map;
-  vg->DoneMappingIterator(index);
+  TDataMap *map = view->NextMapping(index)->map;
+  view->DoneMappingIterator(index);
   
   RecId startRid;
   int numRecs;
