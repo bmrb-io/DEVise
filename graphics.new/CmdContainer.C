@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/11/19 17:17:41  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.51  1999/11/19 15:23:17  wenger
   Added dispatcherRun1 command (for debugging).
 
@@ -280,16 +284,7 @@ static char* cmdLogBase ="/tmp/cmdLog.";
 // is done, so you'll end up destroying other things the object points to.
 #define REGISTER_COMMAND(objType)\
 {\
-	DeviseCommandOption	cmdOption;\
-	cmdOption.setCmdName(#objType);\
-	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)(cmdOption);\
-	insertCmd(#objType,(DeviseCommand*)obj,sizeof(DeviseCommand_##objType)); \
-}
-
-#define REGISTER_COMMAND_WITH_OPTION(objType,cmdOption)\
-{\
-	cmdOption.setCmdName(#objType);\
-	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)(cmdOption);\
+	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)();\
 	insertCmd(#objType,(DeviseCommand*)obj,sizeof(DeviseCommand_##objType)); \
 }
 
@@ -842,7 +837,6 @@ CmdContainer::lookupCmd(const char* cmdName)
 	datap = cmdDb.get(key);
 	if (datap != NULL)
 	{
-		DeviseCommandOption option;
 		cmdp = (DeviseCommand*)datap->data();
 	}
 	return cmdp;

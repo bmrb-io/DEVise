@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/09/07 19:00:56  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.44  1999/08/19 20:46:36  wenger
   Added JAVAC_ProtocolVersion command.
 
@@ -226,7 +234,6 @@
 #ifndef _DeviseCommand_h_
 #define _DeviseCommand_h_
 #include <iostream.h>
-#include "DeviseCommandOption.h"
 #include "ClassDir.h"
 #include "Control.h"
 #include "ExtStack.h"
@@ -235,8 +242,8 @@
 class DeviseCommand_##command_name: public DeviseCommand\
 {\
     public:\
-    DeviseCommand_##command_name(DeviseCommandOption& cmdOption):\
-        DeviseCommand(cmdOption){}\
+    DeviseCommand_##command_name():\
+        DeviseCommand(){}\
     ~DeviseCommand_##command_name(){}\
 	private: /* only base class can Run(), we need to initialize control */\
     int Run(int argc, char** argv);
@@ -249,7 +256,6 @@ class DeviseCommand
 	public:
 		static ControlPanel* getDefaultControl();
 	private:
-		DeviseCommandOption	_cmdOption;
 		static	ControlPanel* _defaultControl;
 		static void setDefaultControl(ControlPanel* defaultControl);
 		ExtStack	*_controlStack;
@@ -265,9 +271,8 @@ class DeviseCommand
 	protected:
 		// only friend class can construct this class
 		ControlPanel* _control;
-		DeviseCommand(DeviseCommandOption& cmdOption)
+		DeviseCommand()
 		{
-			_cmdOption = cmdOption;
 			_controlStack = new ExtStack(5, NULL);
 			_result = NULL;
 		}
@@ -289,11 +294,6 @@ class DeviseCommand
 		char**		_args;
 	public:
 		virtual int Run(int argc, char** argv, ControlPanel* cntl);
-		DeviseCommandOption& 
-		getOption() 
-		{
-			return (DeviseCommandOption&)_cmdOption;
-		}
 };
 ostream& operator <<(ostream& os, DeviseCommand& cmd);
 
@@ -1813,6 +1813,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getAxisTicks) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(dispatcherRun1)
 DECLARE_CLASS_END
 
 
