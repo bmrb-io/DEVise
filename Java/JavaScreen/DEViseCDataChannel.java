@@ -160,8 +160,9 @@ public class DEViseCDataChannel implements Runnable
                 throw new DEViseNetException("Trash Data received from DEVise Server!");                           
             
             if (cmd[0].equals("CreateWindow")) {
-                //DEViseDebugInfo.println("Start receive data ...");
+                DEViseDebugInfo.println("Start receiving image data for window " + cmd[1] + " ...");
                 byte[] imageData = imgSocket.receiveImg((Integer.valueOf(cmd[6])).intValue());
+		DEViseDebugInfo.println("Finish receiving image data for window " + cmd[1]);
                 MediaTracker tracker = new MediaTracker(jsc);
                 Toolkit kit = jsc.getToolkit();
                 Image image = kit.createImage(imageData);
@@ -184,7 +185,6 @@ public class DEViseCDataChannel implements Runnable
                 }            
                  
                 jsc.addView(view);
-                //DEViseDebugInfo.println("Finish read data ...");
             } else if (cmd[0].equals("OpenAll")) {
                 jsc.jscOpen();
             } else if (cmd[0].equals("UpdateGdata")) {
@@ -193,7 +193,9 @@ public class DEViseCDataChannel implements Runnable
                     label[i] = cmd[i + 1];                       
                 jsc.viewControl.updateControl(label); 
             } else if (cmd[0].equals("UpdateWindow")) {
+		DEViseDebugInfo.println("Start receiving image data for window " + cmd[1] + " ...");
                 byte[] imageData = imgSocket.receiveImg((Integer.valueOf(cmd[2])).intValue());
+		DEViseDebugInfo.println("Finish receiving image data for window " + cmd[1]);
                 MediaTracker tracker = new MediaTracker(jsc);
                 Toolkit kit = jsc.getToolkit();
                 Image image = kit.createImage(imageData);

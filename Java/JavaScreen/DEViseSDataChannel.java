@@ -146,9 +146,8 @@ public class DEViseSDataChannel implements Runnable
         if (imageData == null)
             return false;
         cmdSocket.sendCmd("UpdateWindow " + argument[1] + " " + imageData.length, DEViseGlobals.API_CTL);
-        imgSocket.sendImg(imageData);
-        imgSocket.flushStream();
         cmdSocket.sendCmd("Done", DEViseGlobals.API_ACK);
+	imgSocket.sendImg(imageData);
         return true;
     }
     
@@ -177,23 +176,23 @@ public class DEViseSDataChannel implements Runnable
     private boolean openSession() throws DEViseNetException
     {   
         byte[] imageData = null;
-        //String rsp = null;        
         for (int i = 0; i < 4; i++) {
             imageData = getImage("view" + (i + 1) + "-sample0.jpg");
             if (imageData == null) 
                 return false;
             cmdSocket.sendCmd("CreateWindow view" + (i + 1) +" 0 0 400 300 " + imageData.length, DEViseGlobals.API_CTL);
-            //System.out.println("Start sending file ...");
-            imgSocket.sendImg(imageData);
-            //System.out.println("Finish sending file ...");
-            //rsp = cmdSocket.receiveRsp(false);
-            //if (!rsp.equals("Done") 
-            //    return false;
         }
         
-        imgSocket.flushStream();
         cmdSocket.sendCmd("OpenAll", DEViseGlobals.API_CTL);
         cmdSocket.sendCmd("Done", DEViseGlobals.API_ACK);
+	System.out.println("Sended Done...");
+
+	for (int i = 0; i < 4; i++) {
+            //System.out.println("Start sending imageData...");
+            imgSocket.sendImg(imageData);
+	    //System.out.println("Finish sending imageData...");
+        }
+
         return true;
     } 
     
