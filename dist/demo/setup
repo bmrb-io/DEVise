@@ -20,9 +20,6 @@
 
 ############################################################
 
-cd session
-mkdir .tmp
-cd ..
 ln -s session session.js
 
 cd schema/schema
