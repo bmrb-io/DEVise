@@ -28,13 +28,6 @@ BufMgrSrc = BufMgr.c BufMgrNull.c VoidArray.c RangeInfo.c RecRange.c \
 
 BufMgrObj = $(BufMgrSrc:.c=.o)
 
-#/	g++ -CFLAGS  ClientAPI.c client.c
-#/client.o: client.c
-#/	g++ -c client.c
-#/
-#/ClientAPI.o: ClientAPI.c ClientAPI.h
-#/	g++ -c ClientAPI.c
-
 # query processor
 
 QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
@@ -47,10 +40,6 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewRanges.c ViewGraph.c QPRange.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c
 	
-#Removed from this..
-#TkControl.c 
-#=======
-
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))
 QPObj = $(QPSrc1:.c=.o)
@@ -84,21 +73,21 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
 	StringHash.c testViewRanges.c testXY.c
 
-CLIENTSRC = client.c ClientAPI.c
+CLIENTSRC = ClientAPI.c 
 SERVERSRC = ServerAPI.c 
 MONLITHSRC = TkControl.c 
 
-ALLSRC = $(LIBSRC) $(TESTSRC)  $(CLIENTSRC) $(SERVERSRC) $(MONOLITHSRC)
+ALLSRC = $(LIBSRC) $(TESTSRC) $(SERVERSRC) $(MONOLITHSRC)
 
 LIBOBJS = $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
 
-all: libobj.o  clientobj.o servobj.o monolith.o
-
-clientobj.o: ClientAPI.o client.o
-	$(LD) -r -o $@ ClientAPI.o  client.o 
+all: libobj.o clientobj.o servobj.o monolith.o
 
 monolith.o: TkControl.o
 	$(LD) -r -o $@ TkControl.o
+
+clientobj.o: ClientAPI.o
+	$(LD) -r -o $@ ClientAPI.o 
 
 servobj.o: ServerAPI.o
 	$(LD) -r -o $@ ServerAPI.o 
@@ -115,7 +104,8 @@ testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 		-ltk -lXaw -lXmu -lXt -lXext -lX11 -lm
 
 testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testStr.o StringHash.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \ $(CMDOBJ)  StringHash.o ../graphics/allobj.o  \
+	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
+	 $(CMDOBJ)  StringHash.o ../graphics/allobj.o  \
 	-lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
 
 genStrData: genStrData.o
@@ -133,7 +123,8 @@ testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 
 testGDataRange: testGDataRange.o GDataRangeMap.o ../graphics/Parse.o \
 	../graphics/ExitClean.o
-	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o ../graphics/ExitClean.o
+	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o \
+	../graphics/ExitClean.o
 	
 testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o RangeInfo.o \
 	../graphics/Exit.o
@@ -144,7 +135,8 @@ testRecRange: testRecRange.o ../graphics/Parse.o RecRange.o ../graphics/Exit.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o RecRange.o ../graphics/ExitClean.o
 
 testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o ../graphics/Exit.o
-	$(CC) -o $@ $@.o ../graphics/Parse.o VoidArray.o ../graphics/ExitClean.o
+	$(CC) -o $@ $@.o ../graphics/Parse.o VoidArray.o \
+	../graphics/ExitClean.o
 
 testraw: testraw.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o
 	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
@@ -248,9 +240,9 @@ testpage: $(LIBOBJ) testpage.o
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm libobj.o genStrData strData clientobj.o monolith.o 
+	-rm libobj.o genStrData strData monolith.o 
 
 mostlyclean:
 	-rm $(LIBOBJ) BufMgrObj.o genStrData.o rstat.o testGDataRange.o \
-		testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
-		client.o ClientAPI.o ServerAPI.o TkControl.o
+	testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
+	ClientAPI.o ServerAPI.o TkControl.o
