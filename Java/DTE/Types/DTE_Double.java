@@ -5,6 +5,7 @@ import java.io.*;
 public class DTE_Double extends DTE_Type implements Cloneable 
 {
   double val;
+
   public DTE_Double()
   {
     val = 0;
@@ -15,6 +16,16 @@ public class DTE_Double extends DTE_Type implements Cloneable
     val = i;
   }
   
+  public String get_type( )
+  {
+    return "double";
+  }
+
+  public Object get_val( )
+  {
+    return new Double( val );
+  }
+
   public boolean read(StreamTokenizer st) throws IOException 
   {
     int status = st.nextToken();

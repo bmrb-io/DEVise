@@ -6,25 +6,35 @@ public class DTE_Int extends DTE_Type implements Cloneable
 {
   int val;
   
-  public DTE_Int()
+  public DTE_Int( )
   {
     val = 0;
   }
   
-  public DTE_Int(int i)
+  public DTE_Int( int i )
   {
     val = i;
   }
   
+  public String get_type( )
+  {
+    return "int";
+  }
+
+  public Object get_val( )
+  {
+    return new Integer( val );
+  }
+
   public boolean read(StreamTokenizer st) throws IOException 
   {
-    int status = st.nextToken();
+    int status = st.nextToken( );
     if(status == StreamTokenizer.TT_EOF)
       return false;
     
     if(status != StreamTokenizer.TT_NUMBER)
       {
-	int lineno = st.lineno();
+	int lineno = st.lineno( );
 	System.err.println("The data on line " + lineno + " is not an integer!");
 	return false;
       }
