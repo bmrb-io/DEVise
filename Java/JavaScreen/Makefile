@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2000
+# (c) Copyright 1992-2001
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -30,10 +30,10 @@ jss: jss.class
 js.class: *.java utils client
 	$(JAVAC) js.java
 
-jsa.class: *.java utils client applet
+jsa.class: *.java utils client appletclass
 	$(JAVAC) jsa.java
 
-jsb.class: *.java utils client applet
+jsb.class: *.java utils client appletclass
 	$(JAVAC) jsb.java
 
 jspop.class: *.java
@@ -57,7 +57,7 @@ client: *.java
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
 	    jsdevisec.java
 
-applet: *.java
+appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java
 
 loader: *.java
