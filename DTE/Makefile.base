@@ -50,12 +50,13 @@ DTE_INCLUDES = \
 
 #no-comment is for the perl files
 
-CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
-	$(OPTFLAG) $(TEMPLATE_FLAGS) \
-	-DUNIX -DLIBCS -DHAVE_CONFIG_H
+CFLAGS_WO_TEMPLATES = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
+	$(OPTFLAG) -DUNIX -DLIBCS -DHAVE_CONFIG_H
 #	-fhandle-exceptions
 #	-pedantic
 #	-Wall -Wno-unused -Wno-comment \
+
+CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
 
 ifdef DTE_DEBUG
 	CFLAGS += -g
@@ -66,8 +67,9 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Engine.c Aggregates.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
-	ExecOp.c Inserter.c TypeCheck.c joins.c \
-	Interface.c MaterializeParse.c MemoryMgr.c
+	ExecOp.c Inserter.c TypeCheck.c \
+	Interface.c MaterializeParse.c MemoryMgr.c \
+	Templates.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
@@ -187,6 +189,9 @@ ParseAPIDTE_SA.o : ParseAPIDTE.c ParseAPIDTE.o
 
 scriptServer_CS.o : scriptServer.c scriptServer.o common.h
 	$(CC) -c $(CFLAGS) -DDTE_AS_SERVER -o $@ $<
+
+Templates.o: Templates.c
+	g++ -c  $(CFLAGS_WO_TEMPLATES) $<
 
 .PHONY: clean mostlyclean
 
