@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 20:35:10  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.3  1998/02/26 18:54:08  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -411,6 +414,10 @@ void Server::ReadCmd()
     memset(&fdset, 0, sizeof fdset);
 	if (_listenSwtFd >0)
     	FD_SET(_listenSwtFd, &fdset);
+
+	if (_listenFd >0)
+    	FD_SET(_listenFd, &fdset);
+
 	if ((_listenSwtFd >0)&&(_listenFd > _listenSwtFd))
     	maxFdCheck = _listenFd;
 	else
