@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.64  1996/11/01 19:29:01  kmurli
+#	Changed to include the DQL type. Also calls importFileDQL command in
+#	ParseAPI.c to facilitate the creation of the DQL classes.
+#
 #	Revision 1.63  1996/10/22 18:25:07  jussi
 #	Replaced incr statements with conventional expressions because
 #	incr doesn't work on floating point numbers.
@@ -440,7 +444,8 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         # way of checking is to see that we have no groups defined under the 
         # logical schema name
 	   if {$stype == "DQL"} {
-            	set result [DEVise importFileDQLType $schema $param]
+            	set result [DEVise importFileDQLType $schema $schema\
+						$schema $param]
 				set topgrps [DEVise getTopGroups $schema]
 				set [lindex $sourceList($sname) 3] $schema
    		} else {	

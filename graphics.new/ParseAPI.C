@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/11/03 02:41:37  kmurli
+  Modified to include the query schema level. Also modified to include DQL
+  processing
+
   Revision 1.36  1996/11/01 19:28:20  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -189,7 +193,7 @@ extern "C" int purify_new_inuse();
 #endif
 
 
-//#define DEBUG
+#define DEBUG
 #define LINESIZE 1024
 
 static char result[10 * 1024];
@@ -1082,16 +1086,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
   if (argc == 3) {
 
-	if(!strcmp(argv[0],"importFileDQLType")){
-	  char * name = ParseDQL("HIST","HIST",argv[1],argv[2]); 
-	  if (!name){
-		strcpy(result,"");
-		control->ReturnVal(API_NAK, result);
-		return -1;
-	  }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -1709,6 +1703,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 5) {
+
+	if(!strcmp(argv[0],"importFileDQLType")){
+	  char * name = ParseDQL(argv[1],argv[2],argv[3],argv[4]); 
+	  if (!name){
+		strcpy(result,"");
+		control->ReturnVal(API_NAK, result);
+		return -1;
+	  }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
     if (!strcmp(argv[0], "setLabel")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
