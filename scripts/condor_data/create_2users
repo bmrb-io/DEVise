@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  2000/03/15 20:35:47  wenger
+#  Fixed problems with email in cron jobs; safer 'or' in Perl scripts.
+#
 #  Revision 1.18  1999/11/03 16:24:03  wenger
 #  Put text alignment, etc., back the way it was -- now works because of
 #  fixes to JS.
@@ -129,21 +132,23 @@
 
 ############################################################
 
-$debug = 0;
+use strict;
+
+my $debug = 0;
 
 die "usage: create_2users <data directory> <session file>\n",
     "  <user list schema file> <data schema file>\n" if ($#ARGV != 3);
 
-$data_dir = shift(@ARGV);
-$session_file = shift(@ARGV);
-$user_schema = shift(@ARGV);
-$data_schema = shift(@ARGV);
+my $data_dir = shift(@ARGV);
+my $session_file = shift(@ARGV);
+my $user_schema = shift(@ARGV);
+my $data_schema = shift(@ARGV);
 
 # Find all of the users in the data file.
-%userlist = ();
+my %userlist = ();
 GetUsers();
-@userarray = sort keys %userlist;
-$usercount = $#userarray + 1;
+my @userarray = sort keys %userlist;
+my $usercount = $#userarray + 1;
 
 # Create the session file.
 CreateSession($session_file);
@@ -153,11 +158,12 @@ CreateSession($session_file);
 sub GetUsers {
 
   open(DATA_IN, "${data_dir}/UserList") or
-      die "Couldn't open data file $data_file: $!\n";
+      die "Couldn't open data file ${data_dir}/UserList: $!\n";
 
+  my $line;
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug);
-    $tmpuser = GetUserFromLine($line);
+    my $tmpuser = GetUserFromLine($line);
     print "  tmpuser = $tmpuser\n" if ($debug);
     $userlist{$tmpuser} = 1;
   }
@@ -196,7 +202,7 @@ sub CreateSession {
   CreateViews();
 
   # Create the mapping class and mappings.
-  $mapClass = CreateMappings($data_prefix);
+  my $mapClass = CreateMappings($data_prefix);
 
   # Insert mappings into views.
   InsertMappings($mapClass);
@@ -227,7 +233,7 @@ sub DefineData {
   print SES_OUT "# Define data sources\n";
 
   use Cwd;
-  $data_path = cwd() . "/$data_dir";
+  my $data_path = cwd() . "/$data_dir";
 
   # Create a data source for the top-level data (list of users).
   #TEMP -- name should probably be a variable
@@ -280,8 +286,8 @@ sub CreateViews {
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} User1_viewA 0 1 -1 -2 36 2\n";
-  $top = $usercount - 0.5;
-  $bottom = $usercount - 1.5;
+  my $top = $usercount - 0.5;
+  my $bottom = $usercount - 1.5;
   print SES_OUT "DEVise viewSetImplicitHome {User1_viewA} 1 1 2 1 0.5 0.5 -0.5 ",
       "$bottom 0.5 $top\n";
   print SES_OUT "DEVise setViewAutoFilter User1_viewA 1\n";

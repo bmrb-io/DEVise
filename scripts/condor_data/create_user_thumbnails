@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  2001/07/30 14:58:06  wenger
+#  Changed UserThumb.ds session slightly because home now takes bounding
+#  boxes into account.
+#
 #  Revision 1.16  2000/03/15 20:35:47  wenger
 #  Fixed problems with email in cron jobs; safer 'or' in Perl scripts.
 #
@@ -88,18 +92,20 @@
 
 ############################################################
 
-$debug = 0;
+use strict;
+
+my $debug = 0;
 
 die "usage: create_user_thumbnails <data directory> <session file>\n",
     "  <user list schema file> <data schema file>\n" if ($#ARGV != 3);
 
-$data_dir = shift(@ARGV);
-$session_file = shift(@ARGV);
-$user_schema = shift(@ARGV);
-$data_schema = shift(@ARGV);
+my $data_dir = shift(@ARGV);
+my $session_file = shift(@ARGV);
+my $user_schema = shift(@ARGV);
+my $data_schema = shift(@ARGV);
 
 # Find all of the users in the data file.
-%userlist = ();
+my %userlist = ();
 GetUsers();
 
 # Create the session file.
@@ -110,11 +116,12 @@ CreateSession($session_file);
 sub GetUsers {
 
   open(DATA_IN, "${data_dir}/UserList") or
-      die "Couldn't open data file $data_file: $!\n";
+      die "Couldn't open data file ${data_dir}/UserList: $!\n";
 
+  my $line;
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug);
-    $tmpuser = GetUserFromLine($line);
+    my $tmpuser = GetUserFromLine($line);
     print "  tmpuser = $tmpuser\n" if ($debug);
     $userlist{$tmpuser} = 1;
   }
@@ -153,7 +160,7 @@ sub CreateSession {
   CreateViews();
 
   # Create the mapping class and mappings.
-  $mapClass = CreateMappings($data_prefix);
+  my $mapClass = CreateMappings($data_prefix);
 
   # Insert mappings into views.
   InsertMappings($mapClass);
@@ -178,7 +185,7 @@ sub DefineData {
   print SES_OUT "# Define data sources\n";
 
   use Cwd;
-  $data_path = cwd() . "/$data_dir";
+  my $data_path = cwd() . "/$data_dir";
 
   # Create a data source for the top-level data (list of users).
   #TEMP -- name should probably be a variable
@@ -269,6 +276,7 @@ sub CreateMappings {
       "{} {-2} {0.6} {} {-3} {2} {} {} {}\n";
 
   $dataName = "Condor_Total";
+  my $user;
   foreach $user (sort keys %userlist) {
       print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
           "${user}#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
@@ -290,6 +298,7 @@ sub InsertMappings {
   print SES_OUT "DEVise insertMapping {DataParent_view} ",
       "{AllUser#$mappingClass}\n";
 
+  my $user;
   foreach $user (sort keys %userlist) {
       print SES_OUT "DEVise insertMapping {${user}_view} ",
           "{${user}#$mappingClass}\n";
@@ -307,6 +316,7 @@ sub CreateLinksCursors {
 
   # Link the view symbols on X (time).
   print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
+  my $user;
   foreach $user (sort keys %userlist) {
       print SES_OUT "DEVise insertLink {TimeLink} {${user}_view}\n";
   }
