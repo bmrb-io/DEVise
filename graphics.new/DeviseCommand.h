@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  2000/01/13 23:07:06  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.50  1999/12/14 17:57:36  wenger
   Added enableDrawing command (totally enables or disables drawing) to
   allow Omer to avoid "flashing" when he inserts views into windows.
@@ -416,9 +419,15 @@ DECLARE_CLASS_DeviseCommand_(JAVAC_ProtocolVersion)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_ProtocolVersion
+//Class definition: DeviseCommand_ShowRecords3D
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_ShowRecords3D)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ResetFilters)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -1862,6 +1871,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(enableDrawing)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(resetAllFilters)
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

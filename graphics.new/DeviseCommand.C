@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.95  2000/01/13 23:07:05  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.94  1999/12/27 19:33:14  wenger
   Cursor grids can now be applied to the edges of a cursor, rather than the
   center, if desired.
@@ -757,6 +760,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_ShowRecords3D)
 	JavaScreenCmd jc(_control,JavaScreenCmd::SHOW_RECORDS3D,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ResetFilters)
+	JavaScreenCmd jc(_control,JavaScreenCmd::RESET_FILTERS,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -6325,6 +6334,28 @@ IMPLEMENT_COMMAND_BEGIN(enableDrawing)
         return true;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in enableDrawing\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(resetAllFilters)
+    // Arguments: (none)
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+	    if (Session::ResetFilters().IsComplete()) {
+            ReturnVal(API_ACK, "done");
+            return 1;
+		} else {
+            ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+    	    return -1;
+		}
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in resetAllFilters\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

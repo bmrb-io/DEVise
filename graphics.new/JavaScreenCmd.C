@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -438,7 +438,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 3;
-static const int protocolMinorVersion = 1;
+static const int protocolMinorVersion = 2;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -1012,6 +1012,9 @@ JavaScreenCmd::Run()
 			break;
 		case PROTOCOLVERSION:
 			JSProtocolVersion();
+			break;
+		case RESET_FILTERS:
+			JSResetFilters();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -1665,6 +1668,33 @@ JavaScreenCmd::JSProtocolVersion()
 				protocolMajorVersion, protocolMinorVersion, jsMajor, jsMinor);
 		}
 	}
+}
+
+//====================================================================
+// Reset all visual filters to the values defined in the session file.
+void
+JavaScreenCmd::JSResetFilters()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::JSResetFilters(", _argc, _argv, ")\n");
+#endif
+
+	_postponeCursorCmds = true;
+
+	if (!Session::ResetFilters().IsComplete()) {
+		errmsg = DevError::GetLatestError();
+		_status = ERROR;
+	}
+
+	// Make sure everything has actually been re-drawn before we
+	// continue.
+	Dispatcher::Current()->WaitForQueries();
+	_postponeCursorCmds = false;
+
+	// Send the updated window image(s).
+	ControlCmdType tmpStatus = SendChangedViews(true);
+	if (tmpStatus == ERROR) _status = tmpStatus;
 }
 
 //====================================================================

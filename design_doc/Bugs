@@ -2175,6 +2175,9 @@ Num Date        Status  Description
 			a TData without having to first successfully display
 			that TData. (rkw) (See also bug 554.)
 
+556 01/12/00	OPEN	Open Test/bug556.ds, destroy or remove View 6 -> DEVise
+			crashes. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

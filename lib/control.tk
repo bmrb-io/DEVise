@@ -1,6 +1,6 @@
 #========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1999
+#  (c) Copyright 1992-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.208  1999/12/06 18:41:13  wenger
+#	Simplified and improved command logging (includes fixing bug 537, command
+#	logs are now human-readable); added standard header to debug logs.
+#	
 #	Revision 1.207  1999/12/03 22:16:24  wenger
 #	Reduced the number of commands required to update the mapping dialog.
 #	
@@ -1151,6 +1155,7 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Refresh" -command DoRefresh
 .mbar.session.menu add command -label "Update Filters" -command {DEVise updateFilters}
 .mbar.session.menu add command -label "Open, Update, and Save..." -command {DoUpdate}
+.mbar.session.menu add command -label "Reset Filters" -command {DEVise resetAllFilters}
 # <<< Changes for saving sessions as batch scripts only...
 #TEMP.mbar.session.menu add separator
 #TEMP.mbar.session.menu add command -label "Open as Template..." -command {DoOpen 1}

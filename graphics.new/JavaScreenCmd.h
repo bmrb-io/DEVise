@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/10/27 17:59:54  wenger
+  Fixed bug 525 (child views can't send GData to the JavaScreen); started
+  on provision for drill-down in 3D views in the JavaScreen.
+
   Revision 1.26  1999/08/25 14:56:17  wenger
   More improvements to JavaScreen argument handling; assertion failures are
   written to debug log.
@@ -177,6 +181,7 @@ class JavaScreenCmd
 			IMAGECHANNEL,
 			CURSORCHANGED,
 			PROTOCOLVERSION,
+			RESET_FILTERS,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -220,7 +225,7 @@ class JavaScreenCmd
 		char** 			_argv;
 
 		ControlCmdType	_status;
-		char			*errmsg;
+		const char		*errmsg;
 
 		static Boolean	_postponeCursorCmds;
 
@@ -240,6 +245,7 @@ class JavaScreenCmd
 		void ImageChannel();
 		void CursorChanged();
 		void JSProtocolVersion();
+		void JSResetFilters();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);

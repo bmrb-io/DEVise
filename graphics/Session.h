@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/12/06 18:40:48  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.19  1999/11/30 22:28:04  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -139,6 +143,7 @@ public:
   static DevStatus Save(const char *filename, Boolean asTemplate,
       Boolean asExport, Boolean withData, Boolean selectedView = false);
   static DevStatus Update(const char *filename);
+  static DevStatus ResetFilters();
 
   static DevStatus UpdateFilters();
 
@@ -170,12 +175,17 @@ protected:
   static void RemoveTrailingSemicolons(char str[]);
   static DevStatus RunCommand(ControlPanelSimple *control, int argc,
       char *argv[]);
+  static DevStatus FilterCommand(ControlPanelSimple *control, int argc,
+      char *argv[]);
 
 private:
+  typedef DevStatus (*CommandProc)(ControlPanelSimple *control, int argc,
+      char *argv[]);
   static DevStatus ReadSession(ControlPanelSimple *control,
-      const char *filename);
+      const char *filename, CommandProc cp);
 
-  static DevStatus DEViseCmd(ControlPanel *control, int argc, char *argv[]);
+  static DevStatus DEViseCmd(ControlPanel *control, int argc,
+      const char * const *argv);
   static DevStatus OpenDataSourceCmd(ControlPanel * control, int argc,
       char *argv[]);
   static DevStatus ScanDerivedSourcesCmd(ControlPanel * control, int argc,
@@ -248,6 +258,7 @@ private:
 
   static DataCatalog *_dataCat;
   static char *_catFile;
+  static char *_sessionFile;
 };
 
 #endif /* _Session_h_ */

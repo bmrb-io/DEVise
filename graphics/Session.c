@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.75  1999/12/06 20:03:20  wenger
   Windows are forced to be on-screen when opening or saving a session.
 
@@ -406,6 +409,7 @@ Boolean Session::_openingSession = false;
 
 DataCatalog *Session::_dataCat = NULL;
 char *Session::_catFile = NULL;
+char *Session::_sessionFile = NULL;
 
 /*------------------------------------------------------------------------------
  * function: Session::Open
@@ -430,11 +434,15 @@ Session::Open(const char *filename)
   }
 
   if (status.IsComplete()) {
+    if (_sessionFile) {
+      free(_sessionFile);
+    }
+    _sessionFile = CopyString(filename);
     _openingSession = true;
 
     ControlPanelSimple control;
 
-    status += ReadSession(&control, filename);
+    status += ReadSession(&control, filename, RunCommand);
 
     _openingSession = false;
   }
@@ -463,6 +471,12 @@ Session::Close()
 #endif
 
   DevStatus status = StatusOk;
+
+  if (_sessionFile) {
+    free(_sessionFile);
+  }
+  _sessionFile = NULL;
+
   ViewGeom *vg = ViewGeom::GetViewGeom();
   if (!vg->IsGrouped()) {
     status += vg->Group();
@@ -627,6 +641,13 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     }
   }
 
+  if (status.IsComplete()) {
+    if (_sessionFile) {
+      free(_sessionFile);
+    }
+    _sessionFile = CopyString(filename);
+  }
+
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
@@ -657,9 +678,32 @@ Session::Update(const char *filename)
 }
 
 /*------------------------------------------------------------------------------
+ * function: Session::ResetFilters
+ * Reset all visual filters to the values specified in the session file.
+ */
+DevStatus
+Session::ResetFilters()
+{
+#if defined(DEBUG)
+  printf("Session::ResetFilters()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  if (_sessionFile) {
+    ControlPanelSimple control;
+    status += ReadSession(&control, _sessionFile, FilterCommand);
+  } else {
+    reportErrNosys("No session file available");
+    status = StatusCancel;
+  }
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
  * function: Session::UpdateFilters
- * Update specified session file (open it, do 'home' on specified views,
- * save it).
+ * Do 'home' on specified views.
  */
 DevStatus
 Session::UpdateFilters()
@@ -1001,7 +1045,7 @@ Session::GetDataCatalog()
  * Read and execute a DEVise session file.
  */
 DevStatus
-Session::ReadSession(ControlPanelSimple *control, const char *filename)
+Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandProc cp)
 {
 #if defined(DEBUG)
   printf("Session::ReadSession(%s)\n", filename);
@@ -1036,7 +1080,7 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename)
 	      printf("Arguments: ");
           PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
 #endif
-		  result += RunCommand(control, args.GetCount(),
+		  result += cp(control, args.GetCount(),
 		      (char **)args.GetArgs());
 	    }
 	  }
@@ -1146,11 +1190,51 @@ Session::RunCommand(ControlPanelSimple *control, int argc, char *argv[])
 }
 
 /*------------------------------------------------------------------------------
+ * function: Session::FilterCommand
+ * Run any command that set's a view's visual filter (this is used to reset
+ * all visual filters to their original values as defined in the session file).
+ * Note: this function needs a ControlPanelSimple object because it uses
+ * the GetResult() method not found in ControlPanel.
+ */
+DevStatus
+Session::FilterCommand(ControlPanelSimple *control, int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::FilterCommand(");
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
+
+  DevStatus result = StatusOk;
+
+  if (!strcmp(argv[0], "DEVise") && !strcmp(argv[1], "create") &&
+      !strcmp(argv[2], "view")) {
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv, true);
+#endif
+    ArgList args(7);
+    args.AddArg(argv[0]);
+    args.AddArg("setFilter");
+    args.AddArg(argv[4]); // view name
+    args.AddArg(argv[5]); // x low
+    args.AddArg(argv[7]); // y low
+    args.AddArg(argv[6]); // x high
+    args.AddArg(argv[8]); // y high
+
+    // Don't check result here, otherwise we stop if a view is missing, for
+    // example.
+    DEViseCmd(control, args.GetCount(), args.GetArgs());
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: Session::DEViseCmd
  * DEVise command procedure for session file interpreter.
  */
 DevStatus
-Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
+Session::DEViseCmd(ControlPanel *control, int argc, const char * const *argv)
 {
 #if defined(DEBUG)
   printf("Session::DEViseCmd() ");

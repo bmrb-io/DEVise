@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/12/14 17:57:35  wenger
+  Added enableDrawing command (totally enables or disables drawing) to
+  allow Omer to avoid "flashing" when he inserts views into windows.
+
   Revision 1.57  1999/12/06 18:41:02  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -357,6 +361,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_CursorChanged)
 	REGISTER_COMMAND(JAVAC_ProtocolVersion)
 	REGISTER_COMMAND(JAVAC_ShowRecords3D)
+	REGISTER_COMMAND(JAVAC_ResetFilters)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -598,6 +603,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(removeViewFromPile)
 	REGISTER_COMMAND(setOpeningSession)
 	REGISTER_COMMAND(enableDrawing)
+	REGISTER_COMMAND(resetAllFilters)
 }
 
 CmdContainer::~CmdContainer()
