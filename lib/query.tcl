@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/04/11 18:13:34  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -280,4 +283,112 @@ proc AboutDevise {} {
 	    -text "Message about DEVise."
     button .about.ok -text OK -width 10 -command "destroy .about"
     pack .about.msg .about.ok -side top -padx 5m -pady 3m
+}
+
+proc Do3DQuery {} { 
+    global curView query3DWinOpened
+
+    if {[WindowVisible .query3d]} {
+	return
+    }
+
+    toplevel    .query3d
+    wm title    .query3d "Query Tool"
+    wm geometry .query3d +200+200
+
+    # build view name widget
+
+    frame .query3d.title
+    pack .query3d.title -side top -pady 1m -expand 1 -fill both
+
+    label .query3d.title.text -text "No View Selected"
+    pack .query3d.title.text -side top -pady 1m
+
+    # build xyzLoc widgets
+
+    frame .query3d.xyzLoc
+    pack .query3d.xyzLoc -side top -pady 1m -padx 3m -expand 1 -fill both
+
+    frame .query3d.xyzLoc.xEntry
+    frame .query3d.xyzLoc.yEntry
+    frame .query3d.xyzLoc.zEntry
+    pack .query3d.xyzLoc.xEntry .query3d.xyzLoc.yEntry .query3d.xyzLoc.zEntry \
+	    -side top -pady 2m -padx 2m
+
+    # set up X label and entry
+
+    label .query3d.xyzLoc.xEntry.heading -text "X Coordinate"
+    entry .query3d.xyzLoc.xEntry.x -text "" -relief sunken -width 20
+    pack .query3d.xyzLoc.xEntry.heading .query3d.xyzLoc.xEntry.x \
+	    -side left -expand 1 -fill both
+
+    # set up Y label and entry
+
+    label .query3d.xyzLoc.yEntry.heading -text "Y Coordinate"
+    entry .query3d.xyzLoc.yEntry.y -text "" -relief sunken -width 20
+    pack .query3d.xyzLoc.yEntry.heading .query3d.xyzLoc.yEntry.y \
+	    -side left -expand 1 -fill both
+
+    # set up Z label and entry
+
+    label .query3d.xyzLoc.zEntry.heading -text "Z Coordinate"
+    entry .query3d.xyzLoc.zEntry.z -text "" -relief sunken -width 20
+    pack .query3d.xyzLoc.zEntry.heading .query3d.xyzLoc.zEntry.z \
+	    -side left -expand 1 -fill both
+
+    # set up buttons
+
+    frame .query3d.bot
+    frame .query3d.bot.but
+
+    button .query3d.bot.but.exec -text "Execute" -width 10 \
+	    -command {
+	if {$curView == ""} {
+	    return
+	}
+	set x [.query3d.xyzLoc.xEntry.x get]
+	set y [.query3d.xyzLoc.yEntry.y get]
+	set z [.query3d.xyzLoc.zEntry.z get]
+	puts "DEVise set3DLocation $curView $x $y $z"
+	DEVise set3DLocation $curView $x $y $z
+    }
+    button .query3d.bot.but.close -text Close -width 10 \
+	    -command "global query3DWinOpened; \
+	              set query3DWinOpened 0; \
+	              destroy .query3d"
+
+    pack .query3d.bot.but.exec .query3d.bot.but.close \
+	    -side left -expand 1 -fill x -padx 3m
+
+    pack .query3d.bot.but -side top
+    pack .query3d.bot -side top -pady 5m
+
+    set query3DWinOpened 1
+
+    if {$curView != ""} {
+	Update3DLocation
+    }
+}
+
+proc Update3DLocation {} {
+    global curView query3DWinOpened
+
+    if {!$query3DWinOpened} {
+	return
+    }
+
+    .query3d.xyzLoc.xEntry.x delete 0 end
+    .query3d.xyzLoc.yEntry.y delete 0 end
+    .query3d.xyzLoc.zEntry.z delete 0 end
+    .query3d.title.text configure -text "No View Selected"
+
+    if {$curView == ""} {
+	return
+    }
+
+    set xyzloc [DEVise get3DLocation $curView]
+    .query3d.xyzLoc.xEntry.x insert 0 [lindex $xyzloc 0]
+    .query3d.xyzLoc.yEntry.y insert 0 [lindex $xyzloc 1]
+    .query3d.xyzLoc.zEntry.z insert 0 [lindex $xyzloc 2]
+    .query3d.title.text configure -text "View: $curView"
 }
