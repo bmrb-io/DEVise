@@ -150,6 +150,7 @@ static RotatedTextItem *XRotCreateTextItem();
 static void             XRotAddToLinkedList();
 static void             XRotFreeTextItem();
 static XImage          *XRotMagnifyImage();
+static void		XRotFixSinCos();
 
 
 /* ---------------------------------------------------------------------- */
@@ -477,7 +478,9 @@ static int XRotPaintAlignedString(dpy, font, angle, drawable, gc, x, y, text,
     
     /* pre-calculate sin and cos */
     sin_angle=sin(angle);
+    XRotFixSinCos(&sin_angle);
     cos_angle=cos(angle);
+    XRotFixSinCos(&cos_angle);
     
     /* rotate hot_x and hot_y around bitmap centre */
     hot_xp= hot_x*cos_angle - hot_y*sin_angle;
@@ -991,7 +994,9 @@ static RotatedTextItem *XRotCreateTextItem(dpy, font, angle, text, align)
     
     /* pre-calculate sin and cos */
     sin_angle=sin(angle);
+    XRotFixSinCos(&sin_angle);
     cos_angle=cos(angle);
+    XRotFixSinCos(&cos_angle);
     
     /* text background will be drawn using XFillPolygon */
     item->corners_x=
@@ -1103,8 +1108,11 @@ static RotatedTextItem *XRotCreateTextItem(dpy, font, angle, text, align)
     dj=0.5-(float)item->rows_out/2;
 
     /* where abouts does text actually lie in rotated image? */
-    if(angle==0 || angle==M_PI/2 || 
-       angle==M_PI || angle==3*M_PI/2) {
+    // Note: check sine and cosine values here instead of angle because
+    // it's safer.  I don't really understand what's going on here, and
+    // why we need special cases with trig functions, so my changes are
+    // kind of a kludge, but the seem to work.  RKW 1999-06-18.
+    if(sin_angle == 0.0 || cos_angle == 0.0) {
 	xl=0;
 	xr=(float)item->cols_out;
 	xinc=0;
@@ -1152,8 +1160,8 @@ static RotatedTextItem *XRotCreateTextItem(dpy, font, angle, text, align)
 	    di+=1;
 	}
 	dj+=1;
-	xl+=xinc;
-	xr+=xinc;
+	xl+=xinc; //TEMP -- possible roundoff errors?
+	xr+=xinc; //TEMP -- possible roundoff errors?
     }
     XDestroyImage(I_in);
     
@@ -1578,3 +1586,23 @@ XPoint *XRotTextExtents(dpy, font, angle, x, y, text, align)
 }
 
 
+/**************************************************************************/
+/* "Fix up" sine or cosine values so rotation works exactly for angles    */
+/* that are multiples of 90 degress.                                      */
+/* Fixes problem that 90 deg. rotation wasn't coming out exactly right.   */
+/* RKW 1999-06-18                                                         */
+/**************************************************************************/
+
+static void
+XRotFixSinCos(sin_cos_value)
+    float *sin_cos_value;
+{
+    float tolerance = 1.0e-5;
+    if (fabs(*sin_cos_value) < tolerance) {
+        *sin_cos_value = 0.0;
+    } else if (*sin_cos_value > 1.0 - tolerance) {
+        *sin_cos_value = 1.0;
+    } else if (*sin_cos_value < -1.0 + tolerance) {
+        *sin_cos_value = -1.0;
+    }
+}
