@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:02  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <tcl.h>
@@ -114,7 +117,9 @@ Boolean MappingInterp::IsConstCmd(char *cmd, Coord &val){
 }
 
 /* Return the size of GData records, given command and attribute flags */
-int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, int flag, int attrFlag){
+int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
+				 int flag, int attrFlag){
+                _attrList = attrList;
 		int size = 0;
 		int j;
 		double val;
@@ -173,9 +178,12 @@ printf("Gdata record size %d\n", size);
 MappingInterp::MappingInterp(char *name,
 	TData *tdata, MappingInterpCmd *cmd, int flag, int attrFlag,
 	VisualFlag *dimensionInfo, int numDimensions):
-	TDataMapDispatch(name, tdata, name, FindGDataSize(cmd, flag, attrFlag),
-	MappingInterpAllFlags, MappingInterpAllFlags, Init::MaxGDataPages(),
-	dimensionInfo, numDimensions, true) {
+     	TDataMapDispatch(name, tdata, name,
+			 FindGDataSize(cmd, tdata->GetAttrList(),
+				       flag, attrFlag),
+			 MappingInterpAllFlags, MappingInterpAllFlags,
+			 Init::MaxGDataPages(),
+			 dimensionInfo, numDimensions, true) {
 
 /*
 printf("MappingInterp::constructor 0x%x, %d dimensions cmdFlag 0x%x, attrFlag 0x%x\n",
@@ -187,10 +195,8 @@ printf("MappingInterp::constructor 0x%x, %d dimensions cmdFlag 0x%x, attrFlag 0x
 printf("new command color = '%s'\n", cmd->colorCmd);
 */
 
-	_simpleCmd = new MappingSimpleCmd();
-
-
 	_attrList = tdata->GetAttrList();
+	_simpleCmd = new MappingSimpleCmd();
 
 	if (_interp == NULL){
 		/* Init shapes */
@@ -266,7 +272,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd, int flag, int attrFlag,
 		*vf = VISUAL_X;
 		SetDimensionInfo(vf,1);
 	}
-	TDataMap::ResetGData(FindGDataSize(cmd, flag, attrFlag));
+	TDataMap::ResetGData(FindGDataSize(cmd, attrList, flag, attrFlag));
 }
 
 /* Get current commands */
@@ -588,8 +594,12 @@ AttrList *MappingInterp::InitCmd(char *name){
 			goto complexCmd;
 		if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd){
 			/* constant */
+		        printf("Color is constant: %d\n",
+			       (Color)_simpleCmd->colorCmd.cmd.num);
 			SetDefaultColor((Color)_simpleCmd->colorCmd.cmd.num);
 		} else {
+		        printf("Color is attribute: %s\n",
+			       (Color)_simpleCmd->colorCmd.cmd.attr->name);
 			_offsets->colorOffset = offset = WordBoundary(offset, sizeof(Color));
 			attrList->InsertAttr(2,"color",offset,sizeof(double),attrType,
 				false,  NULL, false, isSorted);
@@ -924,14 +934,17 @@ printf("ConvertSimpleCmd: '%s'\n",cmd);
 		*/
 		if ( *(cmd+1) == '\0' )
 			return false;
-		else if ((info = _attrList->Find(cmd+1)) != NULL){
-			entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
-			entry.cmd.attr = info;
-			type = info->type;
-			isSorted = info->isSorted;
-			return true;
+		else  {
+		  printf("Attribute name %s\n", cmd+1);
+		  if ((info = _attrList->Find(cmd+1)) != NULL){
+		    entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+		    entry.cmd.attr = info;
+		    type = info->type;
+		    isSorted = info->isSorted;
+		    return true;
+		  }
+		  else return false;
 		}
-		else return false;
 	}
 	else if (ConvertNum(cmd,num)) {
 		entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
