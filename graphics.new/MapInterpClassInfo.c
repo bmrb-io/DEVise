@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/14 00:19:11  jussi
+  Removed the extraneous data structures and methods for recording
+  new mapping class names. ClassDir records this information for
+  us already! Added debugging statements. Changed interface to
+  CreateWithParams() when a new mapping class is created, to reflect
+  the new syntax of createMappingClass which will eventually replace
+  createInterp.
+
   Revision 1.6  1996/01/13 23:09:33  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -60,6 +68,7 @@ MapInterpClassInfo::MapInterpClassInfo()
   _className = rootClassName;
   _name = NULL;
   _map = NULL;
+  _dimensionInfo = NULL;
 }
 
 MapInterpClassInfo::MapInterpClassInfo(char *className)
@@ -74,6 +83,7 @@ MapInterpClassInfo::MapInterpClassInfo(char *className)
   _className = CopyString(className);
   _name = NULL;
   _map = NULL;
+  _dimensionInfo = NULL;
 }
 
 MapInterpClassInfo::MapInterpClassInfo(char *className,
