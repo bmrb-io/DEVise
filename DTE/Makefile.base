@@ -44,9 +44,7 @@ DTE_INCLUDES = \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../unidata \
-	-I../unidata \
 	$(PERL_INCL)
-#	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 
 #no-comment is for the perl files
 
@@ -70,8 +68,6 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	ExecOp.c Inserter.c TypeCheck.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	Templates.c ODBCInterface.dummy.c
-#	TuplePtr.Plex.c TuplePtr.XPlex.c
-#	ApParseCat.c FunctionRead.c
 
 CORE_SRC_CPP =
 
@@ -173,7 +169,10 @@ gui: $(GUI_OBJ)
 	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
-$(LIBNAME): $(LIBNAME)($(LIBOBJ))
+# $(LIBNAME): $(LIBNAME)($(LIBOBJ))
+
+$(LIBNAME): $(LIBOBJ)
+	$(AR) cr $(LIBNAME) $(LIBOBJ)
 
 $(DTE_DIR)/Core/my.yacc.tab.c: $(DTE_DIR)/Core/my.yacc $(DTE_DIR)/Core/my.yacc.tab.h 
 	bison -d -v -o $@ $(DTE_DIR)/Core/my.yacc

@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.76  1998/02/09 18:09:04  wenger
+# Removed ViewScatter class (totally replaced by ViewData, which is a
+# renamed version of TDataViewX); removed ViewRanges class (not used);
+# re-made Solaris dependencies.
+#
 # Revision 1.75  1998/01/07 19:25:41  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -1049,6 +1054,30 @@ ODBCInterface.dummy.o: /s/gcc/lib/g++-include/set.h
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/tree.h
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/projectn.h DevRead.h
 ODBCInterface.dummy.o: StandardRead.h Inserter.h Engine.h catalog.h
+Optimizer.o: Optimizer.h /s/gcc/lib/g++-include/string
+Optimizer.o: /s/gcc/lib/g++-include/std/string.h
+Optimizer.o: /s/gcc/lib/g++-include/std/bastring.h
+Optimizer.o: /s/gcc/lib/g++-include/std/stddef.h
+Optimizer.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+Optimizer.o: /s/gcc/lib/g++-include/std/straits.h
+Optimizer.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+Optimizer.o: /usr/include/sys/feature_tests.h
+Optimizer.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+Optimizer.o: /s/gcc/lib/g++-include/cassert
+Optimizer.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+Optimizer.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/vector
+Optimizer.o: /s/gcc/lib/g++-include/vector.h
+Optimizer.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
+Optimizer.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
+Optimizer.o: /s/gcc/lib/g++-include/iterator.h
+Optimizer.o: /s/gcc/lib/g++-include/iostream.h
+Optimizer.o: /s/gcc/lib/g++-include/streambuf.h
+Optimizer.o: /s/gcc/lib/g++-include/libio.h /s/gcc/lib/g++-include/defalloc.h
+Optimizer.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
+Optimizer.o: /usr/include/stdlib.h /usr/include/limits.h
+Optimizer.o: /usr/include/sys/isa_defs.h /s/gcc/lib/g++-include/map.h
+Optimizer.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+Optimizer.o: StringLess.h
 PQueue.o: ../../unidata/sysdep.h /usr/include/varargs.h
 PQueue.o: /usr/include/sys/va_list.h PQueue.h types.h
 PQueue.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
@@ -1098,7 +1127,7 @@ QueryTree.o: catalog.h DevRead.h Aggregates.h MemoryMgr.h
 QueryTree.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
 QueryTree.o: TypeCheck.h /s/gcc/lib/g++-include/map
 QueryTree.o: /s/gcc/lib/g++-include/map.h StringLess.h ParseTree.h Sort.h
-QueryTree.o: StandardRead.h PQueue.h MinMax.h Interface.h
+QueryTree.o: StandardRead.h PQueue.h MinMax.h Interface.h Optimizer.h
 RTreeInit.dummy.o: ../../unidata/sysdep.h /usr/include/varargs.h
 RTreeInit.dummy.o: /usr/include/sys/va_list.h
 RTreeRead.o: RTreeRead.h myopt.h /s/gcc/lib/g++-include/string
@@ -1342,17 +1371,18 @@ Templates.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
 Templates.o: /usr/include/sys/ieeefp.h ../../unidata/DateTime.h ExecExpr.h
 Templates.o: MemoryMgr.h /s/gcc/lib/g++-include/deque
 Templates.o: /s/gcc/lib/g++-include/deque.h listop.h myopt.h url.h
-Templates.o: SockStream.h /s/gcc/lib/g++-include/stl.h
+Templates.o: SockStream.h Optimizer.h /s/gcc/lib/g++-include/map.h
+Templates.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+Templates.o: StringLess.h /s/gcc/lib/g++-include/stl.h
 Templates.o: /s/gcc/lib/g++-include/algorithm /s/gcc/lib/g++-include/algo.h
 Templates.o: ../../RTree/src/Common/heap.h /s/gcc/lib/g++-include/tempbuf.h
 Templates.o: /s/gcc/lib/g++-include/functional
 Templates.o: /s/gcc/lib/g++-include/iterator /s/gcc/lib/g++-include/list
 Templates.o: /s/gcc/lib/g++-include/list.h /s/gcc/lib/g++-include/map
-Templates.o: /s/gcc/lib/g++-include/map.h /s/gcc/lib/g++-include/tree.h
-Templates.o: /s/gcc/lib/g++-include/projectn.h /s/gcc/lib/g++-include/memory
-Templates.o: /s/gcc/lib/g++-include/numeric /s/gcc/lib/g++-include/set
-Templates.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/stack
-Templates.o: /s/gcc/lib/g++-include/stack.h /s/gcc/lib/g++-include/utility
+Templates.o: /s/gcc/lib/g++-include/memory /s/gcc/lib/g++-include/numeric
+Templates.o: /s/gcc/lib/g++-include/set /s/gcc/lib/g++-include/set.h
+Templates.o: /s/gcc/lib/g++-include/stack /s/gcc/lib/g++-include/stack.h
+Templates.o: /s/gcc/lib/g++-include/utility
 TypeCheck.o: myopt.h /s/gcc/lib/g++-include/string
 TypeCheck.o: /s/gcc/lib/g++-include/std/string.h
 TypeCheck.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1684,6 +1714,33 @@ SBMInit.o: InitShut.h
 SBMInit.dummy.o: InitShut.h
 main.o: InitShut.h Common.h ../../unidata/sysdep.h /usr/include/varargs.h
 main.o: /usr/include/sys/va_list.h
+memoryTest.o: ../Core/types.h /s/gcc/lib/g++-include/string
+memoryTest.o: /s/gcc/lib/g++-include/std/string.h
+memoryTest.o: /s/gcc/lib/g++-include/std/bastring.h
+memoryTest.o: /s/gcc/lib/g++-include/std/stddef.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+memoryTest.o: /s/gcc/lib/g++-include/std/straits.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+memoryTest.o: /usr/include/sys/feature_tests.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+memoryTest.o: /s/gcc/lib/g++-include/cassert
+memoryTest.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+memoryTest.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
+memoryTest.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
+memoryTest.o: ../../unidata/sysdep.h /usr/include/varargs.h
+memoryTest.o: /usr/include/sys/va_list.h ../Core/Utility.h ../Core/queue.h
+memoryTest.o: ../Core/Array.h ../Core/SeqSimVec.h /usr/include/math.h
+memoryTest.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+memoryTest.o: ../Core/MemoryMgr.h /s/gcc/lib/g++-include/deque
+memoryTest.o: /s/gcc/lib/g++-include/deque.h
+memoryTest.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
+memoryTest.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
+memoryTest.o: /s/gcc/lib/g++-include/iterator.h
+memoryTest.o: /s/gcc/lib/g++-include/iostream.h
+memoryTest.o: /s/gcc/lib/g++-include/streambuf.h
+memoryTest.o: /s/gcc/lib/g++-include/libio.h
+memoryTest.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+memoryTest.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 Common.o: /usr/include/assert.h /usr/include/math.h
 Common.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Common.o: ../Core/types.h /s/gcc/lib/g++-include/string
