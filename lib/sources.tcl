@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.27  1996/01/26 18:45:53  jussi
+#	Minor fix.
+#
 #	Revision 1.26  1996/01/25 17:45:53  jussi
 #	Refined 'query-changed' condition when editing a stream
 #	definition.
@@ -273,7 +276,7 @@ proc defineStream {base edit} {
     } else {
 	wm title .srcdef "Define Data Stream"
     }
-    wm geometry .srcdef +150+150
+    wm geometry .srcdef +100+100
     selection clear .srcdef
 
     set editonly $edit
@@ -802,7 +805,7 @@ proc selectStream {{title ""}} {
 
     toplevel .srcsel
     wm title .srcsel "Data Streams"
-    wm geometry .srcsel +100+100
+    wm geometry .srcsel +50+50
     selection clear .srcsel
 
     frame .srcsel.mbar -relief raised -borderwidth 2
