@@ -2071,8 +2071,9 @@ Num Date        Status  Description
 530 10/30/99	OPEN	When saving Condor/UserWeek.ds, all windows got moved
 			down one screen. (rkw)
 
-531 11/11/99	OPEN	Copying a view doesn't copy the JavaScreen GData
+531 11/11/99	FIXED	Copying a view doesn't copy the JavaScreen GData
 			settings. (rkw)
+			(Fixed by rkw, 11/17/99.)
 
 532 11/11/99	OPEN	Piles seem to be in the opposite order in the
 			JavaScreen compared to "regular" DEVise. (rkw)

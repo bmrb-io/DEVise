@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.59  1999/07/27 15:53:07  wenger
+#  Fixed bug 504.
+#
 #  Revision 1.58  1999/07/14 18:43:04  wenger
 #  Added the capability to have axes without ticks and tick labels.
 #
@@ -550,10 +553,25 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setViewXYZoom {$newView} [DEVise getViewXYZoom $view]
     eval DEVise setViewDisplayDataValues {$newView} \
       [DEVise getViewDisplayDataValues $view]
+
+    # View fonts.
     eval DEVise setFont {$newView} {title} [DEVise getFont $view "title"]
     eval DEVise setFont {$newView} {{x axis}} [DEVise getFont $view "x axis"]
     eval DEVise setFont {$newView} {{y axis}} [DEVise getFont $view "y axis"]
+
+    # View home and implicit home.
+    eval DEVise viewSetHome {$newView} [DEVise viewGetHome $view]
+    eval DEVise viewSetImplicitHome {$newView} [DEVise viewGetImplicitHome \
+      $view]
+
+    # Horizontal and vertical panning parameters.
+    eval DEVise viewSetHorPan {$newView} [DEVise viewGetHorPan $view]
+    eval DEVise viewSetVerPan {$newView} [DEVise viewGetVerPan $view]
+
+    # GData sending parameters.
     eval DEVise setViewGDS {$newView} [DEVise getViewGDS $view]
+    eval DEVise viewSetJSSendP {$newView} [DEVise viewGetJSSendP $view]
+
     eval DEVise setHistogram {$newView} [DEVise getHistogram $view]
     eval DEVise setCountMapping {$newView} [DEVise getCountMapping $view]
     eval DEVise viewSetIsHighlight {$newView} [DEVise viewGetIsHighlight $view]
@@ -562,20 +580,26 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setYAxisDateFormat {$newView} \
       {[DEVise getYAxisDateFormat $view]}
 
-    set stat [DEVise getAxisDisplay $view X]
-    eval DEVise setAxisDisplay {$newView} X $stat
-    set stat [DEVise getAxisDisplay $view Y]
-    eval DEVise setAxisDisplay {$newView} Y $stat
-
-    eval DEVise viewSetHome {$newView} [DEVise viewGetHome $view]
-    eval DEVise viewSetHorPan {$newView} [DEVise viewGetHorPan $view]
-
     eval DEVise setViewAutoFilter {$newView} [DEVise getViewAutoFilter $view]
 
     eval DEVise setDupElim {$newView} [DEVise getDupElim $view]
 
     eval DEVise setNiceAxes {$newView} [DEVise getNiceAxes $view]
-	
+
+    # Whether axes are shown.
+    set stat [DEVise getAxisDisplay $view X]
+    eval DEVise setAxisDisplay {$newView} X $stat
+    set stat [DEVise getAxisDisplay $view Y]
+    eval DEVise setAxisDisplay {$newView} Y $stat
+
+    # Whether axis ticks are shown.
+    set stat [DEVise getAxisTicks $view X]
+    eval DEVise setAxisTicks {$newView} X $stat
+    set stat [DEVise getAxisTicks $view Y]
+    eval DEVise setAxisTicks {$newView} Y $stat
+
+    # TEMP -- should links be copied?? RKW 1999-11-17.
+
     DEVise insertWindow $newView $window
     DEVise insertMapping $newView $newGdata
 }
