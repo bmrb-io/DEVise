@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:35:14  jussi
+  Moved files from graphics directory.
+
   Revision 1.4  1995/11/25 01:12:28  jussi
   Added copyright notice and added #include <stdio.h> to get sprintf
   definition.
@@ -40,13 +43,17 @@ class ViewGraph;
 
 class Action {
 public:
-  Action(char *name) { _name = name; }
+  Action(char *name) { 
+      _name = name;
+      _magnification = 2.0; 
+  }
+
   char *GetName() { return _name; }
 
   virtual void AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			    Coord xhigh, Coord yhigh, int button);
   
-  virtual void KeySelected(ViewGraph *view, char c, Coord x, Coord y);
+  virtual void KeySelected(ViewGraph *view, int c, Coord x, Coord y);
   
   virtual Boolean PopUp(ViewGraph *view, Coord x, Coord y,
 			Coord xHigh, Coord yHigh,
@@ -61,11 +68,20 @@ public:
     return true;
   }
 
-private:
+  /* change the magnification level for zoom in/out */
+  void SetMagnification(double mag) { _magnification = mag; }
+  double  Magnification() { return _magnification; }
+
+
+protected:
+
   char buf1[50];
   char buf2[50];
   char *msgBuf[2];
   char *_name;
+
+  double _magnification;
+
 };
 
 class GenAction {
