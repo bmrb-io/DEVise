@@ -1,0 +1,173 @@
+#! /s/std/bin/perl
+#! /usr/freeware/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999-2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script gets JavaScreen usage statistics.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+use Time::Local;
+
+die "usage: get_stats [idStr]\n" if ($#ARGV < -1 or $#ARGV > 0);
+
+if ($#ARGV == 0) {
+  $idStr = shift(@ARGV);
+} else {
+  $idStr = "";
+}
+
+$debug = 0; # 0-3
+
+my $connectCount = 0;
+my $openCount = 0;
+my %hostList = ();
+my $time1 = -1;
+my $time2 = -1;
+
+if ($idStr eq "") {
+  $filename = "jspop.out*";
+} else {
+  $filename = "jspop.out.$idStr*";
+}
+my @files = glob($filename);
+print "Files: @files\n" if ($debug >= 1);
+
+foreach $file (@files) {
+  open(DATA_IN, $file) or die "Couldn't open log file $file: $!\n";
+
+  while ($line = <DATA_IN>) {
+    print "line = $line" if ($debug >= 3);
+    if ($line =~ /JAVAC_Connect/) {
+      print "line = $line" if ($debug >= 2);
+      $connectCount++;
+      my $client, $date;
+      ($client, $date) = ParseLine($line);
+      $hostList{$client}++;
+      my $connTime = StrToTime($date);
+      if ($connTime >= 0) {
+        if ($time1 == -1 || $connTime < $time1) {
+          $time1 = $connTime;
+        } elsif ($time2 == -1 || $connTime > $time2) {
+          $time2 = $connTime;
+        }
+      }
+    }
+
+    if ($line =~ /Received.*JAVAC_OpenSession/) {
+      print "line = $line" if ($debug >= 2);
+      $openCount++;
+    }
+  }
+
+  close(DATA_IN);
+}
+
+my $date1 = TimeToStr($time1);
+my $date2 = TimeToStr($time2);
+print "JavaScreen usage statistics for $date1 through $date2:\n";
+print "$connectCount connections\n";
+print "$openCount session opens\n";
+
+print "\nClient host info (number of connections, host):\n";
+foreach $host (sort { $hostList{$b} <=> $hostList{$a} } keys %hostList) {
+  printf "%4d %s\n", $hostList{$host}, $host;
+}
+
+#-----------------------------------------------------------
+# Parses a jspop log file line to get the client host and date.
+# Argument: line
+# Returns: list of host and date.
+
+sub ParseLine {
+  my $line = shift(@_);
+
+  my $client = "unknown";
+  my $date = "unknown";
+  if ($line =~ /Received command from client\((.*)\).*\[(.*)\]/) {
+    $client = $1;
+    $date = $2;
+  }
+  @results = ($client, $date);
+  return @results;
+}
+
+#-----------------------------------------------------------
+# Converts a string date of the form "dd-mmm-yy" or "mmm dd, yyyy"
+# to time (seconds since the epoch).
+# Argument: date string
+# Returns: time; -1 if error
+
+sub StrToTime {
+  my $datestr = shift(@_);
+
+  my %monthNames = (
+    Jan => 0,
+    Feb => 1,
+    Mar => 2,
+    Apr => 3,
+    May => 4,
+    Jun => 5,
+    Jul => 6,
+    Aug => 7,
+    Sep => 8,
+    Oct => 9,
+    Nov => 10,
+    Dec => 11,
+  );
+
+  my $cmdTime = -1;
+  if ($datestr =~ /(\d{2})-(\w{3})-(\d{2})/) {
+    my $day = $1;
+    my $month = $2;
+    my $year = $3;
+    $month = $monthNames{$month};
+
+    $cmdTime = timelocal(0, 0, 0, $day, $month, $year);
+  } elsif ($datestr =~ /(\w{3}) (\d*), (\d{4})/) {
+    my $month = $1;
+    my $day = $2;
+    my $year = $3 - 1900;
+    $month = $monthNames{$month};
+
+    $cmdTime = timelocal(0, 0, 0, $day, $month, $year);
+  }
+
+  return $cmdTime;
+}
+
+#-----------------------------------------------------------
+# Converts a time (seconds since the epoch) to a string (date only).
+# Argument: time; -1 if undefined
+# Returns: date string
+
+sub TimeToStr {
+  my $time = shift(@_);
+
+  if ($time == -1) {
+    return "unknown";
+  }
+
+  my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdat) =
+    localtime($time);
+  $year += 1900;
+
+  my $dateStr = sprintf "%4d-%.2d-%.2d", $year, $mon+1, $mday;
+  return $dateStr;
+}
