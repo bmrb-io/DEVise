@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/12/18 23:24:30  donjerko
+  *** empty log message ***
+
   Revision 1.20  1997/12/04 04:05:30  donjerko
   *** empty log message ***
 
@@ -151,7 +154,9 @@ char* dteListCatalog(const char* catName, int& errorCode){
 }
 
 char* dteShowCatalogEntry(const char* tableName){
-//	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
+#if defined(DEBUG)
+	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
+#endif
 	char* entryName;
 	char* catName;
 	getDirAndFileNames(tableName, catName, entryName);
@@ -165,7 +170,9 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
 	string err = "Failed to show catalog entry " + string(entryName);
 
+#if defined(DEBUG)
 	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
+#endif
 	string query = "select cat.name, cat.interf from " +
 		string(catName) + " as cat where cat.name = " +
 		addSQLQuotes(entryName, '\'');
