@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/05/09 18:12:19  kmurli
+  No change to this makefile.
+
   Revision 1.35  1996/05/07 16:32:40  jussi
   Moved Action member variable to ViewGraph. Move implementation of
   HandleKey, HandlePress and HandlePopup to ViewGraph as well.
@@ -176,7 +179,7 @@ int View::_nextId = 0;
 ViewList *View::_viewList = NULL;   /* list of all views */
 
 int View::_nextPos = 0;
-ViewCallbackList *View::_viewCallbackList;
+ViewCallbackList *View::_viewCallbackList = 0;
 
 View::View(char *name, VisualFilter &initFilter, 
 	   Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
@@ -1449,6 +1452,10 @@ void View::ReportViewCreated()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
+#ifdef DEBUG
+    printf("Calling ViewCreated callback 0x%p for view 0x%p\n",
+	   callBack, this);
+#endif
     callBack->ViewCreated(this);
   }
   _viewCallbackList->DoneIterator(index);
@@ -1463,6 +1470,10 @@ void View::ReportViewDestroyed()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
+#ifdef DEBUG
+    printf("Calling ViewDestroyed callback 0x%p for view 0x%p\n",
+	   callBack, this);
+#endif
     callBack->ViewDestroyed(this);
   }
   _viewCallbackList->DoneIterator(index);
@@ -1477,6 +1488,10 @@ void View::ReportFilterAboutToChange()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
+#ifdef DEBUG
+    printf("Calling FilterAboutToChange callback 0x%p for view 0x%p\n",
+	   callBack, this);
+#endif
     callBack->FilterAboutToChange(this);
   }
   _viewCallbackList->DoneIterator(index);
@@ -1491,6 +1506,10 @@ void View::ReportFilterChanged(VisualFilter &filter, int flushed)
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
+#ifdef DEBUG
+    printf("Calling FilterChanged callback 0x%p for view 0x%p\n",
+	   callBack, this);
+#endif
     callBack->FilterChanged(this, filter, flushed);
   }
   _viewCallbackList->DoneIterator(index);
@@ -1501,12 +1520,21 @@ void View::InsertViewCallback(ViewCallback *callBack)
   if (!_viewCallbackList)
     _viewCallbackList = new ViewCallbackList;
   
+#ifdef DEBUG
+  printf("Inserting 0x%p to view callback list\n", callBack);
+#endif
+
   _viewCallbackList->Append(callBack);
 }
 
 void View::DeleteViewCallback(ViewCallback *callBack)
 {
   DOASSERT(_viewCallbackList, "Empty view callback list");
+
+#ifdef DEBUG
+  printf("Removing 0x%p from view callback list\n", callBack);
+#endif
+
   _viewCallbackList->Delete(callBack);
 }
 
