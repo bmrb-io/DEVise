@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/15 14:05:34  jussi
+  Cleaned up a little bit.
+
   Revision 1.12  1996/05/07 17:03:27  jussi
   Method MapGAttr2TAttr() now returns NULL by default. It used
   to be a pure virtual method but that would have required changes
@@ -126,6 +129,7 @@ public:
   }
 		
   virtual Boolean IsInterpreted() { return false; }
+  virtual Boolean IsComplexShape(ShapeID shape) { return false; }
 
   char *GetName() { return _mappingName; }    /* type of mapping */
   char *GetGDataName() { return _gdataName; } /* name of GData */
