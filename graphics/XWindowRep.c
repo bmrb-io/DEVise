@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1996/07/18 01:24:10  jussi
+  Added GetRootGeometry() and FindTopWindow() methods.
+
   Revision 1.48  1996/07/15 21:02:19  jussi
   Fixed Arc() computation.
 
@@ -1619,9 +1622,9 @@ void XWindowRep::SetCopyMode()
 
 #ifdef GRAPHICS
   XSetState(_display, _gc,
-	    ((XDisplay *)GetDisplay())->GetLocalColor(GetFgColor()),
+            ((XDisplay *)GetDisplay())->GetLocalColor(GetFgColor()),
 	    ((XDisplay *)GetDisplay())->GetLocalColor(GetBgColor()),
-	    GXcopy, AllPlanes);
+            GXcopy, AllPlanes);
 #endif
 }
 
@@ -2103,13 +2106,34 @@ DevisePixmap *XWindowRep::GetPixmap()
   printf("XWindowRep::GetPixmap()\n");
 #endif
 
-  Window root;
+  /* see if window is entirely visible on screen or not (XGetImage
+     fails if window is partially off-screen */
+
   int dummyX, dummyY;
-  unsigned int width, height, border_width, depth;
+  unsigned int width, height;
+  Coord screenW, screenH;
+  GetRootGeometry(dummyX, dummyY, width, height);
+  GetDisplay()->Dimensions(screenW, screenH);
+#ifdef DEBUG
+  printf("XWin 0x%p is %d,%d,%u,%u, screen is %.2f,%.2f\n",
+         this, dummyX, dummyY, width, height, screenW, screenH);
+#endif
+
+  if (dummyX < 0 || dummyX + width - 1 > screenW ||
+      dummyY < 0 || dummyY + height - 1 > screenH) {
+#ifdef DEBUG
+    printf("Window partially off-screen\n");
+#endif
+    return NULL;
+  }
+  
+  Window root;
+  unsigned int border_width, depth;
   XGetGeometry(_display, DRAWABLE, &root, &dummyX, &dummyY, &width, &height,
 	       &border_width, &depth);
   
   DevisePixmap *pixmap = new DevisePixmap;
+  DOASSERT(pixmap, "Out of memory");
   pixmap->width = width;
   pixmap->height = height;
   Boolean initPixmap = true;
@@ -2117,9 +2141,12 @@ DevisePixmap *XWindowRep::GetPixmap()
 
   for(int i = 0; i < (int)height; i++) {
     XImage *image = XGetImage(_display, DRAWABLE, 0, i, width, 1,
-			      AllPlanes, ZPixmap);
-    if (!image)
+                              AllPlanes, ZPixmap);
+    if (!image) {
+        delete pixmap;
       return NULL;
+    }
+
     if (initPixmap) {
       pixmap->imageBytes = image->bytes_per_line * height;
       pixmap->bytes_per_line = image->bytes_per_line;
