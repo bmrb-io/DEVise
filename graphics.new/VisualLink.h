@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/04/05 21:09:48  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.7  1999/01/06 21:25:10  wenger
   Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
   also added some debug code and code to make sure view filter histories
@@ -82,7 +87,7 @@ public:
   virtual void Run();
 
   // Make home global to the link.
-  virtual void GoHome(ViewGraph *view);
+  virtual void GoHome(ViewGraph *view, Boolean explicitRequest);
   
 protected:
   void SetVisualFilter(View *view);

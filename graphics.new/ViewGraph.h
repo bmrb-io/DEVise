@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/04/16 20:59:24  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.67  1999/04/14 15:30:20  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -556,14 +561,17 @@ public:
   virtual Boolean IsYDateType();
 
   /* Update visual filter in various ways. */
-  virtual void GetHome2D(VisualFilter &filter);
-  virtual void GoHome();
+  virtual void GetHome2D(Boolean explicitRequest, VisualFilter &filter);
+  virtual void GoHome(Boolean explicitRequest);
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
 
   /* Get and set the home and panning info. */
   virtual void GetHomeInfo(ViewHomeInfo &info) { info = _homeInfo; }
   virtual void SetHomeInfo(const ViewHomeInfo &info) { _homeInfo = info; }
+  virtual void SetImplicitHomeInfo(const ViewHomeInfo &info) {
+    _implicitHomeInfo = info;
+  }
   virtual void GetHorPanInfo(ViewPanInfo &info) { info = _horPanInfo; }
   virtual void SetHorPanInfo(const ViewPanInfo &info) { _horPanInfo = info; }
 
@@ -736,6 +744,7 @@ public:
   void StatsXOR(char *oldstat, char *newstat, char *result);
 
   ViewHomeInfo _homeInfo;
+  ViewHomeInfo _implicitHomeInfo;
   ViewPanInfo _horPanInfo;
   GDataSock *_gds;
   Boolean _drawToScreen;

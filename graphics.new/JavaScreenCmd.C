@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/02/19 18:21:37  wenger
+  Fixed bug that caused windows with negative positions to goof up the
+  screen-filling algorithm.
+
   Revision 1.51  1999/01/29 21:09:50  wenger
   Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
 
@@ -1039,6 +1043,9 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// Resize the windows to use as much of the JavaScreen real estate
 	// as possible.
     FillScreen();
+	// For some reason, the Condor user session doesn't work right without
+	// this.  RKW 1999-04-22.
+	View::RefreshAll();
 
 	//
 	// The following section of the code is a little kludgey for the

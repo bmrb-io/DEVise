@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.105  1999/04/20 14:13:38  wenger
+  Improved debug output.
+
   Revision 1.104  1999/04/16 20:59:24  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -1019,21 +1022,28 @@ void ViewGraph::DrawLegend()
 }
 
 void
-ViewGraph::GetHome2D(VisualFilter &filter)
+ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 {
 #if defined(DEBUG)
-    printf("ViewGraph(%s)::GetHome2D()\n", GetName());
+    printf("ViewGraph(%s)::GetHome2D(%d)\n", GetName(), explicitRequest);
 #endif
 
+    ViewHomeInfo *homeInfo;
+	if (explicitRequest) {
+	  homeInfo = &_homeInfo;
+	} else {
+	  homeInfo = &_implicitHomeInfo;
+	}
+
 #if 0
-    printf("  _homeInfo.homeX = %d\n", _homeInfo.homeX);
-    printf("  _homeInfo.homeY = %d\n", _homeInfo.homeY);
-    printf("  _homeInfo.mode = %d\n", _homeInfo.mode);
-    printf("  _homeInfo.autoYMinZero = %d\n", _homeInfo.autoYMinZero);
-    printf("  _homeInfo.manXLo, manYLo = %g, %g\n", _homeInfo.manXLo,
-      _homeInfo.manYLo);
-    printf("  _homeInfo.manXHi, manYHi = %g, %g\n", _homeInfo.manXHi,
-      _homeInfo.manYHi);
+    printf("  homeInfo->homeX = %d\n", homeInfo->homeX);
+    printf("  homeInfo->homeY = %d\n", homeInfo->homeY);
+    printf("  homeInfo->mode = %d\n", homeInfo->mode);
+    printf("  homeInfo->autoYMinZero = %d\n", homeInfo->autoYMinZero);
+    printf("  homeInfo->manXLo, manYLo = %g, %g\n", homeInfo->manXLo,
+      homeInfo->manYLo);
+    printf("  homeInfo->manXHi, manYHi = %g, %g\n", homeInfo->manXHi,
+      homeInfo->manYHi);
 #endif
 
     DOASSERT(GetNumDimensions() == 2, "GetHome2D called on non 2D view");
@@ -1060,20 +1070,20 @@ ViewGraph::GetHome2D(VisualFilter &filter)
 
     GetVisualFilter(filter);
 
-    switch (_homeInfo.mode) {
+    switch (homeInfo->mode) {
     case HomeAuto: {
-        if (_homeInfo.homeX) {
+        if (homeInfo->homeX) {
             Boolean setXLow = false;
             Boolean setXHigh = false;
 
             // Check data ranges first (fixes bug 469).
             if (_dataRangesValid) {
                 if (!setXLow) {
-                    filter.xLow = _dataXMin - _homeInfo.autoXMargin;
+                    filter.xLow = _dataXMin - homeInfo->autoXMargin;
                     setXLow = true;
                 }
                 if (!setXHigh) {
-                    filter.xHigh = _dataXMax + _homeInfo.autoXMargin;
+                    filter.xHigh = _dataXMax + homeInfo->autoXMargin;
                     setXHigh = true;
                 }
             }
@@ -1082,7 +1092,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 if (!setXLow) {
                     if (xAttr->hasLoVal) {
                         filter.xLow = AttrList::GetVal(&xAttr->loVal,
-                          xAttr->type) - _homeInfo.autoXMargin;
+                          xAttr->type) - homeInfo->autoXMargin;
                         setXLow = true;
                     } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
                         if (hasFirstRec) {
@@ -1095,7 +1105,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 if (!setXHigh) {
                     if (xAttr->hasHiVal) {
                         filter.xHigh = AttrList::GetVal(&xAttr->hiVal,
-                          xAttr->type) + _homeInfo.autoXMargin;
+                          xAttr->type) + homeInfo->autoXMargin;
                         setXHigh = true;
                     } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
                         if (hasLastRec) {
@@ -1113,18 +1123,18 @@ ViewGraph::GetHome2D(VisualFilter &filter)
         }
 
 
-        if (_homeInfo.homeY) {
+        if (homeInfo->homeY) {
             Boolean setYLow = false;
             Boolean setYHigh = false;
 
             // Check data ranges first (fixes bug 469).
             if (_dataRangesValid) {
                 if (!setYLow) {
-                    filter.yLow = _dataYMin - _homeInfo.autoYMargin;
+                    filter.yLow = _dataYMin - homeInfo->autoYMargin;
                     setYLow = true;
                 }
                 if (!setYHigh) {
-                    filter.yHigh = _dataYMax + _homeInfo.autoYMargin;
+                    filter.yHigh = _dataYMax + homeInfo->autoYMargin;
                     setYHigh = true;
                 }
             }
@@ -1133,7 +1143,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 if (!setYLow) {
                     if (yAttr->hasLoVal) {
                         filter.yLow = AttrList::GetVal(&yAttr->loVal,
-                          yAttr->type) - _homeInfo.autoYMargin;
+                          yAttr->type) - homeInfo->autoYMargin;
                         setYLow = true;
                     } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
                         if (hasFirstRec) {
@@ -1146,7 +1156,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 if (!setYHigh) {
                     if (yAttr->hasHiVal) {
                         filter.yHigh = AttrList::GetVal(&yAttr->hiVal,
-                          yAttr->type) + _homeInfo.autoYMargin;
+                          yAttr->type) + homeInfo->autoYMargin;
                         setYHigh = true;
                     } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
                         if (hasLastRec) {
@@ -1162,7 +1172,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 filter.yHigh += 1.0;
             }
 
-            if (_homeInfo.autoYMinZero) {
+            if (homeInfo->autoYMinZero) {
                 filter.yLow = MIN(filter.yLow, 0.0);
             }
         }
@@ -1172,13 +1182,13 @@ ViewGraph::GetHome2D(VisualFilter &filter)
     }
 
     case HomeManual: {
-        if (_homeInfo.homeX) {
-            filter.xLow = _homeInfo.manXLo;
-            filter.xHigh = _homeInfo.manXHi;
+        if (homeInfo->homeX) {
+            filter.xLow = homeInfo->manXLo;
+            filter.xHigh = homeInfo->manXHi;
         }
-        if (_homeInfo.homeY) {
-            filter.yLow = _homeInfo.manYLo;
-            filter.yHigh = _homeInfo.manYHi;
+        if (homeInfo->homeY) {
+            filter.yLow = homeInfo->manYLo;
+            filter.yHigh = homeInfo->manYHi;
         }
         break;
     }
@@ -1190,10 +1200,10 @@ ViewGraph::GetHome2D(VisualFilter &filter)
     }
 }
 
-void ViewGraph::GoHome()
+void ViewGraph::GoHome(Boolean explicitRequest)
 {
 #if defined(DEBUG)
-    printf("ViewGraph(%s)::GoHome()\n", GetName());
+    printf("ViewGraph(%s)::GoHome(%d)\n", GetName(), explicitRequest);
 #endif
 
     if (GetNumDimensions() == 2) {
@@ -1204,7 +1214,7 @@ void ViewGraph::GoHome()
         int index = _visualLinks.InitIterator();
         while (_visualLinks.More(index)) {
           VisualLink *link = _visualLinks.Next(index);
-          link->GoHome(this);
+          link->GoHome(this, explicitRequest);
           hasVisLink = true;
         }
         _visualLinks.DoneIterator(index);
@@ -1222,7 +1232,7 @@ void ViewGraph::GoHome()
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
-	GetHome2D(filter);
+	GetHome2D(explicitRequest, filter);
 
         if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
           CommandObj *    cmdObj = GetCommandObj();
@@ -2097,7 +2107,7 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 #endif
 	if (_homeAfterQueryDone) {
 		_homeAfterQueryDone = false;
-	    GoHome();
+	    GoHome(false);
 		// Make sure view redraws even if filter isn't changed.
 		// (Fixes bug 482.)
 		Refresh();

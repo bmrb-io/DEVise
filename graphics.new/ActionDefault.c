@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/12/15 14:55:08  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.36  1998/11/09 20:33:21  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -241,7 +247,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       case DeviseKey::KP_5:
       case DeviseKey::BEGIN:
       case DeviseKey::KP_BEGIN: {
-	  view->GoHome();
+	  view->GoHome(true);
 	  break;
       }
       

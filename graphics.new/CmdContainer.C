@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/04/14 15:30:16  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.34  1999/03/24 17:26:10  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -446,6 +452,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(set3DLocation)
 	REGISTER_COMMAND(setViewGDS)
 	REGISTER_COMMAND(viewSetHome)
+	REGISTER_COMMAND(viewSetImplicitHome)
 	REGISTER_COMMAND(playLog)
 	REGISTER_COMMAND(test)
 	REGISTER_COMMAND(getLinkMasterAttr)

@@ -30,6 +30,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/04/16 20:59:25  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.13  1999/04/05 21:09:48  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -281,7 +286,7 @@ void VisualLink::Run()
 
 
 void
-VisualLink::GoHome(ViewGraph *view)
+VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
 {
 #if defined(DEBUG)
   printf("VisualLink(%s)::GoHome(%s)\n", GetName(), view->GetName());
@@ -308,7 +313,7 @@ VisualLink::GoHome(ViewGraph *view)
     ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
     if (view->GetNumDimensions() == 2) {
       VisualFilter filter;
-      tmpView->GetHome2D(filter);
+      tmpView->GetHome2D(explicitRequest, filter);
       if (_linkAttrs & VISUAL_X || tmpView == view) {
         xMin = MIN(xMin, filter.xLow);
         xMax = MAX(xMax, filter.xHigh);

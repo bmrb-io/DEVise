@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/05/06 22:04:55  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.13  1998/04/28 18:03:02  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -123,7 +127,7 @@ void QueryProc::RefreshTData(TData *tdata)
             vg->AbortQuery();
             vg->Refresh();
             if (tdata->GoHomeOnInvalidate() && vg->GetAutoScale())
-              vg->GoHome();
+              vg->GoHome(false);
         }
     }
     View::DoneViewIterator(index);

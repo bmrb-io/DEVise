@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/04/21 20:35:35  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.57  1999/04/16 20:59:21  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -4611,6 +4617,47 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
 	}
 }
 
+int
+DeviseCommand_viewSetImplicitHome::Run(int argc, char** argv)
+{
+    // Arguments: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero>
+    // <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+	if (argc == 12) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+        ViewHomeInfo info;
+		int argNum = 2;
+
+		info.homeX = atoi(argv[argNum++]);
+		info.homeY = atoi(argv[argNum++]);
+
+        info.mode = (ViewHomeMode) atoi(argv[argNum++]);
+	    info.autoYMinZero = atoi(argv[argNum++]);
+        info.autoXMargin = atof(argv[argNum++]);
+        info.autoYMargin = atof(argv[argNum++]);
+        info.manXLo = atof(argv[argNum++]);
+        info.manYLo = atof(argv[argNum++]);
+        info.manXHi = atof(argv[argNum++]);
+        info.manYHi = atof(argv[argNum++]);
+        view->SetImplicitHomeInfo(info);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewSetImplicitHome\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+}
+
 IMPLEMENT_COMMAND_BEGIN(playLog)
 	char	*logFile;
 	char	*errmsg = NULL;
@@ -4935,7 +4982,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGoHome)
           return -1;
         }
 
-		view->GoHome();
+		view->GoHome(true);
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
