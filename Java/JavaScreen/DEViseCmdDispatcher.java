@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.98  2001/09/27 19:52:25  wenger
+// Fixed bug 688 (problem dealing with links in session directories);
+// improved JS error handling for session open; eliminated a bunch of
+// duplicate code in the JS.
+//
 // Revision 1.97  2001/09/10 21:15:48  xuk
 // Solve the client disconnection problem.
 // Added reconnect() method to keep trying to reestablish the connection to the JSPoP every 10 seconds.
@@ -854,12 +859,46 @@ public class DEViseCmdDispatcher implements Runnable
 		} else {
 		    processCmd(commands[i]);
 		}
+
+		// for command log playback
+		if (jsc.isPlayback && jsc.isDisplay) {
+		    jsc.repaint(); 
+		    jsc.jscreen.repaint();
+		
+		    for (int n = 0; n < jsc.jscreen.allCanvas.size(); n++) {
+			DEViseCanvas canvas = (DEViseCanvas)jsc.jscreen.allCanvas.elementAt(n);
+			canvas.repaint();
+		    }	
+		}
+		
+		if (jsc.isPlayback && !jsc.isDisplay) {	
+		    for (int n = 0; n < jsc.jscreen.allCanvas.size(); n++) {
+			DEViseCanvas canvas = (DEViseCanvas)jsc.jscreen.allCanvas.elementAt(n);
+			canvas.removeAll();
+			canvas.repaint();
+		    }	
+		    jsc.jscreen.removeAll();
+		    jsc.jscreen.repaint();
+		}
 	    }
 
 	    // Note: this is the "standard" place where the GUI gets
 	    // changed to indicate that the command is finished.
 	    jsc.animPanel.stop();
 	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+
+    	    if (jsc.isPlayback && !jsc.isDisplay) {	
+		jsc.jscreen.updateScreen(false);	
+		try {
+		    processCmd(DEViseCommands.CLOSE_SESSION);
+		} catch (YException e1) {
+		    jsc.showMsg(e1.getMsg());
+		    disconnect();
+		}
+	    }		
+
+	    if (jsc.isPlayback)
+		jsc.isPlayback = false;
 
 	} catch (YException e) {
 	    jsc.animPanel.stop();
@@ -926,8 +965,6 @@ public class DEViseCmdDispatcher implements Runnable
         // sending command to server, and wait until server finish processing and
         // returned a list of commands
         String[] rsp = sendRcvCmd(command);
-
-	// if (rsp == null) return;
 
         // turn on the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
