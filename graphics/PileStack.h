@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/02/11 19:54:33  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.1.2.2  1999/02/11 18:24:01  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -76,12 +81,15 @@ private:
 
   ViewWinList _views;
 
+  Boolean _xAxisOn, _yAxisOn;
+
   void SetNormal();
   void SetStacked();
   void SetPiled(Boolean doLink);
 
   Boolean CanPileOrStack();
   void CreatePileLink();
+  void SynchronizeAxes();
 };
 
 #endif // _PileStack_h_

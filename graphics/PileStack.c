@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/02/11 19:54:33  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.1.2.2  1999/02/11 18:24:00  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -175,6 +180,8 @@ PileStack::InsertView(ViewWin *view)
 
   if (_state == PSPiledNoLink || _state == PSPiledLinked) {
     ((View *)view)->SetPileMode(true);
+    ((View *)view)->XAxisDisplayOnOff(_xAxisOn);
+    ((View *)view)->YAxisDisplayOnOff(_yAxisOn);
   }
 
   if (_state == PSPiledLinked) {
@@ -317,6 +324,12 @@ PileStack::SetPiled(Boolean doLink)
     GetViewList()->DoneIterator(index);
 
     //
+    // Make sure that all views in the pile have the same axes enabled and
+    // disabled, so that data doesn't overdraw the axes.
+    //
+    SynchronizeAxes();
+
+    //
     // Make sure either all views show the title or no views show the
     // title (so the data areas are the same).
     //
@@ -421,6 +434,31 @@ PileStack::CreatePileLink()
       _link->InsertView((ViewGraph *)view);
       view->SetPileMode(false);
     }
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SynchronizeAxes
+ * Make sure that all views in a pile have the same axes enabled and disabled,
+ * so that data doesn't overdraw the axes.
+ */
+void
+PileStack::SynchronizeAxes()
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SynchronizeAxes()\n", _name);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  if (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->AxisDisplay(_xAxisOn, _yAxisOn);
+  }
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->XAxisDisplayOnOff(_xAxisOn);
+    view->YAxisDisplayOnOff(_yAxisOn);
   }
   GetViewList()->DoneIterator(index);
 }

@@ -1770,6 +1770,13 @@ Num Date        Status  Description
 461 02/11/99	OPEN	Moving views in and out of a piled window sometimes
 			doesn't force a redraw when it should. (rkw)
 
+462 02/16/99	OPEN	Rubberband line on an unlinked pile in the JavaScreen
+			zooms only the top view. (rkw)
+
+463 02/16/99	FIXED	Data in piled views sometimes overdraws the axes if
+			some views have axes and others don't. (ml/rkw)
+			(Fixed by rkw, 2/16/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
