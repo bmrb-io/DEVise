@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/09/30 17:44:46  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.37  1998/09/28 20:05:53  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -206,13 +210,9 @@
 #include <arpa/inet.h>
 
 #include "ServerAPI.h"
-#include "QueryProc.h"
-#include "ParseCat.h"
 #include "View.h"
 #include "Util.h"
 #include "Version.h"
-#include "StringStorage.h"
-#include "DCE.h"
 #include "Session.h"
 
 #ifdef SUN

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/08/21 22:16:48  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.4  1998/02/03 23:46:01  wenger
   Fixed a problem Hongyu had with getting GData on socket; fixed bugs
   283 and 285 (resulted from problems in color manager merge);
@@ -192,6 +196,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 
   if (_status.IsComplete()) {
     GDataAttrOffset *offsets = map->GetGDataOffset();
+    StringStorage *stringTable = map->GetStringTable();
     AttrList *attrList = map->GDataAttrList();
 
     // Note: at least for now, I am assuming that for string attributes
@@ -255,8 +260,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 	if (attrInfo != NULL) {
 	  shapeAttrs[attrNum].type = attrInfo->type;
 	  if (shapeAttrs[attrNum].type == StringAttr) {
-	    if (StringStorage::Lookup(
-		(int) shapeAttrs[attrNum].numericalValue,
+	    if (stringTable->Lookup( (int) shapeAttrs[attrNum].numericalValue,
 		shapeAttrs[attrNum].stringValue) < 0) {
 	      char buf[1024];
 	      sprintf(buf, "String not found for %s", attrInfo->name);

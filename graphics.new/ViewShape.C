@@ -70,6 +70,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
   AttrInfo *attrinfo;
   int gdataOffset;
   GDataAttrOffset *offset = map->GetGDataOffset();
+  StringStorage *stringTable = map->GetStringTable();
   char *gdata, *viewname;
 
   Coord x, y;
@@ -88,7 +89,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     //    if ((offset->shapeAttrOffset[0] >= 0)  ||
     //	isStr(((MappingInterp *)map)->GetMappingCmd()->shapeAttrCmd[0])) {
     int key = (int)GetShapeAttr0(gdata, map, offset);
-    int code = StringStorage::Lookup(key, viewname);
+    int code = stringTable->Lookup(key, viewname);
     if (code < 0) {
       label = "X";
 #ifdef DEBUG

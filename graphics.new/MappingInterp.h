@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/08/17 18:51:51  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.37  1998/04/16 21:51:42  wenger
   Committed Sanjay's text code.
 
@@ -188,6 +192,7 @@
 #include "AttrList.h"
 
 class TData;
+class StringStorage;
 
 const int MappingCmd_X           = (1 << 0);
 const int MappingCmd_Y           = (1 << 1);
@@ -257,7 +262,7 @@ class MappingInterp: public TDataMap {
 protected:
 double ConvertOne(char *from,
 		  MappingSimpleCmdEntry *entry,
-		  double defaultVal);
+		  double defaultVal, StringStorage *stringTable);
 public:
   // cmdFlag tells which attributes have some kind of value given for them
   // (see MappingCmd_X, etc.).  attrFlag tells which shape attributes have
@@ -315,7 +320,7 @@ public:
 
   /* Get the AttrInfo for shape attribute i */
   virtual AttrInfo *MapShapeAttr2TAttr(int i);
-				  
+
 
 protected:	
   /* convert from Tdata to Gdata. buf contains buffer for data. */
@@ -343,7 +348,8 @@ private:
      and whether it's sorted.*/
   static Boolean ConvertSimpleCmd(char *cmd, AttrList *attrList,
   				  MappingSimpleCmdEntry &entry,
-			          AttrType &type, Boolean &isSorted);
+			          AttrType &type, Boolean &isSorted,
+				  StringStorage *stringTable);
   
   /* Print one entry of simple command */
   void PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry);
@@ -357,6 +363,7 @@ private:
 			    int numRecs, void *gdataPtr);
   
   /* Find size of GData given attribute flag information */
+  // Note: MUST be static so it can be called before the constructor.
   static FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
 		       unsigned long int cmdFlag, unsigned long int attrFlag);
   

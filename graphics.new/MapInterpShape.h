@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/04/16 21:51:38  wenger
+  Committed Sanjay's text code.
+
   Revision 1.42  1998/02/26 00:19:29  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -188,7 +191,6 @@
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
-//#include "StringStorage.h"
 
 #include "Color.h"
 

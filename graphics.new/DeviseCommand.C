@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/11/02 19:22:42  wenger
+  Added "range/MQL" session description capability.
+
   Revision 1.30  1998/10/28 19:22:27  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -1410,7 +1413,7 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
         {
           // Returns: <stringCount>
           char buf[100];
-          sprintf(buf, "%d", StringStorage::GetCount());
+          sprintf(buf, "%d", StringStorage::GetTotalCount());
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -2795,7 +2798,7 @@ DeviseCommand_saveStringSpace::Run(int argc, char** argv)
     #if defined(DEBUG)
           printf("saveStringSpace <%s>\n", argv[1]);
     #endif
-          if (StringStorage::Save(argv[1]) != 0) {
+          if (StringStorage::SaveAll(argv[1]) != 0) {
             ReturnVal(API_NAK, "can't save string space");
             return -1;
           }
@@ -2814,11 +2817,7 @@ DeviseCommand_loadStringSpace::Run(int argc, char** argv)
     #if defined(DEBUG)
           printf("loadStringSpace <%s>\n", argv[1]);
     #endif
-          if (StringStorage::Clear() != 0) {
-            ReturnVal(API_NAK, "can't clear string space");
-            return -1;
-          }
-          if (StringStorage::Load(argv[1]) != 0) {
+          if (StringStorage::LoadAll(argv[1]) != 0) {
             ReturnVal(API_NAK, "can't load string space");
             return -1;
           }

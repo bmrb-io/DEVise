@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/02/02 18:26:16  wenger
+  Strings file can now be loaded manually; name of strings file is now
+  stored in session file; added 'serverExit' command and kill_devised
+  script to cleanly kill devised; fixed bug 249; more info is now
+  printed for unrecognized commands.
+
   Revision 1.8  1997/07/17 18:44:01  wenger
   Added menu selections to report number of strings and save string space.
 
@@ -56,30 +62,43 @@
 #define StringStorage_h
 
 #include "HashTable.h"
+#include "DeviseTypes.h"
 
 class StringStorage {
   public:
-    static int Insert(char *string, int &key);
+    StringStorage(const char *name);
+    ~StringStorage();
 
-    static int Lookup(char *string, int &key) {
+    static StringStorage *GetDefaultTable();
+    static StringStorage *FindByName(const char *name);
+
+    // Return 0 if OK, -1 otherwise.
+    static int LoadAll(const char *filename);
+
+    // Return 0 if OK, -1 otherwise.
+    static int ClearAll();
+
+    // Return 0 if OK, -1 otherwise.
+    static int SaveAll(const char *filename);
+
+    static int GetTotalCount();
+
+    int Insert(char *string, int &key);
+
+    int Lookup(char *string, int &key) {
         return _strings.lookup(string, key);
     }
 
-    static int Lookup(int key, char *&string) {
+    int Lookup(int key, char *&string) {
         return _keys.lookup(key, string);
     }
 
-    static int GetCount() { return _strings.num(); }
+    int GetCount() { return _strings.num(); }
 
     // Return 0 if OK, -1 otherwise.
-    static int Save(const char *filename);
+    int Clear();
 
-    // Return 0 if OK, -1 otherwise.
-    static int Load(const char *filename);
-
-    static int Clear();
-
-    static int PopulateFromInitFile();
+    void Sort();
 
     static const char *GetFile() { return _stringFile; }
 
@@ -94,9 +113,12 @@ class StringStorage {
         return key % numBuckets;
     }
 
-    static int _stringNum;                   // sequence number for string
-    static HashTable<char *, int> _strings;  // hash table of strings
-    static HashTable<int, char *> _keys;     // hash table of keys
+    int _stringNum;                   // sequence number for string
+    HashTable<char *, int> _strings;  // hash table of strings
+    HashTable<int, char *> _keys;     // hash table of keys
+
+    char* _tableName;
+    Boolean _sorted;
 
     static char* _stringFile;
 };

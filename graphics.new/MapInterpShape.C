@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/06/23 17:50:19  wenger
+  Fixed some compile warnings.
+
   Revision 1.52  1998/04/28 18:02:59  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -1584,6 +1587,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     sprintf(defaultFile, "%s/image.gif", directory);
     
     GDataAttrOffset *offset = map->GetGDataOffset();
+	StringStorage *stringTable = map->GetStringTable();
     
     // first draw a cross mark at each GIF image location;
     // if there is a problem in displaying the GIF image,
@@ -1636,7 +1640,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	char *shapeAttr0 = NULL;
 	if (offset->shapeAttrOffset[0] >= 0) {
 	    int key = (int)GetShapeAttr0(gdata, map, offset);
-	    int code = StringStorage::Lookup(key, shapeAttr0);
+	    int code = stringTable->Lookup(key, shapeAttr0);
 #ifdef DEBUG
 	    printf("Key %d returns \"%s\", code %d\n", key, shapeAttr0, code);
 #endif
@@ -1784,6 +1788,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	}
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
+	StringStorage *stringTable = map->GetStringTable();
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -1795,7 +1800,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 
 	if (offset->shapeAttrOffset[0] >= 0) {
 		int key = (int)GetShapeAttr0(gdata, map, offset);
-		int code = StringStorage::Lookup(key, file);
+		int code = stringTable->Lookup(key, file);
 #ifdef DEBUG
 		printf("Key %d returns \"%s\", code %d\n", key, file, code);
 #endif
@@ -1807,7 +1812,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 
 	if (offset->shapeAttrOffset[1] >= 0) {
 		int key = (int)GetShapeAttr1(gdata, map, offset);
-		int code = StringStorage::Lookup(key, format);
+		int code = stringTable->Lookup(key, format);
 #ifdef DEBUG
 		printf("Key %d returns \"%s\", code %d\n", key, format, code);
 #endif
@@ -1940,6 +1945,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterHeight = filter.yHigh - filter.yLow;
   
   GDataAttrOffset *offset = map->GetGDataOffset();
+  StringStorage *stringTable = map->GetStringTable();
 
   Coord oldPointSize = -9999.9;
 
@@ -1987,7 +1993,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       /* Label attribute is a string.  Get the string value from the
        * StringStorage class. */
       int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = StringStorage::Lookup(key, label);
+      int code = stringTable->Lookup(key, label);
       if( code < 0 ) {        // key not found
         label = "X";
 #if defined(DEBUG)
@@ -2008,7 +2014,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       char *labelFormat = NULL;
       if (labelFormatValid && (labelFormatType == StringAttr)) {
         int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = StringStorage::Lookup(labelKey, labelFormat);
+        int labelCode = stringTable->Lookup(labelKey, labelFormat);
         if (labelCode < 0) {	// key not found
           labelFormat = NULL;
         }
@@ -2270,6 +2276,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 #endif
 
   GDataAttrOffset *offset = map->GetGDataOffset();
+  StringStorage *stringTable = map->GetStringTable();
 
   Coord oldpixelperUnit = -9999.9;
 
@@ -2324,7 +2331,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
       /* Label attribute is a string.  Get the string value from the
        * StringStorage class. */
       int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = StringStorage::Lookup(key, label);
+      int code = stringTable->Lookup(key, label);
       if( code < 0 ) {        // key not found
         label = "X";
 #if defined(DEBUG)
@@ -2345,7 +2352,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
       char *labelFormat = NULL;
       if (labelFormatValid && (labelFormatType == StringAttr)) {
         int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = StringStorage::Lookup(labelKey, labelFormat);
+        int labelCode = stringTable->Lookup(labelKey, labelFormat);
         if (labelCode < 0) {	// key not found
           labelFormat = NULL;
         }
@@ -2541,7 +2548,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       label = "X";
     } else if (labelAttrType == StringAttr) {
       int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = StringStorage::Lookup(key, label);
+      int code = stringTable->Lookup(key, label);
       if( code < 0 ) {        // key not found
         label = "X";
 #if defined(DEBUG)
@@ -2558,7 +2565,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       char *labelFormat = NULL;
       if (labelFormatValid && (labelFormatType == StringAttr)) {
         int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = StringStorage::Lookup(labelKey, labelFormat);
+        int labelCode = stringTable->Lookup(labelKey, labelFormat);
         if (labelCode < 0) {	// key not found
           labelFormat = NULL;
         }
@@ -2806,6 +2813,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterHeight = filter.yHigh - filter.yLow;
 
   GDataAttrOffset *offset = map->GetGDataOffset();
+  StringStorage *stringTable = map->GetStringTable();
 
   Coord oldPointSize = -9999.9;
 
@@ -2837,7 +2845,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
       /* Label attribute is a string.  Get the string value from the
        * StringStorage class. */
       int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = StringStorage::Lookup(key, label);
+      int code = stringTable->Lookup(key, label);
       if( code < 0 ) {        // key not found
         label = "X";
 #if defined(DEBUG)
@@ -2858,7 +2866,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
       char *labelFormat = NULL;
       if (labelFormatValid && (labelFormatType == StringAttr)) {
         int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = StringStorage::Lookup(labelKey, labelFormat);
+        int labelCode = stringTable->Lookup(labelKey, labelFormat);
         if (labelCode < 0) {	// key not found
           labelFormat = NULL;
         }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.85  1998/09/28 20:05:55  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.84  1998/05/02 09:00:52  taodb
   Added support for JAVA Screen and command logging
 
@@ -351,7 +357,6 @@
 #include "Util.h"
 #include "Init.h"
 #include "Version.h"
-#include "StringStorage.h"
 #include "DCE.h"
 #include "CmdContainer.h"
 

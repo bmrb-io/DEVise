@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/06/28 21:41:43  beyer
+  changed to implicit templates
+
   Revision 1.8  1998/05/20 18:11:14  wenger
   Disabled automatic loading of the devise.strings file to avoid confusion
   -- load string table explicitly if necessary.
@@ -63,6 +66,7 @@
 #include "StringStorage.h"
 #include "Util.h"
 #include "DevError.h"
+#include "DList.h"
 
 //#define DEBUG_STRINGS
 
@@ -73,12 +77,82 @@ template class HashTable<char *, int>;
 template class HashTable<int, char *>;
 //#endif
 
-int StringStorage::_stringNum = 0;
-HashTable<char *, int> StringStorage::_strings(100, StringHash, StringComp);
-HashTable<int, char *> StringStorage::_keys(100, KeyHash, 0);
 char *StringStorage::_stringFile = NULL;
 
-static const char *defaultFile = "devise.strings";
+DefinePtrDList(StringTabList, StringStorage *);
+
+static const char *_defaultFile = "devise.strings";
+static StringStorage *_defaultTable = NULL;
+static StringTabList _tables;
+static const char *_defaultTableName = "default";
+static const char *_tableDelimiter = "StringTable:";
+static const char *_sortedStr = "sorted";
+
+StringStorage::StringStorage(const char *name) :
+  _stringNum(0),
+  _strings(100, StringHash, StringComp),
+  _keys(100, KeyHash, 0)
+{
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage::StringStorage(%s)\n", name);
+#endif
+
+  _tableName = CopyString(name);
+  _sorted = true;
+
+  _tables.Append(this);
+}
+
+StringStorage::~StringStorage()
+{
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage(%s)::~StringStorage()\n", _tableName);
+#endif
+
+  int check = _tables.Delete(this);
+  DOASSERT(check, "String table not in table list");
+
+  if (this == _defaultTable) _defaultTable = NULL;
+
+  Clear();
+  delete [] _tableName;
+}
+
+StringStorage *
+StringStorage::GetDefaultTable()
+{
+  if (_defaultTable == NULL) {
+    _defaultTable = new StringStorage(_defaultTableName);
+  }
+
+  return _defaultTable;
+}
+
+StringStorage *
+StringStorage::FindByName(const char *name)
+{
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage::FindByName(%s)\n", name ? name : "NULL");
+#endif
+
+  // Make sure default table exists.
+  (void) GetDefaultTable();
+
+  StringStorage *result = NULL;
+
+  if (name == NULL) name = _defaultTableName;
+
+  int index = _tables.InitIterator();
+  while (_tables.More(index) && result == NULL) {
+    StringStorage *table = _tables.Next(index);
+    if (!strcmp(name, table->_tableName)) {
+      result = table;
+    }
+  }
+  _tables.DoneIterator(index);
+
+  return result;
+}
 
 int
 StringStorage::Insert(char *string, int &key)
@@ -87,6 +161,7 @@ StringStorage::Insert(char *string, int &key)
     // found string in table
     return 0;
   }
+  _sorted = false;
   key = _stringNum++;
   char *tmpString = CopyString(string);
   int code = _strings.insert(tmpString, key);
@@ -108,7 +183,7 @@ int
 StringStorage::Clear()
 {
 #if defined(DEBUG_STRINGS)
-  printf("StringStorage::Clear()\n");
+  printf("StringStorage(%s)::Clear()\n", _tableName);
 #endif
 
   // Delete the strings themselves.
@@ -128,15 +203,35 @@ StringStorage::Clear()
     code = _keys.clear();
     if (code >= 0) {
       _stringNum = 0;
-       PopulateFromInitFile();
        return 0;
     }
   }
 
+  return code;
+}
+
+int
+StringStorage::ClearAll()
+{
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage::ClearAll()\n");
+#endif
+
+  int result = 0;
+
+  while (_tables.Size() > 0) {
+    StringStorage *table = _tables.GetFirst();
+    if (table->Clear() < 0) result = -1;
+    delete table;
+  }
+
+  // Re-create default table.
+  GetDefaultTable();
+
   delete [] _stringFile;
   _stringFile = NULL;
 
-  return code;
+  return result;
 }
 
 int
@@ -149,17 +244,7 @@ StringStorage::StringHash(char *&string, int numBuckets)
 }
 
 int
-StringStorage::PopulateFromInitFile()
-{
-#if 0
-  return Load(defaultFile);
-#else
-  return 0;
-#endif
-}
-
-int
-StringStorage::Save(const char *filename)
+StringStorage::SaveAll(const char *filename)
 {
   int result = 0;
 
@@ -168,14 +253,23 @@ StringStorage::Save(const char *filename)
     reportErrSys("can't open strings file");
     result = 1; 
   } else {
-    // Note: this relies on keys being consecutive.
-    int count = GetCount();
-    int key;
-    char *string;
-    for (key = 0; key < count; key++) {
-      Lookup(key, string);
-      fprintf(fp, "%s\n", string);
+    int index = _tables.InitIterator();
+    while (_tables.More(index)) {
+      StringStorage *table = _tables.Next(index);
+      const char *sortStr = table->_sorted ? _sortedStr : "";
+      fprintf(fp, "%s %s %s\n", _tableDelimiter, table->_tableName, sortStr);
+
+      // Note: this relies on keys being consecutive.
+      int count = table->GetCount();
+      int key;
+      char *string;
+      for (key = 0; key < count; key++) {
+        table->Lookup(key, string);
+        fprintf(fp, "%s\n", string);
+      }
+
     }
+    _tables.DoneIterator(index);
 
     if (fclose(fp) != 0) {
       reportErrSys("error closing strings file");
@@ -186,11 +280,21 @@ StringStorage::Save(const char *filename)
 }
 
 int
-StringStorage::Load(const char *filename)
+StringStorage::LoadAll(const char *filename)
 {
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage::LoadAll(%s)\n", filename);
+#endif
+
+  if (ClearAll() < 0) {
+    char errBuf[1024];
+    sprintf(errBuf, "Error clearing string tables");
+    reportErrNosys(errBuf);
+  }
+
   FILE *fp = fopen(filename, "r");
   if (!fp) {
-    if (strcmp(filename, defaultFile)) {
+    if (strcmp(filename, _defaultFile)) {
       reportErrSys("can't open strings file");
       return -1;
     } else {
@@ -200,22 +304,88 @@ StringStorage::Load(const char *filename)
 
   printf("Initializing string table from %s\n", filename);
 
+  StringStorage *table = GetDefaultTable();
+  Boolean sort = false;
+  const int delimLength = strlen(_tableDelimiter);
+
   char buf[256];
   while (fgets(buf, sizeof buf, fp)) {
-    if (buf[strlen(buf) - 1] == '\n')
-        buf[strlen(buf) - 1] = 0;
-    int key;
-    int code = Insert(buf, key);
-#ifdef DEBUG
-    printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
+
+    if (!strncmp(buf, _tableDelimiter, delimLength)) {
+      //
+      // Line defines a table name.
+      //
+      if (sort) {
+        table->Sort();
+      }
+
+      (void) strtok(buf, " \t\n"); // Bypass delimiter string
+      char *name = strtok(NULL, " \t\n"); // Table name
+      if (name == NULL) {
+        reportErrNosys("No string table name given");
+	table = GetDefaultTable();
+      } else {
+	table = FindByName(name);
+	if (table == NULL) {
+          table = new StringStorage(name);
+	}
+
+	char *sortStr = strtok(NULL, " \t\n"); // sorted?
+	if (sortStr != NULL && !strcmp(sortStr, _sortedStr)) {
+	  sort = true;
+	} else {
+	  sort = false;
+	}
+      }
+    } else {
+      //
+      // Line is a string to insert into table.
+      //
+      if (buf[strlen(buf) - 1] == '\n')
+          buf[strlen(buf) - 1] = 0;
+      int key;
+      int code = table->Insert(buf, key);
+#ifdef DEBUG_STRINGS
+      printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
 #endif
+    }
+  }
+  if (sort) {
+    table->Sort();
   }
 
   if (fclose(fp) != 0) {
     reportErrSys("error closing strings file");
   }
 
+  delete [] _stringFile;
   _stringFile = CopyString(filename);
 
   return 0;
+}
+
+void
+StringStorage::Sort()
+{
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage(%s)::Sort()\n", _tableName);
+#endif
+
+//TEMP -- need to actually sort here
+
+  _sorted = true;
+}
+
+int
+StringStorage::GetTotalCount()
+{
+  int totalCount = 0;
+
+  int index = _tables.InitIterator();
+  while (_tables.More(index)) {
+    totalCount += _tables.Next(index)->GetCount();
+  }
+  _tables.DoneIterator(index);
+
+  return totalCount;
 }

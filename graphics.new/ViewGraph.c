@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.88  1998/11/03 18:27:08  wenger
+  Partial fix to bugs 426 and 432.
+
   Revision 1.87  1998/10/29 21:46:09  wenger
   Added "proof-of-concept" code for filter links; added warning when
   more than one mapping is inserted into a view; updated bug and to-do
@@ -561,6 +564,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _countMapping = NULL;
 
   _slaveTable = new SlaveTable(this);
+  _stringTableName = NULL;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -619,6 +623,9 @@ ViewGraph::~ViewGraph(void)
 
 	delete _slaveTable;
 	_slaveTable = NULL;
+
+	delete [] _stringTableName;
+	_stringTableName = NULL;
 }
 
 //******************************************************************************
@@ -2080,6 +2087,24 @@ ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
   }
 
   return status;
+}
+
+void
+ViewGraph::SetStringTable(char *name)
+{
+  delete [] _stringTableName;
+  _stringTableName = CopyString(name);
+
+  // Note: this will cause problems if a mapping is shared by multiple
+  // views.  RKW 1998-11-03.
+  int index = InitMappingIterator();
+  while (MoreMapping(index)) {
+    MappingInfo *info = NextMapping(index);
+    info->map->SetStringTable(name);
+  }
+  DoneMappingIterator(index);
+
+  Refresh();
 }
 
 //******************************************************************************

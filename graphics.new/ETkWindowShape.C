@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/11/24 23:14:50  weaver
+  Changes for the new ColorManager.
+
   Revision 1.12  1997/11/18 23:26:49  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -82,7 +85,8 @@ static char *
 GetShapeAttrString(int i,
 		   TDataMap *map,
 		   char *gdataBuffer,
-		   Boolean &caller_should_free);
+		   Boolean &caller_should_free,
+		   StringStorage *stringTable);
 
 int FullMapping_ETkWindowShape::NumShapeAttrs()
 {
@@ -141,6 +145,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     //
 
     offset = map->GetGDataOffset();
+    StringStorage *stringTable = map->GetStringTable();
 
     for (i = 0; i < numSyms; i++)
     {
@@ -192,7 +197,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	// Get name of script (shape attr 0)
 	//
 	if ((script = GetShapeAttrString(0, map,
-					 gdata, freeScript)) == NULL)
+		 gdata, freeScript, stringTable)) == NULL)
 	{
 		reportError("No Tcl script specified", devNoSyserr);
 	    continue;
@@ -210,7 +215,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	if (attrType == StringAttr)
 	{
 	    if ((temp = GetShapeAttrString(1, map,
-					   gdata, freeTemp)) == NULL)
+		   gdata, freeTemp, stringTable)) == NULL)
 	    {
 		reportError("No argument count specified", devNoSyserr);
 		continue;
@@ -242,7 +247,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	for (j = 0; j < argc; j++)
 	{
 	    if ((temp = GetShapeAttrString(j + 2, map, gdata,
-					   freeTemp)) == NULL)
+		   freeTemp, stringTable)) == NULL)
 	    {
 		continue;
 	    }
@@ -332,7 +337,8 @@ static char *
 GetShapeAttrString(int i,
 		   TDataMap *map,
 		   char *gdataBuffer,
-		   Boolean &caller_should_free)
+		   Boolean &caller_should_free,
+		   StringStorage *stringTable)
 {
     Coord attrValue;
     AttrType attrType;
@@ -349,7 +355,7 @@ GetShapeAttrString(int i,
     switch (attrType)
     {
       case StringAttr:
-	if (StringStorage::Lookup(int(attrValue), returnValue) < 0)
+	if (stringTable->Lookup(int(attrValue), returnValue) < 0)
 	{
 	    return NULL;
 	}

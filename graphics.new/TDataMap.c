@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/08/17 18:51:55  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.26  1998/05/06 22:04:59  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -128,6 +132,7 @@
 #include "XColor.h"
 #include "DevError.h"
 #include "TimeStamp.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 
@@ -207,6 +212,8 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   // Timestamp is 0 here in case mapping gets created after link somehow.
   _physTdTimestamp = 0;
 
+  _stringTableName = NULL;
+
   _objectValid.Set();
 }
 
@@ -216,6 +223,9 @@ TDataMap::~TDataMap()
   _gdata = NULL;
   delete [] _shapeAttrs;
   _shapeAttrs = NULL;
+
+  delete [] _stringTableName;
+  _stringTableName = NULL;
 }
 
 //******************************************************************************
@@ -477,6 +487,42 @@ void TDataMap::ResetGData(int gRecSize)
 		       _maxGDataPages * Init::PageSize());
     QueryProc::Instance()->ResetGData(_tdata, _gdata);
   }
+}
+
+void
+TDataMap::SetStringTable(char *name)
+{
+#if defined(DEBUG)
+  printf("TDataMap(%s)::SetStringTable(%s)\n", GetName(), name ? name : "NULL");
+#endif
+
+  // Note: we're storing the table name, rather than a pointer to the table,
+  // here in case the string table is destroyed while this mapping still
+  // exists -- if the user loads a different strings file, for example.
+  // RKW 1998-11-03.
+  delete [] _stringTableName;
+  _stringTableName = CopyString(name);
+  if (!StringStorage::FindByName(_stringTableName)) {
+    fprintf(stderr, "Warning: string table %s does not exist\n",
+      _stringTableName);
+  }
+}
+
+StringStorage *
+TDataMap::GetStringTable()
+{
+#if defined(DEBUG)
+  printf("TDataMap(%s)::GetStringTable()\n", GetName());
+#endif
+
+  StringStorage *stringTable = StringStorage::FindByName(_stringTableName);
+  if (!stringTable) {
+	fprintf(stderr,
+	  "Warning: string table %s not found; substituting default table\n",
+	  _stringTableName);
+    stringTable = new StringStorage(_stringTableName);
+  }
+  return stringTable;
 }
 
 //******************************************************************************

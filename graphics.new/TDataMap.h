@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/05/06 22:05:00  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.29  1998/04/29 17:53:57  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -173,6 +177,7 @@ class GData;
 class Symbol;
 class WindowRep;
 class ViewGraph;
+class StringStorage;
 
 /* Offsets for GData attributes. Not all offsets are valid (negative). */
 
@@ -233,6 +238,10 @@ class TDataMap
     dimensionInfo = _dimensionInfo;
     return _numDimensions;
   }
+
+  void SetStringTable(char *name);
+  StringStorage *GetStringTable();
+
 		
   virtual Boolean IsInterpreted() { return false; }
   virtual Boolean IsComplexShape(ShapeID shape) { return false; }
@@ -447,6 +456,8 @@ private:
   
   /* user data. used by QueryProcessor to insert its own info. */
   void *_userData;
+
+  char *_stringTableName;
 };
 
 //******************************************************************************

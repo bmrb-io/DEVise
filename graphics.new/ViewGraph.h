@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/10/20 19:46:19  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.53  1998/08/24 14:51:43  wenger
   Implemented support for JavaScreen drill-down.
 
@@ -516,6 +523,9 @@ public:
   void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr);
   DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr);
 
+  void SetStringTable(char *name);
+  char *GetStringTable() { return _stringTableName; }
+
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
@@ -587,6 +597,7 @@ public:
   Boolean _drawToScreen;
   Boolean _sendToSocket;
   GDataSock::Params _gdsParams;
+  char *_stringTableName;
 
 	protected:
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1998/10/20 19:39:40  wenger
+  Various small code cleanups.
+
   Revision 1.57  1998/08/05 14:18:55  wenger
   Moved disabling of stdout buffer to the very beginning to diagnostic
   messages printed during startup are not lost when stdout is redirected
@@ -1653,9 +1656,6 @@ int main(int argc, char **argv)
 
   /* Keep compiler happy */
   disp = disp;
-
-  /* Populate string storage space from init file */
-  StringStorage::PopulateFromInitFile();
 
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();

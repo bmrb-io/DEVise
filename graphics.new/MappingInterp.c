@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.74  1998/10/21 17:16:41  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.73  1998/08/17 18:51:50  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -382,9 +388,14 @@ Boolean MappingInterp::IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
   printf("  MappingInterp::IsConstCmd(%s)\n", cmd);
 #endif
 
+  // We don't care about the string values here, since we only want to see
+  // if the command is a constant; therefore, we can use the default string
+  // table and make this a static member function.  RKW 1998-11-03.
+  StringStorage *stringTable = StringStorage::GetDefaultTable();
+
   MappingSimpleCmdEntry entry;
   Boolean isSorted;
-  if (ConvertSimpleCmd(cmd, attrList, entry, attrType, isSorted)
+  if (ConvertSimpleCmd(cmd, attrList, entry, attrType, isSorted, stringTable)
       && entry.cmdType == MappingSimpleCmdEntry::ConstCmd) {
     val = entry.cmd.num;
     return true;
@@ -619,39 +630,41 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 	return 0;
     }
 
+    StringStorage *stringTable = GetStringTable();
+
     switch (which_attr)
     {
       case MappingCmd_X:
 	simpleCmd = ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), entry,
-		attrType, isSorted);
+		attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Y:
 	simpleCmd = ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(), entry,
-		attrType, isSorted);
+		attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Z:
 	simpleCmd = ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(), entry,
-		attrType, isSorted);
+		attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Color:
 	simpleCmd = ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Size:
 	simpleCmd = ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Pattern:
 	simpleCmd = ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Orientation:
 	simpleCmd = ConvertSimpleCmd(_cmd->orientationCmd, _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
 	break;
       case MappingCmd_Shape:
 	simpleCmd = ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
 	break;
       default:
 	return 0;
@@ -730,9 +743,11 @@ AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
     {
 	return 0;
     }
+
+    StringStorage *stringTable = GetStringTable();
     
     simpleCmd = ConvertSimpleCmd(_cmd->shapeAttrCmd[i], _tdata->GetAttrList(),
-		entry, attrType, isSorted);
+		entry, attrType, isSorted, stringTable);
     
     if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd) {
 	return _tdata->GetAttrList()->Get(entry.cmd.attrNum);
@@ -878,6 +893,8 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
   char *gPtr = (char *)gdataPtr;
   _recId = startRecId;
 
+  StringStorage *stringTable = GetStringTable();
+
   for(int i = 0; i < numRecs; i++) {
 
     /* Store ID of current record */
@@ -952,7 +969,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
           char *string = NULL;
 
 	  string = tPtr + attrInfo->offset;
-	  code = StringStorage::Insert(string, key);
+	  code = stringTable->Insert(string, key);
           DOASSERT(code >= 0, "Cannot insert string");
 
 	  // added by whh, support for native expression analysis
@@ -1120,6 +1137,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 #endif
 
   AttrList *attrList = new AttrList(name);
+  StringStorage *stringTable = GetStringTable();
 
   /* Record ID is always first GData attribute */
   _offsets->recidOffset = 0;
@@ -1145,7 +1163,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   int j;
 
   if (_cmdFlag & MappingCmd_X) {
-    if (!ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd, attrType, isSorted))
+    if (!ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
 		!FORCE_X_INTO_GDATA) {
@@ -1163,7 +1181,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Y) {
     if (!ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(),
-		_simpleCmd->yCmd, attrType, isSorted))
+		_simpleCmd->yCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
 		!FORCE_Y_INTO_GDATA) {
@@ -1181,7 +1199,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Z) {
     if (!ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(),
-		_simpleCmd->zCmd, attrType, isSorted))
+		_simpleCmd->zCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
@@ -1200,7 +1218,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_Color)
   {
     if (!ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
-		_simpleCmd->colorCmd, attrType, isSorted)) {
+		_simpleCmd->colorCmd, attrType, isSorted, stringTable)) {
       goto complexCmd;
     }
 
@@ -1221,7 +1239,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Size) {
     if (!ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
-		_simpleCmd->sizeCmd, attrType, isSorted))
+		_simpleCmd->sizeCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->sizeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
@@ -1238,7 +1256,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Pattern) {
     if (!ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
-		_simpleCmd->patternCmd, attrType, isSorted))
+		_simpleCmd->patternCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->patternCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
@@ -1255,7 +1273,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Shape) {
     if (!ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
-		_simpleCmd->shapeCmd, attrType, isSorted))
+		_simpleCmd->shapeCmd, attrType, isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->shapeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
@@ -1276,7 +1294,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_Orientation) {
     if (!ConvertSimpleCmd(_cmd->orientationCmd,
 			  _tdata->GetAttrList(), _simpleCmd->orientationCmd, attrType,
-			  isSorted))
+			  isSorted, stringTable))
       goto complexCmd;
     if (_simpleCmd->orientationCmd.cmdType == 
 	MappingSimpleCmdEntry::ConstCmd) {
@@ -1299,7 +1317,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       _maxGDataShapeAttrNum = j;
       if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
 			    _tdata->GetAttrList(), _simpleCmd->shapeAttrCmd[j], attrType,
-			    isSorted))
+			    isSorted, stringTable))
 	goto complexCmd;
       if (_simpleCmd->shapeAttrCmd[j].cmdType ==
 	  MappingSimpleCmdEntry::ConstCmd) {
@@ -1583,7 +1601,8 @@ static char *GetString()
 
 Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
 					MappingSimpleCmdEntry &entry,
-					AttrType &type, Boolean &isSorted)
+					AttrType &type, Boolean &isSorted,
+					StringStorage *stringTable)
 {
 #if defined(DEBUG)
   printf("MappingInterp::ConvertSimpleCmd: '%s'\n",cmd);
@@ -1646,7 +1665,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
     strncpy(str, cmd+1, len);
     str[len] = '\0'; // Terminate the string!
     int strid;
-    int code = StringStorage::Insert(str, strid);
+    int code = stringTable->Insert(str, strid);
     DOASSERT(code >= 0, "Cannot insert string");
     delete [] str;
 #if defined(DEBUG)
@@ -1871,7 +1890,7 @@ void MappingInterp::PrintCmd()
 */
 
 double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry, 
-				 double defaultVal)
+				 double defaultVal, StringStorage *stringTable)
 {
 #if defined(DEBUG)
   printf("MappingInterp::ConvertOne(%s)\n", from);
@@ -1919,7 +1938,7 @@ double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry,
       }
 
       case StringAttr:
-        code = StringStorage::Insert(ptr, key);
+        code = stringTable->Insert(ptr, key);
 #ifdef DEBUG
         printf("Converted string \"%s\" to key %d, code %d\n", ptr, key, code);
 #endif
@@ -1972,6 +1991,8 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   char *gPtr = (char *)gdataPtr;
   _recId = startRecId;
 
+  StringStorage *stringTable = GetStringTable();
+
   for(int i = 0; i < numRecs; i++) {
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
@@ -1979,15 +2000,15 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
     double *dPtr;
     if (_offsets->xOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->xOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0, stringTable);
     }
     if ( _offsets->yOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->yOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0, stringTable);
     }
     if (_offsets->zOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->zOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0, stringTable);
     }
 
 	// Color command
@@ -1995,30 +2016,33 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 	{
 		PColorID*	pcid = (PColorID*)(gPtr + _offsets->colorOffset);
 
-		*pcid = (PColorID)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
+		*pcid = (PColorID)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0,
+		  stringTable);
 	}
 
     if (_offsets->sizeOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->sizeOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0, stringTable);
     }
     if (_offsets->shapeOffset >= 0) {
       ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->shapeOffset);
-      *sPtr = (ShapeID) ConvertOne(tPtr, &_simpleCmd->shapeCmd, 1.0);
+      *sPtr = (ShapeID) ConvertOne(tPtr, &_simpleCmd->shapeCmd, 1.0,
+	    stringTable);
     }
     if (_offsets->patternOffset >= 0) {
       Pattern *pPtr = (Pattern *)(gPtr + _offsets->patternOffset);
-      *pPtr = (Pattern)ConvertOne(tPtr, &_simpleCmd->patternCmd, 0.0);
+      *pPtr = (Pattern)ConvertOne(tPtr, &_simpleCmd->patternCmd, 0.0,
+	    stringTable);
     }
     if (_offsets->orientationOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->orientationOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->orientationCmd, 0.0);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->orientationCmd, 0.0, stringTable);
     }
 
     for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
 	double *dPtr = (double *)(gPtr + _offsets->shapeAttrOffset[j]);
-	*dPtr =  ConvertOne(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1);
+	*dPtr =  ConvertOne(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1, stringTable);
 #ifdef DEBUG
 	printf("ConvertGData: shape attribute %d: %.2f\n", j, *dPtr);
 #endif

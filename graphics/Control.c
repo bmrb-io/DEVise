@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/09/28 20:06:03  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.17  1998/09/08 16:07:16  wenger
   Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
   the creation of multiple classes with the same name; fixed session file.
@@ -134,7 +140,7 @@ void ControlPanel::DestroySessionData()
   gdir = new GroupDir();
 
   // clear string storage space
-  StringStorage::Clear();
+  StringStorage::ClearAll();
 
   _batchMode = false;
   _syncNotify = false;
