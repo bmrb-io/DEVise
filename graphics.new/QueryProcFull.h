@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1999/06/01 17:37:42  wenger
+  Fixed various compiler warnings.
+
   Revision 1.29  1998/12/15 14:55:22  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -212,6 +215,9 @@ public:
 			  QueryCallback *callback, void *userData,
 			  int priority = 0);
 	
+  // Abort all queries in the query processor.
+  virtual void AbortAllQueries();
+
   /* Abort a query given the mapping and the callback. */
   virtual void AbortQuery(TDataMap *map, QueryCallback *callback);
 
@@ -281,6 +287,9 @@ protected:
   void EndQueries();
   void EndQuery(QPFullData *query);
   
+  /* Abort the specified query. */
+  void DoAbortQuery(QPFullData *query);
+
   /* Report elapsed time of query */
   void ReportQueryElapsedTime(QPFullData *query);
 

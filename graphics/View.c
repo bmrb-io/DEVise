@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.196  1999/10/05 17:55:38  wenger
+  Added debug log level.
+
   Revision 1.195  1999/10/04 19:36:57  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -1064,10 +1067,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_viewZ = -1.0; // invalid -- needs to be set later
 
-	_rubberbandDisabled = false;
-	_cursorMoveDisabled = false;
-	_drillDownDisabled = false;
-	_keysDisabled = false;
+	SetDisabledActions(false, false, false, false);
 
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
@@ -1344,7 +1344,7 @@ Boolean View::CheckCursorOp(int x, int y)
   }
 
   if (GetCursorMoveDisabled()) {
-    printf("  Cursor moving disabled in view <%s>\n", GetName());
+    printf("Cursor moving disabled in view <%s>\n", GetName());
     return false;
   }
 
@@ -1361,6 +1361,9 @@ Boolean View::CheckCursorOp(int x, int y)
   DOASSERT(cursor, "Invalid cursor");
   cursor->MoveSource((worldXHigh + worldXLow) / 2.0,
 		     (worldYHigh + worldYLow) / 2.0);
+
+  //TEMP -- need to update whether mouse is on cursor here
+  // click to move cursor -- DEVise doesn't realize mouse is now on cursor
 
   return true;
 }
@@ -2412,8 +2415,9 @@ void View::DeleteViewCallback(ViewCallback *callBack)
 
 void View::Iconify(Boolean iconified)
 {
-  if (iconified)
+  if (iconified) {
     AbortQuery();
+  }
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewIconify);
   Refresh();
@@ -4039,6 +4043,10 @@ View::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 
   cursorHit._hitType = CursorHit::CursorNone;
   cursorHit._cursor = NULL;
+
+  if (GetCursorMoveDisabled()) {
+    return;
+  }
 
   if (IsInPileMode()) {
     GetParentPileStack()->IsOnCursor(pixX, pixY, cursorHit);

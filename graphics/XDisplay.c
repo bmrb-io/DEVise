@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.80  1999/10/04 19:37:00  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.79  1999/09/02 17:25:52  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -1250,10 +1253,14 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     xwin->_myPixmap = 0;
   }
 
+#if 0 // Note: taking this back out is part of the fix for bugs 470 and
+      // 513.  If this code is enabled, we can get goofed up by getting
+      // an event when a view is partially destroyed.  RKW 1999-10-08.
   /* KLUDGE WARNING.  This somehow fixes bug 182.  I think we ended up
    * getting goofed up by the destroy event on the XWindow we're destroying
    * here, and somehow processing the events at this point fixes it. */
   Run();
+#endif
 
   delete xwin;
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/10/04 19:36:58  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.62  1999/09/02 17:25:50  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -661,7 +664,6 @@ void ViewWin::Unmap()
   printf("ViewWin(%s)::Unmap()\n", GetName());
 #endif
   
-  
   if (!_mapped)
     return;
 
@@ -674,7 +676,7 @@ void ViewWin::Unmap()
   _children.DoneIterator(index);
 
   SubClassUnmapped();
-  //TEMP?_winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
+  _winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
 
   if (!WindowRep::IsDestroyPending())
   {

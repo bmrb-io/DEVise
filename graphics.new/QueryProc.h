@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/03/03 18:21:57  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.20  1998/11/09 20:33:23  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -167,6 +172,9 @@ class QueryProc {
     virtual void BatchQuery(TDataMap *map, VisualFilter &filter,
                             QueryCallback *callback, void *userData,
                             int priority = 0) = 0;
+
+    // Abort all queries in the query processor.
+    virtual void AbortAllQueries() = 0;
     
     /* Abort a query given the mapping and the callback. */
     virtual void AbortQuery(TDataMap *map, QueryCallback *callback) = 0;

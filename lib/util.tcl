@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.63  1998/11/17 14:48:09  wenger
+#  Changed master/slave to leader/follower and fixed a few problems in GUI,
+#  session description, etc.
+#
 #  Revision 1.62  1998/11/11 14:31:15  wenger
 #  Implemented "highlight views" for record links and set links; improved
 #  ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -1409,4 +1413,25 @@ proc ToggleViewHighlight {} {
     set highlight [DEVise viewGetIsHighlight $curView]
     set highlight [expr !$highlight]
     DEVise viewSetIsHighlight $curView $highlight
+}
+
+############################################################
+# Move a file, checking for permission problems that would
+# cause this to hang.
+
+proc MoveFile {from to} {
+
+  if {![file exists $from]} {
+    puts "File $from does not exist"
+    return
+  }
+
+  if {[file exists $to]} {
+    if {![file writable $to]} {
+      puts "Can't write to file $to"
+      return
+    }
+  }
+
+  catch { exec mv $from $to }
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  1999/08/11 16:51:12  wenger
+  Point query for drill-down now makes use of symbol bounding boxes.
+
   Revision 1.95  1999/06/28 21:12:20  wenger
   The query processor now only gets woken up by the interval timer if
   idle-time TData to GData conversion is enabled.
@@ -782,13 +785,34 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
   _coordinateTables = newList;
 }
 
+
+/* Abort all queries. */
+void QueryProcFull::AbortAllQueries()
+{
+#if DEBUGLVL >= 3
+  printf("QueryProcFull::AbortAllQueries()\n");
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#endif
+
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
+    QPFullData *query = (QPFullData *)_queries->Next(index);
+    DoAbortQuery(query);
+  }
+  _queries->DoneIterator(index);
+}
+
+
 /* Abort a query given the mapping and the callback */
 
 void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 {
 #if DEBUGLVL >= 3
-  printf("abort query for %s %s\n", map->GetPhysTData()->GetName(),
-	 map->GetName());
+  // Note: it can cause a crash to get map name or map's TData name here
+  // because objects may already be destroyed(!).  RKW 1999-10-08
+  printf("QueryProcFull::AbortQuery(0x%p, 0x%p)\n", map, callback);
 #endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
@@ -798,15 +822,21 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *query = (QPFullData *)_queries->Next(index);
     if (query->map == map && query->callback == callback) {
-      AdvanceState(query, QPFull_EndState);
-      ReportQueryElapsedTime(query);
-      // callback not called because view classes cannot handle it!
-      //query->callback->QueryDone(query->bytes, query->userData);
-      query->callback = NULL;
+      DoAbortQuery(query);
       break;
     }
   }
   _queries->DoneIterator(index);
+}
+
+void
+QueryProcFull::DoAbortQuery(QPFullData *query)
+{
+  AdvanceState(query, QPFull_EndState);
+  ReportQueryElapsedTime(query);
+  // callback not called because view classes cannot handle it!
+  //query->callback->QueryDone(query->bytes, query->userData);
+  query->callback = NULL;
 }
 
 /* Clear all queries */

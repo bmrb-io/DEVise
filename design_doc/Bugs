@@ -1820,8 +1820,9 @@ Num Date        Status  Description
 			info gives the min and max of all records, not just
 			the ones that are selected by the record link. (rkw)
 
-470 03/16/99	OPEN	Open a session while queries for an existing session
+470 03/16/99	FIXED	Open a session while queries for an existing session
 			are running -> QueryProc fails an assertion. (rkw)
+			(Fixed by rkw, 10/8/99.)
 
 471 03/17/99	CD	Resizing a piled window sometimes causes the window
 			to become blank. (rkw)
@@ -1982,6 +1983,26 @@ Num Date        Status  Description
 
 509 09/27/99	OPEN	Tcl code for generating unique view names comes up
 			with stupid names (e.g., View 1116). (rkw)
+
+510 10/05/99	FIXED	Disabling actions in piled views doesn't seem to
+			work right. (rkw)
+			(Fixed by rkw, 10/7/99.)
+
+511 10/05/99	FIXED	Save hangs if .bak file can't be written. (rkw)
+			(Fixed by rkw, 10/5/99.)
+
+512 10/07/99	OPEN	When you move a cursor by clicking, DEVise doesn't
+			realized that the mouse is now on a cursor until
+			the mouse is moved. (rkw)
+
+513 10/07/99	FIXED	Quit while query is running causes DEVise to crash
+			(at least some times). (rkw)
+			(Fixed by rkw, 10/8/99.)
+
+514 10/07/99	OPEN	If there are two piled views, each with a cursor,
+			a mouse click moves both cursors; but in a single view
+			with two cursors, a mouse click only moves one
+			cursor.  (We should make these consistent.) (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

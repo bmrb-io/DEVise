@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.77  1999/09/07 19:00:57  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.76  1999/08/12 16:03:56  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -863,7 +871,7 @@ public:
 									int x2, int y2, int button, int state);
 		virtual void	DoHandlePress(WindowRep *, int x1, int y1,
 									  int x2, int y2, int button,
-									  int state);
+									  int state, Boolean allowZoom);
 		virtual void	HandleKey(WindowRep*, int key, int x, int y);
 		virtual void	DoHandleKey(WindowRep*, int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1999/09/29 17:22:38  wenger
+#  "Regular" DEVise GUI displays session file name; some provision for
+#  displaying mouse position like the JavaScreen does.
+#
 #  Revision 1.46  1999/05/14 21:00:03  wenger
 #  DEVise GUI now "remembers" the most recent session directory.
 #
@@ -269,7 +273,7 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     ChangeStatus 1
 
     # rename existing file to a backup file
-    catch { exec mv $infile $infile.bak }
+    MoveFile $infile $infile.bak
 
     # checkpoint tdata
     set classes [ DEVise get "tdata" ]

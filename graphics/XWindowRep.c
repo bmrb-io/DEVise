@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.134  1999/10/04 19:37:00  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.133  1999/09/21 18:58:29  wenger
   Devise looks for an already-running Tasvir before launching one; Devise
   can also launch a new Tasvir at any time if Tasvir has crashed; added
@@ -2589,12 +2592,12 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
         cb->MouseDrag(x1, y1, x2, y2);
 	x2 = event.xbutton.x;
 	y2 = event.xbutton.y;
+        cb->ShowMouseLocation(&x2, &y2);
 	done = true;
       }
       break;
     case MotionNotify:
       cb->MouseDrag(x1, y1, x2, y2);
-      cb->ShowMouseLocation(&x2, &y2);
       
       /* get rid of all remaining motion events */
       do {
@@ -2603,7 +2606,6 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
       } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
       
       cb->MouseDrag(x1, y1, x2, y2);
-      cb->ShowMouseLocation(&x2, &y2);
       break;
     }
   }

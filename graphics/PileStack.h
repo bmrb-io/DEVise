@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/08/12 16:02:48  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.14  1999/08/05 21:42:35  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -111,14 +114,17 @@ class View;
 
 class PileStack {
 public:
+  // Constructor/destructor.
   PileStack(const char *name, ViewLayout *window);
   ~PileStack();
 
+  // Utilities.
   static PileStack *FindByName(const char *name);
   static void DeleteAll();
 
   const char *GetName() { return _name; }
 
+  // State (piled, stacked, normal, etc.).
   enum State { PileStackInvalid = 0, PSNormal, PSStacked, PSPiledNoLink,
       PSPiledLinked };
 
@@ -129,9 +135,11 @@ public:
 
   void Flip();
 
+  // Insert/delete views.
   void InsertView(ViewWin *view);
   void DeleteView(ViewWin *view);
 
+  // Access view list.
   ViewWin *GetFirstView();
   ViewWin *GetLastView();
   int InitIterator() { return _views.InitIterator(); }
@@ -139,8 +147,10 @@ public:
   ViewWin *Next(int index) { return _views.Next(index); }
   void DoneIterator(int index) { _views.DoneIterator(index); }
 
+  // Called when parent window is destroyed.
   void DetachFromWindow() { _window = NULL; }
 
+  // Set properties.
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
   void EnableXTicks(Boolean enable);
@@ -154,14 +164,29 @@ public:
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
 
+  Boolean GetRubberbandDisabled() { return _rubberbandDisabled; }
+  Boolean GetCursorMoveDisabled() { return _cursorMoveDisabled; }
+  Boolean GetDrillDownDisabled() { return _drillDownDisabled; }
+  Boolean GetKeysDisabled() { return _keysDisabled; }
+  void SetDisabledActions(Boolean disableRubberband,
+      Boolean disableCursorMove, Boolean disableDrillDown,
+      Boolean disableKeys) {
+    _rubberbandDisabled = disableRubberband;
+    _cursorMoveDisabled = disableCursorMove;
+    _drillDownDisabled = disableDrillDown;
+    _keysDisabled = disableKeys;
+  }
+
+  // Handle events.
   void IsOnCursor(int pixX, int pixY, CursorHit &cursor);
 
   void SelectView();
   Boolean ViewIsSelected();
 
   void HandlePress(WindowRep *, int x1, int y1, int x2, int y2, int button,
-      int state);
+      int state, Boolean allowZoom);
   void HandleKey(WindowRep *, int key, int xVal, int yVal);
+
 
   void Refresh();
   void QueryStarted(View *view);
@@ -195,12 +220,19 @@ private:
 
   View *_currentQueryView;
 
+  Boolean _rubberbandDisabled;
+  Boolean _cursorMoveDisabled;
+  Boolean _drillDownDisabled;
+  Boolean _keysDisabled;
+
   void SetNormal();
   void SetStacked();
   void SetPiled(Boolean doLink);
 
   Boolean CanPileOrStack(State state);
   void CreatePileLink();
+
+  void SetPSProperties(View *view);
   void SynchronizeAllViews();
   void SynchronizeView(View *view);
 };

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.95  1999/10/04 19:36:58  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.94  1999/08/31 21:46:18  wenger
   Found and fixed bug 506 (problem with cursor drawing when source and
   destination views are in the same window).
@@ -451,6 +454,7 @@
 #include "Coloring.h"
 #include "ViewDir.h"
 #include "DevAxis.h"
+#include "PileStack.h"
 
 //******************************************************************************
 
@@ -786,15 +790,19 @@ class View : public ViewWin
 	void GetDisabledActions(Boolean &rubberbandDisabled,
 	    Boolean &cursorMoveDisabled, Boolean &drillDownDisabled,
 		Boolean &keysDisabled) {
-	  rubberbandDisabled = _rubberbandDisabled;
-	  cursorMoveDisabled = _cursorMoveDisabled;
-	  drillDownDisabled = _drillDownDisabled;
-	  keysDisabled = _keysDisabled;
+	  rubberbandDisabled = GetRubberbandDisabled();
+	  cursorMoveDisabled = GetCursorMoveDisabled();
+	  drillDownDisabled = GetDrillDownDisabled();
+	  keysDisabled = GetKeysDisabled();
     }
-	Boolean GetRubberbandDisabled() { return _rubberbandDisabled; }
-	Boolean GetCursorMoveDisabled() { return _cursorMoveDisabled; }
-	Boolean GetDrillDownDisabled() { return _drillDownDisabled; }
-	Boolean GetKeysDisabled() { return _keysDisabled; }
+	Boolean GetRubberbandDisabled() { return (IsInPileMode() ?
+	    GetParentPileStack()->GetRubberbandDisabled() : _rubberbandDisabled); }
+	Boolean GetCursorMoveDisabled() { return (IsInPileMode() ?
+	    GetParentPileStack()->GetCursorMoveDisabled() : _cursorMoveDisabled); }
+	Boolean GetDrillDownDisabled() { return (IsInPileMode() ?
+	    GetParentPileStack()->GetDrillDownDisabled() : _drillDownDisabled); }
+	Boolean GetKeysDisabled() { return (IsInPileMode() ?
+	    GetParentPileStack()->GetKeysDisabled() : _keysDisabled); }
 	void SetDisabledActions(Boolean disableRubberband,
 	    Boolean disableCursorMove, Boolean disableDrillDown,
 		Boolean disableKeys) {
@@ -802,6 +810,10 @@ class View : public ViewWin
 	  _cursorMoveDisabled = disableCursorMove;
 	  _drillDownDisabled = disableDrillDown;
 	  _keysDisabled = disableKeys;
+	  if (IsInPileMode()) {
+	    GetParentPileStack()->SetDisabledActions(disableRubberband,
+		    disableCursorMove, disableDrillDown, disableKeys);
+	  }
     }
 
 protected:
@@ -993,6 +1005,7 @@ protected:
 
 		float _viewZ;
 
+		// Never access these members directly!
 	    Boolean _rubberbandDisabled;
 	    Boolean _cursorMoveDisabled;
 	    Boolean _drillDownDisabled;

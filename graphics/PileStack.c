@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/08/12 16:02:34  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.17  1999/08/05 21:42:34  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -151,6 +154,7 @@ PileStack::PileStack(const char *name, ViewLayout *window)
   _link = NULL;
   _psList.Append(this);
   _currentQueryView = NULL;
+  SetDisabledActions(false, false, false, false);
 
   _objectValid.Set();
 }
@@ -391,18 +395,20 @@ PileStack::InsertView(ViewWin *view)
 
   if (IsPiled()) {
 
-    ((View *)view)->SetPileMode(true);
-
     //
     // Make sure the new view is consistent with the state of the pile as
     // far as axes, title, etc.
     //
     if (_views.Size() < 1) {
-      // This is the first view in the pile, so find out whether the
-      // axes are turned on.
-      ((View *)view)->AxisDisplay(_xAxisOn, _yAxisOn);
-      ((View *)view)->TicksEnabled(_xTicksOn, _yTicksOn);
+      // This is the first view in the pile, set the pile's properties based
+      // on the view.
+      SetPSProperties((View *)view);
     }
+
+    //
+    // This must be done *after* SetPSProperties().
+    //
+    ((View *)view)->SetPileMode(true);
 
     SynchronizeView((View *)view);
   }
@@ -746,6 +752,24 @@ PileStack::CreatePileLink()
 }
 
 /*------------------------------------------------------------------------------
+ * function: PileStack::SetPSProperties
+ * Set the properties of the PileStack object based on the properties of
+ * the given view.
+ */
+void
+PileStack::SetPSProperties(View *view)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::SetPSProperties(%s)\n", _name, view->GetName());
+#endif
+
+  view->AxisDisplay(_xAxisOn, _yAxisOn);
+  view->TicksEnabled(_xTicksOn, _yTicksOn);
+  view->GetDisabledActions(_rubberbandDisabled, _cursorMoveDisabled,
+      _drillDownDisabled, _keysDisabled);
+}
+
+/*------------------------------------------------------------------------------
  * function: PileStack::SynchronizeAllViews
  * Make sure that the state of all views in the pile is consistent, in terms
  * of whether axes and title are shown, etc.
@@ -760,8 +784,7 @@ PileStack::SynchronizeAllViews()
   int index = GetViewList()->InitIterator();
   if (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    view->AxisDisplay(_xAxisOn, _yAxisOn);
-    view->TicksEnabled(_xTicksOn, _yTicksOn);
+    SetPSProperties(view);
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
@@ -1061,7 +1084,7 @@ PileStack::ViewIsSelected()
  */
 void
 PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
-    int y2, int button, int state)
+    int y2, int button, int state, Boolean allowZoom)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
@@ -1073,8 +1096,14 @@ PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
   //
   // Do cursor operations for *all* views before selecting a view (fixes
   // bug 495).  RKW 1999-06-03.
+  // (Here we are checking whether we move a cursor by clicking; this
+  // does not include dragging a cursor.)
   //
   if (WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone) {
+    //
+    // We're *not* dragging a cursor -- check whether we're moving one with
+    // a mouse click.
+    //
     if ((x1 == x2) && (y1 == y2)) {
       int index = InitIterator();
       while (More(index)) {
@@ -1100,7 +1129,7 @@ PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
     int index = InitIterator();
     while (More(index)) {
       ViewGraph *view = (ViewGraph *)Next(index);
-      view->DoHandlePress(NULL, x1, y1, x2, y2, button, state);
+      view->DoHandlePress(NULL, x1, y1, x2, y2, button, state, allowZoom);
     }
     DoneIterator(index);
   }
@@ -1126,8 +1155,6 @@ PileStack::HandleKey(WindowRep *, int key, int xVal, int yVal)
     view->DoHandleKey(NULL, key, xVal, yVal);
   }
   DoneIterator(index);
-
-
 }
 
 /*------------------------------------------------------------------------------

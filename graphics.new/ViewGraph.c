@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.125  1999/10/05 17:55:51  wenger
+  Added debug log level.
+
   Revision 1.124  1999/09/08 20:56:29  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -2342,6 +2345,21 @@ void	ViewGraph::PrintLinkInfo(void)
 
 // See PileStack::HandlePress().
 
+// Note: the following actions can take place as a result of receiving
+// a button press in a view:
+// * Nothing (if view is already selected and not moving a cursor)
+// * Select view
+// * Zoom (rubberband line) (also selects view)
+// * Move cursor (click) (only if view is already selected)
+// * Drag cursor (also selects view)
+
+// Zooming or dragging a cursor can take place if the view is not already
+// selected; moving a cursor with a click can only take place if the view
+// *is* already selected.
+
+// If a view is in a pile, having a view in the pile selected is equivalent
+// to having all views in the pile selected.
+
 void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
 							   int x2, int y2, int button, int state)
 {
@@ -2350,31 +2368,75 @@ void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
 	  GetName(), x1, y1, x2, y2, button);
 #endif
 
-  if (WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone) {
+  Boolean allowZoom = true;
+
+  //
+  // Note: because a key press may end up doing various things depending
+  // on the exact state, we have to propagate it to all relevant views
+  // even if some actions are disabled.
+  //
+  if ((WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone)
+      && (x1 != x2 || y1 != y2)) {
 	// Don't zoom if rubberband region is too small.
 	const int minZoomPix = 5;
 	if (ABS(x2 - x1) <= minZoomPix || ABS(y2 - y1) <= minZoomPix) {
-	  x2 = x1;
-	  y2 = y1;
+	  allowZoom = false;
 	}
+
+    if (allowZoom && GetRubberbandDisabled()) {
+      printf("Rubberband disabled in view <%s>\n", GetName());
+	  allowZoom = false;
+    }
   }
 
   if (IsInPileMode()) {
-    GetParentPileStack()->HandlePress(NULL, x1, y1, x2, y2, button, state);
+    GetParentPileStack()->HandlePress(NULL, x1, y1, x2, y2, button, state,
+	    allowZoom);
   } else {
-    DoHandlePress(NULL, x1, y1, x2, y2, button, state);
+    DoHandlePress(NULL, x1, y1, x2, y2, button, state, allowZoom);
   }
 }
 
 void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
-							     int x2, int y2, int button, int state)
+							     int x2, int y2, int button, int state,
+								 Boolean allowZoom)
 {
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
 	  GetName(), x1, y1, x2, y2, button);
 #endif
 
+    int xlow = MIN(x1, x2);
+	int ylow = MIN(y1, y2);
+	int xhigh = MAX(x1, x2);
+	int yhigh = MAX(y1, y2);
+
+	//
+	// If we're piled, this was already done by the PileStack object.
+	//
+	if (!IsInPileMode()) {
+	  if ((xlow == xhigh) && (ylow == yhigh) &&
+	      WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone &&
+	      CheckCursorOp(xlow, ylow)) {	// Was a cursor event?
+        return;
+      }
+
+	  // Note: doing the unhighlight and highlight here breaks the dependency
+	  // we had on the client doing this for us.  RKW Jan 27, 1998.
+      SelectView();
+	}
+
+	//
+	// Moved this code to after CheckCursorOp() for two reasons:
+	// 1. Dragging a cursor now also selects the view.
+	// 2. It matches the code in PileStack::HandlePress() better.
+	// RKW 1999-10-06.
+	//
     if (WindowRep::GetCursorHit()._hitType != CursorHit::CursorNone) {
+	  //
+	  // We may be dragging a cursor -- check if it's in this view, and
+	  // if so, move it.
+	  //
 	  DeviseCursor *cursor = WindowRep::GetCursorHit()._cursor;
 	  if (cursor->GetDst() == this) {
 #if defined(DEBUG)
@@ -2389,27 +2451,13 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 		    (dataY1 + dataY2) / 2.0,
 			ABS(dataX2 - dataX1), ABS(dataY2 - dataY1));
 	  }
+
 	  return;
 	}
 
-    int xlow = MIN(x1, x2);
-	int ylow = MIN(y1, y2);
-	int xhigh = MAX(x1, x2);
-	int yhigh = MAX(y1, y2);
-
-	if (!IsInPileMode()) {
-	  if ((xlow == xhigh) && (ylow == yhigh) &&
-	      CheckCursorOp(xlow, ylow)) {	// Was a cursor event?
-        return;
-      }
-
-	  // Note: doing the unhighlight and highlight here breaks the dependency
-	  // we had on the client doing this for us.  RKW Jan 27, 1998.
-      SelectView();
-	}
-
-	if (_action)				// Convert from screen to world coordinates
+	if (_action && allowZoom && (x1 != x2 || y1 != y2))
 	{
+	    // Convert from screen to world coordinates
 		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
 
 		FindWorld(xlow, ylow, xhigh, yhigh,
@@ -2442,6 +2490,11 @@ void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
     printf("ViewGraph(%s)::HandleKey(%d, %d, %d)\n", GetName(), key, x, y);
 #endif
 
+  if (GetKeysDisabled()) {
+    printf("Key actions disabled in view <%s>\n", GetName());
+    return;
+  }
+
   if (IsInPileMode()) {
     GetParentPileStack()->HandleKey(NULL, key, x, y);
   } else {
@@ -2457,11 +2510,6 @@ void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 
 	if (!IsInPileMode()) {
 	    SelectView();
-	}
-
-	if (GetKeysDisabled()) {
-      printf("Key actions disabled in view <%s>\n", GetName());
-	  return;
 	}
 
 	if (_action)				// Convert from screen to world coordinates

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/06/11 14:47:02  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.33  1999/05/14 20:10:03  wenger
   Fixed bugs 462 and 478 (both related to setting visual filters).
 
@@ -183,11 +189,6 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 #if defined(DEBUG)
     printf("Both points are the same\n");
 #endif
-    return;
-  }
-
-  if (view->GetRubberbandDisabled()) {
-    printf("Rubberband disabled in view <%s>\n", view->GetName());
     return;
   }
 

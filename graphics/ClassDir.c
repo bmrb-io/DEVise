@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/09/24 22:02:18  wenger
+  C++ code no longer allows a session to be opened while one is already
+  open.
+
   Revision 1.22  1999/06/11 20:46:46  wenger
   Fixed bug that caused DEVise to crash when closing the
   SoilSci/TwoStations.ds demo session.
@@ -109,6 +113,7 @@
 #include "DevError.h"
 #include "MasterSlaveLink.h"
 #include "PileStack.h"
+#include "QueryProc.h"
 
 //#define DEBUG
 #define CHECK_CLASS_RECS 0
@@ -431,7 +436,17 @@ ClassDir::FindClassInfo(char *instanceName)
 
 void ClassDir::DestroyAllInstances()
 {
+#if defined(DEBUG)
+  printf("ClassDir::DestroyAllInstances()\n");
+#endif
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+
+  // Make sure all queries are aborted before we start destroying things --
+  // prevents references to destroyed objects (see bugs 470 and 513).
+  // This is kind of a kludge to fix the problem that after TData objects
+  // are destroyed there are many other objects that still reference the
+  // TDatas.
+  QueryProc::Instance()->AbortAllQueries();
 
   // Destroy links first to prevent propagation problems when other stuff
   // is destroyed.
