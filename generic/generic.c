@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/02/03 19:46:31  ssl
+  Added new class ViewLensInfo
+
+  Revision 1.42.4.1  1997/02/14 23:29:00  wenger
+  Fixed off-by-one-hour error in YyDdd_HhMmComposite composite parser;
+  fixed another bug in point queries.
+
   Revision 1.42  1997/01/30 19:48:28  jussi
   Moved state map hash table to StateMap.C. Added init of string table.
 
@@ -224,7 +231,7 @@ static time_t GetTime(struct tm &now)
       now.tm_mday = 1;
     }
 
-    if (now.tm_hour < 0 || now.tm_hour > 23) {
+    if (now.tm_hour < 0 || now.tm_hour > 24) {
       sprintf(errBuf, "Illegal hour value %d; set to 0", now.tm_hour);
       reportErrNosys(errBuf);
       now.tm_hour = 0;
@@ -470,7 +477,7 @@ private:
 /* User composite function for dates of the form YYDDD, HHMM */
 /* YY (19)70 - ?
  * DDD 001 - 366
- * HH 01 - 24 (0100 = midnight!)
+ * HH 00 - 24 (0000 is midnight at beginning of day; 2400 is end)
  * MM 00 - 59 */
 
 class YyDdd_HhMmComposite : public UserComposite {
@@ -519,7 +526,6 @@ public:
     int day = int((yyddd - 1000.0 * year) + 0.1);
     int hour = int((hhmm / 100.0) + 0.1);
     int minute = int((hhmm - 100.0 * hour) + 0.1);
-    hour--; // Convert from 1-24 to 0-23.
 
     static struct tm now;
     memset((char *) &now, 0, sizeof(now));

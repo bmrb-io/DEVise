@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/02/14 16:47:47  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
+  Revision 1.50.4.2  1997/02/13 18:11:49  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
   Revision 1.50.4.1  1997/02/09 20:14:11  wenger
   Fixed bug 147 (or at least some instances of it) -- found a bug in the
   query processor that caused it to miss records it should have found;
@@ -483,6 +490,12 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
       // Contiguous ranges which match the filter''s X *and* Y range
       // are stored in the record link
+#ifdef DEBUG
+      printf("%s , %f < %f < %f , %f < %f < %f \n", 
+	     GetName(),
+	     _queryFilter.xLow , x, _queryFilter.xHigh,
+	     _queryFilter.yLow , y, _queryFilter.yHigh);
+#endif      
       if (!complexShape &&
           (x < _queryFilter.xLow || x > _queryFilter.xHigh
            || y < _queryFilter.yLow || y > _queryFilter.yHigh)) {

@@ -885,7 +885,7 @@ QueryProcFull.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 QueryProcFull.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
 QueryProcFull.o: VisualLink.h Action.h PointStorage.h MappingInterp.h
 QueryProcFull.o: /s/tcl/include/tcl.h Bitmap.h GDataBin.h RecordLink.h
-QueryProcFull.o: RecFile.h
+QueryProcFull.o: RecFile.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -2126,10 +2126,10 @@ ParseAPI.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
 ParseAPI.o: VisualLink.h Action.h RecId.h PointStorage.h KGraph.h
 ParseAPI.o: ../graphics/Util.h ParseCat.h TData.h TDataMap.h ShapeID.h
 ParseAPI.o: GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h Group.h
-ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
-ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
-ParseAPI.o: FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
+ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h RecordLink.h
+ParseAPI.o: RecFile.h ../graphics/FilterQueue.h DataSeg.h Version.h
+ParseAPI.o: DevFileHeader.h ../graphics/Display.h ../graphics/ColorMgr.h
+ParseAPI.o: TDataAscii.h FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -2170,7 +2170,8 @@ RecordLink.o: ../graphics/Control.h ../graphics/ClassDir.h
 RecordLink.o: ../graphics/AttrList.h ../graphics/Cursor.h
 RecordLink.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 RecordLink.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-RecordLink.o: UpdateLink.h Action.h PointStorage.h
+RecordLink.o: UpdateLink.h Action.h PointStorage.h TDataMap.h ShapeID.h
+RecordLink.o: GDataRec.h
 SBufMgr.o: /usr/include/memory.h /usr/include/fcntl.h
 SBufMgr.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 SBufMgr.o: /usr/include/sys/stat.h /usr/include/sys/types.h

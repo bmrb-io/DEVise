@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.2  1997/02/14 16:48:02  wenger
+#	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
+#	Revision 1.1.2.3  1997/02/13 18:17:26  ssl
+#	Updated comments!!
+#
 #	Revision 1.1.2.2  1997/02/11 16:00:24  wenger
 #	Commented out some debug code in the links stuff; added standard header
 #	to dialogInfo.tk.
@@ -22,16 +28,10 @@
 
 ############################################################
 #
-# dialog box with item lists, and a frame in which additional info
-# widgets may be packed in (the widgets should have been created and 
-
-# defined elsewhere and this widget only packs them into a window )
+# dialog box with item lists, and a frame 
+# for labels and checkbuttons. So additional information may
+#  be displayed
 # All other features same as a dialog List
-#	sort == 1 to sort all items
-# Return the button pressed.
-# Global variable dialogListVar(selected) is set to the current selection, 
-# or ""
-#
 ############################################################
 
 set dialogInfoVar(selected) ""

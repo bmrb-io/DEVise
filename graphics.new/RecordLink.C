@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/03 19:45:34  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.9.4.1  1997/02/13 18:11:47  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
   Revision 1.9  1997/01/09 18:44:05  wenger
   Did some cleanup of record link/piled view code.
 
@@ -58,7 +68,7 @@
 #include "Init.h"
 #include "Util.h"
 #include "ViewGraph.h"
-
+#include "TDataMap.h"
 
 //#define DEBUG
 
@@ -128,6 +138,47 @@ void RecordLink::SetMasterView(ViewGraph *view)
 
   if (_masterView)
     _masterView->AddAsMasterView(this);
+}
+Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster) 
+{
+  ViewGraph *mview, *sview;
+  TDataMap *mmap, *smap;
+  mmap = smap  = NULL;
+  if (isMaster) {
+    mview = view;
+  } else {
+    mview = _masterView;
+  } 
+  if (!mview) {
+    return true;
+  }
+  int index = mview->InitMappingIterator();
+  /* check last mapping only */
+  while(mview->MoreMapping(index)) {
+    mmap = mview->NextMapping(index)->map;
+  }
+  mview->DoneMappingIterator(index);
+  
+  if (!mmap) {
+    return true;
+  }
+  index = InitIterator();
+  while(More(index)) {
+    ViewGraph *sview = Next(index);
+    int mindex = sview->InitMappingIterator();
+    while(sview->MoreMapping(mindex)) {
+      smap = sview->NextMapping(mindex)->map;
+    }
+    sview->DoneMappingIterator(mindex);
+    if (smap) {
+      if (mmap->GetTData() != smap->GetTData()) {
+	DoneIterator(index);
+	return false;
+      }
+    }
+  }
+  DoneIterator(index);
+  return true;
 }
 
 void RecordLink::Initialize()

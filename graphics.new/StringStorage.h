@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.4.1  1997/02/12 15:43:42  jussi
+  Added re-initialization of _stringNum in Clear().
+
+  Revision 1.5  1997/01/30 20:01:29  jussi
+  Added call to PopulateFromInitFile() from Clear().
+
   Revision 1.4  1997/01/30 19:47:14  jussi
   Added PopulateFromInitFile() method.
 
@@ -70,6 +76,7 @@ class StringStorage {
         if (code >= 0) {
             code = _keys.clear();
             if (code >= 0) {
+                _stringNum = 0;
                 PopulateFromInitFile();
                 return 0;
             }

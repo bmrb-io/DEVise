@@ -15,8 +15,39 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.17  1997/02/25 22:16:53  donjerko
+#       Fixed some bugs in tcl - dte communication
+#
 #       Revision 1.16  1997/02/14 16:48:02  wenger
 #       Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
+#       Revision 1.15.4.14  1997/02/21 15:18:14  wenger
+#       Minor improvement to shape attribute names.
+#
+#       Revision 1.15.4.13  1997/02/20 20:50:55  wenger
+#       Changed mapping to use ShapeAttr4 for line width.
+#
+#       Revision 1.15.4.12  1997/02/20 18:33:55  wenger
+#       Committed Shilpa's fix to flashing problem when viewer selects
+#       different views.
+#
+#       Revision 1.15.4.11  1997/02/19 23:29:59  wenger
+#       More bug fixes to shape attribute menus...
+#
+#       Revision 1.15.4.10  1997/02/19 23:01:25  wenger
+#       A few minor changes in the shape menu stuff to make the GUI more consistent
+#       with the rest of Devise; added some more info to the shape help;
+#       shape menu doesn't disable shape attributes (extra ones sometimes needed
+#       for 3D, etc.); fixed a bug in how Cancel works in the Color Chooser;
+#       various bug fixes in shape attribute menus.
+#
+#       Revision 1.15.4.9  1997/02/19 19:44:57  weaver
+#       Added "Shape Help" button to display ShapeHelp.txt. Adjusted
+#       context-sensitive ShapeAttr menus to change for constant
+#       shapes only.
+#
+#       Revision 1.15.4.8  1997/02/18 20:57:27  weaver
+#       Added shape-context-sensitive shapeattr menu titles to the mapping dialog.
 #
 #       Revision 1.15.4.7  1997/02/11 23:16:50  weaver
 #       Removed shape justification pending release...
@@ -44,6 +75,12 @@
 #SSL - new mapping box implementation
 # Do editing for mapping
 
+# CEW - added for simplistic shape positioning control
+# List items are {descriptionInMappingMenu offsetInXUnits offsetInYUnits}
+# For now, offset unit = 1/2 the size of the shape drawn in each dimension
+#set DEViseShapePositions {{center 0 0} {NW -1 1} {N 0 1} {NE 1 1} {E 1 0} \
+#		{SE 1 -1} {S 0 -1} {SW -1 -1} {W -1 0}}
+
 proc DoEditMapping {} {
     global curView
 
@@ -63,6 +100,8 @@ proc DoEditMapping {} {
 
 proc BringUpMappingDialog { w curview } {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes
+	global mappingValueShape
+#	global DEViseShapePositions
     
     toplevel $w
     wm geometry $w +50+50
@@ -94,7 +133,8 @@ proc BringUpMappingDialog { w curview } {
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr2" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr3" {0 0.1 0.5 1 2}] \
-		]
+	    [list "ShapeAttr4" {0 0.1 0.5 1 2}]]
+#	    [list "ShapePosition" $DEViseShapePositions]
 
     set xname  [lindex [lindex $mappings 0] 0]
     set xval mappingValue$xname
@@ -114,10 +154,22 @@ proc BringUpMappingDialog { w curview } {
 		menubutton $w.mapping.value.p$itemname -relief raised \
 			-textvariable mappingValue$itemname \
 			-menu $w.mapping.value.p$itemname.menu \
-			-width $valueWidth 
-	
+			-width $valueWidth
+
 		menu $w.mapping.value.p$itemname.menu -tearoff 0
 		tk_menuBar $w.mapping.value $w.mapping.value.p$itemname 
+
+		# Build the shape positioning menu
+#		if {$itemname == "ShapePosition"} {
+#			foreach val $itemList {
+#				set value [lindex $val 0]
+#				$w.mapping.value.p$itemname.menu add radiobutton \
+#					-label $value -variable mappingValue$itemname \
+#					-value $value
+#			}
+#
+#			continue
+#		}
 
 		if {$itemname == "Color"} {
 			$w.mapping.value.p$itemname.menu add command -label "Constant..." \
@@ -127,11 +179,21 @@ proc BringUpMappingDialog { w curview } {
 				-menu $w.mapping.value.p$itemname.menu.constant
 		}
 
-		$w.mapping.value.p$itemname.menu add cascade -label Variable \
-			-menu $w.mapping.value.p$itemname.menu.variable
-		$w.mapping.value.p$itemname.menu add command -label "Expression..." \
-			-command "editExpression $itemname"
-	
+		if {$itemname == "Shape"} {
+			$w.mapping.value.p$itemname.menu add cascade -label Variable \
+				-menu $w.mapping.value.p$itemname.menu.variable
+			$w.mapping.value.p$itemname.menu add command \
+				-label "Expression..." \
+				-command " editExpression $itemname
+			               UpdateShapeAttrs $w {} "
+		} else {
+			$w.mapping.value.p$itemname.menu add cascade -label Variable \
+				-menu $w.mapping.value.p$itemname.menu.variable
+			$w.mapping.value.p$itemname.menu add command \
+				-label "Expression..." \
+				-command " editExpression $itemname"
+		}
+
 		if {$itemname == "Color"} {
 			continue
 		}
@@ -143,19 +205,29 @@ proc BringUpMappingDialog { w curview } {
 			if { [llength $val] > 1 } {
 				set value [lindex $val 1]
 			}
-			$w.mapping.value.p$itemname.menu.constant add radiobutton \
-				-label $value -variable mappingValue$itemname \
-				-value $value
+
+			if {$itemname == "Shape"} {
+				$w.mapping.value.p$itemname.menu.constant add radiobutton \
+					-label $value -variable mappingValue$itemname \
+					-value $value \
+					-command " UpdateShapeAttrs {$w} {$value} "
+			} else {
+				$w.mapping.value.p$itemname.menu.constant add radiobutton \
+					-label $value -variable mappingValue$itemname \
+					-value $value
+			}
 		}
     }
     
     frame $w.but
     
-    button $w.but.apply -text Apply -width 10 
-    button $w.but.cancel -text Close -width 10 -command " \
+    button $w.but.apply -text Apply -width 8
+    button $w.but.shapeHelp -text "Shape Help" -width 12 \
+			-command { DoShapeHelp }
+    button $w.but.cancel -text Close -width 8 -command " \
             destroy $w 
             return "
-    pack $w.but.apply  $w.but.cancel -side left -padx 3m
+    pack $w.but.apply $w.but.shapeHelp $w.but.cancel -side left -padx 3m
     
     foreach item $mappings {
 		set itemname [lindex $item 0]
@@ -175,7 +247,7 @@ proc BringUpMappingDialog { w curview } {
 proc UpdateMappingDialog { w curView } {
      global DEViseColors DEViseShapes
 
-     if {! [WindowVisible $w ] } {
+     if {! [winfo exists $w] } {
 	 return
      }
      if { $curView == "" } {
@@ -254,6 +326,8 @@ proc UpdateMappingDialog { w curView } {
      set shapeAttr1 [lindex [lindex $params 12] 1]
      set shapeAttr2 [lindex [lindex $params 13] 1]
      set shapeAttr3 [lindex [lindex $params 14] 1]
+     set shapeAttr4 [lindex [lindex $params 15] 1]
+#	 set shapePosition [lindex [lindex $params 15] 1]
 
      set mappings [list \
 	     [list X $xParm] \
@@ -268,7 +342,8 @@ proc UpdateMappingDialog { w curView } {
 	     [list "ShapeAttr1" $shapeAttr1] \
 	     [list "ShapeAttr2" $shapeAttr2] \
 	     [list "ShapeAttr3" $shapeAttr3] \
-	     ]
+	     [list "ShapeAttr4" $shapeAttr4]]
+#		 [list "ShapePosition" $shapePosition]
      
      set topgrp [SelectTopGroup $schemaname]
 #     $w.mapping.value.p$itemname configure -state normal
@@ -276,6 +351,10 @@ proc UpdateMappingDialog { w curView } {
      foreach item $mappings {
 	 set itemname [lindex $item 0]
 	 set itemval [lindex $item 1]
+
+#		 if {$itemname == "ShapePosition"} {
+#			 continue
+#		 }
 
 	 global mappingValue$itemname
 	 catch { destroy $w.mapping.value.p$itemname.menu.variable }
@@ -286,6 +365,8 @@ proc UpdateMappingDialog { w curView } {
      }
      $w.but.apply configure -command \
 	     " UpdateMappings {$map} {$params} {$mappings} "
+
+	 UpdateShapeAttrs $w $shapeParm
 }
 
 
@@ -294,7 +375,7 @@ proc ClearMappingDialog { w } {
 	return
     }
     set mappings [list X Y Z Color Size Pattern Orientation Shape \
-	    "ShapeAttr0" "ShapeAttr1" ShapeAttr2" "ShapeAttr3" "ShapePosition" \
+	    "ShapeAttr0" "ShapeAttr1" ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \ # "ShapePosition" \
     ]
     foreach item $mappings  {
 	global mappingValue$item
@@ -386,6 +467,7 @@ proc ChangeParams { map oldparams newmap } {
 	    [findNumericValue $DEViseShapes [lindex $newmap 7]] \
 	    [lindex $newmap 8] [lindex $newmap 9] \
 	    [lindex $newmap 10] [lindex $newmap 11] \
+	    [lindex $newmap 12] \
 	    ]
     
     # Change parameter
@@ -430,11 +512,139 @@ proc UpdateMappings { map params mappings } {
     #puts $newmap
     ChangeParams $map $params $newmap
     ChangeViewMapping $map
+
     return
 }
 
+#*******************************************************************************
+# Shape Attributes
+#*******************************************************************************
 
+# Changed labels for ShapeAttr# labels in mapping dialog to labels specific to
+# each shape and attr# (e.g. Rect Attr1 => Width)
+set DEViseShapeAttrNames { \
+	{Rect Width Height "Cloud Width" "Cloud Height" "Line Width"} \
+	{RectX "Relative Width" "Relative Height" "" "" "Line Width"} \
+	{Bar Width "" "" "" "Line Width"} \
+	{Line "" "" "" "" "Line Width"} \
+	{"Line Shade" "" "" "" "" ""} \
+	{"Regular Polygon" Width Height Segments "" "Line Width"} \
+	{Oval Width Height "" "" "Line Width"} \
+	{Vector "X Length (Height)" "Y Length (Width)" "" "" "Line Width"} \
+	{HorLine "" "" "" "" "Line Width"} \
+	{Segment Width Height "" "" "Line Width"} \
+	{HighLow Width "High (Y max)" "Low (Y min)" "" "Line Width"} \
+	{Polyline "" "" "" "" ""} \
+	{Image "Filename/Image" "Image Type" "" "" ""} \
+	{"Polyline File" Filename Format "" "" "Line Width"} \
+	{"Text Label" "Label Text" "" "" "" ""} \
+	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
+}
 
+# Adjusts the labels of the five ShapeAttr menu labels to descriptive terms
+# (from DEViseShapeAttrNames) appropriate to the current Shape. (Could be done
+# much more efficiently if I knew Tcl better...clean up.)
+proc UpdateShapeAttrs { w shape } {
+	global DEViseShapeAttrNames
+
+	set i 0
+	set j 1
+
+	foreach shapeAttrList $DEViseShapeAttrNames {
+		set foundShape [lindex $shapeAttrList 0]
+		if { $foundShape == $shape } {
+			break
+		}
+		incr i
+	}
+
+	# If the shape wan't found, use the default labels
+	if { $i == [llength $DEViseShapeAttrNames] } {
+		UpdateDefaultShapeAttrs $w
+		return
+	}
+
+    foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
+	  "ShapeAttr4"} {
+		set text [lindex [lindex $DEViseShapeAttrNames $i] $j]
+
+		# Change attr menu labels to reflect specific shape
+		$w.mapping.label.p$item config -text $text
+
+# Don't disable the attr menus -- there are special cases, like 3D, where
+# we need access to ones that might be disabled otherwise.  I want to err
+# on the side of not screwing things up and preventing the users from being
+# able to do something they should be able to do.  RKW 2/19/97.
+#		if { $text == "" } {
+#			set state disabled
+#		} else {
+#			set state normal
+#		}
+
+#		# Disable irrelevant attr menus
+#		$w.mapping.value.p$item config -state $state
+
+		incr j
+	}
+}
+
+# Adjusts the lables of the five ShapeAttr menu labels to default (not context-
+# sensitive) for shapes which are determined by a variable or an expression.
+proc UpdateDefaultShapeAttrs { w } {
+
+    foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
+	  "ShapeAttr4"} {
+		$w.mapping.label.p$item config -text $item
+		$w.mapping.value.p$item config -state normal
+	}
+}
+
+#*******************************************************************************
+# Shape Help
+#*******************************************************************************
+
+# Displays a simple text window with the contents of file ShapeHelp.txt
+# (Needs error checking for the file operation...)
+proc DoShapeHelp {} {
+	global libdir
+
+    if {[WindowVisible .shapeHelp]}  {
+		return
+    }
+
+	set w .shapeHelp
+
+	toplevel $w
+    wm geometry $w +50+50
+    wm title $w "Shape Help"
+
+	frame $w.body
+	frame $w.cntl
+
+	# Read message text from help file
+	set filename "$libdir/ShapeHelp.txt"
+	set stream [open $filename]
+	set text [read $stream]
+	close $stream
+
+	set t [text $w.body.text -width 60 -height 24 -relief groove \
+		-wrap none -yscrollcommand "$w.body.scroll set"]
+
+	$t insert 1.0 $text
+	$t configure -state disabled
+
+	scrollbar $w.body.scroll -command "$w.body.text yview"
+
+    button $w.cntl.ok -text "OK" -width 8 \
+		-command "destroy $w"
+
+	pack $w.body $w.cntl -side top -fill both
+	pack $w.body.scroll -side right -fill y
+	pack $w.body.text -side left -fill both -expand true
+	pack $w.cntl.ok -side right -fill x -expand 1
+}
+
+#*******************************************************************************
 
 
 

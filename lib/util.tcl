@@ -15,11 +15,24 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1997/02/14 16:48:09  wenger
+#  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #  Revision 1.41  1997/02/11 00:48:06  ssl
 #  Fixed minor bug with Record Link list
 #
 #  Revision 1.40  1997/02/03 20:02:04  ssl
 #  Added interface for negative record links and user defined layout mode
+#
+#  Revision 1.39.4.4  1997/02/19 23:01:27  wenger
+#  A few minor changes in the shape menu stuff to make the GUI more consistent
+#  with the rest of Devise; added some more info to the shape help;
+#  shape menu doesn't disable shape attributes (extra ones sometimes needed
+#  for 3D, etc.); fixed a bug in how Cancel works in the Color Chooser;
+#  various bug fixes in shape attribute menus.
+#
+#  Revision 1.39.4.3  1997/02/13 18:17:07  ssl
+#  Added check to UI when user links two different data sources with a record link
 #
 #  Revision 1.39.4.2  1997/02/11 01:17:41  ssl
 #  Cleaned up the UI for piled views
@@ -430,10 +443,11 @@ proc RecordLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set recLinkSet {}
     foreach link $linkSet {
-	set flag [DEVise getLinkFlag $link]
-	if { [expr $flag & 128] } {
-	    set recLinkSet [lappend $recLinkSet $link]
-	}
+        set flag [DEVise getLinkFlag $link]
+        if { [expr $flag & 128] } {
+#TEMPTEMP -- test this
+            lappend recLinkSet $link
+        }
     }
     return $recLinkSet
 }
@@ -524,10 +538,13 @@ proc DoExit {} {
 
 proc getColor {varname} {
     global $varname DEViseColors
+    global getColorCanceled
 
     if {[WindowVisible .getColor]} {
 	return
     }
+
+    set getColorCanceled 0
 
     toplevel .getColor
     wm title .getColor "Choose Color"
@@ -580,7 +597,7 @@ proc getColor {varname} {
     }
 
     button .getColor.bot.but.cancel -text Cancel -width 10 \
-	    -command "set $varname cancel; destroy .getColor"
+	    -command "set getColorCanceled 1; destroy .getColor"
     pack .getColor.bot.but.cancel -side left
 
     tkwait visibility .getColor

@@ -10,7 +10,7 @@
 	- Open the saved session
     - Save a session as a batch script
 	- Run the batch script
-    - Export a template (with and without data)
+    - Export a template (with >= 2 data sources) (with and without data)
 	- Open the exported templates
     - Merge a template
     - Print GIF and PostScript
@@ -32,22 +32,24 @@
 
 - View menu:
     - Toggle X and Y axes
+    - Change foreground and background colors
+    - Change title
+    - Change fonts
     - Make a regular link and a record link
     - Make a cursor
-    - Destroy a view
     - View statistics
     - View color statistics
     - Make Kiviat graph
-    - Change foreground and background colors
-    - Change fonts
     - Change between 2D and 3D
-    - Change title
     - Color override
     - 3D query
+    - Destroy a view
 
 - Window menu:
+    - Toggle X and Y axes
+    - Change foreground and background colors
+    - Create a new window
     - Change window layout
-    - Remove window
     - Duplicate window
     - Stack control:
 	- Pile views
@@ -61,6 +63,7 @@
     - Remove view
     - Bring view back
     - View list
+    - Destroy window
 
 - Help menu:
     - Help demo
@@ -71,6 +74,7 @@
     - Mapping window
     - Display/layout modes
     - About window (click on 'DEVise')
+    - Stop button
 
 - Data windows:
     - Key functions (this list is incomplete):

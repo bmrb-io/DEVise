@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.15.4.1  1997/02/19 19:45:54  jussi
+  Turned some printf()'s into fprintf()'s.
+
+  Revision 1.15  1996/12/20 16:30:02  jussi
+  Removed call to SemaphoreV::destroy().
+
   Revision 1.14  1996/12/18 15:29:13  jussi
   Improved destructor so that all IPC structures are removed.
 
@@ -136,9 +142,10 @@ IOTask::~IOTask()
     }
 
     if (!_readStream && !_writeStream) {
-        printf("I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
-               _readBytes / 1048576.0, _writeBytes / 1048576.0,
-               _seekBytes / 1048576.0);
+        fprintf(stderr,
+                "I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+                _readBytes / 1048576.0, _writeBytes / 1048576.0,
+                _seekBytes / 1048576.0);
     }
 
     delete _isBusy;
@@ -335,9 +342,10 @@ void *IOTask::DoStream()
     else
         _WriteStream();
 
-    printf("I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
-           _readBytes / 1048576.0, _writeBytes / 1048576.0,
-           _seekBytes / 1048576.0);
+    fprintf(stderr, 
+            "I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+            _readBytes / 1048576.0, _writeBytes / 1048576.0,
+            _seekBytes / 1048576.0);
 
     return 0;
 }

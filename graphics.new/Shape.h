@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/02/14 16:47:47  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
+  Revision 1.26.4.2  1997/02/20 20:50:44  wenger
+  Changed mapping to use ShapeAttr4 for line width.
+
   Revision 1.26.4.1  1997/02/09 20:14:11  wenger
   Fixed bug 147 (or at least some instances of it) -- found a bug in the
   query processor that caused it to miss records it should have found;
@@ -239,10 +245,19 @@ inline Coord GetShapeAttr3(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, shapeAttrOffset[3], Coord, offset);
 }
 
-// hack alert: GetLineWidth really returns ShapeAttr3 (temporarily)
+inline Coord GetShapeAttr4(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->shapeAttrOffset[4] < 0){
+    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+    return attrs[4];
+  }
+  return GetAttr(ptr, shapeAttrOffset[4], Coord, offset);
+}
+
+// hack alert: GetLineWidth really returns ShapeAttr4 (temporarily)
 inline int GetLineWidth(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-    return int(GetShapeAttr3(ptr, map, offset)+0.5);
+    return int(GetShapeAttr4(ptr, map, offset)+0.5);
 }
 
 

@@ -15,11 +15,32 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1997/02/14 16:48:09  wenger
+#  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #  Revision 1.25  1997/02/03 20:02:02  ssl
 #  Added interface for negative record links and user defined layout mode
 #
 #  Revision 1.24  1997/02/03 04:12:42  donjerko
 #  Catalog management moved to DTE
+#
+#  Revision 1.23.4.8  1997/02/21 23:23:27  ssl
+#  Made various updates to the UI for links :
+#  1) Added info button in various places and in the main menu
+#  2) Added loops around various operations to make them more intuitive
+#  3) New button in Setlink master now creates a rec link by default
+#  4) Info is displayed even if a link is empty
+#  5  Removed the double OK buttons from the ResetLinkMaster window
+#
+#  Revision 1.23.4.7  1997/02/19 23:01:28  wenger
+#  A few minor changes in the shape menu stuff to make the GUI more consistent
+#  with the rest of Devise; added some more info to the shape help;
+#  shape menu doesn't disable shape attributes (extra ones sometimes needed
+#  for 3D, etc.); fixed a bug in how Cancel works in the Color Chooser;
+#  various bug fixes in shape attribute menus.
+#
+#  Revision 1.23.4.6  1997/02/13 18:17:08  ssl
+#  Added check to UI when user links two different data sources with a record link
 #
 #  Revision 1.23.4.5  1997/02/11 16:49:17  ssl
 #  Fixed minor problem with links
@@ -635,61 +656,94 @@ proc DoSetRecordCursor {} {
 ############################################################
 
 # Create a link, return its name
-proc DoLinkCreate {} {
+proc DoLinkCreate { isRec } {
     global dialogCkButVar 
 
-    set but [dialogCkBut .createLink "Create Link" \
-	    "Enter parameters for creating a new link" "" \
-	     0 { OK Cancel } name \
-	    {x y color size pattern orientation shape record_positive record_negative } {3}]
-    if { $but != 0 } {
-	return ""
-    }
-
-    set flag $dialogCkButVar(selected)
-    set name $dialogCkButVar(entry)
-    if {$name == ""} {
-	set but [dialog .noName "No Link Name" \
-		"No Link Name Specified" "" 0 OK]
-	return 
-    }
-    
-    if { [DEVise exists $name ] } {
-	set but [dialog .linkExists "Link Exists" \
-		"Link $name already exists" "" 0 OK]
-	return 
-    }
-    set type -1
-    if {[ expr ($flag & 128) ] }  {
-	set type 0
-	puts " link type + " 
-	set flag 128
-    } else if { [ expr ($flag & 256) } {
-	set type 1
-	puts " link type - " 
-	set flag 128
-    }
-    set result [DEVise create link Visual_Link $name $flag]
-    if { $flag == 128  } {
-	DEVise setLinkType $name $type
-    }
-    if {$result == ""} {
-	set but [ dialog .linkError "Link Error" \
-		"Cannot create link $name" "" 0 OK]
-	return
+    while { 1 } {
+	if { $isRec} {
+	    set flag 128
+	} else {
+	    set flag 3
+	}
+	set but [dialogCkBut .createLink "Create Link" \
+		"Enter parameters for creating a new link" "" \
+		0 { OK Info Cancel } name \
+		{x y color size pattern orientation shape record} $flag]
+	
+	if { $but == 2 } {
+	    return ""
+	} elseif  { $but == 1 } {
+	    DoDisplayLinkInfo
+	} else {
+	    set flag $dialogCkButVar(selected)
+	    set name $dialogCkButVar(entry)
+	    if {$name == ""} {
+		set but [dialog .noName "No Link Name" \
+			"No Link Name Specified" "" 0 OK]
+		continue
+	    }
+	
+	    if { [DEVise exists $name ] } {
+		set but [dialog .linkExists "Link Exists" \
+			"Link $name already exists" "" 0 OK]
+		continue
+	    }
+	    
+            set type -1
+            if {[ expr ($flag & 128) ] }  {
+	        set type 0
+	        puts " link type + " 
+	        set flag 128
+            } else if { [ expr ($flag & 256) } {
+	        set type 1
+	        puts " link type - " 
+	        set flag 128
+            }
+	    set result [DEVise create link Visual_Link $name $flag]
+       	    if { $flag == 128  } {
+	        DEVise setLinkType $name $type
+            }
+	    if {$result == ""} {
+		set but [ dialog .linkError "Link Error" \
+			"Cannot create link $name" "" 0 OK]
+		continue
+	    }
+	    break
+	}
     }
     return $name
+}
+
+############################################################
+#Display all links
+proc DoDisplayLinkInfo {} {
+    global dialogListVar
+
+    while { 1 } {
+	set linkSet [NonPileLinkSet]
+	if { [llength $linkSet ] == 0 } {
+	    set but [ dialog .destroyLink "No Links" \
+		    "There are no links to give info" "" 0 OK ]
+	    break
+	}
+	set answer [ dialogList .getLink "Select Link" \
+		"Select a link" "" 0 \
+		{ Info Cancel } $linkSet ]
+	if { $answer == 0 } {
+	    if {$dialogListVar(selected) != ""} {
+		    DisplayLinkInfo $dialogListVar(selected)
+	    }
+	}
+	if { $answer == 1 } {
+	    return
+	}
+    }    
 }
 ############################################################
 
 # Display the views in a link 
 proc DisplayLinkInfo { link } {
     set views [DEVise getLinkViews $link]
-    if { [llength $views] == 0 } {
-	dialog .linkInfo "No Views in Link" \
-		"Link $link currently does not link any view" "" 0 OK
-	return
-    }
     set flag [DEVise getLinkFlag $link]
     if { $flag == 128 } {
 	set type "Record"
@@ -721,7 +775,7 @@ proc DoViewLink {} {
     while { 1 } {
 	set linkSet [NonPileLinkSet]
 	if { [llength $linkSet] == 0 } {
-	    set link [DoLinkCreate]
+	    set link [DoLinkCreate 0]
             break
 	} else {
 	    set answer [ dialogList .getLink "Select Link" \
@@ -732,7 +786,7 @@ proc DoViewLink {} {
 		    DisplayLinkInfo $dialogListVar(selected)
 		}
 	    } elseif { $answer == 2 } {
-		set link [ DoLinkCreate ]
+		set link [ DoLinkCreate  0 ]
 	    } elseif {$answer == 3 || $dialogListVar(selected) == ""} {
 		set link ""
 		break
@@ -746,8 +800,13 @@ proc DoViewLink {} {
     if {$link == ""} {
 	return
     }
-
-    DEVise insertLink $link $curView
+    set check 1
+    if { [DEVise getLinkFlag $link] == 128  } {
+	set check [CheckTData $link $curView 0] 
+    }
+    if { $check } {
+	DEVise insertLink $link $curView
+    }
 }
 
 ############################################################
@@ -760,26 +819,63 @@ proc DoViewUnlink {} {
 	return
     }
 
-    set linkSet [NonPileLinkSet]
-    set viewLinks ""
-    foreach link $linkSet {
-	if { [DEVise viewInLink $link $curView] } {
-	    lappend viewLinks $link
+    while { 1 } {
+	set linkSet [NonPileLinkSet]
+	set viewLinks ""
+	foreach link $linkSet {
+	    if { [DEVise viewInLink $link $curView] } {
+		lappend viewLinks $link
+	    }
+	}
+	if { [llength $viewLinks ] == 0 } {
+	    set but [ dialog .removeLink "No Links" \
+		    "View has no established link" "" 0 OK ]
+	    break
+	} else {
+	    set answer [ dialogList .getLink "Select Link" \
+		    "Select a link to unlink" "" 0 \
+		    { OK Info Cancel } $viewLinks ]
+	    if { $answer == 1 } {
+		if {$dialogListVar(selected) != ""} {
+		    DisplayLinkInfo $dialogListVar(selected)
+		}
+	    } elseif { $answer == 2 } {
+		return
+	    } elseif { $dialogListVar(selected) == "" } {
+		return
+	    } else {
+		DEVise unlinkView $dialogListVar(selected) $curView
+		break
+	    }
 	}
     }
-    if { [llength $viewLinks ] == 0 } {
-	set but [ dialog .removeLink "No Links" \
-		"View has no established link" "" 0 OK ]
-    } else {
+}
+
+############################################################
+proc DoLinkDestroy {} {
+    global dialogListVar
+
+    while { 1 } {
+	set linkSet [NonPileLinkSet]
+	if { [llength $linkSet ] == 0 } {
+	    set but [ dialog .destroyLink "No Links" \
+		    "There are no links to destroy" "" 0 OK ]
+	    break
+	}
 	set answer [ dialogList .getLink "Select Link" \
-		"Select a link to unlink" "" 0 \
-		{ OK Cancel } $viewLinks ]
+		"Select a link to delete" "" 0 \
+		{ OK Info Cancel } $linkSet ]
 	if { $answer == 1 } {
+	    if {$dialogListVar(selected) != ""} {
+		    DisplayLinkInfo $dialogListVar(selected)
+	    }
+	}
+	if { $answer == 2 } {
 	    return
 	} elseif { $dialogListVar(selected) == "" } {
 	    return
 	} else {
-	    DEVise unlinkView $dialogListVar(selected) $curView
+	    DeleteLink $dialogListVar(selected) 
 	}
     }
 }
@@ -833,8 +929,16 @@ proc DeleteLink { link } {
     set views [DEVise getLinkViews $link]
     if { [llength $views] > 0 } {
 	set but [ dialog .deleteLink "Link still active" \
-		"Cannot delete link, unlink views first" "" 0 OK ]
-	return
+		"The link still has views linked by it \
+		- Do you want to unlink views and destroy link ?"\
+		"" 0 OK Cancel]
+	if { $but == 0 } {
+	    foreach view $views {
+		DEVise unlinkView $link $view 
+	    }
+	} else {
+	    return
+	}
     }
     DEVise destroy $link
 }
@@ -850,8 +954,9 @@ proc DoSetLinkMaster {} {
 
     set linkSet [RecordLinkSet]
     if { [llength $linkSet] == 0 } {
-	set link [DoLinkCreate]
+	set link [DoLinkCreate 1]
 	if {$link == ""} {
+	    puts "nnnnnnnn"
 	    return
 	}
     }
@@ -866,7 +971,7 @@ proc DoSetLinkMaster {} {
 		DisplayLinkInfo $dialogListVar(selected)
 	    }
 	} elseif { $answer == 2 } {
-	    DoLinkCreate
+	    DoLinkCreate 1
 	} elseif {$answer == 3 || $dialogListVar(selected) == ""} {
 	    return
 	} else {
@@ -874,10 +979,25 @@ proc DoSetLinkMaster {} {
 	    break
 	}
     }
-
-    DEVise setLinkMaster $link $curView
+    if { [CheckTData $link $curView 1] } {
+	DEVise setLinkMaster $link $curView 
+    }
 }
 
+############################################################
+proc CheckTData { link view isMaster } {
+    set check [DEVise checkTDataForRecLink $link $view 1]
+    set but 0
+    if {!$check } {
+	set but [ dialog .tdataCheck "Linking different TData sources" \
+		"The tdata for the master and slave views does not match \n Do you wish to go ahead ? "\
+		"" 0 OK Cancel ]
+    }
+    if { $but == 0 } {
+	return 1
+    } 
+    return 0
+}
 
 ############################################################
 
@@ -887,14 +1007,14 @@ proc DoResetLinkMaster {} {
 
     set linkSet [RecordLinkSet]
     if { [llength $linkSet] == 0 } {
-	dialog .noLinks "No Links" "There are no links." "" 0 OK
+	dialog .noLinks "No Links" "There are no record links." "" 0 OK
 	return
     }
 
     while {1} {
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to reset" "" 0 \
-		{ OK Info Cancel OK } $linkSet ]
+		{ OK Info Cancel} $linkSet ]
 	if { $answer == 1 } {
 	    if {$dialogListVar(selected) != ""} {
 		DisplayLinkInfo $dialogListVar(selected)
@@ -1126,6 +1246,7 @@ proc DoViewAction {} {
 
 proc DoSetFgBgColor { isForeground {perWindow 0} } {
     global curView newColor
+    global getColorCanceled
 
     if {![CurrentView]} {
 	return
@@ -1138,7 +1259,7 @@ proc DoSetFgBgColor { isForeground {perWindow 0} } {
     }
 
     getColor newColor
-    if {$newColor == "cancel"} {
+    if {$getColorCanceled} {
 	return
     }
 

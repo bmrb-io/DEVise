@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/02/03 19:45:37  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.45.4.1  1997/02/13 18:11:49  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
   Revision 1.45  1997/01/24 22:18:40  wenger
   Fixed bug 136.
 
@@ -547,6 +557,10 @@ void ViewGraph::WriteMasterLink(RecId start, int num)
     int index = _masterLink.InitIterator();
     while(_masterLink.More(index)) {
         RecordLink *link = _masterLink.Next(index);
+#ifdef DEBUG
+	printf("*********inserting recs (%ld, %ld) into %s\n", 
+	       start, start + num - 1, link->GetName());
+#endif
         link->InsertRecs(start, num);
     }
     _masterLink.DoneIterator(index);

@@ -649,12 +649,45 @@ Num Date        Status  Description
 156 02/10/97	FIXED	Pile links should be deleted when views are unpiled.
 			(ml/rkw)
 
-157 02/09/97	OPEN	An object is not drawn if its center falls outside
+157 02/12/97	FIXED	After having opened and closed a session, the strings
+			table loaded from devise.strings is goofed up (if you
+			load a session that needs the strings, and then just
+			load it again, the second time it won't work). (rkw)
+			(See test/test_size.tk.)
+
+158 02/12/97	FIXED	Load the session test/anomaly.tk, middle-click on a
+			band but away from the center -> many records get
+			printed that aren't even within the visual filter.
+			(ak/rkw)
+
+159 02/14/97	FIXED	If you have a view with a date attribute on one
+			axis, if you bring up the Query dialog and then
+			select the view, the date values are not properly
+			displayed in the Query dialog.  If you select the
+			view and then bring up the Query dialog, things are
+			okay. (ma/rkw)
+
+160 02/14/97	OPEN	Point query ignores record link(s). (kb/jpm/rkw)
+
+161 02/19/97	OPEN	Shape attribute menus in mapping dialog are not
+			correct for 3D mappings. (rkw)
+
+162 02/19/97	OPEN	Shape attribute names should get set to the generic
+			values if the shape is a variable. (rkw)
+
+163 02/19/97	OPEN	In mapping dialog, bring up expression on Shape,
+			then do cancel -> the shape attribute names are
+			changed to the generic values. (rkw)
+
+164 02/23/97	OPEN	The online help in the Data Streams window is
+			out of date. (rkw)
+
+165 02/09/97	OPEN	An object is not drawn if its center falls outside
 			the visual filter, even if part of the object would
 			fall inside the visual filter if it were drawn.
 			(kb/rkw)
 
-158 02/19/97	OPEN	Merging a template sometimes puts duplicate data
+166 02/19/97	OPEN	Merging a template sometimes puts duplicate data
 			stream definitions into the catalog. (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.

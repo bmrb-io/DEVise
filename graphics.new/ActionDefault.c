@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.26.4.2  1997/02/14 23:29:12  wenger
+  Fixed off-by-one-hour error in YyDdd_HhMmComposite composite parser;
+  fixed another bug in point queries.
+
+  Revision 1.26.4.1  1997/02/14 19:45:19  wenger
+  Fixed bug 158; bumped version up to 1.3.2.
+
+  Revision 1.26  1996/11/26 09:33:37  beyer
+  Added debugging statement
+
   Revision 1.25  1996/11/02 00:21:36  flisakow
   Modified the "drilling down" to data to be more generous.  If the pointer
   is not positioned over the center of the record, a second scan is
@@ -351,6 +361,8 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     filter.flag = VISUAL_X;
     filter.xLow = x;
     filter.xHigh = xHigh;
+    filter.yLow = y;
+    filter.yHigh = yHigh;
 
     if (!approxFlag) {
         // for scatter plot, we filter using Y coordinates as well;
@@ -432,10 +444,22 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     Coord height, width, depth;
     map->GetMaxSymSize(width,height,depth);
 
+    /* Don't let the visual filter for the point query get any larger
+     * than 10% of the view in either direction.  (10% is just chosen
+     * fairly arbitrarily.) */
+    const VisualFilter *viewVisFilterP = view->GetVisualFilter();
+    width = MIN(width, (viewVisFilterP->xHigh - viewVisFilterP->xLow) * 0.1);
+    height = MIN(height, (viewVisFilterP->yHigh - viewVisFilterP->yLow) * 0.1);
+
     filter.xLow  = x - width / 2;
     filter.xHigh = x + width / 2;
     filter.yLow  = y - height / 2;
     filter.yHigh = y + height / 2;
+
+#if defined(DEBUG)
+    printf("running query: %d x:(%f,%f) y:(%f,%f)\n",
+           approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
+#endif
 
     tooMuch = false;
     qp->InitTDataQuery(map, filter, approxFlag);

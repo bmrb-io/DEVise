@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.55.4.1  1997/02/13 18:11:48  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
+  Revision 1.55  1997/01/11 20:56:04  jussi
+  Removed references to _currPos.
+
   Revision 1.54  1997/01/09 18:48:27  jussi
   Added controlling of live data update frequency.
 
@@ -716,7 +723,7 @@ void TDataAscii::BuildIndex()
 #endif
       _lastIncompleteLen = len;
     }
-
+    
     currPos += len;
   }
 
@@ -785,8 +792,15 @@ TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
       reportErrSys("fgets");
       DOASSERT(0, "Cannot read from file");
     }
+    
     int len = strlen(line);
-
+#if DEBUGLVL > 10
+    printf("%d : ", id + i);
+    for (int j = 0 ; j < len ; j++) {
+      printf("%c", line[j]); 
+    }
+    printf("\n");
+#endif
     if (len > 0 ) {
       DOASSERT(line[len - 1] == '\n', "Data record too long");
       line[len - 1] = '\0';

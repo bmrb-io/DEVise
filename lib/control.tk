@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.118  1997/02/18 18:07:49  donjerko
+#	Added index deletions.
+#
 #	Revision 1.117  1997/02/14 16:48:01  wenger
 #	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -23,6 +26,21 @@
 #
 #	Revision 1.115  1997/02/03 04:12:37  donjerko
 #	Catalog management moved to DTE
+#
+#	Revision 1.114.4.9  1997/02/21 23:23:24  ssl
+#	Made various updates to the UI for links :
+#	1) Added info button in various places and in the main menu
+#	2) Added loops around various operations to make them more intuitive
+#	3) New button in Setlink master now creates a rec link by default
+#	4) Info is displayed even if a link is empty
+#	5  Removed the double OK buttons from the ResetLinkMaster window
+#
+#	Revision 1.114.4.8  1997/02/19 23:01:24  wenger
+#	A few minor changes in the shape menu stuff to make the GUI more consistent
+#	with the rest of Devise; added some more info to the shape help;
+#	shape menu doesn't disable shape attributes (extra ones sometimes needed
+#	for 3D, etc.); fixed a bug in how Cancel works in the Color Chooser;
+#	various bug fixes in shape attribute menus.
 #
 #	Revision 1.114.4.7  1997/02/11 22:50:08  wenger
 #	Removed 'All Views' option from axis toggling menu selections.
@@ -525,6 +543,7 @@ set statmax 1
 set statmin 0
 set statcurr 1
 set statcilevel "000"
+set getColorCanceled 0
 
 # set Kiviat graph defaults
 set kval 0
@@ -1023,11 +1042,6 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.linkMenu 
 
 menu .mbar.view.menu.linkMenu -tearoff 0
-.mbar.view.menu.linkMenu add command -label "Create Link" \
-	-command { DoLinkCreate } 
-.mbar.view.menu.linkMenu add command -label "Destroy Link" \
-	-command { DoLinkDestroy }
-.mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu.linkMenu add separator
@@ -1037,6 +1051,15 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 	-command { DoResetLinkMaster}
 .mbar.view.menu.linkMenu add command -label "Set Link Type" \
 	-command { DoSetLinkType }
+	-command { DoResetLinkMaster }
+.mbar.view.menu.linkMenu add separator
+.mbar.view.menu.linkMenu add command -label "Link Info" \
+	-command { DoDisplayLinkInfo }
+.mbar.view.menu.linkMenu add separator
+.mbar.view.menu.linkMenu add command -label "Create Link" \
+	-command { DoLinkCreate 0 } 
+.mbar.view.menu.linkMenu add command -label "Destroy Link" \
+	-command { DoLinkDestroy }
 
 #.mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Cursors" \

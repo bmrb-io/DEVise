@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/02/03 19:45:34  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.4.4.1  1997/02/13 18:11:47  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
   Revision 1.4  1996/11/26 16:51:38  ssl
   Added support for piled viws
 
@@ -69,7 +79,8 @@ class RecordLink : public VisualLink {
   void Print();
   RecordLinkType GetLinkType () { return _linkType; }
   void SetLinkType(RecordLinkType type) { _linkType = type; }
-  
+  Boolean CheckTData(ViewGraph *view, Boolean isMaster);
+
  protected:
   void FlushToDisk();                   // write array contents to disk
 

@@ -16,11 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/02/14 16:47:46  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.54  1997/02/03 19:45:33  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
   3) ParseAPI.C : new API for ViewLens, negative record links and layout
      manager
+
+  Revision 1.53.2.2  1997/02/13 18:11:46  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
 
   Revision 1.53.2.1  1997/02/09 20:14:09  wenger
   Fixed bug 147 (or at least some instances of it) -- found a bug in the
@@ -711,7 +718,7 @@ void QueryProcFull::InitQPFullScatter(QPFullData *query)
     query->map->SetFocusId(query->low);
     query->isRandom = false;
 #if DEBUGLVL >= 5
-    printf("InitQPFullScatter search [%ld,%ld]\n", query->low, query->high);
+    printf("%s :InitQPFullScatter search [%ld,%ld]\n", tdata->GetName(),query->low, query->high);
 #endif
   } else {
     AdvanceState(query, QPFull_EndState);
@@ -974,10 +981,12 @@ void QueryProcFull::ProcessScan(QPFullData *query)
             return;
         }
         
-#if DEBUGLVL >= 3
-        printf("Got records [%ld,%ld] (%d,0x%p)\n", startRid,
-               startRid + numRecs - 1, isTData, buf);
-#endif
+	#if DEBUGLVL >= 3
+	  if (query->isRecLinkSlave) {
+	    printf("Got records [%ld,%ld] (%d,0x%p)\n", startRid,
+		   startRid + numRecs - 1, isTData, buf);
+	  }
+	#endif
 
         DistributeData(query, isTData, startRid, numRecs, buf);
         
@@ -1794,6 +1803,7 @@ void QueryProcFull::DoGDataConvert()
   }
 	
   /* Do in-memory conversion, if we can */
+
   for(int i = 0; i < _numMappings; i++) {
     TDataMap *map = _mappings[_convertIndex];
     _convertIndex = (_convertIndex + 1) % _numMappings;

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11.4.1  1997/02/14 20:26:17  wenger
+#  Fixed bug 159.
+#
+#  Revision 1.11  1997/01/23 17:03:03  wenger
+#  Added full info to 'About DEVise' window.
+#
 #  Revision 1.10  1997/01/23 00:07:35  jussi
 #  Replaced references to queryWinOpened with calls to WindowExists.
 #
@@ -288,17 +294,7 @@ proc Update2DQueryWindow {} {
 
     .query.title.text configure -text "View: $curView"
 
-    set filter [DEVise getCurVisualFilter $curView]
-    .query.xlow insert 0 [lindex $filter 0]
-    .query.ylow insert 0 [lindex $filter 1]
-    .query.xhigh insert 0 [lindex $filter 2]
-    .query.yhigh insert 0 [lindex $filter 3]
-
-    set stat [DEVise getAllStats $curView]
-    .query.max insert 0 [lindex $stat 0]
-    .query.mean insert 0 [lindex $stat 1]
-    .query.min insert 0 [lindex $stat 2]
-    .query.count insert 0 [lindex $stat 3]
+    DoUndoEdit
 }
 
 ############################################################

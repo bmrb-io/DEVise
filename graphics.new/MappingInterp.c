@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.46.4.1  1997/02/13 18:11:44  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
+  Revision 1.46  1996/12/30 23:57:35  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.45  1996/12/30 16:12:10  wenger
   Removed unecessary assertion in MappingInterp::ConvertToGDataSimple().
 
@@ -1412,6 +1421,7 @@ void MappingInterp::PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry)
 
   default:
     printf("Unknown");
+
   }
 }
 
@@ -1602,13 +1612,13 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   char *gPtr = (char *)gdataPtr;
   _tclRecId = startRecId;
 
+
   for(int i = 0; i < numRecs; i++) {
 
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
-
+    
     double *dPtr;
-
     if (_offsets->xOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->xOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0);

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/02/14 16:47:49  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
+  Revision 1.29.4.3  1997/02/13 18:11:50  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
+
   Revision 1.29.4.2  1997/02/11 23:26:50  guangshu
   Added statistics for scattered view.
 
@@ -261,18 +268,17 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   if( _index < 0 ) {
     return;
   }
-
+  
 #if defined(DEBUG)
   printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
 #endif
-
+  
   Coord maxWidth, maxHeight, maxDepth;
   mapping->UpdateMaxSymSize(gdata, numGData);
   mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
   WindowRep *win = GetWindowRep();
-//  WindowRep *alt = GetAltRep();
-
+  
   if (IsInPileMode()) {
     ViewWin *vw = GetFirstSibling();
     win = vw->GetWindowRep();
@@ -281,18 +287,19 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
            GetName(), vw->GetName(), win);
 #endif
   }
-      
+  
   GDataAttrOffset *offset = mapping->GetGDataOffset();
   int gRecSize = mapping->GDataRecordSize();
   char *ptr = (char *)gdata;
   int recIndex = 0;
   int firstRec = 0;
+  
 
   for(int i = 0; i < numGData; i++) {
-
     // Extract X, Y, shape, and color information from gdata record
     Coord x = ShapeGetX(ptr, mapping, offset);
     Coord y = ShapeGetY(ptr, mapping, offset);
+
     ShapeID shape = GetShape(ptr, mapping, offset);
 #if 0
     Coord width  = GetWidth(ptr, mapping, offset);
@@ -307,9 +314,10 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       color = *(GlobalColor *)(ptr + offset->colorOffset);
     Boolean complexShape = mapping->IsComplexShape(shape);
     complexShape |= (GetNumDimensions() == 3);
-
-    // Collect statistics from last mapping and only those records
-    // that match the filter''s X and Y range
+    
+    /* Collect statistics from last mapping and only those records
+     * that match the filter''s X and Y range
+     */
     if (!MoreMapping(_index) &&
 	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
 	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
@@ -335,18 +343,20 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
         }
     }
 
-    // Contiguous ranges which match the filter''s X and Y range
-    // are stored in the record link
+    /* Contiguous ranges which match the filter''s X and Y range
+     * are stored in the record link
+     */
     if (!complexShape &&
 	(x + maxWidth / 2 < _queryFilter.xLow || 
 	 x - maxWidth / 2 > _queryFilter.xHigh || 
 	 y + maxHeight / 2 < _queryFilter.yLow || 
 	 y - maxHeight / 2 > _queryFilter.yHigh)) {
       if (!MoreMapping(_index)) {
-	if (i > firstRec)
+	if (i > firstRec) {
 	  WriteMasterLink(recId + firstRec, i - firstRec);
+	}
 	// Next contiguous batch of record ids starts at i+1
-	firstRec = i + 1;
+	  firstRec = i + 1;
       }
       
       ptr += gRecSize;
@@ -357,38 +367,33 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     printf("ViewScatter::ReturnGData: adding record #%ld (X+-W,Y+-H)="
 	   "(%g+-%g, %g+-%g)\n"
 	   "                          filter(X1,X2,Y1,Y2) = (%g, %g, %g, %g)\n",
-//	   recId + i, x, width, y, height,
+	   //	   recId + i, x, width, y, height,
 	   recId + i, x, maxWidth, y, maxHeight,
 	   _queryFilter.xLow, _queryFilter.xHigh,
 	   _queryFilter.yLow, _queryFilter.yHigh);
 #endif
 
     // Draw data only if window is not iconified
-    if (!Iconified()) {
-      _recs[recIndex++] = ptr;
-      if (recIndex == WINDOWREP_BATCH_SIZE) {
-        mapping->DrawGDataArray(this, win, _recs, recIndex);
-//
-//	if (alt != NULL) {
-//	  mapping->DrawGDataArray(this, alt, _recs, recIndex);
-//	}
-        recIndex = 0;
+      if (!Iconified()) {
+	_recs[recIndex++] = ptr;
+	if (recIndex == WINDOWREP_BATCH_SIZE) {
+	  mapping->DrawGDataArray(this, win, _recs, recIndex);
+	  recIndex = 0;
+	}
       }
-    }
-
+    
     ptr += gRecSize;
-  }
-
+    }
+  
   if (!MoreMapping(_index)) {
-    if (numGData > firstRec)
+    if (numGData > firstRec) {
       WriteMasterLink(recId + firstRec, numGData - firstRec);
+    }
   }
 
+  
   if (!Iconified() && recIndex > 0) {
     mapping->DrawGDataArray(this, win, _recs, recIndex);
-//    if (alt != NULL) {
-//      mapping->DrawGDataArray(this, alt, _recs, recIndex);
-//    }
   }
 }
 

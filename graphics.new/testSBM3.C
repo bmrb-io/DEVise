@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.5.4.1  1997/02/19 19:46:12  jussi
+  Fixed offset and len counts.
+
+  Revision 1.5  1997/01/18 18:41:27  jussi
+  Added definition of variables and funcitons which allow the code to
+  link properly. Init.c and Exit.c reference functions related to
+  initializing and shutting down the RTree system.
+
   Revision 1.4  1996/12/20 16:26:17  jussi
   Removed call to SemaphoreV::create().
 
@@ -108,8 +116,8 @@ int main(int argc, char **argv)
             break;
         fwrite(page, bytes, 1, stdout);
         assert(page && offset == off);
-        offset += pageSize;
-        len += pageSize;
+        offset += bytes;
+        len += bytes;
         if (MemMgr::Instance()->Deallocate(MemMgr::Buffer, page) < 0) {
             perror("Reader dealloc");
             exit(1);

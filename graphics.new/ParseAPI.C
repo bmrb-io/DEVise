@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/02/18 18:07:14  donjerko
+  *** empty log message ***
+
   Revision 1.50  1997/02/03 19:45:29  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -24,6 +27,10 @@
 
   Revision 1.49  1997/02/03 04:12:16  donjerko
   Catalog management moved to DTE
+
+  Revision 1.48.4.1  1997/02/13 18:11:45  ssl
+  Added a check to the user interface asking when user links two different
+  data sets with a record link
 
   Revision 1.48  1997/01/13 18:08:06  wenger
   Fixed bugs 043, 083, 084, 091, 114.
@@ -1828,7 +1835,21 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 4) {
-
+    if (!strcmp(argv[0], "checkTDataForRecLink")) {
+      RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      } 
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      sprintf(result, "%d", (link->CheckTData(view, atoi(argv[3]))) ?  1 : 0);
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }      
     if (!strcmp(argv[0], "importFileType")) {
       char *name = ParseCat(argv[1],argv[2],argv[3]);
       if (!name) {

@@ -739,7 +739,7 @@ QueryProcFull.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 QueryProcFull.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
 QueryProcFull.o: VisualLink.h Action.h PointStorage.h MappingInterp.h
 QueryProcFull.o: /s/tcl/include/tcl.h Bitmap.h GDataBin.h RecordLink.h
-QueryProcFull.o: RecFile.h
+QueryProcFull.o: RecFile.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
@@ -1786,10 +1786,10 @@ ParseAPI.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
 ParseAPI.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h
 ParseAPI.o: /usr/include/time.h ParseCat.h TData.h TDataMap.h ShapeID.h
 ParseAPI.o: GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h Group.h
-ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
-ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
-ParseAPI.o: FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
+ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h RecordLink.h
+ParseAPI.o: RecFile.h ../graphics/FilterQueue.h DataSeg.h Version.h
+ParseAPI.o: DevFileHeader.h ../graphics/Display.h ../graphics/ColorMgr.h
+ParseAPI.o: TDataAscii.h FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h RecId.h
@@ -1824,7 +1824,7 @@ RecordLink.o: ../graphics/ClassDir.h ../graphics/AttrList.h
 RecordLink.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
 RecordLink.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 RecordLink.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h Action.h
-RecordLink.o: PointStorage.h
+RecordLink.o: PointStorage.h TDataMap.h ShapeID.h GDataRec.h
 SBufMgr.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
 SBufMgr.o: /usr/include/string.h /usr/include/fcntl.h
 SBufMgr.o: /usr/include/sys/fcntl.h /usr/include/signal.h

@@ -20,8 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/02/14 16:47:48  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.26  1997/01/31 19:04:18  wenger
   Changed Devise version to 1.4.0.
+
+  Revision 1.25.4.3  1997/02/20 20:50:45  wenger
+  Changed mapping to use ShapeAttr4 for line width.
+
+  Revision 1.25.4.2  1997/02/14 19:45:20  wenger
+  Fixed bug 158; bumped version up to 1.3.2.
 
   Revision 1.25.4.1  1997/02/07 15:21:33  wenger
   Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
@@ -157,7 +166,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.0";
+static const char *	version = "1.4.1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";
