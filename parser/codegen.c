@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/12 23:34:09  jussi
+  Added View * parameter to DrawGDataArray(), corresponding to the changes
+  made earlier to MapInterpShape.h in graphics.new.
+
   Revision 1.11  1995/12/28 21:09:16  jussi
   Small fixes to remove compiler warnings.
 
@@ -346,29 +350,33 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
 
   /* constant shapes */
 
-  fprintf(mapFile, "\tvirtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms) {\n");
-  fprintf(mapFile, "\t\tif (TDataMap::TestAndSetPage(pageNum)) return;\n");
-  fprintf(mapFile, "\t\tCoord width, height;\n");
-  
+  fprintf(mapFile, "\tvirtual void UpdateMaxSymSize(void *gdata, int numSyms) {\n");
+  fprintf(mapFile, "\t\t_maxSymWidth = 0;\n");
+  fprintf(mapFile, "\t\t_maxSymHeight = 0;\n");
+  fprintf(mapFile, "\t\t_maxSymDepth = 0;\n");
+
   if (rec->dynamicFields & BIT_SHAPE) {
     fprintf(mapFile, "\t\tint i = 0;\n");
     fprintf(mapFile, "\t\twhile (i < numSyms) {\n");
-    fprintf(mapFile, "\t\t\t%s_GData *sym = (%s_GData *)syms[i];\n", rec->name, rec->name);
-    fprintf(mapFile, "\t\t\tfor(int symIndex = i+incr; symIndex < numSyms; symIndex += incr) {\n");
-    fprintf(mapFile, "\t\t\t\tif(syms[symIndex]->shapeID != sym->shapeID)\n");
+    fprintf(mapFile, "\t\t\t%s_GData *start = &((%s_GData *)gdata)[i];\n", rec->name, rec->name);
+    fprintf(mapFile, "\t\t\tfor(int j = i+1; j < numSyms; j++) {\n");
+    fprintf(mapFile, "\t\t\t\t%s_GData *end = &((%s_GData *)gdata)[j];\n", rec->name, rec->name);
+    fprintf(mapFile, "\t\t\t\tif(end->shapeID != start->shapeID)\n");
     fprintf(mapFile, "\t\t\t\t\tbreak;\n");
 fprintf(mapFile, "\t\t\t}\n");
     
-    fprintf(mapFile, "\t\t\t/* syms[i..symIndex-incr] have the same shape */\n");
-    fprintf(mapFile, "\t\t\t_shapes[sym->shapeID]->BoundingBoxGData(this,&syms[i],symIndex-i,width, height);\n");
-    fprintf(mapFile, "TDataMap::UpdateBoundingBox(width,height);\n");
-    fprintf(mapFile, "\t\t\ti = symIndex;\n");
+    fprintf(mapFile, "\t\t\t/* gdata[i..j-1] have the same shape */\n");
+    fprintf(mapFile, "\t\t\tCoord w, h;\n");
+    fprintf(mapFile, "\t\t\t_shapes[start->shapeID]->MaxSymSize(this,start,j-i, w, h\n");
+    fprintf(mapFile, "\t\t\tif (w > _maxSymWidth) _maxSymWidth = w;\n");
+    fprintf(mapFile, "\t\t\tif (h > _maxSymHeight) _maxSymHeight = h;\n");
+    fprintf(mapFile, "\t\t\ti = j;\n");
     fprintf(mapFile, "\t\t}\n");
     
   } else {
 
-    fprintf(mapFile, "\t\t_shapes[0]->BoundingBoxGData(this, syms, numSyms, width, height);\n");
-    fprintf(mapFile, "\t\tTDataMap::UpdateBoundingBox(width, height);\n");
+    fprintf(mapFile, "\t\t_shapes[0]->MaxSymSize(this, gdata, numSyms,\n");
+    fprintf(mapFile, "\t\t                       _maxSymWidth, _maxSymHeight);\n");
   }
 
   fprintf(mapFile, "\t}\n\n");
