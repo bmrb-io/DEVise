@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.66  1996/08/29 22:22:27  guangshu
+  Adde quiet varible to make client quiet.
+
   Revision 1.65  1996/08/05 17:26:13  beyer
   changed filter reporting format to %g (from %.2f)
 
@@ -309,6 +312,19 @@ TkControlPanel::TkControlPanel()
     Exit::DoExit(1);
   }
 
+#ifdef TK_WINDOW
+  ControlPanelTclInterp = _interp;
+#endif
+
+  if (Init::BatchFile()) {
+    // In batch mode, we don't need a Tk main window
+    _mainWindow = 0;
+#ifdef TK_WINDOW
+    ControlPanelMainWindow = _mainWindow;
+#endif
+    return;
+  }
+
 #if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
   _mainWindow = Tk_CreateMainWindow(_interp, 0, "DEVise", "DEVise");
   if (!_mainWindow) {
@@ -330,7 +346,6 @@ TkControlPanel::TkControlPanel()
 #endif
 
 #ifdef TK_WINDOW
-  ControlPanelTclInterp = _interp;
   ControlPanelMainWindow = _mainWindow;
 #endif
 
