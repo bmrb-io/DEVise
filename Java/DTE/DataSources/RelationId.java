@@ -3,12 +3,19 @@ package DataSources;
 /* This class correcponds to the C++ files RelationId.[ch] */
 
 import java.io.*;
+import java.lang.*;
 
 public class RelationId {
   private int serverId;
   private int localId;
 
   static final int DTE_SERVER_ID = 0;
+
+  public String toString(){
+    return String.valueOf( serverId ) + "." + String.valueOf( localId );
+  }  
+  
+
 
   public RelationId(){ 
     serverId = DTE_SERVER_ID;

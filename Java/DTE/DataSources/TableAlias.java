@@ -20,6 +20,11 @@ public class TableAlias{
 	}
 
 	// implement toString
+     
+        public String toString()
+        {
+           return relId.toString() + " AS " + alias;
+        }
 
 	public void setDataSource(DataSource ds){
 		dataSource = ds;

@@ -29,6 +29,7 @@ public class ParserTest {
 				query = parser.query();
 						System.out.println("Query was: " + query);
 	*/
+        System.out.println("input query:");
 	try
 	{
 	parse();
