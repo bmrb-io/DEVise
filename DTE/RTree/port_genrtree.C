@@ -16,7 +16,7 @@
 #include<fcntl.h>
 #include<string.h>
 #include"globals.h"
-#include "solaris_stats.h"
+// #include "solaris_stats.h"
 
 
 #define W_DO(x)           \
@@ -860,9 +860,9 @@ void get_line(char *line,
     }
 }
 
-
 int port_genrtree_m::scan_pages()
 {
+/*
   port_genrtree_p *page_arr[101];
   genrtree_p_hdr hdr;
 
@@ -893,6 +893,7 @@ int port_genrtree_m::scan_pages()
     }
   my_timer.stop();
   return my_timer.usertime();
+  */
 }
 
 
