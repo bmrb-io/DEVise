@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/19 03:23:38  jussi
+  Added LineShape and LineShadeShape.
+
   Revision 1.26  1996/07/15 21:33:01  jussi
   Added support for the 'size' gdata parameter. Fixed problem
   with patterns and Rect shapes.
@@ -1358,7 +1361,7 @@ public:
       points[1].y = y1;
       points[2].x = x1;
       points[2].y = 0;
-      points[3].x = x0;
+      points[3].x = (x0 + x1) / 2;
       points[3].y = 0;
       win->FillPoly(points, 4);
       if (c1 == XorColor)
