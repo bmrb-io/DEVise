@@ -19,72 +19,27 @@
 ############################################################
 
 #-----------------------------------------------------------
-# Check argument and set install destination directories.
+# Get the install info and make sure we're on the right
+# host, if specified.
 
-if ($#argv == 1) then
-  set location = $1
-  if ($location == cs_reg || $location == cs_soil || $location == cs_test) then
-    if (`hostname` != "pumori.cs.wisc.edu") then
-      echo "cs installation is normally done on pumori."
-      echo -n "Are you sure you want to continue? [n] "
+if (! -f install_info) then
+  echo "You must create the install_info file before doing an installation."
+  echo "Edit Makefile.config as appropriate, and then do"
+  echo "'make -f Makefile.setup'."
+  exit 1
+endif
 
-      set answer = $<
-      if ($answer != y && $answer != Y) then
-        echo Aborted.
-        exit 1
-      endif
-    endif
+source install_info
 
-    if ($location == cs_reg) then
-      set popdir = "/local.pumori/devise/js.regular"
-      set servdir = "/local.pumori/devise/js.regular"
-      set jardir = "/var/home/www/public"
-      set cgidir = "/var/home/www/cgi-bin"
-      set idstr = "regular"
-    else if ($location == cs_soil) then
-      set popdir = "/local.pumori/devise/js.soil"
-      set servdir = "/local.pumori/devise/js.soil"
-      set jardir = "/var/home/www/public/soil_sci"
-      set cgidir = "/var/home/www/cgi-bin"
-      set idstr = "soil"
-    else if ($location == cs_test) then
-      set popdir = "/local.pumori/devise/js.test"
-      set servdir = "/local.pumori/devise/js.test"
-      set jardir = "/var/home/www/public/test"
-      set cgidir = "/var/home/www/cgi-bin"
-      set idstr = "test"
-    endif
+if ($install_host != "" && `hostname` != $install_host) then
+  echo "Installation is normally done on $install_host."
+  echo -n "Are you sure you want to continue? [n] "
 
-  else if ($location == bmrb) then
-    if (`hostname` != "aden.bmrb.wisc.edu") then
-      echo "cs installation is normally done on aden."
-      echo -n "Are you sure you want to continue? [n] "
-
-      set answer = $<
-      if ($answer != y && $answer != Y) then
-        echo Aborted.
-        exit 1
-      endif
-    endif
-
-    set popdir = "/bmrb/htdocs/devise/jspop"
-    set servdir = "/p/devise/js.installed"
-    set jardir = "/bmrb/htdocs/devise"
-    set cgidir = "/bmrb/htdocs/cgi-bin"
-    set idstr = "regular"
-  else if ($location == test) then
-    set popdir = "~/tst/jspop_install/jspop"
-    set servdir = "~/tst/jspop_install/jspop"
-    set jardir = "~/tst/jspop_install/www"
-    set cgidir = "~/tst/jspop_install/cgi-bin"
-    set idstr = "test"
-  else
-    echo "Illegal argument value: $location"
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo Aborted.
     exit 1
   endif
-else
-    echo "Usage: install_js <cs_reg|cs_soil|cs_test|bmrb|test>"
-    exit 1
 endif
 
 #-----------------------------------------------------------

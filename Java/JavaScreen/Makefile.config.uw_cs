@@ -26,3 +26,10 @@
 JAVA_BIN = /s/java-1/bin
 PERL_BIN = /s/std/bin
 XVFB_BIN = /s/std/bin
+
+POP_DIR = /local.pumori/devise/js.regular
+SERV_DIR = /local.pumori/devise/js.regular
+JAR_DIR = /var/home/www/public
+CGI_DIR = /var/home/www/cgi-bin
+IDSTR = regular
+INSTALL_HOST = pumori.cs.wisc.edu

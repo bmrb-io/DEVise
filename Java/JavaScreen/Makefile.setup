@@ -21,12 +21,13 @@
 include Makefile.config
 
 .PHONY: setup
-setup: bin2 dyn_lib
+setup: bin2 dyn_lib install_info
 
 .PHONY: clean
 clean:
 	-rm -rf bin2
 	-rm -rf dyn_lib
+	-rm install_info
 
 bin2:
 	mkdir bin2
@@ -36,3 +37,17 @@ bin2:
 
 dyn_lib:
 	scripts/make_dyn_lib
+
+install_info: Makefile.config
+	-rm install_info
+	touch install_info
+	echo "set popdir = \"$(POP_DIR)\"" >> install_info
+	echo "set servdir = \"$(SERV_DIR)\"" >> install_info
+	echo "set jardir = \"$(JAR_DIR)\"" >> install_info
+	echo "set cgidir = \"$(CGI_DIR)\"" >> install_info
+	echo "set idstr = \"$(IDSTR)\"" >> install_info
+	echo "set install_host = \"$(INSTALL_HOST)\"" >> install_info
+
+.PHONY: install
+install: install_info
+	install_js

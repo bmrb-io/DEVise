@@ -25,3 +25,10 @@
 JAVA_BIN = /usr/bin
 PERL_BIN = /usr/bin
 XVFB_BIN = /usr/openwin/bin
+
+POP_DIR = /p/devise/js.installed
+SERV_DIR = /p/devise/js.installed
+JAR_DIR = /website/htdocs/devise
+CGI_DIR = /website/htdocs/cgi-bin
+IDSTR = regular
+INSTALL_HOST = manatee
