@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/10/28 19:22:27  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.29  1998/10/21 17:16:39  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -176,6 +182,7 @@
 #include "CmdContainer.h"
 #include "JavaScreenCmd.h"
 #include "TAttrLink.h"
+#include "RangeDesc.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -4474,33 +4481,19 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 2) {
-        TData *tdata = (TData *)classDir->FindInstance(argv[1]);
-        if (!tdata) {
-            ReturnVal(API_NAK, "Cannot find TData");
-            return -1;
-        } else {
-			printf("Before changing attributes:\n");
-			tdata->GetAttrList()->Print();
-
-			AttrList attrs("test");
-			int offset = 0;
-			attrs.InsertAttr(0, "alpha", offset, sizeof(int), IntAttr);
-			offset += sizeof(int);
-			attrs.InsertAttr(1, "beta", offset, sizeof(float), FloatAttr);
-			offset += sizeof(float);
-			attrs.InsertAttr(2, "gamma", offset, sizeof(double), DoubleAttr);
-			offset += sizeof(double);
-			attrs.InsertAttr(3, "sigma", offset, 32, StringAttr);
-			offset += 32;
-			attrs.InsertAttr(4, "epsilon", offset, sizeof(time_t), DateAttr);
-			offset += sizeof(time_t);
-
-			tdata->SetAttrs(attrs);
-			printf("After changing attributes:\n");
-			tdata->GetAttrList()->Print();
-
+		if (RangeDesc::Dump(argv[1]).IsComplete()) {
+#if 0 // Check for memory leaks.
+        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+		for (int count = 0; count < 1000; count++) {
+		  (void) RangeDesc::Dump(argv[1]);
+		}
+        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#endif
         	ReturnVal(API_ACK, "done");
 			return 1;
+		} else {
+            ReturnVal(API_NAK, "Error dumping range description");
+            return -1;
 		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
@@ -4774,6 +4767,35 @@ IMPLEMENT_COMMAND_BEGIN(viewGoHome)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in viewGoHome\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(writeRangeDesc)
+    // Arguments: <file name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+		if (RangeDesc::Dump(argv[1]).IsComplete()) {
+#if 0 // Check for memory leaks.
+        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+		for (int count = 0; count < 1000; count++) {
+		  (void) RangeDesc::Dump(argv[1]);
+		}
+        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#endif
+        	ReturnVal(API_ACK, "done");
+			return 1;
+		} else {
+            ReturnVal(API_NAK, "Error dumping range description");
+            return -1;
+		}
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in writeRangeDesc\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

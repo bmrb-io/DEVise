@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.67  1998/07/03 23:42:07  wenger
+#  Fixed some memory leaks; added provision to print data segment size
+#  at certain places in the code.
+#
 #  Revision 1.66  1998/05/18 16:02:31  wenger
 #  'make clean' now removes dummy OpenGL files.
 #
@@ -232,7 +236,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c CursorStore.c
+	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

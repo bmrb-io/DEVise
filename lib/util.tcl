@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60  1998/10/20 19:46:33  wenger
+#  Mapping dialog now displays the view's TData name; "Next in Pile" button
+#  in mapping dialog allows user to edit the mappings of all views in a pile
+#  without actually flipping them; user has the option to show all view names;
+#  new GUI to display info about all links and cursors; added API and GUI for
+#  count mappings.
+#
 #  Revision 1.59  1998/08/18 15:22:31  wenger
 #  Found and fixed bug 384 (devisec not quitting).
 #
@@ -1138,6 +1145,23 @@ proc SaveSessionDesc {physical} {
     DEVise writeDesc $filename $physical
   }
 }
+
+############################################################
+# Save range/MQL session description to a file.
+
+proc SaveRangeDesc {} {
+  global fsBox
+
+  set fsBox(path) [CWD]
+  set fsBox(pattern) *
+  set filename [ FSBox "Select file for session description" ]
+
+  if {$filename != ""} {
+    DEVise writeRangeDesc $filename
+  }
+}
+
+
 
 ############################################################
 # Show info about links and cursors.

@@ -29,6 +29,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/10/21 17:16:42  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.11  1998/06/15 19:55:21  wenger
   Fixed bugs 338 and 363 (problems with special cases of set links).
 
@@ -414,6 +420,7 @@ TAttrLink::DestroyMasterTable()
  * function: TAttrLink::GetTData
  * Get the TData for the given view.
  */
+//TEMP -- what if view has multiple mappings??
 TData *
 TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {

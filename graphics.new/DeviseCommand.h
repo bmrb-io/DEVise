@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/10/21 17:16:40  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.16  1998/10/20 19:46:16  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -1442,6 +1448,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewGoHome) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(writeRangeDesc) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

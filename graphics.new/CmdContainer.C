@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/10/28 19:22:25  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.19  1998/10/21 17:16:36  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -383,6 +389,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setCountMapping)
 	REGISTER_COMMAND(getCursorType)
 	REGISTER_COMMAND(viewGoHome)
+	REGISTER_COMMAND(writeRangeDesc)
 }
 
 CmdContainer::~CmdContainer()

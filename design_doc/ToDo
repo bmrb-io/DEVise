@@ -526,6 +526,8 @@ Possibly don't allow a single mapping to be inserted into more than one
 view (force one-to-one correspondence between views and mappings).
 (rkw 10/28/98)
 
+Add info to user manual about how to create 3D views. (qh/rkw 10/30/98)
+
 
 COMPLETED
 ---------
@@ -650,6 +652,7 @@ kb = beyer@cs.wisc.edu = Kevin Beyer
 ma = anderson@bob.soils.wisc.edu = Martha Anderson
 ml = miron@cs.wisc.edu = Miron Livny
 na = narayana@cs.wisc.edu = Narayanan Anand
+qh = heq@ceri.memphis.edu = Qunlu(Andy) He
 rkw = wenger@cs.wisc.edu = R. Kent Wenger
 rr = raghu@cs.wisc.edu = Raghu Ramakrishnan
 tom keating = tkeating@facstaff.wisc.edu = Tom Keating
