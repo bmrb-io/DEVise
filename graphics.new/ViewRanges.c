@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/05 20:13:33  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.3  1996/01/30 21:13:15  jussi
   Replaced references to specific colors.
 
@@ -27,7 +33,7 @@
 
 ViewRanges::ViewRanges(char *name,  ViewWin *parent, VisualFilter &initFilter,
 		       RangeSource *source, Boolean horizontal)
-	: View(name, NULL, initFilter, ForegroundColor, BackgroundColor,
+	: View(name, initFilter, ForegroundColor, BackgroundColor,
 	       NULL, NULL, false)
 {
   _source = source;
@@ -76,7 +82,8 @@ ViewRanges::~ViewRanges()
     SubClassUnmapped();
 }
 
-void ViewRanges::DerivedAbortQuery(){
+void ViewRanges::DerivedAbortQuery()
+{
 }
 
 void ViewRanges::RangeInserted(long low, long high)
