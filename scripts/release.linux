@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:35  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.5  1998/02/02 18:25:32  wenger
 #  Strings file can now be loaded manually; name of strings file is now
 #  stored in session file; added 'serverExit' command and kill_devised
@@ -74,8 +79,9 @@
 ############################################################
 
 set files = "linux/generic/generic \
-        linux/multi/disp \
-	lib/control.tk"
+	linux/generic/devise linux/generic/deviseb linux/generic/devised \
+	lib/control.tk doc/userman.ps doc/sysman.ps \
+	doc/Agreement doc/Copyright doc/Disclaimer"
 set target = /p/devise/public
 
 if ($#argv > 0) then
@@ -117,18 +123,24 @@ if (! -d $target) then
   mkdir $target
 endif
 
-if (! -d $target/bin) then
-  mkdir $target/bin
+if (! -d $target/i386_linux) then
+  mkdir $target/i386_linux
 endif
-ls -l linux/generic/generic $target/bin/devise
-cp -p linux/generic/generic $target/bin/devise
-
+ls -l linux/generic/generic $target/i386_linux/devise
+cp -p linux/generic/generic $target/i386_linux/devise
 
 
 echo ""
-echo Releasing new copy of PVM Devise executables...
-ls -l linux/multi/disp $target/bin/multi
-cp -p linux/multi/disp $target/bin/multi
+echo Releasing new copy of client/server and batch Devise executables...
+cp -p linux/generic/devise $target/i386_linux/devisec
+cp -p linux/generic/deviseb $target/i386_linux/deviseb
+cp -p linux/generic/devised $target/i386_linux/devised
+
+
+#echo ""
+#echo Releasing new copy of PVM Devise executables...
+#ls -l linux/multi/disp $target/i386_linux/multi
+#cp -p linux/multi/disp $target/i386_linux/multi
 
 
 echo ""
@@ -138,11 +150,6 @@ if (! -d $target/lib) then
 endif
 cp -p lib/[a-z]* $target/lib
 cp -p lib/[A-Z]* $target/lib
-
-if (! -d $target/lib/LM) then
-  mkdir $target/lib/LM
-endif
-cp -p lib/LM/*.tk $target/lib/LM
 
 
 echo ""
@@ -158,9 +165,9 @@ foreach dir ($rundirs)
   endif
 end
 
-set runfiles = "run_public/devise run_public/devise.tasvir \
+set runfiles = "run_public/devise \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi run_public/devise.etk run_public/kill_devised"
+	run_public/kill_devised2"
 
 foreach file ($runfiles)
   if ($file == "") then
@@ -205,15 +212,15 @@ endif
 ln -s /p/devise/dat/$file $run_target/$file
 
 
-#echo ""
-#echo Releasing documentation...
-#if (! -d $target/doc) then
-  #mkdir $target/doc
-#endif
-#cp -p doc/*.ps doc/*.txt $target/doc
-#cp -p doc/Agreement $target/doc
-#cp -p doc/Copyright $target/doc
-#cp -p doc/Disclaimer $target/doc
+echo ""
+echo Releasing documentation...
+if (! -d $target/doc) then
+  mkdir $target/doc
+endif
+cp -p doc/*.ps doc/*.txt $target/doc
+cp -p doc/Agreement $target/doc
+cp -p doc/Copyright $target/doc
+cp -p doc/Disclaimer $target/doc
 
 
 echo ""
