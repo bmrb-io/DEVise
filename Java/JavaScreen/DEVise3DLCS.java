@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/04/01 03:51:18  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.6  2000/05/24 14:06:58  wenger
 // Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
 // DEViseAtomInCrystal, DEVise3DLCS).
@@ -48,7 +51,8 @@ public class DEVise3DLCS
 {
     protected float[][] data = new float[3][3];
     protected float[] origin = new float[3];
-    public float a = 1.0f, b = 1.0f, c = 1.0f, alpha = 90.0f, beta = 90.0f, gamma = 90.0f;
+
+    private float a = 1.0f, b = 1.0f, c = 1.0f, alpha = 90.0f, beta = 90.0f, gamma = 90.0f;
 
     // default constructor, a unit 3DLCS
     public DEVise3DLCS() throws YException

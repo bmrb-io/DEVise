@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/03/26 15:26:56  wenger
+// DEViseCheckPop now removed log file if the check is okay.
+//
 // Revision 1.4  2001/03/20 20:11:38  wenger
 // Added more debug output to the JS client and jspop.
 //
@@ -140,6 +143,10 @@ public class DEViseCheckPop
 
 	final String usage = "Usage: java DEViseCheckPop [-port<port>] " +
 	  "[-host<hostname>]\n";
+
+        if (args.length > 2) {
+	    throw new YException("Too many arguments");
+	}
 
 	for (int index = 0; index < args.length; index++) {
 	    if (args[index].startsWith("-port")) {
