@@ -1,5 +1,5 @@
 		DEVise Source Code README File
-			$Date$
+		$Date$
 
 *** Checkout and Setup
 
@@ -36,6 +36,10 @@ where <arch> is replaced by the Makefile suffix for your architecture
 (hp, sun, etc.).  Don't commit the updated makefiles to the source
 repository unless you're sure you want to do that.  If you don't commit
 them, you can still use them to compile your copy of the sources.
+
+To compile DEVise with debugging on, just set the environment variable
+DEV_DEBUG to a non-zero value.  You don't have to change any of the
+makefiles.
 
 
 *** Executables
