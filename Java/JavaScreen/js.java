@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2001/10/16 22:14:28  wenger
+// Major cleanup of command playback code; fixed bug 711 (problem with
+// command log playback).
+//
 // Revision 1.44  2001/10/10 19:28:25  xuk
 // Added display control command line argument/parameter for auto playback.
 // For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
@@ -485,6 +489,18 @@ public class js extends Frame
 		jsValues.session.playbackOriginal = true;
 	    } else if (args[i].startsWith("-playbackdisplayoff")) {
 		jsValues.session.playbackDisplay = false;
+	    } else if (args[i].startsWith("-collableadername")) {
+		jsValues.session.collabLeaderName = 
+		    args[i].substring(17);
+	    } else if (args[i].startsWith("-collableaderpass")) {
+		jsValues.session.collabLeaderPass = 
+		    args[i].substring(17);
+	    } else if (args[i].startsWith("-collabname")) {
+		jsValues.session.collabName = 
+		    args[i].substring(11);
+	    } else if (args[i].startsWith("-collabpass")) {
+		jsValues.session.collabPass = 
+		    args[i].substring(11);
             } else {
                 System.out.println("Invalid js option \"" + args[i]
                     + "\" is given!\n");

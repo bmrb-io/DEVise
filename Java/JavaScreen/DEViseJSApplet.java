@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2002/02/28 16:36:03  xuk
+// Added "reloadapplet" parameter to load old jsb applet instance into new HTML page.
+//
 // Revision 1.8  2002/02/22 21:51:10  xuk
 // Added an applet parameter to hide all of the applet buttons in browser.
 // param name="disablebuttons" value="true|false"
@@ -346,6 +349,34 @@ public class DEViseJSApplet extends Applet
 	    }
         } else {
             jsValues.session.reloadApplet = true;
+        }
+
+        String leaderName = getParameter("collableadername");
+        if (leaderName != null) {
+	    jsValues.session.collabLeaderName = leaderName;
+        } else {
+            jsValues.session.collabLeaderName = null;
+        }
+
+        String leaderPass = getParameter("collableaderpass");
+        if (leaderPass != null) {
+	    jsValues.session.collabLeaderPass = leaderPass;
+        } else {
+            jsValues.session.collabLeaderPass = null;
+        }
+
+        String collabName = getParameter("collabname");
+        if (collabName != null) {
+	    jsValues.session.collabName = collabName;
+        } else {
+            jsValues.session.collabName = null;
+        }
+
+        String collabPass = getParameter("collabpass");
+        if (collabPass != null) {
+	    jsValues.session.collabPass = collabPass;
+        } else {
+            jsValues.session.collabPass = null;
         }
     }
 
