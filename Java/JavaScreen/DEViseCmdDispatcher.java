@@ -12,13 +12,22 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Command dispatcher.  This class sends commands from the JavaScreen
+// to the jspop/devised, and processes the commands that are sent
+// back.
+
+// There is one instance of this class for the entire JavaScreen.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.54  2000/04/27 20:15:24  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.53  2000/04/27 15:56:54  wenger
 // Added some comments and requests for comments.
 //
@@ -363,10 +372,8 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.viewInfo.updateImage(0, 0);
             jsc.viewInfo.updateCount(0);
 
-            int id = e.getID();
-
             // user pressed the stop button
-            switch (id) {
+            switch (e.getID()) {
             case 0: // low level communication error
                 jsc.showMsg(e.getMsg());
                 jsc.jscreen.updateScreen(false);
@@ -611,11 +618,9 @@ public class DEViseCmdDispatcher implements Runnable
                 if (gdataStr.equals("\u0004")) {
                     jsc.jscreen.updateGData(viewname, null);
                 } else {
-		    // ADD COMMENT -- what is this doing?  Just stripping
-		    // off the control-D??
-
-		    // YHY-COMMENT
-		    // this is used to handle the case when JSPoP sending all the GData in one command (I know currently devised is sending one
+		    // This is used to handle the case when JSPoP sending
+		    // all the GData in one command (I know currently devised
+		    // is sending one
 		    // GData per command) and separate them use \x04.
                     String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004", false);
                     if (GData == null) {
@@ -628,11 +633,7 @@ public class DEViseCmdDispatcher implements Runnable
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
 
-			// ADD COMMENT -- this is splitting the GData into
-			// records, right?
-
-			// YHY-COMMENT
-			// Yes, this is used to split GData into records
+			// Split the GData into records.
                         String[] results = DEViseGlobals.parseStr(GData[j]);
                         if (results == null || results.length == 0) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -852,7 +853,11 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.viewInfo.updateImage(2, 1);
 
         // wait to receive the response from server
+
+	// isEnd is true when we have finished receiving *all* commands.
         while (!isEnd) {
+	    // isFinish is true when we have finished receiving the current
+	    // command.
             isFinish = false;
 
             while (!isFinish) {

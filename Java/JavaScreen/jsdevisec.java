@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2000/04/27 20:15:25  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.57  2000/04/24 20:22:02  hongyu
 // remove UI dependency of jspop and js
 //
@@ -273,7 +278,6 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-			//TEMPTEMP -- do we need to close the current session first?
 
                         dispatcher.start(DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
                     }

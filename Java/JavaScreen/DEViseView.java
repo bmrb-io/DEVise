@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2000/04/24 20:22:01  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.43  2000/04/07 22:44:10  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -91,8 +94,8 @@ public class DEViseView
 
     public Rectangle viewLoc = null;
     public Rectangle viewLocInCanvas = null;
-    public float viewZ = 0.0f;
-    public int viewDimension = 0;
+    public float viewZ = 0.0f; // for piled views
+    public int viewDimension = 0; // number of dimensions
     public int viewBg, viewFg;
 
     // viewDataLoc is the location relative to this view
@@ -103,11 +106,15 @@ public class DEViseView
     public String viewDataXType = null, viewDataYType = null;
 
     public String viewTitle = null;
-    public int viewDTX, viewDTY;
+    public int viewDTX, viewDTY; // title X and Y location
     public Font viewDTFont = null;
 
     public DEViseView parentView = null;
-    public DEViseView piledView = null;
+
+    // Base view of a piled view.  Note that this is null in the base view
+    // itself.
+    public DEViseView pileBaseView = null;
+
     public Vector viewPiledViews = new Vector();
     public Vector viewChilds = new Vector();
     public Vector viewGDatas = new Vector();
@@ -140,36 +147,24 @@ public class DEViseView
         viewDataYType = yt;
 
         parentView = jsc.jscreen.getView(pn);
-        piledView = jsc.jscreen.getView(piledname);
+
+	// Note that this will be null for the base view, because in this
+	// constructor the DEViseScreen object doesn't know about this
+	// view yet.
+        pileBaseView = jsc.jscreen.getView(piledname);
 
         viewLocInCanvas = getLocInCanvas();
 
         gridx = gx;
         gridy = gy;
 
-        if (rb == 1) {
-            isRubberBand = true;
-        } else {
-            isRubberBand = false;
-        }
+        isRubberBand = (rb == 1);
 
-        if (cm == 1) {
-            isCursorMove = true;
-        } else {
-            isCursorMove = false;
-        }
+        isCursorMove = (cm == 1);
 
-        if (dd == 1) {
-            isDrillDown = true;
-        } else {
-            isDrillDown = false;
-        }
+        isDrillDown = (dd == 1);
 
-        if (ky == 1) {
-            isKey = true;
-        } else {
-            isKey = false;
-        }
+        isKey = (ky == 1);
 
         curlyName = "{" + viewName + "}";
     }
@@ -181,12 +176,13 @@ public class DEViseView
 	removeAllGData();
     }
 
-    // ADD COMMENT -- what is a curly name??
+    // Returns view name enclosed by curly brackets.
     public String getCurlyName()
     {
         return curlyName;
     }
 
+/* Not used.  RKW 2000-05-03.
     public DEViseView getChild(int idx)
     {
         if (idx < 0 || idx >= viewChilds.size())
@@ -194,7 +190,9 @@ public class DEViseView
 
         return (DEViseView)viewChilds.elementAt(idx);
     }
+*/
 
+/* Not used.  RKW 2000-05-03.
     public DEViseCursor getCursor(int idx)
     {
         if (idx < 0 || idx >= viewCursors.size())
@@ -202,7 +200,9 @@ public class DEViseView
 
         return (DEViseCursor)viewCursors.elementAt(idx);
     }
+*/
 
+/* Not used.  RKW 2000-05-03.
     public DEViseGData getGData(int idx)
     {
         if (idx < 0 || idx >= viewGDatas.size())
@@ -210,17 +210,44 @@ public class DEViseView
 
         return (DEViseGData)viewGDatas.elementAt(idx);
     }
+*/
 
-    public void addChild(DEViseView view)
+    // Add a child view to this view.
+    public void addChild(DEViseView view) throws YError
     {
         if (view != null) {
-            viewChilds.addElement(view);
+	    if (view.parentView != this) {
+	        throw new YError("Adding child view (" + view.viewName +
+		  ") to wrong parent(" + viewName + ")");
+	    }
+
+	    if (viewChilds.contains(view)) {
+	        throw new YError("Child view " + view.viewName +
+		  " is already in parent (" + viewName + ")");
+	    } else {
+                viewChilds.addElement(view);
+	    }
         }
     }
 
-    public void addPile(DEViseView view)
+    // Add a view to the base view of a pile.
+    public void addPiledView(DEViseView view) throws YError
     {
+	if (pileBaseView != null) {
+	    throw new YError("Adding piled view (" + view.viewName +
+	      ") to non-base view (" + viewName + ")");
+	}
+
         if (view != null) {
+	    if (view.pileBaseView != this) {
+	        throw new YError("Adding piled view (" + view.viewName +
+		  ") to wrong base view (" + viewName + ")");
+	    }
+	    if (viewPiledViews.contains(view)) {
+	        throw new YError("Pile " + viewName +
+		  "already contains view " + view.viewName);
+	    }
+
             for (int i = 0; i < viewPiledViews.size(); i++) {
                 DEViseView v = (DEViseView)viewPiledViews.elementAt(i);
                 if (view.viewZ < v.viewZ) {
@@ -233,13 +260,20 @@ public class DEViseView
         }
     }
 
-    public boolean addCursor(DEViseCursor cursor)
+    // Add a cursor to this view.  Returns true iff cursor exists and is
+    // not already in this view.
+    public boolean addCursor(DEViseCursor cursor) throws YError
     {
-        if (cursor == null)
+        if (cursor == null) {
             return false;
+        }
 
-        int i = 0;
-        for (i = 0; i < viewCursors.size(); i++) {
+	if (cursor.parentView != this) {
+	    throw new YError("Adding cursor (" + cursor.name +
+	      ") to wrong view (" + viewName + ")");
+	}
+
+        for (int i = 0; i < viewCursors.size(); i++) {
             DEViseCursor c = (DEViseCursor)viewCursors.elementAt(i);
             if (c.name.equals(cursor.name)) {
                 if (c.isSame(cursor)) {
@@ -257,13 +291,17 @@ public class DEViseView
         return true;
     }
 
+    // Add a GData record to this view.
     public void addGData(DEViseGData gdata)
     {
+	// Note: I'm not checking GData.parentView here for speed.
+	// RKW 2000-05-3.
         if (gdata != null) {
             viewGDatas.addElement(gdata);
         }
     }
 
+    // Remove a child view from this view.
     public void removeChild(DEViseView view)
     {
         if (view != null) {
@@ -277,13 +315,19 @@ public class DEViseView
         }
     }
 
-    public void removePile(DEViseView view)
+    // Removed a piled view from its base view.
+    public void removePiledView(DEViseView view) throws YError
     {
+	if (pileBaseView != null) {
+	    throw new YError("Removing piled view from non-base view (" +
+	      viewName + ")");
+	}
         if (view != null) {
             viewPiledViews.removeElement(view);
         }
     }
 
+    // Remove the given cursor from this view.
     public void removeCursor(DEViseCursor cursor)
     {
         if (cursor != null) {
@@ -291,6 +335,8 @@ public class DEViseView
         }
     }
 
+    // Remove the named cursor from this view; returns true iff the cursor
+    // is in this view.
     public boolean removeCursor(String name)
     {
         if (name != null) {
@@ -308,13 +354,16 @@ public class DEViseView
         }
     }
 
+/* Not used.  RKW 2000-05-01.
     public void removeGData(DEViseGData gdata)
     {
         if (gdata != null) {
             viewGDatas.removeElement(gdata);
         }
     }
+*/
 
+    // Remove all GData records from this view.
     public void removeAllGData()
     {
         if (_debug) {
@@ -324,11 +373,13 @@ public class DEViseView
         viewGDatas = new Vector();
     }
 
+    // Remove all cursors from this view.
     public void removeAllCursor()
     {
         viewCursors.removeAllElements();
     }
 
+    // Remove all child views from this view.
     public void removeAllChild()
     {
         if (canvas != null) {
@@ -340,19 +391,24 @@ public class DEViseView
         viewChilds.removeAllElements();
     }
 
+/* Not used.  RKW 2000-05-03.
     public void removeAllPile()
     {
         viewPiledViews.removeAllElements();
     }
+*/
 
+    // Get the canvas corresponding to this view (note that if this view
+    // is a child view or a non-base piled view, the canvas returned is
+    // not "owned" by this view).
     public DEViseCanvas getCanvas()
     {
         if (canvas == null) {
             if (parentView == null) {
-                if (piledView == null) { // this is a top view, but the canvas for it has not yet been set
+                if (pileBaseView == null) { // this is a top view, but the canvas for it has not yet been set
                     return null;
                 } else {
-                    return piledView.getCanvas();
+                    return pileBaseView.getCanvas();
                 }
             } else {
                 return parentView.getCanvas();
@@ -362,17 +418,19 @@ public class DEViseView
         }
     }
 
+    // Returns the location of this view relative to its canvas.
+    // Relative to upper left corner of canvas?
     public Rectangle getLocInCanvas()
     {
         if (canvas == null) {
             Rectangle loc = null;
 
             if (parentView == null) {
-                if (piledView == null) {
+                if (pileBaseView == null) {
                     // this is a top view, but the canvas for it has not yet been set
                     return new Rectangle(0, 0, viewLoc.width, viewLoc.height);
                 } else {
-                    loc = piledView.getLocInCanvas();
+                    loc = pileBaseView.getLocInCanvas();
                 }
             } else {
                 loc = parentView.getLocInCanvas();
@@ -388,6 +446,8 @@ public class DEViseView
         }
     }
 
+    // Returns the location of this view relative to the entire JavaScreen.
+    // Relative to upper left corner of screen?
     public Rectangle getLocInScreen()
     {
         DEViseCanvas canvas = getCanvas();
@@ -404,7 +464,9 @@ public class DEViseView
         }
     }
 
+    // Update the data range of the given axis.
     public void updateDataRange(String axis, float min, float max)
+      throws YError
     {
         if (axis.equals("X")) {
             viewDataXMin = min;
@@ -421,9 +483,15 @@ public class DEViseView
             dataYStep = 0.0f;
             if (viewDataLoc.height > 0)
                 dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
-        }
+        } else {
+	    throw new YError("Illegal axis type (" + axis + ")");
+	}
     }
 
+    // Note: getX and getY should probably be combined into a single
+    // method. RKW 2000-05-03.
+
+    // Convert mouse X coordinate (in pixels) to a String.
     // x is relative to this view's canvas
     public String getX(int x)
     {
@@ -460,6 +528,7 @@ public class DEViseView
         }
     }
 
+    // Convert mouse Y coordinate (in pixels) to a String.
     // y is relative to this view's canvas
     public String getY(int y)
     {
@@ -509,7 +578,8 @@ public class DEViseView
         }
     }
 
-    // check whether or not the point (relative to this view's canvas) is within the view area
+    // check whether or not the point (relative to this view's canvas) is
+    // within the view's data area
     public boolean inViewDataArea(Point p)
     {
         Rectangle loc = viewLocInCanvas;
@@ -523,11 +593,13 @@ public class DEViseView
         }
     }
 
+    // ADD COMMENT -- what is this doing?
     public int translateX(int x, int mode)
     {
         return translateX(x, mode, 0);
     }
 
+    // ADD COMMENT -- what is this doing?
     public int translateX(int x, int mode, int width)
     {
         Rectangle loc = viewLocInCanvas;
@@ -545,11 +617,13 @@ public class DEViseView
         return x;
     }
 
+    // ADD COMMENT -- what is this doing?
     public int translateY(int y, int mode)
     {
         return translateY(y, mode, 0);
     }
 
+    // ADD COMMENT -- what is this doing?
     public int translateY(int y, int mode, int height)
     {
         Rectangle loc = viewLocInCanvas;
@@ -567,8 +641,15 @@ public class DEViseView
         return y;
     }
 
-    public DEViseCursor getFirstCursor()
+    // Get this first cursor in this view or this view's pile.  Note that
+    // this method should only be called on a base view.
+    public DEViseCursor getFirstCursor() throws YError
     {
+        if (pileBaseView != null) {
+	    throw new YError("Calling getFirstCursor() on non-base view (" +
+	      viewName + ")");
+	}
+
         for (int i = 0; i < viewCursors.size(); i++) {
             DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
             return cursor;

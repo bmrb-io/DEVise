@@ -12,7 +12,18 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class provides an interface between the DEViseCmdDispatcher
+// class and the DEViseCanvas and DEViseView classes.  It also handles
+// events that don't fall into a canvas.
+
+// One of the most important functions of this class is to maintain
+// consistency of the DEViseCanvas and DEViseView objects, because
+// they have a number of cross-references.
+
+// This class also has a number of features dealing with the fact
+// that the DEViseCmdDispatcher and the drawing are done in different
+// threads.  It could be made safer by making more members private
+// and more methods syncronized (according to Hongyu).
 
 // There is one instance of this class for the entire JavaScreen.
 
@@ -21,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2000/04/27 20:15:25  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.52  2000/04/24 20:22:00  hongyu
 // remove UI dependency of jspop and js
 //
@@ -108,10 +124,15 @@ public class DEViseScreen extends Panel
 
     Dimension screenDim = new Dimension(600, 400);
 
+    // Hongyu says that having these three vectors for canvases is related
+    // to making things thread-safe.
     Vector allCanvas = new Vector();
     Vector newCanvas = new Vector();
     Vector obsoleteCanvas = new Vector();
 
+    // Hongyu says that we have both a Vector and a HashTable of views
+    // for efficiency.  I'm a bit worried about the possibility of
+    // inconsistencies...  RKW 2000-05-04.
     Vector allViews = new Vector();
     Hashtable viewTable = new Hashtable();
 
@@ -179,6 +200,9 @@ public class DEViseScreen extends Panel
         super.processMouseEvent(event);
     }
 
+    // Hongyu says that we have both this method and a mouse motion
+    // listener because this method gets both move and drag events,
+    // which we want in order to update the mouse location display.
     protected void processMouseMotionEvent(MouseEvent event)
     {
         finalMousePosition.x = event.getX();
@@ -187,6 +211,9 @@ public class DEViseScreen extends Panel
         super.processMouseMotionEvent(event);
     }
 
+    // ADD COMMENT -- what does this do?
+    // Hongyu says that this code has something to do with fixing a
+    // case where Java does things wrong.
     public void reEvaluateMousePosition()
     {
         if (finalMousePosition.x < 0) {
@@ -255,6 +282,7 @@ public class DEViseScreen extends Panel
         repaint();
     }
 
+    // Show help messages in all views.
     public synchronized void showAllHelp()
     {
         helpclicked = !helpclicked;
@@ -292,8 +320,8 @@ public class DEViseScreen extends Panel
         }
 
         // top view always created before bottom view
-        if (view.piledView != null) {
-            view.piledView.addPile(view);
+        if (view.pileBaseView != null) {
+            view.pileBaseView.addPiledView(view);
         }
 
         allViews.addElement(view);
@@ -301,9 +329,11 @@ public class DEViseScreen extends Panel
         viewTable.put(view.viewName, view);
     }
 
-    // Only top view (not view symbol, not bottom view in piled views) will have an image
-    // and only top view will associated with a canvas, a canvas will only be assiciated
-    // one view and one view only
+    // Put an image into a view, creating the appropriate DEViseCanvas
+    // object if necessary.
+    // Only top view (not view symbol, not bottom view in piled views)
+    // will have an image and only top view will associated with a canvas,
+    // a canvas will only be assiciated one view and one view only.
     public void updateViewImage(String name, Image image)
     {
         if (name == null || image == null)
@@ -359,8 +389,8 @@ public class DEViseScreen extends Panel
         Vector vector = null;
 
         // remove itself from its parent or piled view, if any
-        if (view.piledView != null) {
-            view.piledView.removePile(view);
+        if (view.pileBaseView != null) {
+            view.pileBaseView.removePiledView(view);
         }
 
         if (view.parentView != null) {
@@ -513,16 +543,16 @@ public class DEViseScreen extends Panel
         if (view.viewDimension == 3 && view.canvas != null) {
 	        view.canvas.crystal = null;
 	        view.canvas.createCrystal();
-	    } else if (view.piledView != null && view.piledView.viewDimension == 3 && view.piledView.canvas != null) {
-            view.piledView.canvas.createCrystal();
+	    } else if (view.pileBaseView != null && view.pileBaseView.viewDimension == 3 && view.pileBaseView.canvas != null) {
+            view.pileBaseView.canvas.createCrystal();
         }
 
         repaint();
     }
 
-    public void updateCursor(String name, DEViseCursor cursor)
+    public void updateCursor(String viewName, DEViseCursor cursor)
     {
-        DEViseView view = getView(name);
+        DEViseView view = getView(viewName);
 
         if (view == null) {
             return;
@@ -535,20 +565,21 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public void removeCursor(String name, String viewname)
+    public void removeCursor(String cursorName, String viewname)
     {
         DEViseView view = getView(viewname);
 
         if (view != null) {
-            if (view.removeCursor(name)) {
+            if (view.removeCursor(cursorName)) {
                 repaint();
             }
         }
     }
 
-    public void updateViewDataRange(String name, String axis, float min, float max)
+    public void updateViewDataRange(String viewName, String axis,
+      float min, float max)
     {
-        DEViseView view = getView(name);
+        DEViseView view = getView(viewName);
 
         if (view != null && axis != null) {
             view.updateDataRange(axis, min, max);
@@ -581,6 +612,7 @@ public class DEViseScreen extends Panel
         }
     }
 
+    // Update the JS when a session is opened or closed.
     public synchronized void updateScreen(boolean flag)
     {
         if (flag) {
@@ -647,7 +679,7 @@ public class DEViseScreen extends Panel
         }
     }
 
-    // Enable float-buffering
+    // Enable double-buffering
     public synchronized void update(Graphics gc)
     {
         if (offScrImg == null) {

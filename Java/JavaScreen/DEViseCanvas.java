@@ -12,7 +12,9 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class provides an interface to canvases in the JavaScreen.
+// It also holds some information related to piles (pile information
+// is divided between DEViseCanvas and DEViseView).
 
 // There is one instance of this class for each top-level view in
 // the session (note that if top-level views are piled, there's only
@@ -23,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2000/04/27 20:15:23  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.40  2000/04/24 20:21:58  hongyu
 // remove UI dependency of jspop and js
 //
@@ -64,6 +71,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.41  2000/04/27 20:15:23  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.40  2000/04/24 20:21:58  hongyu
 // remove UI dependency of jspop and js
 //
@@ -178,11 +190,15 @@ public class DEViseCanvas extends Container
 
     private static int javaCanvasSizeCorrection = 0;
     public int oldHighlightAtomIndex = -1, highlightAtomIndex = -1;
-    public int action3d = 0;
     public Point point = new Point();
     DEViseCrystal crystal = null;
 
-    public DEViseView view = null;
+    public DEViseView view = null; // base view if piled
+
+    // ADD COMMENT -- we need clarification here as to why this is on a
+    // per-canvas basis, since there can actually only be one active view
+    // at a time in the entire JS; Hongyu says that this does not
+    // necessarily get set to null when the active view becomes inactive.
     public DEViseView activeView = null;
 
     private Dimension canvasDim = null;
@@ -193,7 +209,7 @@ public class DEViseCanvas extends Container
 
     boolean isMouseDragged = false, isInViewDataArea = false, isInDataArea = false;
     DEViseCursor selectedCursor = null;
-    int whichCursorSide = -1;
+    int whichCursorSide = -1; // TEMP -- should probably have named constants for this
 
     public String helpMsg = null;
     public int helpMsgX = -1, helpMsgY = -1;
@@ -206,6 +222,7 @@ public class DEViseCanvas extends Container
 
     public static int totalpaintcount = 0;
 
+    // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
     {
         view = v;
@@ -279,11 +296,11 @@ public class DEViseCanvas extends Container
             isImageUpdated = true;
         }
 
-        // Necessary to draw correct image because float-buffering is used
+        // Necessary to draw correct image because double-buffering is used
         //offScrImg = null;
     }
 
-    // Enable float-buffering
+    // Enable double-buffering
     public void update(Graphics gc)
     {
         if (gc == null) {
@@ -395,121 +412,8 @@ public class DEViseCanvas extends Container
             }
         }
 
-        if (action3d == 0) {
-            paintBackground(gc);
-            crystal.paint(this, gc, isMouseDragged);
-        } else if (action3d == 1) {
-            action3d = 0;
-
-            if (oldHighlightAtomIndex >= 0) {
-                DEViseAtomInCrystal atom = crystal.getAtom(oldHighlightAtomIndex);
-                if (atom != null) {
-                    atom.lastSelectedBondIndex = -1;
-                }
-                oldHighlightAtomIndex = -1;
-
-                //gc.drawImage(offScrImg, 0, 0, this);
-                paintBackground(gc);
-                crystal.paint(this, gc, false);
-            } else if (highlightAtomIndex >= 0) {
-                DEViseAtomInCrystal atom = crystal.getAtom(highlightAtomIndex);
-                oldHighlightAtomIndex = highlightAtomIndex;
-                highlightAtomIndex = -1;
-
-                if (atom != null) {
-                    DEViseAtomInCrystal atom1 = null;
-
-                    if (atom.lastSelectedBondIndex >= 0) {
-                        atom1 = crystal.getAtom(atom.lastSelectedBondIndex);
-
-                        if (atom1 != null) {
-                            Color color = atom.type.XORcolor, color1 = atom1.type.XORcolor, oldcolor = gc.getColor();
-                            int x = atom.drawX, y = atom.drawY, x1 = atom1.drawX, y1 = atom1.drawY, xm = (x + x1) / 2, ym = (y + y1) / 2;
-
-                            gc.setColor(color);
-                            gc.drawLine(x, y, xm, ym);
-                            for (int k = 1; k < crystal.bondWidth + 1; k++) {
-                                gc.drawLine(x, y - k, xm, ym - k);
-                                gc.drawLine(x, y + k, xm, ym + k);
-                                gc.drawLine(x - k, y, xm - k, ym);
-                                gc.drawLine(x + k, y, xm + k, ym);
-                            }
-
-                            gc.setColor(color1);
-                            gc.drawLine(xm, ym, x1, y1);
-                            for (int k = 1; k < crystal.bondWidth + 1; k++) {
-                                gc.drawLine(xm, ym - k, x1, y1 - k);
-                                gc.drawLine(xm, ym + k, x1, y1 + k);
-                                gc.drawLine(xm - k, ym, x1 - k, y1);
-                                gc.drawLine(xm + k, ym, x1 + k, y1);
-                            }
-
-                            gc.setColor(oldcolor);
-                        }
-                    } else {
-                        atom.type.paint(this, gc, atom.drawX, atom.drawY, atom.drawSize, 2);
-                    }
-
-                    if (atom.lastSelectedBondIndex >= 0) {
-                        if (atom1 == null) {
-                            atom.lastSelectedBondIndex = -1;
-                            return true;
-                        }
-                    }
-
-                    int w = 0, h = 0, x = point.x, y = point.y;
-                    if (atom1 == null) {
-                        w = 80;
-                        h = 45;
-                    } else {
-                        w = 120;
-                        h = 25;
-                    }
-
-                    if (x + w > canvasDim.width - 1) {
-                        x = x - w;
-                    }
-                    if (y + h > canvasDim.height - 1) {
-                        y = y - h;
-                    }
-
-                    Color oldcolor = gc.getColor();
-                    Font oldfont = gc.getFont();
-
-                    gc.setColor(Color.black);
-                    gc.drawRect(x, y, w, h);
-                    gc.setColor(Color.white);
-                    gc.fillRect(x + 1, y + 1, w - 1, h - 1);
-                    gc.setFont(new Font("Serif", Font.PLAIN, 12));
-                    gc.setColor(atom.type.color);
-                    if (atom1 == null) {
-                        gc.drawString(atom.type.name + "(" + oldHighlightAtomIndex + ")", x + 5 , y + 10);
-                        float[] pos = crystal.getPos(atom.pos);
-                        String xs = Float.toString(pos[0]), ys = Float.toString(pos[1]), zs = Float.toString(pos[2]);
-                        xs = xs.substring(0, (xs.length() > 6) ? 6 : xs.length());
-                        ys = ys.substring(0, (ys.length() > 6) ? 6 : ys.length());
-                        zs = zs.substring(0, (zs.length() > 6) ? 6 : zs.length());
-                        gc.drawString("x = " + xs, x + 5, y + 23);
-                        gc.drawString("y = " + ys, x + 5, y + 33);
-                        gc.drawString("z = " + zs, x + 5, y + 43);
-                    } else {
-                        gc.drawString("" + atom.type.name + "(" + oldHighlightAtomIndex + ")" + "-" + atom1.type.name + "(" + atom.lastSelectedBondIndex + ")", x + 5, y + 13);
-                        float[] pos1 = crystal.getPos(atom.pos), pos2 = crystal.getPos(atom1.pos);
-                        float dx = pos1[0] - pos2[0], dy = pos1[1] - pos2[1], dz = pos1[2] - pos2[2];
-                        float d = (float)Math.sqrt(dx * dx + dy * dy + dz * dz);
-                        String dd = Float.toString(d);
-                        dd = dd.substring(0, (dd.length() > 6) ? 6 : dd.length());
-                        gc.drawString("Length = " + dd, x + 5, y + 23);
-                        atom.lastSelectedBondIndex = -1;
-                    }
-
-                    gc.setColor(oldcolor);
-                    gc.setFont(oldfont);
-                }
-            }
-        } else {
-            action3d = 0;
-        }
+        paintBackground(gc);
+        crystal.paint(this, gc, isMouseDragged);
 
         return true;
     }
@@ -856,7 +760,7 @@ public class DEViseCanvas extends Container
         {
             // The starting point will be in this view, otherwise this event will not be catched
 
-            // Each mouse click will be here once, so float click actually will enter this twice
+            // Each mouse click will be here once, so double click actually will enter this twice
 
             // The position of this event will be relative to this view, and will not exceed the
             // range of this view, ie, p.x >= 0 && p.x < view.width ...
@@ -883,7 +787,7 @@ public class DEViseCanvas extends Container
 
         public void mouseReleased(MouseEvent event)
         {
-            // Each mouse click will be here once, so float click actually will enter
+            // Each mouse click will be here once, so double click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
 
@@ -990,8 +894,13 @@ public class DEViseCanvas extends Container
                 String cmd = null;
                 Point p = event.getPoint();
 
-                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT && activeView.isDrillDown) {
-                    cmd = DEViseCommands.SHOW_RECORDS + " " + activeView.getCurlyName() + " " + activeView.translateX(p.x, 2) + " " + activeView.translateY(p.y, 2);
+                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
+		    if (activeView.isDrillDown) {
+                        cmd = DEViseCommands.SHOW_RECORDS + " " +
+			  activeView.getCurlyName() + " " +
+			  activeView.translateX(p.x, 2) + " " +
+			  activeView.translateY(p.y, 2);
+		    }
                 } else if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
                     if (helpMsg != null) {
                         helpMsg = null;
@@ -1141,10 +1050,8 @@ public class DEViseCanvas extends Container
 
 		//int index = crystal.find(p.x, p.y);
 		//if (index != oldHighlightAtomIndex) {
-		//    action3d = 1;
 		//    repaint();
 		//    highlightAtomIndex = index;
-		//    action3d = 1;
 		//    repaint();
                 //}
 
@@ -1160,6 +1067,8 @@ public class DEViseCanvas extends Container
     }
     // end of class ViewMouseMotionListener
 
+    // Update the shape of the mouse cursor based on whether the mouse
+    // is on a DEVise cursor, etc.
     public synchronized void checkMousePos(Point p, boolean checkDispatcher)
     {
         // initialize value
@@ -1212,8 +1121,8 @@ public class DEViseCanvas extends Container
 
             setCursor(jsc.lastCursor);
 
-            if (activeView.piledView != null) {
-                activeView = activeView.piledView;
+            if (activeView.pileBaseView != null) {
+                activeView = activeView.pileBaseView;
             }
 
             if (jscreen.getCurrentView() != activeView) {
@@ -1245,6 +1154,7 @@ public class DEViseCanvas extends Container
         }
     }
 
+    // ADD COMMENT -- what does this do, what is return value?
     public synchronized boolean checkMousePos(Point p, DEViseView v)
     {
         if (!v.inView(p)) {
@@ -1252,7 +1162,7 @@ public class DEViseCanvas extends Container
         }
 
         if (!v.inViewDataArea(p)) {
-            if (v.piledView != null) {
+            if (v.pileBaseView != null) {
                 return false;
             } else {
                 activeView = v;
@@ -1296,7 +1206,7 @@ public class DEViseCanvas extends Container
             }
         }
 
-        if (v.piledView != null) {
+        if (v.pileBaseView != null) {
             return false;
         } else {
             activeView = v;
@@ -1307,6 +1217,8 @@ public class DEViseCanvas extends Container
         }
     }
 
+    // Create "crystal" (used for drawing in 3D views/piles).  Note that
+    // in a 3D pile there is only one crystal for the entire pile.
     public void createCrystal()
     {
         if (view.viewDimension != 3) {
@@ -1414,6 +1326,7 @@ public class DEViseCanvas extends Container
         }
     }
 
+/* Not used.  RKW 2000-05-04.
     private void createCrystalFromData(Reader stream) throws YException
     {
         StreamTokenizer input = new StreamTokenizer(stream);
@@ -1500,21 +1413,6 @@ public class DEViseCanvas extends Container
                             for (int i = 0; i < numberOfAtoms; i++) {
                                 atomName[i] = getString(input);
                                 atomPos[i] = getData(input, 3);
-                                /*
-                                if (isBasis) {
-                                    YGlobals.ythrow(atomPos[i][0] >= 0.0 && atomPos[i][0] < 1.0
-                                                    && atomPos[i][1] >= 0.0 && atomPos[i][1] < 1.0
-                                                    && atomPos[i][2] >= 0.0 && atomPos[i][2] < 1.0,
-                                                    "Incorrect atom position for unit cell basis (valid atom position must be less than 1.0 and greater than or equals to 0.0) at line " + input.lineno());
-                                }
-
-                                for (int j = 0; j < i; j++) {
-                                    YGlobals.ythrow(!(atomPos[i][0] == atomPos[j][0]
-                                                    && atomPos[i][1] == atomPos[j][1]
-                                                    && atomPos[i][2] == atomPos[j][2]),
-                                                    "Atom position shared by more than one atoms at line " + input.lineno());
-                                }
-                                */
                             }
 
                             isEnd = true;
@@ -1633,7 +1531,9 @@ public class DEViseCanvas extends Container
             throw new YException("IO error while reading from line " + input.lineno());
         }
     }
+*/
 
+    // ADD COMMENT -- what does this do?
     private float[] getData(StreamTokenizer input, int number) throws YException, IOException
     {
         float[] data = new float[number];
@@ -1654,6 +1554,7 @@ public class DEViseCanvas extends Container
         return data;
     }
 
+    // ADD COMMENT -- what does this do?
     private float getData(StreamTokenizer input) throws YException, IOException
     {
         int type;
@@ -1670,6 +1571,7 @@ public class DEViseCanvas extends Container
         }
     }
 
+    // ADD COMMENT -- what does this do?
     private String[] getString(StreamTokenizer input, int number) throws YException, IOException
     {
         String[] data = new String[number];
@@ -1690,6 +1592,7 @@ public class DEViseCanvas extends Container
         return data;
     }
 
+    // ADD COMMENT -- what does this do?
     private String getString(StreamTokenizer input) throws YException, IOException
     {
         int type;
