@@ -16,8 +16,11 @@ public class FileScanIteratorTest {
 		}
 		FileScanIterator fs = new FileScanIterator(fileName, typeDescs);
 		Tuple t;
+		int cnt = 0;
 		while((t = fs.getNext()) != null){
-			t.print(System.out);
+//			t.print(System.out);
+			cnt++;
 		}
+		System.out.println("read " + cnt + " tuples");
 	}
 }

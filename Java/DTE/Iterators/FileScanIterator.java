@@ -13,7 +13,8 @@ public class FileScanIterator implements Iterator {
 	public FileScanIterator(String fileName, TypeDesc[] types) 
 		throws FileNotFoundException 
 	{
-		FileReader file = new FileReader(fileName);
+		FileReader fr = new FileReader(fileName);
+		BufferedReader file = new BufferedReader(fr);
 		st = new StreamTokenizer(file);
 		tuple = new Tuple(types);
 	}
