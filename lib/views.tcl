@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/07/01 19:33:31  jussi
+#  Minor improvements. Added DoSetRecordCursor procedure, but
+#  it is yet to be implemented.
+#
 #  Revision 1.12  1996/06/20 17:12:53  guangshu
 #  Added DoStat procedure.
 #
@@ -1322,6 +1326,32 @@ proc DoStat {} {
 	    -command { destroy .statWin }
     pack .statWin.ac.applyAll.but .statWin.ac.applyCur.but \
 	    .statWin.ac.cancel.but -side top
+}
+
+############################################################
+
+proc DoColorStat {} {
+    global derivedSourceList curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    scanDerivedSources
+
+    set sname "Stat: $curView"
+    set sname [ OpenAndDefineDataSources 1 [list $sname] ]
+
+    set err [catch {set sourcedef $derivedSourceList($sname)}]
+    if {$err} {
+        dialog .viewNotFound "Derived Data Not Found" \
+                "Derived data\n$sname\nnot found." "" 0 OK
+        return
+    }
+
+    set schemafile [lindex $sourcedef 3]
+
+    MacroDefAutoNew $sname $schemafile
 }
 
 ############################################################
