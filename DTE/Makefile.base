@@ -62,6 +62,8 @@ CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
 
 ifdef DTE_DEBUG
 	CFLAGS += -g
+else
+	CFLAGS += -O2
 endif
 
 #temporary flag for testing the optimizer
@@ -89,13 +91,13 @@ endif
 
 CORE_SRC_CPP =
 
-STAND_ALONE_LIBS =
+STAND_ALONE_LIBS = -L../DataReader -ldatareader
 
 ifdef NO_UNIDATA
 	CORE_SRC += DevRead.dummy.c
 else
 	CORE_SRC += DevRead.c
-	STAND_ALONE_LIBS += -L../unidata -lunidata -L../DataReader -ldatareader -L$(PERL_CORE) -lperl
+	STAND_ALONE_LIBS += -L../unidata -lunidata
 endif
 
 # Set up for profiling.
