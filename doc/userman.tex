@@ -1,10 +1,11 @@
 \documentstyle[epsf,fullpage,verbatim]{article}
 
 \def\Devise{{\tt DEVise} }
-\def\filename#1{{\tt #1} }
-\def\code#1{{\tt #1} }
-\def\term#1{#1 }
-\def\variable#1{{\tt #1} }
+\def\filename#1{{\tt #1}}
+\def\code#1{{\tt #1}}
+\def\menu#1{{\tt #1}}
+\def\term#1{#1}
+\def\variable#1{{\tt #1}}
 
 \begin{document}
 \title{\Devise User Manual}
@@ -17,11 +18,120 @@
 
 \section{Introduction}
 
-\section{Schema Definition and Browsing}
+\section{Installing \Devise}
+
+\subsection{Extracting Files from \code{tar} Archive}
+
+\subsection{Customization}
+
+\section{Running \Devise}
+
+\subsection{Path Names and Environment Variables}
+
+\subsection{Running with \code{run} Script}
+
+\subsection{Customization with \filename{devise.rc}}
+
+\section{Tutorial Session with \Devise}
+
+\newpage
+
+\section{\Devise Concepts}
+
+\subsection{Data Stream}
+
+\subsubsection{Unix File}
+\subsubsection{WWW Data}
+\subsubsection{SEQ Query}
+\subsubsection{CRSP Data}
+\subsubsection{Compustat Data}
+\subsubsection{ISSM Data}
+\subsubsection{SQL Query}
+\subsubsection{Command Output}
+\subsubsection{Network Data}
+
+\subsection{Physical Schema}
+
+\subsubsection{Attribute Name}
+\subsubsection{Attribute Type}
+\subsubsection{Attribute Value Range}
+\subsubsection{Sorted vs.\ Unsorted}
+
+\subsection{Logical Schema}
+
+\subsubsection{Name of Physical Schema}
+\subsubsection{Group Name}
+\subsubsection{Attribute Name}
+
+\subsection{Graphical Data}
+
+\subsubsection{Location: X, Y, and Z}
+\subsubsection{Size}
+\subsubsection{Color}
+\subsubsection{Pattern}
+\subsubsection{Orientation}
+\subsubsection{Shape}
+\subsubsection{Shape Attributes}
+
+\subsection{View Properties}
+
+\subsubsection{Title}
+\subsubsection{Axes}
+
+\newpage
+
+\subsection{Display of Graphical Data}
+
+\subsubsection{Visual Filter}
+
+\subsubsection{View}
+
+\subsubsection{Window}
+
+\subsection{Visual Assistants}
+
+\subsubsection{Visual Cursor}
+
+\subsubsection{Visual Link}
+
+\subsubsection{History}
+
+\subsection{Statistics}
+
+\subsubsection{Min, Max, and Mean}
+
+\subsubsection{Confidence Intervals}
+
+\subsubsection{Kiviat Graphs}
+
+\subsection{Session and Template}
+
+\section{Data Stream Management}
+
+\subsection{Data Stream Catalog}
+
+\subsection{Data Stream Definition}
+
+\subsubsection{Display Name}
+\subsubsection{Source}
+\subsubsection{Key}
+\subsubsection{Schema}
+\subsubsection{Evaluation Factor}
+\subsubsection{Cache Priority}
+\subsubsection{Info/Command}
+
+\subsection{Manipulating the Catalog}
+
+\subsubsection{Create}
+\subsubsection{Edit}
+\subsubsection{Copy}
+\subsubsection{Delete}
+
+\section{Defining and Browsing Schemas}
 
 \subsection{User and Superuser Modes}
 
-\Devise can be brought up in one of two modes - the user mode or the
+\Devise can be brought up in one of two modes --- the user mode or the
 superuser mode.  This is decided by the value of the variable
 \variable{UserMode} defined in the \filename{.rc} file read by
 \Devise.  A value of 1 indicates that it is run in the user mode and 0
@@ -80,7 +190,7 @@ straightforward. First, the two schemas to be mapped are specified and
 also the names of files used for storing the following:
 
 \begin{itemize}
-\item Mapping table - this will be the list of associations
+\item Mapping table --- this will be the list of associations
 \item Unresolved data sources of the first schema 
 \item Unresolved data sources of the second schema
 \end{itemize}
@@ -138,17 +248,102 @@ of the Kiviat graph can be brought up by clicking the middle mouse
 button on the graph. There are options to reuse the same Kiviat graph
 to display different information or create new graphs for each.
 
+\section{Creating a Visualization}
+
+\subsection{Window Name}
+\subsection{Window Layout}
+\subsection{X Attribute}
+\subsection{Y Attributes}
+\subsection{View Background Color}
+\subsection{View Title}
+\subsection{Link X}
+\subsection{X and Y Axes}
+
+\section{Visual Filter}
+
+\subsection{Change Visual Filter}
+\subsection{Filter History}
+
+\section{Graphical Data}
+
+\subsection{Editing the Mapping}
+
 \newpage
-\section{Copyright}
+
+\section{View Properties}
+
+\subsection{Swap View Positions}
+\subsection{Move View to Another Window}
+\subsection{Remove a View}
+\subsection{Bring a View Back}
+\subsection{Destroy View}
+\subsection{Switch TData}
+\subsection{Title}
+\subsection{Axes}
+
+\section{Window Properties}
+
+\subsection{Change View Layout}
+\subsection{Duplicate Window}
+\subsection{Remove Window}
+
+\section{Visual Link}
+
+\subsection{Create Link}
+\subsection{Link}
+\subsection{Unlink}
+\subsection{Delete Link}
+
+\section{Visual Cursor}
+
+\subsection{Create Cursor}
+\subsection{Set Source}
+\subsection{Set Destination}
+\subsection{Delete Cursor}
+
+\section{Statistics}
+
+\subsection{Enable Statistics}
+\subsection{Disable Statistics}
+\subsection{Enable Kiviat Graph}
+
+\newpage
+
+\section{Using Sessions and Templates}
+
+\subsection{Save Session}
+\subsection{Save Session as Template}
+\subsection{Restore Session or Template}
+\subsection{Restore Session as Template}
+\subsection{Pixel Image of View}
+
+\section{Exporting Data and Window Images}
+
+\subsection{Print Window Image}
+
+\subsection{Save Window Image to File}
+
+\section{Online Help}
+
+\section{Exiting \Devise}
+
+\section{Internet Information Resources}
+
+The \Devise WWW page at
+\code{http://www.cs.wisc.edu/~jussi/devise/devise.html} contains a browsable
+version of this document.
+
+\newpage
+\section*{Copyright}
 
 \verbatiminput{Copyright}
 
-\section{Disclaimer}
+\section*{Disclaimer}
 
 \verbatiminput{Disclaimer}
 
 \newpage
-\section{Agreement}
+\section*{Agreement}
 
 \verbatiminput{Agreement}
 
