@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.118  2001/10/10 19:28:24  xuk
+// Added display control command line argument/parameter for auto playback.
+// For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
+// For JS applet: parameter playbackdisplay = true|false to turn on|off display.
+//
 // Revision 1.117  2001/10/05 20:00:26  xuk
 // Fixed bug 701: command log playwork can work for URL and simple file path.
 //
@@ -411,7 +416,7 @@ public class jsdevisec extends Panel
     // -1: normal JS
     // 0: before the first round connection
     // >0: collaborated JS ID
-    public int specialID = -1;
+    public long specialID = -1;
 
     public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
 
