@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/27 15:52:44  jussi
+  Added functionality which allows TDataAscii and TDataBinary to request
+  that views using a given TData be refreshed (existing queries are
+  aborted and new queries are issued). Fixed a few bugs in QueryProcFull
+  which became visible only when this new functionality was tested.
+
   Revision 1.5  1996/06/23 20:33:01  jussi
   Cleaned up.
 
@@ -90,7 +96,9 @@ void QueryProc::RefreshTData(TData *tdata)
     int index = View::InitViewIterator();
     while(View::MoreView(index)) {
         View *v = View::NextView(index);
-        ViewGraph *vg = (ViewGraph *)classDir->FindInstance(v->GetName());
+        char *name = v->GetName();
+        DOASSERT(name, "Invalid view name");
+        ViewGraph *vg = (ViewGraph *)classDir->FindInstance(name);
         DOASSERT(vg, "Cannot find view");
 
         Boolean usesTData = false;
