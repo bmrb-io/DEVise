@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/10/03 16:01:37  wenger
+  Enabled session opening and saving from back end; incremented version; a
+  few more minor fixes to session-related code.
+
   Revision 1.35  1997/08/20 22:11:13  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -209,7 +213,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.7";
+static const char *	version = "1.4.8";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";
