@@ -5,54 +5,7 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-QueryProcTape.o: QueryProcTape.h ../graphics.new/QueryProc.h
-QueryProcTape.o: ../graphics/DeviseTypes.h /usr/include/values.h
-QueryProcTape.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-QueryProcTape.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-QueryProcTape.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-QueryProcTape.o: /usr/include/sys/bitypes.h ../graphics/VisualArg.h
-QueryProcTape.o: ../graphics/Color.h ../graphics/Pattern.h
-QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
-QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-QueryProcTape.o: /usr/include/stdio.h /usr/include/libio.h
-QueryProcTape.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-QueryProcTape.o: /usr/include/stdlib.h /usr/include/features.h
-QueryProcTape.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
-QueryProcTape.o: /usr/include/errno.h /usr/include/linux/errno.h
-QueryProcTape.o: /usr/include/asm/errno.h /usr/include/alloca.h
-QueryProcTape.o: /usr/include/unistd.h /usr/include/posix_opt.h
-QueryProcTape.o: /usr/include/gnu/types.h /usr/include/confname.h
-QueryProcTape.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
-QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
-QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-QueryProcTape.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-QueryProcTape.o: ../graphics.new/BufferPolicy.h ../graphics/Init.h
-QueryProcTape.o: ../graphics.new/BufMgrFull.h ../graphics.new/RangeInfo.h
-QueryProcTape.o: ../graphics.new/BufMgrNull.h ../graphics.new/TDataMap.h
-QueryProcTape.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
-QueryProcTape.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-QueryProcTape.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-QueryProcTape.o: ../graphics/Geom.h /usr/include/math.h
-QueryProcTape.o: /usr/include/huge_val.h /usr/include/endian.h
-QueryProcTape.o: /usr/include/bytesex.h /usr/include/nan.h
-QueryProcTape.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
-QueryProcTape.o: /usr/include/ieee754.h /usr/include/ieee854.h
-QueryProcTape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-QueryProcTape.o: ../graphics/Compress.h ../graphics/Control.h
-QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
-QueryProcTape.o: /usr/include/linux/time.h /usr/include/sys/time.h
-QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
-QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-QueryProcTape.o: ../graphics.new/GdataStat.h HashTable.h
-QueryProcTape.o: ../graphics.new/DataSourceFixedBuf.h
-QueryProcTape.o: ../graphics.new/DataSourceBuf.h ../graphics.new/UpdateLink.h
-QueryProcTape.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-QueryProcTape.o: ../graphics.new/PointStorage.h ../graphics.new/GDataBin.h
-QueryProcTape.o: ../graphics.new/MappingInterp.h ../graphics.new/Bitmap.h
-QueryProcTape.o: ../graphics/Display.h ../graphics/ColorMgr.h
-Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
+Templates.o: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 Templates.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
@@ -60,21 +13,44 @@ Templates.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 Templates.o: /usr/include/sys/bitypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics/Pattern.h
 Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
-Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-Templates.o: /usr/include/libio.h /usr/include/_G_config.h
-Templates.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-Templates.o: /usr/include/features.h
+Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h /usr/include/libio.h
+Templates.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+Templates.o: /usr/include/stdlib.h /usr/include/features.h
 Templates.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
 Templates.o: /usr/include/errno.h /usr/include/linux/errno.h
 Templates.o: /usr/include/asm/errno.h /usr/include/alloca.h
 Templates.o: /usr/include/unistd.h /usr/include/posix_opt.h
 Templates.o: /usr/include/gnu/types.h /usr/include/confname.h
 Templates.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
-Templates.o: ../graphics.new/GData.h ../graphics.new/TData.h
-Templates.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-Templates.o: ../graphics.new/BufferPolicy.h
+Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
+Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
+Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
+Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+Templates.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+Templates.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+Templates.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+Templates.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+Templates.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+Templates.o: ../graphics.new/machdep.h /usr/include/limits.h
+Templates.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Templates.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+Templates.o: /usr/include/linux/param.h /usr/include/asm/param.h
+Templates.o: /usr/include/sys/time.h /usr/include/linux/time.h
+Templates.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+Templates.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Templates.o: /usr/include/endian.h /usr/include/bytesex.h
+Templates.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+Templates.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+Templates.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+Templates.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+Templates.o: /usr/include/paths.h /usr/include/sys/socket.h
+Templates.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Templates.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Templates.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
+Templates.o: ../graphics.new/RangeInfo.h
 devtype.o: /usr/include/stdlib.h /usr/include/features.h
 devtype.o: /usr/include/sys/cdefs.h
 devtype.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -113,7 +89,13 @@ tapedrive.o: /usr/include/netdb.h /usr/include/paths.h
 tapedrive.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
 tapedrive.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 tapedrive.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-tapedrive.o: /usr/include/asm/byteorder.h ../graphics/Exit.h
+tapedrive.o: /usr/include/asm/byteorder.h ../graphics.new/DCE.h
+tapedrive.o: /usr/include/errno.h /usr/include/linux/errno.h
+tapedrive.o: /usr/include/asm/errno.h /usr/include/assert.h
+tapedrive.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+tapedrive.o: ../graphics/Exit.h ../graphics/DevError.h
+tapedrive.o: ../graphics/DeviseTypes.h /usr/include/values.h
+tapedrive.o: ../graphics/DevStatus.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/libio.h
 testtape.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 testtape.o: ../graphics.new/machdep.h /usr/include/limits.h

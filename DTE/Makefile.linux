@@ -13,497 +13,650 @@ depend:
 
 # DO NOT DELETE
 
-Dql.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Dql.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/unistd.h
-Dql.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Dql.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Dql.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Dql.o: /usr/include/sys/unistd.h /usr/include/ctype.h
+Dql.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Dql.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h /usr/include/features.h
+Dql.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+Dql.o: /usr/include/errno.h /usr/include/linux/errno.h
+Dql.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h
+Dql.o: /usr/include/unistd.h /usr/include/posix_opt.h
+Dql.o: /usr/include/gnu/types.h /usr/include/confname.h
+Dql.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Dql.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Dql.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Dql.o: /usr/include/ctype.h /usr/include/endian.h /usr/include/bytesex.h
 Dql.o: ../graphics.new/machdep.h /usr/include/limits.h
-Dql.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-Dql.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Dql.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Dql.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-Dql.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Dql.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Dql.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Dql.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Dql.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Dql.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Dql.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-Dql.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Dql.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Dql.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Dql.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Dql.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-Dql.o: ../graphics/Util.h /usr/include/math.h /usr/include/floatingpoint.h
-Dql.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h
-Dql.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
+Dql.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Dql.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+Dql.o: /usr/include/linux/param.h /usr/include/asm/param.h
+Dql.o: /usr/include/sys/time.h /usr/include/linux/time.h
+Dql.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+Dql.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Dql.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h /usr/include/sys/shm.h
+Dql.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+Dql.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+Dql.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+Dql.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+Dql.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+Dql.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+Dql.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
+Dql.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Dql.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Dql.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Dql.o: ../graphics/Util.h /usr/include/math.h /usr/include/huge_val.h
+Dql.o: /usr/include/nan.h /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+Dql.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Dql.o: ../graphics/DeviseTypes.h ../graphics/DevStatus.h ../graphics/Exit.h
 Dql.o: ../graphics/Parse.h ../graphics/Timer.h
-DqlInclude.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DqlInclude.o: /usr/include/stdlib.h /usr/include/string.h
-DqlInclude.o: /usr/include/unistd.h /usr/include/sys/types.h
-DqlInclude.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DqlInclude.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DqlInclude.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
-DqlInclude.o: /usr/include/ctype.h Core/Engine.h Core/types.h
-DqlInclude.o: /usr/include/assert.h /usr/include/netinet/in.h
-DqlInclude.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DqlInclude.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DqlInclude.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-DqlInclude.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-DqlInclude.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
-DqlInclude.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DqlInclude.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DqlInclude.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DqlInclude.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DqlInclude.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DqlInclude.o: Core/exception.h ../graphics.new/machdep.h
-DqlInclude.o: /usr/include/limits.h /usr/include/sys/wait.h
-DqlInclude.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DqlInclude.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DqlInclude.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DqlInclude.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DqlInclude.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DqlInclude.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
-DqlInclude.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DqlInclude.o: ../graphics/DevStatus.h ../graphics/Config.h
-DqlInclude.o: ../graphics/DList.h ../graphics/Exit.h Core/site.h Core/myopt.h
-DqlInclude.o: Core/queue.h Core/url.h Core/SockStream.h Core/listop.h
-DqlInclude.o: Core/GeneralRead.h Core/StandardRead.h
-TuplePtr.Plex.o: TuplePtr.Plex.h /usr/include/std.h TuplePtr.defs.h
-TuplePtr.Plex.o: Core/types.h /usr/include/assert.h /usr/include/sys/types.h
-TuplePtr.Plex.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-TuplePtr.Plex.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TuplePtr.Plex.o: /usr/include/sys/time.h /usr/include/sys/time.h
-TuplePtr.Plex.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TuplePtr.Plex.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TuplePtr.Plex.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-TuplePtr.Plex.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-TuplePtr.Plex.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-TuplePtr.Plex.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-TuplePtr.Plex.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TuplePtr.Plex.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TuplePtr.Plex.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TuplePtr.Plex.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TuplePtr.Plex.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-TuplePtr.Plex.o: Core/exception.h ../graphics.new/machdep.h
-TuplePtr.Plex.o: /usr/include/limits.h /usr/include/sys/wait.h
-TuplePtr.Plex.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TuplePtr.Plex.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TuplePtr.Plex.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TuplePtr.Plex.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-TuplePtr.Plex.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TuplePtr.Plex.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
+DqlInclude.o: /usr/include/stdio.h /usr/include/libio.h
+DqlInclude.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+DqlInclude.o: /usr/include/stdlib.h /usr/include/features.h
+DqlInclude.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+DqlInclude.o: /usr/include/errno.h /usr/include/linux/errno.h
+DqlInclude.o: /usr/include/asm/errno.h /usr/include/alloca.h
+DqlInclude.o: /usr/include/string.h /usr/include/unistd.h
+DqlInclude.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+DqlInclude.o: /usr/include/confname.h /usr/include/sys/types.h
+DqlInclude.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+DqlInclude.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DqlInclude.o: /usr/include/sys/bitypes.h /usr/include/ctype.h
+DqlInclude.o: /usr/include/endian.h /usr/include/bytesex.h Core/Engine.h
+DqlInclude.o: Core/types.h /usr/include/assert.h /usr/include/netinet/in.h
+DqlInclude.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+DqlInclude.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+DqlInclude.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+DqlInclude.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+DqlInclude.o: Core/exception.h /usr/include/sys/time.h
+DqlInclude.o: /usr/include/linux/time.h /usr/include/sys/time.h
+DqlInclude.o: ../graphics.new/machdep.h /usr/include/limits.h
+DqlInclude.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+DqlInclude.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+DqlInclude.o: /usr/include/linux/param.h /usr/include/asm/param.h
+DqlInclude.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+DqlInclude.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
+DqlInclude.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+DqlInclude.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+DqlInclude.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+DqlInclude.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+DqlInclude.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+DqlInclude.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+DqlInclude.o: /usr/include/netdb.h /usr/include/paths.h
+DqlInclude.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+DqlInclude.o: /usr/include/values.h ../graphics/DevStatus.h
+DqlInclude.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Init.h
+DqlInclude.o: ../graphics/BufPolicy.h Core/site.h Core/myopt.h Core/queue.h
+DqlInclude.o: Core/url.h /usr/include/sys/uio.h Core/SockStream.h
+DqlInclude.o: Core/listop.h Core/GeneralRead.h Core/StandardRead.h
+TuplePtr.Plex.o: TuplePtr.Plex.h TuplePtr.defs.h Core/types.h
+TuplePtr.Plex.o: /usr/include/assert.h /usr/include/features.h
+TuplePtr.Plex.o: /usr/include/sys/cdefs.h /usr/include/string.h
+TuplePtr.Plex.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+TuplePtr.Plex.o: /usr/include/sys/types.h /usr/include/linux/types.h
+TuplePtr.Plex.o: /usr/include/linux/posix_types.h
+TuplePtr.Plex.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+TuplePtr.Plex.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+TuplePtr.Plex.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+TuplePtr.Plex.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+TuplePtr.Plex.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+TuplePtr.Plex.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+TuplePtr.Plex.o: Core/exception.h /usr/include/sys/time.h
+TuplePtr.Plex.o: /usr/include/linux/time.h /usr/include/sys/time.h
+TuplePtr.Plex.o: ../graphics.new/machdep.h /usr/include/limits.h
+TuplePtr.Plex.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TuplePtr.Plex.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TuplePtr.Plex.o: /usr/include/linux/param.h /usr/include/asm/param.h
+TuplePtr.Plex.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+TuplePtr.Plex.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+TuplePtr.Plex.o: /usr/include/endian.h /usr/include/bytesex.h
+TuplePtr.Plex.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+TuplePtr.Plex.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+TuplePtr.Plex.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+TuplePtr.Plex.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+TuplePtr.Plex.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+TuplePtr.Plex.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+TuplePtr.Plex.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+TuplePtr.Plex.o: /usr/include/paths.h ../graphics/AttrList.h
 TuplePtr.Plex.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TuplePtr.Plex.o: ../graphics/DevStatus.h ../graphics/Config.h
-TuplePtr.Plex.o: ../graphics/DList.h ../graphics/Exit.h /usr/include/stddef.h
-TuplePtr.XPlex.o: TuplePtr.XPlex.h TuplePtr.Plex.h /usr/include/std.h
-TuplePtr.XPlex.o: TuplePtr.defs.h Core/types.h /usr/include/assert.h
-TuplePtr.XPlex.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-TuplePtr.XPlex.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-TuplePtr.XPlex.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TuplePtr.XPlex.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-TuplePtr.XPlex.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TuplePtr.XPlex.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TuplePtr.XPlex.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-TuplePtr.XPlex.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-TuplePtr.XPlex.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-TuplePtr.XPlex.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-TuplePtr.XPlex.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TuplePtr.XPlex.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TuplePtr.XPlex.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TuplePtr.XPlex.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TuplePtr.XPlex.o: /usr/include/sys/byteorder.h Core/exception.h
+TuplePtr.Plex.o: ../graphics/DevStatus.h ../graphics/DList.h
+TuplePtr.Plex.o: ../graphics/Exit.h ../graphics/Init.h
+TuplePtr.Plex.o: ../graphics/BufPolicy.h
+TuplePtr.XPlex.o: TuplePtr.XPlex.h TuplePtr.Plex.h TuplePtr.defs.h
+TuplePtr.XPlex.o: Core/types.h /usr/include/assert.h /usr/include/features.h
+TuplePtr.XPlex.o: /usr/include/sys/cdefs.h /usr/include/string.h
+TuplePtr.XPlex.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+TuplePtr.XPlex.o: /usr/include/sys/types.h /usr/include/linux/types.h
+TuplePtr.XPlex.o: /usr/include/linux/posix_types.h
+TuplePtr.XPlex.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+TuplePtr.XPlex.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+TuplePtr.XPlex.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+TuplePtr.XPlex.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+TuplePtr.XPlex.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+TuplePtr.XPlex.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+TuplePtr.XPlex.o: Core/exception.h /usr/include/sys/time.h
+TuplePtr.XPlex.o: /usr/include/linux/time.h /usr/include/sys/time.h
 TuplePtr.XPlex.o: ../graphics.new/machdep.h /usr/include/limits.h
-TuplePtr.XPlex.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-TuplePtr.XPlex.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TuplePtr.XPlex.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-TuplePtr.XPlex.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-TuplePtr.XPlex.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TuplePtr.XPlex.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TuplePtr.XPlex.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
-TuplePtr.XPlex.o: /usr/include/values.h ../graphics/DevStatus.h
-TuplePtr.XPlex.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-TuplePtr.XPlex.o: /usr/include/stddef.h
+TuplePtr.XPlex.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TuplePtr.XPlex.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TuplePtr.XPlex.o: /usr/include/linux/param.h /usr/include/asm/param.h
+TuplePtr.XPlex.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+TuplePtr.XPlex.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+TuplePtr.XPlex.o: /usr/include/endian.h /usr/include/bytesex.h
+TuplePtr.XPlex.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+TuplePtr.XPlex.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+TuplePtr.XPlex.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+TuplePtr.XPlex.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+TuplePtr.XPlex.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+TuplePtr.XPlex.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+TuplePtr.XPlex.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+TuplePtr.XPlex.o: /usr/include/paths.h ../graphics/AttrList.h
+TuplePtr.XPlex.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TuplePtr.XPlex.o: ../graphics/DevStatus.h ../graphics/DList.h
+TuplePtr.XPlex.o: ../graphics/Exit.h ../graphics/Init.h
+TuplePtr.XPlex.o: ../graphics/BufPolicy.h
 
-DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.o: /usr/include/string.h ../../graphics.new/machdep.h
-DevRead.o: /usr/include/limits.h /usr/include/sys/types.h
-DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DevRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DevRead.o: /usr/include/sys/time.h /usr/include/sys/param.h
-DevRead.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-DevRead.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DevRead.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DevRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-DevRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DevRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DevRead.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-DevRead.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-DevRead.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-DevRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DevRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DevRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DevRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DevRead.o: /usr/include/sys/byteorder.h DevRead.h
+Aggregates.o: Aggregates.h types.h /usr/include/assert.h
+Aggregates.o: /usr/include/features.h /usr/include/sys/cdefs.h
+Aggregates.o: /usr/include/string.h
+Aggregates.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+Aggregates.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Aggregates.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Aggregates.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Aggregates.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+Aggregates.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Aggregates.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+Aggregates.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+Aggregates.o: /usr/include/asm/byteorder.h exception.h
+Aggregates.o: /usr/include/sys/time.h /usr/include/linux/time.h
+Aggregates.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+Aggregates.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Aggregates.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Aggregates.o: /usr/include/sys/param.h /usr/include/linux/param.h
+Aggregates.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+Aggregates.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+Aggregates.o: /usr/include/waitstatus.h /usr/include/endian.h
+Aggregates.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
+Aggregates.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+Aggregates.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+Aggregates.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+Aggregates.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+Aggregates.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+Aggregates.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+Aggregates.o: /usr/include/netdb.h /usr/include/paths.h
+Aggregates.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+Aggregates.o: /usr/include/values.h ../../graphics/DevStatus.h
+Aggregates.o: ../../graphics/DList.h ../../graphics/Exit.h
+Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h myopt.h
+Aggregates.o: queue.h url.h /usr/include/sys/uio.h /usr/include/stdio.h
+Aggregates.o: /usr/include/libio.h /usr/include/_G_config.h
+Aggregates.o: /usr/include/unistd.h /usr/include/posix_opt.h
+Aggregates.o: /usr/include/confname.h SockStream.h listop.h site.h
+Aggregates.o: GeneralRead.h StandardRead.h
+DevRead.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+DevRead.o: /usr/include/string.h /usr/include/features.h
+DevRead.o: /usr/include/sys/cdefs.h
+DevRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+DevRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
+DevRead.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+DevRead.o: /usr/include/posix2_lim.h /usr/include/sys/types.h
+DevRead.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+DevRead.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DevRead.o: /usr/include/sys/bitypes.h /usr/include/sys/param.h
+DevRead.o: /usr/include/linux/param.h /usr/include/asm/param.h
+DevRead.o: /usr/include/sys/time.h /usr/include/linux/time.h
+DevRead.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+DevRead.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+DevRead.o: /usr/include/waitstatus.h /usr/include/endian.h
+DevRead.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
+DevRead.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+DevRead.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+DevRead.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+DevRead.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+DevRead.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+DevRead.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+DevRead.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+DevRead.o: /usr/include/netdb.h /usr/include/paths.h
+DevRead.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+DevRead.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+DevRead.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+DevRead.o: /usr/include/asm/byteorder.h DevRead.h
 DevRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 DevRead.o: ../../graphics/DevStatus.h ../../graphics.new/RecId.h types.h
 DevRead.o: /usr/include/assert.h exception.h ../../graphics/AttrList.h
-DevRead.o: ../../graphics/Config.h ../../graphics/DList.h
-DevRead.o: ../../graphics/Exit.h GeneralRead.h ../../graphics/Util.h
-DevRead.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DevRead.o: ../../graphics.new/TData.h ../../graphics.new/RecOrder.h
-DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/DataSeg.h
-Engine.o: /usr/include/memory.h /usr/include/string.h
-Engine.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-Engine.o: /usr/include/math.h /usr/include/floatingpoint.h
-Engine.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h queue.h myopt.h
-Engine.o: types.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Engine.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Engine.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Engine.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Engine.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Engine.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Engine.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Engine.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-Engine.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-Engine.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Engine.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Engine.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Engine.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Engine.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
+DevRead.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+DevRead.o: ../../graphics/BufPolicy.h GeneralRead.h ../../graphics/Util.h
+DevRead.o: /usr/include/stdlib.h /usr/include/errno.h
+DevRead.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+DevRead.o: /usr/include/alloca.h /usr/include/ctype.h /usr/include/math.h
+DevRead.o: /usr/include/huge_val.h /usr/include/nan.h
+DevRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+DevRead.o: /usr/include/ieee754.h /usr/include/ieee854.h
+DevRead.o: ../../graphics.new/TData.h ../../graphics.new/DataSource.h
+DevRead.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
+DevRead.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+DevRead.o: ../../graphics.new/DataSeg.h
+Engine.o: /usr/include/memory.h /usr/include/features.h
+Engine.o: /usr/include/sys/cdefs.h /usr/include/string.h
+Engine.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+Engine.o: /usr/include/assert.h /usr/include/math.h /usr/include/huge_val.h
+Engine.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+Engine.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+Engine.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Engine.o: /usr/include/stdlib.h /usr/include/errno.h
+Engine.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Engine.o: /usr/include/alloca.h queue.h myopt.h types.h
+Engine.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Engine.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Engine.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Engine.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+Engine.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Engine.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+Engine.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+Engine.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+Engine.o: /usr/include/linux/time.h /usr/include/sys/time.h
 Engine.o: ../../graphics.new/machdep.h /usr/include/limits.h
-Engine.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-Engine.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-Engine.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-Engine.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-Engine.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Engine.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Engine.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-Engine.o: /usr/include/values.h ../../graphics/DevStatus.h
-Engine.o: ../../graphics/Config.h ../../graphics/DList.h
-Engine.o: ../../graphics/Exit.h url.h /usr/include/stdio.h
-Engine.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
+Engine.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Engine.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+Engine.o: /usr/include/linux/param.h /usr/include/asm/param.h
+Engine.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+Engine.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Engine.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+Engine.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+Engine.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+Engine.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+Engine.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+Engine.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+Engine.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+Engine.o: /usr/include/paths.h ../../graphics/AttrList.h
+Engine.o: ../../graphics/DeviseTypes.h ../../graphics/DevStatus.h
+Engine.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+Engine.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+Engine.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Engine.o: /usr/include/unistd.h /usr/include/posix_opt.h
+Engine.o: /usr/include/confname.h SockStream.h listop.h site.h GeneralRead.h
 Engine.o: StandardRead.h catalog.h DevRead.h ../../graphics.new/RecId.h
-Engine.o: Engine.h
-StandardRead.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+Engine.o: Engine.h Aggregates.h
+StandardRead.o: /usr/include/string.h /usr/include/features.h
+StandardRead.o: /usr/include/sys/cdefs.h
+StandardRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
 StandardRead.o: StandardRead.h GeneralRead.h types.h /usr/include/assert.h
-StandardRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-StandardRead.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-StandardRead.o: /usr/include/sys/time.h /usr/include/sys/time.h
-StandardRead.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-StandardRead.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-StandardRead.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-StandardRead.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-StandardRead.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-StandardRead.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-StandardRead.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-StandardRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-StandardRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-StandardRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-StandardRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-StandardRead.o: exception.h ../../graphics.new/machdep.h
-StandardRead.o: /usr/include/limits.h /usr/include/sys/wait.h
-StandardRead.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-StandardRead.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-StandardRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-StandardRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-StandardRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-StandardRead.o: /usr/include/sys/netconfig.h ../../graphics/AttrList.h
-StandardRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-StandardRead.o: ../../graphics/DevStatus.h ../../graphics/Config.h
-StandardRead.o: ../../graphics/DList.h ../../graphics/Exit.h url.h
-StandardRead.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-catalog.o: site.h /usr/include/assert.h myopt.h queue.h types.h
-catalog.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-catalog.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-catalog.o: /usr/include/sys/select.h /usr/include/sys/time.h
-catalog.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-catalog.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-catalog.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-catalog.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-catalog.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-catalog.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-catalog.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-catalog.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-catalog.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-catalog.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-catalog.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-catalog.o: /usr/include/sys/byteorder.h exception.h
+StandardRead.o: /usr/include/sys/types.h /usr/include/linux/types.h
+StandardRead.o: /usr/include/linux/posix_types.h
+StandardRead.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+StandardRead.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+StandardRead.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+StandardRead.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+StandardRead.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+StandardRead.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+StandardRead.o: exception.h /usr/include/sys/time.h /usr/include/linux/time.h
+StandardRead.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+StandardRead.o: /usr/include/limits.h /usr/include/posix1_lim.h
+StandardRead.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+StandardRead.o: /usr/include/sys/param.h /usr/include/linux/param.h
+StandardRead.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+StandardRead.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+StandardRead.o: /usr/include/waitstatus.h /usr/include/endian.h
+StandardRead.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
+StandardRead.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+StandardRead.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+StandardRead.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+StandardRead.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+StandardRead.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+StandardRead.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+StandardRead.o: /usr/include/netdb.h /usr/include/paths.h
+StandardRead.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+StandardRead.o: /usr/include/values.h ../../graphics/DevStatus.h
+StandardRead.o: ../../graphics/DList.h ../../graphics/Exit.h
+StandardRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
+StandardRead.o: /usr/include/sys/uio.h /usr/include/stdio.h
+StandardRead.o: /usr/include/libio.h /usr/include/_G_config.h
+StandardRead.o: /usr/include/unistd.h /usr/include/posix_opt.h
+StandardRead.o: /usr/include/confname.h SockStream.h
+catalog.o: site.h /usr/include/assert.h /usr/include/features.h
+catalog.o: /usr/include/sys/cdefs.h myopt.h queue.h types.h
+catalog.o: /usr/include/string.h
+catalog.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+catalog.o: /usr/include/sys/types.h /usr/include/linux/types.h
+catalog.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+catalog.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+catalog.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+catalog.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+catalog.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+catalog.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+catalog.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+catalog.o: /usr/include/linux/time.h /usr/include/sys/time.h
 catalog.o: ../../graphics.new/machdep.h /usr/include/limits.h
-catalog.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-catalog.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-catalog.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-catalog.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-catalog.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-catalog.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-catalog.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-catalog.o: /usr/include/values.h ../../graphics/DevStatus.h
-catalog.o: ../../graphics/Config.h ../../graphics/DList.h
-catalog.o: ../../graphics/Exit.h url.h /usr/include/string.h
-catalog.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h listop.h
-catalog.o: GeneralRead.h StandardRead.h catalog.h DevRead.h
-catalog.o: ../../graphics.new/RecId.h
-lex.yy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-lex.yy.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/assert.h
-lex.yy.o: /usr/include/memory.h myopt.h queue.h types.h
-lex.yy.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-lex.yy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-lex.yy.o: /usr/include/sys/time.h /usr/include/sys/time.h
-lex.yy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-lex.yy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-lex.yy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-lex.yy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-lex.yy.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-lex.yy.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-lex.yy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-lex.yy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-lex.yy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-lex.yy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-lex.yy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-lex.yy.o: ../../graphics.new/machdep.h /usr/include/limits.h
-lex.yy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-lex.yy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-lex.yy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-lex.yy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-lex.yy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-lex.yy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-lex.yy.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-lex.yy.o: /usr/include/values.h ../../graphics/DevStatus.h
-lex.yy.o: ../../graphics/Config.h ../../graphics/DList.h
-lex.yy.o: ../../graphics/Exit.h url.h /usr/include/unistd.h SockStream.h
-lex.yy.o: listop.h my.yacc.tab.h
-listop.o: /usr/include/memory.h /usr/include/string.h
-listop.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-listop.o: /usr/include/math.h /usr/include/floatingpoint.h
-listop.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
-listop.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-listop.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-listop.o: /usr/include/sys/time.h /usr/include/sys/time.h
-listop.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-listop.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-listop.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-listop.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-listop.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-listop.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-listop.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-listop.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-listop.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-listop.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-listop.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-listop.o: ../../graphics.new/machdep.h /usr/include/limits.h
-listop.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-listop.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-listop.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-listop.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-listop.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-listop.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-listop.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-listop.o: /usr/include/values.h ../../graphics/DevStatus.h
-listop.o: ../../graphics/Config.h ../../graphics/DList.h
-listop.o: ../../graphics/Exit.h url.h /usr/include/stdio.h
-listop.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
+catalog.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+catalog.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+catalog.o: /usr/include/linux/param.h /usr/include/asm/param.h
+catalog.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+catalog.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+catalog.o: /usr/include/endian.h /usr/include/bytesex.h
+catalog.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+catalog.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+catalog.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+catalog.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+catalog.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+catalog.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+catalog.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+catalog.o: /usr/include/paths.h ../../graphics/AttrList.h
+catalog.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+catalog.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+catalog.o: ../../graphics/Exit.h ../../graphics/Init.h
+catalog.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+catalog.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+catalog.o: /usr/include/unistd.h /usr/include/posix_opt.h
+catalog.o: /usr/include/confname.h SockStream.h listop.h GeneralRead.h
+catalog.o: StandardRead.h catalog.h DevRead.h ../../graphics.new/RecId.h
+lex.yy.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+lex.yy.o: /usr/include/string.h /usr/include/features.h
+lex.yy.o: /usr/include/sys/cdefs.h
+lex.yy.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+lex.yy.o: /usr/include/stdlib.h /usr/include/errno.h
+lex.yy.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+lex.yy.o: /usr/include/alloca.h /usr/include/assert.h /usr/include/memory.h
+lex.yy.o: myopt.h queue.h types.h /usr/include/sys/types.h
+lex.yy.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+lex.yy.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+lex.yy.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+lex.yy.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+lex.yy.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+lex.yy.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+lex.yy.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h exception.h
+lex.yy.o: /usr/include/sys/time.h /usr/include/linux/time.h
+lex.yy.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+lex.yy.o: /usr/include/limits.h /usr/include/posix1_lim.h
+lex.yy.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+lex.yy.o: /usr/include/sys/param.h /usr/include/linux/param.h
+lex.yy.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+lex.yy.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+lex.yy.o: /usr/include/waitstatus.h /usr/include/endian.h
+lex.yy.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
+lex.yy.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+lex.yy.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+lex.yy.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+lex.yy.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+lex.yy.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+lex.yy.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+lex.yy.o: /usr/include/netdb.h /usr/include/paths.h ../../graphics/AttrList.h
+lex.yy.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+lex.yy.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+lex.yy.o: ../../graphics/Exit.h ../../graphics/Init.h
+lex.yy.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+lex.yy.o: /usr/include/unistd.h /usr/include/posix_opt.h
+lex.yy.o: /usr/include/confname.h SockStream.h listop.h my.yacc.tab.h
+listop.o: /usr/include/memory.h /usr/include/features.h
+listop.o: /usr/include/sys/cdefs.h /usr/include/string.h
+listop.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+listop.o: /usr/include/assert.h /usr/include/math.h /usr/include/huge_val.h
+listop.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+listop.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+listop.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+listop.o: queue.h myopt.h types.h /usr/include/sys/types.h
+listop.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+listop.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+listop.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+listop.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+listop.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+listop.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+listop.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h exception.h
+listop.o: /usr/include/sys/time.h /usr/include/linux/time.h
+listop.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+listop.o: /usr/include/limits.h /usr/include/posix1_lim.h
+listop.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+listop.o: /usr/include/sys/param.h /usr/include/linux/param.h
+listop.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+listop.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+listop.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
+listop.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+listop.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+listop.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+listop.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+listop.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+listop.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+listop.o: /usr/include/netdb.h /usr/include/paths.h ../../graphics/AttrList.h
+listop.o: ../../graphics/DeviseTypes.h ../../graphics/DevStatus.h
+listop.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+listop.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+listop.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+listop.o: /usr/include/unistd.h /usr/include/posix_opt.h
+listop.o: /usr/include/confname.h SockStream.h listop.h site.h GeneralRead.h
 listop.o: StandardRead.h catalog.h
-my.yacc.tab.o: myopt.h /usr/include/assert.h queue.h types.h
-my.yacc.tab.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-my.yacc.tab.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-my.yacc.tab.o: /usr/include/sys/select.h /usr/include/sys/time.h
-my.yacc.tab.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-my.yacc.tab.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-my.yacc.tab.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-my.yacc.tab.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-my.yacc.tab.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-my.yacc.tab.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-my.yacc.tab.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-my.yacc.tab.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-my.yacc.tab.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-my.yacc.tab.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-my.yacc.tab.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-my.yacc.tab.o: /usr/include/sys/byteorder.h exception.h
-my.yacc.tab.o: ../../graphics.new/machdep.h /usr/include/limits.h
-my.yacc.tab.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-my.yacc.tab.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-my.yacc.tab.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-my.yacc.tab.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-my.yacc.tab.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-my.yacc.tab.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+my.yacc.tab.o: myopt.h /usr/include/assert.h /usr/include/features.h
+my.yacc.tab.o: /usr/include/sys/cdefs.h queue.h types.h /usr/include/string.h
+my.yacc.tab.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+my.yacc.tab.o: /usr/include/sys/types.h /usr/include/linux/types.h
+my.yacc.tab.o: /usr/include/linux/posix_types.h
+my.yacc.tab.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+my.yacc.tab.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+my.yacc.tab.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+my.yacc.tab.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+my.yacc.tab.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+my.yacc.tab.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+my.yacc.tab.o: exception.h /usr/include/sys/time.h /usr/include/linux/time.h
+my.yacc.tab.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+my.yacc.tab.o: /usr/include/limits.h /usr/include/posix1_lim.h
+my.yacc.tab.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+my.yacc.tab.o: /usr/include/sys/param.h /usr/include/linux/param.h
+my.yacc.tab.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+my.yacc.tab.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+my.yacc.tab.o: /usr/include/waitstatus.h /usr/include/endian.h
+my.yacc.tab.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
+my.yacc.tab.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+my.yacc.tab.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+my.yacc.tab.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+my.yacc.tab.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+my.yacc.tab.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+my.yacc.tab.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+my.yacc.tab.o: /usr/include/netdb.h /usr/include/paths.h
 my.yacc.tab.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 my.yacc.tab.o: /usr/include/values.h ../../graphics/DevStatus.h
-my.yacc.tab.o: ../../graphics/Config.h ../../graphics/DList.h
-my.yacc.tab.o: ../../graphics/Exit.h url.h /usr/include/string.h
-my.yacc.tab.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-my.yacc.tab.o: listop.h
-myopt.o: /usr/include/memory.h /usr/include/string.h
-myopt.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-myopt.o: /usr/include/math.h /usr/include/floatingpoint.h
-myopt.o: /usr/include/sys/ieeefp.h types.h /usr/include/sys/types.h
-myopt.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-myopt.o: /usr/include/sys/select.h /usr/include/sys/time.h
-myopt.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-myopt.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-myopt.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-myopt.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-myopt.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-myopt.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-myopt.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-myopt.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-myopt.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-myopt.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-myopt.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-myopt.o: /usr/include/sys/byteorder.h exception.h
+my.yacc.tab.o: ../../graphics/DList.h ../../graphics/Exit.h
+my.yacc.tab.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
+my.yacc.tab.o: /usr/include/sys/uio.h /usr/include/stdio.h
+my.yacc.tab.o: /usr/include/libio.h /usr/include/_G_config.h
+my.yacc.tab.o: /usr/include/unistd.h /usr/include/posix_opt.h
+my.yacc.tab.o: /usr/include/confname.h SockStream.h listop.h
+myopt.o: /usr/include/memory.h /usr/include/features.h
+myopt.o: /usr/include/sys/cdefs.h /usr/include/string.h
+myopt.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+myopt.o: /usr/include/assert.h /usr/include/math.h /usr/include/huge_val.h
+myopt.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+myopt.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+myopt.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+myopt.o: types.h /usr/include/sys/types.h /usr/include/linux/types.h
+myopt.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+myopt.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+myopt.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+myopt.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+myopt.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+myopt.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+myopt.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+myopt.o: /usr/include/linux/time.h /usr/include/sys/time.h
 myopt.o: ../../graphics.new/machdep.h /usr/include/limits.h
-myopt.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-myopt.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-myopt.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-myopt.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-myopt.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-myopt.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-myopt.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-myopt.o: /usr/include/values.h ../../graphics/DevStatus.h
-myopt.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-myopt.o: Engine.h site.h myopt.h queue.h url.h /usr/include/stdio.h
-myopt.o: /usr/include/unistd.h SockStream.h listop.h GeneralRead.h
-myopt.o: StandardRead.h
-resolve.o: myopt.h /usr/include/assert.h queue.h types.h
-resolve.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-resolve.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-resolve.o: /usr/include/sys/select.h /usr/include/sys/time.h
-resolve.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-resolve.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-resolve.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-resolve.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-resolve.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-resolve.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-resolve.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-resolve.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-resolve.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-resolve.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-resolve.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-resolve.o: /usr/include/sys/byteorder.h exception.h
+myopt.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+myopt.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+myopt.o: /usr/include/linux/param.h /usr/include/asm/param.h
+myopt.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+myopt.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+myopt.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+myopt.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+myopt.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+myopt.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+myopt.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+myopt.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+myopt.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+myopt.o: /usr/include/paths.h ../../graphics/AttrList.h
+myopt.o: ../../graphics/DeviseTypes.h ../../graphics/DevStatus.h
+myopt.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+myopt.o: ../../graphics/BufPolicy.h Engine.h site.h myopt.h queue.h url.h
+myopt.o: /usr/include/sys/uio.h /usr/include/stdio.h /usr/include/libio.h
+myopt.o: /usr/include/_G_config.h /usr/include/unistd.h
+myopt.o: /usr/include/posix_opt.h /usr/include/confname.h SockStream.h
+myopt.o: listop.h GeneralRead.h StandardRead.h
+resolve.o: myopt.h /usr/include/assert.h /usr/include/features.h
+resolve.o: /usr/include/sys/cdefs.h queue.h types.h /usr/include/string.h
+resolve.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+resolve.o: /usr/include/sys/types.h /usr/include/linux/types.h
+resolve.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+resolve.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+resolve.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+resolve.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+resolve.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+resolve.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+resolve.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+resolve.o: /usr/include/linux/time.h /usr/include/sys/time.h
 resolve.o: ../../graphics.new/machdep.h /usr/include/limits.h
-resolve.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-resolve.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-resolve.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-resolve.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-resolve.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-resolve.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-resolve.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-resolve.o: /usr/include/values.h ../../graphics/DevStatus.h
-resolve.o: ../../graphics/Config.h ../../graphics/DList.h
-resolve.o: ../../graphics/Exit.h url.h /usr/include/string.h
-resolve.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h listop.h
-resolve.o: site.h GeneralRead.h StandardRead.h
-site.o: /usr/include/string.h /usr/include/sys/feature_tests.h site.h
+resolve.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+resolve.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+resolve.o: /usr/include/linux/param.h /usr/include/asm/param.h
+resolve.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+resolve.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+resolve.o: /usr/include/endian.h /usr/include/bytesex.h
+resolve.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+resolve.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+resolve.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+resolve.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+resolve.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+resolve.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+resolve.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+resolve.o: /usr/include/paths.h ../../graphics/AttrList.h
+resolve.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+resolve.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+resolve.o: ../../graphics/Exit.h ../../graphics/Init.h
+resolve.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+resolve.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+resolve.o: /usr/include/unistd.h /usr/include/posix_opt.h
+resolve.o: /usr/include/confname.h SockStream.h listop.h site.h GeneralRead.h
+resolve.o: StandardRead.h
+site.o: /usr/include/string.h /usr/include/features.h
+site.o: /usr/include/sys/cdefs.h
+site.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h site.h
 site.o: /usr/include/assert.h myopt.h queue.h types.h
-site.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-site.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-site.o: /usr/include/sys/time.h /usr/include/sys/time.h
-site.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-site.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-site.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-site.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-site.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-site.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-site.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-site.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-site.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-site.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-site.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
+site.o: /usr/include/sys/types.h /usr/include/linux/types.h
+site.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+site.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+site.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+site.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+site.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+site.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+site.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+site.o: /usr/include/linux/time.h /usr/include/sys/time.h
 site.o: ../../graphics.new/machdep.h /usr/include/limits.h
-site.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-site.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-site.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-site.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-site.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-site.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-site.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-site.o: /usr/include/values.h ../../graphics/DevStatus.h
-site.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-site.o: url.h /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-site.o: listop.h GeneralRead.h StandardRead.h
-types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-types.o: /usr/include/sys/time.h /usr/include/sys/time.h
-types.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-types.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-types.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-types.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-types.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-types.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-types.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-types.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-types.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-types.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-types.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
+site.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+site.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+site.o: /usr/include/linux/param.h /usr/include/asm/param.h
+site.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+site.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+site.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+site.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+site.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+site.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+site.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+site.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+site.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+site.o: /usr/include/netdb.h /usr/include/paths.h ../../graphics/AttrList.h
+site.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+site.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+site.o: ../../graphics/Exit.h ../../graphics/Init.h
+site.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
+site.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+site.o: /usr/include/unistd.h /usr/include/posix_opt.h
+site.o: /usr/include/confname.h SockStream.h listop.h GeneralRead.h
+site.o: StandardRead.h
+types.o: types.h /usr/include/assert.h /usr/include/features.h
+types.o: /usr/include/sys/cdefs.h /usr/include/string.h
+types.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+types.o: /usr/include/sys/types.h /usr/include/linux/types.h
+types.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+types.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+types.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+types.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+types.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+types.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+types.o: /usr/include/asm/byteorder.h exception.h /usr/include/sys/time.h
+types.o: /usr/include/linux/time.h /usr/include/sys/time.h
 types.o: ../../graphics.new/machdep.h /usr/include/limits.h
-types.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-types.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-types.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-types.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-types.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-types.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-types.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-types.o: /usr/include/values.h ../../graphics/DevStatus.h
-types.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-url.o: url.h /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-url.o: /usr/include/sys/select.h /usr/include/sys/time.h
-url.o: /usr/include/sys/time.h /usr/include/sys/socket.h
-url.o: /usr/include/sys/netconfig.h /usr/include/sys/uio.h
-url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-url.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-url.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-url.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-url.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-url.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-url.o: /usr/include/sys/byteorder.h /usr/include/netdb.h
+types.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+types.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+types.o: /usr/include/linux/param.h /usr/include/asm/param.h
+types.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+types.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+types.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+types.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+types.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+types.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+types.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+types.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+types.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+types.o: /usr/include/netdb.h /usr/include/paths.h ../../graphics/AttrList.h
+types.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+types.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+types.o: ../../graphics/Exit.h ../../graphics/Init.h
+types.o: ../../graphics/BufPolicy.h
+url.o: url.h /usr/include/sys/types.h /usr/include/linux/types.h
+url.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+url.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+url.o: /usr/include/sys/socket.h /usr/include/features.h
+url.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+url.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+url.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+url.o: /usr/include/sys/uio.h
+url.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+url.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+url.o: /usr/include/asm/byteorder.h /usr/include/netdb.h /usr/include/paths.h
 url.o: /usr/include/string.h /usr/include/assert.h /usr/include/stdio.h
-url.o: /usr/include/unistd.h SockStream.h exception.h
-url.o: ../../graphics.new/machdep.h /usr/include/limits.h
-url.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+url.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/unistd.h
+url.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+url.o: /usr/include/confname.h SockStream.h exception.h
+url.o: /usr/include/sys/time.h /usr/include/linux/time.h
+url.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+url.o: /usr/include/limits.h /usr/include/posix1_lim.h
+url.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+url.o: /usr/include/sys/param.h /usr/include/linux/param.h
+url.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+url.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+url.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+url.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+url.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+url.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+url.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+url.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+url.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
 
-main.o: /usr/include/memory.h /usr/include/string.h
-main.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-main.o: /usr/include/math.h /usr/include/floatingpoint.h
-main.o: /usr/include/sys/ieeefp.h ../Core/types.h /usr/include/sys/types.h
-main.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-main.o: /usr/include/sys/select.h /usr/include/sys/time.h
-main.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-main.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-main.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-main.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-main.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-main.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-main.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-main.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-main.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-main.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-main.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-main.o: /usr/include/sys/byteorder.h ../Core/exception.h
-main.o: ../../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-main.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-main.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-main.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-main.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-main.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-main.o: /usr/include/values.h ../../graphics/DevStatus.h
-main.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-main.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/queue.h
-main.o: ../Core/url.h /usr/include/stdio.h /usr/include/unistd.h
-main.o: ../Core/SockStream.h ../Core/listop.h ../Core/GeneralRead.h
-main.o: ../Core/StandardRead.h
+main.o: /usr/include/memory.h /usr/include/features.h
+main.o: /usr/include/sys/cdefs.h /usr/include/string.h
+main.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+main.o: /usr/include/assert.h /usr/include/math.h /usr/include/huge_val.h
+main.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+main.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+main.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+main.o: ../Core/types.h /usr/include/sys/types.h /usr/include/linux/types.h
+main.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+main.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+main.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+main.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+main.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+main.o: /usr/include/linux/uio.h /usr/include/linux/in.h
+main.o: /usr/include/asm/byteorder.h ../Core/exception.h
+main.o: /usr/include/sys/time.h /usr/include/linux/time.h
+main.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
+main.o: /usr/include/limits.h /usr/include/posix1_lim.h
+main.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+main.o: /usr/include/sys/param.h /usr/include/linux/param.h
+main.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+main.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+main.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
+main.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+main.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+main.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+main.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+main.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+main.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+main.o: /usr/include/netdb.h /usr/include/paths.h ../../graphics/AttrList.h
+main.o: ../../graphics/DeviseTypes.h ../../graphics/DevStatus.h
+main.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+main.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/site.h
+main.o: ../Core/myopt.h ../Core/queue.h ../Core/url.h /usr/include/sys/uio.h
+main.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+main.o: /usr/include/unistd.h /usr/include/posix_opt.h
+main.o: /usr/include/confname.h ../Core/SockStream.h ../Core/listop.h
+main.o: ../Core/GeneralRead.h ../Core/StandardRead.h

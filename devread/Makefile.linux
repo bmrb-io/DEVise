@@ -3,3 +3,66 @@ depend:
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+DevRead.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+DevRead.o: /usr/include/sys/cdefs.h /usr/include/string.h
+DevRead.o: /usr/include/features.h
+DevRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h DevRead.h
+DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DevRead.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+DevRead.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+DevRead.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DevRead.o: /usr/include/sys/bitypes.h ../graphics.new/RecId.h types.h
+DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
+DevRead.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+DevRead.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+DevRead.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+DevRead.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h marshal.h
+DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/errno.h
+DevRead.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+DevRead.o: /usr/include/alloca.h /usr/include/time.h /usr/include/ctype.h
+DevRead.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/math.h
+DevRead.o: /usr/include/huge_val.h /usr/include/nan.h
+DevRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+DevRead.o: /usr/include/ieee754.h /usr/include/ieee854.h ../graphics/Exit.h
+DevRead.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+DevRead.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+DevRead.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+DevRead.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+DevRead.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+DevRead.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+DevRead.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/limits.h
+DevRead.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+DevRead.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+DevRead.o: /usr/include/linux/param.h /usr/include/asm/param.h
+DevRead.o: /usr/include/sys/time.h /usr/include/linux/time.h
+DevRead.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+DevRead.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+DevRead.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+DevRead.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+DevRead.o: /usr/include/sys/socketio.h /usr/include/netdb.h
+DevRead.o: /usr/include/paths.h ../graphics/AttrList.h ../graphics/DList.h
+DevRead.o: ../graphics/Init.h ../graphics/BufPolicy.h
+DevRead.o: ../graphics.new/DataSeg.h
+drtest.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+drtest.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+drtest.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+drtest.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+drtest.o: /usr/include/sys/bitypes.h DevRead.h ../graphics/DeviseTypes.h
+drtest.o: /usr/include/values.h ../graphics/DevStatus.h
+drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+drtest.o: /usr/include/features.h /usr/include/netinet/in.h
+drtest.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+drtest.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+drtest.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+drtest.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h marshal.h
+types.o: types.h /usr/include/assert.h /usr/include/features.h
+types.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+types.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+types.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+types.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+types.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+types.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+types.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+types.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h

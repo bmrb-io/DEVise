@@ -4,9 +4,6 @@ depend:
 
 # DO NOT DELETE
 
-CallStk.o: /usr/include/string.h /usr/include/features.h
-CallStk.o: /usr/include/sys/cdefs.h
-CallStk.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h CallStk.h
 atof.o: /usr/include/stdlib.h /usr/include/features.h
 atof.o: /usr/include/sys/cdefs.h
 atof.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
