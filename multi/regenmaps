@@ -1,0 +1,8 @@
+#! /bin/csh -f
+
+rm map*.h
+foreach m (map*)
+  ../solsparc/parser/parser < $m
+  mv mapfile.h $m.h
+end
+mv map.h mapfile.h
