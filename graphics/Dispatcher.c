@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/08/09 22:38:53  wenger
+  Fixed bug 027 (error in dispatcher code sometimes put callback into
+  list twice); fixed error in View.c that caused compile failure.
+
   Revision 1.25  1996/08/09 14:55:59  guangshu
   Fixed bugs when dumping the window in batch mode.
 
@@ -333,6 +337,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	printf("Calling callback 0x%p: called fd = %d  req = %d\n", 
 	       info->callBack, info->fd, info->callback_requested); 
 #endif
+	CancelCallback(info);
 	info->callBack->Run();
       }
     }
