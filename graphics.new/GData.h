@@ -1,12 +1,30 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:47  jussi
+  Added CVS header.
+*/
 
 /* graphical data virtual base class*/
 
 #ifndef GData_h
 #define GData_h
+
 #include "TData.h"
 #include "DList.h"
 
@@ -15,10 +33,10 @@ class GDataRangeMap;
 class GDataRangeMapRec;
 class TData;
 
-/* Callback about GData converstion*/
+/* Callback for GData conversion*/
 class GDataCallback {
 public:
-	virtual void Converted(RecId low, RecId high)= 0;
+	virtual void Converted(RecId low, RecId high) = 0;
 };
 
 DefinePtrDList(GDataCallbackList, GDataCallback *)
@@ -34,8 +52,8 @@ public:
 	GData(TData *tdata, char *fname, int recSize, int maxBuf);
 	virtual ~GData();
 
-    /* Return # of dimensions and the size of each dimension,
-	or -1 if unknown */
+	/* Return # of dimensions and the size of each dimension,
+	   or -1 if unknown */
 	virtual int Dimensions(int *sizeDimension);
 
 	/* Return record size, or -1 if variable record size */
@@ -52,7 +70,7 @@ public:
 
 	virtual Boolean HasAppend();
 
-    /* convert RecId into index */
+	/* convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
 
 	virtual char *GetName();
@@ -92,7 +110,7 @@ public:
 	virtual int GetModTime();
 
 	/* Do a checkpoint */
-	virtual void Checkpoint(){};
+	virtual void Checkpoint() {}
 
 
 	/* Get pointers to variable size records. Not implemented
@@ -106,10 +124,11 @@ public:
 	/* return number of records left to convert, or -1 if no limit */
 	int RecsLeftToConvert() { return _recsLeft;}
 
-	/* Update info about which TData records have been converted into GData .
-	(tLow, tHigh): new range that has been converted.
-	firstRec: GData record for tLow
-	lastRec: GDataRec for tHigh. */
+	/* Update info about which TData records have been converted into
+	   GData .
+	   (tLow, tHigh): new range that has been converted.
+	   firstRec: GData record for tLow
+	   lastRec: GDataRec for tHigh. */
 	void UpdateConversionInfo(RecId tLow, RecId tHigh,
 		void *firstRec, void *lastRec);
 	
@@ -151,4 +170,5 @@ private:
 
 	TData *_tdata;
 };
+
 #endif
