@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  1999/08/03 05:56:49  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.14  1999/07/27 17:11:18  hongyu
 // *** empty log message ***
 //
@@ -29,7 +32,9 @@ import java.awt.event.*;
 import java.net.*;
 
 public class DEViseGData
-{
+{   
+    public static Font defaultFont = null;
+    
     public jsdevisec jsc = null;
     public DEViseView parentView = null;
     public String viewname = null;
@@ -179,18 +184,31 @@ public class DEViseGData
             }
 
             color = DEViseGlobals.convertColor(data[3]);
-
-            if (symbolType == 12) {
-                if (w < 0.0) {
-                    font = DEViseGlobals.getFont(string, height, ff, fw, fs);
+            
+            if (DEViseGData.defaultFont == null) {
+                if (symbolType == 12) {
+                    if (w < 0.0) {
+                        font = DEViseGlobals.getFont(string, height, ff, fw, fs);
+                    } else {
+                        font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+                    }
                 } else {
-                    font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+                    int fsize;
+                    
+                    if (size > 1.0) {
+                        fsize = (int)(size + 0.25);
+                    } else {
+                        fsize = (int)(size * jsc.jscreen.getScreenDim().height + 0.25);
+                    }
+                    
+                    font = DEViseGlobals.getFont(fsize, ff, fw, fs);
                 }
+            
+                DEViseGData.defaultFont = font;
             } else {
-                int fsize = (int)size * jsc.jscreen.getScreenDim().height;
-                font = DEViseGlobals.getFont(fsize, ff, fw, fs);
-            }
-
+                font = DEViseGData.defaultFont;
+            }    
+            
             if (color == null || font == null) {
                 string = null;
                 return;

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  1999/08/03 05:56:48  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.36  1999/07/27 17:11:18  hongyu
 // *** empty log message ***
 //
@@ -467,7 +470,9 @@ public class DEViseCmdDispatcher implements Runnable
                         if (results == null || results.length == 0) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
-
+                        
+                        DEViseGData.defaultFont = null;
+                        
                         for (int k = 0; k < results.length; k++) {
                             DEViseGData data = null;
                             jsc.pn("Received gdata is: \"" + results[k] + "\"");

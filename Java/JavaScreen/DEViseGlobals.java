@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  1999/08/03 05:56:49  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.20  1999/07/27 17:11:18  hongyu
 // *** empty log message ***
 //
@@ -275,70 +278,89 @@ public final class DEViseGlobals
 
         return new Font(DEViseFont[ff], fontstyle, size);
     }
-
-    public static Font getFont(String str, int height, int ff, int fw, int fs)
+    
+    public static Font getFont(String str, int height, int ff, int fw, int fs) 
+    {
+        return getFont(str, -1, height, ff, fw, fs);
+    }
+    
+    public static Font getFont(String str, int width, int height, int ff, int fw, int fs)
     {
         if (str == null || str.length() == 0 || height < 1) {
             return null;
         }
-
+        
+        boolean checkWidth = true;
+        if (width < 0) {
+            checkWidth = false;
+        }
+        
         // as of right now, I only recognize courier(Monospaced), times(Serif) and Helvetica(SansSerif)
         // default is courier
         if (ff < 0 || ff > 2) {
             ff = 0;
         }
 
-        int minSize = 4, maxSize = 1000;
+        int minSize = 1, maxSize = 100, fontSize = 13;
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        for (int i = minSize; i < maxSize; i++) {
-            Font font = new Font(DEViseFont[ff], fontstyle, i);
-            FontMetrics fm = tk.getFontMetrics(font);
-            int h = fm.getHeight();
-            if (h > height) {
-                if (i == minSize) {
-                    return null;
-                } else {
-                    return new Font(DEViseFont[ff], fontstyle, i - 1);
+        Toolkit tk = Toolkit.getDefaultToolkit();        
+        Font font = new Font(DEViseFont[ff], fontstyle, fontSize);
+        FontMetrics fm = tk.getFontMetrics(font);
+        int h = fm.getHeight(), w = fm.stringWidth(str);
+        
+        if (h > height || (checkWidth && w > width)) {
+            boolean flag = false;
+            
+            while (fontSize > minSize) {
+                fontSize--;
+                font = new Font(DEViseFont[ff], fontstyle, fontSize);
+                fm = tk.getFontMetrics(font);
+                h = fm.getHeight();                
+                if (h < height) {
+                    if (checkWidth) {
+                        w = fm.stringWidth(str);
+                        if (w < width) {
+                            flag = true;
+                            break;
+                        }
+                    } else {                                
+                        flag = true;
+                        break;
+                    }    
                 }
             }
-        }
-
-        return new Font(DEViseFont[ff], fontstyle, maxSize - 1);
-    }
-
-    public static Font getFont(String str, int width, int height, int ff, int fw, int fs)
-    {
-        if (str == null || str.length() == 0 || width < 1 || height < 1) {
-            return null;
-        }
-
-        // as of right now, I only recognize courier(Monospaced), times(Serif) and Helvetica(SansSerif)
-        // default is courier
-        if (ff < 0 || ff > 2) {
-            ff = 0;
-        }
-
-        int minSize = 4, maxSize = 1000;
-        int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
-
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        for (int i = minSize; i < maxSize; i++) {
-            Font font = new Font(DEViseFont[ff], fontstyle, i);
-            FontMetrics fm = tk.getFontMetrics(font);
-            int w = fm.stringWidth(str);
-            int h = fm.getHeight();
-            if (w > width || h > height) {
-                if (i == minSize) {
-                    return null;
+            
+            if (flag) {
+                return new Font(DEViseFont[ff], fontstyle, fontSize);
+            } else {
+                return null;
+            }    
+        } else {
+            while (fontSize < maxSize) {
+                fontSize++;
+                font = new Font(DEViseFont[ff], fontstyle, fontSize);
+                fm = tk.getFontMetrics(font);
+                h = fm.getHeight();
+                
+                if (h > height) {
+                    break;
                 } else {
-                    return new Font(DEViseFont[ff], fontstyle, i - 1);
-                }
+                    if (checkWidth) {
+                        w = fm.stringWidth(str);
+                        if (w > width) {
+                            break;
+                        }
+                    }
+                }    
             }
-        }
-
-        return new Font(DEViseFont[ff], fontstyle, maxSize - 1);
+            
+            if (fontSize == maxSize) {
+                return new Font(DEViseFont[ff], fontstyle, fontSize);
+            } else {
+                return new Font(DEViseFont[ff], fontstyle, fontSize - 1);
+            }    
+        }                 
     }
 
 }
