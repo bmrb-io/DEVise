@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1997/06/13 18:07:16  wenger
+#  Orientation is now working for text labels and fixed text labels.
+#
 #  Revision 1.30  1997/05/28 15:38:09  wenger
 #  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 #
@@ -95,7 +98,7 @@ OBJ += $(SRCC:.C=.o)
 ALLLIBS = ../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a ../DTE/libdte.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a  ../LM/liblm.a
+	../crsp/libcrsp.a  ../LM/liblm.a ../xvertext/libXrot.a
 
 CLIENTLIB = ../graphics.new/libclient.a
 SERVERLIB = ../graphics.new/libserver.a
