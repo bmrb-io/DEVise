@@ -15,6 +15,15 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.103  1996/12/23 22:20:38  donjerko
+#	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
+#	  pairs to have OK always on the left, Cancel on the right.  Renamed
+#	  and moved around various menu items; to avoid confusion.
+#
+#	  More changes will follow later, after you're had time to adjust.
+#
+#	  Shaun/Donko
+#
 #	Revision 1.102  1996/12/20 16:50:35  wenger
 #	Fonts for view label, x axis, and y axis can now be changed.
 #
@@ -661,9 +670,9 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 #.mbar.tdata.menu add cascade -label "Mapping" \
 #   -menu .mbar.tdata.menu.mappingMenu
 
-# .mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
+.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
 
-.mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
+#.mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
 .mbar.tdata.menu add separator
 .mbar.tdata.menu add command -label "Derived Data Text" -command { MacroImport 1 1 } 
 .mbar.tdata.menu add command -label "Derived Data View" -command { MacroImport 0 1 }
