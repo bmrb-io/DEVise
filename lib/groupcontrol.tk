@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.3  1998/02/19 08:27:27  taodb
+#	Fixed typo
+#
 #	Revision 1.2  1998/02/12 17:17:33  wenger
 #	Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -1007,15 +1010,18 @@ proc displayTable {table} {
          dialog .note "Note" "Please select only one table." "" 0 OK
          return
      }
-     set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
-     if {$tdata_schema_pair == ""} {
-          puts "tdata = NULL"
-          return
-     }
-     set tdata [lindex $tdata_schema_pair 0]
-     set schemaname [lindex $tdata_schema_pair 1]
-     set is_dte_type [lindex $tdata_schema_pair 2]
-     MacroDefAuto $tdata $schemaname $is_dte_type 
+#      set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
+#      if {$tdata_schema_pair == ""} {
+#           puts "tdata = NULL"
+#           return
+#      }
+#      set tdata [lindex $tdata_schema_pair 0]
+#      set schemaname [lindex $tdata_schema_pair 1]
+#      set is_dte_type [lindex $tdata_schema_pair 2]
+#      MacroDefAuto $tdata $schemaname $is_dte_type 
+
+    OpenDataSource $table
+    MacroDefAuto $table [GetSchema $table]
 }
 
 .mbar.tdata.menu add command -label "Display" -command {

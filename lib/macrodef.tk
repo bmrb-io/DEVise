@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.100  1998/02/20 06:17:21  beyer
+#	resurected histograms
+#
 #	Revision 1.99  1997/12/04 04:06:50  donjerko
 #	New View interface.
 #
@@ -439,58 +442,64 @@ proc SelectTopGroup {schemaname} {
 
 ############################################################
 
-proc OpenDataSource {sname} {
-    global sourceList derivedSourceList
-
-#    foreach name [array names derivedSourceList] {
-#    	puts "$name $derivedSourceList($name)"
-#	if { $name == $sname } { puts "They are equal" }
-#    }
-    set resName $sname
-    set subName [string range $sname 0 9]
-    if { $subName == "GstatXDTE:" } {
-        set pos [string last ":" $sname]
-        set mainName [string range $sname 0 [expr $pos-1]]
-	set err [catch {set exists $derivedSourceList($sname)}]
-	if {$err} {
-	    set sname $mainName
-	}
-    } 
-    set err [catch {set exists $derivedSourceList($sname)}]
-    if {!$err} {
-	set fname [isCached $sname -1 -1]
-#	set fname [isCached $mainName -1 -1]
-	if {$fname == ""} {
-	    dialog .noDerivedData "No Derived Data" \
-		    "Derived data \"$sname\" does not exist." \
-		    "" 0 Ok
-	    return ""
-	}
-	set stype [lindex $derivedSourceList($sname) 0]
-#	set stype [lindex $derivedSourceList($mainName) 0]
-#	set command [lindex $derivedSourceList($sname) 4]
-	DEVise dataSegment $sname $fname 0 0
-	return [list $resName $fname $stype]
-#	return [list $sname $fname $stype]
+proc GetSchema {tdata} {
+    set pos [string first : $tdata]
+    set categ [string range $tdata 0 [expr $pos - 1]]
+    
+    set stat 0
+    if { $categ == "Hist" } {
+        set schema "HISTOGRAM"
+        set stat 1
+    } elseif { $categ == "HistDate" || $categ == "Stat" || \
+            $categ == "GstatX" || $categ == "GstatXDTE" || \
+            $categ == "GstatXDate"|| \
+            $categ == "GstatY" || $categ == "GstatYDate" } {
+        set schema "CANT_HANDLE_THESE"
+        set stat 1
+    }
+    
+    if { !$stat } {
+        set errCode [catch {DEVise dteShowCatalogEntry $tdata} sourcedef]
+        if {$errCode != 0} {
+            dialog .noName "DTE Error" $sourcedef "" 0 OK
+            return ""
+        }
+        
+        set err [expr [llength $sourcedef] == 0]
+        
+        if {$err == 0} {
+            # file exists
+            set stype [lindex $sourcedef 1]
+            
+            if {[isDTEType $stype]} {
+                set schema $tdata
+            } else { 
+                set sfname [lindex $sourcedef 4]
+                set schema [file tail $sfname]
+            }
+        } 
     }
 
-    # see if data source (still) defined (may be out-of-date in
-    # a session file)
+    return $schema
+}
 
-#   set err [catch {set exists $sourceList($sname)}]
+############################################################
 
-	if {[string index $sname 0] != "."} {
-		set newname ""
-		regsub -all {\.| |,} $sname _ newname
-		set newname ".$newname"
-#		dialog .oldTableName "Old Table Name Format" \
-#			"Table name $sname will be converted to $newname" \
-#			"" 0 OK
-		set sname $newname
-	}
-#	puts "looking up \"$sname\""
+proc OpenDataSource {sname} {
+    return [DEVise createTData $sname]
 
-#	sname has the full path
+    if {[string index $sname 0] != "."} {
+        set newname ""
+        regsub -all {\.| |,} $sname _ newname
+        set newname ".$newname"
+        # dialog .oldTableName "Old Table Name Format" \
+                # "Table name $sname will be converted to $newname" \
+                # "" 0 OK
+        set sname $newname
+    }
+    #	puts "looking up \"$sname\""
+
+    # sname has the full path
      set errCode [catch {DEVise dteShowCatalogEntry $sname} sourcedef]
      if {$errCode != 0} {
           dialog .noName "DTE Error" $sourcedef "" 0 OK
@@ -615,6 +624,14 @@ proc OpenNewDataSource {derivedOnly} {
 ############################################################
 
 proc OpenAndDefineDataSources {derivedOnly snames} {
+    foreach sname $snames {
+        set sname [string trimleft $sname "{"]
+        set sname [string trimright $sname "}"]
+        OpenDataSource $sname
+    }
+    return
+
+
     global sourceList derivedSourceList
 
 #    puts "In OpenAndDefineDataSources($derivedOnly, $snames)"
@@ -658,14 +675,14 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 	    set tdata_exist 1
         }
 
-	if {$derivedOnly} {
+# 	if {$derivedOnly} {
 
-	    set schema [lindex $derivedSourceList($sname) 2]
-	    set schemafile [lindex $derivedSourceList($sname) 3]
-        } else {
-#           set schema [lindex $sourceList($sname) 2]
-#           set schemafile [lindex $sourceList($sname) 3]
-        }
+# 	    set schema [lindex $derivedSourceList($sname) 2]
+# 	    set schemafile [lindex $derivedSourceList($sname) 3]
+#         } else {
+# #           set schema [lindex $sourceList($sname) 2]
+# #           set schemafile [lindex $sourceList($sname) 3]
+#         }
 
         # load schema file if necessary - it is not sufficient to check if
         # the physical schema by the same name has been loaded because the same

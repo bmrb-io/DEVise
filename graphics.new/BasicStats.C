@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/02/20 06:16:55  beyer
+  resurected histograms
+
   Revision 1.30  1997/09/10 14:15:35  beyer
   Fixed confidence intervals.
 
@@ -138,9 +141,6 @@ BasicStats::BasicStats()
   hist_min = hist_max = width = 100;
   numBuckets = DEFAULT_HISTOGRAM_BUCKETS;
   hist = new int[numBuckets];
-  for(int j = 0; j < numBuckets; j++){
-    hist[j] = 0;
-  }
   Init(_vw);
 }
 
@@ -171,6 +171,11 @@ void BasicStats::Init(ViewGraph *vw)
 
   nval = 0;
   nsamples = 0;
+
+  for(int j = 0; j < numBuckets; j++){
+    hist[j] = 0;
+  }
+
   if (vw) ViewStats::Init(vw);
 
 }

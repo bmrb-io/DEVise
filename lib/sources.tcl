@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.73  1997/12/05 16:51:49  wenger
+#	Removed some unused Tcl code; removed 'Remove' selection from window
+#	menu (duplicated 'Destroy'); removed Layout Manager menu selection.
+#
 #	Revision 1.72  1997/12/04 04:06:53  donjerko
 #	New View interface.
 #
@@ -458,15 +462,17 @@ proc saveSources {} {
 
 proc updateStreamDef_and_display {dispname} {
 
-	updateStreamDef
-	set tdata_schema_pair [OpenAndDefineDataSources 0 $dispname]
-	if {$tdata_schema_pair == ""} {
-		puts "tdata = NULL"
-		return
-	}
-	set tdata [lindex $tdata_schema_pair 0]
-	set schemaname [lindex $tdata_schema_pair 1]
-	MacroDefAuto $tdata $schemaname
+# 	updateStreamDef
+# 	set tdata_schema_pair [OpenAndDefineDataSources 0 $dispname]
+# 	if {$tdata_schema_pair == ""} {
+# 		puts "tdata = NULL"
+# 		return
+# 	}
+# 	set tdata [lindex $tdata_schema_pair 0]
+# 	set schemaname [lindex $tdata_schema_pair 1]
+#	MacroDefAuto $tdata $schemaname
+	OpenDataSource $dispname
+	MacroDefAuto $dispname [GetSchema $dispname]
 }
 
 proc updateStreamDef {} {
@@ -1863,11 +1869,11 @@ proc selectStream {{title "Select Table"}} {
 	return
     }
 
-	set errCode [catch {DEVise dteListCatalog [CWD]} listing]
-     if {$errCode != 0} {
-          dialog .noName "DTE Error" $listing "" 0 OK
-          return
-     }
+    set errCode [catch {DEVise dteListCatalog [CWD]} listing]
+    if {$errCode != 0} {
+        dialog .noName "DTE Error" $listing "" 0 OK
+        return
+    }
 
     toplevel .srcsel
     wm title .srcsel $title

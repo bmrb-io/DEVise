@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.92  1998/02/20 06:17:12  beyer
+  resurected histograms
+
   Revision 1.91  1998/02/19 23:25:14  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -750,27 +753,6 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     return 1;
   }
 
-
-#if defined(KSB_MAYBE_DELETE_THIS_OLD_STATS_STUFF)
-  if (!strcmp(argv[0], "setBuckRefresh")) {
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-	    control->ReturnVal(API_NAK, "Cannot find view");
-	    return -1;
-    }
-#if defined(DEBUG) || 0
-    printf("In setBuckRefresh, %s %s\n", argv[1], argv[2]);
-#endif
-    view->AbortQuery();
-    view->ResetGStatInMem();
-    view->SetHistBucks(atoi(argv[2]));
-    view->Refresh();
-//    view->PrepareStatsBuffer(view->GetFirstMap());
-    
-    control->ReturnVal(API_ACK, "done");
-    return 1;
-  }
-
   if (!strcmp(argv[0], "setHistViewname")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -795,6 +777,27 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     name = view->getHistViewname();
 
     control->ReturnVal(API_ACK, name);
+    return 1;
+  }
+
+
+#if defined(KSB_MAYBE_DELETE_THIS_OLD_STATS_STUFF)
+  if (!strcmp(argv[0], "setBuckRefresh")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+	    control->ReturnVal(API_NAK, "Cannot find view");
+	    return -1;
+    }
+#if defined(DEBUG) || 0
+    printf("In setBuckRefresh, %s %s\n", argv[1], argv[2]);
+#endif
+    view->AbortQuery();
+    view->ResetGStatInMem();
+    view->SetHistBucks(atoi(argv[2]));
+    view->Refresh();
+//    view->PrepareStatsBuffer(view->GetFirstMap());
+    
+    control->ReturnVal(API_ACK, "done");
     return 1;
   }
 
@@ -2018,9 +2021,12 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 #if defined(DEBUG)
       printf("createTData <%s>\n", argv[1]);
 #endif
-      if (!Session::CreateTData(argv[1]).IsComplete()) {
-        control->ReturnVal(API_NAK, "Unable to create tdata");
-        return -1;
+      TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+      if (!tdata) {
+        if (!Session::CreateTData(argv[1]).IsComplete()) {
+          control->ReturnVal(API_NAK, "Unable to create tdata");
+          return -1;
+        }
       }
       //TEMPTEMP -- may need to return something different here
       control->ReturnVal(API_ACK, "done");

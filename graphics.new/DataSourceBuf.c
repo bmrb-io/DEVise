@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.9  1998/02/20 06:16:56  beyer
+   resurected histograms
+
    Revision 1.8  1997/04/21 22:50:05  guangshu
    Minor change.
 
@@ -72,7 +75,6 @@
 #include <sys/param.h>
 #include <unistd.h>
 
-#define DEBUG
 #include "DataSourceBuf.h"
 #include "Util.h"
 #include "DevError.h"
