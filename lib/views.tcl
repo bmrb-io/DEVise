@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1997/01/22 20:13:59  wenger
+#  Removed other non-functional user interface components (includes workaround
+#  for bug 127); fixed a number of OK/Cancel button positions.
+#
 #  Revision 1.21  1997/01/14 20:05:56  wenger
 #  Fixed some compile warnings; fixed relative positions of OK/Cancel
 #  buttons in link GUI; removed some debug code I accidentally left
@@ -105,8 +109,7 @@ proc RefreshAllViews {} {
 ############################################################
 
 proc ProcessViewSelected { view } {
-    global curView lastView historyWinOpened queryWinOpened
-    global stackWinOpened query3DWinOpened
+    global curView lastView
 
     if {$view == $curView} {
 	return
@@ -126,7 +129,7 @@ proc ProcessViewSelected { view } {
     UpdateHistoryWindow
 
     if {$curView == ""} {
-	if {$stackWinOpened} {
+	if {[WindowExists .stack]} {
 	    .stack.title.text configure -text "No View Selected"
 	}
 	.mbar.gdata configure -state disabled
@@ -140,7 +143,7 @@ proc ProcessViewSelected { view } {
 	return
     }
 
-    if {$stackWinOpened} {
+    if {[WindowExists .stack]} {
 	.stack.title.text configure -text "View: $curView"
     }
     .mbar.gdata configure -state normal
@@ -1236,7 +1239,9 @@ proc DoToggleStatistics {} {
 proc DoStat {} {
     global statmean statmax statmin statline statcurr statcilevel
 
-    if {[WindowVisible .statWin]} { return }
+    if {[WindowVisible .statWin]} {
+        return
+    }
 
     toplevel .statWin
     wm title .statWin "Select Statistics"
