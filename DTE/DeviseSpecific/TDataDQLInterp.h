@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/12/15 06:32:01  donjerko
+  Added the DeviseSpecific directory to DTE
+
   Revision 1.5  1996/12/02 16:54:32  wenger
   Fixed compile warning; added standard headers to some files;
   conditionaled out debug code.
@@ -34,7 +37,6 @@
 
 #include "TuplePtr.XPlex.h"
 
-#ifndef ATTRPROJ
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
   TDataDQLInterpClassInfo(char*className,char * schemaFile,char *fileType,char *dataFile,char *query);
@@ -79,7 +81,6 @@ private:
   TuplePtrXPlex _result;
   int* _sizes;
 };
-#endif
 
 class RecInterp;
 

@@ -42,7 +42,7 @@ CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
 	Aggregates.c QueryTree.c IndexParse.c RTreeRead.c
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
-	../attrproj/ApParseCat.c TDataDQL.c TDataDQLInterp.c
+	ApParseCat.c TDataDQL.c TDataDQLInterp.c
 	
 #Dql.c DqlInclude.c
 

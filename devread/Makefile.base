@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/12/03 20:58:00  jussi
+#  Added DCE and MemMgr.
+#
 #  Revision 1.9  1996/11/25 16:33:34  wenger
 #  Fixed makefile so 'all' target makes 'lib' -- so top-level compile
 #  works correctly.
@@ -90,9 +93,7 @@ LIBOBJ = \
 	../attrproj/TDataAscii.o \
 	../attrproj/TDataAsciiInterp.o \
 	../attrproj/TDataBinary.o \
-	../attrproj/TDataDQL.o \
 	../attrproj/TDataBinaryInterp.o \
-	../attrproj/TDataDQLInterp.o \
 	../attrproj/DataSourceSegment.o \
 	../graphics/Parse.o \
 	../graphics/AttrList.o \

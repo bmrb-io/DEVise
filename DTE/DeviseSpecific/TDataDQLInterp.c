@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/12/15 06:32:01  donjerko
+  Added the DeviseSpecific directory to DTE
+
   Revision 1.10  1996/12/02 16:54:31  wenger
   Fixed compile warning; added standard headers to some files;
   conditionaled out debug code.
@@ -38,9 +41,7 @@
 #include "DevError.h"
 #include "ParseCat.h"
 #include "DevError.h"
-#ifndef ATTRPROJ
-#  include "StringStorage.h"
-#endif
+// #include "StringStorage.h"
 
 #include "types.h"
 #include "exception.h"
@@ -48,8 +49,6 @@
 #include "TuplePtr.XPlex.h"
 
 #define DEBUG
-
-#ifndef ATTRPROJ
 
 TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 	char * className, char *schemaFile, char *fileType,char *dataFile,
@@ -240,7 +239,6 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _type;
   args[2] = _query;
 }
-#endif
 
 TDataDQLInterp::TDataDQLInterp(
 	AttrList attrs,char *name, char *type, 

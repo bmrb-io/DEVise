@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/12/15 06:29:43  donjerko
+#  Added two binary files to support RTrees (temporary fix)
+#
 #  Revision 1.4  1996/11/25 04:22:02  donjerko
 #  Removed "make libdevread.a"
 #
@@ -34,7 +37,7 @@ ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1996/12/15 07:00:27  donjerko
+#  Added the RTree.C source because it is needed in DoExit.
+#
 #  Revision 1.30  1996/12/03 20:26:38  jussi
 #  Added DCE and MemMgr.
 #
@@ -104,12 +107,12 @@ endif
 #compiled for attrproj.
 ifeq (yes, $(USE_SEQ))
 LOCALSRC += Exit.c TData.c TDataSeqAscii.c TDataSeqAsciiInterp.c \
-        TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+        TDataBinary.c DataSourceDQL.c \
 	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 else
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c \
-        TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+        TDataBinary.c  DataSourceDQL.c \
 	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 endif
