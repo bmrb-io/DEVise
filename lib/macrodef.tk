@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.39  1996/04/11 18:23:02  jussi
+#	Major changes in the organization of the user interface.
+#
 #	Revision 1.38  1996/03/26 21:16:13  jussi
 #	Added scaling of axis values to nearest "reasonable" value.
 #
@@ -2159,7 +2162,7 @@ proc MacroImport {mode} {
 
 proc MacroDefAutoNew {tdata} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
-    global xaxissel yaxissel cancel newgdata
+    global xaxissel yaxissel cancel newgdata viewsel
     global sourceList macroSelectColor macroMenuSelectColor
 
     if {[WindowVisible .auto]} {
@@ -2532,9 +2535,7 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 
 	# if new mappings are requested, associate color with mapping,
 	# otherwise associate color with view
-	set gcolor $color
 	if {!$newgdata} {
-	    set gcolor 2
 	    DEVise setViewOverrideColor $viewinstance $color 1
 	}
 
@@ -2544,7 +2545,7 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    "" $gcolor $size $pattern $orient $shape $shapeAttr0 \
+		    "" $color $size $pattern $orient $shape $shapeAttr0 \
 		    $shapeAttr1 ""]
 	}
 
@@ -2552,7 +2553,7 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	if {[lsearch [GdataSet] $mapinstance] < 0} {
 	    # ask DEVise to create an instance of mapping
 	    set result [DEVise create mapping $mapname $tdata $mapinstance \
-		    "" \$$x \$$name $gcolor $size $pattern $orient $shape \
+		    "" \$$x \$$name $color $size $pattern $orient $shape \
 		    $shapeAttr0 $shapeAttr1]
 	    DEVise setPixelWidth $mapinstance 1
 	}
