@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/06/28 21:47:42  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.21  1998/06/04 23:26:27  donjerko
   *** empty log message ***
 
@@ -170,8 +174,10 @@ void SortExec::generate_runs()
    // Generate the runs for subsequent merging
    // Use quick sort to perform the sorting
 
-   Tuple* table[MAX_MEM]; // array of pointers to Tuple
    int count = 0;
+   //kb: made table dynamic to keep stack size small
+   //kb: a big stack is bad for threads!
+   Tuple** table = new Tuple*[MAX_MEM]; // array of pointers to Tuple
    output_buf = new Inserter();	
 
    const Tuple* currTup;
@@ -193,7 +199,7 @@ void SortExec::generate_runs()
    if (count) // there are tuples left to be written out
      sort_and_write_run(table, count);
 
-   return;
+   delete [] table;
 }
 
 void SortExec::sort_and_write_run(Tuple **table, int length)
