@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/02/14 16:47:44  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.31.4.3  1997/02/11 23:32:19  weaver
   Changed vector shape drawing to have constant size arrowhead and beginning of vector at the GData center.
 
@@ -190,8 +193,6 @@ int FullMapping_RectShape::NumShapeAttrs()
 	return 2; 
 }
 
-
-
 void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize)
@@ -318,7 +319,6 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	}
 }
 		 
-
 void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 											 void **gdataArray,
 											 int numSyms, TDataMap *map,
@@ -386,12 +386,10 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 
 //---------------------------------------------------------------------------
 
-
 int FullMapping_RectXShape::NumShapeAttrs()
 {
 	return 2; 
 }
-
 
 void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						int numSyms, TDataMap *map,
@@ -1344,43 +1342,43 @@ void FullMapping_GifImageShape::MaxSymSize(TDataMap *map, void *gdata,
 
 
 void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
-						   void **gdataArray,
-						   int numSyms, TDataMap *map,
-						   ViewGraph *view, int pixelSize)
+					       void **gdataArray,
+					       int numSyms, TDataMap *map,
+					       ViewGraph *view, int pixelSize)
 {
 #if defined(DEBUG)
-	printf("%s\n", __PRETTY_FUNCTION__);
+    printf("%s\n", __PRETTY_FUNCTION__);
 #endif
-	const Boolean sendImageOnSocket = false;
-
-	if (view->GetNumDimensions() == 3) {
+    const Boolean sendImageOnSocket = false;
+    
+    if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
-	}
-
-	// Get default image filename.
-	char defaultFile[MAXPATHLEN];
-	char *directory = getenv("PWD");
-	DOASSERT(directory != NULL, "Can't get current directory");
-	sprintf(defaultFile, "%s/image.gif", directory);
-
-	GDataAttrOffset *offset = map->GetGDataOffset();
-
-	// first draw a cross mark at each GIF image location;
-	// if there is a problem in displaying the GIF image,
-	// then at least the user sees some symbol in the window
-
-	for(int i = 0; i < numSyms; i++) {
-
+    }
+    
+    // Get default image filename.
+    char defaultFile[MAXPATHLEN];
+    char *directory = getenv("PWD");
+    DOASSERT(directory != NULL, "Can't get current directory");
+    sprintf(defaultFile, "%s/image.gif", directory);
+    
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    
+    // first draw a cross mark at each GIF image location;
+    // if there is a problem in displaying the GIF image,
+    // then at least the user sees some symbol in the window
+    
+    for (int i = 0; i < numSyms; i++) {
+	
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
 	GlobalColor color = GetColor(view, gdata, map, offset);
-
+	
 	// Transform the data X and Y to pixels.
 	Coord tx, ty;
 	win->Transform(x, y, tx, ty);
-
+	
 #if 0
 	// Draw a cross at the center of each image.  This is now disabled
 	// because of using Tasvir with no subwindows.	RKW 12/18/96.
@@ -1390,128 +1388,129 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	win->Line(tx, ty - 3, tx, ty + 3, 1);
 	win->PopTransform();
 #endif
-
+	
 	if (color == XorColor)
-	  win->SetCopyMode();
+	    win->SetCopyMode();
 	
 	// Get the name of the image file or the image itself.
 	char *shapeAttr0 = NULL;
 	if (offset->shapeAttrOffset[0] >= 0) {
-		int key = (int)GetShapeAttr0(gdata, map, offset);
-		int code = StringStorage::Lookup(key, shapeAttr0);
+	    int key = (int)GetShapeAttr0(gdata, map, offset);
+	    int code = StringStorage::Lookup(key, shapeAttr0);
 #ifdef DEBUG
-		printf("Key %d returns \"%s\", code %d\n", key, shapeAttr0, code);
+	    printf("Key %d returns \"%s\", code %d\n", key, shapeAttr0, code);
 #endif
 	} else {
 #ifdef DEBUG
-		printf("Using default file \"%s\"\n", defaultFile);
+	    printf("Using default file \"%s\"\n", defaultFile);
 #endif
 	}
-
-
+	
+	
 	// Now decide how to deal with it.
 	char *file;
 	int imageDataSize;
 	char *image;
 	Boolean dali;
-
-		int imageType = int(GetShapeAttr1(gdata, map, offset) + 0.5);
+	
+	int imageType = int(GetShapeAttr1(gdata, map, offset) + 0.5);
 	switch (imageType)
 	{
-	case IMAGE_TYPE_GIF_LOCAL:
+	  case IMAGE_TYPE_GIF_LOCAL:
 #if defined(DEBUG)
-		  printf("GIF image local\n");
+	    printf("GIF image local\n");
 #endif
-	  dali = false;
-	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-	  break;
-
-	case IMAGE_TYPE_DALI_FILE:
+	    dali = false;
+	    file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+	    break;
+	    
+	  case IMAGE_TYPE_DALI_FILE:
 #if defined(DEBUG)
-		  printf("Tasvir file, sending filename to Tasvir\n");
+	    printf("Tasvir file, sending filename to Tasvir\n");
 #endif
-	  dali = true;
-	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-	  imageDataSize = 0;
-	  image = NULL;
-	  break;
-
-	case IMAGE_TYPE_DALI_FILE_SEND:
+	    dali = true;
+	    file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+	    imageDataSize = 0;
+	    image = NULL;
+	    break;
+	    
+	  case IMAGE_TYPE_DALI_FILE_SEND:
 #if defined(DEBUG)
-		  printf("Tasvir file, sending image to Tasvir\n");
+	    printf("Tasvir file, sending image to Tasvir\n");
 #endif
-	  dali = true;
-	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-		  (void) ReadFile(file, imageDataSize, image);
-	  file = "-";
-	  break;
-
-	case IMAGE_TYPE_DALI_IMAGE:
+	    dali = true;
+	    file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+	    (void) ReadFile(file, imageDataSize, image);
+	    file = "-";
+	    break;
+	    
+	  case IMAGE_TYPE_DALI_IMAGE:
 #if defined(DEBUG)
-		  printf("Tasvir image\n");
+	    printf("Tasvir image\n");
 #endif
-	  DOASSERT(shapeAttr0 != NULL, "Can't get image");
-	  dali = true;
-	  file = "-";
-	  // Note: I'm not sure that using strlen() here is safe.  RKW
-	  // 8/29/96.
-	  imageDataSize = strlen(shapeAttr0);
-	  image = shapeAttr0;
-	  break;
-
-	default:
-	  reportError("Illegal image type", devNoSyserr);
-	  return;
-	  break;
+	    DOASSERT(shapeAttr0 != NULL, "Can't get image");
+	    dali = true;
+	    file = "-";
+	    // Note: I'm not sure that using strlen() here is safe.  RKW
+	    // 8/29/96.
+	    imageDataSize = strlen(shapeAttr0);
+	    image = shapeAttr0;
+	    break;
+	    
+	  default:
+	    reportError("Illegal image type", devNoSyserr);
+	    return;
+	    break;
 	}
-
+	
 #ifdef DEBUG
 	printf("Drawing image %s at %.2f,%.2f\n", file, tx, ty);
 #endif
-
+	
 	if (Init::ImageDelay() != 0) sleep(Init::ImageDelay());
-
+	
 	// Display the image.
 	if (dali)
 	{
-	  Coord size = GetSize(gdata, map, offset);
-	  Coord x0, y0, x1, y1;
-	  win->Transform(0.0, 0.0, x0, y0);
-	  win->Transform(size, size, x1, y1);
-
-	  Coord width = fabs(x1 - x0);
-	  Coord height = fabs(y1 - y0);
-
-		  width *= pixelSize;
-	  height *= pixelSize;
-
-	  width = MAX(width, pixelSize);
-	  height = MAX(height, pixelSize);
-
+	    Coord size = GetSize(gdata, map, offset);
+	    Coord x0, y0, x1, y1;
+	    win->Transform(0.0, 0.0, x0, y0);
+	    win->Transform(size, size, x1, y1);
+	    
+	    Coord width = fabs(x1 - x0);
+	    Coord height = fabs(y1 - y0);
+	    
+	    width *= pixelSize;
+	    height *= pixelSize;
+	    
+	    width = MAX(width, pixelSize);
+	    height = MAX(height, pixelSize);
+	    
 #if 0
-	  // Enable this line to have the large rather than the smaller
-	  // dimension control the image size.
-	  width = height = MAX(width, height);
+	    // Enable this line to have the large rather than the smaller
+	    // dimension control the image size.
+	    width = height = MAX(width, height);
 #endif
-
-	  // Increase Dali/Tasvir timeout by a factor of 10 if we're drawing
-	  // a view that's in piled mode, because it's more important in
-	  // this case to not time out so that the actual drawing of the
-	  // views occurs in the correct order.
-	  float timeoutFactor = 1.0;
-	  View *view2 = View::FindViewByName(view->GetName());
-	  if (view2->IsInPileMode()) timeoutFactor = 10.0;
-	  win->DaliShowImage(tx, ty, width, height, file, imageDataSize, image,
-		timeoutFactor);
+	    
+	    // Increase Dali/Tasvir timeout by a factor of 10 if we're drawing
+	    // a view that's in piled mode, because it's more important in
+	    // this case to not time out so that the actual drawing of the
+	    // views occurs in the correct order.
+	    float timeoutFactor = 1.0;
+	    View *view2 = View::FindViewByName(view->GetName());
+	    if (view2->IsInPileMode()) timeoutFactor = 10.0;
+	    win->DaliShowImage(tx, ty, width, height, file,
+			       imageDataSize, image,
+			       timeoutFactor);
 	}
 	else
 	{
-	  win->ImportImage(tx, ty, GIF, file);
+	    win->ImportImage(tx, ty, GIF, file);
 	}
-	}
+    }
 }
 
- 
+
 // -----------------------------------------------------------------
 
 

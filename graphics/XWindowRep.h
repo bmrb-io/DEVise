@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/01/17 20:31:52  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.38  1997/01/09 18:41:21  wenger
   Added workarounds for some Tasvir image bugs, added debug code.
 
@@ -180,8 +187,16 @@ DefineDList(DaliImageList, int);
 #endif
 
 #ifndef LIBCS
+struct ETkInfo
+{
+    int handle;
+    Coord x;
+    Coord y;
+    char script[FILENAME_MAX + 1];
+    bool in_use;
+};
 // List of embedded Tk window handles
-DefineDList(ETkWinList, int);
+DefinePtrDList(ETkWinList, ETkInfo *);
 #endif
 
 /* Bitmap info */
@@ -264,12 +279,22 @@ public:
 					   char *filename,
 					   int argc, char **argv,
 					   int &handle);
+  	virtual int ETk_FindWindow(Coord centerX, Coord centerY,
+				   char *script);
 	virtual DevStatus ETk_MoveWindow(int handle,
 					 Coord centerX, Coord centerY);
+	virtual DevStatus ETk_ResizeWindow(int handle,
+					   Coord width, Coord height);
+	virtual DevStatus ETk_MoveResizeWindow(int handle,
+					       Coord centerX, Coord centerY,
+					       Coord centerX, Coord centerY);
 	virtual DevStatus ETk_FreeWindow(int handle);
 	virtual DevStatus ETk_MapWindow(int handle);
 	virtual DevStatus ETk_UnmapWindow(int handle);
 	virtual DevStatus ETk_FreeWindows();
+	virtual DevStatus ETk_Mark(int handle, bool in_use);
+	virtual DevStatus ETk_MarkAll(bool in_use);
+	virtual DevStatus ETk_Cleanup();
 	virtual int ETk_WindowCount()
 	{
 	    return _etkWindows.Size();
@@ -522,6 +547,7 @@ private:
 
 #ifndef LIBCS
 	// List of embedded Tk windows
+	//ETkWinList _etkWindows;
 	ETkWinList _etkWindows;
 	// Machine on which embedded Tk server is running
 	char *_etkServer;

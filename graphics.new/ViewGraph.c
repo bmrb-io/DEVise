@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/02/26 16:31:49  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.46  1997/02/03 19:45:37  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -203,8 +206,6 @@
 #include "Init.h"
 #include "RecordLink.h"
 #include "TData.h"
-
-// Andy
 #include "MappingInterp.h"
 
 ImplementDList(GStatList, int)

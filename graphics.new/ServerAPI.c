@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/12/20 16:26:28  jussi
+  Removed call to SemaphoreV::create().
+
   Revision 1.26  1996/12/13 21:33:43  jussi
   Updated to use SemaphoreV::maxNumSemaphores().
 
@@ -151,8 +154,8 @@
 #include "missing.h"
 #endif
 
-//#define SERV_ANYPORT
-//#define DEBUG
+#define SERV_ANYPORT
+#define DEBUG
 
 MapInterpClassInfo *ServerAPI::_interpProto = 0;
 
@@ -407,102 +410,105 @@ int ServerAPI::ReadCommand()
 
 void ServerAPI::RestartSession()
 {
-  if (_socketFd >= 0) {
-    printf("Closing client connection.\n");
-    Dispatcher::Current()->Unregister(this);
-    NetworkClose(_socketFd);
-    _socketFd = -1;
-  }
-
-  DestroySessionData();
-
-  for(int i = 0; i < _replicate; i++) {
-    printf("Closing replica connection to %s:%d\n", _replicas[i].host,
-	   _replicas[i].port);
-    NetworkClose(_replicas[i].fd);
-  }
-  _replicate = 0;
-
-  DOASSERT(_listenFd < 0, "Invalid socket");
-  _listenFd = socket(AF_INET, SOCK_STREAM, 0);
-  if (_listenFd < 0)
-    perror("socket");
-  DOASSERT(_listenFd >= 0, "Cannot create socket");
-
-  // allow listening port number to be reused
-  int enable = 1;
-  int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
-		      (char *)&enable, sizeof enable);
-  if (result < 0)
-    perror("setsockopt");
-  DOASSERT(result >= 0, "Cannot set socket options");
-
-  // Now bind these to the address..
-
-  struct sockaddr_in servAddr;
-  memset(&servAddr, 0, sizeof servAddr);
-  servAddr.sin_family = AF_INET;
-#ifdef SERV_ANYPORT
-  servAddr.sin_port = htons(0);
-#else
-  servAddr.sin_port = htons(DefaultNetworkPort);
-#ifdef DEBUG
-  printf("Server listening at port %u.\n", DefaultNetworkPort);
-#endif
-#endif
-  servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  result = bind(_listenFd, (struct sockaddr *)&servAddr,
-		sizeof(struct sockaddr));
-  if (result < 0)
-    perror("bind");
-  DOASSERT(result >= 0, "Cannot bind to address");
-     
-#ifdef SERV_ANYPORT	
-  struct sockaddr_in tempAddr;
-  memset(&tempAddr, 0, sizeof(struct sockaddr));
-  int len = sizeof(struct sockaddr);
-
-  result = getsockname(_listenFd, (sockaddr *)&tempAddr, &len);
-  if (result < 0)
-    perror("getsockname");
-  DOASSERT(result >= 0, "Cannot get sockname");
-  printf("Server listening at port %u.\n", ntohs(tempAddr.sin_port);
-#endif	
-
-  result = listen(_listenFd, 5);
-  if (result < 0)
-    perror("listen");
-  DOASSERT(result >= 0, "Cannot listen");
-
-  printf("\n");
-  printf("Server waiting for client connection.\n");
-
-  int len = sizeof(clientAddr);
-
-  do {
-    // hack: jpm 12/12/96
-    // if we're waiting for a client connection and the server
-    // receives an interrupt from the user (Control-C), we don't
-    // really know about it here because it's handled in the
-    // Dispatcher. The handler just sets a flag which is later inspected
-    // in the Run1() routine. Since we're not going to call Run1() anytime
-    // soon, let's have the flag inspected here just in case.
-    Dispatcher::CheckUserInterrupt();
-    _socketFd = accept(_listenFd, (struct sockaddr *)&clientAddr, &len);
-  } while (_socketFd < 0 && errno == EINTR);
-
-  if (_socketFd < 0) {
-    perror("accept");
-    DOASSERT(0, "Error in network interface");
-  }
-  
-  close(_listenFd);
-  _listenFd = -1;
-
-  printf("Client connection established.\n");
+    if (_socketFd >= 0) {
+	printf("Closing client connection.\n");
+	Dispatcher::Current()->Unregister(this);
+	NetworkClose(_socketFd);
+	_socketFd = -1;
+    }
     
-  Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
+    DestroySessionData();
+    
+    for(int i = 0; i < _replicate; i++) {
+	printf("Closing replica connection to %s:%d\n", _replicas[i].host,
+	       _replicas[i].port);
+	NetworkClose(_replicas[i].fd);
+    }
+    _replicate = 0;
+    
+    DOASSERT(_listenFd < 0, "Invalid socket");
+    _listenFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_listenFd < 0)
+	perror("socket");
+    DOASSERT(_listenFd >= 0, "Cannot create socket");
+    
+    // allow listening port number to be reused
+    int enable = 1;
+    int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
+			    (char *)&enable, sizeof enable);
+    if (result < 0)
+	perror("setsockopt");
+    DOASSERT(result >= 0, "Cannot set socket options");
+    
+    // Now bind these to the address..
+    
+    struct sockaddr_in servAddr;
+    memset(&servAddr, 0, sizeof servAddr);
+    servAddr.sin_family = AF_INET;
+#ifdef SERV_ANYPORT
+    servAddr.sin_port = htons(0);
+#else
+    servAddr.sin_port = htons(DefaultNetworkPort);
+#ifdef DEBUG
+    printf("Server listening at port %u.\n", DefaultNetworkPort);
+#endif
+#endif
+    servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    result = bind(_listenFd, (struct sockaddr *)&servAddr,
+		  sizeof(struct sockaddr));
+    if (result < 0)
+	perror("bind");
+    DOASSERT(result >= 0, "Cannot bind to address");
+
+    int len;
+    
+#ifdef SERV_ANYPORT	
+    struct sockaddr_in tempAddr;
+    memset(&tempAddr, 0, sizeof(struct sockaddr));
+    len = sizeof(struct sockaddr);
+    
+    result = getsockname(_listenFd, (sockaddr *)&tempAddr, &len);
+    if (result < 0)
+	perror("getsockname");
+    DOASSERT(result >= 0, "Cannot get sockname");
+    printf("Server listening at port %u.\n", ntohs(tempAddr.sin_port));
+#endif	
+    
+    result = listen(_listenFd, 5);
+    if (result < 0)
+	perror("listen");
+    DOASSERT(result >= 0, "Cannot listen");
+    
+    printf("\n");
+    printf("DEVise server waiting for client connection on port %d.\n",
+	   ntohs(servAddr.sin_port));
+    
+    len = sizeof(clientAddr);
+    
+    do {
+	// hack: jpm 12/12/96
+	// if we're waiting for a client connection and the server
+	// receives an interrupt from the user (Control-C), we don't
+	// really know about it here because it's handled in the
+	// Dispatcher. The handler just sets a flag which is later inspected
+	// in the Run1() routine. Since we're not going to call Run1() anytime
+	// soon, let's have the flag inspected here just in case.
+	Dispatcher::CheckUserInterrupt();
+	_socketFd = accept(_listenFd, (struct sockaddr *)&clientAddr, &len);
+    } while (_socketFd < 0 && errno == EINTR);
+    
+    if (_socketFd < 0) {
+	perror("accept");
+	DOASSERT(0, "Error in network interface");
+    }
+    
+    close(_listenFd);
+    _listenFd = -1;
+    
+    printf("Client connection established.\n");
+    
+    Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
 }
 
 void ServerAPI::OpenDataChannel(int port){

@@ -290,13 +290,13 @@ ETkIfc.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 ETkIfc.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 ETkIfc.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 ETkIfc.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h ETkIfc.h
-ETkIfc.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ETkIfc.o: ETk.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ETkIfc.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 ETkIfc.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h DeviseTypes.h
-ETkIfc.o: /usr/include/values.h DevStatus.h /usr/include/string.h ETk.h
-ETkIfc.o: Util.h /usr/include/stdlib.h /usr/include/ctype.h
-ETkIfc.o: /usr/include/math.h /usr/include/floatingpoint.h
-ETkIfc.o: /usr/include/sys/ieeefp.h Exit.h DevError.h
+ETkIfc.o: /usr/include/values.h DevStatus.h /usr/include/string.h Util.h
+ETkIfc.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+ETkIfc.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Exit.h
+ETkIfc.o: DevError.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Exit.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Exit.o: /usr/include/unistd.h /usr/include/sys/types.h
@@ -309,7 +309,7 @@ Exit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Control.h
 Exit.o: VisualArg.h Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Exit.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h ETkIfc.h
+Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h ETkIfc.h ETk.h
 ExitClean.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ExitClean.o: /usr/include/sys/va_list.h /usr/include/stdlib.h Exit.h
 FilterQueue.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -337,10 +337,10 @@ Init.o: Dispatcher.h DeviseTypes.h /usr/include/values.h DevStatus.h DList.h
 Init.o: Exit.h Journal.h VisualArg.h Color.h Pattern.h Init.h BufPolicy.h
 Init.o: Time.h Util.h /usr/include/ctype.h /usr/include/math.h
 Init.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-Init.o: ../graphics.new/Version.h ETkIfc.h Xdef.h /s/X11/include/X11/Xlib.h
-Init.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-Init.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-Init.o: /s/X11/include/X11/Xutil.h
+Init.o: ../graphics.new/Version.h ETkIfc.h ETk.h Xdef.h
+Init.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+Init.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+Init.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
 Journal.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Journal.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
 Journal.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -558,7 +558,7 @@ ViewWin.o: DevError.h DualWindowRep.h View.h Dispatcher.h
 ViewWin.o: /usr/include/unistd.h /usr/include/sys/unistd.h Journal.h
 ViewWin.o: Control.h ClassDir.h ViewCallback.h AttrList.h Init.h BufPolicy.h
 ViewWin.o: Cursor.h DevFont.h Display.h ColorMgr.h ../graphics.new/Version.h
-ViewWin.o: Util.h /usr/include/ctype.h PSDisplay.h ETkIfc.h Xdef.h
+ViewWin.o: Util.h /usr/include/ctype.h PSDisplay.h ETkIfc.h ETk.h Xdef.h
 ViewWin.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ViewWin.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 ViewWin.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
@@ -636,8 +636,8 @@ XWindowRep.o: DevError.h Xdef.h /s/X11/include/X11/Xlib.h
 XWindowRep.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 XWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 XWindowRep.o: /s/X11/include/X11/Xutil.h Util.h XDisplay.h Display.h
-XWindowRep.o: Dispatcher.h Journal.h ColorMgr.h XBitmap.h ETkIfc.h DaliIfc.h
-XWindowRep.o: Init.h BufPolicy.h xv.h /s/X11/include/X11/Xos.h
+XWindowRep.o: Dispatcher.h Journal.h ColorMgr.h XBitmap.h ETkIfc.h ETk.h
+XWindowRep.o: DaliIfc.h Init.h BufPolicy.h xv.h /s/X11/include/X11/Xos.h
 XWindowRep.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
 XWindowRep.o: /usr/include/malloc.h /s/X11/include/X11/cursorfont.h
 XWindowRep.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xresource.h

@@ -1,7 +1,4 @@
 
-//#define DEBUG
-#define PRINT_ETK_STATUS 0
-
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -13,6 +10,10 @@
 #include "ETk.h"
 #include "Util.h"
 #include "DevError.h"
+
+//#define DEBUG
+
+#define PRINT_ETK_STATUS 0
 
 char *ETkIfc::_etkServer = NULL;
 Boolean ETkIfc::_etkQuit = false;
@@ -48,16 +49,19 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
 		     int argc, const char **argv,
 		     int &handle)
 {
+    BEGIN_ETK_TRACE(__FUNCTION__);
+    
     int i;
     char command[ETK_MAX_STR_LENGTH];
     char reply[ETK_MAX_STR_LENGTH];
 
     DOASSERT(etkServer != NULL, "No ETk server specified");
     
-#ifdef DEBUG
-    printf("ETkIfc::CreateWindow(%s,0x%lx,%d,%d,%d,%d,%s)\n",
-	   etkServer, (long) win, centerX, centerY,
-	   width, height, filename);
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("    Center (%d,%d), width %d, height %d\n",
+	   centerX, centerY, width, height);
+    printf("    Script %s\n", filename);
     printf("    argc: %d\n", argc);
     for (i = 0; i < argc; i++)
 	printf("    arg: %s\n", argv[i] ? argv[i] : "(NULL)");
@@ -94,6 +98,7 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
     printf("ETk status: %s\n", replyBuf);
 #endif
     
+    END_ETK_TRACE(__FUNCTION__);
     return result;
 
 }
@@ -109,9 +114,14 @@ DevStatus
 ETkIfc::SendSimpleCommand(const char *etkServer, const char *command,
 			  int handle)
 {
-    DO_DEBUG(printf("ETkIfc::SendSimpleCommand(%s,%s,%d)\n",
-		    etkServer, command, handle));
-    
+    BEGIN_ETK_TRACE(__FUNCTION__);
+
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("  command: %s\n", command);
+    printf("  handle: %d\n", handle);
+#endif
+        
     DevStatus result = StatusOk;
     
     char commandBuf[ETK_MAX_STR_LENGTH];
@@ -131,6 +141,7 @@ ETkIfc::SendSimpleCommand(const char *etkServer, const char *command,
     printf("ETk status: %s\n", replyBuf);
 #endif
     
+    END_ETK_TRACE(__FUNCTION__);
     return result;
 }
 
@@ -144,8 +155,11 @@ DevStatus
 ETkIfc::MoveWindow(const char *etkServer, int handle,
 		   int centerX, int centerY)
 {
-    DO_DEBUG(printf("ETkIfc::MoveWindow(%s,%d,%d,%d)\n",
-		    etkServer, handle, centerX, centerY));
+    BEGIN_ETK_TRACE(__FUNCTION__);
+#if defined(DEBUG)
+    printf("ETkIfc::MoveWindow(%s,%d,%d,%d)\n",
+	   etkServer, handle, centerX, centerY);
+#endif
     
     DevStatus result = StatusOk;
     
@@ -163,6 +177,80 @@ ETkIfc::MoveWindow(const char *etkServer, int handle,
     printf("ETk status: %s\n", replyBuf);
 #endif
     
+    END_ETK_TRACE(__FUNCTION__);
+    return result;
+}
+
+//
+// ETkIfc::ResizeWindow()
+//
+// Resizes an embedded Tk window. Leaving the center of the window in
+// the same position
+//
+DevStatus
+ETkIfc::ResizeWindow(const char *etkServer, int handle,
+		     int width, int height)
+{
+    BEGIN_ETK_TRACE(__FUNCTION__);
+#if defined(DEBUG)
+    printf("ETkIfc::ResizeWindow(%s,%d,%d,%d)\n",
+	   etkServer, handle, width, height);
+#endif
+    
+    DevStatus result = StatusOk;
+    
+    char commandBuf[ETK_MAX_STR_LENGTH];
+    char replyBuf[ETK_MAX_STR_LENGTH];
+    
+    sprintf(commandBuf, "resize %d %d %d", handle, width, height);
+    
+    DevStatus temp = SendCommand(etkServer, commandBuf,
+				 0, NULL, replyBuf, 0.0);
+    result += temp;
+    
+#if PRINT_ETK_STATUS
+    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    printf("ETk status: %s\n", replyBuf);
+#endif
+    
+    END_ETK_TRACE(__FUNCTION__);
+    return result;
+}
+
+//
+// ETkIfc::MoveResizeWindow()
+//
+// Moves and resizes an embedded Tk window
+//
+DevStatus
+ETkIfc::MoveResizeWindow(const char *etkServer, int handle,
+			 int xcenter, int ycenter,
+			 int width, int height)
+{
+    BEGIN_ETK_TRACE(__FUNCTION__);
+#if defined(DEBUG)
+    printf("ETkIfc::ResizeWindow(%s,%d,%d,%d,%d,%d)\n",
+	   etkServer, handle, xcenter, ycenter, width, height);
+#endif
+    
+    DevStatus result = StatusOk;
+    
+    char commandBuf[ETK_MAX_STR_LENGTH];
+    char replyBuf[ETK_MAX_STR_LENGTH];
+    
+    sprintf(commandBuf, "moveresize %d %d %d %d %d", handle,
+	    xcenter, ycenter, width, height);
+    
+    DevStatus temp = SendCommand(etkServer, commandBuf,
+				 0, NULL, replyBuf, 0.0);
+    result += temp;
+    
+#if PRINT_ETK_STATUS
+    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    printf("ETk status: %s\n", replyBuf);
+#endif
+    
+    END_ETK_TRACE(__FUNCTION__);
     return result;
 }
 
@@ -190,6 +278,8 @@ SendCommand(const char *etkServer, char *commandBuf,
 	    int argc, const char **argv,
 	    char *replyBuf, double timeout)
 {
+    BEGIN_ETK_TRACE(__FUNCTION__);
+    
     DevStatus result = StatusOk;
     int i;
     int length;
@@ -197,14 +287,21 @@ SendCommand(const char *etkServer, char *commandBuf,
     if (argc < 0)
 	argc = 0;
     
-    DO_DEBUG(printf("Sending ETk command: %s\n", commandBuf));
     for (i = 0; i < argc; i++)
     {
 	if (argv[i] == NULL)
 	    argv[i] = "";
-	DO_DEBUG(printf("    arg: %s\n", argv[i]));
     }
     
+    
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("    command: %s\n", commandBuf);
+    printf("    timeout: %f\n", timeout);
+    printf("    argc: %d\n", argc);
+    for (i = 0; i < argc; i++)
+	printf("    arg: %s\n", argv[i] ? argv[i] : "(NULL)");
+#endif
     
     //
     // Establish connection with ETk server.
@@ -266,8 +363,9 @@ SendCommand(const char *etkServer, char *commandBuf,
     
     if (result.IsComplete())
     {
-	DO_DEBUG(printf("ETk server reply: %s\n", replyBuf));
-	
+#if defined(DEBUG)
+	printf("ETk server reply: %s\n", replyBuf);
+#endif	
 	const char *okStr = "OK";
 	const char *errStr = "ERROR";
 	char errBuf[ETK_MAX_STR_LENGTH+100];
@@ -300,6 +398,7 @@ SendCommand(const char *etkServer, char *commandBuf,
 	}
     }
     
+    END_ETK_TRACE(__FUNCTION__);
     return result;
 
 }
@@ -314,6 +413,12 @@ SendCommand(const char *etkServer, char *commandBuf,
 static DevStatus
 WaitForReply(char *buf, int fd, int bufSize, double timeout)
 {
+    BEGIN_ETK_TRACE(__FUNCTION__);
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("    timeout: %f\n", timeout);
+#endif
+    
     DevStatus result = StatusOk;
     double currentTime;
     
@@ -357,6 +462,7 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
 	}
     }
     
+    END_ETK_TRACE(__FUNCTION__);
     return result;
 }
 

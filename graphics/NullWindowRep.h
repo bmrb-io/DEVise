@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/01/17 20:31:42  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.6  1996/12/30 23:51:09  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -103,6 +110,19 @@ public:
     virtual DevStatus ETk_MoveWindow(int handle,
 				     Coord centerX, Coord centerY) {
 	reportError("Can't do ETk_MoveWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_ResizeWindow(int handle,
+				       Coord width, Coord height) {
+	reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_MoveResizeWindow(int handle,
+					   Coord centerX, Coord centerY,
+					   Coord centerX, Coord centerY) {
+	reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
 		    devNoSyserr);
 	return StatusFailed;
     }

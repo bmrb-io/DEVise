@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/01/29 17:02:32  wenger
+  Fixed PSWindowRep::ScaledText().
+
   Revision 1.18  1997/01/17 20:31:44  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -174,6 +177,19 @@ public:
     virtual DevStatus ETk_MoveWindow(int handle,
 				     Coord centerX, Coord centerY) {
 	reportError("Can't do ETk_MoveWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_ResizeWindow(int handle,
+				       Coord width, Coord height) {
+	reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_MoveResizeWindow(int handle,
+					   Coord centerX, Coord centerY,
+					   Coord centerX, Coord centerY) {
+	reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
 		    devNoSyserr);
 	return StatusFailed;
     }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/12/30 23:57:37  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.18  1996/11/23 21:17:17  jussi
   Removed reference to DEVISE_PAGESIZE. Removed StripPath() which
   is already in Util.c.
@@ -250,7 +255,8 @@ public:
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
 
-  // Andy: OLD VERSION: virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
+  /* Get the AttrInfo for a GData attribute. The argument should be
+     one of the MappingCmd_??? constants defined in MappingInterp.h */
   virtual AttrInfo *MapGAttr2TAttr(int which_attr) { return 0; }
   
   /* Get the AttrInfo for shape attribute i */

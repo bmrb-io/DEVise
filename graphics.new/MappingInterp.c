@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/02/26 16:31:37  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.46.4.1  1997/02/13 18:11:44  ssl
   Added a check to the user interface asking when user links two different
   data sets with a record link
@@ -436,36 +439,6 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
   attrFlag = _cmdAttrFlag;
   return _cmd;
 }
-
-/*
-AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
-{
-  MappingSimpleCmdEntry entry;
-  AttrType attrType;
-  Boolean isSorted;
-  Boolean simpleCmd = false;
-
-  if (!strcmp(attrName, "x")) {
-    if (!(_cmdFlag & MappingCmd_X))
-      return 0;
-    simpleCmd = ConvertSimpleCmd(_cmd->xCmd, entry, attrType, isSorted);
-  } else if (!strcmp(attrName, "y")) {
-    if (!(_cmdFlag & MappingCmd_Y))
-      return 0;
-    simpleCmd = ConvertSimpleCmd(_cmd->yCmd, entry, attrType, isSorted);
-  } else if (!strcmp(attrName, "z")) {
-    if (!(_cmdFlag & MappingCmd_Z))
-      return 0;
-    simpleCmd = ConvertSimpleCmd(_cmd->zCmd, entry, attrType, isSorted);
-  } else
-    return 0;
-
-  if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
-    return entry.cmd.attr;
-
-  return 0;
-}
-*/
 
 /* Get the AttrInfo for a GData attribute. */
 AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)

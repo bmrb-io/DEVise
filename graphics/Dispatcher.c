@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/02/03 04:12:05  donjerko
+  Catalog management moved to DTE
+
   Revision 1.34  1997/01/21 19:01:28  wenger
   Minor changes to get Linux compile to work, updated Linux dependencies.
 
@@ -536,7 +539,7 @@ void Dispatcher::Run1()
     break;
 
   default:
-    DOASSERT(0, "Enexpected event in journal");
+    DOASSERT(0, "Unexpected event in journal");
   }
 
   /* get next event */

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/01/17 20:31:48  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.42  1997/01/09 18:41:18  wenger
   Added workarounds for some Tasvir image bugs, added debug code.
 
@@ -359,9 +366,29 @@ public:
 		  devNoSyserr);
       return StatusFailed;
   }
+  virtual int ETk_FindWindow(Coord centerX, Coord centerY,
+			     char *script)
+  {
+      reportError("Can't do ETk_FindWindow() on this WindowRep object",
+		  devNoSyserr);
+      return -1;
+  }
   virtual DevStatus ETk_MoveWindow(int handle,
 				   Coord centerX, Coord centerY) {
       reportError("Can't do ETk_MoveWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_ResizeWindow(int handle,
+				     Coord width, Coord height) {
+      reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_MoveResizeWindow(int handle,
+					 Coord centerX, Coord centerY,
+					 Coord centerX, Coord centerY) {
+      reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
 		  devNoSyserr);
       return StatusFailed;
   }
@@ -385,6 +412,21 @@ public:
   }
   virtual DevStatus ETk_FreeWindows() {
       reportError("Can't do ETk_FreeWindows() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_Cleanup() {
+      reportError("Can't do ETk_Cleanup() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_Mark(int handle, bool in_use) {
+      reportError("Can't do ETk_Mark() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_MarkAll(bool in_use) {
+      reportError("Can't do ETk_MarkAll() on this WindowRep object",
 		  devNoSyserr);
       return StatusFailed;
   }

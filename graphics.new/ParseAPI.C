@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/03/19 18:44:41  wenger
+  Disabled RTree indices in DTE, got that to compile; fixed some compile
+  warnings; undid accidental(?) changes to devise run script; devise.etk
+  uses 'localhost' instead of '$HOSTNAME'; added Solaris-only release
+  script.
+
   Revision 1.58  1997/03/18 20:42:35  donjerko
   Changes for GUI.
 
@@ -306,8 +312,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   result[0] = '\0';
 
 #ifdef DEBUG
-  for(int i = 0; i < argc; i++)
-    printf("\"%s\" ", argv[i]);
+  printf("ParseAPI[%ld]: ", (long) getpid());
+  for (int i = 0; i < argc; i++)
+  {
+      printf("\"%s\" ", argv[i]);
+  }
   printf("\n");
 #endif
 

@@ -31,9 +31,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 						ViewGraph *view,
 						int pixelSize)
 {
-#if defined(DEBUG)
-    printf("%s\n", __PRETTY_FUNCTION__);
-#endif
+    BEGIN_ETK_TRACE(__FUNCTION__);
     
     int i, j, k;
     char *script;
@@ -43,19 +41,24 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     char *gdata;
     GDataAttrOffset *offset;
     Coord x, y, tx, ty, size;
+    Coord x0, y0, x1, y1, width, height;
     GlobalColor color;
+    int argc;
+    char argv[MAX_GDATA_ATTRS][ETK_MAX_STR_LENGTH];
+    ShapeAttr *defaultAttrs;
+    unsigned long attrflags;
+    int gdataOffset;
+    Coord attrValue;
+    AttrInfo *attrinfo;
+    char *temp;
+    char *argv2[MAX_GDATA_ATTRS];
+    int handle;    
     
-    if (view->GetNumDimensions() == 3) {
+    if (view->GetNumDimensions() == 3)
+    {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
     }
-    
-    //
-    // Eventually I'll find a better way, but for now I'm just going
-    // to delete all the ETk windows, and draw them all again from
-    // scratch.
-    //
-    win->ETk_FreeWindows();
     
     //
     // Shape attributes should store:
@@ -66,30 +69,31 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     //   ...
     //   attr[argc+1] = arg
     //
-    int argc;
-    char argv[MAX_GDATA_ATTRS][ETK_MAX_STR_LENGTH];
-    ShapeAttr *defaultAttrs = map->GetDefaultShapeAttrs();
-    unsigned long attrflags = map->GetDynamicShapeAttrs();
-    int gdataOffset;
-    Coord attrValue;
-    AttrInfo *attrinfo;
-    char *temp;
+    defaultAttrs = map->GetDefaultShapeAttrs();
+    attrflags = map->GetDynamicShapeAttrs();
     
     offset = map->GetGDataOffset();
 
-    for (i = 0; i < numSyms; i++) {
-	
+    for (i = 0; i < numSyms; i++)
+    {
 	// first draw a cross mark at each Tk window location;
 	// if there is a problem in displaying the Tk window,
 	// then at least the user sees some symbol in the window
-	gdata = (char *)gdataArray[i];
+
+	gdata = (char *) gdataArray[i];
 	x = ShapeGetX(gdata, map, offset);
 	y = ShapeGetY(gdata, map, offset);
+
 	color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
+	{
 	    win->SetXorMode();
+	}
 	else
+	{
 	    win->SetFgColor(color);
+	}
+	
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->Transform(x, y, tx, ty);
 	win->PushTop();
@@ -99,6 +103,18 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	win->PopTransform();
 	if (color == XorColor)
 	    win->SetCopyMode();
+	
+	// Size is expressed in data units, so convert to width and
+	// height in pixels.
+        size = GetSize(gdata, map, offset);
+	win->Transform(0.0, 0.0, x0, y0);
+	win->Transform(size, size, x1, y1);
+	width = fabs(x1 - x0);
+	width *= pixelSize;
+	width = MAX(width, pixelSize);
+	height = fabs(y1 - y0);
+	height *= pixelSize;
+	height = MAX(height, pixelSize);
 	
 	//
 	// Now we need to get our hands on all the shape attributes.
@@ -115,10 +131,11 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	//
 
 	// Initialize the argv array with NULL strings
-	script = NULL;
 	argc = 0;
 	for (j = 0; j < MAX_GDATA_ATTRS; j++)
+	{
 	    argv[j][0] = '\0';
+	}
 	
 	//
 	// Make sure the name of the script and argc are defined
@@ -139,10 +156,20 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	// Get the name of the script. Assume that it is a string
 	// variable reference attr.
 	//
+	script = NULL;
+	code = -1;
 	if ((gdataOffset = offset->shapeAttrOffset[0]) >= 0)
 	{
 	    attrValue = *(Coord *) (gdata + gdataOffset);
-	    attrinfo = map->MapShapeAttr2TAttr(j);
+	    code = StringStorage::Lookup((int) attrValue, script);
+	}
+	//
+	// Maybe the attrValue is an index into the StringLookup
+	// table
+	//
+	else
+	{
+	    attrValue = (Coord) defaultAttrs[0];
 	    code = StringStorage::Lookup((int) attrValue, script);
 	}
 	if (script == NULL || code < 0)
@@ -212,26 +239,62 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	
 #ifdef DEBUG
 	printf("Displaying Tcl/Tk window at %.2f,%.2f. script = %s\n",
-	       tx, ty, script);
+	       x, y, script);
 	for (j = 0; j < argc; j++)
 	{
 	    printf("    arg: %s\n", argv[j]? argv[j] : "(NULL)");
 	}
 #endif
-	
+
+	//
 	// Display the window
-	char *argv2[MAX_GDATA_ATTRS];
+	//
+	
+	//
+	// argv is a 2-D char array, and we need a (char **) parameter
+	// to pass to the CreateWindow function.
+	//
 	for (j = 0; j < argc; j++)
 	{
 	    argv2[j] = argv[j];
 	}
-	size = GetSize(gdata, map, offset);
-	size *= pixelSize;
-	int dummy;
-	win->ETk_CreateWindow(tx, ty, size, size, script,
-			      argc, argv2, dummy);
+	
+	//
+	// Is there already a window at these x,y coords?
+	//
+	
+	//
+	// This feature not supported yet. Andy will replace the "if (0)"
+	// with the following two lines once the window searches work
+	// correctly.
+	//
+	// handle = win->ETk_FindWindow(x, y, script);
+	// if (handle >= 0)
+	//
+	if (0)
+	{
+	    //
+	    // Update the window
+	    //
+	    reportError("Window updates not implemented yet", devNoSyserr);
+	    //
+	    // Mark the window as "in_use"
+	    //
+	    win->ETk_Mark(handle, true);
+	}
+	
+	else
+	{
+	    //
+	    // Create a new window
+	    //
+	    win->ETk_CreateWindow(tx, ty, width, height,
+				  script, argc, (char **) argv2, handle);
+	}
 
     }
+    
+    END_ETK_TRACE(__FUNCTION__);
 
 }
 

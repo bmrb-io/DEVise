@@ -1,12 +1,11 @@
 
-#ifndef _ETKIFC_h_
-#define _ETKIFC_h_
+#ifndef _ETKIFC_H_
+#define _ETKIFC_H_
 
+#include "ETk.h"
 #include "Xdef.h"
 #include "DeviseTypes.h"
 #include <string.h>
-
-const int ETK_INVALID_HANDLE = -1;
 
 class ETkIfc
 {
@@ -59,6 +58,13 @@ class ETkIfc
     
     static DevStatus MoveWindow(const char *etkServer, int handle,
 				int centerX, int centerY);
+    
+    static DevStatus ResizeWindow(const char *etkServer, int handle,
+				  int width, int height);
+    
+    static DevStatus MoveResizeWindow(const char *etkServer, int handle,
+				      int centerX, int centerY,
+				      int width, int height);
     
     //
     // Get/SetQuitFlag()
