@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/09/06 06:59:48  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.27  1996/09/04 21:24:52  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -121,7 +128,9 @@ class XWindowRep;
 
 DefinePtrDList(XWindowRepList, XWindowRep *);
 
+#ifndef LIBCS
 DefineDList(DaliImageList, int);
+#endif
 
 /* Bitmap info */
 struct XBitmapInfo {
@@ -177,12 +186,15 @@ public:
 	/* export window image to other graphics formats */
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+#ifndef LIBCS
 	/* import graphics via Dali */
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
-	  Coord width, Coord height, char *filename, int imageLen,
-	  char *image);
+                                        Coord width, Coord height,
+                                        char *filename, int imageLen,
+                                        char *image);
 	virtual DevStatus DaliFreeImages();
 	virtual int DaliImageCount() { return _daliImages.Size(); };
+#endif
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -420,7 +432,9 @@ private:
 	/* True if display graphics */
 	Boolean _dispGraphics;
 
+#ifndef LIBCS
 	DaliImageList _daliImages;
+#endif
 };
 
 #endif

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.66  1996/09/06 06:59:47  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.65  1996/09/05 19:11:44  jussi
   Added handling of GraphicsExpose and NoExpose events.
 
@@ -261,11 +268,12 @@
 #include "XWindowRep.h"
 #include "XDisplay.h"
 #include "Compress.h"
-#include "DaliIfc.h"
 #include "DevError.h"
 #ifndef LIBCS
+#include "DaliIfc.h"
 #include "Init.h"
 #endif
+
 extern "C" {
 #include "xv.h"
 }
@@ -280,15 +288,14 @@ extern "C" {
 // so this define must come after xv.h.
 //#define DEBUG
 
-
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
 #define DRAWABLE           (_win ? _win : _pixmap)
 
-
+#ifndef LIBCS
 ImplementDList(DaliImageList, int);
-
+#endif
 
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
@@ -518,10 +525,12 @@ XWindowRep::~XWindowRep()
   
   /* _win or _pixmap is destroyed by XDisplay */
 
+#ifndef LIBCS
   // This should have already been done by XDisplay::DestroyWindowRep(),
   // but do it again here just in case...  If it's already been done,
   // this won't actually do anything.
   (void) DaliFreeImages();
+#endif
 
   if (_parent) {
     if (!_parent->_children.Delete(this))
@@ -737,6 +746,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   }
 }
 
+#ifndef LIBCS
 /*------------------------------------------------------------------------------
  * function: XWindowRep::DaliShowImage
  * Show a Dali image in this window.
@@ -801,6 +811,7 @@ XWindowRep::DaliFreeImages()
 
   return result;
 }
+#endif
 
 /* get geometry of root window enclosing this window */
 

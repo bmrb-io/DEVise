@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/09/05 21:30:16  jussi
+  Moved user-specified screen size to Display.
+
   Revision 1.13  1996/07/23 15:34:40  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -141,9 +144,11 @@ public:
   virtual void FindLocalColor(Color c, float &r, float &g, float &b) = 0;
 #endif
 
+#ifndef LIBCS
   /* Get/set desired screen size */
   virtual int &DesiredScreenWidth() { return _desiredScreenWidth; }
   virtual int &DesiredScreenHeight() { return _desiredScreenHeight; }
+#endif
 
 protected:
 #ifndef LIBCS
