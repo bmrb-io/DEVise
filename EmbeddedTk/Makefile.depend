@@ -1,7 +1,7 @@
 ETkCommands.o: ETkCommands.c TkWindowRep.h EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/types.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/isa_defs.h \
@@ -14,7 +14,7 @@ ETkCommands.o: ETkCommands.c TkWindowRep.h EmbeddedTk.h \
  /s/X11/include/X11/Xosdefs.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl7.4/include/tk.h \
  /s/egcs-1.0.3/sunx86_56/i386-pc-solaris2.6/include/assert.h \
  ETkCommands.h
 ETkCompDate.o: ETkCompDate.c ETkCompDate.h
@@ -53,7 +53,7 @@ ETkPatron.o: ETkPatron.c \
 ETk_DeviseClient.o: ETk_DeviseClient.c ETk_DeviseClient.h EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/types.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/isa_defs.h \
@@ -70,7 +70,7 @@ ETk_DeviseClient.o: ETk_DeviseClient.c ETk_DeviseClient.h EmbeddedTk.h \
 EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/types.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/isa_defs.h \
@@ -83,7 +83,7 @@ EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h \
  /s/X11/include/X11/Xosdefs.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h TkWindowRep.h /s/tcl/include/tk.h \
+ /s/X11/include/X11/keysymdef.h TkWindowRep.h /s/tcl7.4/include/tk.h \
  /s/egcs-1.0.3/sunx86_56/i386-pc-solaris2.6/include/assert.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/errno.h \
  /usr/include/sys/errno.h \
@@ -109,7 +109,7 @@ NetscapeRemote.o: NetscapeRemote.c \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stddef.h \
  /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmu/WinUtil.h \
  /s/X11/include/X11/Xutil.h vroot.h BrowserCommands.h \
- /s/tcl/include/tcl.h
+ /s/tcl7.4/include/tcl.h
 SampleClient.o: SampleClient.c \
  /s/egcs-1.0.3/sunx86_56/include/g++/iostream.h \
  /s/egcs-1.0.3/sunx86_56/include/g++/streambuf.h \
@@ -130,7 +130,7 @@ SampleClient.o: SampleClient.c \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/string.h \
  EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
@@ -138,7 +138,7 @@ SampleClient.o: SampleClient.c \
 TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/types.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/isa_defs.h \
@@ -151,7 +151,7 @@ TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
  /s/X11/include/X11/Xosdefs.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl7.4/include/tk.h \
  /s/egcs-1.0.3/sunx86_56/i386-pc-solaris2.6/include/assert.h \
  ETkCommands.h BrowserCommands.h \
  /s/egcs-1.0.3/sunx86_56/include/g++/iostream.h \
@@ -164,7 +164,7 @@ TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/unistd.h \
  /usr/include/sys/unistd.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/string.h
-ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl/include/tcl.h \
+ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl7.4/include/tcl.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
  /usr/include/sys/va_list.h \
@@ -172,7 +172,7 @@ ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl/include/tcl.h \
 main.o: main.c TkWindowRep.h EmbeddedTk.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdio.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/feature_tests.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
+ /usr/include/sys/va_list.h /s/tcl7.4/include/tcl.h \
  /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/types.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/sys/isa_defs.h \
@@ -185,7 +185,7 @@ main.o: main.c TkWindowRep.h EmbeddedTk.h \
  /s/X11/include/X11/Xosdefs.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl7.4/include/tk.h \
  /s/egcs-1.0.3/sunx86_56/i386-pc-solaris2.6/include/assert.h \
  ETkCompDate.h BrowserCommands.h \
  /s/egcs-1.0.3/sunx86_56/lib/gcc-lib/i386-pc-solaris2.6/pgcc-2.90.29/include/stdlib.h \

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.51  1998/06/24 22:15:24  donjerko
+# *** empty log message ***
+#
 # Revision 1.50  1998/06/04 23:08:26  donjerko
 # *** empty log message ***
 #
@@ -120,8 +123,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecId.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Map3D.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Action.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/PointStorage.h
@@ -210,7 +212,6 @@ CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
 CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleEffMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleEffMappingClassInfo.o: ../graphics.new/Action.h
 CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h
@@ -294,7 +295,6 @@ CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
 CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleOccMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleOccMappingClassInfo.o: ../graphics.new/Action.h
 CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h
@@ -389,8 +389,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RecId.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Map3D.h
+CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Action.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/PointStorage.h
@@ -489,8 +488,7 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RecId.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
-CycleWorkingMappingClassInfo.o: ../graphics/Map3D.h
+CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Action.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/PointStorage.h
@@ -575,8 +573,7 @@ HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-HostMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
-HostMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
+HostMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/ViewGraph.h
 HostMappingClassInfo.o: ../graphics.new/Action.h
 HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
 HostMappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
@@ -640,7 +637,6 @@ MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
 MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
 MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
 MappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
@@ -833,10 +829,9 @@ disp.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h ../graphics/DList.h
 disp.o: ../graphics/Exit.h ../graphics/Init.h ../graphics/BufPolicy.h
 disp.o: ../graphics.new/ActionDefault.h ../graphics.new/Action.h
 disp.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-disp.o: ../graphics/AxisLabelClassInfo.h ../graphics/ClassDir.h
 disp.o: ../graphics/View.h ../graphics.new/ViewGraph.h
 disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
-disp.o: ../graphics.new/ActionClassInfo.h TDataMulti.h
+disp.o: ../graphics/ClassDir.h ../graphics.new/ActionClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
 disp.o: ../graphics/Journal.h ../graphics.new/TData.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
@@ -865,9 +860,8 @@ disp.o: CycleEffMappingClassInfo.h CycleWorkingMappingClassInfo.h
 disp.o: CycleSuspendedMappingClassInfo.h CycleCpuTimeMappingClassInfo.h
 disp.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/CursorClassInfo.h
 disp.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewData.h
-disp.o: ../graphics.new/ViewLens.h TDataHost.h TDataCycle.h
-disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
-disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
+disp.o: TDataHost.h TDataCycle.h ../graphics/Display.h ../graphics/Geom.h
+disp.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
