@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1997/01/23 00:08:12  jussi
+#  Removed references to stackWinOpened. Removed Rotate button.
+#
 #  Revision 1.19  1997/01/22 20:14:00  wenger
 #  Removed other non-functional user interface components (includes workaround
 #  for bug 127); fixed a number of OK/Cancel button positions.
@@ -725,6 +728,13 @@ proc FlipStackedView {} {
 	DEVise swapView $win $prevView $view
     }
 
+    # if window is stacked, raise top view
+
+    set layout [DEVise getWindowLayout $win]
+    if {[lindex $layout 2]} {
+        puts "Raising [lindex [DEVise getWinViews $win] 0]"
+        DEVise raiseView [lindex [DEVise getWinViews $win] 0]
+    }    
 }
 
 ############################################################
