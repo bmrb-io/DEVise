@@ -495,9 +495,11 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             prm->attrfunc = Split_White;
         else if (attr->format())
             prm->attrfunc = Split_Format;
-        else if (have_pos) {
+        else if (attr->reader())
+            prm->attrfunc = ReaderCall;
+        else if (have_pos)
             prm->attrfunc = Split_Position;
-        } else if (_schema->attr0()->seperator())
+        else if (_schema->attr0()->seperator())
             prm->attrfunc = Split_Seper;
         else
             prm->attrfunc = Split_White;
@@ -510,13 +512,26 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
         // These are the only types currently supported, this
         // section must handle all builtin types.
 
-        if (attr->reader())
-            prm->attrfunc = ReaderCall;
+        if (attr->reader()) {
+            // Add a fake param above this type.
+            prm = params->pop();
+            udParam *rdprm = prm->dup();
+            rdprm->attrfunc = ReaderCall;
+            params->push(rdprm);
+            rdprm->subparam = new ParamStk();
+            rdprm->subparam->push(prm);
 
-        // NYI
-        // else if (attr->format()) {
-        else if (attr->value()) {
+        } else if (attr->format()) {
+            // Add a fake param above this type.
+            prm = params->pop();
+            udParam *fmtprm = prm->dup();
+            fmtprm->attrfunc = Split_Format;
+            params->push(fmtprm);
+            fmtprm->subparam = new ParamStk();
+            fmtprm->subparam->push(prm);
+        }
 
+        if (attr->value()) {
             prm = params->pop();
             prm->attrfunc = ValueCall;
             _sys_params->push(prm);
@@ -1133,7 +1148,6 @@ int UniData::Split_Format(char *dst, char * /* src */, udParam *ud)
 
     sv = av_pop(rets);
     int len = SvIV(sv);
-    char *mych = SvPV(sv,na);
     SvREFCNT_dec(sv);
 
       // Skip over the area format read.
@@ -1317,8 +1331,56 @@ int UniData::TxtCopy_UnixTime(char *dst, char *src, udParam *ud)
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 int UniData::ReaderCall(char *dst, char *src, udParam *ud)
 {
-    // NYI - needs to be changed.
-    ud->attr->reader()->Eval();
+    int      ok;
+    SV      *sv;
+
+#ifdef   DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+#endif
+
+    _slbuf->setzero(ud->buf_pos);
+    _slbuf->room(_status,UD_BUFCHUNK);
+
+    char *buf = _slbuf->getpos(ud->buf_pos);
+
+    ud->attr->reader()->set_arg(buf);
+    ok = ud->attr->reader()->Eval();
+
+    AV *rets = ud->attr->reader()->_rets;
+
+    if (!ok || (av_len(rets) < 0))
+        return 0;
+
+    sv = av_pop(rets);
+    int len = SvIV(sv);
+    SvREFCNT_dec(sv);
+
+      // Skip over the stuff reader read.
+    _slbuf->set_init(_slbuf->get_init()+len);
+
+    for (int j=0; j < ud->subparam->count(); j++) {
+
+        udParam *param = ud->subparam->ith(j);
+
+        // These all need to be base types that read from 'src' param.
+        // NYI - change later to load base types directly?
+
+        if (av_len(rets) < 0)
+            return 0;
+
+        sv = av_pop(rets);
+        buf = SvPV(sv,na);
+        param->use_slide = 0;
+
+        ok = (param->attrfunc)(dst, buf, param);
+
+        if (!ok)
+            return 0;
+    }
+
+      // This should be empty now anyway.
+    av_clear(rets);
+
     return 1;
 }
 

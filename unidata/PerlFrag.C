@@ -166,7 +166,6 @@ void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
 // Set a argument to pass in as the @_ parameter.
 void PerlFrag::set_arg(char *line)
 {
-    cout << "In set_arg with line " << line << endl;
     av_clear(_args);
     av_push(_args, newSVpv(line,0));
 }
@@ -217,8 +216,7 @@ I32  PerlFrag::Eval()
                     break;
 
                   default: {
-                    // NYI - need to pass in info, and accept
-                    // a list back.
+                    // need to pass in info, and accept a list back.
                     //_flags = G_EVAL | G_ARRAY;
                         av_clear(_rets);
                         dSP;
@@ -232,7 +230,6 @@ I32  PerlFrag::Eval()
 
                         PUTBACK;
                         n = perl_call_sv(_code, _flags);
-                        cout << "Format got " << n << " items back.\n";
                         SPAGAIN;
 
                         while (n > 0) {

@@ -229,6 +229,7 @@ class Attr {
         if (_reader)
             delete _reader;
         _reader = new PerlFrag(this,type);
+        _reader->set_nrets(2);
         _reader->set_src(rdr);
     }
 
