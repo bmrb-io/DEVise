@@ -15,6 +15,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/05/11 20:19:33  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.2  2000/05/04 17:40:28  wenger
 // Added new text object feature: GData Z value specifies max size of
 // font in points (if > 1).  (Allows me to fix problems with BMRB 4096
@@ -87,9 +91,10 @@ public final class DEViseUIGlobals
         }
     }
 
-    // ADD COMMENT -- what are units for size? points?
-    // TEMP -- info for ff (font family)
-    // TEMP -- what are fw, fs?
+    // size = size in points
+    // ff = font family (0 = "Monospaced", 1 = "Serif", 2 = "SanSerif")
+    // fw = font weight (0 = plain, 1 = bold)
+    // fs = font style (0 = plain, 1 = italic)
     public static Font getFont(int size, int ff, int fw, int fs)
     {
         if (size < 4) {
@@ -97,7 +102,7 @@ public final class DEViseUIGlobals
         }
 
 	// TEMP -- should have defined constants for font family
-        if (ff < 0 || ff > 2) {
+        if (ff < 0 || ff >= DEViseFont.length) {
             ff = 1;
         }
 
@@ -106,12 +111,21 @@ public final class DEViseUIGlobals
         return new Font(DEViseFont[ff], fontstyle, size);
     }
 
+    // Return a font that fits the given string within the given height
+    // (specified in pixels).
+    // ff = font family (0 = "Monospaced", 1 = "Serif", 2 = "SanSerif")
+    // fw = font weight (0 = plain, 1 = bold)
+    // fs = font style (0 = plain, 1 = italic)
     public static Font getFont(String str, int height, int ff, int fw, int fs, int maxPointSize)
     {
         return getFont(str, -1, height, ff, fw, fs, maxPointSize);
     }
 
-    // ADD COMMENT -- what are width and height?
+    // Return a font that fits the given string within the given width and
+    // height (specified in pixels).
+    // ff = font family (0 = "Monospaced", 1 = "Serif", 2 = "SanSerif")
+    // fw = font weight (0 = plain, 1 = bold)
+    // fs = font style (0 = plain, 1 = italic)
     public static Font getFont(String str, int width, int height, int ff, int fw, int fs, int maxPointSize)
     {
         if (str == null || str.length() == 0 || height < 1) {

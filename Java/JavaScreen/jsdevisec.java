@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2000/05/11 20:19:34  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.59  2000/05/04 15:53:32  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -400,7 +404,7 @@ public class jsdevisec extends Panel
     } // end of constructor
 
     // print out message to debug window
-	// ADD COMMENT -- explain the difference between the p() and pn() methods
+    // ADD COMMENT -- explain the difference between the p() and pn() methods
     public void pn(String msg, int level)
     {
         if (debugLevel > 0) {
@@ -428,8 +432,8 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
-		// ADD COMMENT -- why do we need two cases here?  Only if there
-		// are two message boxes at the same time?
+	// ADD COMMENT -- why do we need two cases here?  Only if there
+	// are two message boxes at the same time?
         if (msgbox == null) {
             msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             msgbox.open();

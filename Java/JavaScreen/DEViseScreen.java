@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2000/05/11 20:19:33  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.54  2000/05/04 15:53:31  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -216,7 +220,6 @@ public class DEViseScreen extends Panel
         super.processMouseMotionEvent(event);
     }
 
-    // ADD COMMENT -- what does this do?
     // Hongyu says that this code has something to do with fixing a
     // case where Java does things wrong.
     public void reEvaluateMousePosition()
