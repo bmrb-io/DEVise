@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.117  2001/04/23 18:58:40  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.116  2001/04/03 19:57:39  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -7031,6 +7035,9 @@ IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
+
+    fprintf(stderr, "\nWarning: using deprecated command: setAxisNegLabel\n");
+
     if (argc == 4) {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
         if (!view) {
@@ -7040,9 +7047,9 @@ IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
 
 		Boolean enableNegative = atoi(argv[3]);
         if (!strcmp(argv[2], "X")) {
-    	  view->SetXAxisNegative(enableNegative);
+    	  view->SetXAxisMultFact(enableNegative ? -1.0 : 1.0);
         } else if (!strcmp(argv[2], "Y")) {
-          view->SetYAxisNegative(enableNegative);
+          view->SetYAxisMultFact(enableNegative ? -1.0 : 1.0);
         } else {
           ReturnVal(API_NAK, "Bad axis selection");
           return -1;
@@ -7057,9 +7064,42 @@ IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
 	}
 IMPLEMENT_COMMAND_END
 
-IMPLEMENT_COMMAND_BEGIN(getAxisNegLabel)
+IMPLEMENT_COMMAND_BEGIN(setAxisMultFact)
+    // Arguments: <viewName> <axis (X|Y)> <factor>
+    // Returns: done
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		double factor = atof(argv[3]);
+        if (!strcmp(argv[2], "X")) {
+    	  view->SetXAxisMultFact(factor);
+        } else if (!strcmp(argv[2], "Y")) {
+          view->SetYAxisMultFact(factor);
+        } else {
+          ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in setAxisMultFact\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getAxisMultFact)
     // Arguments: <viewName> <axis (X|Y)>
-    // Returns: <negativeLabels>
+    // Returns: <factor>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -7070,22 +7110,22 @@ IMPLEMENT_COMMAND_BEGIN(getAxisNegLabel)
     	    return -1;
         }
 
-		Boolean negativeLabels;
+		double factor;
         if (!strcmp(argv[2], "X")) {
-		  negativeLabels = view->GetXAxisNegative();
+		  factor = view->GetXAxisMultFact();
         } else if (!strcmp(argv[2], "Y")) {
-		  negativeLabels = view->GetYAxisNegative();
+		  factor = view->GetYAxisMultFact();
         } else {
           ReturnVal(API_NAK, "Bad axis selection");
           return -1;
 	    }
 		const int bufSize = 32;
 		char buf[bufSize];
-		snprintf(buf, bufSize, "%d", negativeLabels);
+		snprintf(buf, bufSize, "%g", factor);
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
-		fprintf(stderr, "Wrong # of arguments: %d in getAxisNegLabel\n",
+		fprintf(stderr, "Wrong # of arguments: %d in getAxisMultFact\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

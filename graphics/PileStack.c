@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  2001/04/23 18:58:25  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.27  2001/01/08 20:32:42  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -1305,21 +1309,21 @@ PileStack::SetYAxisFloatFormat(const char *format)
 }
 
 /*------------------------------------------------------------------------------
- * function: PileStack::SetXAxisNegative
- * Set the X axis to negative or positive mode for all views in the pile.
+ * function: PileStack::SetXAxisMultFact
+ * Set the X axis multiplicative factor for all views in the pile.
  */
 void
-PileStack::SetXAxisNegative(Boolean negative)
+PileStack::SetXAxisMultFact(double factor)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::SetXAxisNegative(%d)\n", _name, negative);
+  printf("PileStack(%s)::SetXAxisMultFact(%g)\n", _name, factor);
 #endif
 
   int index = GetViewList()->InitIterator();
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    view->SetXAxisNegative(negative, false);
+    view->SetXAxisMultFact(factor, false);
   }
   GetViewList()->DoneIterator(index);
 
@@ -1331,21 +1335,21 @@ PileStack::SetXAxisNegative(Boolean negative)
 }
 
 /*------------------------------------------------------------------------------
- * function: PileStack::SetYAxisNegative
- * Set the Y axis to negative or positive mode for all views in the pile.
+ * function: PileStack::SetYAxisMultFact
+ * Set the Y axis multiplicative factor for all views in the pile.
  */
 void
-PileStack::SetYAxisNegative(Boolean negative)
+PileStack::SetYAxisMultFact(double factor)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::SetYAxisNegative(%d)\n", _name, negative);
+  printf("PileStack(%s)::SetYAxisMultFact(%g)\n", _name, factor);
 #endif
 
   int index = GetViewList()->InitIterator();
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    view->SetYAxisNegative(negative, false);
+    view->SetYAxisMultFact(factor, false);
   }
   GetViewList()->DoneIterator(index);
 

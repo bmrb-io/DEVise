@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.116  2001/04/23 18:58:32  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.115  2001/04/02 16:09:49  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -701,10 +705,10 @@ class View : public ViewWin
 	static const int _noTicksYAxisWidth = 2;
 	static const int _noTicksZAxisWidth = 2;
 
-	void SetXAxisNegative(Boolean negative, Boolean notifyPile = true);
-	void SetYAxisNegative(Boolean negative, Boolean notifyPile = true);
-	Boolean GetXAxisNegative() { return _xAxis.GetNegativeLabels(); }
-	Boolean GetYAxisNegative() { return _yAxis.GetNegativeLabels(); }
+	void SetXAxisMultFact(double factor, Boolean notifyPile = true);
+	void SetYAxisMultFact(double factor, Boolean notifyPile = true);
+	double GetXAxisMultFact() { return _xAxis.GetMultFactor(); }
+	double GetYAxisMultFact() { return _yAxis.GetMultFactor(); }
 
 	void TicksEnabled(Boolean &xTicks, Boolean &yTicks) {
 	  xTicks = _xAxis.Width() > _noTicksXAxisWidth;

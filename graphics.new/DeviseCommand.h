@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  2001/04/23 18:58:41  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.65  2001/04/02 16:09:57  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -2098,7 +2102,13 @@ DECLARE_CLASS_END
 //
 //Class definition
 //
-DECLARE_CLASS_DeviseCommand_(getAxisNegLabel) 
+DECLARE_CLASS_DeviseCommand_(setAxisMultFact) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getAxisMultFact) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.235  2001/04/23 18:58:25  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.234  2001/04/02 16:09:49  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -2406,19 +2410,19 @@ void View::YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
   }
 }
 
-void View::SetXAxisNegative(Boolean negative, Boolean notifyPile)
+void View::SetXAxisMultFact(double factor, Boolean notifyPile)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(%s)::SetXAxisNegative(%d, %d)\n", GetName(), negative,
+  printf("View(%s)::SetXAxisMultFact(%g, %d)\n", GetName(), factor,
       notifyPile);
 #endif
 
-  if (negative != _xAxis.GetNegativeLabels()) {
+  if (factor != _xAxis.GetMultFactor()) {
     if (_pileMode && notifyPile) {
-	  GetParentPileStack()->SetXAxisNegative(negative);
+	  GetParentPileStack()->SetXAxisMultFact(factor);
 	} else {
-	  _xAxis.SetNegativeLabels(negative);
+	  _xAxis.SetMultFactor(factor);
 
       DepMgr::Current()->RegisterEvent(dispatcherCallback,
 	      DepMgr::EventViewAxesCh);
@@ -2427,19 +2431,19 @@ void View::SetXAxisNegative(Boolean negative, Boolean notifyPile)
   }
 }
 
-void View::SetYAxisNegative(Boolean negative, Boolean notifyPile)
+void View::SetYAxisMultFact(double factor, Boolean notifyPile)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(%s)::SetYAxisNegative(%d, %d)\n", GetName(), negative,
+  printf("View(%s)::SetYAxisMultFact(%g, %d)\n", GetName(), factor,
       notifyPile);
 #endif
 
-  if (negative != _yAxis.GetNegativeLabels()) {
+  if (factor != _yAxis.GetMultFactor()) {
     if (_pileMode && notifyPile) {
-	  GetParentPileStack()->SetYAxisNegative(negative);
+	  GetParentPileStack()->SetYAxisMultFact(factor);
 	} else {
-	  _yAxis.SetNegativeLabels(negative);
+	  _yAxis.SetMultFactor(factor);
 
       DepMgr::Current()->RegisterEvent(dispatcherCallback,
 	      DepMgr::EventViewAxesCh);
@@ -4830,6 +4834,9 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 	  mouseY = NULL;
     }
   }
+
+  dataX *= _xAxis.GetMultFactor();
+  dataY *= _yAxis.GetMultFactor();
 
   const int mouseFieldWidth = 6;
   const int mouseFieldPrec = 4;

@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  2001/04/23 18:58:25  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.23  2001/01/08 20:32:42  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -224,8 +228,8 @@ public:
   void SetXAxisFloatFormat(const char *format);
   void SetYAxisFloatFormat(const char *format);
 
-  void SetXAxisNegative(Boolean negative);
-  void SetYAxisNegative(Boolean negative);
+  void SetXAxisMultFact(double factor);
+  void SetYAxisMultFact(double factor);
 
   void SetNumDimensions(int dimensions);
 

@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.114  2001/04/20 21:05:19  wenger
+  Changed 3D version of JAVAC_ShowRecords to use the previously-defined
+  JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
+  but doesn't actually return records yet; updated JavaScreen version;
+  updated command documentation and protocol version.
+
   Revision 1.113  2001/04/02 16:09:57  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -558,7 +564,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 6;
-static const int protocolMinorVersion = 1;
+static const int protocolMinorVersion = 2;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -3122,13 +3128,16 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		    axisFormat = view->GetXAxisFloatFormat();
 		  }
 
-		  JSArgs args(6);
+		  double multFactor = view->GetXAxisMultFact();
+
+		  JSArgs args(7);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("X");
 		  args.FillDouble(filter.xLow);
 		  args.FillDouble(filter.xHigh);
 		  args.FillString(axisFormat);
+		  args.FillDouble(multFactor);
 
 		  args.ReturnVal(this);
 		}
@@ -3148,13 +3157,16 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		    axisFormat = view->GetYAxisFloatFormat();
 		  }
 
-		  JSArgs args(6);
+		  double multFactor = view->GetYAxisMultFact();
+
+		  JSArgs args(7);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("Y");
 		  args.FillDouble(filter.yLow);
 		  args.FillDouble(filter.yHigh);
 		  args.FillString(axisFormat);
+		  args.FillDouble(multFactor);
 
 		  args.ReturnVal(this);
 		}

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2001/04/23 18:58:25  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.4  2000/07/20 18:52:53  wenger
   Added support for blank floating-point format for axes and mouse location.
 
@@ -80,8 +84,9 @@ public:
   const char *GetFloatFormat() { return _floatFormat; }
   void SetFloatFormat(const char *format);
 
-  void SetNegativeLabels(Boolean negative) { _negativeLabels = negative; }
-  Boolean GetNegativeLabels() { return _negativeLabels; }
+  void SetMultFactor(double factor) { _multFactor = factor; }
+  double GetMultFactor() { return _multFactor; }
+
 
 protected:
   struct AxisInfo {
@@ -144,7 +149,7 @@ private:
   WindowRep::SymbolAlignment _dateAlignment1;
   WindowRep::SymbolAlignment _dateAlignment2;
 
-  Boolean _negativeLabels;
+  double _multFactor;
 };
 
 #endif // _DevAxis_h_

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  2001/04/23 18:58:40  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.71  2001/04/02 16:09:56  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -710,7 +714,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getJS3dConfig)
 	REGISTER_COMMAND(setJS3dConfig)
 	REGISTER_COMMAND(setAxisNegLabel)
-	REGISTER_COMMAND(getAxisNegLabel)
+	REGISTER_COMMAND(setAxisMultFact)
+	REGISTER_COMMAND(getAxisMultFact)
 }
 
 CmdContainer::~CmdContainer()

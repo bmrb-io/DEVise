@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.94  2001/04/23 18:58:25  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.93  2001/04/02 16:09:48  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -1872,9 +1876,9 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getAxisTicks", "setAxisTicks",
       instance, "Y");
 
-  status += SaveParams(saveData, "getAxisNegLabel", "setAxisNegLabel",
+  status += SaveParams(saveData, "getAxisMultFact", "setAxisMultFact",
       instance, "X");
-  status += SaveParams(saveData, "getAxisNegLabel", "setAxisNegLabel",
+  status += SaveParams(saveData, "getAxisMultFact", "setAxisMultFact",
       instance, "Y");
 
   if (status.IsError()) reportErrNosys("Error or warning");

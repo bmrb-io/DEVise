@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2001/04/23 18:58:24  wenger
+  Added negative axis label option (no GUI yet) to allow us to display
+  chemical shifts the way the BMRB people want.
+
   Revision 1.5  2000/07/20 18:52:53  wenger
   Added support for blank floating-point format for axes and mouse location.
 
@@ -110,7 +114,7 @@ DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
     break;
   }
 
-  _negativeLabels = false;
+  _multFactor = 1.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -413,9 +417,7 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
       strcpy(buf, "");
 	} else {
 	  Coord labelValue = tickMark;
-	  if (_negativeLabels) {
-	    labelValue = -1.0 * tickMark;
-	  }
+	  labelValue = _multFactor * tickMark;
 	  if (labelValue == -0.0) labelValue = 0.0;
       snprintf(buf, bufSize, _floatFormat, labelValue);
 	}
