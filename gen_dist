@@ -19,6 +19,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 23:30:01  wenger
+#  Added sample data, session, and schema files to sources; modified
+#  the release script so that these files get installed into the target
+#  directory; added gen_dist script to generate tar files for distribution;
+#  changed /p/devise/dist structure (removed Devise-1.1.8 directories,
+#  since this actually contains whatever is the current version of
+#  Devise); tar file of the dist structure committed to CVS.
+#
 
 ############################################################
 
@@ -55,6 +63,11 @@ set src = /p/devise/dist/sunos-sparc
 set dest = $target/sunos-sparc.tar.gz
 cd $src
 tar cvfzh $dest .
+
+set src = /p/devise/dist/html/devise
+set dest = $target/quick_intro.tar.gz
+cd $src
+tar cvfzh $dest quick_intro
 
 
 echo ""
