@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/12/18 15:40:23  jussi
+  Initial revision.
+*/
 
 #include <iostream.h>
 #include <math.h>
@@ -40,7 +43,9 @@ int main(int argc, char **argv)
   for(int i = 0; i < n; i++) {
     if ((i % (n / 10)) == 0)
       cerr << i << " ";
-    for(int j = 0; j < 32; j++) {
+    double key = i;
+    cout.write(&key, sizeof key);
+    for(int j = 1; j < 32; j++) {
         double d = (rand() % 1000) / 10.0;
         cout.write(&d, sizeof d);
     }
