@@ -15,7 +15,11 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/11 17:27:22  jussi
+  Initial revision. Moved all API parsing to ParseAPI.C so that
+  ServerAPI.c and TkControl.c would not have to duplicate it.
+*/
 
 #ifndef ParseAPI_h
 #define ParseAPI_h
@@ -23,11 +27,10 @@
 class ControlPanel;
 class MapInterpClassInfo;
 
-#define API_OK    1
-#define API_ERROR (-1)
-
-typedef void (*APIReturn)(int, char *);
-typedef void (*APIReturnMulti)(int, char **);
+#define API_CMD 0
+#define API_ACK 1
+#define API_NAK 2
+#define API_CTL 3
 
 extern int ParseAPI(int argc, char **argv, ControlPanel *control);
 
