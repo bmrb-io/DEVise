@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/12/18 03:13:13  ravim
+  Inverted forms of drawing lines and rectangles.
+
   Revision 1.11  1995/12/14 21:14:02  jussi
   Replaced 0x%x with 0x%p.
 
@@ -153,7 +156,7 @@ void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
     newParent = DefaultRootWindow(_display);
 
 #ifdef DEBUG
-  printf("XWindowRep::Reparent 0x%p to 0x%p at %d,%d\n",
+  printf("XWindowRep::Reparent 0x%lx to 0x%lx at %d,%d\n",
 	 newChild, newParent, x, y);
 #endif
 
@@ -205,7 +208,7 @@ void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 
 /*******************************************************************/
 
-virtual void XWindowRep::PopClip()
+void XWindowRep::PopClip()
 {
   WindowRep::_PopClip();
   Coord x, y, w, h;
@@ -240,7 +243,7 @@ void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
 	  _win, filename);
 
 #ifdef DEBUG
-  printf("WritePostscript: for window id 0x%p:\n", _win);
+  printf("WritePostscript: for window id 0x%lx:\n", _win);
   printf("WritePostscript: executing %s\n", cmd);
 #endif
 
@@ -251,7 +254,7 @@ void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
 }
 
 /* drawing primitives */
-virtual void XWindowRep::SetFgColor(Color fg)
+void XWindowRep::SetFgColor(Color fg)
 {
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
@@ -260,7 +263,7 @@ virtual void XWindowRep::SetFgColor(Color fg)
 #endif
 }
 
-virtual void XWindowRep::SetBgColor(Color bg)
+void XWindowRep::SetBgColor(Color bg)
 {
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
@@ -269,13 +272,13 @@ virtual void XWindowRep::SetBgColor(Color bg)
 #endif
 }
 
-virtual void XWindowRep::DrawPixel(Coord x, Coord y)
+void XWindowRep::DrawPixel(Coord x, Coord y)
 {
   Coord tx, ty;
   WindowRep::Transform(x,y,tx,ty);
 
 #ifdef DEBUG
-  printf("DrawPixel: %.2f %.2f --> %d %d\n", x, y, tx, ty);
+  printf("DrawPixel: %.2f %.2f --> %.2f %.2f\n", x, y, tx, ty);
 #endif
 
 #ifdef GRAPHICS
@@ -367,8 +370,8 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
 /* Fill rectangles, variable width/height */
 
-virtual void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
-				       Coord *height, int num)
+void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
+			       Coord *height, int num)
 {
 #ifdef DEBUG
   printf("FillRectArray: %d points\n", num);
@@ -444,8 +447,8 @@ virtual void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 
 /* Fill rectangles, same width/height */
 
-virtual void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-				       Coord height, int num)
+void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
+			       Coord height, int num)
 {
 #ifdef DEBUG
   printf("FillRectArray: %d points, width %.2f, height %.2f\n", num,
@@ -485,7 +488,7 @@ virtual void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
-  printf("\nAfter transformation: width %.2f, height %.2f\n\n",
+  printf("\nAfter transformation: width %d, height %d\n\n",
 	 rectAngles[0].width, rectAngles[0].height);
   for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
     if ((k + 1) % 10 == 0)
@@ -502,8 +505,8 @@ virtual void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 }
 
-virtual void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, 
-				  Coord height)
+void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, 
+			  Coord height)
 {
 #ifdef DEBUG
   printf("FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", xlow, ylow,
@@ -540,50 +543,6 @@ virtual void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
   if (_dispGraphics)
     XFillRectangle(_display,_win, _gc, ROUND(int, txlow), ROUND(int, tylow),
 		   pixelWidth, pixelHeight);
-#endif
-}
-
-virtual void XWindowRep::InvertFillRect(Coord xlow, Coord ylow, Coord width, 
-					Coord height)
-{
-#ifdef DEBUG
-  printf("InvertFillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", 
-	 xlow, ylow, width, height);
-#endif
-
-  /* XXX: need to clip rect against window dimensions */
-
-  Coord txlow, tylow, txmax, tymax;
-  Coord x1, y1, x2, y2;
-  WindowRep::Transform(xlow, ylow + height, x1, y1);
-  WindowRep::Transform(xlow + width, ylow, x2, y2);
-  txlow = MinMax::min(x1, x2);
-  txmax = MinMax::max(x1, x2);
-  tylow = MinMax::min(y1, y2);
-  tymax = MinMax::max(y1, y2);
-  
-  /* fill rectangle, remember that the window coordinate
-     system starts at the upper left corner */
-
-  unsigned pixelWidth = (unsigned)(ROUND(int, txmax) - ROUND(int, txlow) + 1);
-  if (pixelWidth == 0)
-    pixelWidth = 1;
-  unsigned pixelHeight = (unsigned)(ROUND(int, tymax) - ROUND(int, tylow) + 1);
-  if (pixelHeight == 0)
-    pixelHeight = 1;
-  
-#ifdef DEBUG
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
-	 ROUND(int, txlow), ROUND(int, tylow), pixelWidth, pixelHeight);
-#endif
-
-#ifdef GRAPHICS
-  if (_dispGraphics) {
-    XSetFunction(_display, _gc, GXxor);
-    XFillRectangle(_display,_win, _gc, ROUND(int, txlow), ROUND(int, tylow),
-		   pixelWidth, pixelHeight);
-    XSetFunction(_display, _gc, GXcopy);
-  }
 #endif
 }
 
@@ -711,8 +670,8 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
 
 /********************************************************************/
 
-virtual void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
-			     Coord startAngle, Coord endAngle)
+void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
+		     Coord startAngle, Coord endAngle)
 {
 #ifdef DEBUG
   printf("XWindowRep::Arc %.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
@@ -737,8 +696,8 @@ virtual void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 
 /***********************************************************************/
 
-virtual void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
-			      Coord width)
+void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
+		      Coord width)
 {
 #ifdef DEBUG
   printf("XWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
@@ -756,29 +715,6 @@ virtual void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   }
 #endif
 }
-
-virtual void XWindowRep::InvertLine(Coord x1, Coord y1, Coord x2, Coord y2, 
-				    Coord width)
-{
-#ifdef DEBUG
-  printf("XWindowRep::InvertLine %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
-#endif
-  
-  Coord tx1, ty1, tx2, ty2;
-  WindowRep::Transform(x1 ,y1, tx1, ty1);
-  WindowRep::Transform(x2, y2, tx2, ty2);
-#ifdef GRAPHICS
-  if (_dispGraphics) {
-    XSetFunction(_display, _gc, GXxor);
-    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
-		       JoinRound);
-    XDrawLine(_display, _win, _gc, ROUND(int, tx1), ROUND(int, ty1),
-	      ROUND(int, tx2), ROUND(int, ty2));
-    XSetFunction(_display, _gc, GXcopy);
-  }
-#endif
-}
-
 
 void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
@@ -849,10 +785,10 @@ void XWindowRep::DoButtonPress(int x,int y, int &xlow, int &ylow,
   long buttonMask = buttonMasks[button-1];
   while(!done) {
     XEvent event;
-    XWindowEvent(_display,_win,ButtonReleaseMask|buttonMask,&event);
+    XWindowEvent(_display, _win, ButtonReleaseMask | buttonMask, &event);
     switch(event.xany.type) {
     case ButtonRelease:
-      if (event.xbutton.button == button) {
+      if (event.xbutton.button == (unsigned int)button) {
 	/* final button position */
 	DrawRubberband(x1,y1,x2,y2);
 	
@@ -899,12 +835,13 @@ void XWindowRep::HandleEvent(XEvent &event)
 {
   char buf[40];
   XEvent ev;
-  
+  int count;
+
   switch(event.xany.type) {
   case KeyPress:
     KeySym keysym;
     XComposeStatus compose;
-    int count = XLookupString((XKeyEvent *)&event,buf,40,&keysym,&compose);
+    count = XLookupString((XKeyEvent *)&event,buf,40,&keysym,&compose);
     if (count == 1) {
       /* regular key */
       WindowRep::HandleKey(buf[0],event.xkey.x,event.xkey.y);
@@ -1001,14 +938,14 @@ void XWindowRep::HandleEvent(XEvent &event)
 
   case MapNotify:
 #ifdef DEBUG
-    printf("XWin 0x%p mapped\n",event.xmap.window);
+    printf("XWin 0x%lx mapped\n", event.xmap.window);
 #endif
     WindowRep::HandleWindowMappedInfo(true);
     break;
 
   case UnmapNotify:
 #ifdef DEBUG
-    printf("XWin 0x%p unmapped\n",event.xunmap.window);
+    printf("XWin 0x%lx unmapped\n", event.xunmap.window);
 #endif
     WindowRep::HandleWindowMappedInfo(false);
     break;
@@ -1230,6 +1167,28 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   
   XCopyPlane(_display, _dstBitmap.pixmap, _win, _gc, 
 	     0, 0, dstWidth, dstHeight, startX, startY, 1);
+}
+
+void XWindowRep::SetXorMode()
+{
+#ifdef DEBUG
+  printf("SetXorMode\n");
+#endif
+
+#ifdef GRAPHICS
+  XSetFunction(_display, _gc, GXxor);
+#endif
+}
+
+void XWindowRep::SetCopyMode()
+{
+#ifdef DEBUG
+  printf("SetCopyMode\n");
+#endif
+
+#ifdef GRAPHICS
+  XSetFunction(_display, _gc, GXcopy);
+#endif
 }
 
 /**********************************************************************
@@ -1510,7 +1469,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
       }
     } else {
       if (XCheckWindowEvent(_display, _win, ButtonReleaseMask, &event)) {
-	if (event.xbutton.button == button) {
+	if (event.xbutton.button == (unsigned int)button) {
 	  /* done */
 	  XDestroyWindow(_display, win);
 	  break;
@@ -1627,7 +1586,7 @@ DevisePixmap *XWindowRep::GetPixmap()
   Boolean initPixmap = true;
   int outIndex = 0;
 
-  for(int i = 0; i < height; i++) {
+  for(int i = 0; i < (int)height; i++) {
     XImage *image = XGetImage(_display, _win, 0, i, width, 1,
 			      AllPlanes, ZPixmap);
     if (!image)

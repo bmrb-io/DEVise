@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 17:22:13  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.4  1995/12/02 21:31:14  jussi
   Cleaned up the code further.
 
@@ -24,15 +27,13 @@
   statements.
 
   Revision 1.2  1995/09/05 21:13:34  jussi
-  Added/update CVS header.
+  Added/updated CVS header.
 */
 
 #include "WindowRep.h"
 #include "Display.h"
 
 //#define DEBUG
-
-/* constructor */
 
 WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor, 
 		     Pattern p)
@@ -61,7 +62,8 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
      MaxDamage();
   */
 
-  for(int index = InitIterator(); More(index);) {
+  int index;
+  for(index = InitIterator(); More(index);) {
     WindowRepCallback *callBack = Next(index);
     callBack->HandleResize(this, x, y, width, height);
   }
@@ -97,7 +99,8 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
 	 xhigh, yhigh,button);
 #endif
 
-  for(int index = InitIterator(); More(index); ){
+  int index;
+  for(index = InitIterator(); More(index); ){
     WindowRepCallback *c= Next(index);
     c->HandlePress(this, xlow,ylow,xhigh,yhigh,button);
   }
@@ -108,7 +111,8 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
 
 void WindowRep::HandleKey(char key, int x, int y)
 {
-  for(int index = InitIterator(); More(index); ){
+  int index;
+  for(index = InitIterator(); More(index); ){
     WindowRepCallback *c= Next(index);
     c->HandleKey(this, key, x, y);
   }
@@ -119,7 +123,8 @@ void WindowRep::HandleKey(char key, int x, int y)
 
 void WindowRep::HandleExpose(int x, int y, unsigned w, unsigned h)
 {
-  for(int index = InitIterator(); More(index); ){
+  int index;
+  for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
     c->HandleExpose(this, x,y,w, h);
   }
@@ -131,7 +136,8 @@ Report to all callbacks */
 
 void WindowRep::HandleWindowMappedInfo(Boolean mapped)
 {
-  for(int index = InitIterator(); More(index); ){
+  int index;
+  for(index = InitIterator(); More(index); ){
     WindowRepCallback *c= Next(index);
     c->HandleWindowMappedInfo(this, mapped);
   }

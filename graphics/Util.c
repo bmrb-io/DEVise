@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 17:12:38  jussi
+  Small fixes.
+
   Revision 1.4  1995/10/18 14:55:32  jussi
   Changed mask of created directory to 0777 from 0755.
 
@@ -62,7 +65,8 @@ static char dateBuf[21];
 char *DateString(time_t tm)
 {
   char *dateStr =ctime(&tm);
-  for(int i = 0; i < 7; i++)
+  int i;
+  for(i = 0; i < 7; i++)
     dateBuf[i] = dateStr[i + 4];
 
   for(i = 7; i < 11; i++)

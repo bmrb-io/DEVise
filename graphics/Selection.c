@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:09:38  jussi
+  Added copyright notice and made small fixes.
+
   Revision 1.2  1995/09/05 21:13:02  jussi
   Added/updated CVS header.
 */
@@ -243,7 +246,8 @@ void Selection::DoneViewIterator(int index)
 void Selection::SetVisualFilters(View *selView, Boolean hasHint, 
 				 VisualFilter *hint, VisualFlag changeFlag)
 {
-  for(int index = _viewList->InitIterator(); _viewList->More(index);) {
+  int index;
+  for(index = _viewList->InitIterator(); _viewList->More(index);) {
     View *view = _viewList->Next(index);
     Boolean change; /* TRUE if need to change filter of this view*/
     change = false;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 22:32:39  jussi
+  Disabled an assertion which may unnecessarily fail.
+
   Revision 1.3  1995/12/14 15:31:26  jussi
   Moved Replace and SwapChildren to this base class from derived class
   (used to be WinVertical and WinHorizontal, now TileLayout).
@@ -145,7 +148,8 @@ void ViewLayout::HandleResize(WindowRep *win, int x, int y,
 
 void ViewLayout::Iconify(Boolean iconified)
 {
-  for(int index = InitIterator(); More(index);) {
+  int index;
+  for(index = InitIterator(); More(index);) {
     ViewWin *vw = Next(index);
     vw->Iconify(iconified);
   }
@@ -154,7 +158,8 @@ void ViewLayout::Iconify(Boolean iconified)
 
 void ViewLayout::UnmapChildren()
 {
-  for(int index = InitIterator(); More(index);) {
+  int index;
+  for(index = InitIterator(); More(index);) {
     ViewWin *vw = Next(index);
     vw->Unmap();
   }

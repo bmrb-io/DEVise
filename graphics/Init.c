@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 17:10:33  jussi
+  Small fixes.
+
   Revision 1.5  1995/12/02 20:54:45  jussi
   Substituted DeviseTime for Time.
 
@@ -60,7 +63,7 @@ static char *CreateUniqueFileName(char *progname){
 	char char1,char2;
 	for (char1= 'a'; char1 <= 'z'; char1++)
 		for (char2='a'; char2 <= 'z'; char2++){
-			sprintf(uniqueFileName,"work/%s_%05d%c%c",progname,pid,char1,char2);
+			sprintf(uniqueFileName,"work/%s_%05ld%c%c",progname,(long)pid,char1,char2);
 			if ((fd=open(uniqueFileName, O_WRONLY,0666))<0){
 				return uniqueFileName;
 			}
@@ -204,7 +207,7 @@ char *args[512];
 		fprintf(stderr,"Init: buf too small\n");
 		Exit::DoExit(1);
 	}
-	sprintf(buf,"%s/DEVise_%d",tmpDir,pid);
+	sprintf(buf,"%s/DEVise_%ld",tmpDir,(long)pid);
 	CheckAndMakeDirectory(buf,true);
 	_tmpDir = CopyString(buf);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 16:59:30  jussi
+  Small fixes, and added copyright notice.
+
   Revision 1.2  1995/09/05 21:12:43  jussi
   Added/updated CVS header.
 */
@@ -69,7 +72,7 @@ void DeviseDisplay::MapColor(Color localColor, Color globalColor)
     /* overflow, create a new array  */
     _colorMapSize = globalColor + AdditionalColorMapSize + 1;
     Color *tempMap = new Color[_colorMapSize];
-    for(int i = 0; i < _numColors; i++)
+    for(unsigned int i = 0; i < _numColors; i++)
       tempMap[i] = _colorMap[i];
     delete _colorMap;
     _colorMap = tempMap;
@@ -84,7 +87,7 @@ get local color given global color.
 
 Color DeviseDisplay::GetLocalColor(Color globalColor)
 {
-  if (globalColor >= _numColors){
+  if (globalColor >= _numColors) {
     fprintf(stderr,"Display::GetLocalColor: undefined color %ld\n",
 	    globalColor);
     Exit::DoExit(1);
