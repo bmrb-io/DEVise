@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/08/04 21:14:39  beyer
+  Changed histogram code a little.
+
   Revision 1.22  1996/07/26 16:10:50  guangshu
   Modified the function Histogram.
 
@@ -111,9 +114,11 @@ void BasicStats::Init(ViewGraph *vw)
 {
   xsum = xsum_sqr = xmax = xmin = 0;
   ysum = ysum_sqr = ymin = ymax = 0;
+  avg_x = var_x = std_x = xysum = avg_xy = 0;
   xatymax = xatymin = 0;
   int_x = int_y = 0;
   avg = std = var = 0;
+  line_a = line_b = 0;
   for (int i = 0; i < NUM_Z_VALS; i++)
     clow[i] = chigh[i] = 0;
 
@@ -138,64 +143,65 @@ void BasicStats::Sample(double x, double y)
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
 
-  // Group samples into batches
-  // For values within a batch, simply add to total - at the end of the
-  // batch, compute the average and add to the sum/sqr_sum counter.
-  int_x += x;
-  int_y += y;
-  nval++;
-  if (nval % num_per_batch)
-    return;
+  ysum += y; 
+  ysum_sqr += y * y;
 
-  float tmp = (float)int_y / (float)num_per_batch;
-  ysum += tmp;
-  ysum_sqr += tmp * tmp;
+  xsum += x;
+  xsum_sqr += x*x;
 
-  tmp = (float)int_x / (float)num_per_batch;
-  xsum += tmp;
-  xsum_sqr += tmp * tmp;
+  xysum += x * y;
 
   // Increment number of samples
   nsamples++;
-
-  // Reinitialize internal batch counters
-  int_x = int_y = 0;
 }
 
 void BasicStats::Histogram(double y)
 {
-  if( y >= hist_min && y <= hist_max && width > 0 ) {
-    int index = int( (y - hist_min)/width );
-    if(index>=HIST_NUM) index = HIST_NUM-1;
+    if( y >= hist_min && y <= hist_max && width > 0 ) {
+       int index = (int) ((y - hist_min)/width);
 #if defined(DEBUG)
     printf("y:%g index:%d min:%g max:%g width:%g\n",
-	   y, index, hist_min, hist_max, width);
+	      y, index, hist_min, hist_max, width);
 #endif
-    DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
-    hist[index]++;
-  }
+       if(index>=HIST_NUM) index = HIST_NUM-1;
+       DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
+       hist[index]++;
+     }
 }
 
 void BasicStats::Done()
 {
   if (nsamples > 0) {
-    avg = ((float)ysum) / nsamples;
+    avg = ysum / nsamples;
+    avg_x = xsum / nsamples;
+    avg_xy = xysum / nsamples;
 
     // this doesn't appear to be the right formula for var and std
     // but it seems to be correct for the usage in computing clow
     // and chigh below
-    var = ((float)ysum_sqr)  - nsamples * avg * avg;
+    var = ysum_sqr  - nsamples * avg * avg;
     std = sqrt(var);
     // Compute confidence interval - for now use z85, z90 and z95
     for(int i = 0; i < NUM_Z_VALS; i++) {
-      clow[i] = avg - (float)(zval[i] * std) / (float)(sqrt(nsamples));
-      chigh[i] = avg + (float)(zval[i] * std) / (float)(sqrt(nsamples)); 
+      clow[i] = avg - (zval[i] * std) / (sqrt(nsamples));
+      chigh[i] = avg + (zval[i] * std) / (sqrt(nsamples)); 
     }
 
     // recompute var and std with correct formulas
     if (nsamples >= 1) {
-      var = ((float)ysum_sqr) / (nsamples - 1) - avg * avg;
+      var = ysum_sqr/nsamples - avg * avg;
       std = sqrt(var);
+      var_x = xsum_sqr/nsamples - avg_x * avg_x;
+      std_x = sqrt(var_x);
+      cov_xy = avg_xy - avg * avg_x;
+      line_a = avg - (cov_xy/var_x) * avg_x;
+      if(var_x != 0 ) {
+	 line_a = avg - (cov_xy/var_x) * avg_x;
+	 line_b = cov_xy / var_x;
+       } else {
+	 line_a = 0;
+	 line_b = 0;
+       }
     } else {
       var = 0;
       std = 0;
@@ -209,8 +215,9 @@ void BasicStats::Report()
     return;
 
   printf("***********Statistics Report***********\n");
-  printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
-  printf("Std.deviation: %f\n", std);
+  printf("Max: %g Min: %g Average: %g\n", ymax, ymin, avg);
+  printf("Std.deviation: %g\n", std);
+  printf("xAvg: %g xyAvg: %g xStd_dev: %g\n", avg_x, avg_xy, std_x);
   printf("Confidence intervals\n");
   printf("\t85%%: (%.2f, %.2f)\n", clow[0], chigh[0]);
   printf("\t90%%: (%.2f, %.2f)\n", clow[1], chigh[1]);
@@ -239,6 +246,9 @@ void BasicStats::Report()
   }
   if (statstr[STAT_MEAN] == '1')
     win->Line(filter->xLow, avg, filter->xHigh, avg, StatLineWidth);
+  if (statstr[STAT_LINE] == '1')
+    win->Line(filter->xLow, line_a + (filter->xLow)*line_b, filter->xHigh,
+		  line_a + (filter->xHigh)*line_b, StatLineWidth);
 
   // Display confidence interval
   if (statstr[ZVAL85] == '1')

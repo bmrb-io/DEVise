@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/04 21:14:40  beyer
+  Changed histogram code a little.
+
   Revision 1.14  1996/07/26 16:10:55  guangshu
   Modified the function Histogram.
 
@@ -72,14 +75,15 @@ class ViewKGraph;
 #define STAT_MEAN   0
 #define STAT_MAX    1
 #define STAT_MIN    2
-#define STAT_COUNT  3
-#define ZVAL85      4
-#define ZVAL90      5
-#define ZVAL95      6
-#define STAT_NONE   7
+#define STAT_LINE   3
+#define STAT_COUNT  4
+#define ZVAL85      5
+#define ZVAL90      6
+#define ZVAL95      7
+#define STAT_NONE   8
 
 // Total number of stats
-#define STAT_NUM    7
+#define STAT_NUM   8 
 //Total number of classes for histogram
 #define HIST_NUM    50
 
@@ -100,6 +104,9 @@ class ViewKGraph;
 #define STAT_YSUM    17
 #define STAT_XMIN    18
 #define STAT_XMAX    19
+
+#define STAT_A 	     20
+#define STAT_B 	     21
 
 // Number of confidence intervals
 #define NUM_Z_VALS 3
@@ -130,7 +137,8 @@ public:
 
 protected:
 
-  double ysum, xsum;
+private:
+  double ysum, xsum, xysum;
   double ysum_sqr, xsum_sqr;
   double ymin, xmin, ymax, xmax;
   double xatymax, xatymin;
@@ -143,6 +151,9 @@ protected:
   
   // Stat values
   double avg, var, std;
+  double avg_x, var_x, std_x, avg_xy;
+  double cov_xy;
+  double line_a, line_b;
   double clow[NUM_Z_VALS], chigh[NUM_Z_VALS];
 };
 #endif
