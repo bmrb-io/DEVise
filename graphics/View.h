@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/06/15 14:09:46  jussi
+  Added yuc\'s 3D methods.
+
   Revision 1.23  1996/06/15 13:46:49  jussi
   X and Y axes now use the view foreground color as their color.
   The axis.color field was removed.
@@ -292,7 +295,7 @@ public:
 	in order to detect whether mapping has been changed back */
 	void InvalidatePixmaps();
 
-	/*Print view statistics */
+	/* Print view statistics */
 	virtual void PrintStat();
 
 	/* Toggle symbol display */
@@ -306,16 +309,11 @@ public:
 	/* Report size of data display area. */
 	void GetDataArea(int &x, int &y, int &width,int &height);
 
-	/* -------------- 3D stuffs -------------  */
-	Camera GetCamera () {return _camera;}
-	void SetCamera (Camera new_camera);
-	void SetViewDir (int, int);
-
-	// based on the camera's coordinates, compute rho, phi, theta
+	/* 3D functions */
+	Camera GetCamera() { return _camera; }
+	void SetCamera(Camera new_camera);
+	void SetViewDir(int H, int V);
 	void CompRhoPhiTheta();
-
-	// if flag is false, then label occupies left of view
-	void SetLabelInfo (int flag) {_label.occupyTop = flag;};
 
 	virtual void SetFgBgColor(Color fg, Color bg) {
 	  ViewWin::SetFgBgColor(fg, bg);
@@ -496,7 +494,7 @@ private:
 	Color _overrideColor;           /* color that overrides color
 					   defined in mapping */
 
-	/* -------------- 3D stuffs -------------  */
+	/* 3D data structures */
 	Camera _camera;
 };
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/15 13:48:47  jussi
+  Added SetWindowBgColor() which allows Devise to change
+  the view background color at runtime.
+
   Revision 1.17  1996/06/15 07:01:13  yuc
   Add _AimAxisPt and _AimAxis for drawing the Aim axis.
 
@@ -211,16 +215,6 @@ public:
 	virtual void AbsoluteOrigin(int &x,int &y);
 
 	// ---------------------------------------------------------- 
-	// 3D
-
-	virtual void MapAllXPoints(BLOCK *block_data, int numSyms, 
-		Camera camera, int H, int V);
-	virtual void MapAllXSegments(BLOCK *block_data, int numSyms,
-		Camera camera, int H, int V);
-	virtual void DrawXSegments();
-	virtual void DrawRefAxis(Camera camera);
-
-	// ---------------------------------------------------------- 
 
 	/* Return contents of window as a pixmap */
 	virtual DevisePixmap *GetPixmap();
@@ -256,15 +250,6 @@ protected:
 	~XWindowRep();
 
 	void HandleEvent(XEvent &event);
-
-	/* data structures for 3D images */
-	XSegment _xsegs[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
-	int _NumXSegs;
-	POINT _AxisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
-	EDGE _Axis[3];    // 0 == x, 1 == y, 2 = z
-
-	POINT _AimAxisPt[4];  // 0 == origin, 1 == on x, 2 = on y, 3 == on z
-	EDGE  _AimAxis[3];    // 0 == x, 1 == y, 2 = z
 
 #ifdef TK_WINDOW_old
 	/* Assign window to a new parent. */

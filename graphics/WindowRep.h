@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/15 14:13:02  jussi
+  Added yuc's 3D functions.
+
   Revision 1.18  1996/06/15 13:48:39  jussi
   Added SetWindowBgColor() which allows Devise to change
   the view background color at runtime.
@@ -168,7 +171,7 @@ DefinePtrDList(ClipRectList, ClipRect *);
 
 /* # of symbols that can be sent at once in a batched call */
 
-const int WINDOWREP_BATCH_SIZE = 4096;
+const int WINDOWREP_BATCH_SIZE = 1024;
 
 class WindowRep {
 public:
@@ -376,70 +379,10 @@ public:
     MakeIdentity();
   }
 
-// ---------------------------------------------------------- 
-// 3D
-// ---------------------------------------------------------- 
-  void MakeIdentity3() {
-    _transforms3[_current].MakeIdentity();
-  }
-
-  /* return the transform on top of the stack. */
-  Transform3D *TopTransform3() {
-    return &_transforms3[_current];
-  }
-
-  void PostMultiply(Transform3D *t) {
-    _transforms3[_current].PostMultiply(t);
-  }
-
-  void Transform(Coord x, Coord y, Coord z, Coord &newX, 
-	Coord &newY, Coord &newZ) {
-    _transforms3[_current].Transform(x,y,z,newX,newY,newZ);
-  }
-
-  void PrintTransform3() {
-    _transforms3[_current].Print();
-  }
-
-  /* Clear the transformation stack and put an identity 
-     matrix as top of the stack */
-  void ClearTransformStack3() {
-    _current = 0;
-    MakeIdentity3();
-  }
-
-  // compute the viewing transformation matrix
-  void CompViewingTransf(Camera camera) {
-	_transforms3[_current].SetViewMatrix(camera);
-#ifdef YLC
-	printf ("WinR.h: Camera x = %.2f y = %.2f z = %.2f ", 
-		camera.x_, camera.y_, camera.z_);
-	printf ("fx = %.2f fy = %.2f fz = %.2f\n", camera.fx,
-		camera.fy, camera.fz);
-	_transforms3[_current].Print();
-	printf("_______ WindowRep.h: CompViewingTransf, _current =%d\n",
-		_current);
-#endif
-  } // end of CompViewingTransf
-
-  // compute the location of a "user" point to the viewing
-  // space's coordinates
-  POINT CompLocationOnViewingSpace(POINT);
-
-  // now the point in the viewing space coordinates, "flatten"
-  // the 3D POINT into a 2D Point
-  Point CompProjectionOnViewingPlane(POINT, Camera camera);
-
-  virtual void MapAllXPoints(BLOCK *block_data, int numSyms, 
-	Camera camera, int H, int V) = 0;
-  virtual void MapAllXSegments(BLOCK *block_data, int numSyms,
-	Camera camera, int H, int V) = 0;
-  virtual void DrawXSegments() = 0;
-  virtual void DrawRefAxis(Camera camera) = 0;
-
-// ---------------------------------------------------------- 
+  // ---------------------------------------------------------- 
 
   /* called by derived class to get current clip region */
+
   Boolean ClipTop(Coord &x, Coord &y, Coord &w, Coord &h){
     if (_clipCurrent < 0)
       return false;
@@ -464,8 +407,8 @@ public:
 protected:
 
   /* called by derived class to cached current clip region */
-  void _PushClip(Coord x,Coord y,Coord w,Coord h){
-    if (_clipCurrent >= WindowRepClipDepth-1){
+  void _PushClip(Coord x, Coord y, Coord w, Coord h) {
+    if (_clipCurrent >= WindowRepClipDepth - 1){
       fprintf(stderr,"WindowRep::PushClip: overflow\n");
       Exit::DoExit(1);
     };
@@ -531,7 +474,6 @@ private:
   /* DList<WindowRepCallback *> *_callbackList;*/
   WindowRepCallbackList  *_callbackList;
   Transform2D _transforms[WindowRepTransformDepth];
-  Transform3D _transforms3[WindowRepTransformDepth];
   ClipRect _clippings[WindowRepClipDepth];
   /* DList<ClipRect *> _damageRects; */
   ClipRectList  _damageRects; /* damaged areas*/
@@ -546,5 +488,3 @@ private:
 };
 
 #endif
-
-

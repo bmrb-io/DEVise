@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/15 14:14:04  jussi
+  Added yuc's 3D functions.
+
   Revision 1.9  1996/05/31 15:32:10  jussi
   Added 'state' variable to HandleButton(). This tells the callee
   whether the shift/control keys were pressed in conjunction with
@@ -54,14 +57,14 @@
 WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor, 
 		     Pattern p)
 {
-  /* _callbackList = new DList<WindowRepCallback *>;*/
   _callbackList = new WindowRepCallbackList;
   _current = 0;   /* top of transform stack is identity matrix */
   _clipCurrent = -1;
-  _fgndColor = fgndColor; _bgndColor = bgndColor;
+  _fgndColor = fgndColor;
+  _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
-} // end of WindowRep() constructor
+}
 
 /***************************************************************
 called by derived class to when window is resized or moved: 
@@ -262,7 +265,7 @@ Set max damaged area:
 void WindowRep::MaxDamage()
 {
   int index;
-  for(index=_damageRects.InitIterator();_damageRects.More(index); ){
+  for(index = _damageRects.InitIterator(); _damageRects.More(index);) {
     ClipRect *rect = _damageRects.Next(index);
     _damageRects.DeleteCurrent(index);
     delete rect;
@@ -274,80 +277,10 @@ void WindowRep::MaxDamage()
 }
 #endif
 
-/* called by derived class to get currennt local color from
-global color */
+/* called by derived class to get current local color from
+   global color */
 
 Color WindowRep::GetLocalColor(Color globalColor)
 {
   return _display->GetLocalColor(globalColor);
 }
-
-#define YLC
-
-// ----------------------------------------------------------
-POINT WindowRep::CompLocationOnViewingSpace(POINT pt)
-{
-	Transform3D *tmpVec, tmpTransf;
-	POINT  NewPt;
-
-#ifdef YLC1
-	printf ("CLOVS (1)-> pt x = %f y = %f z = %f \n", pt.x_,pt.y_,pt.z_);
-#endif
-
-	tmpVec = new Transform3D; 
-	tmpVec->SetVector (pt);
-#ifdef YLC1
-	printf ("  &&&&&&& tmpVec print _______________\n");
-	tmpVec->Print();
-	_transforms3[_current].Print();
-#endif
-	_transforms3[_current].duplicate(tmpTransf);
-#ifdef YLC1
-	printf("      Before PreMultiply 22222222222222222222222\n");
-	_transforms3[_current].Print();
-	printf("           _current = %d\n", _current);
-	tmpTransf.Print();
-#endif
-	tmpTransf.PreMultiply(tmpVec);
-#ifdef YLC1
-	tmpTransf.Print();
-	printf("      After PreMultiply 44444444444444444444444\n");
-#endif
-	tmpTransf.GetVector (NewPt);
-	return (NewPt);
-} // end of CompLocationOnViewingSpace
-
-// ----------------------------------------------------------
-Point WindowRep::CompProjectionOnViewingPlane(POINT viewPt,
-	Camera camera)
-{
-	Point screenPt;
-	double z_over_dvs = viewPt.z_ / camera._dvs;
-
-#ifdef YLC1
-	printf ("CPOVP (2)-> vpt x = %f y = %f z = %f\n",
-		viewPt.x_,viewPt.y_,viewPt.z_);
-#endif
-	if (camera._perspective == 1) {
-		screenPt.x = (fabs(viewPt.z_) == 0 ? viewPt.x_ :
-							viewPt.x_ / z_over_dvs);
-		screenPt.y = (fabs(viewPt.z_) == 0 ? viewPt.y_ :
-							viewPt.y_ / z_over_dvs);
-	} else {
-		screenPt.x = viewPt.x_;
-		screenPt.y = viewPt.y_;
-	}
-
-	// upper left-hand corner of the physical screen is the
-	// default origin (0, 0) in the Xlib coordinate system
-	// the following code will move the focus point to whereever
-	// we don't it to be
-	screenPt.x += camera.H;
-	screenPt.y = (screenPt.y < 0 ?
-		camera.V + fabs(screenPt.y) : camera.V - screenPt.y);
-
-	return (screenPt);
-}  // end of CompProjectionOnViewingPlane
-
-
-
