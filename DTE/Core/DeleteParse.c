@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/09/05 22:20:01  donjerko
+  Made changes for port to NT.
+
   Revision 1.10  1997/08/22 23:13:00  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -88,8 +91,10 @@ Site* DeleteParse::createSite(){
 	List<BaseSelection*>* siteISchema = site->getSelectList();
 	assert(siteISchema);
 	ExecExpr* execPred;
-	TRY(execPred = 
-		predicate->createExec(*alias, siteISchema, "", NULL), NULL); 
+
+// 	old thing, not sure if the new works
+//	TRY(execPred = predicate->createExec(*alias, siteISchema, "", NULL), NULL); 
+	TRY(execPred = predicate->createExec(site, NULL), NULL); 
 	assert(execPred);
 	int inputNumFlds = site->getNumFlds();
 	const TypeID* types = site->getTypeIDs();

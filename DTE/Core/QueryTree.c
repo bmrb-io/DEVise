@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/09/17 02:35:43  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.36  1997/09/05 22:20:08  donjerko
   Made changes for port to NT.
 
@@ -287,11 +290,12 @@ Site* QueryTree::createSite(){
           sites->step();
     }
 
-	TRY(checkOrphanInList(selectList), 0);
-	TRY(checkOrphanInList(predicateList), 0);
-	if(!selectList){
-		APPLY(makeNonComposite(), predicateList);
-	}
+	// checkOrphan function is obsolete
+	// this will be check during typechecking
+
+//	TRY(checkOrphanInList(selectList), 0);
+//	TRY(checkOrphanInList(predicateList), 0);
+
      LOG(logFile << "Global query:\n";)
 	LOG(logFile << "   select ";)
      LOG(displayList(logFile, selectList, ", "));
@@ -397,6 +401,10 @@ Site* QueryTree::createSite(){
 		siteGroup = inner;
 	}
 
+	if(!predicateList->isEmpty()){
+		cerr << "Predicate list should be empty: ";
+		displayList(cerr, predicateList, ", ");
+	}
 	assert(predicateList->isEmpty());
 	if(selectList->cardinality() > siteGroup->getSelectList()->cardinality()){
 

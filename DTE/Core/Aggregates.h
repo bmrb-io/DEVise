@@ -14,6 +14,15 @@ public:
   virtual void initialize(const Type* input) = 0;
   virtual void update(const Type* input) = 0;
   virtual Type* getValue() = 0;
+  virtual void dequeue(int n){assert(!"Used only for moving aggregates");}
+};
+
+class ExecMovMinAgg : public ExecAggregate {
+public:
+  virtual void initialize(const Type* input){}
+  virtual void update(const Type* input){}
+  virtual Type* getValue(){return NULL;}
+  virtual void dequeue(int n){}
 };
 
 class ExecGroupAttr : public ExecAggregate {
@@ -195,6 +204,12 @@ class Aggregate {
 public:
   virtual TypeID typify(TypeID inputT) = 0;
   virtual ExecAggregate* createExec() = 0;
+};
+
+class MovMinAggregate : public Aggregate {
+public:
+  virtual TypeID typify(TypeID inputT){return "";};
+  virtual ExecAggregate* createExec(){return NULL;};
 };
 
 class MinAggregate : public Aggregate {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/09/17 02:35:49  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.24  1997/09/05 22:20:19  donjerko
   Made changes for port to NT.
 
@@ -112,27 +115,9 @@
 #include "catalog.h" 	// for root catalog
 #include "Interface.h"
 
-BaseSelection* PrimeSelection::filter(Site* site){
-	assert(alias);
-	if(*alias != "" && !site->have(*alias)){
-		return NULL;
-	}
-	else if(*alias == ""){
-		return NULL;	// This global function cannot be done on this site
-	}
-	else{
-		return new GlobalSelect(site, this);
-	}
-}
-
 bool PrimeSelection::exclusive(Site* site){
 	assert(alias);
-	if(site->have(*alias)){
-		return true;
-	}
-	else{
-		return false;
-	}
+	return site->have(*alias);
 }
 
 bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
@@ -147,131 +132,69 @@ bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
 	return false;
 }
 
-void GlobalSelect::display(ostream& out, int detail){
-	out << "{" << site->getName() << ": ";
-	selection->display(out, detail);
-	out << "}";
-}
-
-BaseSelection* GlobalSelect::filter(Site* siteGroup){
-	if(siteGroup->have(site)){
-		return new GlobalSelect(siteGroup, this);
-	}
-	else{
-		return NULL;
-	}
-}
-
-bool GlobalSelect::exclusive(Site* s){
-	if(s->have(site)){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
-
-ExecExpr* GlobalSelect::createExec(
-     string site1, List<BaseSelection*>* list1,
-     string site2, List<BaseSelection*>* list2){
-
+ExecExpr* BaseSelection::createExec(Site* site1, Site* site2)
+{
      List<BaseSelection*>* selList;
      int leftRight = 0;
-	if(site->getName() == site1){
-          selList = list1;
+	if(site1 && exclusive(site1)){
+          selList = site1->getSelectList();
           leftRight = 0;
      }
-     else if(site->getName() == site2){
-          selList = list2;
+     else if(site2 && exclusive(site2)){
+          selList = site2->getSelectList();
           leftRight = 1;
      }
      else{
-          cerr << "Could not find site: " << site->getName() << endl;
-          cerr << "Options were: " << site1 << " and " << site2 << endl;
-          assert(0);
+		return NULL;
 	}
 	selList->rewind();
 	int i = 0;
 	while(!selList->atEnd()){
-		if(selection->match(selList->get())){
+		if(match(selList->get())){
 			return new ExecSelect(leftRight, i);
 		}
 		selList->step();
 		i++;
 	}
-	cout << "Could not find: ";
-	selection->display(cout);
-	cout << endl;
-	assert(0);
 	return NULL;
 }
 
-TypeID GlobalSelect::typify(List<Site*>* sites){
-	string myName = site->getName();
-	sites->rewind();
-	Site* currSite = NULL;
-	while(true){
-		currSite = sites->get();
-		if(myName == currSite->getName()){
+TypeID BaseSelection::typify(List<Site*>* sites){
+	assert(sites);
+	Site* exclusiveSite = NULL;
+	for(sites->rewind(); !sites->atEnd(); sites->step()){
+		Site* currSite = sites->get();
+		if(exclusive(currSite)){
+			exclusiveSite = currSite;
 			break;
 		}
-		sites->step();
-		if(sites->atEnd()){
-			cerr << "Could not find site: " << myName << endl;
-			cerr << "among: ";
-			for(sites->rewind(); !sites->atEnd(); sites->step()){
-				cerr << sites->get()->getName() << ", ";
-			}
-			cerr << endl;
-			assert(0);
-		}
 	}
-	List<BaseSelection*>* selList = currSite->getSelectList();
+	if(!exclusiveSite){
+		return TypeID("");
+	}
+	List<BaseSelection*>* selList = exclusiveSite->getSelectList();
 	selList->rewind();
 	while(!selList->atEnd()){
-		if(selection->match(selList->get())){
+		if(match(selList->get())){
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
-//			assert(typeID == selection->getTypeID());
 			return typeID;
 		}
 		selList->step();
 	}
-	cout << "Could not find: ";
-	selection->display(cout);
-	cout << endl;
-	cout << "Options were:\n";
-	selList->rewind();
-	while(!selList->atEnd()){
-		selList->get()->display(cout);
-		cout << endl;
-		selList->step();
-	}
-	assert(0);
-	return ""; //avoid compiler warning
+	return TypeID("");
 }
 
-bool GlobalSelect::match(BaseSelection* x){
-	if(!(selectID() == x->selectID())){
-		return false;
+ExecExpr* Operator::createExec(Site* site1, Site* site2)
+{
+	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
+	if(retVal){
+		return retVal;
 	}
-	GlobalSelect* y = (GlobalSelect*) x;
-	if(site->getName() != y->site->getName()){
-		return false;
-	}
-	if(!selection->match(y->selection)){
-		return false;
-	}
-	return true;
-}
-
-ExecExpr* Operator::createExec(
-	string site1, List<BaseSelection*>* list1,
-     string site2, List<BaseSelection*>* list2){
 	ExecExpr* l;
-     TRY(l = left->createExec(site1, list1, site2, list2), NULL);
+     TRY(l = left->createExec(site1, site2), NULL);
 	ExecExpr* r;
-     TRY(r = right->createExec(site1, list1, site2, list2), NULL);
+     TRY(r = right->createExec(site1, site2), NULL);
 	size_t objSz;
 	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
@@ -279,80 +202,42 @@ ExecExpr* Operator::createExec(
 }
 
 TypeID PrimeSelection::typify(List<Site*>* sites){
+	if(sites && BaseSelection::typify(sites) != ""){
+		return typeID;
+	}
 	assert(alias);
 	if(*alias == ""){
 		assert(!"global functions not implemented");
-
-		// TRY(TypeID retVal = nextPath->typify("global", sites), "unknown");
-		// return retVal;
 	}
      assert(sites->cardinality() == 1);
      sites->rewind();
      Site* current = sites->get();
-	List<BaseSelection*>* selList = current->getSelectList();
 	string siteNm = current->getName();
-	selList->rewind();
-	int i = 0;
-	while(!selList->atEnd()){
-		if(match(selList->get())){
-			typeID = selList->get()->getTypeID();
-			avgSize = selList->get()->getSize();
-			return typeID;
-		}
-		selList->step();
-		i++;
-	}
+	List<BaseSelection*>* selList = current->getSelectList();
 	ostringstream tmp;
 	displayList(tmp, selList);
 	tmp << ends;
 	string tmpc = tmp.str();
 	string msg = string("Table ") + siteNm + "(" + tmpc + ")" +
-		" does not have attribute \"" + *fieldNm + "\"";
+		" does not have attribute \"" + *alias + "." + *fieldNm + "\"";
 	THROW(new Exception(msg), "PrimeSelection::typify");
 }
 
-ExecExpr* EnumSelection::createExec(
-	string site1, List<BaseSelection*>* list1,
-	string site2, List<BaseSelection*>* list2)
+ExecExpr* EnumSelection::createExec(Site* site1, Site* site2)
 {
 	return new ExecSelect(0, position);
 }
 
-ExecExpr* PrimeSelection::createExec(
-	string site1, List<BaseSelection*>* list1,
-	string site2, List<BaseSelection*>* list2){
-
-	assert(site2 == "" && list2 == NULL);
-	int leftRight = 0;
-	List<BaseSelection*>* selList = list1;
-	assert(selList);
-	selList->rewind();
-	int i = 0;
-	while(!selList->atEnd()){
-		if(match(selList->get())){
-			return new ExecSelect(leftRight, i);
-		}
-		selList->step();
-		i++;
+ExecExpr* PrimeSelection::createExec(Site* site1, Site* site2)
+{
+	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
+	if(retVal){
+		return retVal;
 	}
 	string msg = "Table " + *alias + " does not have attribute " +
 		*fieldNm;
 	THROW(new Exception(msg), NULL);
 }
-
-BaseSelection* Operator::distributeWrapper(Site* site){
-	BaseSelection* leftG = left->distributeWrapper(site);
-	BaseSelection* rightG = right->distributeWrapper(site);
-	if(leftG){
-		left = leftG;	// nothing is lost
-	}
-	if(rightG){
-		right = rightG;	// nothing is lost
-	}
-	BaseSelection::distributeWrapper(site);
-	return this;
-}
-
 
 bool Operator::isIndexable(
 	string& attrName, string& opName, BaseSelection*& value){
@@ -390,9 +275,8 @@ BaseSelection* ConstantSelection::duplicate() {
 	return new ConstantSelection(typeID, newvalue);
 }
 
-ExecExpr* ConstantSelection::createExec(
-		string site1, List<BaseSelection*>* list1,
-		string site2, List<BaseSelection*>* list2){
+ExecExpr* ConstantSelection::createExec(Site* site1, Site* site2)
+{
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
 	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
 	return new ExecConst(newvalue, destroyPtr);
@@ -418,6 +302,9 @@ bool PrimeSelection::match(BaseSelection* x){
 }
 
 TypeID Operator::typify(List<Site*>* sites){
+	if(sites && BaseSelection::typify(sites) != ""){
+		return typeID;
+	}
 	TRY(left->typify(sites), "");
 	TRY(right->typify(sites), "");
 	TypeID root = left->getTypeID();
@@ -468,22 +355,28 @@ TypeID Operator::typify(List<Site*>* sites){
 	return typeID;
 }
 
-ExecExpr* TypeCast::createExec(
-	string site1, List<BaseSelection*>* list1,
-	string site2, List<BaseSelection*>* list2){
+ExecExpr* TypeCast::createExec(Site* site1, Site* site2)
+{
+	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
+	if(retVal){
+		return retVal;
+	}
 	ExecExpr* execInp;
-	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
+	TRY(execInp = input->createExec(site1, site2), NULL);
 	size_t valueSize;
 	Type* value = allocateSpace(typeID, valueSize);
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
 	return new ExecTypeCast(execInp, promotePtr, value, valueSize, destroyPtr);
 }
 
-ExecExpr* Member::createExec(
-	string site1, List<BaseSelection*>* list1,
-	string site2, List<BaseSelection*>* list2){
+ExecExpr* Member::createExec(Site* site1, Site* site2)
+{
+	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
+	if(retVal){
+		return retVal;
+	}
 	ExecExpr* execInp;
-	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
+	TRY(execInp = input->createExec(site1, site2), NULL);
 	size_t valueSize;
 	Type* value = allocateSpace(typeID, valueSize);
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
@@ -549,6 +442,9 @@ QuoteAlias::~QuoteAlias(){
 }
 
 TypeID Constructor::typify(List<Site*>* sites){
+	if(sites && BaseSelection::typify(sites) != ""){
+		return typeID;
+	}
 	assert(args);
 	int numFlds = args->cardinality();
 	TypeID* inpTypes = new TypeID[numFlds];	
@@ -563,16 +459,17 @@ TypeID Constructor::typify(List<Site*>* sites){
 	return typeID;
 }
 
-ExecExpr* Constructor::createExec(
-	string site1, List<BaseSelection*>* list1,
-     string site2, List<BaseSelection*>* list2)
+ExecExpr* Constructor::createExec(Site* site1, Site* site2)
 {
+	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
+	if(retVal){
+		return retVal;
+	}
 	int numFlds = args->cardinality();
 	Array<ExecExpr*>* input = new Array<ExecExpr*>(numFlds);
 	args->rewind();
 	for(int i = 0; i < numFlds; i++){
-		TRY((*input)[i] = 
-			args->get()->createExec(site1, list1, site2, list2), NULL);
+		TRY((*input)[i] = args->get()->createExec(site1, site2), NULL);
 		args->step();
 	}
 	size_t objSz;
@@ -581,3 +478,62 @@ ExecExpr* Constructor::createExec(
 	return new ExecConstructor(input, consPtr, value, objSz, destroyPtr);
 }
 
+void TypeCast::collect(Site* site, List<BaseSelection*>* to){
+	if(exclusive(site)){
+		to->append(this);
+	}
+	else{
+		input->collect(site, to);
+	}
+}
+
+void Member::collect(Site* site, List<BaseSelection*>* to){
+	if(exclusive(site)){
+		to->append(this);
+	}
+	else{
+		input->collect(site, to);
+	}
+}
+
+void Constructor::collect(Site* site, List<BaseSelection*>* to){
+	if(exclusive(site)){
+		to->append(this);
+	}
+	else{
+		assert(args);
+		for(args->rewind(); !args->atEnd(); args->step()){
+			BaseSelection* curr = args->get();
+			curr->collect(site, to);
+          }
+	}
+}
+
+void PrimeSelection::collect(Site* site, List<BaseSelection*>* to){
+	if(exclusive(site)){
+		to->append(this);
+	}
+}
+
+void Operator::collect(Site* site, List<BaseSelection*>* to){
+	if(exclusive(site)){
+		to->append(this);
+		return;
+	}
+	left->collect(site, to);
+	right->collect(site, to);
+}
+
+TypeID Member::typify(List<Site*>* sites){
+	BaseSelection::typify(sites);
+	if(typeID != ""){
+		return typeID;
+	}
+	TRY(TypeID parentType = input->typify(sites), "unknown");
+	GeneralMemberPtr* genPtr;
+	TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
+	assert(genPtr);
+	memberPtr = genPtr->memberPtr;
+	assert(memberPtr);
+	return typeID;
+}

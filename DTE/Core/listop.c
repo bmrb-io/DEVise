@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/17 02:35:47  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.15  1997/09/05 22:20:17  donjerko
   Made changes for port to NT.
 
@@ -82,7 +85,7 @@ int* findPositions(List<BaseSelection*>* list,
 					" ORDER BY to any of the SELECT clause";
 				THROW(new Exception(msg), NULL);
 			}
-			if(list->get()->matchFlat(elements->get())){
+			if(list->get()->match(elements->get())){
 				retVal[i] = j;
 				break;
 			}
@@ -172,30 +175,14 @@ void displayList(ostream& out, List<string*>* list, string sep){
 	}
 }
 
-void filterList(List<BaseSelection*>* list, Site* site){
-	if(!list){
-		return;
-	}
-	list->rewind();
-	while(!list->atEnd()){
-		BaseSelection* current = list->get();
-		BaseSelection* global = current->filter(site);
-		if(global){
-			list->replace(global);     // nothing is discarded
-		}
-		list->step();
-	}
-}
-
 Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
-     string site1, List<BaseSelection*>* list1,
-	string site2, List<BaseSelection*>* list2){
-
+	Site* site1, Site* site2)
+{
 	Array<ExecExpr*>* retVal = new Array<ExecExpr*>(list->cardinality());
 	list->rewind();
 	for(int i = 0; !list->atEnd(); i++){
 		ExecExpr* tmp;
-		TRY(tmp = list->get()->createExec(site1, list1, site2, list2), NULL);
+		TRY(tmp = list->get()->createExec(site1, site2), NULL);
 		assert(tmp);
 		(*retVal)[i] = tmp;
 		list->step();
@@ -247,7 +234,8 @@ bool boolCheckList(List<BaseSelection*>* list){
 			current->display(msg);
 			msg << ends;
 			string msgc = msg.str();
-			string msgs = "Predicate " + msgc + " is not boolean";
+			string msgs = "Predicate " + msgc + " is of type " +
+				current->getTypeID() + " (boolean expected)";
 			THROW(new Exception(msgs), false);
 		}
 		list->step();
@@ -323,7 +311,7 @@ string* getStringsFrom(List<BaseSelection*>* list){
 	int i = 0;
 	while(!list->atEnd()){
 		ostringstream tmp;
-		list->get()->displayFlat(tmp);
+		list->get()->display(tmp);
 		tmp << ends;
 		retVal[i] = tmp.str();
 		i++;
@@ -355,7 +343,7 @@ List<BaseSelection*>* createGlobalSelectList(List<Site*>* sites){
 		currSelect->rewind();
 		while(!currSelect->atEnd()){
 			BaseSelection* currBase = currSelect->get();
-			retVal->append(new GlobalSelect(current, currBase));
+			retVal->append(currBase);
 			currSelect->step();
 		}
 		sites->step();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/09/05 22:20:17  donjerko
+  Made changes for port to NT.
+
   Revision 1.10  1997/08/21 21:04:31  donjerko
   Implemented view materialization
 
@@ -87,7 +90,6 @@ int* findPositions(List<BaseSelection*>* list,
 bool exclusiveF(List<BaseSelection*>* list, Site* site);
 bool exclusiveList(List<BaseSelection*>* list, string* attNms, int n);
 List<BaseSelection*>* duplicateF(List<BaseSelection*>* list);
-void filterList(List<BaseSelection*>* list, Site* site);
 void displayList(ostream& out, List<TableAlias*>* list, string sep = ", ");
 void displayList(ostream& out, List<BaseSelection*>* list, 
 	string sep = ", ", int detail = 0); 
@@ -95,9 +97,8 @@ void displayList(ostream& out, List<Site*>* list, string sep);
 void displayList(ostream& out, List<string*>* list, string sep);
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
-Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
-     string site1, List<BaseSelection*>* list1,
-     string site2 = "", List<BaseSelection*>* list2 = NULL);
+Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list, 
+	Site* site1, Site* site2 = NULL);
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(

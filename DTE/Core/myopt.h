@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/09/17 02:35:48  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.32  1997/09/05 22:20:18  donjerko
   Made changes for port to NT.
 
@@ -131,14 +134,20 @@ using namespace std;
 class ExecExpr;
 
 typedef enum SelectID {
-	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
+	BASE_ID, SELECT_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
 	CAST_ID, MEMBER_ID, ENUM_SELECT_ID, CONSTRUCTOR_ID
 };
 
 class BaseSelection{
 protected:
+	TypeID typeID;
+	int avgSize;	// to estimate result sizes
 public:
-     BaseSelection() {}
+     BaseSelection() {
+		avgSize = 10;
+	}
+     BaseSelection(const TypeID& typeID, int avgSize = 10) 
+		: typeID(typeID), avgSize(avgSize) {}
 	virtual ~BaseSelection(){}
 	virtual void destroy(){}
 	string toString(){
@@ -150,17 +159,9 @@ public:
 	}
      virtual void display(ostream& out, int detail = 0){
 	};
-	virtual void displayFlat(ostream& out, int detail = 0){
-		display(out, detail);
-	}
-	virtual BaseSelection* filter(Site* site) = 0;
 	virtual bool exclusive(Site* site) = 0;
 	virtual bool exclusive(string* attributeNames, int numFlds) = 0;
 	virtual string* siteName(){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual BaseSelection* selectionF(){
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
@@ -176,19 +177,9 @@ public:
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
-     virtual ExecExpr* createExec(
-		string site1, List<BaseSelection*>* list1,
-		string site2, List<BaseSelection*>* list2){
-
-		return NULL;
-     }
-	virtual TypeID typify(List<Site*>* sites){
-		return "Unknown";
-     }
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual TypeID typify(List<Site*>* sites);
      virtual bool match(BaseSelection* x) = 0;
-	virtual bool matchNoMember(BaseSelection* x){ // throws exception
-		return match(x);
-	}
      virtual SelectID selectID() = 0;
 	virtual TypeID getTypeID(){
 		assert(0);
@@ -211,20 +202,6 @@ public:
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
-	virtual BaseSelection* makeNonComposite(){
-		
-		// Used in the select * queries to make sure that all the
-		// referncies to base tables are simple (eg., not a.i + 1).
-
-		return NULL;
-	}
-	virtual BaseSelection* distributeWrapper(Site* site){
-
-		// Used in the select * queries to make sure that all the
-		// referncies to base tables are simple (eg., not a.i + 1).
-
-		return NULL;
-	}
 	virtual bool isIndexable(
 		string& attrName, string& opName, BaseSelection*& value){
 
@@ -238,87 +215,13 @@ public:
 		assert(0);
 		return ""; // avoid compiler warning
 	}
-     virtual bool matchFlat(BaseSelection* x){
-		return match(x);
-	}
-};
-
-class GlobalSelect : public BaseSelection {
-	Site* site;
-	BaseSelection* selection;
-	TypeID typeID;
-	int avgSize;	// to estimate result sizes
-public:
-	GlobalSelect(Site* s, BaseSelection* sel) :
-		site(s), selection(sel), BaseSelection() {
-		typeID = sel->getTypeID();
-		avgSize = 10;	// fix this!
-	}
-	virtual void display(ostream& out, int detail = 0);
-	virtual void displayFlat(ostream& out, int detail = 0){
-		selection->displayFlat(out, detail);
-	}
-	virtual BaseSelection* selectionF(){
-		return selection;
-	}
-	virtual BaseSelection* filter(Site* siteGroup);
-	virtual bool exclusive(Site* s);
-	virtual bool exclusive(string* attributeNames, int numFlds){
-		assert(!"not implemented");
-		return false;
-	}
-	virtual BaseSelection* duplicate(){
-		cerr << "Error: GlobalSelect::duplicate called\n";
-		exit(1);
-		return NULL ;
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(site == s){
-			to->append(selection);
-		}
-	}
-	virtual ExecExpr* createExec(
-		string site1, List<BaseSelection*>* list1,
-		string site2, List<BaseSelection*>* list2);
-     virtual SelectID selectID(){
-          return GLOBAL_ID;
-     }
-	virtual TypeID typify(List<Site*>* sites);
-	virtual TypeID getTypeID(){
-		return typeID;
-	}
-     virtual void setTypeID(TypeID type){
-		assert(0);
-		typeID = type;
-     }
-     virtual bool match(BaseSelection* x);
-     virtual bool matchFlat(BaseSelection* x){
-		return selection->matchFlat(x);
-	}
-	virtual void setSize(int size){
-		avgSize = size;
-	}
-	virtual int getSize(){
-		return avgSize;
-	}
-	virtual bool checkOrphan(){
-		return true;
-	}
-	virtual BaseSelection* makeNonComposite(){
-		return selection->distributeWrapper(site);
-	}
-	virtual BaseSelection* distributeWrapper(Site* site){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
 };
 
 class ConstantSelection : public BaseSelection {
-	TypeID typeID;
      Type* value;
 public:
 	ConstantSelection(TypeID typeID, Type* val) : 
-		BaseSelection(), typeID(typeID), value(val) {}
+		BaseSelection(typeID), value(val) {}
 	virtual ~ConstantSelection(){
 		DestroyPtr dp = getDestroyPtr(typeID);
 		assert(dp);
@@ -357,9 +260,6 @@ public:
 		wp(out, value);
 		BaseSelection::display(out, detail);
 	}
-	virtual BaseSelection* filter(Site* site){
-          return NULL;
-	}
 	virtual bool exclusive(Site* site){
 		return true;
 	}
@@ -386,9 +286,7 @@ public:
 		genPtr->opPtr(value, y->value, result);
 		return (result ? true : false);
 	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual TypeID typify(List<Site*>* sites){
 		return typeID;
 	}
@@ -404,13 +302,12 @@ public:
 };
 
 class TypeCast : public BaseSelection {
-	TypeID typeID;
 	BaseSelection* input;
 	PromotePtr promotePtr;
 public:
 	TypeCast(TypeID& typeID, BaseSelection* input, 
 		PromotePtr promotePtr = NULL) : 
-		BaseSelection(), typeID(typeID), input(input), 
+		BaseSelection(typeID), input(input), 
 		promotePtr(promotePtr){
 
 		assert(input);
@@ -431,16 +328,6 @@ public:
 		out << ")";
 		BaseSelection::display(out, detail);
 	}
-	virtual BaseSelection* filter(Site* site){
-		if(input->exclusive(site)){
-			return new GlobalSelect(site, this);
-		}
-		else{
-			BaseSelection* newInp = input->filter(site);
-			assert(!newInp);
-			return NULL;
-		}
-	}
 	virtual bool exclusive(Site* site){
 		return input->exclusive(site);
 	}
@@ -450,8 +337,7 @@ public:
 	virtual BaseSelection* duplicate(){
 		return new TypeCast(*this);
 	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-	}
+	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual SelectID selectID(){
           return CAST_ID;
      }
@@ -468,10 +354,12 @@ public:
 		}
 		return true;
 	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual TypeID typify(List<Site*>* sites){
+		BaseSelection::typify(sites);
+		if(typeID != ""){
+			return typeID;
+		}
 		if(promotePtr){
 
 			// already typified when consturcted 
@@ -497,18 +385,16 @@ class Member : public BaseSelection {
 friend class Method;
 protected:
 	string* name;
-	TypeID typeID;
 	BaseSelection* input;
 	MemberPtr memberPtr;
-	int avgSize;	// to estimate result sizes
 public:
 	Member(string* name, BaseSelection* input) : 
-		BaseSelection(), name(name), typeID(UNKN_TYPE), input(input), 
+		BaseSelection(), name(name), input(input), 
 		memberPtr(NULL) {
 	}
 	Member(string* name, BaseSelection* input, MemberPtr memberPtr,
 			TypeID typeID) : 
-		BaseSelection(), name(name), typeID(typeID), input(input), 
+		BaseSelection(typeID), name(name), input(input), 
 		memberPtr(memberPtr) {
 	}
 	Member(const Member& x){
@@ -533,16 +419,6 @@ public:
 	const string* getName(){
 		return name;
 	}
-	virtual BaseSelection* filter(Site* site){
-		if(input->exclusive(site)){
-			return new GlobalSelect(site, this);
-		}
-		else{
-			BaseSelection* newInp = input->filter(site);
-			assert(!newInp);
-			return NULL;
-		}
-	}
 	virtual bool exclusive(Site* site){
 		return input->exclusive(site);
 	}
@@ -552,9 +428,7 @@ public:
 	virtual BaseSelection* duplicate(){
 		return new Member(*this);
 	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		input->collect(s, to);
-	}
+	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual SelectID selectID(){
           return MEMBER_ID;
      }
@@ -571,24 +445,8 @@ public:
 		}
 		return true;
 	}
-	virtual bool matchNoMember(BaseSelection* x){ // throws exception
-		if(match(x)){
-			return true;
-		}
-		return input->matchNoMember(x);
-	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
-     virtual TypeID typify(List<Site*>* sites){
-		TRY(TypeID parentType = input->typify(sites), "unknown");
-		GeneralMemberPtr* genPtr;
-		TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
-		assert(genPtr);
-		memberPtr = genPtr->memberPtr;
-		assert(memberPtr);
-		return typeID;
-	}
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
+     virtual TypeID typify(List<Site*>* sites);
      virtual TypeID getTypeID(){
           return typeID;
      }
@@ -628,17 +486,6 @@ public:
      List<BaseSelection*>* getArgs(){
           return args;
      }
-	virtual BaseSelection* filter(Site* site){
-		assert(0);
-		if(input->exclusive(site)){
-			return new GlobalSelect(site, this);
-		}
-		else{
-			BaseSelection* newInp = input->filter(site);
-			assert(!newInp);
-			return NULL;
-		}
-	}
 	virtual bool exclusive(Site* site){
 		assert(0);
 		return input->exclusive(site);
@@ -672,16 +519,8 @@ public:
 		}
 		return true;
 	}
-	virtual bool matchNoMember(BaseSelection* x){ // throws exception
-		assert(0);
-		if(match(x)){
-			return true;
-		}
-		return input->matchNoMember(x);
-	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2){
+     virtual ExecExpr* createExec(Site* site1, Site* site2)
+	{
 		assert(!"methods not implemented yet");
 		return NULL;
      }
@@ -710,13 +549,11 @@ public:
 
 class Constructor : public BaseSelection {
 	string* name;
-	TypeID typeID;
 	List<BaseSelection*>* args;
-	int avgSize;	// to estimate result sizes
 	ConstructorPtr consPtr;
 public:
 	Constructor(string* name, List<BaseSelection*>* args) :
-		name(name), typeID(UNKN_TYPE), args(args), consPtr(NULL) {}
+		BaseSelection(), name(name), args(args), consPtr(NULL) {}
 	Constructor(const Constructor& a){
 		assert(0);
 	}
@@ -736,20 +573,6 @@ public:
      List<BaseSelection*>* getArgs(){
           return args;
      }
-	virtual BaseSelection* filter(Site* site){
-		if(exclusive(site)){
-			return new GlobalSelect(site, this);
-		}
-		assert(args);
-		for(args->rewind(); !args->atEnd(); args->step()){
-			BaseSelection* curr = args->get();
-			BaseSelection* currf = curr->filter(site);
-			if(currf){
-				args->replace(currf);
-			}
-		}
-		return NULL;
-	}
 	virtual bool exclusive(Site* site){
 		assert(args);
 		for(args->rewind(); !args->atEnd(); args->step()){
@@ -768,13 +591,7 @@ public:
 		assert(0);
 		return NULL;
 	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		assert(args);
-		for(args->rewind(); !args->atEnd(); args->step()){
-			BaseSelection* curr = args->get();
-			curr->collect(s, to);
-		}
-	}
+	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual SelectID selectID(){
           return CONSTRUCTOR_ID;
      }
@@ -799,14 +616,7 @@ public:
 		}
 		return true;
 	}
-	virtual bool matchNoMember(BaseSelection* x){ // throws exception
-		assert(0);
-		return match(x);
-	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
-
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual TypeID typify(List<Site*>* sites);
      virtual TypeID getTypeID(){
           return typeID;
@@ -822,27 +632,20 @@ public:
 };
 
 class EnumSelection : public BaseSelection {
-	TypeID typeID;
 	int position;	// position of this selection in the input stream
 public:
 	EnumSelection(int position, TypeID typeID) :
-		typeID(typeID), position(position) {}
+		BaseSelection(typeID), position(position) {}
 	virtual TypeID getTypeID(){
 		return typeID;
 	}
 	virtual TypeID typify(List<Site*>* sites){
 		return typeID;
 	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual SelectID selectID(){
           return ENUM_SELECT_ID;
      }
-	virtual BaseSelection* filter(Site* site){
-		assert(0);
-		return NULL;
-	}
 	virtual bool exclusive(Site* site){
 		assert(0);
 		return false;
@@ -867,8 +670,6 @@ public:
 class PrimeSelection : public BaseSelection{
 	string* alias;
 	string* fieldNm;
-	TypeID typeID;
-	int avgSize;	// to estimate result sizes
 public:
 	PrimeSelection(string a, string attr) : BaseSelection() {
 		alias = new string(a);
@@ -879,8 +680,7 @@ public:
 	PrimeSelection(
 		string* a, string* fieldNm = NULL, TypeID typeID = "Unknown",
 		int avgSize = 0): 
-          BaseSelection(), alias(a), fieldNm(fieldNm), typeID(typeID), 
-		avgSize(avgSize){}
+          BaseSelection(typeID, avgSize), alias(a), fieldNm(fieldNm) {}
 	~PrimeSelection(){
 		delete alias;
 		delete fieldNm;
@@ -900,7 +700,6 @@ public:
                out << ", type = " << typeID << " %";
           }
 	}
-	virtual BaseSelection* filter(Site* site);
 	virtual bool exclusive(Site* site);
 	virtual bool exclusive(string* attributeNames, int numFlds);
 	virtual BaseSelection* duplicate(){
@@ -909,11 +708,8 @@ public:
 			(fieldNm ? new string(*fieldNm) : (string*) NULL);
 		return new PrimeSelection(dupAlias, dupFieldNm);
 	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-	}
-     virtual ExecExpr* createExec(
-          string site1, List<BaseSelection*>* list1,
-          string site2, List<BaseSelection*>* list2);
+	virtual void collect(Site* s, List<BaseSelection*>* to);
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
 	virtual TypeID typify(List<Site*>* sites);
      virtual SelectID selectID(){
           return SELECT_ID;
@@ -936,9 +732,6 @@ public:
 		string msg = "Table " + *alias + " is not listed in FROM clause";
 		THROW(new Exception(msg), false);
 	}
-	virtual BaseSelection* distributeWrapper(Site* site){
-		return new GlobalSelect(site, this); 
-	}
 	virtual string toStringAttOnly(){
 		return *fieldNm;
 	}
@@ -950,9 +743,7 @@ protected:
      string name;
      BaseSelection* left;
 	BaseSelection* right;
-	TypeID typeID;
 	OperatorPtr opPtr;
-	int avgSize;	// to estimate result sizes
 	double selectivity;
 public:
 	Operator(string n, BaseSelection* l, BaseSelection* r)
@@ -984,14 +775,6 @@ public:
 		}
 		BaseSelection::display(out, detail);
 	}
-	virtual void displayFlat(ostream& out, int detail = 0){
-		out << "(";
-		left->displayFlat(out); 
-		out << " " << name << " ";
-		right->displayFlat(out);
-		out << ")";
-		// BaseSelection::displayFlat(out, detail);
-	}
 	virtual bool isIndexable(
 		string& attrName, string& opName, BaseSelection*& value);
 	string getAttribute(){
@@ -1022,22 +805,6 @@ public:
 		os << ends;
 		return os.str();
 	}
-	virtual BaseSelection* filter(Site* site){
-		if(exclusive(site)){
-			return new GlobalSelect(site, this);
-		}
-		else{
-			BaseSelection* leftG = left->filter(site);
-			BaseSelection* rightG = right->filter(site);
-			if(leftG){
-				left = leftG;
-			}
-			if(rightG){
-				right = rightG;
-			}
-			return NULL;
-		}
-	}
 	virtual bool exclusive(Site* site){
 		if(!left->exclusive(site)){
 			return false;
@@ -1063,13 +830,8 @@ public:
 	virtual BaseSelection* duplicate(){
 		return new Operator(name, left->duplicate(), right->duplicate());
 	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		left->collect(s, to);
-		right->collect(s, to);
-	}
-	virtual ExecExpr* createExec(
-		string site1, List<BaseSelection*>* list1,
-		string site2, List<BaseSelection*>* list2);
+	virtual void collect(Site* s, List<BaseSelection*>* to);
+     virtual ExecExpr* createExec(Site* site1, Site* site2);
      virtual SelectID selectID(){
           return OP_ID;
      }
@@ -1089,22 +851,6 @@ public:
 		TRY(right->checkOrphan(), false);
 		return true;
 	}
-	virtual BaseSelection* makeNonComposite(){
-		BaseSelection* leftG = left->makeNonComposite();
-		BaseSelection* rightG = right->makeNonComposite();
-		if(leftG){
-			assert(left != leftG);
-			delete left;	// shallow 
-			left = leftG;
-		}
-		if(rightG){
-			assert(right != rightG);
-			delete right;	// shallow
-			right = rightG;
-		}
-		return BaseSelection::makeNonComposite();
-	}
-	virtual BaseSelection* distributeWrapper(Site* site);
 };
 
 class ArithmeticOp : public Operator {

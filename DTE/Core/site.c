@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/09/17 02:35:50  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.26  1997/09/09 14:42:16  donjerko
   Bug fix
 
@@ -98,7 +101,7 @@
 
 #include <string>		// for strtok
 #include <set>
-#include <algo.h>	// for includes
+#include <algorithm>	// for includes
 
 class Iterator;
 
@@ -120,14 +123,14 @@ Site::~Site(){
 	if(mySelect){
 		for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
 //			mySelect->get()->destroy();
-			delete mySelect->get();
+//			delete mySelect->get();
 		}
 	}
 	delete mySelect;	// delete only list
 	delete myFrom;
 	for(myWhere->rewind(); !myWhere->atEnd(); myWhere->step()){
 //		myWhere->get()->destroy();
-		delete myWhere->get();
+//		delete myWhere->get();
 	}
 	delete myWhere;	// delete everything
 //	delete stats;	     // fix this
@@ -165,7 +168,24 @@ void Site::addTable(TableAlias* tabName){
 bool Site::have(const string& arg){
 	set<string, ltstr> tmp;
 	tmp.insert(arg);
-	return includes(tables->begin(), tables->end(), tmp.begin(), tmp.end());
+
+	// semantics of this is: first includes second (book is wrong)
+
+	bool incl = 
+		includes(tables->begin(), tables->end(), tmp.begin(), tmp.end());
+
+#if defined(DEBUG)
+	cerr << "tables: " << endl;
+	set<string, ltstr>::const_iterator it = tables->begin();
+	while(it != tables->end()){
+		cerr << *it << ", ";
+		it++;
+	}
+	cerr << (incl ? "" : " does not") 
+		<< " contains " << '"' << arg << '"' << endl;
+#endif
+
+	return incl;
 }
 
 bool Site::have(const set<string, ltstr>& arg){
@@ -277,15 +297,13 @@ void LocalTable::typify(string option){	// Throws exception
 }
 
 void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
-	filterList(select, this);
 	if(where){
-		filterList(where, this);
 		where->rewind();
 		while(!where->atEnd()){
 			BaseSelection* currPred = where->get();
 			if(currPred->exclusive(this)){
 				where->remove();
-				myWhere->append(currPred->selectionF());
+				myWhere->append(currPred);
 			}
 			else{
 				where->step();
@@ -306,7 +324,6 @@ void Site::filterAll(List<BaseSelection*>* select){
 	assert(select);
 	mySelect = new List<BaseSelection*>;
 	mySelect->addList(select);
-	filterList(select, this);
 }
 
 istream* contactURL(string name, 
@@ -535,7 +552,7 @@ Iterator* createIteratorFor(
 	predicate->typify(NULL);
 
 	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
-	TRY((*where)[0] = predicate->createExec("", NULL, "", NULL), NULL);
+	TRY((*where)[0] = predicate->createExec(NULL, NULL), NULL);
 	assert((*where)[0]);
 	return new SelProjExec(fs, select, where);
 }
@@ -646,22 +663,20 @@ void SiteGroup::typify(string option){	// Throws exception
 
 Iterator* LocalTable::createExec(){
 	assert(directSite);
-	List<BaseSelection*>* baseISchema = directSite->getSelectList();
 	Array<ExecExpr*>* select;
 	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, name, baseISchema), NULL);
-	TRY(where = enumerateList(myWhere, name, baseISchema), NULL);
+	TRY(select = enumerateList(mySelect, directSite), NULL);
+	TRY(where = enumerateList(myWhere, directSite), NULL);
 	Iterator* it = directSite->createExec();
 	return new SelProjExec(it, select, where);
 }
 
 Iterator* IndexScan::createExec(){
 	assert(directSite);
-	List<BaseSelection*>* baseISchema = directSite->getSelectList();
 	Array<ExecExpr*>* select;
 	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, name, baseISchema), NULL);
-	TRY(where = enumerateList(myWhere, name, baseISchema), NULL);
+	TRY(select = enumerateList(mySelect, directSite), NULL);
+	TRY(where = enumerateList(myWhere, directSite), NULL);
 	Iterator* it = directSite->createExec();
 	RTreeReadExec* indexIter = (RTreeReadExec*) index->createExec();
 	return new IndexScanExec(indexIter, it, select, where);
@@ -670,10 +685,8 @@ Iterator* IndexScan::createExec(){
 Iterator* SiteGroup::createExec(){
 	Array<ExecExpr*>* select;
 	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, site1->getName(), site1->mySelect, 
-		site2->getName(), site2->mySelect), NULL);
-	TRY(where = enumerateList(myWhere, site1->getName(), site1->mySelect, 
-		site2->getName(), site2->mySelect), NULL);
+	TRY(select = enumerateList(mySelect, site1, site2), NULL);
+	TRY(where = enumerateList(myWhere, site1, site2), NULL);
 	int innerNumFlds = site2->getNumFlds();
 	TRY(Iterator* it1 = site1->createExec(), NULL);
 	TRY(Iterator* it2 = site2->createExec(), NULL);
@@ -693,3 +706,42 @@ Iterator* DirectSite::createExec(){
 	return iterat->createExec();  // no projections or selections
 }
 
+DirectSite::DirectSite(string nm, PlanOp* iterat) : Site(nm) {
+	
+	// Used only for typifying LocalTable
+
+	assert(iterat);
+	Site::iterat = iterat;
+	numFlds = iterat->getNumFlds();
+	stats = iterat->getStats();
+	assert(stats);
+	mySelect = createSelectList(nm, iterat);
+	tables->insert(nm);
+}
+
+SiteGroup::SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2)
+{
+	sites = new List<Site*>;
+
+	const set<string, ltstr>* tables1 = s1->tables;
+	const set<string, ltstr>* tables2 = s2->tables;
+	set_union(tables1->begin(), tables1->end(), 
+		tables2->begin(), tables2->end(), inserter(*tables, tables->end()));
+
+	List<Site*>* tmp1 = site1->getList();
+	List<Site*>* tmp2 = site2->getList();
+
+	sites->addList(tmp1);
+	sites->addList(tmp2);
+	sites->rewind();
+
+	assert(!sites->atEnd());
+	name = sites->get()->getName();
+	sites->step();
+	while(!sites->atEnd()){
+		name += "+" + sites->get()->getName();
+		sites->step();
+	}
+	delete tmp1;
+	delete tmp2;
+}

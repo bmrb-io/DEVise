@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/09/17 02:35:51  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.30  1997/09/05 22:20:21  donjerko
   Made changes for port to NT.
 
@@ -145,10 +148,6 @@ public:
 	}
 	bool have(const string&);
 	bool have(const set<string, ltstr>& arg);
-	virtual bool have(Site* siteGroup){
-		// return this == siteGroup;
-		return name == siteGroup->getName();
-	}
 	void filter(List<BaseSelection*>* select, 
 		List<BaseSelection*>* where = NULL);
 	void filterAll(List<BaseSelection*>* select);
@@ -232,23 +231,19 @@ public:
 };
 
 class DirectSite : public Site {
-public:
-	DirectSite(string nm, PlanOp* iterat) : Site(nm) {
-		
-		// Used only for typifying LocalTable
 
-		assert(iterat);
-		Site::iterat = iterat;
-		numFlds = iterat->getNumFlds();
-		stats = iterat->getStats();
-		assert(stats);
-		mySelect = createSelectList(nm, iterat);
-	}
+	// Used only for typifying LocalTable
+
+public:
+	DirectSite(string nm, PlanOp* iterat);
 	virtual ~DirectSite(){
 		iterat = NULL;	// Local table is the owner of this iterator
 	}
 	virtual void typify(string option){}
 	virtual Iterator* createExec();
+	virtual void addTable(TableAlias* tabName){
+		assert(!"addTable is done already in constructor");
+	}
 };
 
 class LocalTable : public Site {
@@ -370,52 +365,11 @@ protected:
 	Site* site1;
 	Site* site2;
 public:
-	SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2){
-		sites = new List<Site*>;
-
-		List<Site*>* tmp1 = site1->getList();
-		List<Site*>* tmp2 = site2->getList();
-
-		sites->addList(tmp1);
-		sites->addList(tmp2);
-		sites->rewind();
-
-		assert(!sites->atEnd());
-		name = sites->get()->getName();
-		sites->step();
-		while(!sites->atEnd()){
-			name += "+" + sites->get()->getName();
-			sites->step();
-		}
-		delete tmp1;
-		delete tmp2;
-	}
+	SiteGroup(Site* s1, Site* s2);
 	virtual ~SiteGroup(){
 //		delete sites;	// list only PROBLEm
 		delete site1;
 		delete site2;
-	}
-	virtual bool have(Site* siteGroup){
-		List<Site*>* checkList = siteGroup->getList();
-
-		checkList->rewind();
-		while(!checkList->atEnd()){
-			Site* checkSite = checkList->get();
-			sites->rewind();
-			while(true){
-				if(sites->atEnd()){
-					return false;
-				}
-				if(sites->get() == checkSite){
-					break;
-				}
-				sites->step();
-			}
-			checkList->step();
-		}
-		// #########/
-		//delete checkList;
-	     return true;	
 	}
 	virtual List<Site*>* getList(){
 		List<Site *>* tmp = new List<Site *>;

@@ -34,10 +34,17 @@ bool Aggregates::isApplicable(){
 			int numArgs = args->cardinality();
 			const string* name = function->getName();
 			args->rewind();
-			if(*name == "min" && numArgs == 1){
-				isApplicableValue = true;
-				curr = args->get();
-				aggFuncs[i] = new MinAggregate();
+			if(*name == "min"){
+				if(numArgs == 1){
+					isApplicableValue = true;
+					curr = args->get();
+					aggFuncs[i] = new MinAggregate();
+				}
+				else if(numArgs == 3){
+					isApplicableValue = true;
+					curr = args->get();
+					aggFuncs[i] = new MovMinAggregate();
+				}
 			}
 			else if(*name == "max" && numArgs == 1){
 				isApplicableValue = true;
@@ -150,6 +157,12 @@ Iterator* Aggregates::createExec(){
 		return new StandGroupByExec(inputIter, aggExecs, numFlds,
 			positions, numGrpByFlds, aggPos, numAggs);
 	}
+	/*
+	else if(numSeqByFlds > 0){
+		return new MovAggsExec(inputIter, aggExecs, numFlds, seqByPos,
+			numSeqByFlds, aggPos, numAggs);
+	}
+	*/
 	else{ 
 		// No group by 
 		return new StandAggsExec(inputIter, aggExecs, numFlds);
