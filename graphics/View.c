@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/04/20 19:52:16  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.32  1996/04/19 19:07:02  wenger
   Changed exit(1) to Exit::DoExit(1).
 
@@ -448,6 +455,8 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
     _exposureRect.xHigh = MinMax::max(maxX1, maxX2);
     _exposureRect.yHigh = MinMax::max(maxY1, maxY2);
   }
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 /* Handle button press event */
@@ -576,6 +585,8 @@ void View::SetNumDimensions(int d)
   _numDimensions = d;
   _filterChanged = true;
   _updateTransform = true;
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 /* set override color */
@@ -588,6 +599,8 @@ void View::SetOverrideColor(Color color, Boolean active)
   _hasOverrideColor = active;
   _overrideColor = color;
   _filterChanged = true;
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 /* get area for displaying label */
@@ -1295,6 +1308,8 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   
   _updateTransform = true; /* need to update the transformation */
   
+  Dispatcher::InsertMarker(writeFd);
+
   /* XXX: abort current transaction if any */
 }
 
@@ -1343,6 +1358,8 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
 
   _updateTransform = true;
   _refresh = true;
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 void View::XAxisDisplayOnOff(Boolean stat)
@@ -1352,6 +1369,8 @@ void View::XAxisDisplayOnOff(Boolean stat)
     _updateTransform = true;
     _refresh = true;
   }
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 void View::YAxisDisplayOnOff(Boolean stat)
@@ -1361,6 +1380,8 @@ void View::YAxisDisplayOnOff(Boolean stat)
     _updateTransform  = true;
     _refresh = true;
   }
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 /* Find real window coords */
@@ -1495,6 +1516,7 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
 void View::Refresh()
 {
   _refresh = true;
+  Dispatcher::InsertMarker(writeFd);
 }
 
 void View::ReportViewCreated()
@@ -1592,6 +1614,8 @@ void View::ModeChange(ControlPanel::Mode mode)
     _refresh = true;
     _modeRefresh = true;
   }
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 void View::Highlight(Boolean flag)
