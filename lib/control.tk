@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.53  1996/01/23 20:49:59  jussi
+#	Added Visualize/Import. Split view-related procedures into
+#	separate file views.tcl. Split general utilities into
+#	file util.tcl. Split history-related procedures into file
+#	history.tcl.
+#
 #	Revision 1.52  1996/01/19 18:58:51  jussi
 #	Added ClearTopGroups.
 #
@@ -1771,6 +1777,9 @@ proc DupWindow {} {
     set newWin [UniqueName $win]
     set newParam [linsert [lrange $params 1 end] 0 $newWin]
     eval DEVise create window $class $newParam
+
+    set layout [DEVise getWindowLayout $win]
+    eval DEVise setWindowLayout {$newWin} $layout
 
     set views [DEVise getWinViews $win]
     
