@@ -239,6 +239,10 @@ Num Date        Status  Description
 070 11/14/96	OPEN	Load session test/dbc2.tk; toggling axes does not
 			work correctly.
 
+071 11/18/96	OPEN	In piled views with axes, the data from non-"top"
+			views sometimes overdraws the X axis and is drawn
+			to the left of the Y axis. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
