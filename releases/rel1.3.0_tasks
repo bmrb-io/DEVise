@@ -3,9 +3,26 @@
 
 x- Testing
 x- Bug fixing
-a- Update user manual
+- Build released software:
+    x- Build and release to /p/devise for standard architectures
+    x- Ask everyone to confirm that they don't have any other things that
+      need to go into the release.
+    - Test set_up_user.
+    - Untar dist.tar into /p/devise/dist
+    - Generate distribution files
+    - Test distribution files (re-run at least some of the user interface
+      tests on each architecure, running Devise untarred from the distribution
+      files).
+    - Tag sources (but not html and doc directories)
+    - Build on Linux
+    - Build on SGI
+	- Maybe commit SGI-related changes as a CVS branch
 !- Update online help
+a- Update user manual
 - Update web page
+- Tag html and doc directories
+- Release documentation and re-generate distribution files with up-to-date
+  documentation.
 - Put 1.3.0 release on FTP site
 
 x = done
