@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:42:18  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -44,6 +47,8 @@ menu .mbar.file.menu -tearoff 0
 .mbar.file.menu add command -label "New" -command {Server file new}
 .mbar.file.menu add command -label "Open..." -command {Server file open}
 .mbar.file.menu add command -label "Close" -command {Server file close}
+.mbar.file.menu add separator
+.mbar.file.menu add command -label "Print" -command {Server print}
 .mbar.file.menu add separator
 .mbar.file.menu add command -label "Exit" -command {Server exit; destroy .}
 

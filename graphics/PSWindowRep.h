@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/18 23:11:18  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.9  1996/11/13 16:56:10  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -128,10 +135,10 @@ public:
 
 #ifdef LIBCS
     /* Color selection interface using specific colors */
-    virtual void SetFgRGB(float r, float g, float b) {}
-    virtual void SetBgRGB(float r, float g, float b) {}
-    virtual void GetFgRGB(float &r, float &g, float &b) {}
-    virtual void GetBgRGB(float &r, float &g, float &b) {}
+    virtual void SetFgRGB(float r, float g, float b);
+    virtual void SetBgRGB(float r, float g, float b);
+    virtual void GetFgRGB(float &r, float &g, float &b);
+    virtual void GetBgRGB(float &r, float &g, float &b);
     virtual void SetWindowBgRGB(float r, float g, float b) {}
 #endif
 
@@ -226,7 +233,7 @@ protected:
     /* called by PSDisplay to create new window */
     PSWindowRep(DeviseDisplay *display,
                 GlobalColor fgndColor, GlobalColor bgndColor,
-                PSWindowRep *parent, int x, int y); 
+                PSWindowRep *parent, int x, int y, int width, int height); 
 
     /* Called to initialize this object -- must be called ONLY when
      * the output file is open -- therefore CANNOT be called by the
@@ -258,6 +265,11 @@ private:
 
     /* "Pixel" to point transform. */
     Transform2D _pixToPointTrans;
+
+#ifdef LIBCS
+    RgbVals _foreground;
+    RgbVals _background;
+#endif
 };
 
 #endif

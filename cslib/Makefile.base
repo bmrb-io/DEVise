@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/20 18:50:50  jussi
+#  Added Util.c.
+#
 #  Revision 1.2  1996/10/18 15:19:32  jussi
 #  Removed CompDate.o.
 #
@@ -48,7 +51,8 @@ LOCALOBJ += \
         XWindowRep.o \
         XDisplay.o \
         PSWindowRep.o \
-        PSDisplay.o
+        PSDisplay.o \
+	DualWindowRep.o
 
 LIBOBJ = \
         ../graphics/DevisePixmap.o \
@@ -74,8 +78,8 @@ all: client server
 
 pure: client.pure server.pure
 
-CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs $(ARCH_SYSLIBS)
-SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs $(ARCH_SYSLIBS)
+CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) client.o -L. -lcs $(ARCH_SYSLIBS)
+SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) server.o -L. -lcs $(ARCH_SYSLIBS)
 
 client: client.o $(LIB)
 	$(CLIENT) $(ARCH_LDPOST)
@@ -119,6 +123,9 @@ PSDisplay.o: ../../graphics/PSDisplay.c
 
 PSWindowRep.o: ../../graphics/PSWindowRep.c
 	$(CC) -c $(CFLAGS) ../../graphics/PSWindowRep.c
+
+DualWindowRep.o: ../../graphics/DualWindowRep.c
+	$(CC) -c $(CFLAGS) ../../graphics/DualWindowRep.c
 
 .PHONY: clean mostlyclean
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/21 19:13:46  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.7  1996/11/19 15:23:25  wenger
   Minor changes to fix compiles on HP, etc.
 
@@ -122,8 +126,13 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 {
   DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
 
+  /* Note: we may need to do some more thinking about what the dimensions
+   * mean for a PSWindowRep.  This is setting up the dimensions to be the
+   * same as the 'sibling' XWindowRep.  RKW 11/22/96. */
+  x = y = 0.0;
+
   return new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
-    (PSWindowRep *) parentRep, (int) x, (int) y);
+    (PSWindowRep *) parentRep, (int) x, (int) y, (int) width, (int) height);
 }
 
 /**************************************************************
@@ -190,9 +199,17 @@ void PSDisplay::PrintPSHeader()
   /* Print header info. */
   fprintf(_printFile, "%%!PS-Adobe-1.0\n");
 
-  /* Note: we may want to output a bounding box here. RKW 11/15/96. */
-//TEMPTEMP -- make bounding box the size of the page (minus the margin?)
-// for now
+  /* Note: bounding box should really be smaller than this, but this will
+   * do for a start. RKW 11/21/96. */
+  Coord width, height, xMargin, yMargin;
+  GetPageGeom(width, height, xMargin, yMargin);
+  Coord bbX1, bbY1, bbX2, bbY2;
+  bbX1 = xMargin;
+  bbY1 = yMargin;
+  bbX2 = xMargin + width;
+  bbY2 = yMargin + height;
+  fprintf(_printFile, "%%%%BoundingBox: %f %f %f %f\n", bbX1, bbY1, bbX2,
+    bbY2);
 
   char *userName = getenv("USER");
   if (userName == NULL) userName = "user unknown";

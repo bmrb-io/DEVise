@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/20 20:34:52  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.9  1996/11/18 23:11:17  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -104,7 +109,8 @@ Constructor.
 
 PSWindowRep::PSWindowRep(DeviseDisplay *display,
                           GlobalColor fgndColor, GlobalColor bgndColor,
-                          PSWindowRep *parent, int x, int y) :
+                          PSWindowRep *parent, int x, int y, int width,
+			  int height) :
 	WindowRep(display, fgndColor, bgndColor)
 {
 #if defined(DEBUG)
@@ -116,6 +122,20 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
 
   _x = x;
   _y = y;
+  _width = width;
+  _height = height;
+
+#ifdef LIBCS
+//TEMPTEMP -- for some reason, this writes past the end of the object
+// (according to Purify).  I think things will work without it for now.
+// RKW 11/22/96.
+#if 0 
+  ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
+    _foreground.blue);
+  ColorMgr::GetColorRgb(bgndColor, _background.red, _background.green,
+    _background.blue);
+#endif
+#endif
 }
 
 
@@ -135,6 +155,7 @@ void PSWindowRep::Init()
   SetCopyMode();
   WindowRep::SetPattern(Pattern0);
   SetNormalFont();
+//TEMPTEMP -- maybe this should clear the background like XWindowRep does
 }
 
 
@@ -323,12 +344,16 @@ void PSWindowRep::SetFgColor(GlobalColor fg)
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
   
-  float red, green, blue;
   //TEMPTEMP -- maybe this should go through the PSDisplay to be
   // consistent w/ X stuff
+  float red, green, blue;
   ColorMgr::GetColorRgb(fg, red, green, blue);
   fprintf(printFile, "%f %f %f setrgbcolor\n", red, green, blue);
-
+#ifdef LIBCS
+  _foreground.red = red;
+  _foreground.green = green;
+  _foreground.blue = blue;
+#endif
 #endif
 }
 
@@ -358,6 +383,54 @@ void PSWindowRep::SetWindowBgColor(GlobalColor bg)
   /* do something */
 #endif
 }
+
+
+#ifdef LIBCS
+
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::SetFgRGB(float r, float g, float b)
+{
+  _foreground.red = r;
+  _foreground.green = g;
+  _foreground.blue = b;
+
+#ifdef GRAPHICS
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+  
+  fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
+#endif
+}
+
+
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::SetBgRGB(float r, float g, float b)
+{
+  _background.red = r;
+  _background.green = g;
+  _background.blue = b;
+}
+
+
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::GetFgRGB(float &r, float &g, float &b)
+{
+  r = _foreground.red;
+  g = _foreground.green;
+  b = _foreground.blue;
+}
+
+
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::GetBgRGB(float &r, float &g, float &b)
+{
+  r = _background.red;
+  g = _background.green;
+  b = _background.blue;
+}
+
+#endif
 
 
 

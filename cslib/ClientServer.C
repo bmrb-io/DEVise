@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/18 15:19:43  jussi
+  Added CompDate class.
+
   Revision 1.1  1996/10/17 20:42:16  jussi
   Initial revision.
 */
@@ -443,13 +446,14 @@ void Server::CloseClient()
 
 WinServer::WinServer(char *name, int port) : Server(name, port)
 {
-  _display = DeviseDisplay::DefaultDisplay();
-  DOASSERT(_display, "Out of memory");
+  _screenDisp = DeviseDisplay::DefaultDisplay();
+  _fileDisp = DeviseDisplay::GetPSDisplay();
+  DOASSERT(_screenDisp, "Out of memory");
 }
 
 WinServer::~WinServer()
 {
-  delete _display;
+  delete _screenDisp;
 }
 
 void WinServer::MainLoop()
@@ -458,7 +462,7 @@ void WinServer::MainLoop()
     WaitForConnection();
 
     while(_clientFd >= 0) {
-      int wfd = _display->fd();
+      int wfd = _screenDisp->fd();
       fd_set fdset;
       memset(&fdset, 0, sizeof fdset);
       FD_SET(wfd, &fdset);
@@ -473,7 +477,7 @@ void WinServer::MainLoop()
       if (FD_ISSET(_clientFd, &fdset))
 	ReadCmd();
       else
-	_display->InternalProcessing();
+	_screenDisp->InternalProcessing();
     }
   }
 }

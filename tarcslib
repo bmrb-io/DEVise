@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/18 15:21:22  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -40,7 +43,8 @@ ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
         ../../graphics/Util.h ../../graphics/VisualArg.h \
         ../../graphics/WindowRep.h ../../graphics/XBitmap.h \
         ../../graphics/XDisplay.h ../../graphics/XWindowRep.h \
-        ../../graphics/Xdef.h ../../graphics/xv.h include
+        ../../graphics/Xdef.h ../../graphics/xv.h include \
+	../../graphics/DualWindowRep.h
 ln -s ../../graphics.new/ClientAPI.h ../../graphics.new/DeviseKey.h \
         ../../graphics.new/MapIntToInt.h ../../graphics.new/ParseAPI.h \
         ../../graphics.new/Version.h ../../graphics.new/missing.h include

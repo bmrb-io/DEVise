@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.75  1996/11/20 20:34:57  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.74  1996/11/18 23:11:22  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -520,6 +525,9 @@ XWindowRep::XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
   // clear all pixels in pixmap
   SetFgColor(bgndColor);
   XFillRectangle(_display, _pixmap, _gc, 0, 0, _width, _height);
+
+  SetFgColor(fgndColor);
+  SetBgColor(bgndColor);
 }
 
 void XWindowRep::Init()
@@ -537,6 +545,7 @@ void XWindowRep::Init()
 
   _gc = XCreateGC(_display, DRAWABLE, 0, NULL);
   SetCopyMode();
+  SetLineWidth(0);
 
   _rectGc = XCreateGC(_display, DRAWABLE, 0, NULL);
   XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
@@ -999,6 +1008,9 @@ void XWindowRep::SetFgColor(GlobalColor fg)
 #endif
 
   WindowRep::SetFgColor(fg);
+#ifdef LIBCS
+  _rgbForeground = WindowRep::GetLocalColor(fg);
+#endif
 #ifdef GRAPHICS
   if (_dispGraphics)
     XSetForeground(_display, _gc, WindowRep::GetLocalColor(fg));
@@ -1012,6 +1024,9 @@ void XWindowRep::SetBgColor(GlobalColor bg)
 #endif
 
   WindowRep::SetBgColor(bg);
+#ifdef LIBCS
+  _rgbBackground = WindowRep::GetLocalColor(bg);
+#endif
 #ifdef GRAPHICS
   if (_dispGraphics)
     XSetBackground(_display, _gc, WindowRep::GetLocalColor(bg));

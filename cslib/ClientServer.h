@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/18 15:19:44  jussi
+  Added CompDate class.
+
   Revision 1.1  1996/10/17 20:42:17  jussi
   Initial revision.
 */
@@ -142,7 +145,8 @@ class WinServer : public Server, public WindowRepCallback {
      that window has been iconified) */
   virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped) {}
 
-  DeviseDisplay *_display;              // display
+  DeviseDisplay *_screenDisp;            // display to draw to screen
+  DeviseDisplay *_fileDisp;              // display to draw to file
 };
 
 #endif

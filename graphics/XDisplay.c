@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/18 23:11:21  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.41  1996/11/13 16:56:17  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -636,6 +643,9 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, LocalColor &c,
 			       float &error)
 {
+#if defined(DEBUG)
+  printf("XDisplay::ClosestColor()\n");
+#endif
   if (XAllocColor(_display, map, &color)) {
     c = color.pixel;
     error = 0.0;
@@ -878,6 +888,9 @@ void XDisplay::FindLocalColor(GlobalColor c, float &r, float &g, float &b)
 
 void XDisplay::FindLocalColor(LocalColor c, float &r, float &g, float &b)
 {
+#if defined(DEBUG)
+  printf("XDisplay::FindLocalColor(%d)\n", c);
+#endif
   XColor color;
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
   color.pixel = c;
