@@ -85,7 +85,8 @@ export DEVISE_EXEC
 #
 $DEVISE_EXEC $* -logLevel 4 -jscache 1 2>&1 >> $outfile &
 
-pidfile="devised_pid.$idStr.$!"
+host=`hostname`
+pidfile="devised_pid:$idStr:$host:$!"
 touch $pidfile
 wait $!
 rm $pidfile

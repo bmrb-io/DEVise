@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  2001/06/08 17:38:01  wenger
+#  Sh on pumori didn't like previous versions.
+#
 #  Revision 1.23  2001/06/08 15:52:19  wenger
 #  Implemented non-ps-based JSPoP/JSS/DEVised checking.
 #
@@ -139,11 +142,12 @@ then
 fi
 
 idStr=""
-pidfile="jspop_pid.*.*"
+host=`hostname`
+pidfile="jspop_pid:*:$host:*"
 if [ $# = 1 ]
 then
   idStr=$1
-  pidfile="jspop_pid.$1.*"
+  pidfile="jspop_pid:$1:$host:*"
 fi
 
 

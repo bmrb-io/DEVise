@@ -58,7 +58,8 @@ touch $outfile
 #
 java JavaScreen.jspop -debug $* 2>&1 >> $outfile &
 
-pidfile="jspop_pid.$idStr.$!"
+host=`hostname`
+pidfile="jspop_pid:$idStr:$host:$!"
 touch $pidfile
 wait $!
 rm $pidfile

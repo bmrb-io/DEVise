@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2001/06/08 16:49:18  wenger
+#  Can't use wait the way I was trying to.
+#
 #  Revision 1.6  2001/06/08 15:52:20  wenger
 #  Implemented non-ps-based JSPoP/JSS/DEVised checking.
 #
@@ -64,13 +67,14 @@ then
   exit 1
 fi
 
-pidfile="jss_pid.*.*"
+host=`hostname`
+pidfile="jss_pid:*:$host:*"
 if [ $# = 1 ]
 then
-  pidfile="jss_pid.$1.*"
+  pidfile="jss_pid:$1:$host:*"
 fi
 
-pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
+pids=`ls $pidfile 2> /dev/null | cut -d':' -f4`
 
 for pid in $pids
 do

@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2001/06/08 17:38:01  wenger
+#  Sh on pumori didn't like previous versions.
+#
 #  Revision 1.8  2001/06/08 15:52:19  wenger
 #  Implemented non-ps-based JSPoP/JSS/DEVised checking.
 #
@@ -72,10 +75,11 @@ fi
 #
 # Check for the JSS itself.
 #
-pidfile="jss_pid.*.*"
+host=`hostname`
+pidfile="jss_pid:*:$host:*"
 if [ $# = 1 ]
 then
-  pidfile="jss_pid.$1.*"
+  pidfile="jss_pid:$1:$host:*"
 fi
 
 # Check for appropriate pid file to see if a jss process exists.
@@ -91,10 +95,10 @@ done
 #
 # Check for DEVised(s).
 #
-pidfile="devised_pid.*.*"
+pidfile="devised_pid:*:$host:*"
 if [ $# = 1 ]
 then
-  pidfile="devised_pid.$1.*"
+  pidfile="devised_pid:$1:$host:*"
 fi
 
 # Check for appropriate pid file to see if a devised process exists.

@@ -77,7 +77,8 @@ touch $doutfile
 
 java JavaScreen.jss -debug $* 2>&1 >> $joutfile &
 
-pidfile="jss_pid.$idStr.$!"
+host=`hostname`
+pidfile="jss_pid:$idStr:$host:$!"
 touch $pidfile
 wait $!
 rm $pidfile
