@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2000/02/16 08:53:58  hongyu
+// *** empty log message ***
+//
 // Revision 1.44  2000/01/12 14:37:48  hongyu
 // *** empty log message ***
 //
@@ -218,6 +221,14 @@ public class DEViseScreen extends Panel
         isDimChanged = true;
 
         repaint();
+    }
+
+    public synchronized void showAllHelp()
+    {
+        //String cmd = "";
+        //for (int i = 0; i < allCanvas.size(); i++) {
+        //    DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
+        //    "JAVAC_GetViewHelp " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY
     }
 
     public void addView(DEViseView view)

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2000/02/22 15:26:39  wenger
+// Commented out debug output.
+//
 // Revision 1.32  2000/02/22 10:00:38  hongyu
 // *** empty log message ***
 //
@@ -27,6 +30,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.33  2000/02/22 15:26:39  wenger
+// Commented out debug output.
+//
 // Revision 1.32  2000/02/22 10:00:38  hongyu
 // *** empty log message ***
 //
@@ -280,6 +286,13 @@ public class DEViseCanvas extends Container
     {
         if (helpMsg == null) {
             return;
+        }
+
+        if (helpMsgX < 0) {
+            helpMsgX = 0;
+        }
+        if (helpMsgY < 0) {
+            helpMsgY = 0;
         }
 
         Toolkit tk = Toolkit.getDefaultToolkit();
@@ -837,7 +850,6 @@ public class DEViseCanvas extends Container
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
                     DEViseCursor cursor= selectedCursor;
 
-                    if (whichCursorSide == 0) { // move cursor
                         if (cursor.gridx > 0) {
                             dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
                         }
@@ -845,6 +857,14 @@ public class DEViseCanvas extends Container
                         if (cursor.gridy > 0) {
                             dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
                         }
+                    if (whichCursorSide == 0) { // move cursor
+                        //if (cursor.gridx > 0) {
+                        //    dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                        //}
+
+                        //if (cursor.gridy > 0) {
+                        //    dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                        //}
 
                         whichCursorSide = cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, true);
                     } else {
@@ -1013,7 +1033,6 @@ public class DEViseCanvas extends Container
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
 
-                    if (whichCursorSide == 0) { // move cursor
                         if (cursor.gridx > 0) {
                             dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
                         }
@@ -1021,6 +1040,14 @@ public class DEViseCanvas extends Container
                         if (cursor.gridy > 0) {
                             dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
                         }
+                    if (whichCursorSide == 0) { // move cursor
+                        //if (cursor.gridx > 0) {
+                        //    dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                        //}
+
+                        //if (cursor.gridy > 0) {
+                        //    dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                        //}
 
                         whichCursorSide = cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, false);
                     } else {

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2000/01/19 20:41:12  hongyu
+// *** empty log message ***
+//
 // Revision 1.53  1999/10/10 19:59:26  hongyu
 // *** empty log message ***
 //
@@ -68,6 +71,7 @@ public class jsdevisec extends Panel
     private Button setButton = new Button("Option");
     private Button exitButton = new Button("Exit");
     private Button filterButton = new Button("Filter");
+    private Button helpButton = new Button("Help");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -147,18 +151,20 @@ public class jsdevisec extends Panel
 
         Component[] button = null;
         if (DEViseGlobals.inBrowser) {
-            button = new Component[2];
+            button = new Component[3];
             button[0] = restartButton;
             button[1] = stopButton;
+            button[2] = helpButton;
         } else {
-            button = new Component[7];
+            button = new Component[8];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
             button[3] = restartButton;
             button[4] = setButton;
-            button[5] = exitButton;
-            button[6] = filterButton;
+            button[5] = filterButton;
+            button[6] = helpButton;
+            button[7] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button, "Horizontal", 5, 1);
@@ -279,6 +285,18 @@ public class jsdevisec extends Panel
                         }
 
                         dispatcher.start("JAVAC_ResetFilters");
+                    }
+                });
+        helpButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (!isSessionOpened) {
+                            showMsg("You do not have any opened session!");
+                            return;
+                        }
+
+                        jscreen.showAllHelp();
                     }
                 });
 

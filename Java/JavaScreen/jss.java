@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/02/22 10:00:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.7  2000/02/18 22:21:18  wenger
 // Various changes to make cron scripts work better with new two-machine
 // setup: added -id argument to devise, jspop, jss; updated cron scripts
@@ -184,8 +187,9 @@ public class jss implements Runnable
             Socket socket = null;
             try {
                 socket = jssServerSocket.accept();
-                hostname = socket.getInetAddress().getHostName();
-                if (hostname.equals(jspopAddress.getHostName())) {
+                InetAddress addr = socket.getInetAddress();
+                hostname = addr.getHostName();
+                if (addr.getHostAddress().equals(jspopAddress.getHostAddress())) {
                     System.out.println("Connection request from " + hostname + " is accepted ...");
                     try {
                         jspopIS = new DataInputStream(socket.getInputStream());
@@ -223,7 +227,7 @@ public class jss implements Runnable
                         socket = null;
                     }
                 } else {
-                    System.out.println("Connection request from " + hostname + " is rejected ...");
+                    System.out.println("JSPOP Host is " + jspopAddress.getHostName() + "\nConnection request from " + hostname + " is rejected ...");
                     try {
                         socket.close();
                     } catch (IOException exception) {
