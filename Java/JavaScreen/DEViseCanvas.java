@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2000/07/11 16:39:18  venkatan
+// *** empty log message ***
+//
 // Revision 1.53  2000/07/10 12:26:02  venkatan
 // *** empty log message ***
 //
@@ -122,6 +125,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.54  2000/07/11 16:39:18  venkatan
+// *** empty log message ***
+//
 // Revision 1.53  2000/07/10 12:26:02  venkatan
 // *** empty log message ***
 //
@@ -307,7 +313,8 @@ public class DEViseCanvas extends Container
     private Image offScrImg = null;
     private boolean isImageUpdated = false;
 
-    boolean isMouseDragged = false, isInViewDataArea = false, isInDataArea = false;
+    private boolean isMouseDragged = false, isInViewDataArea = false,
+      isInDataArea = false;
     private DEViseCursor selectedCursor = null;
 
     // See DEViseCursor.side* for values.
@@ -818,6 +825,28 @@ public class DEViseCanvas extends Container
             char keyChar = event.getKeyChar();
             int keyCode = event.getKeyCode();
 
+	    // F1 key shows or hides view help.
+            if (keyCode == KeyEvent.VK_F1) {
+                if (helpMsg != null) {
+	            //
+	            // Hide existing help message shown within view.
+	            //
+                    helpMsg = null;
+	            repaint();
+                } else {
+	            //
+	            // Show this view's help within a dialog box.
+	            //
+                    DEViseGlobals.helpBox = true;
+                    String cmd = DEViseCommands.GET_VIEW_HELP + " " +
+		      activeView.getCurlyName() + " " + helpMsgX + " "
+		      + helpMsgY;
+                    jscreen.guiAction = true;
+                    dispatcher.start(cmd);
+                }
+                return;
+            }
+
             if (view.viewDimension == 3) {
 		if ((keyChar == 'r' || keyChar == 'R') && crystal != null) {
                     crystal.totalShiftedX = 0;
@@ -954,7 +983,8 @@ public class DEViseCanvas extends Container
         {
             if (_debug >= 1) {
                 System.out.println(
-		  "DEViseCanvas.ViewMouseListener.mousePressed()");
+		  "DEViseCanvas(" + view.viewName +
+		    ").ViewMouseListener.mousePressed()");
             }
 
 	    // Bug fix -- see notes at variable declaration.
@@ -994,7 +1024,8 @@ public class DEViseCanvas extends Container
         {
 	    if (_debug >= 1) {
 	        System.out.println(
-		  "DEViseCanvas.ViewMouseListener.mouseReleased()");
+		  "DEViseCanvas(" + view.viewName +
+		    ").ViewMouseListener.mouseReleased()");
 	    }
 
 	    // Bug fix -- see notes at variable declaration.
@@ -1085,7 +1116,8 @@ public class DEViseCanvas extends Container
         {
             if (_debug >= 1) {
                 System.out.println(
-		  "DEViseCanvas.ViewMouseListener.mouseClicked()");
+		  "DEViseCanvas(" + view.viewName +
+		    ").ViewMouseListener.mouseClicked()");
             }
 
             if (view.viewDimension == 3) {
@@ -1096,21 +1128,13 @@ public class DEViseCanvas extends Container
                 String cmd = null;
                 Point p = event.getPoint();
 
-                if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
-		// modified - Ven 
-                        helpMsg = null;
-                        DEViseGlobals.helpBox = true;
-                        cmd = DEViseCommands.GET_VIEW_HELP + " " +
-			  activeView.getCurlyName() + " " + helpMsgX + " "
-			  + helpMsgY;
-                } else if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
+                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
 		    if (activeView.isDrillDown) {
                         cmd = DEViseCommands.SHOW_RECORDS + " " +
 			  activeView.getCurlyName() + " " +
 			  activeView.translateX(p.x, 2) + " " +
 			  activeView.translateY(p.y, 2);
 		    }
-		    
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();
 
