@@ -11,6 +11,7 @@ limit descriptors 256
 setenv DEVISE_ROOT    /p/devise
 
 setenv DEVISE_DAT     $DEVISE_ROOT/dat
+setenv DEVISE_HOME_TABLE $DEVISE_ROOT/schema/schema/catalog.dte
 setenv DEVISE_CACHE   /tmp
 setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
 setenv DEVISE_SESSION $DEVISE_ROOT/session

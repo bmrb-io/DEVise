@@ -10,6 +10,7 @@ limit descriptors 256
 
 setenv DEVISE_ROOT    /p/devise
 
+setenv DEVISE_HOME_TABLE $DEVISE_ROOT/schema/schema/catalog.dte
 setenv DEVISE_CACHE   $DEVISE_ROOT/cache
 setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work

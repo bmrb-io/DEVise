@@ -8,6 +8,7 @@
 setenv DEVISE_ROOT    /p/devise
 
 setenv DEVISE_DAT     ./dat
+setenv DEVISE_HOME_TABLE ./schema/schema/catalog.dte
 setenv DEVISE_CACHE   ./cache
 setenv DEVISE_SCHEMA  ./schema/schema
 setenv DEVISE_SESSION ./session
