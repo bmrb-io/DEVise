@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/19 14:37:46  jussi
+  Removed extra code.
+
   Revision 1.29  1996/07/19 13:27:27  jussi
   Fixed handling of stored points in LineShape.
 
@@ -564,8 +567,8 @@ public:
                 * GetShapeAttr0(gdata, map, offset);
       Coord h = GetSize(gdata, map, offset)
                 * GetShapeAttr1(gdata, map, offset);
-      Coord x = GetX(gdata, map, offset);
-      Coord y = GetY(gdata, map, offset);
+      Coord x = GetX(gdata, map, offset) - w / 2;
+      Coord y = GetY(gdata, map, offset) - h / 2;
       Color color = GetColor(view, gdata, map, offset);
       if (color == XorColor)
         win->SetXorMode();
@@ -675,8 +678,8 @@ public:
     for(int i = 0; i < numSyms; i++) {
       // double the width and height because segment starts at
       // at (X,Y) and is not centered at (X,Y)
-          Coord w = 2 * GetSize(ptr, map, offset)
-                      * GetShapeAttr0(ptr, map, offset);
+      Coord w = 2 * GetSize(ptr, map, offset)
+                  * GetShapeAttr0(ptr, map, offset);
       Coord h = 2 * GetSize(ptr, map, offset)
                   * GetShapeAttr1(ptr, map, offset);
       if (w > width) width = w;
@@ -726,8 +729,8 @@ public:
                 * GetShapeAttr0(gdata, map, offset);
       Coord h = GetSize(gdata, map, offset)
                 * GetShapeAttr1(gdata, map, offset);
-      Coord x = GetX(gdata, map, offset);
-      Coord y = GetY(gdata, map, offset);
+      Coord x = GetX(gdata, map, offset) - w / 2;
+      Coord y = GetY(gdata, map, offset) - h / 2;
       Color color = GetColor(view, gdata, map, offset);
       if (color == XorColor)
         win->SetXorMode();
@@ -739,6 +742,11 @@ public:
         win->SetCopyMode();
     }
   }
+
+protected:
+  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
+                                int numSyms, TDataMap *map,
+                                ViewGraph *view, int pixelSize);
 };
 
 // -----------------------------------------------------------------
@@ -1229,7 +1237,8 @@ public:
         Coord xp, yp;
         Color cp;
         if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
-            DrawConnectingLine(win, GetPattern(gdata, map, offset),
+            DrawConnectingLine(win, view,
+                               GetPattern(gdata, map, offset),
                                xp, yp, cp, x0, y0, c0);
             (void)view->GetPointStorage()->Remove(recId - 1);
         } else {
@@ -1244,7 +1253,8 @@ public:
         Coord x = GetX(gdata, map, offset);
         Coord y = GetY(gdata, map, offset);
         Color color = GetColor(view, gdata, map, offset);
-        DrawConnectingLine(win, GetPattern(gdata, map, offset),
+        DrawConnectingLine(win, view,
+                           GetPattern(gdata, map, offset),
                            x0, y0, c0, x, y, color);
         x0 = x;
         y0 = y;
@@ -1257,14 +1267,16 @@ public:
     Coord xn, yn;
     Color cn;
     if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
-        DrawConnectingLine(win, Pattern0, x0, y0, c0, xn, yn, cn);
+        DrawConnectingLine(win, view,
+                           Pattern0, x0, y0, c0, xn, yn, cn);
         (void)view->GetPointStorage()->Remove(recId + numSyms);
     } else {
         view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
     }
   }
 
-  virtual void DrawConnectingLine(WindowRep *win, Pattern pattern,
+  virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
+                                  Pattern pattern,
                                   Coord x0, Coord y0, Color c0,
                                   Coord x1, Coord y1, Color c1) {
       win->SetPattern(pattern);
@@ -1314,9 +1326,19 @@ public:
     }
   }
   
-  virtual void DrawConnectingLine(WindowRep *win, Pattern pattern,
+  virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
+                                  Pattern pattern,
                                   Coord x0, Coord y0, Color c0,
                                   Coord x1, Coord y1, Color c1) {
+      /* clip top of shape with filter (filled polygons are
+         really slow if y0 or y1 is far outside of the screen */
+      VisualFilter filter;
+      view->GetVisualFilter(filter);
+      y0 = MIN(filter.yHigh, y0);
+      y1 = MIN(filter.yHigh, y1);
+      y0 = MAX(filter.yLow, y0);
+      y1 = MAX(filter.yLow, y1);
+
       win->SetPattern(pattern);
       if (c0 == XorColor)
           win->SetXorMode();
@@ -1326,6 +1348,13 @@ public:
       Point points[4];
 
       if (c0 == c1) {
+          if (y0 == y1) {
+              /* area is a rectangle -- optimize for speed */
+              win->FillRect(x0, 0, x1 - x0, y0);
+              if (c0 == XorColor)
+                  win->SetCopyMode();
+              return;
+          }
           points[0].x = x0;
           points[0].y = y0;
           points[1].x = x1;
@@ -1340,15 +1369,20 @@ public:
           return;
       }
 
-      points[0].x = x0;
-      points[0].y = y0;
-      points[1].x = (x0 + x1) / 2;
-      points[1].y = (y0 + y1) / 2;
-      points[2].x = (x0 + x1) / 2;
-      points[2].y = 0;
-      points[3].x = x0;
-      points[3].y = 0;
-      win->FillPoly(points, 4);
+      if (y0 == y1) {
+          /* area is a rectangle -- optimize for speed */
+          win->FillRect(x0, 0, (x1 - x0) / 2, y0);
+      } else {
+          points[0].x = x0;
+          points[0].y = y0;
+          points[1].x = (x0 + x1) / 2;
+          points[1].y = (y0 + y1) / 2;
+          points[2].x = (x0 + x1) / 2;
+          points[2].y = 0;
+          points[3].x = x0;
+          points[3].y = 0;
+          win->FillPoly(points, 4);
+      }
       if (c0 == XorColor)
           win->SetCopyMode();
 
@@ -1356,15 +1390,21 @@ public:
           win->SetXorMode();
       else
           win->SetFgColor(c1);
-      points[0].x = (x0 + x1) / 2;
-      points[0].y = (y0 + y1) / 2;
-      points[1].x = x1;
-      points[1].y = y1;
-      points[2].x = x1;
-      points[2].y = 0;
-      points[3].x = (x0 + x1) / 2;
-      points[3].y = 0;
-      win->FillPoly(points, 4);
+
+      if (y0 == y1) {
+          /* area is a rectangle -- optimize for speed */
+          win->FillRect((x0 + x1) / 2, 0, (x1 - x0) / 2, y0);
+      } else {
+          points[0].x = (x0 + x1) / 2;
+          points[0].y = (y0 + y1) / 2;
+          points[1].x = x1;
+          points[1].y = y1;
+          points[2].x = x1;
+          points[2].y = 0;
+          points[3].x = (x0 + x1) / 2;
+          points[3].y = 0;
+          win->FillPoly(points, 4);
+      }
       if (c1 == XorColor)
           win->SetCopyMode();
   }

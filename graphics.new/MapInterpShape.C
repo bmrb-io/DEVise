@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/19 03:23:37  jussi
+  Added LineShape and LineShadeShape.
+
   Revision 1.8  1996/07/15 21:32:07  jussi
   Added support for the 'size' gdata parameter.
 
@@ -50,68 +53,101 @@
 
 //#define DEBUG
 
-// uncomment the following line if you want blocks drawn with wire
-// frames, otherwise you'll get solid shapes
-//#define WIRE_FRAME
-
 void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
                                              void **gdataArray,
                                              int numSyms, TDataMap *map,
                                              ViewGraph *view, int pixelSize)
 {
-  GDataAttrOffset *offset = map->GetGDataOffset();
+    GDataAttrOffset *offset = map->GetGDataOffset();
 
-  for(int i = 0; i < numSyms; i++) {
-    char *gdata = (char *)gdataArray[i];
+    Boolean wireframe = !view->GetSolid3D();
+
+    for(int i = 0; i < numSyms; i++) {
+        char *gdata = (char *)gdataArray[i];
     
-    Coord size = GetSize(gdata, map, offset);
+        Coord size = GetSize(gdata, map, offset);
 
-    block_data[i].pt.x_ = GetX(gdata, map, offset);
-    block_data[i].pt.y_ = GetY(gdata, map, offset);
-    block_data[i].pt.z_ = GetZ(gdata, map, offset);
-    block_data[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
-    block_data[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
-    block_data[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
-    block_data[i].color = GetColor(view, gdata, map, offset);
+        _object3D[i].pt.x_ = GetX(gdata, map, offset);
+        _object3D[i].pt.y_ = GetY(gdata, map, offset);
+        _object3D[i].pt.z_ = GetZ(gdata, map, offset);
+        _object3D[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
+        _object3D[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
+        _object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
+        _object3D[i].color = GetColor(view, gdata, map, offset);
 
-    Map3D::AssignBlockVertices(block_data[i]);
-#ifdef WIRE_FRAME
-    Map3D::AssignBlockEdges(block_data[i]);
-#else
-    Map3D::AssignBlockSides(block_data[i]);
-#endif
+        Map3D::AssignBlockVertices(_object3D[i]);
+        if (wireframe)
+            Map3D::AssignBlockEdges(_object3D[i]);
+        else
+            Map3D::AssignBlockSides(_object3D[i]);
 
 #ifdef DEBUG
-    cout << "sym " << i << " of " << numSyms << endl
-         << "  x = " << block_data[i].pt.x_
-	 << "  y = " << block_data[i].pt.y_
-	 << "  z = " << block_data[i].pt.z_ << endl;
-    for(int j = 0; j < BLOCK_VERTEX; j++) {
-      cout << "  "
-	   << block_data[i].vt[j].x_ << "  "
-	   << block_data[i].vt[j].y_ << "  "
-	   << block_data[i].vt[j].z_ << endl;
+        cout << "sym " << i << " of " << numSyms << endl
+             << "  x = " << _object3D[i].pt.x_
+             << "  y = " << _object3D[i].pt.y_
+             << "  z = " << _object3D[i].pt.z_ << endl;
+        for(int j = 0; j < BLOCK_VERTEX; j++) {
+            cout << "  "
+                 << _object3D[i].vt[j].x_ << "  "
+                 << _object3D[i].vt[j].y_ << "  "
+                 << _object3D[i].vt[j].z_ << endl;
+        }
+#endif
     }
-#endif
-  }
 
-  // get width and height of 3D display area
-  int x, y, w, h;
-  view->GetDataArea(x, y, w, h);
+    // get width and height of 3D display area
+    int x, y, w, h;
+    view->GetDataArea(x, y, w, h);
 
-  // map blocks to points, segments, and planes
-  Map3D::MapBlockPoints(win, block_data, numSyms, view->GetCamera(), w, h);
-#ifdef WIRE_FRAME
-  Map3D::MapBlockSegments(win, block_data, numSyms, view->GetCamera(), w, h);
-#else
-  Map3D::MapBlockPlanes(win, block_data, numSyms, view->GetCamera(), w, h);
-#endif
+    // clip blocks
+    Map3D::ClipBlocks(win, _object3D, numSyms, view->GetCamera(), w, h);
 
-  // draw blocks
-#ifdef WIRE_FRAME
-  win->SetFgColor(BlackColor);
-  Map3D::DrawSegments(win);
-#else
-  Map3D::DrawPlanes(win);
+    // map blocks to points, segments, and planes and then draw them
+    if (wireframe) {
+        Map3D::MapBlockSegments(win, _object3D, numSyms,
+                                view->GetCamera(), w, h);
+        Map3D::DrawSegments(win);
+    } else {
+        Map3D::MapBlockPlanes(win, _object3D, numSyms,
+                              view->GetCamera(), w, h);
+        Map3D::DrawPlanes(win);
+    }
+}
+
+void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
+                                                void **gdataArray,
+                                                int numSyms, TDataMap *map,
+                                                ViewGraph *view, int pixelSize)
+{
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    for(int i = 0; i < numSyms; i++) {
+        char *gdata = (char *)gdataArray[i];
+    
+        Coord size = GetSize(gdata, map, offset);
+
+        _object3D[i].pt.x_ = GetX(gdata, map, offset);
+        _object3D[i].pt.y_ = GetY(gdata, map, offset);
+        _object3D[i].pt.z_ = GetZ(gdata, map, offset);
+        _object3D[i].W = size * GetShapeAttr0(gdata, map, offset);
+        _object3D[i].H = size * GetShapeAttr1(gdata, map, offset);
+        _object3D[i].D = size * GetShapeAttr2(gdata, map, offset);
+        _object3D[i].color = GetColor(view, gdata, map, offset);
+
+#ifdef DEBUG
+        cout << "sym " << i << " of " << numSyms << endl
+             << "  x = " << _object3D[i].pt.x_
+             << "  y = " << _object3D[i].pt.y_
+             << "  z = " << _object3D[i].pt.z_ << endl;
 #endif
+    }
+
+    // get width and height of 3D display area
+    int x, y, w, h;
+    view->GetDataArea(x, y, w, h);
+
+    // clip, map, and draw segments
+    Map3D::ClipLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
+    Map3D::MapLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
+    Map3D::DrawSegments(win);
 }
