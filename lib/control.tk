@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.106  1996/12/27 17:00:38  wenger
+#	Got latest code to compile for sun, solsparc, and hp; updated dependencies;
+#	changed 'Import' to 'New Table' in main window GUI to reflect change of
+#	function.
+#
 #	Revision 1.105  1996/12/27 14:59:44  donjerko
 #	Import button is used only for importing new streams.
 #	Added a button "Display" in the import window that immediately goes to
@@ -420,7 +425,7 @@ set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {13 Line} {14 {Line Shade}} \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
         {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
-	{11 {Polyline File}} {12 {Text Label}}}
+	{11 {Polyline File}} {12 {Text Label}} {15 {Tcl/Tk Window}}}
 
 # global variables:
 # restoring: true if restoring session or template
