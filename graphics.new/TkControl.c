@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/05/07 16:38:16  jussi
+  Made changes to reflect the new interface with Action/ActionDefault.
+  Action is now a member variable of ViewGraph, not View.
+
   Revision 1.46  1996/04/22 21:38:07  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -232,16 +236,6 @@ ControlPanel *GetTkControl()
   return new TkControlPanel();
 }
 
-/* bitmap for control panel */
-/*
-#define idle_width 16
-#define idle_height 16
-static char idle_bits[] = {
-   0xff, 0x01, 0xff, 0x01, 0x1f, 0x00, 0x3f, 0x00, 0x7f, 0x00, 0xfb, 0x00,
-   0xf3, 0x01, 0xe3, 0x03, 0xc3, 0x07, 0x80, 0x0f, 0x00, 0x1f, 0x00, 0x3e,
-   0x00, 0x7c, 0x00, 0xf8, 0x00, 0xf0, 0x00, 0xe0};
-*/
-
 TkControlPanel::TkControlPanel()
 {
   _interpProto = new MapInterpClassInfo();
@@ -249,27 +243,8 @@ TkControlPanel::TkControlPanel()
   View::InsertViewCallback(this);
 
   _busy = false;
-  _restoring = false;
-  _template = false;
-
-  _fileName = (char *)malloc(1);
-  _fileName[0] = '\0';
-  _fileAlias = (char *)malloc(1);
-  _fileAlias[0] = '\0';
-
-  _winName = (char *)malloc(1);
-  _winName[0] = '\0';
-  _gdataName = (char *)malloc(1);
-  _gdataName[0] = '\0';
-  _viewName = (char *)malloc(1);
-  _viewName[0] = '\0';
-  _sessionName = CopyString(Init::SessionName());
   _argv0 = CopyString(Init::ProgName());
 
-  /* register with dispatcher to be always informed of when to run */
-  Dispatcher::Current()->Register(this, AllState, true);
-
-  /* Create a new interpreter */
   _interp = Tcl_CreateInterp();
   _mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
   if (_mainWindow == NULL) {
@@ -284,27 +259,19 @@ TkControlPanel::TkControlPanel()
   ControlPanelMainWindow = _mainWindow;
 #endif
 
-  /* Init tcl and tk */
   if (Tcl_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr,"can't init tcl in TkControl.c\n");
+    fprintf(stderr,"Cannot initialize Tcl.\n");
     Exit::DoExit(1);
   }
   if (Tk_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr,"can't init tk in TkControl.c\n");
+    fprintf(stderr,"Cannot initialize Tk.\n");
     Exit::DoExit(1);
   }
 
-  /*
-     if (Tk_DefineBitmap(_interp,
-     Tk_GetUid("idle"), idle_bits, idle_width,idle_height)
-     == TCL_ERROR) {
-     fprintf(stderr,"TkControlPanel::can't init bitmap\n");
-     Exit::DoExit(1);
-     }
-     */
+  /* register with dispatcher to be always informed of when to run */
+  Dispatcher::Current()->Register(this, AllState, true);
 }
 
-/* start session */
 void TkControlPanel::StartSession()
 {
   printf("DEVise Data Visualization Software\n");
@@ -313,15 +280,7 @@ void TkControlPanel::StartSession()
   printf("All Rights Reserved.\n");
   printf("\n");
 
-  Tcl_LinkVar(_interp, "fileName", (char *)&_fileName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "fileAlias", (char *)&_fileAlias, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "gdataName", (char *)&_gdataName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "windowName", (char *) &_winName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "viewName", (char *) &_viewName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "sessionName", (char *)&_sessionName, TCL_LINK_STRING);
   Tcl_LinkVar(_interp, "argv0", (char *)&_argv0, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp, "restoring", (char *)&_restoring, TCL_LINK_INT);
-  Tcl_LinkVar(_interp, "template", (char *)&_template, TCL_LINK_INT);
 
   /* Create a new tcl command for control panel */
   Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
@@ -364,25 +323,16 @@ void TkControlPanel::StartSession()
 
   if (Init::Restore()) {
     /* restore session */
-    _restoring = true;
-    int code = Tcl_EvalFile(_interp,_sessionName);
-    _restoring = false;
+    Tcl_SetVar(_interp,"restoring","1",0);
+    char *sessionName = Init::SessionName();
+    int code = Tcl_EvalFile(_interp,sessionName);
+    Tcl_SetVar(_interp,"restoring","0",0);
     if (code != TCL_OK) {
-      fprintf(stderr,"Can't restore session file %s\n",_sessionName);
+      fprintf(stderr,"Can't restore session file %s\n",sessionName);
       fprintf(stderr,"%s\n", _interp->result);
       Exit::DoExit(1);
     }
   }
-}
-
-char * TkControlPanel::SessionName()
-{
-  return _sessionName;
-}
-void TkControlPanel::SetSessionName(char *name)
-{
-  /*XXX: This is a memory leak */
-  _sessionName = CopyString(name);
 }
 
 inline void MakeReturnVals(Tcl_Interp *interp, int numArgs, char **args)
@@ -397,16 +347,32 @@ ControlPanel::Mode TkControlPanel::GetMode()
   return _mode;
 }
 
-Boolean TkControlPanel::Restoring()
-{
-  return _restoring;
-}
-
 void TkControlPanel::DoAbort(char *reason)
 {
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
   (void)Tcl_Eval(_interp, cmd);
+}
+
+void TkControlPanel::DestroyClientData()
+{
+#ifdef DEBUG
+  printf("Destroying client data\n");
+#endif
+
+  ClassDir *classDir = GetClassDir();
+
+  // destroy tdata, gdata, cursor, view link, win, axis, action
+  classDir->DestroyAllInstances();
+
+  // clearQP
+  classDir->DestroyTransientClasses();
+  QueryProc::Instance()->ClearQueries();
+  ClearCats();
+
+  // clearTopGroups
+  delete gdir;
+  gdir = new GroupDir();
 }
 
 int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
@@ -427,15 +393,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			time_t tm = time((time_t *)0);
 			sprintf(interp->result,"%s",DateString(tm));
 		}
-		else if (strcmp(argv[1],"clearQP") == 0) {
-			classDir->DestroyTransientClasses();
-			QueryProc::Instance()->ClearQueries();
-			ClearCats();
-		}
-		else if (strcmp(argv[1],"clearTopGroups") == 0) {
-			delete gdir;
-			gdir = new GroupDir();
-		}
 		else if (strcmp(argv[1],"printDispatcher") == 0) {
 			Dispatcher::Current()->Print();
 		}
@@ -445,7 +402,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"exit")== 0) {
 			QueryProc::Instance()->PrintStat();
+			control->DestroyClientData();
 			control->DoQuit();
+		}
+		else if (strcmp(argv[1],"clearAll")== 0) {
+			control->DestroyClientData();
 		}
 		else {
 			interp->result = "wrong args";
@@ -594,28 +555,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			TData *tdata = map->GetTData();
 			sprintf(interp->result,"%s",classDir->FindInstanceName(tdata));
-		}
-		else if (strcmp(argv[1],"openSession") == 0 ) {
-			(void)Tcl_Eval(interp,"set template 0");
-			control->_restoring = true;
-			code = Tcl_EvalFile(interp,argv[2]);
-			control->_restoring = false;
-			if (code != TCL_OK) {
-				interp->result = "can't restore session file\n";
-				goto error;
-			}
-			control->SetSessionName(argv[2]);
-		}
-		else if (strcmp(argv[1],"openTemplate") == 0 ) {
-			(void)Tcl_Eval(interp,"set template 1");
-			control->_restoring = true;
-			code = Tcl_EvalFile(interp,argv[2]);
-			control->_restoring = false;
-			if (code != TCL_OK) {
-				interp->result = "can't restore template file\n";
-				goto error;
-			}
-			control->SetSessionName(argv[2]);
 		}
 		else if (strcmp(argv[1],"destroy") == 0 ) {
 			classDir->DestroyInstance(argv[2]);
