@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/02/26 16:31:48  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.51  1997/02/14 16:47:47  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -233,8 +236,6 @@
 #include "Util.h"
 #include "RecordLink.h"
 
-//#define DEBUG
-
 ImplementDList(BStatList, BasicStats *)
 
 TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
@@ -272,14 +273,15 @@ TDataViewX::~TDataViewX()
   }
   _blist.DoneIterator(index);
   _blist.DeleteAll();
-  _gstat.Clear();
-  _glist.DeleteAll();
+  _gstatX.Clear();
+  _gstatY.Clear();
+  _glistX.DeleteAll();
+  _glistY.DeleteAll();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
 {
   ViewGraph::InsertMapping(map);
-  
   Refresh();
 }
 
@@ -304,8 +306,10 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   }
   _blist.DoneIterator(index);
   _blist.DeleteAll();
-  _gstat.Clear();     /* Clear the hashtable and calculate it again */
-  _glist.DeleteAll(); /* Clear the gdata list */
+  _gstatX.Clear();     /* Clear the hashtable and calculate it again */
+  _gstatY.Clear();     /* Clear the hashtable and calculate it again */
+  _glistX.DeleteAll(); /* Clear the gdata list */
+  _glistY.DeleteAll(); /* Clear the gdata list */
 
   // Initialize record links whose master this view is
   index = _masterLink.InitIterator();
@@ -429,6 +433,10 @@ void TDataViewX::QueryInit(void *userData)
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 			     void *gdata, int numGData)
 {
+  VisualFilter filter;
+  GetVisualFilter(filter);
+  ResetGStatInMem();
+
 #if defined(DEBUG)
   printf("TDataViewX::ReturnGData()\n");
 #endif
@@ -467,25 +475,46 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       // Compute statistics only for records that match the filter''s
       // X range, regardless of the Y boundary
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
-	  if (color < MAXCOLOR)
-	    _stats[color].Sample(x, y);
+	  if (color < MAXCOLOR) _stats[color].Sample(x, y);
 	  _allStats.Sample(x, y);
 	  _allStats.Histogram(y);
-	  if(_glist.Size() <= MAX_GSTAT) {
-	      int X = (int) x;
-	      BasicStats *bs;
-	      if(_gstat.Lookup(X, bs)) {
-		  bs->Sample(x,y);
+	  if(_glistX.Size() <= MAX_GSTAT) {
+	      double X =  x;
+	      BasicStats *bsx;
+	      if(_gstatX.Lookup(X, bsx)) {
+		  bsx->Sample(x,y);
 	      } else {
-		  bs = new BasicStats();
-		  DOASSERT(bs, "Out of memory");
-		  bs->Init(0);
-		  _glist.InsertOrderly(X, 1);
-		  bs->Sample(x, y);
-		  _gstat.Insert(X, bs);
-		  _blist.Insert(bs);
+		  bsx = new BasicStats();
+		  DOASSERT(bsx, "Out of memory");
+		  bsx->Init(0);
+		  _glistX.InsertOrderly(X, 1);
+		  bsx->Sample(x, y);
+		  _gstatX.Insert(X, bsx);
+		  _blist.Insert(bsx);
 	      } 
-	  } 
+	  } else {
+	      _gstatInMem = false;
+	  }
+
+	  if(_glistY.Size() <= MAX_GSTAT) {
+	      double Y = y;
+	      BasicStats *bsy;
+	      if(_gstatY.Lookup(Y, bsy)) {
+		  bsy->Sample(y,x);
+	      } else {
+		  bsy = new BasicStats();
+		  DOASSERT(bsy, "Out of memory");
+		  bsy->Init(0);
+		  _glistY.InsertOrderly(Y, 1);
+		  bsy->Sample(y,x);
+		  _gstatY.Insert(Y, bsy);
+		  _blist.Insert(bsy);
+	      } 
+	  } else {
+	      /* mark gstatBuf faulse cleanup the gstat list, the group 
+	         by query will be submitted to DTE when requested  */
+	      _gstatInMem = false;  
+	  }
       }
 
       // Contiguous ranges which match the filter''s X *and* Y range
@@ -533,7 +562,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 /* Done with query */
 
-void TDataViewX::QueryDone(int bytes, void *userData)
+void TDataViewX::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
 {
 #ifdef DEBUG
   printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
@@ -562,7 +591,7 @@ void TDataViewX::QueryDone(int bytes, void *userData)
     for(int i = 0; i < MAXCOLOR; i++)
       _stats[i].Done();
 
-    PrepareStatsBuffer();
+    PrepareStatsBuffer(map);
 
     _dataBin->Final();
 
