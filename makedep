@@ -18,9 +18,9 @@ foreach d (*)
 end
 
 echo ""
-echo -n "Is it okay to check new dependency files into the archive? [Y] "
+echo -n "Is it okay to check new dependency files into the archive? [N] "
 set answer = $<
-if ($answer == "" || $answer == y || $answer == Y) then
+if ($answer == y || $answer == Y) then
   cvs update */Makefile.$arch
   cvs commit -m'Updated dependencies.' */Makefile.$arch
   echo "Done."
@@ -31,10 +31,10 @@ echo "Listing of old dependency files:"
 ls */Makefile.$arch.bak
 
 echo ""
-echo -n "Is it okay to remove these files? [N] "
+echo -n "Is it okay to remove these files? [Y] "
 set answer = $<
 
-if ($answer == y || $answer == Y) then
+if ($answer == "" || $answer == y || $answer == Y) then
   echo "Removing old dependency files..."
   rm */Makefile.$arch.bak
   echo "Done."
