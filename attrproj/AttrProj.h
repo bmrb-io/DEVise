@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/30 15:31:52  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.1  1996/04/25 19:25:23  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -33,6 +37,7 @@
 #include "DeviseTypes.h"
 #include "TData.h"
 #include "VectorArray.h"
+#include "ProjectionList.h"
 
 
 class AttrProj
@@ -55,12 +60,14 @@ public:
 	DevStatus ReadRec(RecId recId, VectorArray &vecArray);
 
 private:
+	DevStatus ParseProjection(char *attrProjFile);
+
 	TData *		_tDataP;
 
 	char *		_recBuf;
 	int			_recBufSize;
 
-	int			_projectionCount;
+	ProjectionList	_projList;
 };
 
 

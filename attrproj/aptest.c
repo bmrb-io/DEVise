@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/30 18:53:40  wenger
+  Attrproj now generates a single projection of all attributes of the
+  real data.
+
   Revision 1.3  1996/04/30 15:31:57  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -52,6 +56,7 @@ main(
 {													/* start main */
 	char *		dataFile = "/p/devise/dat/3d_test.dat";
 	int			result = 0;
+	char *		projectionFile = "/u/w/e/wenger/public/attrproj/projection";
 	char *		schemaFile = "/p/devise/schema/3d_test.schema";
 
 	if (argc > 1)
@@ -64,10 +69,15 @@ main(
 		dataFile = argv[2];
 	}
 
+	if (argc > 3)
+	{
+		projectionFile = argv[3];
+	}
+
 	/* Initialize Devise stuff for command-line arguments. */
 	Init::DoInit(argc, argv);
 
-	AttrProj		ap(schemaFile, NULL, dataFile);
+	AttrProj		ap(schemaFile, projectionFile, dataFile);
 	RecId			firstId;
 	RecId			lastId;
 	RecId			recId;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/30 18:53:32  wenger
+  Attrproj now generates a single projection of all attributes of the
+  real data.
+
   Revision 1.2  1996/04/30 15:31:50  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -35,12 +39,14 @@
 //#define DEBUG
 
 #include <stdio.h>
+#include <string.h>
 
 #include "AttrProj.h"
 #include "ApParseCat.h"
 #include "Util.h"
 #include "TData.h"
 #include "AttrList.h"
+#include "ProjectionList.h"
 
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -59,10 +65,10 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 //TEMPTEMP  do something with return value
 	ParseCat(schemaFile, dataFile, _tDataP);
 
+	ParseProjection(attrProjFile);
+
 	_recBufSize = _tDataP->RecSize();
 	_recBuf = new char[_recBufSize];
-
-	_projectionCount = 1;/*TEMPTEMP*/
 }
 
 /*------------------------------------------------------------------------------
@@ -120,8 +126,16 @@ AttrProj::CreateRecordList(VectorArray *&vecArrayP)
 
 	DevStatus	result = StatusOk;
 
-	vecArrayP = new VectorArray(_projectionCount);
-	vecArrayP->Init(0, _tDataP->GetAttrList()->NumAttrs());/*TEMPTEMP*/
+	vecArrayP = new VectorArray(_projList.GetProjCount());
+
+	int		projNum = 0;
+	Projection * projP = _projList.GetFirstProj();
+	while (projP != NULL)
+	{
+		vecArrayP->Init(projNum, projP->attrCount);
+		projP = _projList.GetNextProj();
+		projNum++;
+	}
 
 	return result;
 }
@@ -149,6 +163,67 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	else
 	{
 		AttrList *	attrListP = _tDataP->GetAttrList();
+		int		projNum = 0;
+		Projection * projP = _projList.GetFirstProj();
+		while (projP != NULL)
+		{
+			Vector *	vectorP = vecArray.GetVector(projNum);
+			int		projAttrNum;
+			for (projAttrNum = 0; projAttrNum < projP->attrCount;
+				projAttrNum++)
+			{
+				int			attrNum = projP->attrList[projAttrNum];
+				AttrInfo *	attrInfoP = attrListP->Get(attrNum);
+				double		doubleVal;
+				float		floatVal;
+				int			intVal;
+
+
+				switch (attrInfoP->type)
+				{
+				case IntAttr:
+					intVal = *(int *)(_recBuf + attrInfoP->offset);
+					DO_DEBUG(printf("        %d\n", intVal));
+					vectorP->value[projAttrNum] = (double) intVal;
+					break;
+
+				case FloatAttr:
+					floatVal = *(float *)(_recBuf + attrInfoP->offset);
+					DO_DEBUG(printf("        %f\n", floatVal));
+					vectorP->value[projAttrNum] = (double) floatVal;
+					break;
+
+				case DoubleAttr:
+					doubleVal = *(double *)(_recBuf + attrInfoP->offset);
+					DO_DEBUG(printf("        %f\n", doubleVal));
+					vectorP->value[projAttrNum] = (double) doubleVal;
+					break;
+
+				case StringAttr:
+					DOASSERT(false, "Can't deal with string attribute");
+					break;
+
+				case DateAttr:
+					DOASSERT(false, "Can't deal with date attribute");
+					break;
+
+				default:
+					DOASSERT(false, "Illegal attribute type");
+					break;
+				}
+			}
+
+			projP = _projList.GetNextProj();
+			projNum++;
+		}
+
+
+
+
+
+
+
+#if 0
 		int			attrCount = attrListP->NumAttrs();
 		int			attrNum;
 		Vector *	vectorP = vecArray.GetVector(0);
@@ -164,19 +239,19 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 			{
 			case IntAttr:
 				intVal = *(int *)(_recBuf + attrInfoP->offset);
-				//printf("        %d\n", intVal);/*TEMPTEMP*/
+				DO_DEBUG(printf("        %d\n", intVal));
 				vectorP->value[attrNum] = (double) intVal;
 				break;
 
 			case FloatAttr:
 				floatVal = *(float *)(_recBuf + attrInfoP->offset);
-				//printf("        %f\n", floatVal);/*TEMPTEMP*/
+				DO_DEBUG(//printf("        %f\n", floatVal));
 				vectorP->value[attrNum] = (double) floatVal;
 				break;
 
 			case DoubleAttr:
 				doubleVal = *(double *)(_recBuf + attrInfoP->offset);
-				//printf("        %f\n", doubleVal);/*TEMPTEMP*/
+				DO_DEBUG(//printf("        %f\n", doubleVal));
 				vectorP->value[attrNum] = (double) doubleVal;
 				break;
 
@@ -193,6 +268,92 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 				break;
 			}
 		}
+#endif
+	}
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: AttrProj::ParseProjection
+ * Parse the attribute projection file and build up the corresponding
+ * data structures.
+ */
+DevStatus
+AttrProj::ParseProjection(char *attrProjFile)
+{
+	DO_DEBUG(printf("AttrProj::ParseProjection()\n"));
+
+	DevStatus	result = StatusOk;
+
+	FILE *		file = fopen(attrProjFile, "r");
+	if (file == NULL)
+	{
+		fprintf(stderr, "Can't open attribute projection file\n");
+		result = StatusFailed;
+	}
+	else
+	{
+		const int	bufSize = 256;
+		char		buf[bufSize];
+		char		separators[] = " \t";
+
+		/* Get each line in the attribute projection file. */
+		while (fgets(buf, bufSize, file) != NULL)
+		{
+			/* TEMPTEMP -- we should look for some kind of comment char. */
+
+			StripTrailingNewline(buf);
+			DO_DEBUG(printf("%s\n", buf));
+
+
+
+
+			Projection	projection;
+			projection.attrCount = atoi(strtok(buf, separators));
+			DO_DEBUG(printf("projection.attrCount = %d\n",
+				projection.attrCount));
+			projection.attrList = new int[projection.attrCount];
+
+			AttrList *	attrListP = _tDataP->GetAttrList();
+			int			attrCount = attrListP->NumAttrs();
+			int			projAttrNum = 0;
+			char *		token;
+
+			/* Find each attribute specified for this projection. */
+			while ((token = strtok(NULL, separators)) != NULL)
+			{
+				projection.attrList[projAttrNum] = illegalAttr;
+				DO_DEBUG(printf("  token = %s", token));
+
+				int			attrNum;
+
+				/* Now find the attribute in the TData corresponding to
+				 * the name specified in the projection. */
+				for (attrNum = 0; attrNum < attrCount; attrNum++)
+				{
+					AttrInfo *	attrInfoP = attrListP->Get(attrNum);
+
+					if (!strcmp(token, attrInfoP->name))
+					{
+						DO_DEBUG(printf(" attrNum = %d\n", attrNum));
+						projection.attrList[projAttrNum] = attrNum;
+						break;
+					}
+				}
+				DOASSERT(projection.attrList[projAttrNum] != illegalAttr,	
+					"Illegal attribute name in attribute projection file");
+				projAttrNum++;
+			}
+			DOASSERT(projAttrNum == projection.attrCount,
+				"Incorrect number of attributes in projection file");
+
+
+			_projList.AddProjection(projection);
+
+		}
+
+		fclose(file);
 	}
 
 	return result;

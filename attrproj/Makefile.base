@@ -14,7 +14,7 @@ TESTOBJ = $(TESTSRC:.c=.o)
 
 LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
 	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
-	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c
+	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c ProjectionList.c
 LOCALOBJ = $(LOCALSRC:.c=.o)
 
 LIBOBJ = \
