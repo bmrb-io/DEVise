@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/05/21 18:18:47  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.13  1998/05/13 13:36:35  wenger
   Fixed some dynamic memory errors in the csgroup code; cleaned up
   DeviseCommand class somewhat -- simplified the calling of Run()
@@ -236,6 +241,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_RubberBand)
 	JavaScreenCmd jc(control,JavaScreenCmd::MOUSEACTION_RUBBERBAND,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_SetDisplaySize)
+	JavaScreenCmd jc(control,JavaScreenCmd::SETDISPLAYSIZE,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/05/21 18:18:46  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.9  1998/05/14 18:21:41  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -121,6 +126,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_MouseAction_Click)
 	REGISTER_COMMAND(JAVAC_MouseAction_DoubleClick)
 	REGISTER_COMMAND(JAVAC_MouseAction_RubberBand)
+	REGISTER_COMMAND(JAVAC_SetDisplaySize)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)

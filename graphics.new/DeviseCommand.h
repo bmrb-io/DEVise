@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/05/21 18:18:48  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.6  1998/05/13 13:36:38  wenger
   Fixed some dynamic memory errors in the csgroup code; cleaned up
   DeviseCommand class somewhat -- simplified the calling of Run()
@@ -146,6 +151,12 @@ DECLARE_CLASS_END
 //Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_RubberBand
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_RubberBand)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_JAVAC_SetDisplaySize
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_SetDisplaySize)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

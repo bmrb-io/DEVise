@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/29 18:12:34  wenger
+  Fixed the problem with the JavaScreen only getting one window of multi-
+  window sessions (JAVAC_Done isn't sent until all JAVAC_CreateWindow
+  commands have been sent).
+
   Revision 1.8  1998/05/29 15:18:56  wenger
   Rubberband lines now work in JavaScreen, at least for single-window
   sessions.
@@ -76,6 +81,7 @@
 #include "Init.h"
 #include "Timer.h"
 #include "QueryProc.h"
+#include "Display.h"
 
 //#define DEBUG
 
@@ -470,7 +476,32 @@ JavaScreenCmd::CloseCurrentSession()
 	fflush(stdout);
 #endif
 
+//TEMP -- check _argc
+
 	ControlPanel::Instance()->DestroySessionData();
+
+	_status = DONE;
+	return;
+}
+
+void
+JavaScreenCmd::SetDisplaySize()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::SetDisplaySize(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+	if (_argc != 2) {
+		errmsg = "{Usage: SetDisplaySize <width> <height>}";
+		_status = ERROR;
+		return;
+	}
+
+    DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(_argv[0]);
+    DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(_argv[1]);;
 
 	_status = DONE;
 	return;
@@ -671,6 +702,9 @@ JavaScreenCmd::Run()
 			break;
 		case MOUSEACTION_RUBBERBAND:
 			MouseAction_RubberBand();
+			break;
+		case SETDISPLAYSIZE:
+			SetDisplaySize();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);

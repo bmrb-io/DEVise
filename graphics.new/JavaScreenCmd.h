@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/14 18:21:44  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.4  1998/05/08 17:16:23  taodb
   Added stripping functions for "{}"
 
@@ -39,8 +43,10 @@
 
 typedef double TDataVal;
 typedef string GDataVal;
+
 class DeviseServer;
 class ControlPanel;
+
 class JavaRectangle
 {
 	public:
@@ -104,7 +110,8 @@ class JavaScreenCmd
 			MOUSEACTION_DOUBLECLICK, 
 			MOUSEACTION_RUBBERBAND,
 			JAVAEXIT,
-			CLOSECURRENTSESSION
+			CLOSECURRENTSESSION,
+			SETDISPLAYSIZE
 		}ServiceCmdType;
 
 		typedef enum
@@ -144,6 +151,7 @@ class JavaScreenCmd
 		void MouseAction_Click();
 		void MouseAction_DoubleClick();
 		void MouseAction_RubberBand();
+		void SetDisplaySize();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
