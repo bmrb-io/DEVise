@@ -43,9 +43,10 @@ FLEXFLAGS = -I -Puni_yy
 #PERL_CORE = ./lib/CORE
 PERL_INCL = -I$(PERL_CORE)
 PERL_LIB  = -L$(PERL_CORE) -lperl -lm
+UNI_INCL = -I../../unidata
 
 # Note, the perl header files have mucho '/*' within comments.
-CFLAGS = $(ARCH_FLAGS) -Wall -Wno-comment $(OPTFLAG) $(PERL_INCL) \
+CFLAGS = $(ARCH_FLAGS) -Wall -Wno-comment $(OPTFLAG) $(UNI_INCL) $(PERL_INCL) \
 	-DHAVE_CONFIG_H
 
 .PHONY: all default clean
