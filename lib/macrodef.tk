@@ -252,7 +252,6 @@ proc MacroDefNewMapping {} {
 	return
     }
     set cmd [concat DEVise create view $sorted \{$viewname\} $views($view)]
-    # puts "cmd = $cmd"
     set result [eval $cmd]
     if {$result == ""} {
 	dialog .viewError "View Error" \
@@ -494,10 +493,10 @@ proc MacroDefAuto {tdata} {
                  set sortedx [lindex $attr 2]
                  break
             }
-            puts "The value of x is $x"
-            puts "The value of xtype is $xtype"
-            puts "The value of sortedx is $sortedx"
-	    puts "The ylist is $ylist"
+#            puts "The value of x is $x"
+#            puts "The value of xtype is $xtype"
+#            puts "The value of sortedx is $sortedx"
+#            puts "The ylist is $ylist"
 	    MacroDefAutoActual $tdata $x $xtype $sortedx $ylist
 	    destroy .auto
 	}
@@ -583,8 +582,6 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
 	if {[lsearch $ylist $name] < 0} { continue }
-
-	puts "Creating mapping for $name"
 
 	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
