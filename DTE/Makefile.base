@@ -29,6 +29,7 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/StandAlone \
 	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 	-I$(DTE_DIR)/Script \
+	-I$(DTE_DIR)/GUI \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../attrproj 
@@ -57,6 +58,10 @@ endif
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
 	TDataDQL.c TDataDQLInterp.c CatalogComm.c CatalogComm2.c
 	
+GUI_SRC = ParseAPIDTE.c ParseAPIParent.c TkControl.c CatalogComm.c
+
+GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_SRC:.C=.o)
+
 DEVREAD_OBJ = \
 	../attrproj/ApInit.o \
 	../attrproj/ApParseCat.o \
@@ -118,7 +123,7 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte FormatVolume convert_bulk
+all: $(LIBNAME) dte FormatVolume convert_bulk gui
 lib: $(LIBNAME)
 
 devread: 
