@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/09/02 17:25:53  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.35  1999/07/16 21:35:57  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -183,7 +188,7 @@ class XDisplay : public DeviseDisplay
   public:
 
     // Constructors and Destructors
-    XDisplay(char *name = 0);
+    XDisplay(char *name = 0, Boolean fontKludge = false);
 	~XDisplay();
 
     // Getters and Setters
@@ -294,6 +299,7 @@ private:
     XFontStruct *_fontStruct;       /* current font */
     XFontStruct *_normalFontStruct; /* big font used in window */
     XFontStruct *_smallFontStruct;  /* small font used in window */
+    Boolean _fontKludge;            /* use SPARC/Solaris/Xvfb kludge */
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  2001/05/08 14:14:49  wenger
+  Improved error message if we can't connect to X server.
+
   Revision 1.84  2001/03/23 18:06:31  wenger
   Color palettes are now associated with sessions; added borders to
   color chooser buttons so they're visible even if they're the same
@@ -444,7 +447,7 @@ const int MaxColorIntensity = 65535;
 Open a new X display
 ********************************************************************/
 
-XDisplay::XDisplay(char *name)
+XDisplay::XDisplay(char *name, Boolean fontKludge)
 {
 #if defined(DEBUG)
   printf("XDisplay::XDisplay(%s)\n", name != NULL ? name : "NULL");
@@ -453,6 +456,8 @@ XDisplay::XDisplay(char *name)
     reportErrNosys("Cannot open XDisplay");
     Exit::DoExit(1);
   }
+
+  _fontKludge = fontKludge;
 
   /* set normal font to be the current font */
   _fontStruct = NULL;
@@ -528,6 +533,13 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
   printf("XDisplay::SetFont(%s %s %s %s %f)\n", family, weight, slant, width,
     pointSize);
 #endif
+
+  if (_fontKludge) {
+	// Helvetica and Times fonts don't work with Xvfb on SPARC/Solaris.
+    if (!strcmp(family, "Helvetica") || !strcmp(family, "Times")) {
+	  family = "New Century Schoolbook";
+	}
+  }
 
   /* figure out the required point size from the size of the 
      display and the filter information ... do the necessary

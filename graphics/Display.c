@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/09/22 17:23:41  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.21  1998/01/07 19:28:28  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -138,10 +146,10 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
     if (Init::UseOpenGL()) {
       _defaultDisplay = new GLDisplay();
     } else {
-      _defaultDisplay = new XDisplay();
+      _defaultDisplay = new XDisplay(NULL, Init::FontKludge());
     }
 #else
-    _defaultDisplay = new XDisplay();
+    _defaultDisplay = new XDisplay(NULL, Init::FontKludge());
 #endif
   }
   return _defaultDisplay;

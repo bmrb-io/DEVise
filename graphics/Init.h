@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  2000/08/10 16:10:39  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.28  2000/05/16 14:35:38  wenger
   Added -jscache command-line argument.
 
@@ -232,6 +235,9 @@ class Init {
 
     static Boolean UseJSCache() { return _useJSCache; }
 
+    // Helvetica and Times cause crash on SPARC/Solaris with Xvfb.
+    static Boolean FontKludge() { return _fontKludge; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -300,6 +306,7 @@ protected:
 	static int _logLevel;
 	static Boolean _doHangCheck;
 	static Boolean _useJSCache;
+	static Boolean _fontKludge;
 };
 
 #endif
