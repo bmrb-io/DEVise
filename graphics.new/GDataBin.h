@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/29 22:42:20  jussi
+  Added support for line connectors.
+
   Revision 1.5  1995/11/25 01:24:25  jussi
   Removed #ifdef CALCULATE_DIRECTLY which allowed one to quickly
   switch back to the xPerPixel and yPerPixel method for testing.
@@ -51,8 +54,16 @@ class TDataMap;
 class TDataCMap;
 struct Connector;
 
-/* GDataBin assumes all records have at least x and y fields */
+/* GDataBin assumes all records have at least x and y fields as well
+   as the record ID; note that sizeof(RecId) < sizeof(Coord); we
+   need to pad the struct so that GDataBinRec->x is at the same
+   offset as in a real GData record */
+
 struct GDataBinRec {
+  union {
+      RecId recId;
+      Coord dummy;
+  } r;
   Coord x;
   Coord y;
 };
