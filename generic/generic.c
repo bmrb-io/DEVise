@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/05/06 16:23:03  jussi
+  IBMAddressTraceComposite now stores the reference tag in addition
+  to storing the color of the tag. Added the association of this
+  composite parser with schemas IBMTRACE1 through IBMTRACE3.
+
   Revision 1.19  1996/05/05 03:06:41  jussi
   Added IBMAddressTraceCompositeParser. Added missing attribute
   high/low value computation for some composite parsers.
@@ -148,7 +153,6 @@ public:
   YyMmDdComposite() {
     _init = false;
     attrOffset = 0;
-    dateAttr = 0;
   }
 
   virtual ~YyMmDdComposite() {
@@ -172,8 +176,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "DATE"))
-	  dateAttr = info;
       }
       _init = true;
     }
@@ -192,20 +194,10 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
-
-    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
-      dateAttr->hiVal.dateVal = *datePtr;
-      dateAttr->hasHiVal = true;
-    }
-    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
-      dateAttr->loVal.dateVal = *datePtr;
-      dateAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -217,7 +209,6 @@ public:
   MmDdYyComposite() {
     _init = false;
     attrOffset = 0;
-    dateAttr = 0;
   }
 
   virtual ~MmDdYyComposite() {
@@ -241,8 +232,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "DATE"))
-	  dateAttr = info;
       }
       _init = true;
     }
@@ -260,20 +249,10 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     *datePtr = GetTime(now);
-
-    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
-      dateAttr->hiVal.dateVal = *datePtr;
-      dateAttr->hasHiVal = true;
-    }
-    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
-      dateAttr->loVal.dateVal = *datePtr;
-      dateAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -285,7 +264,6 @@ public:
   ObsDateComposite() {
     _init = false;
     attrOffset = 0;
-    dateAttr = 0;
   }
 
   virtual ~ObsDateComposite() {
@@ -311,8 +289,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "DATE"))
-	  dateAttr = info;
       }
       _init = true;
     }
@@ -330,20 +306,10 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[6]);
     *datePtr = GetTime(now);
-
-    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
-      dateAttr->hiVal.dateVal = *datePtr;
-      dateAttr->hasHiVal = true;
-    }
-    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
-      dateAttr->loVal.dateVal = *datePtr;
-      dateAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -355,7 +321,6 @@ public:
   DOLDateComposite() {
     _init = false;
     attrOffset = 0;
-    dateAttr = 0;
   }
 
   virtual ~DOLDateComposite() {
@@ -379,8 +344,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "DATE"))
-	  dateAttr = info;
       }
       _init = true;
     }
@@ -404,20 +367,10 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[2]);
     *datePtr = GetTime(now);
-
-    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
-      dateAttr->hiVal.dateVal = *datePtr;
-      dateAttr->hasHiVal = true;
-    }
-    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
-      dateAttr->loVal.dateVal = *datePtr;
-      dateAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -433,8 +386,6 @@ public:
     _init = false;
     _warning = true;
     attrOffset = 0;
-    latAttr = 0;
-    lonAttr = 0;
   }
 
   virtual ~StateLatLonComposite() {
@@ -460,10 +411,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "Latitude"))
-	  latAttr = info;
-	else if (!strcmp(primAttrs[i], "Longitude"))
-	  lonAttr = info;
       }
       _init = true;
     }
@@ -581,29 +528,10 @@ public:
       *colorPtr = BlackColor;
     else
       *colorPtr = KhakiColor;
-
-    if (!latAttr->hasHiVal || *latPtr > latAttr->hiVal.floatVal) {
-      latAttr->hiVal.floatVal = *latPtr;
-      latAttr->hasHiVal = true;
-    }
-    if (!latAttr->hasLoVal || *latPtr < latAttr->loVal.floatVal) {
-      latAttr->loVal.floatVal = *latPtr;
-      latAttr->hasLoVal = true;
-    }
-    if (!lonAttr->hasHiVal || *lonPtr > lonAttr->hiVal.floatVal) {
-      lonAttr->hiVal.floatVal = *lonPtr;
-      lonAttr->hasHiVal = true;
-    }
-    if (!lonAttr->hasLoVal || *lonPtr < lonAttr->loVal.floatVal) {
-      lonAttr->loVal.floatVal = *lonPtr;
-      lonAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *latAttr;             /* latitude attribute info */
-  AttrInfo  *lonAttr;             /* longitude attribute info */
   Boolean   _init;                /* true when instance initialized */
   Boolean   _warning;             /* true when warning should be displayed
 				     for unknown state codes */
@@ -621,8 +549,6 @@ public:
   LatLonComposite() {
     _init = false;
     attrOffset = 0;
-    latAttr = 0;
-    lonAttr = 0;
   }
 
   virtual ~LatLonComposite() {
@@ -647,10 +573,6 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "Latitude"))
-	  latAttr = info;
-	else if (!strcmp(primAttrs[i], "Longitude"))
-	  lonAttr = info;
       }
       _init = true;
     }
@@ -663,29 +585,10 @@ public:
 
     *latPtr = *latIntPtr / 1e6;
     *lonPtr = *lonIntPtr / 1e6;
-
-    if (!latAttr->hasHiVal || *latPtr > latAttr->hiVal.floatVal) {
-      latAttr->hiVal.floatVal = *latPtr;
-      latAttr->hasHiVal = true;
-    }
-    if (!latAttr->hasLoVal || *latPtr < latAttr->loVal.floatVal) {
-      latAttr->loVal.floatVal = *latPtr;
-      latAttr->hasLoVal = true;
-    }
-    if (!lonAttr->hasHiVal || *lonPtr > lonAttr->hiVal.floatVal) {
-      lonAttr->hiVal.floatVal = *lonPtr;
-      lonAttr->hasHiVal = true;
-    }
-    if (!lonAttr->hasLoVal || *lonPtr < lonAttr->loVal.floatVal) {
-      lonAttr->loVal.floatVal = *lonPtr;
-      lonAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *latAttr;             /* latitude attribute info */
-  AttrInfo  *lonAttr;             /* longitude attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -705,8 +608,6 @@ public:
   IBMAddressTraceComposite() {
     _init = false;
     attrOffset = 0;
-    XAttr = 0;
-    YAttr = 0;
   }
 
   virtual ~IBMAddressTraceComposite() {
@@ -718,7 +619,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Address", "Tag", "X", "Y", "Color" };
+      char *primAttrs[] = { "Address", "RecNum", "Tag", "X", "Y", "Color" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -730,26 +631,38 @@ public:
 	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
-	if (!strcmp(primAttrs[i], "X"))
-	  XAttr = info;
-	else if (!strcmp(primAttrs[i], "Y"))
-	  YAttr = info;
       }
       _init = true;
     }
 
     char *buf = (char *)recInterp->GetBuf();
     char *address = buf + attrOffset[0];
-    int *tagPtr = (int *)(buf + attrOffset[1]);
-    float *XPtr = (float *)(buf + attrOffset[2]);
-    float *YPtr = (float *)(buf + attrOffset[3]);
-    int *colorPtr = (int *)(buf + attrOffset[4]);
+    int *recPtr = (int *)(buf + attrOffset[1]);
+    int *tagPtr = (int *)(buf + attrOffset[2]);
+    float *XPtr = (float *)(buf + attrOffset[3]);
+    float *YPtr = (float *)(buf + attrOffset[4]);
+    int *colorPtr = (int *)(buf + attrOffset[5]);
+
+    // Record number is passed to us via the record interpreter
+    *recPtr = recInterp->GetRecPos();
 
     // The high 32 bits are first, followed by the low 32 bits.
-    // The lowest 2 bits are the tag.
+    // Randomize the picture a little by creating a square cloud.
 
+#ifdef GRANULARITY_64
     *YPtr = (address[0] & 0xfc) >> 2;
     *XPtr = ((address[0] & 0x03) << 4) | ((address[1] & 0xf0) >> 4);
+    int cloudSize = 4;
+#else
+    *YPtr = (unsigned char)address[0];
+    *XPtr = (unsigned char)address[1];
+    int cloudSize = 8;
+#endif
+    *YPtr += (rand() % (cloudSize * 100)) / 100.0 - cloudSize / 2;
+    *XPtr += (rand() % (cloudSize * 100)) / 100.0 - cloudSize / 2;
+
+    // The lowest 2 bits are the tag.
+
     *tagPtr = address[7] & 0x03;
     *colorPtr = 0;
     if (*tagPtr == 3)                   // instruction reference?
@@ -760,36 +673,10 @@ public:
       *colorPtr = 3;                    // make it blue
     else
       fprintf(stderr, "Invalid tag in trace: %d\n", *tagPtr);
-
-    // randomize the picture a little by creating a cloud
-
-    float length = (rand() % 200) / 100.0;
-    float dir = (rand() % 360) / 360.0 * 2 * 3.14;
-    *YPtr += length * sin(dir);
-    *XPtr += length * cos(dir);
-
-    if (!XAttr->hasHiVal || *XPtr > XAttr->hiVal.floatVal) {
-      XAttr->hiVal.floatVal = *XPtr;
-      XAttr->hasHiVal = true;
-    }
-    if (!XAttr->hasLoVal || *XPtr < XAttr->loVal.floatVal) {
-      XAttr->loVal.floatVal = *XPtr;
-      XAttr->hasLoVal = true;
-    }
-    if (!YAttr->hasHiVal || *YPtr > YAttr->hiVal.floatVal) {
-      YAttr->hiVal.floatVal = *YPtr;
-      YAttr->hasHiVal = true;
-    }
-    if (!YAttr->hasLoVal || *YPtr < YAttr->loVal.floatVal) {
-      YAttr->loVal.floatVal = *YPtr;
-      YAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
-  AttrInfo  *XAttr;               /* X attribute info */
-  AttrInfo  *YAttr;               /* Y attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
