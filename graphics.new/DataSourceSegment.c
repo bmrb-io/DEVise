@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/12 18:24:45  wenger
+  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+  to TDataAscii.
+
   Revision 1.7  1996/07/11 23:48:43  jussi
   Had to undo previous "bug fix" -- it was not a bug after all,
   I just had messed with the template file so the data segment
@@ -85,13 +89,6 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
 static char *	srcFile = __FILE__;
-
-template class DataSourceSegment<DataSourceFileStream>;
-template class DataSourceSegment<DataSourceTape>;
-template class DataSourceSegment<DataSourceBuf>;
-#ifndef ATTRPROJ
-template class DataSourceSegment<DataSourceWeb>;
-#endif
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::DataSourceSegment
@@ -216,3 +213,10 @@ DataSourceSegment<TYPE>::gotoEnd()
 }
 
 /*============================================================================*/
+
+template class DataSourceSegment<DataSourceFileStream>;
+template class DataSourceSegment<DataSourceTape>;
+template class DataSourceSegment<DataSourceBuf>;
+#ifndef ATTRPROJ
+template class DataSourceSegment<DataSourceWeb>;
+#endif
