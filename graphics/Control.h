@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/07 19:25:32  jussi
+  Added methods which allow query processor to control when
+  a synchronization message is sent to client.
+
   Revision 1.14  1996/08/04 20:57:22  beyer
   Added Raise() method to bring the control panel to the top of the stacking
   order.
@@ -190,6 +194,9 @@ public:
   /* Remove replica server */
   virtual int RemoveReplica(char *hostName, int port) = 0;
 
+  virtual void OpenDataChannel(int port) = 0;
+  virtual int getFd() = 0;
+
   /* Control panel instance */
   static ControlPanel *_controlPanel;
 
@@ -267,7 +274,7 @@ protected:
 private:
   void UpdateNewDispatcher() {}
 
-  static ClassDir *_classDir;
+  static ClassDir *_classDir; 
 
   ControlPanelCallbackList *_callbacks;
 };
