@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2001/05/11 20:36:10  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.58  2001/05/03 19:34:38  xuk
 // Added two factors for displaying mouse position.
 //
@@ -155,8 +158,10 @@ public class DEViseView
 
     // viewDataLoc is the location relative to this view
     public Rectangle viewDataLoc = null;
+
     private float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
     private float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
+
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
 

@@ -2761,11 +2761,11 @@ Num Date        Status  Description
 693 09/25/01	OPEN	If you are doing an X-only zoom, the rubberband
 			line that is drawn should reflect this. (rkw)
 
-694 09/25/01	OPEN	JavaScreen: if you are doing an X-only zoom, the
+694 09/25/01	FIXED	JavaScreen: if you are doing an X-only zoom, the
 			rubberband line that is drawn should reflect this.
 			(rkw)
 
-695 09/25/01	OPEN	JavaScreen: if cursor movement is disallowed in
+695 09/25/01	FIXED	JavaScreen: if cursor movement is disallowed in
 			a view, the user shouldn't be able to drag the
 			drawn cursor, and no command should be sent to
 			the devised. (rkw)

@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2001/09/25 18:49:11  wenger
+// Fixed bug 689 (JS no longer draws a rubberband line on mouse drags in
+// non-zoomable views); found bugs 693-695.
+//
 // Revision 1.78  2001/05/11 20:36:04  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -351,6 +355,7 @@ public class DEViseCanvas extends Container
     public String helpMsg = null;
     public int helpMsgX = -1, helpMsgY = -1;
 
+    //TEMP -- what are these? op is old point???
     Point sp = new Point(), ep = new Point(), op = new Point();
 
     private int mouseDragCount = 0;
@@ -366,6 +371,14 @@ public class DEViseCanvas extends Container
     private boolean buttonIsDown = false;
 
     private static final int DEBUG = 0; // 0 - 3
+
+    // Various zoom modes.  Note that _zoomMode is only valid while the
+    // mouse button is down or has just been released.
+    private static final int ZOOM_MODE_NONE = 0;
+    private static final int ZOOM_MODE_X = 1;
+    private static final int ZOOM_MODE_Y = 2;
+    private static final int ZOOM_MODE_XY = 3;
+    private static int _zoomMode = ZOOM_MODE_NONE;
 
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
@@ -902,6 +915,13 @@ public class DEViseCanvas extends Container
                 w = ep.x - x0;
             }
 
+	    // If not zooming in the X direction, the zoom box should
+	    // fill the whole data area horizontally.
+	    if (_zoomMode != ZOOM_MODE_X && _zoomMode != ZOOM_MODE_XY) {
+	        x0 = activeView.viewDataLoc.x + activeView.viewLocInCanvas.x;
+		w = activeView.viewDataLoc.width;
+	    }
+
             if (sp.y > ep.y)  {
                 y0 = ep.y;
                 h = sp.y - y0;
@@ -910,10 +930,19 @@ public class DEViseCanvas extends Container
                 h = ep.y - y0;
             }
 
-            if (w < 4)
+	    // If not zooming in the Y direction, the zoom box should
+	    // fill the whole data area vertically.
+	    if (_zoomMode != ZOOM_MODE_Y && _zoomMode != ZOOM_MODE_XY) {
+	        y0 = activeView.viewDataLoc.y + activeView.viewLocInCanvas.y;
+		h = activeView.viewDataLoc.height;
+	    }
+
+            if (w < 4) {
                 w = 4;
-            if (h < 4)
+	    }
+            if (h < 4) {
                 h = 4;
+	    }
 
             gc.setColor(Color.yellow);
             gc.drawRect(x0, y0, w - 1, h - 1);
@@ -1231,6 +1260,13 @@ public class DEViseCanvas extends Container
             }
 
             checkMousePos(sp, true);
+
+	    // Control-drag is X-only zoom.
+            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+	        _zoomMode = ZOOM_MODE_X;
+	    } else {
+	        _zoomMode = ZOOM_MODE_XY;
+	    }
         }
 
         public void mouseReleased(MouseEvent event)
@@ -1320,7 +1356,7 @@ public class DEViseCanvas extends Container
 
                     jscreen.guiAction = true;
                     dispatcher.start(cmd);
-                } else if (activeView.isRubberBand) { // rubber band
+                } else if (activeView.isRubberBand) { // rubber band (zoom)
                     ep.x = activeView.translateX(p.x, 1);
                     ep.y = activeView.translateY(p.y, 1);
 
@@ -1336,29 +1372,37 @@ public class DEViseCanvas extends Container
 
                     if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
 		      h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
-                        cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
-			  " " + activeView.getCurlyName() + " " +
-			  activeView.translateX(sp.x, 2) + " " +
-			  activeView.translateY(sp.y, 2) + " " +
-			  activeView.translateX(ep.x, 2) + " " +
-			  activeView.translateY(ep.y, 2);
+			try {
+                            cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
+			      " " + activeView.getCurlyName() + " " +
+			      activeView.translateX(sp.x, 2) + " " +
+			      activeView.translateY(sp.y, 2) + " " +
+			      activeView.translateX(ep.x, 2) + " " +
+			      activeView.translateY(ep.y, 2);
 
-                        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
-                            cmd = cmd + " 1";
-                        } else {
-                            cmd = cmd + " 0";
-                        }
+			    // Alt-drag zooms out.
+                            if (jsc.jsValues.canvas.lastKey ==
+			      KeyEvent.VK_ALT) {
+                                cmd = cmd + " 1";
+                            } else {
+                                cmd = cmd + " 0";
+                            }
 
-			//Zoom in X only direction - modified by Ven
+			    if (_zoomMode == ZOOM_MODE_X) {
+                                cmd = cmd + " 1";
+                            } else if (_zoomMode == ZOOM_MODE_XY) {
+                                cmd = cmd + " 0";
+                            } else {
+			        throw new YError("Illegal zoom mode (" +
+			          _zoomMode + ")");
+			    }
 
-                        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
-                            cmd = cmd + " 1";
-                        } else {
-                            cmd = cmd + " 0";
-                        } 
-
-                        jscreen.guiAction = true;
-                        dispatcher.start(cmd);
+                            jscreen.guiAction = true;
+                            dispatcher.start(cmd);
+			} catch (YError err) {
+			    System.err.println(err.getMessage());
+			}
+			_zoomMode = ZOOM_MODE_NONE;
                     }
                 }
 
@@ -1400,7 +1444,7 @@ public class DEViseCanvas extends Container
 			  activeView.translateX(p.x, 2) + " " +
 			  activeView.translateY(p.y, 2);
 		    }
-                } else {
+                } else if (activeView.isCursorMove) {
                     DEViseCursor cursor = activeView.getFirstCursor();
 
                     if (cursor != null && (cursor.isXMovable ||
@@ -1615,7 +1659,7 @@ public class DEViseCanvas extends Container
                 // inside the data area but not within any cursor, you
 		// can draw rubber band or get the records at that data point
                  tmpCursor = DEViseUIGlobals.rbCursor; 
-            } else if( isInViewDataArea && view.viewDimension == 3){
+            } else if (isInViewDataArea && view.viewDimension == 3) {
 		 tmpCursor = DEViseUIGlobals.defaultCursor;
 	    } else if (isInViewDataArea && selectedCursor != null) {
                 switch (whichCursorSide) {
@@ -1770,19 +1814,21 @@ public class DEViseCanvas extends Container
             }
         }
 
-        for (int i = 0; i < v.viewCursors.size(); i++) {
-            DEViseCursor cursor = (DEViseCursor)v.viewCursors.elementAt(i);
-            int cursorSide = cursor.inCursor(p);
-	    if (cursorSide != DEViseCursor.sideNone) {
-                activeView = v;
-                whichCursorSide = cursorSide;
-                if (DEBUG >= 3) System.out.println(
-		  "Setting selected cursor to " + cursor.name);
-                selectedCursor = cursor;
-                isInViewDataArea = true;
-                return true;
+	if (v.isCursorMove) {
+            for (int i = 0; i < v.viewCursors.size(); i++) {
+                DEViseCursor cursor = (DEViseCursor)v.viewCursors.elementAt(i);
+                int cursorSide = cursor.inCursor(p);
+	        if (cursorSide != DEViseCursor.sideNone) {
+                    activeView = v;
+                    whichCursorSide = cursorSide;
+                    if (DEBUG >= 3) System.out.println(
+		      "Setting selected cursor to " + cursor.name);
+                    selectedCursor = cursor;
+                    isInViewDataArea = true;
+                    return true;
+                }
             }
-        }
+	}
 
         for (int i = 0; i < v.viewPiledViews.size(); i++) {
             DEViseView vv = (DEViseView)v.viewPiledViews.elementAt(i);
