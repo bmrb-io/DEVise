@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/02/09 21:12:19  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.25  1997/12/04 04:05:19  donjerko
   *** empty log message ***
 
@@ -113,28 +116,6 @@ static int my_yyinput(char* buf, int max_size){
 
 #undef YY_INPUT
 #define YY_INPUT(buf, result, max_size) (result = my_yyinput(buf, max_size))
-
-string* stripSQLQuotes(const char* input){
-	string* retVal = new string;
-	char quote = input[0];
-	bool escape = false;
-	for(int i = 1; input[i] != '\0'; i++){
-		if(input[i] == quote){
-			if(!escape){
-				escape = true;
-			}
-			else{
-				*retVal += quote;
-				escape = false;
-			}
-		}
-		else{
-			assert(!escape);  // this should never fail
-			*retVal += input[i];
-		}
-	}
-	return retVal;
-}
 
 %}
 

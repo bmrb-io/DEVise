@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/12/04 04:05:17  donjerko
+  *** empty log message ***
+
   Revision 1.12  1997/11/12 23:17:37  donjerko
   Improved error checking.
 
@@ -190,6 +193,28 @@ string* dupStrArr(const string* inp, int numFlds){
 	string* retVal = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		retVal[i] = inp[i];
+	}
+	return retVal;
+}
+
+string* stripSQLQuotes(const char* input){
+	string* retVal = new string;
+	char quote = input[0];
+	bool escape = false;
+	for(int i = 1; input[i] != '\0'; i++){
+		if(input[i] == quote){
+			if(!escape){
+				escape = true;
+			}
+			else{
+				*retVal += quote;
+				escape = false;
+			}
+		}
+		else{
+			assert(!escape);  // this should never fail
+			*retVal += input[i];
+		}
 	}
 	return retVal;
 }

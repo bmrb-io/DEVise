@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/12/04 04:05:17  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/11/12 23:17:38  donjerko
   Improved error checking.
 
@@ -68,6 +71,8 @@ void stripQuotes(istream& in, string& val);	// obsolete, can throw excetion
 void stripQuotes(istream& in, char* buf, size_t bufsz);// can throw excetion
 
 string addQuotes(const string& in);
+
+string* stripSQLQuotes(const char* input);
 
 string addSQLQuotes(const char* inp, char quote);
 

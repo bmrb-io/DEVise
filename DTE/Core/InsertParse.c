@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/12/04 04:05:10  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/11/12 23:17:24  donjerko
   Improved error checking.
 
@@ -65,7 +68,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-// #define DEBUG
+#define DEBUG
 
 Iterator* InsertParse::createExec(){
 
@@ -98,16 +101,19 @@ Iterator* InsertParse::createExec(){
 	assert(fieldList->cardinality() == 1);
 	ConstantSelection* sel = fieldList->get();
 	string tmp = sel->toString();
-	size_t bufLen = tmp.size() + 1;
-	char* inStr = new char[bufLen];
-	stripQuotes(tmp.c_str(), inStr, bufLen);
 #if defined(DEBUG)
-	cerr << "Appending to the file: " << inStr << endl;
+	cerr << "got string: " << tmp << endl;
+#endif
+	size_t bufLen = tmp.size() + 1;
+	// char* inStr = new char[bufLen];
+	string* inStr = stripSQLQuotes(tmp.c_str());
+#if defined(DEBUG)
+	cerr << "Appending to the file: " << *inStr << endl;
 #endif
 //	TRY(site->writeOpen(), NULL);
-	site->append(inStr);
+	site->append(inStr->c_str());
 	site->writeClose();
 	delete site;
-	delete [] inStr;
+	delete inStr;
 	return 0;
 }
