@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:06:04  jussi
+  Added copyright notice and made small fixes.
+
   Revision 1.2  1995/09/05 21:12:57  jussi
   Added/updated CVS header.
 */
@@ -136,7 +139,7 @@ static int GetMonth(char *month)
   }
 
   /* not found */
-  fprintf(stderr,"unknown month %s\n", month);
+  fprintf(stderr, "unknown month %s\n", month);
   Exit::DoExit(2);
 
   // make compiler happy
@@ -145,35 +148,26 @@ static int GetMonth(char *month)
 
 int ParseFloatDate(char *input, double &val)
 {
-  /*
-     printf("ParseFloatDate %s\n", input);
-  */
   char line[256];
   strcpy(line, input);
   char *ptr = line;
   for (; *ptr != '\0'; ptr++){
     if (isalpha(*ptr)) *ptr  = toupper(*ptr);
   }
-  /*
-     printf("after converting to upper: %s\n", line);
-  */
-  
+
   int numArgs;
   char **args;
-  Parse(line,numArgs, args);
-  /*
-     printf("gotd %d args\n", numArgs);
-  */
+  Parse(line, numArgs, args);
+
   struct tm timestr;
-  if (numArgs == 1){
+  if (numArgs == 1) {
     val = atof(args[0]);
-    /*
-       printf("val = %f\n", val);
-    */
     return 1;
   }
   else if (numArgs == 4) {
     if (strlen(args[0]) != 3)
+      goto error;
+    if (strlen(args[2]) != 4)
       goto error;
     if (strlen(args[3]) != 8)
       goto error;
@@ -186,18 +180,13 @@ int ParseFloatDate(char *input, double &val)
     timestr.tm_hour = atoi(args[3]);
     timestr.tm_min = atoi(&args[3][3]);
     timestr.tm_sec = atoi(&args[3][6]);
-    
+    timestr.tm_isdst = -1;
+
     val = (double)mktime(&timestr);
-    /*
-       printf("val = %f\n", val);
-    */
     return 1;
   }
 
  error:
   val = 0.0;
-  /*
-     printf("error val = 0\n" );
-  */
   return 0;
 }
