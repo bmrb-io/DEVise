@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/09/26 18:55:43  jussi
+  Added support for 64-bit file offsets. Tape commands are now
+  executed in a subprocess or thread which increases parallelism
+  in the system.
+
   Revision 1.6  1996/07/18 02:20:01  jussi
   Made this compile in Ultrix.
 
@@ -52,7 +57,7 @@
 //#define THREAD_TASK                     // use threads
 
 #ifdef SOLARIS
-#define THREAD_TASK
+//#define THREAD_TASK
 #endif
 
 #ifdef TAPE_DEBUG

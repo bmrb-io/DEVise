@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/09/27 21:09:38  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.10  1996/09/19 19:32:52  wenger
   Devise now complains about illegal command-line flags (fixes bug 042).
 
@@ -80,7 +86,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.10";
+static const char *	version = "1.1.11";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/09/26 18:54:00  jussi
+#  Added -lpthread to get thread support.
+#
 #  Revision 1.11  1996/08/09 15:40:35  wenger
 #  Modified makefiles to allow making static and Purify'd executables.
 #
@@ -44,7 +47,7 @@
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST  = -lsocket -lnsl -lpthread
+ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -lpthread -static
 # Note: Purify is not available on Pentium/Solaris.
 #ARCH_COLLECTOR	= /usr/ccs/bin/ld

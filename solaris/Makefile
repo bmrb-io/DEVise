@@ -3,7 +3,7 @@
 #
 
 MODULES = graphics graphics.new tape issm compustat crsp parser \
-	generic attrproj multi
+	generic attrproj devread multi
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp
 
@@ -13,7 +13,7 @@ all clean mostlyclean:
 libs:
 	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
 
-.PHONY: generic devise multi attrproj
+.PHONY: generic devise multi attrproj devread
 
 generic: libs
 	cd generic; make generic; cd ..
@@ -26,6 +26,9 @@ multi: libs
 
 attrproj:
 	cd attrproj; make all; cd ..
+
+devread:
+	cd devread; make all; cd ..
 
 pure: libs
 	cd generic; make pure; cd ..
