@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1998/02/20 20:43:03  wenger
+#  Changed color and utils libraries to new export directory scheme for
+#  dealing with include files (email with complete explanation forthcoming).
+#
 #  Revision 1.44  1998/02/19 23:24:35  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -159,10 +163,10 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../cslib
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
 
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
-	-L../color -L../utils -L../issm \
+	-L../color -L../utils -L../issm -L../csgroup\
 	-L../crsp -L../compustat -L../LM -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
-	-ldte -lrtree -lgraphicsnew \
+	-ldte -lrtree -lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
 	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
@@ -220,8 +224,8 @@ generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 
 DEVISED = $(CC) -o $@ generic.o StateMap.o CompDate.o \
-		$(ARCH_LDFLAGS) -L../graphics.new -L../csgroup \
-		-lserver -lcsgroup $(LDFLAGS) $(ARCH_LDPOST) -lcsgroup
+		$(ARCH_LDFLAGS) -L../graphics.new\
+		-lserver $(LDFLAGS) $(ARCH_LDPOST) -lcsgroup -lclient
 
 devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB) 
 	$(FORCE_DATE)
@@ -233,7 +237,7 @@ devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 
 
 DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
-	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup \
+	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup -lclient \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 devise: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a
@@ -245,7 +249,8 @@ devise.pure: devise.o $(CLIENTLIB) DeviseClient.o
 	$(PURIFY) $(PURE_OPT) $(DEVISE)
 
 COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o $(ARCH_LDFLAGS) \
-	-L../csgroup -L../graphics.new $(ARCH_SYSLIBS) -lcsgroup $(ARCH_LDPOST) 
+	-L../csgroup -L../graphics.new $(ARCH_SYSLIBS) -lcsgroup -lclient\
+	$(ARCH_LDPOST) 
 
 collaborator: collaborator.o $(SERVERLIB) 
 	$(COLLABORATOR)
@@ -254,7 +259,8 @@ collaborator.pure: ../csgroup/main.o $(SERVERLIB)
 	$(PURIFY) $(PURE_OPT) $(COLLABORATOR)
 
 DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
-	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup $(ARCH_LDPOST)
+	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup $(ARCH_LDPOST)\
+	-lclient
 
 deviseb.o:../../generic/deviseb.C 
 	$(CC) -c $(CFLAGS) $<
