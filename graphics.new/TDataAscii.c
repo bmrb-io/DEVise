@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/07/12 21:54:00  jussi
+  Buffer data sources are not checkpointed.
+
   Revision 1.33  1996/07/12 19:36:08  jussi
   Modified code to handle derived data sources whose data is
   in a buffer but whose 'type' is one of many possible derived
@@ -161,7 +164,6 @@
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DataSourceBuf.h"
-#include "DerivedDataSource.h"
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
@@ -171,6 +173,7 @@
 #else
 #   include "Init.h"
 #   include "DataSourceWeb.h"
+#   include "DerivedDataSource.h"
 #endif
 
 # define  _STREAM_COMPAT
@@ -261,12 +264,16 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
     }
   }
   else if (!strcmp(_type, "BUFFER")
-           || DerivedDataSource::IsDerivedDataType(_type))
+#ifndef ATTRPROJ
+           || DerivedDataSource::IsDerivedDataType(_type)
+#endif
+           )
   {
     // For regular BUFFER data sources, _param is a pointer to the buffer
 
     char *dataBuf = _param;
 
+#ifndef ATTRPROJ
     // For derived data sources, map the name of the data source
     // to a pointer to the buffer associated with that source
 
@@ -276,6 +283,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
             fprintf(stderr, "Cannot get data buffer for %s %s\n",
                     _type, _param);
     }
+#endif
 
     DOASSERT(dataBuf, "Invalid buffer data source");
 
