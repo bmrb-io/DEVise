@@ -250,6 +250,14 @@ first ~10 lines of a corresponding data file. (ml/rkw 11/12/96)
 
 Switch positions of 'hi' and 'lo' in schema editor. (ml/rkw 11/12/96)
 
+Eliminate color names (do everything by RGB).  (See notes in
+graphics/PostScript.doc.)  (ml/rkw 11/12/96)
+
+'Apply' button in mapping window. (ml/rkw 11/12/96)
+
+Be able to set view foreground and background colors in the mapping
+window. (ml/rkw 11/12/96)
+
 
 COMPLETED
 ---------
