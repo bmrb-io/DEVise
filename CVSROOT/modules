@@ -44,6 +44,7 @@ dte		-a DTE DataReader unidata graphics graphics.new \
 devise		-a DTE DataReader LM Makefile.common README RTree \
 			aix alpha_osf20 compustat crsp csgroup cslib \
 			design_doc doc generic graphics graphics.new hp \
-			issm lib linux public releases run run_public \
+			issm lib linux pmax_ul43a public releases run \
+			run_public \
 			scripts sgi solaris solsparc src sun tape test \
 			unidata util winnt xvertext
