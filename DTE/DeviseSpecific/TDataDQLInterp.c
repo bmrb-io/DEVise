@@ -37,7 +37,7 @@
 #include "TuplePtr.XPlex.h"
 #include "queue.h"
 
-#define DEBUG
+// #define DEBUG
 
 TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 	char* tableName, const char* query) : _attrs(tableName)
@@ -143,9 +143,33 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
      _numFlds = engine.getNumFlds();
      _types = engine.getTypeIDs();
      Tuple* tup;
+	Tuple* highTup = new Tuple[_numFlds];
+	Tuple* lowTup = new Tuple[_numFlds];
 
 	engine.initialize();
+	Tuple* firstTup = engine.getNext();
+	if(firstTup){
+		for(int i = 0; i < _numFlds; i++){
+			lowTup[i] = firstTup[i];
+			highTup[i] = firstTup[i];
+		}
+          _result.add_high(firstTup);
+	}
+	OperatorPtr* lessPtrs = new OperatorPtr[_numFlds];
+	OperatorPtr* greaterPtrs = new OperatorPtr[_numFlds];
+     for(int i = 0; i < _numFlds; i++){
+          TypeID retVal;
+		GeneralPtr* tmp;
+          TRY(tmp = getOperatorPtr("<",_types[i],_types[i],retVal), NULL);
+		assert(tmp);
+		lessPtrs[i] = tmp->opPtr;
+          TRY(tmp = getOperatorPtr(">",_types[i],_types[i],retVal), NULL);
+		assert(tmp);
+		greaterPtrs[i] = tmp->opPtr;
+     }
+
      while((tup = engine.getNext())){
+		updateHighLow(_numFlds, lessPtrs, greaterPtrs, tup, highTup, lowTup);
           _result.add_high(tup);
      }
 
@@ -169,8 +193,10 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 		int deviseSize = packSize(_result[0][i], _types[i]);
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
+		AttrVal* hiVal = (AttrVal*) highTup[i];
+		AttrVal* loVal = (AttrVal*) lowTup[i];
 		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
-			deviseType, false, 0, false, false, false, 0, false, 0); 
+			deviseType, false, 0, false, false, true, hiVal, true, loVal); 
 		offset += deviseSize;
 	}
 
