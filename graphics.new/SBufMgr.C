@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/12/11 04:25:43  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
   Revision 1.18  1997/12/04 04:06:12  donjerko
   *** empty log message ***
 
@@ -1218,13 +1222,13 @@ int CacheMgrLRU::PickVictim()
 
         // found victim page (might be dirty)
 
+        int status;
+
 #ifndef SBM_SHARED_MEMORY
-        int status = _ht.remove(frame.addr);
+        status = _ht.remove(frame.addr);
         if (status < 0)
             return status;
 #endif
-
-        int status;
 
         if (frame.dirty) {              // page has unwritten data on it
             DOASSERT(frame.page, "Invalid page address");

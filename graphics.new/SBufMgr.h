@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/03 20:42:16  jussi
+  Moved memory management stuff to MemMgr.C. Introduced better types
+  for stream position (streampos_t), byte count (bytecount_t) and
+  request size (iosize_t).
+
   Revision 1.11  1996/11/23 21:05:01  jussi
   MemMgr now manages multi-page chunks instead of single pages.
 
@@ -74,9 +79,12 @@
 #ifndef SBufMgr_h
 #define SBufMgr_h
 
-#define SBM_PROCESS
+// These flags are now defined in the appropriate architecture-specific
+// makefile (e.g., solaris/Makfile.config) so that we can configure
+// this class differently depending on the architecture.
+//#define SBM_PROCESS
 //#define SBM_THREAD
-#define SBM_SHARED_MEMORY
+//#define SBM_SHARED_MEMORY
 
 #if !defined(SBM_PROCESS) && !defined(SBM_THREAD)
 #error "Must use either process or thread tasks"
