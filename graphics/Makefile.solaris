@@ -572,11 +572,12 @@ ViewWin.o: /usr/include/sys/time.h /usr/include/sys/time.h WindowRep.h
 ViewWin.o: /usr/include/stdlib.h Geom.h /usr/include/math.h
 ViewWin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
 ViewWin.o: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
-ViewWin.o: DevError.h DualWindowRep.h Display.h Dispatcher.h
+ViewWin.o: DevError.h DualWindowRep.h View.h Dispatcher.h
 ViewWin.o: /usr/include/unistd.h /usr/include/sys/unistd.h Journal.h
-ViewWin.o: ColorMgr.h ClassDir.h Control.h Init.h BufPolicy.h
-ViewWin.o: ../graphics.new/Version.h Util.h /usr/include/ctype.h PSDisplay.h
-ViewWin.o: ETkIfc.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ViewWin.o: Control.h ClassDir.h ViewCallback.h AttrList.h Init.h BufPolicy.h
+ViewWin.o: Cursor.h DevFont.h Display.h ColorMgr.h ../graphics.new/Version.h
+ViewWin.o: Util.h /usr/include/ctype.h PSDisplay.h ETkIfc.h Xdef.h
+ViewWin.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ViewWin.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 ViewWin.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
 WinClassInfo.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h

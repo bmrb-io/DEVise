@@ -5,10 +5,11 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-Templates.o: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
-Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-Templates.o: /usr/include/sys/stdsyms.h ../graphics/VisualArg.h
+Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
+Templates.o: /usr/include/sys/time.h /usr/include/sys/stdsyms.h
+Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
+Templates.o: /usr/include/values.h ../graphics/DevStatus.h
+Templates.o: /usr/include/sys/types.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics/Pattern.h
 Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
@@ -25,12 +26,12 @@ Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
 Templates.o: /usr/include/limits.h /usr/include/sys/stat.h
 Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 Templates.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-Templates.o: /usr/include/sys/time.h /usr/include/machine/spl.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-Templates.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-Templates.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-Templates.o: /usr/include/netinet/in.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+Templates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Templates.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+Templates.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
+Templates.o: ../graphics.new/RangeInfo.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/stat.h
 devtype.o: /usr/include/sys/stdsyms.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/unistd.h

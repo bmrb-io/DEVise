@@ -1108,12 +1108,12 @@ QueryProc.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 QueryProc.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 QueryProc.o: UpdateLink.h VisualLink.h Action.h PointStorage.h TDataMap.h
 QueryProc.o: ShapeID.h GDataRec.h
-QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
-QueryProcFull.o: /usr/include/values.h ../graphics/DevStatus.h
-QueryProcFull.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-QueryProcFull.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-QueryProcFull.o: /usr/include/sys/select.h /usr/include/sys/time.h
-QueryProcFull.o: /usr/include/sys/time.h ../graphics/VisualArg.h
+QueryProcFull.o: QueryProcFull.h /usr/include/sys/time.h
+QueryProcFull.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+QueryProcFull.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+QueryProcFull.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+QueryProcFull.o: QueryProc.h ../graphics/DeviseTypes.h /usr/include/values.h
+QueryProcFull.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
 QueryProcFull.o: ../graphics/Color.h ../graphics/Pattern.h RecId.h QPRange.h
 QueryProcFull.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcFull.o: ../graphics/Dispatcher.h /usr/include/stdio.h

@@ -4,12 +4,12 @@ depend:
 		*.C
 # DO NOT DELETE
 
-Templates.o: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
-Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-Templates.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
+Templates.o: /usr/include/sys/feature_tests.h /usr/include/sys/time.h
+Templates.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 Templates.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Templates.o: /usr/include/sys/time.h /usr/include/sys/time.h
+Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
+Templates.o: /usr/include/values.h ../graphics/DevStatus.h
 Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
 Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
@@ -47,11 +47,11 @@ devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 devtype.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-devtype.o: /usr/include/sys/time.h
+devtype.o: /usr/include/time.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
 tapedrive.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 tapedrive.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/time.h
 tapedrive.o: /usr/include/sys/unistd.h /usr/include/string.h tapedrive.h
 tapedrive.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
@@ -81,7 +81,7 @@ testtape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
 testtape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 testtape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 testtape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-testtape.o: /usr/include/sys/time.h /usr/include/sys/param.h
+testtape.o: /usr/include/time.h /usr/include/sys/param.h
 testtape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 testtape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
@@ -104,7 +104,7 @@ vertape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
 vertape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 vertape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 vertape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-vertape.o: /usr/include/sys/time.h /usr/include/sys/param.h
+vertape.o: /usr/include/time.h /usr/include/sys/param.h
 vertape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 vertape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
