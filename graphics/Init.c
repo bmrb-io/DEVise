@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.64  2001/04/12 20:14:59  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.63  2001/01/08 20:32:42  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -494,11 +500,12 @@ void Init::DoInit(int &argc, char **argv)
 
   // Set the DEVISE_EXACT_TMP for use in data source definitions for
   // data generated 'on-the-fly' by an external process.
-  if (snprintf(buf, bufSize, "DEVISE_EXACT_TMP=%s", _tmpDir) >= bufSize) {
+  static char envBuf[bufSize]; // must be static for putenv()!!
+  if (snprintf(envBuf, bufSize, "DEVISE_EXACT_TMP=%s", _tmpDir) >= bufSize) {
     reportErrNosys("String for setting DEVISE_EXACT_TMP environment "
         "variable is too long");
   } else {
-    if (putenv(buf) != 0) {
+    if (putenv(envBuf) != 0) {
       reportErrSys("Can't set DEVISE_EXACT_TMP environment variable");
     }
   }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  2001/04/12 20:15:14  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.11  2001/01/08 20:32:55  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -314,6 +320,7 @@ VisualLinkClassInfo::Dump(FILE *fp)
       if (!followerAttr) followerAttr = "";
       fprintf(fp, "set (%s/%s)", leaderAttr, followerAttr);
     }
+    if (flag & VISUAL_EXTDATA) fprintf(fp, "external data ");
     fprintf(fp, "\n");
 
     ViewGraph *view = _link->GetMasterView();

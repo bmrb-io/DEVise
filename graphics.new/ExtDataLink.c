@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  2001/04/12 20:16:30  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
  */
 
 #define _ExtDataLink_C_
@@ -53,7 +59,7 @@ ExtDataLink::~ExtDataLink()
 }
 
 //-----------------------------------------------------------------------------
-// descriptionTEMPTEMP
+// Initialize the link -- not really needed for this type of link.
 void
 ExtDataLink::Initialize()
 {
@@ -87,7 +93,7 @@ ExtDataLink::Done()
 }
 
 //-----------------------------------------------------------------------------
-// descriptionTEMPTEMP
+// Abort the link -- not really needed for this type of link.
 void
 ExtDataLink::Abort()
 {

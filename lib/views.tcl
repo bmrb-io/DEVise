@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.63  2001/03/15 20:34:26  wenger
+#  Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bug 645 (problem with window duplication).
+#
 #  Revision 1.62  2001/01/08 20:33:04  wenger
 #  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 #  back onto the trunk.
@@ -968,6 +971,9 @@ proc DoLinkCreate { isRec } {
 		# Record link, negative.
 		set flag 128
 		set negative_record 1
+	    } elseif { $flag == 16 } {
+		# External data link.
+		set flag 2048
 	    }
 
 	    # Make sure the user specified a link name.
@@ -1052,21 +1058,32 @@ proc DisplayLinkInfo { link } {
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
 		          [list Leader 10 $master] ]
-    } elseif { $flag == 1024 } {
+    #} elseif { $flag == 1024 } {
+	## Convert flag value from C++ enum to graphics bitmap.
+	#set flag 8
+
+	#set type "TData Attribute"
+	#set master [DEVise getLinkMaster $link]
+	#set labels [list  [list Type 10 "$type Link" ] \
+		          #[list Leader 10 $master] ]
+
+    } elseif { $flag == 2048 } {
 	# Convert flag value from C++ enum to graphics bitmap.
 	set flag 8
 
-	set type "TData Attribute"
+	set type "External Data"
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
 		          [list Leader 10 $master] ]
+
     } else {
 	set type "Visual"
 	set labels [list [list Type 10 "$type Link" ] ]
     }
     dialogInfo .linkInfo "Link Info" "Views linked by $link" "" \
     	    0 OK $views  $labels  \
-	    [list $flag 40 2 2 col x y record {tdata attr} ]
+	    [list $flag 40 2 2 col x y record {ext data} ]
+	    #[list $flag 40 2 2 col x y record {tdata attr} ]
     # quick hash - actually should write general purpose widgets to do  
     # selections with multiple kinds of widgets in one window
 }
@@ -2626,7 +2643,8 @@ proc LinkViewMsg {} {
 
     # Figure out whether the link is a master/slave link.
     set linkFlag [DEVise getLinkFlag $currentLink]
-    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024]
+    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024 || \
+      $linkFlag == 2048]
 
     # Figure out the right message to show.
     if { $isMasterSlaveLink } {
@@ -2667,7 +2685,8 @@ proc LinkSelectedView {} {
     # Figure out whether the link is a master/slave link.
     #
     set linkFlag [DEVise getLinkFlag $currentLink]
-    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024]
+    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024 || \
+      $linkFlag == 2048]
 
     if { $linkViewStatus == 1 } {
 

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1999
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.55  1999/12/03 22:16:26  wenger
+#       Reduced the number of commands required to update the mapping dialog.
+#
 #       Revision 1.54  1999/08/10 20:15:11  wenger
 #       Parent views can now control the titles of view symbols.
 #
@@ -867,6 +870,30 @@ proc UpdateShapeAttrs { w shape } {
 
 	    pack forget $w.mapping.label.pShapeAttr10
 	    pack forget $w.mapping.value.pShapeAttr10
+    } elseif {$shape == "RectX"} {
+		$w.mapping.label.pShapeAttr5 config -text "Program"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "Output File"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "Arg 1"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "Arg 2"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+		$w.mapping.label.pShapeAttr9 config -text "Arg 3"
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+
+		$w.mapping.label.pShapeAttr10 config -text "Arg 4"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	} else {
 	    pack forget $w.mapping.label.pShapeAttr5
 	    pack forget $w.mapping.value.pShapeAttr5

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.67  2000/07/12 20:49:35  wenger
+#  Added first version of metavisualization session description; changed
+#  DEVise version to 1.7.1.
+#
 #  Revision 1.66  2000/04/19 16:16:36  wenger
 #  Found and fixed bug 579 (crash if opening session fails); found bug
 #  580; better handling of session opening errors on the Tcl side;
@@ -563,12 +567,14 @@ proc LinkSet {} {
 
 ############################################################
 #list of all record and TData attribute links
+#Note: this is really leader/follower links, not just record links.
 proc RecordLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set recLinkSet {}
     foreach link $linkSet {
         set flag [DEVise getLinkFlag $link]
-        if { [expr $flag & 128] || [expr $flag & 1024] } {
+        if { [expr $flag & 128] || [expr $flag & 1024] || \
+	  [expr $flag & 2048]} {
             lappend recLinkSet $link
         }
     }
@@ -1321,6 +1327,10 @@ proc UpdateLinkCursorInfo {} {
       set masterAttr [DEVise getLinkMasterAttr $link]
       set slaveAttr [DEVise getLinkSlaveAttr $link]
       set type "Set ($masterAttr/$slaveAttr)"
+      set masterView [DEVise getLinkMaster $link]
+      set slaveStr "follower"
+    } elseif {$flag == 2048} {
+      set type "External Data"
       set masterView [DEVise getLinkMaster $link]
       set slaveStr "follower"
     } else {

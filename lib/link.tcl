@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1998
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  2001/01/08 20:33:04  wenger
+#	Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#	back onto the trunk.
+#	
 #	Revision 1.2.2.1  2000/10/18 20:35:22  wenger
 #	Merged changes from fixed_bug_616 through link_gui_improvements onto
 #	the branch.
@@ -39,6 +43,7 @@
 #   2: Y link
 #   4: Record link, positive
 #   8: Record link, negative
+#   16: External data link
 proc CreateLink { flag } {
 	global button dialogCkButVar dialogCkButInternalVar
 
@@ -76,7 +81,7 @@ proc CreateLink { flag } {
 	# Create a checkbutton for each of the items
 	# First element of each is name, second is text to show in GUI.
 	set items {{x x} {y y} {record_positive "record (positive)"} \
-	  {record_negative "record (negative)"}}
+	  {record_negative "record (negative)"} {ext_data "external data"}}
 	set butNames ""
 	set varNames ""
 	set cnt 0
@@ -106,24 +111,34 @@ proc CreateLink { flag } {
 	.createLinkGUI.but_x configure -command { \
 	  set dialogCkButInternalVar(var_record_positive) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
+	  set dialogCkButInternalVar(var_ext_data) 0; \
 	}
 	.createLinkGUI.but_y configure -command { \
 	  set dialogCkButInternalVar(var_record_positive) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
+	  set dialogCkButInternalVar(var_ext_data) 0; \
 	}
 	.createLinkGUI.but_record_positive configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
+	  set dialogCkButInternalVar(var_ext_data) 0; \
 	}
 	.createLinkGUI.but_record_negative configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
 	  set dialogCkButInternalVar(var_record_positive) 0; \
+	  set dialogCkButInternalVar(var_ext_data) 0; \
+	}
+	.createLinkGUI.but_ext_data configure -command {
+	  set dialogCkButInternalVar(var_x) 0; \
+	  set dialogCkButInternalVar(var_y) 0; \
+	  set dialogCkButInternalVar(var_record_positive) 0; \
+	  set dialogCkButInternalVar(var_record_negative) 0; \
 	}
 
-	eval pack .createLinkGUI.entries $butNames -in .createLinkGUI.listFrame -side top \
-		-fill x -expand 1
+	eval pack .createLinkGUI.entries $butNames -in .createLinkGUI.listFrame \
+	    -side top -fill x -expand 1
 
 	# 3. Create a row of buttons at the bottom of the dialog.
 

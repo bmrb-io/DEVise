@@ -16,12 +16,21 @@
   Declaration of the ExtDataLink class.  This link is used similarly to
   a record link, in the case where the leader view runs an external
   process to generate data to be displayed in the follower view.
+  All this type of link really does is invalidate the TData of the follower
+  view when the leader view finishes drawing.  The link has no direct
+  effect on which records are displayed in the follower view.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  2001/04/12 20:16:30  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
  */
 
 #ifndef _ExtDataLink_h_
