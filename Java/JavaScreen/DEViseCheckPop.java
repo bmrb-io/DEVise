@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/09/10 21:08:11  xuk
+// Solve the client disconnection problem.
+//
 // Revision 1.7  2001/05/11 20:36:04  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -70,7 +73,7 @@ public class DEViseCheckPop
     //===================================================================
     // VARIABLES
 
-    private static final int DEBUG = 3;
+    private static final int DEBUG = 1;
     private static final int DEBUG_LOG = 2;
     private static final int RECEIVE_TIMEOUT = 5000; // millisec
 

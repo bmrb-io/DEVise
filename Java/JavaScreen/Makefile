@@ -97,5 +97,9 @@ clean:
 
 .PHONY: setup
 setup:
-	setup
+	./setup
 	make -f Makefile.setup setup
+
+.PHONY: install
+install:
+	make -f Makefile.setup install

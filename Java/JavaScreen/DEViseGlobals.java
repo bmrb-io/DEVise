@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2001/08/20 18:20:08  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.55  2001/05/21 17:15:19  wenger
 // Changed JS version to 4.3 because of package.
 //
@@ -214,7 +220,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("4.3");
+    public static final String VERSION = new String("4.4");
     public static final String PROTOCOL_VERSION = new String("7.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");

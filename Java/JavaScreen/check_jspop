@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  2001/07/20 18:04:14  wenger
+#  Added hostname to pid files.
+#
 #  Revision 1.24  2001/06/08 17:38:01  wenger
 #  Sh on pumori didn't like previous versions.
 #
@@ -152,7 +155,7 @@ fi
 
 
 # Check for appropriate pid file to see if a jspop process exists.
-pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
+pids=`ls $pidfile 2> /dev/null`
 
 foundPop=0
 for pid in $pids
@@ -170,7 +173,7 @@ then
 
   result=`check_connect -port$port 2>check_connect.err`
 
-  if [ $result = "OK" ]
+  if [ "$result" = "OK" ]
   then
     connected=1
   else

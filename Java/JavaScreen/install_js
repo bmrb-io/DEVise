@@ -188,6 +188,7 @@ cp -p bin/Tasvir $servdir/bin
 chmod 755 $servdir/bin/Tasvir
 
 # Install bin2 directory (java, perl, Xvfb *links*).
+chmod 755 bin2
 tar cf bin2.tar bin2
 set curdir = `pwd`
 cd $servdir
