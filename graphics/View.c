@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/04/16 20:07:01  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.30  1996/04/09 22:51:44  jussi
   Added SetOverrideColor() and GetOverrideColor().
 
@@ -258,7 +261,7 @@ View::~View()
     fprintf(stderr,
 	    "Destructor of subclass of View did not abort query (%s: %d)\n",
 	    __FILE__, __LINE__);
-    exit(1);
+    Exit::DoExit(1);
   }
 
   delete _label.name;
