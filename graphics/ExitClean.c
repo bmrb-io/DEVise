@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/16 19:45:36  jussi
+  Added DoAbort() method and DOASSERT macro.
+
   Revision 1.3  1996/01/11 21:52:06  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -33,9 +36,9 @@ void Exit::DoExit(int code)
   abort();
 }
 
-void Exit::DoAbort(char *reason)
+void Exit::DoAbort(char *reason, char *file, int line)
 {
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
-  fprintf(stderr, "  %s\n", reason);
+  fprintf(stderr, "  %s (%s:%d)\n", reason, file, line);
   DoExit(2);
 }
