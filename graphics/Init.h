@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/02/05 23:56:55  jussi
+  Added DEVise logo display.
+
   Revision 1.3  1996/01/27 00:22:11  jussi
   Added _postScript variable.
 
@@ -88,7 +91,7 @@ public:
      return name of script file to be executed
      after system has become idle
   */
-  static char *PostScript() { return _postScript; }
+  static char *BatchFile() { return _batchFile; }
 
 private:
 
@@ -109,7 +112,7 @@ private:
   static char *_workDir;    /* name of program */
   static char *_sessionName;
   static Boolean _dispLogo;
-  static char *_postScript;
+  static char *_batchFile;
   static long _progModTime; /* last time program was modified */
   static Boolean _randomize; /* TRUE if TData retrieval is randomized */
   static int _pageSize;

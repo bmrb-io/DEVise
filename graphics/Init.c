@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/16 20:06:58  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.10  1996/02/05 23:56:54  jussi
   Added DEVise logo display.
 
@@ -110,7 +113,7 @@ char *Init::_workDir = 0; /* name of work directory */
 char *Init::_tmpDir = 0;/* name of temp directory */
 char *Init::_sessionName = "session.tk";	/* name of program */
 Boolean Init::_dispLogo = true;
-char *Init::_postScript = 0;
+char *Init::_batchFile = 0;
 char *Init::_qpName = "default"; /* name of query processor */
 Boolean Init::_restore = false; /* TRUE if we need to restore a session file */
 long Init::_progModTime;	/* when program was modified */
@@ -157,7 +160,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t                lru, fifo, lifo, focal, or rnd\n");
   fprintf(stderr, "\t-existing yes_no: use existing buffers first or not\n");
   fprintf(stderr, "\t-norandom: don't randomize record retrieval\n");
-  fprintf(stderr, "\t-postscript file: script file to execute\n");
+  fprintf(stderr, "\t-batch file: batch file to execute\n");
   Exit::DoExit(1);
 }
 
@@ -221,10 +224,10 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
-      else if (strcmp(&argv[i][1], "postscript") == 0) {
+      else if (strcmp(&argv[i][1], "batch") == 0) {
 	if (i >= argc - 1)
 	  Usage(argv[0]);
-	_postScript = CopyString(argv[i + 1]);
+	_batchFile = CopyString(argv[i + 1]);
 	MoveArg(argc,argv,i,2);
       }
 
