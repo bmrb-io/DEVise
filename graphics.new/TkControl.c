@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1996/05/13 18:11:20  jussi
+  Emptied ViewCreated and ViewDestroyed and moved them to
+  the header file.
+
   Revision 1.50  1996/05/11 20:51:49  jussi
   Removed some unnecessary code.
 
@@ -207,9 +211,6 @@ Tcl_Interp *ControlPanelTclInterp = 0;
 Tk_Window ControlPanelMainWindow = 0;
 #endif
 
-extern GroupDir *gdir;
-ViewKGraph *vkg = 0;
-
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
@@ -221,7 +222,6 @@ extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 extern int www_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
 ControlPanel *GetTkControl()
@@ -294,8 +294,10 @@ void TkControlPanel::StartSession()
   Tcl_CreateCommand(_interp, "www_extract", www_extract, 0, 0);
 
   char *controlFile = "control.tk";
-  if (Init::BatchFile()) 
+  if (Init::BatchFile()) {
     controlFile = "batch.tcl";
+    SetBatchMode(true);
+  }
 
   char *envPath = getenv("DEVISE_LIB");
   char *control;
