@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:25:40  jussi
+  Class with virtual functions must have a virtual destructor.
+
   Revision 1.2  1995/12/05 17:05:36  jussi
   Removed #include "ViewGraph.h" and replaced it with forward class
   definition of ViewGraph. There was a circular inclusion problem now
@@ -37,7 +40,7 @@ class ViewGraph;
 class ViewStats
 {
 public:
-  ViewStats() {}
+  ViewStats() : _vw(0) {}
   virtual ~ViewStats() {}
 
   // Initialize the statistics collection
