@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.93  1997/08/21 21:06:38  donjerko
+#	Added Materialize button, added isDTEType to some code in views.tcl
+#
 #	Revision 1.92  1997/08/06 19:23:49  wenger
 #	Changed 'Image' to 'Pixels' in 'Define Visualization' dialog.
 #
@@ -648,8 +651,16 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
 	if { [isDTEType $stype] } {
 		set schema $sname
- 		set result [DEVise dteImportFileType $sname]
 		set topgrps [DEVise getTopGroups $sname]
+        	if {[llength $topgrps] == 0} {
+			set result [DEVise dteImportFileType $sname]
+		}
+		if {$tdata_exist == 0} {
+			# do nothing
+		} else { 
+			set result [DEVise getTDataName $sname]
+		}
+
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
 		#puts "topgrps = $topgrps"
