@@ -1,0 +1,79 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Release the client/server library.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#
+
+############################################################
+
+tarcslib
+
+set target = /p/devise/ClientServer
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+echo You are about to release YOUR copy of the cslib to the
+echo general public. The target directory is $target.
+echo ""
+echo The release includes example source code and Solaris/Sun/HP libraries.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+echo ""
+echo Executing release procedures...
+sleep 1
+
+echo ""
+echo Releasing new copy of client/server library...
+
+cp cslib.hp.tar $target
+cp cslib.solaris.tar $target
+cp cslib.solsparc.tar $target
+cp cslib.sun.tar $target
+
+cd $target
+
+tar xvf cslib.hp.tar
+mv Makefile Makefile.hp
+mv libcs.a libcs.hp700_ux90.a
+rm cslib.hp.tar
+
+tar xvf cslib.solaris.tar
+mv Makefile Makefile.solaris
+mv libcs.a libcs.sunx86_55.a
+rm cslib.solaris.tar
+
+tar xvf cslib.solsparc.tar
+mv Makefile Makefile.solsparc
+mv libcs.a libcs.sun4x_55.a
+rm cslib.solsparc.tar
+
+tar xvf cslib.sun.tar
+mv Makefile Makefile.sun
+mv libcs.a libcs.sun4m_412.a
+rm cslib.sun.tar
