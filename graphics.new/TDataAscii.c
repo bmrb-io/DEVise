@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/12 15:24:45  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.8  1996/01/09 16:35:00  jussi
   Improved console output messages.
 
@@ -66,7 +69,7 @@ static char *MakeCacheName(char *file)
   char *fname = StripPath(file);
   unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
   char *name = new char[nameLen];
-  sprintf(name,"%s/%s.cache", Init::WorkDir(), fname);
+  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
   assert(strlen(name) < nameLen);
   return name;
 }
@@ -78,15 +81,15 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   _name = name;
   _recSize = recSize;
 
-  _file = fopen(name,"r");
-  if (_file ==NULL) {
-    fprintf(stderr,"TDataAscii: cannot open file '%s' ", name);
+  _file = fopen(name, "r");
+  if (_file == NULL) {
+    fprintf(stderr, "TDataAscii: cannot open file '%s': ", name);
     perror("fopen");
     Exit::DoExit(1);
   }
 
   struct stat sbuf;
-  if (fstat(fileno(_file),&sbuf) < 0) {
+  if (fstat(fileno(_file), &sbuf) < 0) {
     perror("fstat");
     Exit::DoExit(1);
   }
@@ -95,7 +98,6 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   
   _lastPos = 0;
   _currPos = 0;
-  _fileGrown = false;
 
   _totalRecs = 0;
   _recBuf = new char[recSize];
@@ -128,7 +130,17 @@ Boolean TDataAscii::HeadID(RecId &recId)
 Boolean TDataAscii::LastID(RecId &recId)
 {
   // see if file has grown
-  if (_fileGrown)
+  if (fseek(_file, 0, SEEK_END) < 0) {
+    perror("TDAtaAscii::LastID");
+    Exit::DoExit(1);
+  }
+  _currPos = ftell(_file);
+  if (_currPos < 0) {
+    perror("TDataAscii::Init:ftell");
+    Exit::DoExit(1);
+  }
+  
+  if (_currPos > _lastPos)
     BuildIndex();
   
   recId = _totalRecs - 1;
@@ -401,16 +413,18 @@ void TDataAscii::BuildIndex()
     if (fgets(buf, LINESIZE, _file) == NULL)
       break;
   
-    /* get rid of '\n' */
     int len = strlen(buf);
     if (len > 0 && buf[len - 1] == '\n') {
-      buf[len - 1] = '\0';
-    }
-    
-    if (IsValid(buf)) {
-      if (_totalRecs >= _indexSize)     // index buffer too small?
-	ExtendIndex();                  // extend it
-      _index[_totalRecs++] = _currPos;
+      buf[len - 1] = 0;
+      if (IsValid(buf)) {
+	if (_totalRecs >= _indexSize)     // index buffer too small?
+	  ExtendIndex();                  // extend it
+	_index[_totalRecs++] = _currPos;
+      } else {
+	printf("Ignoring invalid record: \"%s\"\n", buf);
+      }
+    } else {
+      printf("Ignoring incomplete record: \"%s\"\n", buf);
     }
 
     _currPos += len;
@@ -420,8 +434,6 @@ void TDataAscii::BuildIndex()
   if (_lastPos != _currPos)
     printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
   assert(_lastPos == _currPos);
-
-  _fileGrown = false;
 
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
@@ -499,7 +511,6 @@ void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
   }
 
   _currPos = _lastPos = ftell(_file);
-  _fileGrown = true;
 }
 
 void TDataAscii::WriteLine(void *line)
@@ -515,7 +526,6 @@ void TDataAscii::WriteLine(void *line)
   }
 
   _currPos = _lastPos = ftell(_file);
-  _fileGrown = true;
 }
 
 void TDataAscii::Cleanup()

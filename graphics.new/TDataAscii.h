@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 19:59:35  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.4  1995/11/24 21:35:24  jussi
   Added _currPos member.
 
@@ -189,7 +192,6 @@ private:
 	char *_name;                    // name of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
-	Boolean _fileGrown;             // true if file has grown
 	FILE *_file;                    // file pointer
 
 	RecId _lowId, _highId;          // current range to read data

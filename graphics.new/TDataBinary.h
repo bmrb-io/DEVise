@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/01/23 20:54:50  jussi
+  Initial revision.
+*/
 
 /* Textual data virtual base class */
 
@@ -143,7 +146,6 @@ private:
   long _totalRecs;                // total number of records
   char *_name;                    // name of file/dataset
   int _recSize;                   // size of record
-  Boolean _fileGrown;             // true if file has grown
   FILE *_file;                    // file pointer
 
   RecId _lowId, _highId;          // current range to read data

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/01/23 20:54:49  jussi
+  Initial revision.
+*/
 
 #include <iostream.h>
 #include <assert.h>
@@ -87,6 +90,28 @@ Boolean TDataBinary::HeadID(RecId &recId)
 
 Boolean TDataBinary::LastID(RecId &recId)
 {
+  // see if file has grown
+  if (fseek(_file, 0, SEEK_END) < 0) {
+    perror("TDAtaAscii::LastID");
+    Exit::DoExit(1);
+  }
+  _currPos = ftell(_file);
+  if (_currPos < 0) {
+    perror("TDataAscii::Init:ftell");
+    Exit::DoExit(1);
+  }
+  
+  if (_currPos > _lastPos) {
+    _lastPos = _currPos;
+    if (_lastPos % _recSize) {
+      fprintf(stderr,
+	      "Partial records in binary file: size %ld, record size %d\n",
+	      _lastPos, _recSize);
+      Exit::DoExit(2);
+    }
+    _totalRecs = _lastPos / _recSize;
+  }
+
   recId = _totalRecs - 1;
   return (_totalRecs > 0);
 }
@@ -165,22 +190,11 @@ int TDataBinary::GetModTime()
 
 void TDataBinary::Initialize()
 {
-  // seek to end of file and calculate how many records file has
-  if (fseek(_file, 0, SEEK_END) < 0 ||
-      (_lastPos = ftell(_file)) < 0) {
-    perror("Cannot get size of file: ");
-    Exit::DoExit(2);
-  }
+  _lastPos = 0;
+  _totalRecs = 0;
 
-  if (_lastPos % _recSize) {
-    fprintf(stderr,
-	    "Partial records in binary file: size %ld, record size %d\n",
-	    _lastPos, _recSize);
-    Exit::DoExit(2);
-  }
-
-  _totalRecs = _lastPos / _recSize;
-  _currPos = _lastPos;
+  RecId recid;
+  LastID(recid);
 }
 
 void TDataBinary::Checkpoint()

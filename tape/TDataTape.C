@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/12 16:13:11  jussi
+  Replaced bcmp() with more portable memcmp().
+
   Revision 1.6  1996/01/12 15:49:59  jussi
   Replaced libc.h with stdlib.h
 
@@ -242,20 +245,18 @@ void TDataTape::Initialize()
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
 
-  printf("Index cache seems to be okay.\n");
-
   // continue to build index
-#ifdef HACKHACKHACK
   BuildIndex();
-#endif
   return;
 
  error:
   // recover frome error by building index from scratch 
   if (fileOpened)
     close(cacheFd);
+
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
+
   BuildIndex();
 }
 
@@ -345,15 +346,18 @@ void TDataTape::BuildIndex()
       break;
     if (bytes < 0)
       Exit::DoExit(1);
-    if (buf[bytes - 1] != '\n') {
-      fprintf(stderr, "TDataTape::BuildIndex: line too long\n%s\n", buf);
-      Exit::DoExit(1);
-    }
 
-    if (IsValid(buf)) {
-      if (_totalRecs >= _indexSize)     // index buffer too small?
-	ExtendIndex();                  // extend it
-      _index[_totalRecs++] = pos;
+    if (bytes > 0 && buf[bytes - 1] == '\n') {
+      buf[bytes - 1] = 0;
+      if (IsValid(buf)) {
+	if (_totalRecs >= _indexSize)   // index buffer too small?
+	  ExtendIndex();                // extend it
+	_index[_totalRecs++] = pos;
+      } else {
+	printf("Ignoring invalid record: \"%s\"\n", buf);
+      }
+    } else {
+      printf("Ignoring incomplete record: \"%s\"\n", buf);
     }
   }
 
