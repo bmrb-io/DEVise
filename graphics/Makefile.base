@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.65  1998/05/06 22:04:41  wenger
+#  Single-attribute set links are now working except where the slave of
+#  one is the master of another.
+#
 #  Revision 1.64  1998/05/05 15:14:44  zhenhai
 #  Implemented 3D Cursor as a rectangular block in the destination view
 #  showing left, right, top, bottom, front and back cutting planes of the
@@ -291,7 +295,8 @@ Makefile.depend:
 	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
-	-rm $(LIBNAME) jstat testWindowRep TestDevStatus Makefile.depend
+	-rm $(LIBNAME) libopengldum.a jstat testWindowRep TestDevStatus \
+		Makefile.depend
 
 mostlyclean:
-	-rm $(LIBOBJ) $(OTHEROBJ)
+	-rm $(LIBOBJ) $(OTHEROBJ) OpenGLDum.o
