@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/29 22:43:41  jussi
+  Added support for line connectors. Type 'c' to toggle
+  connectors on or off, and type 's' to toggle symbols.
+
   Revision 1.5  1995/12/28 20:48:27  jussi
   Cleaned up the code a bit.
 
@@ -59,13 +63,19 @@ void Action::AreaSelected(View *view, Coord xlow, Coord ylow,
 void Action::KeySelected(View *view, char key, Coord x, Coord y)
 {
   VisualFilter filter;
+  Boolean symbolsOn = view->DisplaySymbols();
+  Boolean connectorsOn = view->DisplayConnectors();
 
   if (key == 'c') {
-    (void)view->DisplayConnectors(!view->DisplayConnectors());
+    (void)view->DisplayConnectors(!connectorsOn);
+    if (connectorsOn && !symbolsOn)
+      (void)view->DisplaySymbols(true);
   }
 
   else if (key == 's') {
-    (void)view->DisplaySymbols(!view->DisplaySymbols());
+    (void)view->DisplaySymbols(!symbolsOn);
+    if (!connectorsOn && symbolsOn)
+      (void)view->DisplayConnectors(true);
   }
 
   else if (key == '>' || key == '.' || key == '6') {
