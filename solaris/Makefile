@@ -15,6 +15,7 @@ all: date
 
 clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
+	cd cslib; make $@
 
 date:
 	cd generic; make CompDate.o
