@@ -9,17 +9,11 @@ public class RelationId {
   private int serverId;
   private int localId;
 
-  static final int DTE_SERVER_ID = 0;
-
-  public String toString(){
-    return String.valueOf( serverId ) + "." + String.valueOf( localId );
-  }  
-  
-
+  static final int DTE_SERVER_ID = 1;
 
   public RelationId(){ 
     serverId = DTE_SERVER_ID;
-    localId = 0 ;
+    localId = 0 ;                //LocalId starts from 0
   }
 
   public RelationId(int c){
@@ -44,12 +38,10 @@ public class RelationId {
     return new String("ServerId :" + serverId + " LocalId:"+ localId);
   }    
 
-  public void print() {
-    String str = getString();
-    System.out.println(str);
-  }
-
- 
+  public String toString(){
+    return String.valueOf( serverId ) + "." + String.valueOf( localId );
+  }  
+  
 }
 
 

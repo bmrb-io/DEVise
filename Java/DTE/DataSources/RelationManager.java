@@ -1,5 +1,6 @@
 package DataSources;
 
+
 import java.io.*;
 import java.lang.*;
 import Types.*;
@@ -31,21 +32,14 @@ public class RelationManager {
     }catch(IOException e){
       throw new IOException("Failed to open description file:"+ defStream);};
 
-    int d_length = 0;
+    long d_length = 0;
     try{
-      d_length =(int) d_fout.length();
-    }catch(IOException e){
-      throw new IOException();};
-    
-    try{
-      d_fout.seek((long) d_length ); //write append to tail of def file
-    }catch(IOException e){
-      throw new IOException();};
-
-    try{
+      d_length = d_fout.length();
+      d_fout.seek( d_length ); //write append to tail of def file
       d_fout.writeChars(dataSrc.getString());
     }catch(IOException e){
       throw new IOException();};
+   
 
     try{
       d_fout.close();
@@ -53,7 +47,7 @@ public class RelationManager {
       throw new IOException("Failed to close description file:"+ defStream);};
     
    
-    int i_length = 0;
+    long i_length = 0;
     RandomAccessFile i_fout = null;
    
     try{
@@ -63,17 +57,9 @@ public class RelationManager {
 
    
     try{
-      i_length =(int) i_fout.length();
-    }catch(IOException e){
-      throw new IOException();};
-
-    try{
-      i_fout.seek((long) i_length);  //write appends to the tail 
-    }catch(IOException e){
-      throw new IOException();};
- 
-    try{
-      i_fout.writeInt( d_length);
+      i_length = i_fout.length();
+      i_fout.seek( i_length );  //write appends to the tail
+      i_fout.writeInt((int)d_length);
     }catch(IOException e){
       throw new IOException();};
 
@@ -82,7 +68,7 @@ public class RelationManager {
     }catch(IOException e){
       throw new IOException("Failed to open idfile:"+ idStream);};
 
-    RelationId relid = new RelationId(i_length/4); //localId starts from 0
+    RelationId relid = new RelationId((int)i_length/4); //localId starts from 0
     return relid; 
   }
 
@@ -94,20 +80,15 @@ public class RelationManager {
   {
 
     int lcid = relId.getLocalId();
-    if( relId.getServerId() != 0)    //DTE_SERVER_ID
-      throw new IOException("Remote ServerID not Implemented");
+    if( relId.getServerId() != 1)    //DTE_SERVER_ID
+      throw new IOException("Remote ServerID yet-to-be Implemented");
 
     RandomAccessFile i_fin = null;
     try{
       i_fin = new RandomAccessFile(idStream, "rw");
     }catch(IOException e){
        throw new IOException("Failed to open idfile:"+ idStream);};
-   
-    try{
-      i_fin.seek(0);
-    }catch(IOException e){};
-    
-
+ 
     try{
       i_fin.seek( (long)(lcid * 4) );   
     }catch(IOException e){
@@ -129,13 +110,9 @@ public class RelationManager {
 
     RandomAccessFile d_fin = null;
     try{
-      d_fin = new RandomAccessFile(defStream, "r");
+      d_fin = new RandomAccessFile(defStream, "rw");
     }catch(IOException e){
        throw new IOException("Failed to open description file:"+ defStream);};
-    
-    try{
-      d_fin.seek(0);
-    }catch(IOException e){};
 
     try{
       d_fin.seek((long)offset);
@@ -167,14 +144,18 @@ public class RelationManager {
 
     StringReader strrd = new StringReader(schstr);
     StreamTokenizer stk = new StreamTokenizer(strrd);
+    stk.wordChars(40,127);     //to include "/" for StreamToken
 
     StandardTable standtable = new StandardTable();
     try{
       standtable.read(stk);
     }catch(IOException e){
       return null;};
+
     return standtable;
   }
+  
+
   
   public static void main(String[] args){
 
@@ -187,186 +168,9 @@ public class RelationManager {
 
 	// lookup this relation by the returned relId
 
-System.out.println("Test of RelationManager starts:");
-    System.out.println();
-
-    StandardTable stdtbl = null;
-    RelationId relid = null;
-
-    System.out.println("------Test of Constructor and Function registerNewRelation-----");
-
-    RelationManager relmgr = new RelationManager("idFile", "desFile");
-    int i=0;
-    for(; i<=4; i++){
-     
-
-    System.out.print("Register StandardTable [" + (4*i+1) +"]:");
-    stdtbl = new StandardTable(3, "string sname int sid double gpa", "relationFile1");
-    System.out.println(stdtbl.getString());
     
-
-    
-    try{
-      relid = relmgr.registerNewRelation(stdtbl);
-    }catch(IOException e){
-      System.out.println("OOPs, registerNewRelation failed...");
-    };
-
-    System.out.println("RelationId of Relation {" + (4*i+1) +"]:");
-    System.out.println(relid.getString());
-    System.out.println();
-    
-    //*******************************************************************
-    System.out.print("Register StandardTable [" + (4*i+2) + "]:");
-    stdtbl = new StandardTable(2, "int deptno string deptname", "relationFile2");
-    System.out.println(stdtbl.getString());
-    
-    try{
-      relid = relmgr.registerNewRelation(stdtbl);
-    }catch(IOException e){
-      System.out.println("OOPs, registerNewRelation failed...");
-    };
-
-    System.out.println("RelationId of Relation [" +(4*i+2) +"]:");
-    System.out.println(relid.getString());
-    System.out.println();
-
-    //********************************************************************
-    System.out.print("Register StandardTable [" + (4*i+3) + "]:");
-    stdtbl = new StandardTable(1, "int hasRel", "relationFile3");
-    System.out.println(stdtbl.getString());
-    
-    try{
-      relid = relmgr.registerNewRelation(stdtbl);
-    }catch(IOException e){
-      System.out.println("OOPs, registerNewRelation failed...");
-    };
-
-    System.out.println("RelationId of Relation [" + (4*i+3) +"]:");
-    System.out.println(relid.getString());
-    System.out.println();
-
-    //********************************************************************
-    System.out.print("Register StandardTable [" +(4*i+4) +"]:");
-    stdtbl = 
-     new StandardTable(5, "int pid int deptno string pname double salary int hasRel", 
-                       "relationFile4");
-    System.out.println(stdtbl.getString());
-    
-    try{
-      relid = relmgr.registerNewRelation(stdtbl);
-    }catch(IOException e){
-      System.out.println("OOPs, registerNewRelation failed...");
-    };
-
-    System.out.println("RelationId of Relation [" +(4*i+4) +"]:");
-    System.out.println(relid.getString());
-    System.out.println();
-    }
-
-    System.out.println();
-    System.out.println("Totally registered " + (4*i)+"New DataSources");
-    System.out.println("Register New Relations finished...");
-
-
-    System.out.println();
-    System.out.println("--------Test of Function createDataSource---------");
-
-      
-    RelationId id = new RelationId(0);
-    
-    System.out.println("Fetch the DataSource with RelationId:");
-    System.out.println( id.getString());
-   
-    StandardTable stbv = null;
-    try{
-      stbv = (StandardTable) relmgr.createDataSource(id);
-      if(stbv == null)
-	System.out.println("OOPs, DataSource not found");
-      
-    }catch(IOException e){
-      System.out.println("something wrong");
-    };
-
-    System.out.println("DataSource Founded with Given RelationId:" + stbv.getString());
-    System.out.println();
-    
-    //********************************************************************************
-    id = new RelationId(2);
-    System.out.println("Fetch the DataSource with RelationId:");
-    System.out.println( id.getString());
-    
-    //StandardTable stbv1 =null ;
-    try{
-      stbv = (StandardTable) relmgr.createDataSource(id);
-      if(stbv == null)
-	System.out.println("OOPs, DataSource not found");
-      
-    }catch(IOException e){
-      System.out.println("test of createDataSource failed");
-    };
-
-    System.out.println("DataSource Founded with Given RelationId:" + stbv.getString());
-    System.out.println();
-   
-    //********************************************************************************
-    id = new RelationId(8);
-    System.out.println("Fetch the DataSource with RelationId:");
-    System.out.println( id.getString());
-    
-    //StandardTable stbv =null ;
-    try{
-      stbv = (StandardTable) relmgr.createDataSource(id);
-      if(stbv == null)
-	System.out.println("OOPs, DataSource not found");
-      
-    }catch(IOException e){
-      System.out.println("test of createDataSource failed");
-    };
-
-    System.out.println("DataSource Founded with Given RelationId:" + stbv.getString());
-    System.out.println(); 
-
-//********************************************************************************
-    id = new RelationId(15);
-    System.out.println("Fetch the DataSource with RelationId:");
-    System.out.println( id.getString());
-    
-    //StandardTable stbv =null ;
-    try{
-      stbv = (StandardTable) relmgr.createDataSource(id);
-      if(stbv == null)
-	System.out.println("OOPs, DataSource not found");
-      
-    }catch(IOException e){
-      System.out.println("test of createDataSource failed");
-    };
-
-    System.out.println("DataSource Founded with Given RelationId:" + stbv.getString());
-    System.out.println(); 
-
-//********************************************************************************
-    id = new RelationId(19);
-    System.out.println("Fetch the DataSource with RelationId:");
-    System.out.println( id.getString());
-    
-    //StandardTable stbv =null ;
-    try{
-      stbv = (StandardTable) relmgr.createDataSource(id);
-      if(stbv == null)
-	System.out.println("OOPs, DataSource not found");
-      
-    }catch(IOException e){
-      System.out.println("test of createDataSource failed");
-    };
-
-    System.out.println("DataSource Founded with Given RelationId:" + stbv.getString());
-    System.out.println(); 
-
-
-    System.out.println("Test of RelationManager finished successfully...");
-
   }
+   
 }
 
 

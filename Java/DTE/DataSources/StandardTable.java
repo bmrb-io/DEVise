@@ -14,7 +14,7 @@ public class StandardTable implements DataSource{
 
   public StandardTable(){
     schema = new Schema();
-    String urlString = new String();
+    urlString = new String();
   }
        
   public StandardTable(Schema sch, String url){
@@ -45,24 +45,19 @@ public class StandardTable implements DataSource{
     }catch(IOException e){
       throw new IOException();};
      
-    if(st.nextToken() != StreamTokenizer.TT_EOF){
-      urlString += st.toString(); 
+    if(st.nextToken() != StreamTokenizer.TT_EOF && st.ttype == StreamTokenizer.TT_WORD ){
+     
+      urlString += st.sval; 
       return true;
     }
     else throw new IOException("RelFileName Expected");
   }
- 
- 
 
   public String getString(){
     String str = getTypeNm();
     str += " " + schema.getString();
-    str += " " + urlString + ";\n";
+    str += " " + urlString + ";";
     return str;
-  }
-
-  public void printDatasource(){
-    System.out.println( getString());
   }
 
   public Schema getSchema(){
@@ -72,3 +67,6 @@ public class StandardTable implements DataSource{
 }
 
  
+
+
+
