@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/11/18 22:50:15  jussi
+  Commented out debugging statement.
+
   Revision 1.45  1996/11/18 22:29:31  jussi
   Added estimation of total number of records in data set.
 
@@ -377,8 +380,10 @@ Boolean TDataAscii::LastID(RecId &recId)
 
 void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
+#if defined(DEBUG)
   cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
     << order << endl;
+#endif
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
