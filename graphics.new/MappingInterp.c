@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/08/20 22:11:01  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.61.2.3  1997/08/15 23:06:30  wenger
   Interruptible drawing now pretty much working for TDataViewX class,
   too (connector drawing may need work, needs a little more testing).
@@ -292,7 +296,6 @@
 #include "Pattern.h"
 #include "Color.h"
 #include "WindowRep.h"
-#include "Temp.h"
 #include "MappingInterp.h"
 #include "MapInterpShape.h"
 #ifdef VIEW_SHAPE

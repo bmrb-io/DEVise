@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/20 18:47:59  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.1  1996/06/21 19:25:37  jussi
   Moved file from graphics.new to graphics.
 
@@ -30,6 +34,7 @@
 */
 
 #include "Temp.h"
+#include "WindowRep.h"
 
 Coord _x[WINDOWREP_BATCH_SIZE];
 Coord _y[WINDOWREP_BATCH_SIZE];

@@ -4,7 +4,6 @@
 
 #include "ViewShape.h"
 #include "MappingInterp.h"
-#include "Map3D.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/20 22:10:55  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.9.2.1  1997/08/07 16:56:30  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -49,7 +53,6 @@
 
 #include "ETkWindowShape.h"
 #include "ETk.h"
-#include "Map3D.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/20 18:48:00  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.1  1996/06/21 19:25:38  jussi
   Moved file from graphics.new to graphics.
 
@@ -36,7 +40,6 @@
 #define Temp_h
 
 #include "DeviseTypes.h"
-#include "WindowRep.h"
 #include "Geom.h"
 #include "Map3D.h"
 
