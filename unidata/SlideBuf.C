@@ -53,7 +53,7 @@ int SlideBuf::slurp(UD_Status& status, int init)
     } else {
         int mvcnt = _buf_end - _buf_init; 
         if (mvcnt > 0)
-            memmove(_buf,&(_buf[_buf_init]), mvcnt);
+            memmove(_buf,&(_buf[_buf_init]), mvcnt+1);
         _buf_off += _buf_init;
         _buf_init = 0;
         _buf_end  = mvcnt;

@@ -28,6 +28,9 @@ PerlFrag::PerlFrag(Attr *owner, FragType type)
 
     _code  = (SV*) NULL;
 
+    _args  = (AV*) NULL;
+    _rets  = (AV*) NULL;
+
     next   = NULL;
 }
 
@@ -38,6 +41,12 @@ PerlFrag::~PerlFrag()
 
     if (_code)
         SvREFCNT_dec(_code);
+
+    if (_args)
+        av_undef(_args);
+
+    if (_rets)
+        av_undef(_rets);
 
     delete [] _src;
 }
@@ -54,15 +63,16 @@ void PerlFrag::enlist(PerlFrag *pf)
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Make a routine for formats.
-// Currently limited to 10 sub-fields, but we need $` and $& to be set.
+// Have to do the match twice, as we need $` and $& to be set.
 void PerlFrag::set_fmt(char *fmt)
 {
-  _src = new char[strlen(fmt) + XTRA_SPCE + 130];
+  delete [] _src;
+  _src = new char[2*strlen(fmt) + XTRA_SPCE + 150];
 
   memset(_src, ' ', XTRA_SPCE);
   sprintf( &(_src[XTRA_SPCE]),
-  "{my($in)=@_;\nreturn(length($`)+length($&),$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) if ($in=~%s);\nreturn();}",
-    fmt);
+  "{my($in)=@_;my($len,@flds);\nif($in=~%s){$len=length($`)+length($&);\n@flds=$in=~%s;\nreturn($len,@flds);}\nreturn();}",
+    fmt,fmt);
 
   _nrets = 2;
   delete [] fmt;
@@ -128,6 +138,18 @@ void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
                     _flags = G_EVAL | G_ARRAY;
                     break;
                 }
+
+                if (_nrets > 0) {
+                    if (_args)
+                      av_clear(_args);
+                    else
+                      _args = newAV();
+                    
+                    if (_rets)
+                      av_clear(_rets);
+                    else
+                      _rets = newAV();
+                }
             }
             break;
 
@@ -141,11 +163,21 @@ void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// Set a argument to pass in as the @_ parameter.
+void PerlFrag::set_arg(char *line)
+{
+    cout << "In set_arg with line " << line << endl;
+    av_clear(_args);
+    av_push(_args, newSVpv(line,0));
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 I32  PerlFrag::Eval()
 {
     if (!this)
         return 0;
 
+    int j;
     I32 n;
 
     switch (_type) {
@@ -167,6 +199,13 @@ I32  PerlFrag::Eval()
                         ENTER;
                         SAVETMPS;
                         PUSHMARK(sp);
+
+                        n = av_len(_args) + 1;
+                        for (j=0; j < n; j++) {
+                            XPUSHs(sv_2mortal( av_shift(_args) ));
+                        }
+
+                        PUTBACK;
                         n = perl_call_sv(_code, _flags);
                         SPAGAIN;
                         if ((n > 0) && _attr->perl_var())
@@ -181,15 +220,26 @@ I32  PerlFrag::Eval()
                     // NYI - need to pass in info, and accept
                     // a list back.
                     //_flags = G_EVAL | G_ARRAY;
+                        av_clear(_rets);
                         dSP;
                         ENTER;
                         SAVETMPS;
                         PUSHMARK(sp);
+
+                        n = av_len(_args) + 1;
+                        for (j=0; j < n; j++)
+                            XPUSHs(sv_2mortal( av_shift(_args) ));
+
+                        PUTBACK;
                         n = perl_call_sv(_code, _flags);
+                        cout << "Format got " << n << " items back.\n";
                         SPAGAIN;
-                        if ((n > 0) && _attr->perl_var()) {
-                            sv_setsv( _attr->perl_var(), POPs );
+
+                        while (n > 0) {
+                          av_push(_rets, newSVsv(POPs));
+                          n--;
                         }
+
                         PUTBACK;
                         FREETMPS;
                         LEAVE;

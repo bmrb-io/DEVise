@@ -23,6 +23,8 @@ udParam::udParam()
 
     buf_pos   = 0;
     subparam  = NULL;
+
+    use_slide = 1;
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
@@ -44,6 +46,8 @@ udParam *udParam::dup()
     that->flat_indx = flat_indx;
     that->dst_off   = dst_off;
     that->buf_pos   = buf_pos;
+
+    that->use_slide = use_slide;
 
     // Don't copy subparam, this is only for "leaf" parameters.
 

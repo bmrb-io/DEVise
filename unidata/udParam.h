@@ -54,6 +54,8 @@ class udParam {
 
     ParamStk *subparam;   // The params of the subattributes
 
+    int       use_slide;  // The data is in the slide-buffer. 
+
   public:
     udParam();
    ~udParam();

@@ -54,6 +54,9 @@ Attr::Attr(char *name)
     _qte_chr[1] = '\0';
     _date_frmt = NULL;
 
+    _own_df = 0;
+    _own_ws = 0;
+
     _have_lpos = _have_rpos = 0;
     _lpos = _rpos = 0;
 
@@ -90,9 +93,12 @@ Attr::~Attr()
 
     delete [] _delimit;
     delete [] _seper;
-    delete [] _white;
 
-    delete [] _date_frmt;
+    if (_own_ws)
+        delete [] _white;
+
+    if (_own_df)
+        delete [] _date_frmt;
 
     FuncOf *f, *prev = NULL;
     for (f=_func_of; f; f=f->next) {

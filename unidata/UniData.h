@@ -129,6 +129,9 @@ class UniData {
       // Have seperators
     int Split_Seper(char *dst, char *src, udParam *ud);
 
+      // Have a format.
+    int Split_Format(char *dst, char *src, udParam *ud);
+
     int NullCopy(char *dst, char *src, udParam *ud);
     int BinCopy_Native(char *dst, char *src, udParam *ud);
 

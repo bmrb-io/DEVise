@@ -30,6 +30,8 @@
             // Get more stuff in the buffer when we get this low?
 #define   UD_BUFSLACK   256
 
+            // We might need a big piece soon.
+#define   UD_BUFCHUNK  2048
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 

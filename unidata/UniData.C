@@ -491,9 +491,13 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             prm->subparam = NULL;
             prm = params->pop();
             delete prm;
-        } else if (have_pos)
+        } else if (prm->subparam->count() == 1)
+            prm->attrfunc = Split_White;
+        else if (attr->format())
+            prm->attrfunc = Split_Format;
+        else if (have_pos) {
             prm->attrfunc = Split_Position;
-        else if (_schema->attr0()->seperator())
+        } else if (_schema->attr0()->seperator())
             prm->attrfunc = Split_Seper;
         else
             prm->attrfunc = Split_White;
@@ -509,6 +513,8 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
         if (attr->reader())
             prm->attrfunc = ReaderCall;
 
+        // NYI
+        // else if (attr->format()) {
         else if (attr->value()) {
 
             prm = params->pop();
@@ -888,7 +894,14 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 // Do a getRec using a delimitor (text-only).
 int UniData::getRec_delimit(char *buff, off_t *offset)
 {
-    int ok = 0;
+    int   ok = 0;
+    char *sent;
+    int   have_sent;
+    off_t soff;
+    char *delim = _schema->attr0()->delimiter();
+
+    if (!delim)
+        delim = "\n";
 
     if (isOk()) {
 
@@ -903,8 +916,22 @@ int UniData::getRec_delimit(char *buff, off_t *offset)
     
             udParam *prm = _params->ith(0);
             prm->buf_pos = *offset;
+
+            if ((sent = strchr(_slbuf->getcur(), *delim) )) {
+                have_sent = 1;
+                soff = _slbuf->getoff(sent);    
+                *sent = '\0';
+            } else 
+                have_sent = 0;
+
             ok = (prm->attrfunc)(buff,_slbuf->getcur(),prm);
 
+            if (have_sent) {
+                // This may have changed when calling someone.
+                sent = _slbuf->getpos(soff);
+               *sent = *delim;
+            }
+ 
             if (ok)
                 ok &= run_SysParams(buff);
 
@@ -952,6 +979,10 @@ int UniData::Split_White(char *dst, char * /* src */, udParam *ud)
 {
     int ok;
 
+#ifdef   DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+#endif
+
     for (int j=0; j < ud->subparam->count(); j++) {
 
         udParam *param = ud->subparam->ith(j);
@@ -979,6 +1010,10 @@ int UniData::Split_Seper(char *dst, char * /* src */, udParam *ud)
     int      ok, last;
     char     sentinel;
     AttrStk *subattr = ud->attr->subattr();
+
+#ifdef   DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+#endif
 
     for (int j=0; j < ud->subparam->count(); j++) {
 
@@ -1029,6 +1064,10 @@ int UniData::Split_Position(char *dst, char * /* src */, udParam *ud)
     char     sentinel;
     AttrStk *subattr = ud->attr->subattr();
 
+#ifdef   DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+#endif
+
     for (int j=0; j < ud->subparam->count(); j++) {
 
         Attr *attr = subattr->ith(j);
@@ -1068,6 +1107,64 @@ int UniData::Split_Position(char *dst, char * /* src */, udParam *ud)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// Have a format.
+int UniData::Split_Format(char *dst, char * /* src */, udParam *ud)
+{
+    int      ok;
+    SV      *sv;
+
+#ifdef   DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+#endif
+
+    _slbuf->SkipWhite(_status,ud->attr->whitespace());
+    _slbuf->setzero(ud->buf_pos);
+    _slbuf->room(_status,UD_BUFCHUNK);
+
+    char *buf = _slbuf->getpos(ud->buf_pos);
+
+    ud->attr->format()->set_arg(buf);
+    ok = ud->attr->format()->Eval();
+
+    AV *rets = ud->attr->format()->_rets;
+
+    if (!ok || (av_len(rets) < 0))
+        return 0;
+
+    sv = av_pop(rets);
+    int len = SvIV(sv);
+    char *mych = SvPV(sv,na);
+    SvREFCNT_dec(sv);
+
+      // Skip over the area format read.
+    _slbuf->set_init(_slbuf->get_init()+len);
+    
+    for (int j=0; j < ud->subparam->count(); j++) {
+
+        udParam *param = ud->subparam->ith(j);
+
+        // These all need to be base types that read from 'src' param.
+
+        if (av_len(rets) < 0)
+            return 0;
+
+        sv = av_pop(rets);
+        buf = SvPV(sv,na);
+        param->use_slide = 0;
+
+        ok = (param->attrfunc)(dst, buf, param);
+
+        if (!ok)
+            return 0;
+    }
+
+      // This should be empty now anyway.
+    av_clear(rets);
+
+    return 1;
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 int UniData::NullCopy(char *dst, char *, udParam *ud)
 {
     char *mydst = &(dst[ud->dst_off]);
@@ -1080,7 +1177,8 @@ int UniData::BinCopy_Native(char *dst, char *src, udParam *ud)
 {
     char *mydst = &(dst[ud->dst_off]);
     memcpy(mydst,src,ud->sze());
-    _slbuf->set_init(src + ud->sze());
+    if (ud->use_slide)
+        _slbuf->set_init(src + ud->sze());
     return 1;
 }
 
@@ -1099,7 +1197,9 @@ int UniData::TxtCopy_Int(char *dst, char *src, udParam *ud)
 
     src += strspn(src, ud->attr->whitespace());
     *i = strtol(src, &ptr, 10);
-    _slbuf->set_init(ptr);
+
+    if (ud->use_slide)
+        _slbuf->set_init(ptr);
 
     return (errno != ERANGE) && (ptr != src);
 }
@@ -1119,7 +1219,9 @@ int UniData::TxtCopy_Float(char *dst, char *src, udParam *ud)
 
     src += strspn(src, ud->attr->whitespace());
     *f = UtilStrtod(src, &ptr);
-    _slbuf->set_init(ptr);
+
+    if (ud->use_slide)
+        _slbuf->set_init(ptr);
 
     return (errno != ERANGE) && (ptr != src);
 }
@@ -1138,7 +1240,9 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 
     src += strspn(src, ud->attr->whitespace());
     *d = UtilStrtod(src, &ptr);
-    _slbuf->set_init(ptr);
+
+    if (ud->use_slide)
+        _slbuf->set_init(ptr);
 
     return (errno != ERANGE) && (ptr != src);
 }
@@ -1173,7 +1277,9 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 
     strncpy(str,src,n);
     str[n] = '\0';
-    _slbuf->set_init(src + n + has_qte);
+
+    if (ud->use_slide)
+        _slbuf->set_init(src + n + has_qte);
 
     return 1;
 }
@@ -1187,7 +1293,8 @@ int UniData::TxtCopy_DateTime(char *dst, char *src, udParam *ud)
     src += strspn(src, ud->attr->whitespace());
     int n = getftime(src, ud->attr->date_format(), t);
 
-    _slbuf->set_init(_slbuf->get_init() + n);
+    if (ud->use_slide)
+        _slbuf->set_init(_slbuf->get_init() + n);
 
     return (n != 0);
 }
@@ -1201,7 +1308,8 @@ int UniData::TxtCopy_UnixTime(char *dst, char *src, udParam *ud)
 
     src += strspn(src, ud->attr->whitespace());
     *t = strtol(src, &ptr, 10);
-    _slbuf->set_init(ptr);
+    if (ud->use_slide)
+        _slbuf->set_init(ptr);
 
     return (errno != ERANGE) && (ptr != src);
 }

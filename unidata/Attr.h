@@ -119,6 +119,12 @@ class Attr {
     IntStack *_subrpos;    // and right positions of sub attributes.
 
 
+                           // Keep track of whether we own these things
+                           // or if we're just borrowing another attr's
+                           // copy.  (Sharing implements scoping of these).
+    int       _own_df:1;   // Do we own _date_frmt.
+    int       _own_ws:1;   // Do we own _white.
+
       // Determine size based on _type.
     size_t  determ_size();
 
@@ -165,7 +171,20 @@ class Attr {
 
     void set_delimit(char *delim) { delete [] _delimit; _delimit = delim; }
     void set_seper(char *seper) { delete [] _seper; _seper = seper; }
-    void set_white(char *white) { delete [] _white; _white = white; }
+
+    void set_white(char *white, int own=1) {
+        if (_own_ws)
+            delete [] _white;
+        _white = white;
+        _own_ws = own;
+    }
+
+    void set_dtefmt(char *df, int own=1) {
+        if (_own_df)
+            delete [] _date_frmt;
+        _date_frmt = df;
+        _own_df = own;
+    }
 
     char *dup_seper() { char *nw = NULL;
                         if (_seper) {

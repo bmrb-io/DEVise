@@ -59,7 +59,11 @@ class PerlFrag {
                            // The perl interpreter to use.
     PerlInterpreter *_perl; 
 
+
   public:
+
+    AV      *_args;        // Params being passed in, if any.
+    AV      *_rets;        // and the return values, if any.
 
     PerlFrag *next;        // For building a list of fragments.
 
@@ -88,6 +92,9 @@ class PerlFrag {
 
         // Compile the stored code.
     void compile(unsigned int& subrcnt, char *flat_name);
+
+        // Set a argument to pass in as the @_ parameter.
+    void set_arg(char *line);
 
         // Evaluate this fragment.
         // (Should already have args setup.)

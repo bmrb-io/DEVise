@@ -485,8 +485,11 @@ int Schema::subParse(Attr *attr)
                 MATCH(SYMBOL, &ult);
     
                 subattr = new Attr(ult.Str);
-                subattr->set_white(attr->dup_white());
-                subattr->set_seper(attr->dup_seper());
+
+                // Want these things to scope.
+                subattr->set_white(attr->whitespace(),0);
+                subattr->set_dtefmt(attr->date_format(),0);
+                subattr->set_quote(attr->quote());
  
                 if (!match(KY_LBRACE,&ult)) {
                     delete subattr;
@@ -513,8 +516,11 @@ int Schema::subParse(Attr *attr)
                 MATCH(SYMBOL, &ult);
 
                 subattr = new Attr(ult.Str);
-                subattr->set_white(attr->dup_white());
-                subattr->set_seper(attr->dup_seper());
+
+                // Want these things to scope.
+                subattr->set_white(attr->whitespace(),0);
+                subattr->set_dtefmt(attr->date_format(),0);
+                subattr->set_quote(attr->quote());
     
                 if (!match(KY_LBRACE,&ult)) {
                     delete subattr;
@@ -752,7 +758,7 @@ int Schema::subParse(Attr *attr)
             case KY_DATE_FRMT:
                 MATCH(KY_EQ, &ult);
                 MATCH(STRING, &ult);
-                attr->_date_frmt = ult.Str;
+                attr->set_dtefmt(ult.Str);
                 MATCH(KY_SEMICOLON, &ult);
                 break;
 
@@ -947,18 +953,11 @@ int Schema::subParse(Attr *attr)
                 break;
     
             case KY_QUOTE:
-                NOT_TOP_LEVEL("quote");
                 MATCH(KY_EQ, &ult);
                 MATCH(STRING, &ult);
                 attr->set_quote(ult.Str);
                 dispose_token(STRING,&ult);
 
-                if ((attr->type() != String_Attr)
-                    && (attr->type() != Invalid_Attr)) {
-                        *perr << filename << ":" << lineno
-                              << ": quote only valid for String type.\n";
-                        return(0);
-                }
                 MATCH(KY_SEMICOLON, &ult);
                 break;
     
