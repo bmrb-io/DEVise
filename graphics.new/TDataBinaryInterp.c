@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/07 16:46:20  jussi
+  This class now makes a copy of the attribute list so that attribute
+  hi/lo values can be maintained per data stream, not per schema.
+  Hi/lo values are now computed after composite parser is executed.
+
   Revision 1.4  1996/05/05 03:08:23  jussi
   Added support for composite attributes. Also added tape drive
   support.
@@ -98,8 +103,8 @@ void TDataBinaryInterpClassInfo::ParamNames(int &argc, char **&argv)
   args[0] = buf1;
   args[1] = buf2;
   
-  sprintf(buf1, "File %s", ControlPanel::Instance()->FileName());
-  sprintf(buf2, "Alias %s", ControlPanel::Instance()->FileAlias());
+  strcpy(buf1, "File {foobar}");
+  strcpy(buf2, "Alias {foobar}");
 }
 
 ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
