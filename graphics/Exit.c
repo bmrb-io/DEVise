@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/20 16:49:27  wenger
+  Conditionaled out RTree code for libcs and attrproj.
+
   Revision 1.11  1996/12/15 06:52:31  donjerko
   Added the initialization and shutdown for RTree code.
 
@@ -58,10 +61,12 @@
 #include <unistd.h>
 
 #include "Exit.h"
+
 #if !defined(LIBCS) && !defined(ATTRPROJ)
 #include "Init.h"
 #include "Control.h"
 #include "DaliIfc.h"
+#include "ETkIfc.h"
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
@@ -71,33 +76,45 @@
 void Exit::DoExit(int code)
 {
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-  shutdown_system(VolumeName, RTreeFile, VolumeSize);
+    shutdown_system(VolumeName, RTreeFile, VolumeSize);
 #endif
-
+    
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-  if (Init::DoAbort()) {
-    fflush(stdout);
-    fflush(stderr);
-    abort();
-  }
+    if (Init::DoAbort()) {
+	fflush(stdout);
+	fflush(stderr);
+	abort();
+    }
+    
+    if (Init::DoAbort()) {
+	fflush(stdout);
+	fflush(stderr);
+	abort();
+    }
+    
+    if (Init::DaliQuit()) {
+	(void) DaliIfc::Quit(Init::DaliServer());
+    }
 
-  if (Init::DaliQuit()) {
-    (void) DaliIfc::Quit(Init::DaliServer());
-  }
+    if (ETkIfc::GetQuitFlag()) {
+	(void) ETkIfc::SendSimpleCommand(ETkIfc::GetServer(), "quit");
+    }
+    
 #endif
 
-  // hack to get rid of temp directory - this could probably be written
-  // a bit more portably, but oh well.
-  char *tmpDir =  getenv("DEVISE_TMP");
-  if (!tmpDir)
-    tmpDir = "tmp";
-  pid_t pid = getpid();
-  char buf[512];
-  DOASSERT(strlen(tmpDir) + 25 <= 512, "String space too small");
-  sprintf(buf, "rm -fr %s/DEVise_%ld", tmpDir, (long)pid);
-  system(buf);
-
-  exit(code);
+    // hack to get rid of temp directory - this could probably be written
+    // a bit more portably, but oh well.
+    char *tmpDir =  getenv("DEVISE_TMP");
+    if (!tmpDir)
+	tmpDir = "tmp";
+    pid_t pid = getpid();
+    char buf[512];
+    DOASSERT(strlen(tmpDir) + 25 <= 512, "String space too small");
+    sprintf(buf, "rm -fr %s/DEVise_%ld", tmpDir, (long)pid);
+    system(buf);
+    
+    exit(code);
+    
 }
 
 void Exit::DoAbort(char *reason, char *file, int line)
@@ -114,7 +131,13 @@ void Exit::DoAbort(char *reason, char *file, int line)
   if (Init::DaliQuit()) {
     (void) DaliIfc::Quit(Init::DaliServer());
   }
+
+  if (ETkIfc::GetQuitFlag()) {
+    (void) ETkIfc::SendSimpleCommand(ETkIfc::GetServer(), "quit");
+  }
+
 #endif
-  
+
   DoExit(2);
+
 }

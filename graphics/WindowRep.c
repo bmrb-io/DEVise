@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/11/26 15:44:11  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.21  1996/11/13 16:56:16  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -126,7 +132,10 @@ WindowRep::WindowRep(DeviseDisplay *disp, GlobalColor fgndColor,
 WindowRep::~WindowRep()
 {
   delete _callbackList;
-  DaliFreeImages();
+  if (DaliImageCount() > 0)
+      DaliFreeImages();
+  if (ETk_WindowCount() > 0)
+      ETk_FreeWindows();
 }
 
 /* called by derived class to when window is resized or moved */

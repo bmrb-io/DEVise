@@ -17,13 +17,6 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.33  1996/12/15 06:52:32  donjerko
-#  Added the initialization and shutdown for RTree code.
-#
-#  Revision 1.32  1996/12/11 20:36:06  wenger
-#  Added 'cslib' target to top-level makefiles; added 'lib' targets
-#  to library makefiles.
-#
 #  Revision 1.31  1996/11/26 16:47:43  ssl
 #  Added support for Stacked Opaque and Transparent views
 #
@@ -69,7 +62,8 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
-	DevStatus.c DualWindowRep.c DevFont.c
+	DevStatus.c DualWindowRep.c DevFont.c \
+	ETkIfc.c ETkClient.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))
@@ -87,7 +81,6 @@ ALLSRC = $(LIBSRC) $(OTHERSRC)
 LIBNAME = libgraphics.a
 
 all: $(LIBNAME)
-lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ) 
 	$(AR) cr $@ $(LIBOBJ)

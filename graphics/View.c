@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  1996/12/20 16:50:13  wenger
+  Fonts for view label, x axis, and y axis can now be changed.
+
   Revision 1.92  1996/12/04 22:38:53  wenger
   Fixed bug 087 (view removal crash); noted several other fixed bugs
   in the bug list.
@@ -1802,7 +1805,16 @@ void View::Run()
 #if defined(DEBUG)
     printf("Clearing data area in window 0x%p\n", winRep);
 #endif
-    winRep->DaliFreeImages();
+    if (winRep->DaliImageCount() > 0)
+    {
+	(void) winRep->DaliFreeImages();
+	sleep(1);
+    }
+    if (winRep->ETk_WindowCount() > 0)
+    {
+	(void) winRep->ETk_FreeWindows();
+	sleep(1);
+    }
     winRep->SetFgColor(GetBgColor());
     winRep->SetPattern(Pattern0);
     winRep->SetLineWidth(0);

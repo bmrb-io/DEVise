@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/15 20:21:42  wenger
+  Added '-noshm' command line flag to allow user to disable shared memory;
+  temporarily disabled RTree stuff.
+
   Revision 1.12  1996/12/03 20:24:09  jussi
   Removed unused command line parameters. Changed BufPolicies().
 
@@ -121,7 +125,7 @@ class Init {
     static char *DaliServer() { return _daliServer; }
     static Boolean DaliQuit() { return _daliQuit; }
     static int ImageDelay() { return _imageDelay; }
-    
+
     static int ScreenWidth() { return _screenWidth; }
     static int ScreenHeight() { return _screenHeight; }
 
@@ -170,11 +174,13 @@ protected:
     static char *_daliServer;      /* host name of Tasvir image server */
     static Boolean _daliQuit;      /* true if Tasvir abort requested */
     static int _imageDelay;        /* delay before displaying Tasvir image */
-    
+
     static int _screenWidth;       /* requested screen width */
     static int _screenHeight;      /* requested screen height */
 
     static Boolean _useSharedMem;  /* use shared memory */
+
 };
 
 #endif
+

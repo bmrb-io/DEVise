@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/12/15 20:22:34  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.28  1996/12/03 23:29:10  wenger
   Fixed PostScript bounding box to closely surround the image (fixed
   bug 089).
@@ -154,6 +157,7 @@
 #include "Version.h"
 #include "Util.h"
 #include "PSDisplay.h"
+#include "ETkIfc.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -301,6 +305,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 	min_height, relativeMinSize, _winBoundary);
   screenWinRep->RegisterCallback(this);
   screenWinRep->SetDaliServer(Init::DaliServer());
+  screenWinRep->SetETkServer((char *)ETkIfc::GetServer());
   _winReps.SetScreenWinRep(screenWinRep);
 
   WindowRep *fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,

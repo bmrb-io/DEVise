@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/12/15 20:22:30  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.39  1996/12/11 18:05:38  wenger
   Arc() method now works in PSWindowRep class; put SetSmallFont() method
   back into WindowRep classes for backwards compatibility for Opossum;
@@ -329,6 +332,53 @@ public:
   virtual DevStatus DaliFreeImages() { return StatusFailed; }
   virtual int DaliImageCount() { return 0; }
 
+  /* Display embedded Tk (ETk) windows */
+  virtual void SetETkServer(char *serverName) {
+      reportError("Can't do SetETkServer() on this WindowRep object",
+		  devNoSyserr);
+  }
+  virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
+				     Coord width, Coord height,
+				     char *filename,
+				     int argc, char **argv,
+				     int &handle) {
+      reportError("Can't do ETk_CreateWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_MoveWindow(int handle,
+				   Coord centerX, Coord centerY) {
+      reportError("Can't do ETk_MoveWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_FreeWindow(int handle)
+  {
+      reportError("Can't do ETk_FreeWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_MapWindow(int handle)
+  {
+      reportError("Can't do ETk_MapWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_UnmapWindow(int handle)
+  {
+      reportError("Can't do ETk_UnmapWindow() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_FreeWindows() {
+      reportError("Can't do ETk_FreeWindows() on this WindowRep object",
+		  devNoSyserr);
+      return StatusFailed;
+  }
+  virtual int ETk_WindowCount() {
+      return 0;
+  }
+  
   /* drawing primitives */
 
   /* Return TRUE if window is scrollable */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/12/15 20:22:35  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.45  1996/12/03 17:00:25  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -1186,6 +1189,13 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   if (xwin->DaliImageCount() > 0)
   {
     (void) xwin->DaliFreeImages();
+    sleep(1);
+  }
+
+  // Free embedded Tk windows and sleep before destroying the X window
+  if (xwin->ETk_WindowCount() > 0)
+  {
+    (void) xwin->ETk_FreeWindows();
     sleep(1);
   }
 

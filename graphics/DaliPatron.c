@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/21 19:13:46  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
  */
 
 #include "machdep.h"
@@ -32,7 +36,7 @@
 
 extern int errno;
 
-int DaliPatron(char *servName, char *errmsg)
+int DaliPatron(char *servName, char *errmsg, int port)
 {
   int fd, result;
   struct in_addr *ptr;
@@ -62,7 +66,7 @@ int DaliPatron(char *servName, char *errmsg)
   memset(&servAddr, 0, sizeof(struct sockaddr_in));
 	
   servAddr.sin_family = AF_INET;
-  servAddr.sin_port   = htons(DALI_PORT);
+  servAddr.sin_port   = htons(port);
   memcpy(&(servAddr.sin_addr), ptr, sizeof(struct in_addr));
 
 

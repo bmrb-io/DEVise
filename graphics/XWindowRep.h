@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/12/15 20:22:33  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.35  1996/12/11 18:05:39  wenger
   Arc() method now works in PSWindowRep class; put SetSmallFont() method
   back into WindowRep classes for backwards compatibility for Opossum;
@@ -168,6 +171,9 @@ DefinePtrDList(XWindowRepList, XWindowRep *);
 DefineDList(DaliImageList, int);
 #endif
 
+// List of embedded Tk window handles
+DefineDList(ETkWinList, int);
+
 /* Bitmap info */
 struct XBitmapInfo {
 	Boolean inUse;
@@ -233,6 +239,27 @@ public:
 	virtual DevStatus DaliFreeImages();
 	virtual int DaliImageCount() { return _daliImages.Size(); };
 #endif
+
+	/* Display embedded Tk windows */
+	virtual void SetETkServer(char *serverName)
+	{
+	    _etkServer = CopyString(serverName);
+	}
+  	virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
+					   Coord width, Coord height,
+					   char *filename,
+					   int argc, char **argv,
+					   int &handle);
+	virtual DevStatus ETk_MoveWindow(int handle,
+					 Coord centerX, Coord centerY);
+	virtual DevStatus ETk_FreeWindow(int handle);
+	virtual DevStatus ETk_MapWindow(int handle);
+	virtual DevStatus ETk_UnmapWindow(int handle);
+	virtual DevStatus ETk_FreeWindows();
+	virtual int ETk_WindowCount()
+	{
+	    return _etkWindows.Size();
+	}
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -308,7 +335,7 @@ public:
         virtual void SetFont(char *family, char *weight, char *slant,
                              char *width, float pointSize);
 	virtual void SetNormalFont();
-
+	
 	/* Draw rubberbanding rectangle */
 	virtual void DrawRubberband(int x1, int y1, int x2, int y2);
 
@@ -477,6 +504,12 @@ private:
 	DaliImageList _daliImages;
 	char *_daliServer;
 #endif
+
+	// List of embedded Tk windows
+	ETkWinList _etkWindows;
+	// Machine on which embedded Tk server is running
+	char *_etkServer;
+	
 };
 
 #endif

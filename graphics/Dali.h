@@ -114,7 +114,6 @@
 *****************************************************************************************/
 
 #define DALI_MAX_STR_LENGTH 200
-
 #define DALI_PORT 6600
 
 /***********************************************************
@@ -126,5 +125,5 @@
 **  bytes.                                                **
 ***********************************************************/
 
-extern int DaliPatron(char *servName, char *errmsg);
+extern int DaliPatron(char *servName, char *errmsg, int port = DALI_PORT);
 

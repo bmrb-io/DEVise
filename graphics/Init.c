@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/12/16 21:03:07  donjerko
+  Removed #if 0
+
   Revision 1.28  1996/12/15 20:21:41  wenger
   Added '-noshm' command line flag to allow user to disable shared memory;
   temporarily disabled RTree stuff.
@@ -132,6 +135,7 @@
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
+#include "ETkIfc.h"
 #include "RTreeCommon.h"
 
 static char uniqueFileName[100];
@@ -200,8 +204,8 @@ char *Init::_batchFile = 0;
 
 char * Init::_daliServer = NULL;
 Boolean Init::_daliQuit = false;
-int Init::_imageDelay = 0;
 
+int Init::_imageDelay = 0;
 int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
@@ -256,6 +260,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-savePopup: save popup window and wait for button event\n");
   fprintf(stderr, "\t-tasvir <name>: specify name of tasvir server\n");
   fprintf(stderr, "\t-tasvirquit: kills tasvir server when Devise exits\n");
+  fprintf(stderr, "\t-etk <name>: specify name of Embedded-Tk server\n");
+  fprintf(stderr, "\t-etkquit: kills Embedded-Tk server when Devise exits\n");
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
@@ -549,6 +555,20 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "tasvirquit") == 0) {
 	_daliQuit = true;
+	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "etk") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	ETkIfc::SetServer(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "etkquit") == 0) {
+	ETkIfc::SetQuitFlag(true);
 	MoveArg(argc,argv,i,1);
       }
 

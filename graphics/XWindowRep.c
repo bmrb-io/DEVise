@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.81  1996/12/27 17:36:28  wenger
+  Fixed some problems with XWindowRep::ScaledText(); added some more stuff
+  to the cslib example server.
+
   Revision 1.80  1996/12/15 20:22:31  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -337,6 +341,7 @@
 #include "XDisplay.h"
 #include "Compress.h"
 #include "DevError.h"
+#include "ETkIfc.h"
 #ifndef LIBCS
 #include "DaliIfc.h"
 #include "Init.h"
@@ -366,6 +371,9 @@ extern "C" {
 #ifndef LIBCS
 ImplementDList(DaliImageList, int);
 #endif
+
+// List of embedded Tk window handles
+ImplementDList(ETkWinList, int);
 
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
@@ -516,7 +524,8 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 #ifndef LIBCS
   _daliServer = NULL;
 #endif
-
+  _etkServer = NULL;
+  
   Init();
 }
 
@@ -616,6 +625,9 @@ XWindowRep::~XWindowRep()
   delete [] _daliServer;
 #endif
 
+  (void) ETk_FreeWindows();
+  delete [] _etkServer;
+  
   if (_parent) {
     if (!_parent->_children.Delete(this))
       fprintf(stderr, "Cannot remove child from parent window\n");
@@ -899,7 +911,224 @@ XWindowRep::DaliFreeImages()
 
   return result;
 }
+#endif // #ifndef LIBCS
+
+
+//------------------------------------------------------------------------
+// BEGIN ETk interface
+//
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_CreateWindow()
+//
+// Show an embedded Tcl/Tk window in this WindowRep. filename is the
+// name of a Tcl/Tk script to be executed. argc and argv carry the
+// command-line arguments that will be passed to the Tcl/Tk script.
+//
+//
+DevStatus
+XWindowRep::ETk_CreateWindow(Coord centerX, Coord centerY,
+			     Coord width, Coord height,
+			     char *filename, int argc, char **argv,
+			     int &handle)
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_CreateWindow(%s)\n", filename);
 #endif
+    
+    DevStatus result = StatusOk;
+    
+    if (_etkServer == NULL)
+    {
+	reportError("No ETk server specified", devNoSyserr);
+	result = StatusFailed;
+    }
+    else
+    {
+	if (filename == NULL)
+	    filename = "-";
+	
+	result += ETkIfc::CreateWindow(_etkServer, _win,
+				       (int) centerX, (int) centerY,
+				       (int) width, (int) height,
+				       filename,
+				       argc, (const char **) argv,
+				       handle);
+	
+	if (result.IsComplete())
+	{
+#if defined(DEBUG)
+	    printf("Displayed ETk window. handle = %d\n", handle);
+#endif
+	    _etkWindows.Insert(handle);
+	}
+    }
+    
+    return result;
+
+}
+
+//------------------------------------------------------------------------
+// XWindowRep::ETk_FreeWindows()
+//
+// Free all embedded Tk windows associated with this window.
+//
+//
+DevStatus
+XWindowRep::ETk_FreeWindows()
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_FreeWindows()\n");
+#endif
+    DevStatus result = StatusOk;
+    int iter, handle;
+    
+    iter = _etkWindows.InitIterator(false);
+    while (_etkWindows.More(iter))
+    {
+	handle = _etkWindows.Next(iter);
+	_etkWindows.DeleteCurrent(iter);
+	result += ETkIfc::SendSimpleCommand(_etkServer, "free", handle);
+    }
+    _etkWindows.DoneIterator(iter);
+    
+    return result;
+
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_FreeWindow()
+//
+// Frees a single embedded Tk window
+//
+//
+DevStatus
+XWindowRep::ETk_FreeWindow(int handle)
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_FreeWindow(%d)\n", handle);
+#endif
+    DevStatus result = StatusOk;
+    int iter, current;
+    
+    iter = _etkWindows.InitIterator(false);
+    while (_etkWindows.More(iter))
+    {
+	current = _etkWindows.Next(iter);
+	if (current == handle)
+	{
+	    _etkWindows.DeleteCurrent(iter);
+	    result += ETkIfc::SendSimpleCommand(_etkServer, "free", handle);
+	    _etkWindows.DoneIterator(iter);
+	    return result;
+	}
+    }
+    _etkWindows.DoneIterator(iter);
+    
+    reportError("Attempt to delete an invalid ETk window", devNoSyserr);
+    result = StatusFailed;
+    
+    return result;
+
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_MapWindow()
+//
+// Maps a previously created embedded Tk window
+//
+//
+DevStatus
+XWindowRep::ETk_MapWindow(int handle)
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_MapWindow(%d)\n", handle);
+#endif
+    DevStatus result = StatusOk;
+    int iter, current;
+    
+    iter = _etkWindows.InitIterator(false);
+    while (_etkWindows.More(iter))
+    {
+	current = _etkWindows.Next(iter);
+	if (current == handle)
+	{
+	    result += ETkIfc::SendSimpleCommand(_etkServer, "map", handle);
+	    _etkWindows.DoneIterator(iter);
+	    return result;
+	}
+    }
+    _etkWindows.DoneIterator(iter);
+    
+    reportError("Attempt to map an invalid ETk window", devNoSyserr);
+    result = StatusFailed;
+    
+    return result;
+
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_UnmapWindow()
+//
+// Unmaps a previously created embedded Tk window
+//
+//
+DevStatus
+XWindowRep::ETk_UnmapWindow(int handle)
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_UnmapWindow(%d)\n", handle);
+#endif
+    DevStatus result = StatusOk;
+    int iter, current;
+    
+    iter = _etkWindows.InitIterator(false);
+    while (_etkWindows.More(iter))
+    {
+	current = _etkWindows.Next(iter);
+	if (current == handle)
+	{
+	    result += ETkIfc::SendSimpleCommand(_etkServer, "unmap", handle);
+	    _etkWindows.DoneIterator(iter);
+	    return result;
+	}
+    }
+    _etkWindows.DoneIterator(iter);
+    
+    reportError("Attempt to unmap an invalid ETk window", devNoSyserr);
+    result = StatusFailed;
+    
+    return result;
+
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_MoveWindow()
+//
+// Moves an embedded Tk window
+//
+//
+DevStatus
+XWindowRep::ETk_MoveWindow(int handle, Coord centerX, Coord centerY)
+{
+#if defined(DEBUG)
+    printf("XWindowRep::ETk_MoveWindow(%d,%d,%d)\n", handle,
+	   (int) centerX, (int) centerY);
+#endif
+    DevStatus result = StatusOk;
+    result += ETkIfc::MoveWindow(_etkServer, handle,
+				 (int) centerX, (int) centerY);
+    return result;
+}
+
+//
+// END ETk interface
+// -----------------------------------------------------------------------
 
 /* get geometry of root window enclosing this window */
 

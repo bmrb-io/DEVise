@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/20 18:43:29  wenger
+  Unfilled arcs and variable line widths now work in PostScript output.
+
   Revision 1.15  1996/12/15 20:22:30  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -141,6 +144,53 @@ public:
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+    /* Display embedded Tk (ETk) windows */
+    virtual void SetETkServer(char *serverName) {
+	reportError("Can't do SetETkServer() on this WindowRep object",
+		    devNoSyserr);
+    }
+    virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
+				       Coord width, Coord height,
+				       char *filename,
+				       int argc, char **argv,
+				       int &handle) {
+	reportError("Can't do ETk_CreateWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_MoveWindow(int handle,
+				     Coord centerX, Coord centerY) {
+	reportError("Can't do ETk_MoveWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_FreeWindow(int handle)
+    {
+	reportError("Can't do ETk_FreeWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_MapWindow(int handle)
+    {
+	reportError("Can't do ETk_MapWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_UnmapWindow(int handle)
+    {
+	reportError("Can't do ETk_UnmapWindow() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual DevStatus ETk_FreeWindows() {
+	reportError("Can't do ETk_FreeWindows() on this WindowRep object",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    virtual int ETk_WindowCount() {
+	return 0;
+    }
+    
     /* drawing primitives */
     /* Return TRUE if window is scrollable */
     virtual Boolean Scrollable() { return false; }
