@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/05/15 16:44:42  jussi
+  Added support for the new server synchronization mechanism.
+
   Revision 1.14  1996/04/23 21:59:07  jussi
   Minor improvements in code readability. Also fixed missing
   initialization of qdata->isRandom.
@@ -73,6 +76,7 @@
 #include "TData.h"
 #include "GData.h"
 #include "Control.h"
+#include "RecordLink.h"
 
 //#define DEBUG
 
@@ -121,7 +125,6 @@ inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
   Boolean isTData;
   
   mgr->InitGetRecs(tdata, map->GetGData(), id, id, Randomize);
-
   if (!mgr->GetRecs(isTData, startRid, numRecs, buf, recs)) {
     fprintf(stderr,"Getx:can't get record\n");
     Exit::DoExit(2);
@@ -199,7 +202,7 @@ QueryProcFull::QueryProcFull()
      else _mgr = new BufMgrNull;
   */
 
-  _mgr = new BufMgrFull(bufSize*4096);
+  _mgr = new BufMgrFull(bufSize * 4096);
   
   _tqueryQdata = AllocEntry();
   _tqueryQdata->isRandom = false;
@@ -230,6 +233,9 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   qdata->gdata = map->GetGData();
   qdata->mgr = _mgr;
   qdata->bytes = 0;
+
+  qdata->recLink = callback->GetRecordLink();
+  qdata->recLinkRecId = 0;
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -442,7 +448,6 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData)
 #endif
 }
 
-
 /* Initialize all queries. Return false if no query is in initial state */
 Boolean QueryProcFull::InitQueries()
 {
@@ -482,13 +487,58 @@ Set state == QPFull_EndState if scan is completed.
 void QueryProcFull::ProcessScan(QPFullData *qData)
 {
   /* inform buffer manager of focus */
-  qData->mgr->FocusHint(qData->hintId, qData->tdata,qData->gdata);
+  qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
 
   Boolean isTData = UseTDataQuery(qData->tdata, qData->filter);
   InitScan();
 
   Boolean cont;
   Boolean noHigh;
+
+  if (qData->recLink) {
+    /* execute a restricted, non-randomized query using the record
+       ranges specified in recLink */
+    do {
+      RecId low, high;
+      int num;
+      int result = qData->recLink->FetchRecs(qData->recLinkRecId, low, num);
+      if (result < 0) {
+	printf("Cannot fetch record %ld from record link file %s\n",
+	       qData->recLinkRecId, qData->recLink->GetFileName());
+	qData->recLinkRecId = 0;
+	qData->state = QPFull_EndState;
+	return;
+      }
+      if (!result) {
+#ifdef DEBUG
+	printf("End of record link file %s (%ld records)\n",
+	       qData->recLink->GetFileName(), qData->recLinkRecId);
+#endif
+	qData->recLinkRecId = 0;
+	qData->state = QPFull_EndState;
+	return;
+      }
+#ifdef DEBUG
+      printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
+	     low, low + num - 1, qData->recLink->GetFileName(),
+	     qData->recLinkRecId);
+#endif
+      if (low > qData->high) {
+	qData->recLinkRecId = 0;
+	qData->state = QPFull_EndState;
+	return;
+      }
+      qData->recLinkRecId++;
+      high = low + num - 1;
+      if (high > qData->high)
+	high = qData->high;
+      cont = DoScan(qData, low, high, isTData);
+      if (cont)
+	/* reset current */
+	qData->current = high;
+    } while (cont);      
+    return;
+  }
 
   if (!qData->isRandom) {
     do {
@@ -779,6 +829,14 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   return true;
 }
 
+/*
+   Return true if sum of GData record sizes exceeds the size of 
+   a TData record. The query processor will then fetch TData and
+   compute GData for each query. If false is returned, the query
+   processor fetches GData for all affected queries and does not
+   have to recompute.
+*/
+
 Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
 {
   int index;
@@ -802,7 +860,7 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   return false;
 }
 
-/* Initialize scan. by initializing the amount of memory used */
+/* Initialize scan by initializing the amount of memory used */
 
 void QueryProcFull::InitScan()
 {
@@ -857,162 +915,177 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 {
 #ifdef DEBUG
-	printf("QPRangeInserted [%ld,%ld]\n", low, high);
+  printf("QPRangeInserted [%ld,%ld]\n", low, high);
 #endif
 
-	int tRecSize = _rangeQData->tdata->RecSize();
-	int gRecSize = _rangeQData->map->GDataRecordSize();
+  int tRecSize = _rangeQData->tdata->RecSize();
+  int gRecSize = _rangeQData->map->GDataRecordSize();
 
-	if (_rangeTData) {
-		/* return TData in batches. The amount of TData returned might
-		be greater than what we can fit in _gdataBuf after conversion.
-		Therefore, we have to convert in batches and send each batch
-		of GData individually. */
-		_rangeQData->bytes += (high-low+1)*tRecSize;
-		int numRecsPerBatch = GDATA_BUF_SIZE/gRecSize;
-		if (numRecsPerBatch > QPFULL_MAXSYMS)
-			numRecsPerBatch = QPFULL_MAXSYMS;
-
-		int numRecs = high-low+1;
-		int recsLeft = numRecs;
-		int offset = low-_rangeStartId;
-		char *dbuf = (char *)_rangeBuf+ offset*tRecSize;
-		RecId recId = low;
-		while (recsLeft > 0) {
-			int numToConvert = numRecsPerBatch;
-			if (numToConvert > recsLeft)
-				numToConvert = recsLeft;
-
-			_rangeQData->map->ConvertToGData(recId, dbuf,
-				&_rangeRecs[numRecs-recsLeft+offset], numToConvert,_gdataBuf);
-
-/*
-printf("ReturnGData(0x%p,%d,0x%p,%d)\n", _rangeQData->map,recId,
-				_gdataBuf,numToConvert);
-*/
+  if (_rangeTData) {
+    /* return TData in batches. The amount of TData returned might
+       be greater than what we can fit in _gdataBuf after conversion.
+       Therefore, we have to convert in batches and send each batch
+       of GData individually. */
+    _rangeQData->bytes += (high-low+1)*tRecSize;
+    int numRecsPerBatch = GDATA_BUF_SIZE/gRecSize;
+    if (numRecsPerBatch > QPFULL_MAXSYMS)
+      numRecsPerBatch = QPFULL_MAXSYMS;
+    
+    int numRecs = high-low+1;
+    int recsLeft = numRecs;
+    int offset = low-_rangeStartId;
+    char *dbuf = (char *)_rangeBuf+ offset*tRecSize;
+    RecId recId = low;
+    while (recsLeft > 0) {
+      int numToConvert = numRecsPerBatch;
+      if (numToConvert > recsLeft)
+	numToConvert = recsLeft;
+      
+      _rangeQData->map->ConvertToGData(recId, dbuf,
+				       &_rangeRecs[numRecs-recsLeft + offset],
+				       numToConvert, _gdataBuf);
+      
+#ifdef DEBUG
+      printf("ReturnGData(0x%p,%ld,0x%p,%d)\n", _rangeQData->map, recId,
+	     _gdataBuf, numToConvert);
+#endif
 	
-			_rangeQData->callback->ReturnGData(_rangeQData->map,recId,
-				_gdataBuf,numToConvert);
+      _rangeQData->callback->ReturnGData(_rangeQData->map, recId,
+					 _gdataBuf, numToConvert);
 
-			recsLeft -= numToConvert;
-			recId += numToConvert;
-			dbuf += (tRecSize*numToConvert);
-		}
-	}
-	else {
-		/* return GData */
-		char *ptr = (char *)_rangeBuf + (low- _rangeStartId)*gRecSize;
-		_rangeQData->bytes += (high-low+1)*gRecSize;
+      recsLeft -= numToConvert;
+      recId += numToConvert;
+      dbuf += (tRecSize*numToConvert);
+    }
+  } else {
+    /* return GData */
+    char *ptr = (char *)_rangeBuf + (low- _rangeStartId)*gRecSize;
+    _rangeQData->bytes += (high-low+1)*gRecSize;
 
-/*
-printf("ReturnGData(0x%p,%d,0x%p,%d)\n", _rangeQData->map,low,
-				_gdataBuf,high-low+1);
-*/
-		_rangeQData->callback->ReturnGData(_rangeQData->map,
-			low,ptr,high-low+1);
-	}
+#ifdef DEBUG
+    printf("ReturnGData(0x%p,%ld,0x%p,%ld)\n", _rangeQData->map, low,
+	   _gdataBuf, high - low + 1);
+#endif
+    _rangeQData->callback->ReturnGData(_rangeQData->map, low,
+				       ptr, high - low + 1);
+  }
 }
 
 /* Distribute tdata/gdata to all queries that need it */
 void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
-	int numRecs, void *buf, void **recs)
+				    int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-	printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
-	       startRid, startRid+numRecs-1);
+  printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
+	 startRid, startRid + numRecs - 1);
 #endif
+  
+  /* init params for QPRangeInserted() */
+  _rangeBuf = buf;
+  _rangeStartId = startRid;
+  _rangeRecs = recs;
+  _rangeNumRecs = numRecs;
+  _rangeTData = true;
 
-	/* init params for QPRangeInserted() */
-	_rangeBuf = buf;
-	_rangeStartId = startRid;
-	_rangeRecs = recs;
-	_rangeNumRecs = numRecs;
-	_rangeTData = true;
+  RecId low = startRid;
+  RecId high = startRid + numRecs - 1;
 
-	int index;
-	RecId low = startRid;
-	RecId high = startRid+numRecs-1;
-	for (index= _queries->InitIterator(); _queries->More(index); ) {
-		QPFullData *qData = _queries->Next(index);
-		RecId tempLow = low;
-		RecId tempHigh = high;
-		if (qData->tdata == queryData->tdata) {
-			if (tempLow < qData->current)
-				tempLow = qData->current;
-			if (tempHigh > qData->high)
-				tempHigh = qData->high;
-			if (tempHigh >= tempLow) {
-				_rangeQData = qData;
-/*
-printf("before insert range before: ");
-qData->range->Print();
-*/
-				qData->range->Insert(tempLow, tempHigh, this);
-/*
-printf("after insert: ");
-qData->range->Print();
-*/
-			}
-		}
-	}
-	_queries->DoneIterator(index);
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
+    QPFullData *qData = _queries->Next(index);
+
+    // if query is a slave of a record link, do not distribute tdata
+    // to it; the query will be executed when the master of the link
+    // is done
+    if (queryData != qData && qData->recLink)
+      continue;
+
+    RecId tempLow = low;
+    RecId tempHigh = high;
+    if (qData->tdata == queryData->tdata) {
+      if (tempLow < qData->current)
+	tempLow = qData->current;
+      if (tempHigh > qData->high)
+	tempHigh = qData->high;
+      if (tempHigh >= tempLow) {
+	_rangeQData = qData;
+#ifdef DEBUG
+	printf("before insert range before: ");
+	qData->range->Print();
+#endif
+	qData->range->Insert(tempLow, tempHigh, this);
+#ifdef DEBUG
+	printf("after insert: ");
+	qData->range->Print();
+#endif
+      }
+    }
+  }
+  _queries->DoneIterator(index);
 }
 
 void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
-	int numRecs, void *buf, void **recs)
+				    int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-	printf("DistributeGData map 0x%p, [%ld,%ld]\n",
-	       queryData->map, startRid, startRid+numRecs - 1);
+  printf("DistributeGData map 0x%p, [%ld,%ld]\n",
+	 queryData->map, startRid, startRid + numRecs - 1);
 #endif
 
-	/* init params for QPRangeInserted() */
-	_rangeBuf = buf;
-	_rangeStartId = startRid;
-	_rangeRecs = recs;
-	_rangeNumRecs = numRecs;
-	_rangeTData = false;
+  /* init params for QPRangeInserted() */
+  _rangeBuf = buf;
+  _rangeStartId = startRid;
+  _rangeRecs = recs;
+  _rangeNumRecs = numRecs;
+  _rangeTData = false;
 
-	int index;
-	RecId low = startRid;
-	RecId high = startRid+numRecs-1;
-	for (index= _queries->InitIterator(); _queries->More(index); ) {
-		QPFullData *qData = _queries->Next(index);
-		if ( qData->gdata == queryData->gdata ) {
-			RecId tempLow = low;
-			RecId tempHigh = high;
-			if (tempLow < qData->current)
-				tempLow = qData->current;
-			if (tempHigh > qData->high)
-				tempHigh = qData->high;
-			if (tempHigh >= tempLow) {
-				_rangeQData = qData;
-/*
-printf("before insert range before: ");
-qData->range->Print();
-*/
-				qData->range->Insert(tempLow, tempHigh, this);
-/*
-printf("after insert: ");
-qData->range->Print();
-*/
-			}
-		}
-	}
-	_queries->DoneIterator(index);
+  RecId low = startRid;
+  RecId high = startRid + numRecs - 1;
+
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
+    QPFullData *qData = _queries->Next(index);
+
+    // if query is a slave of a record link, do not distribute tdata
+    // to it; the query will be executed when the master of the link
+    // is done
+    if (queryData != qData && qData->recLink)
+      continue;
+
+    if (qData->gdata == queryData->gdata) {
+      RecId tempLow = low;
+      RecId tempHigh = high;
+      if (tempLow < qData->current)
+	tempLow = qData->current;
+      if (tempHigh > qData->high)
+	tempHigh = qData->high;
+      if (tempHigh >= tempLow) {
+	_rangeQData = qData;
+#ifdef DEBUG
+	printf("before insert range before: ");
+	qData->range->Print();
+#endif
+	qData->range->Insert(tempLow, tempHigh, this);
+#ifdef DEBUG
+	printf("after insert: ");
+	qData->range->Print();
+#endif
+      }
+    }
+  }
+  _queries->DoneIterator(index);
 }
-
 
 QPFullData *QueryProcFull::AllocEntry()
 {
   QPFullData *entry;
-  if (_freeList != NULL) {
+  if (_freeList) {
     entry = _freeList;
     _freeList = _freeList->next;
   } else {
     entry = new QPFullData;
   }
-  entry->range = new QPRange();
+  entry->range = new QPRange;
 
   return entry;
 }

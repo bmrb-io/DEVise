@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/22 21:38:06  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.9  1996/04/10 02:24:39  jussi
   Added support for > 1 mappings in a view.
 
@@ -75,6 +82,9 @@ protected:
   virtual void DerivedStartQuery(VisualFilter &filter, int timestamp);
   virtual void DerivedAbortQuery();
   
+  /* Get record link */
+  virtual RecordLink *GetRecordLink() { return _slaveLink; }
+
   virtual Boolean DisplaySymbols() { return _dispSymbols; }
   virtual Boolean DisplaySymbols(Boolean state);
   virtual Boolean DisplayConnectors() { return _dispConnectors; }

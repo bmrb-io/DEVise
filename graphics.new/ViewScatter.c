@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/22 21:38:10  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.11  1996/04/15 16:08:36  jussi
   Improved the way x and y attributes are extracted from a GData
   record in ReturnGData(). Also added code for extracting shape
@@ -60,19 +67,20 @@
 #include "ViewScatter.h"
 #include "TDataMap.h"
 #include "Shape.h"
+#include "RecordLink.h"
 
 //#define DEBUG
 
-ViewScatter::ViewScatter(char *name, 
-			 VisualFilter &initFilter, QueryProc *qp,  
-			 Color fg,Color bg, 
+ViewScatter::ViewScatter(char *name, VisualFilter &initFilter,
+			 QueryProc *qp, Color fg, Color bg, 
 			 AxisLabel *xAxis, AxisLabel *yAxis,
 			 Action *action) : 
-	ViewGraph(name,initFilter, xAxis, yAxis, fg, bg, action)
+	ViewGraph(name, initFilter, xAxis, yAxis, fg, bg, action)
 {
   _queryProc = qp;
   _map = 0;
   _index = -1;
+  _queryFilter = initFilter;
 }
 
 ViewScatter::~ViewScatter()
@@ -90,6 +98,14 @@ void ViewScatter::InsertMapping(TDataMap *map)
 
 void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
+  // Initialize record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Initialize();
+  }
+  _masterLink.DoneIterator(index);
+
   _queryFilter = filter;
   _timestamp = timestamp;
 
@@ -120,6 +136,14 @@ void ViewScatter::DerivedAbortQuery()
     _map = 0;
     _index = -1;
   }
+
+  // Abort record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Abort();
+  }
+  _masterLink.DoneIterator(index);
 }
 
 /* Query data ready to be returned. Do initialization here. */
@@ -144,6 +168,8 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   mapping->MaxBoundingBox(maxWidth, maxHeight);
   GDataAttrOffset *offset = mapping->GetGDataOffset();
 
+  int firstRec = 0;
+
   for(int i = 0; i < numGData; i++) {
 
     // extract X, Y, shape, and color information from gdata record
@@ -157,10 +183,18 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 
     // eliminate records which won't appear on the screen
 
-    if (x + maxWidth < filter->xLow || 
-	x - maxWidth > filter->xHigh || 
-	y + maxHeight < filter->yLow || 
-	y - maxHeight > filter->yHigh) {
+    if (x + maxWidth / 2 < filter->xLow || 
+	x - maxWidth / 2 > filter->xHigh || 
+	y + maxHeight / 2 < filter->yLow || 
+	y - maxHeight / 2 > filter->yHigh) {
+
+      // Only last mapping is used for record linking
+      if (!MoreMapping(_index) && i > firstRec)
+	WriteMasterLink(recId + firstRec, i - firstRec);
+
+      // Next contiguous batch of record id's starts at i+1
+      firstRec = i + 1;
+
       ptr += gRecSize;
       continue;
     }
@@ -175,6 +209,10 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 
   if (recIndex > 0)
     mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+
+  // Only last mapping is used for record linking
+  if (!MoreMapping(_index) && numGData > firstRec)
+    WriteMasterLink(recId + firstRec, numGData - firstRec);
 }
 
 /* Done with query */
@@ -196,6 +234,14 @@ void ViewScatter::QueryDone(int bytes, void *userData)
   _index = -1;
 
   DrawLegend();
+
+  // Finish record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Done();
+  }
+  _masterLink.DoneIterator(index);
 
   ReportQueryDone(bytes);
 }

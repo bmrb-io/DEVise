@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/20 19:56:51  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.4  1996/04/09 18:07:47  jussi
   Added call to Display::Flush() when all queries have been executed,
   and added variables needed to support that.
@@ -40,6 +44,7 @@ class TData;
 class TDataMap;
 class GData;
 class DictGroup;
+class RecFile;
 
 /* data for QueryProcFull */
 enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter};
@@ -70,6 +75,10 @@ struct QPFullData {
   
   int bytes;                            /* # of bytes processed in query */
   
+  RecordLink *recLink;                  /* record link */
+  RecFile    *recLinkFile;              /* record link file */
+  RecId      recLinkRecId;              /* current record link record */
+
   RecId hintId;                         /* ID for hint */
   void *userData;
 };
@@ -128,7 +137,6 @@ private:
   /* Initialize all queries. Return false if no query
      is in initial state */
   Boolean InitQueries();
-
 
   /* Init for individual query types */
   void InitQPFullX(QPFullData *qData);

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/05/07 16:33:35  jussi
+  Moved Action member variable from View to ViewGraph. Moved
+  implementation of HandleKey, HandlePress and HandlePopup to
+  ViewGraph as well. Added IsScatterPlot() method.
+
   Revision 1.12  1996/04/22 21:38:09  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -68,8 +73,10 @@
 #include "Color.h"
 #include "BasicStats.h"
 #include "Action.h"
+#include "RecId.h"
 
 class TDataMap;
+class RecordLink;
 
 struct MappingInfo {
   TDataMap *map;
@@ -77,14 +84,22 @@ struct MappingInfo {
 };
 
 DefinePtrDList(MappingInfoList, MappingInfo *);
+DefinePtrDList(RecordLinkList, RecordLink *);
 
 class ViewGraph: public View {
 public:
   ViewGraph(char *name, VisualFilter &initFilter, 
 	    AxisLabel *xAxis, AxisLabel *yAxis,
-	    Color fg, Color bg,
-	    Action *action = NULL);
+	    Color fg, Color bg, Action *action = 0);
 
+  virtual ~ViewGraph();
+
+  /* Make view a master/slave of a link */
+  virtual void AddAsMasterView(RecordLink *link);
+  virtual void DropAsMasterView(RecordLink *link);
+  virtual void SetSlaveView(RecordLink *link);
+
+  /* Insert/remove mappings from view */
   virtual void InsertMapping(TDataMap *map, char *label = "");
   virtual void RemoveMapping(TDataMap *map);
   virtual char *GetMappingLegend(TDataMap *map);
@@ -113,19 +128,28 @@ public:
   void SetDisplayStats(char *stat);
   BasicStats *GetStatObj() { return &_stats; }
 
+  /* Set/get action */
   void SetAction(Action *action) { _action = action; }
   Action *GetAction() { return _action; }
 	
+  /* Return true if view is a scatter plot */
   Boolean IsScatterPlot();
       
-protected:
+ protected:
+  /* Insert records into record links whose master this view is */
+  void WriteMasterLink(RecId start, int num);
+
+  /* List of mappings displayed in this view */
   MappingInfoList _mappings;
 
   /* TRUE if Statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
   BasicStats _stats;
 
-  Action *_action;
+  Action *_action;                      /* action in this view */
+  RecordLinkList _masterLink;           /* list of links whose master this
+					   view is */
+  RecordLink *_slaveLink;               /* slave record link */
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/07 16:33:23  jussi
+  Moved Action member variable from View to ViewGraph. Moved
+  implementation of HandleKey, HandlePress and HandlePopup to
+  ViewGraph as well. Added IsScatterPlot() method.
+
   Revision 1.15  1996/04/22 21:38:09  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -24,8 +29,8 @@
   now gets its own iterator.
 
   Revision 1.14  1996/04/20 19:56:59  kmurli
-  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
-  needed instead of being continuosly polled by the Dispatcher.
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
 
   Revision 1.13  1996/04/16 20:39:54  jussi
   Replaced assert() calls with DOASSERT macro.
@@ -74,7 +79,7 @@
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
-#include<assert.h>
+#include "RecordLink.h"
 
 //#define DEBUG
 
@@ -94,6 +99,75 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
   // add terminating null
   _DisplayStats[STAT_NUM] = 0;
+
+  _slaveLink = 0;
+}
+
+ViewGraph::~ViewGraph()
+{
+  // Drop view as master from all links.
+
+  // Must delete link using DeleteCurrent() because SetMasterView()
+  // calls DropAsMasterView() which calls _masterLink.Delete(link)
+  // which is not allowed because we're inside an iterator
+  
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    _masterLink.DeleteCurrent(index);
+    link->SetMasterView(0);
+  }
+  _masterLink.DoneIterator(index);
+
+  if (_slaveLink)
+    _slaveLink->DeleteView(this);
+}
+
+void ViewGraph::AddAsMasterView(RecordLink *link)
+{
+  // remove this view from the view list of the link; then add
+  // the link as one of the links whose master this view is
+
+  link->DeleteView(this);
+  if (!_masterLink.Find(link)) {
+#ifdef DEBUG
+    printf("View %s becomes master of record link %s\n", GetName(),
+	   link->GetName());
+#endif
+    _masterLink.Append(link);
+  }
+
+  Refresh();
+}
+
+void ViewGraph::DropAsMasterView(RecordLink *link)
+{
+  if (_masterLink.Find(link)) {
+    _masterLink.Delete(link);
+#ifdef DEBUG
+    printf("View %s no longer master of record link %s\n", GetName(),
+	   link->GetName());
+#endif
+  }
+}
+
+void ViewGraph::SetSlaveView(RecordLink *link)
+{
+  // view cannot be a master, record it as a slave
+
+  if (link) {
+#ifdef DEBUG
+    printf("View %s becomes slave of record link %s\n", GetName(),
+	   link->GetName());
+#endif
+    DropAsMasterView(link);
+  } else {
+#ifdef DEBUG
+    printf("View %s no longer slave\n", GetName());
+#endif
+  }
+
+  _slaveLink = link;
 }
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
@@ -187,6 +261,17 @@ void ViewGraph::DrawLegend()
   DoneMappingIterator(index);
 
   win->PopTransform();
+}
+
+void ViewGraph::WriteMasterLink(RecId start, int num)
+{
+  // Insert records into record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->InsertRecs(start, num);
+  }
+  _masterLink.DoneIterator(index);
 }
 
 Boolean ViewGraph::IsScatterPlot()

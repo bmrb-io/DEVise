@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/22 21:38:06  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.17  1996/04/16 20:50:13  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -84,32 +91,38 @@
 #include "TDataMap.h"
 #include "ConnectorShape.h"
 #include "Shape.h"
+#include "RecordLink.h"
 
 //#define DEBUG
 
 TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
 		       Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
 		       Action *action) :
-	ViewGraph(name,initFilter, xAxis, yAxis, fg, bg, action)
+	ViewGraph(name, initFilter, xAxis, yAxis, fg, bg, action)
 {
   _dataBin = new GDataBin();
+  DOASSERT(_dataBin, "Out of memory");
+
   _map = 0;
   _index = -1;
   _queryProc = qp;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
+  _queryFilter = initFilter;
 
   _dispSymbols = true;
   _dispConnectors = false;
-  _cMap = NULL;
+  _cMap = 0;
 }
 
 TDataViewX::~TDataViewX()
 {
   // SubClassUnmapped aborts any current query; this _must_ be done
   // before this destructor exits, or members needed to do the abort
-  // will no longer be defined.  RKW 4/5/96.
+  // will no longer be defined.
   SubClassUnmapped();
+
+  delete _dataBin;
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
@@ -131,6 +144,14 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
   // Initialize statistics collection
   _stats.Init(this);
+
+  // Initialize record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Initialize();
+  }
+  _masterLink.DoneIterator(index);
 
   _queryFilter = filter;
   _timestamp = timestamp;
@@ -162,6 +183,14 @@ void TDataViewX::DerivedAbortQuery()
     _map = 0;
     _index = -1;
   }
+
+  // Abort record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Abort();
+  }
+  _masterLink.DoneIterator(index);
 
   _dataBin->Final();
 }
@@ -230,14 +259,16 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   _numBatches++;
   int gRecSize = mapping->GDataRecordSize();
 
-  // Collect statistics only for last mapping
+  // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
 
     // Update stats based on gdata
     char *tp = (char *)gdata;
     GDataAttrOffset *offset = mapping->GetGDataOffset();
 
-    for(int tmp = 0; tmp < numGData; tmp++) {
+    int firstRec = 0;
+
+    for(int i = 0; i < numGData; i++) {
 
       // extract X, Y, shape, and color information from gdata record
 
@@ -248,13 +279,19 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
 
-      // eliminate records which won't appear on the screen
-
+      // eliminate records which don't match the filter's X range
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh)
 	_stats.Sample(x, y);
+      else if (i > firstRec) {
+	WriteMasterLink(recId + firstRec, i - firstRec);
+	firstRec = i + 1;
+      }
       
       tp += gRecSize;
     }
+
+    if (numGData > firstRec)
+      WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
   
   if (_batchRecs) {
@@ -296,6 +333,14 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   _dataBin->Final();
 
   DrawLegend();
+
+  // Finish record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Done();
+  }
+  _masterLink.DoneIterator(index);
 
   ReportQueryDone(bytes);
 }

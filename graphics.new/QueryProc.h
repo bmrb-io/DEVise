@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:55:15  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:14  jussi
   Added CVS header.
 */
@@ -31,6 +34,7 @@ class BufMgr;
 class TData;
 class TDataMap;
 class GData;
+class RecordLink;
 
 /* Used to return query results */
 class QueryCallback {
@@ -44,6 +48,8 @@ class QueryCallback {
   /* Done with query. bytes == # of TData bytes used in
      processing this query. */
   virtual void QueryDone(int bytes, void *userData) = 0;
+
+  virtual RecordLink *GetRecordLink() { return 0; }
 };
 
 class QueryProc;
