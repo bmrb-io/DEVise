@@ -29,6 +29,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/11/11 14:31:02  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.13  1998/11/02 19:22:44  wenger
   Added "range/MQL" session description capability.
 
@@ -102,9 +108,11 @@
 #include "Session.h"
 #include "DerivedTable.h"
 
-#include "RelationManager.h"
-#include "types.h"
-#include "CatalogComm.h"
+#if !defined(NO_DTE)
+  #include "RelationManager.h"
+  #include "types.h"
+  #include "CatalogComm.h"
+#endif
 
 //#define DEBUG
 

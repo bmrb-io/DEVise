@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/11/11 14:30:42  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.34  1998/11/06 17:59:35  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -184,7 +190,9 @@
 #include "ParseAPI.h"
 #include "DevFileHeader.h"
 #include "Util.h"
-#include "../../DTE/DeviseSpecific/CatalogComm.h"
+#if !defined(NO_DTE)
+  #include "../../DTE/DeviseSpecific/CatalogComm.h"
+#endif
 #include "ParseCat.h"
 #include "StringStorage.h"
 #include "CmdContainer.h"
@@ -545,7 +553,14 @@ Session::CreateTData(char *name)
   } else {
     // Get the DTE catalog entry for this data source.
 	// TEMP -- memory may be leaked in here
+#if defined(DTE_WARN)
+    fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
     catEntry = dteShowCatalogEntry(name);
+#else
+    catEntry = CopyString("\"testcolors_dat\" UNIXFILE testcolors.dat Visible-Infrared-Schema /p/devise/schema/schema/logical/VN \"\" 100 50 \"/p/devise/dat\" \"\" ;");
+#endif
     if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
       char errBuf[256];
       sprintf(errBuf, "No catalog entry for data source {%s}", name);
@@ -623,7 +638,14 @@ Session::CreateTData(char *name)
     char *result ;
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
+#if defined(DTE_WARN)
+      fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
       result = dteImportFileType(name);
+#else
+      result = NULL;
+#endif
       if (result == NULL) {
 	char buf[2048];
 	sprintf(buf, "Error parsing schema %s", name);

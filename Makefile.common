@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1998/07/09 19:30:40  wenger
+#  Fixed bug 374 (Tables failing on SPARC/Solaris).
+#
 #  Revision 1.30  1998/07/03 23:41:30  wenger
 #  Fixed some memory leaks; added provision to print data segment size
 #  at certain places in the code.
@@ -173,6 +176,8 @@ ifeq ($(DEBUG_MEM),1)
     DEBUG_FLAGS += -DDEBUG_MEM
 endif
 
+#DEBUG_FLAGS += -DNO_DTE
+#DEBUG_FLAGS += -DDTE_WARN
 
 
 # Set up for profiling.

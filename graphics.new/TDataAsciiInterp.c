@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/09/30 17:44:47  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.35  1998/01/07 19:29:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -178,7 +182,9 @@
 #include "DevError.h"
 
 #ifndef ATTRPROJ
-#include "TDataDQLInterp.h"
+#if !defined(NO_DTE)
+  #include "TDataDQLInterp.h"
+#endif
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #endif
@@ -272,6 +278,10 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
     }
 
     if(!strncmp(argv[0], "GstatXDTE:", 10)) {
+  #if defined(DTE_WARN)
+    fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+  #endif
+  #if !defined(NO_DTE)
       char *sourceName = new char[1024];
       char *query = new char[1024];
       char **param = new char *[2];
@@ -304,6 +314,7 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
             new TDataDQLInterpClassInfo(sourceName, query);
 
       return queryClass->CreateWithParamsNew(param, query);
+  #endif
       }
   }
 #endif

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/11/11 14:30:56  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.33  1998/11/06 17:59:46  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -148,12 +154,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <assert.h>
 
 #include "DeviseCommand.h"
 #include "ParseAPI.h"
-#include "TDataDQLInterp.h"
+#if !defined(NO_DTE)
+  #include "TDataDQLInterp.h"
+#endif
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
@@ -230,7 +239,9 @@ extern "C" int purify_new_inuse();
 int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 	char *windowName);
-int ParseAPIDTE(int argc, char** argv, ControlPanel* control);
+#if !defined(NO_DTE)
+  int ParseAPIDTE(int argc, char** argv, ControlPanel* control);
+#endif
 int ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
 
@@ -431,7 +442,14 @@ DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
 		if (argc ==2) 
         {
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
     		 char * name = dteImportFileType(argv[1]);
+#else
+			 char *name = NULL;
+#endif
     		 if (!name){
     		ReturnVal(API_NAK, "");
     		return -1;
@@ -439,7 +457,14 @@ IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
     		 ReturnVal(API_ACK, name);
     		 return 1;
     	}
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
 		return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
 IMPLEMENT_COMMAND_END
 
 /*
@@ -459,7 +484,14 @@ DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -474,7 +506,14 @@ DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -489,7 +528,14 @@ DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -504,7 +550,14 @@ DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -528,7 +581,14 @@ DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
     		return 1;
     	}
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -552,7 +612,14 @@ DeviseCommand_dteListCatalog::Run(int argc, char** argv)
     		}
     	}
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -574,7 +641,14 @@ DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
     		return 1;
     	}
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -589,7 +663,14 @@ DeviseCommand_dteListAttributes::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -604,7 +685,14 @@ DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -619,7 +707,14 @@ DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -634,7 +729,14 @@ DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -649,7 +751,14 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
     	 return 1;
         }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -670,7 +779,14 @@ DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }
@@ -685,7 +801,14 @@ DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
               return 1;
          }
 TAG*/
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
+#else
+        return false;
+#endif
     }
     return true;
 }

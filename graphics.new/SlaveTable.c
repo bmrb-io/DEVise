@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/15 19:55:20  wenger
+  Fixed bugs 338 and 363 (problems with special cases of set links).
+
   Revision 1.1  1998/05/06 22:04:55  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -42,10 +45,12 @@
 #include "DerivedTable.h"
 #include "DataSeg.h"
 
-#include "RelationManager.h"
-#include "types.h"
-#include "CatalogComm.h"
-#include "TDataDQLInterp.h"
+#if !defined(NO_DTE)
+  #include "RelationManager.h"
+  #include "types.h"
+  #include "CatalogComm.h"
+  #include "TDataDQLInterp.h"
+#endif
 
 //#define DEBUG
 
@@ -164,6 +169,10 @@ SlaveTable::CreateRelation()
 
   DevStatus result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   //
   // Make sure the slave view has a TData already defined, and that the
   // TData is a Table (as opposed to a UNIXFILE, or whatever).
@@ -323,6 +332,7 @@ SlaveTable::CreateRelation()
       map->SetPhysTData(CreateTData(slaveTableName));
     }
   }
+#endif
 
   return result;
 }
@@ -349,12 +359,18 @@ SlaveTable::DestroyRelation()
   result += DestroyTData();
 
   if (_relId != NULL) {
-#if defined(DEBUG)
-    cout << "  deleting relation " << *_relId << "\n";
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
 #endif
+#if !defined(NO_DTE)
+
+  #if defined(DEBUG)
+    cout << "  deleting relation " << *_relId << "\n";
+  #endif
     RELATION_MNGR.deleteRelation(*_relId);
     delete _relId;
     _relId = NULL;
+#endif
   }
 
   return result;
@@ -372,6 +388,10 @@ SlaveTable::CreateTData(char *name)
   printf("SlaveTable(0x%p)::CreateTData(%s)\n", this, name);
 #endif
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   (void) DestroyTData();
 
   DataSeg::Set(name, NULL, 0, 0);
@@ -389,6 +409,9 @@ SlaveTable::CreateTData(char *name)
   }
 
   return _tdata;
+#else
+  return NULL;
+#endif
 }
 
 /*------------------------------------------------------------------------------

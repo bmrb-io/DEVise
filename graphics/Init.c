@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/07/31 19:47:20  wenger
+  Fixed bug in setting clientTimeout value.
+
   Revision 1.47  1998/06/23 17:51:38  wenger
   Added client timeout to Devise -- quits if no commands from client
   within specified period.
@@ -233,7 +236,9 @@
 #include "Util.h"
 #include "Version.h"
 #include "ETkIfc.h"
-#include "InitShut.h"
+#if !defined(NO_DTE)
+  #include "InitShut.h"
+#endif
 #include "ClientAPI.h"
 
 static char uniqueFileName[100];
@@ -400,7 +405,12 @@ void Init::DoInit(int &argc, char **argv)
 {
   char *temp;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   initialize_system();
+#endif
 
   /* set the collaborator name via the environmental variables */
   temp = getenv ("DEVISE_COLLABORATOR");

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/10/28 19:22:28  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.45  1998/09/08 16:06:50  wenger
   Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
   the creation of multiple classes with the same name; fixed session file.
@@ -216,8 +222,10 @@
 
 #include "machdep.h"
 #include "TDataAsciiInterp.h"
-#include "TDataDQLInterp.h"
-#include "TDataDQL.h"
+#if !defined(NO_DTE)
+  #include "TDataDQLInterp.h"
+  #include "TDataDQL.h"
+#endif
 #include "TDataBinaryInterp.h"
 #include "Parse.h"
 #include "Control.h"
@@ -230,6 +238,7 @@
 #include "DataSourceFileStream.h"
 #include "ParseCat.h"
 #include "DevError.h"
+#include "ClassDir.h"
 
 //#define DEBUG
 
@@ -1383,6 +1392,10 @@ ParseCatDQL(char *catFile, string& phySchemaFile, string& list)
 
   int result = false;
   
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   FILE *fp = fopen(catFile, "r");
   if (!fp)
   {
@@ -1420,6 +1433,7 @@ ParseCatDQL(char *catFile, string& phySchemaFile, string& list)
       result = ParseDQLCatLogical(&logSchemaSource, list);
     }
   }
+#endif
 
   return result;
 }
@@ -1427,6 +1441,10 @@ ParseCatDQL(char *catFile, string& phySchemaFile, string& list)
 int
 ParseDQLCatLogical(DataSource *schemaSource, string &list)
 {
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   char buf[LINESIZE];
   int numArgs;
   char **args;
@@ -1489,12 +1507,17 @@ ParseDQLCatLogical(DataSource *schemaSource, string &list)
   schemaSource->Close();
   
   fprintf(stderr,"error at line %d\n", _line);
+#endif
   return false;
 }
 
 int
 ParseDQLCatPhysical(DataSource *schemaSource, string& list)
 {
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends
 			     on this */
@@ -1564,5 +1587,6 @@ error:
 
 	if (attrs != NULL) delete attrs;
 	fprintf(stderr,"error at line %d\n", _line);
+#endif
 	return false;
 }

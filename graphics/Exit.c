@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/03/08 01:10:42  wenger
+  Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
+  CPU usage bug (308)).
+
   Revision 1.19  1997/11/05 00:22:05  donjerko
   Added initialization of Streaming Buffer Mgr, used by RTree.
 
@@ -108,7 +112,9 @@
 #include "Control.h"
 #include "DaliIfc.h"
 #include "ETkIfc.h"
-#include "InitShut.h"
+#if !defined(NO_DTE)
+  #include "InitShut.h"
+#endif
 #include "DebugLog.h"
 #endif
 
@@ -119,8 +125,13 @@ void Exit::DoExit(int code)
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
 //    cout << "Calling RTree shutdown\n";
     shutdown_system();
+#endif
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)

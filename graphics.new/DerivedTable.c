@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/08/17 18:51:49  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.3  1998/06/15 19:55:07  wenger
   Fixed bugs 338 and 363 (problems with special cases of set links).
 
@@ -35,6 +39,7 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "DerivedTable.h"
 
@@ -43,9 +48,11 @@
 #include "DevError.h"
 #include "Util.h"
 
+#if !defined(NO_DTE)
 #include "types.h"
 #include "Inserter.h"
 #include "RelationManager.h"
+#endif
 
 //#define DEBUG
 
@@ -63,6 +70,10 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
 
   result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   ClearAll();
 
   _name = CopyString(name);
@@ -139,6 +150,7 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   //
   result += CreateTable();
   if (!result.IsComplete()) return;
+#endif
 
   _objectValid.Set();
 }
@@ -155,6 +167,10 @@ DerivedTable::DerivedTable(char *name, char *masterAttrName, DevStatus &result)
 
   result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   ClearAll();
 
   _name = CopyString(name);
@@ -176,6 +192,7 @@ DerivedTable::DerivedTable(char *name, char *masterAttrName, DevStatus &result)
   //
   result += CreateTable();
   if (!result.IsComplete()) return;
+#endif
 
   _objectValid.Set();
 }
@@ -215,6 +232,10 @@ DerivedTable::CreateTable()
 
   DevStatus result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   _tableFile = tempnam(Init::TmpDir(), "tdaln");
   if (_tableFile == NULL) {
     reportErrSys("Out of memory");
@@ -249,6 +270,8 @@ DerivedTable::CreateTable()
   cout << "    relation ID: " << *_relId << "\n";
 #endif
 
+#endif
+
   return result;
 }
 
@@ -269,6 +292,10 @@ DerivedTable::~DerivedTable()
   delete [] _masterAttrName;
   _masterAttrName = NULL;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   RELATION_MNGR.deleteRelation(*_relId);
   delete _relId;
   _relId = NULL;
@@ -288,6 +315,7 @@ DerivedTable::~DerivedTable()
     delete _inserter;
     _inserter = NULL;
   }
+#endif
 
   if (_tableFile != NULL) {
     unlink(_tableFile);
@@ -312,6 +340,10 @@ DerivedTable::Initialize()
 
   DevStatus result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   _inserter = new UniqueInserter(*_schema, _tableFile, ios::out);
   if (currExcept) {
     cerr << currExcept->toString() << endl;
@@ -320,6 +352,7 @@ DerivedTable::Initialize()
   }
 
   _recordCount = 0;
+#endif
 
   return result;
 }
@@ -338,6 +371,10 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 
   DevStatus result = StatusOk;
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   //
   // Find offset and type of master attribute.
   //
@@ -419,6 +456,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
   }
 
   _recordCount += recCount;
+#endif
 
   return result;
 }
@@ -442,6 +480,10 @@ DerivedTable::Done()
       _recordCount, _name);
 #endif
 
+#if defined(DTE_WARN)
+  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
+#endif
+#if !defined(NO_DTE)
   //
   // Close and delete inserter.
   //
@@ -454,6 +496,7 @@ DerivedTable::Done()
 
   delete _inserter;
   _inserter = NULL;
+#endif
 
   return result;
 }

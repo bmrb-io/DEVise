@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.97  1998/06/10 18:04:13  wenger
+  Improved new cursor drawing (bug in Mesa implementation sometimes makes
+  it look ugly); cursor color now saved in sessions.
+
   Revision 1.96  1998/06/09 20:06:14  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -432,11 +436,15 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <ctype.h>
 #include <assert.h>
 
 #include "ParseAPI.h"
-#include "TDataDQLInterp.h"
+#if !defined(NO_DTE)
+  #include "TDataDQLInterp.h"
+#endif
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
@@ -466,7 +474,9 @@
 
 #include "LMControl.h"		// LayoutManager
 
-#include "CatalogComm.h"
+#if !defined(NO_DTE)
+  #include "CatalogComm.h"
+#endif
 #include "SessionDesc.h"
 #include "StringStorage.h"
 #include "DepMgr.h"

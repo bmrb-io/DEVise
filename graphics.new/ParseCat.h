@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/09/08 16:07:00  wenger
+  Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
+  the creation of multiple classes with the same name; fixed session file.
+
   Revision 1.16  1998/06/28 21:41:14  beyer
   changed from gcc String to stl string
 
@@ -79,7 +83,6 @@
 #define ParseCat_h
 
 #include "DeviseTypes.h"
-#include "ClassDir.h"
 #include "AttrList.h"
 #include <string>
 #include "DataSourceBuf.h"
