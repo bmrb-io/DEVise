@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.7  1996/01/09 16:39:53  jussi
+#	Added support for Tcl expressions as mappings.
+#
 #	Revision 1.6  1995/11/21 23:38:20  jussi
 #	The user can now select either constant values for a mapping
 #	attribute, or a field from TData schema.
@@ -87,7 +90,7 @@ proc FindMaxValueLength { mappings } {
     return $maxlen
 }
 
-proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } { 
+proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } { 
     global button1
 
     # default options for Frame, Button
@@ -97,6 +100,8 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     # destroy the old widget with the same name if there exists one
     catch {destroy $w}
 
+    set topgrp [SelectTopGroup $schemaname]
+
     # toplevel widget parameters
     toplevel $w -borderwidth 2
     catch "$w config $tmpFrameOpt"
@@ -105,7 +110,7 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     wm maxsize $w 1000 1000
     wm minsize $w 100 100
     wm title $w $title
-    wm iconname $w DialogMapping
+    wm iconname $w $title
 
     #########################################################################
 
@@ -156,6 +161,7 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
 	set itemval [lindex $item 2]
 	global mappingValue$itemname
 	set mappingValue$itemname $itemval
+
 	label $w.mapping.label.p$itemname -text $itemname \
 		-width $labelWidth
 	catch "$w.mapping.label.p$itemname config $tmpButtonOpt"
@@ -179,30 +185,20 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
 	    if {[llength $val] > 1} {
 		set value [lindex $val 1]
 	    }
+	    $w.mapping.value.p$itemname.menu.constant add radiobutton \
+		    -label $value -variable mappingValue$itemname \
+		    -value $value
 	    if {$getName} {
-		$w.mapping.value.p$itemname.menu.constant add radiobutton \
-			-label $value -variable mappingValue$itemname \
-			-value $value \
+		$w.mapping.value.p$itemname.menu.constant configure \
 			-command "updateMapName $nameEntryWidget $xval $yval"
-	    } else {
-		$w.mapping.value.p$itemname.menu.constant add radiobutton \
-			-label $value -variable mappingValue$itemname \
-			-value $value
 	    }
 	}
 
-	menu $w.mapping.value.p$itemname.menu.variable -tearoff 0
-	foreach val $attrlist {
-	    if {$getName} {
-		$w.mapping.value.p$itemname.menu.variable add radiobutton \
-			-label $val -variable mappingValue$itemname \
-			-value \$$val \
-			-command "updateMapName $nameEntryWidget $xval $yval"
-	    } else {
-		$w.mapping.value.p$itemname.menu.variable add radiobutton \
-			-label $val -variable mappingValue$itemname \
-			-value \$$val
-	    }
+	setupAttrRadioMenu $w.mapping.value.p$itemname.menu.variable \
+		mappingValue$itemname "\$" $schemaname $topgrp $topgrp
+	if {$getName} {
+	    $w.mapping.value.p$itemname.menu.variable configure \
+		    -command "updateMapName $nameEntryWidget $xval $yval"
 	}
 
 	tk_menuBar $w.mapping.value $w.mapping.value.p$itemname
