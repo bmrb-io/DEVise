@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:57  jussi
+  Added CVS header.
+*/
 
 /* displays XY datafile 
 
@@ -13,7 +16,7 @@
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "RectShape.h"
-#include "ColorMgr.h"
+//#include "ColorMgr.h"
 #include "Control.h"
 #include "TDataCMap.h"
 #include "Connector.h"
@@ -21,16 +24,16 @@
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "TDataMapDispatch.h"
-#include "DispQueryProc.h"
+//#include "TDataMapDispatch.h"
+//#include "DispQueryProc.h"
 #include "BufMgr.h"
-#include "TDataRec.h"
-#include "TDataViewX.h"
+//#include "TDataRec.h"
+//#include "TDataViewX.h"
 #include "Command.h"
 #include "Temp.h"
 #include "ViewWinVer.h"
 #include "ViewWinHor.h"
-#include "Snapshot.h"
+//#include "Snapshot.h"
 
 
 int debug = 0;

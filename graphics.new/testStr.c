@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:50  jussi
+  Added CVS header.
+*/
 
 /* displays string data */
 
@@ -17,17 +20,17 @@
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "TDataMapDispatch.h"
-#include "DispQueryProc.h"
+//#include "TDataMapDispatch.h"
+//#include "DispQueryProc.h"
 #include "BufMgr.h"
-#include "TDataRec.h"
-#include "ViewScatter.h"
+//#include "TDataRec.h"
+//#include "ViewScatter.h"
 #include "Command.h"
-#include "StrData.h"
+//#include "StrData.h"
 #include "Temp.h"
 #include "ViewWinVer.h"
-#include "StringHash.h"
-#include "Snapshot.h"
+//#include "StringHash.h"
+//#include "Snapshot.h"
 
 int debug = 0;
 Color red;

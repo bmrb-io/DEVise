@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:17:03  jussi
+  Added CVS header.
+*/
 
 /*
    displays Khoros raw image
@@ -11,22 +14,22 @@
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "XDisplay.h"
-#include "ViewWindow.h"
+//#include "ViewWindow.h"
 #include "Dispatcher.h"
 #include "RectShape.h"
-#include "ColorMgr.h"
+//#include "ColorMgr.h"
 #include "Control.h"
-#include "TDataMapDispatch.h"
+//#include "TDataMapDispatch.h"
 #include "Connector.h"
 #include "Action.h"
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "DispQueryProc.h"
-#include "TDataRec.h"
-#include "TDataView.h"
+//#include "DispQueryProc.h"
+//#include "TDataRec.h"
+//#include "TDataView.h"
 #include "Command.h"
-#include "TData2DRec.h"
+//#include "TData2DRec.h"
 #include "Temp.h"
 
 int debug = 0;

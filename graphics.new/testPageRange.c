@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:40:30  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:44  jussi
   Added CVS header.
 */
@@ -23,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "PageRange.h"
+//#include "PageRange.h"
 
 /* Note: MAXPAGES should be even */
 const int MAXPAGES = 1000;

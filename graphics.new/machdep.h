@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/02/27 20:47:38  wenger
+  More SGI compile fixes.
+
   Revision 1.21  1998/02/26 17:19:33  wenger
   Fixed problems with yesterday's commit.
 
@@ -442,7 +445,7 @@ union semun {
 #endif
 
 #if !defined(__hpux) && !defined(__alpha) && !defined(__sgi) && \
-    !defined(__linux)
+    !defined(__linux) && !defined(__solaris)
   EXTERNC int socket(int, int, int);
   EXTERNC int bind(int, struct sockaddr *, int);
   EXTERNC int listen(int, int);

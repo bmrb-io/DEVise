@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/02 15:23:54  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.4  1996/01/12 17:53:57  jussi
   Replaced call to random() with call to rand().
 
@@ -34,7 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "StrData.h"
+//#include "StrData.h"
 #include "DevError.h"
 
 int NumRecords= 1000; /* number of records to generate */
