@@ -1,0 +1,20 @@
+LISTENER= 
+   (ADDRESS_LIST= 
+      (ADDRESS= 
+         (PROTOCOL=TCP) 
+         (Host=blondie) 
+         (Port=1521) 
+      ) 
+   ) 
+ 
+STARTUP_WAIT_TIME_LISTENER=0 
+CONNECT_TIMEOUT_LISTENER=0 
+TRACE_LEVEL_LISTENER=ADMIN
+ 
+SID_LIST_LISTENER= 
+   (SID_LIST= 
+      (SID_DESC=  
+          (SID_NAME=dev_ora) 
+          (oracle_home=/var/home/oracle) 
+       ) 
+    )

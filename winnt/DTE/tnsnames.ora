@@ -1,0 +1,7 @@
+devise_oracle=
+        (DESCRIPTION=
+                (ADDRESS=
+                        (PROTOCOL=TCP)
+                        (HOST=blondie)
+                        (PORT=1521))
+                (CONNECT_DATA=(SID=dev_ora)))
