@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/16 11:13:45  kmurli
+  Changed the naming of attributes from DTE
+
   Revision 1.2  1996/12/16 07:21:26  donjerko
   Fixed some compile problems
 
@@ -42,7 +45,7 @@
 
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
-  TDataDQLInterpClassInfo(char*className,char * schemaFile,char *fileType,char *dataFile,char *query);
+  TDataDQLInterpClassInfo(char* tableName, const char* query);
   TDataDQLInterpClassInfo(char *className,char * schemaFile,
   AttrList attrs,char * name,char * type,char *query,TData *tdata);
 

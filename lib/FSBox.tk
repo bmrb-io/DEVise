@@ -6,6 +6,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1997/01/06 19:12:02  wenger
+#	Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
+#	windows; view names now start with 'View 1' instead of 'View'; removed
+#	some diagnostic output; added code to test the UniqueName procedure.
+#
 #	Revision 1.5  1995/09/28 17:05:43  jussi
 #	Fixed paths menu. Fixed Double-Button1 selection.
 #
@@ -39,7 +44,15 @@ set fsBox(button) 0
 set fsBox(extensions) 0
 set fsBox(internalPath) [pwd]
 
-proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} {fsBoxActionCancel ""}} {
+proc fsBoxActionNewDefault {} {
+     dialog .noName "Not supported" \
+          "Please use text editor" "" 0 OK
+     return ""
+}
+
+proc FSBox {{fsBoxMessage "Select file:"} 
+{fsBoxActionNew ""} 
+{fsBoxFileName ""} {fsBoxActionOk ""} {fsBoxActionCancel ""}} {
 ##########
 # Procedure: FSBox
 # Description: show file selector box
@@ -63,6 +76,8 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
 # global fsBox(scrollSide) - side where scrollbar is located
 
   global fsBox
+# global fsBoxActionNew
+# set fsBoxActionNew $fsBoxActionNewA
 
   set tmpButtonOpt ""
   set tmpFrameOpt ""
@@ -184,6 +199,20 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
         catch {destroy .fsBox}
       }"
   catch ".fsBox.frame1.cancel config $tmpButtonOpt"
+
+  button .fsBox.frame1.new \
+    -text "New" \
+    -command "
+      global fsBox
+      set fsBox(name) \[$fsBoxActionNew\]
+      set fsBox(path) {}
+      if {\"\[info commands XFDestroy\]\" != \"\"} {
+        catch {XFDestroy .fsBox}
+      } {
+        catch {destroy .fsBox}
+      }"
+
+  catch ".fsBox.frame1.new config $tmpButtonOpt"
 
   if {$fsBox(showPixmap)} {
     frame .fsBox.frame2 \
@@ -408,9 +437,12 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
               .fsBox.file.labelfile {left} \
               .fsBox.file.file {left fill expand}
   pack append .fsBox.frame1 \
-              .fsBox.frame1.ok {left fill expand} \
-              .fsBox.frame1.cancel {left fill expand} \
-              .fsBox.frame1.rescan {left fill expand}
+              .fsBox.frame1.ok {left fill expand}
+  if {$fsBoxActionNew != ""} {
+    pack append .fsBox.frame1 .fsBox.frame1.new {left fill expand}
+  }
+  pack append .fsBox.frame1 .fsBox.frame1.rescan {left fill expand} \
+              .fsBox.frame1.cancel {left fill expand}
   pack append .fsBox.path.paths \
               .fsBox.path.paths.paths {left}
   pack append .fsBox.pattern.patterns \

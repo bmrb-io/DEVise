@@ -12,21 +12,6 @@
   Development Group.
 */
 
-/*
-  $Id$
-
-  $Log$
-  Revision 1.2  1996/12/16 07:21:26  donjerko
-  Fixed some compile problems
-
-  Revision 1.1  1996/12/15 06:32:01  donjerko
-  Added the DeviseSpecific directory to DTE
-
-  Revision 1.10  1996/12/02 16:54:31  wenger
-  Fixed compile warning; added standard headers to some files;
-  conditionaled out debug code.
-
- */
 
 #include <string.h>
 #include "machdep.h"
@@ -54,35 +39,16 @@
 #define DEBUG
 
 TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
-	char * className, char *schemaFile, char *fileType,char *dataFile,
-	char *query): _attrs(className)
+	char* tableName, const char* query) : _attrs(tableName)
 {
 
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
 
-  _className = strdup(className); 
+  _className = strdup(tableName); 
 
-  String phySchemaFile;
-
-  if (strcmp(fileType,"DQL")){
-	
-	// Extract the attributes from the schema..
-	String list = "";
-
-	if (ParseCatDQL(schemaFile,phySchemaFile,list) == false)
-		return;
-
-	String tmp1 = "select "+ list + " from \"DeviseTable ";
-	tmp1 = tmp1 + phySchemaFile + " " + dataFile + "\" where ";
-	tmp1 = tmp1 + query + ";";
-
-	_query = strdup(tmp1.chars());
-	_schemaFile = (char *)phySchemaFile.chars();
-  }
-  else{
 	_query = strdup(query);
-  	_schemaFile = strdup(schemaFile);
-  }
+  	_schemaFile = strdup(tableName);
+
   #ifdef DEBUG
 	  printf(" Query = %s \n",_query);
   #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/24 21:00:54  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.7  1996/12/21 22:21:52  donjerko
   Added hierarchical namespace.
 
@@ -47,6 +50,7 @@
 #include "exception.h"
 #include "AttrList.h"
 #include "queue.h"
+#include "Utility.h"
 
 class BaseSelection;
 
@@ -104,26 +108,55 @@ typedef void Type;
 typedef String TypeID;
 typedef Type* Tuple;
 typedef Type* (*OperatorPtr)(Type*, Type*);
+typedef Type* (*MemberPtr)(Type*);
 typedef Type* (*ReadPtr)(istream&);
+typedef void (*DestroyPtr)(Type*);
+typedef void (*WritePtr)(ostream&, Type*);
 typedef int (*SizePtr)(int, int);
+typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
+
+int boolSize(int a, int b);
+int sameSize(int a, int b);
+int memberSameSize(int a);
+
+void intDestroy(Type* adt);
+void stringDestroy(Type* adt);
+void boolDestroy(Type* adt);
+void doubleDestroy(Type* adt);
+void catEntryDestroy(Type* adt);
 
 struct GeneralPtr{
 	OperatorPtr opPtr;
 	SizePtr	sizePtr;
 	SelectyPtr selectyPtr;
-	GeneralPtr(
-		OperatorPtr opPtr, SizePtr sizePtr, SelectyPtr selectyPtr = NULL) : 
-		opPtr(opPtr), sizePtr(sizePtr), selectyPtr(selectyPtr) {}
+	GeneralPtr(OperatorPtr opPtr, 
+		SizePtr sizePtr = NULL, SelectyPtr selectyPtr = NULL) : 
+		opPtr(opPtr), sizePtr(sizePtr), selectyPtr(selectyPtr) {
+		if(sizePtr == NULL){
+			sizePtr = sameSize;
+		}
+	}
 };
 
-int boolSize(int a, int b);
-int sameSize(int a, int b);
+struct GeneralMemberPtr{
+	MemberPtr memberPtr;
+	MemberSizePtr	sizePtr;
+	GeneralMemberPtr(MemberPtr opPtr, MemberSizePtr sizePtr = NULL) : 
+		memberPtr(opPtr){
+		if(sizePtr == NULL){
+			sizePtr = memberSameSize;
+		}
+	}
+};
 
 double oneOver2(BaseSelection* left, BaseSelection* right);
 double oneOver3(BaseSelection* left, BaseSelection* right);
 double oneOver10(BaseSelection* left, BaseSelection* right);
 double oneOver100(BaseSelection* left, BaseSelection* right);
+
+Type* catEntryName(Type* arg1);
+Type* catEntryType(Type* arg1);
 
 Type* intAdd(Type* arg1, Type* arg2);
 Type* intSub(Type* arg1, Type* arg2);
@@ -164,6 +197,14 @@ Type* stringRead(istream&);
 Type* doubleRead(istream&);
 Type* boolRead(istream&);
 Type* catEntryRead(istream&);
+Type* schemaRead(istream&);
+
+void intWrite(ostream&, Type*);
+void stringWrite(ostream&, Type*);
+void doubleWrite(ostream&, Type*);
+void boolWrite(ostream&, Type*);
+void catEntryWrite(ostream&, Type*);
+void schemaWrite(ostream&, Type*);
 
 class IInt {
      int value;
@@ -391,8 +432,11 @@ class IString {
 	char* string;
 public:
      IString() : length(0), string(NULL){}
-	IString(char* s) : length(strlen(s) + 1){
+	IString(const char* s) : length(strlen(s) + 1){
 		string = strdup(s);
+	}
+	~IString(){
+		delete string;
 	}
 	void setValue(char *s){
 		if (s)
@@ -414,7 +458,7 @@ public:
 	}
 	void display(ostream& out){
 		assert(string);
-		out << string;
+		out << addQuotes(string);
 	}
 	IString & operator=(IString & str){
 		length = str.length;
@@ -468,18 +512,50 @@ public:
 
 class Site;
 class Interface;
-class TableName;
 
 class CatEntry {
 	String singleName;
-	TableName* tableNm;
 	Interface* interface;
+	String typeNm;
 public:
-	CatEntry(TableName* tableNm) : tableNm(tableNm), interface(NULL) {}
+	CatEntry(String singleName) : 
+		singleName(singleName), interface(NULL) {}
 	~CatEntry();
 	istream& read(istream& in); // Throws Exception
 	void display(ostream& out);
-	Site* getSite(String *function=NULL,int shiftVal=0);
+	Site* getSite();
+	Interface* getInterface();	// Throws Exception
+	static GeneralMemberPtr* getMemberPtr(String name, TypeID& retType);
+		// throws exception
+	String getName(){
+		return singleName;
+	}
+	String getType(){
+		return typeNm;
+	}
+};
+
+class Schema {
+	String* attributeNames;
+	int numFlds;
+public:
+	Schema() : attributeNames(NULL), numFlds(0) {}
+	Schema(String* attributeNames, int numFlds) :
+		attributeNames(attributeNames), numFlds(numFlds) {}
+	~Schema(){
+		delete [] attributeNames;
+	}
+	istream& read(istream& in); // Throws Exception
+	void display(ostream& out);
+	int getNumFlds(){
+		return numFlds;
+	}
+	String* getAttributeNames(){
+		assert(attributeNames);
+		String* retVal = attributeNames;
+		attributeNames = NULL;
+		return retVal;
+	}
 };
 
 void displayAs(ostream& out, void* adt, String type);
@@ -498,8 +574,13 @@ Type* unmarshal(char* from, String type);
 
 GeneralPtr* getOperatorPtr(
 	String name, TypeID root, TypeID arg, TypeID& retType);
+	// throws exception
+
+GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType);
+	// throws exception
 
 ReadPtr getReadPtr(TypeID root);
+WritePtr getWritePtr(TypeID root);	// throws exception
 
 Type * getNullValue(TypeID &);
 
@@ -508,5 +589,9 @@ AttrType getDeviseType(String type);
 Type* createNegInf(TypeID typeID);
 
 Type* createPosInf(TypeID typeID);
+
+void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers); // throws
+
+DestroyPtr getDestroyPtr(TypeID root); // throws
 
 #endif

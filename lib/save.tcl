@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1997/01/23 18:13:33  jussi
+#  Disabled saving of pixmaps due to bug #135 and #069.
+#
 #  Revision 1.29  1997/01/22 23:24:08  jussi
 #  Fixed computation of total number of TData streams saved in
 #  session.
@@ -386,7 +389,7 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
 	puts $f "global physSchema logSchema"
 	puts $f "set templateMode 1"
 	# The sourceList will have to be reset in the imported file
-	puts $f "unset sourceList"
+#	puts $f "unset sourceList"
 	puts $f ""
     }
 
@@ -567,6 +570,7 @@ proc SaveAllSchemas { fileId asExport } {
     puts $fileId "# Import schemas"
     set catFile [ DEVise catFiles ]
     foreach file $catFile {
+    	puts "current catFile: $file"
 	SaveOneSchema $fileId $asExport $file
     }
     puts $fileId ""
@@ -603,8 +607,14 @@ proc SaveOneSchema { fileId asExport schemaFile } {
 	puts $fileId "set physSchema($sname) \"$pschema\""
 	puts $fileId "set logSchema($sname) \"$lschema\""
 	puts $fileId "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
+    } elseif {[string index $schemaFile 0] != "."} {
+
+    # this is just a hack to find out if dte has registered this schema
+    # dte schemas are just the table names and therefore start with .
+
+ 	puts $fileId "DEVise importFileType $schemaFile"
     } else {
-	puts $fileId "DEVise importFileType $schemaFile"
+ 	puts $fileId "DEVise dteImportFileType $schemaFile"
     }
 }
 
@@ -664,7 +674,10 @@ proc SaveDataSources { fileId asExport asTemplate withData
 		set fileAlias [lindex $params 0]
                 set err [catch {set sourcedef $derivedSourceList($fileAlias)}]
                 if {$err} {
-                    set sourcedef $sourceList($fileAlias)
+                    # set sourcedef $sourceList($fileAlias)
+				set sourcedef [DEVise dteShowCatalogEntry $fileAlias]
+				set sourcedef [lindex $sourcedef 0]
+				set sourcedef [lrange $sourcedef 1 end]
                 }
                 set type [lindex $sourcedef 0]
 
@@ -1006,7 +1019,10 @@ proc SaveOneData { fileId tdata positionOffset lengthOffset } {
     # Get the source information for this TData.
     set err [catch {set source $derivedSourceList($tdata)}]
     if {$err} {
-        set source $sourceList($tdata)
+        # set source $sourceList($tdata)
+		set source [DEVise dteShowCatalogEntry $tdata]
+		set source [lindex $source 0]
+		set source [lrange $source 1 end]
     }
 
     # Make sure this TData is a UNIXFILE, otherwise we can't save it yet.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/24 21:00:52  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.4  1996/12/21 22:21:46  donjerko
   Added hierarchical namespace.
 
@@ -36,7 +39,6 @@
 #include "url.h"
 
 void StandardRead::open(){	// Throws exception
-	order = "";
 	(*in) >> numFlds;
 	if(!in->good()){
 		String msg = "Number of fields expected";
@@ -62,7 +64,8 @@ void StandardRead::open(){	// Throws exception
 	while(inputStr != ";"){
 		if (inputStr == "order"){
 			assert(in->good());
-			(*in) >> order;
+			order = new String();
+			(*in) >> *order;
 		}
 		else if (inputStr == "stats"){
 			stats->read(in);

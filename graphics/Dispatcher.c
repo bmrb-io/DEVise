@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/01/21 19:01:28  wenger
+  Minor changes to get Linux compile to work, updated Linux dependencies.
+
   Revision 1.33  1997/01/11 20:55:02  jussi
   Replaced setpgrp() with more portable setsid().
 
@@ -374,11 +377,13 @@ void Dispatcher::ImmediateTerminate(int sig)
           sig);
   fprintf(stderr, "Aborting.\n");
 
+  abort();
+
   /* Kill all processes in the process group */
 
   kill(-getpgrp(), SIGKILL);
 
-  exit(1);
+  Exit::DoExit(1);
 }
 
 void Dispatcher::CheckUserInterrupt()

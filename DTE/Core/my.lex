@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/27 04:38:00  kmurli
+  Nodified joins.h to remove erros in joinprev in case of more than one table
+
   Revision 1.8  1996/12/24 21:00:52  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -31,12 +34,6 @@
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
 
-  Revision 1.3  1996/12/07 15:14:27  donjerko
-  Introduced new files to support indexes.
-
-  Revision 1.2  1996/12/05 16:06:02  wenger
-  Added standard Devise file headers.
-
  */
 
 %{
@@ -47,41 +44,26 @@
 #include <memory.h>
 #include "myopt.h"
 #include "my.yacc.tab.h"
+#include "Utility.h"
 
-extern char* queryString;
+extern const char* queryString;
+extern bool rescan;
 
-static int global_counter_ = 0;
-
-#define YY_INPUT(buf,result,max_size) \
-    { \
-    if(global_counter_){ \
-	    result = YY_NULL; \
-    } \
-    int queryLength = strlen(queryString);\
-    assert(queryLength < max_size); \
-    memcpy(buf, queryString, queryLength); \
-    result = queryLength; \
-    global_counter_++; \
-    }
-
-char* stripquotes(char* text){
-	char* retVal = strdup(text + 1);
-	int len = strlen(retVal);
-	int j = 0;
-	for(int i = 0; i < len - 1; i++){
-		if(retVal[i] == '"'){
-			assert(j > 0);
-			retVal[--j] = retVal[i];
-		}
-		else{
-			retVal[j] = retVal[i];
-		}
-		j++;
+static int my_yyinput(char* buf, int max_size){
+	int retVal = YY_NULL;
+	if(rescan){
+		rescan = false;
+		int queryLength = strlen(queryString) + 1;
+		assert(queryLength < max_size);
+		memcpy(buf, queryString, queryLength);
+		retVal = queryLength;
 	}
-	retVal[j] = '\0';
 	return retVal;
 }
-		
+
+#undef YY_INPUT
+#define YY_INPUT(buf, result, max_size) (result = my_yyinput(buf, max_size))
+
 %}
 
 Digit        [0-9]
@@ -107,17 +89,32 @@ LessGreat    ">="|">"|"<="|"<"
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
 [Ii][Nn][Dd][Ee][Xx]		{return INDEX;}
 [Oo][Nn]				{return ON;}
+[Ii][Nn][Ss][Ee][Rr][Tt]		{return INSERT;}
+[Vv][Aa][Ll][Uu][Ee][Ss]		{return VALUES;}
+[Ii][Nn][Tt][Oo]			{return INTO;}
+[Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETE;}
+[Ss][Cc][Hh][Ee][Mm][Aa]		{return SCHEMA;}
+
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}
 {DecLit}     {yylval.real = atof(yytext); return DOUBLE;}
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
 {LessGreat}  {yylval.string = new String(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {
-             yylval.string = new String(stripquotes(yytext)); 
+             yylval.string = new String(stripQuotes(yytext)); 
 		   return STRING_CONST;
 		   }
 .            {return yytext[0];}
 %%
 int yywrap(){
+	yy_flush_buffer(YY_CURRENT_BUFFER);
+	yyrestart(yyin);
      return 1;
+}
+
+extern int yyparse();
+
+int my_yyparse(){
+	yyrestart(yyin);
+	return yyparse();
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/24 21:00:54  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.6  1996/12/21 22:21:52  donjerko
   Added hierarchical namespace.
 
@@ -39,7 +42,20 @@
 #include "exception.h"
 #include "myopt.h"		// for TableName
 #include "catalog.h"	// for Interface
+#include "Utility.h"
 #include <String.h>
+
+Type* catEntryName(Type* arg1){
+	CatEntry* entry = (CatEntry*) arg1;
+	String tmp = entry->getName();
+	return new IString(tmp.chars());
+}
+
+Type* catEntryType(Type* arg1){
+	CatEntry* entry = (CatEntry*) arg1;
+	String tmp = entry->getType();
+	return new IString(tmp.chars());
+}
 
 Type* intAdd(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
@@ -223,9 +239,8 @@ Type* doubleRead(istream& in){
 }
 
 Type* stringRead(istream& in){
-	String* i = new String;
-	in >> *i;
-	return new IString((char*) i->chars());
+	String tmp = stripQuotes(in);
+	return new IString(tmp.chars());
 }
 
 Type* boolRead(istream& in){
@@ -235,23 +250,67 @@ Type* boolRead(istream& in){
 }
 
 Type* catEntryRead(istream& in){
-	String* nameStr = new String();
-	in >> *nameStr;
+	String nameStr;
+	TRY(nameStr = stripQuotes(in), NULL);
 	if(!in){
 		return NULL;
 	}
-	CatEntry* retVal = new CatEntry(new TableName(nameStr));
+	CatEntry* retVal = new CatEntry(nameStr);
 	retVal->read(in);
 	return retVal;
+}
+
+Type* schemaRead(istream& in){
+	Schema* retVal = new Schema();
+	TRY(retVal->read(in), NULL);
+     if(!in){
+          delete retVal;
+          return NULL;
+     }
+	return retVal;
+}
+
+void intWrite(ostream& out, Type* adt){
+	assert(adt);
+	((IInt*) adt)->display(out);
+}
+
+void stringWrite(ostream& out, Type* adt){
+	assert(adt);
+	((IString*) adt)->display(out);
+}
+
+void doubleWrite(ostream& out, Type* adt){
+	assert(adt);
+	((IDouble*) adt)->display(out);
+}
+
+void boolWrite(ostream& out, Type* adt){
+	assert(adt);
+	((IBool*) adt)->display(out);
+}
+
+void catEntryWrite(ostream& out, Type* adt){
+	assert(adt);
+	((CatEntry*) adt)->display(out);
+}
+
+void schemaWrite(ostream& out, Type* adt){
+	assert(adt);
+	((Schema*) adt)->display(out);
 }
 
 int boolSize(int a, int b){
 	return 1;
 }
+
 int sameSize(int a, int b){
 	return a;
 }
 
+int memberSameSize(int a){
+	return a;
+}
 double oneOver2(BaseSelection* left, BaseSelection* right){
 	return 0.5;
 }
@@ -359,8 +418,26 @@ GeneralPtr* getOperatorPtr(
 		return IDouble::getOperatorPtr(name, arg, retType);
 	}
 	else{
-		cout << "No such type: " << root << endl;
-		assert(0);
+		String msg = "No such type: " + root;
+		THROW(new Exception(msg), NULL);
+	}
+}
+
+GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType){
+	String err;
+	if(root == "int" || root == "string" || 
+		root == "bool" || root == "double"){
+		err = "Type " + root + " does not have a member \"" + name + "\"";
+		THROW(new Exception(err), NULL);
+	}
+	else if(root == "catentry"){
+		GeneralMemberPtr* retVal;
+		TRY(retVal = CatEntry::getMemberPtr(name, retType), NULL);
+		return retVal;
+	}
+	else{
+		err = "No such type: " + root;
+		THROW(new Exception(err), NULL);
 	}
 }
 
@@ -380,9 +457,37 @@ ReadPtr getReadPtr(TypeID root){
 	else if(root == "catentry"){
 		return catEntryRead;
 	}
+	else if(root == "schema"){
+		return schemaRead;
+	}
 	else{
 		cout << "No such type: " << root << endl;
 		assert(0);
+	}
+}
+
+WritePtr getWritePtr(TypeID root){
+	if(root == "int"){
+		return intWrite;
+	}
+	else if(root == "string"){
+		return stringWrite;
+	}
+	else if(root == "bool"){
+		return boolWrite;
+	}
+	else if(root == "double"){
+		return doubleWrite;
+	}
+	else if(root == "catentry"){
+		return catEntryWrite;
+	}
+	else if(root == "schema"){
+		return schemaWrite;
+	}
+	else{
+		String msg = "No such type: " + root;
+		THROW(new Exception(msg), NULL);
 	}
 }
 
@@ -489,36 +594,51 @@ Type* createPosInf(TypeID type){
 	}
 }
 
-Site* CatEntry::getSite(String *function,int shiftVal){
-	return interface->getSite(function,shiftVal);
+GeneralMemberPtr* CatEntry::getMemberPtr(String name, TypeID& retType){
+	if(name == "name"){
+		retType = "string";
+		return new GeneralMemberPtr(catEntryName);
+	}
+	else if(name == "type"){
+		retType = "string";
+		return new GeneralMemberPtr(catEntryType);
+	}
+	else{
+		String msg = "Type catentry does not have member \"" + name + "\"";
+		THROW(new Exception(msg), NULL);
+	}
+}
+
+Site* CatEntry::getSite(){
+	return interface->getSite();
+}
+
+Interface* CatEntry::getInterface(){
+	assert(interface);
+	Interface* retVal = interface;
+	interface = NULL;
+	return retVal;
 }
 
 CatEntry::~CatEntry(){
-	// do not delete tableNm
 	delete interface;
 }
 
 void CatEntry::display(ostream& out){
-     out << singleName << " ";
+     out << addQuotes(singleName) << " " << typeNm;
      interface->write(out);
-     out << "; ";
+     out << " ;";
 }
 
 istream& CatEntry::read(istream& in){ // Throws Exception
-	assert(tableNm);
-	String* tmp = tableNm->getFirst();
-	singleName = String(*tmp);
-	tableNm->deleteFirst();
-	String typeNm;
 	in >> typeNm;
 	if(!in){
 		String msg = "Interface for table " + singleName + 
 			" must be specified";
 		THROW(new Exception(msg), in);
 	}
-	if(typeNm == "Catalog"){
-		interface = new CatalogInterface(tableNm);
-		tableNm = NULL;
+	if(typeNm == "Directory"){
+		interface = new CatalogInterface();
 		TRY(interface->read(in), in);
 		String semicolon;
 		in >> semicolon;
@@ -528,32 +648,28 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 		}
 		return in;
 	}
-	if(typeNm == "DeviseTable"){
-		if(tableNm->cardinality() > 0){
-			String msg = "Table " + singleName + " is not a catalog";
-			THROW(new Exception(msg), in);
-		}
+	if(typeNm == "Table"){
 		interface = new DeviseInterface(singleName);
 		TRY(interface->read(in), in);
 	}
 	else if(typeNm == "StandardTable"){
-		if(tableNm->cardinality() > 0){
-			String msg = "Table " + singleName + " is not a catalog";
-			THROW(new Exception(msg), in);
-		}
-		interface = new StandardInterface(singleName);
+		interface = new StandardInterface();
 		TRY(interface->read(in), in);
 	}
-	else if(typeNm == "QueryInterface"){
-		interface = new QueryInterface(tableNm);
+	else if(typeNm == "DEVise"){
+		interface = new QueryInterface();
 		TRY(interface->read(in), in);
 	}
 	else if(typeNm == "CGIInterface"){
-		if(tableNm->cardinality() > 0){
-			String msg = "Table " + singleName + " is not a catalog";
-			THROW(new Exception(msg), in);
-		}
 		interface = new CGIInterface(singleName);
+		TRY(interface->read(in), in);
+	}
+	else if(typeNm == "SQLView"){
+		interface = new ViewInterface(singleName);
+		TRY(interface->read(in), in);
+	}
+	else if(typeNm == "UNIXFILE"){
+		interface = new DummyInterface();
 		TRY(interface->read(in), in);
 	}
 	else{
@@ -579,4 +695,73 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 		THROW(new Exception(msg), in);
 	}
 	return in;
+}
+
+istream& Schema::read(istream& in){ // Throws Exception
+	in >> numFlds;
+	if(!in){
+		return in;
+	}
+	attributeNames = new String[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		in >> attributeNames[i];
+	}
+	return in;
+}
+
+void Schema::display(ostream& out){
+	out << numFlds;
+	for(int i = 0; i < numFlds; i++){
+		out << " " << attributeNames[i];
+	}
+}
+
+void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
+	assert(destroyers);
+	for(int i = 0; i < numFlds; i++){
+		destroyers[i](tuple[i]);
+		delete tuple[i];
+	}
+}
+
+DestroyPtr getDestroyPtr(TypeID root){ // throws
+	if(root == "int"){
+		return intDestroy;
+	}
+	else if(root == "string"){
+		return stringDestroy;
+	}
+	else if(root == "bool"){
+		return boolDestroy;
+	}
+	else if(root == "double"){
+		return doubleDestroy;
+	}
+	else if(root == "catentry"){
+		return catEntryDestroy;
+	}
+	else{
+		String msg = "Don't know how to destroy type: " + root;
+		THROW(new Exception(msg), NULL);
+	}
+}
+
+void intDestroy(Type* adt){
+	delete (IInt*) adt;
+}
+
+void boolDestroy(Type* adt){
+	delete (IBool*) adt;
+}
+
+void doubleDestroy(Type* adt){
+	delete (IDouble*) adt;
+}
+
+void stringDestroy(Type* adt){
+	delete (IString*) adt;
+}
+
+void catEntryDestroy(Type* adt){
+	delete (CatEntry*) adt;
 }

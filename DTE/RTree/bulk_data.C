@@ -88,8 +88,13 @@ void bulk_data_t::init(int       infile,
   else
     entry_sz=2*dim*sizeof(int)+data_sz;
   off=offset;
+#ifdef HP
+  file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
+		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FILE|MAP_VARIABLE, infile, 0);
+#else
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_NORESERVE, infile, 0);
+#endif
 }
 
 

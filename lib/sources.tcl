@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.55  1997/01/30 17:25:42  wenger
+#	Removed all data source types except UNIXFILE and WWW.
+#
 #	Revision 1.54  1997/01/30 02:12:36  beyer
 #	sources now listed in alphabetical order, regardless of case.
 #
@@ -227,13 +230,16 @@
 #set sourceTypes(COMPUSTAT) "{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx"
 #set sourceTypes(CRSP) "{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx"
 #set sourceTypes(CRSP_NSDQ) "{Nasdaq Security Data} $schemadir/logical/CRSP crsp_ndsm94.idx"
-#set "sourceTypes(DQL)" {{DEVise Query language} /p/devise/schema/schema/logical/DQL}
 #set sourceTypes(ISSM) "{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx"
 #set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
 #set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
 #set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
+set "sourceTypes(SQLView)" "{SQL View} $schemadir/logical/SQL"
+set "sourceTypes(Table)" "{Table} $schemadir/logical/SQL"
+set "sourceTypes(Directory)" "{Directory} $schemadir/logical/SQL"
 set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
-set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
+set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
+#set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
 if {[file exists $sourceFile]} {
@@ -284,6 +290,53 @@ set cacheSize [expr 100 * 1024 * 1024]
 
 ############################################################
 
+proc addQuotes {s} {
+
+	# This procedure returns the input string enclosed in quotes, escaping
+	# all the internal quotes and backslashes.
+	# It is used on some strings to be passed to DTE
+
+     set retVal "\""
+     set len [string length $s]
+     for {set i 0} {$i < $len} {incr i} {
+          set ch [string index $s $i]
+          if {$ch == "\\"} {
+               append retVal "\\\\"
+          } elseif {$ch == "\""} {
+               append retVal "\\\""
+          } else {
+               append retVal $ch
+          }
+     }
+     append retVal "\""
+     return $retVal
+}
+
+proc newViewFile {{schemaFile ""} {dataFile ""}} {
+	global schemadir
+	if {$schemaFile != ""} {
+		set logicalAttrlist [DEVise dteShowAttrNames $schemaFile $dataFile]
+	} else {
+		set logicalAttrlist ""
+	}
+	set result [qbrowse 1 "" $logicalAttrlist]
+	if {$result != ""} {
+		set viewName [lindex $result 0]
+		set select [lindex $result 2]
+		set as [lindex $result 3]
+		set where [lindex $result 4]
+		set fileName "$schemadir/query/$viewName"
+
+	#	DEVise dteSaveSingleView $fileName $select $as $where
+
+		saveViewFile $fileName $select $as $where
+		puts "$viewName $select $as $where"
+		return $fileName
+	} else {
+		return ""
+	}
+}
+
 proc saveSources {} {
     global sourceFile sourceList sourceTypes
 
@@ -312,19 +365,16 @@ proc saveSources {} {
 ############################################################
 
 proc updateStreamDef_and_display {dispname} {
-	global sourceList
 
 	updateStreamDef
-	set tdata [OpenAndDefineDataSources 0 $dispname]
-	if {$tdata == ""} {
+	set tdata_schema_pair [OpenAndDefineDataSources 0 $dispname]
+	if {$tdata_schema_pair == ""} {
 		puts "tdata = NULL"
 		return
 	}
-	set schemafile [lindex $sourceList($tdata) 3]
-	MacroDefAuto $tdata $schemafile
-
-#	proc OpenAndDefineDataSources {derivedOnly snames}
-#    proc MacroDefAuto {tdata schemafile} 
+	set tdata [lindex $tdata_schema_pair 0]
+	set schemaname [lindex $tdata_schema_pair 1]
+	MacroDefAuto $tdata $schemaname
 }
 
 proc updateStreamDef {} {
@@ -332,18 +382,19 @@ proc updateStreamDef {} {
     global sourceList sourceTypes editonly oldDispName
     global dispname source key schemafile evaluation priority command
 
-    if {$source == "SEQ"} {
-	set schemafile [format "%s/%s.%s.schema" $schemadir/physical \
-		[string trim $source] [string trim $key]]
-	set schematype [format "%s.%s" [string trim $source] \
-		[string trim $key]]
-    }
-	if {$source == "DQL"} {
-	  set key [format "%s.%s" [string trim $source] [string trim $dispname]]
-	  set schemafile $key
-      #set schemafile [format "%s.%s" [string trim $source] [string trim $key]]
-      set schematype $schemafile 
-    }
+#	if {$source == "SEQ"} {
+#	set schemafile [format "%s/%s.%s.schema" $schemadir/physical \
+#		[string trim $source] [string trim $key]]
+#	set schematype [format "%s.%s" [string trim $source] \
+#		[string trim $key]]
+#    }
+#	if {$source == "DQL"} {
+#	  set key [format "%s.%s" [string trim $source] [string trim $dispname]]
+#	  set schemafile $key
+#      #set schemafile [format "%s.%s" [string trim $source] [string trim $key]]
+#      set schematype $schemafile 
+#    }
+
     if {$dispname == "" || $key == "" || $schemafile == ""} {
 	dialog .noName "Missing Information" \
 		"Please enter all requested information." \
@@ -351,71 +402,94 @@ proc updateStreamDef {} {
 	return
     }
 
-    set cachefile [getCacheName $source $key]
+#   set cachefile [getCacheName $source $key]
+
+    set cachefile ""
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
-    if {$editonly && $source == "SEQ"} {
-	set oldCommand [lindex $sourceList($oldDispName) 7]
-	if {$oldCommand != $command} {
-	    uncacheData $oldDispName "Query changed."
-	}
-    }
-    if {$editonly && $source == "DQL"} {
-    set oldCommand [lindex $sourceList($oldDispName) 7]
-    if {$oldCommand != $command} {
-        uncacheData $oldDispName "Query changed."
-    }
-    }
+#	if {$editonly && $source == "SEQ"} {
+#		set oldCommand [lindex $sourceList($oldDispName) 7]
+#		if {$oldCommand != $command} {
+#	    		uncacheData $oldDispName "Query changed."
+#		}
+#	}
+#	if {$editonly && $source == "DQL"} {
+#		set oldCommand [lindex $sourceList($oldDispName) 7]
+#		if {$oldCommand != $command} {
+#		    uncacheData $oldDispName "Query changed."
+#		}
+#	}
+#
+#    if {$source != "SEQ" && $source != "DQL" } {
+#	set newschematype [scanSchema $schemafile]
+#	if {$newschematype == ""} { return }
+#	set schematype $newschematype
+#    }
 
-    if {$source != "SEQ" && $source != "DQL" } {
 	set newschematype [scanSchema $schemafile]
 	if {$newschematype == ""} { return }
 	set schematype $newschematype
-    }
 
-    set sourcedef [list $source $key $schematype $schemafile \
-	    $cachefile $evaluation $priority $command]
+    set sourcedef "[addQuotes $dispname] $source $key $schematype \
+		$schemafile [addQuotes $cachefile] $evaluation $priority \
+		[addQuotes $command] \"\""
 		
-    set conflict [getSourceByCache $cachefile]
-    if {!$editonly && $conflict != ""} {
-	dialog .existsAlready "Data Stream Exists" \
-		"This definition conflicts\n\
-		with \"$conflict\"." "" 0 OK
-	return
-    }
+#   set conflict [getSourceByCache $cachefile]
+#   if {!$editonly && $conflict != ""} {
+#	dialog .existsAlready "Data Stream Exists" \
+#		"This definition conflicts\n\
+#		with \"$conflict\"." "" 0 OK
+#	return
+#   }
 
     if {$editonly} {
-	set oldCachefile $sourceList($oldDispName)
-	if {[file exists $oldCachefile] \
-		&& $cachefile != $oldCachefile} {
-	    uncacheData $oldDispName "Source and/or key changed."
-	}
-	unset sourceList($oldDispName)
-    }
 
-    set err [catch {set exists $sourceList($dispname)}]
-    if {$err == 0} {
-	dialog .sourceExists "Data Stream Exists" \
-		"Data stream \"$dispname\" exists already." \
-		"" 0 OK
-	return
+# commented out temporarily (dd)
+#
+#	set oldCachefile $sourceList($oldDispName)
+#
+#	# this is WRONG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+#
+#	if {[file exists $oldCachefile] \
+#		&& $cachefile != $oldCachefile} {
+#	    uncacheData $oldDispName "Source and/or key changed."
+#	}
+	
+	# delete the old entry
+
+	DEVise dteDeleteCatalogEntry [fullPathName $oldDispName]
+
+    } else {
+    		
+		# this is an insertion, make sure that table does not exist already
+
+		set oldEntry [DEVise dteShowCatalogEntry [CWD] $dispname]
+		set oldEntry [lindex $oldEntry 0]
+		if {[llength $oldEntry] > 0} {
+			dialog .sourceExists "Data Stream Exists" \
+			"Data stream \"$dispname\" exists already." \
+			"" 0 OK
+			return
+		}
     }
 	
-    set "sourceList($dispname)" $sourcedef
-    saveSources
+#   set "sourceList($dispname)" $sourcedef
+
+    DEVise dteInsertCatalogEntry [CWD] $sourcedef
+
+#   saveSources
     updateSources
     destroy .srcdef
 }
 
 ############################################################
-proc indexUpdate {} {
+proc indexUpdate {logicalAttrlist} {
 	
 	# Create the new index window and update the indices..
-    global schemafile tgrps glist attrlist logicalAttrlist dispname
+    global schemafile tgrps glist attrlist dispname
 	
-	set logicalAttrlist ""    
     toplevel .gbrowse
-    wm title .gbrowse "$schemafile View"
+    wm title .gbrowse "Edit Index"
     wm geometry .gbrowse +50+50
     wm iconname .gbrowse "Groups"
 
@@ -431,23 +505,7 @@ proc indexUpdate {} {
 	# This reads the attributes (items) in the logical schema 
 	# and puts it in the logicalAttrlist list..
 	
-	set dirname [file dirname $schemafile]
-	set dirname [file tail dirname]
-	set newschemafile [file tail $schemafile]
-
-	#if { $dirname == "physical" } {
-		set attrlist ""
-	
-		#readQuerylogical $newschemafile
-		readphysical $newschemafile	
-		foreach attr $attrlist {
-			set logicalAttrlist [linsert $logicalAttrlist 0 [lindex $attr 4]]
-		}
-#	} else {	
-#		
-#		readQuerylogical $newschemafile
-#	}
-    label .gbrowse.attrs.label -text "List of View Attributes"
+    label .gbrowse.attrs.label -text "List of Available Attributes"
     pack .gbrowse.attrs.label -side top -fill x
     listbox .gbrowse.attrs.list -relief raised -bd 1 \
 	    -yscrollcommand ".gbrowse.attrs.scroll set" \
@@ -506,25 +564,24 @@ proc indexUpdate {} {
 	#pack .gbrowse.ops.name.indexName -side left \
 	#    -fill x -padx 1m -pady 1m -expand 1
 
-    button .gbrowse.ops.op.create -text "Create Index" -command {
+    button .gbrowse.ops.op.create -text "OK" -command {
 	    set query "create index $indexName on $dispname ($query );" 
 	    puts " THE QUERY FOR DEVISE WAS "
 	    puts $query
 	    DEVise createIndex $query
     }
     
-	button .gbrowse.ops.op.quit -text "Quit" -command {
+	button .gbrowse.ops.op.quit -text "Cancel" -command {
 	  destroy .gbrowse
     }
     
     pack .gbrowse.ops.op.create .gbrowse.ops.op.quit \
 	    -side left -padx 3m -pady 1m -expand 1
 	
-	updateStreamDef
-
 }
 
 proc defineStream {base edit} {
+
     global sourceList sourceTypes editonly oldDispName 
     global dispname source key schemafile evaluation priority command
 
@@ -563,16 +620,37 @@ proc defineStream {base edit} {
     set priority 50
     set command ""
 
-    set err [catch {set sourcedef $sourceList($base)}]
+# modified by dd
+
+#	puts "editonly = $editonly\n"
+	set sourcedef ""
+	if {$base != ""} {
+		set sourcedef [DEVise dteShowCatalogEntry [CWD] $base]
+	}
+
+#    set err [catch {set sourcedef $sourceList($base)}]
+
+	# result is only one tuple
+	set sourcedef [lindex $sourcedef 0]	
+
+	if {[llength $sourcedef] == 0} {
+		set err 1
+	} else {
+		set err 0
+	}
+
     if {$base != "" && $err == 0} {
-	set dispname $base
-	set source [lindex $sourcedef 0]
-	set key [lindex $sourcedef 1]
-	set schemafile [lindex $sourcedef 3]
-	set cachefile [lindex $sourcedef 4]
-	set evaluation [lindex $sourcedef 5]
-	set priority [lindex $sourcedef 6]
-	set command [lindex $sourcedef 7]
+
+     # This is an update and an original table was found
+
+     set dispname $base
+     set source [lindex $sourcedef 1]
+     set key [lindex $sourcedef 2]
+     set schemafile [lindex $sourcedef 4]
+     set cachefile [lindex $sourcedef 5]
+     set evaluation [lindex $sourcedef 6]
+     set priority [lindex $sourcedef 7]
+     set command [lindex $sourcedef 8]
     }
 	
     set oldDispName $base
@@ -655,16 +733,453 @@ proc defineStream {base edit} {
     pack .srcdef.top.row5.l1 .srcdef.top.row5.e1 -side left -padx 3m \
 	    -fill x -expand 1
 
-    button .srcdef.but.index -text Index -width 10 -command indexUpdate 
+#   button .srcdef.but.index -text Index -width 10 -command indexUpdate 
+
     button .srcdef.but.ok -text OK -width 10 -command updateStreamDef
     button .srcdef.but.display -text Display -width 10 \
     		-command {updateStreamDef_and_display $dispname}
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
-    pack .srcdef.but.ok .srcdef.but.index .srcdef.but.display .srcdef.but.cancel -in .srcdef.but.row1 \
+    pack .srcdef.but.display .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
 	    -side left -padx 7m
 
     tkwait visibility .srcdef
+}
+
+###########################################################
+
+set _cwd [list] 
+
+proc CWD {} {
+	global _cwd
+	puts "CWD returns .[join $_cwd .]"
+	return ".[join $_cwd .]"
+}
+
+proc CD {path} {
+	global _cwd
+	puts "in CD\{$path\}"
+	puts "dir before = [CWD]"
+	lappend _cwd $path
+	puts "dir after = [CWD]"
+	return [CWD]
+}
+
+proc CDup {} {
+	global _cwd
+	set len [llength $_cwd]
+	set _cwd [lrange $_cwd 0 [expr $len - 2]]
+	return [CWD]
+}
+
+proc notRootDir {} {
+	global _cwd
+	return [llength $_cwd]
+}
+
+proc fullPathName {tableName {currentDir ""}} {
+	global _cwd
+	if {$currentDir == ""} {
+		if {[llength $_cwd]} {
+			return ".[join $_cwd .].$tableName"
+		} else {
+			return ".$tableName"
+		}
+	} else {
+		if {$currentDir == "."} {
+			return ".$tableName"
+		} else {
+			return "$currentDir.$tableName"
+		}
+	}
+}
+
+proc isDirectory {typeName} {
+	if {$typeName == "Directory" || $typeName == "DEVise"} {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc defineANY {sourcetype} {
+	global displayImmediately
+	global _cwd
+
+	set directory [selectStream "Change directory to insert into"]
+	if {$directory == ""} {
+		return
+	}
+	set currentDir [CWD]
+
+	set retVal [define$sourcetype ""]
+	puts "retVal = $retVal"
+	set table [lindex $retVal 0]
+	if {$retVal != ""} {
+		DEVise dteInsertCatalogEntry $currentDir $retVal
+          if {$displayImmediately} {
+               displayTable [fullPathName $table $currentDir]
+          }
+	}
+}
+
+proc defineDEVise {content} {
+	defineDEViseOrDir DEVise "HTTP address" $content
+}
+
+proc defineDirectory {content} {
+	defineDEViseOrDir Directory "File" $content
+}
+
+proc defineSQLView {content} {
+	# argument 0 stands for "no single table view"
+	global viewName from select as where
+	set viewName [lindex $content 0]
+	set type "SQLView"
+	set attrCnt [lindex $content 2]
+	if {$attrCnt != ""} {
+		set queryIndex [expr 3 + $attrCnt]
+	} else {
+		set queryIndex 0
+	}
+	set as [lrange $content 3 [expr $queryIndex - 1]]
+	puts "as = $as"
+	set query [lindex $content $queryIndex]
+	puts "query = $query"
+	set beginSelect [string first select $query]
+	incr beginSelect 7
+	set beginFrom [string first from $query]
+	incr beginFrom -1
+	set select [string range $query $beginSelect $beginFrom]
+	puts "select = $select"
+	incr beginFrom 6
+	set beginWhere [string first where $query]
+	incr beginWhere -1
+	set from [string range $query $beginFrom $beginWhere]
+	puts "from = $from"
+	incr beginWhere 7
+	set where [string range $query $beginWhere end] 
+	puts "where = $where"
+	set retVal [qbrowse 0 $viewName "" $from $select $as $where]
+	if {$retVal != ""} {
+		set as [split $as ,]
+		set attrCnt [llength $as]
+		set as [join $as]
+		if {$where == ""} {
+			set query "select $select from $from"
+		} else {
+			set query "select $select from $from where $where"
+		}
+		return "[addQuotes $viewName] $type $attrCnt $as [addQuotes $query]"
+	} else {
+		return
+	}
+}
+
+proc defineUNIXFILE {content} {
+	global displayImmediatelly
+	set displayImmediatelly 0
+	set tableName [lindex $content 0]
+	if {$content == ""} {
+		# new table
+		defineStream $tableName 0
+	} else {
+		# editing existing table
+		defineStream $tableName 1
+	}
+}
+
+proc defineTable {content} {
+
+# var displayImmediately has a boolean value and is used by a caller 
+
+	global displayImmediately
+
+# these variable are used within the widgets of this procedure only
+
+	global retVal tableName sourceType schemaFile dataFile viewFile
+
+    toplevel .srcdef
+	wm title .srcdef "Edit Table"
+    wm geometry .srcdef +100+100
+    selection clear .srcdef
+
+    frame .srcdef.top -relief groove -borderwidth 2
+    frame .srcdef.but
+    pack .srcdef.top -side top -pady 3m -fill both -expand 1
+    pack .srcdef.but -side top -pady 3m -fill x
+    frame .srcdef.but.row1
+    pack .srcdef.but.row1 -side top
+
+     set tableName [lindex $content 0]
+	set sourceType "Table"
+	set schemaFile [lindex $content 2]
+	set dataFile [lindex $content 3]
+	set viewFile [lindex $content 4]
+	
+    frame .srcdef.top.row1
+    frame .srcdef.top.row2
+    frame .srcdef.top.row3
+    frame .srcdef.top.row4 -relief groove -borderwidth 2
+    frame .srcdef.top.row5
+    pack .srcdef.top.row2 .srcdef.top.row3 .srcdef.top.row1 \
+	     .srcdef.top.row4 .srcdef.top.row5 -side top -pady 1m
+
+    label .srcdef.top.row1.l1 -text "Table Name:"
+    entry .srcdef.top.row1.e1 -relief sunken -textvariable tableName \
+	    -width 40
+    pack .srcdef.top.row1.l1 .srcdef.top.row1.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    label .srcdef.top.row2.l1 -text "Data:"
+    entry .srcdef.top.row2.e1 -relief sunken -textvariable dataFile \
+	    -width 40 
+    button .srcdef.top.row2.b1 -text "Select..." -width 10 -command {
+	global datadir fsBox
+	set fsBox(path) $datadir
+	set fsBox(pattern) *
+	set file [FSBox "Select data file"]
+	if {$file != ""} { set dataFile $file }
+    }
+    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 .srcdef.top.row2.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+    label .srcdef.top.row3.l1 -text "Schema:"
+    entry .srcdef.top.row3.e1 -relief sunken -textvariable schemaFile \
+	    -width 40
+    button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
+	global schemadir fsBox
+	set fsBox(path) $schemadir/physical
+	set fsBox(pattern) *
+	set file [FSBox "Select schema file" "newschema"]
+	if {$file != ""} { set schemaFile $file }
+    }
+    pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+    label .srcdef.top.row4.l1 -text "View:"
+    entry .srcdef.top.row4.e1 -relief sunken -textvariable viewFile \
+	    -width 40 
+    button .srcdef.top.row4.b1 -text "Select..." -width 10 -command {
+	if {$schemaFile == "" || $dataFile == ""} {
+		dialog .noName "Missing Information" \
+			"Please enter schema and data file names first." "" 0 OK
+		return
+	}
+	set fsBox(path) $schemadir/query
+	set fsBox(pattern) *
+	set file [FSBox "Select view file" "newViewFile $schemaFile $dataFile"]
+	if {$file != ""} { set viewFile $file }
+    }
+    pack .srcdef.top.row4.l1 .srcdef.top.row4.e1 .srcdef.top.row4.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+    button .srcdef.but.display -text Display -width 10 -command {
+    		set displayImmediately 1
+		defineTableOKAction
+	}
+
+	button .srcdef.but.ok -text OK -width 10 -command {
+    		set displayImmediately 0
+		defineTableOKAction
+	}
+
+	button .srcdef.but.cancel -text Cancel -width 10  -command {
+			set retVal ""
+			destroy .srcdef
+	}
+
+	pack .srcdef.but.display .srcdef.but.ok \
+		.srcdef.but.cancel -in .srcdef.but.row1 -side left -padx 7m
+
+	tkwait visibility .srcdef
+	grab set .srcdef
+	tkwait window .srcdef
+	return $retVal
+}
+
+proc defineTableOKAction {} {
+
+	global retVal tableName sourceType schemaFile dataFile viewFile
+
+	if {$tableName == "" || $schemaFile == "" || $dataFile == ""} {
+		dialog .noName "Missing Information" \
+			"Please enter all requested information." \
+			"" 0 OK
+	} else {
+		set retVal "[addQuotes $tableName] $sourceType $schemaFile \
+			$dataFile [addQuotes $viewFile]"
+		destroy .srcdef
+	}
+}
+
+##################################################################
+
+proc defineDEViseOrDir {sourcetype label content} {
+
+# these variable are used within the widgets of this procedure only
+
+	global retVal tableName sourceType schemaFile url viewFile
+	set sourceType $sourcetype
+
+# cannot display remote site
+	global displayImmediately
+	set displayImmediately 0
+
+    toplevel .srcdef
+ 	wm title .srcdef "$sourcetype Definition"
+    wm geometry .srcdef +100+100
+    selection clear .srcdef
+
+    frame .srcdef.top -relief groove -borderwidth 2
+    frame .srcdef.but
+    pack .srcdef.top -side top -pady 3m -fill both -expand 1
+    pack .srcdef.but -side top -pady 3m -fill x
+    frame .srcdef.but.row1
+    pack .srcdef.but.row1 -side top
+
+     set tableName [lindex $content 0]
+	set url [lindex $content 2]
+	
+    frame .srcdef.top.row1
+    frame .srcdef.top.row2
+    frame .srcdef.top.row3
+    frame .srcdef.top.row4 -relief groove -borderwidth 2
+    frame .srcdef.top.row5
+    pack .srcdef.top.row2 .srcdef.top.row3 .srcdef.top.row1 \
+	     .srcdef.top.row4 .srcdef.top.row5 -side top -pady 1m
+
+    label .srcdef.top.row1.l1 -text "Table Name:"
+    entry .srcdef.top.row1.e1 -relief sunken -textvariable tableName \
+	    -width 40
+    pack .srcdef.top.row1.l1 .srcdef.top.row1.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    label .srcdef.top.row2.l1 -text $label
+    entry .srcdef.top.row2.e1 -relief sunken -textvariable url \
+	    -width 40 
+    button .srcdef.top.row2.b1 -text "Select..." -width 10 -command {
+     global dialogListVar
+    	if {$sourceType == "Directory"} {
+		global schemadir fsBox
+		set fsBox(path) $schemadir
+		set fsBox(pattern) *.dte
+		set file [FSBox "Select $sourceType file" newDirectory]
+		if {$file != ""} { set url $file }
+	} else {
+		set answer [dialogList .selectTData "Select DEVise Script"  \
+		              "Select DEVise Script" \
+				   "" 0 { OK New Cancel } \
+				   {http://fontina.cs.wisc.edu/cgi-fontina/donko/script} ]
+		if {$answer == 0} {
+			set url $dialogListVar(selected)
+		} elseif {$answer == 1} {
+			set url [lineEntryBox "New DEVise address" "HTTP address"]
+		} else {
+			set url ""
+		}
+	}
+	set tableName ""
+    }
+
+    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 .srcdef.top.row2.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+	button .srcdef.but.ok -text OK -width 10 -command {
+		if {$tableName == "" || $url == "" } {
+			dialog .noName "Missing Information" \
+				"Please enter all requested information." "" 0 OK
+		} else {
+			set retVal "[addQuotes $tableName] $sourceType $url"
+			destroy .srcdef
+		}
+	}
+
+	button .srcdef.but.cancel -text Cancel -width 10  -command {
+			set retVal ""
+			destroy .srcdef
+	}
+
+	pack .srcdef.but.ok \
+		.srcdef.but.cancel -in .srcdef.but.row1 -side left -padx 7m
+
+	grab set .srcdef
+	tkwait window .srcdef
+	return $retVal
+}
+
+proc newDirectory {} {
+
+# these variable are used within the widgets of this procedure only
+
+	global retVal
+	global displayImmediately
+
+#	cannot display a directoy
+
+	set displayImmediately 0
+
+	global schemadir
+	set retVal ""
+	set tableName [lineEntryBox "Create Directory" "File name"]
+	if {$tableName != ""} {
+		set fullPath "$schemadir/$tableName.dte"
+		set f [open $fullPath w]
+		puts $f "1 catentry entry ;"
+		close $f
+		set retVal $fullPath
+	}
+
+	return $retVal
+}
+
+proc lineEntryBox {winTitle labelTitle} {
+
+	global retVal
+
+    toplevel .newdir
+ 	wm title .newdir $winTitle
+    wm geometry .newdir +100+100
+    selection clear .newdir
+
+    frame .newdir.top -relief groove -borderwidth 2
+    frame .newdir.but
+    pack .newdir.top -side top -pady 3m -fill both -expand 1
+    pack .newdir.but -side top -pady 3m -fill x
+
+    frame .newdir.top.row1
+    pack .newdir.top.row1 -side top -pady 1m
+
+    label .newdir.top.row1.l1 -text $labelTitle
+    entry .newdir.top.row1.e1 -relief sunken -textvariable tableName \
+	    -width 40
+    pack .newdir.top.row1.l1 .newdir.top.row1.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+	button .newdir.but.ok -text OK -width 10 -command {
+		global retVal
+		set retVal ""
+		if {$tableName == ""} {
+			dialog .noName "Missing Information" \
+				"Please enter all requested information." "" 0 OK
+		} else {
+			set retVal $tableName
+			destroy .newdir
+		}
+	}
+
+	button .newdir.but.cancel -text Cancel -width 10  -command {
+			global retVal
+			set retVal ""
+			destroy .newdir
+	}
+
+	pack .newdir.but.ok \
+		.newdir.but.cancel -in .newdir.but -side left -expand 1 -padx 7m
+
+	grab set .newdir
+	tkwait window .newdir
+	return $retVal
 }
 
 ############################################################
@@ -1103,7 +1618,7 @@ proc selectUnixFile {} {
 
 ############################################################
 
-proc selectStream {{title ""}} {
+proc selectStream {{title "Select Table"}} {
     global streamsSelected sourceTypes MapTable
 
     if {[WindowVisible .srcsel]} {
@@ -1111,7 +1626,7 @@ proc selectStream {{title ""}} {
     }
 
     toplevel .srcsel
-    wm title .srcsel "Data Streams"
+    wm title .srcsel $title
     wm geometry .srcsel +50+50
     selection clear .srcsel
 
@@ -1119,10 +1634,10 @@ proc selectStream {{title ""}} {
     frame .srcsel.top
     frame .srcsel.bot
     pack .srcsel.mbar -side top -fill x
-    if {$title != ""} {
-	label .srcsel.title -text $title
-	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
-    }
+#   if {$title != ""} {
+#	label .srcsel.title -text $title
+#	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
+#   }
     pack .srcsel.top -side top -fill both -expand 1
     pack .srcsel.bot -side top -fill x -pady 5m
 
@@ -1130,16 +1645,16 @@ proc selectStream {{title ""}} {
     pack .srcsel.bot.but -side top
 
 #   menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
-    menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
+#   menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
 
 # Donko's and Shaun's MAD SLASHING spree
 #menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
 #menubutton .srcsel.mbar.follow -text "Follow to" -menu .srcsel.mbar.follow.menu
 
-    menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
+#   menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
 #   pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
 #    	.srcsel.mbar.follow .srcsel.mbar.help -side left
-    pack .srcsel.mbar.stream .srcsel.mbar.help -side left
+#   pack .srcsel.mbar.stream .srcsel.mbar.help -side left
 
 #   menu .srcsel.mbar.define.menu -tearoff 0
 #   .srcsel.mbar.define.menu add command -label "New..." \
@@ -1159,47 +1674,47 @@ proc selectStream {{title ""}} {
 #		-command "mapFollow $mtype"
 #   }
 
-    menu .srcsel.mbar.stream.menu -tearoff 0
-    .srcsel.mbar.stream.menu add command -label "New..." \
-  	  -command { defineStream "" 0 }
-    .srcsel.mbar.stream.menu add command -label "Edit..." -command {
-	set dispname [getSelectedSource]
-	if {[llength $dispname] != 1} {
-	    dialog .note "Note" "Select one stream to edit." "" 0 OK
-	    return
-	}
-	defineStream [lindex $dispname 0] 1
-    }
-    .srcsel.mbar.stream.menu add command -label "Copy..." -command {
-	set dispname [getSelectedSource]
-	if {[llength $dispname] != 1} {
-	    dialog .note "Note" "Select one stream to copy." "" 0 OK
-	    return
-	}
-	defineStream [lindex $dispname 0] 0
-    }
-    .srcsel.mbar.stream.menu add command -label Delete -command {
-	set dispnames [getSelectedSource]
-	if {$dispnames == ""} {
-	    dialog .note "Note" "Select streams to delete first." "" 0 OK
-	    return
-	}
-	foreach d $dispnames {
-	    set but [dialog .confirm "Confirm Stream Deletion" \
-		    "Delete stream \"$d\"?" "" 1 Yes No Cancel]
-	    if {$but == 2} {
-		return
-	    }
-	    if {$but == 1} {
-		continue
-	    }
-	    uncacheData $d ""
-	    if {[catch {unset "sourceList($d)"}] == 0} {
-		saveSources
-		updateSources
-	    }
-	}
-    }
+#   menu .srcsel.mbar.stream.menu -tearoff 0
+#   .srcsel.mbar.stream.menu add command -label "New..." \
+# 	  -command { defineStream "" 0 }
+#   .srcsel.mbar.stream.menu add command -label "Edit..." -command {
+#	set dispname [getSelectedSource]
+#	if {[llength $dispname] != 1} {
+#	    dialog .note "Note" "Select one stream to edit." "" 0 OK
+#	    return
+#	}
+#	defineStream [lindex $dispname 0] 1
+#   }
+#   .srcsel.mbar.stream.menu add command -label "Copy..." -command {
+#	set dispname [getSelectedSource]
+#	if {[llength $dispname] != 1} {
+#	    dialog .note "Note" "Select one stream to copy." "" 0 OK
+#	    return
+#	}
+#	defineStream [lindex $dispname 0] 0
+#   }
+#   .srcsel.mbar.stream.menu add command -label Delete -command {
+#	set dispnames [getSelectedSource]
+#	if {$dispnames == ""} {
+#	    dialog .note "Note" "Select streams to delete first." "" 0 OK
+#	    return
+#	}
+#	foreach d $dispnames {
+#	    set but [dialog .confirm "Confirm Stream Deletion" \
+#		    "Delete stream \"$d\"?" "" 1 Yes No Cancel]
+#	    if {$but == 2} {
+#		return
+#	    }
+#	    if {$but == 1} {
+#		continue
+#	    }
+#
+#	    uncacheData $d ""
+#
+#		DEVise dteDeleteCatalogEntry [CWD] $d
+#		updateSources
+#	}
+#   }
 
 # Donko's and Shaun's MAD SLASHING spree
 #   menu .srcsel.mbar.display.menu -tearoff 0
@@ -1210,27 +1725,27 @@ proc selectStream {{title ""}} {
 #   .srcsel.mbar.display.menu add separator
 #   .srcsel.mbar.display.menu add command -label "Verbose" -command {}
 
-    menu .srcsel.mbar.help.menu -tearoff 0
-    .srcsel.mbar.help.menu add command -label Help -command {
-	dialog .help "Help" \
-		"This dialog lets you choose one or more data streams\
-		for visualization. You can select a single data stream\
-		by double-clicking on it, or you can select multiple\
-		data streams with control-click and then\
-		pressing the Select button. Press the Cancel button\
-		to return without selecting anything.\n\n\
-		Choose Stream/New to define a new data stream using a blank\
-		template.\n\n\
-		Stream/Edit lets you edit an existing data stream. Select\
-		data stream first with the mouse.\n\n\
-		You can copy an existing data stream and use its definition\
-		as a template for a new data stream with Stream/Copy. Select\
-		template with the mouse first.\n\n\
-		Stream/Delete lets you delete the definition of the selected\
-		data streams. The program asks for confirmation before\
-		actually removing the entries." \
-		"" 0 OK
-    }
+#   menu .srcsel.mbar.help.menu -tearoff 0
+#   .srcsel.mbar.help.menu add command -label Help -command {
+#	dialog .help "Help" \
+#		"This dialog lets you choose one or more data streams\
+#		for visualization. You can select a single data stream\
+#		by double-clicking on it, or you can select multiple\
+# 		data streams with control-click and then\
+#		pressing the Select button. Press the Cancel button\
+#		to return without selecting anything.\n\n\
+#		Choose Stream/New to define a new data stream using a blank\
+#		template.\n\n\
+#		Stream/Edit lets you edit an existing data stream. Select\
+#		data stream first with the mouse.\n\n\
+#		You can copy an existing data stream and use its definition\
+#		as a template for a new data stream with Stream/Copy. Select\
+#		template with the mouse first.\n\n\
+#		Stream/Delete lets you delete the definition of the selected\
+#		data streams. The program asks for confirmation before\
+#		actually removing the entries." \
+#		"" 0 OK
+#   }
 
     tk_menuBar .srcsel.mbar .srcsel.mbar.define .srcsel.mbar.stream \
 	    .srcsel.mbar.display .srcsel.mbar.follow .srcsel.mbar.help
@@ -1241,29 +1756,92 @@ proc selectStream {{title ""}} {
     scrollbar .srcsel.top.scroll -command ".srcsel.top.list yview"
     pack .srcsel.top.list -side left -fill both -expand 1
     pack .srcsel.top.scroll -side right -fill y
+
     bind .srcsel.top.list <Double-Button-1> {
-	set streamsSelected [getSelectedSource]
+
+	set tmp [getSelectedLine]
+
+	puts "streamsSelected = $tmp"
+
+	# check if the selected source is directory (need to change retVal)
+	# if so, update CWD, and list sources
+
+     if {[llength $tmp] != 1} {
+		# this should never happen, but just in case
+         dialog .note "Note" "Please select only one table." "" 0 OK
+         return
+     }
+
+ 	set table_type_pair [lindex $tmp 0]
+	set tableName [lindex $table_type_pair 0]
+	set typeName [lindex $table_type_pair 1]
+	puts "tableName = $tableName; typeName = $typeName"
+	if { [isDirectory $typeName] } {
+		if {$tableName == ".."} {
+			CDup
+		} else {
+			CD $tableName
+		}
+		updateSources
+	} else {
+		puts "continuing with streamsSelected = $tableName"
+		set streamsSelected [fullPathName $tableName]
+	}
     }
 
     updateSources
 
-    button .srcsel.bot.but.select -text Select -width 10 -command {
-	set streamsSelected [getSelectedSource]
-    }
-    button .srcsel.bot.but.uncache -text Uncache -width 10 -command {
-	set dispnames [getSelectedSource]
-	foreach d $dispnames {
-	    uncacheData $d "Uncache requested."
-	    updateSources
+    button .srcsel.bot.but.select -text OK -width 10 -command {
+
+	# This button is selecting any table (including directories) except ..
+
+	set tmpStreamsSelected {}
+	set tmp [getSelectedLine]
+
+	puts "streamsSelected = $tmp"
+
+#    if {[llength $tmp] != 1} {
+#        dialog .note "Note" "Please select only one table." "" 0 OK
+#        return
+#    }
+
+	if {$tmp == ""} {
+		set tmpStreamsSelected [CWD]
+	} else {
+		foreach table_type_pair $tmp {
+			set tableName [lindex $table_type_pair 0]
+			set typeName [lindex $table_type_pair 1]
+			puts "tableName = $tableName; typeName = $typeName"
+			if {$tableName == ".."} {
+				dialog .note "Note" \
+					"Discarding selection of \"..\"." "" 0 OK
+				return
+			} else {
+				lappend tmpStreamsSelected [fullPathName $tableName]
+			}
+		}
 	}
+	set streamsSelected $tmpStreamsSelected
     }
+
+#   button .srcsel.bot.but.uncache -text Uncache -width 10 -command {
+#	set dispnames [getSelectedSource]
+#	foreach d $dispnames {
+#	    uncacheData $d "Uncache requested."
+#	    updateSources
+#	}
+#   }
+
     button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
 	set streamsSelected ""
     }
-    pack .srcsel.bot.but.select .srcsel.bot.but.uncache \
-	    .srcsel.bot.but.cancel -side left -padx 3m
+
+    pack .srcsel.bot.but.select \
+ 	    .srcsel.bot.but.cancel -side left -padx 3m
 
     set streamsSelected ""
+
+    grab set .srcsel
     tkwait variable streamsSelected
     catch {destroy .srcsel}
 
@@ -1342,23 +1920,33 @@ proc addDataSource {dispName source} {
 ############################################################
 
 proc updateSources {} {
-    global sourceList
 
     if {[catch {wm state .srcsel}] > 0} {
 	return
     }
 
     .srcsel.top.list delete 0 end
-    #    foreach sname [lsort [array names sourceList]] {}
-    foreach sname [lsortCase [array names sourceList]] {
-	set source [lindex $sourceList($sname) 0]
-	set cachefile [lindex $sourceList($sname) 4]
-	set cached ""
-	if {$source == "WWW"} {
-            set cached "Server"
-        } elseif {[isCached $sname -1 -1] != ""} {
-	    set cached "Cached"
+	set listing [DEVise dteListCatalog [CWD]]
+	if {[notRootDir]} {
+		set sname ".."
+		set source "Directory"
+		set cached ""
+		set item [format "%-40.40s  %-10.10s  %-6.6s" \
+			$sname $source $cached]
+		.srcsel.top.list insert end $item
 	}
+	foreach pair [lsort $listing] {
+		set sname [lindex $pair 0]
+		set source [lindex $pair 1]
+		set cached ""
+
+#	set cachefile [lindex $sourceList($sname) 4]
+#	if {$source == "WWW"} {
+#           set cached "Server"
+#       } elseif {[isCached $sname -1 -1] != ""} {
+#	    set cached "Cached"
+#	}
+
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
 		$sname $source $cached]
 	.srcsel.top.list insert end $item
@@ -1447,6 +2035,30 @@ proc getSelectedSource {} {
 	set dispName [string trimright $dispName]
 	lappend retval $dispName
     }
+    return $retval
+}
+
+############################################################
+
+proc getSelectedLine {} {
+
+	# this proc is same as getSelectedSource except that it returns the
+	# whole selected line
+
+    set err [catch { set owner [selection own] }]
+    if {$err > 0} { return "" }
+    if {$owner != ".srcsel.top.list"} { return "" }
+    set err [catch { set select [selection get] }]
+    if {$err > 0} { return "" }
+
+    set select [split $select \n]
+    set retval ""
+    foreach s $select {
+	set dispName [lindex $s 0]
+	set typeName [lindex $s 1]
+	lappend retval [list $dispName $typeName]
+    }
+#   return [lindex $retval 0]
     return $retval
 }
 

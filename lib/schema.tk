@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1997/01/17 20:32:31  wenger
+#  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+#  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+#  from Tcl/Tk code; removed (at least for now) the ETk interface from
+#  the cslib versions of WindowRep classes so that the cslib will link
+#  okay; cslib server now tests XOR drawing.
+#
 #  Revision 1.24  1996/12/15 07:01:38  donjerko
 #  Added the window to create an index on streams.
 #
@@ -687,6 +694,11 @@ proc newschemawin {} {
     pack .newschema.opt.save .newschema.opt.quit  -side left \
 	    -padx 3m -pady 1m -expand 1
     
+    # modified by DD so that it works with FSBox
+
+    tkwait visibility .newschema
+    grab .newschema
+
     tkwait window .newschema
 }
 
@@ -785,17 +797,18 @@ proc writelogical {name} {
     close $f
 }
 
-proc writeQuerylogical {logschema queryName query} {
+proc writeQuerylogical {viewName query} {
     global schemadir 
 
-    set f [open $schemadir/query/$queryName w]
+    set f [open $schemadir/query/$viewName w]
 
-    set header [DEVise getFileHeader querySchema]
-    puts $f $header
-    unset header
-    
-    puts $f "logical $schemadir/logical/$logschema"
+#   set header [DEVise getFileHeader querySchema]
+#   puts $f $header
+#   unset header
+#   
+#   puts $f "logical $schemadir/logical/$logschema"
 	
+	puts $f "where"
 	puts $f $query
 
     close $f
@@ -1189,30 +1202,59 @@ proc gbrowse {} {
 	    -side left -padx 3m -pady 1m -expand 1
 }
 
-proc qbrowse {} {
-    global logicalAttrlist physchema logschema tgrps glist Query query \
-	queryName iname
+proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
+		{_from ""} {_select ""} {_as ""} {_where ""}} {
+	global schemadir
+
+	global isSingle
+ 	set isSingle $_isSingle
+
+	global viewName
+ 	set viewName $_viewName
+
+	global from select as where
+	set from $_from
+	set select $_select
+	set as $_as
+	set where $_where
+
+	puts "select = $select"
+	global fromCnt attrCnt
+
+	global q_retVal
+
+	set fromCnt 1
+	set attrCnt 1
 
     toplevel .gbrowse
-    wm title .gbrowse "$logschema View: $queryName"
+    wm title .gbrowse "View Definition"
     wm geometry .gbrowse +50+50
     wm iconname .gbrowse "Groups"
 
+    frame .gbrowse.fname -relief raised -bd 1
+
+    label .gbrowse.fname.label -text "View Name "
+    entry .gbrowse.fname.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable viewName
+
+#   label .gbrowse.ops.select.label -text "SELECT "
+#   entry .gbrowse.ops.select.entry -width 100 -relief sunken -bd 2 \
+#	    -textvariable select 
+    
     # Toplevel rows
     frame .gbrowse.attrs -relief raised
     frame .gbrowse.list -relief raised
     frame .gbrowse.ops -relief raised
-    pack .gbrowse.attrs .gbrowse.list .gbrowse.ops \
+    pack .gbrowse.fname .gbrowse.attrs .gbrowse.list .gbrowse.ops \
 	    -side top -fill x -padx 3m -pady 1m
+
+    pack .gbrowse.fname.label .gbrowse.fname.entry -side left -padx 1m \
+ 	    -pady 1m
 
     #----------------------------------------------------------
     # Create a listbox with all the attrs in the logical schema
-	# This reads the attributes (items) in the logical schema 
-	# and puts it in the logicalAttrlist list..
 	
-	readQuerylogical $logschema
-	
-	label .gbrowse.attrs.label -text "List of View Attributes"
+	label .gbrowse.attrs.label -text "Available Attributes"
     pack .gbrowse.attrs.label -side top -fill x
     listbox .gbrowse.attrs.list -relief raised -bd 1 \
 	    -yscrollcommand ".gbrowse.attrs.scroll set" \
@@ -1223,87 +1265,194 @@ proc qbrowse {} {
 
     # Populate the list with all the attrs 
     foreach attr $logicalAttrlist {
-	  .gbrowse.attrs.list insert end $attr 
+	  .gbrowse.attrs.list insert end "t.$attr" 
+	  if {$select == ""} {
+		  append select "t.$attr"
+	  } else {
+	  	 append select ", t.$attr"
+	  }
+	  if {$as == ""} {
+		  append as $attr
+	  } else {
+	  	 append as ", $attr"
+	  }
     }
 
     # Bind the mouse click on this list
     bind .gbrowse.attrs.list <Double-1> {
-	  set query  "$query [.gbrowse.attrs.list get active] "
+	  set where  "$where [.gbrowse.attrs.list get active] "
     }
 
-    #-----------------------------------------------------------
-    # Create a listbox displaying list of groups
-    #    CreateTextBitmap .gbrowse.list.label group.gif Groups
-    label .gbrowse.list.label -text "Query"
-    pack .gbrowse.list.label -side top -fill x
+    
+	frame .gbrowse.ops.from -relief raised -bd 1
+	frame .gbrowse.ops.select -relief raised -bd 1
+	frame .gbrowse.ops.as -relief raised -bd 1
+	frame .gbrowse.ops.where -relief raised -bd 1
 	
-	#### Gotta put the entry box here..
-    # Panel for group name and panels for operators  
-    
-	frame .gbrowse.ops.name -relief raised -bd 1
     frame .gbrowse.ops.op -relief raised
-    pack .gbrowse.ops.name .gbrowse.ops.op -side top -fill x \
-	    -padx 3m -pady 1m
-    #label .gbrowse.ops.name.label -text "Query "
-    entry .gbrowse.ops.name.entry -width 100 -relief sunken -bd 2 \
-	    -textvariable query 
-    #pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
-	#    -fill x -padx 1m -pady 1m -expand 1
-    
-	pack .gbrowse.ops.name.entry -side left \
-	    -fill x -padx 1m -pady 1m -expand 1
+    if {!$isSingle} {
+    		pack .gbrowse.ops.from -side top
+	}
 
+    pack .gbrowse.ops.select .gbrowse.ops.as .gbrowse.ops.where -side top 
+
+    pack .gbrowse.ops.op -side top -fill x -padx 3m -pady 1m
+
+    label .gbrowse.ops.from.label -text "FROM "
+    entry .gbrowse.ops.from.entry -width 85 -relief sunken -bd 2 \
+	    -textvariable from 
+    button .gbrowse.ops.from.selbox -text "Select..." -width 10 -command {
+         set table [selectStream]
+		if {$from == ""} {
+			append from "$table as t$fromCnt"
+		} else {
+			append from ", $table as t$fromCnt"
+		}
+	    set attrs [DEVise dteListAttributes $table]
+	    foreach attr $attrs {
+	    		set fullAttr "t$fromCnt.$attr"
+	    		set attrName "attr$attrCnt"
+			incr attrCnt
+			.gbrowse.attrs.list insert end $fullAttr 
+			if {$select == ""} {
+				append select $fullAttr
+			} else {
+				append select ", $fullAttr"
+			}
+			if {$as == ""} {
+				append as $attrName
+			} else {
+				append as ", $attrName"
+			}
+	    }
+	    incr fromCnt
+    }
+
+    label .gbrowse.ops.select.label -text "SELECT "
+    entry .gbrowse.ops.select.entry -width 100 -relief sunken -bd 2 \
+	    -textvariable select 
+
+    label .gbrowse.ops.as.label -text "AS "
+    entry .gbrowse.ops.as.entry -width 100 -relief sunken -bd 2 \
+	    -textvariable as 
+
+    label .gbrowse.ops.where.label -text "WHERE "
+    entry .gbrowse.ops.where.entry -width 100 -relief sunken -bd 2 \
+	    -textvariable where 
+
+    pack .gbrowse.ops.from.label .gbrowse.ops.from.entry \
+         .gbrowse.ops.from.selbox -side left \
+	    -fill x -padx 1m -pady 1m -expand 1
+    pack .gbrowse.ops.select.label .gbrowse.ops.select.entry -side left \
+	    -fill x -padx 1m -pady 1m -expand 1
+    pack .gbrowse.ops.as.label .gbrowse.ops.as.entry -side left \
+	    -fill x -padx 1m -pady 1m -expand 1
+    pack .gbrowse.ops.where.label .gbrowse.ops.where.entry -side left \
+	    -fill x -padx 1m -pady 1m -expand 1
+    
     button .gbrowse.ops.op.and -text "AND" -command {
-	    set query "$query AND " 
+	    set where "$where AND " 
     }
     button .gbrowse.ops.op.or -text "OR" -command {
-	    set query "$query OR " 
-    }
-    button .gbrowse.ops.op.not -text "NOT" -command {
-	    set query "$query NOT " 
+	    set where "$where OR " 
     }
     button .gbrowse.ops.op.lbrac -text "(" -command {
-	    set query "$query ( " 
+	    set where "$where ( " 
     }
     button .gbrowse.ops.op.rbrac -text ")" -command {
-	    set query "$query ) " 
+	    set where "$where ) " 
     }
     button .gbrowse.ops.op.albrac -text "<" -command {
-	    set query "$query < " 
+	    set where "$where < " 
     }
     button .gbrowse.ops.op.arbrac -text ">" -command {
-	    set query "$query > " 
+	    set where "$where > " 
     }
     button .gbrowse.ops.op.eq -text "=" -command {
-	    set query "$query = " 
+	    set where "$where = " 
     }
-    button .gbrowse.ops.op.ne -text "<>" -command {
-	    set query "$query <> " 
+    button .gbrowse.ops.op.ne -text "!=" -command {
+	    set where "$where != " 
     }
     
-	button .gbrowse.ops.op.quit -text "Quit" -command {
-	
-	writeQuerylogical $logschema $queryName $query
-
-	# Update catalog if needed
-	if {[lsearch $Query($physchema,$logschema) $queryName] == -1} {
-	    set Query($physchema,$logschema) \
-			[lappend Query($physchema,$logschema) $queryName]
-	    writeQuerycatalog
-	}
-	set logschema ""
-	set physchema ""
-	set queryName ""
-	set tgrps ""
-	destroy .gbrowse
-    }
     pack .gbrowse.ops.op.and .gbrowse.ops.op.or \
-	    .gbrowse.ops.op.not .gbrowse.ops.op.lbrac\
+	    .gbrowse.ops.op.lbrac\
 	    .gbrowse.ops.op.rbrac .gbrowse.ops.op.albrac \
 	    .gbrowse.ops.op.arbrac .gbrowse.ops.op.eq\
-	    .gbrowse.ops.op.ne .gbrowse.ops.op.quit \
+	    .gbrowse.ops.op.ne \
 	    -side left -padx 3m -pady 1m -expand 1
+
+	frame .gbrowse.but -relief groove -borderwidth 2
+	button .gbrowse.but.display -text "Display" -width 10 -command {
+		global displayImmediately
+		set displayImmediately 1
+		if {[qbrowseOKAction] == "OK"} {
+			destroy .gbrowse
+		}
+	}
+	button .gbrowse.but.ok -text "OK" -width 10 -command {
+		global displayImmediately
+		set displayImmediately 0
+		if {[qbrowseOKAction] == "OK"} {
+			destroy .gbrowse
+		}
+    }
+
+	button .gbrowse.but.cancel -text "Cancel" -width 10 -command {
+		set q_retVal ""
+		destroy .gbrowse
+	}
+
+	pack .gbrowse.but -side top -fill x
+	if {!$isSingle} {
+		pack .gbrowse.but.display .gbrowse.but.ok .gbrowse.but.cancel \
+		          -side left -padx 7m -pady 2m -expand 1
+	} else {
+		pack .gbrowse.but.ok .gbrowse.but.cancel \
+			-side left -padx 7m -pady 2m -expand 1
+	}
+
+ 	tkwait visibility .gbrowse
+ 	grab .gbrowse
+	tkwait window .gbrowse
+	return $q_retVal
 }
+
+proc qbrowseOKAction {} {
+	global viewName from isSingle select as where q_retVal
+
+	if {$viewName == "" || ($from == "" && !$isSingle) || 
+		$select == "" || $as == ""} {
+		dialog .noName "Missing Information" \
+			"Please Enter All Required Information." "" 0 OK
+		return ""
+	}
+	set q_retVal [list $viewName $from $select $as $where]
+	return "OK"
+}
+
+proc saveViewFile {fileName select as where} {
+
+	set f [open $fileName w]
+
+#   set header [DEVise getFileHeader schemaCat]
+#   puts $f $header
+#   unset header
+
+#   puts $f "# Association between physical and logical schemas"
+#   puts $f ""
+
+	set w_as [split $as ,]
+	puts $f [llength $w_as]
+	foreach itm $w_as {
+		puts $f " $itm"
+	}
+	puts $f [addQuotes $select]
+	puts $f [addQuotes $where]
+	close $f
+	return $fileName
+}
+
 proc dispgrp {gname } {
     global glist tgrps currgrp cnt iname
     # Displays the group information and allows modification

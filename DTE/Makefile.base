@@ -44,7 +44,8 @@ endif
 
 CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c FunctionRead.c \
-	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c 
+	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
+	InsertParse.c DeleteParse.c SchemaParse.c ApParseCat.c
 
 ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c
@@ -53,7 +54,7 @@ else
 endif
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
-	ApParseCat.c TDataDQL.c TDataDQLInterp.c
+	TDataDQL.c TDataDQLInterp.c CatalogComm.c
 	
 DEVREAD_OBJ = \
 	../attrproj/ApInit.o \

@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.5  1996/12/16 11:13:03  kmurli
+    Changes to make the code work for separate TDataDQL etc..and also changes
+    done to make Aggregates more robust
+
     Revision 1.4  1996/12/15 06:41:03  donjerko
     Added support for RTree indexes
 
@@ -53,8 +57,6 @@
  */
 
 #define _DevRead_c_
-
-//#define DEBUG
 
 #include <stdio.h>
 #include <string.h>

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.114  1997/01/29 17:03:01  wenger
+#	Removed main help (but not help demo or history) from user interface.
+#
 #	Revision 1.113  1997/01/27 20:15:23  wenger
 #	Workaround to bug 137: disables Stack Control dialog buttons while drawing.
 #
@@ -508,6 +511,8 @@ if { [info exists env(DEVISE_TMP)] } {
     set tmpdir $env(DEVISE_TMP)
 }
 
+set filterdir $schemadir/query
+
 set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
     puts "Cannot read configuration file $hostCfg"
@@ -679,12 +684,187 @@ menu .mbar.session.menu.printMenu -tearoff 0
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
 menu .mbar.tdata.menu -tearoff 0
-.mbar.tdata.menu add command -label "New Table" -command { defineStream "" 0 }
-.mbar.tdata.menu add command -label "Edit" -command { MacroImport 0 0 }
+
+proc displayTable {table} {
+     if {[llength $table] == 0} {
+		return
+	}
+     if {[llength $table] != 1} {
+         dialog .note "Note" "Please select only one table." "" 0 OK
+         return
+     }
+	set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
+     if {$tdata_schema_pair == ""} {
+          puts "tdata = NULL"
+          return
+     }
+     set tdata [lindex $tdata_schema_pair 0]
+     set schemaname [lindex $tdata_schema_pair 1]
+     MacroDefAuto $tdata $schemaname
+}
+
+.mbar.tdata.menu add command -label "Display" -command {
+	set table [selectStream]
+	displayTable $table
+}
+
+.mbar.tdata.menu add separator
+
+.mbar.tdata.menu add cascade -label "New" \
+	-menu .mbar.tdata.menu.import 
+#.mbar.tdata.menu add command -label "Edit" -command { MacroImport 0 0 }
+
+.mbar.tdata.menu add command -label "Edit" -command {
+	
+	# boolean var
+	global displayImmediately
+
+	set table [selectStream]
+	set currentDir [CWD]
+     if {[llength $table] == 0} {
+		return
+	}
+     if {[llength $table] > 1} {
+         dialog .note "Note" "Please select only one table." "" 0 OK
+         return
+     }
+	set entry [DEVise dteShowCatalogEntry $table]
+	set entry [lindex $entry 0]
+	set oldTableName [lindex $entry 0]
+	set type [lindex $entry 1]
+	set retVal [define$type $entry]
+	puts "retVal = $retVal"
+	set newTableName [lindex $retVal 0]
+	puts "newTableName = $newTableName"
+	if {$retVal != ""} {
+		if {$newTableName == $oldTableName} {
+
+			# this was an update
+
+			DEVise dteDeleteCatalogEntry \
+				[fullPathName $oldTableName $currentDir]
+		}
+		DEVise dteInsertCatalogEntry $currentDir $retVal
+		if {$displayImmediately} {
+			displayTable [fullPathName $newTableName]
+		}
+	}
+}
+
+.mbar.tdata.menu add command -label "Delete" -command {
+	set table [selectStream]
+     foreach d $table {
+         set but [dialog .confirm "Confirm Stream Deletion" \
+              "Delete stream \"$d\"?" "" 1 Yes No Cancel]
+         if {$but == 2} {
+          return
+         }
+         if {$but == 1} {
+          continue
+         }
+          DEVise dteDeleteCatalogEntry $d
+          updateSources
+     }
+}
+
+.mbar.tdata.menu add separator
+
+.mbar.tdata.menu add cascade -label "Index" \
+	-menu .mbar.tdata.menu.indexMenu 
+
+menu .mbar.tdata.menu.indexMenu -tearoff 0
+.mbar.tdata.menu.indexMenu add command -label New -command {
+	set table [selectStream]
+	while {[llength $table] > 1} {
+		dialog .note "Note" "Please select only one table." "" 0 OK
+		set table [selectStream]
+	}
+	if {$table == ""} {
+		return
+	}
+	set attrs [DEVise dteListAttributes $table]
+	indexUpdate $attrs
+}
+.mbar.tdata.menu.indexMenu add command -label Browse -command {
+	set table [selectStream]
+	while {[llength $table] > 1} {
+		dialog .note "Note" "Please select only one table." "" 0 OK
+		set table [selectStream]
+	}
+	if {$table == ""} {
+		return
+	}
+}
+.mbar.tdata.menu.indexMenu add command -label Delete -command {
+	set table [selectStream]
+	while {[llength $table] > 1} {
+		dialog .note "Note" "Please select only one table." "" 0 OK
+		set table [selectStream]
+	}
+	if {$table == ""} {
+		return
+	}
+}
+
+.mbar.tdata.menu add separator
+
+.mbar.tdata.menu add cascade -label "SQLFilter" \
+	-menu .mbar.tdata.menu.filterMenu 
+
+menu .mbar.tdata.menu.filterMenu -tearoff 0
+.mbar.tdata.menu.filterMenu add command -label New -command {
+	newViewFile
+	return
+}
+
+.mbar.tdata.menu.filterMenu add command -label Edit -command {
+	global filterdir fsBox
+	global viewName select as where
+	set fsBox(path) $filterdir
+	set fsBox(pattern) *
+	set file [FSBox "Select SQLFilter file"]
+	if {$file != ""} {
+		set result [DEVise dteReadSQLFilter $file]
+		set select [lindex $result 0]
+		set as [lindex $result 1]
+		set where [lindex $result 2]
+		set viewName [file tail $file]
+		puts "calling qbrowse 1 $viewName $select $as $where"
+		qbrowse 1 $viewName "" "" $select $as $where
+		puts "returns qbrowse 1 $viewName $select $as $where"
+		set fileName "$filterdir/$viewName"
+		saveViewFile $fileName $select $as $where
+	}
+}
+
+.mbar.tdata.menu.filterMenu add command -label Delete -command {
+	global filterdir fsBox
+	set fsBox(path) $filterdir
+	set fsBox(pattern) *
+	set file [FSBox "Select SQLFilter file"]
+	if {$file != ""} {
+         set but [dialog .confirm "Confirm Stream Deletion" \
+              "Delete SQLFilter \"$file\"?" "" 1 Yes No]
+         if {$but == 1} {
+          return
+         }
+		exec rm $file
+	}
+}
+
+.mbar.tdata.menu add separator
 
 .mbar.tdata.menu add cascade -label "Schema" \
 	-menu .mbar.tdata.menu.schemaMenu 
 
+.mbar.tdata.menu add separator
+
+menu .mbar.tdata.menu.import -tearoff 0
+foreach sourcetype [lsort [array names sourceTypes]] {
+	.mbar.tdata.menu.import add command -label $sourcetype \
+		-command 	[list defineANY $sourcetype]
+}
+		
 menu .mbar.tdata.menu.schemaMenu -tearoff 0
 
 .mbar.tdata.menu.schemaMenu add command -label "Browse..." \
@@ -694,8 +874,8 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 	-command {SchemaEdit 0}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
-.mbar.tdata.menu.schemaMenu add command -label "Query..." \
-	-command {SchemaEdit 2}
+#.mbar.tdata.menu.schemaMenu add command -label "Query..." \
+#	-command {SchemaEdit 2}
 
 # Donko's and Shaun's MAD SLASHING spree
 #.mbar.tdata.menu add cascade -label "Mapping" \
@@ -1055,11 +1235,24 @@ proc EditMapping { map } {
     
     set tdata [lindex [lindex $params 0] 1]
     
-    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-    if {$err > 0} {
-	set sfname [lindex $derivedSourceList($tdata) 3]
-    }
-    set schemaname [file tail $sfname]
+	set catEntry [DEVise dteShowCatalogEntry $tdata]
+	set catEntry [lindex $catEntry 0]
+	set entryType [lindex $catEntry 1]
+	if {$catEntry == ""} {
+		set sfname [lindex $derivedSourceList($tdata) 3]
+		set schemaname [file tail $sfname]
+	} elseif {[isDTEType $entryType]} {
+		set schemaname $tdata
+	} else {
+		set sfname [lindex $catEntry 4]
+		set schemaname [file tail $sfname]
+	}
+
+#   set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+#   if {$err > 0} {
+#	set sfname [lindex $derivedSourceList($tdata) 3]
+#   }
+#   set schemaname [file tail $sfname]
 
     # set attrs [DEVise getSchema $tdata]
     
@@ -1564,13 +1757,4 @@ proc ShowKGraph {} {
     set cmd "DEVise showkgraph $knew $kval {$win} $vlist"
     eval $cmd
 }
-
-
-
-
-
-
-
-
-
 

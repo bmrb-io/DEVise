@@ -34,8 +34,8 @@ int main(int argc, char** argv){
 		}
 		else if(option == "query"){
 			queryString = entries[i].val;
-			int queryLength = strlen(queryString);
-			queryString[queryLength - 1] = ';';
+			// int queryLength = strlen(queryString);
+			// queryString[queryLength - 1] = ';';
 		}
 		else if(option == "shipping"){
 			shipping = entries[i].val;
@@ -70,6 +70,8 @@ int main(int argc, char** argv){
      Engine engine(query);
      TRY(engine.optimize(), 0);
      int numFlds = engine.getNumFlds();
+	assert(numFlds > 0);
+	WritePtr* writePtrs = engine.getWritePtrs();
      String* types = engine.getTypeIDs();
 	String* attrs = engine.getAttributeNames();
      Tuple* tup;
@@ -89,7 +91,7 @@ int main(int argc, char** argv){
 	engine.initialize();
      while((tup = engine.getNext())){
           for(int i = 0; i < numFlds; i++){
-               displayAs(cout, tup[i], types[i]);
+			writePtrs[i](cout, tup[i]);
                cout << '\t';
           }
           cout << endl;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/26 03:42:02  kmurli
+  MOdified to make joinprev work right
+
   Revision 1.10  1996/12/25 19:54:02  kmurli
   Files to do joinprev,joinnext and function calls.
 
@@ -24,19 +27,6 @@
 
   Revision 1.8  1996/12/21 22:21:51  donjerko
   Added hierarchical namespace.
-
-  Revision 1.7  1996/12/16 11:13:10  kmurli
-  Changes to make the code work for separate TDataDQL etc..and also changes
-  done to make Aggregates more robust
-
-  Revision 1.6  1996/12/15 06:41:10  donjerko
-  Added support for RTree indexes
-
-  Revision 1.5  1996/12/07 15:14:29  donjerko
-  Introduced new files to support indexes.
-
-  Revision 1.4  1996/12/05 16:06:05  wenger
-  Added standard Devise file headers.
 
  */
 
@@ -61,6 +51,10 @@
 List<BaseSelection*>* createSelectList(String nm, Iterator* iterator);
 List<BaseSelection*>* createSelectList(Iterator* iterator);
 
+istream* contactURL(String url,
+     const String* options, const String* values, int count);
+	// throws exception
+
 class Site {
 friend class LocalTable;
 friend class SiteGroup;
@@ -78,7 +72,7 @@ public:
 	Site(String nm = "") : name(nm), iterator(NULL) {
 		numFlds = 0;
 		tables = new List<String*>;
-		mySelect = new List<BaseSelection*>;
+		mySelect = NULL;
 		myFrom = new List<TableAlias*>;
 		myWhere = new List<BaseSelection*>;
 		stats = NULL;
@@ -105,7 +99,6 @@ public:
 	// Returns the name of the ordering attribute using the
 	// read iterator.
 	virtual String * getOrderingAttrib(){
-		
 		if(iterator)
 			return iterator->getOrderingAttrib();
 		else
@@ -125,25 +118,7 @@ public:
 		return this == siteGroup;
 	}
 	void filter(List<BaseSelection*>* select, List<BaseSelection*>* where);
-	virtual void display(ostream& out, int detail = 0){
-		if(detail > 0){
-			 out << "Site " << name << ":\n"; 
-			 if(stats){
-				 out	<< " stats: ";
-				 stats->display(out);
-			 }
-			 out << "\n query:";
-		}
-		out << "   select ";
-		displayList(out, mySelect, ", ", detail);
-		out << "\n   from ";
-		displayList(out, myFrom, ", ");
-		if(!myWhere->isEmpty()){
-			out << "\n   where ";
-			displayList(out, myWhere, " and ", detail);
-		}
-		out << ';';
-	}
+	virtual void display(ostream& out, int detail = 0);
 	String getName(){
 		return name;
 	}
@@ -159,8 +134,13 @@ public:
 		return iterator->getNext();
 	}
 	virtual int getNumFlds(){
-		assert(numFlds == mySelect->cardinality());
-		return numFlds;
+		if(mySelect){
+			assert(numFlds == mySelect->cardinality());
+			return numFlds;
+		}
+		else{
+			return 0;
+		}
 	}
      virtual String* getTypeIDs(){
           return getTypesFromList(mySelect);
@@ -188,8 +168,9 @@ public:
 		return retVal;
 	}
 	virtual void initialize(){
-		if(iterator)
+		if(iterator){
 			iterator->initialize();
+		}
 	}
 	virtual void finalize(){
 	}
@@ -200,6 +181,20 @@ public:
           assert(!"getOffset not supported for this iterator");
           return Offset();
      }
+	virtual void writeOpen(int mode = ios::app){
+		assert(0);
+	}
+	virtual void writeClose(){
+		assert(0);
+	}
+	virtual void write(String content){
+		assert(0);
+	}
+	virtual void write(Tuple* tuple){
+		assert(0);
+	}
+	virtual void insert(Tuple* tuple){
+	}
 };
 
 class DirectSite : public Site {
@@ -219,37 +214,40 @@ public:
 
 class LocalTable : public Site {
 	List<RTreeIndex*> indexes;
-	void setStats(){
-		double selectivity = listSelectivity(myWhere);
-		assert(directSite);
-		Stats* baseStats = directSite->getStats();
-		assert(baseStats);
-		int cardinality = int(selectivity * baseStats->cardinality);
-		int* sizes = sizesFromList(mySelect);
-		stats = new Stats(numFlds, sizes, cardinality);
-	}
+	void setStats();
+	String fileToWrite;
+	ofstream* fout;
+	WritePtr* writePtrs;
 protected:
 	Site* directSite;
 public:
-     LocalTable(String nm, Iterator* marsh, List<RTreeIndex*>* indx) : 
+     LocalTable(String nm, Iterator* marsh, List<RTreeIndex*>* indx, 
+		String fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
 		if(indx){
 			indexes.addList(indx);
 		}
 		iterator = marsh;
+		this->fileToWrite = fileToWrite;
+		fout = NULL;
+		writePtrs = NULL;
 	}
 	LocalTable(String nm, List<BaseSelection*>* select, 
 		List<BaseSelection*>* where, Iterator* iterator) : Site(nm) {
 
 		// Used as a simple filter, not as a real site
 
+		mySelect = new List<BaseSelection*>;
 		mySelect->addList(select);
 		myWhere->addList(where);
 		this->iterator = iterator;
 		numFlds = mySelect->cardinality();
 		directSite = new DirectSite(name, iterator);
 	}
-	virtual ~LocalTable(){}
+	virtual ~LocalTable(){
+		delete fout;
+		delete writePtrs;
+	}
 	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
 		assert(myFrom->isEmpty());
@@ -261,8 +259,6 @@ public:
 		}
 		else{
 			assert(0);
-			// tables->append(tabName->table);
-			// name = *tabName->table;
 		}
 	}
 	virtual void enumerate(){
@@ -271,26 +267,10 @@ public:
 		TRY(enumerateList(mySelect, name, baseSchema), );
 		TRY(enumerateList(myWhere, name, baseSchema), );
 	}
-	virtual void typify(String option){	// Throws exception
-		
-		// option is ignored since the execution = profile + getNext
-
-		LOG(logFile << "Header: ");
-		LOG(iterator->display(logFile));
-		directSite = new DirectSite(name, iterator);
-		List<Site*>* tmpL = new List<Site*>;
-		tmpL->append(directSite);
-          TRY(typifyList(myWhere, tmpL), );
-		TRY(boolCheckList(myWhere), );
-		if(mySelect == NULL){
-			mySelect = createSelectList(name, iterator);
-		}
-		else{
-			TRY(typifyList(mySelect, tmpL), );
-		}
-		numFlds = mySelect->cardinality();
-		setStats();
-     }
+	virtual void typify(String option);	// Throws exception
+	virtual void initialize(){
+		Site::initialize();
+	}
 	virtual Tuple* getNext(){
 		bool cond = false;
 		Tuple* input = NULL;
@@ -308,6 +288,25 @@ public:
      virtual Offset getOffset(){
           return iterator->getOffset();
      }
+	virtual void writeOpen(int mode = ios::app);
+	virtual void writeClose(){
+		assert(fout);
+		fout->close();
+		delete fout;	
+		fout = NULL;
+	}
+	virtual void write(String content){
+		assert(fout);
+		*fout << content << endl;
+	}
+	virtual void write(Tuple* tuple){
+		assert(fout);
+		assert(writePtrs);
+		for(int i = 0; i < numFlds; i++){
+			writePtrs[i](*fout, tuple[i]);
+		}
+		*fout << endl;
+	}
 };
 
 class IndexScan : public LocalTable {
@@ -458,47 +457,7 @@ public:
 		out << endl;
 		site2->display(out, detail);
 	}
-	virtual Tuple* getNext(){
-		bool cond = false;
-		Tuple* innerTup = NULL;
-		if(firstEntry){
-			outerTup = site1->getNext();
-			firstEntry = false;
-		}
-		while(cond == false){
-			if(firstPass){
-				innerTup = site2->getNext();
-				if(innerTup){
-					innerRel.append(innerTup);
-				}
-				else{
-					firstPass = false;
-					innerRel.rewind();
-					if(innerRel.atEnd()){
-						return NULL;
-					}
-					innerTup = innerRel.get();
-					innerRel.step();
-					outerTup = site1->getNext();
-				}
-			}
-			else{
-				if(innerRel.atEnd()){
-					innerRel.rewind();
-					outerTup = site1->getNext();
-				}
-				innerTup = innerRel.get();
-				innerRel.step();
-			}
-			assert(innerTup);
-			if(!outerTup){
-				return NULL;
-			}
-			cond = evaluateList(myWhere, outerTup, innerTup);
-		}
-		assert(outerTup);
-		return tupleFromList(mySelect, outerTup, innerTup);
-	}
+	virtual Tuple* getNext();
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}

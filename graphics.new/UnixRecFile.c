@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/10/07 22:54:01  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.8  1996/10/02 15:23:53  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -66,6 +70,7 @@ UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 {
   /* Open file */
   int fd;
+  cout << "UnixRecFile::CreateFile(" << name << ", " << recSize << ")" << endl;
   if ((fd = open(name, O_RDWR, 0)) >= 0) {
     /* File already exists */
     close(fd);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/21 22:21:51  donjerko
+  Added hierarchical namespace.
+
   Revision 1.5  1996/12/15 06:41:10  donjerko
   Added support for RTree indexes
 
@@ -25,6 +28,7 @@
  */
 
 #include <string.h>
+#include <ctype.h>
 #include "site.h"
 #include "Iterator.h"
 #ifdef NO_RTREE
@@ -70,6 +74,35 @@ List<BaseSelection*>* createSelectList(Iterator* iterator){
 	return retVal;
 }
 
+void LocalTable::typify(String option){	// Throws exception
+	
+	// option is ignored since the execution = profile + getNext
+
+	LOG(logFile << "Header: ");
+	LOG(iterator->display(logFile));
+	directSite = new DirectSite(name, iterator);
+	List<Site*>* tmpL = new List<Site*>;
+	tmpL->append(directSite);
+	TRY(typifyList(myWhere, tmpL), );
+	TRY(boolCheckList(myWhere), );
+	if(mySelect == NULL){
+		mySelect = createSelectList(name, iterator);
+	}
+	else{
+		TRY(typifyList(mySelect, tmpL), );
+	}
+	numFlds = mySelect->cardinality();
+	setStats();
+	myFrom->rewind();
+	TableAlias* ta = myFrom->get();
+	if(ta && ta->getFunction()){
+		String* function = ta->getFunction();
+		int shiftVal = ta->getShiftVal();
+		iterator = new FunctionRead(iterator, function, shiftVal);
+		TRY(iterator->initialize(), );
+	}
+}
+
 void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
 	assert(where);
 	filterList(select, this);
@@ -85,32 +118,49 @@ void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
 			where->step();
 		}
 	}
-	if(select == NULL){
-		mySelect = NULL;
-	}
-	else{
+	if(select != NULL){
+		mySelect = new List<BaseSelection*>;
 		collectFrom(select, this, mySelect);
 		collectFrom(where, this, mySelect);
 	}
 }
 
-void Site::typify(String option){	// Throws a exception
-	TRY(URL* url = new URL(name), );
+istream* contactURL(String name, 
+	const String* options, const String* values, int count){
+
+	// throws exception
+
+	TRY(URL* url = new URL(name), NULL);
 	ostream* out = url->getOutputStream();
-	*out << "query=";
-	strstream tmp;
-	display(tmp);
-	String msg = "&" + option + "=true";
-	ostrstream* encoded = URL::encode(tmp);
-	*out << encoded->rdbuf() << msg;
-	delete encoded;
-	TRY(istream* in = url->getInputStream(), );
+	for(int i = 0; i < count; i++){
+		*out << options[i];
+		*out << "=";
+		strstream tmp;
+		tmp << values[i];
+		ostrstream* encoded = URL::encode(tmp);
+  		*out << encoded->rdbuf();
+		delete encoded;
+		if(i < count - 1){
+			*out << "&";
+		}
+	}
+	TRY(istream* in = url->getInputStream(), NULL);
 	delete url;
-	LOG(logFile << "Request " << option << " from " << name << endl);
-	int code;
+	String code;
 	*in >> code;
+	int codeVal;
+	if(code.length() == 0){
+		String msg = "No response from DTE (it probably crashed)";
+		THROW(new Exception(msg), NULL);
+	}
+	if(!isdigit(code[0])){
+		codeVal = -1;
+	}
+	else{
+		codeVal = atoi(code.chars());
+	}
 	char buff[100];
-	if(code != 0){
+	if(codeVal != 0){
 		ostrstream err;
 		err << code << endl;
 		while(*in){
@@ -119,9 +169,29 @@ void Site::typify(String option){	// Throws a exception
 		} 
 		err << ends;
 		String msg = "Wrong code: " + String(err.str());
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NULL);
 	}
 	in->getline(buff, 100);	// ignore OK msg
+	return in;
+}
+
+void Site::typify(String option){	// Throws a exception
+	int count = 2;
+	String* options = new String[count];
+	String* values = new String[count];
+	options[0] = "query";
+	options[1] = option;
+	strstream tmp;
+	display(tmp);
+	tmp << ends;
+	char* tmpstr = tmp.str();
+	values[0] = String(tmpstr);
+	delete tmpstr;
+	values[1] = "true";
+	istream* in;
+	TRY(in = contactURL(name, options, values, count), );
+	delete [] options;
+	delete [] values;
 	iterator = new StandardRead(in);	
 	TRY(iterator->open(), );
 	LOG(logFile << "Header: ");
@@ -140,6 +210,25 @@ void Site::typify(String option){	// Throws a exception
 		mySelect->get()->setTypeID(types[i]);
 		mySelect->get()->setSize(sizes[i]);
 		mySelect->step();
+	}
+}
+
+void Site::display(ostream& out, int detail = 0){
+	if(detail > 0){
+		 out << "Site " << name << ":\n"; 
+		 if(stats){
+			 out	<< " stats: ";
+			 stats->display(out);
+		 }
+		 out << "\n query:";
+	}
+	out << "   select ";
+	displayList(out, mySelect, ", ", detail);
+	out << "\n   from ";
+	displayList(out, myFrom, ", ");
+	if(!myWhere->isEmpty()){
+		out << "\n   where ";
+		displayList(out, myWhere, " and ", detail);
 	}
 }
 
@@ -200,6 +289,26 @@ void CGISite::typify(String option){	// Throws a exception
 
 }
 
+void LocalTable::writeOpen(int mode = ios::app){
+	if(fileToWrite == ""){
+		THROW(new Exception("This site is read only"), );
+	}
+	if(fout){
+		THROW(new Exception("Already opened"), );
+	}
+	fout = new ofstream(fileToWrite.chars(), mode);
+	assert(fout);
+	int numFlds = getNumFlds();
+	writePtrs = new WritePtr[numFlds];
+	TypeID* types = getTypeIDs();
+	for(int i = 0; i < numFlds; i++){
+		TRY(writePtrs[i] = getWritePtr(types[i]), );
+	}
+	if(mode == ios::out){
+		iterator->writeHeader(*fout);
+	}
+}
+
 istream& CGISite::Entry::read(istream& in){	// throws
 	in >> option;
 	char tmp;
@@ -252,6 +361,15 @@ void CGISite::Entry::write(ostream& out){
 	out << option << " " << "\"" << value << "\"";
 }
 
+void LocalTable::setStats(){
+	double selectivity = listSelectivity(myWhere);
+	assert(directSite);
+	Stats* baseStats = directSite->getStats();
+	assert(baseStats);
+	int cardinality = int(selectivity * baseStats->cardinality);
+	int* sizes = sizesFromList(mySelect);
+	stats = new Stats(numFlds, sizes, cardinality);
+}
 
 List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	List<Site*>* retVal = new List<Site*>;
@@ -319,4 +437,46 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		indexes.step();
 	}
 	return retVal;
+}
+
+Tuple* SiteGroup::getNext(){
+	bool cond = false;
+	Tuple* innerTup = NULL;
+	if(firstEntry){
+		outerTup = site1->getNext();
+		firstEntry = false;
+	}
+	while(cond == false){
+		if(firstPass){
+			innerTup = site2->getNext();
+			if(innerTup){
+				innerRel.append(innerTup);
+			}
+			else{
+				firstPass = false;
+				innerRel.rewind();
+				if(innerRel.atEnd()){
+					return NULL;
+				}
+				innerTup = innerRel.get();
+				innerRel.step();
+				outerTup = site1->getNext();
+			}
+		}
+		else{
+			if(innerRel.atEnd()){
+				innerRel.rewind();
+				outerTup = site1->getNext();
+			}
+			innerTup = innerRel.get();
+			innerRel.step();
+		}
+		assert(innerTup);
+		if(!outerTup){
+			return NULL;
+		}
+		cond = evaluateList(myWhere, outerTup, innerTup);
+	}
+	assert(outerTup);
+	return tupleFromList(mySelect, outerTup, innerTup);
 }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/11/21 19:14:07  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.38  1996/11/21 16:22:44  wenger
   Updated dependencies; fixed some compile errors and warnings.
 
@@ -250,7 +254,7 @@ SetVal(AttrVal *aval, char *valstr, AttrType valtype)
  * function: InsertCatFile
  * Insert a new catalog file name into the list of catalog files.
  */
-static void
+void
 InsertCatFile(char *name)
 {
   if (!_catFiles){
@@ -961,8 +965,8 @@ error:
 }
 
 /*------------------------------------------------------------------------------
- * function: ParseDQL
- */
+ * function: ParseDQL	DEAD
+
 char *
 ParseDQL(char * name, char * schema, char *schemaFile, char * fileType,
 	 char *dataFile,char * query)
@@ -993,6 +997,7 @@ ParseDQL(char * name, char * schema, char *schemaFile, char * fileType,
 	}
 	return schema;
 }
+*/
 
 /*------------------------------------------------------------------------------
  * function: ParseCatLogical
@@ -1208,9 +1213,11 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
 			//char * temp = ParseDQL((&schemaSource)->getLabel(),
 		    // ParseCatPhysical(&schemaSource,false,true),schema,query);
 			
-			char * temp = ParseDQL(StripPath(catFile),
-				ParseCatPhysical(&schemaSource,false,true),schema,fileType,dataFile,query);
+		//	char * temp = ParseDQL(StripPath(catFile),
+		//		ParseCatPhysical(&schemaSource,false,true),schema,fileType,dataFile,query);
 			
+			ParseCatPhysical(&schemaSource,false,true);
+			char* temp = strdup(schema);
 			free(query);
 			free(schema);
 			return temp;

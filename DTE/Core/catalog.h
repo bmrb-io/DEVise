@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/24 21:00:52  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.7  1996/12/21 22:21:47  donjerko
   Added hierarchical namespace.
 
@@ -38,6 +41,7 @@
 #include "queue.h"
 #include "exception.h"
 #include "site.h"
+#include "Utility.h"
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
@@ -52,36 +56,48 @@ private:
 public:
 	Catalog(String fileName) : fileName(fileName) {
 	}
-	Site* find(TableName* path,String*function=0,int shiftVal=0);     // Throws Exception
+	Site* find(TableName* path);     // Throws Exception
+	Interface* findInterface(TableName* path);	// Throws exception
 	void write(String fileNm){
 		ofstream out(fileNm);
 		assert(!"not implemented");
 	}
-	Site* toSite(String directEntry,String *function =0,int shiftVal =0){	// throws exception
+	/*
+	Site* toSite(String directEntry){	// throws exception
+		THROW(new Exception("Not supported any more"), NULL);
 		strstream entryStream;
 		entryStream << directEntry << " ;";
 		CatEntry* entry = new CatEntry(new TableName());
 		TRY(entry->read(entryStream), NULL); 
-		Site* retVal = entry->getSite(function,shiftVal);
+		Site* retVal = entry->getSite();
 		delete entry;
 		return retVal;
 	}
+	*/
 };
 
 class Interface{
+public:
+	enum Type {UNKNOWN, CATALOG, QUERY};
+
 protected:
 	List<RTreeIndex*> indexes;
 public:
 	Interface() {}
-	virtual Site* getSite(String *function=NULL,int shiftVal= 0) = 0;
+	virtual Site* getSite() = 0;
 	virtual istream& read(istream& in) = 0;
+	virtual ostream* getOutStream(){
+		assert(0);
+	}
+	virtual String getFileName(){
+		assert(0);
+	}
 	virtual void write(ostream& out){
 		indexes.rewind();
 		while(!indexes.atEnd()){
-			out << "index ";
+			out << " index ";
 			indexes.get()->write(out);
 			indexes.step();
-			out << " ";
 		}
 	}
 	istream& readIndex(istream& in){	// throws exception
@@ -93,48 +109,119 @@ public:
 	void addIndex(RTreeIndex* index){
 		indexes.append(index);
 	}
+	virtual Type getType(){
+		return UNKNOWN;
+	}
+	virtual Schema* getSchema(TableName* table) = 0;
+};
+
+class DummyInterface : public Interface {
+	String key;
+	String schemaType;
+	String schemaFile;
+	String cacheFile;	// quoted
+	int evaluation;
+	int priority;
+	String command;	// quoted
+	String segment;	// quoted
+public:
+	DummyInterface() {}
+	virtual Site* getSite(){
+		String err = "Operations on old DEVise table are not supported";
+		THROW(new Exception(err), NULL);
+	}
+	virtual istream& read(istream& in){
+		if(!in){
+			THROW(new Exception("Wrong format"), in);
+		}
+		in >> key >> schemaType >> schemaFile;
+		TRY(cacheFile = stripQuotes(in), in);
+		in >> evaluation >> priority;
+		TRY(command = stripQuotes(in), in);
+		TRY(segment = stripQuotes(in), in);
+		return in;
+	}
+	virtual void write(ostream& out){
+		out << " " << key << " " << schemaType << " " << schemaFile; 
+		out << " " << addQuotes(cacheFile) << " " << evaluation;
+		out << " " << priority << " " << addQuotes(command);
+		out << " " << addQuotes(segment);
+	}
+	virtual Schema* getSchema(TableName* table){
+		String msg = "Schema lookup not supported for UNIXFILEs";
+		THROW(new Exception(msg), NULL);
+	}
+};
+
+class ViewInterface : public Interface {
+	String tableNm;
+	int numFlds;
+	String* attributeNames;
+	String query;
+public:
+	ViewInterface(String tableNm) : tableNm(tableNm), attributeNames(NULL) {}
+	ViewInterface(int numFlds, String* attributeNames, String query) 
+		: numFlds(numFlds), attributeNames(attributeNames), query(query) {}	
+	virtual ~ViewInterface(){
+		delete [] attributeNames;
+	}
+	virtual Site* getSite();
+	virtual istream& read(istream& in);
+	virtual void write(ostream& out);
+	virtual Schema* getSchema(TableName* table){
+		assert(table);
+		assert(table->isEmpty());
+		assert(attributeNames);
+		String* retVal = attributeNames;
+		attributeNames = NULL;
+		return new Schema(retVal, numFlds);
+	}
 };
 
 class DeviseInterface : public Interface{
 	String tableNm;
 	String schemaNm;
 	String dataNm;
+	String viewNm;
 public:
 	DeviseInterface(String tableNm) : tableNm(tableNm){}
-	virtual Site* getSite(String * function=NULL,int shiftVal = 0);
+	virtual Site* getSite();
 	virtual istream& read(istream& in){
-		return in >> schemaNm >> dataNm;
+		in >> schemaNm >> dataNm;
+		viewNm = stripQuotes(in);
+		return in;
 	}
 	virtual void write(ostream& out){
-		out << "DeviseTable " << endl;
-		out << "\t" << schemaNm << endl;
-		out << "\t" << dataNm << " ";
+		out << " " << schemaNm << endl;
+		out << "\t" << dataNm << endl;
+		out << "\t" << addQuotes(viewNm);
 		Interface::write(out);
 	}
+	virtual Schema* getSchema(TableName* table);
 };
 
 class StandardInterface : public Interface{
-	String tableNm;
 	String urlString;
 public:
-	StandardInterface(String tableNm) : tableNm(tableNm){}
-	virtual Site* getSite(String * function=NULL,int shiftVal = 0);
+	StandardInterface() {}
+	StandardInterface(String urlString) : urlString(urlString){}
+	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		return in >> urlString;
 	}
 	virtual void write(ostream& out){
-		out << "StandardTable " << urlString << " ";
+		out << " " << urlString;
 		Interface::write(out);
 	}
+	virtual Schema* getSchema(TableName* table);	// throws exception
 };
 
 class QueryInterface : public Interface{
-	TableName* tableNm;
 	String urlString;
 	Site* site;
 public:
-	QueryInterface(TableName* tableNm) : tableNm(tableNm){}
-	virtual Site* getSite(String * function=NULL,int shiftVal = 0){
+	QueryInterface(){}
+	virtual Site* getSite(){
 		return site;
 	}
 	virtual istream& read(istream& in){
@@ -143,9 +230,13 @@ public:
 		return in;
 	}
 	virtual void write(ostream& out){
-		out << "QueryInterface " << urlString << " ";
+		out << " " << urlString;
 		Interface::write(out);
 	}
+	virtual Type getType(){
+		return QUERY;
+	}
+	virtual Schema* getSchema(TableName* table);	// throws exception
 };
 
 class CGIInterface : public Interface{
@@ -160,16 +251,16 @@ public:
 			delete [] entries;
 		}
 	}
-    virtual Site* getSite(String * function=NULL,int shiftVal = 0){
+    virtual Site* getSite(){
 		assert(entries);
 		Site* site = new CGISite(urlString, entries, entryLen);
-		entries = NULL;
+		// CGISite is the owner of the entries
 		return site;
 	}
 	virtual istream& read(istream& in);  // throws
 	virtual void write(ostream& out){
 		assert(entries);
-		out << "CGIInterface " << urlString << " " << entryLen;
+		out << " " << urlString << " " << entryLen;
 		for(int i = 0; i < entryLen; i++){
 			out << endl;
 			out << "\t";
@@ -177,21 +268,34 @@ public:
 		}
 		Interface::write(out);
 	}
+	virtual Schema* getSchema(TableName* table){
+		String msg = "Schema lookup not yet implemented for CGIs";
+		THROW(new Exception(msg), NULL);
+	}
 };
 
 class CatalogInterface : public Interface {
-	TableName* tableName;
 	String fileName;
 public:
-	CatalogInterface(TableName* tableName) : tableName(tableName) {}
-    virtual Site* getSite(String * function=NULL,int shiftVal = 0);
+	CatalogInterface() {}
+	virtual String getFileName(){
+		return fileName;
+	}
+	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		return in >> fileName;
 	}
 	virtual void write(ostream& out){
-		out << "Catalog " << fileName << " ";
+		out << " " << fileName;
 		Interface::write(out);
 	}
+	virtual String getCatalogName(){	// throws
+		return fileName;
+	}
+	virtual Type getType(){
+		return CATALOG;
+	}
+	virtual Schema* getSchema(TableName* table);	// throws exception
 };
 
 #endif

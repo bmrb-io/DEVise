@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/21 22:21:45  donjerko
+  Added hierarchical namespace.
+
   Revision 1.3  1996/12/05 16:05:59  wenger
   Added standard Devise file headers.
 
@@ -52,7 +55,7 @@
 
 extern int errno;
 
-// #define DEBUG_SOCK_REL
+#define DEBUG_SOCK_REL
 
 // *************************************************************************
 Cor_sockbuf::Cor_sockbuf(int sockfd)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/21 22:21:50  donjerko
+  Added hierarchical namespace.
+
   Revision 1.7  1996/12/18 00:55:59  donjerko
   Introduced the Operator* parent into the ExecOperator so that
   getTypeID work.
@@ -148,6 +151,7 @@ BaseSelection* GlobalSelect::enumerate(
      String site1, List<BaseSelection*>* list1,
      String site2, List<BaseSelection*>* list2){
 
+	TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
      List<BaseSelection*>* selList;
      int leftRight = 0;
 	if(site->getName() == site1){
@@ -165,16 +169,11 @@ BaseSelection* GlobalSelect::enumerate(
 	}
 	selList->rewind();
 	int i = 0;
+	BaseSelection* retVal;
 	while(!selList->atEnd()){
 		Path* upTo = NULL;
 		if(selection->match(selList->get(), upTo)){
-			Path* newNext = NULL;
-			if(upTo){
-				assert(!"not implemented");
-			}
-			BaseSelection* retVal = new ExecSelect(
-				this, leftRight, i, newNext);
-			TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
+			retVal = new ExecSelect(this, leftRight, i, upTo);
 			return retVal;
 		}
 		selList->step();
@@ -206,13 +205,13 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 	while(!selList->atEnd()){
 		Path* upTo = NULL;
 		if(selection->match(selList->get(), upTo)){
-			Path* newNext = NULL;
-			if(upTo){
-				assert(!"not implemented");
-			}
-			TRY(BaseSelection::typify(sites), "Unknown");
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
+			if(upTo){
+				TRY(typeID = upTo->typify(typeID, sites), "unknown");
+				avgSize = upTo->getSize();
+			}
+			// TRY(BaseSelection::typify(sites), "Unknown");
 			return typeID;
 		}
 		selList->step();
@@ -263,17 +262,19 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	int i = 0;
 	assert(alias);
 	if(*alias == ""){
-		assert(!"Typifying functions not implemented");
+		TRY(TypeID retVal = nextPath->typify("global", sites), "unknown");
+		return retVal;
 	}
 	while(!selList->atEnd()){
 		Path* upTo = NULL;
 		if(match(selList->get(), upTo)){
-			if(upTo){
-				assert(!"Typifying functions not implemented");
-			}
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
 			position = i;
+			if(upTo){
+				TRY(typeID = upTo->typify(typeID, sites), "unknown");
+				avgSize = upTo->getSize();
+			}
 			return typeID;
 		}
 		selList->step();
@@ -288,6 +289,33 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 		*nextPath->path;
 	delete tmpc;
 	THROW(new Exception(msg), (char *) NULL);
+}
+
+BaseSelection* PrimeSelection::enumerate(
+	String site1, List<BaseSelection*>* list1,
+	String site2, List<BaseSelection*>* list2){
+
+	TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
+	assert(site2 == "" && list2 == NULL);
+	int leftRight = 0;
+	List<BaseSelection*>* selList = list1;
+	assert(selList);
+	selList->rewind();
+	int i = 0;
+	while(!selList->atEnd()){
+		Path* upTo = NULL;
+		if(match(selList->get(), upTo)){
+			BaseSelection* retVal;
+			// assert(i == position); failed for RTreeIndex
+			retVal = new ExecSelect(this, leftRight, i, upTo);
+			return retVal;
+		}
+		selList->step();
+		i++;
+	}
+	String msg = "Table " + *alias + " does not have attribute " +
+		*nextPath->path;
+	THROW(new Exception(msg), NULL);
 }
 
 BaseSelection* Operator::distributeWrapper(Site* site){
@@ -324,4 +352,31 @@ bool Operator::isIndexable(
 	attrName = String(os.str());
 	opName = name;
 	return true;
+}
+
+TypeID Path::typify(TypeID parentType, List<Site*>* sites){
+
+	//cout << "Typifying function: " << *path << " on " << parentType << endl;
+
+	TypeID retType;
+	GeneralMemberPtr* genPtr;
+	TRY(genPtr = getMemberPtr(*path, parentType, retType), "unknown");
+	assert(genPtr);
+	memberPtr = genPtr->memberPtr;
+	assert(memberPtr);
+	if(nextPath){
+		TRY(retType = nextPath->typify(retType, sites), "unknown");
+	}
+	return retType;
+}
+
+Type* Path::evaluate(Type* base){
+	assert(memberPtr);
+	Type* member = memberPtr(base);
+	if(nextPath){
+		return nextPath->evaluate(member);
+	}
+	else{
+		return member;
+	}
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/01/13 18:08:06  wenger
+  Fixed bugs 043, 083, 084, 091, 114.
+
   Revision 1.47  1996/12/20 16:50:25  wenger
   Fonts for view label, x axis, and y axis can now be changed.
 
@@ -230,6 +233,7 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
+#include "CatalogComm.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -289,8 +293,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     control->SetBusy();
     // HACK to provide backward compatibility
     if (!strcmp(argv[2], "WinVertical") ||
-	!strcmp(argv[2], "WinHorizontal"))
+	!strcmp(argv[2], "WinHorizontal")){
       argv[2] = "TileLayout";
+	}
+
     char *name = classDir->CreateWithParams(argv[1], argv[2],
 					    argc - 3, &argv[3]);
 #ifdef DEBUG
@@ -428,6 +434,48 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
+
+    if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
+    	 dteDeleteCatalogEntry(argv[1]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteReadSQLFilter")){
+    	 char* retVal = dteReadSQLFilter(argv[1]);
+      control->ReturnVal(API_ACK, retVal);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteShowCatalogEntry")){
+    	 char* catEntry = dteShowCatalogEntry(argv[1]);
+      control->ReturnVal(API_ACK, catEntry);
+      return 1;
+    }
+
+	if(!strcmp(argv[0],"dteImportFileType")){
+	  char * name = dteImportFileType(argv[1]); 
+	  if (!name){
+		strcpy(result,"");
+		control->ReturnVal(API_NAK, result);
+		return -1;
+	  }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteListCatalog")){
+    	 char* catListing = dteListCatalog(argv[1]);
+      control->ReturnVal(API_ACK, catListing);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteListAttributes")){
+    	 char* attrListing = dteListAttributes(argv[1]);
+      control->ReturnVal(API_ACK, attrListing);
+      return 1;
+    }
+
 	if (!strcmp(argv[0],"createIndex")){
 		dqlCreateIndex(argv[1]);
 		return 1;
@@ -1162,6 +1210,23 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
   if (argc == 3) {
 
+    if(!strcmp(argv[0], "dteShowAttrNames")){
+    	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, attrListing);
+      return 1;
+    }
+    if(!strcmp(argv[0], "dteShowCatalogEntry")){
+    	 char* catEntry = dteShowCatalogEntry(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, catEntry);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteInsertCatalogEntry")){
+    	 dteInsertCatalogEntry(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -1833,6 +1898,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
   if (argc == 5) {
 
+/*
 	if(!strcmp(argv[0],"importFileDQLType")){
 	  char * name = ParseDQL(argv[1],argv[2],argv[3],"DQL",argv[2],argv[4]); 
 	  if (!name){
@@ -1843,6 +1909,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, name);
       return 1;
     }
+*/
     if (!strcmp(argv[0], "setLabel")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {

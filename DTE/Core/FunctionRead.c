@@ -16,13 +16,6 @@
   $Id$
 
   $Log$
-  Revision 1.3  1996/12/16 11:13:07  kmurli
-  Changes to make the code work for separate TDataDQL etc..and also changes
-  done to make Aggregates more robust
-
-  Revision 1.2  1996/12/05 16:06:00  wenger
-  Added standard Devise file headers.
-
  */
 
 #include <strstream.h>
@@ -32,8 +25,7 @@
 #include "assert.h"
 #include "url.h"
 
-void FunctionRead::open(){	// Throws exception
-	iterator->open();
+void FunctionRead::initialize(){	// Throws exception
 	
 	String * seqAttr = iterator->getOrderingAttrib();
 	if (!seqAttr){

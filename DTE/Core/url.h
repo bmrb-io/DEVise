@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:06  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef URL_H
@@ -51,6 +54,7 @@ private:
 	Cor_sockbuf* sockBuf;
 	int sock;
 	bool outputRequested;
+	bool inputRequested;
 	ostrstream userInput;
 	char header[MAX_HEADER];
 private:
@@ -77,6 +81,7 @@ private:
 public:
 	URL(String url) : url(strdup((char*) url.chars())) {
 		outputRequested = false;
+		inputRequested = false;
 		host = file = NULL;
 		sockBuf = NULL;
 		parseURL();
@@ -116,7 +121,15 @@ public:
      }
 	ostream* getOutputStream(){
 		if(protocol == "file"){
-			assert(!"not implemented");
+			ostream* retVal =  new ofstream(file);
+			if(!retVal->good()){
+				String msg = "Cannot open file: " + String(file);
+				THROW(new Exception(msg), NULL);
+			}
+			return retVal;
+		}
+		if(inputRequested){
+			THROW(new Exception("Cannot modify HTTP file"), NULL);
 		}
 		outputRequested = true;
 		return &userInput;

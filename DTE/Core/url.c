@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/16 11:13:14  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.2  1996/12/05 16:06:06  wenger
   Added standard Devise file headers.
 
@@ -73,6 +77,10 @@ void URL::parseURL(){	// Throws: unknown URL protocol
 	if(strncmp(url, "file:", 5) == 0){
 		protocol = "file";
 		file = strdup(url + 5);
+	}
+	else if(url[0] == '/' || url[0] == '.'){
+		protocol = "file";
+		file = strdup(url);
 	}
 	else if(strncmp(url, "http:", 5) == 0){
 		protocol = "http";

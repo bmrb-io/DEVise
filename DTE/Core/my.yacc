@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/27 16:51:50  kmurli
+  Changed my.yacc to not put non-join tables in the joinLIst
+
   Revision 1.12  1996/12/27 04:38:01  kmurli
   Nodified joins.h to remove erros in joinprev in case of more than one table
 
@@ -34,16 +37,6 @@
 
   Revision 1.7  1996/12/15 06:41:09  donjerko
   Added support for RTree indexes
-
-  Revision 1.6  1996/12/09 10:01:52  kmurli
-  Changed DTe/Core to include the moving aggregate functions. Also included
-  changes to the my.yacc and my.lex to add sequenceby clause.
-
-  Revision 1.5  1996/12/07 15:14:28  donjerko
-  Introduced new files to support indexes.
-
-  Revision 1.4  1996/12/05 16:06:02  wenger
-  Added standard Devise file headers.
 
  */
 
@@ -69,6 +62,7 @@ extern BaseSelection* withPredicate;
 /* extern BaseSelection * sequencebyTable;*/
 extern String *sequencebyTable; 
 int yyerror(char* msg);
+extern char* queryString;
 
 %}
 %union{
@@ -76,8 +70,10 @@ int yyerror(char* msg);
 	int integer;
 	double real;
 	BaseSelection* sel;
+	ConstantSelection* constantSel;
 	Path* path;
 	List<BaseSelection*>* selList;
+	List<ConstantSelection*>* constList;
 	List<TableAlias*>* tableList;
 	TableAlias* tabAlias;
 	List<String*>* tableName;
@@ -97,6 +93,11 @@ int yyerror(char* msg);
 %token ON
 %token OVER 
 %token WITH 
+%token INSERT
+%token INTO
+%token VALUES
+%token DELETE
+%token SCHEMA
 %token <string> STRING_CONST
 %left '.'
 %left OR
@@ -111,8 +112,8 @@ int yyerror(char* msg);
 %type <integer> optShiftVal 
 %type <path> expression
 %type <selList> listOfSelections
+%type <constList> listOfConstants
 %type <selList> optOverClause
-%type <integer> optOffset 
 %type <sel> optWithClause
 %type <selList> optGroupByClause
 %type <tableList> listOfTables
@@ -120,7 +121,8 @@ int yyerror(char* msg);
 %type <tableList> JoinList 
 %type <sel> optWhereClause
 %type <sel> predicate
-%type <string> optString
+%type <constantSel> constant
+/* %type <string> optString */
 %type <string> optSequenceByClause
 %type <string> index_name
 %type <tableName> table_name
@@ -128,33 +130,59 @@ int yyerror(char* msg);
 input : query
 	| definition
 	;
-definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' ';'{
+definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' {
 		parseTree = new IndexParse($3, $5, $7, namesToResolve);
 		YYACCEPT;
+	}
+	| INSERT INTO table_name VALUES '(' listOfConstants ')' {
+		parseTree = new InsertParse($3, $6);
+		YYACCEPT;
+	}
+	| DELETE table_name AS STRING WHERE predicate {
+		parseTree = new DeleteParse($2, $4, $6);
+		YYACCEPT;
+	}
+	| SCHEMA table_name {
+		parseTree = new SchemaParse($2);
+		YYACCEPT;
+	}
+	;
+constant :
+	STRING_CONST {
+		$$ = new ConstantSelection("string", new IString($1));
+	}
+	| INT {
+		$$ = new ConstantSelection("int", new IInt($1));
+	}
+	| DOUBLE {
+		$$ = new ConstantSelection("double", new IDouble($1));
 	}
 	;
 index_name : STRING
 	;
-table_name : table_name '/' STRING {
+table_name : table_name '.' STRING {
 		$1->append($3);
 		$$ = $1;
 	}
-	| '/' STRING {
+	| '.' STRING {
 		$$ = new List<String*>;
 		$$->append($2);
 	}
-	| '/' {
+	| '.' {
 		$$ = new List<String*>;
 	}
 	;
 query : SELECT listOfSelections 
-	  FROM listOfTables optWhereClause optSequenceByClause optGroupByClause';' {
-		parseTree = new QueryTree($2,$4,$5,$6,withPredicate,$7,namesToResolve);
+		FROM listOfTables optWhereClause 
+		optSequenceByClause optGroupByClause {
+		parseTree = new QueryTree(
+			$2,$4,$5,$6,withPredicate,$7,namesToResolve);
 		return 0;
 	}
 	| SELECT '*' FROM listOfTables optWhereClause 
-			optSequenceByClause optGroupByClause ';' {
-	 parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
+			optSequenceByClause optGroupByClause  {
+		parseTree = new QueryTree(
+	 	NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
 		return 0;
 	}
      ;
@@ -168,6 +196,15 @@ listOfSelections : listOfSelections ',' predicate {
 	}
 	| {
 		$$ = new List<BaseSelection*>;
+	}
+     ;
+listOfConstants : listOfConstants ',' constant {
+		$1->append($3);
+		$$ = $1;
+	}
+	| constant {
+		$$ = new List<ConstantSelection*>;
+		$$->append($1);
 	}
      ;
 listOfTables : 
@@ -255,6 +292,7 @@ selection :
 		namesToResolve->append(dummy); 
 		$$ = new PrimeSelection(dummy, new Path($1, NULL));
 	}
+	/*
 	| STRING '(' selection ')' optOverClause {
 		String* dummy = new String;
 		List <BaseSelection *> * dummylist = new List<BaseSelection*>;
@@ -264,18 +302,16 @@ selection :
 		dummylist->prepend($3);
 		$$ = new PrimeSelection(dummy, new Method($1, dummylist));
 	}
-	| STRING '(' listOfSelections ')' {
+	*/
+	| STRING '(' listOfSelections ')' optOverClause {
 		String * dummy = new String("");	
+		assert($3);
+		if ($5 != NULL){
+			$3->addList($5);
+		}
 		$$ = new PrimeSelection(dummy, new Method($1,$3));
 	}
-	| STRING_CONST {
-		$$ = new ConstantSelection("string", new IString($1));
-	}
-	| INT {
-		$$ = new ConstantSelection("int", new IInt($1));
-	}
-	| DOUBLE {
-		$$ = new ConstantSelection("double", new IDouble($1));
+	| constant {
 	}
 	| '(' predicate ')' {
 		$$ = $2;
@@ -317,18 +353,10 @@ JoinString : JOINPREV {
 	}
 	;
 
-optOffset: '(' INT ')' {
-		$$ = $2;
-	}
-	|{
-		$$ = 1;
-	}
-	;
-tableAlias : STRING '(' table_name optShiftVal ')' AS STRING{
+tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
 		$$ = new TableAlias(new TableName($3),$7,$1,$4);
 	}
-	|
-	table_name AS STRING {
+	| table_name AS STRING {
 		$$ = new TableAlias(new TableName($1), $3);
 	}
 	| table_name {
@@ -341,9 +369,9 @@ tableAlias : STRING '(' table_name optShiftVal ')' AS STRING{
             String msg = "Sorry, you need to specify alias";
             THROW(new Exception(msg), 0);
         }
-    }
-	| STRING_CONST optString {
-		$$ = new QuoteAlias($1, $2);
+	}
+	| STRING_CONST AS STRING {
+		$$ = new QuoteAlias($1, $3);
 	}
 	;
 optShiftVal: ',' INT {
@@ -353,6 +381,7 @@ optShiftVal: ',' INT {
 		$$ = 0;
 	}
 	;
+/*
 optString : STRING {
 		$$ = $1;
 	}
@@ -360,6 +389,7 @@ optString : STRING {
 		$$ = NULL;
 	}
 	;
+*/
 expression : STRING {
 		$$ = new Path($1, NULL);
 	}

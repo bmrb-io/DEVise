@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.71  1997/01/06 19:12:04  wenger
+#	Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
+#	windows; view names now start with 'View 1' instead of 'View'; removed
+#	some diagnostic output; added code to test the UniqueName procedure.
+#
 #	Revision 1.70  1996/12/27 14:59:49  donjerko
 #	Import button is used only for importing new streams.
 #	Added a button "Display" in the import window that immediately goes to
@@ -279,6 +284,15 @@
 
 ############################################################
 
+proc isDTEType {type} {
+	if {$type == "SQLView" || $type == "Table" || $type == "DEVise"
+		|| $type == "Directory"} {
+		return 1
+	} else {
+		return 0
+	}
+}
+
 proc SelectTopGroup {schemaname} {
     global selgrp
 
@@ -340,7 +354,20 @@ proc OpenDataSource {sname} {
     # see if data source (still) defined (may be out-of-date in
     # a session file)
 
-    set err [catch {set exists $sourceList($sname)}]
+#   set err [catch {set exists $sourceList($sname)}]
+
+	puts "looking up \"$sname\""
+	set sourcedef [DEVise dteShowCatalogEntry $sname]
+	set sourcedef [lindex $sourcedef 0]
+	set err [expr [llength $sourcedef] == 0]
+	if {$err == 0} {
+		# entry exists
+		set fname "[lindex $sourcedef 8]/[lindex $sourcedef 2]"
+		set stype [lindex $sourcedef 1]
+		set schemafile [lindex $sourcedef 4]
+		set schema [lindex $sourcedef 3]
+	}
+
     if {$err} {
 	set but [dialog .sourceNotExists "Undefined Data Stream" \
 		"Data stream \"$sname\" does not exist." \
@@ -359,36 +386,43 @@ proc OpenDataSource {sname} {
 	    break
 	}
 	set sname [lindex $sname 0]
-    mpo}
-
-    # cache data to disk right now
-    if {[isCached $sname -1 -1] == ""} {
-	set but [dialog .cacheData "Caching Data" \
-		"Cache \"$sname\" to disk now?" \
-		"" 1 Yes No]
-	if {$but == 1} {
-	    dialog .notCached "Must Cache Data Stream" \
-		    "Cannot visualize data without caching it to disk first." \
-		    "" 0 OK
-	    return ""
-	}
     }
 
-    set fname [cacheData $sname -1 -1]
-    if {$fname == ""} {
-	return ""
-    }
+#   # cache data to disk right now
+#   if {[isCached $sname -1 -1] == ""} {
+#	set but [dialog .cacheData "Caching Data" \
+#		"Cache \"$sname\" to disk now?" \
+#		"" 1 Yes No]
+#	if {$but == 1} {
+#	    dialog .notCached "Must Cache Data Stream" \
+#		    "Cannot visualize data without caching it to disk first." \
+#		    "" 0 OK
+#	    return ""
+#	}
+#   }
+#
+#   set fname [cacheData $sname -1 -1]
+#   if {$fname == ""} {
+#	return ""
+#   }
 
     # Tell the C++ code whether this data is only a portion of a file.
-    set fileSeg [lindex $sourceList($sname) 8]
+#    set fileSeg [lindex $sourceList($sname) 8]
+	set fileSeg [lindex $sourcedef 9]
+
+	# fname for DQL was SQL command ??;
     DEVise dataSegment $sname $fname [lindex $fileSeg 0] [lindex $fileSeg 1]
 
-    set stype [lindex $sourceList($sname) 0]
-    if {$stype != "DQL" && $stype != "WWW" && $stype != "UNIXFILE"} {
-        set stype "UNIXFILE"
-    }
+#   set stype [lindex $sourceList($sname) 0]
+#   if {$stype != "DQL" && $stype != "WWW" && $stype != "UNIXFILE"} {
+#       set stype "UNIXFILE"
+#   }
 
-	return [list $sname $fname $stype]
+	if { ![isDTEType $stype] } {
+		set stype "UNIXFILE"
+	}
+
+	return [list $sname $fname $stype $schemafile $schema]
 }
 ############################################################
 
@@ -437,7 +471,6 @@ proc OpenNewDataSource {derivedOnly} {
                 "You have selected more than one data stream.\
                 Only the first stream will be visualized." "" 0 Continue
     }
-
     return [ OpenAndDefineDataSources $derivedOnly $snames ]
 }
 
@@ -446,14 +479,12 @@ proc OpenNewDataSource {derivedOnly} {
 proc OpenAndDefineDataSources {derivedOnly snames} {
     global sourceList derivedSourceList
 
+    puts "In OpenAndDefineDataSources($derivedOnly, $snames)"
     foreach sname $snames {
-        # see if data stream already open
-        if {[lsearch [TdataSet] $sname] >= 0} {
-            continue
-        }
 
-        # make sure data is cached on disk
-        set sourcedef [OpenDataSource $sname]
+       set sourcedef [OpenDataSource $sname]
+
+	   puts "OpenDataSource returns: $sourcedef"
         if {$sourcedef == ""} {
             return ""
         }
@@ -461,13 +492,20 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set sname [lindex $sourcedef 0]
         set param [lindex $sourcedef 1]
         set stype [lindex $sourcedef 2]
+	   set schemafile [lindex $sourcedef 3]
+	   set schema [lindex $sourcedef 4]
       	
+        # see if data stream already open
+        if {[lsearch [TdataSet] $sname] >= 0} {
+            continue
+        }
+
 	if {$derivedOnly} {
 	    set schema [lindex $derivedSourceList($sname) 2]
 	    set schemafile [lindex $derivedSourceList($sname) 3]
         } else {
-            set schema [lindex $sourceList($sname) 2]
-            set schemafile [lindex $sourceList($sname) 3]
+#           set schema [lindex $sourceList($sname) 2]
+#           set schemafile [lindex $sourceList($sname) 3]
         }
 
         # load schema file if necessary - it is not sufficient to check if
@@ -475,14 +513,17 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         # physical schema may be shared by several logical schemas - the best
         # way of checking is to see that we have no groups defined under the 
         # logical schema name
-	   if {$stype == "DQL"} {
-            	set result [DEVise importFileDQLType $schema $schema\
-						$schema $param]
-				set topgrps [DEVise getTopGroups $schema]
-				set [lindex $sourceList($sname) 3] $schema
-   		} else {	
+
+	   if { [isDTEType $stype] } {
+			set schema $sname
+ 			set result [DEVise dteImportFileType $sname]
+			set topgrps [DEVise getTopGroups $sname]
+   		} else {
         set topgrps [DEVise getTopGroups [file tail $schemafile]]
         if {[llength $topgrps] == 0} {
+
+	   	  puts "list topgrps is empty"
+
             if {![file readable $schemafile]} {
                 dialog .schemaError "Schema Not Found" \
                         "Cannot open schema $schemafile" "" 0 OK
@@ -491,10 +532,14 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 			# Send the file type UNIXFILE etc.. 
 			# followed by schemaFile Name
 			# followed by the dataFile name (param)
-			# This was specially done for the unique case for query interfaces
-			# since a full query was needed to call DQL
 			
+			puts "before import file"
+
+			# this call appears to parse the schema ??? DD
+			#
             	set result [DEVise importFileType $stype $schemafile $param]
+			#set result $schema
+			puts "after import file"
             
 			if {$result == ""} {
                 return ""
@@ -505,13 +550,20 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 set schema $result
             }
         }
-		}
+	   }
+
+	   puts "before creating tdata"
+
         statusWindow .info "Status" \
                 "Creating an index on \"$sname\".\n\n\This may take a while."
         update
 
         # ask DEVise to create tdata
+	   puts "create tdata $schema $sname $stype $param"
         set result [DEVise create tdata $schema $sname $stype $param]
+
+	   puts "after creating tdata"
+
         catch {destroy .info}
 
         if {$result == ""} {
@@ -520,7 +572,11 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
             return ""
         }
     }
-    return [lindex $snames 0]
+	if { [isDTEType $stype] } {
+		return [list [lindex $snames 0] $sname]
+	} else {
+		return [list [lindex $snames 0] [file tail $schemafile]]
+	}
 }
 
 ############################################################
@@ -665,6 +721,7 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 ############################################################
 
 proc MacroImport {mode derivedOnly} {
+    global schemadir
     global dialogListVar sourceList derivedSourceList
 
     set tdata ""
@@ -687,7 +744,10 @@ proc MacroImport {mode derivedOnly} {
     }
 
     if {$tdata == ""} {
-	set tdata [OpenNewDataSource $derivedOnly]
+	set name_schema_pair [OpenNewDataSource $derivedOnly]
+	set tdata [lindex $name_schema_pair 0]
+	set schemaname [lindex $name_schema_pair 1]
+	set schemafile "$schemadir/$schemaname"
     }
     
     if {$tdata == ""} { return }
@@ -695,13 +755,14 @@ proc MacroImport {mode derivedOnly} {
     if {$derivedOnly} {
 	set schemafile [lindex $derivedSourceList($tdata) 3]
     } else {
-	set schemafile [lindex $sourceList($tdata) 3]
+#	set schemafile [lindex $sourceList($tdata) 3]
     }
 
     if {$mode && $derivedOnly} {
 	StatText $tdata $schemafile
     } else {
-	MacroDefAuto $tdata $schemafile
+#    set schemaname [file tail $schemafile]
+	MacroDefAuto $tdata $schemaname
     }
 }
 
@@ -792,7 +853,7 @@ proc AllList {list  args} {
 }
 
 #############################################################
-proc MacroDefAuto {tdata schemafile} {
+proc MacroDefAuto {tdata schemaname} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList global curView
@@ -802,10 +863,9 @@ proc MacroDefAuto {tdata schemafile} {
     }
 	
 	set schema [DEVise getSchema $tdata]
-    set schemaname [file tail $schemafile]
+#   set schemaname [file tail $schemafile]
 	
-	# set schemaname "DQL.newDQL"
-
+	puts "schemaname = $schemaname" 
     set topgrp [SelectTopGroup $schemaname]
 
     toplevel .auto

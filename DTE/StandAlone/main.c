@@ -16,14 +16,20 @@ int main(int argc, char** argv){
 	Init::DoInit();	// to initialize Devise reading stuff
 	String query;
 	char c = '\0';
-	char l = '\0';
 	while(1){
 		cin.get(c);
-		if(l == ';' && c == '\n'){
-			break;
+		if(c == ';'){
+			cin.get(c);
+			if(c == '\n'){
+				break;
+			}
+			else{
+				query += String(';') + String(c);
+			}
 		}
-		query += c;
-		l = c;
+		else{
+			query += c;
+		}
 	}
 	iTimer.reset();
 	cout << "Query in main is: " << query << endl; 
@@ -36,7 +42,7 @@ int main(int argc, char** argv){
 	TRY(engine.optimize(), 0);
 	int numFlds = engine.getNumFlds();
 	if(numFlds > 0){
-		String* types = engine.getTypeIDs();
+		WritePtr* writePtrs = engine.getWritePtrs();
 		String* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";
@@ -47,7 +53,7 @@ int main(int argc, char** argv){
 		engine.initialize();
 		while((tup = engine.getNext())){
 			for(int i = 0; i < numFlds; i++){
-				displayAs(cout, tup[i], types[i]);
+				writePtrs[i](cout, tup[i]);
 				cout << '\t';
 			}
 			cout << endl;

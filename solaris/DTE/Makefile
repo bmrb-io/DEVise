@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/12/24 21:01:10  kmurli
+#  Included FunctionRead to support joinprev and joinnext
+#
 #  Revision 1.6  1996/12/16 07:22:15  donjerko
 #  Fixed some compile problems
 #
@@ -40,13 +43,16 @@ ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script ../../attrproj/
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
 	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
+script: $(SCRIPT_OBJ)
+	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@

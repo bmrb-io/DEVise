@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/26 03:42:00  kmurli
+  MOdified to make joinprev work right
+
   Revision 1.11  1996/12/25 19:53:58  kmurli
   Files to do joinprev,joinnext and function calls.
 
@@ -57,14 +60,15 @@
 #include "ParseTree.h"
 #include "joins.h"
 
-extern int yyparse();
+extern int my_yyparse();
 extern int yydebug;
 Exception* currExcept;
 
 ParseTree* parseTree = NULL;
 List<String*>* namesToResolve = NULL;
 BaseSelection * sequenceby;
-char* queryString;
+const char* queryString;
+bool rescan;
 BaseSelection * withPredicate;
 DefaultExceptHndl defaultExceptHndl;
 List<JoinTable*>* joinList = NULL;
@@ -73,9 +77,10 @@ JoinTable * jTable = NULL;
 ITimer iTimer;
 
 int Engine::optimize(){
-	queryString = strdup(query.chars());
+	queryString = query.chars();
+	rescan = true;
 	namesToResolve = new List<String*>;
-	TRY(int parseRet = yyparse(), 0);
+	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
 		String msg = "parse error in: " + String(queryString);
 		THROW(new Exception(msg), 0);

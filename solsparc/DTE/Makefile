@@ -12,32 +12,42 @@
 
 ############################################################
 
-#  $Id$
-
 #  $Log$
-#  Revision 1.3  1996/11/26 21:42:47  wenger
-#  Fixed various makefile problems; updated dependencies.
+#  Revision 1.6  1996/12/16 07:22:15  donjerko
+#  Fixed some compile problems
 #
-#  Revision 1.2  1996/11/23 01:54:37  donjerko
+#  Revision 1.5  1996/12/15 06:29:43  donjerko
+#  Added two binary files to support RTrees (temporary fix)
+#
+#  Revision 1.4  1996/11/25 04:22:02  donjerko
+#  Removed "make libdevread.a"
+#
+#  Revision 1.3  1996/11/23 20:54:53  jussi
+#  Removed -lpthread.
+#
+#  Revision 1.2  1996/11/23 01:53:29  donjerko
 #  added standalone option
 #
-#  Revision 1.1  1996/11/19 15:23:50  donjerko
+#  Revision 1.1  1996/11/18 21:08:05  donjerko
 #  *** empty log message ***
 #
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
-#ARCH_LDFLAGS = -lpthread
+ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
 	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
+
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
-	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread \
-		-lm -lsocket -lnsl
+	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
+pure: $(STAND_ALONE_OBJ)
+	purify $(CC) -gstabs -o dte.pure $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@

@@ -16,16 +16,6 @@
   $Id$
 
   $Log$
-  Revision 1.4  1996/12/16 11:13:08  kmurli
-  Changes to make the code work for separate TDataDQL etc..and also changes
-  done to make Aggregates more robust
-
-  Revision 1.3  1996/12/15 06:41:07  donjerko
-  Added support for RTree indexes
-
-  Revision 1.2  1996/12/05 16:06:00  wenger
-  Added standard Devise file headers.
-
  */
 
 #ifndef FUNCTION_READ_H
@@ -49,11 +39,8 @@ public:
 			nextTup = NULL;
 			presentTupVal = nextTupVal = currentTupVal = 0;
 			comparePtr = 0;
-			if (!offset){
-				THROW(new Exception("Offset cannot be zero for shift oprs"),);
-			}
 	}
-	void open();	// Throws exception
+	virtual void initialize();	// Throws exception
 	virtual int getNumFlds(){
 		return iterator->getNumFlds();
 	}

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/01/10 17:05:26  wenger
+#  Fixed DTE makefiles for HP and Sun.
+#  : ----------------------------------------------------------------------
+#
 #  Revision 1.5  1996/12/27 17:00:21  wenger
 #  Got latest code to compile for sun, solsparc, and hp; updated dependencies;
 #  changed 'Import' to 'New Table' in main window GUI to reflect change of
@@ -40,14 +44,16 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script ../../attrproj/
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.hp
 
 dte: $(STAND_ALONE_OBJ)
-	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread \
-	-lm
+	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm 
+
+script: $(SCRIPT_OBJ)
+	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@

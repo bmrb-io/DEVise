@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/11/23 20:56:08  jussi
+#  Removed -lpthread.
+#
 #  Revision 1.5  1996/09/26 18:53:45  jussi
 #  Added -lpthread to get thread support.
 #
@@ -36,6 +39,6 @@ ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
-VPATH = ../../attrproj:../../graphics:../../graphics.new
+VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
 include ../../attrproj/Makefile.base
 include ../../attrproj/Makefile.solaris

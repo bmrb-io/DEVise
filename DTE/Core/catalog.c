@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/24 21:00:52  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.6  1996/12/21 22:21:47  donjerko
   Added hierarchical namespace.
 
@@ -36,19 +39,80 @@
 #include "StandardRead.h"
 #include "url.h"
 #include "site.h"
+#include "Utility.h"
+#include "Engine.h"
 
-Site* DeviseInterface::getSite(String * function,int shiftVal){
+void readFilter(String viewNm, String& select, 
+		String*& attributeNames, int& numFlds, String& where){
+	ifstream vin(viewNm);
+	if(!vin){
+		String msg = "Could not open view file \"" + viewNm + "\"";
+		THROW(new Exception(msg), );
+	}
+	vin >> numFlds;
+	if(!vin){
+		String msg = "Number of fieds expected in file \"" + viewNm + "\"";
+		THROW(new Exception(msg), );
+	}
+	attributeNames = new String[numFlds];
+     for(int i = 0; i < numFlds; i++){
+          vin >> attributeNames[i];
+     }
+     TRY(select = stripQuotes(vin), );
+     TRY(where = stripQuotes(vin), );
+}
+
+Site* DeviseInterface::getSite(){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
 	Iterator* unmarshal = new DevRead(schema, data);
-	// In the case of previous or next it is shoved down to 
-	// the bottom most...
-	if (function)
-		unmarshal = new FunctionRead(unmarshal,function,shiftVal);
-	return new LocalTable("", unmarshal, &indexes);	
+	if(viewNm == ""){
+		return new LocalTable("", unmarshal, &indexes);	
+	}
+
+	// Need to apply view
+
+	String select;
+	String* attributeNames;
+	String where;
+	int numFlds;
+
+	TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
+
+	String from = "Table " + schemaNm +  " " + dataNm + " \"\" ;";
+	String query = "select " + select + " from " + addQuotes(from) + " as t";
+	if(!where.empty()){
+		query += " where " + where;
+	}
+	ViewInterface tmpView(numFlds, attributeNames, query);
+
+	// attributeNames are deleted in ViewInterface destructor
+
+	TRY(Site* retVal = tmpView.getSite(), NULL);
+	return retVal;
 }
 
-Site* StandardInterface::getSite(String * function,int shiftVal){ // Throws a exception
+Schema* DeviseInterface::getSchema(TableName* table){
+	assert(table);
+	assert(table->isEmpty());
+	int numFlds;
+	String* attributeNames;
+	if(viewNm.empty()){
+		char* schema = strdup(schemaNm.chars());
+		char* data = strdup(dataNm.chars());
+		DevRead tmp(schema, data);
+		numFlds = tmp.getNumFlds();
+		attributeNames = tmp.getAttributeNames();
+	}
+	else {
+		String select;
+		String where;
+		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
+	}
+	return new Schema(attributeNames, numFlds);
+}
+
+Site* StandardInterface::getSite(){ // Throws a exception
 
 	LOG(logFile << "Contacting " << urlString << " @ ");
 	LOG(iTimer.display(logFile) << endl);
@@ -56,40 +120,42 @@ Site* StandardInterface::getSite(String * function,int shiftVal){ // Throws a ex
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
 	Iterator* unmarshal = new StandardRead(in);
-	if (function)
-		unmarshal = new FunctionRead(unmarshal,function,shiftVal);
 	TRY(unmarshal->open(), NULL);
 
 	LOG(logFile << "Initialized @ ");
 	LOG(iTimer.display(logFile) << endl);
 
 	delete url;
-     return new LocalTable("", unmarshal, &indexes);	
+     return new LocalTable("", unmarshal, &indexes, urlString);	
 }
 
-Site* CatalogInterface::getSite(String * function,int shiftVal){ 
-// Throws a exception
-	Site* retVal = NULL;
-	if(tableName->isEmpty()){
+Schema* StandardInterface::getSchema(TableName* table){
+	assert(table);
+	assert(table->isEmpty());
+	int numFlds;
+	String* attributeNames;
+	TRY(URL* url = new URL(urlString), NULL);
+	TRY(istream* in = url->getInputStream(), NULL);
+	Iterator* iterator = new StandardRead(in);
+	TRY(iterator->open(), NULL);
+	numFlds = iterator->getNumFlds();
+	attributeNames = iterator->getAttributeNames();
+	delete iterator;
+	return new Schema(attributeNames, numFlds);
+}
 
-		// If it was not for indexes, this clause could be deleted
-
-		ifstream* catalog = new ifstream(fileName);	
-		assert(catalog);
-		if(!catalog->good()){
-			String msg = "Cannot open catalog: " + fileName;
-			THROW(new Exception(msg), NULL);
-		}
-		StandardRead* iterator = new StandardRead(catalog);
-		TRY(iterator->open(), NULL);
-		retVal = new LocalTable("", iterator, &indexes);
-	}
-	else {
-		Catalog catalog(fileName);
-		TRY(retVal = catalog.find(tableName,function,shiftVal), NULL);
-		tableName = NULL;
-	}
+Site* CatalogInterface::getSite(){ // Throws a exception
+	Interface* interf = new StandardInterface(fileName);
+	Site* retVal = interf->getSite();
+	delete interf;
 	return retVal;
+}
+
+Schema* CatalogInterface::getSchema(TableName* table){
+	assert(table);
+	assert(table->isEmpty());
+	String* attributeNames = new String("catentry");
+	return new Schema(attributeNames, 1);
 }
 
 istream& CGIInterface::read(istream& in){  // throws
@@ -107,40 +173,136 @@ istream& CGIInterface::read(istream& in){  // throws
 	return in;
 }
 
+istream& ViewInterface::read(istream& in){ // throws
+	in >> numFlds;
+	if(!in){
+		String e = "Number of attributes expected";
+		THROW(new Exception(e), in);
+	}
+	attributeNames = new String[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		in >> attributeNames[i];
+	}
+	TRY(query = stripQuotes(in), in);
+	return in;
+}
 
-Site* Catalog::find(TableName* path,String *function,int shiftVal){     // Throws Exception
-	ifstream* in = new ifstream(fileName);
+void ViewInterface::write(ostream& out){
+	out << " " << numFlds;
+	for(int i = 0; i < numFlds; i++){
+		out << " " << attributeNames[i];
+	}
+	out << " " << addQuotes(query);
+	Interface::write(out);
+}
+ 
+Site* ViewInterface::getSite(){ 
+	// Throws a exception
+	
+	// This is just a temporary hack because it does not provide
+	// any optimization. View is executed unmodified.
+
+	Engine* engine = new Engine(query);
+	TRY(engine->optimize(), NULL);
+	int numEngFlds = engine->getNumFlds();
+	if(numEngFlds != numFlds){
+		ostrstream estr;
+		estr << "Number of fields in the view (" << numFlds << ") ";
+		estr << "is not equal to the number in the query ";
+		estr << "(" << numEngFlds << ")" << ends;
+		char* e = estr.str();
+		String except(e);
+		delete e;
+		THROW(new Exception(except), NULL);
+	}
+	engine->renameAttributes(attributeNames);
+	attributeNames = NULL;
+	return new LocalTable("", engine, NULL); 
+}
+
+Schema* QueryInterface::getSchema(TableName* table){	// throws exception
+	int count = 2;
+	String* options = new String[count];
+	String* values = new String[count];
+	options[0] = "query";
+	options[1] = "execute";
+	strstream tmp;
+	tmp << "schema ";
+	table->display(tmp);
+	tmp << ends;
+	char* tmpstr = tmp.str();
+	values[0] = String(tmpstr);
+	values[1] = "true";
+	delete tmpstr;
+	istream* in;
+	TRY(in = contactURL(urlString, options, values, count), NULL);
+	delete [] options;
+	delete [] values;
+	Iterator* iterator = new StandardRead(in);
+	TRY(iterator->open(), NULL);
+	int numFlds = iterator->getNumFlds();
+	assert(numFlds == 1);
+	TypeID* types = iterator->getTypeIDs();
+	assert(types[0] == "schema");
+	iterator->initialize();
+	Tuple* tuple = iterator->getNext();
+	Schema* schema = (Schema*) tuple[0];
+	assert(iterator->getNext() == NULL);
+	delete iterator;
+	return schema;
+}
+
+Site* Catalog::find(TableName* path){ // Throws Exception
+	TRY(Interface* interf = findInterface(path), NULL);	
+	Site* retVal = interf->getSite();
+	delete interf;
+	return retVal;
+}
+
+Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	if(path->isEmpty()){
-		StandardRead* iterator = new StandardRead(in);
-		TRY(iterator->open(), NULL);
-		return new LocalTable("", iterator, NULL);
+		return new StandardInterface(fileName);
 	}
-	if(!in->good()){
-		String msg = "Cannot open catalog: " + fileName;
-		THROW(new Exception(msg), NULL);
-	}
-	in->ignore(INFINITY, ';');	// ignore the header
-	if(!in->good()){
-		String msg = "Could not find end of header in: " + fileName;
-		THROW(new Exception(msg), NULL);
-	}
-	String tableNm;
-	*in >> tableNm;
-	while(in->good()){
-		if(path->isEmpty() || tableNm == *path->getFirst()){
-			CatEntry* entry = new CatEntry(path);
-			TRY(entry->read(*in), NULL); 
+	ifstream* in = new ifstream(fileName);
+	StandardRead* fileRead = new StandardRead(in);	
+	TRY(fileRead->open(), NULL);
+	fileRead->initialize();
+
+	String firstPathNm = *path->getFirst();
+	path->deleteFirst();
+	Tuple* tuple;
+
+	while((tuple = fileRead->getNext())){
+		CatEntry* entry = (CatEntry*) tuple[0];
+		assert(entry);
+		String tableNm = entry->getName();
+		if(tableNm == firstPathNm){
 			delete in;
-			Site* retVal = entry->getSite(function,shiftVal);
-			delete entry;
-			return retVal;
+			TRY(Interface* interf = entry->getInterface(), NULL);
+			// to do: delete tuple
+			delete entry;	// does not delete interface
+			entry = NULL;
+			if(interf->getType() == Interface::CATALOG){
+				CatalogInterface* tmp = (CatalogInterface*) interf;
+				TRY(fileName = tmp->getCatalogName(), NULL);
+				delete interf;
+				return findInterface(path);
+			}
+			else if(interf->getType() != Interface::QUERY &&
+					path->cardinality() > 0){
+				String msg = "Table " + firstPathNm + " is not a catalog";
+				THROW(new Exception(msg), NULL);
+			}
+			else{
+				return interf;
+			}
 		}
 		else{
-			in->ignore(INFINITY, ';');
+			delete entry;
+			entry = NULL;
 		}
-		*in >> tableNm;
 	}
 	delete in;
-	String msg = "Table " + *path->getFirst() + " not defined";
+	String msg = "Table " + firstPathNm + " not defined";
 	THROW(new Exception(msg), NULL);
 }

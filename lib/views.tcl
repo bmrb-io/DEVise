@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1997/01/22 23:46:26  jussi
+#  Removed references to queryWinOpened, query3dWinOpened,
+#  historyWinOpened and stackWinOpened. Replaced them with
+#  calls to WindowExists.
+#
 #  Revision 1.22  1997/01/22 20:13:59  wenger
 #  Removed other non-functional user interface components (includes workaround
 #  for bug 127); fixed a number of OK/Cancel button positions.
@@ -1330,7 +1335,8 @@ proc DoColorStat {} {
 
     set schemafile [lindex $sourcedef 3]
 
-    MacroDefAuto $sname $schemafile
+    set schemaname [file tail $schemafile]
+    MacroDefAuto $sname $schemaname
 }
 
 ############################################################

@@ -22,10 +22,13 @@
 
 class Iterator {
 public:
+	virtual ~Iterator() {}
 	virtual int getNumFlds() = 0;
 	virtual String *getTypeIDs() = 0;
 	virtual String *getAttributeNames() = 0;
-	virtual String *getOrderingAttrib() = 0;
+	virtual String *getOrderingAttrib(){
+		assert(0);
+	}
 	virtual Tuple  *getNext() = 0;
 	virtual Stats* getStats(){
 
@@ -55,7 +58,11 @@ public:
 	virtual void setOffset(Offset offset){
 		assert(!"setOffset not supported for this iterator");
 	}
-	virtual void initialize(){}
+	virtual void initialize(){
+	}
+	virtual void writeHeader(ostream& out){
+		assert(0);
+	}
 };
 
 #endif

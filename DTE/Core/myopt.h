@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/26 03:42:01  kmurli
+  MOdified to make joinprev work right
+
   Revision 1.12  1996/12/24 21:00:53  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -72,15 +75,17 @@ friend class PrimeSelection;
 protected:
 	String* path;
 	Path* nextPath;
+	MemberPtr memberPtr;
 public:
 	Path(String* p, Path* n = NULL) : 
-          path(p), nextPath(n) {}
+          path(p), nextPath(n), memberPtr(NULL) {}
 	Path(Path &newPath):
 		 path(newPath.path),nextPath(newPath.nextPath){}
 	virtual void display(ostream& out, int detail = 0){
 		assert(path);
 		out << *path;
 		if(nextPath){
+			out << ".";
 			nextPath->display(out, detail);
 		}
 	}
@@ -106,6 +111,7 @@ public:
 			return this;
 		}
 	}
+	virtual TypeID typify(TypeID parentType, List<Site*>* sites);
 	virtual BaseSelection * getSelectList(){
 
 		assert(!"SelecList cannot be given by Path");
@@ -186,6 +192,10 @@ public:
 	virtual List<BaseSelection*>* getArgs(){
 		return NULL;	// implemented for functions only;
 	}
+	virtual int getSize(){
+		return 10;	// fix this later
+	}
+	virtual Type* evaluate(Type* base);
 };
 
 class BaseSelection{
@@ -443,7 +453,13 @@ public:
 		return parent->getTypeID();
 	}
 	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return (leftRight ? right[fieldNo] : left[fieldNo]);
+		Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
+		if(nextPath){
+			return nextPath->evaluate(base);
+		}
+		else{
+			return base;
+		}
 	}
 };
 		
@@ -466,9 +482,10 @@ public:
 	virtual bool operator >(ConstantSelection arg){
 		assert(0);
 	}
-	virtual bool operator ==(ConstantSelection arg){
+	virtual bool operator ==(ConstantSelection arg){ // throws exception
 		TypeID tmp;
-		GeneralPtr* genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp);
+		GeneralPtr* genPtr;
+		TRY(genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp), false);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
 		return ((IBool*) genPtr->opPtr(value, arg.value))->getValue();
@@ -510,13 +527,14 @@ public:
      virtual SelectID selectID(){
           return CONST_ID;
      }
-	virtual bool match(BaseSelection* x, Path*& upTo){
+	virtual bool match(BaseSelection* x, Path*& upTo){ // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
 		ConstantSelection* y = (ConstantSelection*) x;
 		TypeID tmp;
-		GeneralPtr* genPtr = getOperatorPtr("=", typeID, y->typeID, tmp);
+		GeneralPtr* genPtr;
+		TRY(genPtr = getOperatorPtr("=", typeID, y->typeID, tmp), false);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
 		if(!((IBool*) genPtr->opPtr(value, y->value))->getValue()){
@@ -711,7 +729,7 @@ public:
           TypeID root = left->getTypeID();
           TypeID arg = right->getTypeID();
 		GeneralPtr* genPtr;
-          genPtr = getOperatorPtr(name, root, arg, typeID);
+          TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
           if(!genPtr){
 			String msg = "No operator " + name + "(" + root + ", " +
 				arg + ") defined";
@@ -847,6 +865,9 @@ public:
 		newArgs = args ? duplicateF(args) : (List<BaseSelection*>*)NULL;
 		return new Method(new String(*path), newArgs, newNext);
 	}
+	virtual TypeID typify(TypeID parentType, List<Site*>* sites){
+		assert(!"not implemented");
+	}
      virtual void enumerate(
           String site1, List<BaseSelection*>* list1,
           String site2, List<BaseSelection*>* list2){
@@ -872,7 +893,7 @@ public:
 	}
 	virtual BaseSelection * getSelectList(){
 
-		// Need to check if this is fine..??
+		// Need to check if this is fine..?? NO!!
 		// Get the nextpath from arg 0 of the sel list
 		String *dummy = new String;
 
@@ -880,7 +901,6 @@ public:
 		return args->get();
 
 	}
-
 };
 
 class ArithmeticOp : public Operator {
@@ -998,30 +1018,7 @@ public:
 	}
      virtual BaseSelection* enumerate(
           String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-		assert(site2 == "" && list2 == NULL);
-		int leftRight = 0;
-		List<BaseSelection*>* selList = list1;
-		assert(selList);
-		selList->rewind();
-		int i = 0;
-		while(!selList->atEnd()){
-               Path* upTo = NULL;
-			if(match(selList->get(), upTo)){
-				BaseSelection* retVal;
-				// assert(i == position); failed for RTreeIndex
-                    retVal = new ExecSelect(this, leftRight, i, upTo);
-				TRY(BaseSelection::enumerate(site1, list1, site2, list2),
-					NULL);
-				return retVal;
-			}
-			selList->step();
-			i++;
-		}
-		String msg = "Table " + *alias + " does not have attribute " +
-			*nextPath->path;
-		THROW(new Exception(msg), NULL);
-	}
+          String site2, List<BaseSelection*>* list2);
 	virtual TypeID typify(List<Site*>* sites);
      virtual SelectID selectID(){
           return SELECT_ID;
@@ -1064,7 +1061,13 @@ public:
 	virtual String toStringAttOnly(){
 		return nextPath->toString();
 	}
+	virtual Type* evaluate(Tuple* left, Tuple* right){
+		assert(!"Evaluate called on PrimeSelection");
+		return NULL;
+	}
 };
+
+const int MAX_PATH_LEN = 10;
 
 class TableName {
 	List<String*>* tableName;
@@ -1076,6 +1079,17 @@ public:
 	TableName(String* str){	// delete str when done
 		tableName = new List<String*>;
 		tableName->append(str);
+	}
+	TableName(const char* path){
+		String tmp(path);
+		String* res = new String[MAX_PATH_LEN];
+		int len = split(tmp, res, MAX_PATH_LEN, String(".")); 
+		assert(len < MAX_PATH_LEN);
+		tableName = new List<String*>;
+		for(int i = 1; i < len; i++){
+			tableName->append(new String(res[i]));
+		}
+		delete [] res;
 	}
 	~TableName(){
 		delete tableName;
@@ -1093,14 +1107,14 @@ public:
 		String* firstPath = tableName->remove();
 		delete firstPath;
 	}
-	bool isEmpty(){
+	bool isEmpty() const {
 		assert(tableName);
 		return tableName->isEmpty();
 	}
 	void display(ostream& out){
 		assert(tableName);
-		out << "/";
-		displayList(out, tableName, "/");
+		out << ".";
+		displayList(out, tableName, ".");
 	}
 	int cardinality(){
 		assert(tableName);
@@ -1117,7 +1131,8 @@ protected:
 public:
 	TableAlias(TableName *t, String* a = NULL,String *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
-		shiftVal(optShiftVal) { }
+		shiftVal(optShiftVal) {}
+	virtual ~TableAlias(){}
 	virtual TableName* getTable(){
 		return table;
 	}
@@ -1137,9 +1152,9 @@ public:
 			table->display(out) ;
 			cout << ") " ;
 		}
-		else
-			table->display(cout);
-		table->display(out);
+		else{
+			table->display(out);
+		}
 		if(alias){
 			out << " as " << *alias;
 		}
@@ -1154,6 +1169,9 @@ class QuoteAlias : public TableAlias {
 public:
 	QuoteAlias(String* quote, String* alias = NULL) :
 		TableAlias(new TableName(), alias), quote(quote) {}
+	virtual ~QuoteAlias(){
+		delete quote;
+	}
 	virtual void display(ostream& out, int detail = 0){
 		assert(quote);
 		out << *quote;
@@ -1164,7 +1182,7 @@ public:
 	virtual TableName* getTable(){
 		assert(0);
 	}
-	String* getQuote(){
+	const String* getQuote(){
 		return quote;
 	}
 	virtual bool isQuote(){

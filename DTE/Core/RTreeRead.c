@@ -124,3 +124,51 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	}
 	return false;
 }
+
+istream& RTreeIndex::read(istream& catalogStr){	// throws exception
+	assert(catalogStr);
+	catalogStr >> numFlds;
+	stats = new Stats(numFlds);
+
+	/*
+	//	Needs to fix stats, something like this:
+
+	void setStats(){
+		double selectivity = listSelectivity(indexPreds);
+		assert(baseIterator);
+		Stats* baseStats = baseIterator->getStats();
+		assert(baseStats);
+		int cardinality = int(selectivity * baseStats->cardinality);
+		int* sizes = baseStats->sizes;
+		int nf = baseIterator->getNumFlds();
+		stats = new Stats(nf, sizes, cardinality);
+	}
+
+	*/
+
+	if(!catalogStr){
+		String msg = "Number of index attributes expected";
+		THROW(new Exception(msg), catalogStr);
+	}
+	attributeNames = new String[numFlds];
+	typeIDs = new TypeID[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		catalogStr >> typeIDs[i];
+		catalogStr >> attributeNames[i];
+		if(!catalogStr){
+			String msg = 
+				"Type and name of the index attribute expected";
+			THROW(new Exception(msg), catalogStr);
+		}
+	}
+	catalogStr >> pageId;
+	if(!catalogStr){
+		String msg = "PageId expected in RTree index";
+		THROW(new Exception(msg), catalogStr);
+	}
+	rTreeQuery = new RTreePred[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		rTreeQuery[i].setTypeID(typeIDs[i]);
+	}
+	return catalogStr;
+}

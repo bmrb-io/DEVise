@@ -22,6 +22,7 @@
 #include "ParseTree.h"
 #include "joins.h"
 
+List<ConstantSelection*>* dummy;	// Just needed for pragme implementation
 extern List<JoinTable*>*joinList;
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
@@ -77,31 +78,28 @@ Site* QueryTree::createSite(){
 
 	tableList->rewind();
 	int numSites = 0;
-	String catalogName;
-	char* dev_schema = getenv("DEVISE_SCHEMA");
-	if(dev_schema){
-		catalogName = String(dev_schema) + "/catalog.dte";
-	}
-	else {
-		catalogName = "catalog.dte";
-	}
-	Catalog catalog(catalogName);
+	Catalog* catalog = getRootCatalog();
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
 		TableAlias* ta = tableList->get();
 		Site* site = NULL;
 		if(ta->isQuote()){
-			assert(0);
 			QuoteAlias* qa = (QuoteAlias*) ta;
-			TRY(site = catalog.toSite(*qa->getQuote(),ta->getFunction(),ta->getShiftVal()), 0);
+			const String* quote = qa->getQuote();
+			cout << "quote is:\n" << *quote << endl;
+			strstream qstr;
+			qstr << *quote;
+			CatEntry entry("");
+			TRY(entry.read(qstr), 0);
+			cout << "quoute entry read:" << endl;
+			entry.display(cout);
+			TRY(site = entry.getSite(), 0);
 		}
 		else{
-			TRY(site = catalog.find(ta->getTable(),ta->getFunction(),ta->getShiftVal()), 0);
+			assert(catalog);
+			TRY(site = catalog->find(ta->getTable()), 0);
 		}
 		assert(site);
-		// In the case of a function call like previois and next the
-		// proper  iterator class could be called..
-		//TRY(Site* site = interf->getSite(ta->function,ta->shiftVal),0);
 		site->addTable(ta);
 		if(!sites->exists(site)){
 			sites->append(site);
@@ -109,6 +107,7 @@ Site* QueryTree::createSite(){
 		}
 		tableList->step();
 	}
+	delete catalog;
 	// For the sequenceby clause;
 	// find the sequecing attribute..(Only table name is known initially)
 	BaseSelection * sequenceby = NULL;

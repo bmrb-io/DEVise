@@ -13,9 +13,7 @@
 #include "types.h"
 #include "exception.h"
 #include "catalog.h"
-#include "DevRead.h"
 #include "listop.h"
-#include "Aggregates.h"
 #include "ParseTree.h"
 #ifdef NO_RTREE
 	#include "RTreeRead.dummy"
@@ -50,12 +48,10 @@ Site* IndexParse::createSite(){
 	LOG(displayList(logFile, attributeList, ", ");)
 	LOG(logFile << ")" << endl;)
 
-	String catalogName;
-	catalogName += getenv("DEVISE_SCHEMA");
-	catalogName += "/catalog.dte";
-	Catalog catalog(catalogName);
-	Site* site = NULL;
-	TRY(site = catalog.find(tableName), 0);
+     Catalog* catalog = getRootCatalog();
+     assert(catalog);
+     TRY(Site* site = catalog->find(tableName), 0);
+
 	assert(site);
 	site->addTable(new TableAlias(tableName, indexName));
 
@@ -148,7 +144,8 @@ Site* IndexParse::createSite(){
 
 	// to do:
 	// interf->addIndex(index);		// add this index to the catalog
-	catalog.write(catalogName);
+	catalog->write(catalogName);
+	delete catalog;
 #endif
 	return new Site();
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/21 22:21:46  donjerko
+  Added hierarchical namespace.
+
   Revision 1.4  1996/12/16 11:13:08  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -39,41 +42,55 @@
 class StandardRead : public Iterator {
 protected:
 	istream* in;
+	ostream* out;
 	int numFlds;
 	String* typeIDs;
 	String* attributeNames;
 	ReadPtr* readPtrs;
-	String order;
+	String* order;
 	Stats* stats;
 public:
      StandardRead(istream* in) : 
-		in(in), numFlds(0), typeIDs(NULL), attributeNames(NULL),
-		readPtrs(NULL), stats(NULL) {}
+		in(in), out(NULL), numFlds(0), typeIDs(NULL), 
+		attributeNames(NULL),
+		readPtrs(NULL), order(NULL), stats(NULL) {}
 	virtual ~StandardRead(){
 		assert(in);
 		delete in;
+		delete out;
 		delete [] typeIDs;
 		delete [] attributeNames;
 		delete [] readPtrs;
 		delete [] stats;
 	}
 	void open();	// Throws exception
+	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){
 		return numFlds;
 	}
 	virtual String *getTypeIDs(){
 		return typeIDs;
 	}
-	virtual String *getAttributeNames(){
-		return attributeNames;
+	virtual String* getAttributeNames(){
+		String* retVal = new String[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			retVal[i] = attributeNames[i];
+		}
+		return retVal;
 	}
 	virtual String * getOrderingAttrib(){
-		return &order;
+		return order;
+	}
+	virtual Tuple* getNext(streampos& pos){
+		assert(in);
+		pos = in->tellg();
+		return getNext();
 	}
 	virtual Tuple* getNext(){
+		assert(in);
 		Tuple* tuple = new Tuple[numFlds];
           for(int i = 0; i < numFlds; i++){
-			tuple[i] = (readPtrs[i])(*in);
+			TRY(tuple[i] = (readPtrs[i])(*in), NULL);
 		}
 		if(*in){
 			return tuple;
@@ -97,7 +114,19 @@ public:
 		stats->display(out);
 		return out;
 	}
+	virtual void writeHeader(ostream& out){
+		out << numFlds << " ";
+		for(int i = 0; i < numFlds; i++){
+			out << typeIDs[i] << " ";
+		}
+		cout << endl;
+		for(int i = 0; i < numFlds; i++){
+			out << attributeNames[i] << " ";
+		}
+		out << ";" << endl;
+	}
 };
+
 
 class NCDCRead : public StandardRead {
 public:

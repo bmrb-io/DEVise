@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/26 03:42:02  kmurli
+  MOdified to make joinprev work right
+
   Revision 1.5  1996/12/24 21:00:53  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -133,7 +136,7 @@ public:
 	bool atEnd(){
 		return current == NULL;
 	}
-	bool isEmpty(){
+	bool isEmpty() const {
 		return head == NULL;
 	}
 	T get(){
@@ -167,7 +170,7 @@ public:
 	}
 	List<T>* duplicate(){
 		List<T>* tmp = new List<T>;
-		*tmp = *this;     // Shalow copy
+		*tmp = *this;     // Shallow copy
 		return tmp;
 	}
      void addList(List<T>* list){
