@@ -702,6 +702,7 @@ int Schema::subParse(Attr *attr)
                         attr->set_type((attr_t) _enums->ith(pos)->type());
                     }
 
+                    dispose_token(tok,&ult);
                     break;
 
                   case KY_TEXT:
