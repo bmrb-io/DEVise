@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/10/04 17:10:43  wenger
+  Fixed error in open_ftp() call that prevented compile.
+
   Revision 1.6  1996/10/02 19:47:15  jussi
   Added support for opening an HTTP connection for writing (posting)
   Web data.
@@ -205,11 +208,13 @@ DataSourceWeb::ChildProc()
     }
 
     char buffer[1024];
+    totlen = 0;
 
     while (1) {
         int len = read(fd, buffer, sizeof buffer);
         if (len == 0) {
-            printf("Data transfer from %s complete\n", _url);
+            printf("Data transfer from %s complete (%d bytes)\n",
+                   _url, totlen);
             close(fd);
             fclose(cfile);
             return StatusOk;
@@ -226,6 +231,7 @@ DataSourceWeb::ChildProc()
             reportErrSys("Cannot write to cache file");
             break;
         }
+        totlen += len;
     }
     
     close(fd);
