@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/05 15:16:13  zhenhai
+  Corrected make files for sgi uses.
+
   Revision 1.5  1998/02/19 23:26:02  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -48,6 +51,7 @@
 
 #include "Color.h"
 #include "XColor.h"
+#include "ColorUtil.h"
 
 //******************************************************************************
 // Libraries
@@ -140,6 +144,8 @@ static PaletteID		gCurrentPaletteID;			// Current PaletteID
 static Palette*			gCurrentPalette	= NULL;		// Current Palette
 
 static ActivePalette*	gActivePalette	= NULL;		// ActivePalette
+
+static ColorMode		gMode = ColorModeModulus;
 
 // These are more devise-specific than the others
 static ColorID			globalColors[maxGlobalColor];
@@ -363,6 +369,21 @@ void		SetPColorID(GlobalColor color, PColorID pcid)
 const Coloring&		GetKGraphDefColoring(void)
 {
 	return kgraphDefColoring;
+}
+
+void				SetColorMode(ColorMode mode)
+{
+	if (mode != ColorModeModulus && mode != ColorModeTruncate) {
+		cerr << "Illegal color mode: " << (int)mode << endl;
+    	gMode = ColorModeModulus;
+	} else {
+    	gMode = mode;
+	}
+}
+
+ColorMode			GetColorMode()
+{
+    return gMode;
 }
 
 //******************************************************************************
@@ -606,14 +627,9 @@ XColorID	AP_GetXColorID(PColorID pcid)
 {
 	Trace("AP_GetXColorID()");
 
-	PColorID	rpcid = pcid;
-
-	if (pcid == nullPColorID)
-		rpcid = 0;
-	else if (pcid < 0)
-		rpcid = -pcid;
-
-	return (*gActivePalette)[rpcid % gActivePalette->GetSize()];
+    int index = PColorID2Index(pcid, gActivePalette->GetSize());
+	
+	return (*gActivePalette)[index];
 }
 
 XColorID	AP_GetRawXColorID(PColorID pcid)

@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  2001/03/23 18:07:05  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.2  1998/06/24 14:44:36  beyer
   added destructor
 
@@ -62,6 +67,7 @@
 #include <string>
 #include <stl.h>
 #include <iostream.h>
+#include <values.h>
 
 #include "PaletteColor.h"
 
@@ -72,7 +78,7 @@
 typedef unsigned long	ulong;
 
 typedef long	PColorID;
-const PColorID	nullPColorID = -1;
+const PColorID	nullPColorID = -MAXINT;
 
 
 //******************************************************************************
@@ -131,30 +137,6 @@ typedef Palette*	PalettePtr;
 //******************************************************************************
 // Utility Functions (Inline)
 //******************************************************************************
-
-inline PaletteColor*	Palette::GetColor(PColorID pcid)
-{
-	if ((0 <= pcid) && (ulong(pcid) < colors.size())) {
-		return &(colors[pcid]);
-	} else {
-		// Note: this is needed in case a palette switch causes some
-		// palette IDs to be out-of-range for the current palette.
-		// RKW 2001-03-23.
-		return &(colors[pcid % colors.size()]);
-    }
-}
-
-inline const PaletteColor*	Palette::GetColor(PColorID pcid) const
-{
-	if ((0 <= pcid) && (ulong(pcid) < colors.size())) {
-		return &(colors[pcid]);
-	} else {
-		// Note: this is needed in case a palette switch causes some
-		// palette IDs to be out-of-range for the current palette.
-		// RKW 2001-03-23.
-		return &(colors[pcid & colors.size()]);
-    }
-}
 
 //******************************************************************************
 // Conversions and Operators (Inline)

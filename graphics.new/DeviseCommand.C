@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.119  2001/05/27 18:51:15  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.118  2001/05/03 19:39:11  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -7133,6 +7136,53 @@ IMPLEMENT_COMMAND_BEGIN(getAxisMultFact)
         return 1;
     } else {
 		fprintf(stderr, "Wrong # of arguments: %d in getAxisMultFact\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setColorMode)
+    // Arguments: <color mode>
+	// (Color mode: 0 = modulus, 1 = truncate -- see Color.h)
+    // Returns: done
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		ColorMode mode = (ColorMode)atoi(argv[1]);
+	    SetColorMode(mode);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in setColorMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getColorMode)
+    // Arguments: none
+    // Returns: <color mode>
+	// (Color mode: 0 = modulus, 1 = truncate -- see Color.h)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		ColorMode mode = GetColorMode();
+		const int bufSize = 32;
+		char buf[bufSize];
+		int formatted = snprintf(buf, bufSize, "%d", mode);
+		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in getColorMode\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

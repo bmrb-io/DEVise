@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/24 14:44:02  beyer
+  added destructor
+
   Revision 1.3  1998/02/19 23:26:01  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -58,6 +61,7 @@
 
 #include "Palette.h"
 #include "ColorManager.h"
+#include "ColorUtil.h"
 
 //******************************************************************************
 // Types and Constants
@@ -111,10 +115,7 @@ typedef ActivePalette*	ActivePalettePtr;
 
 inline XColorID		ActivePalette::GetXColorID(PColorID pcid) const
 {
-	if ((0 <= pcid) && (ulong(pcid) < colors.size()))
-		return colors[pcid];
-	else
-		return nullXColorID;
+	return colors[PColorID2Index(pcid, colors.size())];
 }
 
 //******************************************************************************

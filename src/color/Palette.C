@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/19 23:26:06  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
@@ -37,6 +45,7 @@
 //******************************************************************************
 
 #include "Palette.h"
+#include "ColorUtil.h"
 
 //******************************************************************************
 // Libraries
@@ -57,6 +66,16 @@
 //******************************************************************************
 // Utility Functions
 //******************************************************************************
+
+PaletteColor*	Palette::GetColor(PColorID pcid)
+{
+	return &(colors[PColorID2Index(pcid, colors.size())]);
+}
+
+const PaletteColor*	Palette::GetColor(PColorID pcid) const
+{
+    return (const PaletteColor*)GetColor(pcid);
+}
 
 PColorID	Palette::NewColor(const PaletteColor& color)
 {

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -34,6 +34,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/04 19:12:08  wenger
+  Removed PM_GetOrAllocColor() which somehow got into here even though
+  it was never implemented.
+
   Revision 1.1  1998/02/20 20:44:06  wenger
   Changed color and utils libraries to new export directory scheme for
   dealing with include files (email with complete explanation forthcoming).
@@ -123,6 +127,16 @@ enum GlobalColor
 	maxGlobalColor
 };
 
+// How we deal with PColorIDs outside the range of the Palette.
+// Note: specific values are important because of command interface at
+// higher level of DEVise.
+enum ColorMode
+{
+	ColorModeInvalid = -1,
+	ColorModeModulus = 0,
+	ColorModeTruncate = 1
+};
+
 typedef unsigned long	PaletteID;
 const PaletteID			nullPaletteID = 0;
 
@@ -160,6 +174,11 @@ void		SetPColorID(GlobalColor color, PColorID pcid);
 // A kludge needed by the KGraph code to easily obtain several privately
 // allocated colors.
 const Coloring&		GetKGraphDefColoring(void);
+
+// Set and get color mode (how we deal with PColorIDs outside the Palette's
+// range of colors.
+void		SetColorMode(ColorMode mode);
+ColorMode	GetColorMode();
 
 //******************************************************************************
 // Function Prototypes (Utilities, Color Manager)

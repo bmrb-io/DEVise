@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.95  2001/05/03 19:39:02  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.94  2001/04/23 18:58:25  wenger
   Added negative axis label option (no GUI yet) to allow us to display
   chemical shifts the way the BMRB people want.
@@ -613,6 +619,9 @@ Session::Close()
     control->NotifyFrontEnd(cmdBuf);
   }
 
+  // Reset the color mode to the default.
+  SetColorMode(ColorModeModulus);
+
   if (_description) {
     FreeString(_description);
   }
@@ -707,6 +716,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
 	  colors.c_str());
       }
     }
+
+    fprintf(saveData.fp, "\n# Set color mode (modulus or truncation)\n");
+    status += SaveParams(&saveData, "getColorMode", "setColorMode", NULL);
 
     status += SaveDataSources(saveData.fp);
 
@@ -2218,7 +2230,7 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
 {
 #if defined(DEBUG)
   printf("Session::SaveParams(%s, %s, %s, %s, %s)\n", getCommand, setCommand,
-      arg0, arg1 ? arg1 : "null", arg2 ? arg2 : "null");
+      arg0 ? arg0 : "null", arg1 ? arg1 : "null", arg2 ? arg2 : "null");
 #endif
 
   DevStatus status = StatusOk;
@@ -2239,7 +2251,10 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
       getCommand, arg0, arg1, arg2);
   if (status.IsComplete()) {
     if (strlen(result) > 0) { // Note: session files won't work without this
-      fprintf(saveData->fp, "DEVise %s {%s} ", setCommand, arg0);
+      fprintf(saveData->fp, "DEVise %s ", setCommand);
+      if (arg0 != NULL) {
+        fprintf(saveData->fp, "{%s} ", arg0);
+      }
       if (arg1 != NULL) {
         // Note: arg2 is not passed to 'set' command.
 	fprintf(saveData->fp, "{%s} ", arg1);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.73  2001/05/03 19:39:10  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.72  2001/04/23 18:58:40  wenger
   Added negative axis label option (no GUI yet) to allow us to display
   chemical shifts the way the BMRB people want.
@@ -716,6 +722,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setAxisNegLabel)
 	REGISTER_COMMAND(setAxisMultFact)
 	REGISTER_COMMAND(getAxisMultFact)
+	REGISTER_COMMAND(setColorMode)
+	REGISTER_COMMAND(getColorMode)
 }
 
 CmdContainer::~CmdContainer()
