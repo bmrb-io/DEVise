@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/01/20 22:46:20  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.32  1998/10/01 20:59:51  yunrui
   add class CreateGestaltParse class and RegisterIntoGestaltParse
 
@@ -275,10 +281,9 @@ public:
 class CreateGestaltParse : public ParseTree {
   	vector<IdentType> identTypePairs;
 	TableName gestaltName;
-	string fileName;
 public:
 	CreateGestaltParse(TableName* gestaltName,
-          vector<IdentType>* identTypePairs, string* fileName);
+          vector<IdentType>* identTypePairs);
  	virtual Iterator* createExec();	// throws exception
 	virtual ~CreateGestaltParse();
 }; 

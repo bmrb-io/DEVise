@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/04/08 17:30:50  beyer
+  Long overdue commit of many things:
+  1. groupby queries are now working (optimizer changes)
+  2. added RadixCube process, mostly for my own playing around
+  3. replaced sort code.
+  4. added a few functions
+  5. added initial mql support, including mql server
+  6. finally committed plan reader
+  7. added HeapFile support
+  8. initial thread support code - still need to thread server
+  9. a few other misc. things
+
   Revision 1.46  1999/01/25 16:36:36  beyer
   Field access again requires table alias (for support of structured attributes).
 
@@ -329,8 +341,8 @@ definition:
 	| CREATE TABLE '(' ident_type_pairs ')' {
 		$$ = new CreateTableParse($4);
 	}
-	| CREATE GESTALT table_name '(' ident_type_pairs ')' STRING {
-		$$ = new CreateGestaltParse($3, $5, $7);
+	| CREATE GESTALT table_name '(' ident_type_pairs ')' {
+		$$ = new CreateGestaltParse($3, $5);
 	}
 	| REGISTER table_name INTO GESTALT table_name {
 		$$ = new RegisterIntoGestaltParse($5, $2);

@@ -15,6 +15,18 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/04/08 17:30:50  beyer
+  Long overdue commit of many things:
+  1. groupby queries are now working (optimizer changes)
+  2. added RadixCube process, mostly for my own playing around
+  3. replaced sort code.
+  4. added a few functions
+  5. added initial mql support, including mql server
+  6. finally committed plan reader
+  7. added HeapFile support
+  8. initial thread support code - still need to thread server
+  9. a few other misc. things
+
   Revision 1.36  1999/01/20 22:46:32  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -196,7 +208,7 @@ LessGreat    ">="|">"|"<="|"<"|"<>"
 [Uu][Nn][Ii][Oo][Nn]		{return UNION;}
 [Gg][Ee][Ss][Tt][Aa][Ll][Tt]    {return GESTALT;}
 [Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return REGISTER;}
-[Un][Nn][Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return UNREGISTER;}
+[Uu][Nn][Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return UNREGISTER;}
 declare         {return DECLARE;}
 query           {return QUERY_TOK;}
 set             {return SET;}

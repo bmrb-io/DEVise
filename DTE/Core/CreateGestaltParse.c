@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include "ParseTree.h"
+#include "catalog.h"
 //#include "ExecOp.h"
 #include "Utility.h"
 #include "DTE/types/DteStringAdt.h"
@@ -11,14 +12,11 @@
 
 
 CreateGestaltParse::CreateGestaltParse(TableName* _gestaltName, 
-				       vector<IdentType>* _identTypePairs,
-				       string* _fileName) : 
-  gestaltName(*_gestaltName), identTypePairs(*_identTypePairs),
-  fileName(*_fileName)
+				       vector<IdentType>* _identTypePairs) :
+  identTypePairs(*_identTypePairs), gestaltName (*_gestaltName)
 {
   delete _gestaltName;
   delete _identTypePairs;
-  delete _fileName;
 }
 
 CreateGestaltParse::~CreateGestaltParse()
@@ -27,6 +25,20 @@ CreateGestaltParse::~CreateGestaltParse()
 
 Iterator* CreateGestaltParse::createExec()
 {
+        string nameStr = gestaltName.fileName();
+        string materFile = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.materViewDir);
+        if(materFile.empty()){
+                string err = "Please set the env var '"
+                        + DTE_ENV_VARS.materViewDir + "' to point to a directory";
+                THROW(new Exception(err), NULL);
+        }
+        materFile += "/" + nameStr;
+
+	// create empty file
+	ofstream (materFile.c_str(), ios::out).close ();
+	
+	cerr << "Create Gestalt member file: " << materFile << endl;
+
 	OptExprList* lconst = new OptExprList;
 	string s;
 	char buf [100];
@@ -36,7 +48,7 @@ Iterator* CreateGestaltParse::createExec()
 	vector<IdentType>::iterator i;
 	for(i = identTypePairs.begin(); i != identTypePairs.end(); ++i)
 	        s += i->first + " " + i->second + " ";
-	s = s + fileName + " ;";
+	s = s + materFile + " ;";
 
 	lconst->push_back(new OptConstant(new DteStringAdt(s.length()),
                                           strdup(s.c_str())));
@@ -56,6 +68,26 @@ RegisterIntoGestaltParse::RegisterIntoGestaltParse(TableName* gestaltName,
 
 Iterator* RegisterIntoGestaltParse::createExec()
 {
+  // Insert into file instead of using "insert into ..." command,
+  // This saves schema checking trouble. YL
+  string s = tableName.toString ();
+  Del<Interface> interface (ROOT_CATALOG.createInterface (gestaltName));
+  assert (interface);
+  if (! (interface->isGestalt ()))
+    {
+      string msg = gestaltName.toString () + " is not a gestalt";
+      cerr << msg << endl;
+      THROW (new Exception (msg), NULL);
+    }
+  
+  string path = ((GestaltInterface*)(Interface*)interface) -> getUrlString ();
+  ofstream f (path.c_str (), ios::app);
+  f << s.c_str () << endl;
+  f.close ();
+  
+  return NULL;
+
+  /* YL
         string s = tableName.toString();
 	OptExprList* lconst = new OptExprList;
 	lconst->push_back(new OptConstant(new DteStringAdt(s.length()),
@@ -64,6 +96,7 @@ Iterator* RegisterIntoGestaltParse::createExec()
 	Del<InsertParse> ip = new InsertParse(new TableName(gestaltName),
                                               lconst);
 	return ip -> createExec ();
+  */
 }
 
 UnregisterFromGestaltParse::UnregisterFromGestaltParse(TableName* gestaltName, 
@@ -77,7 +110,27 @@ UnregisterFromGestaltParse::UnregisterFromGestaltParse(TableName* gestaltName,
 
 Iterator* UnregisterFromGestaltParse::createExec()
 {
-  cerr << "UnregisterFromGestaltParse::createExec is not yet implemented\n";
+  Del<Interface> interface (ROOT_CATALOG.createInterface (gestaltName));
+  assert (interface);
+  if (! (interface->isGestalt ()))
+    {
+      string msg = gestaltName.toString () + " is not a gestalt";
+      cerr << msg << endl;
+      THROW (new Exception (msg), NULL);
+    }
+  
+  string path = ((GestaltInterface*)(Interface*)interface) -> getUrlString ();
+  vector<string> v = ((GestaltInterface*)(Interface*)interface) -> getMemberNames ();
+  
+  ofstream f (path.c_str (), ios::out|ios::trunc);
+  for (int i = 0; i < v.size (); i ++)
+    {
+      if (strcmp (v[i].c_str (), tableName.toString ().c_str ()))
+	f << v[i] << endl;
+    }
+  
+  f.close ();
+
   return NULL;
 }
 

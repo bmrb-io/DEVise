@@ -189,6 +189,7 @@ public:
 
 	virtual bool isGestalt() const {return true;}
 	vector<string> getMemberNames() const;
+	string getUrlString () { return urlString; }
 };
  
 class ViewInterface : public Interface {
