@@ -69,6 +69,7 @@ if (! -e $targetdir) then
   fs setacl $targetdir system:anyuser write
 endif
 cp -p html/[a-z]* $targetdir
+chmod 755 $targetdir/summarize
 
 # Create and set up the java classes directory.
 set targetdir = $demohome/dat/bmrb/dynamic_data/java_classes
