@@ -6,8 +6,9 @@ rmmem
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/devise/public/bin )
 
+setenv HOSTNAME `hostname | sed -e s/\\..\*//`
+
 setenv DEVISE_ROOT		/p/devise/demo
-#TEMPTEMP
 #setenv DEVISE_ROOT		/p/devise/wenger
 setenv DEVISE_PUB               /p/devise/public
 
