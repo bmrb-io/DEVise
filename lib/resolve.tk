@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/11/30 02:22:02  ravim
+#  Changed some colors.
+#
 #  Revision 1.1  1995/11/24 07:46:23  ravim
 #  Initial version.
 #
@@ -32,6 +35,11 @@ set rightindex 0
 
 proc resolve {mapfile rel1file rel2file} {
     global mfile r1file r2file leftelem rightelem mapnum
+    global numres1 numres2 numcurrmap numautomap
+    set numres1 0
+    set numres2 0
+    set numcurrmap 0
+    set numautomap 0
 
     set mfile $mapfile
     set r1file $rel1file
@@ -45,7 +53,7 @@ proc resolve {mapfile rel1file rel2file} {
     toplevel .res -bg red4
     wm title .res "Mapping Data Sources"
     wm iconname .res "Map"
-    wm geometry .res 630x570+100+100
+    wm geometry .res 630x590+100+100
 
     # top level frames
     frame .res.lists -relief raised -bg honeydew2 
@@ -60,20 +68,30 @@ proc resolve {mapfile rel1file rel2file} {
 	    -padx 1m -pady 1m -fill x -expand 1
 
     # Two frames side by side for the listboxes
-    label .res.lists.label -text "Unresolved Companies" -bg honeydew2 -fg red4
+    label .res.lists.label -text " Unresolved Companies" -bg honeydew2 -fg red4
     pack .res.lists.label -side top -fill x
     frame .res.l1 -relief raised -bg honeydew2 -bd 1
     frame .res.l2 -relief raised -bg honeydew2 -bd 1
     pack .res.l1 .res.l2 -in .res.lists -side left -padx 1m -pady 1m -fill x \
 	    -expand 1
 
+    frame .res.l1.lab -relief raised -bg honeydew2
     frame .res.l1.top -relief raised -bg honeydew2 
     frame .res.l1.bot -relief raised -bg honeydew2 
-    pack .res.l1.top .res.l1.bot -fill x 
+    pack .res.l1.lab .res.l1.top .res.l1.bot -side top -fill x 
 
+    label .res.l1.label1 -text "Number of entries : " -bg honeydew2 -fg red4
+    label .res.l1.label -textvariable numres1  -bg honeydew2 -fg red -width 5
+    pack .res.l1.label1 .res.l1.label -in .res.l1.lab -side left  -fill x
+
+    frame .res.l2.lab -relief raised -bg honeydew2
     frame .res.l2.top -relief raised -bg honeydew2
     frame .res.l2.bot -relief raised -bg honeydew2
-    pack .res.l2.top .res.l2.bot -fill x 
+    pack .res.l2.lab .res.l2.top .res.l2.bot -fill x 
+
+    label .res.l2.label2 -text "Number of entries : " -bg honeydew2 -fg red4
+    label .res.l2.label -textvariable numres2  -bg honeydew2 -fg red -width 5
+    pack .res.l2.label2 .res.l2.label -in .res.l2.lab -side left  -fill x
 
 
 
@@ -92,6 +110,7 @@ proc resolve {mapfile rel1file rel2file} {
 	if {$line != ""} {
 	    .res.l1.list delete active 
 	    set leftelem ""
+	    set numres1 [expr $numres1-1]
 	}
     }
     
@@ -114,6 +133,7 @@ proc resolve {mapfile rel1file rel2file} {
 	if {$line != ""} {
 	    .res.l2.list delete active 
 	    set rightelem ""
+	    set numres2 [expr $numres2-1]
 	}
     }
     
@@ -125,7 +145,11 @@ proc resolve {mapfile rel1file rel2file} {
 
     # Initialize lists
     readrel $rel1file .res.l1.list
+    set numres1 [.res.l1.list index end]
+    incr numres1
     readrel $rel2file .res.l2.list
+    set numres2 [.res.l2.list index end]
+    incr numres2
 
     # Bind double click on the listboxes to load selection into entry boxes
     bind .res.l1.list <Double-1> {
@@ -139,10 +163,15 @@ proc resolve {mapfile rel1file rel2file} {
     }
 
     # Break up into two frames side by side
-    label .res.map.label -text "Current mappings" -bg honeydew2 -fg red4
+    frame .res.map.lab -relief raised -bg honeydew2
     frame .res.map.left -relief raised -bg honeydew2
     frame .res.map.right -relief raised -bg honeydew2
-    pack .res.map.label .res.map.left .res.map.right -side top -fill x
+    pack .res.map.lab .res.map.left .res.map.right -side top -fill x
+
+    label .res.map.label -text "Current mappings : " -bg honeydew2 -fg red4
+    label .res.map.nlabel -textvariable numcurrmap -bg honeydew2 -fg red \
+	    -width 5
+    pack .res.map.label .res.map.nlabel -in .res.map.lab -side left -fill x
 
     # Frame with one list of mapped items
     listbox .res.map.list -relief raised -bd 1 \
@@ -162,6 +191,7 @@ proc resolve {mapfile rel1file rel2file} {
 	    set mapnum [expr $mapnum+1]
 	    set leftelem ""
 	    set rightelem ""
+	    incr numcurrmap
 	}
     }
 
@@ -169,6 +199,7 @@ proc resolve {mapfile rel1file rel2file} {
 	set line [.res.map.list get active]
 	if {$line != ""} {
 	    .res.map.list delete active 
+	    set numcurrmap [expr $numcurrmap-1]
 	}
     }
 
@@ -176,10 +207,16 @@ proc resolve {mapfile rel1file rel2file} {
 	    -padx 1m -pady 1m -ipadx 1m -ipady 1m -expand 1
 
     # Automatic mapping window
-    label .res.auto.label -text "Automatic mappings" -bg honeydew2 -fg red4
+    frame .res.auto.lab -relief raised -bg honeydew2 
     frame .res.auto.left -relief raised -bg honeydew2
     frame .res.auto.right -relief raised -bg honeydew2
-    pack .res.auto.label .res.auto.left .res.auto.right -side top -fill x
+    pack .res.auto.lab .res.auto.left .res.auto.right \
+	    -side top -fill x
+
+    label .res.auto.label -text "Automatic mappings : " -bg honeydew2 -fg red4
+    label .res.auto.nlabel -textvariable numautomap -bg honeydew2 -fg red \
+	    -width 5
+    pack .res.auto.label .res.auto.nlabel -in .res.auto.lab -side left
 
     # Frame with one list of mapped items
     listbox .res.auto.list -relief raised -bd 1 \
@@ -194,6 +231,7 @@ proc resolve {mapfile rel1file rel2file} {
 	set line [.res.auto.list get active]
 	if {$line != ""} {
 	    .res.auto.list delete active 
+	    set numautomap [expr $numautomap-1]
 	}
     }
 
@@ -202,7 +240,8 @@ proc resolve {mapfile rel1file rel2file} {
 
     # Populate the auto-mapping listbox
     readrel $mapfile .res.auto.list
-
+    set numautomap [.res.auto.list index end]
+    incr numautomap
 
     # Bottom frame for save/cancel
     button .res.bot.save -text Save -bg gray75 -fg IndianRed4 -command {
