@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/17 04:05:57  ravim
+  Extracts only first 6 chars of cusip for comparison.
+
   Revision 1.3  1995/11/15 21:11:39  ravim
   Fix bug in extract routine.
 
@@ -182,7 +185,7 @@ int find_offset(FILE *idxfile, char cval[])
   do 
   {
     // get offset
-    fscanf(idxfile, "%lu,%d,%d,%8s", &offval, &tmpval1, &tmpval2, fval);
+    fscanf(idxfile, "%lu,%d,%d,%6s", &offval, &tmpval1, &tmpval2, fval);
 
     // Ignore rest of line
     fgets(tmpbuf, 200, idxfile);
