@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/08/07 15:29:56  guangshu
+  Fixed bugs in iterating the mappings. Check _convertIndex before iterating in
+  DoGDataConvert().
+
   Revision 1.28  1996/08/01 22:44:54  jussi
   Record ranges in record link files can now be arbitrarily large.
 
@@ -825,13 +829,25 @@ void QueryProcFull::ProcessQuery()
        we need to notify control panel that everything is in
        sync, then do so.
     */
-    if (ControlPanel::Instance()->GetSyncNotify())
-      ControlPanel::Instance()->SyncNotify();
+    if (ControlPanel::Instance()->GetSyncNotify()) {
+      if (ControlPanel::Instance()->GetSyncAllowed()) {
+#ifdef DEBUG
+        printf("Sending sync message to control panel\n");
+#endif
+        ControlPanel::Instance()->SyncNotify();
+      } else {
+#ifdef DEBUG
+        printf("Not allowed to send sync message yet\n");
+#endif
+      }
+    }
 
     /* Do conversion, then return */
     DoGDataConvert();
     return;
   }
+
+  ControlPanel::Instance()->SetSyncAllowed();
 
   Dispatcher::Current()->RequestCallback(_dispatcherID);
 
