@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.124  1997/03/20 01:32:17  wenger
+#	Fixed a bug in color allocation; color chooser for data shows old colors
+#	(temporarily); background conversion of GData defaults to off.
+#
 #	Revision 1.123  1997/03/18 16:50:32  weaver
 #	Modified DEViseColors for aesthetics and balance.
 #
@@ -1116,14 +1120,24 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 #	-command DoSetRecordCursor
 
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Statistics" -command { DoStat }
-.mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
+#.mbar.view.menu add command -label "Statistics" -command { DoStat }
+.mbar.view.menu add cascade -label "Statistics" -menu .mbar.view.menu.statMenu
+#.mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
 
+menu .mbar.view.menu.statMenu -tearoff 0
+
+.mbar.view.menu.statMenu add command -label "Basic Stat" \
+	-command { DoBasicStat
+		   Update2DBasicStatWindow }
+.mbar.view.menu.statMenu add command -label "Group By" \
+	-command DoGroupByStat
+.mbar.view.menu.statMenu add command -label "Histogram" \
+	-command DoHistStat
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
@@ -1306,6 +1320,7 @@ proc ChangeStatus { status } {
                 -activeforeground white -relief flat -state disabled
         Update3DLocation
         Update2DQueryWindow
+	Update2DBasicStatWindow
         UpdateHistoryWindow
 	EnableStackControl
     } else {
