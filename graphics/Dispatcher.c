@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/23 20:36:27  jussi
+  Minor fix with header files.
+
   Revision 1.15  1996/06/23 20:31:36  jussi
   Cleaned up marker and pipe mechanism. Moved a couple #defines to
   the .c file so that not all of Devise needs to be recompiled when
@@ -76,6 +79,7 @@
   Added/updated CVS header.
 */
 
+#include <errno.h>
 #include <memory.h>
 #include <sys/time.h>
 #include<fcntl.h>
@@ -90,13 +94,8 @@
 #include "Time.h"
 
 //#define DEBUG
-#define USE_SELECT
-//#define DISPATCHER_SLEEP
 
-/* dispatcher timer interval, in milliseconds */
-#define DISPATCHER_TIMER_INTERVAL 500
-
-Dispatcher *Dispatcher::_current_dispatcher = NULL;
+Dispatcher *Dispatcher::_current_dispatcher = 0;
 DispatcherList Dispatcher::_dispatchers;
 DispatcherInfoList Dispatcher::_allCallbacks;
 DispatcherInfoList Dispatcher::_toInsertAllCallbacks;
@@ -192,13 +191,12 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   info->callBack = c;
   info->flag = flag;
   info->priority = priority;
-  info->fd =  fd; // fd;
+  info->fd = fd;
 
 #ifdef DEBUG
-  printf("In Register, fd = %d\n", fd);
+  printf("In Dispatcher::Register, fd = %d\n", fd);
 #endif
 
-#ifdef USE_SELECT
   if (fd >= 0) {
 #ifndef HPUX
     FD_SET(fd, &fdset);
@@ -208,7 +206,6 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
     if (fd > maxFdCheck)
       maxFdCheck = fd;
   }
-#endif
   
   if (allDispatchers) {
     _toInsertAllCallbacks.Append(info);
@@ -268,7 +265,6 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _callbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
-#ifdef USE_SELECT
       if (info->fd >= 0) {
 #ifndef HPUX
 	FD_CLR(info->fd, &fdset);
@@ -276,7 +272,6 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 	fdset &= ~(1 << info->fd);
 #endif
       }
-#endif
       _toDeleteCallbacks.Append(info);
       _callbacks.DoneIterator(index);
       return;
@@ -288,7 +283,6 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _allCallbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
-#ifdef USE_SELECT
       if (info->fd >= 0) {
 #ifndef HPUX
 	FD_CLR(info->fd, &fdset);
@@ -296,7 +290,6 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 	fdset &= ~(1 << info->fd);
 #endif
       }
-#endif
       _toDeleteAllCallbacks.Append(info);
       _allCallbacks.DoneIterator(index);
       return;
@@ -380,24 +373,8 @@ void Dispatcher::RunNoReturn()
 {
   ControlPanel::Init();
 
-  while(1) {
-#ifdef DISPATCHER_SLEEP
-    long start = DeviseTime::Now();
-#endif
-
-    for(int i = 0; i < 10; i++)
-      Current()->Run1();
-
-#ifdef DISPATCHER_SLEEP
-    long end = DeviseTime::Now();
-    if (end - start < DISPATCHER_TIMER_INTERVAL) {
-#ifdef DEBUG
-      printf("Dispatcher sleeps...\n");
-#endif
-      sleep(1);
-    }
-#endif
-  }
+  while(1)
+    Current()->Run1();
 }
 
 void Dispatcher::QuitNotify()
@@ -415,6 +392,7 @@ void Dispatcher::QuitNotify()
 void Dispatcher::Run1()
 {
   if (_quit) {
+    errno = 0;
     Cleanup();
     Exit::DoExit(0);
   }
@@ -423,50 +401,10 @@ void Dispatcher::Run1()
   DoRegisterAll();
   DoUnregisterAll();
 
-  int index;
-  for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-    DispatcherInfo *callback = _allCallbacks.Next(index);
-    if (callback->flag & _stateFlag) {
-#ifdef USE_SELECT
-      if (callback->fd < 0)
-#endif
-	callback->callBack->Run();
-    }
-  }
-  _allCallbacks.DoneIterator(index);
-
-  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
-    DispatcherInfo *callback = _callbacks.Next(index);
-    if (callback->flag & _stateFlag) {
-#ifdef USE_SELECT
-      if (callback->fd < 0)
-#endif
-	callback->callBack->Run();
-    }
-  }
-  _callbacks.DoneIterator(index);
-
-  
-  long now = DeviseTime::Now();
-  long diff = now - _oldTime;
-  if (diff >= DISPATCHER_TIMER_INTERVAL) {
-    _oldTime = now;
-    /* time interval is up */
-    for(index = _timerCallbacks.InitIterator(); _timerCallbacks.More(index);) {
-      DispatcherTimerCallback *callback = _timerCallbacks.Next(index);
-      callback->TimeUp();
-    }
-    _timerCallbacks.DoneIterator(index);
-  }
-
-#ifdef USE_SELECT
-  // Now wait for something to happen using the select function
-  // Here the time is set to 0 so that it comes out immediately after checking
-  // Changing the time to a NULL value will make this wait forever
-
-  struct timeval timeout;
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 0;
+  /*
+     Wait for something to happen using select().
+     Use an infinite timeout if we're not in playback mode.
+  */
 
 #ifndef HPUX
   fd_set fdread;
@@ -475,8 +413,12 @@ void Dispatcher::Run1()
 #endif
   memcpy(&fdread, &fdset, sizeof fdread);
 
-  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, 0, &timeout);
-  DOASSERT(NumberFdsReady >= 0, "Invalid select() status");
+  struct timeval timeout;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 0;
+
+  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, 0,
+			      (_playback ? &timeout : 0));
 
   // Check if any one of the fds have something to be read...
 
@@ -484,6 +426,7 @@ void Dispatcher::Run1()
 #ifdef DEBUG
     printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
 #endif
+    int index;
     for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
       DispatcherInfo *callback = _allCallbacks.Next(index);
       if (callback->flag & _stateFlag) {
@@ -523,14 +466,13 @@ void Dispatcher::Run1()
     }
     _callbacks.DoneIterator(index);
   } 
-#endif
 
-  // end of call backs     
+  /* end of call backs */
 
   if (!_playback)
     return;
 
-  now = DeviseTime::Now();
+  long now = DeviseTime::Now();
   long playdiff = now - _playTime;
   if (playdiff < _playInterval)
     return;
