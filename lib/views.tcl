@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/07/15 14:59:28  wenger
+#  Fixed a bug in the view destroying Tcl code; user can now destroy a window
+#  that contains views (DEVise asks for confirmation, destroys the views).
+#
 #  Revision 1.38  1997/06/10 19:32:20  wenger
 #  Copy/Edit GUI doesn't bring up window creation GUI until user clicks 'OK'.
 #
@@ -754,6 +758,11 @@ proc DoLinkCreate { isRec } {
 	    if {$name == ""} {
 		set but [dialog .noName "No Link Name" \
 			"No Link Name Specified" "" 0 OK]
+		continue
+	    }
+	    if {[string range $name 0 4] == "Pile:"} {
+		set but [dialog .noName "No Link Name" \
+			"Link name cannot start with 'Pile:'" "" 0 OK]
 		continue
 	    }
 	

@@ -847,6 +847,15 @@ Num Date        Status  Description
 			Window unless you've done an 'execute' on that window
 			when running the session test/canopy.tk. (ml/rkw)
 
+208 07/22/97	OPEN	Killing the devised often results in port 6100 being
+			unavailable. (rkw)
+
+209 07/22/97	OPEN	Spaces in data source names goof things up. (rkw)
+
+210 07/22/97	WORK	The user can create a link with a name starting with
+			"Pile:"; this link is then interpreted as a pile link
+			by DEVise and not displayed in link info, etc. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
