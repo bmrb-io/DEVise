@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/01/29 16:41:37  wenger
+  Fixed problem with source view not being redrawn correctly when cursor
+  is dragged in the JavaScreen.
+
   Revision 1.49  1999/01/29 15:18:16  wenger
   Fixed egcs 1.1.1 fixes -- taking out array constructor arguments caused
   problems in some places.
@@ -1554,26 +1558,17 @@ JavaScreenCmd::CursorChanged()
 
 	//
 	// Convert new cursor size and location from pixels to data units,
-	// and set the visual filter of the source view (that's what actually
-	// moves the cursor).
+	// and move the cursor.
 	//
 	Coord dataXLow, dataYLow, dataXHigh, dataYHigh;
 	view->FindWorld(pixX, pixY, pixX + pixWidth - 1, pixY + pixHeight - 1,
 	  dataXLow, dataYLow, dataXHigh, dataYHigh);
 
-	VisualFilter filter;
-	srcView->GetVisualFilter(filter);
-
-	VisualFlag cursorFlag = cursor->GetFlag();
-	if (cursorFlag & VISUAL_X) {
-		filter.xLow = dataXLow;
-		filter.xHigh = dataXHigh;
-	}
-	if (cursorFlag & VISUAL_Y) {
-		filter.yLow = dataYLow;
-		filter.yHigh = dataYHigh;
-	}
-	srcView->SetVisualFilter(filter);
+	Coord centerX = (dataXLow + dataXHigh) / 2.0;
+	Coord centerY = (dataYLow + dataYHigh) / 2.0;;
+	Coord width = ABS(dataXHigh - dataXLow);
+	Coord height = ABS(dataYHigh - dataYLow);
+	cursor->MoveSource(centerX, centerY, width, height);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.

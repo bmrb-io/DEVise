@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/06/12 19:55:15  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.17  1998/06/10 18:04:02  wenger
   Improved new cursor drawing (bug in Mesa implementation sometimes makes
   it look ugly); cursor color now saved in sessions.
@@ -143,8 +148,8 @@ class DeviseCursor : private ViewCallback
 
   VisualFlag GetFlag() { return _visFlag; }
 
-  /* Move the X and Y coords of source */
-  void MoveSource(Coord x, Coord y);
+  /* Move the X and Y coords of source; X and Y are the center of the cursor */
+  void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0);
 
   /* Get or set the grid parameters. */
   void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY) {

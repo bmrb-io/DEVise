@@ -1728,6 +1728,19 @@ Num Date        Status  Description
 			(rkw)
 			(Fixed by rkw, 01/18/99.)
 
+451 01/29/99	FIXED	Dragging cursor in JavaScreen bypasses cursor grid
+			setting. (rkw)
+			(Fixed by rkw, 01/29/99.)
+
+452 01/29/99	OPEN	Directly changing visual filter of source view (by
+			using arrow keys or the query dialog) bypasses cursor
+			grid setting. (rkw)
+
+453 01/29/99	OPEN	Each time the mapping dialog is updated for a new
+			view, it queries the DTE to get the catalog entry
+			for the appropriate TData, instead of just getting
+			the list of attributes from the TData object. (kb/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

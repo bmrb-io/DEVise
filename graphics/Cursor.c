@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/12/10 21:53:16  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.19  1998/09/25 22:07:07  wenger
   Found and fixed bug 397 (another problem with a cursor not connected to
   any views).
@@ -258,7 +263,7 @@ void DeviseCursor::ViewDestroyed(View *view)
     _dst = 0;
 }
 
-void DeviseCursor::MoveSource(Coord x, Coord y)
+void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
 {
 #if defined(DEBUG)
   printf("DeviseCursor(%s)::MoveSource(%f, %f)\n", GetName(), x, y);
@@ -277,7 +282,9 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
       int tmp = (int) ((x / _gridX) + 0.5);
       x = _gridX * tmp;
     }
-    Coord width = filter.xHigh - filter.xLow;
+    if (width < 0.0) {
+      width = filter.xHigh - filter.xLow;
+    }
     Coord newXLow = x - width / 2.0;
     filter.xLow = newXLow;
     filter.xHigh = newXLow + width;
@@ -289,7 +296,9 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
       int tmp = (int) ((y / _gridY) + 0.5);
       y = _gridY * tmp;
     }
-    Coord height = filter.yHigh - filter.yLow;
+    if (height < 0.0) {
+      height = filter.yHigh - filter.yLow;
+    }
     Coord newYLow = y - height / 2.0;
     filter.yLow = newYLow;
     filter.yHigh = newYLow + height;
