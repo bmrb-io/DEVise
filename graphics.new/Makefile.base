@@ -18,6 +18,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.62  1997/11/24 23:14:53  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.61  1997/11/12 15:45:48  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -28,6 +31,10 @@
 #  moving the unidata config.h files to separate copies in the unidata
 #  directory for each architecture, since the config.h's are architecture-
 #  dependent.
+#
+#  Revision 1.60.6.1  1997/12/03 22:52:16  whh
+#  Devise now uses new C++ expression evaluation code instead of Tcl
+#  interpreter.
 #
 #  Revision 1.60  1997/09/05 22:21:01  donjerko
 #  Made changes for port to NT.
@@ -147,10 +154,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
-	ETkWindowShape.C DrawTimer.c
+	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c
 
-QPSrc += ViewShape.C
-	
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
 QPObj = $(QPSrcc:.c=.o)

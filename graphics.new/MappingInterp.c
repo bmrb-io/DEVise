@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.66  1997/11/24 23:15:09  weaver
+  Changes for the new ColorManager.
+
   Revision 1.65  1997/11/18 23:26:55  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -26,6 +29,10 @@
 
   Revision 1.63.4.1  1997/11/04 18:48:30  wenger
   Fixed bug 238 (core dump in search engine demo).
+
+  Revision 1.63.6.1  1997/12/03 22:52:26  whh
+  Devise now uses new C++ expression evaluation code instead of Tcl
+  interpreter.
 
   Revision 1.63  1997/08/27 14:47:40  wenger
   Removed some unnecessary include dependencies.
@@ -324,6 +331,7 @@
 #include "Init.h"
 #include "StringStorage.h"
 #include "GDataSock.h"
+#include "NativeExpr.h"
 
 #include "Color.h"
 
@@ -510,6 +518,9 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   AttrInfo *info = attrList->Find("x");
   if ((info != NULL) && (info->isSorted))
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+
+  // added by whh, support for native expression analysis
+  pNativeExpr = new CGraphicExpr( cmd );
 }
 
 MappingInterp::~MappingInterp()
@@ -522,6 +533,9 @@ MappingInterp::~MappingInterp()
 
   delete GDataAttrList();
   SetGDataAttrList(NULL);
+
+  // added by whh, support for native expression analysis
+  delete pNativeExpr;
 }
 
 void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
@@ -552,6 +566,10 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
 
   TDataMap::ResetGData(FindGDataSize(cmd, _attrList, flag, attrFlag));
+
+  // added by whh, support for native expression analysis
+  delete pNativeExpr;
+  pNativeExpr = new CGraphicExpr( cmd );
 }
 
 /* Get current commands */
@@ -790,6 +808,7 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
    convert from Tdata to Gdata. buf contains
    buffer for data. tRecs are pointers to variable size records only.
 */
+// modified by whh for native expression support
 
 void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 				   int numRecs, void *gdataPtr)
@@ -826,6 +845,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 #if 0
     printf("setting attr values\n");
 #endif
+ 
+    // added by whh, support for native expression analysis
+    InitAttrList();
+    InsertAttr( "recId", startRecId + i );
 
     int j;
     for(j = 0; j <= _maxTDataAttrNum; j++) {
@@ -851,6 +874,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  int tmpInt;
 	  memcpy((void *) &tmpInt, (void *) intPtr, sizeof(tmpInt));
 	  _tclAttrs[j] = tmpInt;
+
+	  // added by whh, support for native expression analysis
+	  InsertAttr( attrInfo->name, (double)(*intPtr) );
+
 	  /*
 	     printf("Setting int attr %d to %f\n", j, _tclAttrs[j]);
 	  */
@@ -864,6 +891,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  /*
 	     printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
 	  */
+
+	  // added by whh, support for native expression analysis
+	  InsertAttr( attrInfo->name, (double)(*fPtr) );
+
 	  break;
 
 	case DoubleAttr:
@@ -872,6 +903,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  memcpy((void *) &tmpDbl, (void *) dPtr, sizeof(tmpDbl));
 	  _tclAttrs[j] = tmpDbl;
 	  //printf("Setting double attr %d to %f\n", j, _tclAttrs[j]);
+	  
+	  // added by whh, support for native expression analysis
+	  InsertAttr( attrInfo->name, (double)(*dPtr) );
+	  
 	  break;
 
 	case StringAttr:
@@ -882,6 +917,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 #if defined(DEBUG)
 	     printf("  Setting string attr %d to %f\n", j, _tclAttrs[j]);
 #endif
+	  // added by whh, support for native expression analysis
+	  InsertAttr( attrInfo->name, (double)key );
+	  
 	  break;
 
 	case DateAttr:
@@ -892,6 +930,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 #if defined(DEBUG) || 0
 	  printf("Setting date attr %d to %f\n", j, _tclAttrs[j]);
 #endif
+	  // added by whh, support for native expression analysis
+	  InsertAttr( attrInfo->name, (double)(*tptr) );
+	  
 	  break;
 
 	default:
@@ -909,9 +950,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->xCmd == NULL) {
 	_interpResult = GetDefaultX();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->xCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->xCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	// added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprX );
       }
       *((double *)(gPtr + _offsets->xOffset)) = _interpResult;
     }
@@ -920,9 +964,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->yCmd == NULL) {
 	_interpResult = GetDefaultY();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->yCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->yCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	// added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprY );
       }
       *((double *)(gPtr + _offsets->yOffset)) = _interpResult;
     }
@@ -931,9 +978,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->zCmd == NULL) {
 	_interpResult = GetDefaultZ();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->zCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->zCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	// added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprZ );
       }
       *((double *)(gPtr + _offsets->zOffset)) = _interpResult;
     }
@@ -947,9 +997,11 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 		}
 		else
 		{
-			_interpResult = (Coord)nullPColorID;
-			sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
-			code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+			//TEMPTEMP?_interpResult = (Coord)nullPColorID;
+			//TEMPTEMP?sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
+			//TEMPTEMP?code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	        // added by whh, support for native expression analysis
+	        _interpResult = EvalExpr( pNativeExpr->pExprColor );//TEMPTEMP??
 		}
 
 		*((PColorID*)(gPtr + _offsets->colorOffset)) =
@@ -960,9 +1012,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->sizeCmd == NULL) {
 	_interpResult = GetDefaultSize();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->sizeCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->sizeCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	//added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprSize );
       }
       /*
 	 printf("eval size\n");
@@ -974,9 +1029,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->patternCmd == NULL) {
 	_interpResult = (double) GetDefaultPattern();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->patternCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->patternCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	//added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprPattern );
       }
       /*
 	 printf("eval pattern\n");
@@ -988,9 +1046,13 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->shapeCmd == NULL) {
 	_interpResult = GetDefaultShape();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	// added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprShape );
+
 	if (_interpResult <0 || _interpResult >= MaxInterpShapes)
 	  _interpResult = 0;
       }
@@ -1004,9 +1066,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       if (_tclCmd->orientationCmd == NULL) {
 	_interpResult = GetDefaultOrientation();
       } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->orientationCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	//_interpResult = 0.0;
+	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->orientationCmd);
+	//code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+
+	// added by whh, support for native expression analysis
+	_interpResult = EvalExpr( pNativeExpr->pExprOrientation );
       }
       /*
 	 printf("eval orientation\n");
@@ -1020,9 +1085,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	if (_tclCmd->shapeAttrCmd[j] == NULL) {
 	  _interpResult = shapeAttr[j];
 	} else {
-	  _interpResult = 0.0;
-	  sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeAttrCmd[j]);
-	  code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	  //_interpResult = 0.0;
+	  //sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeAttrCmd[j]);
+	  //code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	  
+	  // added by whh, support for native expression analysis
+	  _interpResult = EvalExpr( pNativeExpr->ppExprGDataAttr[j] );
 	}
 	/*
 	   printf("eval shapeAttr %d\n", j);

@@ -15,6 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.6.2  1997/12/04 15:50:05  wenger
+#  Undid Haihong's temporary changes.
+#
+#  Revision 1.16.6.1  1997/12/03 22:52:55  whh
+#  Devise now uses new C++ expression evaluation code instead of Tcl
+#  interpreter.
+#
+#  Revision 1.16  1997/08/12 18:48:32  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.15  1997/01/18 18:58:30  jussi
 #  Removed inclusion of Xaw and related libraries.
 #

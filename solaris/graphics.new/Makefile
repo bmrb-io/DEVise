@@ -15,6 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13.18.2  1997/12/04 15:50:15  wenger
+#  Undid Haihong's temporary changes.
+#
+#  Revision 1.13.18.1  1997/12/03 22:53:03  whh
+#  Devise now uses new C++ expression evaluation code instead of Tcl
+#  interpreter.
+#
+#  Revision 1.13  1996/11/23 20:54:40  jussi
+#  Removed -lpthread.
+#
 #  Revision 1.12  1996/11/18 18:14:21  donjerko
 #  Added final touches for DTE
 #

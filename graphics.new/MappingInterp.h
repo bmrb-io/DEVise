@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.33.6.1  1997/12/03 22:52:28  whh
+  Devise now uses new C++ expression evaluation code instead of Tcl
+  interpreter.
+
+  Revision 1.33  1997/09/09 21:41:05  wenger
+  Workaround for bug 218 (images drawn even when outside visual filter):
+  images are no longer complex shapes.
+
   Revision 1.32  1997/08/20 22:11:02  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -211,6 +219,9 @@ struct MappingSimpleCmd {
   MappingSimpleCmdEntry shapeAttrCmd[MAX_GDATA_ATTRS];
 };
 
+// added by whh, support for native expression analysis
+class CGraphicExpr;
+
 class Shape;
 class AttrList;
 #ifdef VIEW_SHAPE 
@@ -347,6 +358,10 @@ private:
   static int _tclRecId;
   
   static Tcl_Interp *_interp;  /* Tcl interpreter */
+
+  // native expression analysis engine
+  // added by whh,
+  CGraphicExpr *pNativeExpr;  
 };
 
 #endif
