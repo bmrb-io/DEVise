@@ -22,7 +22,7 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    cat $outfile | /usr/ucb/mail -s "Error message from check_jspop soil" `whoami`
+    /s/std/bin/cat $outfile | /usr/ucb/mail -s "Error message from check_jspop soil" `/s/std/bin/whoami`
 endif
 
 /usr/ucb/touch /tmp/soil_js_check
