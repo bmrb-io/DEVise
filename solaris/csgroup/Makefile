@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1998/03/04 18:41:06  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.2  1998/02/12 17:18:19  wenger
 #  Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -35,7 +41,7 @@
 
 include ../Makefile.config
 
-ARCH_FLAGS += -DDEBUG
+#ARCH_FLAGS += -DDEBUG
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
