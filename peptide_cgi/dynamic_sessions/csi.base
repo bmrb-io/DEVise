@@ -38,6 +38,7 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {HA Chemical Shift Indices}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise create {view} {SortedX} {View 2} 1.000000 147.000000 -1.000000 1.000000 37 0
 DEVise setLabel {View 2} 1 16 {C CSI}
@@ -66,6 +67,7 @@ DEVise setViewAutoFilter {View 2} {1}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setViewHelp {View 2} {C Chemical Shift Indices}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise create {view} {SortedX} {View 3} 1.000000 147.000000 -1.000000 1.000000 37 0
 DEVise setLabel {View 3} 1 16 {CA CSI}
@@ -94,6 +96,7 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise setViewHelp {View 3} {CA Chemical Shift Indices}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise create {view} {SortedX} {View 4} 1.000000 147.000000 -1.000000 1.000000 37 0
 DEVise setLabel {View 4} 1 16 {CB CSI}
@@ -122,9 +125,10 @@ DEVise setViewAutoFilter {View 4} {1}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise setViewHelp {View 4} {CB Chemical Shift Indices}
 DEVise setShowMouseLocation {View 4} {1}
 DEVise create {view} {SortedX} {View 5} 1.000000 147.000000 -1.000000 1.000000 37 0
-DEVise setLabel {View 5} 1 16 {Concensus CSI}
+DEVise setLabel {View 5} 1 16 {Consensus CSI}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
 DEVise setViewSolid3D {View 5} 2
@@ -150,6 +154,7 @@ DEVise setViewAutoFilter {View 5} {1}
 DEVise setDupElim {View 5} {0}
 DEVise setNiceAxes {View 5} 0 0
 DEVise viewSetDisabledActions {View 5} 0 0 0 0
+DEVise setViewHelp {View 5} {Consensus Chemical Shift Indices}
 DEVise setShowMouseLocation {View 5} {1}
 DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 37 0
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}

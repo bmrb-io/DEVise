@@ -39,6 +39,7 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {Percent Assigned Protons Per Residue}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise create {view} {SortedX} {View 2} 1.000000 147.000000 0.000000 100.000000 37 0
 DEVise setLabel {View 2} 1 16 {Percent Assigned Carbons}
@@ -67,6 +68,7 @@ DEVise setViewAutoFilter {View 2} {1}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setViewHelp {View 2} {Percent Assigned Carbons Per Residue}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise create {view} {SortedX} {View 3} 1.000000 147.000000 0.000000 100.000000 37 0
 DEVise setLabel {View 3} 1 16 {Percent Assigned Nitrogens}
@@ -95,6 +97,7 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise setViewHelp {View 3} {Percent Assigned Nitrogens Per Residue}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise create {view} {Scatter} {View 4} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 4} 0 12 {Label_text() vs. recId}
