@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/09 22:51:58  jussi
+  Added SetOverrideColor() and GetOverrideColor().
+
   Revision 1.16  1996/03/06 19:35:26  jussi
   Added GetNumDimensions() and SetNumDimensions().
 
@@ -191,6 +194,8 @@ public:
 
 	/* set/clear min info about a view */
 	void SetXMin(Boolean hasXMin, Coord xMin = 0.0) {
+	  if (_hasXMin && _xMin < xMin)
+	    return;
 	  _hasXMin = hasXMin;
 	  _xMin = xMin;
 	}
