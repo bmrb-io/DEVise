@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/08 22:13:18  jussi
+  Added assertions along the way.
+
   Revision 1.3  1995/12/28 18:45:12  jussi
   Added copyright notice and made small fixes to remove compiler
   warnings.
@@ -32,8 +35,7 @@
 #include <assert.h>
 #include "Exit.h"
 
-/* data for iterator */
-const unsigned MaxIterators = 5;	/* max # of concurrent iterators */
+const int MaxIterators = 5;		/* max # of concurrent iterators */
 
 #define DefineDList(listName, valType)\
 class listName {\
@@ -64,22 +66,23 @@ public:\
 	int Delete(valType v);\
 \
 	/* Return the first element */\
-	valType GetFirst() ;\
+	valType GetFirst();\
 \
 	/* Return the last element */\
-	valType GetLast() ;\
+	valType GetLast();\
 \
 	/* swap elements a and b */\
 	void Swap(valType a, valType b);\
 \
 	/* iterator for the list. This implementation supports\
 	multiple iterators, and also  supports \
-	Deletecurrent(), which deletes the current elemenet being looked at.\
-	Note:  Deletecurrent() is an error when more than 1 iterator is in effect.\
+	Deletecurrent(), which deletes the current element being looked at.\
+	Note:  DeleteCurrent() is an error when more than 1 iterator is in
+        effect.\
 	*/\
 \
 	/* Init and return index of iterator */\
-	int InitIterator(int backwards=0) ;\
+	int InitIterator(int backwards=0);\
 \
 	/* Init iterator to return the last N records */\
 	int InitIteratorLastN(int n=1);\
@@ -185,7 +188,7 @@ void listName::Swap(valType val1, valType val2) {\
 /* Init and return index of iterator */\
 int listName::InitIterator(int backwards) {\
 	/* find an empty slot in the array of active iterators */\
-	for(unsigned int i = 0; i < MaxIterators; i++) {\
+	for(int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
 			/* found one */\
 			_iterators[i].backwards = backwards;\
@@ -194,7 +197,7 @@ int listName::InitIterator(int backwards) {\
 			else\
 				_iterators[i].current = _head->next; \
 			_numIterators++;\
-			return (int)i;\
+			return i;\
 		}\
 	}\
 	fprintf(stderr,"DList::InitIterator: no more space\n");\
@@ -210,7 +213,7 @@ int listName::InitIteratorLastN(int n){\
 	}\
 \
 	/* find an empty slot in the array of active iterators */\
-	for(unsigned int i = 0; i < MaxIterators; i++) {\
+	for(int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
 			/* found one */\
 			_iterators[i].backwards = 0;\
@@ -223,7 +226,7 @@ int listName::InitIteratorLastN(int n){\
 			else\
 				_iterators[i].current = _head->next; \
 			_numIterators++;\
-			return (int)i;\
+			return i;\
 		}\
 	}\
 	fprintf(stderr,"DList::InitIterator: no more space\n");\
@@ -248,6 +251,10 @@ valType listName::Next(int index) { \
 \
 void listName::DeleteCurrent(int index) {\
 	assert(index >= 0 && index < MaxIterators);\
+	if (_numIterators > 1){\
+		fprintf(stderr,"DList::DeleteCurrent: can't delete with iterator\n");\
+		Exit::DoExit(2);\
+	}\
 	if (_iterators[index].backwards)\
 		_DListDelete(_iterators[index].current->next);\
 	else\
@@ -305,7 +312,7 @@ void listName::_DListDelete(ListElement *node){\
 }\
 \
 void listName::ClearIterators(){\
-	for(unsigned int i = 0; i < MaxIterators; i++)\
+	for(int i = 0; i < MaxIterators; i++)\
 		_iterators[i].current = NULL;\
 	_numIterators = 0;\
 }\
@@ -322,7 +329,7 @@ int listName::Find(valType v) {\
 }\
 \
 int listName::Delete(valType v){\
-	if (_numIterators> 0){\
+	if (_numIterators > 0){\
 		fprintf(stderr,"DList::Delete: can't delete with iterator\n");\
 		Exit::DoExit(2);\
 	}\
@@ -338,8 +345,9 @@ int listName::Delete(valType v){\
 }\
 \
 void listName::DeleteAll(){\
-	while (_head->next != _head) _DListDelete(_head->next);\
-	_size=0;\
+	while (_head->next != _head)\
+		_DListDelete(_head->next);\
+	_size = 0;\
 }\
 
 /* define a void list */
