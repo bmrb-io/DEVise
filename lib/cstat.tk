@@ -1,0 +1,440 @@
+#	$Id$
+
+#	$Log$
+
+############################################################
+
+set cstat_tapeDrive /dev/nrst1
+set cstat_tapeFile  5
+set cstat_diskPath /tmp
+
+if {[info exists env(CSTAT_TAPEDRIVE)]} {
+    set cstat_tapeDrive $env(CSTAT_TAPEDRIVE)
+}
+if {[info exists env(CSTAT_TAPEFILE)]} {
+    set cstat_tapeFile $env(CSTAT_TAPEFILE)
+}
+if {[info exists env(CSTAT_DISKPATH)]} {
+    set cstat_diskPath $env(CSTAT_DISKPATH)
+}
+
+set cstat_firmsel ""
+set cstat_firmlst ""
+set cstat_numfirms 0
+
+set tcl_interactive 1
+
+############################################################
+
+proc cstat_onDisk {symbol} {
+    global cstat_diskPath
+    set diskFile [format "%s/%s.dat" $cstat_diskPath $symbol]
+    if {![file exists $diskFile]} {
+	return 0
+    }
+    return 1
+}
+
+############################################################
+
+proc cstat_setupMain {main} {
+    toplevel $main
+    wm minsize $main 500 400
+    wm maxsize $main 500 1000
+    wm title $main "Compustat"
+    wm geometry $main =500x650+50+50
+    selection clear $main
+
+    label $main.title -relief raised -text "Compustat Database" \
+	    -font -adobe-helvetica-medium-r-normal--*-140-*
+    pack $main.title -side top -fill x -ipady 5m
+}
+
+############################################################
+
+proc cstat_setSelectButton {} {
+    set selbut .cstat.buttons.row1.select
+    set unselbut .cstat.buttons.row1.unselect
+    $selbut configure -state disabled
+    $unselbut configure -state normal
+}
+
+############################################################
+
+proc cstat_setUnselectButton {} {
+    set selbut .cstat.buttons.row1.select
+    set unselbut .cstat.buttons.row1.unselect
+    $selbut configure -state normal
+    $unselbut configure -state disabled
+}
+
+############################################################
+
+proc cstat_setupButtons {buttons fsel flist} {
+    frame $buttons
+    frame $buttons.row1
+    frame $buttons.row2
+    pack $buttons.row1 $buttons.row2 -side top -pady 3m
+
+    button $buttons.row1.select -text Select -width 10 \
+	    -command "cstat_addSelection $fsel.list" -state normal
+    button $buttons.row1.unselect -text Unselect -width 10 \
+	    -command "cstat_removeSelection $fsel.list" -state normal
+    pack $buttons.row1.select $buttons.row1.unselect -side left -padx 3m
+    
+    button $buttons.row2.ok -text OK -width 10 \
+	    -command "cstat_extractFiles"
+    button $buttons.row2.close -text Close -width 10 \
+	    -command "destroy .cstat"
+    button $buttons.row2.help -text Help -width 10 \
+	    -command "cstat_helpWindow"
+    pack $buttons.row2.ok $buttons.row2.close $buttons.row2.help \
+	    -side left -padx 3m
+
+#    bind $fsel.list <Any-Button-1> +cstat_setSelectButton
+#    bind $flist.list <Any-Button-1> +cstat_setUnselectButton
+}
+
+############################################################
+
+proc cstat_setupFirmSel {fsel} {
+    frame $fsel -relief groove -borderwidth 2 -width 3c
+    listbox $fsel.list -relief raised -borderwidth 2 \
+	    -yscrollcommand "$fsel.scroll set" -font 9x15 \
+	    -selectmode extended
+    scrollbar $fsel.scroll -command "$fsel.list yview"
+    label $fsel.msg -text "Companies selected:"
+    pack $fsel.msg -side top -pady 3m
+    pack $fsel.list -expand 1 -side left -fill y
+    pack $fsel.scroll -side right -fill y
+
+    bind $fsel.list <Double-Button-1> \
+	    "cstat_removeSelection $fsel.list"
+}
+
+############################################################
+
+proc cstat_setupFirmList {flist fsel} {
+    frame $flist -relief groove -borderwidth 2
+    listbox $flist.list -relief raised -borderwidth 2 \
+	    -yscrollcommand "$flist.scroll set" -font 9x15 \
+	    -selectmode extended
+    scrollbar $flist.scroll -command "$flist.list yview"
+    label $flist.msg -text "Database has 0 companies."
+    pack $flist.msg -side top -pady 3m
+    pack $flist.list -expand 1 -side left -fill both
+    pack $flist.scroll -side right -fill y
+    
+    bind $flist.list <Double-Button-1> \
+	"cstat_addSelection $fsel.list"
+}
+
+############################################################
+
+proc cstat_scanFirmList {listb msg} {
+    global cstat_firmlst cstat_numfirms cstat_status
+
+    $listb delete 0 end
+    set cstat_firmlst ""
+    set cstat_numfirms 0
+    set indexFile compustat.idx
+    set err [catch { set firms [open $indexFile] }]
+    if {$err > 0} {
+	cstat_putMessage "Cannot find index file $indexFile."
+	return -1
+    }
+
+    set cstat_status "Reading tape index..."
+    cstat_setupStatus .cstatstatus
+
+    while {[gets $firms line] >= 0} {
+	set symbol  [lindex $line 5]
+	set industry [lindex $line 1]
+	set year [lindex $line 6]
+	set ondisk ""
+	if {[cstat_onDisk $symbol]} { set ondisk "On Disk" }
+	set line [format "%-6s  %4d  19%2d  %s" $symbol $industry \
+		$year $ondisk]
+	lappend cstat_firmlst $line
+	incr cstat_numfirms
+	if {$cstat_numfirms % 500 == 0} {
+	    $msg configure -text "Database has $cstat_numfirms companies."
+	    update
+	}
+    }
+    close $firms
+
+    $msg configure -text "Database has $cstat_numfirms companies."
+    update
+    cstat_updateFirmListBox $listb
+
+    return 1
+}
+
+############################################################
+
+proc cstat_clearSelection {listb} {
+    global cstat_firmsel
+    $listb delete 0 end
+    set cstat_firmsel ""
+}
+
+############################################################
+
+proc cstat_updateFirmListBox {listb} {
+    global cstat_firmlst cstat_status
+
+    set cstat_status "Building company list..."
+    update
+
+    $listb delete 0 end
+    set n 0
+    foreach sel $cstat_firmlst {
+	$listb insert end $sel
+	if {$n % 500 == 0} { update }
+	incr n
+    }
+    catch {destroy .cstatstatus}
+}
+
+############################################################
+
+proc cstat_updateFirmSelBox {listb} {
+    global cstat_firmsel
+    $listb delete 0 end
+    foreach sel $cstat_firmsel {
+	set listitem $sel
+	$listb insert end $listitem
+    }
+}
+
+############################################################
+
+proc cstat_lstIndex {list symbol} {
+    set n 0
+    foreach item $list {
+	if {[lindex $item 0] == $symbol} {
+	    return $n
+	}
+	incr n
+    }
+    return -1
+}
+
+############################################################
+
+proc cstat_addSelection {listb} {
+    global cstat_firmsel
+    set err [catch { set owner [selection own] }]
+    if {$err > 0} { return }
+    if {$owner != ".cstat.firmlst.list"} { return }
+    set err [catch { set flist [selection get] }]
+    if {$err > 0} { return }
+    set flist [split $flist \n]
+    foreach sel $flist {
+	set symbol [lindex $sel 0]
+	if {[cstat_lstIndex $cstat_firmsel $symbol] < 0} {
+	    set ondisk [lrange $sel 3 4]
+	    lappend cstat_firmsel [format "%-11s %s" $symbol $ondisk]
+	    set cstat_firmsel [lsort $cstat_firmsel]
+	}
+    }
+    cstat_updateFirmSelBox $listb
+}
+
+############################################################
+
+proc cstat_removeSelection {listb} {
+    global cstat_firmsel
+    set err [catch { set owner [selection own] }]
+    if {$err > 0} { return }
+    if {$owner != $listb} { return }
+    set err [catch { set flist [selection get] }]
+    if {$err > 0} { return }
+    set flist [split $flist \n]
+    foreach sel $flist {
+	set symbol [lindex $sel 0]
+	set loc [cstat_lstIndex $cstat_firmsel $symbol]
+	set cstat_firmsel [lreplace $cstat_firmsel $loc $loc]
+    }
+    cstat_updateFirmSelBox $listb
+}
+
+############################################################
+
+proc cstat_putMessage {msg} {
+    toplevel .note
+    wm title .note "Note"
+    wm geometry .note +100+400
+    message .note.msg -justify center -width 8c -text $msg
+    button .note.ok -text OK -width 10 -command "destroy .note"
+    pack .note.msg .note.ok -side top -padx 5m -pady 3m
+
+    tkwait visibility .note
+    grab set .note
+    tkwait window .note
+}
+
+############################################################
+
+proc cstat_okOrCancel {msg} {
+    global cstat_button
+    toplevel .note
+    wm title .note "Confirm"
+    wm geometry .note +100+400
+    message .note.msg -justify center -width 8c -text $msg
+    frame .note.buttons
+    button .note.buttons.ok -text OK -width 10 \
+	    -command "set cstat_button 1"
+    button .note.buttons.cancel -text Cancel -width 10 \
+	    -command "set cstat_button 0"
+    pack .note.msg .note.buttons -side top -padx 5m -pady 4m
+    pack .note.buttons.ok .note.buttons.cancel -side left -padx 3m
+
+    tkwait visibility .note
+    grab set .note
+    tkwait variable cstat_button
+    catch {destroy .note}
+    return $cstat_button
+}
+
+############################################################
+
+proc cstat_helpWindow {} {
+    toplevel .help
+    wm title .help "Help"
+    wm geometry .help +100+300
+    message .help.msg -justify center -width 10c \
+	    -text "The list on the left shows companies whose data\
+	           exists in the database. The list on the right shows\
+                   the currently selected companies.\n\n\
+                   Select a company by double-clicking on it in the left box,\
+                   or select several companies by highlighting a range\
+                   and then press Select.\n\n\
+                   Remove a selection by double-clicking on a company\
+                   in the right box, or select several companies by\
+		   highlighting a range and then press Unselect."
+    button .help.ok -text OK -width 10 -command "destroy .help"
+    pack .help.msg .help.ok -side top -padx 5m -pady 3m
+
+    tkwait visibility .help
+    grab set .help
+    tkwait window .help
+}
+
+############################################################
+
+proc cstat_tapeToDisk {symbol} {
+    global cstat_firmlst cstat_firmsel
+    set lstIdx [cstat_lstIndex $cstat_firmlst $symbol]
+    set entry [join [lindex $cstat_firmlst $lstIdx]]
+    set entry [concat $entry "On Disk"]
+    set cstat_firmlst [lreplace $cstat_firmlst $lstIdx $lstIdx $entry]
+
+    set lstIdx [cstat_lstIndex $cstat_firmsel $symbol]
+    set entry [join [lindex $cstat_firmsel $lstIdx]]
+    set entry [concat $entry "On Disk"]
+    set cstat_firmsel [lreplace $cstat_firmsel $lstIdx $lstIdx $entry]
+    cstat_updateFirmSelBox .cstat.firmsel.list
+}
+
+############################################################
+
+proc cstat_extractFiles {} {
+    global cstat_firmlst cstat_firmsel cstat_status
+
+    set tapelst ""
+    set tapenum 0
+    set symnum 0
+    set maxprice 0
+    set maxvolume 0
+
+    foreach sel $cstat_firmsel {
+	set symbol($symnum) [lindex $sel 0]
+
+	set lstIdx [cstat_lstIndex $cstat_firmlst $symbol($symnum)]
+	set entry [lindex $cstat_firmlst $lstIdx]
+	    
+	set ondisk [lrange $sel 1 2]
+	if {$ondisk == ""} {
+	    lappend tapelst $symbol($symnum)
+	    incr tapenum
+	}
+
+	incr symnum
+    }
+
+    if {$tapenum} {
+	if {![cstat_okOrCancel "Data needs to be extracted from tape.\
+		Press OK to continue."]} {
+	    return
+	}
+	set cstat_status "Extracting data from tape..."
+	cstat_setupStatus .cstatstatus
+	set err [catch { eval cstat_extract $tapelst }]
+	if {$err > 0} {
+	    cstat_putMessage "See error message in text window."
+	    catch {destroy .cstatstatus}
+	    return
+	}
+	selection clear .cstat
+	cstat_updateFirmSelBox .cstat.firmsel.list
+	cstat_updateFirmListBox .cstat.firmlst.list
+    }
+
+    catch {destroy .cstatstatus}
+}
+
+############################################################
+
+proc cstat_setupStatus {stat} {
+    global cstat_status
+    toplevel $stat
+    wm title $stat "Status"
+    wm geometry $stat +150+400
+    label $stat.msg -textvariable cstat_status
+    pack $stat.msg -side top -padx 8m -pady 4m
+    grab set $stat
+    update
+    # for some reason raising the window takes a long time,
+    # on the order of one half or even one second
+    # raise $stat
+}
+
+############################################################
+
+proc cstatMain {} {
+    global cstat_firmlst cstat_numfirms cstat_firmsel
+
+    # see if .cstat window already exists; if so, just return
+    set err [catch {set exists [wm state .cstat]}]
+    if {!$err} { wm deiconify .cstat; return }
+
+    cstat_setupMain .cstat
+
+    frame .cstat.firms -relief groove -borderwidth 2
+    cstat_setupFirmSel .cstat.firmsel
+    cstat_setupFirmList .cstat.firmlst .cstat.firmsel
+    pack .cstat.firmlst -in .cstat.firms -side left -expand 1 -fill both
+    pack .cstat.firmsel -in .cstat.firms -side right -fill y
+    pack .cstat.firms -side top -expand 1 -fill both -pady 1m
+
+    cstat_setupButtons .cstat.buttons .cstat.firmsel .cstat.firmlst
+    pack .cstat.buttons -side top -pady 3m
+    update
+
+    # scan firm index only if the firm list doesn't exist yet
+    if {!$cstat_numfirms} {
+	if {[cstat_scanFirmList .cstat.firmlst.list .cstat.firmlst.msg] < 0} {
+	    return
+	}
+    } else {
+	.cstat.firmlst.msg configure -text \
+	"Database has $cstat_numfirms companies."
+	update
+	cstat_updateFirmListBox .cstat.firmlst.list
+    }
+    set cstat_firmsel ""
+
+    tkwait visibility .cstat
+}
