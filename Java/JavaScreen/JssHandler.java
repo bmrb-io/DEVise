@@ -9,22 +9,27 @@ public class JssHandler implements Runnable
     private int timestep = 500;
 
     private Thread handler = null;
+    private int jspopPort = 0;
     private ServerSocket jssServerSocket = null;
 
     // status = 0, handler is not running
     // status = 1, handler is running
     private boolean status = false;
 
-    public JssHandler(jspop j) throws YException
+    public JssHandler(jspop j, int port) throws YException
     {
+        jspopPort = port;
+        if (port < 1024 || port > 65535)
+            throw new YException("Invalid jspop port specified: " + port);
+
         pop = j;
 
         System.out.println("\nTry to start jss server socket at port " + DEViseGlobals.JSPOPPORT + " ...\n");
         try {
-            jssServerSocket = new ServerSocket(DEViseGlobals.JSPOPPORT);
+            jssServerSocket = new ServerSocket(jspopPort);
         } catch (IOException e) {
             jssServerSocket = null;
-            throw new YException("Can not start jss server sokcet at port " + DEViseGlobals.JSPOPPORT);
+            throw new YException("Can not start jss server sokcet at port " + jspopPort);
         }
 
     }
@@ -43,9 +48,9 @@ public class JssHandler implements Runnable
     {
         if (!getStatus()) {
             if (jssServerSocket == null) {
-                System.out.println("\nTry to restart jss server socket at port " + DEViseGlobals.JSPOPPORT + " ...\n");
+                System.out.println("\nTry to restart jss server socket at port " + jspopPort + " ...\n");
                 try {
-                    jssServerSocket = new ServerSocket(DEViseGlobals.JSPOPPORT);
+                    jssServerSocket = new ServerSocket(jspopPort);
                     System.out.println("\nRestarting jss server socket succeed!\n");
                 } catch (IOException e) {
                     System.out.println("\nRestarting jss server socket failed\n");
@@ -87,7 +92,7 @@ public class JssHandler implements Runnable
 
         boolean isListen = true;
         String hostname = null;
-        int cmdport, imgport;
+        int cmdport, imgport, port;
 
         while (isListen) {
             Socket socket = null;
@@ -97,6 +102,7 @@ public class JssHandler implements Runnable
                 hostname = socket.getInetAddress().getHostName();
                 imgport = -1;
                 cmdport = -1;
+                port = -1;
                 System.out.println("Connection request from " + hostname + " is accepted ...");
 
                 try {
@@ -107,12 +113,13 @@ public class JssHandler implements Runnable
                     if (cmd == null) {
                         System.out.println("Invalid request received from jss \"" + msg + "\"");
                     } else {
-
-                        if (cmd[0].startsWith("JSS_Add") && cmd.length == 3) {
+                        if (cmd[0].startsWith("JSS_Add") && cmd.length == 4) {
                             try {
-                                cmdport = Integer.parseInt(cmd[1]);
-                                imgport = Integer.parseInt(cmd[2]);
+                                port = Integer.parseInt(cmd[1]);
+                                cmdport = Integer.parseInt(cmd[2]);
+                                imgport = Integer.parseInt(cmd[3]);
                             } catch (NumberFormatException e) {
+                                port = -1;
                                 cmdport = -1;
                                 imgport = -1;
                                 System.out.println("Invalid request received from jss \"" + msg + "\"");
@@ -122,8 +129,8 @@ public class JssHandler implements Runnable
                         }
                     }
 
-                    if (hostname != null && imgport > 0 && imgport < 65535 && cmdport > 0 && cmdport < 65535) {
-                        pop.addServer(hostname, cmdport, imgport);
+                    if (hostname != null && port > 1024 && port < 65535 && imgport > 1024 && imgport < 65535 && cmdport > 1024 && cmdport < 65535) {
+                        pop.addServer(hostname, port, cmdport, imgport);
                     }
                 } catch (IOException ex) {
                     pop.pn("IO Error while open connection to jss host " + hostname);

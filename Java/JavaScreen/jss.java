@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/01/19 20:41:13  hongyu
+// *** empty log message ***
+//
 // Revision 1.2  2000/01/17 07:48:32  hongyu
 // *** empty log message ***
 //
@@ -29,7 +32,7 @@ import  java.util.*;
 
 public class jss implements Runnable
 {
-    private String usage = new String("usage: java jss -server[number] -debug[number]");
+    private String usage = new String("usage: java jss -server[number] -debug[number] -jssport[number] -jspopport[number] -jspophost[string]");
 
     private jss jssServer = null;
     private String localHostname = null;
@@ -138,7 +141,7 @@ public class jss implements Runnable
             connectToJSPOP();
             for (int i = 0; i < deviseds.size(); i++) {
                 devised server = (devised)deviseds.elementAt(i);
-                sendToJSPOP("JSS_Add " + server.cmdPort + " " + server.imgPort);
+                sendToJSPOP("JSS_Add " + jssPort + " " + server.cmdPort + " " + server.imgPort);
             }
         } catch (YException e) {
             System.out.println(e.getMessage());
@@ -306,7 +309,7 @@ public class jss implements Runnable
                         if (server != null) {
                             deviseds.addElement(server);
                             connectToJSPOP();
-                            sendToJSPOP("JSS_Add " + server.cmdPort + " " + server.imgPort);
+                            sendToJSPOP("JSS_Add " + jssPort + " " + server.cmdPort + " " + server.imgPort);
                             disconnectFromJSPOP();
                         }
 
@@ -359,6 +362,30 @@ public class jss implements Runnable
                         System.exit(1);
                     }
                 }
+            } else if (args[i].startsWith("-jssport")) {
+                if (!args[i].substring(8).equals("")) {
+                    try {
+                        jssPort = Integer.parseInt(args[i].substring(8));
+                        if (jssPort < 1024 || jssPort > 65535) {
+                            throw new NumberFormatException();
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number for JSS Server");
+                        System.exit(1);
+                    }
+                }
+            } else if (args[i].startsWith("-jspopport")) {
+                if (!args[i].substring(10).equals("")) {
+                    try {
+                        jspopPort = Integer.parseInt(args[i].substring(10));
+                        if (jspopPort < 1024 || jspopPort > 65535) {
+                            throw new NumberFormatException();
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number of jspop");
+                        System.exit(1);
+                    }
+                }
             } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {
                     try {
@@ -369,6 +396,10 @@ public class jss implements Runnable
                     }
                 } else {
                     debugLevel = 1;
+                }
+            } else if (args[i].startsWith("-jspophost")) {
+                if (!args[i].substring(10).equals("")) {
+                    jspopHost = args[i].substring(10);
                 }
             } else {
                 System.out.println("Invalid jss option \"" + args[i] + "\"!");

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2000/01/19 20:41:03  hongyu
+// *** empty log message ***
+//
 // Revision 1.26  1999/10/10 08:49:53  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -53,6 +56,7 @@ public class DEViseServer implements Runnable
 
     public String hostname = "localhost";
     public int dataPort = 0, cmdPort = 0, switchPort = 0;
+    public int jssport = 0;
     private DEViseCommSocket socket = null;
     private int devisedTimeout = 180 * 1000;
     private int socketTimeout = 1000;
@@ -69,7 +73,7 @@ public class DEViseServer implements Runnable
 
     private int action = DEViseServer.IDLE;
 
-    public DEViseServer(jspop j, String name, int cmdport, int imgport)
+    public DEViseServer(jspop j, String name, int port, int cmdport, int imgport)
     {
         pop = j;
         if (name != null) {
@@ -78,6 +82,7 @@ public class DEViseServer implements Runnable
 
         cmdPort = cmdport;
         dataPort = imgport;
+        jssport = port;
         isValid = true;
     }
     /*
@@ -887,7 +892,7 @@ public class DEViseServer implements Runnable
 
         Vector rspbuf = new Vector();
 
-        pop.pn("Sending command to devised(" + hostname + ") :  \"" + clientCmd + "\"");
+        pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + " ) :  \"" + clientCmd + "\"");
         socket.sendCmd(clientCmd);
 
         isEnd = false;

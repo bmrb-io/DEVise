@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2000/01/19 20:41:13  hongyu
+// *** empty log message ***
+//
 // Revision 1.18  1999/08/03 05:56:51  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -30,7 +33,7 @@ import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -userfile[filename] -logfile[filename] -debug[number]");
+    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -userfile[filename] -logfile[filename] -debug[number] -jspopport[number]");
     // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
@@ -67,6 +70,7 @@ public class jspop implements Runnable
     private Thread popThread = null;
 
     private JssHandler jssHandler = null;
+    private int jspopPort = DEViseGlobals.JSPOPPORT;
     private DEViseClientDispatcher dispatcher = null;
 
     private Hashtable users = new Hashtable();
@@ -184,7 +188,7 @@ public class jspop implements Runnable
 
         System.out.println("\nStarting JSS handler ...\n");
         try {
-            jssHandler = new JssHandler(this);
+            jssHandler = new JssHandler(this, jspopPort);
             jssHandler.start();
         } catch (YException e) {
             System.out.println("Can not start jss handler");
@@ -440,9 +444,9 @@ public class jspop implements Runnable
         }
     }
 
-    public synchronized void addServer(String name, int cmdport, int imgport)
+    public synchronized void addServer(String name, int port, int cmdport, int imgport)
     {
-        DEViseServer newserver = new DEViseServer(this, name, cmdport, imgport);
+        DEViseServer newserver = new DEViseServer(this, name, port, cmdport, imgport);
         servers.addElement(newserver);
     }
 
@@ -455,7 +459,7 @@ public class jspop implements Runnable
         servers.removeElement(server);
 
         try {
-            Socket socket = new Socket(server.hostname, DEViseGlobals.JSSPORT);
+            Socket socket = new Socket(server.hostname, server.jssport);
             DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             String msg = "JSS_Restart " + server.cmdPort + " " + server.dataPort;
             os.writeInt(msg.length());
@@ -587,6 +591,18 @@ public class jspop implements Runnable
                         DEViseGlobals.cmdport = port;
                     } catch (NumberFormatException e) {
                         System.out.println("Please use a positive integer number between 1024 and 65535 as the port number");
+                        System.exit(1);
+                    }
+                }
+            } else if (args[i].startsWith("-jspopport")) {
+                if (!args[i].substring(10).equals("")) {
+                    try {
+                        int jspopPort = Integer.parseInt(args[i].substring(10));
+                        if (jspopPort < 1024 || jspopPort > 65535) {
+                            throw new NumberFormatException();
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please use a positive integer number between 1024 and 65535 as the jspop port number");
                         System.exit(1);
                     }
                 }
