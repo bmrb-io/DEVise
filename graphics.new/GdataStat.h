@@ -31,11 +31,11 @@ class GdataStat {
 	   _hashTable.clear();
       }
 
-      void Insert(int index, BasicStats *bs){
+      void Insert(double index, BasicStats *bs){
 	  _hashTable.insert(index, bs);
       }
 
-      Boolean Lookup(int index, BasicStats *&bs) {
+      Boolean Lookup(double index, BasicStats *&bs) {
 	  BasicStats *stat;
 	  if(_hashTable.lookup(index, stat) == 0) {
 	      bs = stat;
@@ -45,18 +45,19 @@ class GdataStat {
 	   return false;
        }
 
-       Boolean Remove(int index) {
+       Boolean Remove(double index) {
 	   if(_hashTable.remove(index) >= 0) 
 	       return true;
-	   printf("Warning: Statistics for index %d not found", index);
+	   printf("Warning: Statistics for index %f not found", index);
 	   return false;
        }
 
 
   protected:
-     static int hashFun(int &index, int numOfBucks) { return abs(index)%numOfBucks; }
+     static int hashFun(double &index, int numOfBucks) { return abs((int)index)%numOfBucks; }
 
-     HashTable<int, BasicStats *> _hashTable;
+//     HashTable<int, BasicStats *> _hashTable;
+     HashTable<double, BasicStats *> _hashTable;
 };
 
 #endif
