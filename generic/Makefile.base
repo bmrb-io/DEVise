@@ -12,7 +12,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lgraphics.new -lgraphics \
+	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
 SRC = generic.c devise.C deviseb.C
@@ -20,7 +20,7 @@ SRC = generic.c devise.C deviseb.C
 OBJ = $(SRC:.c=.o)
 OBJ += $(SRC:.C=.o)
 
-ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
+ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a
 
@@ -32,6 +32,7 @@ all: generic devise devised deviseb
 
 # Note: the first line below forces CompDate.c to always be compiled when
 # we link this module.
+
 generic: generic.o $(ALLLIBS) $(MONOLITHLIB)
 	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
 	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
@@ -43,12 +44,12 @@ devised: generic.o $(ALLLIBS) $(SERVERLIB)
 		-lserver $(LDFLAGS) $(ARCH_LDPOST)
 
 devise: devise.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
-		$(LDFLAGS) $(ARCH_LDPOST)
+	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+                -lclient $(LDFLAGS) $(ARCH_LDPOST)
 
 deviseb: deviseb.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
-		$(ARCH_LDPOST)
+	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+                -lclient $(ARCH_LDPOST)
 
 .PHONY: clean mostlyclean
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/07/09 23:58:36  jussi
+#  Added CompDate.o as a compile target.
+#
 #  Revision 1.10  1996/05/22 21:16:14  jussi
 #  Changed Devise from using composite .o files to using .a files.
 #  The old approach did not work in AIX whereas the new approach
@@ -44,7 +47,6 @@
 #
 #  Revision 1.3  1995/09/29 19:58:54  jussi
 #  Added exttape.
-#
 
 ############################################################
 
@@ -72,11 +74,11 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lmonolith -lgraphics.new -lgraphics \
+	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
 	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 
-ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
+ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a ../graphics.new/libmonolith.a
 
