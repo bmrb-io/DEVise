@@ -292,6 +292,11 @@ Num Date        Status  Description
 			drawn; then if you force a redraw, only the correct
 			ones are drawn). (rkw)
 
+086 11/27/96	OPEN	Can't print session wenger/session/PrintTest6.tk
+			(never finishes). (rkw)
+
+087 12/02/96	OPEN	Removing a view causes DEVise to exit. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
