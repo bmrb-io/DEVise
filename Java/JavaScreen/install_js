@@ -171,7 +171,7 @@ chmod 755 $servdir/scripts/*
 # Create the logs directory if necessary.
 if (! -d $servdir/logs) then
   mkdir $servdir/logs
-  chmod 755 $servdir/logs
+  chmod 777 $servdir/logs
 endif
 
 # Install lib files (for devised).
@@ -268,7 +268,7 @@ chmod 755 $popdir/scripts/*
 # Create the logs directory if necessary.
 if (! -d $servdir/logs) then
   mkdir $servdir/logs
-  chmod 755 $servdir/logs
+  chmod 777 $servdir/logs
 endif
 
 # Keep run_check last because of cron job.
