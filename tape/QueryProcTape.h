@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/10 01:46:09  jussi
+  Added call to Flush() when query processor becomes idle.
+
   Revision 1.3  1995/09/22 15:43:27  jussi
   Added copyright message.
 
@@ -282,7 +285,8 @@ private:
   };
   sortedTableEntry **_sortedTables;
 
-  Boolean _needDisplayFlush;       /* display needs to be flushed */
+  int readFd;	                   /* read marker fd */
+  int writeFd;                     /* write marker fd */
 };
 
 #endif

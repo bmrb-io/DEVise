@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/16 20:56:23  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.6  1996/04/10 01:45:37  jussi
   Added call to Flush() when query processor becomes idle.
 
@@ -125,8 +128,6 @@ inline void GetGDataFirstLastX(TDataMap *map, void **recs, int numRecs,
 
 QueryProcTape::QueryProcTape()
 {
-  Dispatcher::Current()->Register(this);
-  
   _freeList = NULL;
   _queries = new QPTapeDataList();
   _numMappings = 0;
@@ -147,7 +148,8 @@ QueryProcTape::QueryProcTape()
   _numSortedTables = 0;
   _sortedTables = 0;
 
-  _needDisplayFlush = true;
+  Dispatcher::CreateMarker(readFd, writeFd);
+  Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
 }
 
 void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -241,11 +243,14 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->DoneIterator(index);
 #endif
 
-  return;
+  Dispatcher::InsertMarker(writeFd);
 }
 
 QueryProcTape::~QueryProcTape()
 {
+  Dispatcher::FlushMarkers(readFd);
+  Dispatcher::CloseMarker(readFd, writeFd);
+
   for(int i = 0; i < _numSortedTables; i++)
     delete _sortedTables[i];
   delete [] _sortedTables;
@@ -519,17 +524,18 @@ void QueryProcTape::ProcessQPTapeScatter(QPTapeData *qData)
 void QueryProcTape::ProcessQuery()
 {
   if (NoQueries()) {
-    if (_needDisplayFlush) {
-      DeviseDisplay::DefaultDisplay()->Flush();
-      _needDisplayFlush = false;
-    }
+    /*
+       If all queries have been executed (system is idle) and
+       we need to notify control panel that everything is in
+       sync, then do so.
+    */
+    if (ControlPanel::Instance()->GetSyncNotify())
+      ControlPanel::Instance()->SyncNotify();
 
-    // Do conversion, then return
+    /* Do conversion, then return */
     DoGDataConvert();
     return;
   }
-
-  _needDisplayFlush = true;
 
   if (InitQueries())
     // Have initialized queries. Return now
@@ -1071,7 +1077,7 @@ void QueryProcTape::ClearMapping()
   _numMappings = 0;
 }
 
-// Convert what's in memory for tdata. Return false if no more to convert.*/
+/* Convert what's in memory for tdata. Return false if no more to convert.*/
 Boolean QueryProcTape::DoInMemGDataConvert(TData *tdata, GData *gdata,
 					   TDataMap *map)
 {
@@ -1079,149 +1085,178 @@ Boolean QueryProcTape::DoInMemGDataConvert(TData *tdata, GData *gdata,
   RecId inMemLow, inMemHigh;
   int gRecSize = gdata->RecSize();
   int tRecSize = tdata->RecSize();
-  int maxRecs = GDATA_BUF_SIZE/gRecSize;
+  int maxRecs = GDATA_BUF_SIZE / gRecSize;
   int numBytes = 0;
   void *tmpBuf;
-  while (numBytes < QPTAPE_MAX_FETCH &&
-	 _mgr->GetInMemRecs(tmpBuf,inMemLow,inMemHigh)) {
+  while(numBytes < QPTAPE_MAX_FETCH &&
+	_mgr->GetInMemRecs(tmpBuf, inMemLow, inMemHigh)) {
+    /* need this cast because some C++ compilers will
+       not allow as to pass a (char *) into _mgr->GetInMemRecs() above */
     char *buf = (char *)tmpBuf;
-
-    // For each in-mem range, find all subranges that
-    // have not been converted and convert
+    
+    /* For each in-mem range, find all subranges that
+       have not been converted and convert */
     RecId current = inMemLow;
-    Boolean noHigh;
     RecId low, high;
-    noHigh = gdata->NextUnConverted(current, low, high);
+    Boolean noHigh = gdata->NextUnConverted(current, low, high);
     while (low <= inMemHigh) {
       if (noHigh)
 	high = inMemHigh;
       else if (high > inMemHigh)
 	high = inMemHigh;
-
-      // convert [low..high] in batches that fit in memory
+      
+      /* convert [low..high] in batches that fit in memory */
       int numRecs = high-low+1;
       RecId convertId = low;
       while (numRecs > 0 ) {
 	int numConvert = numRecs;
 	if (numConvert > maxRecs)
 	  numConvert = maxRecs;
-
-	char *startBuf = buf + tRecSize*(convertId-inMemLow);
+	
+	char *startBuf = buf + tRecSize * (convertId - inMemLow);
 	void **recPtrs = 0;
 	char *firstRec = _gdataBuf;
-	char *lastRec = _gdataBuf + gRecSize*(numConvert-1);
-	map->ConvertToGData(convertId,startBuf,recPtrs,
-			    numConvert,_gdataBuf);
-	gdata->UpdateConversionInfo(convertId,convertId+numConvert-1, 
-				    firstRec,lastRec);
-	gdata->WriteRecs(convertId,numConvert,_gdataBuf);
-	numBytes += gRecSize*numConvert;
-
+	char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
+	map->ConvertToGData(convertId, startBuf, recPtrs,
+			    numConvert, _gdataBuf);
+	gdata->UpdateConversionInfo(convertId, convertId + numConvert - 1, 
+				    firstRec, lastRec);
+	gdata->WriteRecs(convertId, numConvert, _gdataBuf);
+	numBytes += gRecSize * numConvert;
+	
 	numRecs -= numConvert;
 	convertId += numConvert;
-
-	AddCoordMapping(map, convertId, ((GDataBinRec *)_gdataBuf)->x);
       }
-
+      
       current = high;
       noHigh = gdata->NextUnConverted(current, low, high);
     }
     _mgr->FreeInMemRecs(buf);
   }
   _mgr->DoneTDataInMem();
+
   return (numBytes > 0);
 }
 
 void QueryProcTape::DoGDataConvert()
 {
-  if (!Init::ConvertGData() || _numMappings == 0)
+  if (!Init::ConvertGData() || !_numMappings) {
+    Dispatcher::FlushMarkers(readFd);
     return;
-  
-  // Do In mem conversion, if we can
+  }
+	
+  /* Do in-memory conversion, if we can */
   int index = _convertIndex;
-  TDataMap *map;
-  TData *tdata;
-  GData *gdata;
-  int i;
-  for(i= 0; i < _numMappings; i++) {
+
+  for(int i = 0; i < _numMappings; i++) {
     if (index < 0 || index >= _numMappings)
       index = 0;
-    map = _mappings[index];
+    TDataMap *map = _mappings[index];
+    GData *gdata = map->GetGData();
+    TData *tdata = map->GetTData();
+    if (gdata && DoInMemGDataConvert(tdata, gdata, map)) {
+      /* done converting one segment for in mem conversion */
+#ifdef DEBUG
+      printf("Done with in-memory GData conversion\n");
+#endif
+      return;
+    }
+  }
+  
+  /* If we get here, nothing can be converted from memory */
+
+  /* Find first gdata that needs disk conversion */
+
+  TDataMap *map = 0;
+  GData *gdata = 0;
+  TData *tdata = 0;
+  int recsLeft = 0;
+
+  RecId startId, firstId, lastId;
+  Boolean noHigh = false;
+  RecId low, high;
+
+  int mapidx;
+
+  for(mapidx = 0; mapidx < _numMappings; mapidx++) {
+    map = _mappings[_convertIndex];
+#ifdef DEBUG
+    printf("DoGDataConvert map 0x%p\n", map);
+#endif
+
     gdata = map->GetGData();
     tdata = map->GetTData();
-    if (gdata != NULL && DoInMemGDataConvert(tdata, gdata, map))
-      // done converting one segment for in mem conversion
-      return;
-  }
-
-  // If we get here, nothing can be converted from memory
-  // Do disk conversion
-  if (_convertIndex < 0 || _convertIndex >= _numMappings)
-    _convertIndex = 0;
-
-  map = _mappings[_convertIndex++];
 
 #ifdef DEBUG
-  printf("DoGDataConvert map 0x%p\n", map);
+    printf("Map[%d] has GData 0x%p\n", _convertIndex, gdata);
 #endif
 
-  gdata = map->GetGData();
-  if (gdata == NULL)
-    return;
+    _convertIndex = (_convertIndex + 1) % _numMappings;
 
-  tdata = map->GetTData();
-  int gRecSize = map->GDataRecordSize();
-  
-  int recsLeft = gdata->RecsLeftToConvert();
+    if (!gdata)
+      continue;
+
+    recsLeft = gdata->RecsLeftToConvert();
 #ifdef DEBUG
-  printf("Converting Gata %s, %d recs left\n", gdata->GetName(), recsLeft);
+    printf("GData %s has %d recs left\n", gdata->GetName(), recsLeft);
 #endif
+    if (!recsLeft)
+      continue;
 
-  if (recsLeft == 0)
-    // no more space to store gdata
-    return;
+    startId = map->GetFocusId();
+    if (!tdata->HeadID(firstId) || !tdata->LastID(lastId))
+      continue;
   
-  RecId startId = map->GetFocusId();
-  RecId firstId, lastId ;
-  if (!tdata->HeadID(firstId))
-    return;
-  if (!tdata->LastID(lastId))
-    return;
-
-  Boolean noHigh;
-  RecId low, high;
-  noHigh = gdata->NextUnConverted(startId, low, high);
-  if (low > lastId) {
-    // check from beginning
-    startId = firstId;
     noHigh = gdata->NextUnConverted(startId, low, high);
-    if (low > lastId)
-      // done
-      return;
+    if (low > lastId) {
+      /* check from beginning */
+      startId = firstId;
+      noHigh = gdata->NextUnConverted(startId, low, high);
+      if (low > lastId) {
+#ifdef DEBUG
+	printf("GData %s has nothing more to convert\n", gdata->GetName());
+#endif
+	continue;
+      }
+    }
+
+    break;
   }
+  
+  if (mapidx >= _numMappings) {
+#ifdef DEBUG
+    printf("Could not find any GData that needs disk conversion\n");
+#endif
+    Dispatcher::FlushMarkers(readFd);
+    return;
+  }
+
+  DOASSERT(map && gdata && tdata, "Invalid TDataMap or GData or TData");
+
   if (noHigh)
     high = lastId;
-  
-  int numRecs = high-low+1;
+
+  int gRecSize = map->GDataRecordSize();
+
+  int numRecs = high - low + 1;
   if (recsLeft > 0 && numRecs > recsLeft)
     numRecs = recsLeft;
   
-  // convert [low..low+recsLeft-1]
+  /* convert [low..low+recsLeft-1] */
   tdata->InitGetRecs(low, high, RecIdOrder);
   RecId startRid;
   int numRetrieved;
   int dataSize;
   void **recPtrs = 0;
-  Boolean more = tdata->GetRecs(_tdataBuf, TDATA_BUF_SIZE,startRid,
-				numRetrieved, dataSize, recPtrs);
-  more = more;
+  (void)tdata->GetRecs(_tdataBuf, TDATA_BUF_SIZE,startRid,
+		       numRetrieved, dataSize, recPtrs);
   tdata->DoneGetRecs();
-
-  // convert [startRid..startRid+numRetrieved-1]
+  
+  /* convert [startRid..startRid+numRetrieved-1] */
   map->ConvertToGData(startRid, _tdataBuf, recPtrs, numRetrieved, _gdataBuf);
   char *firstRec = _gdataBuf;
-  char *lastRec = _gdataBuf + gRecSize*(numRetrieved-1);
-  gdata->UpdateConversionInfo(startRid, startRid+numRetrieved-1,
+  char *lastRec = _gdataBuf + gRecSize * (numRetrieved - 1);
+  gdata->UpdateConversionInfo(startRid, startRid + numRetrieved - 1,
 			      firstRec, lastRec);
   gdata->WriteRecs(startRid, numRetrieved, _gdataBuf);
 
