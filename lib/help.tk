@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.9  1997/01/22 23:47:53  jussi
+#	Removed references to helpWinCreated and replaced them with
+#	calls to WindowVisible.
+#
 #	Revision 1.8  1996/04/04 20:59:45  jussi
 #	Minor typographical correction.
 #
@@ -118,7 +122,7 @@ proc DoHelp { } {
 
 #	GUI
 	$canvasName create text [helpUnit 4.5] [helpUnit .3] \
-		-fill $regularColor -text "Graphica User Interface(GUI)" -tag "gui.fill"
+		-fill $regularColor -text "Graphical User Interface (GUI)" -tag "gui.fill"
 
 #	tdata
 	$canvasName create text [helpUnit 2.5] [helpUnit 1] \
@@ -285,7 +289,7 @@ proc DoHelp { } {
 
 	listbox $listboxName -relief raised \
 		-yscrollcommand "$topicScrollName set" \
-		-bg white -selectmode single
+		-fg $regularColor -bg white -selectmode single
 	foreach item $index {
 		$listboxName insert end $item
 	}

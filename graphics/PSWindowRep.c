@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/01/17 20:31:44  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.19  1997/01/13 18:07:49  wenger
   Fixed bugs 043, 083, 084, 091, 114.
 
@@ -1361,11 +1368,31 @@ void PSWindowRep::SetCopyMode()
 void PSWindowRep::SetFont(char *family, char *weight, char *slant,
                           char *width, float pointSize)
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::SetFont(%s %s %s %s %f\n", family, weight, slant,
+    width, pointSize);
+#endif
+
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
+  if (!strcasecmp(family, "new century schoolbook")) {
+    family = "NewCenturySchoolbook";
+  }
+
+  char *boldString = "";
+  if (!strcasecmp(weight, "bold")) {
+    boldString = "-Bold";
+  }
+
+  char *angleString = "";
+  if (!strcasecmp(slant, "i")) {
+    angleString = "-Oblique";
+  }
+
   _fontSize = pointSize;
-  fprintf(printFile, "/%s findfont\n", family);
+
+  fprintf(printFile, "/%s%s%s findfont\n", family, boldString, angleString);
   fprintf(printFile, "%f scalefont\n", _fontSize);
   fprintf(printFile, "setfont\n");
 #endif

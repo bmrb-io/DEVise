@@ -294,7 +294,7 @@ Num Date        Status  Description
 			window but is not visible unless views are unpiled.
 			(rkw)
 
-078 11/21/96	OPEN	Open a template as a session, cancel out of selecting
+078 11/21/96	FIXED	Open a template as a session, cancel out of selecting
 			a data stream -> some of the (internal) objects for
 			the session are not destroyed (opening the same
 			session again causes duplicate name error). (rkw)
@@ -400,7 +400,7 @@ Num Date        Status  Description
 			open. (rkw)
 			Deferred
 
-103 12/20/96	OPEN	Bold, italic, and New Century Schoolbook fonts
+103 12/20/96	FIXED	Bold, italic, and New Century Schoolbook fonts
 			don't work in PostScript. (rkw)
 			Assigned: Kent
 
@@ -502,6 +502,7 @@ Num Date        Status  Description
 			up the drawing of the view selection box. (rkw)
 			(Setting FILL_WHOLE_BACKGROUND to 0 in View.c
 			removed the fix for this bug.  rkw)
+			Deferred
 
 123 01/16/97	WORK	Load the sesson demo/COD1.tk; resize the 'Global
 			View' window; then obscure any part of that window
@@ -518,7 +519,7 @@ Num Date        Status  Description
 			actual data overdraws it. (rkw)
 			Deferred
 
-125 01/22/97	OPEN	When the help window is shown, the topics do not show
+125 01/22/97	FIXED	When the help window is shown, the topics do not show
 			up. (rkw)
 			Assigned: Kent
 

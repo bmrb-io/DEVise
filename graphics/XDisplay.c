@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/01/17 20:31:49  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.47  1996/12/30 23:51:13  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -321,15 +328,30 @@ void XDisplay::Register()
 void XDisplay::SetFont(char *family, char *weight, char *slant,
                        char *width, float pointSize)
 {
+#if defined(DEBUG)
+  printf("XDisplay::SetFont(%s %s %s %s %f\n", family, weight, slant, width,
+    pointSize);
+#endif
+
     XFontStruct *oldFont = _fontStruct;
+
+    /* Special case for Courier or Helvetica italic. */
+    if (((!strcasecmp(family, "courier")) ||
+      (!strcasecmp(family, "helvetica"))) && !strcasecmp(slant, "i")) {
+      slant = "o";
+    }
+
     /*
        Attempt to load font as specified. If font cannot be loaded,
        increase point size by one unit and try again.
     */
     for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
         char fname[128];
-        sprintf(fname, "*-%s-%s-%s-%s--*-%d-*-*-*-*-*-*",
+        sprintf(fname, "*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
                 family, weight, slant, width, (int) (p * 10.0));
+#if 0
+        printf("  Trying font %s\n", fname);
+#endif
         _fontStruct = XLoadQueryFont(_display, fname);
         if (_fontStruct) {
 #if defined(DEBUG)

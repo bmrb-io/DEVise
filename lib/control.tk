@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.111  1997/01/22 23:47:27  jussi
+#	Removed references to queryWinOpened, query3dWinOpened,
+#	historyWinOpened, stackWinOpened, and helpWinOpened.
+#	This information is now available by calling WindowExists
+#	or WindowVisible.
+#
 #	Revision 1.110  1997/01/22 20:13:57  wenger
 #	Removed other non-functional user interface components (includes workaround
 #	for bug 127); fixed a number of OK/Cancel button positions.
@@ -1058,13 +1064,18 @@ proc EditMapping { map } {
 
 
 # Close current session
-proc DoClose {} {
+proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
     
     if {$templateMode} {	
-	set but [dialog .open "Merge Data" \
-	   "If you Close without Merging, you will lose access to this data" \
-	   "" 2 "Close" "Merge, then Close" "Cancel"]
+	if {$askUser} {
+	  set but [dialog .open "Merge Data" \
+	     "If you Close without Merging, you will lose access to this data" \
+	     "" 2 "Close" "Merge, then Close" "Cancel"]
+	} else {
+	  set but 0
+	}
+
 	if {$but == 2} {
 	    return 0
 	} elseif {$but == 0} {
@@ -1074,8 +1085,13 @@ proc DoClose {} {
 	}
     }	
     
-    set but [dialog .open "Close Session" "Close Current Session?" \
+    if {$askUser } {
+      set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 0 OK Cancel ]
+    } else {
+      set but 0
+    }
+
     if { $but == 1 } {
 	return 0
     }
@@ -1124,6 +1140,11 @@ proc DoOpen { asTemplate } {
     }
     Puts "Restoring session from $file"
     set err [ catch { source $file } ]
+
+    # Make sure to clean up if things didn't work or the user cancelled.
+    if {[DEVise getWinCount] <= 1} {
+      DoClose 0
+    }
     set restoring 0
     set template 0
 
