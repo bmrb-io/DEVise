@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/30 21:16:14  jussi
+  Removed references to specific colors.
+
  * Revision 1.3  1995/11/25  01:20:21  jussi
  * This code now uses Transform matrix operations to convert user/world
  * coordinates to screen pixel coordinates. This is to avoid any future
@@ -41,6 +44,8 @@ public:
 	      QueryProc *qp, Color fg = ForegroundColor,
 	      Color bg = BackgroundColor, AxisLabel *xAxis = NULL,
 	      AxisLabel *yAxis = NULL, Action *action = NULL);
+
+  ~ViewScatter();
   
   virtual void InsertMapping(TDataMap *map);
 

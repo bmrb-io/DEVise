@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/02/13 16:44:18  jussi
+#  Replaced /usr/X11R6/include with /s/X11/include.
+#
 #  Revision 1.6  1995/12/02 21:51:49  jussi
 #  Added -I/s/tcl/include.
 #
@@ -25,6 +28,8 @@
 ############################################################
 
 ARCH_FLAGS = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

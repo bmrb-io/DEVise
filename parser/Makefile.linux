@@ -1,4 +1,4 @@
 depend:
-	makedepend -fMakefile.hp -I../parser *.c
+	makedepend -fMakefile.linux -I../parser *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

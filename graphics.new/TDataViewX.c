@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/29 22:41:28  jussi
+  Added support for line connectors.
+
   Revision 1.9  1995/12/14 21:20:00  jussi
   Replaced 0x%x with 0x%p.
 
@@ -72,6 +75,14 @@ TDataViewX::TDataViewX(char *name,
   _dispSymbols = true;
   _dispConnectors = false;
   _cMap = NULL;
+}
+
+TDataViewX::~TDataViewX()
+{
+	// SubClassUnmapped aborts any current query; this _must_ be done
+	// before this destructor exits, or members needed to do the abort
+	// will no longer be defined.  RKW 4/5/96.
+	SubClassUnmapped();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)

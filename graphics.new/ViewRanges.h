@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:19  jussi
+  Added CVS header.
+*/
 
 #ifndef ViewRanges_h
 #define ViewRanges_h
@@ -13,6 +16,8 @@ public:
 	/*TRUE if draw horizontal line, else draw vertical line */
 	ViewRanges(char *name,  ViewWin *parent, VisualFilter &initFilter,
 		RangeSource *source, Boolean horizontal);
+
+	~ViewRanges();
 private:
 	/* from View */
     virtual void DerivedStartQuery(VisualFilter &filter, int timestamp);

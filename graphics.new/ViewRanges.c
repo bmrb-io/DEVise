@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/30 21:13:15  jussi
+  Replaced references to specific colors.
+
   Revision 1.2  1995/09/05 22:16:18  jussi
   Added CVS header.
 */
@@ -63,6 +66,14 @@ void ViewRanges::DerivedStartQuery(VisualFilter &filter, int timestamp)
   _source->DoneRangeSourceIterator();
   
   ReportQueryDone(0);
+}
+
+ViewRanges::~ViewRanges()
+{
+	// SubClassUnmapped aborts any current query; this _must_ be done
+	// before this destructor exits, or members needed to do the abort
+	// will no longer be defined.  RKW 4/5/96.
+    SubClassUnmapped();
 }
 
 void ViewRanges::DerivedAbortQuery(){

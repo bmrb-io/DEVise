@@ -62,7 +62,7 @@ jstat: jstat.o $(LIBOBJ)
 testWindowRep: $(TESTOBJ)
 	$(CC) -o testWindowRep $(TESTOBJ) \
 		-ltcl -ltk -lXaw -lXmu -lXt \
-		-lXext -lX11 -lm $(ARCH_LDFLAGS)
+		-lXext -lX11 -lm $(ARCH_LDPOST) $(ARCH_LDFLAGS)
 
 .PHONY: clean mostlyclean
 

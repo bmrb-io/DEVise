@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/30 00:02:09  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.6  1995/12/29 22:42:32  jussi
   Added support for line connectors.
 
@@ -52,6 +56,8 @@ public:
 	     Color fg = ForegroundColor, Color bg = BackgroundColor,
 	     AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 	     Action *action = NULL);
+
+  ~TDataViewX();
 	
   virtual void InsertMapping(TDataMap *map);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 21:20:15  jussi
+  Replaced 0x%x with 0x%p.
+
  * Revision 1.5  1995/11/25  01:20:20  jussi
  * This code now uses Transform matrix operations to convert user/world
  * coordinates to screen pixel coordinates. This is to avoid any future
@@ -47,6 +50,14 @@ ViewScatter::ViewScatter(char *name,
 {
   _queryProc = qp;
   _map = NULL;
+}
+
+ViewScatter::~ViewScatter()
+{
+	// SubClassUnmapped aborts any current query; this _must_ be done
+	// before this destructor exits, or members needed to do the abort
+	// will no longer be defined.  RKW 4/5/96.
+    SubClassUnmapped();
 }
 
 void ViewScatter::InsertMapping(TDataMap *map)

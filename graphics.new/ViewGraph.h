@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/18 03:16:13  ravim
+  Function to compute XOR of statistic strings.
+
   Revision 1.6  1995/12/14 20:51:03  jussi
   Added one char to _DisplayStats for terminating null.
 
@@ -50,7 +53,6 @@ public:
 	    AxisLabel *xAxis, AxisLabel *yAxis,
 	    Color fg, Color bg,
 	    Action *action = NULL);
-	
   virtual void InsertMapping(TDataMap *map);
 
   void InitMappingIterator();

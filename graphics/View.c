@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/03/29 18:13:57  wenger
+  Got testWindowRep to compile and run, added drawing in
+  windows; fixed a few more compile warnings, etc.
+
   Revision 1.25  1996/03/06 19:35:40  jussi
   Added GetNumDimensions() and SetNumDimensions().
 
@@ -233,6 +237,13 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
 
 View::~View()
 {
+  if (_querySent)
+  {
+	fprintf(stderr, "Destructor of subclass of View did not abort query"
+	  " (%s: %d)\n", __FILE__, __LINE__);
+	exit(1);
+  }
+
   delete _label.name;
 
   Unmap();
@@ -309,6 +320,9 @@ void View::SubClassMapped()
 	
 void View::SubClassUnmapped()
 {
+  // If the View object is really anything other than a
+  // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
+  // this will call a pure virtual function.  RKW 4/5/96.
   if (_querySent) {
     DerivedAbortQuery();
     ReportQueryDone(0);
