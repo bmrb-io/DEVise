@@ -57,6 +57,9 @@ struct SolDnCompiled_GData {
 
 
 
+
+
+
 class SolDnCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -72,7 +75,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 82 "/p/devise/parser/proto/RectXShape_proto.h"
+# 85 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
@@ -86,7 +89,6 @@ public:
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
     Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
 
 
     win->SetFgColor((map->GetDefaultColor()) );
@@ -285,6 +287,9 @@ struct RainCompiled_GData {
 
 
 
+
+
+
 class RainCompiled_BarShape  : public BarShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -317,13 +322,10 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, int pixelSize) {
 		
-    Coord maxWidth, maxHeight;
-
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
     Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
 
 
     win->SetFgColor((map->GetDefaultColor()) );
@@ -485,6 +487,9 @@ struct TempCompiled_GData {
 
 
 
+
+
+
 class TempCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -500,7 +505,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 82 "/p/devise/parser/proto/RectXShape_proto.h"
+# 85 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
@@ -514,7 +519,6 @@ public:
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
     Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
 
 
     win->SetFgColor((map->GetDefaultColor()) );
