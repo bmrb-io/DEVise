@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/13 17:26:31  jussi
+  Moved Mapped() method to header file.
+
   Revision 1.10  1996/07/10 19:36:23  jussi
   Cleaned up code.
 
@@ -175,11 +178,11 @@ protected:
     virtual void SubClassMapped() = 0;
     virtual void SubClassUnmapped() = 0;
 
-    virtual void HandleResize(WindowRep * w, int xlow,
-                              int ylow, unsigned width, unsigned height);
-    
-    virtual void HandleWindowMappedInfo(WindowRep *winRep, Boolean mapped);
-    
+    virtual void HandleResize(WindowRep *w, int xlow, int ylow,
+                              unsigned width, unsigned height);
+    virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped);
+    virtual Boolean HandleWindowDestroy(WindowRep *w) { return false; }
+
     /* Get total weight of children */
     int TotalWeight();
 
