@@ -1047,8 +1047,11 @@ Num Date        Status  Description
 			place (since OpenGL commit). (rkw)
 
 268 12/29/97	OPEN	Util.c:CheckDirSpace doesn't work with more than
-			2GB of free space.
+			2GB of free space (at least on Linux). (kb/rkw)
 
+269 01/06/98	OPEN	Client/server (but not monolithic) Devise crashes
+			if you try to pile the views in the Zones 2 window
+			of the COD1.ds session. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
