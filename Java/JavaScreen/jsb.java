@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2001/05/11 20:36:13  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.14  2001/05/07 21:53:26  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -114,6 +117,9 @@ public class jsb extends DEViseJSApplet
 
     jsdevisec jsc = null;
 
+    public static jsb app = null;
+
+
     public void init()
     {
 	super.init();
@@ -148,7 +154,14 @@ public class jsb extends DEViseJSApplet
                 }
             }
         }
+
+	// reloading applet instance
+	if (app == null) {
+	    app = this;
+	} else if (jsc != null && !jsValues.session.reloadApplet) 
+	    jsc.restartSession();
     }
+
 
     public void start()
     {

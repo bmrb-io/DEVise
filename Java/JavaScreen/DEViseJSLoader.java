@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/05/11 20:36:08  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.3  2001/02/20 20:02:23  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -73,6 +76,9 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
     Thread appletThread;
     Applet realApplet;
 
+    jsb app = null;
+    boolean reload = true;
+
     public void init()
     {
 	super.init();
@@ -87,6 +93,15 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	    appletToLoad = "JavaScreen.jsb";
 	}
 
+	// Whether reload a new applet instance for jsb.
+	String reloadString = getParameter("reloadapplet");
+        if (reloadString == null) {
+	    reload = true;
+	} else if (reloadString.equals("false")) 
+	    reload = false;
+	else
+	    reload = true;
+	
         label = new Label(
 	  " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
         label.setFont(new Font("Helvetica", Font.BOLD, 16));
@@ -109,16 +124,49 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
-            Class appletClass = Class.forName(appletToLoad);
-            realApplet = (Applet)appletClass.newInstance();
-            realApplet.setStub(this);
 
-            remove(label);
-            setLayout(new GridLayout(1, 0));
-            add(realApplet);
-            realApplet.init();
-            realApplet.start();
-        } catch (Exception e) {
+	    if (reload) {
+		System.out.println("New instance 1");
+
+		Class appletClass = Class.forName(appletToLoad);
+		realApplet = (Applet)appletClass.newInstance();
+		realApplet.setStub(this);
+
+		remove(label);
+		setLayout(new GridLayout(1, 0));
+		add(realApplet);
+		realApplet.init();
+		realApplet.start();
+	    } else { // not reload, but still check 
+		     // whether there is an old instance
+		app = jsb.app; 
+		
+		if (app == null) {
+		    System.out.println("New instance 2");
+
+		    Class appletClass = Class.forName(appletToLoad);
+		    realApplet = (Applet)appletClass.newInstance();
+		    realApplet.setStub(this);
+
+		    remove(label);
+		    setLayout(new GridLayout(1, 0));
+		    add(realApplet);
+		    realApplet.init();
+		    realApplet.start();
+		} else {
+		    System.out.println("Old instance");
+		    
+		    realApplet = (Applet)app;
+		    realApplet.setStub(this);
+		    
+		    remove(label);
+		    setLayout(new GridLayout(1, 0));
+		    add(realApplet);
+		    realApplet.init();
+		    realApplet.start();
+		}
+	    }
+	} catch (Exception e) {
 	    System.err.println("Error loading applet: " + e.getMessage());
             label.setText("Error loading applet.");
         }
