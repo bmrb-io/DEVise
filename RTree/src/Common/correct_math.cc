@@ -270,7 +270,7 @@ int logint(unsigned int n)
 }
 
 
-#include "heap.h"
+#include "Heap.h"
 static ArrayHeap P_H;	
 static double P_A[1024];
 

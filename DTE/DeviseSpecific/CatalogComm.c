@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/01/26 23:19:49  wenger
+  Conditionaled out some debug output.
+
   Revision 1.21  1997/12/18 23:24:30  donjerko
   *** empty log message ***
 
@@ -211,14 +214,6 @@ void dteDeleteCatalogEntry(const char* tableName){
 void dteMaterializeCatalogEntry(const char* tableName){
 	string query = "materialize " + string(tableName);
 	char* retVal = executeQuery(query);
-     CATCH(
-          cout << "DTE error coused by query: \n";
-          cout << "   " << query << endl;
-          cout << currExcept->toString();
-          currExcept = NULL;
-          cout << endl;
-          exit(0);
-     )
 }
 
 void dteDeleteCatalogEntry(const char* catName, const char* entryName){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/02/09 21:12:15  donjerko
+  Added Bin by clause and implementation.
+
 
   Revision 1.46  1997/11/24 23:13:15  weaver
   Changes for the new ColorManager.
@@ -279,7 +282,13 @@ Iterator* QueryTree::createExec(){
 
 #ifdef USE_OPTIMIZER
 
-	Optimizer optmizer(query);
+//	Query query(selectVec, tableVec, predicateVec, orderByVec);
+	Query query(selectVec, tableVec, predicateVec);
+	Optimizer optimizer(query);
+	optimizer.run();
+	optimizer.display();
+	cerr << endl;
+	exit(1);
 	return optimizer.createExec();
 
 #endif

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/12/23 23:34:19  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.27  1997/12/04 04:05:33  donjerko
   *** empty log message ***
 
@@ -571,7 +580,7 @@ void TDataDQL::BuildIndex()
 
 }
 
-TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
+TD_Status TDataDQL::ReadRec(RecId, int numRecs, void *buf){
 	
 	char *ptr = (char *)buf;
 

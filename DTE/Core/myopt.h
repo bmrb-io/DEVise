@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/02/09 21:12:23  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.43  1997/12/22 17:54:10  donjerko
   Initial version of Saeed's sequence similarity search.
 
@@ -157,6 +160,7 @@
 #include "queue.h"
 #include "types.h"
 #include "exception.h"
+#include "TableUtils.h"
 #include "url.h"
 #include "listop.h"
 #include "sysdep.h"
@@ -251,6 +255,7 @@ public:
 		assert(0);
 		return ""; // avoid compiler warning
 	}
+	virtual TableMap getTableMap(const vector<TableAlias*>&) const = 0;
 };
 
 class ConstantSelection : public BaseSelection {
@@ -349,7 +354,9 @@ public:
 	virtual bool checkOrphan(){
 		return true;
 	}
-  
+	virtual TableMap getTableMap(const vector<TableAlias*>&) const {
+		return TableMap(0);
+	}
 };
 
 class TypeCast : public BaseSelection {
@@ -422,6 +429,9 @@ public:
 	}
 	virtual bool checkOrphan(){
 		return input->checkOrphan();
+	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+		return input->getTableMap(x);
 	}
 };
 
@@ -510,6 +520,9 @@ public:
 	virtual bool checkOrphan(){
 		return input->checkOrphan();
 	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+		return input->getTableMap(x);
+	}
 };
 
 class Method : public Member {
@@ -584,6 +597,10 @@ public:
 	virtual bool checkOrphan(){
 		assert(0);
 		return input->checkOrphan();
+	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+		assert(!"not implemented");
+		return input->getTableMap(x);
 	}
 };
 
@@ -673,7 +690,10 @@ public:
 	virtual double getSelectivity(){  
 		return 0.01;
 	}
-					 
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+		assert(!"not implemented");
+		return TableMap(0);
+	}
 };
 
 class EnumSelection : public BaseSelection {
@@ -711,6 +731,10 @@ public:
 	virtual bool match(BaseSelection* x){
 		assert(0);
 		return false;
+	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+		assert(!"this should not be called!!");
+		return TableMap(0);
 	}
 };
 
@@ -781,6 +805,7 @@ public:
 	virtual string toStringAttOnly(){
 		return *fieldNm;
 	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const;
 };
 
 class Operator : public BaseSelection {
@@ -905,6 +930,7 @@ public:
 		TRY(right->checkOrphan(), false);
 		return true;
 	}
+	virtual TableMap getTableMap(const vector<TableAlias*>& x) const;
 };
 
 class ArithmeticOp : public Operator {

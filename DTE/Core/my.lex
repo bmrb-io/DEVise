@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/02/17 23:09:13  donjerko
+  *** empty log message ***
+
   Revision 1.26  1998/02/09 21:12:19  donjerko
   Added Bin by clause and implementation.
 
@@ -146,6 +149,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
+[Tt][Aa][Bb][Ll][Ee]		{return TABLE;}
 [Dd][Rr][Oo][Pp]			{return DROP;}
 [Ii][Nn][Dd][Ee][Xx]		{return INDEX;}
 [Oo][Nn]				{return ON;}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/02/09 21:12:21  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.37  1997/12/04 04:05:19  donjerko
   *** empty log message ***
 
@@ -144,6 +147,8 @@ string* sortOrdering;
 	TableAlias* tabAlias;
 	List<string*>* listOfStrings;
 	ParseTree* parseTree;
+	vector<IdentType*>* ident_type_vec;
+	IdentType* ident_type;
 }
 %token <integer> INTY
 %token <real> DOUBLEY
@@ -162,6 +167,7 @@ string* sortOrdering;
 %token JOINNEXT 
 %token JOINPREV 
 %token CREATE
+%token TABLE
 %token DROP
 %token INDEX
 %token ON
@@ -184,13 +190,15 @@ string* sortOrdering;
 %left '-' '+'
 %left '*' '/'
 %left <stringLit> STRING 
-%type <stringLit> JoinString 
+
+// %type <stringLit> JoinString 
+// %type <selList> optOverClause
+
 %type <sel> selection
 %type <integer> optShiftVal 
 %type <selList> listOfSelections
 %type <selList> listOfSelectionsOrStar
 %type <constList> listOfConstants
-%type <selList> optOverClause
 %type <sel> optWithClause
 %type <sel> optHavingClause
 %type <selList> optGroupByClause
@@ -210,6 +218,8 @@ string* sortOrdering;
 %type <listOfStrings> optIndAdd 
 %type <listOfStrings> listOfStrings 
 %type <parseTree> query
+%type <ident_type_vec> ident_type_pairs
+%type <ident_type> ident_type_pair
 %%
 input : query {
 		globalParseTree = $1;
@@ -223,6 +233,10 @@ definition: CREATE optIndType INDEX index_name ON table_name
 		YYACCEPT;
 		// return my_yyaccept();  
 		// this does not work unless the last argument is optional
+	}
+	| CREATE TABLE '(' ident_type_pairs ')' {
+		globalParseTree = new CreateTableParse($4);
+		YYACCEPT;
 	}
 	| DROP INDEX table_name index_name {
 		globalParseTree = new DropIndexParse($3, $4);
@@ -246,6 +260,19 @@ definition: CREATE optIndType INDEX index_name ON table_name
 	}
 	;
 keyAttrs : listOfStrings
+	;
+ident_type_pairs : ident_type_pairs ',' ident_type_pair {
+		$1->push_back($3);
+		$$ = $1;
+	}
+	| ident_type_pair {
+		$$ = new vector<IdentType*>;
+		$$->push_back($1);
+	}
+	;
+ident_type_pair : STRING STRING {
+		$$ = new IdentType($1, $2);
+	}
 	;
 optIndType: STRING {
 		$$ = $1;
@@ -477,6 +504,10 @@ selection :
 	}
 	;
 
+/*
+
+// not supported any more
+
 optOverClause:	
 	OVER '(' listOfSelections ')' {
 			$$ = $3;
@@ -493,6 +524,7 @@ JoinString : JOINPREV {
 		$$ = new string("joinnext");
 	}
 	;
+*/
 
 tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
 		$$ = new TableAlias(new TableName($3),$7,$1,$4);

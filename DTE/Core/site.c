@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/11/24 06:01:26  donjerko
+  Added more odbc files.
+
   Revision 1.32  1997/11/13 22:19:25  okan
   Changes about compilation on NT
 
@@ -114,6 +117,7 @@
 #include "ExecOp.h"
 #include "RTreeRead.h"
 #include "MemoryMgr.h"
+#include "TableUtils.h"
 
 #include <string>		// for strtok
 #include <set>
@@ -567,30 +571,6 @@ void LocalTable::setStats(){
 	stats = new Stats(numFlds, sizes, cardinality);
 }
 
-Iterator* createIteratorFor(
-	const ISchema& schema, istream* in, const string& tableStr)
-{
-	assert(in && in->good());
-	int numFlds = schema.getNumFlds();
-	StandReadExec* fs = new StandReadExec(numFlds, schema.getTypeIDs(), in);
-	Array<ExecExpr*>* select = new Array<ExecExpr*>(numFlds);
-	for(int i = 0; i < numFlds; i++){
-		(*select)[i] = new ExecSelect(0, i);
-	}
-
-	BaseSelection* name = new EnumSelection(0, "string");
-	BaseSelection* value = new ConstantSelection(
-		"string", strdup(tableStr.c_str()));
-	BaseSelection* predicate = new Operator("=", name, value);
-	assert(predicate);
-	predicate->typeCheck();
-
-	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
-	TRY((*where)[0] = predicate->createExec(NULL, NULL), NULL);
-	assert((*where)[0]);
-	return new SelProjExec(fs, select, where);
-}
-
 List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	List<Site*>* retVal = new List<Site*>;
 	int totalNumPreds = myWhere->cardinality();
@@ -781,5 +761,5 @@ SiteGroup::SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2)
 }
 
 Iterator* ISchemaSite::createExec(){
-	return new ISchemaExec(schema);
+	return new SingleAnswerIt(schema, schemaDestroy);
 }

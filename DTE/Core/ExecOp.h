@@ -1,6 +1,8 @@
 #ifndef EXECOP_H
 #define EXECOP_H
 
+#include <vector>
+
 #include "queue.h"
 #include "Array.h"
 #include "ExecExpr.h"
@@ -171,16 +173,17 @@ public:
 	}
 };
 
-class ISchemaExec : public Iterator {
+class SingleAnswerIt : public Iterator {
 	bool done;
-	ISchema* schema;
+	DestroyPtr destroyPtr;
 	Tuple retVal[1];
 public:
-	ISchemaExec(ISchema* schema) : done(false), schema(schema) {
-		retVal[0] = (Type*) schema;
+	SingleAnswerIt(Type* arg, DestroyPtr dp) 
+		: done(false), destroyPtr(dp) {
+		retVal[0] = arg;
 	}
-	virtual ~ISchemaExec(){
-		delete schema;
+	virtual ~SingleAnswerIt(){
+		destroyPtr(retVal[0]);
 	}
 	virtual void initialize(){}
 	virtual const Tuple* getNext(){

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "heap.h"
+#include "Heap.h"
 
 #define PARENT(x) ((x) >> 1)
 #define LEFT_CHILD(x) ((x) << 1)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/02/09 21:12:10  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.46  1997/12/22 17:54:06  donjerko
   Initial version of Saeed's sequence similarity search.
 
@@ -222,9 +225,11 @@ public:
     if (count == 0)
       return (Type *) NULL; // What should be returned here?
 
-    Type *sumDouble = &IDouble(0.0);
+    IDouble tmp(0);
+    Type *sumDouble = &tmp;
     promotePtr(sum, sumDouble);
-    divPtr(sumDouble, &IDouble(count), result);
+    IDouble count2(count);
+    divPtr(sumDouble, &count2, result);
     return result;
   }
 

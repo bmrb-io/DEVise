@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/12/10 00:00:37  okan
+  ODBC Interface Changes ...
+
   Revision 1.31  1997/12/04 04:05:21  donjerko
   *** empty log message ***
 
@@ -566,4 +569,23 @@ void Constructor::setChildren(const vector<BaseSelection*>& children){
 	for(it = children.begin(); it != children.end(); ++it){
 		args->append(*it);
 	}
+}
+
+TableMap PrimeSelection::getTableMap(const vector<TableAlias*>& x) const {
+	int pos = 1;
+	bool found = false;
+	vector<TableAlias*>::const_iterator it;
+	for(it = x.begin(); it != x.end(); ++it){
+		if(*alias == *((*it)->getAlias())){
+			found = true;
+			break;
+		}
+		pos <<= 1;
+	}
+	assert(found);
+	return TableMap(pos);
+}
+
+TableMap Operator::getTableMap(const vector<TableAlias*>& x) const {
+	return left->getTableMap(x) | right->getTableMap(x);
 }

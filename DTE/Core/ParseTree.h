@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/02/09 21:12:15  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.25  1997/12/10 02:31:14  okan
   *** empty log message ***
 
@@ -276,6 +279,17 @@ public:
 	virtual ~MaterializeParse(){
 		delete tableName;	// destroy too
 	}
+};
+
+typedef pair<string*, string*> IdentType;
+
+class CreateTableParse : public ParseTree {
+	vector<IdentType*>* identTypePairs;
+public:
+	CreateTableParse(vector<IdentType*>* identTypePairs);
+	virtual Iterator* createExec();	// throws exception
+	virtual ~CreateTableParse();
+	virtual const ISchema* getISchema();
 };
 
 #endif

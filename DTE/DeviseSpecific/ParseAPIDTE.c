@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/12/04 04:05:31  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/11/24 23:13:21  weaver
   Changes for the new ColorManager.
 
@@ -98,11 +101,17 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
       return 1;
     }
 
-    if(!strcmp(argv[0], "dteMaterializeCatalogEntry")){
-      dteMaterializeCatalogEntry(argv[1]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
+	if(!strcmp(argv[0], "dteMaterializeCatalogEntry")){
+		dteMaterializeCatalogEntry(argv[1]);
+		CATCH(
+			string err = currExcept->toString();
+			control->ReturnVal(API_NAK, (char*) err.c_str());
+			currExcept = NULL;
+			return -1;
+		)
+		control->ReturnVal(API_ACK, "");
+		return 1;
+	}
 
     if(!strcmp(argv[0], "dteReadSQLFilter")){
       char* retVal = dteReadSQLFilter(argv[1]);
@@ -117,6 +126,7 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 		CATCH(
 			string err = currExcept->toString();
 			control->ReturnVal(API_NAK, (char*) err.c_str());
+			currExcept = NULL;
 			return -1;
 		)
 		control->ReturnVal(API_ACK, catEntry);
@@ -145,6 +155,7 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 			string err = "Failed to find available attributes.\n";
 			err += currExcept->toString();
 			control->ReturnVal(API_NAK, (char*) err.c_str());
+			currExcept = NULL;
 			return -1;
 		)
 		control->ReturnVal(API_ACK, attrListing);

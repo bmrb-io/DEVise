@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.159  1998/03/08 00:01:30  wenger
+#	Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+#	update problems) -- major changes to visual links.
+#
 #	Revision 1.158  1998/02/26 20:50:33  taodb
 #	Removed redundancy between groupcontrol.tk and control.tk
 #
@@ -1094,8 +1098,13 @@ proc displayTable {table} {
 		statusWindow .info "Status" \
 		"Materializing table \"$d\"\n Please wait."
 
-		DEVise dteMaterializeCatalogEntry $d
+		set errCode [catch {DEVise dteMaterializeCatalogEntry $d} errStr]
 		catch {destroy .info}
+		if {$errCode != 0} {
+			dialog .noName "DTE Error" $errStr "" 0 OK
+			return
+		}
+
 		updateSources
      }
 }

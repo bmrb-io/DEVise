@@ -12,6 +12,7 @@
 #include "listop.h"
 #include "myopt.h"
 #include "Optimizer.h"
+#include "ParseTree.h"
 
 #include <stl.h>	// includes all of stl
 
@@ -42,16 +43,38 @@ template class List<basic_string<char, string_char_traits<char> > *>;
 template class List<void*>;
 template class List<void *const *>;
 template class vector<BaseSelection*>;
+template class vector<OptNode*>;
 template class vector<TableAlias*>;
 template class Array<ExecExpr*>;
 template class Array<void const *>;
 template class map<basic_string<char, string_char_traits<char> >, BaseSelection*, StringLess>;
+
+// this template does not work with g++ 2.8
+
 template class rb_tree<basic_string<char, string_char_traits<char> >, pair<basic_string<char, string_char_traits<char> > const, BaseSelection *>, select1st<pair<basic_string<char, string_char_traits<char> > const, BaseSelection *>, basic_string<char, string_char_traits<char> > >, StringLess>;
 
 template class deque<void*>;
+template class vector<LogicalProp>;
+template class vector<TableMap>;
+template class vector<AltEntry>;
+
+template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::push_back(pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *const &);
+
+template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::vector(void);
+
+template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::~vector(void);
+
+template pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *>::pair(basic_string<char, string_char_traits<char> > *const &, basic_string<char, string_char_traits<char> > *const &);
 
 static void template_junk1(void)
 {
+	AltEntry junk_alt_entry(0, (JoinMethod*) 0);
+	vector<AltEntry> vae;
+	make_heap(vae.begin(), vae.end(), AlternativeLess());
+	sort_heap(vae.begin(), vae.end(), AlternativeLess());
+	push_heap(vae.begin(), vae.end(), AlternativeLess());
+	for_each(vae.begin(), vae.end(), printAlts);
+
 	set<string, ltstr>	tmp, tables, tables2;
 	bool				incl = includes(tables.begin(), tables.end(),
 										tmp.begin(), tmp.end());
@@ -84,6 +107,10 @@ static void junk(){
 
 	map<string, OptNode*, StringLess>::iterator it1;
 	map<string, LogicalProp*, StringLess>::iterator it2;
+	vector<TableAlias*>::const_reverse_iterator it3;
+	*it3;
+	it3 != it3;
+	++it3;
 	vector<td1> pair1;
 	vector<SortCriterion> orderBy;
 	const vector<SortCriterion>& orderBy2 = orderBy;

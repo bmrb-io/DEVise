@@ -1,7 +1,7 @@
 #ifndef _INT_KEY_H
 #define _INT_KEY_H
 
-#include<setup.h>
+#include "setup.h"
 #include<stdio.h>
 #include<math.h>
 #include"bit_vec.h"

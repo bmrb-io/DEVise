@@ -18,6 +18,8 @@
 
 include ../../Makefile.common
 
+// CC = /s/gcc-2.8.0/bin/g++
+
 DTE_DIR = ../../DTE
 
 #NO_RTREE = 1
@@ -60,6 +62,12 @@ ifdef DTE_DEBUG
 	CFLAGS += -g
 endif
 
+#temporary flag for testing the optimizer
+
+ifdef USE_OPTIMIZER
+	CFLAGS += -DUSE_OPTIMIZER
+endif
+
 CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c \
 	Engine.c Aggregates.c QueryTree.c Util.c \
@@ -67,7 +75,8 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
 	ExecOp.c Inserter.c TypeCheck.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
-	ODBCInterface.dummy.c
+	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
+	CreateTableParse.c
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c

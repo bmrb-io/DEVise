@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/02/09 21:12:25  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.49  1998/02/04 00:43:44  okan
   *** empty log message ***
 
@@ -162,6 +165,10 @@
 
 const DteEnvVars DTE_ENV_VARS;
 
+const ISchema STRING_SCHEMA("1 string name");
+
+const NewStat DEFAULT_STAT = NewStat();
+
 extern const Catalog ROOT_CATALOG(DTE_ENV_VARS.rootCatalog);
 
 extern const Directory MINMAX_DIR(DTE_ENV_VARS.minmaxCatalog);
@@ -193,11 +200,21 @@ string DteEnvVars::getFile(const string& env, const string& def){
 }
 
 DteEnvVars::DteEnvVars(){
-	materViewDir = getDirectory("DEVISE_MATER_DIR");
-	minmaxDir = getDirectory("DEVISE_MINMAX_DIR");
-	rootCatalog = getFile("DEVISE_HOME_TABLE", "./catalog.dte");
-	indexTable = getFile("DEVISE_INDEX_TABLE", "./sysind.dte");
-	minmaxCatalog = getFile("DEVISE_MINMAX_TABLE", "./minmax.dte");
+	materViewDirN = "DEVISE_MATER_DIR";
+	minmaxDirN = "DEVISE_MINMAX_DIR";
+	rootCatalogN = "DEVISE_HOME_TABLE";
+	indexTableN = "DEVISE_INDEX_TABLE";
+	minmaxCatalogN = "DEVISE_MINMAX_TABLE";
+	definitionFileN = "DEVISE_DEF_FILE";
+	idFileN = "DEVISE_ID_FILE";
+
+	materViewDir = getDirectory(materViewDirN);
+	minmaxDir = getDirectory(minmaxDirN);
+	rootCatalog = getFile(rootCatalogN, "./catalog.dte");
+	indexTable = getFile(indexTableN, "./sysind.dte");
+	minmaxCatalog = getFile(minmaxCatalogN, "./minmax.dte");
+	definitionFile = getFile(definitionFileN);
+	idFile = getFile(idFileN);
 }
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -1383,6 +1400,9 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == SEQSV_TP){ 	
 		return seqSimVecDestroy;
 	}
+	else if(root == SCHEMA_TP){
+		return schemaDestroy;
+	}
 	else{
 		string msg = "Don't know how to destroy type: " + root;
 		cout << msg << endl;
@@ -1407,6 +1427,10 @@ void dateDestroy(Type* adt){
 // This function is called to destroy a structure of type ISeqSimVec
 void seqSimVecDestroy(Type* adt){
 	delete (ISeqSimVec*) adt;
+}
+
+void schemaDestroy(Type* adt){
+	delete (ISchema*) adt;
 }
 
 void boolDestroy(Type* adt){

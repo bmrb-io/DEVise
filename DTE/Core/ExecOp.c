@@ -2,6 +2,8 @@
 #pragma implementation "Array.h"
 #endif
 
+#include <string>
+
 #include "ExecOp.h"
 #include "listop.h"
 #include "RTreeRead.h"
@@ -139,3 +141,4 @@ NLJoinExec::~NLJoinExec(){
 	delete [] next;
 	delete tupleLoader;
 }
+

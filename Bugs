@@ -1197,7 +1197,7 @@ Num Date        Status  Description
 			the mapping should have width and height set to 1.
 			(rkw)
 
-317 03/11/98	OPEN	Trying to materialize a data source that's not a
+317 03/11/98	FIXED (donko) Trying to materialize a data source that's not a
 			view causes DEVise to crash. (rkw)
 
 318 03/11/98	OPEN	SQLFilter->New dialog doesn't have any place to set

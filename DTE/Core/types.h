@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/02/09 21:12:26  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.43  1998/02/04 00:43:45  okan
   *** empty log message ***
 
@@ -201,19 +204,42 @@ const string SCHEMA_STR("schema");
 
 class DteEnvVars {
 public:
+	string materViewDirN;
+	string minmaxDirN;
+	string rootCatalogN;
+	string indexTableN;
+	string minmaxCatalogN;
+	string definitionFileN;
+	string idFileN;
+
 	string materViewDir;
 	string minmaxDir;
 	string rootCatalog;
 	string indexTable;
 	string minmaxCatalog;
+	string definitionFile;
+	string idFile;
 public:
 	DteEnvVars();
 private:
 	string getDirectory(const string& envVar);
-	string getFile(const string& env, const string& def);
+	string getFile(const string& env, const string& def = string());
 };
 
 extern const DteEnvVars DTE_ENV_VARS;
+
+class NewStat{
+	int numPgs;
+public:
+	NewStat(){
+		numPgs = 1000;
+	}
+	int getNumPgs() const {
+		return numPgs;
+	}
+};
+
+extern const NewStat DEFAULT_STAT;
 
 struct Stats{
 	int* fldSizes;
@@ -334,6 +360,7 @@ void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
 void interfaceDestroy(Type* adt);
 void indexDescDestroy(Type* adt);
+void schemaDestroy(Type* adt);
 
 struct GeneralPtr{
 	OperatorPtr opPtr;
@@ -1021,6 +1048,8 @@ public:
 
 const ISchema DIR_SCHEMA("2 string name interface interf");
 const ISchema INDEX_SCHEMA("3 string table string name indexdesc descriptor");
+const ISchema STAT_SCHEMA("2 string table statdesc descriptor");
+extern const ISchema STRING_SCHEMA;
 
 int packSize(string type);    // throws exception
 
