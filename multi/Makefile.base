@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/05/22 21:16:44  jussi
+#  Changed Devise from using composite .o files to using .a files.
+#  The old approach did not work in AIX whereas the new approach
+#  is more portable. Also, the graphics library is no longer
+#  included in the graphics.new library, which yields some space
+#  savings.
+#
 
 ############################################################
 
@@ -26,8 +33,7 @@ CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lmonolith -lgraphics.new -lgraphics \
-	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
-	$(ARCH_LDPOST)
+	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

@@ -15,11 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/10/15 19:12:19  jussi
+#  Initial revision.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
+ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi
