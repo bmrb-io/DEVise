@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:43:32  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:55  jussi
   Added CVS header.
 */
@@ -38,6 +41,10 @@
   #define __aix
 #endif
   
+#if !defined(__sgi) && defined(sgi)
+  #define __sgi
+#endif
+
 #if !defined(__sun)
   #if defined(sun2) || defined(sun3) || defined(sun3x) || defined(sun4) \
       || defined(sun) || defined(sparc)
@@ -184,7 +191,8 @@ union semun {
 };
 #endif
 
-#if !defined(__alpha) && !defined(__hpux) && !defined(__solaris)
+#if !defined(__alpha) && !defined(__hpux) && !defined(__solaris) \
+    && !defined(__sgi)
   EXTERNC int readv(int, struct iovec *, int);
   EXTERNC int writev(int, struct iovec *, int);
 #endif
@@ -203,7 +211,7 @@ union semun {
   EXTERNC void perror(const char *);
 #endif
 
-#if !defined(__hpux) && !defined(__solaris)
+#if !defined(__hpux) && !defined(__solaris) && !defined(__sgi)
   EXTERNC int sigpause(int sigmask);
   EXTERNC key_t ftok(char *, char);
 #endif
