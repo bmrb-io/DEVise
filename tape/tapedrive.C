@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/12 00:55:39  jussi
+  Updated copyright information to reflect original source.
+
   Revision 1.9  1996/06/27 16:04:25  jussi
   Added a cast in memchr() so that the code compiles cleanly in Linux.
 
@@ -63,7 +66,7 @@
 // struct mtget (mtio.h) does not include fields mt_fileno and
 // mt_blkno. See warning printed out below.
 
-#ifdef __alpha
+#if defined(__alpha) || defined(__ultrix)
 #define mt_fileno mt_resid * 0
 #define mt_blkno  mt_resid * 0
 #endif
@@ -72,10 +75,11 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
 	initialized(0), fileNo(fno), blockSize(blockSz),
 	haveTarHeader(0), tarFileSize(0), tarFileOffset(0)
 {
-#ifdef __alpha
-  cerr << "Warning: In Alpha/OSF/1, file number and block number inquiry"
+#if defined(__alpha) || defined(__ultrix)
+  cerr << "Warning: In Ultrix and Alpha/OSF/1, file number and block number"
        << endl;
-  cerr << "         does not work. TapeDrive will probably fail." << endl;
+  cerr << "         inquiry does not work. TapeDrive will probably fail."
+       << endl;
 #endif
 
   if (!(file = fopen(name, mode))) {
