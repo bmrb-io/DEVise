@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/12 18:14:29  jussi
+  Rewrote Timer code to use fewer timer interrupts and also
+  allow for timer events which should precede any events
+  already in the queue.
+
   Revision 1.5  1996/07/01 19:17:47  jussi
   Made StopTimer() and StartTimer() public.
 
@@ -77,6 +82,7 @@ private:
 
   static Boolean _initialized;  /* TRUE if timer has been initialized */
   static Boolean _inHandler;    /* TRUE if timer handler active */
+  static Boolean _timerRunning; /* TRUE if timer running */
 
   static long _now;	        /* current time in ms from beginning */
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/12 18:45:08  jussi
+  Added check for negative "next event" case.
+
   Revision 1.9  1996/07/12 18:13:31  jussi
   Rewrote Timer code to use fewer timer interrupts and also
   allow for timer events which should precede any events
@@ -64,6 +67,7 @@ struct TimerQueueEntry {
 
 Boolean Timer::_initialized = false;
 Boolean Timer::_inHandler = false;
+Boolean Timer::_timerRunning = false;
 TimerQueueEntry *Timer::_head = 0;
 TimerQueueEntry *Timer::_freeHead = 0;
 long Timer::_now = 0;
@@ -200,6 +204,8 @@ void Timer::TimerHandler(int arg)
 
     _inHandler = false;
 
+    (void)signal(SIGALRM, TimerHandler);
+
     StartTimer();
 }
 
@@ -214,15 +220,11 @@ void Timer::InitTimer()
   
     _now = 0;
 
-    /* set timer value to zero */
-    struct itimerval timerVal;
-    timerVal.it_value.tv_sec = 0;
-    timerVal.it_value.tv_usec = 0;
-    timerVal.it_interval.tv_sec = 0;
-    timerVal.it_interval.tv_usec = 0;
-    setitimer(ITIMER_REAL, &timerVal, 0);
+    (void)signal(SIGALRM, TimerHandler);
 
     _inHandler = false;
+    _timerRunning = false;
+
     _initialized = true;
 }
 
@@ -232,10 +234,11 @@ Stop the timer
 
 void Timer::StopTimer()
 {
-    if (_inHandler)
+    if (_inHandler || !_timerRunning)
         return;
 
-    (void)signal(SIGALRM, SIG_IGN);
+    _timerRunning = false;
+
     struct itimerval timerVal;
     struct itimerval oldTimerVal;
     timerVal.it_value.tv_sec = 0;
@@ -275,7 +278,7 @@ void Timer::StartTimer()
         return;
     }
 
-    (void)signal(SIGALRM, TimerHandler);
+    _timerRunning = true;
 
     long ms = _head->when - _now;
 
@@ -290,8 +293,8 @@ void Timer::StartTimer()
 
     /* Set timer */
     struct itimerval timerVal;
-    timerVal.it_interval.tv_sec = ms / 1000;
-    timerVal.it_interval.tv_usec = (ms % 1000) * 1000;
+    timerVal.it_interval.tv_sec = 0;
+    timerVal.it_interval.tv_usec = 0;
     timerVal.it_value.tv_sec = ms / 1000;
     timerVal.it_value.tv_usec = (ms % 1000) * 1000;
     setitimer(ITIMER_REAL, &timerVal, 0);
