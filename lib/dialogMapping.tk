@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.34  1997/10/02 18:48:22  wenger
+#       Removed diagnostic output.
+#
 #       Revision 1.33  1997/09/15 17:28:40  wenger
 #       Kludge fix for bug 223.
 #
@@ -193,7 +196,7 @@ proc BringUpMappingDialog { w curview } {
 	    [list Size {0 1 2 3 4} ] \
 	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10}] \
 	    [list Orientation {0 90 180 270} ] \
-	    [list Shape $DEViseShapes ] \
+	    [list SymbolType $DEViseShapes ] \
 	    [list "ShapeAttr0" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr2" {0 0.1 0.5 1 2}] \
@@ -438,7 +441,7 @@ proc UpdateMappingDialog { w curView } {
 	     [list Size $sizeParm] \
 	     [list Pattern $patternParm] \
 	     [list Orientation $orientParm] \
-	     [list Shape $shapeParm ] \
+	     [list SymbolType $shapeParm ] \
 	     [list "ShapeAttr0" $shapeAttr0] \
 	     [list "ShapeAttr1" $shapeAttr1] \
 	     [list "ShapeAttr2" $shapeAttr2] \
@@ -481,7 +484,7 @@ proc ClearMappingDialog { w } {
     if {! [WindowVisible $w ] } {
 	return
     }
-    set mappings [list X Y Z Color Size Pattern Orientation Shape \
+    set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 	    "ShapeAttr0" "ShapeAttr1" ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \ # "ShapePosition" \
     ]
     foreach item $mappings  {
