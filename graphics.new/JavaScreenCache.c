@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.1.2.1  2000/12/27 19:39:19  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.2  2000/12/14 18:46:15  wenger
+  Devised makes sure JS data cache file is non-zero size.
+
   Revision 1.1  2000/06/05 16:22:42  wenger
   Basically finished command/GData/GIF caching for JavaScreen support
   (there are a few refinements that could still be added); changed the

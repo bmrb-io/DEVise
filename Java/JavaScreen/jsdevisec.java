@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,43 @@
 // $Id$
 
 // $Log$
+// Revision 1.70.4.9  2001/01/05 19:15:46  wenger
+// Updated copyright dates.
+//
+// Revision 1.70.4.8  2001/01/04 21:15:20  wenger
+// Added socket/CGI communication mode indicator.
+//
+// Revision 1.70.4.7  2000/12/29 22:41:39  wenger
+// Fixed problems with the JavaScreen client not getting destroyed
+// properly, except that it still doesn't work right if you go to a
+// different web page in the browser, then quit.
+//
+// Revision 1.70.4.6  2000/11/22 17:44:01  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.70.4.5  2000/11/21 01:51:35  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.70.4.4  2000/11/08 19:13:52  wenger
+// Fixed bug 600 (JS exits even if you click No); fixed crash if you click
+// Exit in JS before connecting to a jspop.
+//
+// Revision 1.70.4.3  2000/10/18 18:29:24  wenger
+// Added a separate thread to the JavaScreen to send the heartbeat -- this
+// is much simpler that the previous version that used an existing thread.
+//
+// Revision 1.70.4.2  2000/10/11 02:59:19  xuk
+// Add notifyall() to wake up the dispatcher thread.
+//
+// Revision 1.70.4.1  2000/10/09 16:33:12  xuk
+// Change dispathcer.start() to dispatcher.command = cmd, since D
+// EViseCmdDispatcher thread starts only once now.
+//
+// Revision 1.70  2000/07/20 16:26:08  venkatan
+// Mouse Location Display format - is now controlled by printf type
+// format strings specified by the VIEW_DATA_AREA command
+//
 // Revision 1.69  2000/07/19 20:11:38  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -111,6 +148,7 @@
 
 // jsdevisec.java
 
+import  java.applet.*;
 import  java.awt.*;
 import  java.io.*;
 import  java.net.*;
@@ -120,13 +158,12 @@ import  java.util.*;
 public class jsdevisec extends Panel
 {
     private YLogGUI debugWindow = null;
-    private int debugLevel = 0;
 
     public DEViseCmdDispatcher dispatcher = null;
 
     public Frame parentFrame = null;
     private boolean isCenterScreen = false;
-    //public Applet parentApplet = null;
+    public Applet _parentApplet = null;
 
     public DEViseScreen jscreen = null;
 
@@ -142,6 +179,7 @@ public class jsdevisec extends Panel
     private Button exitButton = new Button("Exit");
     private Button filterButton = new Button("Filter");
     private Button helpButton = new Button("Help");
+    private Label commMode = new Label("");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -157,7 +195,11 @@ public class jsdevisec extends Panel
     private SettingDlg settingdlg = null;
 
     public boolean isSessionOpened = false;
+
+    // This seems to be true if we are in the process of quitting -- avoids
+    // re-entering the quit code(?).
     private boolean isQuit = false;
+
     public int stopNumber = 0;
 
     public boolean isShowProgramInfo = false;
@@ -165,16 +207,22 @@ public class jsdevisec extends Panel
     public String currentDir = "DEViseSession";
     public String currentSession = null;
 
+    public DEViseJSValues jsValues = null;
 
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
 	//   (devise[0-10].gif).
 	// sessionName is non-null only in jsb.
-    public jsdevisec(Frame frame, Vector images, int dbgLvl,
-	  String sessionName)
+    public jsdevisec(Applet parentApplet, Frame frame, Vector images,
+	  String sessionName, DEViseJSValues jv)
     {
-		if (DEViseGlobals.debugLog) {
-		    DEViseDebugLog.create();
-		}
+	// create the DEViseJSValues object
+	jsValues = jv;
+
+	if (jsValues.debug._logEnabled) {
+	    jsValues.debug._logger = new DEViseDebugLog(jsValues);
+	}
+
+	_parentApplet = parentApplet;
 
         // frame might be null if JavaScreen is running inside a browser
         parentFrame = frame;
@@ -183,41 +231,40 @@ public class jsdevisec extends Panel
             isCenterScreen = true;
         }
 
-        debugLevel = dbgLvl;
-        if (debugLevel > 0) {
-            debugWindow = new YLogGUI(debugLevel);
+        if (jv.debug._debugLevel > 0) {
+            debugWindow = new YLogGUI(jv.debug._debugLevel);
         }
 
         // determine the font size according to JavaScreen size
-        int width = DEViseUIGlobals.maxScreenSize.width;
-        int height = DEViseUIGlobals.maxScreenSize.height;
+        int width = jsValues.uiglobals.maxScreenSize.width;
+        int height = jsValues.uiglobals.maxScreenSize.height;
 
         if (width > 800 ) {
-            DEViseUIGlobals.font = DEViseFonts.getFont(12,
+            jsValues.uiglobals.font = DEViseFonts.getFont(12,
 	      DEViseFonts.SERIF, 0, 0);
-            DEViseUIGlobals.font2 = DEViseFonts.getFont(12,
+            jsValues.uiglobals.font2 = DEViseFonts.getFont(12,
 	      DEViseFonts.SANS_SERIF, 0, 0);
-            DEViseUIGlobals.textFont = DEViseFonts.getFont(12,
+            jsValues.uiglobals.textFont = DEViseFonts.getFont(12,
 	      DEViseFonts.SERIF, 0, 0);
         } else if (width > 640) {
-            DEViseUIGlobals.font = DEViseFonts.getFont(10,
+            jsValues.uiglobals.font = DEViseFonts.getFont(10,
 	      DEViseFonts.SERIF, 0, 0);
-            DEViseUIGlobals.font2 = DEViseFonts.getFont(10,
+            jsValues.uiglobals.font2 = DEViseFonts.getFont(10,
 	      DEViseFonts.SANS_SERIF, 0, 0);
-            DEViseUIGlobals.textFont = DEViseFonts.getFont(10,
+            jsValues.uiglobals.textFont = DEViseFonts.getFont(10,
 	      DEViseFonts.SERIF, 0, 0);
         } else {
-            DEViseUIGlobals.font = DEViseFonts.getFont(8,
+            jsValues.uiglobals.font = DEViseFonts.getFont(8,
 	      DEViseFonts.SERIF, 0, 0);
-            DEViseUIGlobals.font2 = DEViseFonts.getFont(8,
+            jsValues.uiglobals.font2 = DEViseFonts.getFont(8,
 	      DEViseFonts.SANS_SERIF, 0, 0);
-            DEViseUIGlobals.textFont = DEViseFonts.getFont(8,
+            jsValues.uiglobals.textFont = DEViseFonts.getFont(8,
 	      DEViseFonts.SERIF, 0, 0);
         }
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsValues.uiglobals.bg);
+        setForeground(jsValues.uiglobals.fg);
+        setFont(jsValues.uiglobals.font);
         setLayout(new BorderLayout(2, 2));
 
         topPanel = new Panel(new BorderLayout(2, 2));
@@ -232,7 +279,7 @@ public class jsdevisec extends Panel
 		// and image 10 are what we need for the traffic light.
         if (images != null && images.size() == 11) {
             try {
-                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
+                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0", this);
             } catch (YException e) {
                 light = null;
             }
@@ -248,7 +295,7 @@ public class jsdevisec extends Panel
 		// even if only some of them will get used.
 		//
         Component[] button = null;
-        if (DEViseUIGlobals.inBrowser) {
+        if (jsValues.uiglobals.inBrowser) {
             button = new Component[3];
             button[0] = restartButton;
             button[1] = stopButton;
@@ -267,7 +314,13 @@ public class jsdevisec extends Panel
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 5,
-	  DEViseComponentPanel.ALIGN_LEFT);
+	  DEViseComponentPanel.ALIGN_LEFT, this);
+	  if (jsValues.connection.cgi) {
+	      cgiMode();
+	  } else {
+	      socketMode();
+	  }
+	  buttonPanel.add(commMode);
 
         mainPanel.add(buttonPanel);
 
@@ -276,7 +329,7 @@ public class jsdevisec extends Panel
         topPanel.add(mainPanel, BorderLayout.WEST);
         topPanel.add(viewInfo, BorderLayout.EAST);
 
-        if (DEViseUIGlobals.inBrowser) {
+        if (jsValues.uiglobals.inBrowser) {
             topPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
             topPanel.add(new Label("                       " +
 	      DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
@@ -286,23 +339,23 @@ public class jsdevisec extends Panel
 		// Constrain the screen width to be within the min and max width,
 		// if they are valid; width is set to max if not already set.
 		//
-        if (DEViseUIGlobals.screenSize.width <= 0) {
+        if (jsValues.uiglobals.screenSize.width <= 0) {
 
-            DEViseUIGlobals.screenSize.width =
-			  DEViseUIGlobals.maxScreenSize.width;
+            jsValues.uiglobals.screenSize.width =
+			  jsValues.uiglobals.maxScreenSize.width;
 
-        } else if (DEViseUIGlobals.screenSize.width <
-		  DEViseUIGlobals.minScreenSize.width &&
-		  DEViseUIGlobals.screenSize.width > 0) {
+        } else if (jsValues.uiglobals.screenSize.width <
+		  jsValues.uiglobals.minScreenSize.width &&
+		  jsValues.uiglobals.screenSize.width > 0) {
 
-            DEViseUIGlobals.screenSize.width =
-			  DEViseUIGlobals.minScreenSize.width;
+            jsValues.uiglobals.screenSize.width =
+			  jsValues.uiglobals.minScreenSize.width;
 
-        } else if (DEViseUIGlobals.screenSize.width >
-		  DEViseUIGlobals.maxScreenSize.width) {
+        } else if (jsValues.uiglobals.screenSize.width >
+		  jsValues.uiglobals.maxScreenSize.width) {
 
-            DEViseUIGlobals.screenSize.width =
-			  DEViseUIGlobals.maxScreenSize.width;
+            jsValues.uiglobals.screenSize.width =
+			  jsValues.uiglobals.maxScreenSize.width;
 
         }
 
@@ -310,29 +363,29 @@ public class jsdevisec extends Panel
 		// Constrain the screen height to be within the min and max height,
 		// if they are valid; height is set to max if not already set.
 		//
-        if (DEViseUIGlobals.screenSize.height <= 0) {
+        if (jsValues.uiglobals.screenSize.height <= 0) {
 
-            DEViseUIGlobals.screenSize.height =
-			  DEViseUIGlobals.maxScreenSize.height;
+            jsValues.uiglobals.screenSize.height =
+			  jsValues.uiglobals.maxScreenSize.height;
 
-        } else if (DEViseUIGlobals.screenSize.height <
-		  DEViseUIGlobals.minScreenSize.height &&
-		  DEViseUIGlobals.screenSize.height > 0) {
+        } else if (jsValues.uiglobals.screenSize.height <
+		  jsValues.uiglobals.minScreenSize.height &&
+		  jsValues.uiglobals.screenSize.height > 0) {
 
-            DEViseUIGlobals.screenSize.height =
-			  DEViseUIGlobals.minScreenSize.height;
+            jsValues.uiglobals.screenSize.height =
+			  jsValues.uiglobals.minScreenSize.height;
 
-        } else if (DEViseUIGlobals.screenSize.height >
-		  DEViseUIGlobals.maxScreenSize.height) {
+        } else if (jsValues.uiglobals.screenSize.height >
+		  jsValues.uiglobals.maxScreenSize.height) {
 
-            DEViseUIGlobals.screenSize.height =
-			  DEViseUIGlobals.maxScreenSize.height;
+            jsValues.uiglobals.screenSize.height =
+			  jsValues.uiglobals.maxScreenSize.height;
 
         }
 
         jscreen = new DEViseScreen(this);
         Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-        screenPanel.setBackground(DEViseUIGlobals.screenBg);
+        screenPanel.setBackground(jsValues.uiglobals.screenBg);
         screenPanel.add(jscreen);
 
         add(topPanel, BorderLayout.NORTH);
@@ -349,8 +402,8 @@ public class jsdevisec extends Panel
                             showMsg("You already have a session opened!\nPlease close current session first!");
                             return;
                         }
-
-                        dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
+			
+			dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
                     }
                 });
 
@@ -362,7 +415,6 @@ public class jsdevisec extends Panel
                             showMsg("You do not have any opened session!");
                             return;
                         }
-
                         dispatcher.start(DEViseCommands.CLOSE_SESSION);
                     }
                 });
@@ -374,7 +426,7 @@ public class jsdevisec extends Panel
                         if (dispatcher.getStatus() != 0) {
                             stopNumber++;
                             if (stopNumber > 1) {
-                                dispatcher.stop(true, false);
+                                dispatcher.stop(true);
                             } else {
                                 dispatcher.stop();
                             }
@@ -390,7 +442,6 @@ public class jsdevisec extends Panel
                             showMsg("You do not have any opened session!");
                             return;
                         }
-
                         dispatcher.start(DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
                     }
                 });
@@ -407,7 +458,7 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        quit();
+                        checkQuit();
                     }
                 });
 
@@ -449,6 +500,7 @@ public class jsdevisec extends Panel
 		// Open the session if a session name was specified.
 		//
         if (sessionName != null) {
+	    pn("sessionname: " + sessionName);
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
                 currentDir = currentDir + "/" + sessionName.substring(0, index);
@@ -457,7 +509,7 @@ public class jsdevisec extends Panel
                 currentSession = sessionName;
             }
 
-            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height + "\n" + DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
+            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsValues.uiglobals.screenSize.width + " " + jsValues.uiglobals.screenSize.height + "\n" + DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
         }
     } // end of constructor
 
@@ -465,7 +517,7 @@ public class jsdevisec extends Panel
     // pn() methods add a newline to the end of the string; p() methods don't.
     public void pn(String msg, int level)
     {
-        if (debugLevel > 0) {
+        if (jsValues.debug._debugLevel > 0) {
             debugWindow.pn(msg, level);
         }
     }
@@ -477,7 +529,7 @@ public class jsdevisec extends Panel
 
     public void p(String msg, int level)
     {
-        if (debugLevel > 0) {
+        if (jsValues.debug._debugLevel > 0) {
             debugWindow.p(msg, level);
         }
     }
@@ -490,30 +542,30 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
-	DEViseDebugLog.log("Showing message box: " + msg); 
-	mainPanel.setBackground(DEViseUIGlobals.bg_warn);
+	jsValues.debug.log("Showing message box: " + msg); 
+	mainPanel.setBackground(jsValues.uiglobals.bg_warn);
 
 	// Note: we have two cases here to make things work in the case
 	// where we have more than one message box shown at once.  msgbox
 	// is a class member so we know whether we have at least one
 	// message box showing.
         if (msgbox == null) {
-            msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
+            msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, jsValues.uiglobals.font, jsValues.uiglobals.bg, jsValues.uiglobals.fg);
             msgbox.open();
             String result = msgbox.getResult();
             msgbox = null;
-	    mainPanel.setBackground(DEViseUIGlobals.bg);
-	    DEViseDebugLog.log("Done with message box");
+	    mainPanel.setBackground(jsValues.uiglobals.bg);
+	    jsValues.debug.log("Done with message box");
             return result;
         } else {
 	    // We only get here if we already have one message box showing,
 	    // and need to show another one.
-            YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
+            YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, jsValues.uiglobals.font, jsValues.uiglobals.bg, jsValues.uiglobals.fg);
             box.open();
             String result = box.getResult();
             box = null;
-	    mainPanel.setBackground(DEViseUIGlobals.bg);
-	    DEViseDebugLog.log("Done with message box");
+	    mainPanel.setBackground(jsValues.uiglobals.bg);
+	    jsValues.debug.log("Done with message box");
             return result;
         }
     }
@@ -545,7 +597,7 @@ public class jsdevisec extends Panel
 
     public void showRecord(String[] msg)
     {
-        recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg);
+        recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         recorddlg.open();
         recorddlg = null;
     }
@@ -562,7 +614,7 @@ public class jsdevisec extends Panel
 
     public void showServerState(String msg)
     {
-        statedlg = new ServerStateDlg(parentFrame, isCenterScreen, msg);
+        statedlg = new ServerStateDlg(parentFrame, isCenterScreen, msg, this);
         statedlg.open();
         statedlg = null;
     }
@@ -583,29 +635,62 @@ public class jsdevisec extends Panel
         }
     }
 
+    // Check whether we really want to quit, and call destroy() if so.
+    public synchronized void checkQuit()
+    {
+        boolean reallyQuit = true;
+
+        if (dispatcher.getStatus() != 0) {
+	    String result = confirmMsg("JavaScreen still busy talking " +
+	      "to server!\nDo you wish to exit anyway?");
+	    if (result.equals(YMsgBox.YIDNO)) {
+	        reallyQuit = false;
+	    }
+	}
+	//TEMP -- do we want to check for an open session here?
+
+	if (reallyQuit) {
+            if (jsValues.uiglobals.isApplet) {
+                parentFrame.dispose();
+		// This will call destroy().
+	        _parentApplet.destroy();
+            } else {
+                destroy();
+	    }
+	}
+    }
+
     public synchronized boolean getQuitStatus()
     {
         return isQuit;
     }
 
-    public synchronized void quit()
+    public synchronized void destroy()
     {
-        if (isQuit)
+        if (isQuit) {
             return;
-
-        if (dispatcher != null) {
-            dispatcher.stop(true, true);
         }
 
         isQuit = true;
-        dispatcher = null;
 
-        if (!DEViseUIGlobals.inBrowser) {
-            if (DEViseUIGlobals.isApplet)
-                parentFrame.dispose();
-            else
-                System.exit(0);
+        if (dispatcher != null) {
+            dispatcher.destroy();
+            dispatcher = null;
         }
+
+        if (!jsValues.uiglobals.isApplet) {
+            System.exit(0);
+	}
+    }
+    
+    public void socketMode()
+    {
+        commMode.setText("Socket");
+    }
+
+    public void cgiMode()
+    {
+        commMode.setText("CGI");
     }
 }
 
@@ -614,27 +699,31 @@ public class jsdevisec extends Panel
 // Dialog to show record values.
 class RecordDlg extends Dialog
 {
+    jsdevisec jsc = null;
+
     String[] attrs = null;
     Button okButton = new Button("  OK  ");
     private boolean status = false; // true means this dialog is showing
 
-    public RecordDlg(Frame owner, boolean isCenterScreen, String[] data)
+    public RecordDlg(Frame owner, boolean isCenterScreen, String[] data, jsdevisec what)
     {
         super(owner, true);
+	
+	jsc = what;
 
-        DEViseDebugLog.log("Creating RecordDlg");
+        jsc.jsValues.debug.log("Creating RecordDlg");
 
         attrs = data;
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Record Attributes");
 
-        okButton.setBackground(DEViseUIGlobals.bg);
-        okButton.setForeground(DEViseUIGlobals.fg);
-        okButton.setFont(DEViseUIGlobals.font);
+        okButton.setBackground(jsc.jsValues.uiglobals.bg);
+        okButton.setForeground(jsc.jsValues.uiglobals.fg);
+        okButton.setFont(jsc.jsValues.uiglobals.font);
 
         int size = attrs.length - 1;
         Label[] label = null;
@@ -649,12 +738,12 @@ class RecordDlg extends Dialog
         }
 
         DEViseComponentPanel panel = new DEViseComponentPanel(label,
-	  DEViseComponentPanel.LAYOUT_VERTICAL, 0);
-        panel.setBackground(DEViseUIGlobals.textBg);
+	  DEViseComponentPanel.LAYOUT_VERTICAL, 0, jsc);
+        panel.setBackground(jsc.jsValues.uiglobals.textBg);
         for (int i = 0; i < size; i++) {
             label[i].setAlignment(Label.LEFT);
-            label[i].setBackground(DEViseUIGlobals.textBg);
-            label[i].setForeground(DEViseUIGlobals.textFg);
+            label[i].setBackground(jsc.jsValues.uiglobals.textBg);
+            label[i].setForeground(jsc.jsValues.uiglobals.textFg);
 	}
 
         // set layout manager
@@ -681,13 +770,13 @@ class RecordDlg extends Dialog
         pack();
 
         Dimension panesize = panel.getPreferredSize();
-        if (panesize.width > (DEViseUIGlobals.maxScreenSize.width - 120) || panesize.height > (DEViseUIGlobals.maxScreenSize.height - 80)) {
-            if (panesize.width > (DEViseUIGlobals.maxScreenSize.width - 120)) {
-                panesize.width = DEViseUIGlobals.maxScreenSize.width - 120;
+        if (panesize.width > (jsc.jsValues.uiglobals.maxScreenSize.width - 120) || panesize.height > (jsc.jsValues.uiglobals.maxScreenSize.height - 80)) {
+            if (panesize.width > (jsc.jsValues.uiglobals.maxScreenSize.width - 120)) {
+                panesize.width = jsc.jsValues.uiglobals.maxScreenSize.width - 120;
             }
 
-            if (panesize.height > (DEViseUIGlobals.maxScreenSize.height - 80)) {
-                panesize.height = DEViseUIGlobals.maxScreenSize.height - 80;
+            if (panesize.height > (jsc.jsValues.uiglobals.maxScreenSize.height - 80)) {
+                panesize.height = jsc.jsValues.uiglobals.maxScreenSize.height - 80;
             }
 
             ScrollPane pane = new ScrollPane();
@@ -753,7 +842,7 @@ class RecordDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-        DEViseDebugLog.log("Opening RecordDlg");
+        jsc.jsValues.debug.log("Opening RecordDlg");
         status = true;
         setVisible(true);
     }
@@ -765,7 +854,7 @@ class RecordDlg extends Dialog
 
             status = false;
         }
-        DEViseDebugLog.log("Closed RecordDlg");
+        jsc.jsValues.debug.log("Closed RecordDlg");
     }
 
     // true means this dialog is showing
@@ -797,26 +886,26 @@ class SessionDlg extends Frame
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
-	DEViseDebugLog.log("Creating SessionDlg");
+	what.jsValues.debug.log("Creating SessionDlg");
 
         jsc = what;
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("JavaScreen Open Dialog");
 
         label.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
-        //label.setFont(DEViseUIGlobals.font);
+        //label.setFont(jsc.jsValues.uiglobals.font);
         directory.setText("/" + jsc.currentDir);
-        directory.setFont(DEViseUIGlobals.font);
+        directory.setFont(jsc.jsValues.uiglobals.font);
 
         fileList = new java.awt.List(8, false);
-        fileList.setBackground(DEViseUIGlobals.textBg);
+        fileList.setBackground(jsc.jsValues.uiglobals.textBg);
         //fileList.setBackground(Color.white);
-        fileList.setForeground(DEViseUIGlobals.textFg);
-        fileList.setFont(DEViseUIGlobals.textFont);
+        fileList.setForeground(jsc.jsValues.uiglobals.textFg);
+        fileList.setFont(jsc.jsValues.uiglobals.textFont);
 
         setSessionList(data);
 
@@ -824,7 +913,7 @@ class SessionDlg extends Frame
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20);
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -877,6 +966,7 @@ class SessionDlg extends Frame
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
+	//TEMP -- this has too damn many levels of indentation!
         fileList.addMouseListener(new MouseAdapter()
                 {
                     public void mouseClicked(MouseEvent event)
@@ -910,11 +1000,10 @@ class SessionDlg extends Frame
                                         validate();
 
                                         //String dir = (jsc.currentDir).substring(14);
-
                                         jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
                                     } else {
                                         jsc.currentSession = sessionName;
-                                        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
+                                        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsc.jsValues.uiglobals.screenSize.width + " " + jsc.jsValues.uiglobals.screenSize.height
                                                                  + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
                                         close();
                                     }
@@ -954,11 +1043,10 @@ class SessionDlg extends Frame
 
                                     directory.setText("/" + jsc.currentDir);
                                     validate();
-
                                     jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
                                 } else {
                                     jsc.currentSession = sessionName;
-                                    jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
+                                    jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsc.jsValues.uiglobals.screenSize.width + " " + jsc.jsValues.uiglobals.screenSize.height
                                                              + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
                                     close();
                                 }
@@ -1035,7 +1123,7 @@ class SessionDlg extends Frame
     // dispatcher thread
     public void open()
     {
-	DEViseDebugLog.log("Opening SessionDlg");
+	jsc.jsValues.debug.log("Opening SessionDlg");
         status = true;
         setVisible(true);
     }
@@ -1049,7 +1137,7 @@ class SessionDlg extends Frame
 
             jsc.sessiondlg = null;
         }
-	DEViseDebugLog.log("Closed SessionDlg");
+	jsc.jsValues.debug.log("Closed SessionDlg");
     }
 
     // true means this dialog is showing
@@ -1075,36 +1163,36 @@ class SettingDlg extends Dialog
     {
         super(owner, true);
 
-	DEViseDebugLog.log("Creating SettingDlg");
+	what.jsValues.debug.log("Creating SettingDlg");
 
         jsc = what;
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("JavaScreen Setting");
 
-        setButton.setBackground(DEViseUIGlobals.bg);
-        setButton.setForeground(DEViseUIGlobals.fg);
-        setButton.setFont(DEViseUIGlobals.font);
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
 
-        screenX.setBackground(DEViseUIGlobals.textBg);
-        screenX.setForeground(DEViseUIGlobals.textFg);
-        screenX.setFont(DEViseUIGlobals.textFont);
+        screenX.setBackground(jsc.jsValues.uiglobals.textBg);
+        screenX.setForeground(jsc.jsValues.uiglobals.textFg);
+        screenX.setFont(jsc.jsValues.uiglobals.textFont);
 
-        screenY.setBackground(DEViseUIGlobals.textBg);
-        screenY.setForeground(DEViseUIGlobals.textFg);
-        screenY.setFont(DEViseUIGlobals.textFont);
+        screenY.setBackground(jsc.jsValues.uiglobals.textBg);
+        screenY.setForeground(jsc.jsValues.uiglobals.textFg);
+        screenY.setFont(jsc.jsValues.uiglobals.textFont);
 
-        screenX.setText("" + DEViseUIGlobals.screenSize.width);
-        screenY.setText("" + DEViseUIGlobals.screenSize.height);
+        screenX.setText("" + jsc.jsValues.uiglobals.screenSize.width);
+        screenY.setText("" + jsc.jsValues.uiglobals.screenSize.height);
 
-        statButton.setBackground(DEViseUIGlobals.bg);
-        statButton.setForeground(DEViseUIGlobals.fg);
-        statButton.setFont(DEViseUIGlobals.font);
+        statButton.setBackground(jsc.jsValues.uiglobals.bg);
+        statButton.setForeground(jsc.jsValues.uiglobals.fg);
+        statButton.setFont(jsc.jsValues.uiglobals.font);
 
-        if (DEViseUIGlobals.inBrowser) {
+        if (jsc.jsValues.uiglobals.inBrowser) {
             screenX.setEditable(false);
             screenY.setEditable(false);
             setButton.setEnabled(false);
@@ -1194,8 +1282,8 @@ class SettingDlg extends Dialog
                             x = Integer.parseInt(screenX.getText());
                             y = Integer.parseInt(screenY.getText());
 
-                            if (x < DEViseUIGlobals.minScreenSize.width || x > DEViseUIGlobals.maxScreenSize.width
-                                || y < DEViseUIGlobals.minScreenSize.height || y > DEViseUIGlobals.maxScreenSize.height) {
+                            if (x < jsc.jsValues.uiglobals.minScreenSize.width || x > jsc.jsValues.uiglobals.maxScreenSize.width
+                                || y < jsc.jsValues.uiglobals.minScreenSize.height || y > jsc.jsValues.uiglobals.maxScreenSize.height) {
                                 throw new NumberFormatException();
                             } else {
                                 jsc.jscreen.setScreenDim(x, y);
@@ -1203,9 +1291,9 @@ class SettingDlg extends Dialog
                             }
                         } catch (NumberFormatException e) {
                             jsc.showMsg("Invalid screen size specified!\nJavaScreen size must be larger than ("
-                                         + DEViseUIGlobals.minScreenSize.width + ", " + DEViseUIGlobals.minScreenSize.height
+                                         + jsc.jsValues.uiglobals.minScreenSize.width + ", " + jsc.jsValues.uiglobals.minScreenSize.height
                                          + ") and smaller than ("
-                                         + DEViseUIGlobals.maxScreenSize.width + ", " + DEViseUIGlobals.maxScreenSize.height + ")");
+                                         + jsc.jsValues.uiglobals.maxScreenSize.width + ", " + jsc.jsValues.uiglobals.maxScreenSize.height + ")");
                         }
                     }
                 });
@@ -1214,7 +1302,7 @@ class SettingDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        jsc.dispatcher.start(DEViseCommands.GET_SERVER_STATE);
+			jsc.dispatcher.start(DEViseCommands.GET_SERVER_STATE);
 
                         close();
                     }
@@ -1239,7 +1327,7 @@ class SettingDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	DEViseDebugLog.log("Opening SettingDlg");
+	jsc.jsValues.debug.log("Opening SettingDlg");
         status = true;
         setVisible(true);
     }
@@ -1251,7 +1339,7 @@ class SettingDlg extends Dialog
 
             status = false;
         }
-	DEViseDebugLog.log("Closed SettingDlg");
+	jsc.jsValues.debug.log("Closed SettingDlg");
     }
 
     // true means this dialog is showing
@@ -1266,6 +1354,8 @@ class SettingDlg extends Dialog
 // Dialog for displaying server state.
 class ServerStateDlg extends Dialog
 {
+    public jsdevisec jsc = null;
+
     private java.awt.List serverList = null, activeClientList = null, suspendClientList = null;
     private Label label1 = new Label("Current active server:");
     private Label label2 = new Label("Current active client:");
@@ -1274,11 +1364,13 @@ class ServerStateDlg extends Dialog
 
     private boolean status = false; // true means this dialog is showing
 
-    public ServerStateDlg(Frame owner, boolean isCenterScreen, String data)
+    public ServerStateDlg(Frame owner, boolean isCenterScreen, String data, jsdevisec what)
     {
         super(owner, true);
 
-	DEViseDebugLog.log("Creating ServerStateDlg");
+	jsc = what;
+
+	jsc.jsValues.debug.log("Creating ServerStateDlg");
 
         String[] list = DEViseGlobals.parseStr(data, " ");
         String[] list1 = null, list2 = null, list3 = null;
@@ -1312,9 +1404,9 @@ class ServerStateDlg extends Dialog
             }
         }
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("JSPOP current state");
 
@@ -1323,36 +1415,36 @@ class ServerStateDlg extends Dialog
         label3.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
 
         serverList = new java.awt.List(4, false);
-        serverList.setBackground(DEViseUIGlobals.textBg);
-        serverList.setForeground(DEViseUIGlobals.textFg);
-        serverList.setFont(DEViseUIGlobals.textFont);
+        serverList.setBackground(jsc.jsValues.uiglobals.textBg);
+        serverList.setForeground(jsc.jsValues.uiglobals.textFg);
+        serverList.setFont(jsc.jsValues.uiglobals.textFont);
         if (list1 != null) {
             for (int i = 0; i < list1.length; i++) {
                 serverList.add(list1[i]);
             }
         }
         activeClientList = new java.awt.List(6, false);
-        activeClientList.setBackground(DEViseUIGlobals.textBg);
-        activeClientList.setForeground(DEViseUIGlobals.textFg);
-        activeClientList.setFont(DEViseUIGlobals.textFont);
+        activeClientList.setBackground(jsc.jsValues.uiglobals.textBg);
+        activeClientList.setForeground(jsc.jsValues.uiglobals.textFg);
+        activeClientList.setFont(jsc.jsValues.uiglobals.textFont);
         if (list2 != null) {
             for (int i = 0; i < list2.length; i++) {
                 activeClientList.add(list2[i]);
             }
         }
         suspendClientList = new java.awt.List(6, false);
-        suspendClientList.setBackground(DEViseUIGlobals.textBg);
-        suspendClientList.setForeground(DEViseUIGlobals.textFg);
-        suspendClientList.setFont(DEViseUIGlobals.textFont);
+        suspendClientList.setBackground(jsc.jsValues.uiglobals.textBg);
+        suspendClientList.setForeground(jsc.jsValues.uiglobals.textFg);
+        suspendClientList.setFont(jsc.jsValues.uiglobals.textFont);
         if (list3 != null) {
             for (int i = 0; i < list3.length; i++) {
                 suspendClientList.add(list3[i]);
             }
         }
 
-        okButton.setBackground(DEViseUIGlobals.bg);
-        okButton.setForeground(DEViseUIGlobals.fg);
-        okButton.setFont(DEViseUIGlobals.font);
+        okButton.setBackground(jsc.jsValues.uiglobals.bg);
+        okButton.setForeground(jsc.jsValues.uiglobals.fg);
+        okButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -1438,7 +1530,7 @@ class ServerStateDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	DEViseDebugLog.log("Opening ServerStateDlg");
+	jsc.jsValues.debug.log("Opening ServerStateDlg");
         status = true;
         setVisible(true);
     }
@@ -1450,7 +1542,7 @@ class ServerStateDlg extends Dialog
 
             status = false;
         }
-	DEViseDebugLog.log("Closed ServerStateDlg");
+	jsc.jsValues.debug.log("Closed ServerStateDlg");
     }
 
     // true means this dialog is showing

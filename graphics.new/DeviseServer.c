@@ -20,6 +20,19 @@
   $Id$
 
   $Log$
+  Revision 1.14.2.2  2000/09/09 18:37:31  wenger
+  Devised can now operate with either separate command and data sockets
+  or a single command/data socket.
+
+  Revision 1.14.2.1  2000/08/31 18:30:04  wenger
+  Test version of devised uses only the command socket for the JavaScreen
+  (also writes GIFs and GData to the command socket).
+
+  Revision 1.14  1999/11/24 15:44:23  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.13  1999/10/05 17:55:48  wenger
   Added debug log level.
 
@@ -343,11 +356,6 @@ DeviseServer::WriteImagePort(const void* buf, int nsize)
 		fprintf(stderr, "Not JAVA_SCREEN client\n");
 		return -1;
 	}
-	if (_clients[_currentClient].imagefd <0)
-	{
-		fprintf(stderr, "Invalid image port file descriptor\n");
-		return -1;
-	}
 
 	int	 nbytes =-1;
 	char tempbuf[IMG_OOB];	
@@ -373,7 +381,11 @@ DeviseServer::WriteImagePort(const void* buf, int nsize)
 			break;
 		}
 #endif
-		nbytes = write(_clients[_currentClient].imagefd, buf, nsize);
+	    if (_clients[_currentClient].imagefd < 0) {
+		    nbytes = write(_clients[_currentClient].fd, buf, nsize);
+		} else {
+		    nbytes = write(_clients[_currentClient].imagefd, buf, nsize);
+		}
 	} while ((nbytes == -1) && ((errno == EAGAIN)||(errno==EINTR)));
 	if (nbytes != nsize) {
 		reportErrSys("Writing to image port");

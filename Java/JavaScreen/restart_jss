@@ -32,10 +32,10 @@ endif
 
 # Get the port numbers and log file names.
 set info = `ports+files $idStr`
-set popPort = `echo $info | cut -d' ' -f3`
-set jssPort = `echo $info | cut -d' ' -f4`
-set jssFile = `echo $info | cut -d' ' -f6`
-set dFile = `echo $info | cut -d' ' -f7`
+set popPort = `echo $info | cut -d' ' -f2`
+set jssPort = `echo $info | cut -d' ' -f3`
+set jssFile = `echo $info | cut -d' ' -f5`
+set dFile = `echo $info | cut -d' ' -f6`
 
 
 echo "Restarting jss and associated processes on `hostname`."

@@ -16,9 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.143.2.3  2001/01/05 20:49:49  wenger
+  Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
+  onto the js_cgi_br branch.
+
+  Revision 1.147  2000/12/27 22:22:31  wenger
+  Fixed 'duplicate GDataSock' problem caused by GDataSocks not getting
+  destroyed when queries are aborted; added a little more debug output.
+
+  Revision 1.143.2.2  2000/12/27 19:39:21  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
   Revision 1.146  2000/11/17 22:59:06  wenger
   Fixed problems with command logging of cursor movements and pile/stack
   flips.
+
+  Revision 1.143.2.1  2000/10/18 20:32:16  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
 
   Revision 1.145  2000/10/16 16:11:47  wenger
   Link creation GUI now gives a choice of positive or negative record

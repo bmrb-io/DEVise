@@ -24,6 +24,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.4.1  2000/11/08 18:21:38  wenger
+// Fixed problem with client objects never getting finalized; added
+// removal of client objects once we hit maxclients limit;
+// set names for the jspop threads; added client IDs to debug output;
+// added more info to jspop state output; various cleanups.
+//
+// Revision 1.8  2000/06/05 16:35:07  wenger
+// Added comments and cleaned up the code a little.
+//
 // Revision 1.7  2000/03/23 16:26:13  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -73,6 +82,7 @@ public class DEViseClientDispatcher implements Runnable
         if (!getStatus()) {
             status = true;
             dispatcher = new Thread(this);
+	    dispatcher.setName("DEViseClientDispatcher");
             dispatcher.start();
         }
     }
@@ -109,6 +119,9 @@ public class DEViseClientDispatcher implements Runnable
                 if (server != null) {
                     server.setCurrentClient(client);
                 }
+
+		// Try to avoid any delay in garbage collection of clients.
+		client = null;
             }
         }
 

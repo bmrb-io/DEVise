@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13.2.1  2000/10/18 20:31:52  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.14  2000/09/11 19:24:45  wenger
+  Fixed bug 617 and some other problems with the cursor constraints code.
+
   Revision 1.13  2000/02/16 18:22:54  wenger
   Better error messages.
 

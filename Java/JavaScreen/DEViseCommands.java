@@ -19,6 +19,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.1.4.2  2000/10/18 20:28:10  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.2  2000/09/12 20:51:27  wenger
+// Did some cleanup of the command-related code, better error messages from JSS.
+//
+// Revision 1.1.4.1  2000/10/09 16:26:41  xuk
+// Add JAVAC_HEARTBEAT command for heart-beat from JS
+//
 // Revision 1.1  2000/04/27 20:15:24  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -72,6 +82,8 @@ public final class DEViseCommands
     public static final String GET_SESSION_LIST = JS_PREFIX + "GetSessionList";
 
     public static final String GET_VIEW_HELP = JS_PREFIX + "GetViewHelp";
+
+    public static final String HEART_BEAT = JS_PREFIX + "HeartBeat";
 
     public static final String KEY_ACTION = JS_PREFIX + "KeyAction";
 

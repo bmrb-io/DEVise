@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.15.2.1  2000/10/18 20:31:53  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.16  2000/10/13 19:58:23  wenger
+  Got rid of GDataSocket creation errors in JavaScreen support.
+
   Revision 1.15  2000/03/14 17:05:05  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.

@@ -20,6 +20,25 @@
   $Id$
 
   $Log$
+  Revision 1.29.2.4  2000/12/14 00:42:46  wenger
+  Devise doesn't listen when image port is set to -1; jss starts devised
+  that way so we don't use up extra ports.
+
+  Revision 1.29.2.3  2000/10/18 20:30:44  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.30  2000/09/11 19:45:54  wenger
+  Added some debug code.
+
+  Revision 1.29.2.2  2000/09/09 18:37:14  wenger
+  Devised can now operate with either separate command and data sockets
+  or a single command/data socket.
+
+  Revision 1.29.2.1  2000/08/31 18:29:56  wenger
+  Test version of devised uses only the command socket for the JavaScreen
+  (also writes GIFs and GData to the command socket).
+
   Revision 1.29  2000/03/23 19:58:39  wenger
   Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
   g++ 2.95.2).
@@ -239,7 +258,8 @@ Server::Server(char *name, int image_port,
 	int maxClients)
 {
 #if defined(DEBUG)
-    printf("Server::Server(%s)\n", name);
+    printf("Server::Server(%s, %d, %d, %d)\n", name, image_port, swt_port,
+      clnt_port);
 #endif
 
     char hostname[MAXNAMELEN];
@@ -506,7 +526,7 @@ void Server::WaitForConnection()
     {
 		InitializeListenFd(_port, _listenFd);
     }
-	if (_listenImageFd <0)
+	if (_listenImageFd < 0 && _imageport != -1)
 	{
 		InitializeListenFd(_imageport, _listenImageFd);
 	}
@@ -857,7 +877,7 @@ void Server::ReadCmd()
     {
 		WaitForConnection();
     }
-    if (FD_ISSET(_listenImageFd, &fdset))
+    if (_listenImageFd >= 0 && FD_ISSET(_listenImageFd, &fdset))
     {
 		WaitForImageportConnection();
     }

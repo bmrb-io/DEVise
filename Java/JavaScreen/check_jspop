@@ -21,8 +21,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12.4.4  2000/12/27 19:38:36  wenger
+#  Merged changes from js_restart_improvements thru zero_js_cache_check from
+#  the trunk onto the js_cgi_br branch.
+#
+#  Revision 1.17  2000/12/18 20:28:15  wenger
+#  Mods to get check/restart scripts to work at BMRB.
+#
 #  Revision 1.16  2000/12/13 22:02:03  wenger
 #  Added more paths to perl.
+#
+#  Revision 1.12.4.3  2000/12/11 22:14:18  wenger
+#  Merged chagnes from link_gui_improvements thru js_restart_improvements
+#  onto the branch, removing imgport code from the restart scripts.
 #
 #  Revision 1.15  2000/12/08 20:54:59  wenger
 #  Major changes to cron job scripts to check and restart jspop, etc., so they
@@ -34,6 +45,14 @@
 #  Revision 1.13  2000/12/06 19:52:10  wenger
 #  Check scripts now have 'test' ID option, use new kill scripts; check_jss
 #  starts 4 deviseds (for BMRB).
+#
+#  Revision 1.12.4.2  2000/11/15 16:11:02  wenger
+#  Improved DEVise.kill, check* and run* scripts: added alternate path lines
+#  for perl and csh; added 'test' id, other cleanups; added scripts to run
+#  the JS with soil and test ports.
+#
+#  Revision 1.12.4.1  2000/11/13 18:10:30  wenger
+#  Removed imgport arguments.
 #
 #  Revision 1.12  2000/05/02 18:27:43  wenger
 #  Set up restart scripts for BMRB setup on yola/aden.

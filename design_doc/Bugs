@@ -2365,9 +2365,10 @@ Num Date        Status  Description
 			precision axis format, you can end up with multiple
 			axis ticks with identical labels. (rkw)
 
-600 6/29/00	OPEN	JavaScreen: if you click 'Exit' while the JS is
+600 6/29/00	FIXED	JavaScreen: if you click 'Exit' while the JS is
 			talking to the devised, and then 'No' in the
 			dialog, the JS still exits. (rkw)
+			(Fixed by rkw, 11/08/00.)
 
 601 7/12/00	OPEN	JavaScreen: JS doesn't get key released event
 			while help dialog is shown. (rkw)

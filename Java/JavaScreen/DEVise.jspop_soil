@@ -23,7 +23,7 @@ while ($index < $#argv)
 end
 
 set info = `ports+files $idStr`
-set outfile = `echo $info | cut -d' ' -f7`
+set outfile = `echo $info | cut -d' ' -f6`
 
 
 # For Tasvir and EmbeddedTk.

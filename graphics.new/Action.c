@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.40.2.1  2000/12/27 19:39:17  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.41  2000/11/17 22:59:05  wenger
+  Fixed problems with command logging of cursor movements and pile/stack
+  flips.
+
   Revision 1.40  2000/03/28 17:55:57  wenger
   Oops!  Used 'f' and 'F' for flip, so 'c' or 'C' now makes cursor fill
   destination view (slightly different than before -- it previously did

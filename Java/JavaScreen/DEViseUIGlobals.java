@@ -21,6 +21,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.4.3  2000/11/22 17:43:59  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.10.4.2  2000/11/21 01:51:33  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.10.4.1  2000/11/16 17:30:52  wenger
+// Made static variables into static final variables.
+//
+// Revision 1.10  2000/07/26 15:53:49  venkatan
+// Hand - Mouse Cursor is used in the 3D view
+//
 // Revision 1.9  2000/07/19 20:11:38  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -70,47 +83,30 @@ import java.applet.*;
 public final class DEViseUIGlobals
 {
     // global variables
-    public static boolean isApplet = false, inBrowser = false;
-    public static final String javaScreenTitle = "DEVise JavaScreen -- Version " + DEViseGlobals.VERSION;
+    public static final String javaScreenTitle =
+      "DEVise JavaScreen -- Version " + DEViseGlobals.VERSION;
 
-    public static AppletContext browser = null;
-
-    public static Dimension maxScreenSize = new Dimension(0, 0);
-    public static Dimension minScreenSize = new Dimension(0, 0);
-    public static Dimension screenSize = new Dimension(0, 0);
-    public static Dimension rubberBandLimit = new Dimension(4, 4);
-
-    public static Color bg = new Color(64, 96, 0);
-    public static Color bg_warn = new Color(255, 0, 0);
-    public static Color fg = Color.white;
-    public static Color screenBg = new Color(64, 192, 0);
-    public static Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
-    public static Font font2 = DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 0, 0);
-    public static Color textBg = new Color(255, 240, 230);
-    public static Color textFg = Color.black;
     public static final int COLOR_MIN = 0; // min. integer RGB value
     public static final int COLOR_MAX = 255; // max. integer RGB value
 
-    public static Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF,
-      0, 0);
-
     // DEVise font name
-    public static String[] DEViseFont = {"Monospaced", "Serif", "SanSerif"};
+    public static final String[] DEViseFont = {"Monospaced", "Serif",
+      "SanSerif"};
 
-    public static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    public static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-    public static Cursor rbCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
-    public static Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
-    public static Cursor lrsCursor = new Cursor(Cursor.W_RESIZE_CURSOR);
-    public static Cursor rrsCursor = new Cursor(Cursor.E_RESIZE_CURSOR);
-    public static Cursor trsCursor = new Cursor(Cursor.N_RESIZE_CURSOR);
-    public static Cursor brsCursor = new Cursor(Cursor.S_RESIZE_CURSOR);
-    public static Cursor tlrsCursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
-    public static Cursor blrsCursor = new Cursor(Cursor.SW_RESIZE_CURSOR);
-    public static Cursor trrsCursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
-    public static Cursor brrsCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
-    public static Cursor  hdCursor = new Cursor(Cursor.HAND_CURSOR);
-    public static Cursor  txtCursor = new Cursor(Cursor.TEXT_CURSOR);
+    public static final Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    public static final Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    public static final Cursor rbCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+    public static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
+    public static final Cursor lrsCursor = new Cursor(Cursor.W_RESIZE_CURSOR);
+    public static final Cursor rrsCursor = new Cursor(Cursor.E_RESIZE_CURSOR);
+    public static final Cursor trsCursor = new Cursor(Cursor.N_RESIZE_CURSOR);
+    public static final Cursor brsCursor = new Cursor(Cursor.S_RESIZE_CURSOR);
+    public static final Cursor tlrsCursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
+    public static final Cursor blrsCursor = new Cursor(Cursor.SW_RESIZE_CURSOR);
+    public static final Cursor trrsCursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
+    public static final Cursor brrsCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
+    public static final Cursor hdCursor = new Cursor(Cursor.HAND_CURSOR);
+    public static final Cursor txtCursor = new Cursor(Cursor.TEXT_CURSOR);
 
     public static Color convertColor(String str)
     {

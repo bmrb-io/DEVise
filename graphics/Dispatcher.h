@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.39.2.1  2000/10/18 20:31:52  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.40  2000/10/16 16:11:39  wenger
+  Link creation GUI now gives a choice of positive or negative record
+  links; fixed bug 622 (record link type not saved in session files);
+  fixed bug 623 (record link update problem); other link-related cleanups.
+
   Revision 1.39  1999/12/15 20:03:58  wenger
   Command log now includes information about how many times we went through
   the dispatcher, to try to allow reproducing timing-dependent bugs.

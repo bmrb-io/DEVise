@@ -21,8 +21,27 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6.4.5  2001/01/05 20:49:39  wenger
+#  Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
+#  onto the js_cgi_br branch.
+#
+#  Revision 1.6.4.4  2000/12/27 19:38:22  wenger
+#  Merged changes from js_restart_improvements thru zero_js_cache_check from
+#  the trunk onto the js_cgi_br branch.
+#
+#  Revision 1.9  2000/12/27 20:34:03  wenger
+#  A few more jspop-script fixes; the JavaScreen devised now gets
+#  composite.ini from its own lib directory.
+#
 #  Revision 1.8  2000/12/13 22:02:03  wenger
 #  Added more paths to perl.
+#
+#  Revision 1.6.4.3  2000/12/11 22:14:18  wenger
+#  Merged chagnes from link_gui_improvements thru js_restart_improvements
+#  onto the branch, removing imgport code from the restart scripts.
+#
+#  Revision 1.6.4.2  2000/11/21 01:51:28  xuk
+#  Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
 #
 #  Revision 1.7  2000/12/06 19:52:40  wenger
 #  Improved comment.

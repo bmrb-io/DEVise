@@ -6,5 +6,4 @@
 
 ############################################################
 
-\cp DEVise.jspop_soil DEVise.jspop
-jspop -cmdport5966 -imgport5944 &
+java js -usecgi -cgiurl/cgi-bin/js.cgi -cmdport6266 $*

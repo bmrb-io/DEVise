@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.62.2.1  2000/12/14 00:42:53  wenger
+  Devise doesn't listen when image port is set to -1; jss starts devised
+  that way so we don't use up extra ports.
+
+  Revision 1.62  2000/08/10 16:10:29  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.61  2000/06/05 16:22:09  wenger
   Basically finished command/GData/GIF caching for JavaScreen support
   (there are a few refinements that could still be added); changed the
@@ -416,7 +423,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-gl: use OpenGL to draw\n");
   fprintf(stderr, "\t-port <value>: port for server to listen on\n");
   fprintf(stderr, "\t-switchport <value>: port for server to listen on\n");
-  fprintf(stderr, "\t-imageport <value>: port for image socket\n");
+  fprintf(stderr, "\t-imageport <value>: port for image socket (-1 means don't listen)\n");
   fprintf(stderr, "\t-switchname <value>: host for the server to listen for"
 					" the collaborator\n");
   fprintf(stderr, "\t-maxclients <value>: maximum number of clients\n");

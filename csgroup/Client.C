@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.14.2.1  2000/09/01 18:26:10  wenger
+  Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
+
+  Revision 1.15  2000/09/01 17:31:53  wenger
+  Fixed bug 616 (problem with socket-reading code causing heavy CPU usage
+  in certain cases).
+
   Revision 1.14  2000/03/14 21:51:28  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.

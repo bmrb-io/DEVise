@@ -1,0 +1,25 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+############################################################
+
+nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+#nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
+#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+setenv DISPLAY unix:1.0
+
+# Make sure Xvfb gets going before starting the jss.
+sleep 10
+
+\rm -f devised.out
+\rm -f jss.out
+touch devised.out
+touch jss.out
+
+nohup java jss -idtest -jssport7811 -jspopport8822 -debug $* >! jss.out
+setenv DISPLAY unix:0.0

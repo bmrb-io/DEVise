@@ -15,6 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2.2.1  2000/10/18 20:35:22  wenger
+#	Merged changes from fixed_bug_616 through link_gui_improvements onto
+#	the branch.
+#	
+#	Revision 1.3  2000/10/16 16:11:54  wenger
+#	Link creation GUI now gives a choice of positive or negative record
+#	links; fixed bug 622 (record link type not saved in session files);
+#	fixed bug 623 (record link update problem); other link-related cleanups.
+#	
 #	Revision 1.2  1999/11/15 23:08:08  wenger
 #	Removed set link GUI, since this is no longer an option.
 #	

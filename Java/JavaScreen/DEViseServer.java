@@ -27,10 +27,62 @@
 // $Id$
 
 // $Log$
+// Revision 1.42.4.13  2000/12/27 19:38:34  wenger
+// Merged changes from js_restart_improvements thru zero_js_cache_check from
+// the trunk onto the js_cgi_br branch.
+//
+// Revision 1.42.4.12  2000/12/22 16:29:06  wenger
+// Fixed bug 629; temporarily disabled heartbeat pending fix for bug 627.
+//
+// Revision 1.44  2000/12/14 21:41:06  wenger
+// More debug info (bytes of data available from devised).
+//
+// Revision 1.42.4.11  2000/12/07 17:36:45  xuk
+// *** empty log message ***
+//
+// Revision 1.42.4.10  2000/11/22 17:43:58  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.42.4.9  2000/11/08 18:21:38  wenger
+// Fixed problem with client objects never getting finalized; added
+// removal of client objects once we hit maxclients limit;
+// set names for the jspop threads; added client IDs to debug output;
+// added more info to jspop state output; various cleanups.
+//
+// Revision 1.42.4.8  2000/11/02 04:59:48  xuk
+// *** empty log message ***
+//
+// Revision 1.42.4.7  2000/11/01 22:14:18  wenger
+// A bunch of cleanups to the jspop: client heartbeat time is now updated
+// with every command; new clients are correctly put into suspended client
+// list; destruction of excess client objects is temporarily disabled;
+// some methods re-structured, other general improvements.
+//
+// Revision 1.42.4.6  2000/10/25 03:10:07  xuk
+// Do not close socket after communication of each command. Modified in run().
+//
+// Revision 1.42.4.5  2000/10/18 20:28:11  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
 // Revision 1.43  2000/09/20 19:29:32  wenger
 // Removed maximum logins per user from jspop (causes problems because client
 // objects are not removed if JS crashes; generally simplified the DEViseUser-
 // related code.
+//
+// Revision 1.42.4.4  2000/10/18 18:29:23  wenger
+// Added a separate thread to the JavaScreen to send the heartbeat -- this
+// is much simpler that the previous version that used an existing thread.
+//
+// Revision 1.42.4.3  2000/10/09 16:35:41  xuk
+// In processClientcmd() function, process the Javac_heartBeat command received from JS.
+//
+// Revision 1.42.4.2  2000/10/02 19:16:26  xuk
+// In run() function, disconnect the socket between the client and JS after the communication for each command.
+//
+// Revision 1.42.4.1  2000/09/01 20:14:28  xuk
+// Delete dataPort. In startSocket() function, only provide one port to DEViseCommSocket constructor.
 //
 // Revision 1.42  2000/07/19 20:11:36  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
@@ -118,7 +170,7 @@ import java.util.*;
 
 public class DEViseServer implements Runnable
 {
-    private static int Port = DEViseGlobals.cmdport + 1;
+    private static final int DEBUG = 1;
 
     private jspop pop = null;
 
@@ -126,13 +178,14 @@ public class DEViseServer implements Runnable
     private Thread serverThread = null;
 
     public String hostname = "localhost"; // hostname of jss/devised
-    public int dataPort = 0, cmdPort = 0, switchPort = 0;
+    //public int dataPort = 0;
+    public int cmdPort = 0, switchPort = 0;
 
     public int jssport = 0; // port the jss is listening on
 
     private DEViseCommSocket socket = null;
-    private int devisedTimeout = 180 * 1000;
-    private int socketTimeout = 1000;
+    private static final int devisedTimeout = 180 * 1000; // milliseconds
+    private static final int socketTimeout = 1000; // milliseconds
 
     // newClient is the client we're going to switch to the next time we
     // switch clients; client is the client we're currently connected to.
@@ -145,11 +198,14 @@ public class DEViseServer implements Runnable
     private String rootDir = "DEViseSession";
 
     public static final int STATUS_STOPPED = 0, STATUS_RUNNING = 1;
-    private int status = 0;
+    private int status = STATUS_STOPPED;
     private boolean isValid = false;
 
     public static final int ACTION_QUIT = 0, ACTION_IDLE = 1, ACTION_WORK = 2;
     private int action = ACTION_IDLE;
+
+    private static int _nextObjectNum = 1;
+    private int _objectNum = -1;
 
     // name is the name of the system that the jss and devised(s) are running
     // on; port is the jssport.
@@ -162,9 +218,11 @@ public class DEViseServer implements Runnable
         }
 
         cmdPort = cmdport;
-        dataPort = imgport;
+        //dataPort = imgport;
         jssport = port;
         isValid = true;
+
+	_objectNum = _nextObjectNum++;
     }
 
     // Returns STATUS_*.
@@ -207,6 +265,7 @@ public class DEViseServer implements Runnable
             setStatus(STATUS_RUNNING);
             setAction(ACTION_IDLE);
             serverThread = new Thread(this);
+	    serverThread.setName("DEViseServer " + _objectNum);
             serverThread.start();
         }
 
@@ -221,8 +280,13 @@ public class DEViseServer implements Runnable
         }
     }
 
+    // Connect a socket to the devised.
     private synchronized boolean startSocket()
     {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseServer.startSocket()");
+        }
+
         // close previous connection first if any
         closeSocket();
 
@@ -246,8 +310,7 @@ public class DEViseServer implements Runnable
             time += timestep;
 
             try {
-                socket = new DEViseCommSocket(hostname, cmdPort, dataPort,
-				  socketTimeout);
+                socket = new DEViseCommSocket(hostname, cmdPort,  socketTimeout);
 
                 pop.pn("Successfully connect to devised ...");
 
@@ -295,6 +358,12 @@ public class DEViseServer implements Runnable
     // Set the client to switch to the next time we switch clients.
     public synchronized void setCurrentClient(DEViseClient c)
     {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseServer(" + _objectNum +
+	      ").setCurrentClient(" + c.getConnectionID() + ") in thread " +
+	      Thread.currentThread());
+        }
+
         if (c == null)
             return;
 
@@ -347,6 +416,7 @@ public class DEViseServer implements Runnable
         int todo;
         boolean isRemoveClient = false;
 
+	//TEMP -- kind of busywaiting?? YES
         while (true) {
             todo = getAction();
 
@@ -370,7 +440,7 @@ public class DEViseServer implements Runnable
 			// Get a command from the client.
                         // This method will not block, if no command it just
 			// returns null.
-                        clientCmd = client.getCmd();
+			clientCmd = client.getCmd();
                         isEnd = true;
                     } catch (InterruptedIOException e) {
                         // since client.getCmd() will not block, this is
@@ -390,6 +460,9 @@ public class DEViseServer implements Runnable
                 } else {
 		    // We've just finished processing this command, so
 		    // remove it from the client.
+		    // We now have a reference to the command, so remove it
+		    // from the client.  Note: I'm not sure why the client
+		    // saves the command in the first place.  RKW 2000-11-07.
                     client.removeLastCmd();
                 }
 
@@ -401,11 +474,19 @@ public class DEViseServer implements Runnable
                 try {
 		    if (!processClientCmd(clientCmd, isRemoveClient,
 		      serverDatas)) {
-		        continue;
+			
+			// close client socket for cgi version
+			if (client != null && client.useCgi()) {
+			    client.getSocket().closeSocket();
+			    client.setSocket(null);
+			    pop.pn("Socket between client and cgi is closed.");
+			}
+			
+      			continue;
                     }
 		    processServerCmd(serverDatas);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed");
+                    pop.pn("DEViseServer failed1");
                     pop.pn(e.getMsg());
 
                     if (clientCmd.startsWith(DEViseCommands.EXIT)) {
@@ -436,12 +517,18 @@ public class DEViseServer implements Runnable
                 try {
                     client.sendCmd(serverCmds);
                     client.sendData(serverDatas);
+		    
+		    if (client.useCgi()) {
+			client.getSocket().closeSocket();
+			client.setSocket(null);
+			pop.pn("Socket between client and cgi is closed.");
+		    }
                     if (isRemoveClient) {
                         isRemoveClient = false;
                         removeCurrentClient(false);
                     }
                 } catch (YException e) {
-                    pop.pn("Client communication error");
+                    pop.pn("Client communication error3");
                     pop.pn(e.getMsg());
                     removeCurrentClient();
                 }
@@ -465,14 +552,16 @@ public class DEViseServer implements Runnable
 	    cmdExit();
 
             // no need to return any response to client
+	    //TEMP -- should probably return a response here to fix bug 630.
             return false;
 
         } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
 	    cmdCloseSession();
 
-            // no need to return any response to client
+        } else if (clientCmd.startsWith(DEViseCommands.HEART_BEAT)) {
+            // do nothing
+	    // no need to return any response to client
             return false;
-
         } else if (clientCmd.startsWith(DEViseCommands.GET_SESSION_LIST)) {
 	    cmdGetSessionList(clientCmd);
 
@@ -530,10 +619,9 @@ public class DEViseServer implements Runnable
         }
     }
 
-    private void cmdExit() throws YException
+    public void cmdExit() throws YException
     {
 	cmdCloseSession();
-
         removeCurrentClient(false);
     }
 
@@ -792,7 +880,7 @@ public class DEViseServer implements Runnable
                     currentDir = new Vector();
                     currentDir.addElement(rootDir);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed");
+                    pop.pn("DEViseServer failed2");
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
@@ -817,6 +905,12 @@ public class DEViseServer implements Runnable
     // example, if the client crashes).
     private synchronized void switchClient(boolean startNewClient)
     {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseServer(" + _objectNum +
+	      ").switchClient(" + startNewClient + ") in thread " +
+	      Thread.currentThread());
+	}
+
         if (client != null) {
             if (client.isSessionOpened) {
                 client.isClientSwitched = true;
@@ -837,7 +931,7 @@ public class DEViseServer implements Runnable
                     currentDir = new Vector();
                     currentDir.addElement(rootDir);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed");
+                    pop.pn("DEViseServer failed3");
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
@@ -932,7 +1026,8 @@ public class DEViseServer implements Runnable
                     if (cmd.startsWith(DEViseCommands.DONE)) {
                         isEnd = true;
                         isError = false;
-                    } else if (cmd.startsWith(DEViseCommands.ERROR) || cmd.startsWith(DEViseCommands.FAIL)) {
+                    } else if (cmd.startsWith(DEViseCommands.ERROR) ||
+		      cmd.startsWith(DEViseCommands.FAIL)) {
                         isEnd = true;
                         isError = true;
                         rspbuf.removeAllElements();

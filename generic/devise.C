@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.21.2.1  2000/09/01 18:26:34  wenger
+  Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
+
+  Revision 1.22  2000/09/01 17:33:14  wenger
+  Fixed bug 616 (problem with socket-reading code causing heavy CPU usage
+  in certain cases).
+
   Revision 1.21  2000/03/23 20:34:27  wenger
   Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
   g++ 2.95.2).

@@ -21,6 +21,15 @@
   $Id$
 
   $Log$
+  Revision 1.3.12.1  2000/10/18 20:31:53  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.4  2000/10/16 16:11:39  wenger
+  Link creation GUI now gives a choice of positive or negative record
+  links; fixed bug 622 (record link type not saved in session files);
+  fixed bug 623 (record link update problem); other link-related cleanups.
+
   Revision 1.3  1998/05/02 09:02:28  taodb
   Added support for command logging
   Added support for registering events with delay

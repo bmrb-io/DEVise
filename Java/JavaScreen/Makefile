@@ -36,8 +36,26 @@ jspop.class: *.java
 jss.class: *.java
 	javac *.java
 
-jar: js jsa
-	jar cf jsa.jar *.class *.gif
+jar:
+	make jara jarb
+
+jara:
+	-rm *.class
+	-rm jsa1.jar jsa2.jar
+	javac DEViseJSLoader.java
+	javac jsa.java
+	jar cf jsa1.jar DEViseJSLoader.class jsa.class
+	rm DEViseJSLoader.class jsa.class
+	jar cf jsa2.jar *.class  *.gif
+
+jarb:
+	-rm *.class
+	-rm jsb1.jar jsb2.jar
+	javac DEViseJSLoader.java
+	javac jsb.java
+	jar cf jsb1.jar DEViseJSLoader.class jsb.class
+	rm DEViseJSLoader.class jsb.class
+	jar cf jsb2.jar *.class  *.gif
 
 clean:
 	-rm *.class *.jar

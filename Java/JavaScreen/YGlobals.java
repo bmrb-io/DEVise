@@ -19,6 +19,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.4.2  2000/11/22 17:44:00  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.18.4.1  2000/11/21 01:51:34  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.18  2000/04/05 06:25:40  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.17  2000/03/23 16:26:17  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -36,9 +46,7 @@ public final class YGlobals
     public final static float rad = (float)(180.0 / Math.PI);
 
     // control constants
-    public static boolean isdebug = true;
-    public static boolean isapplet = false;
-    public static boolean inbrowser = false;
+    private static final boolean isdebug = true;
 
     public static void ythrow(boolean condition, String msg, String where, int id) throws YException
     {

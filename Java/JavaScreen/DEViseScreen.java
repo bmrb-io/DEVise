@@ -32,6 +32,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.63.4.5  2000/11/21 01:51:33  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.63.4.4  2000/10/18 20:28:11  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.64  2000/10/03 19:23:27  wenger
+// Fixed bugs 592 and 594 (JavaScreen sometimes missing keystrokes in views).
+//
+// Revision 1.63.4.3  2000/10/18 18:29:23  wenger
+// Added a separate thread to the JavaScreen to send the heartbeat -- this
+// is much simpler that the previous version that used an existing thread.
+//
+// Revision 1.63.4.2  2000/10/11 02:59:48  xuk
+// Add notifyall() to wake up dispatcher thread.
+//
+// Revision 1.63.4.1  2000/10/09 16:32:22  xuk
+// Change dispathcer.start() to dispatcher.command = cmd, since DEViseCmdDispatcher thread starts only once now.
+//
 // Revision 1.63  2000/07/20 16:26:07  venkatan
 // Mouse Location Display format - is now controlled by printf type
 // format strings specified by the VIEW_DATA_AREA command
@@ -200,12 +220,12 @@ public class DEViseScreen extends Panel
     {
         jsc = what;
 
-        screenDim = new Dimension(DEViseUIGlobals.screenSize.width, DEViseUIGlobals.screenSize.height);
+        screenDim = new Dimension(jsc.jsValues.uiglobals.screenSize.width, jsc.jsValues.uiglobals.screenSize.height);
 
         setLayout(null);
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
         this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
         this.enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -319,8 +339,8 @@ public class DEViseScreen extends Panel
         screenDim.width = width;
         screenDim.height = height;
 
-        DEViseUIGlobals.screenSize.width = screenDim.width;
-        DEViseUIGlobals.screenSize.height = screenDim.height;
+        jsc.jsValues.uiglobals.screenSize.width = screenDim.width;
+        jsc.jsValues.uiglobals.screenSize.height = screenDim.height;
 
         isDimChanged = true;
 
@@ -790,7 +810,7 @@ public class DEViseScreen extends Panel
             isDimChanged = false;
             setSize(screenDim);
 
-            if (DEViseUIGlobals.inBrowser) {
+            if (jsc.jsValues.uiglobals.inBrowser) {
                 jsc.validate();
             } else {
                 jsc.parentFrame.pack();

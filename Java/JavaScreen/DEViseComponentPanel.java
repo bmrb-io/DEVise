@@ -23,6 +23,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.7.4.1  2000/11/21 01:51:31  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.7  2000/06/22 20:51:11  wenger
+// Changed colors and font in drill-down dialog to make text more
+// readable.
+//
 // Revision 1.6  2000/06/12 22:13:56  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -52,10 +59,15 @@ public class DEViseComponentPanel extends Panel
     public static final int ALIGN_CENTER = 0;
     public static final int ALIGN_LEFT = 1;
     public static final int ALIGN_RIGHT = 2;
+    
+    public jsdevisec jsc;
 
     public DEViseComponentPanel(Component component[], String style, int gap,
-      int align)
+      int align, jsdevisec js)
     {
+
+	jsc = js;
+
         if (component == null)
             return;
 
@@ -82,21 +94,21 @@ public class DEViseComponentPanel extends Panel
         int i;
         for (i = 0; i < component.length; i++) {
             if (component[i] instanceof Button) {
-                component[i].setBackground(DEViseUIGlobals.bg);
-                component[i].setForeground(DEViseUIGlobals.fg);
-                component[i].setFont(DEViseUIGlobals.font);
+                component[i].setBackground(jsc.jsValues.uiglobals.bg);
+                component[i].setForeground(jsc.jsValues.uiglobals.fg);
+                component[i].setFont(jsc.jsValues.uiglobals.font);
                 ((Button)component[i]).setActionCommand(
 		  ((Button)component[i]).getLabel());
             } else if ((component[i] instanceof TextField) ||
 	      (component[i] instanceof TextArea)) {
-                component[i].setBackground(DEViseUIGlobals.textBg);
-                component[i].setForeground(DEViseUIGlobals.textFg);
-                component[i].setFont(DEViseUIGlobals.textFont);
+                component[i].setBackground(jsc.jsValues.uiglobals.textBg);
+                component[i].setForeground(jsc.jsValues.uiglobals.textFg);
+                component[i].setFont(jsc.jsValues.uiglobals.textFont);
             } else {
-                component[i].setBackground(DEViseUIGlobals.bg);
-                component[i].setForeground(DEViseUIGlobals.fg);
+                component[i].setBackground(jsc.jsValues.uiglobals.bg);
+                component[i].setForeground(jsc.jsValues.uiglobals.fg);
 		// font2 for drill-down dialog.  RKW 2000-06-22.
-                component[i].setFont(DEViseUIGlobals.font2);
+                component[i].setFont(jsc.jsValues.uiglobals.font2);
                 if (component[i] instanceof Label) {
                     ((Label)component[i]).setAlignment(Label.CENTER);
 	        }
@@ -108,18 +120,18 @@ public class DEViseComponentPanel extends Panel
         add(panel);
     }
 
-    public DEViseComponentPanel(Component component[], String style, int gap)
+    public DEViseComponentPanel(Component component[], String style, int gap, jsdevisec js)
     {
-        this(component, style, gap, ALIGN_CENTER);
+        this(component, style, gap, ALIGN_CENTER, js);
     }
 
-    public DEViseComponentPanel(Component component[], String style)
+    public DEViseComponentPanel(Component component[], String style, jsdevisec js)
     {
-        this(component, style, 10, ALIGN_CENTER);
+        this(component, style, 10, ALIGN_CENTER, js);
     }
 
-    public DEViseComponentPanel(Component component[])
+    public DEViseComponentPanel(Component component[], jsdevisec js)
     {
-        this(component, LAYOUT_HORIZONTAL, 10, ALIGN_CENTER);
+        this(component, LAYOUT_HORIZONTAL, 10, ALIGN_CENTER, js);
     }
 }

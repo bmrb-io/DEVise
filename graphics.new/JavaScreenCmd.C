@@ -21,6 +21,21 @@
   $Id$
 
   $Log$
+  Revision 1.107.2.5  2001/01/05 20:49:49  wenger
+  Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
+  onto the js_cgi_br branch.
+
+  Revision 1.111  2000/12/27 22:22:31  wenger
+  Fixed 'duplicate GDataSock' problem caused by GDataSocks not getting
+  destroyed when queries are aborted; added a little more debug output.
+
+  Revision 1.107.2.4  2000/12/27 19:39:20  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.107.2.3  2000/12/22 17:41:13  wenger
+  Updated JavaScreen protocol version to 5.0.
+
   Revision 1.110  2000/12/14 18:46:16  wenger
   Devised makes sure JS data cache file is non-zero size.
 
@@ -28,9 +43,17 @@
   More debug output: JavaScreenCmd constructor and ReturnVal() log command
   name.
 
+  Revision 1.107.2.2  2000/11/22 18:18:08  wenger
+  Made changes for DEVise server and client to read/write JS ID and CGI
+  flag in every command (currently disabled until the Java side is ready).
+
   Revision 1.108  2000/11/17 22:59:06  wenger
   Fixed problems with command logging of cursor movements and pile/stack
   flips.
+
+  Revision 1.107.2.1  2000/08/31 18:30:04  wenger
+  Test version of devised uses only the command socket for the JavaScreen
+  (also writes GIFs and GData to the command socket).
 
   Revision 1.107  2000/07/28 17:01:19  wenger
   Added support for x-only zoom in the JavaScreen.
@@ -525,8 +548,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 4;
-static const int protocolMinorVersion = 3;
+static const int protocolMajorVersion = 5;
+static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -1180,9 +1203,11 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// and other problems.
 	DoCloseSession();
 
+#if 0 //TEMPTEMP
 	if (Init::UseJSCache()) {
         (void)_cache.StartPlayingBack(this, fullpath, protocolMajorVersion);
 	}
+#endif //TEMPTEMP
 	if (_cache.IsPlayingBack()) {
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
 		  "Opening session by playing back cache");
@@ -1265,10 +1290,12 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// ...end of kludgey section.
 	//
 
+#if 0 //TEMPTEMP
 	if (Init::UseJSCache() && !_cache.IsPlayingBack()) {
 	    (void)_cache.StartRecording(fullpath, protocolMajorVersion,
 		  protocolMinorVersion);
 	}
+#endif //TEMPTEMP
 	if (_cache.IsRecording()) {
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
 		  "Recording opening of session to cache files");

@@ -6,4 +6,4 @@
 
 ############################################################
 
-/s/java-1/bin/java js -cmdport6266 -imgport6244 $*
+java js -cgiurl/cgi-bin/js.cgi -cmdport6266 $*

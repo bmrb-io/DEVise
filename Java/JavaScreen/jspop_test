@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+############################################################
+
+\rm -f jspop.out
+touch jspop.out
+
+nohup java jspop -idtest -cmdport6266 -jspopport8822 -debug $* >! jspop.out

@@ -23,6 +23,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.4.3  2000/12/14 00:42:32  wenger
+// Devise doesn't listen when image port is set to -1; jss starts devised
+// that way so we don't use up extra ports.
+//
+// Revision 1.9.4.2  2000/11/08 18:21:39  wenger
+// Fixed problem with client objects never getting finalized; added
+// removal of client objects once we hit maxclients limit;
+// set names for the jspop threads; added client IDs to debug output;
+// added more info to jspop state output; various cleanups.
+//
+// Revision 1.9.4.1  2000/10/18 20:28:12  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.11  2000/09/13 17:39:11  wenger
+// Cleaned up command parsing code.
+//
 // Revision 1.10  2000/09/12 20:51:27  wenger
 // Did some cleanup of the command-related code, better error messages from JSS.
 //
@@ -114,6 +131,7 @@ public class JssHandler implements Runnable
 
             status = true;
             handler = new Thread(this);
+	    handler.setName("JssHandler");
             handler.start();
         }
     }
@@ -176,7 +194,7 @@ public class JssHandler implements Runnable
 		}
 
                 if (cmd[0].equals(DEViseCommands.S_ADD)) {
-		    if (cmd.length != 4) {
+		    if (cmd.length != 3) {
 		        throw new YException(
 			  "Wrong number of arguments in command: <" + msg + 
 			  ">");
@@ -184,15 +202,15 @@ public class JssHandler implements Runnable
 
 		    int port = Integer.parseInt(cmd[1]);
 		    int cmdport = Integer.parseInt(cmd[2]);
-		    int imgport = Integer.parseInt(cmd[3]);
 
                     if (hostname != null && port > 1024 && port < 65535 &&
-		      imgport > 1024 && imgport < 65535 && cmdport > 1024 &&
-		      cmdport < 65535) {
-                        pop.addServer(hostname, port, cmdport, imgport);
+		      cmdport > 1024 && cmdport < 65535) {
+			// Note: 0 is placeholder until we get rid of all
+			// image port code.
+                        pop.addServer(hostname, port, cmdport, 0);
                     } else {
 			throw new YException(
-			  "Illegal hostname, port, cmdport, or imgport");
+			  "Illegal hostname, port, or cmdport");
 		    }
 		} else {
 		    throw new YException(

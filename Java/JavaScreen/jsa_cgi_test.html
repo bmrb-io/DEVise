@@ -1,0 +1,40 @@
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1999-2000
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<html>
+<head>
+<title>DEVise JavaScreen</title>
+</head>
+<body>
+
+<p><a target="new" href="keyboard.html">Help on keyboard shortcuts</a>
+<p>
+
+<applet code=DEViseJSLoader.class archive=jsa1.jar,jsa2.jar width=800 height=600>
+<param name="applet" value="jsa">
+<param name="debug" value="1">
+<param name="cmdport" value="6266">
+<param name="usecgi" value="0">
+<param name="cgiurl" value="/cgi-bin/js.cgi">
+<param name="rubberbandlimit" value="4x4">
+<param name="bgcolor" value="64+96+0">
+<param name="screensize" value="1024x768">
+</applet>
+</body>
+</html>
+

@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.4.1  2000/10/18 20:28:11  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.7  2000/09/20 19:29:34  wenger
+// Removed maximum logins per user from jspop (causes problems because client
+// objects are not removed if JS crashes; generally simplified the DEViseUser-
+// related code.
+//
 // Revision 1.6  2000/03/23 16:26:15  wenger
 // Cleaned up headers and added requests for comments.
 //

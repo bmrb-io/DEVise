@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.27.2.2  2000/12/27 19:38:54  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.30  2000/11/17 22:58:59  wenger
+  Fixed problems with command logging of cursor movements and pile/stack
+  flips.
+
+  Revision 1.27.2.1  2000/10/18 20:31:52  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
   Revision 1.29  2000/09/14 19:38:59  wenger
   Added GUI to view and change cursor type (X, Y, or XY).
 

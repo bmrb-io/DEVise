@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.40.4.1  2000/11/21 01:51:29  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.40  2000/04/24 20:21:58  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.39  2000/04/07 22:43:12  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -130,7 +136,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         if (currentImg != null) {
             g.drawImage(currentImg, 0, 0, this);
         } else {
-            g.setColor(DEViseUIGlobals.bg);
+            g.setColor(jsc.jsValues.uiglobals.bg);
             g.fillRect(0, 0, imageWidth, imageHeight);
         }
     }

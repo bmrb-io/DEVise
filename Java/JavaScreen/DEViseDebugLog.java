@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.4  2001/01/05 19:15:45  wenger
+// Updated copyright dates.
+//
+// Revision 1.2.4.3  2001/01/05 17:56:25  wenger
+// Minor code cleanups.
+//
+// Revision 1.2.4.2  2000/11/22 17:43:57  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.2.4.1  2000/11/21 01:51:32  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.2  2000/07/14 21:13:08  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.1  2000/06/26 16:48:32  wenger
 // Added client-side JavaScreen debug logging.
 //
@@ -34,31 +53,19 @@ import  java.io.*;
 
 public class DEViseDebugLog
 {
-    private static DEViseDebugLog _log = null;
-    private static final boolean _debug = false;
+    private static final boolean DEBUG = false;
+    private DEViseJSValues _jsVals = null;
 
-    static void create()
-    {
-        _log = new DEViseDebugLog();
-    }
-
-    static void log(String msg)
-    {
-        if (_debug) {
-            System.out.println(msg);
-        }
-
-        if (_log != null) {
-	    _log.send(msg);
-	}
-    }
-
-    DEViseDebugLog()
-    {
+    DEViseDebugLog(DEViseJSValues jsVals) {
+        _jsVals = jsVals;
     }
 
     void send(String msg)
     {
+        if (DEBUG) {
+            System.out.println(msg);
+        }
+
 	try {
 	    Date date = new Date();
 	    DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
@@ -76,7 +83,7 @@ public class DEViseDebugLog
 
 	    PrintWriter out = new PrintWriter(connection.getOutputStream());
     
-            out.print("js_id=" + DEViseGlobals.connectionID + "&");
+            out.print("js_id=" + _jsVals.connection.connectionID + "&");
 	    out.print("command=" + stringToLog);
 	    out.close();
 

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.82.2.1  2000/10/18 20:32:17  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.83  2000/10/13 19:58:37  wenger
+  Got rid of GDataSocket creation errors in JavaScreen support.
+
   Revision 1.82  2000/03/14 21:51:50  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.

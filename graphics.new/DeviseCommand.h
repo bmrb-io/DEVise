@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.61.2.1  2000/10/18 20:32:09  wenger
+  Merged changes from fixed_bug_616 through link_gui_improvements onto
+  the branch.
+
+  Revision 1.62  2000/09/14 19:39:16  wenger
+  Added GUI to view and change cursor type (X, Y, or XY).
+
   Revision 1.61  2000/08/30 20:09:05  wenger
   Added the option of forcing a cursor to be entirely within its destination
   view; added control for whether a cursor must be at least partially within

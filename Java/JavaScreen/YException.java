@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.4.1  2000/11/16 17:13:13  wenger
+// Made static variables into static final variables.
+//
+// Revision 1.13  2000/04/07 22:44:11  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.12  2000/03/23 16:26:16  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -37,7 +44,7 @@ public class YException extends Exception
     // indicate the error message
     private String msg = null;
 
-    private static String defaultMsg = "YException has been thrown!";
+    private static final String defaultMsg = "YException has been thrown!";
 
     public YException()
     {

@@ -5,6 +5,10 @@ Version: this document refers to the JavaScreen communication protocol
 version 4.3.
 
 
+For the details of the format in which commands are send on the socket,
+see comments in DEViseCommSocket.java.
+
+
 0. Convention
 
 
@@ -40,6 +44,10 @@ version 4.3.
 
     2.3 JAVAC_Abort
     Purpose: tells JSPoP that user willing to abort the last command
+    Arguments: 0
+
+    2.4 JAVAC_HeartBeat
+    Purpose: tells JSPoP that the JavaScreen is "alive".
     Arguments: 0
 
 
@@ -387,10 +395,12 @@ version 4.3.
 
     6.1 JSS_Restart
     Purpose: tells the specified JSS server to restart the specified devised
-    Arguments: 2
+    Arguments: 1
         <cmd port>: the command port used by the specified devised
-        <img port>: the data port used by the specified devised
 
+    6.2 JSS_Quit
+    Purpose: tells the JSS to quit.
+    Arguments: 0
 
 7. JSS to JSPoP
 
@@ -399,6 +409,3 @@ version 4.3.
     Arguments: 3
         <jss port>: the port used by this JSS to listen to JSPoP request
         <cmd port>: the command port used by the specified devised
-        <img port>: the data port used by the specified devised
-
-

@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.4.1  2000/11/22 17:43:57  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.3  2000/06/26 16:47:10  wenger
+// Minor cleanups.
+//
 // Revision 1.2  2000/06/06 17:06:43  wenger
 // Fixed bug 595 (array out of bounds in font code).
 //
@@ -109,6 +116,9 @@ public final class DEViseFonts
 
     private static final int _minSize = 1;
 
+    // Note: it's okay for _fonts to be static, even if there is more than
+    // one JavaScreen instance in the JVM, because this is just used as
+    // a repository of Font objects to speed things up.  RKW 2000-11-22.
     private static Vector _fonts = new Vector();
 
     private static final int _debug = 0;

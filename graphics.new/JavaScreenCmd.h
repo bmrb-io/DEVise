@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.39.2.1  2000/12/27 19:39:20  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.40  2000/12/14 16:38:48  wenger
+  More debug output: JavaScreenCmd constructor and ReturnVal() log command
+  name.
+
   Revision 1.39  2000/06/16 18:28:40  wenger
   Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
 

@@ -4,6 +4,8 @@
 
 # Start the jspop (JavaScreen Point of Presence).
 
+# Note: specific port number must NOT be specified in this script.
+
 #-----------------------------------------------------------
 
 # $Id$
@@ -26,7 +28,7 @@ foreach arg ($argv[*])
 end
 
 set info = `ports+files $idStr`
-set outfile = `echo $info | cut -d' ' -f5`
+set outfile = `echo $info | cut -d' ' -f4`
 
 
 if (`hostname` == "yola") then

@@ -20,6 +20,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1.2.1  2000/12/27 19:38:36  wenger
+#  Merged changes from js_restart_improvements thru zero_js_cache_check from
+#  the trunk onto the js_cgi_br branch.
+#
+#  Revision 1.1  2000/12/13 21:22:00  wenger
+#  First version of script to get usage statistics.
+#
 
 ############################################################
 

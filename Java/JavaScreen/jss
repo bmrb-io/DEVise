@@ -4,6 +4,8 @@
 
 # Start the jss (JavaScreen Server).
 
+# Note: specific port number must NOT be specified in this script.
+
 #-----------------------------------------------------------
 
 # $Id$
@@ -26,8 +28,8 @@ foreach arg ($argv[*])
 end
 
 set info = `ports+files $idStr`
-set joutfile = `echo $info | cut -d' ' -f6`
-set doutfile = `echo $info | cut -d' ' -f7`
+set joutfile = `echo $info | cut -d' ' -f5`
+set doutfile = `echo $info | cut -d' ' -f6`
 
 
 # Fire up Xvfb and set DISPLAY accordingly.

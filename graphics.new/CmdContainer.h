@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10.2.1  2000/12/27 19:39:19  wenger
+  Merged changes from js_restart_improvements thru zero_js_cache_check from
+  the trunk onto the js_cgi_br branch.
+
+  Revision 1.11  2000/11/17 22:59:06  wenger
+  Fixed problems with command logging of cursor movements and pile/stack
+  flips.
+
   Revision 1.10  1999/12/06 18:41:03  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.

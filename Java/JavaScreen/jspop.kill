@@ -21,8 +21,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1.4.2  2000/12/27 19:38:37  wenger
+#  Merged changes from js_restart_improvements thru zero_js_cache_check from
+#  the trunk onto the js_cgi_br branch.
+#
+#  Revision 1.3  2000/12/18 20:28:16  wenger
+#  Mods to get check/restart scripts to work at BMRB.
+#
 #  Revision 1.2  2000/12/13 22:02:04  wenger
 #  Added more paths to perl.
+#
+#  Revision 1.1.4.1  2000/12/11 23:09:54  wenger
+#  Re-adding stuff that somehow got goofed up in the merge.
+#
+#  Revision 1.1.2.1  2000/12/11 22:22:42  wenger
+#  Merged chagnes from link_gui_improvements thru js_restart_improvements
+#  onto the branch, removing imgport code from the restart scripts.
 #
 #  Revision 1.1  2000/12/06 19:48:57  wenger
 #  New scripts to kill jspop and jss.

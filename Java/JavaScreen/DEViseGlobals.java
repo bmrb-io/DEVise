@@ -20,6 +20,51 @@
 // $Id$
 
 // $Log$
+// Revision 1.44.2.11  2000/12/22 17:32:10  wenger
+// Changed JS version to 4.0 and protocol version to 5.0.
+//
+// Revision 1.44.2.10  2000/12/07 17:36:45  xuk
+// *** empty log message ***
+//
+// Revision 1.44.2.9  2000/11/22 17:43:58  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.44.2.8  2000/11/21 01:51:32  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.44.2.7  2000/11/10 15:50:38  wenger
+// Minor cleanups to CGI-related code.
+//
+// Revision 1.44.2.6  2000/11/09 21:43:13  wenger
+// js.cgi now uses CGI library, various other cleanups; changed CGI parameter
+// names slightly; added -cgi argument to JS usage message.
+//
+// Revision 1.44.2.5  2000/11/01 22:14:17  wenger
+// A bunch of cleanups to the jspop: client heartbeat time is now updated
+// with every command; new clients are correctly put into suspended client
+// list; destruction of excess client objects is temporarily disabled;
+// some methods re-structured, other general improvements.
+//
+// Revision 1.44.2.4  2000/10/28 19:30:52  xuk
+// add global variables cgi and cgiURL for cgi communication.
+//
+// Revision 1.44.2.3  2000/10/23 19:57:39  xuk
+// Add time constants for checking the death of JS.
+// Add constant of default maximum number of clients.
+//
+// Revision 1.44.2.2  2000/10/02 19:18:28  xuk
+// Add a new message type API_JAVA_JS=8, which is used for the command sent from JS to JSPoP including a ID of JS.
+//
+// Revision 1.44.2.1  2000/09/01 20:10:45  xuk
+// Remove the imgport global variable.
+//
+// Revision 1.44  2000/08/07 17:15:39  wenger
+// Removed the 'control-drag' to move a cursor without talking to the devised
+// feature because it could end up causing an incorrect state; added
+// workaround for bug 607 (problems with control-drag); documented X-only zoom
+// in keyboard help; improved JavaScreen makefile; fixed up makejsa.
+//
 // Revision 1.43  2000/07/27 14:46:33  wenger
 // Updated JS end of protocol version to 4.2.
 //
@@ -114,24 +159,27 @@ import java.util.*;
 public final class DEViseGlobals
 {
     // global constants
+    // API_JAVA is a JavaScreen command without JS ID; API_JAVA_WID is
+    // a JavaScreen command *with* JS ID.
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
-                              API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
-                              API_DATA = 7;
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
+                              API_CTL = 3, API_JAVA = 5,
+			      // API_IMAGE = 6, API_DATA = 7,
+			      API_JAVA_WID = 8;
+    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
+      JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("3.4");
-    public static final String PROTOCOL_VERSION = new String("4.3");
-    public static final int DEFAULTID = -1;
+    public static final String VERSION = new String("4.0");
+    public static final String PROTOCOL_VERSION = new String("5.0");
+    public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
 
+    public static final int CHECKINTERVAL = 600000, // check interval for dead JS, 10 minutes
+	                    KILLINTERVAL = 3600000, // kill a JS for not response after 60 minutes
+	                    DEFAULTMAXCLIENT = 100; // default value for maximum number of clients
+
     // global variables
-    public static int cmdport = 0, imgport = 0;
-    public static int connectionID = -1;
-    public static String username = null, password = null, hostname = null;
-    public static boolean debugLog = false;
-    public static boolean helpBox = false;
 
     // global functions
 

@@ -19,6 +19,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.1.2.1  2000/10/18 20:35:22  wenger
+# Merged changes from fixed_bug_616 through link_gui_improvements onto
+# the branch.
+#
+# Revision 1.1  2000/09/14 19:39:41  wenger
+# Added GUI to view and change cursor type (X, Y, or XY).
+#
 
 ############################################################
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,79 +12,139 @@
 
 // ------------------------------------------------------------------------
 
+// This applet loads the applet specified in the appletToLoad
+// string. Used to print a short message that Java Screen is 
+// loading, when the network connection is slow.
+
+// ------------------------------------------------------------------------
+
+// $Id$
+
+// $Log$
+// Revision 1.1.2.6  2001/01/05 19:15:45  wenger
+// Updated copyright dates.
+//
+// Revision 1.1.2.5  2001/01/05 16:35:21  wenger
+// JS applets now deal correctly with stop/start calls from browser.
+//
+// Revision 1.1.2.4  2000/12/29 22:41:38  wenger
+// Fixed problems with the JavaScreen client not getting destroyed
+// properly, except that it still doesn't work right if you go to a
+// different web page in the browser, then quit.
+//
+// Revision 1.1.2.3  2000/12/28 20:30:48  wenger
+// Modified DEViseJSLoader.java to handle both the jsa and jsb, and eliminated
+// DEViseJSBLoader.java; eliminated makejsa and makejsb and incorporated
+// their functionality into the Makefile.
+//
+// Revision 1.1.2.2  2000/12/28 18:51:02  wenger
+// Fixed formatting.
+//
+// Revision 1.1.2.1  2000/12/21 22:15:28  wenger
+// Added proper header with RCS Id, etc.
+//
+
+// ========================================================================
+
 import java.applet.*;
 import java.awt.*;
 
-
-/**
-* This applet loads the applet specified in the appletToLoad
-* String. Used to print a short message that Java Screen is 
-* Loading, when the network connection is slow.
-**/
-
-
 public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 {
-String appletToLoad;
-Label label;
-Thread appletThread;
+    static final int DEBUG = 0;
 
-public void init()
-{
-appletToLoad = "jsa";
-if (appletToLoad == null) {
-label = new Label("No applet to load.");
-} else {
- label = new Label( " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
- label.setFont(new Font("Helvetica", Font.BOLD, 16));
- label.setForeground(new Color(0.4f, 0.3f, 0.6f));
- label.setBackground(new Color(0.9f, 0.9f, 0.9f));
+    String appletToLoad;
+    Label label;
+    Thread appletThread;
+    Applet realApplet;
 
-add(label);
-}
-}
+    public void init()
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseJSLoader.init()");
+        }
 
-public void run()
-{
-if (appletToLoad == null) return;
+	// Get "real applet" name from applet parameters.
+	appletToLoad = getParameter("applet");
+        if (appletToLoad == null) {
+	    appletToLoad = "jsb";
+	}
 
-try {
-  try{
-     Thread.sleep(1000);
-  }
-  catch(InterruptedException e){
-  }
-Class appletClass = Class.forName(appletToLoad);
-Applet realApplet = (Applet)appletClass.newInstance();
-realApplet.setStub(this);
+        label = new Label(
+	  " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
+        label.setFont(new Font("Helvetica", Font.BOLD, 16));
+        label.setForeground(new Color(0.4f, 0.3f, 0.6f));
+        label.setBackground(new Color(0.9f, 0.9f, 0.9f));
 
-remove(label);
-setLayout(new GridLayout(1, 0));
-add(realApplet);
-realApplet.init();
-realApplet.start();
-} catch (Exception e) {
-label.setText("Error loading applet.");
-}
-validate();
-}
+        add(label);
+    }
 
-public void start()
-{
-if(appletThread == null){
-appletThread = new Thread(this);
-}
-appletThread.start();
-}
+    public void run()
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseJSLoader.run()");
+        }
 
-public void stop()
-{
-appletThread.stop();
-}
+        if (appletToLoad == null) return;
 
-public void appletResize(int width, int height)
-{
-resize(width, height);
-}
+        try {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            Class appletClass = Class.forName(appletToLoad);
+            realApplet = (Applet)appletClass.newInstance();
+            realApplet.setStub(this);
 
+            remove(label);
+            setLayout(new GridLayout(1, 0));
+            add(realApplet);
+            realApplet.init();
+            realApplet.start();
+        } catch (Exception e) {
+            label.setText("Error loading applet.");
+        }
+        validate();
+    }
+
+    public void start()
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseJSLoader.start()");
+        }
+
+        if (appletThread == null) {
+            appletThread = new Thread(this);
+            appletThread.start();
+        } else {
+	    realApplet.start();
+	}
+    }
+
+    public void stop()
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseJSLoader.stop()");
+	}
+
+	realApplet.stop();
+    }
+
+    public void destroy()
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseJSLoader.destroy()");
+	}
+
+	realApplet.destroy();
+    }
+
+    public void appletResize(int width, int height)
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseJSLoader.resize()");
+        }
+
+        resize(width, height);
+    }
 }

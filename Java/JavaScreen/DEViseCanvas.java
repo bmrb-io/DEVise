@@ -27,6 +27,31 @@
 // $Id$
 
 // $Log$
+// Revision 1.66.2.6  2000/11/22 17:43:56  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.66.2.5  2000/11/21 01:51:29  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.66.2.4  2000/10/18 20:28:09  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.67  2000/10/03 19:23:26  wenger
+// Fixed bugs 592 and 594 (JavaScreen sometimes missing keystrokes in views).
+//
+// Revision 1.66.2.3  2000/10/18 18:29:12  wenger
+// Added a separate thread to the JavaScreen to send the heartbeat -- this
+// is much simpler that the previous version that used an existing thread.
+//
+// Revision 1.66.2.2  2000/10/11 03:00:21  xuk
+// Add notifyall() to wake up dispatcher thread.
+//
+// Revision 1.66.2.1  2000/10/09 16:32:47  xuk
+// Change dispathcer.start() to dispatcher.command = cmd, since D
+// EViseCmdDispatcher thread starts only once now.
+//
 // Revision 1.66  2000/08/07 20:21:23  wenger
 // Fixed problems with DEViseView.getFirstCursor() method; cleanup of
 // DEViseCanvas CVS log, and other minor cleanup.
@@ -240,12 +265,12 @@ import  java.io.*;
 
 public class DEViseCanvas extends Container
 {
+
     private jsdevisec jsc = null;
     private DEViseScreen jscreen = null;
     private DEViseCmdDispatcher dispatcher = null;
     public int posZ = 0;
 
-    private static int javaCanvasSizeCorrection = 0;
     public int oldHighlightAtomIndex = -1, highlightAtomIndex = -1;
     public Point point = new Point();
     DEViseCrystal crystal = null;
@@ -279,12 +304,6 @@ public class DEViseCanvas extends Container
     public int helpMsgX = -1, helpMsgY = -1;
 
     Point sp = new Point(), ep = new Point(), op = new Point();
-    public static int lastKey = KeyEvent.VK_UNDEFINED;
-
-    public static DEViseCanvas sourceCanvas = null;
-    public static boolean isInterative = false;
-
-    public static int totalpaintcount = 0;
 
     //
     // This is a fix to a problem that seems to be in the JVM itself:
@@ -410,8 +429,8 @@ public class DEViseCanvas extends Container
 
     public void paint(Graphics gc)
     {
-        if (DEViseCanvas.isInterative) {
-            if (DEViseCanvas.sourceCanvas != this) {
+        if (jsc.jsValues.canvas.isInteractive) {
+            if (jsc.jsValues.canvas.sourceCanvas != this) {
                 return;
             }
         }
@@ -530,7 +549,7 @@ public class DEViseCanvas extends Container
 	helpMsgX = 0; helpMsgY = 0;
  
         Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(DEViseUIGlobals.textFont);
+        FontMetrics fm = tk.getFontMetrics(jsc.jsValues.uiglobals.textFont);
         int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
         int width = fm.stringWidth(helpMsg) + 12;
 	int minHeight = height + height/3; int minWidth = fm.stringWidth("THIS IS THE MINIMUM");
@@ -616,7 +635,7 @@ public class DEViseCanvas extends Container
         gc.setColor(new Color(255, 255, 192));
         gc.fillRect(helpMsgX + 1, helpMsgY + 1,dispLength - 2, totHeight- 1);
         gc.setColor(Color.black);
-        gc.setFont(DEViseUIGlobals.textFont);
+        gc.setFont(jsc.jsValues.uiglobals.textFont);
 
         // printing each of the line from the Vector of lines.
         for( int i = 0 ; i < sv.size(); i++){	
@@ -661,7 +680,10 @@ public class DEViseCanvas extends Container
             return false;
         }
 
-        //jsc.pn("crystal is been painted " + totalpaintcount++);
+	if (jsc.jsValues.debug._debugLevel >= 2) {
+            jsc.pn("Crystals have been painted " +
+	      jsc.jsValues.canvas.crystalPaintCount++ + " times");
+        }
 
         if (crystal == null) {
             createCrystal();
@@ -866,7 +888,7 @@ public class DEViseCanvas extends Container
 
         jsc.jscreen.finalMousePosition.x = view.viewLoc.x + event.getX();
         jsc.jscreen.finalMousePosition.y = view.viewLoc.y + event.getY();
-
+	//jsc.pn("DEViseCanvas.processMouseEvent()");
         if (id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED
 	  || id == MouseEvent.MOUSE_CLICKED) {
             if (dispatcher.getStatus() != 0) {
@@ -927,7 +949,7 @@ public class DEViseCanvas extends Container
                 System.out.println("DEViseCanvas(" + view.viewName +
 		  ").keyPressed(" + event.getKeyChar() + ")");
 	    }
-            DEViseCanvas.lastKey = event.getKeyCode();
+            jsc.jsValues.canvas.lastKey = event.getKeyCode();
         }
 
 	// If this is not a 3D-view, send the appropriate key action
@@ -938,7 +960,7 @@ public class DEViseCanvas extends Container
                 System.out.println("DEViseCanvas(" + view.viewName +
 		  ").keyReleased(" + event.getKeyChar() + ")");
 	    }
-            DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
+            jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
 
             char keyChar = event.getKeyChar();
             int keyCode = event.getKeyCode();
@@ -949,12 +971,12 @@ public class DEViseCanvas extends Container
 	            //
 	            // Show this view's help within a dialog box.
 	            //
-                    DEViseGlobals.helpBox = true;
+                    jsc.jsValues.connection.helpBox = true;
                     String cmd = DEViseCommands.GET_VIEW_HELP + " " +
 		      activeView.getCurlyName() + " " + helpMsgX + " "
 		      + helpMsgY;
-                   //  jscreen.guiAction = true;
-                    dispatcher.start(cmd);
+		    //  jscreen.guiAction = true;
+     		    dispatcher.start(cmd);
                     return;
             }
 
@@ -1148,7 +1170,7 @@ public class DEViseCanvas extends Container
 	    // with each mouse click and before the mouseClick event is
 	    // reported.
 
-            DEViseCanvas.isInterative = false;
+            jsc.jsValues.canvas.isInteractive = false;
 
             if (view.viewDimension == 3) {
                 isMouseDragged = false;
@@ -1193,8 +1215,8 @@ public class DEViseCanvas extends Container
                     if (h < 0)
                         h = -h;
 
-                    if (w > DEViseUIGlobals.rubberBandLimit.width ||
-		      h > DEViseUIGlobals.rubberBandLimit.height) {
+                    if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
+		      h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
                         cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
 			  " " + activeView.getCurlyName() + " " +
 			  activeView.translateX(sp.x, 2) + " " +
@@ -1202,7 +1224,7 @@ public class DEViseCanvas extends Container
 			  activeView.translateX(ep.x, 2) + " " +
 			  activeView.translateY(ep.y, 2);
 
-                        if (DEViseCanvas.lastKey == KeyEvent.VK_ALT) {
+                        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
                             cmd = cmd + " 1";
                         } else {
                             cmd = cmd + " 0";
@@ -1210,7 +1232,7 @@ public class DEViseCanvas extends Container
 
 			//Zoom in X only direction - modified by Ven
 
-                        if (DEViseCanvas.lastKey == KeyEvent.VK_CONTROL) {
+                        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
                             cmd = cmd + " 1";
                         } else {
                             cmd = cmd + " 0";
@@ -1232,7 +1254,7 @@ public class DEViseCanvas extends Container
 		// will *not* work correctly if you do two consecutive drags
 		// while holding down the control key the whole time.
 		// RKW 2000-08-07.
-		lastKey = KeyEvent.VK_UNDEFINED;
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
             }
         }
 
@@ -1252,7 +1274,7 @@ public class DEViseCanvas extends Container
                 String cmd = null;
                 Point p = event.getPoint();
 
-                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
+                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) {
 		    if (activeView.isDrillDown) {
                         cmd = DEViseCommands.SHOW_RECORDS + " " +
 			  activeView.getCurlyName() + " " +
@@ -1339,16 +1361,16 @@ public class DEViseCanvas extends Container
                 jsc.viewInfo.updateInfo(activeView.getX(p.x),
 		  activeView.getY(p.y));
 
-                if (lastKey == KeyEvent.VK_ALT) {
+                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
                     crystal.translate(dx, dy);
-                } else if (lastKey == KeyEvent.VK_CONTROL) {
+                } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
                     crystal.scale(dx, dy);
                 } else {
                     crystal.rotate(dx, dy);
                 }
 
-                DEViseCanvas.isInterative = true;
-                DEViseCanvas.sourceCanvas = DEViseCanvas.this;
+                jsc.jsValues.canvas.isInteractive = true;
+                jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
                 return;
             }
@@ -1369,8 +1391,8 @@ public class DEViseCanvas extends Container
                     cursor.updateCursorLoc(dx, dy, whichCursorSide, false);
                 }
 
-                DEViseCanvas.isInterative = true;
-                DEViseCanvas.sourceCanvas = DEViseCanvas.this;
+                jsc.jsValues.canvas.isInteractive = true;
+                jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
             }
         }

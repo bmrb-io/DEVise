@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,13 +12,57 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Top-level class for JavaScreen applet with its window outside the
+// web browser.  This class parses the applet parameters, etc., and
+// then creates a jsdevisec.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.41.2.11  2001/01/05 19:15:45  wenger
+// Updated copyright dates.
+//
+// Revision 1.41.2.10  2001/01/05 17:56:25  wenger
+// Minor code cleanups.
+//
+// Revision 1.41.2.9  2001/01/05 16:35:31  wenger
+// JS applets now deal correctly with stop/start calls from browser.
+//
+// Revision 1.41.2.8  2000/12/29 22:41:39  wenger
+// Fixed problems with the JavaScreen client not getting destroyed
+// properly, except that it still doesn't work right if you go to a
+// different web page in the browser, then quit.
+//
+// Revision 1.41.2.7  2000/12/20 18:22:50  wenger
+// Fixed some problems with parameters in jsa and jsb.
+//
+// Revision 1.41.2.6  2000/11/29 22:40:57  wenger
+// Abstracted common code from jsa and jsb into new DEViseJSApplet
+// superclass; other minor cleanups.
+//
+// Revision 1.41.2.5  2000/11/22 22:01:04  wenger
+// Added 'usecgi' and 'cgiurl' parameters to the JSA and JSB, added other
+// files to help test this.
+//
+// Revision 1.41.2.4  2000/11/22 19:59:48  wenger
+// Formatting cleanup.
+//
+// Revision 1.41.2.3  2000/11/22 17:44:00  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.41.2.2  2000/11/21 01:51:35  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.41.2.1  2000/09/01 20:23:58  xuk
+// In checkParameters(), delete imgports checking.
+//
+// Revision 1.41  2000/08/21 15:30:19  wenger
+// Made 'start JavaScreen' button label clearer; changed html files to use
+// new loader message jar file.
+//
 // Revision 1.40  2000/07/26 15:53:49  venkatan
 // Hand - Mouse Cursor is used in the 3D view
 //
@@ -51,186 +95,122 @@
 // jsa.java
 
 import  java.applet.*;
-import  java.awt.event.*;
 import  java.awt.*;
-import  java.net.*;
+import  java.awt.event.*;
 import  java.io.*;
 import  java.util.*;
 
-public class jsa extends Applet
+public class jsa extends DEViseJSApplet
 {
-    URL baseURL = null;
-
-    String sessionName = null;
-    int debugLevel = 0;
-
-
-
-    Vector images = null;
+    static final int DEBUG = 0;
 
     Button startButton = new Button("Click here to start JavaScreen");
 
-    TextArea startInfo = null;
-
-    boolean isInit = true;
     jscframe jsf = null;
+    boolean started = false;
 
     public void init()
     {
-        DEViseUIGlobals.isApplet = true;
-        DEViseUIGlobals.inBrowser = false;
+        if (DEBUG >= 1) {
+            System.out.println("jsa.init()");
+	}
 
-        isInit = true;
+	super.init();
+	final Applet applet = this;
 
-        DEViseUIGlobals.browser = getAppletContext();
-
-
-        setLayout(new BorderLayout(0, 10));
+        jsValues.uiglobals.inBrowser = false;
 
         add(startButton, BorderLayout.NORTH);
         startButton.setEnabled(false);
 
         startButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
                 {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (jsf == null) {
+                    if (jsf == null) {
+                        startInfo.append("Start Java Screen ...\n");
+                        jsf = new jscframe(applet, images, sessionName,
+			  jsValues);
+                        //startButton.setEnabled(false);
+                    } else {
+			// Note: we get here if the user clicks the start
+			// button when a JS already exists.  RKW 2001-01-05.
+                        if (jsf.isQuit()) {
                             startInfo.append("Start Java Screen ...\n");
-                            jsf = new jscframe(images, debugLevel, sessionName);
+                            jsf = null;
+                            jsf = new jscframe(applet, images, sessionName,
+			      jsValues);
                             //startButton.setEnabled(false);
                         } else {
-                            if (jsf.isQuit()) {
-                                startInfo.append("Start Java Screen ...\n");
-                                jsf = null;
-                                jsf = new jscframe(images, debugLevel, sessionName);
-                                //startButton.setEnabled(false);
-                            } else {
-                                startInfo.append("Java Screen already started!\n");
-                            }
+                            startInfo.append("Java Screen already started!\n");
                         }
                     }
-                });
-
-        startInfo = new TextArea(8, 50);
-        startInfo.setBackground(DEViseUIGlobals.textBg);
-        startInfo.setForeground(DEViseUIGlobals.textFg);
-        startInfo.setFont(DEViseUIGlobals.textFont);
-        add(startInfo, BorderLayout.CENTER);
-
-        setVisible(true);
-
-        checkParameters();
-
-        //baseURL = getDocumentBase();
-        baseURL = getCodeBase();
-        DEViseGlobals.hostname = baseURL.getHost();
-        DEViseGlobals.username = DEViseGlobals.DEFAULTUSER;
-        DEViseGlobals.password = DEViseGlobals.DEFAULTPASS;
-
-        String version = System.getProperty("java.version");
-        String vendor = System.getProperty("java.vendor");
-        startInfo.append("The browser you used is: " + vendor + "\n");
-        startInfo.append("The Java version your browser supported is: " + version + "\n");
-        if (version.compareTo("1.1") < 0)  {
-            startInfo.append("Error: Java version 1.1 or greater is needed to run this program\n");
-            isInit = false;
-            return;
-        }
+                }
+            });
     }
-
 
     public void start()
     {
-        if (sessionName != null) {
-            startJS(true);
-        } else {
-            startJS(false);
-        }
+        if (DEBUG >= 1) {
+            System.out.println("jsa.start()");
+	}
+
+	if (started) {
+            if (jsf != null && !jsf.isQuit()) {
+                jsf.displayMe(true);
+	    }
+	} else {
+            if (sessionName != null) {
+                startJS(true);
+            } else {
+                startJS(false);
+            }
+	    started = true;
+	}
     }
 
     public void stop()
     {
+        if (DEBUG >= 1) {
+            System.out.println("jsa.stop()");
+	}
+
         if (jsf != null && !jsf.isQuit()) {
             jsf.displayMe(false);
         }
     }
 
-
     public void destroy()
     {
-        closeJS();
+        if (DEBUG >= 1) {
+            System.out.println("jsa.destroy()");
+	}
 
-        super.destroy();
-    }
-
-    public void closeJS()
-    {
         if (jsf != null && !jsf.isQuit()) {
-            jsf.quit();
+            jsf.destroy();
             jsf = null;
         }
 
         sessionName = null;
         images = null;
+
+        super.destroy();
     }
 
     public void startJS(boolean flag)
     { 
-        if (images == null) {
-            images = new Vector();
+        if (DEBUG >= 1) {
+            System.out.println("jsa.startJS()");
+	}
 
-            startInfo.append("Trying to load DEVise animation symbol ...\n");
-            MediaTracker tracker = new MediaTracker(this);
-            Image image = null;
-            String imageName = null;
-            byte[] imageData = new byte[2000];
-            for (int i = 0; i < 11; i++)  {
-                //image = getImage(baseURL, "devise" + i + ".gif");
-
-                // get image from JAR file
-                try {
-                    imageName = "devise" + i + ".gif";
-                    InputStream is = getClass().getResourceAsStream(imageName);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    int count = bis.read(imageData, 0, 2000);
-                    //byte idata;
-                    //int count = 0;
-                    //while ((idata = bis.read()) != -1) {
-                    //    imageData[count] = idata;
-                    //    count++;
-                    //}
-                    image = Toolkit.getDefaultToolkit().createImage(imageData, 0, count);
-                } catch (IOException e) {
-                    startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
-                    images = null;
-                    break;
-                }
-
-                tracker.addImage(image, 0);
-                try  {
-                    tracker.waitForID(0);
-                }  catch (InterruptedException e)  {
-                }
-
-                if (tracker.isErrorID(0)) {
-                    startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
-                    images = null;
-                    break;
-                }
-
-                images.addElement(image);
-            }
-
-            if (images != null)
-                startInfo.append("DEVise animation symbol successfully loaded\n");
-        }
+	loadImages();
 
         startButton.setEnabled(true);
 
         if (jsf == null) {
             if (flag) {
                 startInfo.append("Start Java Screen ...\n");
-                jsf = new jscframe(images, debugLevel, sessionName);
+                jsf = new jscframe(this, images, sessionName, jsValues);
                 //startButton.setEnabled(false);
             }
         } else {
@@ -238,7 +218,7 @@ public class jsa extends Applet
                 if (flag) {
                     startInfo.append("Start new Java Screen ...\n");
                     jsf = null;
-                    jsf = new jscframe(images, debugLevel, sessionName);
+                    jsf = new jscframe(this, images, sessionName, jsValues);
                     //startButton.setEnabled(false);
                 }
             } else {
@@ -248,56 +228,9 @@ public class jsa extends Applet
 	repaint();
     }
 
-    private void checkParameters()
+    protected void checkParameters()
     {
-     
-        sessionName = getParameter("session");
-        if (sessionName == null) {
-            startInfo.append("Parameter session is not specified!\n");
-        } else {
-            startInfo.append("Parameter session: " + sessionName + " is used\n");
-        }
-
-        String debug = getParameter("debug");
-        if (debug != null) {
-            try {
-                debugLevel = Integer.parseInt(debug);
-            } catch (NumberFormatException e) {
-                debugLevel = 0;
-            }
-        } else {
-            debugLevel = 0;
-        }
-
-        String cmdport = getParameter("cmdport");
-        if (cmdport != null) {
-            try {
-                int port = Integer.parseInt(cmdport);
-                if (port < 1024 || port > 65535)
-                    throw new NumberFormatException();
-                DEViseGlobals.cmdport = port;
-                startInfo.append("Parameter cmdport " + port + " is used\n");
-            } catch (NumberFormatException e) {
-                DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
-            }
-        } else {
-            DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
-        }
-
-        String imgport = getParameter("imgport");
-        if (imgport != null) {
-            try {
-                int port = Integer.parseInt(imgport);
-                if (port < 1024 || port > 65535)
-                    throw new NumberFormatException();
-                DEViseGlobals.imgport = port;
-                startInfo.append("Parameter imgport " + port + " is used\n");
-            } catch (NumberFormatException e) {
-                DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
-            }
-        } else {
-            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
-        }
+        super.checkParameters();
 
         String screen = getParameter("screensize");
         if (screen != null) {
@@ -310,116 +243,13 @@ public class jsa extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                DEViseUIGlobals.screenSize.width = x;
-                DEViseUIGlobals.screenSize.height = y;
+                jsValues.uiglobals.screenSize.width = x;
+                jsValues.uiglobals.screenSize.height = y;
 
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
         }
-
-        String rsize = getParameter("rubberbandlimit");
-        if (rsize != null) {
-            try {
-                String[] str = DEViseGlobals.parseStr(rsize, "x");
-                if (str == null || str.length != 2) {
-                    throw new NumberFormatException();
-                }
-
-                int x = Integer.parseInt(str[0]);
-                int y = Integer.parseInt(str[1]);
-
-                if (x < 0) {
-                    x = 0;
-                }
-
-                if (y < 0) {
-                    y = 0;
-                }
-
-                DEViseUIGlobals.rubberBandLimit.width = x;
-                DEViseUIGlobals.rubberBandLimit.height = y;
-                startInfo.append("Parameter rubber band limit (" + x + ", " + y + ") is used\n");
-            } catch (NumberFormatException e) {
-            }
-        }
-
-        String bg = getParameter("bgcolor");
-        if (bg != null) {
-            try {
-                String[] str = DEViseGlobals.parseStr(bg, "+");
-                if (str == null || str.length != 3) {
-                    throw new NumberFormatException();
-                }
-
-                int r = Integer.parseInt(str[0]);
-                int g = Integer.parseInt(str[1]);
-                int b = Integer.parseInt(str[2]);
-                if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                    throw new NumberFormatException();
-                }
-
-                Color c = new Color(r, g, b);
-                DEViseUIGlobals.bg = c;
-                startInfo.append("Parameter bgcolor (" + r + ", " + g + ", " + b + ") is used\n");
-            } catch (NumberFormatException e) {
-            }
-        }
-
-        String fg = getParameter("fgcolor");
-        if (fg != null) {
-            try {
-                String[] str = DEViseGlobals.parseStr(fg, "+");
-                if (str == null || str.length != 3) {
-                    throw new NumberFormatException();
-                }
-
-                int r = Integer.parseInt(str[0]);
-                int g = Integer.parseInt(str[1]);
-                int b = Integer.parseInt(str[2]);
-                if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                    throw new NumberFormatException();
-                }
-
-                Color c = new Color(r, g, b);
-                DEViseUIGlobals.fg = c;
-                startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
-            } catch (NumberFormatException e) {
-            }
-        }
-
-        String dl = getParameter("log");
-        if (dl != null) {
-            try {
-		DEViseGlobals.debugLog = (Integer.parseInt(dl) != 0);
-            } catch (NumberFormatException e) {
-		DEViseGlobals.debugLog = false;
-            }
-        } else {
-	    DEViseGlobals.debugLog = false;
-        }
-    }
-
-    public String[][] getParameterInfo()
-    {
-        String [][] info = {
-               // Parameter Name   Type of Value      Description
-                  {"debug",           "int",        "whether or not display debug information"},
-                  {"cmdport",         "int",        "jspop command port"},
-                  {"imgport",         "int",        "jspop image port"},
-                  {"session",        "String",      "session file name"},
-                  {"screensize",     "String",      "assumed java screen dimension"},
-                  {"rubberbandlimit","String",      "Minimum dimension for a rubberband"},
-                  {"bgcolor",        "String",      "RGB values for bgcolor"},
-                  {"fgcolor",        "String",      "RGB values for fgcolor"}
-               };
-
-        return info;
-    }
-
-    public String getAppletInfo()
-    {
-        return "DEVise Java Screen version 2.0\nBy DEVise Development Group at UW-Madison\nAll rights reserved";
     }
 }
 
@@ -427,16 +257,17 @@ class jscframe extends Frame
 {
     public jsdevisec jsc = null;
 
-    public jscframe(Vector images, int debugLevel, String sessionName)
+    public jscframe(Applet parentApplet, Vector images, String sessionName,
+      DEViseJSValues jsValues)
     {
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
-        DEViseUIGlobals.maxScreenSize.width = dim.width - 80;
-        DEViseUIGlobals.maxScreenSize.height = dim.height - 120;
-        DEViseUIGlobals.minScreenSize.width = 300;
-        DEViseUIGlobals.minScreenSize.height = 240;
+        jsValues.uiglobals.maxScreenSize.width = dim.width - 80;
+        jsValues.uiglobals.maxScreenSize.height = dim.height - 120;
+        jsValues.uiglobals.minScreenSize.width = 300;
+        jsValues.uiglobals.minScreenSize.height = 240;
 
-        jsc = new jsdevisec(this, images, debugLevel, sessionName);
+        jsc = new jsdevisec(parentApplet, this, images, sessionName, jsValues);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
@@ -463,15 +294,15 @@ class jscframe extends Frame
         return jsc.getQuitStatus();
     }
 
-    public void quit()
+    public void destroy()
     {
-        jsc.quit();
+        jsc.destroy();
     }
 
     protected void processEvent(AWTEvent event)
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING)  {
-            jsc.quit();
+            jsc.destroy();
 
             return;
         }
@@ -491,6 +322,4 @@ class jscframe extends Frame
             }
         }
     }
-
-
 }

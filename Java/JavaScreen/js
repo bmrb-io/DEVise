@@ -4,6 +4,8 @@
 
 # $Id$
 
+# Note: specific port number must NOT be specified in this script.
+
 ############################################################
 
-/s/java-1/bin/java  js $*
+java js -cgiurl/cgi-bin/js.cgi $*

@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.49.4.2  2000/12/11 22:14:18  wenger
+// Merged chagnes from link_gui_improvements thru js_restart_improvements
+// onto the branch, removing imgport code from the restart scripts.
+//
+// Revision 1.49.4.1  2000/11/21 01:51:34  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.50  2000/12/11 04:19:04  venkatan
+// Improved Efficiency for parsing the mouse display format string
+//
 // Revision 1.49  2000/07/21 16:26:19  venkatan
 // *** empty log message ***
 //
@@ -91,21 +101,21 @@ public class DEViseViewInfo extends Panel
         jsc = what;
         images = array;
 
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
-        setFont(DEViseUIGlobals.font);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
 
-        viewName.setBackground(DEViseUIGlobals.textBg);
-        viewName.setForeground(DEViseUIGlobals.textFg);
-        viewName.setFont(DEViseUIGlobals.textFont);
+        viewName.setBackground(jsc.jsValues.uiglobals.textBg);
+        viewName.setForeground(jsc.jsValues.uiglobals.textFg);
+        viewName.setFont(jsc.jsValues.uiglobals.textFont);
 
-        mouseX.setBackground(DEViseUIGlobals.textBg);
-        mouseX.setForeground(DEViseUIGlobals.textFg);
-        mouseX.setFont(DEViseUIGlobals.textFont);
+        mouseX.setBackground(jsc.jsValues.uiglobals.textBg);
+        mouseX.setForeground(jsc.jsValues.uiglobals.textFg);
+        mouseX.setFont(jsc.jsValues.uiglobals.textFont);
 
-        mouseY.setBackground(DEViseUIGlobals.textBg);
-        mouseY.setForeground(DEViseUIGlobals.textFg);
-        mouseY.setFont(DEViseUIGlobals.textFont);
+        mouseY.setBackground(jsc.jsValues.uiglobals.textBg);
+        mouseY.setForeground(jsc.jsValues.uiglobals.textFg);
+        mouseY.setFont(jsc.jsValues.uiglobals.textFont);
 
         setLayout(new FlowLayout(FlowLayout.LEFT, 2, 12));
 

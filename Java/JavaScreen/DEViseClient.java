@@ -24,6 +24,43 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.4.8  2000/12/22 15:44:58  wenger
+// Cleaned up sendCmd() methods.
+//
+// Revision 1.18.4.7  2000/12/07 17:34:44  xuk
+// In getCmd() doesn't receive command directly from socket. Commands are received in jspop and put into bufferCommand vector by calling addNewCmd() in jspop.java.
+//
+// Revision 1.18.4.6  2000/11/08 18:21:38  wenger
+// Fixed problem with client objects never getting finalized; added
+// removal of client objects once we hit maxclients limit;
+// set names for the jspop threads; added client IDs to debug output;
+// added more info to jspop state output; various cleanups.
+//
+// Revision 1.18.4.5  2000/11/02 04:21:59  xuk
+// Make the socket public.
+//
+// Revision 1.18.4.4  2000/11/01 22:14:08  wenger
+// A bunch of cleanups to the jspop: client heartbeat time is now updated
+// with every command; new clients are correctly put into suspended client
+// list; destruction of excess client objects is temporarily disabled;
+// some methods re-structured, other general improvements.
+//
+// Revision 1.18.4.3  2000/10/18 20:28:09  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.19  2000/09/20 19:29:31  wenger
+// Removed maximum logins per user from jspop (causes problems because client
+// objects are not removed if JS crashes; generally simplified the DEViseUser-
+// related code.
+//
+// Revision 1.18.4.2  2000/10/09 16:34:52  xuk
+// Add runTime variable to remember the latest time receiving a command from JS.
+// In getCmd() function, process the Javac_HeartBeat command received from JS.
+//
+// Revision 1.18.4.1  2000/10/02 20:17:24  xuk
+// Modify isSocketEmpty() function, to make sure the socket is not null, which could happen since a command is finished in DEViseServer.java
+//
 // Revision 1.18  2000/07/19 20:11:36  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -71,13 +108,20 @@ import java.util.*;
 
 public class DEViseClient
 {
+    private static final int DEBUG = 0;
+
     jspop pop = null;
 
-    // Client states.
+    // Client states.  CLOSE means connection is not yet established,
+    // or has been closed; REQUEST means JS has sent a command, but
+    // the client is not currently assigned to a server; IDLE means the
+    // client is not currently assigned to a server, and no command is
+    // pending; SERVE means that the client is assigned to a server.
     public static final int CLOSE = 0, REQUEST = 1, IDLE = 2, SERVE = 3;
-    private int status = 0;
+    private int status = CLOSE;
 
     public DEViseUser user = null;
+    //TEMP -- why Integer vs. int?
     public Integer ID = null;
     private String hostname = null;
     private DEViseCommSocket socket = null;
@@ -98,8 +142,23 @@ public class DEViseClient
 
     private Vector cmdBuffer = new Vector();
 
-    public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id)
+    private boolean cgi; // whether to use cgi instead of socket
+
+    //private String firstCmd = null;
+
+    // Timestamp of most recent command from JS.
+    private long heartBeat;
+
+    private static int _objectCount = 0;
+
+    public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
+      boolean cgi)
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient.DEViseClient(" +
+	      id.intValue() + ") in thread " + Thread.currentThread());
+	}
+
         pop = p;
         hostname = host;
         socket = s;
@@ -108,6 +167,42 @@ public class DEViseClient
         savedSessionName = ".tmp/jstmp_" + ID.intValue();
 
         status = IDLE;
+
+	updateHeartbeat();
+
+	_objectCount++;
+
+	this.cgi = cgi;
+    }
+
+    protected void finalize()
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID.intValue() +
+	      ").finalize() in thread " + Thread.currentThread());
+	}
+
+	_objectCount--;
+    }
+
+    public static int getObjectCount() {
+        return _objectCount;
+    }
+
+    public DEViseCommSocket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(DEViseCommSocket sock) {
+        socket = sock;
+    }
+
+    public void addNewCmd(String cmd) {
+        cmdBuffer.addElement(cmd);
+    }
+
+    public boolean useCgi() {
+        return cgi;
     }
 
     public int getPriority()
@@ -175,23 +270,18 @@ public class DEViseClient
     // command the state becomes REQUEST).
     public synchronized int getStatus()
     {
-        if (status != IDLE) {
-            return status;
-        }
+        if (status == IDLE) {
+	    try {
+	        if (!isSocketEmpty()) {
+	            status = REQUEST;
+	        }
+	    } catch(YException ex) {
+                pop.pn(ex.getMsg());
+                close();
+	    }
+	}
 
-        try {
-            boolean flag = isSocketEmpty();
-            if (flag) {
-                return status;
-            } else {
-                status = REQUEST;
-                return status;
-            }
-        } catch (YException e) {
-            pop.pn(e.getMsg());
-            close();
-            return status;
-        }
+	return status;
     }
 
     public synchronized void setStatus(int s)
@@ -200,17 +290,43 @@ public class DEViseClient
             status = s;
         }
     }
+    
+    public void updateHeartbeat()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("Updating heartbeat for client " + ID);
+	}
+
+        Date date = new Date();
+	heartBeat = date.getTime();
+
+	if (DEBUG >= 2) {
+	    System.out.println("Client " + ID + " heartbeat updated to " +
+	      heartBeat);
+        }
+    }
+
+    // Timestamp of the command we've most recently received.
+    public long getHeartbeat()
+    {
+        return heartBeat;
+    }
 
     public void removeLastCmd()
     {
-        if (cmdBuffer.size() > 0)
+        if (cmdBuffer.size() > 0) {
             cmdBuffer.removeElementAt(0);
+        }
     }
 
     private synchronized boolean isSocketEmpty() throws YException
     {
         if (status != CLOSE) {
-            return socket.isEmpty();
+	    if (socket != null) {
+		return socket.isEmpty();
+	    } else {
+      		return true;
+	    }
         } else {
             throw new YException("Invalid client");
         }
@@ -218,63 +334,74 @@ public class DEViseClient
 
     public String getCmd() throws YException, InterruptedIOException
     {
+        if (DEBUG >= 2) {
+	    System.out.println("DEViseClient(" + ID + ").getCmd()");
+	}
+
         if (getStatus() != CLOSE) {
+
+	    if (cmdBuffer.size() == 0) {
+		if (DEBUG >= 2) {
+		    System.out.println("  got null command");
+	        }
+		return null;
+	    }
+
             try {
-                while (!isSocketEmpty()) {
-                    String command = receiveCmd();
-                    if (command != null) {
-                        if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
-                            sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
-                            throw new YException("Can not get user information for this client");
-                        }
+		String command = (String)cmdBuffer.elementAt(0);
+                if (command != null) {
+		    if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
+                    sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
+                    throw new YException("Can not get user information for this client");
+		    }
 
+		    //
+		    // Commands specifically checked for in this 'if'
+		    // require special processing.  All other commands
+		    // are "normal".
+		    //
+		    if (command.startsWith(DEViseCommands.ABORT)) {
+			cmdBuffer.removeAllElements();
+		    } else if (command.startsWith(DEViseCommands.CONNECT)) {
+			String[] cmds = DEViseGlobals.parseString(command);
+			if (cmds != null && cmds.length == 4) {
+			    user = pop.getUser(cmds[1], cmds[2]);
+			    if (user != null) { 
+				cmdBuffer.removeAllElements();
+				cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
+			    } else {
+				sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
+				throw new YException("Client send invalid login information");
+			    }
+			} else {
+			    sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
+			    throw new YException("Invalid connection request received from client");
+			}
+		    } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
+			cmdBuffer.removeAllElements();
+			cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
+		    } else if (command.startsWith(DEViseCommands.EXIT)) {
+			cmdBuffer.removeAllElements();
+			cmdBuffer.addElement(DEViseCommands.EXIT);
+		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
+			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
+			sendCmd(new String[] {state, DEViseCommands.DONE});
+		    } else {
 			//
-			// Commands specifically checked for in this 'if'
-			// require special processing.  All other commands
-			// are "normal".
+			// Send an ACK immediately so that the client
+			// knows that we received the command.
 			//
-                        if (command.startsWith(DEViseCommands.ABORT)) {
-                            cmdBuffer.removeAllElements();
-                        } else if (command.startsWith(DEViseCommands.CONNECT)) {
-                            String[] cmds = DEViseGlobals.parseString(command);
-                            if (cmds != null && cmds.length == 4) {
-                                user = pop.getUser(cmds[1], cmds[2]);
-                                if (user != null) { 
-                                    cmdBuffer.removeAllElements();
-                                    cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
-                                } else {
-                                    sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
-                                    throw new YException("Client send invalid login information");
-                                }
-                            } else {
-                                sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
-                                throw new YException("Invalid connection request received from client");
-                            }
-                        } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
-                            cmdBuffer.removeAllElements();
-                            cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
-                        } else if (command.startsWith(DEViseCommands.EXIT)) {
-                            cmdBuffer.removeAllElements();
-                            cmdBuffer.addElement(DEViseCommands.EXIT);
-                        } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
-                            String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
-                            sendCmd(new String[] {state, DEViseCommands.DONE});
-                        } else {
-			    //
-			    // Send an ACK immediately so that the client
-			    // knows that we received the command.
-			    //
-                            cmdBuffer.addElement(command);
-                            sendCmd(DEViseCommands.ACK);
-                        }
-                    }
-                }
+			//cmdBuffer.addElement(command);
+			sendCmd(DEViseCommands.ACK);
+		    }
+		}
+                    
+		if (DEBUG >= 1) {
+		    System.out.println("  got command: " + (String)cmdBuffer.elementAt(0));
+	        }
 
-                if (cmdBuffer.size() > 0) {
-                    return (String)cmdBuffer.elementAt(0);
-                } else {
-                    return null;
-                }
+                return (String)cmdBuffer.elementAt(0);
+
             } catch (YException e) {
                 //close();
                 throw e;
@@ -288,41 +415,31 @@ public class DEViseClient
     {
         if (status != CLOSE) {
             String cmd = socket.receiveCmd();
-            pop.pn("Received command from client(" + hostname + ") :  \"" + cmd + "\"");
+            pop.pn("Received command from client(" + ID + " " + hostname +
+	      ") :  \"" + cmd + "\"");
             return cmd;
         } else {
             throw new YException("Invalid client");
         }
     }
 
+    // Send a series of commands to the client.
     public synchronized void sendCmd(String[] cmds) throws YException
     {
-        if (status != CLOSE) {
-            if (cmds == null)
-                return;
-
-            for (int i = 0; i < cmds.length; i++) {
-                if (cmds[i] != null) {
-                    pop.pn("Sending command to client(" + hostname + ") :  \"" + cmds[i] + "\"");
-                    socket.sendCmd(cmds[i]);
-                }
-            }
-
-            //socket.sendCmd(DEViseCommands.DONE);
-        } else {
-            throw new YException("Invalid client");
+        for (int i = 0; i < cmds.length; i++) {
+            sendCmd(cmds[i]);
         }
     }
 
+    // Send a single command to the client.
     public synchronized void sendCmd(String cmd) throws YException
     {
         if (status != CLOSE) {
-            if (cmd == null) {
-                return;
-            }
-
-            pop.pn("Sending command to client(" + hostname + ") :  \"" + cmd + "\"");
-            socket.sendCmd(cmd);
+	    if (cmd != null) {
+                pop.pn("Sending command to client(" + ID + " " + hostname +
+	          ") :  \"" + cmd + "\"");
+                socket.sendCmd(cmd);
+	    }
         } else {
             throw new YException("Invalid client");
         }
@@ -337,8 +454,8 @@ public class DEViseClient
             for (int i = 0; i < data.size(); i++) {
                 byte[] d = (byte[])data.elementAt(i);
                 if (d != null && d.length > 0) {
-                    pop.pn("Sending data to client(" + hostname + ") (" +
-		      d.length + " bytes)");
+                    pop.pn("Sending data to client(" + ID + " " + hostname +
+		      ") (" + d.length + " bytes)");
                     socket.sendData(d);
                     pop.pn("  Done sending data");
                 }
@@ -350,6 +467,10 @@ public class DEViseClient
 
     public synchronized void close()
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID + ").close()");
+	}
+
         if (status == CLOSE) {
             return;
         }

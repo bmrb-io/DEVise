@@ -22,6 +22,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.4.1  2000/11/21 01:51:33  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.8  2000/06/12 22:13:57  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.7  2000/05/22 17:52:49  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -61,15 +69,19 @@ public class DEViseTrafficLight extends Panel
     String[] c = {"S", "R", "P"};
     String string = null;
 
-    public DEViseTrafficLight(Image offi, Image oni, String s)
+    public jsdevisec jsc;
+
+    public DEViseTrafficLight(Image offi, Image oni, String s, jsdevisec js)
       throws YException
     {
-        this(offi, oni, s, null);
+        this(offi, oni, s, null, js);
     }
 
-    public DEViseTrafficLight(Image offi, Image oni, String s, String align)
+    public DEViseTrafficLight(Image offi, Image oni, String s, String align, jsdevisec js)
       throws YException
     {
+	jsc = js;
+	
         onImage = oni;
         offImage = offi;
 
@@ -78,8 +90,8 @@ public class DEViseTrafficLight extends Panel
             if (!canvas[i].setImage(offImage)) {
                 throw new YException("Invalid Image!");
 	    }
-            label[i] = new YImageCanvas(c[i], null, DEViseUIGlobals.bg,
-	      DEViseUIGlobals.fg, 12, 12, 1, 1);
+            label[i] = new YImageCanvas(c[i], null, jsc.jsValues.uiglobals.bg,
+	      jsc.jsValues.uiglobals.fg, 12, 12, 1, 1);
         }
         string = s;
         canvas[3] = new YImageCanvas(string);
@@ -89,14 +101,14 @@ public class DEViseTrafficLight extends Panel
         }
 
         setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
-        setBackground(DEViseUIGlobals.bg);
-        setForeground(DEViseUIGlobals.fg);
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
 
         Panel panel = new Panel();
         panel.setLayout(new GridLayout(2, 4));
         panel.setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
-        panel.setBackground(DEViseUIGlobals.bg);
-        panel.setForeground(DEViseUIGlobals.fg);
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
+        panel.setForeground(jsc.jsValues.uiglobals.fg);
 
         for (int i = 0; i < 3; i++) {
             panel.add(label[i]);

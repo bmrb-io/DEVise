@@ -22,6 +22,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.36.4.2  2000/11/22 17:43:57  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.36.4.1  2000/11/21 01:51:32  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.36  2000/07/20 15:42:59  wenger
+// Fixed bug 603 (GData errors caused by problems in new parser); eliminated
+// old parser.
+//
 // Revision 1.35  2000/07/14 21:13:08  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -121,8 +132,6 @@ import java.net.*;
 
 public class DEViseGData
 {
-    public static Font defaultFont = null;
-
     public jsdevisec jsc = null; //TEMP -- do we really need this for *every* GData record???
     private DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
 
@@ -152,7 +161,6 @@ public class DEViseGData
     public Font font = null;
     public int outline = 0;
 
-    private static int _gdCount = 0;
     private static final boolean _debug = false;
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
@@ -160,15 +168,15 @@ public class DEViseGData
     public DEViseGData(jsdevisec panel, DEViseView view, String gdata, float xm,
       float xo, float ym, float yo) throws YException
     {
-	_gdCount++;
+        jsc = panel;
+
+	jsc.jsValues.gdata._gdCount++;
 	if (_debug) {
-            System.out.println("DEViseGData constructor " + _gdCount);
+            System.out.println("DEViseGData constructor " + jsc.jsValues.gdata._gdCount);
             System.out.println("Free memory: " +
 	      Runtime.getRuntime().freeMemory() + "/" +
 	      Runtime.getRuntime().totalMemory());
 	}
-
-        jsc = panel;
 
         parentView = view;
         if (parentView == null) {
@@ -230,9 +238,9 @@ public class DEViseGData
     }
 
     protected void finalize() {
-	_gdCount--;
+	jsc.jsValues.gdata._gdCount--;
 	if (_debug) {
-            System.out.println("DEViseGData.finalize() " + _gdCount);
+            System.out.println("DEViseGData.finalize() " + jsc.jsValues.gdata._gdCount);
             System.out.println("Free memory: " +
 	      Runtime.getRuntime().freeMemory() + "/" +
 	      Runtime.getRuntime().totalMemory());
@@ -403,7 +411,7 @@ public class DEViseGData
         if (size > 1.0f) {
             fsize = (int)(size + 0.25f);
         } else {
-            fsize = (int)(size * DEViseUIGlobals.screenSize.height + 0.25f);
+            fsize = (int)(size * jsc.jsValues.uiglobals.screenSize.height + 0.25f);
         }
         font = DEViseUIGlobals.getFont(fsize, ff, fw, fs);
 
@@ -448,12 +456,12 @@ public class DEViseGData
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    if (DEViseUIGlobals.isApplet) {
-                        if (DEViseUIGlobals.browser != null) {
+                    if (jsc.jsValues.uiglobals.isApplet) {
+                        if (jsc.jsValues.uiglobals.browser != null) {
                             try {
                                 URL url = new URL(event.getActionCommand());
                                 //DEViseUIGlobals.browser.showDocument(url, "_blank");
-                                DEViseUIGlobals.browser.showDocument(url, "_parent");
+                                jsc.jsValues.uiglobals.browser.showDocument(url, "_parent");
                             } catch (MalformedURLException e) {
                                 //YGlobals.Ydebugpn("Invalid URL {" + event.getActionCommand() + "}");
                             }

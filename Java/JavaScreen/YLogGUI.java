@@ -19,6 +19,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.4.2  2000/11/22 17:44:00  wenger
+// Finished cleanup of static variables fix; re-changed CGI command code to
+// match the current version of the CGI script.
+//
+// Revision 1.8.4.1  2000/11/21 01:51:34  xuk
+// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+//
+// Revision 1.8  2000/05/22 17:52:50  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.7  2000/03/23 16:26:17  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -58,7 +69,7 @@ public class YLogGUI extends Frame
     // be stored in it), after that, any text appended will not shown. So
     // this class will clear up the TextArea 'max' number of characters
     // has been added into its textarea
-    public static int max;
+    public static final int max = 35000;
     protected int number = 0;
 
     // loglevel <= 0 means no log information is written
@@ -67,10 +78,6 @@ public class YLogGUI extends Frame
     protected int loglevel;
 
     protected boolean isValid = false;
-
-    static {
-        max = 35000;
-    }
 
     public YLogGUI(int width, int height, String title, int level, boolean isClosable, Font font, Color bg, Color fg)
     {

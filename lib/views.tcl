@@ -15,6 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60.2.1  2000/10/18 20:35:23  wenger
+#  Merged changes from fixed_bug_616 through link_gui_improvements onto
+#  the branch.
+#
+#  Revision 1.61  2000/10/16 16:11:54  wenger
+#  Link creation GUI now gives a choice of positive or negative record
+#  links; fixed bug 622 (record link type not saved in session files);
+#  fixed bug 623 (record link update problem); other link-related cleanups.
+#
 #  Revision 1.60  1999/11/17 15:08:47  wenger
 #  Fixed bug 531 (copying view doesn't copy JavaScreen GData params); also
 #  added copying of other missing values.

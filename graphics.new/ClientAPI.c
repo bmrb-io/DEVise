@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.22.2.2  2000/11/22 18:18:07  wenger
+  Made changes for DEVise server and client to read/write JS ID and CGI
+  flag in every command (currently disabled until the Java side is ready).
+
+  Revision 1.22.2.1  2000/09/01 18:26:42  wenger
+  Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
+
+  Revision 1.23  2000/09/01 17:33:26  wenger
+  Fixed bug 616 (problem with socket-reading code causing heavy CPU usage
+  in certain cases).
+
   Revision 1.22  1999/11/01 17:53:35  wenger
   More debug info.
 
@@ -278,7 +289,7 @@ void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int& tsize)
 // maxRetries is how many times to retry header if we get no data.
 // -1 to keep retrying indefinitely.
 // Returns -1 if error, 1 if okay, 0 if ?.
-int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av,
+int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
 	int maxRetries)
 {
 #if defined(DEBUG)
@@ -359,14 +370,15 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av,
 	}
     return -1;
   }
-  flag = ntohs(hdr.flag);
+  msgType = ntohs(hdr.msgType);
 
   int    numElements; 
   int    tsize;
   NetworkAnalyseHeader((char*)&hdr, numElements, tsize);
 
 #if defined(DEBUG)
-  printf("Got flag %u, numElements = %u, size = %u\n",flag,numElements,tsize);
+  printf("Got msgType %u, numElements = %u, size = %u\n", msgType,
+      numElements, tsize);
 #endif
 
   //
@@ -509,10 +521,11 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
   return 1;
 }
 
-int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
+int NetworkSend(int fd, u_short msgType, u_short bracket, int argc,
+    char **argv)
 {
 #if defined(DEBUG)
-  printf("NetworkSend(%d, %d, %d, ", fd, flag, bracket);
+  printf("NetworkSend(%d, %d, %d, ", fd, msgType, bracket);
   printf("args(");
   for (int argNum = 0; argNum < argc; argNum++) {
     printf("<%s>, ", argv[argNum]);
@@ -524,7 +537,7 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   int msgsize;
   char *recBuffer = 0;
 
-  msgsize = NetworkPrepareMsg(flag, bracket, argc, argv, &recBuffer );
+  msgsize = NetworkPrepareMsg(msgType, bracket, argc, argv, &recBuffer);
   if (msgsize == -1)
     return -1;
 
@@ -546,14 +559,14 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   return 1;
 }
 
-int NetworkPrepareMsg(u_short flag, 
+int NetworkPrepareMsg(u_short msgType, 
     u_short bracket, int argc, char **argv, char** recBufferp)
 {
   static int recBuffSize = 0;
   static char *recBuff = 0;
 
   NetworkHeader hdr;
-  hdr.flag = htons(flag);
+  hdr.msgType = htons(msgType);
   hdr.nelem = htons(argc);
 
   u_short tsize = 0;
@@ -624,7 +637,8 @@ int NetworkPrepareMsg(u_short flag,
 
   assert(buff - recBuff == msgsize);
 #if defined(DEBUG)
-  printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
+  printf("Sending message: msgType %u, nelem %u, size %u\n", msgType,
+      argc, tsize);
   printf("  buffer = <");
   for (int count = 0; count < msgsize; count++) {
     if (isprint(recBuff[count])) {

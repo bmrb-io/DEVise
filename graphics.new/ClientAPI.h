@@ -16,6 +16,21 @@
    $Id$
 
    $Log$
+   Revision 1.14.10.3  2000/12/14 00:44:14  wenger
+   Devised, devisec, and deviseb now send/receive JavaScreen ID and CGI
+   flag with all commands (matching the latest JavaScreen/jspop code).
+
+   Revision 1.14.10.2  2000/11/22 18:18:08  wenger
+   Made changes for DEVise server and client to read/write JS ID and CGI
+   flag in every command (currently disabled until the Java side is ready).
+
+   Revision 1.14.10.1  2000/09/01 18:26:43  wenger
+   Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
+
+   Revision 1.15  2000/09/01 17:33:28  wenger
+   Fixed bug 616 (problem with socket-reading code causing heavy CPU usage
+   in certain cases).
+
    Revision 1.14  1998/05/02 09:00:37  taodb
    Added support for JAVA Screen and command logging
 
@@ -56,10 +71,14 @@
 #include "ParseAPI.h"
 
 typedef struct {
-  u_short flag;                         // type of message
+  u_short msgType;                      // type of message (see API_CMD, etc.
+  					// in ParseAPI.h
+  u_short jsId;				// JavaScreen ID
+  u_short useCgi;			// (boolean) whether to use CGI
   u_short nelem;                        // number of elements in message
   u_short size;                         // total size of message
 } NetworkHeader;
+
 typedef enum{
 	CONNECT_ONCE, CONNECT_ALWAYS
 }ConnectMode;

@@ -19,8 +19,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.4.4  2000/12/14 00:42:32  wenger
+// Devise doesn't listen when image port is set to -1; jss starts devised
+// that way so we don't use up extra ports.
+//
+// Revision 1.11.4.3  2000/11/16 17:30:52  wenger
+// Made static variables into static final variables.
+//
+// Revision 1.11.4.2  2000/10/18 20:28:13  wenger
+// Merged changes from fixed_bug_616 through link_gui_improvements onto
+// the branch.
+//
+// Revision 1.13  2000/09/13 17:39:13  wenger
+// Cleaned up command parsing code.
+//
 // Revision 1.12  2000/09/12 20:51:34  wenger
 // Did some cleanup of the command-related code, better error messages from JSS.
+//
+// Revision 1.11.4.1  2000/09/12 19:38:32  wenger
+// Fixed bug 618 (single-socket jspop can't restart devised).
 //
 // Revision 1.11  2000/03/30 19:14:36  wenger
 // Improved error messages for socket creation failures.
@@ -193,7 +210,7 @@ public class jss implements Runnable
                 connectToJSPOP();
                 devised server = (devised)deviseds.elementAt(i);
                 sendToJSPOP(DEViseCommands.S_ADD + " " + jssPort + " " +
-				  server.cmdPort + " " + server.imgPort);
+				  server.cmdPort);
                 disconnectFromJSPOP();
             }
         } catch (YException e) {
@@ -356,14 +373,12 @@ public class jss implements Runnable
         }
 
         if (cmd[0].equals(DEViseCommands.S_RESTART)) {
-			if (cmd.length == 3) {
+	    if (cmd.length == 2) {
                 try {
                     int cmdport = Integer.parseInt(cmd[1]);
-					int imgport = Integer.parseInt(cmd[2]);
                     for (int i = 0; i < deviseds.size(); i++) {
                         devised server = (devised)deviseds.elementAt(i);
-                        if (server.cmdPort == cmdport &&
-						  server.imgPort == imgport) {
+                        if (server.cmdPort == cmdport) {
                             server.stop();
                             deviseds.removeElement(server);
 
@@ -377,6 +392,7 @@ public class jss implements Runnable
                             if (server != null) {
                                 deviseds.addElement(server);
                                 connectToJSPOP();
+				//TEMP -- get rid of imgPort here!
                                 sendToJSPOP(DEViseCommands.S_ADD + " " +
 								  jssPort + " " + server.cmdPort + " " +
 								  server.imgPort);
@@ -504,7 +520,7 @@ public class jss implements Runnable
 
 class devised
 {
-    public static String devisedKill = "DEVise.kill";
+    public static final String devisedKill = "DEVise.kill";
 
     private Process process = null;
     public int cmdPort, imgPort, switchPort;
@@ -522,14 +538,15 @@ class devised
         stop();
 
         // find three free port for new devised
-        ServerSocket socket1 = null, socket2 = null, socket3 = null;
+        ServerSocket socket1 = null, socket3 = null;
         try {
-            //System.out.println("Try to find 3 available ports ... ");
+            //System.out.println("Try to find 2 available ports ... ");
             socket1 = new ServerSocket(0);
-            socket2 = new ServerSocket(0);
             socket3 = new ServerSocket(0);
             cmdPort = socket1.getLocalPort();
-            imgPort = socket2.getLocalPort();
+			// Note: -1 means that the devised shouldn't listen on an
+			// image port.
+	    	imgPort = -1;
             switchPort = socket3.getLocalPort();
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -540,13 +557,6 @@ class devised
                     socket1.close();
                 } catch (IOException e) {
                     System.err.println("Cannot close socket at port " + cmdPort);
-                }
-            }
-            if (socket2 != null) {
-                try {
-                    socket2.close();
-                } catch (IOException e) {
-                    System.err.println("Cannot close socket at port " + imgPort);
                 }
             }
             if (socket3 != null) {
