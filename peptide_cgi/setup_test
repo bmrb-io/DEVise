@@ -1,0 +1,40 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  Set things up to be able to do tests of the peptide-cgi software
+#  without "contaminating" the "real" directories.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+mkdir test_data
+cd test_data
+ln -s ../html/* .
+ln -s ../java_classes .
+cd ..
+
+mkdir test_session
+cd test_session
+ln -s ../dynamic_sessions/* .
+cd ..
+
+cd cgi-bin
+ln -s ../test_data data_dir
+ln -s ../test_session session_dir
+cd ..
