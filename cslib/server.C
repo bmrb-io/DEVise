@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/04/15 18:32:27  wenger
+  Added more line width test code to cslib server program.
+
   Revision 1.12  1997/04/11 18:48:34  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -86,7 +89,6 @@
 
 #include "ClientServer.h"
 #include "DualWindowRep.h"
-#include "PSDisplay.h"
 
 static char *_progName = 0;
 
@@ -155,6 +157,9 @@ class SampleWinServer : public WinServer {
     _winReps.GetWindowRep()->SetDashes(dashCount, dashes, 0);
     _winReps.GetWindowRep()->Line(x, y, x + w - 1, y + h - 1, 1);
     _winReps.GetWindowRep()->SetDashes(0, NULL, 0);
+
+    /* draw rubberband line */
+    _winReps.GetWindowRep()->DrawRubberband(10, 10, 100, 100);
 
     /* use color from local colormap (see Color.h) */
     _winReps.GetWindowRep()->SetFgColor(SeaGreenColor);
@@ -357,10 +362,9 @@ void SampleWinServer::Print()
 
   /* Open the print file. */
   char *filename = "/tmp/client_server.0.ps";
-  DevStatus status = ((PSDisplay *) _fileDisp)->OpenPrintFile(filename);
+  DevStatus status = _fileDisp->OpenPrintFile(filename);
   assert(status.IsComplete());
-  ((PSDisplay *) _fileDisp)->PrintPSHeader("cslib sample server", printRegion,
-    true);
+  _fileDisp->PrintPSHeader("cslib sample server", printRegion, true);
 
   /* Switch over to file output.  Since we're printing a single window,
    * the window geometry and the print region geometry are the same. */
@@ -374,8 +378,8 @@ void SampleWinServer::Print()
   _winReps.SetScreenOutput();
 
   /* Close the print file. */
-  ((PSDisplay *) _fileDisp)->PrintPSTrailer();
-  (void) ((PSDisplay *) _fileDisp)->ClosePrintFile();
+  _fileDisp->PrintPSTrailer();
+  _fileDisp->ClosePrintFile();
 
   printf("Output in file '%s'\n", filename);
 }

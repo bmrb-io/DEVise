@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/12/10 23:14:36  wenger
+#  Dammit, error with extra include sneaked back in -- what happened to
+#  rev. 1.4 anyhow?
+#
 #  Revision 1.5  1996/12/06 18:53:24  wenger
 #  Fixed an error in setting up the include dir.
 #
@@ -53,17 +57,13 @@ ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
         ../../graphics/DevError.h ../../graphics/DevStatus.h \
         ../../graphics/DevisePixmap.h ../../graphics/DeviseTypes.h \
         ../../graphics/Display.h ../../graphics/Exit.h \
-        ../../graphics/Geom.h ../../graphics/PSDisplay.h \
+        ../../graphics/Geom.h \
         ../../graphics/Pattern.h ../../graphics/Transform.h \
-        ../../graphics/Util.h ../../graphics/VisualArg.h \
-        ../../graphics/WindowRep.h ../../graphics/XBitmap.h \
-        ../../graphics/XDisplay.h ../../graphics/XWindowRep.h \
-        ../../graphics/Xdef.h ../../graphics/xv.h \
+        ../../graphics/VisualArg.h \
+        ../../graphics/WindowRep.h \
 	../../graphics/DualWindowRep.h include
-ln -s ../../graphics.new/ClientAPI.h ../../graphics.new/DeviseKey.h \
-        ../../graphics.new/MapIntToInt.h ../../graphics.new/ParseAPI.h \
-        ../../graphics.new/Version.h ../../graphics.new/missing.h include
-ln -s ../../tape/HashTable.h include
+ln -s ../../graphics.new/ClientAPI.h \
+        ../../graphics.new/ParseAPI.h include
 ln -s ../cslib/Makefile.com ../cslib/ClientServer.* \
         ../cslib/server.* ../cslib/client.* \
         ../cslib/opossum.* ../cslib/Readme.tex .

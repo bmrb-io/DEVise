@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/04/11 18:48:53  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.45  1997/03/25 17:59:01  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -549,6 +555,9 @@ public:
   virtual void SetNormalFont() = 0;
   virtual void SetSmallFont() { SetFont("Courier", "Medium", "r", "Normal",
 					 8.0); }
+
+  /* Draw rubberbanding rectangle */
+  virtual void DrawRubberband(int x1, int y1, int x2, int y2) = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;

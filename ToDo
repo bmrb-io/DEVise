@@ -382,6 +382,13 @@ Session files should save whether each window is iconified or not, and
 they should come back in that state when you open the session file.
 (bb/rkw 4/16/97)
 
+Fields that are in the physical schema but not the logical schema should
+not be decoded when data is read. (ml/rkw 4/18/97)
+
+Allow a string in a Devise physical schema to be specified as length
+0; if this is done, don't hash the string, just stick in zero for
+the hash key. (ml/rkw 4/18/97)
+
 
 COMPLETED
 ---------
