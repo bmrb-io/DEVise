@@ -850,23 +850,3 @@ ViewLayout.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ViewLayout.o: /usr/include/sys/time.h WindowRep.h /usr/include/stdio.h
 ViewLayout.o: /usr/include/stdlib.h Geom.h Color.h Transform.h VisualArg.h
 ViewLayout.o: Pattern.h DevisePixmap.h Compress.h DualWindowRep.h
-ViewLens.o: /usr/include/sys/time.h Util.h /usr/include/stdlib.h
-ViewLens.o: /usr/include/sys/feature_tests.h /usr/include/stdio.h
-ViewLens.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
-ViewLens.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ViewLens.o: DeviseTypes.h /usr/include/values.h DevStatus.h
-ViewLens.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-ViewLens.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ViewLens.o: /usr/include/sys/time.h Exit.h ViewLens.h Dispatcher.h
-ViewLens.o: /usr/include/unistd.h /usr/include/sys/unistd.h DList.h Journal.h
-ViewLens.o: VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
-ViewLens.o: Transform.h DevisePixmap.h Compress.h DualWindowRep.h Control.h
-ViewLens.o: ClassDir.h ViewCallback.h AttrList.h Init.h BufPolicy.h Cursor.h
-ViewLens.o: ../graphics.new/ViewGraph.h View.h ../graphics.new/BasicStats.h
-ViewLens.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-ViewLens.o: ../graphics.new/DataSourceFixedBuf.h
-ViewLens.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-ViewLens.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
-ViewLens.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-ViewLens.o: ../graphics.new/PointStorage.h FilterQueue.h TimeStamp.h Parse.h
-ViewLens.o: Map3D.h Display.h ColorMgr.h

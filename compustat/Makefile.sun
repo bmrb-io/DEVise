@@ -13,36 +13,34 @@ compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
 compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
 compustat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-compustat.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-compustat.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-compustat.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-compustat.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-compustat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-compustat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-compustat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-compustat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+compustat.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+compustat.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+compustat.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+compustat.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+compustat.o: /usr/include/netdb.h /usr/include/sys/socket.h
+compustat.o: /usr/include/netinet/in.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h
 index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 index.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
 index.o: /usr/include/sys/sysmacros.h index.h ../tape/tapedrive.h
 index.o: ../graphics.new/machdep.h /usr/include/limits.h
 index.o: /usr/include/sys/param.h /usr/include/machine/param.h
-index.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-index.o: /usr/include/sys/time.h /usr/include/sys/time.h
-index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-index.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-index.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-index.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-index.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-index.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-index.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-index.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-index.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-index.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+index.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+index.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+index.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+index.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+index.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+index.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+index.o: /usr/include/netdb.h /usr/include/sys/socket.h
+index.o: /usr/include/netinet/in.h
 project.o: /usr/include/stdio.h /usr/include/stdlib.h
 project.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 project.o: /usr/include/ctype.h /usr/include/unistd.h
@@ -50,15 +48,14 @@ project.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
 project.o: ../graphics.new/machdep.h /usr/include/limits.h
 project.o: /usr/include/sys/param.h /usr/include/machine/param.h
-project.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-project.o: /usr/include/sys/time.h /usr/include/sys/time.h
-project.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-project.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-project.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-project.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-project.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-project.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-project.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-project.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-project.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+project.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+project.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+project.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+project.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+project.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+project.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+project.o: /usr/include/netdb.h /usr/include/sys/socket.h
+project.o: /usr/include/netinet/in.h

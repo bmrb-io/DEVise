@@ -65,12 +65,12 @@ ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
 ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
 ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
-ams.o: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
-ams.o: ../graphics.new/RecInterp.h ../graphics.new/TDataMap.h
-ams.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
-ams.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
-ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
-ams.o: ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
+ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
+ams.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/stdsyms.h /usr/include/sys/fcntl.h
 amsStat.o: /usr/include/limits.h /usr/include/unistd.h

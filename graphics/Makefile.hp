@@ -150,7 +150,7 @@ Dispatcher.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
 Dispatcher.o: Pattern.h Control.h ClassDir.h Init.h BufPolicy.h Selection.h
 Dispatcher.o: View.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
 Dispatcher.o: Transform.h DevisePixmap.h Compress.h DualWindowRep.h
-Dispatcher.o: ViewCallback.h AttrList.h Cursor.h Time.h
+Dispatcher.o: ViewCallback.h AttrList.h Cursor.h Time.h Display.h ColorMgr.h
 Display.o: XDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 Display.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 Display.o: Geom.h /usr/include/stdio.h /usr/include/math.h Color.h
@@ -177,7 +177,8 @@ DualWindowRep.o: /usr/include/ctype.h PSWindowRep.h Display.h Dispatcher.h
 DualWindowRep.o: /usr/include/unistd.h /usr/include/sys/unistd.h Journal.h
 DualWindowRep.o: ColorMgr.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
-Exit.o: Exit.h Init.h DeviseTypes.h /usr/include/values.h DevStatus.h
+Exit.o: /usr/include/unistd.h /usr/include/sys/unistd.h Exit.h Init.h
+Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 Exit.o: /usr/include/sys/types.h BufPolicy.h Control.h VisualArg.h Color.h
 Exit.o: Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h

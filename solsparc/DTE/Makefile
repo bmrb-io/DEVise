@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/11/23 01:54:37  donjerko
+#  added standalone option
+#
 #  Revision 1.1  1996/11/19 15:23:50  donjerko
 #  *** empty log message ***
 #
@@ -29,6 +32,5 @@ include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
-        cd ../devread; make libdevread.a; cd ../DTE;
-        $(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
-
+	cd ../devread; make libdevread.a; cd ../DTE;
+	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl

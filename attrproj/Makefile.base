@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1996/11/25 18:15:05  wenger
+#  Changes to non-indexed attrproj to match other changes to TData;
+#  changes to compile non-index attrproj and to get the rest of Devise
+#  to compile with that.
+#
 #  Revision 1.27  1996/11/23 21:35:51  jussi
 #  Added -I../../DTE/Core which seemed to be missing.
 #
@@ -129,6 +134,8 @@ LIBOBJ = \
 	../generic/CompDate.o \
 	$(LOCALOBJ)
 
+DEVREADOBJ = ApParseCat.o TDataAscii.o TDataAsciiInterp.o
+
 LIB = libattrproj.a
 
 ALLTESTOBJ = $(TESTOBJ)
@@ -150,9 +157,7 @@ APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
 aptest: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)
 
-# Note: ApParseCat.o, etc. are included in the dependencies solely so that they
-# are always compiled, so that devread and DTE will compile.  RKW 11/25/96.
-aptest2: $(ALLTESTOBJ) $(LIB) ApParseCat.o TDataAscii.o TDataAsciiInterp.o
+aptest2: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)
 
 aptest.pure: $(ALLTESTOBJ) $(LIB)
@@ -168,14 +173,17 @@ show: $(ALLSHOWOBJ) $(LIB)
 show.pure: $(ALLSHOWOBJ) $(LIB)
 	$(PURIFY) $(PURE_OPT) $(SHOW) $(ARCH_LDPOST)
 
-$(LIB): $(LIBOBJ)
+# Note: $(DEVREADOBJ) is included in the dependencies solely so that these
+# files are always compiled, so that devread and DTE will compile.
+# RKW 11/25/96.
+$(LIB): $(LIBOBJ) $(DEVREADOBJ)
 	$(AR) cr $@ $(LIBOBJ)
 	$(RANLIB) $@
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm aptest show
+	-rm aptest aptest2 show $(LIB)
 
 mostlyclean:
-	-rm $(TESTOBJ) $(SHOWOBJ) $(LOCALOBJ) $(LIB)
+	-rm $(TESTOBJ) $(SHOWOBJ) $(LOCALOBJ) $(DEVREADOBJ)

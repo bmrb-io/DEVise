@@ -34,25 +34,23 @@ ClassDir.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ColorMgr.o: ../graphics.new/machdep.h /usr/include/limits.h
 ColorMgr.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 ColorMgr.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-ColorMgr.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-ColorMgr.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-ColorMgr.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-ColorMgr.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ColorMgr.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-ColorMgr.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-ColorMgr.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-ColorMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ColorMgr.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ColorMgr.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ColorMgr.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ColorMgr.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ColorMgr.o: /usr/include/netinet/in.h ColorMgr.h /usr/include/stdio.h
-ColorMgr.o: /usr/include/string.h Color.h DeviseTypes.h /usr/include/values.h
-ColorMgr.o: DevStatus.h Exit.h Display.h Geom.h /usr/include/math.h
-ColorMgr.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ColorMgr.o: Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h DList.h
-ColorMgr.o: Journal.h VisualArg.h Pattern.h WindowRep.h Transform.h
-ColorMgr.o: DevisePixmap.h Compress.h
+ColorMgr.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+ColorMgr.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+ColorMgr.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ColorMgr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+ColorMgr.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+ColorMgr.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+ColorMgr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ColorMgr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ColorMgr.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ColorMgr.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ColorMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ColorMgr.h
+ColorMgr.o: /usr/include/stdio.h /usr/include/string.h Color.h DeviseTypes.h
+ColorMgr.o: /usr/include/values.h DevStatus.h Exit.h Display.h Geom.h
+ColorMgr.o: /usr/include/math.h /usr/include/floatingpoint.h
+ColorMgr.o: /usr/include/sys/ieeefp.h Dispatcher.h /usr/include/stdlib.h
+ColorMgr.o: /usr/include/unistd.h DList.h Journal.h VisualArg.h Pattern.h
+ColorMgr.o: WindowRep.h Transform.h DevisePixmap.h Compress.h
 Compress.o: /usr/include/stdio.h Compress.h Exit.h
 Control.o: /usr/include/unistd.h /usr/include/sys/types.h
 Control.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -109,19 +107,17 @@ DaliIfc.o: /usr/include/sys/sysmacros.h /usr/include/errno.h
 DaliIfc.o: /usr/include/sys/errno.h /usr/include/sys/time.h
 DaliIfc.o: /usr/include/sys/time.h ../graphics.new/machdep.h
 DaliIfc.o: /usr/include/limits.h /usr/include/sys/param.h
-DaliIfc.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-DaliIfc.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
-DaliIfc.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DaliIfc.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-DaliIfc.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-DaliIfc.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-DaliIfc.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-DaliIfc.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-DaliIfc.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-DaliIfc.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-DaliIfc.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DaliIfc.o: /usr/include/netinet/in.h DaliIfc.h Xdef.h
-DaliIfc.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+DaliIfc.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+DaliIfc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+DaliIfc.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+DaliIfc.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DaliIfc.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+DaliIfc.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+DaliIfc.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+DaliIfc.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+DaliIfc.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+DaliIfc.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DaliIfc.h
+DaliIfc.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 DaliIfc.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 DaliIfc.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h DeviseTypes.h
 DaliIfc.o: /usr/include/values.h DevStatus.h Dali.h Util.h
@@ -131,22 +127,20 @@ DaliIfc.o: /usr/include/sys/ieeefp.h Exit.h DevError.h
 DaliPatron.o: ../graphics.new/machdep.h /usr/include/limits.h
 DaliPatron.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 DaliPatron.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-DaliPatron.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-DaliPatron.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-DaliPatron.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-DaliPatron.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DaliPatron.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-DaliPatron.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-DaliPatron.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-DaliPatron.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-DaliPatron.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-DaliPatron.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-DaliPatron.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-DaliPatron.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DaliPatron.o: /usr/include/netinet/in.h /usr/include/stdio.h
-DaliPatron.o: /usr/include/stdlib.h /usr/include/string.h
-DaliPatron.o: /usr/include/unistd.h /usr/include/errno.h
-DaliPatron.o: /usr/include/sys/errno.h Dali.h
+DaliPatron.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+DaliPatron.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+DaliPatron.o: /usr/include/sys/time.h /usr/include/sys/time.h
+DaliPatron.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+DaliPatron.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DaliPatron.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+DaliPatron.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+DaliPatron.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+DaliPatron.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+DaliPatron.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+DaliPatron.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+DaliPatron.o: /usr/include/stdio.h /usr/include/stdlib.h
+DaliPatron.o: /usr/include/string.h /usr/include/unistd.h
+DaliPatron.o: /usr/include/errno.h /usr/include/sys/errno.h Dali.h
 DevError.o: DevError.h /usr/include/stdio.h /usr/include/errno.h
 DevError.o: /usr/include/sys/errno.h DeviseTypes.h /usr/include/values.h
 DevError.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -167,26 +161,25 @@ Dispatcher.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 Dispatcher.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 Dispatcher.o: /usr/include/sys/sysmacros.h ../graphics.new/machdep.h
 Dispatcher.o: /usr/include/limits.h /usr/include/sys/param.h
-Dispatcher.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-Dispatcher.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
-Dispatcher.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Dispatcher.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Dispatcher.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Dispatcher.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-Dispatcher.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-Dispatcher.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-Dispatcher.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-Dispatcher.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-Dispatcher.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Dispatcher.o: /usr/include/netinet/in.h Dispatcher.h /usr/include/stdio.h
-Dispatcher.o: /usr/include/stdlib.h /usr/include/unistd.h
-Dispatcher.o: /usr/include/string.h DeviseTypes.h /usr/include/values.h
-Dispatcher.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
-Dispatcher.o: Pattern.h Control.h ClassDir.h Init.h BufPolicy.h Selection.h
-Dispatcher.o: View.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-Dispatcher.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-Dispatcher.o: Transform.h DevisePixmap.h Compress.h DualWindowRep.h
-Dispatcher.o: ViewCallback.h AttrList.h Cursor.h Time.h
+Dispatcher.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+Dispatcher.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Dispatcher.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Dispatcher.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Dispatcher.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dispatcher.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Dispatcher.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Dispatcher.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Dispatcher.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Dispatcher.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Dispatcher.o: Dispatcher.h /usr/include/stdio.h /usr/include/stdlib.h
+Dispatcher.o: /usr/include/unistd.h /usr/include/string.h DeviseTypes.h
+Dispatcher.o: /usr/include/values.h DevStatus.h DList.h Exit.h Journal.h
+Dispatcher.o: VisualArg.h Color.h Pattern.h Control.h ClassDir.h Init.h
+Dispatcher.o: BufPolicy.h Selection.h View.h ViewWin.h WindowRep.h Geom.h
+Dispatcher.o: /usr/include/math.h /usr/include/floatingpoint.h
+Dispatcher.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
+Dispatcher.o: DualWindowRep.h ViewCallback.h AttrList.h Cursor.h Time.h
+Dispatcher.o: Display.h ColorMgr.h
 Display.o: XDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 Display.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Display.o: /usr/include/sys/sysmacros.h Geom.h /usr/include/stdio.h
@@ -215,10 +208,10 @@ DualWindowRep.o: /usr/include/sys/time.h /usr/include/ctype.h PSWindowRep.h
 DualWindowRep.o: Display.h Dispatcher.h /usr/include/unistd.h Journal.h
 DualWindowRep.o: ColorMgr.h
 Exit.o: /usr/include/stdio.h /usr/include/stdlib.h
-Exit.o: /usr/include/sys/stdtypes.h Exit.h Init.h DeviseTypes.h
-Exit.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
-Exit.o: /usr/include/sys/sysmacros.h BufPolicy.h Control.h VisualArg.h
-Exit.o: Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
+Exit.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+Exit.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Exit.h Init.h
+Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h BufPolicy.h Control.h
+Exit.o: VisualArg.h Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Exit.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
@@ -281,23 +274,21 @@ PSDisplay.o: /usr/include/errno.h /usr/include/sys/errno.h
 PSDisplay.o: ../graphics.new/machdep.h /usr/include/limits.h
 PSDisplay.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 PSDisplay.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-PSDisplay.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-PSDisplay.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-PSDisplay.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-PSDisplay.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-PSDisplay.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-PSDisplay.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-PSDisplay.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-PSDisplay.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-PSDisplay.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-PSDisplay.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-PSDisplay.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-PSDisplay.o: /usr/include/netdb.h /usr/include/sys/socket.h
-PSDisplay.o: /usr/include/netinet/in.h PSDisplay.h Display.h DeviseTypes.h
-PSDisplay.o: /usr/include/values.h DevStatus.h Geom.h /usr/include/stdio.h
-PSDisplay.o: /usr/include/math.h /usr/include/floatingpoint.h
-PSDisplay.o: /usr/include/sys/ieeefp.h Color.h Dispatcher.h
-PSDisplay.o: /usr/include/stdlib.h /usr/include/unistd.h
+PSDisplay.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+PSDisplay.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+PSDisplay.o: /usr/include/sys/time.h /usr/include/sys/time.h
+PSDisplay.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+PSDisplay.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+PSDisplay.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+PSDisplay.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+PSDisplay.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+PSDisplay.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+PSDisplay.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+PSDisplay.o: /usr/include/sys/socket.h /usr/include/netinet/in.h PSDisplay.h
+PSDisplay.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h Geom.h
+PSDisplay.o: /usr/include/stdio.h /usr/include/math.h
+PSDisplay.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
+PSDisplay.o: Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
 PSDisplay.o: /usr/include/string.h DList.h Exit.h Journal.h VisualArg.h
 PSDisplay.o: Pattern.h ColorMgr.h WindowRep.h Transform.h DevisePixmap.h
 PSDisplay.o: Compress.h PSWindowRep.h Util.h /usr/include/ctype.h DevError.h
@@ -343,12 +334,10 @@ Time.o: /usr/include/sys/time.h ../graphics.new/machdep.h
 Time.o: /usr/include/limits.h /usr/include/sys/types.h
 Time.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 Time.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Time.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Time.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-Time.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Time.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Time.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Time.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Time.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Time.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Time.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Time.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 Time.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 Time.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 Time.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
@@ -363,17 +352,16 @@ Timer.o: /usr/include/sys/time.h /usr/include/sys/time.h
 Timer.o: ../graphics.new/machdep.h /usr/include/limits.h
 Timer.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 Timer.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Timer.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Timer.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Timer.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-Timer.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-Timer.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Timer.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Timer.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Timer.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Timer.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Timer.o: /usr/include/sys/socket.h /usr/include/netinet/in.h Timer.h
-Timer.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+Timer.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
+Timer.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Timer.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+Timer.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Timer.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Timer.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Timer.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Timer.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Timer.o: /usr/include/netinet/in.h Timer.h DeviseTypes.h
+Timer.o: /usr/include/values.h DevStatus.h
 Util.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Util.o: /usr/include/sys/sysmacros.h /usr/include/stdio.h
 Util.o: /usr/include/sys/stat.h /usr/include/sys/dir.h /usr/include/unistd.h
@@ -583,17 +571,15 @@ xv24to8.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
 xv24to8.o: /usr/include/signal.h /usr/include/sys/signal.h
 xv24to8.o: /usr/include/vm/faultcode.h ../graphics.new/machdep.h
 xv24to8.o: /usr/include/limits.h /usr/include/sys/param.h
-xv24to8.o: /usr/include/machine/param.h /usr/include/sys/wait.h
-xv24to8.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-xv24to8.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-xv24to8.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-xv24to8.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-xv24to8.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-xv24to8.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-xv24to8.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-xv24to8.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-xv24to8.o: /usr/include/netdb.h /usr/include/sys/socket.h
-xv24to8.o: /usr/include/netinet/in.h
+xv24to8.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+xv24to8.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+xv24to8.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+xv24to8.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+xv24to8.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+xv24to8.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+xv24to8.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+xv24to8.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+xv24to8.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 xvgif.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xvgif.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 xvgif.o: /usr/include/sys/sysmacros.h /usr/include/string.h
@@ -615,16 +601,15 @@ xvgif.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
 xvgif.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 xvgif.o: ../graphics.new/machdep.h /usr/include/limits.h
 xvgif.o: /usr/include/sys/param.h /usr/include/machine/param.h
-xvgif.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-xvgif.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-xvgif.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-xvgif.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-xvgif.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-xvgif.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-xvgif.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-xvgif.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-xvgif.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-xvgif.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+xvgif.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
+xvgif.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+xvgif.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+xvgif.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+xvgif.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+xvgif.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+xvgif.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+xvgif.o: /usr/include/netdb.h /usr/include/sys/socket.h
+xvgif.o: /usr/include/netinet/in.h
 xvgifwr.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xvgifwr.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 xvgifwr.o: /usr/include/sys/sysmacros.h /usr/include/string.h
@@ -646,17 +631,15 @@ xvgifwr.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
 xvgifwr.o: /usr/include/signal.h /usr/include/sys/signal.h
 xvgifwr.o: /usr/include/vm/faultcode.h ../graphics.new/machdep.h
 xvgifwr.o: /usr/include/limits.h /usr/include/sys/param.h
-xvgifwr.o: /usr/include/machine/param.h /usr/include/sys/wait.h
-xvgifwr.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-xvgifwr.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-xvgifwr.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-xvgifwr.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-xvgifwr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-xvgifwr.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-xvgifwr.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-xvgifwr.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-xvgifwr.o: /usr/include/netdb.h /usr/include/sys/socket.h
-xvgifwr.o: /usr/include/netinet/in.h
+xvgifwr.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+xvgifwr.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+xvgifwr.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+xvgifwr.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+xvgifwr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+xvgifwr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+xvgifwr.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+xvgifwr.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+xvgifwr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 xvgrab.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xvgrab.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 xvgrab.o: /usr/include/sys/sysmacros.h /usr/include/string.h
@@ -678,17 +661,15 @@ xvgrab.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
 xvgrab.o: /usr/include/signal.h /usr/include/sys/signal.h
 xvgrab.o: /usr/include/vm/faultcode.h ../graphics.new/machdep.h
 xvgrab.o: /usr/include/limits.h /usr/include/sys/param.h
-xvgrab.o: /usr/include/machine/param.h /usr/include/sys/wait.h
-xvgrab.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-xvgrab.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-xvgrab.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-xvgrab.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-xvgrab.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-xvgrab.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-xvgrab.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-xvgrab.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-xvgrab.o: /usr/include/netdb.h /usr/include/sys/socket.h
-xvgrab.o: /usr/include/netinet/in.h
+xvgrab.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+xvgrab.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+xvgrab.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+xvgrab.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+xvgrab.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+xvgrab.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+xvgrab.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+xvgrab.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+xvgrab.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 Map3D.o: Map3D.h DeviseTypes.h /usr/include/values.h DevStatus.h
 Map3D.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Map3D.o: /usr/include/sys/sysmacros.h Geom.h /usr/include/stdio.h

@@ -455,11 +455,12 @@ disp.o: TDataCycle.h ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
 disp.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
 disp.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
 disp.o: ../graphics.new/Snapshot.h ../graphics.new/ViewClassInfo.h
-disp.o: ../graphics.new/ViewScatter.h MappingClassInfo.h
-disp.o: ../graphics.new/MapInterpClassInfo.h HostMappingClassInfo.h
-disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
-disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h
-disp.o: CycleCpuTimeMappingClassInfo.h ../graphics/WinClassInfo.h
-disp.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-disp.o: /usr/include/ctype.h Message.h ../graphics.new/ActionClassInfo.h
-disp.o: ../graphics/AxisLabelClassInfo.h ../graphics/CursorClassInfo.h
+disp.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
+disp.o: MappingClassInfo.h ../graphics.new/MapInterpClassInfo.h
+disp.o: HostMappingClassInfo.h CycleOccMappingClassInfo.h
+disp.o: CycleEffMappingClassInfo.h CycleWorkingMappingClassInfo.h
+disp.o: CycleSuspendedMappingClassInfo.h CycleCpuTimeMappingClassInfo.h
+disp.o: ../graphics/WinClassInfo.h ../graphics.new/ActionDefault.h
+disp.o: ../graphics/Util.h /usr/include/ctype.h Message.h
+disp.o: ../graphics.new/ActionClassInfo.h ../graphics/AxisLabelClassInfo.h
+disp.o: ../graphics/CursorClassInfo.h

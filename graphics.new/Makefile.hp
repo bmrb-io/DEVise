@@ -311,10 +311,6 @@ DevFileHeader.o: /usr/include/sys/time.h /usr/include/string.h
 DevFileHeader.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 DevFileHeader.o: ../graphics/DevError.h /usr/include/errno.h
 DevFileHeader.o: /usr/include/sys/errno.h
-DictGroup.o: /usr/include/stdio.h DictGroup.h ../graphics/DeviseTypes.h
-DictGroup.o: /usr/include/values.h ../graphics/DevStatus.h
-DictGroup.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-DictGroup.o: ../graphics/DList.h ../graphics/Exit.h
 DiskFile.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
 DiskFile.o: /usr/include/sys/stdsyms.h DiskFile.h ../graphics/DeviseTypes.h
 DiskFile.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -938,7 +934,7 @@ ViewClassInfo.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 ViewClassInfo.o: DataSource.h UpdateLink.h VisualLink.h Action.h
 ViewClassInfo.o: PointStorage.h GDataBin.h TDataCMap.h ConnectorShape.h
 ViewClassInfo.o: Connector.h ShapeID.h ViewScatter.h ViewClassInfo.h
-ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
+ViewClassInfo.o: ViewLens.h ../graphics/Selection.h ../graphics/Util.h
 ViewClassInfo.o: /usr/include/ctype.h ActionDefault.h ../graphics/ColorMgr.h
 ViewClassInfo.o: ../graphics/Parse.h
 ViewGraph.o: /usr/include/assert.h ViewGraph.h ../graphics/View.h
@@ -1093,10 +1089,6 @@ testBufMgrFull.o: /usr/include/assert.h /usr/include/sys/stat.h
 testBufPage.o: BufPage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 testBufPage.o: /usr/include/values.h ../graphics/DevStatus.h
 testBufPage.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h PageSize.h
-testDictGroup.o: /usr/include/stdio.h DictGroup.h ../graphics/DeviseTypes.h
-testDictGroup.o: /usr/include/values.h ../graphics/DevStatus.h
-testDictGroup.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-testDictGroup.o: ../graphics/DList.h ../graphics/Exit.h
 testGDataRange.o: /usr/include/stdio.h /usr/include/stdlib.h GDataRangeMap.h
 testGDataRange.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testGDataRange.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -1338,7 +1330,7 @@ ParseAPI.o: Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
 ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
 ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
 ParseAPI.o: FileIndex.h ../graphics/DevError.h /usr/include/errno.h
-ParseAPI.o: /usr/include/sys/errno.h ../graphics/WinClassInfo.h
+ParseAPI.o: /usr/include/sys/errno.h ViewLens.h ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h RecId.h
@@ -1441,6 +1433,32 @@ ViewKGraph.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 ViewKGraph.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h UpdateLink.h
 ViewKGraph.o: VisualLink.h Action.h RecId.h PointStorage.h KGraph.h
 ViewKGraph.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
+ViewLens.o: /usr/include/time.h /usr/include/sys/time.h
+ViewLens.o: /usr/include/sys/stdsyms.h ../graphics/Util.h
+ViewLens.o: /usr/include/stdlib.h /usr/include/stdio.h /usr/include/string.h
+ViewLens.o: /usr/include/ctype.h /usr/include/math.h
+ViewLens.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ViewLens.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+ViewLens.o: ../graphics/Exit.h ViewLens.h ../graphics/Dispatcher.h
+ViewLens.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+ViewLens.o: ../graphics/DList.h ../graphics/Journal.h ../graphics/VisualArg.h
+ViewLens.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/ViewWin.h
+ViewLens.o: ../graphics/WindowRep.h ../graphics/Geom.h
+ViewLens.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ViewLens.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+ViewLens.o: ../graphics/Control.h ../graphics/ClassDir.h
+ViewLens.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ViewLens.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
+ViewLens.o: ViewGraph.h ../graphics/View.h BasicStats.h ViewStats.h
+ViewLens.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
+ViewLens.o: DataSourceBuf.h DataSource.h UpdateLink.h VisualLink.h Action.h
+ViewLens.o: RecId.h PointStorage.h ../graphics/XWindowRep.h
+ViewLens.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
+ViewLens.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+ViewLens.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+ViewLens.o: /s/X11/include/X11/Xutil.h ../graphics/FilterQueue.h
+ViewLens.o: ../graphics/TimeStamp.h ../graphics/Parse.h ../graphics/Map3D.h
+ViewLens.o: ../graphics/Display.h ../graphics/ColorMgr.h
 Web.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
 Web.o: /usr/include/sys/unistd.h /usr/include/string.h /usr/include/errno.h
 Web.o: /usr/include/sys/errno.h /usr/include/sys/stdsyms.h ../graphics/Exit.h
