@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/12/06 18:53:24  wenger
+#  Fixed an error in setting up the include dir.
+#
 #  Revision 1.3  1996/11/26 15:43:43  wenger
 #  Added features and fixed bugs in PostScript-related parts of the
 #  client/server library and the PSWindowRep class; page size can now be
@@ -55,7 +58,7 @@ ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
         ../../graphics/Util.h ../../graphics/VisualArg.h \
         ../../graphics/WindowRep.h ../../graphics/XBitmap.h \
         ../../graphics/XDisplay.h ../../graphics/XWindowRep.h \
-        ../../graphics/Xdef.h ../../graphics/xv.h include \
+        ../../graphics/Xdef.h ../../graphics/xv.h \
 	../../graphics/DualWindowRep.h include
 ln -s ../../graphics.new/ClientAPI.h ../../graphics.new/DeviseKey.h \
         ../../graphics.new/MapIntToInt.h ../../graphics.new/ParseAPI.h \
