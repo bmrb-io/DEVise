@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/11 18:04:08  jussi
+  Added initialization of _stacked member variable. Fixed bug
+  in computation of window geometry in SwapChildren().
+
   Revision 1.5  1995/12/28 18:53:07  jussi
   Small fixes to remove compiler warnings.
 
@@ -33,7 +37,6 @@
   Initial revision.
 */
 
-#include <assert.h>
 #include <math.h>
 
 #include "ViewLayout.h"
@@ -130,7 +133,7 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
   // for the two views if the height (or width) of the window is odd;
   // I've disabled the assertion below for this reason
 #if 0
-  assert(w1 == w2 && h1 == h2);
+  DOASSERT(w1 == w2 && h1 == h2, "Incompatible window sizes");
 #endif
 
   child1->MoveResize(x2, y2, w2, h2);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/15 19:32:28  wenger
+  Consolidated the two (nearly identical) functions for
+  reading/parsing physical schema, and cleaned up the
+  ParseCat.c module quite a bit.  As part of this, I added
+  a new enum DevStatus (StatusOk, StatusFailed, etc.).
+
   Revision 1.4  1995/12/28 21:29:02  jussi
   Got rid of strings.h and stuck with string.h.
 
@@ -31,13 +37,14 @@
 #ifndef Util_h
 #define Util_h
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
 #include <iostream.h>
+
+#include "Exit.h"
 
 /* get the name file was last modified */
 extern long ModTime(char *fname);
@@ -59,10 +66,9 @@ inline char *StripPath(char *name) {
 /* Strip the trailing newline (if any) from a string. */
 inline void StripTrailingNewline(char *string)
 {
-	int		len = strlen(string);
-	if (len > 0 && string[len-1] == '\n') string[len-1] = '\0';
-
-	return;
+  int len = strlen(string);
+  if (len > 0 && string[len - 1] == '\n')
+    string[len - 1] = '\0';
 }
 
 /* convert double to string */
@@ -136,7 +142,7 @@ inline double UtilAtof(char *str)
     return atof(origStr);
   }
 
-  assert(decimals >= 0 && decimals < _UtilMaxDecimals);
+  DOASSERT(decimals >= 0 && decimals < _UtilMaxDecimals, "Too many decimals");
 
   if (*str != 'e') {
     double ret = sign * (integer + fraction / _UtilPower10[decimals]);

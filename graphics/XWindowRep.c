@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/04/11 17:54:28  jussi
+  Added Raise() and Lower().
+
   Revision 1.28  1996/03/29 18:14:05  wenger
   Got testWindowRep to compile and run, added drawing in
   windows; fixed a few more compile warnings, etc.
@@ -110,7 +113,6 @@
   Added/updated CVS header.
 */
 
-#include <assert.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -1483,8 +1485,7 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
     unsigned int nchildren;
     if (!XQueryTree(_display, current, &root, &parent,
 		    &children, &nchildren)) {
-      fprintf(stderr,"XwindowRep::HandleEvent QueryTree\n");
-      Exit::DoExit(1);
+      DOASSERT(0, "XQueryTree failed");
     }
     if (children != NULL)
       XFree(children);
@@ -1578,16 +1579,14 @@ void XWindowRep::DoPopup(int x, int y, int button)
   if ((win = XCreateWindow(_display, DefaultRootWindow(_display), x, y,
 			   textWidth, textHeight, 1, 0, InputOutput,
 			   CopyFromParent, AllPlanes, &attr)) == 0) {
-    fprintf(stderr,"XWindowRep::DoPopup: can't create window\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot create popup window");
   }
   
   XSelectInput(_display, win, ExposureMask|ButtonPressMask);
   
   /* Map the window so that it appears on the display. */
   if (XMapWindow(_display, win) < 0) {
-    fprintf(stderr,"XWindowRep::DoPopup: can't map window\n");
-    Exit::DoExit(2);
+    DOASSERT(0, "Cannot map popup window");
   }
   
   /* Do a sync to force the window to appear immediately */
@@ -1818,17 +1817,12 @@ void XWindowRep::DisplayPixmap(DevisePixmap *pixmap)
     int outCount;
     memcpy((char *)&count, (char *)&data[index], sizeof(int));
     index += sizeof(int);
-    if (index + count > pixmap->compressedBytes) {
-      fprintf(stderr,"XWindowRep::DisplayPixmap: pixmap format\n");
-      Exit::DoExit(2);
-    }
+    DOASSERT(index + count <= pixmap->compressedBytes,
+	     "Invalid pixmap format");
     char *buf = _compress->DecompressLine((char *)&data[index],
 					  count, outCount);
     index += count;
-    if (outCount != pixmap->bytes_per_line) {
-      fprintf(stderr,"XWindowRep::DisplayPixmap: pixmap format 2\n");
-      Exit::DoExit(2);
-    }
+    DOASSERT(outCount == pixmap->bytes_per_line, "Invalid pixmap format");
     XImage *image = XCreateImage(_display, visual, depth, ZPixmap,
 				 0, buf, pixmap->width, 1, pixmap->padding, 0);
     XPutImage(_display,_win, _gc, image, 0, 0, 0, i, image->width, 1);
@@ -1847,7 +1841,7 @@ void XWindowRep::FreePixmap(DevisePixmap *pixmap)
 void XWindowRep::Decorate(WindowRep *parent, char *name,
 			  unsigned int min_width, unsigned int min_height)
 {
-  assert(!isInTkWindow());
+  DOASSERT(!isInTkWindow(), "Invalid Tk window");
   EmbedInTkWindow((XWindowRep *)parent, name, min_width, min_height);
 }
 
@@ -1875,7 +1869,7 @@ void XWindowRep::TkWindowSizeChanged()
 
   // first find out new size of Tk window
 
-  assert(_tkWindow != 0);
+  DOASSERT(_tkWindow, "Invalid Tk window");
   unsigned int w = (unsigned int)Tk_Width(_tkWindow);
   unsigned int h = (unsigned int)Tk_Height(_tkWindow);
 
@@ -1895,11 +1889,7 @@ void XWindowRep::TkWindowSizeChanged()
   printf("Executing: %s\n", cmd);
 #endif
   int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  if (status != TCL_OK) {
-    fprintf(stderr, "Cannot resize Tk window %s: %s\n",
-	    _tkPathName, ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
+  DOASSERT(status == TCL_OK, "Cannot resize Tk window");
 }
 
 static const unsigned int TkRootLeftMargin   = 0;
@@ -1956,20 +1946,12 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
   printf("Executing: %s\n", cmd);
 #endif
   int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  if (status != TCL_OK) {
-    fprintf(stderr, "Cannot create Tk window %s: %s\n", _tkPathName,
-	    ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
+  DOASSERT(status == TCL_OK, "Cannot create Tk window");
 
   _tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
 			      _tkPathName,
 			      ControlPanelMainWindow);
-  if (!_tkWindow) {
-    fprintf(stderr, "Cannot convert name to window: %s\n",
-	    ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
+  DOASSERT(_tkWindow, "Cannot get name of Tk window");
 
 #ifdef DEBUG
   printf("Created %s, id 0x%p, X id 0x%p, at %d,%d size %u,%u\n",
@@ -2015,7 +1997,7 @@ void XWindowRep::DetachFromTkWindow()
   printf("ViewWin::Detaching 0x%p from 0x%0x\n", this, _tkWindow);
 #endif
 
-  assert(_tkWindow != 0);
+  DOASSERT(_tkWindow, "Invalid Tk window");
   unsigned long mask = StructureNotifyMask;
   Tk_DeleteEventHandler(_tkWindow, mask, HandleTkEvents, this);
 
@@ -2041,11 +2023,7 @@ void XWindowRep::DetachFromTkWindow()
   char cmd[256];
   sprintf(cmd, "destroy %s", _tkPathName);
   int status = Tcl_Eval(ControlPanelTclInterp, cmd);
-  if (status != TCL_OK) {
-    fprintf(stderr, "Cannot destroy Tk window %s: %s\n", _tkPathName,
-	    ControlPanelTclInterp->result);
-    Exit::DoExit(2);
-  }
+  DOASSERT(status == TCL_OK, "Cannot destroy Tk window");
 
   _tkPathName[0] = 0;
   _tkWindow = 0;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/11 18:04:37  jussi
+  Added support for stacked windows (one overlays another).
+
   Revision 1.3  1995/12/28 19:04:26  jussi
   Small fixes to remove compiler warnings.
 
@@ -26,7 +29,6 @@
   Initial revision.
 */
 
-#include <assert.h>
 #include <math.h>
 
 #include "TileLayout.h"
@@ -107,7 +109,7 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
   printf("TileLayout::MapChildren: using %dx%d layout for %d views\n",
 	 verViews, horViews, numViews);
 #endif
-  assert(verViews * horViews >= numViews);
+  DOASSERT(verViews * horViews >= numViews, "Incorrect number of views");
 
   // compute default, unweighted width and height of views
   unsigned int height = (int)(1.0 * _h / verViews);
@@ -155,7 +157,7 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
 
   // see if we need to report back any unused space (for one more child)
   if (x) {
-    assert(x && y && w && h);
+    DOASSERT(x && y && w && h, "Invalid window position or size");
     *x = _x + xoff;
     *y = _y + yoff;
     if (horViews == 1)

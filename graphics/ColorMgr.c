@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/30 00:01:57  jussi
+  Added a few colors and removed duplicate ones.
+
   Revision 1.4  1995/12/28 18:39:26  jussi
   Minor fixes to remove compiler warnings.
 
@@ -28,7 +31,6 @@
   Added/updated CVS header.
 */
 
-#include <assert.h>
 #include "ColorMgr.h"
 #include "Display.h"
 #include "Color.h"
@@ -94,12 +96,12 @@ ColorMgr::ColorMgr()
   
   _colorArraySize = InitColorArraySize;
   _numColors = sizeof defaultColors / sizeof defaultColors[0];
-  assert(_numColors <= _colorArraySize);
+  DOASSERT(_numColors <= _colorArraySize, "Too many colors");
 
   _colorArray = new ColorData * [_colorArraySize];
 
   for(unsigned int i = 0; i < _numColors; i++) {
-    assert(defaultColors[i].value == i);
+    DOASSERT(defaultColors[i].value == i, "Invalid color index");
     ColorData *data = _colorArray[defaultColors[i].value] = new ColorData;
     data->type = ColorData::NameVal;
     data->val.nameVal = defaultColors[i].name;
