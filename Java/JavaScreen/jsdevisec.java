@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  1999/10/10 08:49:54  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.50  1999/08/03 05:56:50  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -154,7 +162,8 @@ public class jsdevisec extends Panel
         topPanel.add(mainPanel, BorderLayout.WEST);
 
         if (DEViseGlobals.inBrowser) {
-            topPanel.add(new Label("DEVise Screen -- Version " + DEViseGlobals.VERSION), BorderLayout.CENTER);
+            topPanel.setFont(new Font("Serif", Font.PLAIN, 14));
+            topPanel.add(new Label("               DEVise Screen -- Version " + DEViseGlobals.VERSION), BorderLayout.CENTER);
         }
 
         topPanel.add(viewInfo, BorderLayout.EAST);

@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  1999/10/10 08:49:54  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.5  1999/08/03 07:37:46  hongyu
 // add support for read animation symbol from JAR file           by Hongyu Yao
 //
@@ -239,11 +247,11 @@ public class jsb extends Applet
             DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
 
-        //Toolkit kit = Toolkit.getDefaultToolkit();
-        //Dimension dim = kit.getScreenSize();
-        Dimension dim = getMaximumSize();
-        DEViseGlobals.maxScreenSize.width = dim.width - 20;
-        DEViseGlobals.maxScreenSize.height = dim.height - 60;
+        //Dimension dim = getMaximumSize();
+        //DEViseGlobals.maxScreenSize.width = dim.width - 20;
+        //DEViseGlobals.maxScreenSize.height = dim.height - 60;
+        DEViseGlobals.maxScreenSize.width = 794;
+        DEViseGlobals.maxScreenSize.height = 540;
         DEViseGlobals.minScreenSize.width = 300;
         DEViseGlobals.minScreenSize.height = 240;
         if (DEViseGlobals.maxScreenSize.width < DEViseGlobals.minScreenSize.width) {
