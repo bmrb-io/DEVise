@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/29 17:22:40  jussi
+  Changed default value of _iconify parameter to false.
+
   Revision 1.3  1995/11/07 20:46:27  jussi
   Commented out InitTimer() because timer functions are currently
   not used, and sometimes a SIGALRM gets through unhandled, causing
@@ -181,7 +184,7 @@ char *args[512];
 		args[j] = argv[j];
 
 	/* init current time */
-	Time::Init();
+	DeviseTime::Init();
 
 	/* init timer */
 #if 0

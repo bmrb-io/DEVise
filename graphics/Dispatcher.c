@@ -16,8 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/25 01:12:56  jussi
+  Added copyright notice and added #include <unistd.h> for sleep()
+  definition.
+
   Revision 1.2  1995/09/05 21:12:41  jussi
-  Added/update CVS header.
+  Added/updated CVS header.
 */
 
 #include <unistd.h>
@@ -44,7 +48,7 @@ Dispatcher::Dispatcher(StateFlag state){
 	AppendDispatcher();
 
 	/* init current time */
-	_oldTime = Time::Now();
+	_oldTime = DeviseTime::Now();
 	_playTime = _oldTime;
 	_playback = Init::DoPlayback();
 	if (_playback){
@@ -186,11 +190,11 @@ void Dispatcher::RunNoReturn(){
 	ControlPanel::Init(); /* create control panel, if not already created*/
 
 	for (; ;){
-		long start = Time::Now();
+		long start = DeviseTime::Now();
 		for (int i=0; i < 5000; i++){
 			Current()->Run1();
 		}
-		long end = Time::Now();
+		long end = DeviseTime::Now();
 		if (end - start < 500)
 			/* not much happened */
 			sleep(1);
@@ -231,7 +235,7 @@ void Dispatcher::Run1(){
 	_callbacks.DoneIterator(index);
 
 	/* test time */
-	long now = Time::Now();
+	long now = DeviseTime::Now();
 	long diff = now - _oldTime;
 	if (diff >= DISPATCHER_TIMER_INTERVAL){
 		_oldTime = now;
@@ -247,7 +251,7 @@ void Dispatcher::Run1(){
 
 	if (_playback){
 		/* doing playback */
-		now = Time::Now();
+		now = DeviseTime::Now();
 		long playdiff = now - _playTime;
 		if (playdiff >= _playInterval){
 			/* dispatch event */
@@ -291,7 +295,7 @@ void Dispatcher::Run1(){
 				_playback = ! Journal::NextEvent(_playInterval,
 					_nextEvent, _nextSelection, _nextView, _nextFilter,
 						_nextHint,d1,d2,d3,d4);
-				_playTime = Time::Now();
+				_playTime = DeviseTime::Now();
 			}
 		}
 	}
