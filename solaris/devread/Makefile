@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1998/02/26 17:20:46  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.5  1996/12/03 20:59:23  jussi
 #  Corrected architecture flag.
 #
@@ -47,7 +50,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/19 15:29:25  wenger
+#  Fixed SOLARIS define.
+#
 #  Revision 1.3  1996/11/18 18:14:47  donjerko
 #  *** empty log message ***
 #
@@ -41,7 +44,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 

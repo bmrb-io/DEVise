@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1998/02/26 00:20:25  zhenhai
+#  Implementation for spheres and line segments in OpenGL 3D graphics.
+#
 #  Revision 1.2  1997/12/04 23:51:15  wenger
 #  Changed how dependencies work for src/color and src/utils to work
 #  around a bug in makedepend (this is an improvement anyhow).
@@ -26,7 +29,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/src/perl5.002
+include ../Makefile.config
+
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =
 

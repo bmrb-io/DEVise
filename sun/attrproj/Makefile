@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/07/18 14:10:25  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.2  1996/06/28 13:57:34  wenger
 #  Forgot to change the attrproj Makefiles for all architectures.
 #
@@ -24,7 +27,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSUN -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/02/12 17:17:10  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.42  1998/01/30 21:53:56  wenger
   Updated screen trademark message to 1998.
 
@@ -246,7 +249,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.5.1";
+static const char *	version = "1.5.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1998";

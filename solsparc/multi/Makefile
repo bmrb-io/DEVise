@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/08/12 18:49:03  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.6  1997/01/18 20:48:48  jussi
 #  Removed inclusion of Xaw and related X extensions.
 #
@@ -38,9 +42,8 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl

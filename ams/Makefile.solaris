@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.49  1998/02/09 18:09:45  wenger
+# Removed ViewScatter class (totally replaced by ViewData, which is a
+# renamed version of TDataViewX); removed ViewRanges class (not used);
+# re-made Solaris dependencies.
+#
 # Revision 1.48  1997/12/22 17:54:36  donjerko
 # Initial version of Saeed's sequence similarity search.
 #
@@ -69,9 +74,9 @@ MapClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
 MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 MapClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
@@ -97,10 +102,10 @@ ams.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 ams.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Dispatcher.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-ams.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/Display.h
-ams.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
+ams.o: ../graphics/VisualArg.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: /usr/include/math.h /usr/include/floatingpoint.h
 ams.o: /usr/include/sys/ieeefp.h ../graphics/ViewWin.h
-ams.o: ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/WindowRep.h ../graphics/Transform.h ../graphics/Pattern.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 ams.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
@@ -123,22 +128,21 @@ ams.o: /usr/include/sys/unistd.h /usr/include/assert.h /usr/include/limits.h
 ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
 ams.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 ams.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-ams.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-ams.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ams.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ams.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ams.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ams.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-ams.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-ams.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-ams.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ams.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ams.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ams.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ams.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/Command.h
-ams.o: ../graphics/Timer.h MapClassInfo.h
+ams.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+ams.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ams.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ams.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ams.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ams.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+ams.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+ams.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+ams.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+ams.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+ams.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+ams.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+ams.o: /usr/include/sys/byteorder.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/DataSourceBuf.h
+ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 amsStat.o: /usr/include/fcntl.h /usr/include/sys/types.h
@@ -158,22 +162,21 @@ amsStat.o: /usr/include/sys/shm.h /usr/include/errno.h
 amsStat.o: /usr/include/sys/errno.h /usr/include/assert.h
 amsStat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 amsStat.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-amsStat.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-amsStat.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-amsStat.o: /usr/include/netdb.h /usr/include/sys/socket.h
-amsStat.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-amsStat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-amsStat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-amsStat.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-amsStat.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-amsStat.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-amsStat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-amsStat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-amsStat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-amsStat.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
-amsStat.o: /usr/include/math.h /usr/include/floatingpoint.h
-amsStat.o: /usr/include/sys/ieeefp.h
+amsStat.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+amsStat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+amsStat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+amsStat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+amsStat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+amsStat.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+amsStat.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+amsStat.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+amsStat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+amsStat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+amsStat.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
+amsStat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+amsStat.o: /usr/include/sys/byteorder.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+amsStat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 extendAms.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 extendAms.o: /usr/include/fcntl.h /usr/include/sys/types.h

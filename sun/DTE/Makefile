@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/08/12 18:49:15  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.8  1997/03/20 19:56:48  wenger
 #  Minor mods to get latest version to compile on HP and SunOS; cleaned
 #  up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -46,15 +50,13 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS = -DSUN -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS =
 ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
 ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST =
-ARCH_ENDIAN = -DBYTE_BIG_ENDIAN -DWORD_BIG_ENDIAN
 
 
 DTE_DIR = ../../DTE

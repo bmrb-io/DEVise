@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1995/09/28 15:10:06  jussi
+#  Added copyright and CVS log messages.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I../../parser
+include ../Makefile.config
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

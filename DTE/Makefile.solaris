@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.78  1998/02/12 17:13:33  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.77  1998/02/09 21:11:45  donjerko
 # *** empty log message ***
 #
@@ -242,22 +245,21 @@ CatalogComm2.o: ../../graphics/ClassDir.h TDataDQL.h /usr/include/stdio.h
 CatalogComm2.o: /usr/include/sys/va_list.h ../../graphics/Dispatcher.h
 CatalogComm2.o: ../../graphics/DList.h ../../graphics/Exit.h
 CatalogComm2.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h
-CatalogComm2.o: ../../unidata/sysdep.h /usr/include/varargs.h ../Core/types.h
-CatalogComm2.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
-CatalogComm2.o: ../Core/exception.h ../Core/Utility.h ../Core/Array.h
-CatalogComm2.o: ../Core/SeqSimVec.h /usr/include/math.h
-CatalogComm2.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-CatalogComm2.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
-CatalogComm2.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-CatalogComm2.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
-CatalogComm2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-CatalogComm2.o: /usr/include/sys/unistd.h /usr/include/errno.h
-CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
-CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
-CatalogComm2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-CatalogComm2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-CatalogComm2.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+CatalogComm2.o: ../Core/queue.h ../../unidata/sysdep.h /usr/include/varargs.h
+CatalogComm2.o: ../Core/types.h /s/gcc/lib/g++-include/new.h
+CatalogComm2.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
+CatalogComm2.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
+CatalogComm2.o: /usr/include/math.h /usr/include/floatingpoint.h
+CatalogComm2.o: /usr/include/sys/ieeefp.h ../../graphics.new/TData.h
+CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
+CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
+CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+CatalogComm2.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+CatalogComm2.o: /usr/include/errno.h /usr/include/sys/errno.h
+CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
+CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
+CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+CatalogComm2.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
 CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 CatalogComm2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 CatalogComm2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
@@ -287,23 +289,23 @@ Dql.o: /s/gcc/lib/g++-include/fstream.h /usr/include/ctype.h
 Dql.o: ../../graphics.new/machdep.h /usr/include/limits.h
 Dql.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 Dql.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Dql.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Dql.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-Dql.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Dql.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Dql.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Dql.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Dql.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Dql.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Dql.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-Dql.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Dql.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Dql.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Dql.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Dql.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-Dql.o: ../../graphics/Util.h /usr/include/math.h /usr/include/floatingpoint.h
-Dql.o: /usr/include/sys/ieeefp.h ../../graphics/DeviseTypes.h
-Dql.o: /usr/include/values.h ../../graphics/DevStatus.h ../../graphics/Exit.h
+Dql.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Dql.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dql.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Dql.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+Dql.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Dql.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Dql.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+Dql.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+Dql.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+Dql.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Dql.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Dql.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Dql.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Dql.o: /usr/include/sys/byteorder.h ../../graphics/Util.h /usr/include/math.h
+Dql.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+Dql.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+Dql.o: ../../graphics/DevStatus.h ../../graphics/Exit.h
 Dql.o: ../../graphics/Parse.h ../../graphics/Timer.h
 DqlInclude.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DqlInclude.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
@@ -387,19 +389,18 @@ TDataDQL.o: ../../graphics/Exit.h ../../graphics/Init.h
 TDataDQL.o: ../../graphics/BufPolicy.h ../../graphics/Timer.h
 TDataDQL.o: ../../graphics/Parse.h TDataDQL.h ../../graphics/Dispatcher.h
 TDataDQL.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-TDataDQL.o: ../../graphics/Pattern.h ../Core/queue.h ../../unidata/sysdep.h
-TDataDQL.o: /usr/include/varargs.h ../Core/types.h
-TDataDQL.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
-TDataDQL.o: ../Core/exception.h ../Core/Utility.h ../Core/Array.h
-TDataDQL.o: ../Core/SeqSimVec.h /usr/include/math.h
-TDataDQL.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-TDataDQL.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
-TDataDQL.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-TDataDQL.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
-TDataDQL.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataDQL.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
-TDataDQL.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-TDataDQL.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+TDataDQL.o: ../Core/queue.h ../../unidata/sysdep.h /usr/include/varargs.h
+TDataDQL.o: ../Core/types.h /s/gcc/lib/g++-include/new.h
+TDataDQL.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
+TDataDQL.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
+TDataDQL.o: /usr/include/math.h /usr/include/floatingpoint.h
+TDataDQL.o: /usr/include/sys/ieeefp.h ../../graphics.new/TData.h
+TDataDQL.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
+TDataDQL.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
+TDataDQL.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+TDataDQL.o: /usr/include/sys/shm.h ../../graphics.new/machdep.h
+TDataDQL.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+TDataDQL.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 TDataDQL.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
 TDataDQL.o: /usr/include/netdb.h /usr/include/sys/socket.h
 TDataDQL.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
@@ -439,23 +440,23 @@ TDataDQLInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 TDataDQLInterp.o: /usr/include/sys/time.h /usr/include/time.h
 TDataDQLInterp.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 TDataDQLInterp.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-TDataDQLInterp.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataDQLInterp.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-TDataDQLInterp.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-TDataDQLInterp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TDataDQLInterp.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TDataDQLInterp.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TDataDQLInterp.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TDataDQLInterp.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-TDataDQLInterp.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-TDataDQLInterp.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-TDataDQLInterp.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataDQLInterp.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataDQLInterp.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataDQLInterp.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataDQLInterp.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-TDataDQLInterp.o: /usr/include/ctype.h /usr/include/unistd.h
-TDataDQLInterp.o: ../../graphics.new/DataSeg.h /s/gcc/lib/g++-include/string
+TDataDQLInterp.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+TDataDQLInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataDQLInterp.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+TDataDQLInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataDQLInterp.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+TDataDQLInterp.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+TDataDQLInterp.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+TDataDQLInterp.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+TDataDQLInterp.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+TDataDQLInterp.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+TDataDQLInterp.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+TDataDQLInterp.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+TDataDQLInterp.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+TDataDQLInterp.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+TDataDQLInterp.o: /usr/include/sys/byteorder.h /usr/include/ctype.h
+TDataDQLInterp.o: /usr/include/unistd.h ../../graphics.new/DataSeg.h
+TDataDQLInterp.o: /s/gcc/lib/g++-include/string
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/string.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/bastring.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -471,10 +472,9 @@ TDataDQLInterp.o: ../../graphics/DevStatus.h ../../graphics/ClassDir.h
 TDataDQLInterp.o: TDataDQL.h /usr/include/stdio.h /usr/include/sys/va_list.h
 TDataDQLInterp.o: ../../graphics/Dispatcher.h ../../graphics/DList.h
 TDataDQLInterp.o: ../../graphics/Exit.h ../../graphics/Journal.h
-TDataDQLInterp.o: ../../graphics/VisualArg.h ../../graphics/Pattern.h
-TDataDQLInterp.o: ../Core/queue.h ../../unidata/sysdep.h
-TDataDQLInterp.o: /usr/include/varargs.h ../Core/types.h
-TDataDQLInterp.o: /s/gcc/lib/g++-include/new.h
+TDataDQLInterp.o: ../../graphics/VisualArg.h ../Core/queue.h
+TDataDQLInterp.o: ../../unidata/sysdep.h /usr/include/varargs.h
+TDataDQLInterp.o: ../Core/types.h /s/gcc/lib/g++-include/new.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
 TDataDQLInterp.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
 TDataDQLInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -784,20 +784,20 @@ IndexParse.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 IndexParse.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
 IndexParse.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 IndexParse.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-IndexParse.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-IndexParse.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-IndexParse.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-IndexParse.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-IndexParse.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-IndexParse.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-IndexParse.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-IndexParse.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-IndexParse.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-IndexParse.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-IndexParse.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-IndexParse.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-IndexParse.o: /usr/include/sys/byteorder.h ../../tape/tapedrive.h
-IndexParse.o: ../../tape/HashTable.h ../StandAlone/SBMInit.h
+IndexParse.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+IndexParse.o: /usr/include/netdb.h /usr/include/sys/socket.h
+IndexParse.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+IndexParse.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+IndexParse.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+IndexParse.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+IndexParse.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+IndexParse.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+IndexParse.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+IndexParse.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+IndexParse.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+IndexParse.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+IndexParse.o: ../../tape/tapedrive.h ../../tape/HashTable.h
+IndexParse.o: ../StandAlone/SBMInit.h
 IndexParse.dummy.o: /s/gcc/lib/g++-include/string
 IndexParse.dummy.o: /s/gcc/lib/g++-include/std/string.h
 IndexParse.dummy.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1183,20 +1183,20 @@ RTreeRead.o: /usr/include/sys/shm.h /usr/include/errno.h
 RTreeRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
 RTreeRead.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
 RTreeRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-RTreeRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RTreeRead.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RTreeRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-RTreeRead.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-RTreeRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RTreeRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RTreeRead.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-RTreeRead.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-RTreeRead.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-RTreeRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-RTreeRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-RTreeRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RTreeRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-RTreeRead.o: ../../tape/tapedrive.h ../../tape/HashTable.h
+RTreeRead.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+RTreeRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+RTreeRead.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+RTreeRead.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+RTreeRead.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+RTreeRead.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+RTreeRead.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+RTreeRead.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+RTreeRead.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+RTreeRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+RTreeRead.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
+RTreeRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+RTreeRead.o: /usr/include/sys/byteorder.h ../../tape/tapedrive.h
+RTreeRead.o: ../../tape/HashTable.h
 RTreeRead.dummy.o: RTreeRead.h myopt.h /s/gcc/lib/g++-include/string
 RTreeRead.dummy.o: /s/gcc/lib/g++-include/std/string.h
 RTreeRead.dummy.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1537,7 +1537,7 @@ lex.yy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
 lex.yy.o: SockStream.h listop.h ParseTree.h TypeCheck.h
 lex.yy.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
 lex.yy.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-lex.yy.o: StringLess.h
+lex.yy.o: StringLess.h my.yacc.tab.h
 listop.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 listop.o: /s/gcc/lib/g++-include/std/bastring.h
 listop.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -1563,6 +1563,39 @@ listop.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
 listop.o: listop.h site.h Iterator.h /s/gcc/lib/g++-include/set
 listop.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
 listop.o: /s/gcc/lib/g++-include/projectn.h catalog.h ExecExpr.h
+my.yacc.tab.o: myopt.h /s/gcc/lib/g++-include/string
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/bastring.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/straits.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+my.yacc.tab.o: /usr/include/sys/feature_tests.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/cassert
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/sinst.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/function.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/bool.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/algobase.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/pair.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iterator.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iostream.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/streambuf.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/libio.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/defalloc.h /s/gcc/lib/g++-include/new.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/new.h /usr/include/stdlib.h
+my.yacc.tab.o: /usr/include/limits.h /usr/include/sys/isa_defs.h queue.h
+my.yacc.tab.o: ../../unidata/sysdep.h /usr/include/varargs.h
+my.yacc.tab.o: /usr/include/sys/va_list.h types.h exception.h Utility.h
+my.yacc.tab.o: Array.h SeqSimVec.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+my.yacc.tab.o: SockStream.h listop.h ParseTree.h TypeCheck.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/tree.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
+my.yacc.tab.o: /usr/include/stdio.h /usr/include/alloca.h
 resolve.o: types.h /s/gcc/lib/g++-include/string
 resolve.o: /s/gcc/lib/g++-include/std/string.h
 resolve.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1664,21 +1697,20 @@ SBMInit.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 SBMInit.o: /usr/include/limits.h /usr/include/sys/stat.h
 SBMInit.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
 SBMInit.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-SBMInit.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-SBMInit.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-SBMInit.o: /usr/include/netdb.h /usr/include/sys/socket.h
-SBMInit.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-SBMInit.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-SBMInit.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-SBMInit.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-SBMInit.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-SBMInit.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-SBMInit.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-SBMInit.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-SBMInit.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-SBMInit.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-SBMInit.o: ../../tape/tapedrive.h ../../tape/HashTable.h
-SBMInit.o: /s/gcc/lib/g++-include/iostream.h
+SBMInit.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+SBMInit.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+SBMInit.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+SBMInit.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+SBMInit.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+SBMInit.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+SBMInit.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+SBMInit.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+SBMInit.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+SBMInit.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+SBMInit.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
+SBMInit.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+SBMInit.o: /usr/include/sys/byteorder.h ../../tape/tapedrive.h
+SBMInit.o: ../../tape/HashTable.h /s/gcc/lib/g++-include/iostream.h
 SBMInit.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
 SBMInit.o: InitShut.h
 SBMInit.dummy.o: InitShut.h

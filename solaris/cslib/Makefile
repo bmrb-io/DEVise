@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/02/26 17:20:40  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.2  1997/01/18 18:58:29  jussi
 #  Removed inclusion of Xaw and related libraries.
 #
@@ -24,12 +27,11 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
-# Note: Purify is not available on Pentium/Solaris.
-#ARCH_COLLECTOR	= /usr/ccs/bin/ld
 
 VPATH = ../../cslib
 include $(VPATH)/Makefile.base

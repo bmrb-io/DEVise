@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1998/02/26 17:21:06  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.14  1997/08/12 18:48:39  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -48,9 +51,8 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl

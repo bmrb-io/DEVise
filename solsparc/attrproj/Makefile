@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/02/03 04:14:33  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.6  1996/11/23 20:56:08  jussi
 #  Removed -lpthread.
 #
@@ -35,7 +38,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 

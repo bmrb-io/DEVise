@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/09/28 15:09:59  jussi
+#  Added copyright and CVS log messages.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../compustat
 include $(VPATH)/Makefile.base

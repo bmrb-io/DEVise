@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1998/03/02 22:30:03  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.26  1998/02/26 00:16:27  zhenhai
 #  Implementation for spheres and line segments in OpenGL 3D graphics.
 #
@@ -113,20 +119,6 @@
 #
 
 ############################################################
-
-# Define our linker and compiler.
-SPECIFIC_PATH = FALSE
-
-ifneq (, $(findstring LINUX, $(ARCH_FLAGS)))
-  SPECIFIC_PATH = FALSE
-endif
-
-ifneq (, $(findstring SGI, $(ARCH_FLAGS)))
-  SPECIFIC_PATH = FALSE
-  GLINCLUDE = 
-else
-  GLINCLUDE = -I/s/mesa-2.4/include
-endif
 
 LD = ld
 

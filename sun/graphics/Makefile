@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1998/02/20 17:03:39  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.10  1997/09/23 20:02:27  wenger
 #  Opening and saving of sessions now working with new scheme of mapping
 #  automatically creating the appropriate TData.
@@ -35,7 +39,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS =
 
 VPATH = ../../graphics

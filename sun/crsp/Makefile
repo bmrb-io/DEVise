@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/11/09 18:54:10  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../crsp
 include $(VPATH)/Makefile.base

@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/20 18:38:27  jussi
+#  Replaced PENTIUM flag with SOLARIS.
+#
 #  Revision 1.1  1996/05/16 19:34:09  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../crsp
 include $(VPATH)/Makefile.base

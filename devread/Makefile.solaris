@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1997/05/21 22:05:01  andyt
+# *** empty log message ***
+#
 # Revision 1.9  1997/03/28 16:08:54  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -56,12 +59,11 @@ DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
 DevRead.o: /usr/include/sys/errno.h /usr/include/limits.h
 DevRead.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
 DevRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-DevRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DevRead.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
-DevRead.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-DevRead.o: ../graphics.new/DataSeg.h
+DevRead.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+DevRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DevRead.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DevRead.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 drtest.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
 drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h

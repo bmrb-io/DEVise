@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/03/02 22:32:52  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.3  1995/12/29 18:54:42  jussi
 #  Removed -fno-for-scope compiler flag.
 #
@@ -27,10 +33,7 @@
 
 ############################################################
 
-IMPLICIT_TEMPLATES = 1
-AR = /usr/gnu/bin/ar
-
-ARCH_FLAGS = -DSGI -I../../parser
+include ../Makefile.config
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

@@ -15,10 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/05/28 20:48:48  wenger
+#  Added directories and makefiles for layout mananger to compile for hp,
+#  linux, solsparc, and sun.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/X11/include -I/s/tcl/include 
+include ../Makefile.config
 
 VPATH = ../../LM
 include $(VPATH)/Makefile.base

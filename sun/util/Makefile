@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/13 03:24:43  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN
+include ../Makefile.config
 
 VPATH = ../../util
 include $(VPATH)/Makefile.base

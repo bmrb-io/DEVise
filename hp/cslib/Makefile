@@ -15,18 +15,20 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/01/18 20:48:53  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.1  1996/10/17 20:50:36  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST =
-ARCH_COLLECTOR	= \
-	/s/gcc-2.7.1/hp700_ux90/lib/gcc-lib/hppa1.1-hp-hpux9.01/2.7.1/ld
 
 VPATH = ../../cslib
 include $(VPATH)/Makefile.base

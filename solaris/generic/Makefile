@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1998/02/26 17:20:52  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.18  1997/12/16 18:02:45  zhenhai
 #  Added OpenGL features.
 #
@@ -71,17 +74,14 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
                -L/s/X11/lib -L /s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
                -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
-# Note: Purify is not available on Pentium/Solaris.
-#ARCH_COLLECTOR	= /usr/ccs/bin/ld
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.52  1998/02/20 20:43:04  wenger
+# Changed color and utils libraries to new export directory scheme for
+# dealing with include files (email with complete explanation forthcoming).
+#
 # Revision 1.51  1998/02/12 17:15:44  wenger
 # Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -92,21 +96,20 @@ collaborator.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 collaborator.o: /usr/include/string.h /usr/include/signal.h
 collaborator.o: /usr/include/sys/signal.h /usr/include/sys/unistd.h
 collaborator.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-collaborator.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-collaborator.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-collaborator.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-collaborator.o: /usr/include/time.h /usr/include/unistd.h
-collaborator.o: /usr/include/memory.h /usr/include/stropts.h
-collaborator.o: /usr/include/sys/stropts.h /usr/include/sys/conf.h
-collaborator.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-collaborator.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-collaborator.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-collaborator.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
-collaborator.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-collaborator.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-collaborator.o: /usr/include/netconfig.h /usr/include/sys/netconfig.h
-collaborator.o: /usr/include/sys/resource.h /usr/include/syslog.h
-collaborator.o: /usr/include/sys/syslog.h
+collaborator.o: /usr/include/sys/time.h /usr/include/sys/types.h
+collaborator.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+collaborator.o: /usr/include/sys/select.h /usr/include/time.h
+collaborator.o: /usr/include/unistd.h /usr/include/memory.h
+collaborator.o: /usr/include/stropts.h /usr/include/sys/stropts.h
+collaborator.o: /usr/include/sys/conf.h /usr/include/sys/t_lock.h
+collaborator.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+collaborator.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+collaborator.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+collaborator.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+collaborator.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+collaborator.o: /usr/include/sys/condvar.h /usr/include/netconfig.h
+collaborator.o: /usr/include/sys/netconfig.h /usr/include/sys/resource.h
+collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 generic.o: /usr/include/sys/va_list.h /usr/include/errno.h
 generic.o: /usr/include/sys/errno.h /usr/include/time.h /usr/include/string.h
@@ -117,9 +120,9 @@ generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
-generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
+generic.o: ../graphics/VisualArg.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/Pattern.h
 generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 generic.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
@@ -142,14 +145,14 @@ testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 testWindowSpeed.o: /usr/include/sys/select.h ../graphics/TestControl.h
 testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
 testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
-testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
-testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
-testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
-testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/DList.h
+testWindowSpeed.o: ../graphics/Exit.h ../graphics/ClassDir.h
+testWindowSpeed.o: ../graphics/Display.h ../graphics/Geom.h
+testWindowSpeed.o: /usr/include/math.h /usr/include/floatingpoint.h
+testWindowSpeed.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
+testWindowSpeed.o: ../graphics/Journal.h ../graphics/ViewWin.h
+testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
+testWindowSpeed.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
 testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
 testWindowSpeed.o: ../graphics/ETkIfc.h /usr/include/string.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  1998/02/12 17:15:27  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.14  1998/02/09 21:13:05  donjerko
 # *** empty log message ***
 #
@@ -87,7 +90,6 @@ Client.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 Client.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h Client.h
-Client.o: ../graphics/Exit.h
 Server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
@@ -167,9 +169,9 @@ WinServer.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 WinServer.o: /usr/include/math.h /usr/include/floatingpoint.h
 WinServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
 WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-WinServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-WinServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+WinServer.o: ../graphics/VisualArg.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
 WinServer.o: /usr/include/errno.h /usr/include/sys/errno.h
 WinServer.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
@@ -197,10 +199,10 @@ server.o: /usr/include/sys/time.h /usr/include/time.h ../graphics/Geom.h
 server.o: /usr/include/math.h /usr/include/floatingpoint.h
 server.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
 server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-server.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/ViewWin.h
+server.o: ../graphics/VisualArg.h ../graphics/ViewWin.h
 server.o: ../graphics/WindowRep.h ../graphics/Transform.h
-server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-server.o: ../graphics/DevError.h /usr/include/errno.h
+server.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h

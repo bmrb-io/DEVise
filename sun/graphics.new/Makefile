@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/02/20 17:03:46  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.7  1996/03/26 15:35:39  wenger
 #  Fixed various compile warnings and errors; added 'clean' and
 #  'mostlyclean' targets to makefiles; changed makefiles so that
@@ -26,7 +30,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics.new

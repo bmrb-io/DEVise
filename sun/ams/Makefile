@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/01/18 20:49:15  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.8  1996/11/23 20:57:51  jussi
 #  Added ARCH_SYSLIBS.
 #
@@ -26,7 +29,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSUN -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =

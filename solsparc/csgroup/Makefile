@@ -15,14 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/02/13 15:02:14  wenger
+#  Added csgroup directory and makefile.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
-# Note: Purify is not available on Pentium/Solaris.
 #ARCH_COLLECTOR	= /usr/ccs/bin/ld
 
 VPATH = ../../csgroup

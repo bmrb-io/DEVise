@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/26 17:21:36  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.3  1997/12/04 23:51:22  wenger
 #  Changed how dependencies work for src/color and src/utils to work
 #  around a bug in makedepend (this is an improvement anyhow).
@@ -29,7 +32,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =
 

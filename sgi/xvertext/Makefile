@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/03/02 22:33:29  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.3  1998/02/26 18:55:35  wenger
 #  Got everything to compile on haha -- still have a link problem, though.
 #
@@ -30,10 +36,8 @@
 
 ############################################################
 
-IMPLICIT_TEMPLATES = 1
-AR = /usr/gnu/bin/ar
+include ../Makefile.config
 
-ARCH_FLAGS = -DSGI -I/usr/include/X11
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 

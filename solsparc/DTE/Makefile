@@ -13,6 +13,9 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.10  1997/11/05 00:24:25  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.9  1997/08/12 18:48:51  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -51,16 +54,13 @@
 #
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS =
 ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
 ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
-ARCH_ENDIAN = -DBYTE_BIG_ENDIAN -DWORD_BIG_ENDIAN
-
 
 DTE_DIR = ../../DTE
 

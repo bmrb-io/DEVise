@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/20 17:03:26  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.4  1997/09/23 20:02:01  wenger
 #  Opening and saving of sessions now working with new scheme of mapping
 #  automatically creating the appropriate TData.
@@ -31,7 +35,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS =
 ARCH_LDPOST  = -lsocket -lnsl
 

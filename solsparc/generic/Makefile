@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1997/12/23 21:00:35  wenger
+#  Got the latest version of DEVise to compile and link on SPARC/Solaris;
+#  removed (old) layout manager code from DEVise link.
+#
 #  Revision 1.9  1997/08/12 18:48:57  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -49,9 +53,7 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
-
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
 
 # We need to explicitly specify /usr/lib here so we get the libm.a there
 # rather than from /s/mesa-2.4/lib.
@@ -61,8 +63,6 @@ ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
 		-ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
-# Note: Purify works on SPARC/Solaris without the collector being specified.
-#ARCH_COLLECTOR	= /usr/ccs/bin/ld
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

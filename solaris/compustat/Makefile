@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1998/02/26 17:20:26  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.4  1996/05/20 18:37:56  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -24,7 +27,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../compustat
 include $(VPATH)/Makefile.base

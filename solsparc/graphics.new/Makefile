@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/20 17:03:32  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.4  1996/11/23 20:56:20  jussi
 #  Removed -lpthread.
 #
@@ -30,7 +34,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+include ../Makefile.config
+
 ARCH_LDFLAGS =
 
 VPATH = ../../graphics.new

@@ -15,16 +15,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/03/02 22:33:14  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.1  1996/01/13 03:26:11  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-IMPLICIT_TEMPLATES = 1
-AR = /usr/gnu/bin/ar
-
-ARCH_FLAGS = -DSGI
+include ../Makefile.config
 
 VPATH = ../../util
 include $(VPATH)/Makefile.base

@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.38  1998/02/26 23:00:17  wenger
+# Added "count mappings" to views, except for API and GUI (waiting for
+# Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+# of VisualFilter struct; did some cleanup of MappingInterp class.
+#
 # Revision 1.37  1998/02/26 18:55:42  wenger
 # Got everything to compile on haha -- still have a link problem, though.
 #
@@ -122,8 +127,7 @@ LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
 #devread is obsolete
 #attrproj is broken
 
-MODULES = $(LIBMODULES) parser generic cslib
-#MODULES = $(LIBMODULES) parser generic multi cslib
+MODULES = $(LIBMODULES) parser cslib generic
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
 	csgroup
@@ -140,6 +144,9 @@ date:
 #	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
 libs: date
 	$(foreach i, $(LIBMODULES), make -C $i lib &&) echo 
+
+devise: libs
+	cd generic; make all; cd ..
 
 generic: libs
 	cd generic; make generic; cd ..

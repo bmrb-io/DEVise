@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/20 18:38:31  jussi
+#  Replaced PENTIUM flag with SOLARIS.
+#
 #  Revision 1.1  1996/05/16 19:34:12  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I../../parser
+include ../Makefile.config
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

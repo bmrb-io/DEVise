@@ -7,6 +7,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/03/02 22:33:48  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.7  1998/02/24 21:39:28  beyer
 #  added 'depend' target
 #
@@ -73,7 +79,9 @@ lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
-depend Makefile.depend: $(VPATH)/*.[cCh]
+depend: Makefile.depend
+
+Makefile.depend: $(VPATH)/*.[cCh]
 	-rm Makefile.depend
 	-$(CC) -M $(ARCH_FLAGS) $(COLOR_INCLUDES) $(VPATH)/*.[cC] \
 		> Makefile.depend

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/26 17:19:59  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.3  1997/05/28 20:48:35  wenger
 #  Added directories and makefiles for layout mananger to compile for hp,
 #  linux, solsparc, and sun.
@@ -22,7 +25,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+include ../Makefile.config
 
 VPATH = ../../LM
 include $(VPATH)/Makefile.base

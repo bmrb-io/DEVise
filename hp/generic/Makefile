@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/08/12 18:46:56  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.7  1997/01/18 20:48:54  jussi
 #  Removed inclusion of Xaw and related X extensions.
 #
@@ -41,15 +45,12 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -lSM -lICE -static
-ARCH_COLLECTOR	= \
-	/s/gcc-2.7.1/hp700_ux90/lib/gcc-lib/hppa1.1-hp-hpux9.01/2.7.1/ld
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

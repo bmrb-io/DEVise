@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1998/02/26 17:20:20  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.9  1996/12/15 07:02:13  donjerko
 #  Added RTree to the VPATH
 #
@@ -50,7 +53,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = 
 

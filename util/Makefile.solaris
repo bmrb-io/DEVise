@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.27  1997/03/28 16:13:00  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -42,21 +46,21 @@ http_url.o: /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
 http_url.o: /usr/include/limits.h /usr/include/sys/param.h
 http_url.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-http_url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-http_url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-http_url.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-http_url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-http_url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-http_url.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-http_url.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-http_url.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-http_url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-http_url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-http_url.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-http_url.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-http_url.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+http_url.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
+http_url.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+http_url.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+http_url.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+http_url.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+http_url.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+http_url.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+http_url.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+http_url.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+http_url.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+http_url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+http_url.o: /usr/include/sys/byteorder.h
 mk3dstruct.o: /usr/include/math.h /usr/include/floatingpoint.h
 mk3dstruct.o: /usr/include/sys/ieeefp.h /usr/include/time.h
 mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h

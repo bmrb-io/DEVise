@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/11/12 15:51:20  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
 #  Revision 1.2.16.1  1997/10/30 20:18:12  wenger
 #  Got DEVise to compile, link, and run on sun and linux; compiles but
 #  doesn't link on hp (can't find memory mapping functions).  This includes
@@ -45,7 +49,8 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSUN -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 

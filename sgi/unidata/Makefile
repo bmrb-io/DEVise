@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/03/02 22:33:07  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.3  1998/02/23 23:23:59  wenger
 #  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
 #
@@ -32,12 +38,8 @@
 
 ############################################################
 
-IMPLICIT_TEMPLATES = 1
-AR = /usr/gnu/bin/ar
+include ../Makefile.config
 
-PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
-
-ARCH_FLAGS   = -DSGI
 ARCH_LDFLAGS =
 ARCH_LDPOST  = -lnsl
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/02/12 17:18:19  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.1.6.1  1998/02/12 05:13:13  taodb
 #  Removed -g option
 #
@@ -30,12 +33,12 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include -DDEBUG 
+include ../Makefile.config
+
+ARCH_FLAGS += -DDEBUG
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
-# Note: Purify is not available on Pentium/Solaris.
-#ARCH_COLLECTOR	= /usr/ccs/bin/ld
 
 VPATH = ../../csgroup
 include $(VPATH)/Makefile.base

@@ -15,13 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1998/02/26 17:21:42  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.1  1997/06/12 17:59:45  wenger
 #  Jeez -- forgot to add the solaris one earlier!
 #
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 

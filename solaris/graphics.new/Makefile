@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1998/02/20 06:06:42  beyer
+#  updated make depend
+#
 #  Revision 1.14  1997/12/04 18:32:04  wenger
 #  Merged new expression evaluation code thru the expression_br_2 tag.
 #
@@ -49,7 +52,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+include ../Makefile.config
+
 ARCH_LDFLAGS = -lsocket -lnsl
 
 VPATH = ../../graphics.new

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.75  1998/03/03 05:21:00  taodb
+#  Added extendable stack to command object
+#
 #  Revision 1.74  1998/02/26 22:59:48  wenger
 #  Added "count mappings" to views, except for API and GUI (waiting for
 #  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -282,7 +285,7 @@ libserver.a: ServerAPI.o ClientAPI.o DeviseServer.o
 	$(AR) cr $@ ServerAPI.o ClientAPI.o DeviseServer.o
 	$(RANLIB) $@
 
-$(LIBNAME): $(LIBOBJ)
+$(LIBNAME): depend $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)
 	$(RANLIB) $@
 
@@ -405,15 +408,16 @@ NativeExpr.main.o:
 
 .PHONY: clean mostlyclean
 
-#depend Makefile.depend: $(VPATH)/*.[cCh]
-depend Makefile.depend:
+depend: Makefile.depend
+
+Makefile.depend: $(VPATH)/*.[cCh]
 	-rm Makefile.depend
 	-$(CC) -M $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
 		libmonolith.a testSBufMgr testGDataRange \
-                testRecFile testVoidArray
+                testRecFile testVoidArray Makefile.depend
 
 mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.58  1998/02/26 00:18:58  zhenhai
+#  Implementation for spheres and line segments in OpenGL 3D graphics.
+#
 #  Revision 1.57  1998/02/20 20:43:14  wenger
 #  Changed color and utils libraries to new export directory scheme for
 #  dealing with include files (email with complete explanation forthcoming).
@@ -213,19 +216,22 @@ lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
-$(LIBNAME)(xvgifwr.o):	xvgifwr.c
+#$(LIBNAME)(xvgifwr.o):	xvgifwr.c
+xvgifwr.o:	xvgifwr.c
 	$(C) -c $(CFLAGS) $<
-	$(AR) r $@ $%
+#	$(AR) r $@ $%
 #	$(RM) $%
 
-$(LIBNAME)(xv24to8.o):	xv24to8.c
+#$(LIBNAME)(xv24to8.o):	xv24to8.c
+xv24to8.o:	xv24to8.c
 	$(C) -c $(CFLAGS) $<
-	$(AR) r $@ $%
+#	$(AR) r $@ $%
 #	$(RM) $%
 
-$(LIBNAME)(xvgrab.o):	xvgrab.c
+#$(LIBNAME)(xvgrab.o):	xvgrab.c
+xvgrab.o:	xvgrab.c
 	$(C) -c $(CFLAGS) $<
-	$(AR) r $@ $%
+#	$(AR) r $@ $%
 #	$(RM) $%
 
 jstat: jstat.o $(LIBOBJ)
@@ -240,13 +246,14 @@ TestDevStatus: TestDevStatus.o DevStatus.o
 
 .PHONY: clean mostlyclean
 
-#depend Makefile.depend: $(VPATH)/*.[cCh]
-depend Makefile.depend:
+depend: Makefile.depend
+
+Makefile.depend:
 	-rm Makefile.depend
 	-$(CC) -M $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
-	-rm $(LIBNAME) jstat testWindowRep TestDevStatus
+	-rm $(LIBNAME) jstat testWindowRep TestDevStatus Makefile.depend
 
 mostlyclean:
 	-rm $(LIBOBJ) $(OTHEROBJ)

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1998/02/26 17:19:53  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.13  1997/11/05 00:24:15  donjerko
 #  *** empty log message ***
 #
@@ -59,15 +62,13 @@
 #
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
 ARCH_LDFLAGS =
 ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
 ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
-ARCH_ENDIAN =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1998/02/26 17:21:19  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.8  1996/05/20 18:38:04  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -27,7 +30,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../tape
 include $(VPATH)/Makefile.base

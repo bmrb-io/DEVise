@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/02/26 17:21:31  wenger
+#  Fixed problems with yesterday's commit.
+#
 #  Revision 1.2  1996/05/20 18:38:05  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -24,7 +27,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS
+include ../Makefile.config
+
 ARCH_LDPOST = -lsocket -lnsl
 
 VPATH = ../../util

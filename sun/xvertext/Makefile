@@ -15,10 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/06/11 18:35:19  wenger
+#  Got xvertext set up to compile on hp, linux, solaris, solsparc, and sun.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN
+include ../Makefile.config
+
 ARCH_LDFLAGS =
 
 VPATH = ../../xvertext

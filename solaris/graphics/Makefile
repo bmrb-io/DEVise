@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1998/02/20 06:06:32  beyer
+#  updated make depend
+#
 #  Revision 1.12  1997/09/23 20:01:49  wenger
 #  Opening and saving of sessions now working with new scheme of mapping
 #  automatically creating the appropriate TData.
@@ -46,7 +49,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 
