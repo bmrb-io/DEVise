@@ -90,6 +90,7 @@ Site* QueryTree::createSite(){
 		TableAlias* ta = tableList->get();
 		Site* site = NULL;
 		if(ta->isQuote()){
+			assert(0);
 			QuoteAlias* qa = (QuoteAlias*) ta;
 			TRY(site = catalog.toSite(*qa->getQuote(),ta->getFunction(),ta->getShiftVal()), 0);
 		}

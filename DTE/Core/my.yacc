@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/27 04:38:01  kmurli
+  Nodified joins.h to remove erros in joinprev in case of more than one table
+
   Revision 1.11  1996/12/24 21:00:53  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -171,17 +174,21 @@ listOfTables :
 		listOfTables ',' JoinList{
 		$1->addList($3);
 		$$ = $1;
-		if (!joinList)
-			joinList = new List<JoinTable*>;
-		joinList->append(joinTable);
+		if (joinTable){
+			if (!joinList)
+				joinList = new List<JoinTable*>;
+			joinList->append(joinTable);
+		}
 		joinTable = NULL;
 	}
 	| JoinList {
 		$$ = new List<TableAlias*>;
 		$$->addList($1);
-		if (!joinList)
-			joinList = new List<JoinTable*>;
-		joinList->append(joinTable);
+		if (joinTable){
+			if (!joinList)
+				joinList = new List<JoinTable*>;
+			joinList->append(joinTable);
+		}
 		joinTable = NULL;
 	}
 	;
@@ -284,25 +291,21 @@ optOverClause:
 	}
 	;
 
-JoinList: JoinList JoinString JoinList{
+JoinList: JoinList JoinString tableAlias{
 		$$ = $1;
-		$$->addList($3);
-		//cout << " Calling JoinTable " << jTable << "- " << joinTable << endl;
+		$$->append($3);
+		
+		if (!joinTable)
+			joinTable = new JoinTable($1->get());
+		
+		jTable = new JoinTable($3);
+
 		joinTable = new JoinTable(joinTable,jTable,$2);
 		jTable = NULL;
-		//cout << " joinTable created with joinprev "<< endl;
 	}
 	| tableAlias {
 		$$ = new List<TableAlias*>;
 		$$->append($1);
-		if (!joinTable){	
-			joinTable = new JoinTable($1);
-			//cout << " joinTable created with " << *$1->table << endl;
-		}
-		else{
-			jTable = new JoinTable($1);
-			//cout << " jTable created with " << *$1->table << endl;
-		}
 	}
 	;
 

@@ -184,7 +184,6 @@ bool Joins::innerFill(){
 Site* JoinTable::Plan(List<Site*>*siteList,List<BaseSelection*>*selectList,
 	List<BaseSelection*>*predicateList)
 {
-	
 	Site * leftSite = 0,*rightSite = 0;
 	if (leftJoin)
 		TRY(leftSite = leftJoin->Plan(siteList,selectList,predicateList),NULL);
