@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  1999/12/17 15:55:01  wenger
+  Added missing return value in setLinkType command.
+
   Revision 1.92  1999/12/15 20:04:06  wenger
   Command log now includes information about how many times we went through
   the dispatcher, to try to allow reproducing timing-dependent bugs.
@@ -3073,28 +3076,36 @@ DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
 int
 DeviseCommand_getCursorGrid::Run(int argc, char** argv)
 {
-    {
-        {
-          // Arguments: <cursorName>
-          // Returns: <useGrid> <gridX> <gridY>
-    #if defined(DEBUG)
-          printf("getCursorGrid <%s>\n", argv[1]);
-    #endif
-          DeviseCursor *cursor = (DeviseCursor *) _classDir->FindInstance(argv[1]);
-          if (!cursor) {
-    	ReturnVal(API_NAK, "Cannot find cursor");
-    	return -1;
-          }
-          Boolean useGrid;
-          Coord gridX, gridY;
-          cursor->GetGrid(useGrid, gridX, gridY);
-          char buf[100];
-          sprintf(buf, "%d %f %f", useGrid, gridX, gridY);
-          ReturnVal(API_ACK, buf);
-          return 1;
+    // Arguments: <cursorName>
+    // Returns: <useGrid> <gridX> <gridY> <edgeGrid>
+#if defined(DEBUG)
+    printf("getCursorGrid <%s>\n", argv[1]);
+#endif
+
+    if (argc == 2) {
+
+        DeviseCursor *cursor =
+		  (DeviseCursor *) _classDir->FindInstance(argv[1]);
+        if (!cursor) {
+            ReturnVal(API_NAK, "Cannot find cursor");
+            return -1;
         }
+        Boolean useGrid;
+        Coord gridX, gridY;
+        Boolean edgeGrid;
+        cursor->GetGrid(useGrid, gridX, gridY, edgeGrid);
+        char buf[100];
+        sprintf(buf, "%d %f %f %d", useGrid, gridX, gridY, edgeGrid);
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+        fprintf(stderr, "Wrong # of arguments: %d in getCursorGrid\n",
+          argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
     }
-    return true;
+
+
 }
 
 IMPLEMENT_COMMAND_BEGIN(writeDesc)
@@ -4433,28 +4444,38 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
 int
 DeviseCommand_setCursorGrid::Run(int argc, char** argv)
 {
-    {
-        {
-          // Arguments: <cursorName> <useGrid> <gridX> <gridY>
-    #if defined(DEBUG)
-          printf("setCursorGrid <%s> <%s> <%s> <%s>\n", argv[1], argv[2],
-		    argv[3], argv[4]);
-    #endif
-          DeviseCursor *cursor = (DeviseCursor *) _classDir->FindInstance(argv[1]);
-          if (!cursor) {
-    	ReturnVal(API_NAK, "Cannot find cursor");
-    	return -1;
-          }
-          Boolean useGrid = atoi(argv[2]);
-          Coord gridX = atof(argv[3]);
-          Coord gridY = atof(argv[4]);
-          cursor->SetGrid(useGrid, gridX, gridY);
-          ReturnVal(API_ACK, "done");
-          return 1;
+    // Arguments: <cursorName> <useGrid> <gridX> <gridY> [edgeGrid]
+    // (If edgeGrid is absent or false, the grid is on the cursor center;
+    // otherwise it's on the edges.)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 5 || argc == 6) {
+        DeviseCursor *cursor =
+          (DeviseCursor *) _classDir->FindInstance(argv[1]);
+        if (!cursor) {
+            ReturnVal(API_NAK, "Cannot find cursor");
+            return -1;
         }
+        Boolean useGrid = atoi(argv[2]);
+        Coord gridX = atof(argv[3]);
+        Coord gridY = atof(argv[4]);
+        Boolean edgeGrid = false;
+        if (argc == 6) {
+            edgeGrid = atoi(argv[5]);
+        }
+        cursor->SetGrid(useGrid, gridX, gridY, edgeGrid);
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+        fprintf(stderr, "Wrong # of arguments: %d in setCursorGrid\n",
+          argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
     }
-    return true;
 }
+
 int
 DeviseCommand_saveSession::Run(int argc, char** argv)
 {

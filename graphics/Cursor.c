@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/12/15 16:25:42  wenger
+  Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bugs 543 and 544 (problems with cursor movement).
+
   Revision 1.32  1999/11/19 17:17:26  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -193,7 +196,8 @@
 //******************************************************************************
 
 DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
-						   Boolean useGrid, Coord gridX, Coord gridY)
+						   Boolean useGrid, Coord gridX, Coord gridY,
+						   Boolean edgeGrid)
 {
   _name = name;
   _visFlag = flag;
@@ -204,6 +208,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _useGrid = useGrid;
   _gridX = gridX;
   _gridY = gridY;
+  _edgeGrid = edgeGrid;
   _cursorColor = GetPColorID(whiteColor);
   _fixedSize = false;
   _oldPixelsValid = false;
@@ -990,8 +995,23 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
       /* Round location to nearest grid point. */
-      int tmp = (int)floor((x / _gridX) + 0.5);
-      x = _gridX * tmp;
+	  if (_edgeGrid) {
+	    Coord xLow = x - width / 2.0;
+	    Coord xHi = x + width / 2.0;
+
+		// The extra 0.5s here put the cursor edges halfway between multiples
+		// of the grid size.
+        int tmp = (int)floor((xLow / _gridX) + 0.5 - 0.5);
+		xLow = _gridX * (tmp + 0.5);
+        tmp = (int)floor((xHi / _gridX) + 0.5 + 0.5);
+		xHi = _gridX * (tmp - 0.5);
+
+		width = ABS(xHi - xLow); // ABS() just to be safe.
+		x = (xLow + xHi) / 2.0;
+	  } else {
+        int tmp = (int)floor((x / _gridX) + 0.5);
+        x = _gridX * tmp;
+	  }
     }
     if (width < 0.0) {
       width = filter.xHigh - filter.xLow;
@@ -1004,8 +1024,23 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
   if (_visFlag & VISUAL_Y) {
     if (_useGrid && (_gridY != 0.0)) {
       /* Round location to nearest grid point. */
-      int tmp = (int)floor((y / _gridY) + 0.5);
-      y = _gridY * tmp;
+	  if (_edgeGrid) {
+	    Coord yLow = y - height / 2.0;
+	    Coord yHi = y + height / 2.0;
+
+		// The extra 0.5s here put the cursor edges halfway between multiples
+		// of the grid size.
+        int tmp = (int)floor((yLow / _gridY) + 0.5 - 0.5);
+		yLow = _gridY * (tmp + 0.5);
+        tmp = (int)floor((yHi / _gridY) + 0.5 + 0.5);
+		yHi = _gridY * (tmp - 0.5);
+
+		height = ABS(yHi - yLow); // ABS() just to be safe.
+		y = (yLow + yHi) / 2.0;
+	  } else {
+        int tmp = (int)floor((y / _gridY) + 0.5);
+        y = _gridY * tmp;
+	  }
     }
     if (height < 0.0) {
       height = filter.yHigh - filter.yLow;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/08/17 19:46:54  wenger
+  Converted Condor UserMonth session from high/low symbols to piles for
+  better representation of data; fixed some cursor/pile drawing bugs and
+  TData switching bugs that I found in the process.
+
   Revision 1.22  1999/08/05 21:42:34  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -145,7 +150,8 @@ class DeviseCursor : private ViewCallback
 		// Constructors and Destructors
 		DeviseCursor(char* name, VisualFlag flag,
 					 Boolean useGrid = false,
-					 Coord gridX = 1.0, Coord gridY = 1.0);
+					 Coord gridX = 1.0, Coord gridY = 1.0,
+					 Boolean edgeGrid = false);
 		virtual ~DeviseCursor(void);
 
 	 /* Set source view. Changing this view's visual filter
@@ -167,15 +173,18 @@ class DeviseCursor : private ViewCallback
   void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0);
 
   /* Get or set the grid parameters. */
-  void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY) {
+  void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY,
+      Boolean &edgeGrid) {
     useGrid = _useGrid;
     gridX = _gridX;
     gridY = _gridY;
+    edgeGrid = _edgeGrid;
   }
-  void SetGrid(Boolean useGrid, Coord gridX, Coord gridY) {
+  void SetGrid(Boolean useGrid, Coord gridX, Coord gridY, Boolean edgeGrid) {
     _useGrid = useGrid;
     _gridX = gridX;
     _gridY = gridY;
+    _edgeGrid = edgeGrid;
   }
   void ReadCursorStore(WindowRep*);
   void DrawCursorStore(WindowRep*);
@@ -228,6 +237,7 @@ private:
   Boolean _useGrid;
   Coord _gridX;
   Coord _gridY;
+  Boolean _edgeGrid;
   CursorStore _cursor_store[12];
   PColorID _cursorColor;
   Boolean _fixedSize;

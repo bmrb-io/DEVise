@@ -2200,7 +2200,8 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	//
 	Boolean useGrid;
 	Coord gridX, gridY;
-	cursor->GetGrid(useGrid, gridX, gridY);
+	Boolean edgeGrid;
+	cursor->GetGrid(useGrid, gridX, gridY, edgeGrid);
 	if (!useGrid) {
 	  gridX = gridY = 0.0;
 	}
@@ -2220,6 +2221,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	args.FillString(fixedSize);
 	args.FillDouble(gridX);
 	args.FillDouble(gridY);
+    //TEMP -- need to put in edgeGrid here somewhere
 
 	//
     // This JavaScreenCmd object is created only to send the command.

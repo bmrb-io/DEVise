@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1996
+# (c) Copyright 1992-1999
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -19,6 +19,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/06/09 14:47:09  wenger
+# Added cursor grid; fixed bug 187; a few minor cleanups.
+#
 
 ############################################################
 
@@ -39,6 +42,7 @@ proc GetCursorGrid {cursorName} {
 
     frame .getCursorGrid.row1
     frame .getCursorGrid.row2
+    frame .getCursorGrid.row2b
     frame .getCursorGrid.row3
     frame .getCursorGrid.row4
 
@@ -49,10 +53,11 @@ proc GetCursorGrid {cursorName} {
       -command "destroy .getCursorGrid"
 
     global cursorUseGrid
-    radiobutton .getCursorGrid.yes -text "Use Grid" -variable cursorUseGrid \
-      -value 1 -command "SwitchGridMode"
-    radiobutton .getCursorGrid.no -text "No Grid" -variable cursorUseGrid \
-      -value 0 -command "SwitchGridMode"
+    checkbutton .getCursorGrid.useGrid -text "Use Grid" \
+      -variable cursorUseGrid -command "SwitchGridMode"
+
+    global cursorEdgeGrid
+    checkbutton .getCursorGrid.edge -text "Edge Grid" -variable cursorEdgeGrid
 
     global cursorGridX cursorGridY
     label .getCursorGrid.xLab -text "Grid X:"
@@ -74,8 +79,9 @@ proc GetCursorGrid {cursorName} {
 
     pack .getCursorGrid.ok .getCursorGrid.cancel -in .getCursorGrid.row1 \
       -side left -padx 3m
-    pack .getCursorGrid.no .getCursorGrid.yes -in .getCursorGrid.row2 \
+    pack .getCursorGrid.useGrid -in .getCursorGrid.row2 \
       -side top -pady 1m
+    pack .getCursorGrid.edge -in .getCursorGrid.row2b -side left
     pack .getCursorGrid.xLab .getCursorGrid.xEnt \
       -in .getCursorGrid.row3 -side left
     pack .getCursorGrid.yLab .getCursorGrid.yEnt -in .getCursorGrid.row4 \
@@ -87,6 +93,7 @@ proc GetCursorGrid {cursorName} {
     set cursorUseGrid [lindex $grid 0]
     set cursorGridX [lindex $grid 1]
     set cursorGridY [lindex $grid 2]
+    set cursorEdgeGrid [lindex $grid 3]
     SwitchGridMode
 
     # Wait for the user to make a selection from this window.
@@ -101,10 +108,12 @@ proc SwitchGridMode {} {
     global cursorUseGrid
 
     if {$cursorUseGrid} {
-      pack .getCursorGrid.row3 -after .getCursorGrid.row2a -pady 1m
+      pack .getCursorGrid.row2b -after .getCursorGrid.row2a -pady 1m
+      pack .getCursorGrid.row3 -after .getCursorGrid.row2b -pady 1m
       pack .getCursorGrid.row4 -after .getCursorGrid.row3 -pady 1m
       pack .getCursorGrid.row4a -after .getCursorGrid.row4 -pady 1m
     } else {
+      pack forget .getCursorGrid.row2b
       pack forget .getCursorGrid.row3
       pack forget .getCursorGrid.row4
       pack forget .getCursorGrid.row4a
@@ -117,10 +126,11 @@ proc SetCursorGrid {} {
     global gridCursorName
     global cursorUseGrid
     global cursorGridX cursorGridY
+    global cursorEdgeGrid
 
-    # Arguments: <cursorName> <useGrid> <gridX> <gridY>
+    # Arguments: <cursorName> <useGrid> <gridX> <gridY> <edgeGrid>
     DEVise setCursorGrid $gridCursorName $cursorUseGrid $cursorGridX \
-      $cursorGridY
+      $cursorGridY $cursorEdgeGrid
 }
 
 #============================================================================

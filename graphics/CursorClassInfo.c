@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/11/30 22:28:01  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.9  1999/06/10 19:59:12  wenger
   Devised sends axis type info to JS even if axes aren't drawn (so JS can
   display cursor position properly); added code to send cursor grid info
@@ -117,20 +124,20 @@ static char *args[5];
 
 void CursorClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 5;
+  argc = 6;
   argv = args;
   args[0] = "Name cursor";
   args[1] = "flags 2";
   args[2] = "Use Grid";
   args[3] = "Grid X";
   args[4] = "Grid Y";
+  args[5] = "Edge Grid";
 }
 
 ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
 {
-  if ((argc != 2) && (argc != 5)) {
-    fprintf(stderr,"CursorClassInfo::CreateWithParams: wrong args\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+  if ((argc != 2) && (argc != 5) && (argc != 6)) {
+    reportErrNosys("CursorClassInfo::CreateWithParams: wrong args\n");
     Exit::DoExit(2);
   }
   
@@ -139,11 +146,13 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
   Boolean useGrid = false;
   Coord gridX = 1.0;
   Coord gridY = 1.0;
+  Coord edgeGrid = false;
   if (argc >= 3) useGrid = atoi(argv[2]);
   if (argc >= 4) gridX = atof(argv[3]);
   if (argc >= 5) gridY = atof(argv[4]);
-  DeviseCursor *cursor = new DeviseCursor(name, flag,
-										  useGrid, gridX, gridY);
+  if (argc >= 6) edgeGrid = atoi(argv[5]);
+  DeviseCursor *cursor = new DeviseCursor(name, flag, useGrid, gridX, gridY,
+      edgeGrid);
   return new CursorClassInfo(name, flag, cursor);
 }
 
@@ -168,24 +177,28 @@ void *CursorClassInfo::GetInstance()
 
 /* Get parameters that can be used to re-create this instance */
 
-static char buf1[80], buf2[80], buf3[80], buf4[80];
+static char buf1[80], buf2[80], buf3[80], buf4[80], buf5[80];
 
 void CursorClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 5;
+  argc = 6;
   argv= args;
   args[0] = _name;
   sprintf(buf1, "%d", _flag);
   args[1] = buf1;
   Boolean useGrid;
   Coord gridX, gridY;
-  _cursor->GetGrid(useGrid, gridX, gridY);
+  Boolean edgeGrid;
+  _cursor->GetGrid(useGrid, gridX, gridY, edgeGrid);
+
   sprintf(buf2, "%d", useGrid);
   args[2] = buf2;
   sprintf(buf3, "%f", gridX);
   args[3] = buf3;
   sprintf(buf4, "%f", gridY);
   args[4] = buf4;
+  sprintf(buf5, "%d", edgeGrid);
+  args[5] = buf5;
 }
 
 void

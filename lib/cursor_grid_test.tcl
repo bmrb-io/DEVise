@@ -1,7 +1,7 @@
 #!/s/std/bin/wish -f
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1996
+# (c) Copyright 1992-1999
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -21,6 +21,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/06/09 14:47:09  wenger
+# Added cursor grid; fixed bug 187; a few minor cleanups.
+#
 
 ############################################################
 
@@ -35,6 +38,9 @@ global gridX
 
 set gridY 2.0
 global gridY
+
+set edgeGrid 0
+global edgeGrid
 
 wm geometry . 200x50
 
@@ -70,6 +76,7 @@ proc DEVise { command args } {
   global useGrid
   global gridX
   global gridY
+  global edgeGrid
 
   puts -nonewline "DEVise $command"
   foreach arg $args {
@@ -78,13 +85,14 @@ proc DEVise { command args } {
   puts ""
 
   if { $command == "getCursorGrid" } {
-    return [list $useGrid $gridX $gridY]
+    return [list $useGrid $gridX $gridY $edgeGrid]
   }
 
   if { $command == "setCursorGrid" } {
     set useGrid [lindex $args 1]
     set gridX [lindex $args 2]
     set gridY [lindex $args 3]
+    set edgeGrid [lindex $args 4]
     return
   }
 }
