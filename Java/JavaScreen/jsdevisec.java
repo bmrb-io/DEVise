@@ -310,6 +310,8 @@ public class jsdevisec extends Frame
                             } else {
                                 YGlobals.showMsg(jsc, e.getMessage() + "\nconnection attempt succeed!");
                             }
+                            
+                            jsc.animPanel.stop();
                         }
                             
                         connectButton.setEnabled(false);
@@ -640,13 +642,13 @@ class DEViseOpenDlg extends Dialog
         //sessions = jsc.getSessionList("/DEViseSessionRoot");
         sessions = jsc.getSessionList("");
         // need to correct for num = 0
-        int num = sessions.size() / 2;
+        int num = sessions.size() / 3;
         sessionNames = new String[num];
         sessionTypes = new boolean[num];
         String str = null;
         for (int i = 0; i < num; i++) {
-            sessionNames[i] = (String)sessions.elementAt(i * 2);
-            str = (String)sessions.elementAt(i * 2 + 1);
+            sessionNames[i] = (String)sessions.elementAt(i * 3);
+            str = (String)sessions.elementAt(i * 3 + 1);
             if (str.equals("0")) {
                 sessionTypes[i] = true;
             } else {
@@ -731,13 +733,13 @@ class DEViseOpenDlg extends Dialog
                                     //sessions = jsc.getSessionList(currentDir);
                                     sessions = jsc.getSessionList(name[0]);
                                     // need to correct for num = 0
-                                    int number = sessions.size() / 2;
+                                    int number = sessions.size() / 3;
                                     sessionNames = new String[number];
                                     sessionTypes = new boolean[number];
                                     String tmpstr = null;
                                     for (int i = 0; i < number; i++) {
-                                        sessionNames[i] = (String)sessions.elementAt(i * 2);
-                                        tmpstr = (String)sessions.elementAt(i * 2 + 1);
+                                        sessionNames[i] = (String)sessions.elementAt(i * 3);
+                                        tmpstr = (String)sessions.elementAt(i * 3 + 1);
                                         if (tmpstr.equals("0")) {
                                             sessionTypes[i] = true;
                                         } else {

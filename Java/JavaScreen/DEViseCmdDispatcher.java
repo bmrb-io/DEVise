@@ -34,8 +34,8 @@ public class DEViseCmdDispatcher implements Runnable
 {
     public jsdevisec jsc = null;
     DEViseScreen jscreen = null;
-    DEViseImgSocket imgSocket = null;
-    DEViseCmdSocket cmdSocket = null;
+    //DEViseImgSocket imgSocket = null;
+    //DEViseCmdSocket cmdSocket = null;
 
     // status = 0, dispatcher running    
     // status = 1, dispatcher wait for command
@@ -51,8 +51,8 @@ public class DEViseCmdDispatcher implements Runnable
     {        
         jsc = what;
         jscreen = jsc.jscreen;
-        imgSocket = jsc.jscomm.imgSocket;
-        cmdSocket = jsc.jscomm.cmdSocket;
+        //imgSocket = jsc.jscomm.imgSocket;
+        //cmdSocket = jsc.jscomm.cmdSocket;
         counter = new Counter(this, jsc.jscomm.timeout);
         counterThread = new Thread(counter);
         counterThread.start();
@@ -149,7 +149,7 @@ public class DEViseCmdDispatcher implements Runnable
                                                 
                             YDebug.println("Command Dispatcher is processing command: " + command);
                             
-                            response = cmdSocket.sendCommand(command);
+                            response = jsc.jscomm.cmdSocket.sendCommand(command);
                             parseRsp(command, response);
                         
                             YDebug.println("Command Dispatcher finish processing command: " + command);
@@ -208,7 +208,7 @@ public class DEViseCmdDispatcher implements Runnable
                         throw new YException("Incorrectly formatted command received from server: " + response[i]);
                         
                     YDebug.println("Retrieving image data for window " + rsp[1] + " ... ");
-                    byte[] imageData = imgSocket.receiveImg((Integer.valueOf(rsp[6])).intValue());
+                    byte[] imageData = jsc.jscomm.imgSocket.receiveImg((Integer.valueOf(rsp[6])).intValue());
                     YDebug.println("Successfully retrieve image data");
                     MediaTracker tracker = new MediaTracker(jsc);
                     Toolkit kit = jsc.getToolkit();
@@ -249,7 +249,7 @@ public class DEViseCmdDispatcher implements Runnable
                     jscreen.addWindow(win);
                 } else if (rsp[0].equals("JAVAC_UpdateWindow")) {
                     YDebug.println("Retrieving image data for window " + rsp[1] + " ... ");
-                    byte[] imageData = imgSocket.receiveImg((Integer.valueOf(rsp[2])).intValue());
+                    byte[] imageData = jsc.jscomm.imgSocket.receiveImg((Integer.valueOf(rsp[2])).intValue());
                     YDebug.println("Successfully retrieve image data");
                     MediaTracker tracker = new MediaTracker(jsc);
                     Toolkit kit = jsc.getToolkit();

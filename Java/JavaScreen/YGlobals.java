@@ -16,7 +16,7 @@ public final class YGlobals
     // global functions
     public static void printMsg(String msg)
     {
-        System.out.print(msg);
+        System.out.println(msg);
     }
 
     public static String showMsg(Frame frame, String msg, String title, int style, boolean isCenterScreen)

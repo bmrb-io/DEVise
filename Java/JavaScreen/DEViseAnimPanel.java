@@ -131,9 +131,9 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     
     public void paint(Graphics g) 
     {        
-        if (currentImg != null)  {
+        if (currentImg != null) {
             g.drawImage(currentImg, 0, 0, this);          
-        }  else  {
+        } else {
             g.setColor(DEViseGlobals.uibgcolor);
             g.fillRect(0, 0, imageWidth, imageHeight);
         }
@@ -142,11 +142,13 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     public void run()  
     {   
         Thread me = Thread.currentThread();
-        me.setPriority(Thread.MIN_PRIORITY);
-        
+        //me.setPriority(Thread.MIN_PRIORITY);
+        //YDebug.println("I am in run");
         frameNum = 1;
         while (animator == me)  {
+            //YDebug.println("I am in loop");
             currentImg = (Image)images.elementAt(frameNum);
+
             if (frameNum == imageCount - 1)
                 frameNum = 1;
             else
@@ -170,10 +172,10 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         if (animator == null) {
             animator = new Thread(this);
             animator.start();
-        }
         
-        jsc.stopButton.setBackground(Color.red);
-        jsc.stopButton.setEnabled(true);        
+            jsc.stopButton.setBackground(Color.red);
+            jsc.stopButton.setEnabled(true);        
+        }
     }
     
     public void stop()
