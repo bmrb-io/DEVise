@@ -1277,6 +1277,9 @@ Num Date        Status  Description
 
 335 04/10/98	OPEN	'float' type not implemented in UniData. (rkw)
 
+336 04/14/98	OPEN	DEVise uses 26 MB of memory before you even do
+			*anything*. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
