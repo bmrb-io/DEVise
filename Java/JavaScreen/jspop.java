@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2001/10/05 15:51:35  wenger
+// Minor cleanup: fixed usage messages, improved argument checking.
+//
 // Revision 1.58  2001/09/28 19:41:46  xuk
 // *** empty log message ***
 //
@@ -315,7 +318,7 @@ public class jspop implements Runnable
     private Hashtable users = new Hashtable();
     private Vector servers = new Vector();
 
-    private int _nextClientId = 1;
+    // private int _nextClientId = 1;
 
     // Clients that are not connected to a devised.
     private Vector suspendClients = new Vector();
@@ -625,7 +628,7 @@ public class jspop implements Runnable
       		String cmd = socket.receiveCmd();
                 pn("After reading command");
 
-	        int id = socket.cmdId;
+	        long id = socket.cmdId;
 		int flag = socket.flag;
 		if (flag == -1) { // collaboration JS
 		    pn("Received collaboration request for client: " + id + ".");
@@ -758,13 +761,13 @@ public class jspop implements Runnable
         return suspendClients.size() + activeClients.size();
     }
 
-    private DEViseClient findClientById(int id)
+    private DEViseClient findClientById(long id)
     {
 	for (int i = 0; i < activeClients.size(); i++) {
 	    DEViseClient tmpClient =
 	      (DEViseClient) activeClients.elementAt(i);
 	    if (tmpClient != null) {
-	        if (tmpClient.getConnectionID().intValue() == id) {
+	        if (tmpClient.getConnectionID() == id) {
 		    return tmpClient;
 		}
 	    }
@@ -774,7 +777,7 @@ public class jspop implements Runnable
 	    DEViseClient tmpClient =
 	      (DEViseClient) suspendClients.elementAt(i);
 	    if (tmpClient != null) {
-	        if (tmpClient.getConnectionID().intValue() == id) {
+	        if (tmpClient.getConnectionID() == id) {
 		    return tmpClient;
 		}
 	    }
@@ -811,7 +814,7 @@ public class jspop implements Runnable
 	    
 		if (socket != null) {
 		    if (! socket.isEmpty()) {
-			int id;
+			long id;
 			int cgi;
 			boolean cgiflag;
 
@@ -928,7 +931,7 @@ public class jspop implements Runnable
 
 	if (DEBUG >= 3) {
 	    System.out.println("DIAG client is " + ((client != null) ?
-	      (client.getConnectionID().toString()) : "null"));
+	      (new Long(client.getConnectionID()).toString()) : "null"));
 	}
 
         return client;
@@ -1109,7 +1112,7 @@ public class jspop implements Runnable
 		if (client == null) {
 		    state += "null";
 		} else {
-		    state += client.getConnectionID().intValue();
+		    state += client.getConnectionID();
 		}
             }
 	    state += "} ";
@@ -1166,12 +1169,18 @@ public class jspop implements Runnable
     //----------------------------------------------------------------------
 
     // Get a unique ID for a client.
-    private synchronized Integer getID()
+    private synchronized long getID()
     {
+	// we use timestamp as client's id now.
+	// xuk 10/10/01
+	Date date = new Date();
+	long id = date.getTime();
+	
+	return id;
+	
+	/*
         Integer id = new Integer(_nextClientId++);
 
-	//TEMP if (_nextClientId == Integer.MAX_VALUE) {
-	//TEMP }
 	if (_nextClientId == Short.MAX_VALUE) {//TEMP
 	    System.err.println("Warning: client IDs rolled over");
 	    _nextClientId = DEViseGlobals.DEFAULTID + 1;
@@ -1182,6 +1191,7 @@ public class jspop implements Runnable
 	}
 
 	return id;
+	*/
     }
 
     //----------------------------------------------------------------------
@@ -1410,7 +1420,7 @@ public class jspop implements Runnable
         }
     }
 
-    private synchronized void onCollab(DEViseCommSocket socket, int id, String cmd, String hostname)
+    private synchronized void onCollab(DEViseCommSocket socket, long id, String cmd, String hostname)
     {   
 	try {	
 	    // first connection for collaboration
@@ -1421,14 +1431,18 @@ public class jspop implements Runnable
 		    DEViseClient tmpClient =
 			(DEViseClient) activeClients.elementAt(i);
 		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID().intValue() + "}" + " {  " + tmpClient.hostname + ":}" + " { " + tmpClient.sessionName + "}";
+			command = command + " {" + tmpClient.getConnectionID() + 
+			    "}" + " {  " + tmpClient.hostname + ":}" + " { " + 
+			    tmpClient.sessionName + "}";
 		}
 
 		for (int i = 0; i < suspendClients.size(); i++) {
 		    DEViseClient tmpClient =
 			(DEViseClient) suspendClients.elementAt(i);
 		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID().intValue() + "}" + " {  " + tmpClient.hostname + ":}" + " { " + tmpClient.sessionName + "}";
+			command = command + " {" + tmpClient.getConnectionID() + 
+			    "}" + " {  " + tmpClient.hostname + ":}" + 
+			    " { " + tmpClient.sessionName + "}";
 		}    
 		command = command.trim();
 		pn("Send clients list to collaboration JS: " + command);
