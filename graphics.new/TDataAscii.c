@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/08/04 21:59:53  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.37  1996/07/13 01:32:33  jussi
   Moved initialization of i to make older compilers happy.
 
@@ -665,8 +672,10 @@ void TDataAscii::BuildIndex()
   _lastPos = _data->Tell();
   DOASSERT(_lastPos >= _currPos, "Incorrect file position");
 
+#ifdef    DEBUG
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
+#endif
 }
 
 /* Rebuild index */
