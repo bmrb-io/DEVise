@@ -200,6 +200,14 @@ Num Date        Status  Description
                         TData.h: int RecSize() somehow no longer virtual
                         as it should be. (jpm)
 
+062 11/08/96	OPEN	Don't ask whether you want to close a session when
+			there is no session open (e.g., immediately after
+			starting devise). (ml/rkw)
+
+063 11/12/96	OPEN	Devise core dumps when trying to parse a schema
+			with a string attribute that's missing the length.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
