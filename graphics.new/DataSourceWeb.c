@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/02 22:48:14  jussi
+  Fixed small bug in AsyncIO. Close() no longer uses the base
+  class Close() routine.
+
   Revision 1.1  1996/07/01 19:21:24  jussi
   Initial revision.
 */
@@ -48,10 +52,12 @@
 #include "DevError.h"
 
 #if !defined(lint) && defined(RCSID)
-static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
+static char rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static char * srcFile = __FILE__;
+
+static const int ConnectTimeout = 2;    /* timeout of network connect */
 
 /*------------------------------------------------------------------------------
  * function: DataSourceWeb::DataSourceWeb
@@ -94,8 +100,8 @@ DataSourceWeb::Open(char *mode)
 
     if (strcmp(mode, "r"))
     {
-      reportError("cannot write to a Web data source", EINVAL);
-      return StatusFailed;
+        reportError("cannot write to a Web data source", EINVAL);
+        return StatusFailed;
     }
 
     // if file can be opened for reading, assume that the cache file
@@ -103,6 +109,32 @@ DataSourceWeb::Open(char *mode)
     _file = fopen(_cache, "r");
     if (_file != NULL) {
         return StatusOk;
+    }
+
+    printf("Initiating data transfer from %s\n", _url);
+
+    Timer::Queue(ConnectTimeout * 1000, this, 0, true);
+
+    size_t len = 0;
+    if (!strncmp(_url, "ftp://", 6))
+      _fd = open_ftp(_url);
+    else
+      _fd = open_http(_url, &len);
+
+    Timer::Cancel(this, 0);
+
+    if (_fd < 0 && errno == EINTR)
+    {
+        fprintf(stderr, "Connection to %s timed out\n", _url);
+        return StatusFailed;
+    }
+
+    if (_fd < 0)
+    {
+        char errBuf[256];
+        sprintf(errBuf, "unable to open URL %s", _url);
+        reportError(errBuf, errno);
+        return StatusFailed;
     }
 
     // attempt to create an empty cache file
@@ -118,24 +150,6 @@ DataSourceWeb::Open(char *mode)
     // open a second instance of the same file, for reading
     _file = fopen(_cache, "r");
     DOASSERT(_file != NULL, "Invalid file pointer");
-
-    Timer::StopTimer();
-
-    size_t len = 0;
-    if (!strncmp(_url, "ftp://", 6))
-      _fd = open_ftp(_url);
-    else
-      _fd = open_http(_url, &len);
-
-    Timer::StartTimer();
-
-    if (_fd < 0)
-    {
-        char errBuf[256];
-        sprintf(errBuf, "unable to open URL %s", _url);
-        reportError(errBuf, errno);
-        return StatusFailed;
-    }
 
     return StatusOk;
 }
