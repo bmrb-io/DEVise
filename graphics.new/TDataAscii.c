@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/07/13 00:22:39  jussi
+  Fixed bug in Initialize().
+
   Revision 1.35  1996/07/12 23:42:51  jussi
   Derived data sources are compiled in only for non-ATTRPROJ executables.
 
@@ -525,6 +528,7 @@ void TDataAscii::Initialize()
   }
 
   Boolean fileOpened = false;
+  int i;
 
   int indexFd;
   if ((indexFd = open(_indexFileName, O_RDONLY, 0)) <0)
@@ -599,7 +603,7 @@ void TDataAscii::Initialize()
     goto error;
   }
   
-  for(int i = 1; i < _totalRecs; i++) {
+  for(i = 1; i < _totalRecs; i++) {
     if (_index[i - 1] > _index[i]) {
       printf("Indexed index inconsistent\n");
       goto error;
