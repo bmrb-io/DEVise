@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.64  2001/08/03 18:12:53  wenger
+# Removed all OpenGL-related code.
+#
 # Revision 1.63  2001/06/12 15:35:45  wenger
 # Updated dependencies for solaris and linux.
 #
@@ -190,7 +193,7 @@ generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
 generic.o: ../graphics.new/ViewData.h ../graphics.new/GDataBin.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics/CursorClassInfo.h StateMap.h ../graphics/HangCheck.h
-generic.o: ../graphics/Timer.h
+generic.o: ../graphics/Timer.h ../graphics.new/DebugLog.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testWindowSpeed.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.23  2001/06/12 15:35:42  wenger
+# Updated dependencies for solaris and linux.
+#
 # Revision 1.22  2000/03/23 19:51:28  wenger
 # Updated dependencies for Solaris 2.7.
 #
@@ -381,11 +384,11 @@ sndMsg.o: /usr/include/sys/time_impl.h /usr/include/sys/cred.h
 sndMsg.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 sndMsg.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 sndMsg.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h sndMsg.h
-sndMsg.o: CollabTypes.h codec.h prnfns.h serverInterface.h colbr.h
-sndMsg.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
-sndMsg.o: queue.h queueElem.h Csprotocols.h /usr/include/netdb.h ctrlMsg.h
-sndMsg.o: error.h
+sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h
+sndMsg.o: /usr/include/assert.h sndMsg.h CollabTypes.h codec.h prnfns.h
+sndMsg.o: serverInterface.h colbr.h /usr/include/string.h dbase.h htable.h
+sndMsg.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
+sndMsg.o: /usr/include/netdb.h ctrlMsg.h error.h
 Client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Client.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 Client.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

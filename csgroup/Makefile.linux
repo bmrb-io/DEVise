@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.17  2001/06/12 15:35:42  wenger
+# Updated dependencies for solaris and linux.
+#
 # Revision 1.16  2001/03/09 20:24:45  wenger
 # Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
 # to the trunk; updated linux and solaris dependencies.
@@ -409,10 +412,11 @@ sndMsg.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 sndMsg.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h
 sndMsg.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-sndMsg.o: /usr/include/getopt.h sndMsg.h CollabTypes.h codec.h prnfns.h
-sndMsg.o: serverInterface.h colbr.h /usr/include/string.h dbase.h htable.h
-sndMsg.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
-sndMsg.o: /usr/include/netdb.h /usr/include/rpc/netdb.h ctrlMsg.h error.h
+sndMsg.o: /usr/include/getopt.h /usr/include/assert.h sndMsg.h CollabTypes.h
+sndMsg.o: codec.h prnfns.h serverInterface.h colbr.h /usr/include/string.h
+sndMsg.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+sndMsg.o: Csprotocols.h /usr/include/netdb.h /usr/include/rpc/netdb.h
+sndMsg.o: ctrlMsg.h error.h
 Client.o: /usr/include/stdio.h /usr/include/features.h
 Client.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Client.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
