@@ -195,12 +195,13 @@ ETkIfc.o: /usr/include/ctype.h /usr/include/math.h Exit.h DevError.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 Exit.o: /usr/include/unistd.h /usr/include/sys/unistd.h Exit.h Init.h
 Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h
-Exit.o: /usr/include/sys/types.h BufPolicy.h Control.h VisualArg.h Color.h
-Exit.o: Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
-Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-Exit.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h ETkIfc.h
-Exit.o: /usr/include/string.h
+Exit.o: /usr/include/sys/types.h BufPolicy.h Util.h /usr/include/time.h
+Exit.o: /usr/include/sys/time.h /usr/include/string.h /usr/include/ctype.h
+Exit.o: /usr/include/math.h Control.h VisualArg.h Color.h Pattern.h DList.h
+Exit.o: ClassDir.h DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h
+Exit.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+Exit.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+Exit.o: /s/X11/include/X11/Xutil.h ETkIfc.h
 ExitClean.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ExitClean.o: /usr/include/stdlib.h Exit.h
 FilterQueue.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Exit.h

@@ -810,7 +810,6 @@ ServerAPI.o: ../graphics/DevError.h ../graphics/DualWindowRep.h
 ServerAPI.o: ../graphics/Cursor.h ../graphics/DevFont.h ../graphics/Util.h
 ServerAPI.o: /usr/include/time.h /usr/include/ctype.h Version.h
 ServerAPI.o: StringStorage.h ../tape/HashTable.h
-StringHash.o: /usr/include/stdio.h StringHash.h
 TData.o: /usr/include/stdio.h /usr/include/fcntl.h /usr/include/sys/fcntl.h
 TData.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
 TData.o: /usr/include/sys/unistd.h /usr/include/errno.h
@@ -1363,7 +1362,7 @@ genStrData.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/fcntl.h
 genStrData.o: /usr/include/sys/fcntl.h /usr/include/sys/stdsyms.h
 genStrData.o: /usr/include/limits.h /usr/include/unistd.h
 genStrData.o: /usr/include/sys/unistd.h /usr/include/sys/types.h
-genStrData.o: /usr/include/sys/stat.h StrData.h ../graphics/DevError.h
+genStrData.o: /usr/include/sys/stat.h ../graphics/DevError.h
 genStrData.o: /usr/include/errno.h /usr/include/sys/errno.h
 genStrData.o: ../graphics/DeviseTypes.h /usr/include/values.h
 genStrData.o: ../graphics/DevStatus.h
@@ -1491,7 +1490,6 @@ testRecFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 testRecFile.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
 testRecFile.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
 testRecFile.o: /usr/include/netinet/in.h TestData.h
-testStringHash.o: /usr/include/stdio.h StringHash.h
 testTcl.o: /usr/include/stdio.h /usr/include/stdlib.h /s/tcl/include/tcl.h
 testTdata.o: /usr/include/stdio.h /usr/include/stdlib.h BufMgr.h
 testTdata.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -1864,7 +1862,13 @@ Seq.o: /usr/include/time.h /usr/include/math.h ../graphics/DeviseTypes.h
 Seq.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
 Seq.o: ../graphics/Parse.h ../graphics/DevError.h /usr/include/errno.h
 Seq.o: /usr/include/sys/errno.h
-StringStorage.o: /usr/include/string.h StringStorage.h ../tape/HashTable.h
+StringStorage.o: /usr/include/string.h /usr/include/stdio.h StringStorage.h
+StringStorage.o: ../tape/HashTable.h ../graphics/Util.h /usr/include/stdlib.h
+StringStorage.o: /usr/include/time.h /usr/include/sys/time.h
+StringStorage.o: /usr/include/sys/stdsyms.h /usr/include/ctype.h
+StringStorage.o: /usr/include/math.h ../graphics/DeviseTypes.h
+StringStorage.o: /usr/include/values.h ../graphics/DevStatus.h
+StringStorage.o: /usr/include/sys/types.h ../graphics/Exit.h
 UpdateLink.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 UpdateLink.o: ../graphics/DeviseTypes.h /usr/include/values.h
 UpdateLink.o: ../graphics/DevStatus.h /usr/include/sys/types.h

@@ -303,12 +303,13 @@ Exit.o: /usr/include/unistd.h /usr/include/sys/types.h
 Exit.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 Exit.o: /usr/include/sys/select.h /usr/include/sys/time.h
 Exit.o: /usr/include/sys/time.h /usr/include/sys/unistd.h Exit.h Init.h
-Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h BufPolicy.h Control.h
+Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h BufPolicy.h Util.h
+Exit.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+Exit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Control.h
 Exit.o: VisualArg.h Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Exit.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h ETkIfc.h
-Exit.o: /usr/include/string.h
 ExitClean.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ExitClean.o: /usr/include/sys/va_list.h /usr/include/stdlib.h Exit.h
 FilterQueue.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h

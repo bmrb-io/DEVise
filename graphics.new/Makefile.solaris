@@ -1270,8 +1270,6 @@ ServerAPI.o: ../graphics/DevError.h ../graphics/DualWindowRep.h
 ServerAPI.o: ../graphics/Cursor.h ../graphics/DevFont.h ../graphics/Util.h
 ServerAPI.o: /usr/include/ctype.h Version.h StringStorage.h
 ServerAPI.o: ../tape/HashTable.h
-StringHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-StringHash.o: /usr/include/sys/va_list.h StringHash.h
 TData.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TData.o: /usr/include/sys/va_list.h /usr/include/fcntl.h
 TData.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -2093,7 +2091,7 @@ genStrData.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 genStrData.o: /usr/include/sys/select.h /usr/include/sys/time.h
 genStrData.o: /usr/include/sys/time.h /usr/include/sys/fcntl.h
 genStrData.o: /usr/include/limits.h /usr/include/unistd.h
-genStrData.o: /usr/include/sys/unistd.h /usr/include/sys/stat.h StrData.h
+genStrData.o: /usr/include/sys/unistd.h /usr/include/sys/stat.h
 genStrData.o: ../graphics/DevError.h /usr/include/errno.h
 genStrData.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
 genStrData.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2293,8 +2291,6 @@ testRecFile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 testRecFile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 testRecFile.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 testRecFile.o: TestData.h
-testStringHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testStringHash.o: /usr/include/sys/va_list.h StringHash.h
 testTcl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testTcl.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 testTcl.o: /s/tcl/include/tcl.h
@@ -2880,7 +2876,16 @@ Seq.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
 Seq.o: ../graphics/Parse.h ../graphics/DevError.h /usr/include/errno.h
 Seq.o: /usr/include/sys/errno.h
 StringStorage.o: /usr/include/string.h /usr/include/sys/feature_tests.h
-StringStorage.o: StringStorage.h ../tape/HashTable.h
+StringStorage.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+StringStorage.o: StringStorage.h ../tape/HashTable.h ../graphics/Util.h
+StringStorage.o: /usr/include/stdlib.h /usr/include/sys/time.h
+StringStorage.o: /usr/include/ctype.h /usr/include/math.h
+StringStorage.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+StringStorage.o: ../graphics/DeviseTypes.h /usr/include/values.h
+StringStorage.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+StringStorage.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+StringStorage.o: /usr/include/sys/select.h /usr/include/sys/time.h
+StringStorage.o: ../graphics/Exit.h
 UpdateLink.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
 UpdateLink.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 UpdateLink.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
