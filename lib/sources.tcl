@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.16  1996/01/11 16:04:08  jussi
+#	Added button for uncaching data.
+#
 #	Revision 1.15  1996/01/10 00:41:44  jussi
 #	Added support for automatically generated SEQ schemas when a SEQ
 #	query is edited.
@@ -146,8 +149,75 @@ proc saveSources {} {
 
 ############################################################
 
+proc updateStreamDef {} {
+    global schemadir
+    global sourceList sourceTypes editonly oldDispName
+    global dispname source key schemafile evaluation priority command
+
+    if {$source == "SEQ"} {
+	set schemafile $schemadir/physical/SEQ.$key.schema
+	set schematype "SEQ.$key"
+    }
+
+    if {$dispname == "" || $key == "" || $schemafile == ""} {
+	dialog .noName "Missing Information" \
+		"Please enter all requested information." \
+		"" 0 OK
+	return
+    }
+
+    set cachefile [getCacheName $source $key]
+    set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
+
+    if {$source == "SEQ"} {
+	set oldCommand $sourceList($dispname)
+	if {$oldCommand != $command} {
+	    uncacheData $oldDispName "Query changed."
+	}
+    } else {
+	set newschematype [scanSchema $schemafile]
+	if {$newschematype == ""} { return }
+	set schematype $newschematype
+    }
+
+    set sourcedef [list $source $key $schematype $schemafile \
+	    $cachefile $evaluation $priority $command]
+	
+    set conflict [getSourceByCache $cachefile]
+    if {!$editonly && $source != "UNIXFILE" && $conflict != ""} {
+	dialog .existsAlready "Data Stream Exists" \
+		"This definition conflicts\n\
+		with \"$conflict\"." "" 0 OK
+	return
+    }
+
+    if {$editonly} {
+	set oldCachefile $sourceList($dispname)
+	if {[file exists $oldCachefile] \
+		&& $cachefile != $oldCachefile} {
+	    uncacheData $oldDispName "Source and/or key changed."
+	}
+	unset sourceList($oldDispName)
+    }
+
+    set err [catch {set exists $sourceList($dispname)}]
+    if {$err == 0} {
+	dialog .sourceExists "Data Stream Exists" \
+		"Data Stream \"$dispname\" exists already." \
+		"" 0 OK
+	return
+    }
+
+    set "sourceList($dispname)" $sourcedef
+    saveSources
+    updateSources
+    destroy .srcdef
+}
+
+############################################################
+
 proc defineStream {base edit} {
-    global sourceList sourceTypes editonly oldDispName oldCachefile
+    global sourceList sourceTypes editonly oldDispName
     global dispname source key schemafile evaluation priority command
 
     # see if .srcdef window already exists; if so, just return
@@ -198,7 +268,6 @@ proc defineStream {base edit} {
     }
 	
     set oldDispName $base
-    set oldCachefile $cachefile
 
     frame .srcdef.top.row1
     frame .srcdef.top.row2
@@ -275,74 +344,42 @@ proc defineStream {base edit} {
     pack .srcdef.top.row5.l1 .srcdef.top.row5.e1 -side left -padx 3m \
 	    -fill x -expand 1
 
-    button .srcdef.but.ok -text OK -width 10 -command {
-	if {$source == "SEQ"} {
-	    set schemafile $schemadir/physical/SEQ.$key.schema
-	    set schematype "SEQ.$key"
-	}
-	if {$dispname == "" || $key == "" || $schemafile == ""} {
-	    dialog .noName "Missing Information" \
-		    "Please enter all requested information." \
-		    "" 0 OK
-	    return
-	}
-	set cachefile [getCacheName $source $key]
-	set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
-	if {$source == "SEQ"} {
-	    if {[getSEQSchema $command $schemafile $schematype] < 0} {
-		dialog .error "No Schema" \
-			"Cannot define a SEQ query while server cannot\n\
-			be reached." "" 0 OK
-		return
-	    }
-	} else {
-	    set newschematype [scanSchema $schemafile]
-	    if {$newschematype == ""} { return }
-	    set schematype $newschematype
-	}
-
-	set sourcedef [list $source $key $schematype $schemafile \
-		$cachefile $evaluation $priority $command]
-	
-	set conflict [getSourceByCache $cachefile]
-	if {!$editonly && $source != "UNIXFILE" && $conflict != ""} {
-	    dialog .existsAlready "Data Stream Exists" \
-		    "This definition conflicts\n\
-		    with \"$conflict\"." "" 0 OK
-	    return
-	}
-	if {$editonly} {
-	    if {[file exists $oldCachefile] \
-		    && $cachefile != $oldCachefile} {
-		set but [dialog .uncacheSource "Removing Old Cache" \
-			"Source and/or key changed.\n\
-			Okay to remove old cache file?" \
-			"" 1 OK Cancel]
-		if {$but > 0} {
-		    return
-		}
-		uncacheData $oldDispName
-	    }
-	    unset sourceList($oldDispName)
-	}
-	set err [catch {set exists $sourceList($dispname)}]
-	if {$err == 0} {
-	    dialog .sourceExists "Data Stream Exists" \
-		    "Data Stream \"$dispname\" exists already." \
-		    "" 0 OK
-	    return
-	}
-	set "sourceList($dispname)" $sourcedef
-	saveSources
-	updateSources
-	destroy .srcdef
-    }
+    button .srcdef.but.ok -text OK -width 10 -command updateStreamDef
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
     pack .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
 	    -side left -padx 7m
 
     tkwait visibility .srcdef
+}
+
+############################################################
+
+proc scanSchema {schemafile} {
+    global schemadir
+    if {[catch { set f [open $schemafile "r"] }] > 0} {
+	dialog .noFile "No Schema File" \
+		"Cannot open schema file $schemafile." \
+		"" 0 OK
+	return ""
+    }
+
+    set type ""
+
+    while {[gets $f line] >= 0} {
+	if {[lindex $line 0] == "type"} {
+	    set type [lindex $line 1]
+	    break
+	} elseif {[lindex $line 0] == "physical"} {
+	    return [scanSchema [lindex $line 1]]
+	}
+    }
+
+    close $f
+
+    puts "Schema file $schemafile has type $type"
+
+    return $type
 }
 
 ############################################################
@@ -373,35 +410,6 @@ proc getSEQSchema {command schemafile schematype} {
     }
 
     return 0
-}
-
-############################################################
-
-proc scanSchema {schemafile} {
-    global schemadir
-    if {[catch { set f [open $schemafile "r"] }] > 0} {
-	dialog .noFile "No Schema File" \
-		"Cannot open schema file $schemafile." \
-		"" 0 OK
-	return ""
-    }
-
-    set type ""
-
-    while {[gets $f line] >= 0} {
-	if {[lindex $line 0] == "type"} {
-	    set type [lindex $line 1]
-	    break
-	} elseif {[lindex $line 0] == "physical"} {
-	    return [scanSchema [lindex $line 1]]
-	}
-    }
-
-    close $f
-
-    puts "Schema file $schemafile has type $type"
-
-    return $type
 }
 
 ############################################################
@@ -486,7 +494,7 @@ proc cacheData {dispname startrec endrec} {
     } elseif {$source == "SEQ"} {
 	set host [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
-	set cmd "seq_extract $host $port \{$command;\} $cachefile \
+	set cmd "seq_extract $host $port \{$command\} $cachefile \
 		$schemafile $schematype"
     } elseif {$source == "SQL"} {
 	set prog [lindex $sourceConfig($source) 0]
@@ -525,8 +533,11 @@ proc cacheData {dispname startrec endrec} {
 		"" 0 OK
 	return ""
     } else {
+	statusWindow .info "Status" \
+		"Extracting \"$dispname\".\n\n\This may take a while."
 	update
 	if {[catch { eval $cmd }] > 0} {
+	    catch { destroy .info }
 	    puts "Cannot execute command:"
 	    puts "  $cmd"
 	    dialog .error "Error Occurred" \
@@ -534,9 +545,10 @@ proc cacheData {dispname startrec endrec} {
 		    from the data source. See text window for\n\
 		    the error message." \
 		    "" 0 OK
-	    uncacheData $dispname
+	    uncacheData $dispname ""
 	    return ""
 	}
+	catch { destroy .info }
     }
 
     return $cachefile
@@ -544,11 +556,20 @@ proc cacheData {dispname startrec endrec} {
 
 ############################################################
 
-proc uncacheData {dispname} {
+proc uncacheData {dispname reason} {
     global sourceList sourceConfig
 
-    set sourcedef $sourceList($dispname)
+    if {$reason != ""} {
+	set but [dialog .uncacheOkay "Remove Cache File" \
+		"$reason\n\
+		Okay to remove cache file?" \
+		"" 1 OK Cancel]
+	if {$but > 0} {
+	    return
+	}
+    }
 
+    set sourcedef $sourceList($dispname)
     set cachefile [lindex $sourcedef 4]
 
     set pattern [format "%s*" $cachefile]
@@ -785,13 +806,7 @@ proc selectStream {} {
 		    "" 0 OK]
 	    return
 	}
-	set but [dialog .uncacheDisp "Uncache Data Stream" \
-		"Okay to remove cache file for \"$uncacheDisp\"?" \
-		"" 1 OK Cancel]
-	if {$but > 0} {
-	    return
-	}
-	uncacheData $uncacheDisp
+	uncacheData $uncacheDisp "Uncache requested."
 	updateSources
     }
     button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
