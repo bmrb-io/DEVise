@@ -1315,8 +1315,9 @@ Num Date        Status  Description
 346 05/20/98	OPEN	Symbol alignment doesn't work for non-zero text
 			orientation. (ml/rkw)
 
-347 05/21/98	OPEN	3D with OpenGL: objects suddenly disappear as you
-			zoom out. (rkw)
+347 05/21/98	OPEN	3D with OpenGL: objects (spheres) suddenly disappear
+			as you zoom out (that is, when the spheres get too
+			small, but still much bigger than a pixel). (rkw)
 			(It looks like this may be a Mesa bug -- doesn't
 			seem to show up when running on the SGI.  rkw
 			5/22/98)
