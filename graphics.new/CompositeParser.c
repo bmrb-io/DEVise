@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/05 23:14:16  kmurli
+  Added a destructor to free the fileType char pointer after use.
+  CVS ----------------------------------------------------------------------
+
   Revision 1.3  1996/03/26 20:22:01  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -34,10 +38,13 @@ CompositeEntry CompositeParser::_entries[MAX_COMPOSITE_ENTRIES];
 int CompositeParser::_numEntries = 0;
 int CompositeParser::_hintIndex = -1;
 
-CompositeParser::~CompositeParser()
+void
+CompositeParser::DestroyAll()
 {
-  for(int i = 0; i < _numEntries; i++) 
-	free(_entries[i].fileType);
+  for(int i = 0; i < _numEntries; i++) {
+    delete _entries[i].userComposite;
+    free(_entries[i].fileType);
+  }
 }
 	
 void CompositeParser::Register(char *fileType, UserComposite *userComposite){
@@ -74,4 +81,12 @@ void CompositeParser::Decode(char *fileType, RecInterp *recInterp)
   fprintf(stderr, "Can't find user composite function for file type %s\n",
 	  fileType);
   Exit::DoExit(2);
+}
+
+void
+CompositeParser::ResetAll()
+{
+  for(int index = 0; index < _numEntries; index++) {
+    _entries[index].userComposite->Reset();
+  }
 }

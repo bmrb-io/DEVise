@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/09/05 23:14:17  kmurli
+  Added a destructor to free the fileType char pointer after use.
+  CVS ----------------------------------------------------------------------
+
   Revision 1.4  1996/07/21 02:25:13  jussi
   Increased max. number of composite parsers from 20 to 100.
 
@@ -34,6 +38,9 @@
 #ifndef CompositeParser_h
 #define CompositeParser_h
 
+// Unfortunately #defined by X.h.
+#undef DestroyAll
+
 class RecInterp;
 class AttrInfo;
 
@@ -41,6 +48,10 @@ class UserComposite {
 public:
   /* This is called by the Composite parser to parse composite attributes */
   virtual void Decode(RecInterp *recInterp) = 0;
+
+  // This uninitializes the composite parser, in case field offsets change
+  // (part of the fix for bug 519).
+  virtual void Reset() = 0;
 };
 
 struct CompositeEntry {
@@ -56,7 +67,12 @@ public:
 
   /* called by parser when it needs a composite attribute parsed */
   static void Decode(char *fileType, RecInterp *recInterp);
-  ~CompositeParser();
+
+  // Uninitialize all composite parsers (should be called when a session
+  // is closed).
+  static void ResetAll();
+
+  static void DestroyAll();
 
 private:
   static CompositeEntry _entries[MAX_COMPOSITE_ENTRIES];

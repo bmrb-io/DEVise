@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/10/14 16:07:24  wenger
+  Improvements to debug logging.
+
   Revision 1.25  1999/10/05 17:55:37  wenger
   Added debug log level.
 
@@ -140,6 +143,7 @@
 #endif
 #include "DebugLog.h"
 #include "HangCheck.h"
+#include "CompositeParser.h"
 #endif
 
 void Exit::DoExit(int code)
@@ -185,6 +189,7 @@ void Exit::DoExit(int code)
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
     HangCheck::DestroyDefault();
+    CompositeParser::DestroyAll();
 #endif
 
     exit(code);

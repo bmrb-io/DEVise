@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/07/19 19:46:09  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.61  1999/04/23 21:40:34  wenger
   Made date composite parsers y2k-compliant; things will still get goofed
   up in 2038, though.
@@ -389,6 +393,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -446,6 +456,12 @@ public:
     
   virtual ~MmDdYyHhMmAmPmComposite() {
     delete attrOffset;
+  }
+
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
   }
     
   virtual void Decode(RecInterp *recInterp) {
@@ -525,6 +541,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -584,6 +606,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -648,6 +676,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -769,6 +803,12 @@ public:
     delete _attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] _attrOffset;
+    _attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
@@ -827,6 +867,12 @@ public:
     delete _attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] _attrOffset;
+    _attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
@@ -884,6 +930,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -946,6 +998,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -1016,6 +1074,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -1175,6 +1239,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -1269,6 +1339,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -1328,6 +1404,12 @@ public:
     delete attrOffset;
   }
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
+    
   virtual void Decode(RecInterp *recInterp) {
 
     if (!_init) {
@@ -1436,6 +1518,11 @@ public:
     SIM_SREF=(4<<16)    /* This is a data store ref. */
   };
 
+  virtual void Reset() {
+    _init = false;
+    delete [] attrOffset;
+    attrOffset = 0;
+  }
 
   virtual void Decode(RecInterp *recInterp) {
 
