@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/04/14 00:07:08  jussi
+#  DupWindow now copies all links of the source view into the new view.
+#
 #  Revision 1.1  1996/04/11 18:13:07  jussi
 #  Initial revision.
 #
@@ -331,16 +334,58 @@ proc DoWindowMerge {} {
 	return
     }
 
+    # no need to merge if there are no views other than curView
+    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
+	return
+    }
+
+    # first create a duplicate of current view
+
+    set class [GetClass view $curView]
+    set params [DEVise getCreateParam view $class $curView]
     set win [DEVise getViewWin $curView]
 
+    set newView [UniqueName $curView]
+    set newParams [linsert [lrange $params 1 end] 0 $newView]
+    eval DEVise create view $class $newParams
+    DEVise insertWindow $newView $win
+
+    set labelParams [DEVise getLabel $curView]
+    set newLabelParams [linsert [lrange $labelParams 0 1] 2 "Composite View"]
+    eval DEVise setLabel {$newView} $newLabelParams
+    set viewStatParams [DEVise getViewStatistics $curView]
+    eval DEVise setViewStatistics {$newView} $viewStatParams
+    set stat [DEVise getAxisDisplay $curView X]
+    eval DEVise setAxisDisplay {$newView} X $stat
+    set stat [DEVise getAxisDisplay $curView Y]
+    eval DEVise setAxisDisplay {$newView} Y $stat
+    
+    # insert links of $curView into $newView
+    foreach link [LinkSet] {
+	if {[DEVise viewInLink $link $curView]} {
+	    DEVise insertLink $link $newView
+	}
+    }
+
+    ProcessViewSelected $newView
+
+    # now move mappings from all other views to this view
+
     foreach v [DEVise getWinViews $win] {
-	if {$v == $curView} {
-	    # don't move current view anywhere
+	if {$v == $newView} {
 	    continue
 	}
+
+	set viewLabelParams [DEVise getLabel $v]
+	set label [lindex $viewLabelParams 2]
+
 	foreach m [DEVise getViewMappings $v] {
-	    # insert mapping $m to view $curView
-	    DEVise insertMapping $curView $m
+	    set legend [DEVise getMappingLegend $v $m]
+	    if {$legend == ""} {
+		set legend $label
+	    }
+	    # insert mapping $m to view $newView, with legend $legend
+	    DEVise insertMapping $newView $m $legend
 	}
 
 	# remove all links in view $v
@@ -354,14 +399,14 @@ proc DoWindowMerge {} {
 	foreach cursor [CursorSet] {
 	    set views [DEVise getCursorViews $cursor]
 	    if {[lindex $views 0] == $v} {
-		# replace view $v with $curView as the the source
+		# replace view $v with $newView as the the source
 		# in cursor $cursor
-		DEVise setCursorSrc $cursor $curView
+		DEVise setCursorSrc $cursor $newView
 	    }
 	    if {[lindex $views 1] == $v} {
-		# replace view $v with $curView as the the destination
+		# replace view $v with $newView as the the destination
 		# in cursor $cursor
-		DEVise setCursorDst $cursor $curView
+		DEVise setCursorDst $cursor $newView
 	    }
 	}
 
@@ -375,7 +420,7 @@ proc DoWindowMerge {} {
 	DEVise destroy $v
     }
 
-    DEVise refreshView $curView
+    DEVise refreshView $newView
 }
 
 ############################################################
@@ -400,19 +445,22 @@ proc DoWindowSplit {} {
 	}
     }
 
-    set count 0
+    set lastView ""
+
     foreach m [DEVise getViewMappings $curView] {
-	incr count
-	if {$count == 1} {
-	    # don't move the first mapping anywhere
-	    continue
-	}
 	set newView [UniqueName $curView]
 	set newParams [linsert [lrange $params 1 end] 0 $newView]
 	# create view $newView
 	eval DEVise create view $class $newParams
 
-	set newLabelParams [linsert [lrange $labelParams 0 1] 2 "New View"]
+	set lastView $newView
+
+	set legend [DEVise getMappingLegend $curView $m]
+	if {$legend == ""} {
+	    set legend "New View"
+	}
+
+	set newLabelParams [linsert [lrange $labelParams 0 1] 2 $legend]
 	eval DEVise setLabel {$newView} $newLabelParams
 	set viewStatParams [DEVise getViewStatistics $curView]
 	eval DEVise setViewStatistics {$newView} $viewStatParams
@@ -432,11 +480,24 @@ proc DoWindowSplit {} {
 
 	# insert view $newView to window $win
 	DEVise insertWindow $newView $win
-
 	DEVise refreshView $newView
     }
 
-    DEVise refreshView $curView
+    if {$lastView != ""} {
+	set v $curView
+	ProcessViewSelected $lastView
+	# remove all links in view $v
+	foreach link [LinkSet] {
+	    if {[DEVise viewInLink $link $v]} {
+		DEVise unlinkView $link $v
+	    }
+	}
+	set ans [DEVise removeView $v]
+	if {$ans != ""} {
+	    dialogList .removeError "Cannot Remove View" $ans "" 0 OK
+	}
+	DEVise destroy $v
+    }
 }
 
 ############################################################
@@ -524,8 +585,12 @@ proc RotateMergedView {} {
     }
 
     # move mapping to end of mapping list in view
+    set legend [DEVise getMappingLegend $curView $map]
+    if {$legend == ""} {
+	set legend "Unknown"
+    }
     DEVise removeMapping $curView $map
-    DEVise insertMapping $curView $map
+    DEVise insertMapping $curView $map $legend
     
     DEVise refreshView $curView
 }
