@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/12/15 20:24:50  wenger
+#  set_up_user no longer forces devise directory to be in home; copies
+#  data from dat instead of dat_local.
+#
 #  Revision 1.2  1996/11/06 18:01:51  guangshu
 #  Some improvements to make it working in cs department afs.
 #
@@ -41,14 +45,14 @@ if (! -d $dir) then
 endif
 
 cd $dir
-mkdir dat cache session 
+mkdir dat cache session run
 cp -r /p/devise/public/schema .
-cp /p/devise/public/session_local/* session
+cp /p/devise/public/session/* session
 cp /p/devise/public/dat/* dat
-cp /p/devise/public/devisepub .
-cp /p/devise/public/run.script---copy.and.customize devise
+cp /p/devise/public/devisepub run
+cp /p/devise/public/run.script---copy.and.customize run/devise
 
 echo ""
 echo "To be able to run DEVise from any directory, you must perform the"
 echo "following additional steps:"
-echo "  o Add the 'devise' directory to your path."
+echo "  o Add the 'devise/run' directory to your path."

@@ -6,7 +6,7 @@
 # DEVise endHeader
 
 # Import schemas
-DEVise importFileType ./schema/3d_test.schema
+DEVise importFileType ../schema/3d_test.schema
 
 # Layout mode
 DEVise changeMode 0
