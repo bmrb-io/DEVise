@@ -1,4 +1,22 @@
-/* disp.c: display */
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
@@ -109,8 +127,7 @@ main(int argc, char **argv){
 	ControlPanel::RegisterClass(new AxisLabelClassInfo("date",
 		   new GenDateAxisLabel()));
 
-	ControlPanel::RegisterClass(new WinVerInfo);
-	ControlPanel::RegisterClass(new WinHorInfo);
+	ControlPanel::RegisterClass(new TileLayoutInfo);
 	ControlPanel::RegisterClass(new ActionClassInfo("multiAction",
 		new GenMultiAction()));
 	ControlPanel::RegisterClass(new MultiClassInfo);
