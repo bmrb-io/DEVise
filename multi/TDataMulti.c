@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/16 19:27:03  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.4  1996/05/07 21:13:39  jussi
   Added record position parameter to Decode(). Added alias parameter
   to constructor.
@@ -37,6 +40,7 @@
 #include "Control.h"
 #include "Exit.h"
 #include "Util.h"
+#include "DataSeg.h"
 
 MultiClassInfo::MultiClassInfo()
 {
@@ -76,6 +80,9 @@ ClassInfo *MultiClassInfo::CreateWithParams(int argc, char **argv)
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
+
+  DataSeg::Set(alias, name, 0, 0);
+
   TDataMulti *tdata = new TDataMulti(name, alias);
   return new MultiClassInfo(name, alias, tdata);
 }

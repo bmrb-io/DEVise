@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/16 19:27:03  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.4  1996/05/07 21:13:38  jussi
   Added record position parameter to Decode(). Added alias parameter
   to constructor.
@@ -36,6 +39,7 @@
 #include "Control.h"
 #include "Exit.h"
 #include "Util.h"
+#include "DataSeg.h"
 
 HostClassInfo::HostClassInfo()
 {
@@ -67,7 +71,7 @@ void HostClassInfo::ParamNames(int &argc, char **&argv)
 ClassInfo *HostClassInfo::CreateWithParams(int argc, char **argv)
 {
   if (argc != 2) {
-    fprintf(stderr,"AfsioClassInfo::CreateWithParams: wrong args\n");
+    fprintf(stderr,"HostClassInfo::CreateWithParams: wrong args\n");
     for(int i = 0; i < argc; i++)
       printf("%s\n", argv[i]);
     return 0;
@@ -75,6 +79,9 @@ ClassInfo *HostClassInfo::CreateWithParams(int argc, char **argv)
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
+
+  DataSeg::Set(alias, name, 0, 0);
+
   TDataHost *tdata = new TDataHost(name, alias);
   return new HostClassInfo(name, alias, tdata);
 }

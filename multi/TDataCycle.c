@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/16 19:27:02  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.4  1996/05/07 21:13:37  jussi
   Added record position parameter to Decode(). Added alias parameter
   to constructor.
@@ -36,6 +39,7 @@
 #include "Control.h"
 #include "Exit.h"
 #include "Util.h"
+#include "DataSeg.h"
 
 CycleClassInfo::CycleClassInfo()
 {
@@ -67,7 +71,7 @@ void CycleClassInfo::ParamNames(int &argc, char **&argv)
 ClassInfo *CycleClassInfo::CreateWithParams(int argc, char **argv)
 {
   if (argc != 2) {
-    fprintf(stderr,"AfsioClassInfo::CreateWithParams: wrong args\n");
+    fprintf(stderr,"CycleClassInfo::CreateWithParams: wrong args\n");
     for(int i = 0; i < argc; i++)
       printf("%s\n", argv[i]);
     return 0;
@@ -75,6 +79,9 @@ ClassInfo *CycleClassInfo::CreateWithParams(int argc, char **argv)
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
+
+  DataSeg::Set(alias, name, 0, 0);
+
   TDataCycle *tdata = new TDataCycle(name, alias);
   return new CycleClassInfo(name, alias, tdata);
 }
@@ -150,4 +157,3 @@ Boolean TDataCycle::Decode(void *recordBuf, int recPos, char *line)
   
   return true;
 }
-
