@@ -83,6 +83,15 @@ List<BaseSelection*>* Aggregates::filterList(){
 	if (withPredicate){
 		retVal->append(withPredicate);
 	}
+	if (selectMatch == false && sequenceAttr){
+		if (!groupBy->isEmpty()){
+			groupBy->append(sequenceAttr);
+		}
+		else{
+			selList->prepend(sequenceAttr);
+			retVal->prepend(sequenceAttr);
+		}
+	}
 	groupBy->rewind();
 	while(!groupBy->atEnd()){
 		
@@ -105,10 +114,6 @@ List<BaseSelection*>* Aggregates::filterList(){
 		groupBy->step();
 
 	}
-	if (selectMatch == false && sequenceAttr){
-		selList->prepend(sequenceAttr);
-		retVal->prepend(sequenceAttr);
-	}	
 	withPredicatePos = retVal->getPos(withPredicate);
 	return retVal;
 	
@@ -136,6 +141,7 @@ void Aggregates::typify(Site* inputIterator){
 	// Counts the function ptr 
 	int i = 0;
 	positions = new int[groupBy->cardinality()];
+	taboo = new int[groupBy->cardinality()];
 	types = new TypeID[groupBy->cardinality()];
 	selList->rewind();
 
@@ -201,7 +207,12 @@ void Aggregates::typify(Site* inputIterator){
 			
 			Path *path;
 	    	if (selectList->get()->match(groupBy->get(),path)){
-			
+				
+	    		if (selectList->get()->match(sequenceAttr,path))
+					taboo[groupBy->getCurrPos()] =1; 
+				else
+					taboo[groupBy->getCurrPos()] = 0; 
+				 	
 				positions[groupBy->getCurrPos()] = selectList->getCurrPos();
 				types[groupBy->getCurrPos()] = TypeIDList[selectList->getCurrPos()];
 				match = true;
@@ -215,13 +226,14 @@ void Aggregates::typify(Site* inputIterator){
 	}
 	// Now all that is done ...
 	// Form the Grouping class;;
-	groupIterator = new Grouping(iterator,positions,types,groupBy->cardinality());
+	groupIterator = new Grouping(iterator,positions,taboo,types,seqAttrPos,groupBy->cardinality());
 }
 
 void Aggregates::getSeqAttrType(String * AttribNameList,TypeID *TypeIDList ,int countFlds)
 {
 	if (!sequenceAttr)	{
 		fillNextFunc = new AggWindow(this,"",-1);
+		seqAttrPos = -1;
 		return ;
 	}
 
@@ -362,6 +374,11 @@ void AggWindow::fillWindow()
 		for(i = 0; i < windowHigh; i++){
 			
 			// The next tuple is in the  next..
+			if (!nextStoredTuple)
+				nextStoredTuple = aggregate->groupIterator->getNext();
+			
+			if (!nextStoredTuple)
+				return;
 			TupleList->append(nextStoredTuple);
 			// Now get all the tuples that match next..
 			bool match = true;
@@ -815,6 +832,9 @@ int Grouping::tupleCompare(int *positions,GeneralPtr **lessPtr,GeneralPtr ** equ
 	int i;
 	for(i = 0; i < count; i++){
 		
+		if (positions[i] < 0 ){
+			continue;
+		}
 		if (((IBool*)lessPtr[i]->opPtr(left[positions[i]],right[positions[i]]))->getValue())
 			return -1;
 		else if (((IBool*)
@@ -837,7 +857,14 @@ Tuple *Grouping::getNext(){
 	
 		//int count = TupleList->cardinality();
 		//TupleArray = new Tuple[count];
-		sort();;
+		sort();
+		if (seqAttrPos >= 0){
+			int i;
+			for(i = 0; i < count; i++)
+				if (taboo[i])
+					positions[i] = -1;
+		}
+
 		TupleList->rewind();
 		next = TupleList->get();
 		TupleList->remove();

@@ -129,7 +129,7 @@ Site* QueryTree::createSite(){
 	}
 	Aggregates *aggregates =new Aggregates(selectList,sequenceby,withPredicate,
 		groupBy);
-	if(aggregates->isApplicable()){
+	if (aggregates->isApplicable()){
 			   
 	   	// Change the select list
 		TRY(selectList = aggregates->filterList(),NULL);

@@ -13,8 +13,8 @@ class Grouping{
 		
 	// Remeber this shares the iterator..
 	public:
-		Grouping(Site * iterator,int *positions=NULL,TypeID*types=NULL,int count=0):
-				iterator(iterator),positions(positions),types(types),count(count){
+		Grouping(Site * iterator,int *positions=NULL,int * taboo = NULL,TypeID*types=NULL,int seqAttrPos,int count=0):
+				iterator(iterator),positions(positions),taboo(taboo),types(types),seqAttrPos(seqAttrPos),count(count){
 			TupleList = new List<Tuple *>;
 			state = NORMAL;
 		}
@@ -24,12 +24,14 @@ class Grouping{
 	private:
 		Site * iterator;
 		int *positions;	
+		int *taboo;	
 		TypeID *types;
+		int seqAttrPos;
 		int count;
 		enum STATE {NORMAL,GROUPEND} state;
 		List<Tuple *>*TupleList;
 		Tuple * next;		
-		
+
 		GeneralPtr ** lessPtrs;
 		GeneralPtr ** equalPtrs;
 		void sort();
@@ -388,6 +390,7 @@ private:
 	List<BaseSelection*>*groupBy;
 
 	int *positions;
+	int *taboo;
 	TypeID *types;
 	// A list of ptrs to the GeneralFunction class to actually do the 
 	// aggregation.
