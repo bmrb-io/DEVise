@@ -1,0 +1,30 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Mar 17 1997 13:06:11
+# DEVise version: 1.4.1
+# DEVise date: Mar 16 1997
+# DEVise endHeader
+
+schema date {
+
+    type = text;
+    comment = '//';
+    whitespace = ' \t';
+
+    attr month {
+        type = int;
+    }
+
+    attr day {
+        type = int;
+    }
+
+    attr year {
+        type = int;
+    }
+
+    attr date {
+        type = datetime;
+        value = ("year", $year, "month", $month, "day", $day);
+    }
+}
