@@ -2085,6 +2085,9 @@ Num Date        Status  Description
 			station view shows no data. (ml/rkw)
 			(Fixed by rkw, 11/15/99.)
 
+535 11/17/99	OPEN	Order of views in a pile no longer relates to the
+			order of the views in the window when flattened. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
