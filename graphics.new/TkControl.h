@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/29 18:27:00  jussi
+  Added FilterAboutToChange() to facilitate new cursor mechanism.
+
   Revision 1.3  1995/11/29 15:10:23  jussi
   Added copyright notice and added primitives for Tk window support.
 
@@ -74,12 +77,12 @@ public:
 	/* Get current busy status */
 	virtual Boolean IsBusy();
 
-
 	virtual void StartSession();
 	virtual char *SessionName() ;
 	virtual void SetSessionName(char *name);
 
-
+	/* Execute script */
+	virtual void ExecuteScript(char *script);
 
 protected:
     virtual void SubclassInsertDisplay(DeviseDisplay *disp,Coord x, Coord y,

@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:32  jussi
+  Added/update CVS header.
+*/
 
 #ifndef Control_h
 #define Control_h
@@ -76,6 +79,9 @@ public:
 	virtual void StartSession() = 0;
 	virtual char *SessionName() =0;
 	virtual void SetSessionName(char *name) = 0;
+
+	/* Execute script */
+	virtual void ExecuteScript(char *script) = 0;
 
 	/* Instantiate control panel into display */
 	static void InsertDisplay(DeviseDisplay *disp,Coord x=0.0, Coord y=0.4, 
