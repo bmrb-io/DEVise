@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/04/03 16:36:42  wenger
+  Reduced memory and CPU usage in statistics; fixed a memory leak in the
+  statistics code; switched devised back to listening on port 6100
+  (changed accidentally?); turned off a bunch of debug output.
+
   Revision 1.26  1997/03/20 22:04:00  guangshu
   Added function SetnumBucks.
 
@@ -229,7 +234,6 @@ void BasicStats::Done()
       var_x = xsum_sqr/nsamples - avg_x * avg_x;
       std_x = sqrt(var_x);
       cov_xy = avg_xy - avg * avg_x;
-      line_a = avg - (cov_xy/var_x) * avg_x;
       if(var_x != 0 ) {
 	 line_a = avg - (cov_xy/var_x) * avg_x;
 	 line_b = cov_xy / var_x;
