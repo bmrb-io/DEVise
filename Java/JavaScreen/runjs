@@ -1,0 +1,14 @@
+#!/bin/csh -f
+
+\rm jspop.out
+echo "launching jspop"
+jspop >& jspop.out &
+
+sleep 5
+
+\rm js.out
+echo "launching JavaScreen"
+js >& js.out
+
+echo "JavaScreen done; killing jspop"
+set j=`ps -ax|grep 'java jspop'|head -1`;kill -1 $j[1]

@@ -1,4 +1,6 @@
 #! /bin/csh -f
+# Rename this script to devised.jspop to have the JavaScreen run a local
+# devised executable.
 
 rmmem
 
@@ -6,7 +8,7 @@ rmmem
 set path = ( $path /p/qclic/Code/Qclic/bin.common )
 set path = ( $path /p/devise/public/bin )
 
-setenv DEVISE_ROOT		/p/devise/demo
+setenv DEVISE_ROOT		/p/devise
 setenv DEVISE_PUB               /p/devise/public
 
 setenv DEVISE_DAT		$DEVISE_ROOT/dat
@@ -27,10 +29,11 @@ setenv DEVISE_WORK		/tmp/$USER-devise-work
 setenv LM_DAT			/tmp/LM/dat
 setenv LM_TMP			/tmp/LM/dat
 
-setenv DEVISE_LIB               $DEVISE_PUB/lib
+setenv DEVISE_LIB               ../../lib
 setenv LM_LIB                   $DEVISE_LIB/LM 
-setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
+setenv DEVISE_EXEC              ../../solaris/generic/devised.hongyu
 
-$DEVISE_EXEC -clientTimeout 10 -quit 1 $*
+\rm devised.out
+$DEVISE_EXEC -quit 1 -clientTimeout 10 $* >& devised.out
 
 rmmem
