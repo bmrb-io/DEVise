@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/08/17 17:21:10  wenger
+// Summary html file has cleaner format.
+//
 // Revision 1.6  2000/08/17 14:35:52  wenger
 // Made code more tolerant of numerical parsing errors (fixes problem with
 // bmr4267.str).
@@ -884,8 +887,8 @@ public class Star2Devise {
 		= _currentDataLoop.getVals().elementAt(currRowNum);
 	    
 	    try {
-	        _currChemShiftValue = Double.parseDouble(
-		  currRow.elementAt(_chemShiftValueIndex) .getValue());
+	        _currChemShiftValue = (new Double(currRow.elementAt(
+		  _chemShiftValueIndex) .getValue())).doubleValue();
 	    } catch(Exception ex) {
 	        System.err.println("Error parsing chem shift value: " +
 		  ex.getMessage());
@@ -1001,8 +1004,8 @@ public class Star2Devise {
 		= _currentDataLoop.getVals().elementAt(currRowNum);
 	
 	    try {
-	        _currChemShiftValue = Double.parseDouble(
-		  currRow.elementAt(_chemShiftValueIndex).getValue());
+	        _currChemShiftValue = (new Double(currRow.elementAt(
+		  _chemShiftValueIndex).getValue())).doubleValue();
 	    } catch(Exception ex) {
 	        System.err.println("Error parsing chem shift value: " +
 		  ex.getMessage());
