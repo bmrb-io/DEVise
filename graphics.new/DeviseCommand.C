@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/05/05 15:15:14  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.11  1998/05/02 09:00:40  taodb
   Added support for JAVA Screen and command logging
 
@@ -90,16 +95,14 @@
 #include "debug.h"
 #define LINESIZE 1024
 
+//#define DEBUG
+
 #define IMPLEMENT_COMMAND_BEGIN(command) \
 int DeviseCommand_##command::Run(int argc, char** argv)\
-{\
-	int ret_value;\
-	ret_value=DeviseCommand::Run(argc, argv);\
-	if (ret_value)\
-	{
+{
+
 #define IMPLEMENT_COMMAND_END \
-	}\
-	return ret_value;\
+	return true;\
 }
 
 
@@ -148,33 +151,28 @@ DeviseCommand::setDefaultControl(ControlPanel* defaultCntl)
 int 
 DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 {
+#if defined(DEBUG)
+	printf("DeviseCommand::Run(");
+	PrintArgs(stdout, argc, argv, false);
+	printf(")\n");
+	fflush(stdout);
+#endif
+
 	// reset the control each time you run a command
 	int	retval;
 
 	control = cntl;
 	pushControl(cntl);
+
+	classDir = control->GetClassDir();
+	result[0] = '\0';
+
 	retval = Run(argc, argv);
 
-	// restore the orignial value to control
+	// restore the orignal value to control
 	popControl();
 	return retval;
 }
-
-int 
-DeviseCommand::Run(int argc, char** argv)
-{
-	classDir = control->GetClassDir();
-	result[0] = '\0';
-#if defined(DEBUG)
-	printf("ParseAPI[%ld]: ", (long) getpid());
-	for (int i = 0; i < argc; i++)
-  	{
-		printf("\"%s\" ", argv[i]);
-	}
-	printf("\n");
-#endif
-	return (int) true;
-}	
 
 //**********************************************************************
 // Conventions for Developing Devise Command Objects:
@@ -242,10 +240,6 @@ IMPLEMENT_COMMAND_END
 int
 DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
-    {
 */
 
 IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
@@ -264,17 +258,13 @@ IMPLEMENT_COMMAND_END
 
 /*
 	// alternatively, we can write this, instead of the Macro
-    }
-    return ret_value;
+    return true;
 }
 */
 
 int
 DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -285,14 +275,11 @@ DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -303,14 +290,11 @@ DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -321,14 +305,11 @@ DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -339,19 +320,16 @@ DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
     
-    	// TEMPTEMP -- Kent, I traced the type 11 error to here...
+    	// TEMP -- Kent, I traced the type 11 error to here...
     
     		char* catEntry = dteShowCatalogEntry(argv[1]);
     		CATCH(
@@ -366,14 +344,11 @@ DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteListCatalog::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -393,14 +368,11 @@ DeviseCommand_dteListCatalog::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -418,14 +390,11 @@ DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteListAttributes::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -436,14 +405,11 @@ DeviseCommand_dteListAttributes::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -454,14 +420,11 @@ DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -472,14 +435,11 @@ DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -490,14 +450,11 @@ DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -508,14 +465,11 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -532,14 +486,11 @@ DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 /*TAG
         {
@@ -550,7 +501,7 @@ DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
 TAG*/
         return ParseAPIDTE(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 
 //**********************************************************************
@@ -559,20 +510,14 @@ TAG*/
 int
 DeviseCommand_color::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
     		return ParseAPIColorCommands(argc, argv, control);
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getAllViews::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
     	{
     		int		index;
@@ -592,16 +537,13 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     		return 1;
     	}
     }
-    return ret_value;
+    return true;
 }
 #if 0 // Why the hell do we have two *different* versions of the same
 	  // command?!?  RKW Feb. 3, 1998.
 int
 DeviseCommand_getAllViews::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
     	{
     		int		iargc;
@@ -633,16 +575,13 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     		return 1;
     	}
     }
-    return ret_value;
+    return true;
 }
 #endif
 
 int
 DeviseCommand_changeParam::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
@@ -650,14 +589,11 @@ DeviseCommand_changeParam::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_createInterp::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         /* This command is supported for backward compatibility only */
@@ -672,14 +608,11 @@ DeviseCommand_createInterp::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_create::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         control->SetBusy();
@@ -706,14 +639,11 @@ DeviseCommand_create::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getTDataName::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         TData *tdata = (TData *)classDir->FindInstance(argv[1]);
@@ -726,14 +656,11 @@ DeviseCommand_getTDataName::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_showkgraph::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         if (atoi(argv[1]) == 1 || !vkg) {
@@ -773,14 +700,11 @@ DeviseCommand_showkgraph::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_createMappingClass::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         MapInterpClassInfo *interp = control->GetInterpProto();
@@ -794,14 +718,11 @@ DeviseCommand_createMappingClass::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setDefault::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         classDir->SetDefault(argv[1], argv[2], argc - 3, &argv[3]);
@@ -809,15 +730,12 @@ DeviseCommand_setDefault::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 
 int
 DeviseCommand_setHistogram::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -846,14 +764,11 @@ DeviseCommand_setHistogram::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getHistogram::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -867,16 +782,13 @@ DeviseCommand_getHistogram::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 
 #if defined(KSB_MAYBE_DELETE_THIS_OLD_STATS_STUFF)
 int
 DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -897,16 +809,13 @@ DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 #endif
 
 int
 DeviseCommand_setHistViewname::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -922,14 +831,11 @@ DeviseCommand_setHistViewname::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getHistViewname::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -944,14 +850,11 @@ DeviseCommand_getHistViewname::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_checkGstat::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -971,14 +874,11 @@ DeviseCommand_checkGstat::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getSourceName::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -994,14 +894,11 @@ DeviseCommand_getSourceName::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_isXDateType::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -1021,14 +918,11 @@ DeviseCommand_isXDateType::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_isYDateType::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -1048,14 +942,11 @@ DeviseCommand_isYDateType::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -1091,14 +982,11 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         char *gname = NULL;
@@ -1124,14 +1012,11 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
         return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewLensParams::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
          // name mode views 
@@ -1173,15 +1058,12 @@ DeviseCommand_setViewLensParams::Run(int argc, char** argv)
          return 1;
       }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_startLayoutManager::Run(int argc, char** argv)
 {
-    int ret_value = 0;
 #if 0
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           printf("starting Layout Manager\n");
@@ -1197,14 +1079,11 @@ DeviseCommand_startLayoutManager::Run(int argc, char** argv)
         }
     }
 #endif
-    return ret_value;
+    return false;
 }
 int
 DeviseCommand_date::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           time_t tm = time((time_t *)0);
@@ -1212,28 +1091,22 @@ DeviseCommand_date::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_printDispatcher::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, "done");
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_catFiles::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           CatFiles(numArgs, args);
@@ -1241,14 +1114,11 @@ DeviseCommand_catFiles::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_exit::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, "done");
@@ -1256,14 +1126,11 @@ DeviseCommand_exit::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_clearAll::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->DestroySessionData();
@@ -1271,14 +1138,11 @@ DeviseCommand_clearAll::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_sync::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->SetSyncNotify();
@@ -1286,57 +1150,45 @@ DeviseCommand_sync::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_version::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, (char *) Version::Get());
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_copyright::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, (char *) Version::GetCopyright());
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_compDate::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, (char *) CompDate::Get());
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_new_leaks::Run(int argc, char** argv)
 {
-    int ret_value = 0;
 #if PURIFY
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           if (purify_is_running()) {
@@ -1347,15 +1199,12 @@ DeviseCommand_new_leaks::Run(int argc, char** argv)
         }
     }
 #endif
-    return ret_value;
+    return false;
 }
 int
 DeviseCommand_new_inuse::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
 #if PURIFY
-    if (ret_value)
     {
         {
           if (purify_is_running()) {
@@ -1366,14 +1215,11 @@ DeviseCommand_new_inuse::Run(int argc, char** argv)
         }
     }
 #endif
-    return ret_value;
+    return false;
 }
 int
 DeviseCommand_getWinCount::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           char buf[100];
@@ -1382,14 +1228,11 @@ DeviseCommand_getWinCount::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getStringCount::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Returns: <stringCount>
@@ -1399,14 +1242,11 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_waitForQueries::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: none
@@ -1422,14 +1262,11 @@ DeviseCommand_waitForQueries::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_serverExit::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: none
@@ -1452,14 +1289,11 @@ DeviseCommand_serverExit::Run(int argc, char** argv)
     	  }
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_abortQuery::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -1472,7 +1306,7 @@ DeviseCommand_abortQuery::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_importFileType::Run(int argc, char** argv)
@@ -1488,9 +1322,6 @@ DeviseCommand_importFileType::Run(int argc, char** argv)
 int
 DeviseCommand_importFileType::Run_2(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           char *name = ParseCat(argv[1]);
@@ -1502,14 +1333,11 @@ DeviseCommand_importFileType::Run_2(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_importFileType::Run_4(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           char *name = ParseCat(argv[1],argv[2],argv[3]);
@@ -1522,14 +1350,11 @@ DeviseCommand_importFileType::Run_4(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -1542,14 +1367,11 @@ DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_get3DLocation::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -1567,14 +1389,11 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getLinkMaster::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -1587,14 +1406,11 @@ DeviseCommand_getLinkMaster::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getLinkType::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
@@ -1606,14 +1422,11 @@ DeviseCommand_getLinkType::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setBatchMode::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           Boolean batch = (atoi(argv[1]) ? true : false);
@@ -1622,14 +1435,11 @@ DeviseCommand_setBatchMode::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_invalidateTData::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
@@ -1642,14 +1452,11 @@ DeviseCommand_invalidateTData::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_invalidatePixmap::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -1662,14 +1469,11 @@ DeviseCommand_invalidatePixmap::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_readLine::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           FILE *file = (FILE *)atol(argv[1]);
@@ -1681,14 +1485,11 @@ DeviseCommand_readLine::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_close::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           FILE *file = (FILE *)atol(argv[1]);
@@ -1697,14 +1498,11 @@ DeviseCommand_close::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_isMapped::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -1717,14 +1515,11 @@ DeviseCommand_isMapped::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getLabel::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -1742,14 +1537,11 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_tdataFileName::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
@@ -1761,14 +1553,11 @@ DeviseCommand_tdataFileName::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewWin::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -1784,14 +1573,11 @@ DeviseCommand_getViewWin::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_clearViewHistory::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -1805,14 +1591,11 @@ DeviseCommand_clearViewHistory::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getCursorViews::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseCursor *cursor = (DeviseCursor *)classDir->FindInstance(argv[1]);
@@ -1835,14 +1618,11 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
           return 1;
         } 
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getMappingTData::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
@@ -1855,14 +1635,11 @@ DeviseCommand_getMappingTData::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_destroy::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->DestroyInstance(argv[1]);
@@ -1870,14 +1647,11 @@ DeviseCommand_destroy::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_parseDateFloat::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           double val;
@@ -1887,14 +1661,11 @@ DeviseCommand_parseDateFloat::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_isInterpretedGData::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
@@ -1910,14 +1681,11 @@ DeviseCommand_isInterpretedGData::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_isInterpreted::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           int *isInterp = (int *)classDir->UserInfo("mapping", argv[1]);
@@ -1928,14 +1696,11 @@ DeviseCommand_isInterpreted::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getPixelWidth::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
@@ -1948,14 +1713,11 @@ DeviseCommand_getPixelWidth::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getTopGroups::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->GetGroupDir()->top_level_groups(result, argv[1]);
@@ -1963,14 +1725,11 @@ DeviseCommand_getTopGroups::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getWindowLayout::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
@@ -1986,14 +1745,11 @@ DeviseCommand_getWindowLayout::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getSchema::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
         	
@@ -2080,14 +1836,11 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getAction::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -2105,14 +1858,11 @@ DeviseCommand_getAction::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getLinkFlag::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -2125,14 +1875,11 @@ DeviseCommand_getLinkFlag::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_changeableParam::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           Boolean changeable = classDir->Changeable(argv[1]);
@@ -2144,14 +1891,11 @@ DeviseCommand_changeableParam::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getInstParam::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->GetParams(argv[1], numArgs, args);
@@ -2159,14 +1903,11 @@ DeviseCommand_getInstParam::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_tcheckpoint::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TData *tdata;
@@ -2179,7 +1920,7 @@ DeviseCommand_tcheckpoint::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 int
@@ -2197,9 +1938,6 @@ DeviseCommand_get::Run(int argc, char** argv)
 int
 DeviseCommand_get::Run_2(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->ClassNames(argv[1], numArgs, args);
@@ -2207,14 +1945,11 @@ DeviseCommand_get::Run_2(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_get::Run_3(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->InstanceNames(argv[1], argv[2], numArgs, args);
@@ -2222,15 +1957,12 @@ DeviseCommand_get::Run_3(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 int
 DeviseCommand_changeMode::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
 	  if (!strcmp(argv[1], "0")) {
 		  if(control->GetMode() != ControlPanel::DisplayMode) {
@@ -2248,15 +1980,12 @@ DeviseCommand_changeMode::Run(int argc, char** argv)
 	  control->ReturnVal(API_ACK, "done");
   	  return 1;
     }
-    return ret_value;
+    return true;
 }
 
 int
 DeviseCommand_exists::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           if (!classDir->FindInstance(argv[1]))
@@ -2267,14 +1996,11 @@ DeviseCommand_exists::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_removeView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -2291,14 +2017,11 @@ DeviseCommand_removeView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewMappings::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -2318,14 +2041,11 @@ DeviseCommand_getViewMappings::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_refreshView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -2338,14 +2058,11 @@ DeviseCommand_refreshView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getWinGeometry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
@@ -2363,14 +2080,11 @@ DeviseCommand_getWinGeometry::Run(int argc, char** argv)
           return 1;	      
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getWinViews::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
@@ -2391,14 +2105,11 @@ DeviseCommand_getWinViews::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getLinkViews::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -2418,14 +2129,11 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -2440,14 +2148,11 @@ DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getVisualFilters::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -2486,14 +2191,11 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewStatistics::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -2506,14 +2208,11 @@ DeviseCommand_getViewStatistics::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getAllStats::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -2545,14 +2244,11 @@ DeviseCommand_getAllStats::Run(int argc, char** argv)
           return 1;
         }    	
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getStatBuffer::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
            enum {
@@ -2633,14 +2329,11 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
                return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewDimensions::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -2654,14 +2347,11 @@ DeviseCommand_getViewDimensions::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -2675,14 +2365,11 @@ DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -2696,14 +2383,11 @@ DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -2717,14 +2401,11 @@ DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewPileMode::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -2738,14 +2419,11 @@ DeviseCommand_getViewPileMode::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_raiseView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -2758,14 +2436,11 @@ DeviseCommand_raiseView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_lowerView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -2778,28 +2453,22 @@ DeviseCommand_lowerView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getFileHeader::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->ReturnVal(API_ACK, DevFileHeader::Get(argv[1]));
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewLensParams::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
@@ -2823,14 +2492,11 @@ DeviseCommand_getViewLensParams::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_winGetPrint::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
@@ -2847,14 +2513,11 @@ DeviseCommand_winGetPrint::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewGetHome::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <viewName>
@@ -2877,14 +2540,11 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <viewName>
@@ -2905,14 +2565,11 @@ DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getCursorGrid::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <cursorName>
@@ -2934,7 +2591,7 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 IMPLEMENT_COMMAND_BEGIN(writeDesc)
@@ -2970,9 +2627,6 @@ IMPLEMENT_COMMAND_END
 int
 DeviseCommand_saveStringSpace::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <file name>
@@ -2987,14 +2641,11 @@ DeviseCommand_saveStringSpace::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_loadStringSpace::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <file name>
@@ -3014,14 +2665,11 @@ DeviseCommand_loadStringSpace::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <file name>
@@ -3042,14 +2690,11 @@ DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_openSession::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <file name>
@@ -3064,14 +2709,11 @@ DeviseCommand_openSession::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_createTData::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <data source name>
@@ -3085,19 +2727,16 @@ DeviseCommand_createTData::Run(int argc, char** argv)
             	return -1;
           	}
 		  }
-          //TEMPTEMP -- may need to return something different here
+          //TEMP -- may need to return something different here
           control->ReturnVal(API_ACK, "done");
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getViewGDS::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <view name>
@@ -3124,14 +2763,11 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_testDataSock::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <port number>
@@ -3162,14 +2798,11 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewGetAlign::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <view name>
@@ -3188,14 +2821,11 @@ DeviseCommand_viewGetAlign::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setLinkMaster::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -3213,14 +2843,11 @@ DeviseCommand_setLinkMaster::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setLinkType::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
@@ -3236,14 +2863,11 @@ DeviseCommand_setLinkType::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setScreenSize::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(argv[1]);
@@ -3252,14 +2876,11 @@ DeviseCommand_setScreenSize::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_writeLine::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           FILE *file = (FILE *)atol(argv[2]);
@@ -3269,14 +2890,11 @@ DeviseCommand_writeLine::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_open::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           FILE *file = fopen(argv[1],argv[2]);
@@ -3289,14 +2907,11 @@ DeviseCommand_open::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewStatistics::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3310,14 +2925,11 @@ DeviseCommand_setViewStatistics::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewDimensions::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3331,14 +2943,11 @@ DeviseCommand_setViewDimensions::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewSolid3D::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3352,14 +2961,11 @@ DeviseCommand_setViewSolid3D::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewXYZoom::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3373,14 +2979,11 @@ DeviseCommand_setViewXYZoom::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3394,14 +2997,11 @@ DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewPileMode::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3415,14 +3015,11 @@ DeviseCommand_setViewPileMode::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_savePixmap::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3436,14 +3033,11 @@ DeviseCommand_savePixmap::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_loadPixmap::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3457,14 +3051,11 @@ DeviseCommand_loadPixmap::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -3486,14 +3077,11 @@ DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_replaceView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view1 = (View *)classDir->FindInstance(argv[1]);
@@ -3512,14 +3100,11 @@ DeviseCommand_replaceView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setCursorSrc::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseCursor *cursor = (DeviseCursor *)
@@ -3538,14 +3123,11 @@ DeviseCommand_setCursorSrc::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setCursorDst::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseCursor *cursor = (DeviseCursor *)
@@ -3564,14 +3146,11 @@ DeviseCommand_setCursorDst::Run(int argc, char** argv)
           return 1;
         } 
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setPixelWidth::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
@@ -3586,14 +3165,11 @@ DeviseCommand_setPixelWidth::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getAxis::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -3614,14 +3190,11 @@ DeviseCommand_getAxis::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setAction::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3639,14 +3212,11 @@ DeviseCommand_setAction::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setLinkFlag::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -3660,14 +3230,11 @@ DeviseCommand_setLinkFlag::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_highlightView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -3680,14 +3247,11 @@ DeviseCommand_highlightView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getparam::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->GetParams(argv[1], argv[2], numArgs, args);
@@ -3695,14 +3259,11 @@ DeviseCommand_getparam::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertViewInLens::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
@@ -3720,7 +3281,7 @@ DeviseCommand_insertViewInLens::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertMapping::Run(int argc, char** argv)
@@ -3736,9 +3297,6 @@ DeviseCommand_insertMapping::Run(int argc, char** argv)
 int
 DeviseCommand_insertMapping::Run_3(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3756,14 +3314,11 @@ DeviseCommand_insertMapping::Run_3(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertMapping::Run_4(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3781,15 +3336,12 @@ DeviseCommand_insertMapping::Run_4(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 int
 DeviseCommand_getMappingLegend::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3806,14 +3358,11 @@ DeviseCommand_getMappingLegend::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertLink::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -3832,14 +3381,11 @@ DeviseCommand_insertLink::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewInLink::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -3860,14 +3406,11 @@ DeviseCommand_viewInLink::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_unlinkView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -3886,14 +3429,11 @@ DeviseCommand_unlinkView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertWindow::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3912,14 +3452,11 @@ DeviseCommand_insertWindow::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_removeMapping::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -3937,14 +3474,11 @@ DeviseCommand_removeMapping::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveDisplayImage::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DisplayExportFormat format = POSTSCRIPT;
@@ -3957,14 +3491,11 @@ DeviseCommand_saveDisplayImage::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveDisplayView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DisplayExportFormat format = POSTSCRIPT;
@@ -3977,14 +3508,11 @@ DeviseCommand_saveDisplayView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveTdata::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
@@ -4001,14 +3529,11 @@ DeviseCommand_saveTdata::Run(int argc, char** argv)
           }
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getDisplayImage::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <port number> <image type>
@@ -4034,14 +3559,11 @@ DeviseCommand_getDisplayImage::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getDisplayImageAndSize::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <port number> <image type>
@@ -4049,14 +3571,11 @@ DeviseCommand_getDisplayImageAndSize::Run(int argc, char** argv)
           return GetDisplayImageAndSize(control, atoi(argv[1]), argv[2]);
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getFont::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = View::FindViewByName(argv[1]);
@@ -4076,14 +3595,11 @@ DeviseCommand_getFont::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewSetAlign::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <view name> <alignment value>
@@ -4105,14 +3621,11 @@ DeviseCommand_viewSetAlign::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
@@ -4138,14 +3651,11 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
 	  }
         }      
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setMappingLegend::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -4163,14 +3673,11 @@ DeviseCommand_setMappingLegend::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_markViewFilter::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4185,14 +3692,11 @@ DeviseCommand_markViewFilter::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setAxis::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4213,14 +3717,11 @@ DeviseCommand_setAxis::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getWindowImage::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <port number> <image type> <window name>
@@ -4252,14 +3753,11 @@ DeviseCommand_getWindowImage::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getWindowImageAndSize::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <port number> <image type> <window name>
@@ -4267,14 +3765,11 @@ DeviseCommand_getWindowImageAndSize::Run(int argc, char** argv)
           return GetWindowImageAndSize(control, atoi(argv[1]), argv[2], argv[3]);
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_swapView::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[1]);
@@ -4293,14 +3788,11 @@ DeviseCommand_swapView::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
@@ -4317,14 +3809,11 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getCreateParam::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           classDir->CreateParams(argv[1], argv[2], argv[3], numArgs, args);
@@ -4332,14 +3821,11 @@ DeviseCommand_getCreateParam::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_getItems::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           control->GetGroupDir()->get_items(result, argv[1], argv[2], argv[3]);
@@ -4347,7 +3833,7 @@ DeviseCommand_getItems::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 int
@@ -4364,9 +3850,6 @@ DeviseCommand_setWindowLayout::Run(int argc, char** argv)
 int
 DeviseCommand_setWindowLayout::Run_4(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
@@ -4379,14 +3862,11 @@ DeviseCommand_setWindowLayout::Run_4(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
@@ -4400,14 +3880,11 @@ DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveWindowImage::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DisplayExportFormat format = POSTSCRIPT;
@@ -4426,28 +3903,22 @@ DeviseCommand_saveWindowImage::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewOverrideColor::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
     		control->ReturnVal(API_ACK, "done");
     		return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_parseSchema::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           char *name = ParseSchema(argv[1], argv[2], argv[3]);
@@ -4459,14 +3930,11 @@ DeviseCommand_parseSchema::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_winSetPrint::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
     #if defined(DEBUG)
@@ -4485,14 +3953,11 @@ DeviseCommand_winSetPrint::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setLabel::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4505,14 +3970,11 @@ DeviseCommand_setLabel::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_dataSegment::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DataSeg::Set(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
@@ -4520,14 +3982,11 @@ DeviseCommand_dataSegment::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <viewName> <mode> <relativePan> <absolutePan>
@@ -4549,14 +4008,11 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setCursorGrid::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <cursorName> <useGrid> <gridX> <gridY>
@@ -4576,14 +4032,11 @@ DeviseCommand_setCursorGrid::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveSession::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <file name> <as template> <as export> <with data>
@@ -4600,14 +4053,11 @@ DeviseCommand_saveSession::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setWinGeometry::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4627,14 +4077,11 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
           return 1;
         }  
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setFilter::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4656,14 +4103,11 @@ DeviseCommand_setFilter::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_saveDisplayImageAndMap::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           DisplayExportFormat format = POSTSCRIPT;
@@ -4677,14 +4121,11 @@ DeviseCommand_saveDisplayImageAndMap::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_insertViewHistory::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
@@ -4703,14 +4144,11 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setFont::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           View *view = View::FindViewByName(argv[1]);
@@ -4726,15 +4164,11 @@ DeviseCommand_setFont::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_set3DLocation::Run(int argc, char** argv)
 {
-    int ret_value;
-
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
@@ -4765,14 +4199,11 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_setViewGDS::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Argument: <view name> <draw to screen> <send to socket>
@@ -4801,14 +4232,11 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 int
 DeviseCommand_viewSetHome::Run(int argc, char** argv)
 {
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
     {
         {
           // Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
@@ -4835,7 +4263,7 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
           return 1;
         }
     }
-    return ret_value;
+    return true;
 }
 
 IMPLEMENT_COMMAND_BEGIN(playLog)

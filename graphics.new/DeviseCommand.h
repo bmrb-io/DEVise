@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/02 09:00:42  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.4  1998/03/27 15:08:56  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -79,7 +82,7 @@ class DeviseCommand
 		{
 			delete _controlStack;
 		}
-		virtual int Run(int argc, char** argv);
+		virtual int Run(int argc, char** argv) = 0;
 	protected:
 		char		result[10*1024];
 		ClassDir	*classDir;

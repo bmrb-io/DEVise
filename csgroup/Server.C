@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/05/02 08:38:58  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.9  1998/03/30 22:32:51  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -293,8 +297,11 @@ Server::~Server()
 		CloseClient(i);
     }
     delete [] _clients;
+	_clients = NULL;
     free( _name);
+	_name = NULL;
     delete _cmd;
+	_cmd = NULL;
 }
 
 void Server::DoAbort(char *reason)
@@ -577,7 +584,8 @@ void Server::CloseClient(ClientID clientID)
 	_clients[clientID].imagefd = -1;
     _clients[clientID].fd = -1;
     _clients[clientID].valid = false;
-	delete _clients[clientID].cname;
+	delete [] _clients[clientID].cname;
+	_clients[clientID].cname = NULL;
 
 	// clean the group associated with this client, if any
 	CloseClientGroup(clientID);
@@ -775,7 +783,9 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 		// initialize the server according to the client
 		success = ExecInitServer(cid, argv[2], errmsg);
 		if (_clients[cid].cname != NULL)
+		{
 			free( _clients[cid].cname);
+		}
 		_clients[cid].cname = strdup(argv[2]);
 	}
 	else if (!strcmp(argv[0], CS_Query_Req))
@@ -844,6 +854,7 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 					// record its groupkey
 					if (_clients[cid].gname!= NULL)
 						delete _clients[cid].gname;
+						_clients[cid].gname = NULL;
 					_clients[cid].gname = new GroupKey;
 					memcpy((char*)_clients[cid].gname,(char*)gkp,
 						sizeof(GroupKey));
@@ -938,7 +949,9 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 			delete grouplist;
 		}
 		else
+		{
 			SendClientCmd(_clients[cid].fd, API_ACK, 1, errmsg);
+		}
 	}
 	else
 	{
@@ -1204,7 +1217,9 @@ ControlChannel::ControlChannel()
 ControlChannel::~ControlChannel()
 {
 	delete _key;
-	delete _hostname;
+	_key = NULL;
+	delete [] _hostname;
+	_hostname = NULL;
 }
 int
 ControlChannel::GetFd()
