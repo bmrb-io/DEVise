@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.48  2001/02/20 20:02:52  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.47.4.1  2001/02/16 21:37:58  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -426,7 +430,9 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
     AttrType xAttr = view->GetXAxisAttrType();
     AttrType yAttr = view->GetYAxisAttrType();
 
-    InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
+    Coord msgX = ((x + xHigh) / 2.0) * view->GetXAxisMultFact();
+    Coord msgY = ((y + yHigh) / 2.0) * view->GetYAxisMultFact();
+    InitPutMessage(msgX, xAttr, msgY, yAttr);
     
     if (view->GetNumDimensions() != 2) {
         PutMessage("");

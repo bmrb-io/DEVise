@@ -2684,8 +2684,9 @@ Num Date        Status  Description
 			work right (records are shown for drill-down that
 			are not selected by the leader view). (rkw)
 
-675 05/23/01	OPEN	Axis mult factor should be applied to value returned
+675 05/23/01	FIXED	Axis mult factor should be applied to value returned
 			in drill-down. (rkw)
+			(Fixed by rkw, 5/23/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
