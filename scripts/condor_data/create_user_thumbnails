@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1999/07/22 14:52:26  wenger
+#  Updated Condor scripts for alignment info in mapping instead of view.
+#
 #  Revision 1.5  1999/07/15 19:26:42  wenger
 #  Decreased font sizes for better appearance.
 #
@@ -178,12 +181,14 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions UserList_view 1 0 0 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} DataParent_view 0 1 -1 -2 36 9\n";
   print SES_OUT "DEVise viewSetImplicitHome {DataParent_view} 1 1 1 1 0.50 ",
       "0.50 0.0 0.0 100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter DataParent_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions DataParent_view 1 0 0 1\n";
   print SES_OUT "\n";
 
   my $user;

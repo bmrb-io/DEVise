@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1999/07/22 14:52:13  wenger
+#  Updated Condor scripts for alignment info in mapping instead of view.
+#
 #  Revision 1.6  1999/07/15 19:26:42  wenger
 #  Decreased font sizes for better appearance.
 #
@@ -221,18 +224,21 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions UserList_view 1 0 0 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 2\n";
   print SES_OUT "DEVise viewSetImplicitHome {Select1_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter Select1_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions Select1_view 1 0 0 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} Select2_view 0 1 0 1 36 9\n";
   print SES_OUT "DEVise viewSetImplicitHome {Select2_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter Select2_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions Select2_view 1 0 0 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} User1_view 0 1 -1 -2 36 2\n";
@@ -241,6 +247,7 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetImplicitHome {User1_view} 1 1 2 1 0.5 0.5 -0.5 ",
       "$bottom 0.5 $top\n";
   print SES_OUT "DEVise setViewAutoFilter User1_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User1_view 1 1 1 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} User2_view 0 1 -1 -2 36 9\n";
@@ -249,14 +256,17 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetImplicitHome {User2_view} 1 1 2 1 0.5 0.5 -0.5 ",
       "$bottom 0.5 $top\n";
   print SES_OUT "DEVise setViewAutoFilter User2_view 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User2_view 1 1 1 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} TotalLinked_view ",
       "-0.5 0.5 -0.5 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetDisabledActions TotalLinked_view 1 1 1 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} Total_view ",
       "-0.5 0.5 -0.5 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetDisabledActions Total_view 1 1 1 1\n";
   print SES_OUT "\n";
 
   my @users;
@@ -296,6 +306,8 @@ sub CreateViews {
 
     print SES_OUT "\n";
   }
+
+  print SES_OUT "DEVise viewSetDisabledActions Total_viewsym 1 0 0 1\n";
 }
 
 #-----------------------------------------------------------
