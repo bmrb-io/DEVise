@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2002/01/24 23:03:36  xuk
+// *** empty log message ***
+//
 // Revision 1.74  2001/11/28 21:56:20  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -967,6 +970,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     private void cmdOpenSession(String clientCmd) throws YException
     {
+	client.sendCmd(DEViseCommands.UPDATEJS);
+
         if (client.isSessionOpened) {
             client.isSessionOpened = false;
             sendCmd(DEViseCommands.CLOSE_SESSION);

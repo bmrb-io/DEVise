@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.118  2002/02/06 23:09:44  xuk
+// Draw the axis labels in the JavaScreen
+//
 // Revision 1.117  2002/01/28 23:51:59  wenger
 // Updated the DEVised to support drawing axis labels on the JS side:
 // changed JAVAC_ViewDataArea command; leaves blank areas for axis
@@ -1217,6 +1220,10 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.SET_3D_CONFIG)) {
             // this command is for collaboration JS
             jsc.jscreen.collab3DView(args);
+
+        } else if (args[0].equals(DEViseCommands.UPDATEJS)) {
+            // update JS after open_session or close_session
+	    jsc.jscreen.updateScreen(false);
 
         } else {
             throw new YException("Unsupported command (" + response +

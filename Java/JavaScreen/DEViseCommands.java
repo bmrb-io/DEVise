@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2001/11/28 21:56:18  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.16  2001/11/19 17:17:02  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -223,7 +226,7 @@ public final class DEViseCommands
 
     public static final String VIEW_DATA_AREA = JS_PREFIX + "ViewDataArea";
 
-
+    public static final String UPDATEJS = JS_PREFIX + "UpdateJS";
     // -------------------------------------------------------------------
     // JSS commands.
 

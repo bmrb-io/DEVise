@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2002/01/23 21:54:12  xuk
+// Fixed bug 738: could start collaboration when leader has no session opened.
+//
 // Revision 1.59  2001/12/03 19:43:40  xuk
 // Fixed bug: inproper client state during client switching.
 //
@@ -486,7 +489,6 @@ public class DEViseClient
             if (useCgi()) {
 	        closeSocket();
 	    }
-
 	} else {
             cmdBuffer.addElement(cmd);
 	    if (pop.clientLog && logFile == null) {
@@ -717,6 +719,7 @@ public class DEViseClient
 			//TEMP -- move to addNewCmd()?
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
+			//sendCmd(DEViseCommands.UPDATAJS);
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
 		    } else if (command.startsWith(DEViseCommands.SAVE_CUR_SESSION)) {

@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.137  2002/02/22 21:47:42  xuk
+// Added GUI in "Option" menu to allow user to find out the client ID.
+//
 // Revision 1.136  2002/02/21 18:35:19  wenger
 // Added jsdevisec.restartSession method so Wavelet-IDR JavaScript code
 // can force a session restart.
@@ -659,7 +662,6 @@ public class jsdevisec extends Panel
 	}
 	buttonPanel.add(commMode);
 
-	pn("disable buttons = " + jsValues.session.disableButtons);
 	if (! jsValues.session.disableButtons)
 	    mainPanel.add(buttonPanel);
 

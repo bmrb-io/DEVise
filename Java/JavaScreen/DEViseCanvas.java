@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2002/02/20 18:08:39  xuk
+// Improvement on axis label drawing.
+//
 // Revision 1.89  2002/02/19 22:13:28  xuk
 // Improvement for label drawing.
 //
@@ -1223,6 +1226,7 @@ public class DEViseCanvas extends Container
             gc.setColor(new Color(view.viewFg));
             gc.setFont(view.viewDTFont);
             gc.drawString(view.viewTitle, view.viewDTX, view.viewDTY);
+	    //jsc.pn("We draw title: " + view.viewTitle);
         }
     }
 
