@@ -13,4 +13,7 @@ if (`hostname` == "yola") then
   unsetenv LD_LIBRARY_PATH
 endif
 
+limit cputime 10
+limit coredumpsize 0
+
 java DEViseCheckPop $*

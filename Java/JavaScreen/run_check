@@ -19,9 +19,6 @@ set path = ( /s/std/bin /usr/ucb /bin /p/devise/run . $path )
 # For yola.
 set path = ( $path /usr/people/zoo/bin /usr/local/zoobin /usr/freeware/bin /usr/people/zoo/zoobin /usr/sbin /usr/bsd /sbin /usr/bin /usr/bin/X11 /usr/freeware/bin /bmrb/bin /bmrb/irix/bin /usr/java/bin /usr/local/bin /usr/people/zoo/perl /usr1/local/share /usr1/local/bin /usr/bin/X11 )
 
-limit cputime 10
-limit coredumpsize 0
-
 set outfile = /tmp/run_check.out
 
 if (-e $outfile) then
