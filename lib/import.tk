@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/09/22 17:33:45  jussi
+#	Added copyright message.
+#
 #	Revision 1.2  1995/09/21 15:35:59  jussi
 #	Minor changes.
 #
@@ -35,6 +38,12 @@ if {[info exists env(IMPORT_DISKPATH)]} {
 ############################################################
 
 proc importUnixFile {} {
+    NotImplemented
+}
+
+############################################################
+
+proc importTapeFile {} {
     NotImplemented
 }
 
