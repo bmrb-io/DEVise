@@ -13,6 +13,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/02/18 22:21:18  wenger
+// Various changes to make cron scripts work better with new two-machine
+// setup: added -id argument to devise, jspop, jss; updated cron scripts
+// that check status of jspop, etc.; improved usage messages of jspop,
+// jss, js; improved DEVise.kill script; removed obsolete sections of
+// Java code.
+//
 // Revision 1.6  2000/02/18 06:45:41  hongyu
 // *** empty log message ***
 //
@@ -42,13 +49,13 @@ import  java.util.*;
 public class jss implements Runnable
 {
     private String usage = new String("usage: java jss -id[string] -server[number] -devisescript[filename] -debug[number] -jssport[number] -jspopport[number] -jspophost[string] -quit -usage\n" +
-	  "  -id[string]: ID for ps\n" + 
-	  "  -server[number]: number of servers to start\n" + 
-	  "  -devisescript[filename]: script to use to start servers\n" + 
-	  "  -debug[number]: debug output level\n" + 
-	  "  -jssport[number]: port jss listens on\n" + 
-	  "  -jspopport[number]: port to use to connect to jspop\n" + 
-	  "  -jspophost[string]: host jspop is running on\n" + 
+	  "  -id[string]: ID for ps\n" +
+	  "  -server[number]: number of servers to start\n" +
+	  "  -devisescript[filename]: script to use to start servers\n" +
+	  "  -debug[number]: debug output level\n" +
+	  "  -jssport[number]: port jss listens on\n" +
+	  "  -jspopport[number]: port to use to connect to jspop\n" +
+	  "  -jspophost[string]: host jspop is running on\n" +
 	  "  -quit: tell another jss to quit" +
 	  "  -usage: print this message");
 
@@ -59,6 +66,7 @@ public class jss implements Runnable
 
     private int jspopPort = DEViseGlobals.JSPOPPORT;
     private String jspopHost = DEViseGlobals.JSPOPHOST;
+    private InetAddress jspopAddress = null;
     private Socket jspopSocket = null;
     private DataOutputStream jspopOS = null;
     private DataInputStream jspopIS = null;
@@ -159,10 +167,11 @@ public class jss implements Runnable
 
         System.out.println("\nTry to connect to jspop server " + jspopHost + " at port " + jspopPort + " ...\n");
         try {
-            connectToJSPOP();
             for (int i = 0; i < deviseds.size(); i++) {
+                connectToJSPOP();
                 devised server = (devised)deviseds.elementAt(i);
                 sendToJSPOP("JSS_Add " + jssPort + " " + server.cmdPort + " " + server.imgPort);
+                disconnectFromJSPOP();
             }
         } catch (YException e) {
             System.out.println(e.getMessage());
@@ -176,7 +185,7 @@ public class jss implements Runnable
             try {
                 socket = jssServerSocket.accept();
                 hostname = socket.getInetAddress().getHostName();
-                if (hostname.equals(jspopHost)) {
+                if (hostname.equals(jspopAddress.getHostName())) {
                     System.out.println("Connection request from " + hostname + " is accepted ...");
                     try {
                         jspopIS = new DataInputStream(socket.getInputStream());
@@ -253,7 +262,11 @@ public class jss implements Runnable
         disconnectFromJSPOP();
 
         try {
-            jspopSocket = new Socket(jspopHost, jspopPort);
+            if (jspopAddress == null) {
+                jspopAddress = InetAddress.getByName(jspopHost);
+            }
+
+            jspopSocket = new Socket(jspopAddress, jspopPort);
             jspopOS = new DataOutputStream(new BufferedOutputStream(jspopSocket.getOutputStream()));
         } catch (UnknownHostException e) {
             throw new YException("Can not find jspop host " + jspopHost);
@@ -427,6 +440,7 @@ public class jss implements Runnable
             } else if (args[i].startsWith("-jspophost")) {
                 if (!args[i].substring(10).equals("")) {
                     jspopHost = args[i].substring(10);
+                    System.out.println("JSPOP host is " + jspopHost);
                 }
 			} else if (args[i].startsWith("-id")) {
                 if (!args[i].substring(3).equals("")) {
@@ -459,17 +473,20 @@ class devised
 
     public devised(String idStr, String startScript) throws YException
     {
+        //System.out.println("I am in devised");
         start(idStr, startScript);
     }
 
     private synchronized void start(String idStr, String startScript) throws YException
     {
         // stop previous devised first if any
+        //System.out.println("I am in devised-start");
         stop();
 
         // find three free port for new devised
         ServerSocket socket1 = null, socket2 = null, socket3 = null;
         try {
+            //System.out.println("Try to find 3 available ports ... ");
             socket1 = new ServerSocket(0);
             socket2 = new ServerSocket(0);
             socket3 = new ServerSocket(0);
@@ -508,6 +525,7 @@ class devised
 			String execStr = startScript;
 			if (idStr != null) execStr += " -id " + idStr;
 			execStr += " -port " + cmdPort + " -imageport " + imgPort + " -switchport " + switchPort;
+			System.out.println("Try to start command \"" + execStr + "\" ...");
             process = currentRT.exec(execStr);
         } catch (IOException e) {
             throw new YException("IO Error while trying to start a new devised at port " + cmdPort + "," + imgPort + "," + switchPort);
@@ -518,6 +536,7 @@ class devised
 
     public synchronized void stop()
     {
+        //System.out.println("I am in devised-stop");
         if (process != null) {
             try {
                 int v = process.exitValue();
@@ -531,8 +550,9 @@ class devised
         Runtime currentRT = Runtime.getRuntime();
         Process kill = null;
         try {
+            //System.out.println("I am start to kill");
             kill = currentRT.exec(devised.devisedKill + " -port " + cmdPort);
-
+            //System.out.println("kill finished");
             boolean stillWorking = true;
             while (stillWorking) {
                 try {
@@ -553,7 +573,7 @@ class devised
             kill.destroy();
             kill = null;
         }
-
+        //System.out.println("leaving stop");
         cmdPort = 0;
         imgPort = 0;
         switchPort = 0;

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2000/02/16 08:53:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.29  2000/01/12 14:37:48  hongyu
 // *** empty log message ***
 //
@@ -21,6 +24,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.31  2000/02/16 08:53:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.29  2000/01/12 14:37:48  hongyu
 // *** empty log message ***
 //
@@ -171,7 +177,7 @@ public class DEViseCanvas extends Container
     }
 
     // loc is relative to this canvas
-    public Image getCroppedXORImage(Rectangle loc)
+    public Image getCroppedXORImage(Color c, Rectangle loc)
     {
         if (image == null)
             return null;
@@ -183,7 +189,7 @@ public class DEViseCanvas extends Container
             return null;
         }
 
-        source = new FilteredImageSource(img.getSource(), new XORFilter());
+        source = new FilteredImageSource(img.getSource(), new XORFilter(c));
         img = createImage(source);
 
         return img;
@@ -503,7 +509,7 @@ public class DEViseCanvas extends Container
             }
 
             if (cursor.image == null || isImageUpdated) {
-                cursor.image = getCroppedXORImage(loc);
+                cursor.image = getCroppedXORImage(cursor.color, loc);
             }
 
             if (cursor.image != null) {
@@ -1643,13 +1649,27 @@ public class DEViseCanvas extends Container
 // this class is used to create XOR of part of image
 class XORFilter extends RGBImageFilter
 {
-    public XORFilter()
+    Color color = Color.white;
+    int red, green, blue;
+
+    public XORFilter(Color c)
     {
+        if (c != null) {
+            color = c;
+        }
+
+        red = color.getRed() << 16;
+        green = color.getGreen() << 8;
+        blue = color.getBlue();
+
+        System.out.println("r = " + red + " g = " + green + " b = " + blue);
+
         canFilterIndexColorModel = true;
     }
 
     public int filterRGB(int x, int y, int rgb)
     {
-        return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) | ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
+        //return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) | ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
+        return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ red) | ((rgb & 0xff00) ^ green) | ((rgb & 0xff) ^ blue));
     }
 }

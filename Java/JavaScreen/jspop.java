@@ -13,6 +13,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2000/02/18 22:21:17  wenger
+// Various changes to make cron scripts work better with new two-machine
+// setup: added -id argument to devise, jspop, jss; updated cron scripts
+// that check status of jspop, etc.; improved usage messages of jspop,
+// jss, js; improved DEVise.kill script; removed obsolete sections of
+// Java code.
+//
 // Revision 1.22  2000/02/15 20:50:42  hongyu
 // *** empty log message ***
 //
@@ -445,6 +452,13 @@ public class jspop implements Runnable
     {
         DEViseServer newserver = new DEViseServer(this, name, port, cmdport, imgport);
         servers.addElement(newserver);
+
+        try {
+            newserver.start();
+        } catch (YException e) {
+            removeServer(newserver);
+            pn(e.getMsg());
+        }
     }
 
     public synchronized void removeServer(DEViseServer server)
@@ -488,6 +502,7 @@ public class jspop implements Runnable
                     try {
                         newserver.start();
                     } catch (YException e) {
+                        removeServer(newserver);
                         pn(e.getMsg());
                         continue;
                     }

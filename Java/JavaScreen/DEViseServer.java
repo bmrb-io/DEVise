@@ -13,6 +13,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2000/02/18 22:21:15  wenger
+// Various changes to make cron scripts work better with new two-machine
+// setup: added -id argument to devise, jspop, jss; updated cron scripts
+// that check status of jspop, etc.; improved usage messages of jspop,
+// jss, js; improved DEVise.kill script; removed obsolete sections of
+// Java code.
+//
 // Revision 1.30  2000/02/16 08:53:58  hongyu
 // *** empty log message ***
 //
@@ -62,7 +69,7 @@ public class DEViseServer implements Runnable
     public int dataPort = 0, cmdPort = 0, switchPort = 0;
     public int jssport = 0;
     private DEViseCommSocket socket = null;
-    private int devisedTimeout = 180 * 1000;
+    private int devisedTimeout = 10 * 1000;
     private int socketTimeout = 1000;
 
     private DEViseClient newClient = null;
@@ -182,7 +189,7 @@ public class DEViseServer implements Runnable
             return false;
         }
 
-        int time = 0, timestep = 5000;
+        int time = 0, timestep = 1000;
 
         while (time < devisedTimeout) {
             try {
@@ -199,6 +206,7 @@ public class DEViseServer implements Runnable
 
                 return true;
             } catch (YException e) {
+                pop.pn("Can not connect to devised, wait to try again ...");
                 closeSocket();
             }
         }
