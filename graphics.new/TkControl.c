@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.58  1996/07/09 16:00:22  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
   Revision 1.57  1996/07/01 19:24:42  jussi
   The Web data transfer routines are now caller from DataSourceWeb.c,
   and not TkControl.c. The Web interface is now in the server, not
@@ -352,6 +357,7 @@ void TkControlPanel::StartSession()
     /* restore session */
     Tcl_SetVar(_interp, "restoring", "1", 0);
     char *sessionName = Init::SessionName();
+    Tcl_SetVar(_interp, "file", sessionName, 0);
     int code = Tcl_EvalFile(_interp, sessionName);
     Tcl_SetVar(_interp, "restoring", "0", 0);
     if (code != TCL_OK) {

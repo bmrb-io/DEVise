@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/11 18:18:04  jussi
+  In batch mode, the Tcl client no longer uses any Tk or X11 features.
+  The client operates in batch mode when an idle script is specified.
+  The idle script is interpreted with Tcl. Tk is not needed.
+
   Revision 1.9  1996/07/09 15:59:36  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -240,6 +245,7 @@ void SetupConnection()
     if (_restoreFile) {
         printf("Restoring session file %s\n", _restoreFile);
         Tcl_SetVar(_interp, "restoring", "1", 0);
+        Tcl_SetVar(_interp, "file", _restoreFile, 0);
         int code = Tcl_EvalFile(_interp, _restoreFile);
         Tcl_SetVar(_interp, "restoring", "0", 0);
         if (code != TCL_OK) {
