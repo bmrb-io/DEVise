@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/11 01:54:28  jussi
+  Added DestroyAllInstances() method.
+
   Revision 1.4  1996/04/13 23:39:38  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -75,9 +78,8 @@ public:
 	/* Get default parameters */
 	void GetDefaultParams(int &argc, char **&argv);
 
-
 	/* Get user info */
-	virtual void *UserInfo() { return NULL; }
+	virtual void *UserInfo() { return 0; }
 
 	/**************************************************
 	Instance Info. 
