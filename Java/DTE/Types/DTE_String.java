@@ -21,7 +21,7 @@ public class DTE_String extends DTE_Type implements Cloneable
     return "string";
   }
 
-  public Object get_type( )
+  public Object get_val( )
   {
     return val;
   }

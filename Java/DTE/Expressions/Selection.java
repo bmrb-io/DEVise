@@ -24,18 +24,16 @@ public class Selection implements Expression {
 		return alias + "." + attribute;
 	}
 
-	public Expression typeCheck(SymbolTable st){
+	public Expression typeCheck(SymbolTable st) throws RuntimeException{
 		Expression expr = st.get(toString());
-		if(expr != null){
+		if(expr != null)
 			return expr;
-		}
-		else{
-			return null;
-	// throw "table " + alias + " does not have attr " + attribute;
-		}
+		else
+			throw new RuntimeException("table "+alias+" does not have attr "+attribute);
+		 
 	}
 
-	public ExecExpr createExec(OptNode[] nodes){
+	public ExecExpr createExec(OptNode[] nodes) throws InternalError{
 		Expression[][] exprList = new Expression[2][];
 		for(int i = 0; i < nodes.length; i++){
 			exprList[i] = nodes[i].getProjectList();
@@ -48,7 +46,9 @@ public class Selection implements Expression {
 			}
 		}
 
-		return null;
-		// throw exception, internal error
+		throw new InternalError("Strange!\n");
 	}
-};
+}
+
+
+
