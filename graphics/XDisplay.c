@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/14 01:36:59  jussi
+  Added support for ICCCM (inter-client communication) between
+  window manager and the X windows we create. This allows the
+  window manager to Close/Delete a window by sending a
+  WM_DELETE_WINDOW message to Devise, rather than Destroying
+  a window which closes the X connection.
+
   Revision 1.24  1996/06/24 19:38:35  jussi
   Cleaned up a little and made XDisplay now use the ConnectionNumber()
   as the file descriptor. Also added a Flush() to InternalProcessing()
@@ -121,6 +128,10 @@
 #include "Init.h"
 #endif
 
+extern "C" {
+#include "xv.h"
+}
+
 //#define DEBUG
 
 #ifdef TK_WINDOW_EV2
@@ -200,6 +211,8 @@ XDisplay::XDisplay(char *name)
 #endif
 }
 
+/* Register the display with the dispatcher */
+
 #ifndef LIBCS
 void XDisplay::Register()
 {
@@ -207,10 +220,162 @@ void XDisplay::Register()
 }
 #endif
 
-void XDisplay::Flush()
+/* Export display image to other graphics formats */
+
+void XDisplay::ExportImage(DisplayExportFormat format,
+                           char *filename)
 {
-  /* Do a sync to force all buffered window operations on the screen */
-  XSync(_display, false);
+  /* compute the bounding rectangle of all windows */
+
+  int x = 0, y = 0;
+  unsigned int w = 0, h = 0;
+
+  int index = _winList.InitIterator();
+  while(_winList.More(index)) {
+    XWindowRep *win = _winList.Next(index);
+    if (win->_parent)
+      continue;
+    int wx, wy;
+    unsigned int ww, wh;
+    win->GetRootGeometry(wx, wy, ww, wh);
+    if (!w && !h) {
+      /* this is the first window */
+      x = wx;
+      y = wy;
+      w = ww;
+      h = wh;
+    } else {
+      /* compute combined area */
+      int x2 = MAX(x + w - 1, wx + ww - 1);
+      int y2 = MAX(y + h - 1, wy + wh - 1);
+      x = MIN(x, wx);
+      y = MIN(y, wy);
+      w = x2 - x;
+      h = y2 - y;
+    }
+  }
+  _winList.DoneIterator(index);
+
+#ifdef DEBUG
+  printf("Bounding rectangle of windows is %d,%d,%u,%u\n", x, y, w, h);
+#endif
+
+  /* Allocate a pixmap large enough to hold all windows */
+
+  unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
+  Window parent = DefaultRootWindow(_display);
+  Pixmap pixmap = XCreatePixmap(_display, parent, w, h, depth);
+  if (!pixmap) {
+    fprintf(stderr, "Cannot create %ux%d pixmap\n", w, h);
+    return;
+  }
+
+  /* Create and set up graphics context */
+
+  GC gc = XCreateGC(_display, pixmap, 0, NULL);
+  XSetState(_display, gc, None, None, GXcopy, AllPlanes);
+  XFillRectangle(_display, pixmap, gc, 0, 0, w, h);
+  XSetGraphicsExposures(_display, gc, False);
+  XSetClipMask(_display, gc, None);
+
+  /* Copy windows to pixmap */
+
+  index = _winList.InitIterator();
+  while(_winList.More(index)) {
+    XWindowRep *win = _winList.Next(index);
+    if (win->_parent)
+      continue;
+    int wx, wy;
+    unsigned int ww, wh;
+    win->GetRootGeometry(wx, wy, ww, wh);
+    int dx = wx - x;
+    int dy = wy - y;
+#ifdef DEBUG
+    printf("Copying from XWin 0x%p to %d,%d,%u,%u\n", win,
+           dx, dy, ww, wh);
+#endif
+    DOASSERT(dx >= 0 && dy >= 0, "Invalid window coordinates");
+    Pixmap src = win->GetPixmapId();
+    if (src)
+      XWindowRep::CoalescePixmaps(win);
+    else {
+      src = win->FindTopWindow(win->GetWinId());
+      XRaiseWindow(_display, src);
+    }
+    XCopyArea(_display, src, pixmap, gc, 0, 0, ww, wh, dx, dy);
+  }
+  _winList.DoneIterator(index);
+
+  /* Cannot get attributes of pixmap using XGetWindowAttributes
+     so let's get the attributes from the root window and then
+     patch xwa with the pixmap's information */
+
+  XWindowAttributes xwa;
+  if (!XGetWindowAttributes(_display, DefaultRootWindow(_display), &xwa)) {
+    fprintf(stderr, "Cannot get window attributes\n");
+    return;
+  }
+  xwa.x = x;
+  xwa.y = y;
+  xwa.width = w;
+  xwa.height = h;
+  
+  /* Convert pixmap to GIF and write to file */
+
+  ConvertAndWriteGIF(pixmap, xwa, filename);
+
+  /* Free gc and pixmap area */
+
+  XFreeGC(_display, gc);
+  XFreePixmap(_display, pixmap);
+}
+
+/* Convert drawable to GIF and write to file */
+
+void XDisplay::ConvertAndWriteGIF(Drawable drawable,
+                                  XWindowAttributes xwa,
+                                  char *filename)
+{
+  XImage *image = XGetImage(_display, drawable, 0, 0, xwa.width, xwa.height,
+			    AllPlanes, ZPixmap);
+  if (!image || !image->data) {
+    fprintf(stderr, "Cannot get image of window or pixmap\n");
+    return;
+  }
+
+  XColor *colors = 0;
+  int ncolors = getxcolors(&xwa, &colors, _display);
+  int code = convertImage(image, colors, ncolors, &xwa);
+
+  XDestroyImage(image);
+  if (colors)
+    free(colors);
+
+  if (code != 1 || !grabPic) {
+    fprintf(stderr, "Cannot convert image\n");
+    return;
+  }
+
+  int ptype = (gbits == 24 ? PIC24 : PIC8);
+  int colorstyle = -1;                  // use 1 for grayscale
+  char *comment = "Visualization by DEVise (c) 1996";
+
+  FILE *fp = fopen(filename, "wb");
+  if (!fp) {
+    fprintf(stderr, "Cannot open file %s for writing\n", filename);
+    return;
+  }
+
+  int status = WriteGIF(fp, grabPic, ptype, gWIDE, gHIGH,
+			grabmapR, grabmapG, grabmapB, ncolors,
+			colorstyle, comment);
+  if (status)
+    fprintf(stderr, "Cannot write GIF image\n");
+
+  fclose(fp);
+
+  free(grabPic);
+  grabPic = 0;
 }
 
 /*******************************************************************
@@ -414,11 +579,6 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 #endif
 
-  if (parentRep) {
-    XWindowRep *xParentRep = (XWindowRep *)parentRep;
-    parent = xParentRep->GetWinId();
-  }
-
   Color realFgnd, realBgnd;
   realFgnd = GetLocalColor(fgnd);
   realBgnd = GetLocalColor(bgnd);
@@ -455,6 +615,9 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.cursor  			= None;
 
   /* Create the window. */
+
+  if (parentRep)
+    parent = ((XWindowRep *)parentRep)->GetWinId();
 
   unsigned int border_width;
   if (winBoundary)
@@ -537,7 +700,9 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 
   /* Return the XWindowRep structure. */
 
-  XWindowRep *xwin = new XWindowRep(_display, w, this, fgnd, bgnd, false);
+  XWindowRep *xwin = new XWindowRep(_display, w, this,
+                                    (XWindowRep *)parentRep,
+                                    fgnd, bgnd, false);
   DOASSERT(xwin, "Cannot create XWindowRep");
   _winList.Insert(xwin);
   
