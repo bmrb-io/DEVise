@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/03/06 02:37:20  donjerko
+  *** empty log message ***
+
   Revision 1.53  1997/03/02 00:42:40  donjerko
   Attribute recId as not added to the schema in this file, it is done
   by DTE now. This might screw up the UNIXFILE because they are not
@@ -521,13 +524,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
 
-	if(!strcmp(argv[0],"dteImportFileType")){
-	  char * name = dteImportFileType(argv[1]); 
-	  if (!name){
-		strcpy(result,"");
-		control->ReturnVal(API_NAK, result);
-		return -1;
-	  }
+    if(!strcmp(argv[0],"dteImportFileType")){
+      char * name = dteImportFileType(argv[1]); 
+      if (!name){
+	strcpy(result,"");
+	control->ReturnVal(API_NAK, result);
+	return -1;
+      }
       control->ReturnVal(API_ACK, name);
       return 1;
     }
@@ -612,6 +615,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       Boolean batch = (atoi(argv[1]) ? true : false);
       control->SetBatchMode(batch);
       control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "invalidateTData")) {
+      TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+      if (!tdata) {
+	control->ReturnVal(API_NAK, "Cannot find TData");
+	return -1;
+      }
+      tdata->InvalidateTData();
+      control->ReturnVal(API_ACK, "Done");
       return 1;
     }
     if (!strcmp(argv[0], "invalidatePixmap")) {
