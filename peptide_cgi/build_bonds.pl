@@ -123,27 +123,21 @@ sub EndOfAcidConn {
 sub EndOfAcidAtoms {
   if ($lastacid ne "") {
     print "\nEnd of amino acid $lastacid\n" if ($debug);
-    print "\nDIAG End of amino acid $lastacid\n";
     OutputBonds();
   }
   $lastacid = $thisacid;
   $lastresnum = $thisresnum;
   $lastC = $atoms{C};
-print "DIAG lastC = $lastC\n";
   %atoms = ();
 }
 
 sub OutputBonds {
-#TEMPTEMP -- connect one amino acid to the previous one
-
-  #TEMPTEMP -- add residue number
-  print OUT "\n# $lastacid\n";
+  print OUT "\n# $lastacid (residue $lastresnum)\n";
 
   #TEMPTEMP -- get this to work with a reference?
   #@conns = \@{$connhash{$lastacid}};
   @conns = @{$connhash{$lastacid}};
   #$conns = \@{$connhash{$lastacid}};
-  #TEMPTEMP print "$conns[0][0]\n";
 
   $lastbond = $#conns;
   for ($bondnum = 0; $bondnum <= $lastbond; $bondnum++) {
@@ -163,7 +157,7 @@ sub OutputBonds {
 
   # Connect to the previous residue.
   if ($lastC) {
-    print OUT "Connect to previous residue.\n";
+    print OUT "\n# Connect to previous residue.\n";
 
     $atom0line = $lastC;
     $atom1line = $atoms{N};
