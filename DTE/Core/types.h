@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/25 22:14:56  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.10  1997/02/18 18:06:08  donjerko
   Added skeleton files for sorting.
 
@@ -783,5 +786,9 @@ DestroyPtr getDestroyPtr(TypeID root); // throws
 PromotePtr getPromotePtr(TypeID from, TypeID to); // throws
 
 ADTCopyPtr getADTCopyPtr(TypeID adt); // throws
+
+void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs, 
+	const OperatorPtr* greaterPtrs, const Tuple* tup, 
+	Tuple* highTup, Tuple* lowTup);
 
 #endif

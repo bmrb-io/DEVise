@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/02/21 01:38:07  donjerko
+  Fixed some problems with "group by" clause.
+
   Revision 1.15  1997/02/18 18:06:04  donjerko
   Added skeleton files for sorting.
 
@@ -278,6 +281,9 @@ listOfTables :
 	;
 optWhereClause : WHERE predicate {
          $$ = $2;
+	}
+	| WHERE {
+		$$ = NULL;
 	}
 	| {
 		$$ = NULL;

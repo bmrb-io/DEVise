@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/25 22:14:55  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.9  1997/02/18 18:06:07  donjerko
   Added skeleton files for sorting.
 
@@ -790,7 +793,7 @@ istream& IndexDesc::read(istream& in){
 }
 
 void IndexDesc::display(ostream& out){
-	assert(out);
+	assert(out.good());
 	out << numKeyFlds << " ";
 	for(int i = 0; i < numKeyFlds; i++){
 		out << keyTypes[i] << " ";
@@ -920,3 +923,15 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	}
 }
 
+void updateHighLow(int numFlds, const OperatorPtr* lessPtrs, 
+	const OperatorPtr* greaterPtrs, const Tuple* tup, 
+	Tuple* highTup, Tuple* lowTup){
+	for (int i = 0; i < numFlds; i++){
+		if(((IBool*) lessPtrs[i](tup[i], lowTup[i]))->getValue()){
+			lowTup[i] = tup[i];
+		}
+		if(((IBool*) greaterPtrs[i](tup[i], highTup[i]))->getValue()){
+			highTup[i] = tup[i];
+		}
+	}
+}

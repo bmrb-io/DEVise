@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/02/03 04:11:31  donjerko
+  Catalog management moved to DTE
+
   Revision 1.4  1996/12/21 22:21:45  donjerko
   Added hierarchical namespace.
 
@@ -55,7 +58,7 @@
 
 extern int errno;
 
-#define DEBUG_SOCK_REL
+// #define DEBUG_SOCK_REL
 
 // *************************************************************************
 Cor_sockbuf::Cor_sockbuf(int sockfd)

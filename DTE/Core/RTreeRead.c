@@ -94,7 +94,9 @@ Tuple* RTreeIndex::getNext(){
 			offs += packSize(adt, typeIDs[i]);
 			retVal[i] = adt;
 		}
+		#ifdef DEBUG
 		cout << "Offset = " << offset << endl;
+		#endif
 		return retVal;
 	}
 	else{
