@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1998/03/12 18:25:02  donjerko
+# *** empty log message ***
+#
 # Revision 1.7  1998/03/04 18:39:49  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -171,9 +174,20 @@ netfns.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
 netfns.o: /usr/include/sys/filio.h /usr/include/sys/ioccom.h
 netfns.o: /usr/include/sys/time.h /usr/include/sys/types.h
 netfns.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-netfns.o: /usr/include/sys/select.h /usr/include/time.h netfns.h
-netfns.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-netfns.o: /usr/include/unistd.h /usr/include/sys/unistd.h error.h
+netfns.o: /usr/include/sys/select.h /usr/include/time.h
+netfns.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+netfns.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+netfns.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+netfns.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+netfns.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+netfns.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+netfns.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+netfns.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+netfns.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+netfns.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+netfns.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+netfns.o: /usr/include/netdb.h netfns.h /usr/include/sys/socket.h
+netfns.o: /usr/include/sys/netconfig.h /usr/include/unistd.h error.h
 netfns.o: /usr/include/sys/varargs.h
 prnfns.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h prnfns.h
 prnfns.o: /usr/include/sys/varargs.h /usr/include/sys/va_list.h types.h
@@ -267,7 +281,7 @@ server_locfns.o: ../graphics/Init.h ../graphics/DeviseTypes.h
 server_locfns.o: /usr/include/values.h ../graphics/DevStatus.h
 server_locfns.o: ../graphics/BufPolicy.h Server.h ../graphics/Dispatcher.h
 server_locfns.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ckptfile.h
+server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/types.h
 server_rmtfns.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 server_rmtfns.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
@@ -427,11 +441,11 @@ Server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Server.h
 Server.o: types.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 Server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
 Server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h error.h
-Server.o: /usr/include/sys/varargs.h ctrlMsg.h rcvMsg.h CommandObj.h
-Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
-Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
-Server.o: /usr/include/netdb.h
+Server.o: ../graphics/ViewDir.h ../graphics/Control.h ../graphics/ClassDir.h
+Server.o: callBks.h error.h /usr/include/sys/varargs.h ctrlMsg.h rcvMsg.h
+Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
+Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+Server.o: keys.h Csprotocols.h /usr/include/netdb.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

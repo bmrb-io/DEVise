@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.80  1998/03/26 15:21:59  zhenhai
+#  XOR mode for drawing and erasing.
+#
 #  Revision 1.79  1998/03/08 01:10:58  wenger
 #  Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
 #  CPU usage bug (308)).
@@ -219,7 +222,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics -I../../LM \
 	-I../../src/color/export -I../../src/utils/export \
 	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
-	-I../../csgroup\
+	-I../../csgroup/export\
 	-I../unidata\
 	-I../../graphics.new -I../../tape -I../../generic $(GLINCLUDE)\
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX \

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/03/12 18:24:11  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.7  1998/03/04 18:39:35  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -58,7 +61,7 @@ LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMAPI.o: ../graphics/VisualArg.h LMError.h
+LMAPI.o: ../graphics/VisualArg.h ../graphics/ViewDir.h LMError.h
 LMControl.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 LMControl.o: /usr/include/string.h LMControl.h /s/tcl/include/tcl.h
 LMControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -71,7 +74,8 @@ LMControl.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
 LMControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
 LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMControl.o: /usr/include/stdio.h /usr/include/sys/va_list.h LMAPI.h
+LMControl.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+LMControl.o: ../graphics/ViewDir.h LMAPI.h
 LMHashTable.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 LMHashTable.o: LMHashTable.h
 LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -89,7 +93,7 @@ LMMain.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMMain.o: ../graphics/VisualArg.h /usr/include/stdio.h
-LMMain.o: /usr/include/sys/va_list.h
+LMMain.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
 LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
 LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -102,6 +106,6 @@ LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
 LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMWindow.o: ../graphics/VisualArg.h /usr/include/stdio.h
-LMWindow.o: /usr/include/sys/va_list.h
+LMWindow.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

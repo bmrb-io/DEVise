@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.34  1998/03/12 18:24:43  donjerko
+# *** empty log message ***
+#
 # Revision 1.33  1998/03/04 18:39:43  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -59,8 +62,8 @@ ApInit.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
-ApInit.o: ../graphics/VisualArg.h ../graphics/Timer.h ../graphics/Util.h
-ApInit.o: /usr/include/ctype.h /usr/include/math.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
 ApInit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApParseCat.o: /usr/include/sys/va_list.h ApParseCat.h
@@ -96,10 +99,11 @@ ApParseCat.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
 ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Parse.h ApInit.h
-ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
-ApParseCat.o: ../graphics/Dispatcher.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+ApParseCat.o: ../graphics/Parse.h ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -137,7 +141,8 @@ ApParseCat2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ApParseCat2.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
 ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat2.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Parse.h ApInit.h
+ApParseCat2.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+ApParseCat2.o: ../graphics/Parse.h ApInit.h
 ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h

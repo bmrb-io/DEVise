@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.49  1998/03/26 15:20:21  zhenhai
+#  *** empty log message ***
+#
 #  Revision 1.48  1998/03/12 02:09:16  wenger
 #  Fixed dynamic memory errors in collaboration code that caused core dump
 #  on Linux; collaboration code now tolerates interruption of accept() and
@@ -168,8 +171,8 @@ BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../src/color/export -I../../tape $(GLINCLUDE)\
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
-CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
-BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../cslib
+CFLAGS =$(BASIC_CFLAGS) -I../../csgroup/export
+BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
