@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:04:17  wenger
+  Added final version of code for reading schemas from session files;
+  added an error-reporting class to improve error info.
  */
 
 #define _DataSource_c_
@@ -155,6 +158,18 @@ DataSourceFile::fgets(char *buffer, int bufSize)
 	DO_DEBUG(printf("DataSourceFile::fgets()\n"));
 
 	return ::fgets(buffer, bufSize, _file);
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceFile::getName
+ * Get the name of a DataSourceFile object.
+ */
+char *
+DataSourceFile::getName()
+{
+	DO_DEBUG(printf("DataSourceFile::getName()\n"));
+
+	return _filename;
 }
 
 /*------------------------------------------------------------------------------

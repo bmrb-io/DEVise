@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:04:18  wenger
+  Added final version of code for reading schemas from session files;
+  added an error-reporting class to improve error info.
+
  */
 
 #ifndef _DataSource_h_
@@ -51,6 +55,7 @@ public:
 	virtual DevStatus fopen(char *type);
 	virtual DevStatus fclose();
 	virtual char *fgets(char *buffer, int bufSize);
+	virtual char *getName();
 
 private:
 	char *		_filename;
