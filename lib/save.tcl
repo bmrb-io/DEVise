@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/23 20:50:58  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -325,6 +328,8 @@ proc DoActualSave { infile asTemplate } {
 	    puts $f "DEVise setLabel \$$viewVar $viewLabelParams"
 	    set viewStatParams [DEVise getViewStatistics $inst]
 	    puts $f "DEVise setViewStatistics \$$viewVar $viewStatParams"
+	    set viewDimensions [DEVise getViewDimensions $inst]
+	    puts $f "DEVise setViewDimensions \$$viewVar $viewDimensions"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    set viewNum [expr $viewNum+1]
