@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/02 16:52:42  jussi
+  Updated copyright message.
+
   Revision 1.2  1995/09/22 15:49:43  jussi
   Added copyright message.
 
@@ -28,16 +31,25 @@
 
 #include <string.h>
 
+#if !defined(PENTIUM) && !defined(SUN4) && !defined(MIPS) \
+    && !defined(SUN3) && !defined(VAX) && !defined(IBM370)
 #define SUN4
+#endif
 
 #ifdef SUN4	                // Sun 4 (Sparc based) machine
 #   undef  SWAPBYTES		/* don't swap byte order on ints and reals */
 #   define NEED_WORD_ALIGNED	/* data must be aligned on proper word     */
 				/*   boundaries				   */
-#   define CONVREALS		/* don't convert real (floating point)     */
-				/*   numbers 				   */
+#   define CONVREALS		/* convert real (floating point) numbers   */
 #   undef  CONVEBCDIC		/* don't convert characters from ASCII     */
 				/*   to EBCDIC				   */
+#endif
+
+#ifdef PENTIUM	                // Pentium machine
+#   define SWAPBYTES
+#   define NEED_WORD_ALIGNED
+#   define CONVREALS
+#   undef  CONVEBCDIC
 #endif
 
 #ifdef MIPS	                // MIPS machine (DECstation)
@@ -118,20 +130,20 @@ public:
   static void CRSPDate(int index, int &day, int &month, int &year);
 
 protected:
-  char ascii2ebcdic(char c) {
+  static char ascii2ebcdic(char c) {
     return c;
   }
 
-  void swap2(char *x) {
+  static void swap2(char *x) {
     char c = *x; *x = *(x + 1); *(x + 1) = c;
   }
 
-  void swap4(char *x) {
+  static void swap4(char *x) {
     char c = *x; *x = *(x + 3); *(x + 3) = c;
     c = *(x + 1); *(x + 1) = *(x + 2); *(x + 2) = c;
   }
 
-  float convreal(unsigned long num);    // convert IEEE FP number
+  static float convreal(unsigned long num);  // convert IEEE FP number
 };
 
 #endif
