@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/24 16:22:20  wenger
+  Added GUI for saving GData; turning on GData to socket now forces
+  redraw of view; GData to socket params now saved in session files;
+  improvement to waitForQueries command.
+
   Revision 1.10  1997/10/28 15:46:19  wenger
   Fixed bug 236.
 
@@ -641,9 +646,6 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "getViewPileMode", "setViewPileMode",
       instance);
-
-  status += SaveParams(saveData, "getViewOverrideColor",
-      "setViewOverrideColor", instance);
 
   status += SaveParams(saveData, "getFont", "setFont", instance, "title");
 
