@@ -20,6 +20,11 @@
 #define NFA 3		// The number of coefficents from the DFT which will be 
 					// used for getting the fingerprint of a sub-seqeunce
 #include <math.h>
+
+#if !defined(M_PI)
+#define   M_PI      3.14159265358979323846
+#endif
+
 class SeqSimVec {
 // Store the summary vector here
 public:
@@ -64,7 +69,8 @@ double DFT_pts[2*NFA+3];		// This is the actual summary vector for the
 		sigmak = sqrt(sumsqr/(double)omega - alphak*alphak);
 		double a,b,c = (*arg)/sqrt(omega);
 		double _sin_, _cos_;
-		for (int m=1; m <= NFA;m++)
+		int m;
+		for (m=1; m <= NFA;m++)
 		{
 			a = prev[2*m]*prev[1];
 			b = prev[2*m+1]*prev[1];
@@ -79,7 +85,7 @@ double DFT_pts[2*NFA+3];		// This is the actual summary vector for the
 		DFT_pts[1] = sigmak;
 
 		// calculate Fourier amplitudes of normalized sequences
-		for (int m=1; m <=NFA; m++)
+		for (m=1; m <=NFA; m++)
 		{
 			DFT_pts[2*m] /= DFT_pts[1];
 			DFT_pts[2*m+1] /= DFT_pts[1];
@@ -102,7 +108,8 @@ double DFT_pts[2*NFA+3];		// This is the actual summary vector for the
 		double a,b,c = -(*arg)/sqrt(omega);
 		double _sin_, _cos_;
 
-		for (int m=1; m <= NFA;m++)
+		int m;
+		for (m=1; m <= NFA;m++)
 		{
 			a = prev[2*m]*prev[1];
 			b = prev[2*m+1]*prev[1];
@@ -117,7 +124,7 @@ double DFT_pts[2*NFA+3];		// This is the actual summary vector for the
 		DFT_pts[1] = sigmak;
 
 		// calculate Fourier amplitudes of normalized sequences
-		for (int m=1; m <=NFA; m++)
+		for (m=1; m <=NFA; m++)
 		{
 			DFT_pts[2*m] /= DFT_pts[1];
 			DFT_pts[2*m+1] /= DFT_pts[1];
