@@ -1,0 +1,484 @@
+
+%  ========================================================================
+%  DEVise Data Visualization Software
+%  (c) Copyright 1992-1996
+%  By the DEVise Development Group
+%  Madison, Wisconsin
+%  All Rights Reserved.
+%  ========================================================================
+%
+%  Under no circumstances is this software to be copied, distributed,
+%  or altered in any way without prior permission from the DEVise
+%  Development Group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%  $Id$
+
+%  $Log$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \documentstyle[doublespace,11pt]{article}
+\documentstyle[11pt]{article}
+\renewcommand{\textwidth}{5.9in}
+\oddsidemargin 0.30in
+\evensidemargin 0.30in
+\newenvironment{codespace}{\baselineskip 6pt }{}
+
+\input{epsf}
+% \pagestyle{empty}
+
+\title{\bf{DEVise in 3D}}
+\author{Yu Lun Chen}
+\date{May 22, 1996}
+
+
+\begin{document}
+\maketitle
+
+\section{Abstract}
+
+``A Data Exploration via Visualization Environment'' ({\tt DEVise}) is a
+system that supports a paradigm called {\em visual queries}.  A
+{\em visual query} is an abstract description of a collection of 
+data that are to be mapped to the screen.  This query
+is like a template that can be applied to any data set with the
+appropriate schema.
+
+The main focuses in the earlier work for this project was on the 
+exploration and visualization of the data set in 2D space with 2D 
+shapes.  The purpose of this project is to extend the DEVise 
+system, so it will support data set in 3D space with 3D 
+shapes (e.g. block, sphere, and/or 3D vector).
+
+% ------------------------------------------------------------
+\section{Introduction}
+
+This document is divided into four parts. The first part 
+is a brief description of {\tt DEVise}.  The second part describes the
+implementation of the 3D space and the 3D shapes.  The third part
+describes the integration of the 2D and 3D interfaces.  And the 
+last part describes some thoughts on how the implementation can 
+be enhanced.
+
+% ------------------------------------------------------------
+\section{An overview of {\tt DEVise}}
+
+Visualization in {\tt DEVise} is divided into several stages.  
+These stages are:
+
+\begin{enumerate}
+	\item Using a user defined ``schema'' to import a data file 
+		into {\tt DEVise} as a textual data (TData) set.
+	\item Using a ``mapping'' to map the textual data into graphical
+		data (GData).
+	\item Selecting a view and assigning a visual filter the 
+		displaying GData.
+	\item Arranging views in windows.
+	\item Creating visual links among visual links and axes.
+\end{enumerate}
+
+Followings are the descriptions for some of the key terms that
+will be used throughout the discussions.
+
+\subsection{Schema}
+
+The schema file describes the layout of the ASCII input file.  It
+maps the actual data set to the internal TData set.  It includes the
+name, comment, separator, data type, data attributes, etc.
+
+\subsection{TData}
+
+The texture data (TData) is the internal representation of the 
+actual data in {\tt DEVise}.  Because the uniform representation
+there is a standard way of treating different types of input files.
+
+\subsection{Mapping}
+
+The mapping has four functions.  First, it defines the interface for
+the converting textual data (TData) attributes into graphical data
+attributes (GData).  Second, mapping serves as a handle to the
+TData/GData pair.  Third, mapping creates the GData when the mapping
+is created.  Fourth, it keeps track of the changes in GData
+attributes at run time.  This allows compiler to generate the dynamic
+attributes for GData.
+
+\subsection{GData}
+
+A graphical data (GData) is a graphical representation of TData.  
+Each record of TData is mapped to a record in GData.  The attributes 
+of GData are: $value_{1a}$, $value_{1b}$, $value_{1c}$, {\em color}, 
+{\em size}, {\em pattern}, {\em orientation}, {\em shape}, 
+$shape_{width}$, $shape_{height}$, and $shape_{depth}$.
+
+\subsection{View}
+
+A view is used to display GData, which fall within the range of the
+visual filter and in a window.  It is implemented as a leaf window 
+in the hierarchy of windows.  A view also keep tracks of the number
+of dimension for the mapping.
+
+Whenever a view's {\em visual filter}\footnote{A visual filter defines a
+query over the GData attributes.} or a {\em camera}\footnote{A camera
+defines the eye coordinates in 3D space.} is changed, its window will
+be updated.  In addition, view is responsible for deciding how
+overlapping GData is displayed.
+
+\subsection{Window}
+
+``View'' draws GData on a window.  Window is the hierarchically
+structured output devices visible within a display.  It is
+responsible for displaying data and arranging views.
+
+\subsection{Visual Link}
+
+A visual link implements the links among axes.  It links the visual
+filters with multiple views.  Whenever a view's visual filter or
+camera is changed, the visual link is notified and synchronized
+all linked views.
+
+% ------------------------------------------------------------
+\section{Implementation of 3D stuffs}
+
+In the previous version {\tt DEVise}, GData only supports {\it 
+$value_{1a}$, $value_{1b}$, color, size, pattern, orientation, and 
+shape}.  The purpose of this project is to extend the GData 
+support to another dimension--``$value_{1c}$''.  To accommodate for the
+extra parameters, new visual tools and functionalities are added to
+the system.  The first portion of this section
+is the derivation of the viewing system which have the appropriate
+transformations from the three dimensional
+(3D) world (or user) space to the two dimension (2D) viewing (or 
+screen or camera or eye) space.  The second portion of this 
+section presents a simple 
+``volume clipping'' algorithm.  The final portion of this section 
+deals with the creation of 3D shapes.
+
+\subsection{3D space}
+
+A viewing system is a set of 
+transformations which will map points in world coordinates space onto
+the viewing surface.  Such a system allows a user to specify a
+projective transform and it enables the view plane to be positioned
+anywhere in world coordinates space.  Fig.~\ref{fig:view_sys}
+illustrates the viewing system.
+
+\begin {figure}[htbp]
+ \centerline{
+% \epsfxsize=300pt
+ \epsffile{3d-view_sys.eps}
+ }
+ \caption{The relationship between world coordinate system and the
+ 	view coordinate system.}
+ \label{fig:view_sys}
+\end   {figure}
+
+The viewing system orients the axes so that, when the viewer's line
+of sight is directed toward the origin of the $X_w$, $Y_w$, $Z_w$
+axis system, the $Z_c$ axis points in the direction of the line of
+sight, the $X_c$ axis points to the right, and the $Y_c$ axis points
+upward.  The transformation, $T_r$, for mapping $(X_w, Y_w, Z_w)
+\rightarrow (X_c, Y_c, Z_c)$ is composed of two steps:
+
+\begin{enumerate}
+	\item The camera coordinates $(X_c, Y_c, Z_c)$ associated with 
+		a point having standard coordinates $(X_w, Y_w, Z_w)$.
+	\item The screen coordinates $(X_s, Y_s)$ associated with a 
+		specific set of camera (or eye) coordinates $(X_c, Y_c,
+		Z_c)$.
+\end{enumerate}
+
+\subsubsection{Viewing transformation}
+
+In the first step, the viewing transformation $T_{view}$ transforms
+points in the world coordinates system into the view coordinate
+system:
+
+  \[ [x_v \  y_v \  z_v \  1] = [x_w \  y_w \  z_w \  1] \cdot T_{view}   \]
+
+The $T_{view}$ required to take the objects from a world coordinate
+system into a view coordinate system are derivated from the following
+steps.
+
+\begin{enumerate}
+	\item Translate the focus (or the aim) of the world coordinate
+		system to $(-f_x, -f_y, -f_z)$.
+
+		\[ A = \left[  \begin{array}{cccc}
+					1 & 0 & 0 & 0 \\
+					0 & 1 & 0 & 0 \\
+					0 & 0 & 1 & 0 \\
+					-f_x & -f_y & -f_y & 1 \\
+					\end{array}
+			  \right] \]
+
+	\item Translate the world coordinate system to 
+		$(\rho\sin\phi\sin\theta, \rho\cos\theta, \rho\sin\phi\cos\theta)$,
+		the position of the camera (or view point).  The axes of the
+		view coordinate system and axes of the world coordinate
+		system are parallel.  $A$ is the matrix for this
+		transformation.
+
+		\[ B = \left[  \begin{array}{cccc}
+					1 & 0 & 0 & 0 \\
+					0 & 1 & 0 & 0 \\
+					0 & 0 & 1 & 0 \\
+					-\rho\sin\phi\sin\theta & -\rho\cos\phi & 
+					-\rho\sin\phi\cos\theta & 1
+					\end{array}
+			  \right] \]
+
+	\item The next step is to rotate the coordinate system
+		about $Y_c$ axis counter-clockwise by $\theta$, so the 
+		negative $Z_c$ axis intersect the $Y_w$ axis.  The
+		transformation matrix which accomplishes this is:
+
+		\[ C = \left[  \begin{array}{cccc}
+					\cos\theta & 0 & \sin\theta & 0 \\
+					0 & 1 & 0 & 0 \\
+					-\sin\theta & 0 & \cos\theta & 0 \\
+					0 & 0 & 0 & 1 \\
+					\end{array}
+			  \right] \]
+
+	\item  The next step is to rotate the coordinate system through
+	$90^{\circ} -\phi$ counterclockwise about the $X_c$ axis.  This makes
+	the $Z_c$ axis pass through the origin of the world coordinate
+	system.  The transformation matrix which accomplishes this is:
+
+		\[ \begin{array}{ll}
+			D & = \left[  \begin{array}{cccc}
+				1 & 0 & 0 & 0 \\
+				0 & \cos(90 - \phi) & \sin(90^{\circ}-\phi) & 0 \\
+				0 & -\sin(90^{\circ}-\phi) & \cos(90^{\circ}-\phi) & 0 \\
+				0 & 0 & 0 & 1 \\
+					\end{array}
+			  \right] \\ \\
+			& = \left[  \begin{array}{cccc}
+				1 & 0 & 0 & 0 \\
+				0 & \sin\phi & \cos\phi & 0 \\
+				0 & -\cos\phi & \sin\phi & 0 \\
+				0 & 0 & 0 & 1 \\
+					\end{array}
+			  \right] 
+		  \end{array}
+		\]
+
+
+	\item The final step is to convert to a left-handed system as
+		described above.
+
+		\[ E = \left[  \begin{array}{cccc}
+					1 & 0 & 0 & 0 \\
+					0 & 1 & 0 & 0 \\
+					0 & 0 & -1 & 0 \\
+					0 & 0 & 0 & 1 \\
+					\end{array}
+			  \right] \]
+\end{enumerate}
+
+After multiplying the four matrix together, they give the net
+transformation matrix which is the viewing transformation, $T_{view}$.
+
+  \[ \begin{array}{ll}
+	T_{view} & = A \cdot B \cdot C \cdot D \cdot E \\ \\
+		& = \left[ \begin{array}{cccc}
+				t_{11} & t_{12} & t_{13} & 0 \\ 
+				t_{21} & t_{22} & t_{23} & 0 \\
+				t_{31} & t_{32} & t_{33} & 0 \\
+				t_{41} & t_{42} & t_{43} & 1
+				\end{array}
+		\right] 
+	\end{array}
+  \]
+
+where: 
+
+\[ \begin{array}{l}
+
+	t_{11} = \cos\theta \\
+	t_{12} = -\cos\phi\sin\theta \\
+	t_{13} = -\sin\phi\sin\theta \\
+
+  	t_{21} = 0 \\
+  	t_{22} = \sin\phi \\
+  	t_{23} = -\cos\phi \\
+
+  	t_{31} = \sin\theta \\
+  	t_{32} = \cos\phi\cos\theta \\
+  	t_{33} = \cos\theta\sin\phi \\
+
+  	t_{41} = -f_y\cos\theta + f_z\sin\theta \\
+  	t_{42} = -((f_y + \rho\cos)\sin\phi) + \cos\phi(f_z \cos\theta +
+			\rho\sin\phi + f_x \sin\theta)  \\
+  	t_{43} = \cos\phi(f_y + \rho\cos\phi) + \sin\phi(f_z \cos\theta +
+			\rho\sin\phi + f_x \sin\theta)
+   \end{array}			
+\]
+
+If the world coordinates $(X_w, Y_w, Z_w)$ of a point are known, the
+camera coordinates $(X_c, Y_c, Z_c)$ may be obtained by the following
+equation.
+
+   \[ [X_c \  Y_c \  Z_c \  1] = [X_w \  Y_w \  Z_w \  1] \cdot T_{view} \]
+
+\subsubsection{Perspective projection}
+
+The second step for mapping a point onto the display screen is
+``perspective projection''.  ``Perspective projection'' is a finite
+resolution approximation on the infinitely precise projection.   There
+are two required elements for performing this projection: view point
+and the plane of projection.  Fig.~\ref{fig:persp_view_3d} illustrates
+the idea, and Fig.~\ref{fig:persp_view_2d} shows the similar triangles
+for deriving the equations.
+
+\begin {figure}[htbp]
+  \centerline{
+%  \epsfxsize=300pt
+  \epsffile{3d-persp_view_3d.eps}
+  }
+  \caption{Relationship between camera coordinate system and display screen.}
+  \label{fig:persp_view_3d}
+\end   {figure}
+
+\begin {figure}[htbp]
+  \centerline{
+%  \epsfxsize=300pt
+  \epsffile{3d-persp_view_2d.eps}
+  }
+  \caption{Similar triangles.}
+  \label{fig:persp_view_2d}
+\end   {figure}
+
+
+The equations for mapping $(X_c, Y_c, Z_c) \rightarrow (X_s, Y_s)$ are
+as follow:
+
+  \[ X_s = \frac{dvs \cdot X_c}{Z_c} \]
+
+  \[ Y_s = \frac{dvs \cdot Y_c}{Z_c} \]
+
+where ``dvs'' is the distance from viewing system.
+
+\subsection{Volume clipping}
+
+``Volume clipping'' is the set of all points in the ``world''
+coordinate system which can appear on screen under certain projection
+method.  Perspective projection is used in this project.  Because the
+natural of the perspective projection, there are two degenerate cases.
+
+\begin{enumerate}
+	\item When a point is very close to the screen, the denominator
+		becomes very small.  This results in wrong or distorted
+		pictures on screen.
+	\item When a point is behind the viewing screen or outside of 
+		the clipping cone, it should not be displayed.
+\end{enumerate}
+
+This project uses a simple but effective volume clipping method.  The
+idea is to implement volume clipping with special kind of perspective
+view volume which uses $90^{\circ}$ between the clipping axes.  
+The reason is that it's 
+easier to computing the intersecting points between the clipping cone
+and the view coordinate axes.  The intersecting points
+are the clipping points on the axes.  In this case, the clipping
+points are: x = z, y = z, x = -z, and y = -z.  
+
+The shortcoming of this clipping method is clipping points do
+not define an arbitrary directed plane.  However, the speed of this
+method will out weight the constraints.
+
+\subsection{3D shape}
+
+3D shapes, besides 3D arrow, are composed of triangular or
+parallelepiped facets.  The simplest example is a cube which has six 
+parallelepiped facets.  The data structure uses the following syntax.
+\\
+
+\[
+\begin{tt}
+\begin{array}{lll}
+	x_0 & y_0 & z_0 \\
+	x_1 & y_1 & z_1 \\
+	x_2 & y_2 & z_2 \\
+	x_3 & y_3 & z_3 \\
+	\ldots & & \\
+	\ldots & & \\
+	x_n & y_n & z_n \\
+	line_{vert_0} & line_{vert_1} & \\
+	line_{vert_3} & line_{vert_1}  &\\
+	\ldots & & \\
+	\ldots & & \\
+	line_{vert_i} & line_{vert_j} & \\
+\end{array}
+\end{tt}
+\]
+
+In order to keep track of the face normal for each face, the order of
+the edges on a face is in counterclockwise direction.  The reason is
+to keep track of the face normal.  The direction of face normal is not
+used in this project, but it is important for the hidden line removal
+function which might be implemented in the future.
+
+% ------------------------------------------------------------
+\section{Integration of 2D and 3D interfaces}
+
+In order to ease the transition from the 2D user interface to the 3D
+user interface, same keystrokes are mapped to similar functions.  The
+following table summaries the keystrokes and the corresponding
+functions. \\
+
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+  Keystroke(s) & Function \\ \hline \hline
+  6 & Move toward +X \\ \hline
+  4 & Move toward -X \\ \hline
+
+  8 & Move toward +Y \\ \hline
+  2 & Move toward -Y \\ \hline
+
+  7, 1 & Zoom in \\ \hline
+  9, 3 & Zoom out \\ \hline
+
+  i, I & Move toward +Z \\ \hline
+  o, O & Move toward -Z \\ \hline
+
+  f, F & Un-Fix/fix the focus \\ \hline
+  r, R & On/Off to spherical coordinate \\ \hline
+\end{tabular}
+\end{center}
+
+Another Tcl/tk tool is incorporated into the main {\tt DEVise} 
+window in order
+to show the current modes and the current position.  Under the {\em
+View} option, ``3D query'' has been added as a direct control to the camera,
+focus, and the toggle switches for focus and spherical coordinate
+system.
+
+% ------------------------------------------------------------
+\section{Conclusions and recommendations}
+
+There is one more thing that is needed  in order to make {\tt DEVise} 
+a true 3D package.  The missing link is the hidden line removal
+function.  The hidden line function will improve the visibility of
+different objects.   In the current system, it's very easy to get confuse
+about the orientation of adjacent objects.  One suggestion will be to
+implement the simple Painter's algorithm~\cite{FDFH92} which is 
+probably sufficient for the general usage.
+
+Besides hidden line removal function, one can always add more 
+shapes to the shape library.  It would be nice if there are
+corresponding 3D shapes for each existing 2D shapes.  Then a user 
+can switch back and forth between the dimensions without changing too
+much information.
+
+\begin{thebibliography}{99}
+
+ \bibitem{FDFH92} J. D. Foley, A. van Dam, S. K. Feiner, J. F. 
+  Hughes, {\em Computer Graphics}, Addison-Wesley Publishing 
+  Company, Second eidtion, 1992.
+\end{thebibliography}
+
+\end{document}
+
