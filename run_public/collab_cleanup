@@ -1,0 +1,22 @@
+#! /s/std/bin/tcsh -f
+# Note: we have to use tcsh here because csh refuses to let us run ps -ax(!)
+
+# $Id$
+
+# Clean up after running collaboration demo (dev_collab script).
+
+# Kill the devised's we started.
+#kill_devised -p 6101
+#kill_devised -p 6102
+(set j=`ps -ax|grep devised|grep -v 'grep\|csh'|head -1`;kill -INT $j[1]; \
+    kill -INT $j[1]) >& /dev/null
+(set j=`ps -ax|grep devised|grep -v 'grep\|csh'|head -1`;kill -INT $j[1]; \
+    kill -INT $j[1]) >& /dev/null
+
+# Kill the collaborator.
+(set j=`ps -ax|grep collaborator|grep -v grep|head -1`;kill -1 $j[1]) \
+    >& /dev/null
+
+\rm -f /tmp/Group.log
+\rm -f /tmp/*master*
+\rm -f /tmp/*server*
