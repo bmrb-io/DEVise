@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/12 15:49:59  jussi
+  Replaced libc.h with stdlib.h
+
   Revision 1.5  1995/12/28 17:50:33  jussi
   Small fixes to remove new compiler warnings.
 
@@ -44,10 +47,6 @@
 #include "Exit.h"
 #include "Util.h"
 #include "Init.h"
-
-#ifndef HPUX
-extern "C" int bcmp(char *b1, char *b2, int length);
-#endif
 
 static char fileContent[TAPE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[TAPE_CONTENT_COMPARE_BYTES];
@@ -194,7 +193,7 @@ void TDataTape::Initialize()
       != TAPE_CONTENT_COMPARE_BYTES  ||
       _tape->read(fileContent, TAPE_CONTENT_COMPARE_BYTES)
       != TAPE_CONTENT_COMPARE_BYTES ||
-      bcmp(cachedFileContent, fileContent, TAPE_CONTENT_COMPARE_BYTES) != 0)
+      memcmp(cachedFileContent, fileContent, TAPE_CONTENT_COMPARE_BYTES))
     goto error;
 
   // Assume identical file
