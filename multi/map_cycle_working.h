@@ -6,6 +6,37 @@ struct CycleWorkingMapping_GData {
 };
 
 # 1 "/p/devise/parser/proto/RectShape_proto.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class CycleWorkingMapping_RectShape  : public RectShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -24,12 +55,13 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       CycleWorkingMapping_GData  *gdata = (CycleWorkingMapping_GData  *)gdataArray[i];
+      Coord temp;
 
-      Coord temp = gdata->shapeAttr_0;
+      temp = (gdata->shapeAttr_0) ;
       if (temp > width) width = temp;
 
 
-      temp = gdata->shapeAttr_1;
+      temp = (gdata->shapeAttr_1) ;
       if (temp > height) height = temp;
 
     }
@@ -40,7 +72,7 @@ public:
 			      TDataMap *map, int pixelSize) {
 		
     Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth,maxHeight);
+    map->MaxBoundingBox(maxWidth, maxHeight);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -48,51 +80,37 @@ public:
     Coord pixelWidth = 1 / fabs(x1 - x0);
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
-    if (maxWidth <= pixelWidth  && maxHeight <= pixelHeight) {
+
+    win->SetFgColor((map->GetDefaultColor()) );
+
+
+    if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 			
       int i = 0;
       while (i < numSyms) {
 
 	CycleWorkingMapping_GData  *gdata = (CycleWorkingMapping_GData  *)gdataArray[i];
 	int count = 1;
-
-	_x[0] = gdata->x;
-
-
-
-
-	_y[0] = gdata->y;
-
-
-
+	_x[0] = (gdata->x) ;
+	_y[0] = (gdata->y) ;
 
 
 
 
 	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
-	  CycleWorkingMapping_GData  *colorGData = (CycleWorkingMapping_GData  *)gdataArray[colorIndex];
+	  CycleWorkingMapping_GData  *gdata = (CycleWorkingMapping_GData  *)gdataArray[colorIndex];
 
 
 
 
-
-	  _x[count] = colorGData->x;
-
-
-
-
-	  _y[count++] = colorGData->y;
-
-
-
+	  _x[count] = (gdata->x) ;
+	  _y[count++] = (gdata->y) ;
 	}
 
 
 
 
-	win->SetFgColor(map->GetDefaultColor());
-
-	win->DrawPixelArray(_x, _y,count, pixelSize);
+	win->DrawPixelArray(_x, _y, count, pixelSize);
 	i = colorIndex;
       }
 
@@ -102,26 +120,10 @@ public:
       while (i < numSyms) {
 	CycleWorkingMapping_GData  *gdata = (CycleWorkingMapping_GData  *)gdataArray[i];
 	int count = 1;
-
-	Coord width = gdata->shapeAttr_0;
-
-
-
-
-	Coord height = gdata->shapeAttr_1;
-
-
-
-
-	_x[0] = gdata->x;
-
-
-
-
-	_y[0] = gdata->y;
-
-
-
+	Coord width = (gdata->shapeAttr_0) ;
+	Coord height = (gdata->shapeAttr_1) ;
+	_x[0] = (gdata->x) ;
+	_y[0] = (gdata->y) ;
 	if (width > 1)
 	  _x[0] -= width / 2.0;
 	if (height > 1)
@@ -134,32 +136,15 @@ public:
 
 
 	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
-	  CycleWorkingMapping_GData  *colorGData = (CycleWorkingMapping_GData  *)gdataArray[colorIndex];
+	  CycleWorkingMapping_GData  *gdata = (CycleWorkingMapping_GData  *)gdataArray[colorIndex];
 
 
 
 
-
-
-	  width = colorGData->shapeAttr_0;
-
-
-
-
-	  height = colorGData->shapeAttr_1;
-
-
-
-
-	  _x[count] = colorGData->x;
-
-
-
-
-	  _y[count] = colorGData->y;
-
-
-
+	  width = (gdata->shapeAttr_0) ;
+	  height = (gdata->shapeAttr_1) ;
+	  _x[count] = (gdata->x) ;
+	  _y[count] = (gdata->y) ;
 	  if (width > 1)
 	    _x[count] -= width / 2.0;
 	  if (height > 1)
@@ -173,8 +158,6 @@ public:
 
 
 
-
-	win->SetFgColor(map->GetDefaultColor());
 
 	win->FillRectArray(_x, _y, _width, _height, count);
 	i = colorIndex;
