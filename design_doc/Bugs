@@ -2296,6 +2296,7 @@ Num Date        Status  Description
 
 586 05/01/00	OPEN	Cursors with spaces in their names do not work right
 			in the JavaScreen (cannot be moved). (rkw)
+			(See Misc/orange_rtree.tk.)
 
 587 05/15/00	FIXED	Clicking to move a cursor changes its size (see
 			4096_side_newselect.ds). (rkw)
@@ -2369,6 +2370,9 @@ Num Date        Status  Description
 			if the cursor is in the non-base(?) view of a pile
 			(see bmrb/test/bad_cursor_drag.ds, third cursor
 			from the right). (rkw)
+
+603 7/19/00	OPEN	JavaScreen: variable name strings in left window
+			are truncated. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
