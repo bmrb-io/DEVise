@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+# Revision 1.25  1995/11/24  07:47:27  ravim
+# Mapping between different types of data sources can be defined. Anything
+# that cannot be resolved automatically can be handled manually.
+#
 #	Revision 1.24  1995/11/22 00:33:13  jussi
 #	Fixed bug in function that saves session files; spaces embedded
 #	in TData names needed to be protected by braces.
@@ -158,12 +162,17 @@ if { [info exists env(DEVISE_SESSION)] } {
 set mode 0
 DEVise changeMode $mode
 
-set hostCfg $libdir/config.$env(HOSTNAME)
+set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
     puts "Cannot read configuration file $hostCfg"
 }
 puts "Reading configuration file $hostCfg"
 source $hostCfg
+set hostCfg $libdir/config.$env(HOSTNAME)
+if {[file exists $hostCfg]} {
+    puts "Reading configuration file $hostCfg"
+    source $hostCfg
+}
 
 source $libdir/dialog.tk
 source $libdir/FSBox.tk
