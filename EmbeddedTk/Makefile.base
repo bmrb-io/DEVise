@@ -20,7 +20,7 @@ ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o
 #CSLIB_DIR = ../devise-cslib
 #INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
 #LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
-#DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DNEW_LIBCS -DZOOQUERY
+#DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DZOOQUERY
 #ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
 
 .c.o: 
