@@ -202,6 +202,10 @@ Status Schema::finalizeSchema() {
 			return FAIL;
 		}
 
+		if ((tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getType() == TYPE_STRING) && (tableAttr[i]->getFieldLen() == -1)) {
+			tableAttr[i]->setQuote(_quote);
+		}
+		
 		if ((tableAttr[i]->getSeparator() == NULL) && (tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getFieldLen() == -1)) {
 			tableAttr[i]->setSeparator(_separator);
 		}

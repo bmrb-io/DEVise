@@ -140,6 +140,7 @@ class Schema {
 private:
 	Holder* _delimiter; // Record delimiter
 	Holder* _separator; // Default separator
+	char _quote;
 	char* _fileName; // Schema file name
 	char* _nullIf; // null string, not implemented yet
 	char* _schemaName; // Name of the schema
@@ -175,6 +176,7 @@ public:
 		_stageKeys = NULL;
 		_stageSorted = NULL;
 		_dateFormat = NULL;
+		_quote = -1;
 	}
 
 	~Schema();
@@ -228,6 +230,14 @@ public:
 
 	void setSeparator(Holder* separator) {
 		_separator = separator;
+	}
+
+	char getQuote() {
+		return _quote;
+	}
+
+	void setQuote(char quote) {
+		_quote = quote;
 	}
 
 	char* getFileName() {

@@ -60,6 +60,7 @@ getschema: getanyschema
 
 getanyschema: getdelim ';'
               | getupsep ';'
+			  | getupqu ';'
 			  | getkey ';'
 			  | getsorted ';'
 			  | getattribute
@@ -99,6 +100,16 @@ getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
 											tmpHolder->data = tmpSChar;
 											tmpHolder->length = strlen(tmpSChar);
 											mySchema->setSeparator(tmpHolder);
+										}
+			;
+
+getupqu: QUOTE_TOKEN '=' BRACKET_TOKEN {
+											if (mySchema->getQuote() != -1) 
+												drerror("Schema Quote can't be entered twice!...");
+											char* tmpQChar = new char[strlen($3)+1];
+											strcpy(tmpQChar,$3);
+
+											mySchema->setQuote(tmpQChar[0]);
 										}
 			;
 

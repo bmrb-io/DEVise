@@ -26,6 +26,7 @@ confirm [yYnN]
 %%
 [ \t\n]+ ;
 "//".*\n ;
+"#".*\n ;
 "/*"		BEGIN COMMENT;
 <COMMENT>"*/" BEGIN INITIAL;
 <COMMENT>. ;
