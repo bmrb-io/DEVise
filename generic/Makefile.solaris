@@ -44,4 +44,4 @@ generic.o: ../graphics.new/GData.h ../graphics.new/TData.h
 generic.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 generic.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+generic.o: ../graphics/CursorClassInfo.h ../graphics/ParseCat.h

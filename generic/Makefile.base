@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1996/11/15 21:30:20  jussi
+#  Added testWindowSpeed.
+#
 #  Revision 1.21  1996/11/01 19:04:31  kmurli
 #  Makefile changed to include DQL sources
 #
@@ -37,8 +40,9 @@ CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
-LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lgraphicsnew -lgraphics -lgraphicsnew \
+LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
+	-L../crsp -L../compustat -lgraphicsnew -ldte -lgraphics \
+	-lgraphicsnew \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
 SRC = generic.c devise.C deviseb.C CompDate.c
@@ -48,7 +52,8 @@ SRCC = $(filter %.C,$(SRC))
 OBJ = $(SRCc:.c=.o)
 OBJ += $(SRCC:.C=.o)
 
-ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
+ALLLIBS = ../DTE/libdte.a ../graphics/libgraphics.a \
+	../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a
 
@@ -64,7 +69,8 @@ static: generic.static
 FORCE_DATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
 
 
-GENERIC = $(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+GENERIC = $(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../DTE \
+	-L../graphics.new \
 	-lmonolith $(LDFLAGS)
 
 generic: generic.o $(ALLLIBS) $(MONOLITHLIB)

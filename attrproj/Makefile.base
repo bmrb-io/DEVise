@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1996/11/01 19:03:31  kmurli
+#  Makefile changed to include DQL sources
+#
 #  Revision 1.23  1996/10/04 17:24:45  wenger
 #  Moved handling of indices from TDataAscii and TDataBinary to new
 #  FileIndex class.
@@ -50,7 +53,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
-	-I../../graphics.new -I../../tape \
+	-I../../graphics.new -I../../tape -I../../DTE \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
 

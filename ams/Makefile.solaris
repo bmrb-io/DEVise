@@ -83,7 +83,7 @@ ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
 ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+ams.o: ../graphics/CursorClassInfo.h ../graphics/ParseCat.h
 ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h
