@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/27 00:18:39  jussi
+  Made recId be evaluated as a simple command rather than as
+  a complex command.
+
   Revision 1.9  1996/01/13 23:10:18  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -101,7 +105,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 7;
+const int MaxInterpShapes = 8;
 
 class MappingInterp: public TDataMapDispatch {
   friend double ConvertOne(char *from, MappingSimpleCmdEntry *entry,

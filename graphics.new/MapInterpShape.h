@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/01/09 22:14:34  jussi
+  Added a skeleton for 3D block object.
+
   Revision 1.11  1995/12/22 18:07:03  jussi
   Added Vector shape.
 
@@ -63,6 +66,8 @@
 #include "RectShape.h"
 
 //#define DEBUG
+
+// -----------------------------------------------------------------
 
 class FullMapping_RectShape: public RectShape {
 public:
@@ -136,6 +141,8 @@ public:
   }
 };
  
+// -----------------------------------------------------------------
+
 class FullMapping_RectXShape: public RectXShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
@@ -193,6 +200,8 @@ public:
   }
 };
  
+// -----------------------------------------------------------------
+
 class FullMapping_BarShape: public BarShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -244,6 +253,8 @@ public:
     }
   }
 };
+
+// -----------------------------------------------------------------
 
 class FullMapping_PolygonShape: public PolygonShape {
 public:
@@ -300,6 +311,8 @@ public:
   }
 };
 
+// -----------------------------------------------------------------
+
 class FullMapping_OvalShape: public OvalShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
@@ -343,6 +356,8 @@ public:
     }
   }
 };
+
+// -----------------------------------------------------------------
 
 class FullMapping_VectorShape: public VectorShape {
 public:
@@ -420,6 +435,8 @@ public:
     }
   }
 };
+
+// -----------------------------------------------------------------
 
 class FullMapping_BlockShape: public BlockShape {
 public:
