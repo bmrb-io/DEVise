@@ -25,7 +25,7 @@ opt:
 	javac OptimizerTest.java -d $(CLASSES)
 
 Parser/SQLParser.java: Parser/SQLParser.jj
-	cd Parser && javacc SQLParser.jj  && cd ..
+	cd Parser && javacc -DEBUG_TOKEN_MANAGER=true SQLParser.jj   && cd ..
 
 parser: Parser/SQLParser.java
-	javac ParserTest.java -d $(CLASSES)
+	javac ParserTest.java Parser/*.java -d $(CLASSES)

@@ -36,11 +36,21 @@ SKIP :
 
 TOKEN :
 {
+  <AS : ["A","a"]["S","s"] >
+|
+  <SELECT: ["S","s"]["E","e"]["L","l"]["E","e"]["C","c"]["T","t"]>
+|
+  < FROM: ["F","f"]["R","r"]["O","o"]["M","m"] >
+|
+  < SELECTION: <ID> "." <ID> >
+|
+  < WHERE:["W","w"]["H","h"]["E","e"]["R","r"]["E","e"] >
+|
   < ID: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
 |
-  < DOUBLE: ( ["0"-"9"] )+ "."( ["0"-"9"] )+  >
+  <INTEGER: ( ["0"-"9"] )+ >
 |
-  < INTEGER: ( ["0"-"9"] )+ >
+  < DOUBLE: ( ["0"-"9"] )+ "."( ["0"-"9"] )+  >
 |
   < ADD: ("+"|"-") >
 |
@@ -49,29 +59,19 @@ TOKEN :
   < LOGIC: ("<"|">"|"!="|"=") >
 |
   < JOINT: ("||"|"&&") >
-|
-  <AS : ["A","a"]["S","s"] >
 }
-
-
-
-
-
-
-
-
 
 
 Query query() :
 {
 	java.util.Vector selectClause;
 	java.util.Vector fromClause;
-	Expression whereClause;
+	Expression whereClause = null;
 }
 {
-        <ID> selectClause = SelectClause() 
-        <ID>  fromClause = FromClause()
-       <ID>  whereClause = WhereClause()
+        <SELECT> selectClause = SelectClause() 
+        <FROM>  fromClause = FromClause()
+        [ <WHERE>  whereClause = WhereClause() ]
 	{
 		return new Query(selectClause, fromClause, whereClause);		
 	}
@@ -123,11 +123,10 @@ java.util.Vector FromClause() :
 	java.util.Vector relationIdList = new java.util.Vector();
         java.util.Vector aliasList = new java.util.Vector();
         java.util.Vector tableAliasList  = new java.util.Vector();
-	RelationId e;
+	RelationId r;
         String alias;
         RelationId  rid;
         String a;
-        RelationManager rm;
         TableAlias ta;
         int count = 0;
 }
@@ -135,27 +134,29 @@ java.util.Vector FromClause() :
 
 
 
-	e = relationId()
+	r = relationId()
 		{
-			relationIdList.addElement(e);
+			relationIdList.addElement(r);
 		}
 	[  <AS>  alias=Alias()
 		{
-			aliasList.setElementAt(e,count);
+			aliasList.setSize( count + 1 );
+			aliasList.setElementAt( alias,count);
 		}
 	]
 
 
         (
 
-   	   "," e = relationId()
+   	   "," r = relationId()
 		   {
-			   relationIdList.addElement(e);
+			   relationIdList.addElement(r);
                            count++;
+			   aliasList.setSize( count + 1 );
 		   }
 	   [  <AS> alias=Alias()
 		   {
-			   aliasList.setElementAt(e,count);
+			   aliasList.setElementAt(alias,count);
 		   }
  	   ]
 
@@ -173,9 +174,6 @@ java.util.Vector FromClause() :
                       a = (String)(aliasList.elementAt(i));
                   else
                       a = "null";
-                  rm = new RelationManager(String.valueOf( rid.getServerId()),String.valueOf(
-rid.getLocalId())
-);                          
                   ta = new TableAlias(  rid, a );
                   tableAliasList.addElement(ta);  
 
@@ -328,14 +326,33 @@ Expression MultiplicativeExpression() :
 
 Expression UnaryExpression() :
 {
-	Token alias;
-        Token attribute;
+	String alias;
+        String attribute;
         Token t;
         Integer Value;
         Double value;
   	Expression s;
+	String str;
+	int pos = 0;
 }
 {
+
+  t=<SELECTION>
+	{
+	  str = t.image;
+          for ( int i = 0; i < str.length(); i ++ )
+	  {
+	    if ( str.charAt(i) == '.')
+	    {
+	       pos = i;
+	       break;
+            }
+          }
+          alias = str.substring( 0, pos );
+          attribute = str.substring( pos + 1 );
+	  return ( Expression )( new Selection( alias, attribute ) );
+        }
+|
 
 
   t=<DOUBLE>
@@ -365,35 +382,35 @@ Expression UnaryExpression() :
 
 
 RelationId  relationId() :
-{ 
-       Token t1;
-       Token t2;
+{
+       Token t;      
        int i1;
        int i2;
+       int pos = 0;
+       String str;
        RelationId rid;
 
 }  
 {
-  (
-  t1=<INTEGER>
+
+  t = <DOUBLE>
        {
-         i1 = ( new Integer( t1.image) ).intValue();
+          str = t.image;
+          for ( int i = 0; i < str.length(); i ++ )
+          {    
+             if ( str.charAt(i) == '.')
+             {
+               pos = i;
+               break;
+             }
+          }
+
+          i1 = ( new Integer( str.substring( 0, pos ) ) ).intValue(); 
+          i2 = ( new Integer( str.substring( pos + 1 ) ) ).intValue();
+
+          rid = new RelationId(i1,i2);
+          return rid;
        }
-  "."
-  
-  t2=<INTEGER>
-
-       {
-         i2 = ( new Integer( t2.image) ).intValue();
-       }
-  )
-
-
-  {
-    
-      rid = new RelationId(i1,i2);
-      return rid;
-  }
 
 
 }

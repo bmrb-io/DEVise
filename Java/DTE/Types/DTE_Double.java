@@ -1,10 +1,17 @@
 package Types;
 
 import java.io.*;
+import java.lang.*;
 
 public class DTE_Double extends DTE_Type  //implements Cloneable 
 {
   double val;
+
+  public String toString()
+  {
+     return String.valueOf( val );
+  }
+
 
   public DTE_Double()
   {
