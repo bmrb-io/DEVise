@@ -1159,6 +1159,14 @@ Num Date        Status  Description
                         problems for histograms (see ViewGraph.c search for
                         BUG 303.)
 
+304 03/02/98	OPEN	Background and foreground color settings don't get
+			saved in sessions. (ad/rkw)
+
+305 03/02/98	OPEN	New DeviseCommand module doesn't check argument counts.
+			(rkw)
+
+306 03/02/98	OPEN	Attempting to save a session causes a core dump. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
