@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.125  1997/03/20 22:29:50  guangshu
+#	Changed statistics user interface.
+#
 #	Revision 1.124  1997/03/20 01:32:17  wenger
 #	Fixed a bug in color allocation; color chooser for data shows old colors
 #	(temporarily); background conversion of GData defaults to off.
@@ -809,7 +812,8 @@ proc displayTable {table} {
      }
      set tdata [lindex $tdata_schema_pair 0]
      set schemaname [lindex $tdata_schema_pair 1]
-     MacroDefAuto $tdata $schemaname 1
+	set is_dte_type [lindex $tdata_schema_pair 2]
+     MacroDefAuto $tdata $schemaname $is_dte_type 
 }
 
 .mbar.tdata.menu add command -label "Display" -command {
