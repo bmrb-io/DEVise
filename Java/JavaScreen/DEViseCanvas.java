@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2000/07/21 03:23:42  venkatan
+// Help Display - Multiple lines are now in a single "panel"
+//
 // Revision 1.60  2000/07/20 15:51:12  wenger
 // Fixed bug 586 (can't move cursors with spaces in the names).
 //
@@ -148,6 +151,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.61  2000/07/21 03:23:42  venkatan
+// Help Display - Multiple lines are now in a single "panel"
+//
 // Revision 1.60  2000/07/20 15:51:12  wenger
 // Fixed bug 586 (can't move cursors with spaces in the names).
 //
@@ -1197,7 +1203,8 @@ public class DEViseCanvas extends Container
             ep.y = op.y = sp.y = p.y;
 
             if (view.viewDimension == 3) {
-                setCursor(DEViseUIGlobals.rbCursor);
+                // setCursor(DEViseUIGlobals.rbCursor);  - Ven modified
+		   setCursor(DEViseUIGlobals.hdCursor);
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName,
@@ -1450,7 +1457,8 @@ public class DEViseCanvas extends Container
                 point.x = p.x;
                 point.y = p.y;
 
-                setCursor(DEViseUIGlobals.rbCursor);
+               //  setCursor(DEViseUIGlobals.rbCursor); - Ven modified
+		   setCursor(DEViseUIGlobals.hdCursor);
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName,
@@ -1491,8 +1499,10 @@ public class DEViseCanvas extends Container
             } else if (isInViewDataArea && selectedCursor == null) {
                 // inside the data area but not within any cursor, you
 		// can draw rubber band or get the records at that data point
-                tmpCursor = DEViseUIGlobals.rbCursor;
-            } else if (isInViewDataArea && selectedCursor != null) {
+                 tmpCursor = DEViseUIGlobals.rbCursor; 
+            } else if( isInViewDataArea && view.viewDimension == 3){
+		 tmpCursor = DEViseUIGlobals.defaultCursor;
+	    } else if (isInViewDataArea && selectedCursor != null) {
                 switch (whichCursorSide) {
                 case DEViseCursor.sideNone:
 		    // Not on a cursor, do nothing.

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/07/19 20:11:38  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.8  2000/06/26 18:52:00  wenger
 // Added class explanation in header.
 //
@@ -104,6 +109,8 @@ public final class DEViseUIGlobals
     public static Cursor blrsCursor = new Cursor(Cursor.SW_RESIZE_CURSOR);
     public static Cursor trrsCursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
     public static Cursor brrsCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
+    public static Cursor  hdCursor = new Cursor(Cursor.HAND_CURSOR);
+    public static Cursor  txtCursor = new Cursor(Cursor.TEXT_CURSOR);
 
     public static Color convertColor(String str)
     {

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/06/26 16:48:33  wenger
+// Added client-side JavaScreen debug logging.
+//
 // Revision 1.38  2000/04/24 20:22:01  hongyu
 // remove UI dependency of jspop and js
 //
@@ -58,6 +61,8 @@ public class jsa extends Applet
     String sessionName = null;
     int debugLevel = 0;
 
+
+
     Vector images = null;
 
     Button startButton = new Button("Start Java Screen");
@@ -75,6 +80,7 @@ public class jsa extends Applet
         isInit = true;
 
         DEViseUIGlobals.browser = getAppletContext();
+
 
         setLayout(new BorderLayout(0, 10));
 
@@ -129,6 +135,7 @@ public class jsa extends Applet
         }
     }
 
+
     public void start()
     {
         if (sessionName != null) {
@@ -144,6 +151,7 @@ public class jsa extends Applet
             jsf.displayMe(false);
         }
     }
+
 
     public void destroy()
     {
@@ -164,7 +172,7 @@ public class jsa extends Applet
     }
 
     public void startJS(boolean flag)
-    {
+    { 
         if (images == null) {
             images = new Vector();
 
@@ -234,10 +242,12 @@ public class jsa extends Applet
                 jsf.displayMe(true);
             }
         }
+	repaint();
     }
 
     private void checkParameters()
     {
+     
         sessionName = getParameter("session");
         if (sessionName == null) {
             startInfo.append("Parameter session is not specified!\n");
@@ -478,5 +488,6 @@ class jscframe extends Frame
             }
         }
     }
+
 
 }
