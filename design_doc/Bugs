@@ -1691,6 +1691,18 @@ Num Date        Status  Description
 			no X command for some mappings and improper
 			initialization of the QPFullData objects.)
 
+441 12/09/98	OPEN	If you load a session with a color palette defined
+			in it, that palette seems to become the default
+			palette. (rkw)
+
+442 12/09/98	OPEN	Should closing a session switch back to the default
+			color palette? (rkw)
+
+443 12/10/98	OPEN	Load the SoilSci/ASA2.ds session in the JavaScreen;
+			when you change the location of the time cursor, the
+			numbers under the location cursors do not get updated.
+			(ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
