@@ -11,7 +11,7 @@ LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 	$(CPP) -c $(CFLAGS) $<
 
 SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
-	tardump.c lc.c dbcext.c
+	tardump.c lc.c dbcext.c addlatlon.c
 
 SRC1 = $(filter %.c,$(SRC))
 SRC2 = $(filter %.C,$(SRC))
@@ -37,6 +37,9 @@ gendots: gendots.o
 
 genimage: genimage.o
 	$(CPP) -o $@ $@.o $(LDFLAGS)
+
+addlatlon: addlatlon.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 issm2bin: issm2bin.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
