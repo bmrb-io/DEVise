@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/15 15:13:52  jussi
+  A mapping label is now stored as part of the mapping list data
+  structure. Added GetMappingLegend() accessor method.
+
   Revision 1.11  1996/04/10 15:27:22  jussi
   Added RemoveMapping() method.
 
@@ -53,8 +57,6 @@
   Added CVS header.
 */
 
-#include <assert.h>
-
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
@@ -82,7 +84,7 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
   MappingInfo *info = new MappingInfo;
-  assert(info);
+  DOASSERT(info, "Could not create mapping information");
 
   info->map = map;
   info->label = CopyString(label);
@@ -136,25 +138,25 @@ char *ViewGraph::GetMappingLegend(TDataMap *map)
 
 void ViewGraph::InitMappingIterator(Boolean backwards)
 {
-  assert(_index < 0);
+  DOASSERT(_index < 0, "Unexpected iterator index");
   _index = _mappings.InitIterator((backwards ? 1 : 0));
 }
 
 Boolean ViewGraph::MoreMapping()
 {
-  assert(_index >= 0);
+  DOASSERT(_index >= 0, "Invalid iterator index");
   return _mappings.More(_index);
 }
 
 MappingInfo *ViewGraph::NextMapping()
 {
-  assert(_index >= 0);
+  DOASSERT(_index >= 0, "Invalid iterator index");
   return _mappings.Next(_index);
 }
 
 void ViewGraph::DoneMappingIterator()
 {
-  assert(_index >= 0);
+  DOASSERT(_index >= 0, "Invalid iterator index");
   _mappings.DoneIterator(_index);
   _index = -1;
 }
@@ -218,7 +220,8 @@ void ViewGraph::SetDisplayStats(char *stat)
 
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
 {
-  assert(strlen(oldset) == STAT_NUM && strlen(newset) == STAT_NUM);
+  DOASSERT(strlen(oldset) == STAT_NUM && strlen(newset) == STAT_NUM,
+	   "Invalid statistics flags");
 
   /* Check if a 1 in "old" has become 0 in "new" - means that a stat
      previously being displayed should now be removed. */

@@ -16,12 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/01/25 20:22:48  jussi
+  Improved support for data files that grow while visualization
+  is being performed.
+
   Revision 1.1  1996/01/23 20:54:49  jussi
   Initial revision.
 */
 
 #include <iostream.h>
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -46,16 +49,16 @@ TDataBinary::TDataBinary(char *name, int recSize) : TData()
   _recSize = recSize;
 
   _file = fopen(name, "r");
-  if (_file == NULL) {
-    fprintf(stderr,"TDataBinary: cannot open file '%s' ", name);
+  if (!_file) {
+    fprintf(stderr, "Cannot open file '%s' ", name);
     perror("fopen");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot open file");
   }
 
   struct stat sbuf;
   if (fstat(fileno(_file), &sbuf) < 0) {
     perror("fstat");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot get file statistics");
   }
   
   _bytesFetched = 0;
@@ -92,13 +95,13 @@ Boolean TDataBinary::LastID(RecId &recId)
 {
   // see if file has grown
   if (fseek(_file, 0, SEEK_END) < 0) {
-    perror("TDAtaAscii::LastID");
-    Exit::DoExit(1);
+    perror("fseek");
+    DOASSERT(0, "Cannot perform file seek");
   }
   _currPos = ftell(_file);
   if (_currPos < 0) {
-    perror("TDataAscii::Init:ftell");
-    Exit::DoExit(1);
+    perror("ftell");
+    DOASSERT(0, "Cannot get current file position");
   }
   
   if (_currPos > _lastPos) {
@@ -107,7 +110,7 @@ Boolean TDataBinary::LastID(RecId &recId)
       fprintf(stderr,
 	      "Partial records in binary file: size %ld, record size %d\n",
 	      _lastPos, _recSize);
-      Exit::DoExit(2);
+      DOASSERT(0, "Partial records in binary file");
     }
     _totalRecs = _lastPos / _recSize;
   }
@@ -118,12 +121,8 @@ Boolean TDataBinary::LastID(RecId &recId)
 
 void TDataBinary::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
 {
-  if ((long)lowId >= _totalRecs ||	
-      (long)highId >= _totalRecs || highId < lowId) {
-    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %ld\n",
-	    lowId, highId, _totalRecs);
-    Exit::DoExit(1);
-  }
+  DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
+	   && highId >= lowId, "Invalid record parameters");
 
   _lowId = lowId;
   _highId = highId;
@@ -140,11 +139,7 @@ Boolean TDataBinary::GetRecs(void *buf, int bufSize,
 #endif
 
   numRecs = bufSize / _recSize;
-  if (!numRecs) {
-    fprintf(stderr, "TDataRec::GetRecs(): not enough buffer space \n");
-    fprintf(stderr, "buffer size = %d, rec size= %d\n", bufSize, _recSize);
-    Exit::DoExit(1);
-  }
+  DOASSERT(numRecs, "Not enough record buffer space");
 
   if (_nextId > _endId)
     return false;
@@ -167,8 +162,7 @@ Boolean TDataBinary::GetRecs(void *buf, int bufSize,
 void TDataBinary::GetRecPointers(RecId startId, int numRecs,
 				 void *buf, void **recPtrs)
 {
-  fprintf(stderr,"TDataRec::GetRecPointers: not implemented\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Feature not implemented");
 }
 
 void TDataBinary::GetIndex(RecId id, int *&indices)
@@ -182,8 +176,8 @@ int TDataBinary::GetModTime()
 {
   struct stat sbuf;
   if (fstat(fileno(_file), &sbuf) < 0) {
-    fprintf(stderr,"TDataBinary::can't find stat\n");
-    Exit::DoExit(1);
+    perror("fstat");
+    DOASSERT(0, "Cannot get file statistics");
   }
   return (long)sbuf.st_mtime;
 }
@@ -210,24 +204,22 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
   long recloc = id * _recSize;
   if (_currPos != recloc) {
     if (fseek(_file, recloc, SEEK_SET) < 0) {
-      fprintf(stderr, "TDataBinary::ReadRec(%ld,%d,0x%p) seek\n",
-	      id, numRecs, buf);
       perror("fseek");
-    Exit::DoExit(1);
+      DOASSERT(0, "Cannot perform file seek");
     }
     _currPos = recloc;
   }
 
   if (fread(buf, numRecs * _recSize, 1, _file) != 1) {
     perror("fread");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot read from file");
   }
   _currPos += numRecs * _recSize;
   
   char *ptr = (char *)buf;
   for(int i = 0; i < numRecs; i++) {
     Boolean valid = Decode(id + i, ptr, ptr);
-    assert(valid);
+    DOASSERT(valid, "Inconsistent validity flag");
     ptr += _recSize;
   }
 }
@@ -235,13 +227,13 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-    perror("TDataBinary::WriteRecs");
-    Exit::DoExit(1);
+    perror("fseek");
+    DOASSERT(0, "Cannot perform file seek");
   }
 
   if (fwrite(buf, numRecs * _recSize, 1, _file) != 1) {
-    perror("TDataBinary::WriteRecs");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write to file");
   }
 
   _currPos = _lastPos = ftell(_file);

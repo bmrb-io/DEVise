@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/13 03:19:13  jussi
+  Moved platform-dependent network stuff to machdep.h.
+
   Revision 1.6  1996/01/12 18:30:00  jussi
   Network functions need not be defined in SGI because socket.h
   defines them properly.
@@ -44,7 +47,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <iostream.h>
-#include <assert.h>
 #include <ctype.h>
 
 #include <tcl.h>
@@ -164,7 +166,7 @@ static int ParseSEQSchema(char *&buf, int &len, char *schemafile,
     buf = eol;
   }
 
-  assert(schema);
+  DOASSERT(schema, "No schema");
 
   // allocate space that is large enough to hold the attribute
   // list; schema definition includes it so it must be enough
@@ -315,7 +317,7 @@ static int ParseSEQSchema(char *&buf, int &len, char *schemafile,
 
 static int WriteSEQRecord(char *rec, int len, FILE *fp, char *cachefile)
 {
-  assert(rec && fp && cachefile);
+  DOASSERT(rec && fp && cachefile, "Invalid parameters");
 
 #ifdef DEBUG_IO
   printf("Converting record (%d bytes): %s\n", len, rec);
@@ -377,7 +379,7 @@ static int WriteSEQRecord(char *rec, int len, FILE *fp, char *cachefile)
 
 int ParseSEQData(char *buf, int size, int len, int sock, char *cachefile)
 {
-  assert(buf && cachefile);
+  DOASSERT(buf && cachefile, "Invalid parameters");
 
   const char *resultTrailer = "\n";
 
@@ -465,7 +467,7 @@ int seq_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc == 7);
+  DOASSERT(argc == 7, "Invalid parameters");
 
   char *hostname = argv[1];
   int port = atoi(argv[2]);

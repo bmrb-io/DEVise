@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/24 17:19:36  jussi
+  Fixed bugs in open_ftp and open_http.
+
   Revision 1.4  1996/02/01 18:00:11  jussi
   Added detection of 'no such file' response from ftp server.
   Also added error messages in case of network or protocol
@@ -55,11 +58,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #include <tcl.h>
 #include <tk.h>
 
+#include "Exit.h"
 #include "machdep.h"
 
 //#define DEBUG
@@ -504,7 +507,7 @@ int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc == 5);
+  DOASSERT(argc == 5, "Invalid parameters");
 
   char *url = argv[1];
   char *cachefile = argv[2];

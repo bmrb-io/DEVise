@@ -16,12 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/02/01 18:28:55  jussi
+  Improved handling of case where data file has more attributes
+  than schema defined.
+
   Revision 1.1  1996/01/23 20:54:51  jussi
   Initial revision.
 */
 
 #include <string.h>
-#include <assert.h>
 
 #include "TDataBinaryInterp.h"
 #include "AttrList.h"
@@ -78,7 +81,7 @@ void TDataBinaryInterpClassInfo::ParamNames(int &argc, char **&argv)
 
 ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-  assert(argc == 2);
+  DOASSERT(argc == 2, "Invalid parameters");
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);

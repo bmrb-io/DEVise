@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/03/27 15:31:01  jussi
+  Small fixes for tape TData.
+
   Revision 1.13  1996/03/26 21:18:43  jussi
   Merged with TDataTape. Added magic number to cache file.
 
@@ -58,7 +61,6 @@
 */
 
 #include <iostream.h>
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -94,14 +96,14 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
     if (!_tape || !*_tape) {
       fprintf(stderr, "Cannot open tape '%s': ", name);
       perror("fopen");
-      Exit::DoExit(1);
+      DOASSERT(0, "Cannot open tape drive");
     }
   } else {
     _file = fopen(name, "r");
     if (!_file) {
       fprintf(stderr, "Cannot open file '%s': ", name);
       perror("fopen");
-      Exit::DoExit(1);
+      DOASSERT(0, "Cannot open data file");
     }
   }
 
@@ -153,13 +155,13 @@ Boolean TDataAscii::LastID(RecId &recId)
   if (_file) {
     // see if file has grown
     if (fseek(_file, 0, SEEK_END) < 0) {
-      perror("LastID:fseek");
-      Exit::DoExit(1);
+      perror("fseek");
+      DOASSERT(0, "Cannot seek to end of file");
     }
     _currPos = ftell(_file);
     if (_currPos < 0) {
-      perror("LastID:ftell");
-      Exit::DoExit(1);
+      perror("ftell");
+      DOASSERT(0, "Cannot get current file position");
     }
     if (_currPos > _lastPos)
       BuildIndex();
@@ -174,12 +176,8 @@ Boolean TDataAscii::LastID(RecId &recId)
 
 void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
-  if ((long)lowId >= _totalRecs ||	
-      (long)highId >= _totalRecs || highId < lowId) {
-    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %ld\n",
-	    lowId, highId, _totalRecs);
-    Exit::DoExit(1);
-  }
+  DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
+	   && highId >= lowId, "Invalid record parameters");
 
   _lowId = lowId;
   _highId = highId;
@@ -195,12 +193,9 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
   printf("TDataAscii::GetRecs buf = 0x%p\n", buf);
 #endif
 
-  numRecs = bufSize/_recSize;
-  if (!numRecs) {
-    fprintf(stderr,"TDataRec::GetRecs(): not enough buffer space \n");
-    fprintf(stderr,"buffer size = %d, rec size= %d\n", bufSize, _recSize);
-    Exit::DoExit(1);
-  }
+  numRecs = bufSize / _recSize;
+  DOASSERT(numRecs, "Not enough record buffer space");
+
   if (_nextId > _endId)
     return false;
   
@@ -222,8 +217,7 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
 void TDataAscii::GetRecPointers(RecId startId, int numRecs,
 				void *buf, void **recPtrs)
 {
-  fprintf(stderr,"TDataRec::GetRecPointers: not implemented\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Feature not implemented");
 }
 
 void TDataAscii::GetIndex(RecId id, int *&indices)
@@ -236,10 +230,8 @@ void TDataAscii::GetIndex(RecId id, int *&indices)
 int TDataAscii::GetModTime()
 {
   struct stat sbuf;
-  if (fstat(fileno(_file), &sbuf) < 0) {
-    fprintf(stderr, "TDataAscii::GetModTime: can't find stat\n");
-    Exit::DoExit(1);
-  }
+  int status = fstat(fileno(_file), &sbuf);
+  DOASSERT(status >= 0, "Cannot get file statistics");
   return (long)sbuf.st_mtime;
 }
 
@@ -249,7 +241,7 @@ char *TDataAscii::MakeCacheName(char *file)
   unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
   char *name = new char[nameLen];
   sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
-  assert(strlen(name) < nameLen);
+  DOASSERT(strlen(name) < nameLen, "Name too long");
   return name;
 }
 
@@ -268,7 +260,7 @@ void TDataAscii::Initialize()
   
   unsigned long magicNumber;
   if (read(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    perror("Initialize:read");
+    perror("read");
     goto error;
   }
   if (magicNumber != 0xdeadbeef) {
@@ -280,28 +272,28 @@ void TDataAscii::Initialize()
      file, and if we are, reinitialize */
   if (_tape) {
     if (_tape->seek(0) != 0) {
-      perror("Initialize:tapeseek");
+      perror("tapeseek");
       goto error;
     }
     if (_tape->read(fileContent, FILE_CONTENT_COMPARE_BYTES)
 	!= FILE_CONTENT_COMPARE_BYTES) {
-      perror("Initialize:taperead");
+      perror("taperead");
       goto error;
     }
   } else {
     if (fseek(_file, 0, SEEK_SET) < 0) {
-      perror("Initialize:fseek");
+      perror("fseek");
       goto error;
     }
     if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      perror("Initialize:fread");
+      perror("fread");
       goto error;
     }
   }
 
   if (read(cacheFd, cachedFileContent, FILE_CONTENT_COMPARE_BYTES)
       != FILE_CONTENT_COMPARE_BYTES) {
-    perror("Initialize:read");
+    perror("read");
     goto error;
   }
   if (memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES)) {
@@ -317,13 +309,13 @@ void TDataAscii::Initialize()
   
   /* Read last file position */
   if (read(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    perror("Initialize:read");
+    perror("read");
     goto error;
   }
   
   /* Read number of records */
   if (read(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    perror("Initialize:read");
+    perror("read");
     goto error;
   }
 
@@ -339,7 +331,7 @@ void TDataAscii::Initialize()
   /* read the index */
   if (read(cacheFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
-    perror("Initialize:read");
+    perror("read");
     goto error;
   }
   
@@ -370,7 +362,6 @@ void TDataAscii::Initialize()
   BuildIndex();
 }
 
-/* Do a checkpoint */
 void TDataAscii::Checkpoint()
 {
   printf("Checkpointing %s: %ld total records, %ld new\n", _name,
@@ -389,27 +380,27 @@ void TDataAscii::Checkpoint()
   
   unsigned long magicNumber = 0xdeadbeef;
   if (write(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    perror("Checkpoint:write");
+    perror("write");
     goto error;
   }
 
   if (_tape) {
     if (_tape->seek(0) != 0) {
-      perror("Checkpoint:fseek");
+      perror("tapeseek");
       goto error;
     }
     if (_tape->read(fileContent, FILE_CONTENT_COMPARE_BYTES)
 	!= FILE_CONTENT_COMPARE_BYTES) {
-      perror("Checkpoint:fread");
+      perror("taperead");
       goto error;
     }
   } else {
     if (fseek(_file, 0, SEEK_SET) < 0) {
-      perror("Checkpoint:fseek");
+      perror("fseek");
       goto error;
     }
     if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      perror("Checkpoint:fread");
+      perror("fread");
       goto error;
     }
   }
@@ -417,7 +408,7 @@ void TDataAscii::Checkpoint()
   /* write contents of file to be compared later */
   if (write(cacheFd, fileContent, FILE_CONTENT_COMPARE_BYTES) !=
       FILE_CONTENT_COMPARE_BYTES) {
-    perror("Checkpoint:write");
+    perror("write");
     goto error;
   }
   
@@ -427,20 +418,20 @@ void TDataAscii::Checkpoint()
   
   /* write last position in the file */
   if (write(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    perror("Checkpoint:write");
+    perror("write");
     goto error;
   }
   
   /* write # of records */
   if (write(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    perror("Checkpoint:write");
+    perror("write");
     goto error;
   }
     
   /* write indices */
   if (write(cacheFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
-    perror("Checkpoint:write");
+    perror("write");
     goto error;
   }
 
@@ -480,14 +471,14 @@ void TDataAscii::BuildIndex()
   if (_tape) {
     // File has been appended, extend index
     if (_tape->seek(_lastPos) != _lastPos) {
-      perror("BuildIndex:tapeseek");
-      Exit::DoExit(1);
+      perror("tapeseek");
+      DOASSERT(0, "Cannot perform seek on tape drive");
     }
   } else {
     // File has been appended, extend index
     if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-      perror("BuildIndex:fseek");
-      Exit::DoExit(1);
+      perror("fseek");
+      DOASSERT(0, "Cannot perform file seek");
     }
   }
 
@@ -501,10 +492,7 @@ void TDataAscii::BuildIndex()
       len = _tape->gets(buf, LINESIZE);
       if (!len)
 	break;
-      if (len < 0) {
-	perror("BuildIndex:taperead");
-	Exit::DoExit(1);
-      }
+      DOASSERT(len >= 0, "Cannot read tape");
     } else {
       if (fgets(buf, LINESIZE, _file) == NULL)
 	break;
@@ -534,12 +522,10 @@ void TDataAscii::BuildIndex()
     // bufferOffset to the next block, past the EOF, when tape file
     // ends
     _lastPos = _tape->tell();
-    assert(_lastPos >= _currPos);
+    DOASSERT(_lastPos >= _currPos, "Incorrect file position");
   } else {
     _lastPos = ftell(_file);
-    if (_lastPos != _currPos)
-      printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
-    assert(_lastPos == _currPos);
+    DOASSERT(_lastPos == _currPos, "Incorrect file position");
   }
 
   _fileGrown = false;
@@ -563,39 +549,33 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
     int len;
     if (_tape) {
       if (_tape->seek(_index[id + i]) != _index[id + i]) {
-	perror("ReadRec:tapeseek");
-	Exit::DoExit(1);
+	perror("tapeseek");
+	DOASSERT(0, "Cannot perform seek on tape drive");
       }
       len = _tape->gets(line, LINESIZE);
-      if (len <= 0) {
-	perror("ReadRec:taperead");
-	Exit::DoExit(1);
-      }
+      DOASSERT(len > 0, "Cannot read from tape");
     } else {
       if (_currPos != _index[id + i]) {
 	if (fseek(_file, _index[id + i], SEEK_SET) < 0) {
-	  perror("ReadRec:fseek");
-	  Exit::DoExit(1);
+	  perror("fseek");
+	  DOASSERT(0, "Cannot perform file seek");
 	}
 	_currPos = _index[id + i];
       }
       if (fgets(line, LINESIZE, _file) == NULL) {
-	perror("ReadRec:fgets");
-	Exit::DoExit(1);
+	perror("fgets");
+	DOASSERT(0, "Cannot read from file");
       }
       len = strlen(line);
     }
 
     if (len > 0 ) {
-      if (line[len - 1] != '\n') {
-	fprintf(stderr,"ReadRec:line too long (%d)\n", len);
-	Exit::DoExit(1);
-      }
+      DOASSERT(line[len - 1] == '\n', "Data record too long");
       line[len - 1] = '\0';
     }
 
     Boolean valid = Decode(ptr, line);
-    assert(valid);
+    DOASSERT(valid, "Inconsistent validity flag");
     ptr += _recSize;
 
     _currPos += len;
@@ -618,10 +598,7 @@ void TDataAscii::ExtendIndex()
 
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
-  if (_tape) {
-    fprintf(stderr, "Writing to tape not supported yet\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(!_tape, "Writing to tape not supported yet");
 
   if (_totalRecs >= _indexSize)         // index buffer too small?
     ExtendIndex();                      // extend it
@@ -631,18 +608,18 @@ void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 
   if (_tape) {
     if (_tape->append(buf, len) != len) {
-      perror("WriteRecs:tapeappend");
-      Exit::DoExit(1);
+      perror("tapewrite");
+      DOASSERT(0, "Cannot append to tape");
     }
     _lastPos = _tape->tell();
   } else {
     if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-      perror("WriteRecs:fseek");
-      Exit::DoExit(1);
+      perror("fseek");
+      DOASSERT(0, "Cannot perform file seek");
     }
     if (fwrite(buf, len, 1, _file) != 1) {
-      perror("WriteRecs:fwrite");
-      Exit::DoExit(1);
+      perror("fwrite");
+      DOASSERT(0, "Cannot write to file");
     }
     _lastPos = ftell(_file);
   }
@@ -658,18 +635,18 @@ void TDataAscii::WriteLine(void *line)
 
   if (_tape) {
     if (_tape->append(line, len) != len) {
-      perror("WriteLine:tapeappend");
-      Exit::DoExit(1);
+      perror("tapewrite");
+      DOASSERT(0, "Cannot append to tape");
     }
     _lastPos = _tape->tell();
   } else {
     if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-      perror("WriteLine:fseek");
-      Exit::DoExit(1);
+      perror("fseek");
+      DOASSERT(0, "Cannot perform file seek");
     }
     if (fwrite(line, len, 1, _file) != 1) {
-      perror("WriteLine:fwrite");
-      Exit::DoExit(1);
+      perror("fwrite");
+      DOASSERT(0, "Cannot write to file");
     }
     _lastPos = ftell(_file);
   }

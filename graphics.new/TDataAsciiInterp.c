@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/03/29 18:14:20  wenger
+  Got testWindowRep to compile and run, added drawing in
+  windows; fixed a few more compile warnings, etc.
+
   Revision 1.9  1996/03/26 21:33:00  jussi
   Added computation of max/min attribute values.
 
@@ -43,7 +47,6 @@
 */
 
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <unistd.h>
 
@@ -113,12 +116,9 @@ void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
 
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 2) {
-    fprintf(stderr,"TDataAsciiInterp::CreateWithParams: wrong args\n");
-    for (int i=0; i < argc; i++)
-      printf("%s\n", argv[i]);
+  if (argc != 2)
     return (ClassInfo *)NULL;
-  }
+
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
   TDataAsciiInterp *tdata = new TDataAsciiInterp(name,_recSize, _attrList,
@@ -180,10 +180,8 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
       _numAttrs--;
     }
     if (info->hasMatchVal) {
-      if (_numMatchingAttrs >= MAX_MATCHING_ATTRS) {
-	fprintf(stderr,"TDataASciiInterp: too many matching attrs\n");
-	Exit::DoExit(2);
-      }
+      DOASSERT(_numMatchingAttrs < MAX_MATCHING_ATTRS,
+	       "Too many matching attributes");
       _matchingAttrs[_numMatchingAttrs++] = info;
     }
   }
@@ -199,7 +197,7 @@ Boolean TDataAsciiInterp::WriteCache(int fd)
 {
   int numAttrs = _attrList->NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("WriteCache:write");
+    perror("write");
     return false;
   }
 
@@ -209,20 +207,20 @@ Boolean TDataAsciiInterp::WriteCache(int fd)
       continue;
     if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("WriteCache:write");
+      perror("write");
       return false;
     }
     if (write(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("WriteCache:write");
+      perror("write");
       return false;
     }
     if (write(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("WriteCache:write");
+      perror("write");
       return false;
     }
     if (write(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("WriteCache:write");
+      perror("write");
       return false;
     }
   }
@@ -234,7 +232,7 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
 {
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("ReadCache:read");
+    perror("read");
     return false;
   }
   if (numAttrs != _attrList->NumAttrs()) {
@@ -248,20 +246,20 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
       continue;
     if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("ReadCache:read");
+      perror("read");
       return false;
     }
     if (read(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("ReadCache:read");
+      perror("read");
       return false;
     }
     if (read(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("ReadCache:read");
+      perror("read");
       return false;
     }
     if (read(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("ReadCache:read");
+      perror("read");
       return false;
     }
   }
@@ -298,7 +296,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
     }
   }
 
-  assert(numArgs >= _numAttrs);
+  DOASSERT(numArgs >= _numAttrs, "Invalid number of arguments");
 
   for(i = 0; i < _numAttrs; i++) {
 
@@ -378,10 +376,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
       break;
 
     case DateAttr:
-      if (info->hasMatchVal) {
-	fprintf(stderr, "TDataAsciiInterp: date attr match not implemented\n");
-	Exit::DoExit(2);
-      }
+      DOASSERT(!info->hasMatchVal, "Date attribute match not implemented");
       dateVal = atoi(args[i]);
       *(time_t *)ptr = dateVal;
       if (!info->hasHiVal || dateVal > info->hiVal.dateVal) {
@@ -399,9 +394,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
       break;
 
     default:
-      fprintf(stderr, "TDataAsciiInterp: unknown attribute type: %d\n",
-	      info->type);
-      Exit::DoExit(2);
+      DOASSERT(0, "Unknown attribute type");
     }
   }
   
