@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 21:55:02  jussi
+  Added #include <unistd.h> to get rmdir() prototype.
+
   Revision 1.2  1995/09/05 21:12:32  jussi
   Added/updated CVS header.
 */
@@ -123,6 +126,7 @@ void ControlPanel::DoContext()
 
 Boolean ControlPanel::DoInit()
 {
+  return false;
 }
 
 /********************************************************************

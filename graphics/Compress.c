@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 20:19:45  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:29  jussi
   Added/updated CVS header.
 */
@@ -54,7 +57,7 @@ void SimpleCompress::Decompress(CompressIO *cio)
   while ((line = cio->ReadLine(count))!= NULL) {
     int outCount;
     char *outBuf = DecompressLine(line, count, outCount);
-    cio->WriteLine((char *)_compressBuf, outCount);
+    cio->WriteLine(outBuf, outCount);
   }
   cio->End();
 }
