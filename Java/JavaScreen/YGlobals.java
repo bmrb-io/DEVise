@@ -298,7 +298,7 @@ final class YMSGDlg extends Dialog
         add(panel3);
 
         pack();
-        setResizable(false);
+        //setResizable(false);
         
         // reposition the dialog
         Point parentLoc = null;
