@@ -1,37 +1,41 @@
 /*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1996
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
+   ========================================================================
+   DEVise Data Visualization Software
+   (c) Copyright 1992-1996
+   By the DEVise Development Group
+   Madison, Wisconsin
+   All Rights Reserved.
+   ========================================================================
 
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Implementation of the DataSourceBuf class.
- */
+   Under no circumstances is this software to be copied, distributed,
+   or altered in any way without prior permission from the DEVise
+   Development Group.
+   */
 
 /*
-  $Id$
+   Implementation of the DataSourceBuf class.
+   */
 
-  $Log$
-  Revision 1.2  1996/07/01 19:31:32  jussi
-  Added an asynchronous I/O interface to the data source classes.
-  Added a third parameter (char *param) to data sources because
-  the DataSegment template requires that all data sources have the
-  same constructor (DataSourceWeb requires the third parameter).
+/*
+   $Id$
 
-  Revision 1.1  1996/05/22 17:52:00  wenger
-  Extended DataSource subclasses to handle tape data; changed TDataAscii
-  and TDataBinary classes to use new DataSource subclasses to hide the
-  differences between tape and disk files.
+   $Log$
+   Revision 1.3  1996/07/12 18:24:42  wenger
+   Fixed bugs with handling file headers in schemas; added DataSourceBuf
+   to TDataAscii.
 
- */
+   Revision 1.2  1996/07/01 19:31:32  jussi
+   Added an asynchronous I/O interface to the data source classes.
+   Added a third parameter (char *param) to data sources because
+   the DataSegment template requires that all data sources have the
+   same constructor (DataSourceWeb requires the third parameter).
+
+   Revision 1.1  1996/05/22 17:52:00  wenger
+   Extended DataSource subclasses to handle tape data; changed TDataAscii
+   and TDataBinary classes to use new DataSource subclasses to hide the
+   differences between tape and disk files.
+
+   */
 
 #define _DataSourceBuf_c_
 
@@ -59,14 +63,21 @@ static char *	srcFile = __FILE__;
  * function: DataSourceBuf::DataSourceBuf
  * DataSourceBuf constructor.
  */
-DataSourceBuf::DataSourceBuf(char *buffer, char *label, char *param) :
-     DataSource(label)
+DataSourceBuf::DataSourceBuf(char *buffer, int buffer_size,
+			     int data_size, char *label)
+: DataSource(label)
 {
-	DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n",
-		(label != NULL) ? label : "<null>"));
+    DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n",
+		    (label != NULL) ? label : "<null>"));
+    DOASSERT(buffer != NULL, "DataSourceBuf::DataSourceBuf: null buffer");
+    DOASSERT(buffer_size > 0, 
+	     "DataSourceBuf::DataSourceBuf: buffer too small");
 
-	_sourceBuf = buffer;
-	_currentLoc = NULL;
+    _sourceBuf = buffer;
+    _end_buffer = _sourceBuf + buffer_size -1;
+    _end_data = _sourceBuf + data_size -1;
+    DOASSERT(_end_data <= _end_buffer, "more data than buffer space");
+    _currentLoc = NULL;
 }
 
 /*------------------------------------------------------------------------------
@@ -75,7 +86,8 @@ DataSourceBuf::DataSourceBuf(char *buffer, char *label, char *param) :
  */
 DataSourceBuf::~DataSourceBuf()
 {
-	DO_DEBUG(printf("DataSourceBuf::~DataSourceBuf()\n"));
+    DO_DEBUG(printf("DataSourceBuf::~DataSourceBuf(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 }
 
 /*------------------------------------------------------------------------------
@@ -85,13 +97,14 @@ DataSourceBuf::~DataSourceBuf()
 DevStatus
 DataSourceBuf::Open(char *)
 {
-	DO_DEBUG(printf("DataSourceBuf::Open()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Open(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	DevStatus	result = StatusOk;
+    DevStatus	result = StatusOk;
 
-	_currentLoc = _sourceBuf;
+    _currentLoc = _sourceBuf;
 
-	return result;
+    return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -101,13 +114,14 @@ DataSourceBuf::Open(char *)
 DevStatus
 DataSourceBuf::Close()
 {
-	DO_DEBUG(printf("DataSourceBuf::Close()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Close(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	DevStatus	result = StatusOk;
+    DevStatus	result = StatusOk;
 
-	_currentLoc = NULL;
+    _currentLoc = NULL;
 
-	return result;
+    return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -117,89 +131,84 @@ DataSourceBuf::Close()
 char *
 DataSourceBuf::Fgets(char *buffer, int bufSize)
 {
-	DO_DEBUG(printf("DataSourceBuf::Fgets()\n"));
+    DO_DEBUG(printf("DataSourceBuf::FGets(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    DOASSERT(buffer != NULL, "DataSourceBuf::Fgets null buffer");
+    DOASSERT(bufSize > 0, "DataSourceBuf::Fgets: zero sized buffer");
 
-	char *		result = buffer;
-	char *		endOfBuf = buffer + bufSize - 1;
-	Boolean		endOfLine = false;
-	char *		outputP = buffer;
+    char *		endOfBuf = buffer + bufSize - 1;
+    Boolean		endOfLine = false;
+    char *		outputP = buffer;
 
-	if (_currentLoc == NULL)
-	{
-		reportError("DataSourceBuf: not open", devNoSyserr);
+    DO_DEBUG(printf("sourceBuf=0x%p, end_buffer=0x%p, end_data=0x%p, currentLoc=0x%p\n", 
+		    _sourceBuf, _end_buffer, _end_data, _currentLoc));
+    DO_DEBUG(printf("buffer=0x%p, endOfBuf=0x%p\n", buffer, endOfBuf));
+
+    if (_currentLoc == NULL ) {
+	reportError("DataSourceBuf: not open", devNoSyserr);
+    } else if( _currentLoc > _end_data || *_currentLoc == '\0' ) {
+	return NULL;		// Signal "EOF" - don't modify buffer
+    } else {
+	while ((outputP < endOfBuf) && !endOfLine) {
+	    // End of string in the buffer is equivalent to EOF in real
+	    // fgets().
+	    if (_currentLoc > _end_data || *_currentLoc == '\0') {
+		endOfLine = true;
+	    } else {
+		if( *_currentLoc == '\n' ) {
+		    endOfLine = true;
+		}
+		*outputP = *_currentLoc;
+		_currentLoc++;
+		outputP++;
+	    }
 	}
-	else
-	{
-		while ((outputP < endOfBuf) && !endOfLine)
-		{
-			*outputP = *_currentLoc;
-
-			// End of string in the buffer is equivalent to EOF in real
-			// fgets().
-			if (*_currentLoc == '\0')
-			{
-				if (outputP == buffer) result = NULL;	// Signal "EOF".
-				break;
-			}
-
-			if (*_currentLoc == '\n') endOfLine = true;
-
-			_currentLoc++;
-			outputP++;
-		}
-
-		// Terminate the output string.
-		if (outputP < endOfBuf)
-		{
-			*outputP = '\0';
-		}
-		else
-		{
-			*endOfBuf = '\0';
-		}
-	}
-
-	return result;
+	*outputP = '\0';
+    }
+    DO_DEBUG(printf("sourceBuf=0x%p, end_buffer=0x%p, end_data=0x%p, currentLoc=0x%p\n", 
+		    _sourceBuf, _end_buffer, _end_data, _currentLoc));
+    return buffer;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::Fread
  * Simulate fread() on the buffer associated with this object.
- * Note: no checking for going past end of buffer.
  */
 size_t
 DataSourceBuf::Fread(char *buf, size_t size, size_t itemCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::Fread()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Fread(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    DO_DEBUG(printf("DataSourceBuf::Fread()\n"));
 
-	return Read(buf, size * itemCount) / size;
+    return Read(buf, size * itemCount) / size;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::Read
  * Simulate read() on the buffer associated with this object.
- * Note: no checking for going past end of buffer.
  */
 size_t
 DataSourceBuf::Read(char *buf, int byteCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::Read()\n"));
-
-	int		result = 0;
-
-	if (_currentLoc == NULL)
-	{
-		reportError("DataSourceBuf: not open", devNoSyserr);
-		result = -1;
-	}
-	else
-	{
-		memcpy(buf, _currentLoc, byteCount);
-		_currentLoc += byteCount;
-		result = byteCount;
-	}
-
-	return result;
+    DO_DEBUG(printf("DataSourceBuf::Read(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    
+    int		result = -1;
+    
+    if (_currentLoc == NULL) {
+	reportError("DataSourceBuf: not open", devNoSyserr);
+    } else if( _currentLoc > _end_data ) {
+	reportError("DataSourceBuf: read beyond eof", devNoSyserr);
+    } else {
+	int bytes_left = _end_data - _currentLoc + 1;
+	if( byteCount > bytes_left ) byteCount = bytes_left;
+	memcpy(buf, _currentLoc, byteCount);
+	_currentLoc += byteCount;
+	result = byteCount;
+    }
+    
+    return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -210,72 +219,78 @@ DataSourceBuf::Read(char *buf, int byteCount)
 size_t
 DataSourceBuf::Fwrite(const char *buf, size_t size, size_t itemCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::Fwrite()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Fwrite(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	return Write(buf, size * itemCount) / size;
+    return Write(buf, size * itemCount) / size;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::Write
  * Simulate write() on the buffer associated with this object.
- * Note: no checking for going past end of buffer.
  */
 size_t
 DataSourceBuf::Write(const char *buf, size_t byteCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::Write()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Write(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    
+    int		result = 0;
 
-	int		result = 0;
-
-	if (_currentLoc == NULL)
-	{
-		reportError("DataSourceBuf: not open", devNoSyserr);
-		result = -1;
+    if (_currentLoc == NULL) {
+	reportError("DataSourceBuf: not open", devNoSyserr);
+	result = -1;
+    } else {
+	int bytes_left = _end_buffer - _currentLoc + 1;
+	if( bytes_left > 0 ) {
+	    if( byteCount > bytes_left ) byteCount = bytes_left;
+	    memcpy(_currentLoc, buf, byteCount);
+	    _currentLoc += byteCount;
+	    if( _currentLoc > _end_data ) {
+		_end_data = _currentLoc - 1;
+	    }
+	    result = byteCount;
 	}
-	else
-	{
-		memcpy(_currentLoc, _currentLoc, byteCount);
-		_currentLoc += byteCount;
-		result = byteCount;
-	}
-
-	return result;
+    }
+    
+    return result;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::Seek
  * Simulate seek() on the buffer associated with this object.
- * Note: no checking for going past end of buffer.
  */
 int
 DataSourceBuf::Seek(long offset, int from)
 {
-	DO_DEBUG(printf("DataSourceBuf::Seek()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Seek(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	int		result = 0;
-
-	switch (from)
-	{
+    switch (from)
+      {
 	case SEEK_SET:
-		_currentLoc = _sourceBuf + offset;
-		break;
+	  _currentLoc = _sourceBuf + offset;
+	  break;
 
 	case SEEK_CUR:
-		_currentLoc += offset;
-		break;
+	  _currentLoc += offset;
+	  break;
 
 	case SEEK_END:
-		(void) gotoEnd();
-		_currentLoc += offset;
-		break;
+	  (void) gotoEnd();
+	  _currentLoc += offset;
+	  break;
 
 	default:
-		reportError("Illegal 'seek from' value", devNoSyserr);
-		result = -1;
-		break;
-	}
+	  reportError("Illegal 'seek from' value", devNoSyserr);
+	  return -1;
+      }
 
-	return result;
+    if( _currentLoc > _end_data ) {
+	_currentLoc = _end_data + 1;
+    }
+
+    return _currentLoc - _sourceBuf;
 }
 
 /*------------------------------------------------------------------------------
@@ -285,9 +300,10 @@ DataSourceBuf::Seek(long offset, int from)
 long
 DataSourceBuf::Tell()
 {
-	DO_DEBUG(printf("DataSourceBuf::Tell()\n"));
+    DO_DEBUG(printf("DataSourceBuf::Tell(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	return _currentLoc - _sourceBuf;
+    return _currentLoc - _sourceBuf;
 }
 
 /*------------------------------------------------------------------------------
@@ -298,13 +314,23 @@ DataSourceBuf::Tell()
 int
 DataSourceBuf::gotoEnd()
 {
-	DO_DEBUG(printf("DataSourceBuf::gotoEnd()\n"));
-
-	int result = strlen(_sourceBuf);
-
-	_currentLoc = _sourceBuf + result;
-
-	return result;
+    DO_DEBUG(printf("DataSourceBuf::gotoEnd(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    _currentLoc = _end_data + 1;
+    return _currentLoc - _sourceBuf;
 }
+
+
+/*----------------------------------------------------------------------------*/
+void DataSourceBuf::Clear()
+{
+    DO_DEBUG(printf("DataSourceBuf::Clear(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
+    _version++;
+    *_sourceBuf = '\0';		// not really needed...
+    _currentLoc = _sourceBuf;
+    _end_data = _sourceBuf - 1;
+}
+
 
 /*============================================================================*/

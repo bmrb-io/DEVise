@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/13 02:31:58  jussi
+  Moved template instantiations to end of source file. Older
+  compilers seem to want it that way.
+
   Revision 1.8  1996/07/12 18:24:45  wenger
   Fixed bugs with handling file headers in schemas; added DataSourceBuf
   to TDataAscii.
@@ -94,47 +98,48 @@ static char *	srcFile = __FILE__;
  * function: DataSourceSegment::DataSourceSegment
  * DataSourceSegment constructor.
  */
-template<class TYPE>
-DataSourceSegment<TYPE>::DataSourceSegment(char *name, char *label,
-                                           char *param, long dataOffset,
-                                           long dataLength) :
-     TYPE(name, label, param)
+DataSourceSegment::DataSourceSegment(DataSource* dataSource,
+				     long dataOffset,
+				     long dataLength)
+: DataSource("segment"),
+  _dataSource(dataSource),
+  _dataOffset(dataOffset),
+  _dataLength(dataLength)
 {
 	DO_DEBUG(printf("DataSourceSegment::DataSourceSegment()\n"));
-
-	_dataOffset = dataOffset;
-	_dataLength = dataLength;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::~DataSourceSegment
  * DataSourceSegment destructor.
  */
-template<class TYPE>
-DataSourceSegment<TYPE>::~DataSourceSegment()
+DataSourceSegment::~DataSourceSegment()
 {
 	DO_DEBUG(printf("DataSourceSegment::~DataSourceSegment()\n"));
+	// right now the segment is in control of the origina data source.
+	// when the data source is registered in a catalog, it will no
+	// longer delete it.
+	delete _dataSource;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::Open
  * Open the file or other data source corresponding to this object.
  */
-template<class TYPE>
 DevStatus
-DataSourceSegment<TYPE>::Open(char *mode)
+DataSourceSegment::Open(char *mode)
 {
 	DO_DEBUG(printf("DataSourceSegment::Open()\n"));
 
 	DevStatus	result = StatusOk;
 
-	if (TYPE::Open(mode) != StatusOk)
+	if (_dataSource->Open(mode) != StatusOk)
 	{
 		result = StatusFailed;
 	}
 	else
 	{
-		if (TYPE::Seek(_dataOffset, SEEK_SET) < 0)
+		if (_dataSource->Seek(_dataOffset, SEEK_SET) < 0)
 		{
 			result = StatusFailed;
 		}
@@ -143,13 +148,30 @@ DataSourceSegment<TYPE>::Open(char *mode)
 	return result;
 }
 
-/*------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+DevStatus
+DataSourceSegment::Close()
+{
+    return _dataSource->Close();
+}
+
+
+//-----------------------------------------------------------------------------
+
+char
+DataSourceSegment::IsOk()
+{
+    return _dataSource && _dataSource->IsOk();
+}
+
+
+/*-----------------------------------------------------------------------------
  * function: DataSourceSegment::Seek
  * Do a seek on the data source corresponding to this object.
  */
-template<class TYPE>
 int
-DataSourceSegment<TYPE>::Seek(long offset, int from)
+DataSourceSegment::Seek(long offset, int from)
 {
 	DO_DEBUG(printf("DataSourceSegment::Seek()\n"));
 
@@ -159,29 +181,27 @@ DataSourceSegment<TYPE>::Seek(long offset, int from)
          * on successful return, -1 otherwise.
          */
 
-	return TYPE::Seek(offset + _dataOffset, from);
+	return _dataSource->Seek(offset + _dataOffset, from);
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::Tell
  * Do a tell on the data source corresponding to this object.
  */
-template<class TYPE>
 long
-DataSourceSegment<TYPE>::Tell()
+DataSourceSegment::Tell()
 {
 	DO_DEBUG(printf("DataSourceSegment::Tell()\n"));
 
-	return TYPE::Tell() - _dataOffset;
+	return _dataSource->Tell() - _dataOffset;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::gotoEnd
  * Go to the end of the data source corresponding to this object.
  */
-template<class TYPE>
 int
-DataSourceSegment<TYPE>::gotoEnd()
+DataSourceSegment::gotoEnd()
 {
 	DO_DEBUG(printf("DataSourceSegment::gotoEnd()\n"));
 
@@ -189,14 +209,14 @@ DataSourceSegment<TYPE>::gotoEnd()
 
 	if (_dataLength == DATA_LENGTH_UNDEFINED)
 	{
-		if (TYPE::gotoEnd() < 0)
+		if (_dataSource->gotoEnd() < 0)
 		{
 			result = -1;
 		}
 	}
 	else
 	{
-		if (TYPE::Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
+		if (_dataSource->Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
 		{
 			reportError("Cannot seek to end of file", devNoSyserr);
 			result = -1;
@@ -206,7 +226,7 @@ DataSourceSegment<TYPE>::gotoEnd()
 
 	if (result != -1)
 	{
-		result = TYPE::Tell() - _dataOffset;
+		result = _dataSource->Tell() - _dataOffset;
 	}
 
 	return result;
@@ -214,9 +234,3 @@ DataSourceSegment<TYPE>::gotoEnd()
 
 /*============================================================================*/
 
-template class DataSourceSegment<DataSourceFileStream>;
-template class DataSourceSegment<DataSourceTape>;
-template class DataSourceSegment<DataSourceBuf>;
-#ifndef ATTRPROJ
-template class DataSourceSegment<DataSourceWeb>;
-#endif

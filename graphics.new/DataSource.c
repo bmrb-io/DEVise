@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/01 19:31:30  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.4  1996/05/22 17:51:55  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -66,19 +72,19 @@ static char *	srcFile = __FILE__;
  * function: DataSource::DataSource
  * DataSource constructor.
  */
-DataSource::DataSource(char *label)
+DataSource::DataSource(char *label, ViewGraph* controlling_view)
 {
-	DO_DEBUG(printf("DataSource::DataSource(%s)\n",
-		(label != NULL) ? label : "<null>"));
+    DO_DEBUG(printf("DataSource::DataSource(%s)\n",
+		    (label != NULL) ? label : "<null>"));
 
-	if (label != NULL)
-	{
-		_label = strdup(label);
-	}
-	else
-	{
-		_label = NULL;
-	}
+    _ref_count = 0;
+    if (label != NULL) {
+	_label = strdup(label);
+    } else {
+	_label = NULL;
+    }
+    _version = 0;
+    _controlling_view = NULL;
 }
 
 /*------------------------------------------------------------------------------
@@ -87,13 +93,41 @@ DataSource::DataSource(char *label)
  */
 DataSource::~DataSource()
 {
-	DO_DEBUG(printf("DataSource::~DataSource()\n"));
+    DO_DEBUG(printf("DataSource::~DataSource(%s)\n",
+		    (_label != NULL) ? _label : "<null>"));
 
-	if (_label != NULL)
-	{
-		delete [] _label;
-	}
+    DOASSERT(_ref_count == 0, 
+	     "Deleting datasource with dangling references");
+    
+    if (_label != NULL) {
+	delete [] _label;
+    }
 }
+
+
+//---------------------------------------------------------------------------
+void DataSource::AddRef()
+{
+    DO_DEBUG(printf("DataSource::AddRef(%s) refs=%d\n",
+		    (_label != NULL) ? _label : "<null>", _ref_count));
+    _ref_count++;
+}
+
+
+//---------------------------------------------------------------------------
+// returns true if the caller should delete this object
+bool DataSource::DeleteRef()
+{
+    DO_DEBUG(printf("DataSource::DeleteRef(%s) refs=%d\n",
+		    (_label != NULL) ? _label : "<null>", _ref_count));
+    _ref_count--;
+    DOASSERT(_ref_count >= 0, "invalid datasource ref_count");
+    // this could delete itself, but other old code still does that...
+    // also, this could be statically allocated...
+    return _ref_count == 0;
+}
+
+
 
 /*------------------------------------------------------------------------------
  * function: DataSource::getLabel
@@ -208,6 +242,34 @@ DataSource::append(void *buf, int recSize)
 
 	return -1;
 }
+
+/*--------------------------------------------------------------------------*/
+int DataSource::GetModTime()
+{
+  return -1;
+}
+
+
+/*--------------------------------------------------------------------------*/
+Boolean DataSource::isFile()
+{
+  return false;
+}
+
+
+/*--------------------------------------------------------------------------*/
+Boolean DataSource::isBuf()
+{
+  return false;
+}
+
+
+/*--------------------------------------------------------------------------*/
+Boolean DataSource::isTape()
+{
+  return false;
+}
+
 
 /*------------------------------------------------------------------------------
  * function: DataSource::printStats

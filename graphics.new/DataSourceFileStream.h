@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/01 19:31:33  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.2  1996/06/27 15:50:59  jussi
   Added IsOk() method which is used by TDataAscii and TDataBinary
   to determine if a file is still accessible. Also moved GetModTime()
@@ -43,7 +49,9 @@
 class DataSourceFileStream : public DataSource
 {
 public:
-	DataSourceFileStream(char *filename, char *label, char *param = 0);
+
+	DataSourceFileStream(char *filename, char *label);
+
 	virtual ~DataSourceFileStream();
 
 	virtual char *objectType() {return "DataSourceFileStream";};
@@ -52,6 +60,9 @@ public:
 	virtual Boolean IsOk();
 	virtual DevStatus Close();
 
+	// WARNING: don't mix the F* functions with the plain ones
+	// eg, Fread (or Fgets) with Read.  The F* functions use 
+	// stdio routines which are buffered while the other ones don't.
 	virtual char *Fgets(char *buffer, int size);
 	virtual size_t Fread(char *buf, size_t size, size_t itemCount);
 	virtual size_t Read(char *buf, int byteCount);
@@ -66,15 +77,19 @@ public:
 
 	virtual int append(void *buf, int recSize);
 
-	virtual int GetModTime();
+	virtual Boolean isFile() { return true; }
 
-	virtual Boolean isFile() {return true;};
+	char* GetName() { return _filename; }
 
-	virtual Boolean isBuf() {return false;};
+	int DataSourceFileStream::GetModTime();
 
-	virtual Boolean isTape() {return false;};
+      protected:
 
-protected:
+	DataSourceFileStream() : DataSource() {
+	    _filename = NULL;
+	    _file = NULL;
+	}
+
 	char *		_filename;
 	FILE *		_file;
 };

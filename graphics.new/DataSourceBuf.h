@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/12 18:24:43  wenger
+  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+  to TDataAscii.
+
   Revision 1.3  1996/07/01 19:31:32  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -49,7 +53,8 @@
 class DataSourceBuf : public DataSource
 {
 public:
-	DataSourceBuf(char *buffer, char *label, char *param = 0);
+	DataSourceBuf(char *buffer, int buffer_size, 
+		      int data_size, char *label);
 	virtual ~DataSourceBuf();
 
 	virtual char *objectType() {return "DataSourceBuf";};
@@ -70,16 +75,15 @@ public:
 
 	virtual int gotoEnd();
 
-	virtual int GetModTime() {return -1;}
+	// erase the buffer & increase the version
+	void Clear();
 
-	virtual Boolean isFile() {return false;};
+	virtual Boolean isBuf() {return true;}
 
-	virtual Boolean isBuf() {return true;};
-
-	virtual Boolean isTape() {return false;};
-
-private:
+      protected:
 	char *		_sourceBuf;
+	char *          _end_buffer;
+	char *          _end_data;
 	char *		_currentLoc;
 };
 

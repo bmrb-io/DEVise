@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/11 17:25:33  wenger
+  Devise now writes headers to some of the files it writes;
+  DataSourceSegment class allows non-fixed data length with non-zero
+  offset; GUI for editing schema files can deal with comment lines;
+  added targets to top-level makefiles to allow more flexibility.
+
   Revision 1.3  1996/07/01 19:31:34  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -54,24 +60,30 @@
 #define DATA_LENGTH_UNDEFINED (-1)
 
 
-template<class TYPE>
-class DataSourceSegment : public TYPE
+class DataSourceSegment : public DataSource
 {
 public:
-    DataSourceSegment(char *name, char *label, char *param,
-                      long dataOffset, long dataLength);
+    DataSourceSegment(DataSource* dataSource, 
+		      long dataOffset, long dataLength);
     ~DataSourceSegment();
 
     virtual char *objectType() {return "DataSourceSegment";};
 
     virtual DevStatus Open(char *mode);
+    virtual DevStatus Close();
+    
 
     virtual int Seek(long offset, int from);
     virtual long Tell();
 
     virtual int gotoEnd();
 
-private:
+    virtual char IsOk();
+    
+
+protected:
+
+    DataSource* _dataSource;
     long _dataOffset;
     long _dataLength;
 };

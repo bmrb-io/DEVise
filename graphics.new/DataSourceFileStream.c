@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/01 19:31:33  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.4  1996/06/27 15:50:58  jussi
   Added IsOk() method which is used by TDataAscii and TDataBinary
   to determine if a file is still accessible. Also moved GetModTime()
@@ -69,8 +75,8 @@ static char *	srcFile = __FILE__;
  * function: DataSourceFileStream::DataSourceFileStream
  * DataSourceFileStream constructor.
  */
-DataSourceFileStream::DataSourceFileStream(char *filename, char *label,
-                                           char *param) : DataSource(label)
+DataSourceFileStream::DataSourceFileStream(char *filename, char *label)
+: DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n",
 		filename, (label != NULL) ? label : "null"));
