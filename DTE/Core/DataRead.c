@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/01/20 22:46:03  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.6  1999/01/18 22:34:05  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -96,6 +102,8 @@ DataReadExec::DataReadExec(DataReader* dr)
 
 void DataReadExec::init()
 {
+  assert(dr);
+  assert( dr->isOk() );
   ISchema schema;
   translateSchema(dr, schema);
   resultAdt = schema.getAdt();
@@ -105,8 +113,7 @@ void DataReadExec::init()
 
   buffSize = dr->myDRSchema->getRecSize();
   // ensure double alignment
-  buff = (char*) new double[(buffSize / sizeof(double)) + 1];
-  buff[buffSize - 1] = '\0';
+  buff = (char*) new double[(buffSize+sizeof(double)-1) / sizeof(double)];
 
   int count = 0;
   for(int i = 0; i < dr->myDRSchema->qAttr ; i++){
@@ -169,11 +176,10 @@ void DataReadExec::initialize()
 
 const Tuple* DataReadExec::getNext()
 {
-  if( !dr->isOk() ) {	// should not happen
-    return NULL;
-  }
-  if( dr->getRecord(buff) ) {
-    return tuple;
+  while( !dr->isEof() ) {
+    if( dr->getRecord(buff) ) {
+      return tuple;
+    }
   }
   return NULL;
 }
