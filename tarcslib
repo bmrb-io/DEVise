@@ -1,0 +1,64 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+if (-d cslibtar) then
+  echo Directory cslibtar exists already. Remove it and then rerun $0.
+  exit 1
+endif
+
+echo Creating Client-Server Library tar files...
+
+mkdir cslibtar
+cd cslibtar
+mkdir include
+ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
+        ../../graphics/Compress.h ../../graphics/DList.h \
+        ../../graphics/DevError.h ../../graphics/DevStatus.h \
+        ../../graphics/DevisePixmap.h ../../graphics/DeviseTypes.h \
+        ../../graphics/Display.h ../../graphics/Exit.h \
+        ../../graphics/Geom.h ../../graphics/PSDisplay.h \
+        ../../graphics/Pattern.h ../../graphics/Transform.h \
+        ../../graphics/Util.h ../../graphics/VisualArg.h \
+        ../../graphics/WindowRep.h ../../graphics/XBitmap.h \
+        ../../graphics/XDisplay.h ../../graphics/XWindowRep.h \
+        ../../graphics/Xdef.h ../../graphics/xv.h include
+ln -s ../../graphics.new/ClientAPI.h ../../graphics.new/DeviseKey.h \
+        ../../graphics.new/MapIntToInt.h ../../graphics.new/ParseAPI.h \
+        ../../graphics.new/Version.h ../../graphics.new/missing.h include
+ln -s ../../tape/HashTable.h include
+ln -s ../cslib/Makefile.com ../cslib/ClientServer.* \
+        ../cslib/server.* ../cslib/client.* \
+        ../cslib/opossum.* ../cslib/Readme.tex .
+
+foreach platform (solaris solsparc sun hp)
+  ln -s ../$platform/cslib/Makefile.dist Makefile
+  ln -s ../$platform/cslib/libcs.a .
+  tar cfvh ../cslib.$platform.tar .
+  rm Makefile libcs.a
+end
+
+cd ..
+rm -rf cslibtar
+
+echo Done!
+
+exit 1
