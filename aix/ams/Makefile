@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/23 20:57:00  jussi
+#  Added ARCH_SYSLIBS.
+#
 #  Revision 1.3  1996/05/31 15:43:44  jussi
 #  A customized Makefile.base.aix is used in AIX.
 #
@@ -29,7 +32,7 @@
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/07/18 14:10:26  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.10  1996/07/13 02:39:49  jussi
 #  Added -static linker option.
 #
@@ -32,7 +35,7 @@
 
 ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/07/13 02:12:07  jussi
+#  AIX now also uses the base Makefile.
+#
 #  Revision 1.4  1996/07/08 18:14:25  wenger
 #  Fixed multi makefiles with ARCH_SYSLIBS macro like generic so that
 #  multi will compile for HP.
@@ -33,7 +36,7 @@
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

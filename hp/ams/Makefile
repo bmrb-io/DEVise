@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/23 20:56:37  jussi
+#  Added ARCH_SYSLIBS.
+#
 #  Revision 1.3  1996/01/12 18:00:03  jussi
 #  Switched to newer compiler version with all necessary header files.
 #
@@ -30,7 +33,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

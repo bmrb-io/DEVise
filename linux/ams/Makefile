@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/23 20:57:25  jussi
+#  Added ARCH_SYSLIBS.
+#
 #  Revision 1.2  1996/07/13 05:01:37  jussi
 #  Updated to compile on Linux.
 #
@@ -35,7 +38,7 @@
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

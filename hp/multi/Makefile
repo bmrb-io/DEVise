@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/07/18 13:58:49  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.3  1996/07/13 02:43:47  jussi
 #  Added -static linker option.
 #
@@ -29,7 +32,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 #ARCH_LDPOST  = -lSM -lICE -static
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/08/09 15:40:13  wenger
+#  Modified makefiles to allow making static and Purify'd executables.
+#
 #  Revision 1.5  1996/07/18 13:58:48  jussi
 #  We now produce dynamically linked executables.
 #
@@ -37,7 +40,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -lSM -lICE -static
 ARCH_COLLECTOR	= \

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/09/25 18:37:23  wenger
+#  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
+#
 #  Revision 1.3  1996/07/13 05:01:39  jussi
 #  Updated to compile on Linux.
 #
@@ -32,7 +35,7 @@
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/05/31 21:34:52  wenger
+#  Fixed core dump in SPARC/Solaris version caused by GData buffer
+#  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+#  version to link correctly and eliminate special Makefile.base.aix.
+#
 #  Revision 1.3  1996/05/31 15:45:25  jussi
 #  A customized Makefile.base.aix is used in AIX.
 #
@@ -29,7 +34,7 @@
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../generic

@@ -15,12 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:50:39  jussi
+#  Initial revision.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DULTRIX -I/s/tcl/include
 ARCH_LDFLAGS =  -L/s/tcl/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../cslib

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/07/08 18:15:32  wenger
+#  Fixed multi makefiles with ARCH_SYSLIBS macro like generic so that
+#  multi will compile for HP.
+#
 #  Revision 1.3  1995/12/29 18:54:40  jussi
 #  Removed -fno-for-scope compiler flag.
 #
@@ -29,7 +33,7 @@
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib 
-ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/23 20:57:38  jussi
+#  Added ARCH_SYSLIBS.
+#
 #  Revision 1.3  1995/12/29 18:54:35  jussi
 #  Removed -fno-for-scope compiler flag.
 #
@@ -29,7 +32,7 @@
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib
-ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

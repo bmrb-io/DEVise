@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/07/18 14:31:53  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.1  1996/07/14 20:34:43  jussi
 #  Initial revision.
 
@@ -22,7 +25,7 @@
 
 ARCH_FLAGS   = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -L/s/gcc/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

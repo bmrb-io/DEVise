@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/07/15 14:20:30  jussi
+#  Updated to reflect new Tcl/Tk library.
+#
 #  Revision 1.4  1996/05/31 21:36:05  wenger
 #  Fixed core dump in SPARC/Solaris version caused by GData buffer
 #  misalignment; cleaned up generic/Makefile.base, etc., to get HP
@@ -34,7 +37,7 @@
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib
-ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../generic

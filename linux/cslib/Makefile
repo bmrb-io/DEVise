@@ -15,12 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:50:36  jussi
+#  Initial revision.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../cslib

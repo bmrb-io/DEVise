@@ -15,12 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:50:34  jussi
+#  Initial revision.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST =
 
 VPATH = ../../cslib
