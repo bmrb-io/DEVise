@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/13 17:35:48  jussi
+  Added calls to DataSeg::Set().
+
   Revision 1.5  1996/05/16 19:27:03  jussi
   Removed references to ControlPanel::File_Alias().
 
@@ -44,52 +47,61 @@
 
 MultiClassInfo::MultiClassInfo()
 {
-  _name = _alias = 0;
+  _name = _type = _param = 0;
   _tdata = 0;
 }
 
-MultiClassInfo::MultiClassInfo(char *name, char *alias, TDataMulti *tdata)
+MultiClassInfo::MultiClassInfo(char *name, char *type,
+                               char *param, TDataMulti *tdata)
 {
   _name = name;
-  _alias = alias;
+  _type = type;
+  _param = param;
   _tdata = tdata;
 }
 
-static char buf1[512], buf2[256];
-static char *args[5];
+static char buf[3][256];
+static char *args[3];
 
 void MultiClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
-  args[0] = buf1;
-  args[1] = buf2;
+  args[0] = buf[0];
+  args[1] = buf[1];
+  args[2] = buf[2];
   
-  strcpy(buf1, "File {foobar}");
-  strcpy(buf2, "Alias {foobar}");
+  strcpy(buf[0], "Name {foobar}");
+  strcpy(buf[1], "Type {foobar}");
+  strcpy(buf[2], "Param {foobar}");
 }
 
 ClassInfo *MultiClassInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 2) {
-    fprintf(stderr, "MultiClassInfo::CreateWithParams: wrong args\n");
-    for(int i = 0; i < argc; i++)
-      printf("%s\n", argv[i]);
+  if (argc != 2 && argc != 3)
     return 0;
+
+  char *name, *type, *param;
+
+  if (argc == 2) {
+    name = CopyString(argv[1]);
+    type = CopyString("UNIXFILE");
+    param = CopyString(argv[0]);
+  } else {
+    name = CopyString(argv[0]);
+    type = CopyString(argv[1]);
+    param = CopyString(argv[2]);
   }
 
-  char *name = CopyString(argv[0]);
-  char *alias = CopyString(argv[1]);
+  DataSeg::Set(name, param, 0, 0);
 
-  DataSeg::Set(alias, name, 0, 0);
-
-  TDataMulti *tdata = new TDataMulti(name, alias);
-  return new MultiClassInfo(name, alias, tdata);
+  TDataMulti *tdata = new TDataMulti(name, type, param);
+  return new MultiClassInfo(name, type, param, tdata);
 }
 
 char *MultiClassInfo::InstanceName()
 {
-  return _alias;
+  return _name;
 }
 
 void *MultiClassInfo::GetInstance()
@@ -101,14 +113,15 @@ void *MultiClassInfo::GetInstance()
 
 void MultiClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
   args[0] = _name;
-  args[1] = _alias;
+  args[1] = _type;
+  args[2] = _param;
 }
 
-TDataMulti::TDataMulti(char *name, char *alias) :
-     TDataAscii(name, alias, sizeof(MultiRec))
+TDataMulti::TDataMulti(char *name, char *type, char *param) :
+     TDataAscii(name, type, param, sizeof(MultiRec))
 {
   _hasFirst = false;
   Initialize();
@@ -151,4 +164,3 @@ Boolean TDataMulti::Decode(void *recordBuf, int recPos, char *line)
   
   return true;
 }
-

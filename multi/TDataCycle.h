@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/07 21:13:37  jussi
+  Added record position parameter to Decode(). Added alias parameter
+  to constructor.
+
   Revision 1.3  1996/04/12 23:43:54  jussi
   Removed IsValid() and removed RecId parameter from Decode().
 
@@ -36,7 +40,8 @@ public:
   CycleClassInfo();
 
   /* for creating instance */
-  CycleClassInfo(char *name, char *alias, TDataCycle *tdata); 
+  CycleClassInfo(char *name, char *type, char *param, TDataCycle *tdata); 
+  virtual ~CycleClassInfo() {}
 
   /* Info for category */
   virtual char *CategoryName() { return "tdata"; }
@@ -59,13 +64,15 @@ public:
 
 private:
   char *_name;
-  char *_alias;
+  char *_type;
+  char *_param;
   TDataCycle *_tdata;
 };
 
 class TDataCycle: public TDataAscii {
 public:
-  TDataCycle(char *name, char *alias);
+  TDataCycle(char *name, char *type, char *param);
+  virtual ~TDataCycle() {}
 
 protected:
   /* Decode a record and put data into buffer */
