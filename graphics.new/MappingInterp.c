@@ -1748,7 +1748,7 @@ double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry,
   int code = 0;
   int key = 0;
 
-  printf("entry->cmdType : %d\n", entry->cmdType);
+//  printf("entry->cmdType : %d\n", entry->cmdType);
   switch(entry->cmdType) {
   
   case MappingSimpleCmdEntry::AttrCmd: {

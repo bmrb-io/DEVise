@@ -70,7 +70,6 @@ AttrList::AttrList(char *name)
 
 void AttrList::Clear(){
   for(int i = 0; i < MAX_ATTRLIST_SIZE; i++){
-    printf("Deleted attrs[%d] = %p\n", i, _attrs[i]);
     delete _attrs[i];
     _attrs[i] = NULL;
   }
@@ -126,8 +125,6 @@ void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
   }
 
   AttrInfo *info = new AttrInfo;
-  printf("Allocared info (attrname = %s, num = %d)= %p\n",
-	 name, attrNum,info);
   info->attrNum = attrNum;
   info->name = CopyString(name);
   info->offset = offset;
