@@ -22,9 +22,6 @@ There should be a "keep the same" selection for attributes where you
 don't want to change the values.
 (ml/rkw 12/16/96)
 
-Improve sizing of Tasvir images so that they work like other symbols.
-(rkw 9/12/96)
-
 Update examples on Devise web page. (ml/rkw 9/6/96)
 
 
@@ -335,6 +332,9 @@ are within the legal range of Unix dates; possible also check that the
 attribute being written to is of type 'date'. (rkw 9/25/96)
 
 Show name of view in mapping window. (ml/rkw 11/21/96)
+
+Improve sizing of Tasvir images so that they work like other symbols.
+(rkw 9/12/96)
 
 
 CANCELLED

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/21 19:13:45  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.4  1996/09/04 21:24:47  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -96,6 +100,10 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
 
   DevStatus result = StatusOk;
 
+  const int minTasvirSize = 2;
+  width = MAX(width, minTasvirSize);
+  height = MAX(height, minTasvirSize);
+
   int topLeftX = centerX - (width / 2);
   int topLeftY = centerY - (height / 2);
   int botRightX = centerX + (width / 2) - 1;
@@ -104,7 +112,7 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking",
+  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin",
     filename, (long) win, topLeftX, topLeftY, botRightX, botRightY);
   if (image != NULL)
   {

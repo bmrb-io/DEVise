@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/12/15 20:22:44  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.27  1996/12/04 18:12:47  wenger
   Unimplemented methods in PSWindowRep now report an error but do not
   abort when called; fixed code in cslib server example that caused problems
@@ -413,20 +416,22 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord width, height;
 	
 	win->Transform(x, y, tx, ty);
-	win->Transform(fabs(GetSize(gdata, map, offset)
-			    * GetShapeAttr0(gdata, map, offset)), 0.0,
-		       x1, y1);
+
+	win->Transform(
+	  fabs(GetSize(gdata, map, offset) * GetShapeAttr0(gdata, map, offset)),
+	  0.0, x1, y1);
 	width = x1 - x0;
-        width *= pixelSize;
-	if (width < 0.0)
-	  width = -width;
+	width = ABS(width);
+
 	height = fabs(GetShapeAttr1(gdata, map, offset)) /
 	  fabs(GetShapeAttr0(gdata, map, offset)) * width;
+	height = ABS(height);
+
+        width *= pixelSize;
 	height *= pixelSize;
-	if (width < pixelSize)
-	  width = pixelSize;
-	if (height < pixelSize)
-	  height = pixelSize;
+
+	width = MAX(width, pixelSize);
+	height = MAX(height, pixelSize);
 
 	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
@@ -1333,24 +1338,20 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
-	win->SetPattern(GetPattern(gdata, map, offset));
 
+	// Transform the data X and Y to pixels.
 	Coord tx, ty;
 	win->Transform(x, y, tx, ty);
+
+#if 0
+	// Draw a cross at the center of each image.  This is now disabled
+	// because of using Tasvir with no subwindows.  RKW 12/18/96.
 	win->PushTop();
 	win->MakeIdentity();
 	win->Line(tx - 3, ty, tx + 3, ty, 1);
 	win->Line(tx, ty - 3, tx, ty + 3, 1);
 	win->PopTransform();
-
-	if (color == XorColor)
-	  win->SetCopyMode();
-
+#endif
 
 	// Get the name of the image file or the image itself.
 	char *shapeAttr0 = NULL;
@@ -1369,7 +1370,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 
 	// Now decide how to deal with it.
 	char *file;
-	int imageSize;
+	int imageDataSize;
 	char *image;
 	Boolean dali;
 
@@ -1386,34 +1387,34 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 
 	case IMAGE_TYPE_DALI_FILE:
 #if defined(DEBUG)
-          printf("Dali file, sending filename to Dali\n");
+          printf("Tasvir file, sending filename to Tasvir\n");
 #endif
 	  dali = true;
 	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-	  imageSize = 0;
+	  imageDataSize = 0;
 	  image = NULL;
 	  break;
 
 	case IMAGE_TYPE_DALI_FILE_SEND:
 #if defined(DEBUG)
-          printf("Dali file, sending image to Dali\n");
+          printf("Tasvir file, sending image to Tasvir\n");
 #endif
 	  dali = true;
 	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-          (void) ReadFile(file, imageSize, image);
+          (void) ReadFile(file, imageDataSize, image);
 	  file = "-";
 	  break;
 
 	case IMAGE_TYPE_DALI_IMAGE:
 #if defined(DEBUG)
-          printf("Dali image\n");
+          printf("Tasvir image\n");
 #endif
 	  DOASSERT(shapeAttr0 != NULL, "Can't get image");
 	  dali = true;
 	  file = "-";
 	  // Note: I'm not sure that using strlen() here is safe.  RKW
 	  // 8/29/96.
-	  imageSize = strlen(shapeAttr0);
+	  imageDataSize = strlen(shapeAttr0);
 	  image = shapeAttr0;
 	  break;
 
@@ -1433,8 +1434,26 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	if (dali)
 	{
 	  Coord size = GetSize(gdata, map, offset);
-	  size *= pixelSize;
-	  win->DaliShowImage(tx, ty, size, size, file, imageSize, image);
+	  Coord x0, y0, x1, y1;
+	  win->Transform(0.0, 0.0, x0, y0);
+	  win->Transform(size, size, x1, y1);
+
+	  Coord width = fabs(x1 - x0);
+	  Coord height = fabs(y1 - y0);
+
+          width *= pixelSize;
+	  height *= pixelSize;
+
+	  width = MAX(width, pixelSize);
+	  height = MAX(height, pixelSize);
+
+#if 0
+	  // Enable this line to have the large rather than the smaller
+	  // dimension control the image size.
+	  width = height = MAX(width, height);
+#endif
+
+	  win->DaliShowImage(tx, ty, width, height, file, imageDataSize, image);
 	}
 	else
 	{

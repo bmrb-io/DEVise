@@ -2,6 +2,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/23 16:55:32  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.10  1996/08/05 19:51:36  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -69,6 +74,11 @@ inline int trunc(double num) {
 #ifndef MAX3
 #define MAX3(a,b,c) ((a) > (b) ? MAX(a,c) : MAX(b,c))
 #endif
+
+#ifndef ABS
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
+#endif  ABS
+
 
 
 #include "DevStatus.h"
