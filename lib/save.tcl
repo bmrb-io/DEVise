@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/05/16 21:39:06  wenger
+#  implemented saving schemas ans session file for importing tdata
+#
 #  Revision 1.3  1996/04/14 00:27:00  jussi
 #  Changed format of session file to reflect the new mapping class
 #  interface (namely, createInterp has been replaced with
@@ -156,6 +159,11 @@ proc SaveLinkViews { file dict} {
 	    set viewVar [DictLookup $dict $view]
 	    puts $file "DEVise insertLink \{$link\} \$$viewVar"
 	}
+	set view [DEVise getLinkMaster $link]
+	if {$view != ""} {
+	    set viewVar [DictLookup $dict $view]
+	    puts $file "DEVise setLinkMaster \{$link\} \$$viewVar"
+	}
     }
 }
 
@@ -181,35 +189,25 @@ proc SaveCursorViews { file dict} {
 
 # Save session
 proc DoActualSave { infile asTemplate asExport } {
-    global mode curView sourceFile sourceList sourceTypes templateMode schemadir datadir
+    global mode curView sourceFile sourceList sourceTypes
+    global templateMode schemadir datadir
 
-#you can't save an imported file until it has been merged
+    # you can't save an imported file until it has been merged
     if {$templateMode} { 
-	set but [dialog .open "Merge Data" \
-	    "You must Merge an imported template before you can save it" \
-	    "" 1 Ok] 
+	dialog .open "Merge Data" \
+	    "You must merge an imported template before saving it" "" 0 Ok
+	return
+    }
+
+    if { ![file writable $infile] } {
+	dialog .saveError "File $infile not writable" "" 0 OK
 	return
     }
 
     ChangeStatus 1
-     # copy existing file to a backup file
-    if { [ file exists $infile ] } {
-	set src [open $infile]
-	set dst [open $infile.bak w]
-	while { [gets $src line] >= 0 } {
-	    puts $dst $line
- 	}
-	close $src
-	close $dst
 
-	if { ! [ file writable $infile ] } {
-	    set but [ dialog .saveError "File $infile not writable" \
-		    "" 0 OK ]
-	    ChangeStatus 0
-	    return
-	}
-    }
-
+    # rename existing file to a backup file
+    catch { exec mv $infile $infile.bak }
 
     # checkpoint tdata
     set classes [ DEVise get "tdata" ]
@@ -222,25 +220,20 @@ proc DoActualSave { infile asTemplate asExport } {
 
     set f [open $infile w ]
 
-
-    puts $f "global templateMode sourceList datadir schemadir physSchema logSchema"
-
     if {$asExport} {
+	puts $f "global templateMode sourceList datadir schemadir"
+	puts $f "global physSchema logSchema"
 	puts $f "set templateMode 1"
+	# The sourceList will have to be reset in the imported file
+	puts $f "unset sourceList"
 	puts $f ""
-    }
-
-
-#The sourceList will have to be reset in the imported file
-    if {$asExport} {
- 	   puts $f "\tunset sourceList"
     }
 
     puts $f "# Import schemas"
     set catFile [DEVise catFiles]
     foreach file $catFile {
 	if {$asExport} {
-	    # write contents of schema
+	    # read contents of schema
 	    set fileP [open $file r]
 	    gets $fileP schemaTest
 	    if {[lindex $schemaTest 0] == "physical"} {
@@ -263,8 +256,6 @@ proc DoActualSave { infile asTemplate asExport } {
 	    puts $f "DEVise importFileType $file"
 	}
     }
-
-
     puts $f ""
 
     puts $f "# Layout mode"
@@ -278,32 +269,26 @@ proc DoActualSave { infile asTemplate asExport } {
 	puts $f ""
     } 
 
-
     set fileDict ""
     set fileNum 1
-    set classes [DEVise get tdata]
-    set totalTData [llength [TdataSet]]
+    set totalTData [llength [DEVise get tdata]]
 
     if {$asExport} {
-	foreach class $classes {
-	    foreach inst $instances {
+	foreach class [DEVise get tdata] {
+	    foreach inst [DEVise get tdata $class] {
 		set params [DEVise getCreateParam tdata $class $inst]
 		set fileAlias [lindex $params 1]
-		# in definition of source, replace path name of entry #3 with \$schemadir
+		set sourcedef $sourceList($fileAlias)
+		# in sourcedef, replace path name of entry #3 with \$schemadir
 		# if entry #0 == UNIXFILE, replace entry #7 with \$datadir
-		set sourceList($fileAlias) [lreplace $sourceList($fileAlias) 3 3 [file tail [lindex $sourceList($fileAlias) 3]]]
-
-		if {[lindex $sourceList($fileAlias) 0] == "UNIXFILE" } {
-		    set sourceList($fileAlias) [lreplace $sourceList($fileAlias) 7 7 $datadir]
-		}
-		puts $f "\tset \"sourceList($fileAlias)\" \{$sourceList($fileAlias)\}"
+		puts $f "\tset \"sourceList($fileAlias)\" \{$sourcedef\}"
 		set instances [DEVise get tdata $class]
 	    }
 	}
     }
 
-    foreach class $classes {
-	foreach inst $instances {
+    foreach class [DEVise get tdata] {
+	foreach inst [DEVise get tdata $class] {
 	    set params [DEVise getCreateParam tdata $class $inst]
 	    set filePath [lindex $params 0]
 	    set fileAlias [lindex $params 1]
@@ -342,23 +327,18 @@ proc DoActualSave { infile asTemplate asExport } {
     }
     puts $f  ""
 
-
-
-
     puts $f "# Create interpreted mapping classes "
-    set mapClasses [ DEVise get mapping ]
-    foreach mclass $mapClasses {
+    foreach mclass [ DEVise get mapping ] {
 	# puts "mclass $mclass"
 	puts $f "DEVise createMappingClass $mclass"
     }
     puts $f ""
 
-    puts $f "# Create mappings instances (and GData)"
+    puts $f "# Create mappings instance (GData)"
     set mapDict ""
     set mapNum 1
-    foreach mapClass $mapClasses {
-	set instances [DEVise get mapping $mapClass]
-	foreach inst $instances {
+    foreach mapClass [ DEVise get mapping ] {
+	foreach inst [DEVise get mapping $mapClass] {
 	    set params [DEVise getCreateParam mapping $mapClass $inst]
 	    set fileAlias [lindex $params 0]
 	    set fileVar [DictLookup $fileDict $fileAlias]
@@ -373,7 +353,7 @@ proc DoActualSave { infile asTemplate asExport } {
     puts $f ""
 
     puts $f "# Save pixel width for mappings"
-    foreach map [GdataSet ] {
+    foreach map [ GdataSet ] {
 	set width [DEVise getPixelWidth $map]
 	set gdataVar [DictLookup $mapDict $map]
 	puts $f "DEVise setPixelWidth \$$gdataVar $width"
@@ -383,10 +363,8 @@ proc DoActualSave { infile asTemplate asExport } {
     puts $f "# Create views"
     set viewDict ""
     set viewNum 1
-    set viewClasses [DEVise get view]
-    foreach viewClass $viewClasses {
-	set instances [DEVise get view $viewClass]
-	foreach inst $instances {
+    foreach viewClass [ DEVise get view ] {
+	foreach inst [ DEVise get view $viewClass ] {
 	    set params [DEVise getCreateParam view $viewClass $inst]
 	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
 	    set viewVar view_$viewNum
@@ -468,15 +446,13 @@ proc DoActualSave { infile asTemplate asExport } {
     puts $f ""
 
     puts $f "# Init history of view"
-    set viewSet [ViewSet]
-    foreach view $viewSet {
+    foreach view [ViewSet] {
 	set viewVar [DictLookup $viewDict $view]
 	puts $f "DEVise clearViewHistory \$$viewVar"
 	if {$asTemplate || $asExport} {
 	    continue
 	}
-	set historyList [DEVise getVisualFilters $view]
-	foreach hist $historyList {
+	foreach hist [ DEVise getVisualFilters $view ] {
 	    puts $f "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
 	}
     }
@@ -520,8 +496,7 @@ proc DoActualSave { infile asTemplate asExport } {
     puts $f "	set fileDate \[ DEVise readLine \$pixmapFile \]"
     puts $f "	set sessionDate \{$date\}"
     puts $f "	if \{\$fileDate == \$sessionDate\} \{ "
-    set viewSet [ViewSet]
-    foreach view $viewSet {
+    foreach view [ViewSet] {
 	DEVise savePixmap $view $bitF
 	puts $f "		DEVise loadPixmap \{$view\} \$pixmapFile"
     }
@@ -576,57 +551,62 @@ proc DoSaveAs { asTemplate asExport } {
 
 
 ####################################################################
-#This procedure merges the schema and sourceList from an imprted file,
-#with the local schemas and souceList.
+
+# This procedure merges the schema and sourceList from an imported file,
+# with the local schemas and sourceList.
+
 proc DoTemplateMerge {} {
-    
-    global sourceFile sourceList sourceTypes templateMode schemadir physSchema logSchema
+    global sourceFile sourceList sourceTypes templateMode schemadir
+    global physSchema logSchema datadir
 
     if {!$templateMode} { 
-	set but [dialog .open "Merge Data" \
-	    "You must be in Template Mode inorder to Merge" "" 1 Ok] 
+	dialog .open "Merge Data" \
+		"You must be in template mode in order to merge" "" 1 Ok
 	return
     }
 
     # write schemas to schema files in $schemadir
     # make sure schema files don't exist before overwriting them
 
-#save logical schemas
-    foreach scheme [array names logSchema] {
-	if {[file exists [concat $schemadir/logical/$scheme]]} {
-	    puts "Conflict -- could not add logical schema $scheme"
+    # save logical schemas
+    foreach schema [array names logSchema] {
+	if {[file exists [concat $schemadir/logical/$schema]]} {
+	    puts "Conflict -- could not add logical schema $schema"
 	} else {
-	    set fileP [open [concat $schemadir/logical/$scheme] "w"]
-	    puts $fileP $logSchema($scheme)
+	    set fileP [open $schemadir/logical/$schema "w"]
+	    puts $fileP $logSchema($schema)
 	    close $fileP
 	}
-	#DEVise importFileType [concat $schemadir/logical/$scheme]
+	#DEVise importFileType $schemadir/logical/$schema
     }
 
-#save physical schemas
-    foreach scheme [array names physSchema] {
-	if {[file exists [concat $schemadir/physical/$scheme]]} {
-	    puts "Conflict -- could not add physical schema $scheme"
+    # save physical schemas
+    foreach schema [array names physSchema] {
+	if {[file exists [concat $schemadir/physical/$schema]]} {
+	    puts "Conflict -- could not add physical schema $schema"
 	} else {
-	    set fileP [open [concat $schemadir/physical/$scheme] "w"]
-	    puts $fileP $physSchema($scheme)
+	    set fileP [open $schemadir/physical/$schema "w"]
+	    puts $fileP $physSchema($schema)
 	    close $fileP
 	}
-	DEVise importFileType [concat $schemadir/physical/$scheme]
+	DEVise importFileType $schemadir/physical/$schema
     }
 	        
     unset physSchema
     unset logSchema
 
-   # set tempSourceList ""
     foreach entry [array names sourceList] {
 	set tempSourceList($entry) $sourceList($entry)
     }
 
     unset sourceList 
-    source /p/devise/mthomas/lib/sourcedef.tcl
+    set sourceFile $datadir/sourcedef.tcl
+    if {[file exists $sourceFile]} {
+	puts "Reading data stream catalog $sourceFile"
+	source $sourceFile
+    }
 
-#add entries to sourceList
+    # add entries to sourceList
     foreach entry [array names tempSourceList] {
 	set defn $tempSourceList($entry)
 	set err [catch {set exists $sourceList($entry)}]
