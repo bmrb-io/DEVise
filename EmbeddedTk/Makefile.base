@@ -12,17 +12,17 @@ FORCE_DATE = $(CCC) -c $(CFLAGS) ETkCompDate.c
 ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o
 
 #
-# To compile the ETk server that support the Zoo object browser,
+# To compile the ETk server that supports the Zoo object browser,
 # uncomment the following seven lines, and set the locations of 
 # the Zoo shipping code and DEVise client-server library.
 #
-ZOO_DIR = /u/a/n/andyt/zoo
-SHIP_DIR = $(ZOO_DIR)/ShippingComm
-CSLIB_DIR = $(ZOO_DIR)/devise-cslib
-INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
-LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
-DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DZOOQUERY
-ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
+#ZOO_DIR = /u/a/n/andyt/zoo
+#SHIP_DIR = $(ZOO_DIR)/ShippingComm
+#CSLIB_DIR = $(ZOO_DIR)/devise-cslib
+#INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
+#LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
+#DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DZOOQUERY
+#ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
 
 .c.o: 
 	$(CCC) -c $(CFLAGS) $<
