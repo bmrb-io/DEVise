@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/20 20:43:17  donjerko
+  Increased the default size of Plex to 1000
+
   Revision 1.7  1997/03/07 17:40:37  donjerko
   Moved query execution from TDataDQLInterpClassInfo::CreateWithParams
   to TDataDQL::runQuery
@@ -78,6 +81,7 @@ public:
   /* Create instance using the supplied parameters. Return
      the instance info if successful, otherwise return NULL. */
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  ClassInfo *CreateWithParamsNew(char **argv, char* queryS);
 
   /**************************************************
     Instance Info.
