@@ -30,14 +30,14 @@ ClassDir.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h Exit.h
 ClassDir.o: Util.h /usr/include/stdlib.h /usr/include/sys/time.h
 ClassDir.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ClassDir.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ColorMgr.o: ColorMgr.h /usr/include/stdio.h Color.h Display.h DeviseTypes.h
+ColorMgr.o: ColorMgr.h /usr/include/stdio.h /usr/include/string.h
+ColorMgr.o: /usr/include/sys/stdtypes.h Color.h DeviseTypes.h
 ColorMgr.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
-ColorMgr.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h Geom.h
+ColorMgr.o: /usr/include/sys/sysmacros.h Exit.h Display.h Geom.h
 ColorMgr.o: /usr/include/math.h /usr/include/floatingpoint.h
 ColorMgr.o: /usr/include/sys/ieeefp.h Dispatcher.h /usr/include/stdlib.h
-ColorMgr.o: /usr/include/unistd.h /usr/include/string.h DList.h Exit.h
-ColorMgr.o: Journal.h VisualArg.h Pattern.h WindowRep.h Transform.h
-ColorMgr.o: DevisePixmap.h Compress.h
+ColorMgr.o: /usr/include/unistd.h DList.h Journal.h VisualArg.h Pattern.h
+ColorMgr.o: WindowRep.h Transform.h DevisePixmap.h Compress.h
 Compress.o: /usr/include/stdio.h Compress.h Exit.h
 Control.o: /usr/include/unistd.h /usr/include/sys/types.h
 Control.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -233,7 +233,9 @@ NullWindowRep.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 NullWindowRep.o: /usr/include/sys/sysmacros.h Color.h Transform.h VisualArg.h
 NullWindowRep.o: Pattern.h DList.h Exit.h DevisePixmap.h Compress.h Display.h
 NullWindowRep.o: Dispatcher.h /usr/include/unistd.h /usr/include/string.h
-NullWindowRep.o: Journal.h ColorMgr.h NullDisplay.h Init.h BufPolicy.h
+NullWindowRep.o: Journal.h ColorMgr.h NullDisplay.h DevError.h
+NullWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h Init.h
+NullWindowRep.o: BufPolicy.h
 PSDisplay.o: /usr/include/errno.h /usr/include/sys/errno.h PSDisplay.h
 PSDisplay.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h
 PSDisplay.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -244,7 +246,19 @@ PSDisplay.o: /usr/include/stdlib.h /usr/include/unistd.h
 PSDisplay.o: /usr/include/string.h DList.h Exit.h Journal.h VisualArg.h
 PSDisplay.o: Pattern.h ColorMgr.h WindowRep.h Transform.h DevisePixmap.h
 PSDisplay.o: Compress.h PSWindowRep.h Util.h /usr/include/sys/time.h
-PSDisplay.o: /usr/include/ctype.h DevError.h Control.h ClassDir.h Init.h
+PSDisplay.o: /usr/include/ctype.h DevError.h ../graphics.new/machdep.h
+PSDisplay.o: /usr/include/limits.h /usr/include/sys/param.h
+PSDisplay.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+PSDisplay.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+PSDisplay.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+PSDisplay.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+PSDisplay.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+PSDisplay.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+PSDisplay.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+PSDisplay.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+PSDisplay.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+PSDisplay.o: /usr/include/netdb.h /usr/include/sys/socket.h
+PSDisplay.o: /usr/include/netinet/in.h Control.h ClassDir.h Init.h
 PSDisplay.o: BufPolicy.h
 PSWindowRep.o: PSWindowRep.h WindowRep.h /usr/include/stdio.h
 PSWindowRep.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h Geom.h
@@ -254,7 +268,9 @@ PSWindowRep.o: DevStatus.h /usr/include/sys/types.h
 PSWindowRep.o: /usr/include/sys/sysmacros.h Color.h Transform.h VisualArg.h
 PSWindowRep.o: Pattern.h DList.h Exit.h DevisePixmap.h Compress.h Display.h
 PSWindowRep.o: Dispatcher.h /usr/include/unistd.h /usr/include/string.h
-PSWindowRep.o: Journal.h ColorMgr.h PSDisplay.h Init.h BufPolicy.h
+PSWindowRep.o: Journal.h ColorMgr.h PSDisplay.h DevError.h
+PSWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h Init.h
+PSWindowRep.o: BufPolicy.h
 Parse.o: /usr/include/stdio.h /usr/include/stdlib.h
 Parse.o: /usr/include/sys/stdtypes.h /usr/include/ctype.h
 Parse.o: /usr/include/sys/time.h /usr/include/sys/types.h
@@ -479,20 +495,6 @@ jstat.o: /usr/include/sys/ieeefp.h Journal.h DeviseTypes.h
 jstat.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 jstat.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h VisualArg.h
 jstat.o: Color.h Pattern.h
-junk.o: ../graphics.new/machdep.h /usr/include/limits.h
-junk.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-junk.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-junk.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-junk.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-junk.o: /usr/include/sys/time.h /usr/include/sys/time.h
-junk.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-junk.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-junk.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-junk.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-junk.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-junk.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-junk.o: /usr/include/netdb.h /usr/include/sys/socket.h
-junk.o: /usr/include/netinet/in.h
 test.o: /usr/include/stdio.h /usr/include/sys/time.h Util.h
 test.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 test.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h

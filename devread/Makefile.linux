@@ -1,5 +1,5 @@
 depend:
-	makedepend -fMakefile.hp -I../graphics -I../graphics.new \
+	makedepend -fMakefile.linux -I../graphics -I../graphics.new \
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -43,3 +43,23 @@ generic.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 generic.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
 generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+testWindowSpeed.o: /usr/include/time.h /usr/include/sys/time.h
+testWindowSpeed.o: ../graphics.new/TkControl.h ../graphics/Dispatcher.h
+testWindowSpeed.o: /usr/include/stdlib.h /usr/include/unistd.h
+testWindowSpeed.o: /usr/include/sys/unistd.h /usr/include/string.h
+testWindowSpeed.o: /usr/include/sys/types.h ../graphics/DeviseTypes.h
+testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/Journal.h ../graphics/VisualArg.h
+testWindowSpeed.o: ../graphics/Color.h ../graphics/Pattern.h
+testWindowSpeed.o: ../graphics/Control.h ../graphics/ClassDir.h
+testWindowSpeed.o: ../graphics/ViewCallback.h ../graphics.new/GroupDir.h
+testWindowSpeed.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+testWindowSpeed.o: ../graphics.new/MapInterpClassInfo.h
+testWindowSpeed.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+testWindowSpeed.o: ../graphics.new/ParseAPI.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
+testWindowSpeed.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+testWindowSpeed.o: ../graphics/Compress.h

@@ -1,5 +1,196 @@
-
 depend:
-	makedepend  -fMakefile.solaris -I../DTE -I../graphics -I../graphics.new \
+	makedepend  -fMakefile.sun -I../DTE -I../graphics -I../graphics.new \
 		-I/s/X11/include -I/s/tcl/include *.c *.C
 
+# DO NOT DELETE
+
+DevRead.o: /usr/include/stdio.h /usr/include/string.h
+DevRead.o: /usr/include/sys/stdtypes.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/values.h ../graphics/DevStatus.h
+DevRead.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+DevRead.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+DevRead.o: /usr/include/sys/time.h ../graphics/AttrList.h
+DevRead.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+DevRead.o: GeneralRead.h ../graphics/Util.h /usr/include/stdlib.h
+DevRead.o: /usr/include/ctype.h /usr/include/math.h
+DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DevRead.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+DevRead.o: ../graphics.new/DataSource.h ../graphics.new/DataSeg.h
+Dql.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Dql.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/types.h
+Dql.o: /usr/include/sys/sysmacros.h /usr/include/ctype.h /s/tcl/include/tcl.h
+Dql.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+Dql.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+Dql.o: /usr/include/stddef.h ../graphics.new/machdep.h /usr/include/limits.h
+Dql.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Dql.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Dql.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Dql.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Dql.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Dql.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dql.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Dql.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Dql.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Dql.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Dql.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ../graphics/Util.h
+Dql.o: /usr/include/math.h /usr/include/floatingpoint.h
+Dql.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h
+Dql.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
+Dql.o: ../graphics/Parse.h ../graphics/Timer.h
+DqlInclude.o: /usr/include/stdio.h /usr/include/stdlib.h
+DqlInclude.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+DqlInclude.o: /usr/include/unistd.h /usr/include/sys/types.h
+DqlInclude.o: /usr/include/sys/sysmacros.h /usr/include/ctype.h Engine.h
+DqlInclude.o: types.h /usr/include/assert.h /usr/include/netinet/in.h
+DqlInclude.o: exception.h /usr/include/sys/time.h /usr/include/sys/time.h
+DqlInclude.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+DqlInclude.o: /usr/include/values.h ../graphics/DevStatus.h
+DqlInclude.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+DqlInclude.o: site.h myopt.h queue.h url.h /usr/include/sys/socket.h
+DqlInclude.o: /usr/include/sys/uio.h /usr/include/netdb.h SockStream.h
+DqlInclude.o: listop.h GeneralRead.h StandardRead.h
+Engine.o: /usr/include/memory.h /usr/include/string.h
+Engine.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
+Engine.o: /usr/include/math.h /usr/include/floatingpoint.h
+Engine.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h queue.h myopt.h
+Engine.o: types.h /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+Engine.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+Engine.o: /usr/include/sys/time.h ../graphics/AttrList.h
+Engine.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Engine.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+Engine.o: ../graphics/Exit.h url.h /usr/include/sys/socket.h
+Engine.o: /usr/include/sys/uio.h /usr/include/netdb.h /usr/include/stdio.h
+Engine.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
+Engine.o: StandardRead.h catalog.h DevRead.h ../graphics.new/RecId.h Engine.h
+StandardRead.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+StandardRead.o: StandardRead.h GeneralRead.h types.h /usr/include/assert.h
+StandardRead.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+StandardRead.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+StandardRead.o: /usr/include/sys/time.h ../graphics/AttrList.h
+StandardRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
+StandardRead.o: ../graphics/DevStatus.h ../graphics/Config.h
+StandardRead.o: ../graphics/DList.h ../graphics/Exit.h url.h
+StandardRead.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+StandardRead.o: /usr/include/netdb.h /usr/include/stdio.h
+StandardRead.o: /usr/include/unistd.h SockStream.h
+TuplePtr.Plex.o: TuplePtr.Plex.h TuplePtr.defs.h types.h
+TuplePtr.Plex.o: /usr/include/assert.h /usr/include/sys/types.h
+TuplePtr.Plex.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+TuplePtr.Plex.o: /usr/include/netinet/in.h exception.h
+TuplePtr.Plex.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TuplePtr.Plex.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+TuplePtr.Plex.o: /usr/include/values.h ../graphics/DevStatus.h
+TuplePtr.Plex.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+TuplePtr.Plex.o: /usr/include/stddef.h
+TuplePtr.XPlex.o: TuplePtr.XPlex.h TuplePtr.Plex.h TuplePtr.defs.h types.h
+TuplePtr.XPlex.o: /usr/include/assert.h /usr/include/sys/types.h
+TuplePtr.XPlex.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+TuplePtr.XPlex.o: /usr/include/netinet/in.h exception.h
+TuplePtr.XPlex.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TuplePtr.XPlex.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+TuplePtr.XPlex.o: /usr/include/values.h ../graphics/DevStatus.h
+TuplePtr.XPlex.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+TuplePtr.XPlex.o: /usr/include/stddef.h
+catalog.o: site.h /usr/include/assert.h myopt.h queue.h types.h
+catalog.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+catalog.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h exception.h
+catalog.o: /usr/include/sys/time.h /usr/include/sys/time.h
+catalog.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+catalog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Config.h
+catalog.o: ../graphics/DList.h ../graphics/Exit.h url.h
+catalog.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+catalog.o: /usr/include/netdb.h /usr/include/string.h /usr/include/stdio.h
+catalog.o: /usr/include/unistd.h SockStream.h listop.h GeneralRead.h
+catalog.o: StandardRead.h catalog.h DevRead.h ../graphics.new/RecId.h
+lex.yy.o: /usr/include/stdio.h /usr/include/string.h
+lex.yy.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+lex.yy.o: /usr/include/assert.h /usr/include/memory.h myopt.h queue.h types.h
+lex.yy.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+lex.yy.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+lex.yy.o: /usr/include/sys/time.h ../graphics/AttrList.h
+lex.yy.o: ../graphics/DeviseTypes.h /usr/include/values.h
+lex.yy.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+lex.yy.o: ../graphics/Exit.h url.h /usr/include/sys/socket.h
+lex.yy.o: /usr/include/sys/uio.h /usr/include/netdb.h /usr/include/unistd.h
+lex.yy.o: SockStream.h listop.h my.yacc.tab.h
+listop.o: /usr/include/memory.h /usr/include/string.h
+listop.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
+listop.o: /usr/include/math.h /usr/include/floatingpoint.h
+listop.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
+listop.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+listop.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+listop.o: /usr/include/sys/time.h ../graphics/AttrList.h
+listop.o: ../graphics/DeviseTypes.h /usr/include/values.h
+listop.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+listop.o: ../graphics/Exit.h url.h /usr/include/sys/socket.h
+listop.o: /usr/include/sys/uio.h /usr/include/netdb.h /usr/include/stdio.h
+listop.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
+listop.o: StandardRead.h catalog.h
+my.yacc.tab.o: myopt.h /usr/include/assert.h queue.h types.h
+my.yacc.tab.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+my.yacc.tab.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
+my.yacc.tab.o: exception.h /usr/include/sys/time.h /usr/include/sys/time.h
+my.yacc.tab.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+my.yacc.tab.o: /usr/include/values.h ../graphics/DevStatus.h
+my.yacc.tab.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+my.yacc.tab.o: url.h /usr/include/sys/socket.h /usr/include/sys/uio.h
+my.yacc.tab.o: /usr/include/netdb.h /usr/include/string.h
+my.yacc.tab.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h
+my.yacc.tab.o: listop.h /usr/include/alloca.h
+myopt.o: /usr/include/memory.h /usr/include/string.h
+myopt.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
+myopt.o: /usr/include/math.h /usr/include/floatingpoint.h
+myopt.o: /usr/include/sys/ieeefp.h types.h /usr/include/sys/types.h
+myopt.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h exception.h
+myopt.o: /usr/include/sys/time.h /usr/include/sys/time.h
+myopt.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+myopt.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Config.h
+myopt.o: ../graphics/DList.h ../graphics/Exit.h Engine.h site.h myopt.h
+myopt.o: queue.h url.h /usr/include/sys/socket.h /usr/include/sys/uio.h
+myopt.o: /usr/include/netdb.h /usr/include/stdio.h /usr/include/unistd.h
+myopt.o: SockStream.h listop.h GeneralRead.h StandardRead.h
+resolve.o: myopt.h /usr/include/assert.h queue.h types.h
+resolve.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+resolve.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h exception.h
+resolve.o: /usr/include/sys/time.h /usr/include/sys/time.h
+resolve.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
+resolve.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Config.h
+resolve.o: ../graphics/DList.h ../graphics/Exit.h url.h
+resolve.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+resolve.o: /usr/include/netdb.h /usr/include/string.h /usr/include/stdio.h
+resolve.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
+resolve.o: StandardRead.h ../graphics.new/machdep.h /usr/include/limits.h
+resolve.o: /usr/include/sys/param.h /usr/include/machine/param.h
+resolve.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+resolve.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+resolve.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+resolve.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+resolve.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+resolve.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+resolve.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+resolve.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+site.o: /usr/include/string.h /usr/include/sys/stdtypes.h site.h
+site.o: /usr/include/assert.h myopt.h queue.h types.h
+site.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+site.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+site.o: /usr/include/sys/time.h ../graphics/AttrList.h
+site.o: ../graphics/DeviseTypes.h /usr/include/values.h
+site.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+site.o: ../graphics/Exit.h url.h /usr/include/sys/socket.h
+site.o: /usr/include/sys/uio.h /usr/include/netdb.h /usr/include/stdio.h
+site.o: /usr/include/unistd.h SockStream.h listop.h GeneralRead.h
+site.o: StandardRead.h
+types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
+types.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+types.o: /usr/include/netinet/in.h exception.h /usr/include/sys/time.h
+types.o: /usr/include/sys/time.h ../graphics/AttrList.h
+types.o: ../graphics/DeviseTypes.h /usr/include/values.h
+types.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+types.o: ../graphics/Exit.h
+url.o: url.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+url.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+url.o: /usr/include/sys/uio.h /usr/include/netinet/in.h /usr/include/netdb.h
+url.o: /usr/include/string.h /usr/include/assert.h /usr/include/stdio.h
+url.o: /usr/include/unistd.h SockStream.h exception.h /usr/include/sys/time.h
+url.o: /usr/include/sys/time.h

@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/11/19 15:33:36  wenger
+#  Added HP DTE makefile.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX
+ARCH_FLAGS = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../DTE

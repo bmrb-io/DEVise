@@ -5,7 +5,9 @@
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <netinet/in.h>
+#ifndef SUN
 #include <netdb.h>
+#endif
 #include <String.h>
 #include <string.h>
 #include <assert.h>

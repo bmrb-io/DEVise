@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/19 15:31:44  wenger
+  Various fixes to try to get DTE to compile on HP, Sun, etc.
+
  */
 
 #include "myopt.h"
@@ -225,7 +228,7 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 		" does not have attribute " +
 		*nextPath->path;
 	delete tmpc;
-	THROW(new Exception(msg), NULL);
+	THROW(new Exception(msg), (char *) NULL);
 }
 
 BaseSelection* Operator::distributeWrapper(Site* site){

@@ -6,6 +6,8 @@
 #include <sys/time.h>
 #include <iomanip.h>
 
+#include "machdep.h"
+
 #define LOG(A) A
 
 LOG(extern ofstream logFile);

@@ -1,5 +1,5 @@
-
 depend:
-	makedepend  -fMakefile.solaris -I../DTE -I../graphics -I../graphics.new \
-		-I/s/X11/include -I/s/tcl/include *.c *.C
+	makedepend  -fMakefile.pmax_ul43a -I../DTE -I../graphics \
+		-I../graphics.new -I/s/X11/include -I/s/tcl/include *.c *.C
 
+# DO NOT DELETE

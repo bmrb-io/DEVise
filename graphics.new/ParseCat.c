@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/11/20 20:35:21  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.36  1996/11/19 02:42:23  kmurli
   Changed to include original importFileType parameters..This means that
   the those using the importFileType with a single parameter cannot use
@@ -950,14 +955,13 @@ error:
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
 }
+
 /*------------------------------------------------------------------------------
- * function: ParseCatPhysical
- * Read and parse a physical schema from a catalog file.
- * physicalOnly should be true if only a physical schema (not a physical
- * schema and a logical schema) is being read.
+ * function: ParseDQL
  */
 char *
-ParseDQL(char * name,char * schema,char *schemaFile,char * fileType,char *dataFile,char * query)
+ParseDQL(char * name, char * schema, char *schemaFile, char * fileType,
+	 char *dataFile,char * query)
 {
 
     gdir->add_entry(name);
@@ -1116,7 +1120,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
  * Read and parse a schema file.
  */
 char *
-ParseCat(char *fileType,char *catFile,char *dataFile) 
+ParseCat(char *fileType, char *catFile, char *dataFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(DataSourceFile(abc), false) and then
@@ -1328,7 +1332,7 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
  * Read and parse a schema file.
  */
 int
-ParseCatDQL(char *catFile,String &phySchemaFile,String &list) 
+ParseCatDQL(char *catFile, String &phySchemaFile, String &list) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(DataSourceFile(abc), false) and then

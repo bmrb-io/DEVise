@@ -21,7 +21,7 @@ Action.o: ../graphics/AttrList.h /usr/include/sys/time.h ../graphics/Config.h
 Action.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
 Action.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 Action.o: DataSource.h UpdateLink.h VisualLink.h RecId.h PointStorage.h
-Action.o: DeviseKey.h
+Action.o: DeviseKey.h GDataBin.h
 ActionClassInfo.o: /usr/include/stdio.h ActionClassInfo.h
 ActionClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ActionClassInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -235,6 +235,20 @@ DataSourceBuf.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 DataSourceBuf.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
 DataSourceBuf.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
 DataSourceBuf.o: /usr/include/netinet/in.h
+DataSourceDQL.o: /usr/include/stdio.h /usr/include/string.h
+DataSourceDQL.o: /usr/include/errno.h /usr/include/sys/errno.h
+DataSourceDQL.o: /usr/include/sys/stdsyms.h /usr/include/signal.h
+DataSourceDQL.o: /usr/include/sys/signal.h /usr/include/unistd.h
+DataSourceDQL.o: /usr/include/sys/unistd.h /usr/include/sys/param.h
+DataSourceDQL.o: /usr/include/sys/types.h /usr/include/machine/param.h
+DataSourceDQL.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+DataSourceDQL.o: /usr/include/machine/spl.h /usr/include/sys/stat.h
+DataSourceDQL.o: DataSourceDQL.h DataSourceFileStream.h DataSource.h
+DataSourceDQL.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DataSourceDQL.o: ../graphics/DevStatus.h ../graphics/Exit.h
+DataSourceDQL.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
+DataSourceDQL.o: /usr/include/ctype.h /usr/include/math.h
+DataSourceDQL.o: ../graphics/DevError.h
 DataSourceFileDesc.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceFileDesc.o: /usr/include/errno.h /usr/include/sys/errno.h
 DataSourceFileDesc.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
@@ -249,24 +263,6 @@ DataSourceFileDesc.o: ../graphics/Exit.h ../graphics/Util.h
 DataSourceFileDesc.o: /usr/include/stdlib.h /usr/include/time.h
 DataSourceFileDesc.o: /usr/include/ctype.h /usr/include/math.h
 DataSourceFileDesc.o: ../graphics/DevError.h
-DataSourceFileRaw.o: /usr/include/stdio.h /usr/include/string.h
-DataSourceFileRaw.o: /usr/include/errno.h /usr/include/sys/errno.h
-DataSourceFileRaw.o: /usr/include/sys/stdsyms.h /usr/include/sys/param.h
-DataSourceFileRaw.o: /usr/include/sys/types.h /usr/include/machine/param.h
-DataSourceFileRaw.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-DataSourceFileRaw.o: /usr/include/machine/spl.h /usr/include/unistd.h
-DataSourceFileRaw.o: /usr/include/sys/unistd.h DataSource.h
-DataSourceFileRaw.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceFileRaw.o: ../graphics/DevStatus.h ../graphics/Exit.h
-DataSourceFileRaw.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceFileRaw.o: /usr/include/time.h /usr/include/ctype.h
-DataSourceFileRaw.o: /usr/include/math.h ../graphics/DevError.h
-DataSourceFileRaw.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
-DataSourceFileRaw.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-DataSourceFileRaw.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DataSourceFileRaw.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DataSourceFileRaw.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-DataSourceFileRaw.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 DataSourceFileStream.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceFileStream.o: /usr/include/errno.h /usr/include/sys/errno.h
 DataSourceFileStream.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
@@ -499,21 +495,21 @@ PageRange.o: FileMacro.h PageRange.h ../graphics/DeviseTypes.h
 PageRange.o: /usr/include/values.h ../graphics/DevStatus.h
 ParseCat.o: /usr/include/stdio.h /usr/include/fcntl.h
 ParseCat.o: /usr/include/sys/fcntl.h /usr/include/sys/stdsyms.h
-ParseCat.o: /usr/include/unistd.h /usr/include/sys/unistd.h ParseCat.h
-ParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ParseCat.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-ParseCat.o: ../graphics/ClassDir.h ../graphics/AttrList.h
-ParseCat.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/DList.h
-ParseCat.o: ../graphics/Exit.h TDataAsciiInterp.h TDataAscii.h
+ParseCat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+ParseCat.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
+ParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
+ParseCat.o: /usr/include/sys/types.h ../graphics/ClassDir.h TDataAscii.h
 ParseCat.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-ParseCat.o: /usr/include/string.h ../graphics/Journal.h
-ParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ParseCat.o: TData.h RecId.h RecOrder.h DataSource.h FileIndex.h
+ParseCat.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
+ParseCat.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ParseCat.o: ../graphics/Pattern.h TData.h RecId.h RecOrder.h DataSource.h
+ParseCat.o: FileIndex.h ../graphics/AttrList.h /usr/include/sys/time.h
+ParseCat.o: ../graphics/Config.h TDataDQLInterp.h TDataDQL.h
 ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
 ParseCat.o: /usr/include/time.h ../graphics/Control.h ../graphics/Util.h
 ParseCat.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Init.h
 ParseCat.o: ../graphics/BufPolicy.h Group.h MapInterpClassInfo.h GroupDir.h
-ParseCat.o: ItemList.h DataSourceBuf.h DataSourceFileStream.h
+ParseCat.o: ItemList.h DataSourceBuf.h DataSourceFileStream.h ParseCat.h
 ParseCat.o: ../graphics/DevError.h /usr/include/errno.h
 ParseCat.o: /usr/include/sys/errno.h
 QPRange.o: /usr/include/stdio.h ../graphics/Exit.h QPRange.h
@@ -645,13 +641,13 @@ ServerAPI.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Control.h
 ServerAPI.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h GroupDir.h
 ServerAPI.o: ItemList.h Group.h MapInterpClassInfo.h ClientAPI.h ParseAPI.h
 ServerAPI.o: QueryProc.h RecId.h ParseCat.h ../graphics/AttrList.h
-ServerAPI.o: ../graphics/Config.h ../graphics/View.h ../graphics/ViewWin.h
-ServerAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
-ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ServerAPI.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
-ServerAPI.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/time.h
-ServerAPI.o: /usr/include/ctype.h Version.h StringStorage.h
-ServerAPI.o: ../tape/HashTable.h
+ServerAPI.o: ../graphics/Config.h DataSourceBuf.h DataSource.h
+ServerAPI.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+ServerAPI.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+ServerAPI.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ServerAPI.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
+ServerAPI.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
+ServerAPI.o: Version.h StringStorage.h ../tape/HashTable.h
 Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h /usr/include/values.h
 Snapshot.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 Snapshot.o: /usr/include/sys/stdsyms.h TDataMap.h /usr/include/stdio.h
@@ -686,8 +682,8 @@ TData.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/sys/time.h
 TData.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 TData.o: DevFileHeader.h ../graphics/DevError.h ../graphics/AttrList.h
 TData.o: ../graphics/Config.h ../graphics/DList.h DataSourceFileStream.h
-TData.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h DataSeg.h
-TData.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+TData.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h DataSourceDQL.h
+TData.o: DataSeg.h ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 TData.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 TData.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
 TData.o: ../graphics/Geom.h ../graphics/Transform.h
@@ -782,6 +778,41 @@ TDataBinaryInterp.o: /usr/include/ctype.h /usr/include/math.h
 TDataBinaryInterp.o: ../graphics/DevError.h /usr/include/errno.h
 TDataBinaryInterp.o: /usr/include/sys/errno.h StringStorage.h
 TDataBinaryInterp.o: ../tape/HashTable.h
+TDataDQL.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/stdlib.h
+TDataDQL.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+TDataDQL.o: /usr/include/sys/stdsyms.h /usr/include/limits.h
+TDataDQL.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+TDataDQL.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataDQL.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+TDataDQL.o: ../graphics/AttrList.h /usr/include/sys/time.h
+TDataDQL.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TDataDQL.o: ../graphics/DevStatus.h ../graphics/Config.h ../graphics/DList.h
+TDataDQL.o: ../graphics/Exit.h ../graphics/Parse.h /usr/include/time.h
+TDataDQL.o: TDataDQL.h ../graphics/Dispatcher.h /usr/include/string.h
+TDataDQL.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+TDataDQL.o: ../graphics/Pattern.h TData.h RecId.h RecOrder.h DataSource.h
+TDataDQL.o: FileIndex.h ../graphics/Util.h /usr/include/ctype.h
+TDataDQL.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
+TDataDQL.o: DataSourceTape.h DataSourceBuf.h ../graphics/DevError.h DataSeg.h
+TDataDQL.o: QueryProc.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataDQL.o: DataSourceWeb.h
+TDataDQLInterp.o: /usr/include/string.h /usr/include/ctype.h
+TDataDQLInterp.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
+TDataDQLInterp.o: /usr/include/sys/unistd.h DataSeg.h TDataDQLInterp.h
+TDataDQLInterp.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TDataDQLInterp.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+TDataDQLInterp.o: ../graphics/ClassDir.h TDataDQL.h /usr/include/stdio.h
+TDataDQLInterp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+TDataDQLInterp.o: ../graphics/DList.h ../graphics/Exit.h
+TDataDQLInterp.o: ../graphics/Journal.h ../graphics/VisualArg.h
+TDataDQLInterp.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
+TDataDQLInterp.o: RecOrder.h DataSource.h FileIndex.h ../graphics/AttrList.h
+TDataDQLInterp.o: /usr/include/sys/time.h ../graphics/Config.h RecInterp.h
+TDataDQLInterp.o: CompositeParser.h ../graphics/Parse.h /usr/include/time.h
+TDataDQLInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataDQLInterp.o: /usr/include/math.h ../graphics/DevError.h
+TDataDQLInterp.o: /usr/include/errno.h /usr/include/sys/errno.h ParseCat.h
+TDataDQLInterp.o: DataSourceBuf.h StringStorage.h ../tape/HashTable.h
 TDataMap.o: /usr/include/stdio.h /usr/include/string.h ../graphics/Config.h
 TDataMap.o: ../graphics/Init.h ../graphics/DeviseTypes.h
 TDataMap.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -864,14 +895,14 @@ TkControl.o: ../graphics/Pattern.h ../graphics/Control.h
 TkControl.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h GroupDir.h
 TkControl.o: ItemList.h Group.h MapInterpClassInfo.h QueryProc.h RecId.h
 TkControl.o: ParseAPI.h ParseCat.h ../graphics/AttrList.h
-TkControl.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/View.h
-TkControl.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-TkControl.o: /usr/include/math.h ../graphics/Transform.h
-TkControl.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TkControl.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
-TkControl.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
-TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h Version.h
-TkControl.o: StringStorage.h ../tape/HashTable.h
+TkControl.o: /usr/include/sys/time.h ../graphics/Config.h DataSourceBuf.h
+TkControl.o: DataSource.h ../graphics/View.h ../graphics/ViewWin.h
+TkControl.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+TkControl.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+TkControl.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+TkControl.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/time.h
+TkControl.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
+TkControl.o: Version.h StringStorage.h ../tape/HashTable.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/stdlib.h
 UnixDiskFile.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
 UnixDiskFile.o: /usr/include/sys/stdsyms.h /usr/include/limits.h
@@ -1350,7 +1381,7 @@ ParseAPI.o: ../graphics/ViewLayout.h ../graphics/FilterQueue.h DataSeg.h
 ParseAPI.o: Version.h DevFileHeader.h ../graphics/Display.h
 ParseAPI.o: ../graphics/ColorMgr.h TDataAscii.h FileIndex.h
 ParseAPI.o: ../graphics/DevError.h /usr/include/errno.h
-ParseAPI.o: /usr/include/sys/errno.h
+ParseAPI.o: /usr/include/sys/errno.h ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h RecId.h
@@ -1463,6 +1494,23 @@ Web.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 Web.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 Web.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 Web.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+testSBM2.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/assert.h
+testSBM2.o: /usr/include/string.h /usr/include/ctype.h
+testSBM2.o: /usr/include/sys/stdsyms.h SBufMgr.h /usr/include/sys/types.h
+testSBM2.o: /usr/include/sys/uio.h /usr/include/unistd.h
+testSBM2.o: /usr/include/sys/unistd.h ../tape/tapedrive.h machdep.h
+testSBM2.o: /usr/include/limits.h /usr/include/sys/param.h
+testSBM2.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+testSBM2.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+testSBM2.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+testSBM2.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testSBM2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+testSBM2.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+testSBM2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+testSBM2.o: ../graphics/DeviseTypes.h /usr/include/values.h
+testSBM2.o: ../graphics/DevStatus.h ../tape/HashTable.h DCE.h
+testSBM2.o: /usr/include/errno.h /usr/include/sys/errno.h
+testSBM2.o: /usr/include/sys/stat.h ../graphics/DList.h ../graphics/Exit.h
 testSBufMgr.o: /usr/include/stdio.h /usr/include/stdlib.h
 testSBufMgr.o: /usr/include/assert.h /usr/include/string.h
 testSBufMgr.o: /usr/include/ctype.h /usr/include/sys/stdsyms.h SBufMgr.h
