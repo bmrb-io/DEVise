@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 20:19:20  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:38  jussi
   Added/updated CVS header.
 */
@@ -38,6 +41,7 @@ struct DevisePixmap {
   unsigned char *data;        /* data buffer */
 };
 
+#if 0 // Not used.  RKW 1999-03-01.
 /* Pixmap I/O */
 
 class PixmapIO: public CompressIO {
@@ -65,5 +69,6 @@ protected:
   DevisePixmap *_pixmap;      /* pixel map */
   int _line;                  /* which line we are reading */
 };
+#endif
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.158  1999/02/23 15:34:59  wenger
+  Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
+  other pile-related problems.
+
   Revision 1.157  1999/02/22 19:07:34  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -856,8 +860,6 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_refresh = true;
 
 	_pixmap = NULL;
-	_pixmapIO = new PixmapIO();
-	_compress = new SimpleCompress();
 
 	_cursorsOn = false;
 	_numDimensions = 2;

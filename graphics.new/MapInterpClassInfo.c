@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/11/20 18:38:46  wenger
+  Fixed bug 440 (crash caused by empty mapping command for X in combination
+  with other errors).
+
   Revision 1.18  1998/04/01 18:54:27  wenger
   Fixed bug 332.
 
@@ -160,6 +164,8 @@ MapInterpClassInfo::~MapInterpClassInfo()
   delete _map;
   delete _dimensionInfo;
   delete _cmd;
+  delete _fileAlias;
+  delete _name;
 }
 
 /* Return true if string is not empty. A string is not empty
@@ -405,6 +411,8 @@ void MapInterpClassInfo::ChangeParams(int argc, char**argv)
 		 _dimensionInfo, _numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {
     _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, _dimensionInfo, _numDimensions);
+    delete [] name;
+    delete [] tdataAlias;
   }
 }
 

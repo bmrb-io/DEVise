@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/12/22 19:39:09  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.29  1998/11/19 21:13:27  wenger
   Implemented non-DTE version of DEVise (new code handles data source catalog
   functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -234,7 +240,9 @@ ReadFile(char *filename, int &size, char *&buffer)
 char *CopyString(const char *str)
 {
   if (str == NULL) return NULL;
-  char *result = new char[strlen(str) + 1];
+  // Changed from new to malloc here so the stack doesn't get too deep
+  // for Purify to show.  RKW 1999-03-01.
+  char *result = (char *)malloc(strlen(str) + 1);
   if (!result) {
     fprintf(stderr, "Insufficient memory for new string\n");
     Exit::DoExit(2);

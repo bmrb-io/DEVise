@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/11/09 20:33:26  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.29  1998/11/06 17:59:53  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -254,6 +258,9 @@ TDataMap::~TDataMap()
 
   delete [] _stringGenTableName;
   _stringGenTableName = NULL;
+
+  delete [] _gdataPath;
+  _gdataPath = NULL;
 }
 
 //******************************************************************************

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.90  1998/12/15 14:55:20  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.89  1998/11/20 18:39:00  wenger
   Fixed bug 440 (crash caused by empty mapping command for X in combination
   with other errors).
@@ -563,7 +569,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 #endif
 
   TData *tdata = map->GetPhysTData();
-  QPFullData *query = new QPFullData;//TEMP leaked
+  QPFullData *query = new QPFullData;
   DOASSERT(query, "Out of memory");
 
   query->tdata = tdata;
@@ -1398,6 +1404,7 @@ void QueryProcFull::ProcessQuery()
   DOASSERT(_queries->ListOk(), "Error in query list");
   if( query->state == QPFull_EndState ) {
     EndQuery(query);
+    delete query;
   } else {
     _queries->Append(query);
     DOASSERT(_queries->ListOk(), "Error in query list");

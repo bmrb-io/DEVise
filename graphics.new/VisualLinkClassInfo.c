@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/02/11 19:55:00  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.5.2.1  1999/02/11 18:24:23  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -120,6 +125,7 @@ VisualLinkClassInfo::~VisualLinkClassInfo()
 #endif
 
   delete _link;
+  delete [] _name;
 
   if (!DevLink::_linkList.Delete(this)) {
     reportErrNosys("Unable to delete from link list");

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  1999/02/23 15:35:01  wenger
+  Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
+  other pile-related problems.
+
   Revision 1.75  1999/02/22 19:07:37  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -812,9 +816,6 @@ protected:
 	static int _nextPos; /* next position in file to read from
 				input file */
 	
-	PixmapIO *_pixmapIO;    /* IO for read/write pixmap */
-	Compression *_compress; /* compression class */
-
 	Boolean _cursorsOn;             /* true if cursors displayed */
 
 	int _numDimensions;             /* number of dimensions */

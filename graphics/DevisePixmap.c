@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/12/15 14:54:53  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.5  1996/10/02 15:23:36  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -37,6 +43,7 @@
 #include "DevisePixmap.h"
 #include "DevError.h"
 
+#if 0 // Not used.  RKW 1999-03-01.
 PixmapIO::PixmapIO()
 {
 }
@@ -164,3 +171,5 @@ void PixmapIO::WriteLine(char *line, int length)
   }
   _line++;
 }
+
+#endif

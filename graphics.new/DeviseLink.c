@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/02/11 19:54:58  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.3.4.1  1999/02/11 18:24:21  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -76,6 +81,8 @@ DeviseLink::~DeviseLink()
     _viewList->DeleteCurrent(index);
   }
   DoneIterator(index);
+
+  delete _viewList;
 }
 
 /* insert view into link */

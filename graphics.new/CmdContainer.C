@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1999/03/01 17:47:43  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.28  1999/02/11 19:54:54  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -218,9 +221,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 
 	char	tempFileName[128];
 	sprintf(tempFileName, "%s%ld", cmdLogBase, (long)getpid());
-	cmdLogFname = strdup(tempFileName);
-	unlink(cmdLogFname);
-	cmdLog = new CmdLogRecord(cmdLogFname);
+	unlink(tempFileName);
+	cmdLog = new CmdLogRecord(tempFileName);
 
 	// JAVA Screen commands
 	REGISTER_COMMAND(JAVAC_GetSessionList)
