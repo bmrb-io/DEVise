@@ -26,7 +26,7 @@
 #undef    assert        // defined by perl includes
 #include  <assert.h>
 
-//#define   DEBUG_UNIDATA
+// #define   DEBUG_UNIDATA
 
 extern SlideBuf *yyslbuf;
 
@@ -1293,9 +1293,12 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
     double *d = (double*) &(dst[ud->dst_off]);
     int tem_ws ;
 
+//	assert(((int)dst % DOUB_ALIGN) == 0);	// check alignment
+
 #ifdef DEBUG_UNIDATA
-    if (((int)dst % DOUB_ALIGN) != 0)  // but we'll check to be sure.
+    if (((int)dst % DOUB_ALIGN) != 0){  // but we'll check to be sure.
         return 0;
+	}
 #endif
 
      tem_ws=strspn(src, ud->attr->whitespace());

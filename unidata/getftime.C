@@ -28,6 +28,10 @@
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
+// This number is added to the 2 digit year
+
+const int CENTURY = 1900;	// change this to 2000 later
+
 // Strings to be used during conversions.
 
 static char *am_or_pm[] = {
@@ -534,9 +538,7 @@ int getftime(char *buf, char *format, TimeT *time)
 #endif
                     return 0;
                 }
-                  // We should really smite them for not being
-                  // more specific, but for now, round up for < 50.
-                tme->tm_year = v + ((v <= 50) ? 100 : 0);
+                tme->tm_year = CENTURY + v;
 
                 if (repeat)
                     len = repeat;
