@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/01/09 21:41:32  wenger
+#  Changed devise.dali to devise.tasvir.
+#
 #  Revision 1.1  1996/12/13 18:20:48  wenger
 #  Added release.linux; incremented DEVise revision.
 #
@@ -139,7 +142,7 @@ end
 
 set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi"
+	run_public/multi run_public/devise.etk"
 
 foreach file ($runfiles)
   if ($file == "") then

@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1997/01/17 20:32:32  wenger
+#  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+#  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+#  from Tcl/Tk code; removed (at least for now) the ETk interface from
+#  the cslib versions of WindowRep classes so that the cslib will link
+#  okay; cslib server now tests XOR drawing.
+#
 #  Revision 1.16  1997/01/08 18:56:51  wenger
 #  Added 'View List' selection to window menu (gives a list of the views
 #  in the window containing the selected view, especially useful for
@@ -615,10 +622,6 @@ proc DoWindowStackControl {} {
     frame .stack.bot.row1.but
     frame .stack.bot.row2.but
 
-    button .stack.bot.row1.but.merge -text "Merge" -width 10 \
-	    -command { DoWindowMerge }
-    button .stack.bot.row2.but.split -text "Split" -width 10 \
-	    -command { DoWindowSplit }
     button .stack.bot.row1.but.pile -text "Pile" -width 10 \
 	    -command { DoWindowPile }
     button .stack.bot.row2.but.unpile -text "Unpile" -width 10 \
@@ -639,12 +642,12 @@ proc DoWindowStackControl {} {
 	              set stackWinOpened false; \
 	              destroy .stack"
 
-    pack .stack.bot.row1.but.merge .stack.bot.row1.but.pile \
+    pack .stack.bot.row1.but.pile \
             .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
             .stack.bot.row1.but.edit \
 	    -side left -expand 1 -fill x -padx 3m
 
-    pack .stack.bot.row2.but.split .stack.bot.row2.but.unpile \
+    pack .stack.bot.row2.but.unpile \
 	    .stack.bot.row2.but.unstack .stack.bot.row2.but.flip \
             .stack.bot.row2.but.close \
 	    -side left -expand 1 -fill x -padx 3m

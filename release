@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1997/01/13 15:42:43  wenger
+#  Added lib/FSBox.tk to release.
+#
 #  Revision 1.10  1996/12/30 17:50:07  wenger
 #  Got latest sources to compile on Linux; updated Linux dependencies;
 #  changes devise.dali to devise.tasvir in release script.
@@ -185,7 +188,7 @@ end
 
 set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi"
+	run_public/multi run_public/devise.etk"
 
 foreach file ($runfiles)
   if ($file == "") then
