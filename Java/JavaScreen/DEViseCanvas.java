@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2000/07/18 18:10:56  venkatan
+// *** empty log message ***
+//
 // Revision 1.56  2000/07/14 21:13:07  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -134,6 +137,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.57  2000/07/18 18:10:56  venkatan
+// *** empty log message ***
+//
 // Revision 1.56  2000/07/14 21:13:07  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -591,7 +597,7 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintBorder(Graphics gc)
     {
-       // Border for Active view is disabled.
+       // Border for Active view is disabled. - no highlighting
        /* if (activeView != null && activeView == jscreen.getCurrentView()) {
             Rectangle loc = activeView.viewLocInCanvas;
 
