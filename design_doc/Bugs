@@ -2138,6 +2138,9 @@ Num Date        Status  Description
 546 12/21/99	OPEN	Cursor drawing in the JavaScreen doesn't seem to do
 			XOR with text symbol pixels. (rkw)
 
+547 12/23/99	OPEN	'5' (home) key functionality should take into account
+			symbol bounding boxes. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
