@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+#include <string>
 
 #include "DeviseTypes.h"
 #ifdef ATTRPROJ
@@ -28,13 +29,14 @@
 #endif
 
 #include "queue.h"
+#include "types.h"
 #include "TData.h"
 #include "RecId.h"
 #include "DataSource.h"
 #include "FileIndex.h"
 #include "AttrList.h"
-// #include "TuplePtr.XPlex.h"
-#include "Engine.h"
+
+class Engine;
 
 #ifdef TDATADQLNEW_DEBUG
         #define DBDQLNEW(a) {cout << __FILE__ << ':' << __LINE__ << ' ' << a << endl;}
@@ -183,7 +185,7 @@ private:
 	MarshalPtr* _marshalPtrs;
 	char* _tableName;
 	RecId _nextToFetch;
-	Engine engine;
+	Engine* engine;
 };
 
 #endif

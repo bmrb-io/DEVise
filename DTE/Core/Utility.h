@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/21 21:04:28  donjerko
+  Implemented view materialization
+
   Revision 1.6  1997/08/14 02:08:54  donjerko
   Index catalog is now an independent file.
 
@@ -36,7 +39,12 @@
 #define UTILITY_H
 
 #include <string>
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 // class Catalog;
 

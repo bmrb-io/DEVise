@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/25 15:28:15  donjerko
+  Added minmax table
+
   Revision 1.22  1997/08/21 21:04:34  donjerko
   Implemented view materialization
 
@@ -102,7 +105,6 @@
 #include "types.h"
 #include "myopt.h"
 #include "site.h"
-#include "machdep.h"
 #include "ExecExpr.h"
 #include "catalog.h" 	// for root catalog
 #include "Interface.h"
@@ -142,7 +144,7 @@ bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
 	return false;
 }
 
-void GlobalSelect::display(ostream& out, int detail = 0){
+void GlobalSelect::display(ostream& out, int detail){
 	out << "{" << site->getName() << ": ";
 	selection->display(out, detail);
 	out << "}";
@@ -198,6 +200,7 @@ ExecExpr* GlobalSelect::createExec(
 	selection->display(cout);
 	cout << endl;
 	assert(0);
+	return NULL;
 }
 
 TypeID GlobalSelect::typify(List<Site*>* sites){
@@ -296,13 +299,12 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 		selList->step();
 		i++;
 	}
-	ostrstream tmp;
+	ostringstream tmp;
 	displayList(tmp, selList);
 	tmp << ends;
-	char* tmpc = tmp.str();
-	string msg = string("Table ") + siteNm + "(" + string(tmpc) + ")" +
+	string tmpc = tmp.str();
+	string msg = string("Table ") + siteNm + "(" + tmpc + ")" +
 		" does not have attribute \"" + *fieldNm + "\"";
-	delete tmpc;
 	THROW(new Exception(msg), "PrimeSelection::typify");
 }
 

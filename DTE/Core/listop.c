@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/22 23:13:05  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.13  1997/08/21 21:04:31  donjerko
   Implemented view materialization
 
@@ -51,8 +54,8 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
+//#include<iostream.h>   erased for sysdep.h
+//#include<memory.h>   erased for sysdep.h
 #include <string>
 #include<assert.h>
 #include<math.h>
@@ -63,6 +66,7 @@
 #include "exception.h"
 #include "catalog.h"
 #include "ExecExpr.h"
+#include "sysdep.h"
 
 int* findPositions(List<BaseSelection*>* list, 
 			List<BaseSelection*>* elements){ 		// throws
@@ -214,7 +218,7 @@ void typifyList(List<Site*>* list, string option){
 	list->rewind();
 	while(!list->atEnd()){
 		Site* tmp = list->get();
-		TRY(tmp->typify(option), );
+		TRY(tmp->typify(option), NVOID );
 		list->step();
 	}
 }
@@ -236,12 +240,11 @@ bool boolCheckList(List<BaseSelection*>* list){
 	while(!list->atEnd()){
 		BaseSelection* current = list->get();
 		if(current->getTypeID() != "bool"){
-			strstream msg;
+			stringstream msg;
 			current->display(msg);
 			msg << ends;
-			char* msgc = msg.str();
-			string msgs = "Predicate " + string(msgc) + " is not boolean";
-			delete msgc;
+			string msgc = msg.str();
+			string msgs = "Predicate " + msgc + " is not boolean";
 			THROW(new Exception(msgs), false);
 		}
 		list->step();
@@ -306,7 +309,7 @@ void checkOrphanInList(List<BaseSelection*>* list){
 	}
 	list->rewind();
 	while(!list->atEnd()){
-		TRY(list->get()->checkOrphan(), );
+		TRY(list->get()->checkOrphan(), NVOID );
 		list->step();
 	}
 }
@@ -316,10 +319,10 @@ string* getStringsFrom(List<BaseSelection*>* list){
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){
-		ostrstream tmp;
+		ostringstream tmp;
 		list->get()->displayFlat(tmp);
 		tmp << ends;
-		retVal[i] = string(tmp.str());
+		retVal[i] = tmp.str();
 		i++;
 		list->step();
 	}
@@ -331,7 +334,7 @@ string* getAttStringsOnly(List<BaseSelection*>* list){
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){
-		ostrstream tmp;
+		ostringstream tmp;
 		retVal[i] = list->get()->toStringAttOnly();
 		i++;
 		list->step();

@@ -1,4 +1,5 @@
-#include <strstream.h>
+#include "sysdep.h"
+//#include <strstream.h>   erased for sysdep.h
 
 #undef assert
 #include <assert.h>

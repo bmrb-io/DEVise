@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/22 23:13:02  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.5  1997/08/21 21:04:20  donjerko
   Implemented view materialization
 
@@ -31,14 +34,14 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
+//#include<iostream.h>   erased for sysdep.h
+//#include<memory.h>   erased for sysdep.h
 #include <string>
 #include<assert.h>
 #include<math.h>
-#include<stdlib.h>
-#include<stdio.h>	// for perror
-#include<errno.h>
+//#include<stdlib.h>   erased for sysdep.h
+//#include<stdio.h>	// for perror   erased for sysdep.h
+//#include<errno.h>   erased for sysdep.h
 
 #include "queue.h"
 #include "myopt.h"
@@ -48,6 +51,7 @@
 #include "catalog.h"
 #include "listop.h"
 #include "ParseTree.h"
+#include "sysdep.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
@@ -78,7 +82,7 @@ Site* InsertParse::createSite(){
 	fieldList->rewind();
 	assert(fieldList->cardinality() == 1);
 	ConstantSelection* sel = fieldList->get();
-	strstream tmp;
+	stringstream tmp;
 	sel->display(tmp);
 	string inStr;
 	stripQuotes(tmp, inStr);

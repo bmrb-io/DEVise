@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/08/25 15:28:12  donjerko
+  Added minmax table
+
   Revision 1.26  1997/08/22 23:13:04  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -68,8 +71,8 @@
  */
 
 #include <string>
-#include <fstream.h>
-#include <iostream.h>
+//#include <fstream.h>   erased for sysdep.h
+//#include <iostream.h>   erased for sysdep.h
 #include "StandardRead.h"
 #include "catalog.h"
 #include "Iterator.h"
@@ -80,25 +83,26 @@
 // #include "Engine.h"
 #include "Inserter.h"
 #include "Interface.h"
+#include "sysdep.h"
 
 void readFilter(string viewNm, string& select, 
 		string*& attributeNames, int& numFlds, string& where){
 	ifstream vin(viewNm.c_str());
 	if(!vin){
 		string msg = "Could not open view file \"" + viewNm + "\"";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 	vin >> numFlds;
 	if(!vin){
 		string msg = "Number of fieds expected in file \"" + viewNm + "\"";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 	attributeNames = new string[numFlds];
      for(int i = 0; i < numFlds; i++){
           vin >> attributeNames[i];
      }
-     TRY(stripQuotes(vin, select), );
-     TRY(stripQuotes(vin, where), );
+     TRY(stripQuotes(vin, select), NVOID );
+     TRY(stripQuotes(vin, where), NVOID );
 }
 
 Site* Catalog::find(TableName* path) const { // Throws Exception
@@ -112,7 +116,7 @@ void Directory::replace(const string& entry, const Interface* interf) const
 {
 	Modifier modifier(DIR_SCHEMA, fileName);
 
-	TRY(modifier.replace(&entry, interf), );
+	TRY(modifier.replace(&entry, interf), NVOID );
 }
 
 Interface* Directory::createInterface(const string& entry) const

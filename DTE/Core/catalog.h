@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/25 15:28:13  donjerko
+  Added minmax table
+
   Revision 1.22  1997/08/21 21:04:29  donjerko
   Implemented view materialization
 
@@ -72,11 +75,16 @@
 #ifndef CATALOG_H
 #define CATALOG_H
 
+#include "sysdep.h"
 #include <assert.h>
-#include <limits.h>
+//#include <limits.h>   erased for sysdep.h
 #include "queue.h"
 #include "exception.h"
 #include "Utility.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 const int INFINITY = INT_MAX;
 

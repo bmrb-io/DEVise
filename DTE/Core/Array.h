@@ -7,6 +7,10 @@
 
 #include <assert.h>
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 template<class T>
 class Array {
 	T* base;

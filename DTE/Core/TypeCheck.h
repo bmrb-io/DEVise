@@ -3,6 +3,10 @@
 
 #include "queue.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 // This class is the owner of all BaseSelection objects
 
 class SymbolTable;

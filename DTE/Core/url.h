@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/22 23:13:07  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.7  1997/08/21 21:04:38  donjerko
   Implemented view materialization
 
@@ -39,21 +42,24 @@
 #ifndef URL_H
 #define URL_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
+//#include <sys/types.h>   erased for sysdep.h
+//#include <sys/socket.h>   erased for sysdep.h
 // #include <sys/uio.h> // why is this here? (DD)
-#include <netinet/in.h>
-#ifndef SUN
-#include <netdb.h>
-#endif
+//#include <netinet/in.h>   erased for sysdep.h
+//#include <netdb.h>   erased for sysdep.h (There was an ifndef SUN for this line)
 #include <string>
 #include <assert.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <stdio.h>
-#include <unistd.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
+//#include <stdio.h>   erased for sysdep.h
+//#include <unistd.h>   erased for sysdep.h
 #include "SockStream.h"
 #include "exception.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 const unsigned short httpport = 80;
 const int MAX_HEADER = 512;
@@ -69,11 +75,11 @@ private:
 	int sock;
 	bool outputRequested;
 	bool inputRequested;
-	ostrstream userInput;
+	ostringstream userInput;
 	char header[MAX_HEADER];
 private:
 	void parseURL();	// Throws: unknown URL protocol
-     void sendRequest(ostrstream& req){
+     void sendRequest(ostringstream& req){
 		ostream out(sockBuf);
 		out << req.rdbuf();
 		out << flush;
@@ -124,13 +130,14 @@ public:
 		free(file);
 	}
      istream* getInputStream();
-     void post(ostrstream& content){
-          ostrstream reqStream;
-		int contentLen = content.pcount();
+     void post(ostringstream& content){
+          ostringstream reqStream;
+		string contentS = content.str();
+		int contentLen = contentS.length();
           reqStream << "POST " << file << " HTTP/1.0\r\n";
 		reqStream << "Content-Type: application/x-www-form-urlencoded\r\n";
 		reqStream << "Content-Length: " << contentLen << "\r\n\r\n";
-		reqStream << content.rdbuf();
+		reqStream << contentS;
           sendRequest(reqStream);
      }
 	ostream* getOutputStream(int mode = ios::out){
@@ -151,7 +158,7 @@ public:
 	char* getHeader(){
 		return header;
 	}
-	static ostrstream* encode(strstream& input);
+	static ostringstream* encode(stringstream& input);
 };
 
 #endif

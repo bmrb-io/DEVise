@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/08/21 21:04:27  donjerko
+  Implemented view materialization
+
   Revision 1.17  1997/08/15 00:17:36  donjerko
   Completed the Iterator destructor code.
 
@@ -67,10 +70,15 @@
 #ifndef STANDARD_READ_H
 #define STANDARD_READ_H
 
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
 #include <string>
 #include "types.h"
 #include "Iterator.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class StandReadExec : public Iterator {
 	istream* in;
@@ -172,12 +180,13 @@ public:
 		return out;
 	}
 	virtual void writeHeader(ostream& out){
+		int i;
 		out << numFlds << " ";
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			out << typeIDs[i] << " ";
 		}
 		cout << endl;
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			out << attributeNames[i] << " ";
 		}
 		out << ";" << endl;

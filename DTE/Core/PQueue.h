@@ -1,10 +1,15 @@
 #ifndef PRIORITY_QUEUE
 #define PRIORITY_QUEUE
 
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
 #include "types.h"
+#include "sysdep.h"
 
 typedef enum {Ascending, Descending } SortOrder;
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 struct Node{
   const Tuple *tuple;
@@ -36,13 +41,13 @@ public:
        Items = new (Node *) [size+1]; 
        num_of_elems = 0;
        
-       comparePtrs  = new (GeneralPtr *)[num_flds];
+       comparePtrs  = new GeneralPtr*[num_flds];
        
        for (int i=0; i < num_flds; i++)
          {
            TypeID retVal;  // is a dummy	           
            TRY(comparePtrs[i] = getOperatorPtr("comp", fld_types[i],
-					       fld_types[i],retVal),);
+					       fld_types[i],retVal), NVOID);
          }
     }
   

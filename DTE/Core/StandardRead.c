@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/22 23:13:04  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.14  1997/08/21 21:04:26  donjerko
   Implemented view materialization
 
@@ -58,7 +61,8 @@
 
  */
 
-#include <strstream.h>
+#include "sysdep.h"
+//#include <strstream.h>   erased for sysdep.h
 #include <string>
 #include "StandardRead.h"
 #include "exception.h"
@@ -112,14 +116,14 @@ Iterator* RidAdder::createExec(){
 
 void NCDCRead::open(istream* in){	// Throws exception
      char buff[100];
-     ostrstream err;
+     ostringstream err;
      while(in->good()){
           in->read(buff, 100);
           err.write(buff, in->gcount());
      }
      err << ends;
-     char* response = err.str();
-     char* tmp = response;
+     string response = err.str();
+     char* tmp = strdup(response.c_str());
 
      // find the third occurence of "http:"
 
@@ -129,7 +133,7 @@ void NCDCRead::open(istream* in){	// Throws exception
           tmp = strstr(tmp, "http:");
           if(!tmp){
                string msg = "Unexpected response from the NCDC server:\n" +
-                    string(response);
+                    response;
                THROW(new Exception(msg), );
           }
      }
@@ -140,10 +144,9 @@ void NCDCRead::open(istream* in){	// Throws exception
      assert(tmp[j]);
      tmp[j] = '\0';
      string tableUrlStr = string(tmp);
-     delete response;
      URL* tableUrl = new URL(tableUrlStr);
 	istream* tablein = NULL;
-     TRY(tablein = tableUrl->getInputStream(), );
+     TRY(tablein = tableUrl->getInputStream(), NVOID );
 	delete tableUrl;
 
      // ignore first 8 lines

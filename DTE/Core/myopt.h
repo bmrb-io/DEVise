@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/08/25 15:28:14  donjerko
+  Added minmax table
+
   Revision 1.30  1997/08/21 21:04:33  donjerko
   Implemented view materialization
 
@@ -108,14 +111,19 @@
 
 #include <assert.h>
 #include <string>
-#include <iostream.h>
-#include <fstream.h>
-#include <strstream.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <fstream.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
 #include "queue.h"
 #include "types.h"
 #include "exception.h"
 #include "url.h"
 #include "listop.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class ExecExpr;
 
@@ -131,12 +139,10 @@ public:
 	virtual ~BaseSelection(){}
 	virtual void destroy(){}
 	string toString(){
-		ostrstream os;
+		ostringstream os;
 		display(os);
 		os << ends;
-		char* tmp = os.str();
-		string retVal(tmp);
-		delete tmp;
+		string retVal(os.str());
 		return retVal;
 	}
      virtual void display(ostream& out, int detail = 0){
@@ -264,6 +270,7 @@ public:
 	virtual BaseSelection* duplicate(){
 		cerr << "Error: GlobalSelect::duplicate called\n";
 		exit(1);
+		return NULL ;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		if(site == s){
@@ -340,7 +347,7 @@ public:
 		assert(genPtr && genPtr->opPtr);
 		Type* result;
 		genPtr->opPtr(value, arg.value, result);
-		return bool(result);
+		return (result ? true : false);
 	}
 	virtual void display(ostream& out, int detail = 0){
 		WritePtr wp = getWritePtr(typeID);
@@ -375,7 +382,7 @@ public:
 		Type* result;
 		assert(genPtr && genPtr->opPtr);
 		genPtr->opPtr(value, y->value, result);
-		return bool(result);
+		return (result ? true : false);
 	}
      virtual ExecExpr* createExec(
           string site1, List<BaseSelection*>* list1,
@@ -877,7 +884,7 @@ public:
 		string& attrName, string& opName, BaseSelection*& value);
 	string getAttribute(){
 		string attrNm;
-		ostrstream os;
+		ostringstream os;
 		if(left->selectID() == SELECT_ID){
 			attrNm = *(((PrimeSelection*) left)->getFieldNm());
 		}
@@ -890,7 +897,7 @@ public:
 		return attrNm;
 	}
 	string getValue(){
-		ostrstream os;
+		ostringstream os;
 		if(left->selectID() == SELECT_ID){
 			right->display(os);
 		}
@@ -901,7 +908,7 @@ public:
 			assert(!"selection expected");
 		}
 		os << ends;
-		return string(os.str());
+		return os.str();
 	}
 	virtual BaseSelection* filter(Site* site){
 		if(exclusive(site)){
@@ -1077,7 +1084,7 @@ public:
 	}
 	TableName(const char* path){
 		int len = strlen(path);
-		char tmp[len + 1];
+		char* tmp = new char[len + 1];
 		tmp[len] = '\0';
 		tableName = new List<string*>;
 		for(int i = len - 1; i >= 0; i--){
@@ -1091,6 +1098,7 @@ public:
 		}
 		cerr << "path " << path << " resolved as: ";
 		displayList(cerr, tableName, ".");
+		delete [] tmp;
 	}
 	TableName dirName();
 	string fileName();
@@ -1120,12 +1128,11 @@ public:
 		displayList(out, tableName, ".");
 	}
 	string toString(){
-		ostrstream tmp;
+		ostringstream tmp;
 		tmp << ".";
 		displayList(tmp, tableName, ".");
 		tmp << ends;
-		char* tmps = tmp.str();
-		string retVal(tmps);
+		string retVal(tmp.str());
 		// delete tmps; // should use free instead?
 		return retVal;
 	}

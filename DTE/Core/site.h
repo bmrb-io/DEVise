@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/21 21:04:36  donjerko
+  Implemented view materialization
+
   Revision 1.28  1997/08/15 00:17:36  donjerko
   Completed the Iterator destructor code.
 
@@ -89,14 +92,17 @@
 
 // #include <set>
 
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 template<class A, class B> class set;
 
 class RTreeIndex;
 class CGIEntry;
 
-List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterator);
-List<BaseSelection*>* createSelectList(PlanOp* iterator);
+List<BaseSelection*>* createSelectList(const string& nm, PlanOp*);
+List<BaseSelection*>* createSelectList(PlanOp*);
 List<BaseSelection*>* createSelectList(
 	const string& table, List<string*>* attNms);
 
@@ -111,7 +117,7 @@ friend class LocalTable;
 friend class SiteGroup;
 protected:
 	string name;
-	PlanOp* iterator;
+	PlanOp* iterat;
 	int numFlds;
 	set<string, ltstr>* tables;
 	List<BaseSelection*>* mySelect;
@@ -129,8 +135,8 @@ public:
 	// Returns the name of the ordering attribute using the
 	// read iterator.
 	virtual string * getOrderingAttrib(){
-		if(iterator)
-			return iterator->getOrderingAttrib();
+		if(iterat)
+			return iterat->getOrderingAttrib();
 		else
 			return NULL;
 	}
@@ -153,8 +159,8 @@ public:
 		return tmp;
 	}
 	virtual Iterator* createExec(){
-		assert(iterator);
-		return iterator->createExec();	// no projections or selections
+		assert(iterat);
+		return iterat->createExec();	// no projections or selections
 	}
      virtual void typify(string option);	// Throws a exception
 	virtual int getNumFlds(){
@@ -227,19 +233,19 @@ public:
 
 class DirectSite : public Site {
 public:
-	DirectSite(string nm, PlanOp* iterator) : Site(nm) {
+	DirectSite(string nm, PlanOp* iterat) : Site(nm) {
 		
 		// Used only for typifying LocalTable
 
-		assert(iterator);
-		Site::iterator = iterator;
-		numFlds = iterator->getNumFlds();
-		stats = iterator->getStats();
+		assert(iterat);
+		Site::iterat = iterat;
+		numFlds = iterat->getNumFlds();
+		stats = iterat->getStats();
 		assert(stats);
-		mySelect = createSelectList(nm, iterator);
+		mySelect = createSelectList(nm, iterat);
 	}
 	virtual ~DirectSite(){
-		iterator = NULL;	// Local table is the owner of this iterator
+		iterat = NULL;	// Local table is the owner of this iterator
 	}
 	virtual void typify(string option){}
 };
@@ -254,7 +260,7 @@ protected:
 public:
      LocalTable(string nm, PlanOp* marsh, string fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
-		iterator = marsh;
+		iterat = marsh;
 		directSite = NULL;  // will be set up in typify because it
 						// needs the name
 		this->fileToWrite = fileToWrite;
@@ -262,17 +268,17 @@ public:
 		writePtrs = NULL;
 	}
 	LocalTable(string nm, List<BaseSelection*>* select, 
-		List<BaseSelection*>* where, PlanOp* iterator) : Site(nm) {
+		List<BaseSelection*>* where, PlanOp* iterat) : Site(nm) {
 
 		// Used as a simple filter, not as a real site
 
 		mySelect = new List<BaseSelection*>;
 		mySelect->addList(select);
 		myWhere->addList(where);
-		this->iterator = iterator;
+		this->iterat = iterat;
 		numFlds = mySelect->cardinality();
-		directSite = new DirectSite(name, iterator);
-		this->iterator = NULL;
+		directSite = new DirectSite(name, iterat);
+		this->iterat = NULL;
 		fout = NULL;
 		writePtrs = NULL;
 	}
@@ -282,7 +288,7 @@ public:
 		// It does includes leftover constants, if any.
 
 		mySelect = new List<BaseSelection*>;
-		this->iterator = NULL;
+		this->iterat = NULL;
 		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;
@@ -331,8 +337,8 @@ class IndexScan : public LocalTable {
 	int numIndexablePreds;
 public:
 	IndexScan(string name, List<BaseSelection*>* select,
-		List<BaseSelection*>* where, RTreeIndex* index, PlanOp* iterator) :
-		LocalTable(name, select, where, iterator), index(index) {
+		List<BaseSelection*>* where, RTreeIndex* index, PlanOp* iterat) :
+		LocalTable(name, select, where, iterat), index(index) {
 		numIndexablePreds = 0;
 	}
 	virtual double evaluateCost(){

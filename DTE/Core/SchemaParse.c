@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/21 21:04:26  donjerko
+  Implemented view materialization
+
   Revision 1.11  1997/08/14 02:08:53  donjerko
   Index catalog is now an independent file.
 
@@ -91,7 +94,7 @@ public:
      virtual const string *getAttributeNames(){
 		return &SCHEMA_STR;
      }
-	ISchemaExec* createExec(){
+	Iterator* createExec(){
 		return new ISchemaExec(schema);
 	}
 };

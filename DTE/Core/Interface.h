@@ -2,7 +2,12 @@
 #define DTE_INTERFACE_H
 
 #include <string>
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class Inserter;
 class TableName;
@@ -19,9 +24,12 @@ public:
 	virtual istream& read(istream& in) = 0;
 	virtual ostream* getOutStream(){
 		assert(0);
+		return NULL;
 	}
 	virtual string getFileName(){
 		assert(0);
+		string tmp;
+		return tmp;
 	}
 	virtual void write(ostream& out) const {
 		out << " ;";
@@ -53,7 +61,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual DummyInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new DummyInterface(*this);	
 	}
 	virtual Site* getSite(){
@@ -103,7 +111,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual StandardInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new StandardInterface(*this);
 	}
 	virtual Site* getSite();
@@ -150,7 +158,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual ViewInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new ViewInterface(*this);
 	}
 	virtual Site* getSite();
@@ -184,8 +192,8 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual MaterViewInterface* duplicate() const {
-		return new MaterViewInterface(*this);
+	virtual Interface* duplicate() const {
+		return (ViewInterface*) new MaterViewInterface(*this);
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
@@ -229,7 +237,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual DeviseInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new DeviseInterface(*this);
 	}
 	virtual Site* getSite();
@@ -272,7 +280,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual QueryInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new QueryInterface(*this);
 	}
 	virtual Site* getSite();
@@ -295,7 +303,8 @@ public:
 };
 
 
-struct CGIEntry{
+class CGIEntry{
+public:
 	string option;
 	string value;
 	istream& read(istream& in);	// throws
@@ -314,7 +323,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual CGIInterface* duplicate() const {
+	virtual Interface* duplicate() const {
 		return new CGIInterface(*this);
 	}
 	virtual Site* getSite();
@@ -338,7 +347,7 @@ public:
 	virtual string getTypeNm(){
 		return typeName;
 	}
-	virtual CatalogInterface* duplicate() const; 
+	virtual Interface* duplicate() const; 
 	virtual string getFileName(){
 		return fileName;
 	}

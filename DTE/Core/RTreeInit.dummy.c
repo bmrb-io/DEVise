@@ -16,13 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/08/10 20:30:54  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.3  1997/03/28 16:07:26  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
 
  */
 
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
+#include "sysdep.h"
+
+using namespace std;
 
 int NextEmptyPage; // global variable used by genrtree.C
 char *FileArr;     // global variable used by genrtree.C

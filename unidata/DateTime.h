@@ -1,12 +1,17 @@
 #ifndef DATETIME_H
 #define DATETIME_H
 
-#include <time.h>  // just for the definition of struct tm
+//#include <time.h>  // just for the definition of struct tm   erased for sysdep.h
+#include "sysdep.h"
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 typedef __int64 bigint ;
 #else
 typedef long long bigint ;
+#endif
+
+#ifndef __GNUG__
+using namespace std;
 #endif
 
 class DateTime ;

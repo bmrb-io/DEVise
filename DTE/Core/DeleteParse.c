@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/22 23:13:00  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.9  1997/08/21 21:04:15  donjerko
   Implemented view materialization
 
@@ -38,14 +41,14 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
+//#include<iostream.h>   erased for sysdep.h
+//#include<memory.h>   erased for sysdep.h
 #include<string>
 #include<assert.h>
 #include<math.h>
-#include<stdlib.h>
-#include<stdio.h>	// for perror
-#include<errno.h>
+//#include<stdlib.h>   erased for sysdep.h
+//#include<stdio.h>	// for perror   erased for sysdep.h
+// #include<errno.h>   erased for sysdep.h
 
 #include "queue.h"
 #include "myopt.h"
@@ -56,6 +59,7 @@
 #include "listop.h"
 #include "ParseTree.h"
 #include "ExecExpr.h"
+#include "sysdep.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)

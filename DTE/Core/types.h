@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/08/25 15:28:16  donjerko
+  Added minmax table
+
   Revision 1.33  1997/08/22 23:13:07  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -121,15 +124,20 @@
 
 #include <string>
 
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
 #include <assert.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <time.h>
+//#include <sys/types.h>   erased for sysdep.h
+//#include <netinet/in.h>   erased for sysdep.h
+//#include <time.h>   erased for sysdep.h
 #include <new.h>
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 #ifndef RecId_h
 #define RecId_h
@@ -837,22 +845,24 @@ public:
 	}
 	string* getAllAttrNms(){
 		int totFlds = getTotNumFlds();
+		int i ;
 		string* retVal = new string[totFlds];
-		for(int i = 0; i < numKeyFlds; i++){
+		for(i = 0; i < numKeyFlds; i++){
 			retVal[i] = keyFlds[i];
 		}
-		for(int i = 0; i < numAddFlds; i++){
+		for(i = 0; i < numAddFlds; i++){
 			retVal[i + numKeyFlds] = addFlds[i];
 		}
 		return retVal;
 	}
 	TypeID* getAllTypeIDs(){
 		int totFlds = getTotNumFlds();
+		int i ;
 		string* retVal = new TypeID[totFlds];
-		for(int i = 0; i < numKeyFlds; i++){
+		for(i = 0; i < numKeyFlds; i++){
 			retVal[i] = keyTypes[i];
 		}
-		for(int i = 0; i < numAddFlds; i++){
+		for(i = 0; i < numAddFlds; i++){
 			retVal[i + numKeyFlds] = addTypes[i];
 		}
 		return retVal;
@@ -900,7 +910,7 @@ const ISchema INDEX_SCHEMA("3 string table string name indexdesc descriptor");
 
 class MemoryLoader {
 protected:
-	const size_t PAGE_SZ = 1 * 1024;
+	static size_t PAGE_SZ;
 	size_t remainSpace;
 	List<void*> pagePtrs;
 	void* spacePtr;
@@ -1014,7 +1024,7 @@ public:
 	}
 	void open(int numFlds, const TypeID* typeIDs){ // throws
 		this->numFlds = numFlds;
-		TRY(typeLoaders = newTypeLoaders(typeIDs, numFlds), );
+		TRY(typeLoaders = newTypeLoaders(typeIDs, numFlds), NVOID );
 	}
 	Tuple* insert(const ConstTuple* tuple){ // throws
 		size_t spaceNeed = numFlds * sizeof(Type*);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/08/25 15:28:08  donjerko
+  Added minmax table
+
   Revision 1.18  1997/08/22 23:13:02  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -214,8 +217,8 @@ Site* IndexParse::createSite(){
 		TRY(maxs[i].typify(types[i]), NULL);
 	}
 
-	ExecMinMax* minExs[numTFlds];
-	ExecMinMax* maxExs[numTFlds];
+	ExecAggregate* minExs[numTFlds];
+	ExecAggregate* maxExs[numTFlds];
 
 	for(int i = 0; i < numTFlds; i++){
 		minExs[i] = mins[i].createExec();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/25 15:28:13  donjerko
+  Added minmax table
+
   Revision 1.7  1997/08/21 21:04:30  donjerko
   Implemented view materialization
 
@@ -41,12 +44,16 @@
 
 #include <string>
 
-#include <fstream.h>
+//#include <fstream.h>   erased for sysdep.h
 #include <assert.h>
-#include <sys/time.h>
-#include <iomanip.h>
-
+//#include <sys/time.h>   //erased for sysdep.h
+//#include <iomanip.h>   erased for sysdep.h
+#include "sysdep.h"
 // #include "machdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 // #define LOG(A) A
 #define LOG(A)
@@ -98,7 +105,7 @@ private:
 public:
 	ITimer() : isInit(false) {}
 	void reset(){
-		assert(gettimeofday(&initT, NULL) != -1);
+//		assert(gettimeofday(&initT, NULL) != -1);
 		lastT = initT;
 		isInit = true;
 	}
@@ -107,7 +114,7 @@ public:
 			reset();
 		}
 		Timeval curT;
-		assert(gettimeofday(&curT, NULL) != -1);
+//		assert(gettimeofday(&curT, NULL) != -1);
 		float fromInit = subtract(curT, initT);
 		float fromLast = subtract(curT, lastT);
 		out << "time(" << fromInit << ", ";

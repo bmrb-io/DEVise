@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/09 00:55:15  donjerko
+  *** empty log message ***
+
   Revision 1.3  1997/06/16 16:05:18  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -27,6 +30,10 @@
 
 #ifndef RTREE_COMMON_H
 #define RTREE_COMMON_H
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 const int VolumeSize = 20*1024*1024;
 static const char* VolumeName = "RTREE";

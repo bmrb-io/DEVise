@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/06/27 23:15:41  donjerko
+# Changed date structure from tm to EncodedDTF.
+#
 # Revision 1.3  1997/05/29 15:22:36  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -33,6 +36,7 @@ depend:
 
 # DO NOT DELETE
 
+junk.o: sysdep.h /usr/include/varargs.h /usr/include/sys/va_list.h
 Attr.o: Attr.h /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 Attr.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
 Attr.o: /usr/include/limits.h /usr/include/sys/isa_defs.h PerlFrag.h
@@ -42,9 +46,11 @@ Attr.o: udParam.h RecId.h Schema.h /usr/include/unistd.h
 Attr.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 Attr.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
 Attr.o: /usr/include/sys/unistd.h Enum.h Comment.h Config.h UniData.h
-Attr.o: SlideBuf.h getftime.h DateTime.h /usr/include/assert.h
+Attr.o: SlideBuf.h getftime.h DateTime.h sysdep.h /usr/include/varargs.h
+Attr.o: /usr/include/assert.h
 Comment.o: Comment.h
-DateTime.o: DateTime.h /usr/include/time.h /usr/include/sys/feature_tests.h
+DateTime.o: sysdep.h /usr/include/varargs.h /usr/include/sys/va_list.h
+DateTime.o: DateTime.h
 Enum.o: Enum.h /usr/include/string.h /usr/include/sys/feature_tests.h Attr.h
 Enum.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
 Enum.o: /usr/include/limits.h /usr/include/sys/isa_defs.h PerlFrag.h
@@ -66,7 +72,8 @@ Schema.o: /usr/include/sys/select.h /usr/include/sys/time.h
 Schema.o: /usr/include/time.h /usr/include/sys/unistd.h Attr.h
 Schema.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
 Schema.o: /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h Config.h
-Schema.o: Token.h getftime.h DateTime.h /usr/include/assert.h
+Schema.o: Token.h getftime.h DateTime.h sysdep.h /usr/include/varargs.h
+Schema.o: /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
@@ -99,11 +106,13 @@ UniData.o: /usr/include/sys/va_list.h /usr/include/math.h
 UniData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h DateTime.h /usr/include/assert.h
+UniData.o: getftime.h DateTime.h sysdep.h /usr/include/varargs.h
+UniData.o: /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/sys/feature_tests.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
-getftime.o: /usr/include/time.h DateTime.h
+getftime.o: /usr/include/time.h DateTime.h sysdep.h /usr/include/varargs.h
+getftime.o: /usr/include/sys/va_list.h
 pmain.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 pmain.o: /usr/include/sys/va_list.h /usr/include/math.h
 pmain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h PerlFrag.h
@@ -133,4 +142,4 @@ umain.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
 umain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 umain.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
 umain.o: /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h Config.h
-umain.o: udParam.h getftime.h DateTime.h
+umain.o: udParam.h getftime.h DateTime.h sysdep.h /usr/include/varargs.h

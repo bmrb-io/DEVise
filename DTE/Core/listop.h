@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/21 21:04:31  donjerko
+  Implemented view materialization
+
   Revision 1.9  1997/07/30 21:39:24  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -44,13 +47,18 @@
 
 #include <assert.h>
 #include <string>
-#include <iostream.h>
-#include <fstream.h>
-#include <strstream.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <fstream.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
 #include "queue.h"
 #include "Array.h"
 #include "types.h"
 #include "exception.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 #define APPLY(FUNC, LIST){\
      LIST->rewind();\

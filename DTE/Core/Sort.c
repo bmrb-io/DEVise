@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/15 00:17:34  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.12  1997/08/14 02:08:53  donjerko
   Index catalog is now an independent file.
 
@@ -308,7 +311,7 @@ Iterator* Sort::createExec(){
 	cerr << endl;
 #endif
 
-	GeneralPtr** comparePtrs  = new (GeneralPtr *)[numFlds];
+	GeneralPtr** comparePtrs  = new GeneralPtr*[numFlds];
 	TypeID retVal;  // is a dummy	       
 	for (int i=0; i < numFlds; i++){
 		TypeID tp = attrTypes[i];

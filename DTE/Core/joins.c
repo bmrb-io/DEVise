@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/21 21:04:30  donjerko
+  Implemented view materialization
+
   Revision 1.9  1997/07/30 21:39:23  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -38,20 +41,20 @@ void Joins::typify(string  option){
         tmpL->append(site1);
         tmpL->append(site2);
         if(mySelect == NULL){
-            mySelect = createSelectList(name, iterator);
+            mySelect = createSelectList(name, iterat);
         }
         else{
-            TRY(typifyList(mySelect, tmpL), );
+            TRY(typifyList(mySelect, tmpL), NVOID );
         }
         numFlds = mySelect->cardinality();
-          TRY(typifyList(myWhere, tmpL), );
+          TRY(typifyList(myWhere, tmpL), NVOID );
         double selectivity = listSelectivity(myWhere);
         int card1 = site1->getStats()->cardinality;
         int card2 = site2->getStats()->cardinality;
         int cardinality = int(selectivity * card1 * card2);
         int* sizes = sizesFromList(mySelect);
         stats = new Stats(numFlds, sizes, cardinality);
-        TRY(boolCheckList(myWhere), );
+        TRY(boolCheckList(myWhere), NVOID );
 
 	string * leftorder = left->getOrderingAttrib();
 	string * rightorder = right->getOrderingAttrib();
@@ -59,7 +62,7 @@ void Joins::typify(string  option){
 	const TypeID * rightIDs = right->getTypeIDs();
 	
 	if (!leftorder || !rightorder){
-		THROW(new Exception("Cannot do composition on non sequences"),);
+		THROW(new Exception("Cannot do composition on non sequences"), NVOID );
 	}
 	string *  leftAttribNameList = left->getAttNamesOnly();
 	string *  rightAttribNameList = right->getAttNamesOnly();
@@ -74,7 +77,7 @@ void Joins::typify(string  option){
 		}
 	}
 	if (i >= leftCountFlds){
-		THROW(new Exception(" Ordering attribute not projected "),);
+		THROW(new Exception(" Ordering attribute not projected "), NVOID );
 	}
 	for(i = 0;i < rightCountFlds;i++){
 		if (rightAttribNameList[i] == *rightorder){
@@ -83,21 +86,21 @@ void Joins::typify(string  option){
 		}
 	}
 	if (i >= rightCountFlds){
-		THROW(new Exception(" Ordering attribute not projected "),);
+		THROW(new Exception(" Ordering attribute not projected "), NVOID );
 	}
 	
 	string retVal;
 	TRY(leftequalPtr = getOperatorPtr("=",leftIDs[leftSeqAttrPos],
-			leftIDs[leftSeqAttrPos],retVal),);
+			leftIDs[leftSeqAttrPos],retVal), NVOID );
 	TRY(rightequalPtr = getOperatorPtr("=",rightIDs[leftSeqAttrPos],
-			rightIDs[leftSeqAttrPos],retVal),);
+			rightIDs[leftSeqAttrPos],retVal), NVOID );
 	if (*function == "joinprev"){
 		TRY(comparePtr = getOperatorPtr(">",leftIDs[leftSeqAttrPos],
-			rightIDs[rightSeqAttrPos],retVal),);
+			rightIDs[rightSeqAttrPos],retVal), NVOID );
 	}
 	else{
 		TRY(comparePtr = getOperatorPtr("<",leftIDs[leftSeqAttrPos],
-			rightIDs[rightSeqAttrPos],retVal),);
+			rightIDs[rightSeqAttrPos],retVal), NVOID );
 	}
 
 }

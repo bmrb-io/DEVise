@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/08/22 23:13:02  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.1  1997/08/10 20:30:54  donjerko
   Fixed the NO_RTREE option.
 
@@ -40,14 +43,14 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
+//#include<iostream.h>   erased for sysdep.h
+//#include<memory.h>   erased for sysdep.h
 #include <string>
 #include<assert.h>
 #include<math.h>
-#include<stdlib.h>
-#include<stdio.h>	// for perror
-#include<errno.h>
+//#include<stdlib.h>   erased for sysdep.h
+//#include<stdio.h>	// for perror   erased for sysdep.h
+//#include<errno.h>   erased for sysdep.h
 
 #include "queue.h"
 #include "myopt.h"
@@ -60,6 +63,7 @@
 #include "Utility.h"
 #include "Iterator.h"
 #include "Aggregates.h"
+#include "sysdep.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)

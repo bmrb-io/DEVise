@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/21 21:04:21  donjerko
+  Implemented view materialization
+
   Revision 1.7  1997/08/14 02:08:51  donjerko
   Index catalog is now an independent file.
 
@@ -40,8 +43,13 @@
 #ifndef INSERTER_H
 #define INSERTER_H
 
-#include<iostream.h>
+//#include<iostream.h>   erased for sysdep.h
 #include "types.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class Inserter {
 	ostream* out;
@@ -62,7 +70,7 @@ public:
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;
-		TRY(writePtrs = newWritePtrs(typeIDs, numFlds), );
+		TRY(writePtrs = newWritePtrs(typeIDs, numFlds), NVOID );
 	}
 	void insert(const Tuple* tuple){ // throws
 		assert(out);

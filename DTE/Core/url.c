@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/21 21:04:38  donjerko
+  Implemented view materialization
+
   Revision 1.5  1997/04/26 13:59:03  donjerko
   Fixed the extraction of header.
 
@@ -66,7 +69,7 @@ istream* URL::getInputStream(){
 
 		// have to GET this file
 
-		ostrstream reqStream;
+		ostringstream reqStream;
 		reqStream << "GET " << file << " HTTP/1.0\r\n\r\n" ;
 		sendRequest(reqStream);
 	}
@@ -105,13 +108,14 @@ void URL::parseURL(){	// Throws: unknown URL protocol
 	}
 	else{
 		string msg = "Unknow protocol: " + string(url);
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 }
 
-ostrstream* URL::encode(strstream& input){
-	ostrstream* encoded = new ostrstream();
-	int len = input.pcount();
+ostringstream* URL::encode(stringstream& input){
+	ostringstream* encoded = new ostringstream();
+	string inputS = input.str();
+	int len = inputS.length();
 	char c;
 	for(int i = 0; i < len; i++){
 		input.get(c);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/21 21:04:30  donjerko
+  Implemented view materialization
+
   Revision 1.6  1997/06/16 16:04:49  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -30,6 +33,10 @@
 #define JOINS_H
 
 #include "site.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class Joins:public SiteGroup{
 		

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.75  1997/08/28 18:23:04  wenger
+# Re-made solaris dependencies.
+#
 # Revision 1.74  1997/07/16 16:14:42  wenger
 # Updated solaris, sun, and hp dependencies; removed .bak files that
 # somehow got committed.
@@ -1155,10 +1158,7 @@ ParseCat.o: /usr/include/assert.h /usr/include/sys/stat.h FileIndex.h
 ParseCat.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ParseCat.o: ../DTE/DeviseSpecific/TDataDQLInterp.h
 ParseCat.o: ../DTE/DeviseSpecific/TDataDQL.h ../DTE/Core/queue.h
-ParseCat.o: ../DTE/Core/Engine.h ../DTE/Core/types.h ../DTE/Core/exception.h
-ParseCat.o: ../DTE/Core/Utility.h ../DTE/Core/site.h ../DTE/Core/myopt.h
-ParseCat.o: ../DTE/Core/url.h ../DTE/Core/SockStream.h ../DTE/Core/listop.h
-ParseCat.o: ../DTE/Core/Array.h ../DTE/Core/Iterator.h
+ParseCat.o: ../DTE/Core/types.h ../DTE/Core/exception.h ../DTE/Core/Utility.h
 ParseCat.o: ../DTE/DeviseSpecific/TuplePtr.XPlex.h
 ParseCat.o: ../DTE/DeviseSpecific/TuplePtr.Plex.h /usr/include/std.h
 ParseCat.o: ../DTE/DeviseSpecific/TuplePtr.defs.h /usr/include/stddef.h
@@ -1550,11 +1550,8 @@ TDataAsciiInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataAsciiInterp.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
 TDataAsciiInterp.o: ../DTE/DeviseSpecific/TDataDQLInterp.h
 TDataAsciiInterp.o: ../DTE/DeviseSpecific/TDataDQL.h ../DTE/Core/queue.h
-TDataAsciiInterp.o: ../DTE/Core/Engine.h ../DTE/Core/types.h
-TDataAsciiInterp.o: ../DTE/Core/exception.h ../DTE/Core/Utility.h
-TDataAsciiInterp.o: ../DTE/Core/site.h ../DTE/Core/myopt.h ../DTE/Core/url.h
-TDataAsciiInterp.o: ../DTE/Core/SockStream.h ../DTE/Core/listop.h
-TDataAsciiInterp.o: ../DTE/Core/Array.h ../DTE/Core/Iterator.h
+TDataAsciiInterp.o: ../DTE/Core/types.h ../DTE/Core/exception.h
+TDataAsciiInterp.o: ../DTE/Core/Utility.h
 TDataAsciiInterp.o: ../DTE/DeviseSpecific/TuplePtr.XPlex.h
 TDataAsciiInterp.o: ../DTE/DeviseSpecific/TuplePtr.Plex.h /usr/include/std.h
 TDataAsciiInterp.o: ../DTE/DeviseSpecific/TuplePtr.defs.h
@@ -2935,7 +2932,8 @@ ParseAPI.o: /usr/include/sys/time.h /usr/include/time.h
 ParseAPI.o: ../graphics/ClassDir.h ../DTE/DeviseSpecific/TDataDQL.h
 ParseAPI.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 ParseAPI.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-ParseAPI.o: ../graphics/Pattern.h ../DTE/Core/queue.h TData.h RecId.h
+ParseAPI.o: ../graphics/Pattern.h ../DTE/Core/queue.h ../DTE/Core/types.h
+ParseAPI.o: ../DTE/Core/exception.h ../DTE/Core/Utility.h TData.h RecId.h
 ParseAPI.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 ParseAPI.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 ParseAPI.o: /usr/include/sys/unistd.h /usr/include/errno.h
@@ -2956,11 +2954,7 @@ ParseAPI.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 ParseAPI.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 ParseAPI.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 ParseAPI.o: /usr/include/sys/byteorder.h FileIndex.h ../graphics/AttrList.h
-ParseAPI.o: ../graphics/Init.h ../graphics/BufPolicy.h ../DTE/Core/Engine.h
-ParseAPI.o: ../DTE/Core/types.h ../DTE/Core/exception.h ../DTE/Core/Utility.h
-ParseAPI.o: ../DTE/Core/site.h ../DTE/Core/myopt.h ../DTE/Core/url.h
-ParseAPI.o: /usr/include/unistd.h ../DTE/Core/SockStream.h
-ParseAPI.o: ../DTE/Core/listop.h ../DTE/Core/Array.h ../DTE/Core/Iterator.h
+ParseAPI.o: ../graphics/Init.h ../graphics/BufPolicy.h
 ParseAPI.o: ../DTE/DeviseSpecific/TuplePtr.XPlex.h
 ParseAPI.o: ../DTE/DeviseSpecific/TuplePtr.Plex.h /usr/include/std.h
 ParseAPI.o: ../DTE/DeviseSpecific/TuplePtr.defs.h /usr/include/stddef.h

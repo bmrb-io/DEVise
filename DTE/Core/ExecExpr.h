@@ -4,6 +4,10 @@
 #include <assert.h>
 #include "types.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class ExecExpr {
 public:
 	virtual ~ExecExpr() {};

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/22 23:13:03  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.3  1996/12/21 22:21:45  donjerko
   Added hierarchical namespace.
 
@@ -35,16 +38,21 @@
 #ifndef _SOCKSTREAM_H_
 #define _SOCKSTREAM_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+//#include <stdio.h>   erased for sysdep.h
+//#include <stdlib.h>   erased for sysdep.h
+//#include <unistd.h>   erased for sysdep.h
 #include <string>
 
-#include <sys/types.h>
-#include <stdarg.h>
+//#include <sys/types.h>   erased for sysdep.h
+//#include <stdarg.h>   erased for sysdep.h
 
-#include <iostream.h>
-#include <fstream.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <fstream.h>   erased for sysdep.h
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 //**************************************************************************
 
@@ -116,7 +124,6 @@ class Cor_sockbuf : public streambuf {
     int get_buffer_size;
     int put_buffer_size;
 
-    Cor_sockbuf();
     Cor_sockbuf(const Cor_sockbuf& other);
     Cor_sockbuf& operator=(const Cor_sockbuf& other);
 };

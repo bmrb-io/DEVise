@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/08/25 15:28:10  donjerko
+  Added minmax table
+
   Revision 1.34  1997/08/22 23:13:03  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -90,12 +93,13 @@
 #include "MinMax.h"
 #include "Interface.h"
 
-#include<iostream.h>
-#include<memory.h>
+//#include<iostream.h>   erased for sysdep.h
+//#include<memory.h>   erased for sysdep.h
 #include <string>
 #include<assert.h>
 #include<math.h>
-#include<stdlib.h>
+//#include<stdlib.h>   erased for sysdep.h
+#include "sysdep.h"
 
 class ExecExpr;
 
@@ -109,7 +113,7 @@ LOG(ofstream logFile("log_file.txt");)
 void QueryTree::resolveNames(){	// throws exception
      if(tableList->cardinality() > 1){
           string msg = "cannot resolve attribute referencies";
-          THROW(new Exception(msg), );
+          THROW(new Exception(msg), NVOID );
      }
      else{
           tableList->rewind();
@@ -231,7 +235,7 @@ Site* QueryTree::createSite(){
 		}
 	}
 	// Need to fix a mamimum for this..
-	Aggregates **aggregates =new (Aggregates*)[MAX_AGG];
+	Aggregates **aggregates =new Aggregates*[MAX_AGG];
 	int count = 0;
     aggregates[count] = 
     	new Aggregates(selectList,sequenceby,withPredicate,groupBy);

@@ -20,6 +20,10 @@
 
 #include "types.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class Iterator {
 public:
      virtual void initialize(){}
@@ -38,7 +42,7 @@ public:
      }
      virtual void reset(int lowRid, int highRid){
           string msg = "reset not implemented for this reader";
-          THROW(new Exception(msg), );
+          THROW(new Exception(msg), NVOID );
      }
 	virtual void finalize(){}
 	virtual ~Iterator(){}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/08/21 21:04:52  donjerko
+  Implemented view materialization
+
   Revision 1.19  1997/08/09 00:55:03  donjerko
   Added indexing of select-project unmaterialized views.
 
@@ -114,7 +117,8 @@ TDataDQL::TDataDQL(
 	_types(types),
 	_sizes(sizes),
 	_attributeNames(NULL),
-	_marshalPtrs(NULL)
+	_marshalPtrs(NULL),
+	engine(NULL)
 {
   
 #ifdef DEBUG
@@ -136,11 +140,14 @@ void TDataDQL::runQuery(){
 	cerr << ".";
 #endif
 
+	if(!engine){
+		engine = new Engine;
+	}
 	Timer::StopTimer();
-     TRY(engine.optimize(_query), );
-     assert(_numFlds == engine.getNumFlds() / 2);
+     TRY(engine->optimize(_query), );
+     assert(_numFlds == engine->getNumFlds() / 2);
 	_types = new TypeID[_numFlds];
-	const TypeID* tmpTypes = engine.getTypeIDs();
+	const TypeID* tmpTypes = engine->getTypeIDs();
 	for(int i = 0; i < _numFlds; i++){
 		_types[i] = tmpTypes[2 * i];
 	}
@@ -155,8 +162,8 @@ void TDataDQL::runQuery(){
 	}
      Tuple* tup;
 
-	engine.initialize();
-	const Tuple* firstTup = engine.getNext();
+	engine->initialize();
+	const Tuple* firstTup = engine->getNext();
 	if(!firstTup){
 		cout << "Empty result set" << endl;
 	}
@@ -228,6 +235,7 @@ void TDataDQL::runQuery(){
 TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : 
 	_attrs(tableName), 
 	_attributeNames(NULL),
+	engine(NULL),
 	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
 	_tableName = strdup(tableName);
 	_marshalPtrs = NULL;
@@ -272,6 +280,7 @@ TDataDQL::~TDataDQL()
   printf("TDataDQL destructor\n");
 #endif
 	delete [] _marshalPtrs;
+	delete engine;
 }
 
 Boolean TDataDQL::CheckFileStatus()
@@ -349,7 +358,10 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
 	cumRecs += highVal - lowVal + 1;
 #endif
 
-  engine.optimize(query);
+  if(!engine){
+  	engine = new Engine;
+  }
+  engine->optimize(query);
 CATCH(
      cout << "DTE error coused by query: \n";
      cout << "   " << query << endl;
@@ -359,7 +371,7 @@ CATCH(
      exit(0);
 )
 
-  engine.initialize();
+  engine->initialize();
   return req;
   } // end of recId stuff
   
@@ -502,7 +514,7 @@ TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 
   while(counter < numRecs){
 
-		tuple = engine.getNext();
+		tuple = engine->getNext();
 		assert(tuple);
 		for(int j = 0; j < _numFlds; j++){
 			#if 0 

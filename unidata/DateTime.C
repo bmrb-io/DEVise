@@ -1,6 +1,8 @@
-#include <iostream.h>
-#include <strstream.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
+#include "sysdep.h"
 #include "DateTime.h"
+#include <string>
 
 const char *months[] = {
 	"January", "February", "March", "April", "May", "June", "July",
@@ -14,9 +16,10 @@ const int month_days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31} ;
 const int s_sec = 1000000 ;
      
 char* IntervalYM::Write_Data(){
-	ostrstream tmp;
+	ostringstream tmp;
 	tmp << "Year : " << year << " Month: " << month << " Plus ?: " << V_Plus << ends ;
-	return tmp.str();
+	string retst = tmp.str() ;
+	return strdup(retst.c_str()) ;
 }
 
 IntervalYM::IntervalYM(int c_year, int c_month, bool c_Plus) {
@@ -57,14 +60,15 @@ IntervalYM IntervalYM::operator +(const IntervalYM& arg) {
 	t_val1 *= (t_val1 >=0 ? 1 : -1) ;
 	r_y = int(t_val1/12) ;
 	r_m = t_val1 % 12 ;
-	IntervalYM ret_IYM(r_y,r_m,r_p) ;
+	IntervalYM ret_IYM(r_y,r_m,bool(r_p)) ;
 	return ret_IYM ;
 }
 
 char* IntervalDT::Write_Data(){
-	ostrstream tmp;
+	ostringstream tmp;
 	tmp << "Day : " << day  << " Hour : " << hour << " Minute : " << min << " Seconds : " << sec << " N Seconds : " << msec << " Min-Pos : " << V_Plus;
-	return tmp.str();
+	string retst = tmp.str() ;
+	return strdup(retst.c_str()) ;
 }
 
 IntervalDT::IntervalDT() {
@@ -134,21 +138,21 @@ IntervalDT IntervalDT::operator -(const IntervalDT& arg) {
 	   	}
 	}
 	else if (DT1 < 0 ) {
-		DT1 *= (-1LL) ;
+		DT1 *= (bigint)(-1) ;
 		T_P = 0 ;
 		if (DTS1 > 0) {
 			DT1 -- ;
 			DTS1 = s_sec - DTS1 ;
 	   	}
-	   	else if (DTS1 < 0) DTS1 *= (-1LL) ;
+	   	else if (DTS1 < 0) DTS1 *= (bigint)(-1) ;
 	}
 	else if (DTS1 < 0) {
 		T_P = 0 ;
-		DTS1 *= (-1LL) ;
+		DTS1 *= (bigint)(-1) ;
 	}
-	DTS2 = DT1 % 86400LL ;
-	t_day = int(DT1 / 86400LL) ;
-	t_hour = int(DTS2 / 3600LL) ;
+	DTS2 = DT1 % (bigint)(86400);
+	t_day = int(DT1 / (bigint)(86400)) ;
+	t_hour = int(DTS2 / (bigint)(3600)) ;
 	DTS2 = DTS2 % 3600 ;
 	t_min = int(DTS2 / 60) ;
 	DTS2 = DTS2 % 60 ;
@@ -173,21 +177,21 @@ IntervalDT IntervalDT::operator +(const IntervalDT& arg) {
 	   	}
 	}
 	else if (DT1 < 0 ) {
-	   	DT1 *= (-1LL) ;
+	   	DT1 *= (bigint)(-1) ;
 	   	T_P = 0 ;
 	   	if (DTS1 > 0) {
 		 	DT1 -- ;
 			DTS1 = s_sec - DTS1 ;
 	   	}
-	   	else if (DTS1 < 0) DTS1 *= (-1LL) ;
+	   	else if (DTS1 < 0) DTS1 *= (bigint)(-1) ;
 	}
 	else {
 	   	T_P = 0 ;
-	   	DT1 *= (-1LL) ;
+	   	DT1 *= (bigint)(-1) ;
 	}
-	DTS2 = DT1 % 86400LL ;
-	t_day = int(DT1 / 86400LL) ;
-	t_hour = int(DTS2 / 3600LL) ;
+	DTS2 = DT1 % (bigint)(86400);
+	t_day = int(DT1 / (bigint)(86400)) ;
+	t_hour = int(DTS2 / (bigint)(3600)) ;
 	DTS2 = DTS2 % 3600 ;
 	t_min = int(DTS2 / 60) ;
 	DTS2 = DTS2 % 60 ;
@@ -196,9 +200,10 @@ IntervalDT IntervalDT::operator +(const IntervalDT& arg) {
 }
 
 char* DateTime::Write_Data(){
-	ostrstream tmp;
+	ostringstream tmp;
 	tmp << "isBC : " << isBC << " year : " << year  << " month : " << month << " day : " << day << " elap_day : " << elap_day << " elap_month : " << elap_month << " current_day : " << Days[current_day] << " hour : " << hour << " minute : " << min << " seconds : " << sec << " m.seconds : "<< msec << ends ;
-	return tmp.str();
+	string retst = tmp.str() ;
+	return strdup(retst.c_str());
 }
 
 int DateTime::Get_Elap() const {
@@ -329,7 +334,7 @@ DateTime DateTime::operator -(const IntervalDT& arg) {
 		 	T_D1 -- ;
 		 	T_DM1 = msec - T_DM1 ;
 	   	}
-	   	T_D1 *= -1LL ;
+	   	T_D1 *= (bigint)(-1);
 	   	T_Plus = 0 ;
 	}
 	else if (( T_D1 > 0 ) && (T_DM1<0)) {
@@ -340,11 +345,11 @@ DateTime DateTime::operator -(const IntervalDT& arg) {
 		T_Plus -- ;
 		T_DM1 *= -1 ;
 	}
-	T_day = int(T_D1 / 86400LL) ;
-	T_D1 = T_D1 % 86400LL ;
+	T_day = int(T_D1 / (bigint)(86400)) ;
+	T_D1 = T_D1 % (bigint)(86400);
 	T_hour = int(T_D1 / 3600) ;
-	T_D1 = T_D1 % 3600LL ;
-	T_min = int(T_D1 / 60LL) ;
+	T_D1 = T_D1 % (bigint)(3600);
+	T_min = int(T_D1 / (bigint)(60)) ;
 	T_D1 = T_D1 % 60 ;
 	T_sec = int(T_D1) ;
 	IntervalDT Tem_IDT(T_day, T_hour, T_min, T_sec , T_DM1, T_Plus) ;
@@ -393,7 +398,7 @@ DateTime DateTime::operator +(const IntervalDT& arg) {
 			T_D1 -- ;
 		 	T_DM1 = msec - T_DM1 ;
 	   	}
-	   	T_D1 *= -1LL ;
+	   	T_D1 *= (bigint)(-1);
 	   	T_Plus = 0 ;
 	}
 	else if ( T_D1 > 0 ) {
@@ -406,11 +411,11 @@ DateTime DateTime::operator +(const IntervalDT& arg) {
 		T_Plus -- ;
 		T_DM1 *= -1 ;
 	}
-	T_day = int(T_D1 / 86400LL) ;
-	T_D1 = T_D1 % 86400LL ;
+	T_day = int(T_D1 / (bigint)(86400)) ;
+	T_D1 = T_D1 % (bigint)(86400);
 	T_hour = int(T_D1 / 3600) ;
-	T_D1 = T_D1 % 3600LL ;
-	T_min = int(T_D1 / 60LL) ;
+	T_D1 = T_D1 % (bigint)(3600);
+	T_min = int(T_D1 / (bigint)(60)) ;
 	T_D1 = T_D1 % 60 ;
 	T_sec = int(T_D1) ;
 	IntervalDT Tem_IDT(T_day, T_hour, T_min, T_sec , T_DM1, T_Plus) ;

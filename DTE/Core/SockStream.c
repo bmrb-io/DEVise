@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/22 23:13:03  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.6  1997/03/06 02:35:30  donjerko
   Undefined DEBUG
 
@@ -37,26 +40,26 @@
 //
 //**************************************************************************
 
-#include <stdlib.h>
-#include <unistd.h>
+//#include <stdlib.h>   erased for sysdep.h
+//#include <unistd.h>   erased for sysdep.h
+#include "sysdep.h"
 #include <string>
 // #include <netdb.h>
-#include "machdep.h"	// Could be removed in standalone case
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+//#include "machdep.h"	// Could be removed in standalone case
+//#include <sys/types.h>   erased for sysdep.h
+//#include <sys/errno.h>   erased for sysdep.h
+//#include <sys/socket.h>   erased for sysdep.h
+//#include <netinet/in.h>   erased for sysdep.h
+//#include <arpa/inet.h>   erased for sysdep.h
 
-#include <stdarg.h>
+//#include <stdarg.h>   erased for sysdep.h
 #include <assert.h>
 
 #include "SockStream.h"
 //#include "Identify.h"
 
 #ifdef ASYN_SOCK_REL
-#include <sys/time.h>
+//#include <sys/time.h>   erased for sysdep.h
 #endif
 
 extern int errno;

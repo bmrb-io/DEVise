@@ -270,13 +270,11 @@ Site* ViewInterface::getSite(){
 	TRY(engine->optimize(), NULL);
 	int numEngFlds = engine->getNumFlds();
 	if(numEngFlds != numFlds + 1){
-		ostrstream estr;
+		ostringstream estr;
 		estr << "Number of fields in the view (" << numFlds << ") ";
 		estr << "is not equal to the number in the query ";
 		estr << "(" << numEngFlds << ")" << ends;
-		char* e = estr.str();
-		string except(e);
-		delete e;
+		string except = estr.str();
 		THROW(new Exception(except), NULL);
 	}
 	return new LocalTable("", engine); 
@@ -294,14 +292,12 @@ const ISchema* QueryInterface::getISchema(TableName* table){
 	string* values = new string[count];
 	options[0] = "query";
 	options[1] = "execute";
-	strstream tmp;
+	stringstream tmp;
 	tmp << "schema ";
 	table->display(tmp);
 	tmp << ends;
-	char* tmpstr = tmp.str();
-	values[0] = string(tmpstr);
+	values[0] = tmp.str() ;
 	values[1] = "true";
-	delete tmpstr;
 	istream* in;
 	TRY(in = contactURL(urlString, options, values, count), NULL);
 	delete [] options;
@@ -422,15 +418,15 @@ void insert(string tableStr, Tuple* tuple){	// throws exception
 	Catalog* catalog = getRootCatalog();
 	assert(catalog);
 	TableName tableName(tableStr.c_str());
-	TRY(Interface* interf = catalog->createInterface(&tableName), );
+	TRY(Interface* interf = catalog->createInterface(&tableName), NVOID );
 	delete catalog;
-	TRY(Inserter* inserter = interf->getInserter(&tableName), );
+	TRY(Inserter* inserter = interf->getInserter(&tableName), NVOID );
 	delete interf;
 	inserter->insert(tuple);
 	delete inserter;
 }
 */
 
-CatalogInterface* CatalogInterface::duplicate() const {
+Interface* CatalogInterface::duplicate() const {
 	return new CatalogInterface(*this);
 }

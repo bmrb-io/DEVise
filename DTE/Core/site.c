@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/08/22 23:13:06  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.23  1997/08/21 21:04:35  donjerko
   Implemented view materialization
 
@@ -93,7 +96,7 @@
 
 class Iterator;
 
-Site::Site(string nm = "") : name(nm), iterator(NULL) {
+Site::Site(string nm = "") : name(nm), iterat(NULL) {
 	numFlds = 0;
 	tables = new set<string, ltstr>;
 	mySelect = NULL;
@@ -107,7 +110,7 @@ Site::Site(string nm = "") : name(nm), iterator(NULL) {
 Site::~Site(){
 //	cerr << "deleting select where lists\n";
 	delete tables;
-	delete iterator;
+	delete iterat;
 	if(mySelect){
 		for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
 //			mySelect->get()->destroy();
@@ -152,12 +155,12 @@ void LocalTable::addTable(TableAlias* tabName){
 	name = *alias;
 }
 
-List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterator){
-	assert(iterator);
-	int numFlds = iterator->getNumFlds();
-	const string* attNms = iterator->getAttributeNames();
-	const string* types = iterator->getTypeIDs();
-	Stats* stats = iterator->getStats();
+List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterat){
+	assert(iterat);
+	int numFlds = iterat->getNumFlds();
+	const string* attNms = iterat->getAttributeNames();
+	const string* types = iterat->getTypeIDs();
+	Stats* stats = iterat->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
@@ -182,12 +185,12 @@ List<BaseSelection*>* createSelectList(
 	return retVal;
 }
 
-List<BaseSelection*>* createSelectList(PlanOp* iterator){
-	assert(iterator);
-	int numFlds = iterator->getNumFlds();
-	const string* attNms = iterator->getAttributeNames();
-	const string* types = iterator->getTypeIDs();
-	Stats* stats = iterator->getStats();
+List<BaseSelection*>* createSelectList(PlanOp* iterat){
+	assert(iterat);
+	int numFlds = iterat->getNumFlds();
+	const string* attNms = iterat->getAttributeNames();
+	const string* types = iterat->getTypeIDs();
+	Stats* stats = iterat->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
@@ -211,22 +214,22 @@ void LocalTable::typify(string option){	// Throws exception
 	// option is ignored since the execution = profile + getNext
 
 //	LOG(logFile << "Header: ");
-//	LOG(iterator->display(logFile));	// iterator may be NULL
+//	LOG(iterat->display(logFile));	// iterat may be NULL
 
 	if(!directSite){
-		directSite = new DirectSite(name, iterator);
+		directSite = new DirectSite(name, iterat);
 	}
 
 	List<Site*>* tmpL = new List<Site*>;
 	tmpL->append(directSite);
-	TRY(typifyList(myWhere, tmpL), );
-	TRY(boolCheckList(myWhere), );
+	TRY(typifyList(myWhere, tmpL), NVOID );
+	TRY(boolCheckList(myWhere), NVOID );
 	if(mySelect == NULL){
 		assert(directSite);
-		mySelect = createSelectList(name, iterator);
+		mySelect = createSelectList(name, iterat);
 	}
 	else{
-		TRY(typifyList(mySelect, tmpL), );
+		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
 	numFlds = mySelect->cardinality();
 	setStats();
@@ -236,11 +239,11 @@ void LocalTable::typify(string option){	// Throws exception
 		string* function = ta->getFunction();
 		int shiftVal = ta->getShiftVal();
 		assert(!"Need to convert iterator to site");
-		assert(iterator);
+		assert(iterat);
 		assert(!"not implemented");
-		// iterator = new FunctionRead(iterator, function, shiftVal);
-		assert(iterator);
-		// TRY(iterator->initialize(), );
+		// iterat = new FunctionRead(iterat, function, shiftVal);
+		assert(iterat);
+		// TRY(iterat->initialize(), NVOID );
 	}
 }
 
@@ -287,9 +290,9 @@ istream* contactURL(string name,
 	for(int i = 0; i < count; i++){
 		*out << options[i];
 		*out << "=";
-		strstream tmp;
+		stringstream tmp;
 		tmp << values[i];
-		ostrstream* encoded = URL::encode(tmp);
+		ostringstream* encoded = URL::encode(tmp);
   		*out << encoded->rdbuf();
 		delete encoded;
 		if(i < count - 1){
@@ -315,7 +318,7 @@ istream* contactURL(string name,
 	}
 	char buff[100];
 	if(codeVal != 0){
-		ostrstream err;
+		ostringstream err;
 		err << code << endl;
 		while(*in){
 			in->read(buff, 100);
@@ -335,30 +338,28 @@ void Site::typify(string option){	// Throws an exception
 	string* values = new string[count];
 	options[0] = "query";
 	options[1] = option;
-	strstream tmp;
+	stringstream tmp;
 	display(tmp);
 	tmp << ends;
-	char* tmpstr = tmp.str();
-	values[0] = string(tmpstr);
-	delete tmpstr;
+	values[0] = tmp.str();
 	values[1] = "true";
 	istream* in;
-	TRY(in = contactURL(name, options, values, count), );
+	TRY(in = contactURL(name, options, values, count), NVOID );
 	delete [] options;
 	delete [] values;
-//	iterator = new StandardRead();	
+//	iterat = new StandardRead();	
 	assert(!"temporarily broken");
-	TRY(iterator->open(in), );
+	TRY(iterat->open(in), NVOID );
 	LOG(logFile << "Header: ");
-	LOG(iterator->display(logFile));
-	stats = iterator->getStats();
+	LOG(iterat->display(logFile));
+	stats = iterat->getStats();
 	assert(stats);
-	numFlds = iterator->getNumFlds();
+	numFlds = iterat->getNumFlds();
 	if(mySelect == NULL){
-		mySelect = createSelectList(iterator);
+		mySelect = createSelectList(iterat);
 		return;
 	}
-	const TypeID* types = iterator->getTypeIDs();
+	const TypeID* types = iterat->getTypeIDs();
 	int* sizes = stats->fldSizes;
 	mySelect->rewind();
 	for(int i = 0; i < numFlds; i++){
@@ -388,7 +389,7 @@ void Site::display(ostream& out, int detail = 0){
 }
 
 void CGISite::typify(string option){	// Throws a exception
-	TRY(URL* url = new URL(urlString), );
+	TRY(URL* url = new URL(urlString), NVOID );
 	ostream* out = url->getOutputStream();
 	assert(myWhere);
 	myWhere->rewind();
@@ -417,14 +418,14 @@ void CGISite::typify(string option){	// Throws a exception
 		if(entry[i].value.empty()){
 			string err = "Option " + name + "." + entry[i].option + 
 				" has to be specified";
-			THROW(new Exception(err), );
+			THROW(new Exception(err), NVOID );
 		}
 	}
 
 	for(int i = 0; i < entryLen; i++){
-		strstream ss;
+		stringstream ss;
 		ss << entry[i].value;
-		ostrstream* encoded = URL::encode(ss);
+		ostringstream* encoded = URL::encode(ss);
 		*out << entry[i].option << "=" << encoded->rdbuf();
 		delete encoded;
 		if(i < entryLen - 1){
@@ -432,24 +433,24 @@ void CGISite::typify(string option){	// Throws a exception
 		}
 	}
 
-	TRY(istream* in = url->getInputStream(), );
+	TRY(istream* in = url->getInputStream(), NVOID );
 	delete url;
 	assert(in);
 	assert(in->good());
-	iterator = new NCDCRead();
-	assert(iterator);
-	TRY(iterator->open(in), );
+	iterat = new NCDCRead();
+	assert(iterat);
+	TRY(iterat->open(in), NVOID );
 
-	TRY(LocalTable::typify(option), );
+	TRY(LocalTable::typify(option), NVOID );
 
 }
 
 void LocalTable::writeOpen(int mode = ios::app){
 	if(fileToWrite == ""){
-		THROW(new Exception("This site is read only"), );
+		THROW(new Exception("This site is read only"), NVOID );
 	}
 	if(fout){
-		THROW(new Exception("Already opened"), );
+		THROW(new Exception("Already opened"), NVOID );
 	}
 	fout = new ofstream(fileToWrite.c_str(), mode);
 	assert(fout);
@@ -457,10 +458,10 @@ void LocalTable::writeOpen(int mode = ios::app){
 	writePtrs = new WritePtr[numFlds];
 	const TypeID* types = getTypeIDs();
 	for(int i = 0; i < numFlds; i++){
-		TRY(writePtrs[i] = getWritePtr(types[i]), );
+		TRY(writePtrs[i] = getWritePtr(types[i]), NVOID );
 	}
 	if(mode == ios::out){
-		iterator->writeHeader(*fout);
+		iterat->writeHeader(*fout);
 	}
 }
 
@@ -564,7 +565,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			// Can use index, hook it directly to the indexscan
 
 			newAlt = new IndexScan(
-					name, mySelect, myWhere, currInd, iterator);
+					name, mySelect, myWhere, currInd, iterat);
 		}
 		else {
 
@@ -586,20 +587,20 @@ void SiteGroup::typify(string option){	// Throws exception
 	tmpL->append(site1);
 	tmpL->append(site2);
 	if(mySelect == NULL){
-		mySelect = createSelectList(name, iterator);
+		mySelect = createSelectList(name, iterat);
 	}
 	else{
-		TRY(typifyList(mySelect, tmpL), );
+		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
 	numFlds = mySelect->cardinality();
-	TRY(typifyList(myWhere, tmpL), );
+	TRY(typifyList(myWhere, tmpL), NVOID );
 	double selectivity = listSelectivity(myWhere);
 	int card1 = site1->getStats()->cardinality;
 	int card2 = site2->getStats()->cardinality;
 	int cardinality = int(selectivity * card1 * card2);
 	int* sizes = sizesFromList(mySelect);
 	stats = new Stats(numFlds, sizes, cardinality);
-	TRY(boolCheckList(myWhere), );
+	TRY(boolCheckList(myWhere), NVOID );
 }
 
 Iterator* LocalTable::createExec(){

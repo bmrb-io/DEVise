@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/21 21:04:26  donjerko
+  Implemented view materialization
+
   Revision 1.11  1997/08/14 02:08:53  donjerko
   Index catalog is now an independent file.
 
@@ -47,13 +50,18 @@
 #ifndef SORT_H
 #define SORT_H
 
-#include <fstream.h>
+//#include <fstream.h>   erased for sysdep.h
 
 #include "site.h"
 #include "Iterator.h"
 #include "StandardRead.h"
 #include "types.h"
 #include "PQueue.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 #define MAX_MEM         800000 
 #define NUM_RUNS       	1000
@@ -131,6 +139,7 @@ public:
      }
      virtual string *getOrderingAttrib(){
           assert(0);
+		return NULL;
      }
 
 	virtual Stats* getStats(){

@@ -1,5 +1,6 @@
-#include <stdlib.h>
+//#include <stdlib.h>   erased for sysdep.h
 
+#include "sysdep.h"
 #include "PQueue.h"
 
 void PQueue::enq(Node *newitem)

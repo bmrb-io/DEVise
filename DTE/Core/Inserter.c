@@ -4,16 +4,16 @@
 
 void Inserter::open(const ISchema& schema, string urlString, int mode)
 { // throws
-	TRY(URL* url = new URL(urlString), );
+	TRY(URL* url = new URL(urlString), NVOID );
 	numFlds = schema.getNumFlds();
 	const TypeID* types = schema.getTypeIDs();
-	TRY(writePtrs = newWritePtrs(types, numFlds), );
-	TRY(out = url->getOutputStream(mode), );
+	TRY(writePtrs = newWritePtrs(types, numFlds), NVOID );
+	TRY(out = url->getOutputStream(mode), NVOID );
 	delete url;
 }
 
 void Modifier::replace
-	(const string* key, const Type* object, const string* key2 = NULL)
+	(const string* key, const Type* object, const string* key2)
 {
 	int objIndex = (key2 == NULL ? 1 : 2);
 	ifstream* ins = new ifstream(fileName.c_str());
@@ -28,15 +28,15 @@ void Modifier::replace
 	const Tuple* tmpTuple;
 	List<Tuple*> tupleList;
 	TupleLoader tupleLoader;
-	TRY(tupleLoader.open(numFlds, schema.getTypeIDs()), );
-	TRY(tmpTuple = iter->getNext(), );
+	TRY(tupleLoader.open(numFlds, schema.getTypeIDs()), NVOID);
+	TRY(tmpTuple = iter->getNext(), NVOID);
 
 	bool isReplaced = false;
 	
 	Tuple* copy;
 	while(tmpTuple){
 		if(predicate(key, key2, tmpTuple)){
-			ConstTuple localTup[numFlds];
+			ConstTuple* localTup = new ConstTuple[numFlds];
 			for(int i = 0; i < numFlds; i++){
 				localTup[i] = tmpTuple[i];
 			}
@@ -48,7 +48,7 @@ void Modifier::replace
 			copy = tupleLoader.insert(tmpTuple);
 		}
 		tupleList.append(copy);
-		TRY(tmpTuple = iter->getNext(), );
+		TRY(tmpTuple = iter->getNext(), NVOID );
 	}
 	delete iter;
 	if(!isReplaced){
@@ -62,7 +62,7 @@ void Modifier::replace
 		tupleList.append(copy);
 	}
 	Inserter newFile;
-	TRY(newFile.open(schema, fileName, ios::out), );
+	TRY(newFile.open(schema, fileName, ios::out), NVOID );
 	for(tupleList.rewind(); !tupleList.atEnd(); tupleList.step()){
 		Tuple* tuple = tupleList.get();
 		newFile.insert(tuple);

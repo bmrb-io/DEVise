@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/08/25 15:28:16  donjerko
+  Added minmax table
+
   Revision 1.32  1997/08/22 23:13:06  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -90,6 +93,7 @@
 
  */
 
+#include "sysdep.h"
 #include "types.h"
 #include "exception.h"
 #include "Interface.h"
@@ -97,10 +101,12 @@
 #include "DateTime.h"
 #include "catalog.h" 	// for root catalog
 #include <string>
-#include <time.h>
-#include <strstream.h>
-#include <stdlib.h>
-#include <limits.h>
+//#include <time.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
+//#include <stdlib.h>   erased for sysdep.h
+//#include <limits.h>   erased for sysdep.h
+
+size_t MemoryLoader::PAGE_SZ = 1 * 1024;
 
 const DteEnvVars DTE_ENV_VARS;
 
@@ -456,75 +462,75 @@ void interfaceRead(istream& in, Type*& adt){
 	in >> typeNm;
 	if(!in){
 		string msg = "Interface name must be specified";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 	((Interface*) adt)->~Interface();	// calls the right destructor
-	Interface* interface;
+	Interface* interf;
 	if(typeNm == CatalogInterface::typeName){
-		interface = new (adt) CatalogInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) CatalogInterface();
+		TRY(interf->read(in), NVOID );
 		string semicolon;
 		in >> semicolon;
 		if(semicolon != ";"){
 			string msg = "Semicolon expected instead of: " + semicolon;
-			THROW(new Exception(msg), );
+			THROW(new Exception(msg), NVOID );
 		}
 		return;
 	}
 	if(typeNm == DeviseInterface::typeName){
-		interface = new (adt) DeviseInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) DeviseInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == StandardInterface::typeName){
-		interface = new (adt) StandardInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) StandardInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == QueryInterface::typeName){
-		interface = new (adt) QueryInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) QueryInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == CGIInterface::typeName){
-		interface = new (adt) CGIInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) CGIInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == ViewInterface::typeName){
-		interface = new (adt) ViewInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) ViewInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == DummyInterface::typeName){
-		interface = new (adt) DummyInterface();
-		TRY(interface->read(in), );
+		interf = new (adt) DummyInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == MaterViewInterface::typeName){
-		interface = (ViewInterface*) new (adt) MaterViewInterface();
-		TRY(interface->read(in), );
+		interf = (ViewInterface*) new (adt) MaterViewInterface();
+		TRY(interf->read(in), NVOID );
 	}
 	else{
-		interface = NULL;
+		interf = NULL;
 		string msg = "Interface type: " + typeNm + " not defined";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 	string indexStr;
 	in >> indexStr;
 	while(in && indexStr != ";"){
 		string msg = 
 			"Invalid catalog format: \"index\" or \";\" expected";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 	if(!in){
 		string msg = "Premature end of catalog";
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID );
 	}
 }
 
 void schemaRead(istream& in, Type*& adt){
-	TRY(((ISchema*) adt)->read(in), );
+	TRY(((ISchema*) adt)->read(in), NVOID );
 }
 
 void indexDescRead(istream& in, Type*& adt){
 	IndexDesc* tmp = new IndexDesc();	
 	memcpy(adt, tmp, sizeof(IndexDesc));
-	TRY(((IndexDesc*) adt)->read(in), );
+	TRY(((IndexDesc*) adt)->read(in), NVOID );
 }
 
 void intWrite(ostream& out, const Type* adt){
@@ -625,6 +631,7 @@ int packSize(const Type* adt, string type){
 	else{
 		cout << "Don't know how to pack type: " << type << endl;
 		assert(0);
+		return 0;
 	}
 }
 
@@ -721,6 +728,7 @@ MarshalPtr getMarshalPtr(string type){
 	else{
 		cout << "Don't know how to marshal type: " << type << endl;
 		assert(0);
+		return NULL;
 	}
 }
 
@@ -776,6 +784,7 @@ UnmarshalPtr getUnmarshalPtr(string type){
 	else{
 		cout << "Don't know how to unmarshal type: " << type << endl;
 		assert(0);
+		return NULL;
 	}
 }
 
@@ -854,6 +863,7 @@ ReadPtr getReadPtr(TypeID root){
 	else{
 		cout << "No such type: " << root << endl;
 		assert(0);
+		return NULL;
 	}
 }
 
@@ -924,11 +934,9 @@ string rTreeEncode(string type){
 		return "d";
 	}
 	else if(type.substr(0, 6) == "string"){
-		ostrstream tmp;
+		ostringstream tmp;
 		tmp << "s[" << packSize(type) << "]" << ends;
-		char* tmpc = tmp.str();
-		string retVal(tmpc);
-		delete tmpc;
+		string retVal = tmp.str() ;
 		return retVal;
 	}
 	else{
@@ -1017,12 +1025,13 @@ istream& IndexDesc::read(istream& in){
 	if(!in){
 		return in;
 	}
+	int i;
 	keyTypes = new TypeID[numKeyFlds];
 	keyFlds = new string[numKeyFlds];
-	for(int i = 0; i < numKeyFlds; i++){
+	for(i = 0; i < numKeyFlds; i++){
 		in >> keyTypes[i];
 	}
-	for(int i = 0; i < numKeyFlds; i++){
+	for(i = 0; i < numKeyFlds; i++){
 		in >> keyFlds[i];
 	}
 	in >> numAddFlds;
@@ -1031,10 +1040,10 @@ istream& IndexDesc::read(istream& in){
 	}
 	addFlds = new string[numAddFlds];
 	addTypes = new TypeID[numAddFlds];
-	for(int i = 0; i < numAddFlds; i++){
+	for(i = 0; i < numAddFlds; i++){
 		in >> addTypes[i];
 	}
-	for(int i = 0; i < numAddFlds; i++){
+	for(i = 0; i < numAddFlds; i++){
 		in >> addFlds[i];
 	}
 	in >> pointer;
@@ -1043,19 +1052,20 @@ istream& IndexDesc::read(istream& in){
 }
 
 void IndexDesc::display(ostream& out){
+	int i;
 	assert(out.good());
 	out << numKeyFlds << " ";
-	for(int i = 0; i < numKeyFlds; i++){
+	for(i = 0; i < numKeyFlds; i++){
 		out << keyTypes[i] << " ";
 	}
-	for(int i = 0; i < numKeyFlds; i++){
+	for(i = 0; i < numKeyFlds; i++){
 		out << keyFlds[i] << " ";
 	}
 	out << numAddFlds << " ";
-	for(int i = 0; i < numAddFlds; i++){
+	for(i = 0; i < numAddFlds; i++){
 		out << addTypes[i] << " ";
 	}
-	for(int i = 0; i < numAddFlds; i++){
+	for(i = 0; i < numAddFlds; i++){
 		out << addFlds[i] << " ";
 	}
 	out << pointer << " ";
@@ -1073,13 +1083,14 @@ void ISchema::write(ostream& out){
 ISchema::ISchema
 	(int numFlds, const TypeID* typeIDs, const string* attributeNames)
 {
+	int i;
 	this->numFlds = numFlds;
 	this->typeIDs = new TypeID[numFlds];
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		this->typeIDs[i] = typeIDs[i];
 	}
 	this->attributeNames = new string[numFlds];
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		this->attributeNames[i] = attributeNames[i];
 	}
 }
@@ -1148,7 +1159,7 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 
 void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types){ // throws
 	for(int i = 0; i < numFlds; i++){
-		TRY(DestroyPtr destroyer = getDestroyPtr(types[i]), );
+		TRY(DestroyPtr destroyer = getDestroyPtr(types[i]), NVOID );
 		destroyer(tuple[i]);
 	}
 }
@@ -1558,7 +1569,7 @@ istream& operator>>(istream& in, ISchema& s){
 ISchema::ISchema(const string& str) :
 	typeIDs(NULL), attributeNames(NULL) {
 //	istrstream in(strdup(str.c_str()));
-	istrstream in(str.c_str());	// trying to free the string??
+	istringstream in(str.c_str());	// trying to free the string??
 	in >> *this;
 }
 

@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/08/25 15:28:13  donjerko
+  Added minmax table
+
   Revision 1.18  1997/08/22 23:13:06  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -66,9 +69,10 @@
 
 %{
 #include <string>
-#include <stdlib.h>
+#include <string>
+//#include <stdlib.h>   erased for sysdep.h
 #include <assert.h>
-#include <memory.h>
+//#include <memory.h>   erased for sysdep.h
 #include "myopt.h"
 #include "ParseTree.h"
 #include "my.yacc.tab.h"

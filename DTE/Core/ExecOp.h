@@ -6,6 +6,10 @@
 #include "ExecExpr.h"
 #include "Iterator.h"	 // for Iterator
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class RTreeReadExec;
 
 class SelProjExec : public Iterator {

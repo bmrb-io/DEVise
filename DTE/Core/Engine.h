@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/08/21 21:04:17  donjerko
+  Implemented view materialization
+
   Revision 1.16  1997/08/12 19:58:38  donjerko
   Moved StandardTable headers to catalog.
 
@@ -64,7 +67,13 @@
 #include "types.h"
 #include "site.h"
 #include "Iterator.h"
-#include <strstream.h>
+//#include <strstream.h>   erased for sysdep.h
+
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class Engine : public PlanOp {
 protected:
@@ -109,12 +118,12 @@ public:
 		return topNode->getStats();
 	}
 	void reset(int lowRid, int highRid){
-		TRY(topNodeIt->reset(lowRid, highRid), );
+		TRY(topNodeIt->reset(lowRid, highRid), NVOID );
 	}
 	void initialize(){
 		assert(getNumFlds() != 0);
 		assert(topNodeIt == NULL);
-		TRY(topNodeIt = topNode->createExec(), );
+		TRY(topNodeIt = topNode->createExec(), NVOID );
 		assert(topNodeIt);
 		topNodeIt->initialize();
 	}

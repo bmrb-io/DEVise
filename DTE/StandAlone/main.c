@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/23 19:41:40  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.14  1997/08/21 21:04:57  donjerko
   Implemented view materialization
 
@@ -38,8 +41,8 @@
 
  */
 
-#include <iostream.h>
-#include <memory.h>
+//#include <iostream.h>   erased for sysdep.h
+//#include <memory.h>   erased for sysdep.h
 #include <assert.h>
 #include <math.h>
 #include "types.h"
@@ -47,6 +50,7 @@
 #include "Engine.h"
 #include "RTreeCommon.h"
 #include <string>
+#include "sysdep.h"
 
 const int DETAIL = 1;
 

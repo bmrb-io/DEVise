@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/21 21:04:25  donjerko
+  Implemented view materialization
+
   Revision 1.11  1997/08/10 20:30:56  donjerko
   Fixed the NO_RTREE option.
 
@@ -44,6 +47,10 @@
 #include "myopt.h"
 #include "Iterator.h"
 #include "StandardRead.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class gen_key_t;
 class genrtree_m;
@@ -96,15 +103,15 @@ struct RTreePred {
 	}
 	void setTypeID(TypeID t){
 		typeID = t;
-		TRY(Type* negInf = createNegInf(typeID), );
-		TRY(Type* posInf = createPosInf(typeID), );
+		TRY(Type* negInf = createNegInf(typeID), NVOID );
+		TRY(Type* posInf = createPosInf(typeID), NVOID );
 		values[0] = new ConstantSelection(typeID, negInf);
 		values[1] = new ConstantSelection(typeID, posInf);
 	}
 	void update(string opName, BaseSelection* constant){ // throws
 		assert(constant->selectID() == CONST_ID);
 		ConstantSelection* cconstant = (ConstantSelection*) constant;
-		TRY(cconstant = cconstant->promote(typeID), );
+		TRY(cconstant = cconstant->promote(typeID), NVOID );
 		assert(cconstant->getTypeID() == typeID);
 		RTreePred tmp(opName, cconstant);
 		intersect(tmp);

@@ -140,7 +140,7 @@ Iterator* Aggregates::createExec(){
 	assert(inputPlanOp);
 	TRY(Iterator* inputIter = inputPlanOp->createExec(), NULL);
 	assert(inputIter);
-	ExecAggregate** aggExecs = new (ExecAggregate*)[numFlds];
+	ExecAggregate** aggExecs = new ExecAggregate*[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		assert(aggFuncs[i]);
 		aggExecs[i] = aggFuncs[i]->createExec();
@@ -163,19 +163,20 @@ void StandAggsExec::initialize(){
 
 const Tuple* StandAggsExec::getNext(){
 	const Tuple* currt = inputIter->getNext();
+	int i;
 	if(!currt){
 		return NULL;
 	}
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		aggExecs[i]->initialize(currt[i]);
 	}
 	while((currt = inputIter->getNext())){
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			aggExecs[i]->update(currt[i]);
 		}
 	}
 
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		retTuple[i] = aggExecs[i]->getValue();
 	}
 	return retTuple;
@@ -189,21 +190,22 @@ void StandGroupByExec::initialize(){
 
 const Tuple* StandGroupByExec::getNext(){
 
+	int i;
 	if(!currInTup){
 		return NULL;
 	}
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		aggExecs[i]->initialize(currInTup[i]);
 	}
 	currInTup = inputIter->getNext();
 	while(currInTup && !isNewGroup(currInTup)){
-		for(int i = 0; i < numAggs; i++){
+		for(i = 0; i < numAggs; i++){
 			aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 		}
 		currInTup = inputIter->getNext();
 	}
 
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		retTuple[i] = aggExecs[i]->getValue();
 	}
 	return retTuple;

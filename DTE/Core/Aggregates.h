@@ -5,6 +5,10 @@
 #include "myopt.h"
 #include "site.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class ExecAggregate {
 public:
   virtual void initialize(const Type* input) = 0;
@@ -27,7 +31,7 @@ public:
 	bool isDifferent(const Type* newVal){
 		Type* cmp;
 		eqPtr(prevGroup, newVal, cmp);
-		return !((bool) cmp);
+		return !(cmp ? true : false);
 	}
 
 	virtual void initialize(const Type* input){
@@ -212,7 +216,7 @@ public:
     return typeID;
   }
 
-  ExecMinMax* createExec(){
+  ExecAggregate* createExec(){
     ADTCopyPtr copyPtr;
     TRY(copyPtr = getADTCopyPtr(typeID), NULL);
 
@@ -353,7 +357,7 @@ public:
     return typeID;
   }
 
-  virtual ExecGroupAttr* createExec(){
+  virtual ExecAggregate* createExec(){
     ADTCopyPtr copyPtr;
     TRY(copyPtr = getADTCopyPtr(typeID), NULL);
     
@@ -392,7 +396,7 @@ public:
 
 	// Need to check this..
 	virtual void reset(int lowRid, int highRid){
-		TRY(inputIter->reset(lowRid, highRid), );
+		TRY(inputIter->reset(lowRid, highRid), NVOID );
 	}
 };
 
@@ -442,7 +446,7 @@ public:
   
   // Need to check this..
   virtual void reset(int lowRid, int highRid){
-    TRY(inputIter->reset(lowRid, highRid), );
+    TRY(inputIter->reset(lowRid, highRid), NVOID );
   }
 
 private:
@@ -488,7 +492,7 @@ public:
 		Site::mySelect = selList;
 		if(selList){
 			numFlds = selList->cardinality();
-			aggFuncs = new (Aggregate*)[numFlds];
+			aggFuncs = new Aggregate*[numFlds];
 			typeIDs = new TypeID[numFlds];
 			for(int i = 0; i < numFlds; i++){
 			  aggFuncs[i] = NULL;
@@ -525,12 +529,12 @@ public:
 	}
 	virtual void typify(const string& name, Site* inputPlanOp);
 	
-	virtual TypeID* getTypeIDs(){
+	virtual const TypeID* getTypeIDs(){
 		return typeIDs;
 	}
 
 	virtual string *getOrderingAttrib(){
-		return iterator->getOrderingAttrib();
+		return iterat->getOrderingAttrib();
 	}
 	Iterator* createExec();
 };

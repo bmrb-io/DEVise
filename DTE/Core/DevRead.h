@@ -19,10 +19,15 @@
 #ifndef UNIDATA_READ_H
 #define UNIDATA_READ_H
 
-#include <iostream.h>
+//#include <iostream.h>   erased for sysdep.h
 #include <string>
 #include "types.h"
 #include "Iterator.h"
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 const int BUFSZE = 2048;
 
@@ -131,12 +136,13 @@ public:
 		return out;
 	}
 	virtual void writeHeader(ostream& out){
+		int i;
 		out << numFlds << " ";
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			out << typeIDs[i] << " ";
 		}
 		cout << endl;
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			out << attributeNames[i] << " ";
 		}
 		out << ";" << endl;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/07/30 21:39:25  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.10  1997/06/16 16:04:53  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -53,8 +56,13 @@
 #endif
 
 #include <assert.h>
-#include <stdio.h>
-#include <iostream.h>
+// #include <stdio.h>   erased for sysdep.h
+// #include <iostream.h>   erased for sysdep.h
+#include "sysdep.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 template <class T>
 class List{
@@ -249,7 +257,7 @@ public:
 	}
 
 	void display(){
-		
+/*		
 		Cell * curr = head;
 		int i = 0;
 		cout << " The pointer values are -- ";
@@ -259,6 +267,7 @@ public:
 			curr = curr->next;
 		}
 		cout << endl;
+*/
 	}
 };
 

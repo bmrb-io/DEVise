@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/08/22 23:13:01  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.16  1997/08/21 21:04:16  donjerko
   Implemented view materialization
 
@@ -60,11 +63,12 @@
 
  */
 
-#include<memory.h>
+//#include<memory.h>   erased for sysdep.h
+#include "sysdep.h"
 #include <string>
 #include<assert.h>
 #include<math.h>
-#include<stdlib.h>
+//#include<stdlib.h>   erased for sysdep.h
 #include "queue.h"
 #include "myopt.h"
 #include "types.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/21 21:04:24  donjerko
+  Implemented view materialization
+
   Revision 1.14  1997/08/14 02:08:52  donjerko
   Index catalog is now an independent file.
 
@@ -39,6 +42,10 @@
 
 #include "queue.h"
 #include "myopt.h"
+
+#ifndef __GNUG__
+using namespace std;
+#endif
 
 class Catalog;
 class Site;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/08/25 15:28:12  donjerko
+  Added minmax table
+
   Revision 1.8  1997/08/21 21:04:28  donjerko
   Implemented view materialization
 
@@ -43,9 +46,29 @@
 #include "Utility.h"
 
 #include <string>
-#include <fstream.h>
-#include <strstream.h>
-#include <stdlib.h>
+//#include <fstream.h>   erased for sysdep.h
+//#include <strstream.h>   erased for sysdep.h
+//#include <stdlib.h>   erased for sysdep.h
+#include "sysdep.h"
+
+string selectFileName(const string& env, const string& def){
+	char* nm = getenv(env.c_str());
+	if(nm){
+		return string(nm);
+	}
+	else{
+		return def;
+	}
+}
+
+
+/*
+const Catalog* getRootCatalog(){
+	string catalogName;
+	catalogName = selectFileName("DEVISE_HOME_TABLE", "./catalog.dte");
+	return &ROOT_CATALOG;
+}
+*/
 
 istream* getIndexTableStream(){
 	string catalogName = DTE_ENV_VARS.indexTable;
@@ -68,7 +91,7 @@ ostream* getIndexTableOutStream(int mode){
 }
 
 string stripQuotes(char* str){
-	strstream tmp;
+	stringstream tmp;
 	tmp << str << ends;
 	string tmpstr;
 	stripQuotes(tmp, tmpstr);
@@ -88,14 +111,14 @@ void stripQuotes(istream& in, string& value){	// can throw excetion
 		return;
 	}
 	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), );
+		THROW(new Exception("Leading \" expected"), NVOID );
 	}
 	bool escape = false;
 	while(1){
 		in.get(tmp);
 		if(!in){
 			string e = "Closing \" expected";
-			THROW(new Exception(e), );
+			THROW(new Exception(e), NVOID );
 		}
 		if(escape){
 			escape = false;
@@ -134,7 +157,7 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 		return;
 	}
 	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), );
+		THROW(new Exception("Leading \" expected"), NVOID );
 	}
 	bool escape = false;
 	while(1){
@@ -143,7 +166,7 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 		if(!in){
 			string e = "Closing \" expected";
 			buf[length] = '\0';
-			THROW(new Exception(e), );
+			THROW(new Exception(e), NVOID );
 		}
 		if(escape){
 			escape = false;

@@ -4,6 +4,10 @@
 #include "myopt.h"
 #include "StandardRead.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class MinMax {
 public:
 	static bool isApplicable(List<BaseSelection*>* selectList);

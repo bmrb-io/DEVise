@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/08/21 21:04:32  donjerko
+  Implemented view materialization
+
   Revision 1.26  1997/08/15 21:19:11  donjerko
   Added / operator for ints and doubles
 
@@ -90,7 +93,7 @@
 #include <iostream.h>
 #include <string>
 #include <assert.h>
-#include <stdio.h>
+//#include <stdio.h>    erased for sysdep.h
 
 extern int yylex();
 extern ParseTree* parseTree;
