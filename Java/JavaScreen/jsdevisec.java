@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.96  2001/03/25 20:34:44  xuk
+// Fixed bug for Collaboration Dlag.
+//
 // Revision 1.95  2001/03/19 23:37:53  xuk
 // Fixed bugs.
 //
@@ -1626,32 +1629,35 @@ class ServerStateDlg extends Dialog
 
 	jsc.jsValues.debug.log("Creating ServerStateDlg");
 
-        String[] list = DEViseGlobals.parseStr(data, " ");
-        String[] list1 = null, list2 = null, list3 = null;
-
-        if (list != null && list.length > 3) {
+	String[] list = DEViseGlobals.parseString(data);
+	String[] list1 = null, list2 = null, list3 = null;
+	
+	if (list != null && list.length > 3) {
             try {
                 int number1 = Integer.parseInt(list[0]);
                 if (number1 != 0) {
                     list1 = new String[number1];
+		    String[] temp_list = DEViseGlobals.parseStr(list[1], " ");
                     for (int i = 0; i < number1; i++) {
-                        list1[i] = list[i + 1];
+                        list1[i] = temp_list[2*i] + " " + temp_list[2*i+1];
                     }
                 }
 
-                int number2 = Integer.parseInt(list[number1 + 1]);
+                int number2 = Integer.parseInt(list[3]);
                 if (number2 != 0) {
                     list2 = new String[number2];
+		    String[] temp_list = DEViseGlobals.parseStr(list[4], " ");
                     for (int i = 0; i < number2; i++) {
-                        list2[i] = list[i + 2 + number1];
+                        list2[i] = temp_list[2*i] + " " + temp_list[2*i+1];
                     }
                 }
 
-                int number3 = Integer.parseInt(list[number1 + number2 + 2]);
+                int number3 = Integer.parseInt(list[5]);
                 if (number3 != 0) {
                     list3 = new String[number3];
-                    for (int i = 0; i < number3; i++) {
-                        list3[i] = list[i + 3 + number1 + number2];
+		    for (int i = 0; i < number3; i++) {
+			String[] temp_list = DEViseGlobals.parseStr(list[6+i], " ");
+                        list3[i] = temp_list[0] + " " + temp_list[1];
                     }
                 }
             } catch (NumberFormatException e) {
