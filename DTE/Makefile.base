@@ -35,7 +35,7 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/GUI \
 	-I$(DTE_DIR)/Script
 
-CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
+CFLAGS = $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused $(OPTFLAG) \
 	-DUNIX -DATTRPROJ -DLIBCS \
 	-fexternal-templates 
