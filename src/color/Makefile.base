@@ -7,6 +7,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/12/04 23:50:30  wenger
+#  Changed how dependencies work for src/color and src/utils to work
+#  around a bug in makedepend (this is an improvement anyhow).
+#
 #  Revision 1.2  1997/12/03 16:57:04  wenger
 #  Set up src/color and src/utils to compile "normally" for sun, hp, and linux.
 #
@@ -43,15 +47,14 @@ COLOR_SRC = ActivePalette.C Color.C ColorManager.C Coloring.C HSVColor.C \
 	Palette.C PaletteColor.C PaletteManager.C RGB.C RGBColor.C TriColor.C \
 	XColorManager.C
 
-COLOR_OBJ = $(COLOR_SRC:.C=.o)
+LIBOBJ = $(COLOR_SRC:.C=.o)
 
-COLOR_LIB = libcolor.a
+LIBNAME = libcolor.a
 
-all:	$(COLOR_LIB)
-lib:	$(COLOR_LIB)
+all: $(LIBNAME)
+lib: $(LIBNAME)
 
-$(COLOR_LIB):	$(COLOR_OBJ)
-	$(AR) cr $@ $(COLOR_OBJ)
+$(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
 Makefile.depend: $(VPATH)/*.[cCh]
 	-rm Makefile.depend
@@ -59,7 +62,7 @@ Makefile.depend: $(VPATH)/*.[cCh]
 		> Makefile.depend
 
 clean:	mostlyclean
-	-rm $(COLOR_LIB)
+	-rm $(LIBNAME)
 
 mostlyclean:
-	-rm $(COLOR_OBJ) core Makefile.depend
+	-rm $(LIBOBJ) core Makefile.depend

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1997/11/24 23:14:01  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.11.10.1  1997/05/21 20:39:18  weaver
 #  Changes for new ColorManager
 #
@@ -145,9 +148,7 @@ drtest: $(ALLTESTOBJ) types.o $(LIB)
 drtest.pure: $(ALLTESTOBJ) types.o $(LIB) 
 	$(PURIFY) $(PURE_OPT) $(DRTEST) $(ARCH_LDPOST)
 
-$(LIB): $(LIBOBJ)
-	$(AR) cr $@ $(LIBOBJ)
-	$(RANLIB) $@
+$(LIB): $(LIB)($(LIBOBJ))
 
 .PHONY: clean mostlyclean
 

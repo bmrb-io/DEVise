@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1997/11/24 23:15:34  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.10.10.1  1997/05/21 20:41:04  weaver
 #  Changes for new ColorManager
 #
@@ -49,9 +52,7 @@ LIBNAME = libissm.a
 all: $(LIBNAME)
 lib: $(LIBNAME)
 
-$(LIBNAME): $(LIBOBJ)
-	$(AR) cr $@ $(LIBOBJ)
-	ranlib $@
+$(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
 .PHONY: clean mostlyclean
 

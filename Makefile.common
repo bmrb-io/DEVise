@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1997/12/04 04:04:26  donjerko
+#  Changed -gstabs to -g.
+#
 #  Revision 1.21  1997/11/24 23:12:48  weaver
 #  Changes for the new ColorManager.
 #
@@ -154,6 +157,19 @@ endif
 	$(CC) -c $(CFLAGS) $<
 %.o : %.cpp
 	$(CC) -c $(CFLAGS) $<
+
+(%.o): %.c
+	$(CC) -c $(CFLAGS) $< 
+	$(AR) r $@ $%
+	$(RM) $%
+(%.o): %.C
+	$(CC) -c $(CFLAGS) $< 
+	$(AR) r $@ $%
+	$(RM) $%
+(%.o): %.cc
+	$(CC) -c $(CFLAGS) $< 
+	$(AR) r $@ $%
+	$(RM) $%
 
 # Purify
 PURIFY = purify

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1997/11/24 23:13:46  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.33.10.1  1997/05/21 20:38:42  weaver
 #  Changes for new ColorManager
 #
@@ -198,9 +201,7 @@ show.pure: $(ALLSHOWOBJ) $(LIB)
 # Note: $(DEVREADOBJ) is included in the dependencies solely so that these
 # files are always compiled, so that devread and DTE will compile.
 # RKW 11/25/96.
-$(LIB): $(LIBOBJ) $(DEVREADOBJ)
-	$(AR) cr $@ $(LIBOBJ)
-	$(RANLIB) $@
+$(LIB): $(LIB)($(LIBOBJ) $(DEVREADOBJ))
 
 .PHONY: clean mostlyclean
 

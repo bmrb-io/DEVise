@@ -58,27 +58,21 @@ PURE_OPTS = -g++=yes -collector=/p/coral/bin/hp_ld -windows=no -chain-length=12 
 #	Object files
 #
 
-LIB_OBJS = \
-	$(LIB_FILES:.C=.o) \
-	$(OTHER_FILES)
+LIBOBJ = $(LIB_FILES:.C=.o) $(OTHER_FILES)
 
-OBJFILES = \
-	$(CC_FILES:.C=.o) \
-	$(C_FILES:.c=.o)
+OBJFILES = $(CC_FILES:.C=.o) $(C_FILES:.c=.o)
 
 ###############################################################################
 
 default: all
 
-lib: libunidata.a
+LIBNAME = libunidata.a
 
-all: libunidata.a umain
+all: $(LIBNAME)
+lib: $(LIBNAME)
 
-libunidata.a: $(LIB_OBJS)
-	$(RM) $@
-	$(AR) cr $@ $(LIB_OBJS)
-	$(RANLIB) $@
-	
+$(LIBNAME): $(LIBNAME)($(LIBOBJ))
+
 umain: $(OBJFILES) libunidata.a
 	$(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(ARCH_LDPOST)
 

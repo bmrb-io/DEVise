@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/09/26 02:27:07  taodb
+#  Most files are copied from cslib. csgroup will support group
+#  communication amonger servers. Our current server no longer
+#  support SINGLE_CLIENT compilatoin.
+#
 #  Revision 1.8  1997/06/13 18:02:48  wenger
 #  Got client/server library to compile with latest changes.
 #
@@ -136,9 +141,7 @@ server: server.o $(LIB)
 server.pure: server.o $(LIB)
 	$(PURIFY) $(PURE_OPT) $(SERVER)
 
-$(LIB): $(LIBOBJ)
-	$(AR) cr $@ $(LIBOBJ)
-	$(RANLIB) $@
+$(LIB): $(LIB)($(LIBOBJ))
 
 Exit.o: ../../graphics/Exit.c
 	$(CC) -c $(CFLAGS) ../../graphics/Exit.c

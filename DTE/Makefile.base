@@ -171,9 +171,7 @@ gui: $(GUI_OBJ)
 	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
-$(LIBNAME): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
-	$(RANLIB) $@
+$(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
 $(DTE_DIR)/Core/my.yacc.tab.c: $(DTE_DIR)/Core/my.yacc $(DTE_DIR)/Core/my.yacc.tab.h 
 	bison -d -v -o $@ $(DTE_DIR)/Core/my.yacc
@@ -184,14 +182,16 @@ $(DTE_DIR)/Core/my.yacc.tab.h: $(DTE_DIR)/Core/my.yacc
 $(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex $(DTE_DIR)/Core/my.yacc.tab.h
 	flex -o$@ $(DTE_DIR)/Core/my.lex
 
-ParseAPIDTE_SA.o : ParseAPIDTE.c ParseAPIDTE.o
+ParseAPIDTE_SA.o: ParseAPIDTE.c ParseAPIDTE.o
 	$(CC) -c $(CFLAGS) -DDTE_STANDALONE -o $@ $<
 
-scriptServer_CS.o : scriptServer.c scriptServer.o common.h
+scriptServer_CS.o: scriptServer.c scriptServer.o common.h
 	$(CC) -c $(CFLAGS) -DDTE_AS_SERVER -o $@ $<
 
-Templates.o: Templates.c
-	g++ -c  $(CFLAGS_WO_TEMPLATES) $<
+$(LIBNAME)(Templates.o): Templates.c
+	$(CC) -c  $(CFLAGS_WO_TEMPLATES) $<
+	$(AR) r $@ $%
+	$(RM) $%
 
 .PHONY: clean mostlyclean
 
