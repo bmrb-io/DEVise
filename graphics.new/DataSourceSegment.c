@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/11 23:36:43  jussi
+  Fixed off-by-one error in gotoEnd().
+
   Revision 1.5  1996/07/11 17:25:30  wenger
   Devise now writes headers to some of the files it writes;
   DataSourceSegment class allows non-fixed data length with non-zero
@@ -189,7 +192,7 @@ DataSourceSegment<TYPE>::gotoEnd()
 	}
 	else
 	{
-		if (TYPE::Seek(_dataOffset + _dataLength - 1, SEEK_SET) < 0)
+		if (TYPE::Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
 		{
 			reportError("Cannot seek to end of file", devNoSyserr);
 			result = -1;
