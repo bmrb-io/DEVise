@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/05 17:05:36  jussi
+  Removed #include "ViewGraph.h" and replaced it with forward class
+  definition of ViewGraph. There was a circular inclusion problem now
+  that ViewGraph includes BasicStats which includes ViewStats which
+  includes ViewGraph again.
+
   Revision 1.1  1995/11/28  05:24:51  ravim
   Support for statistics.
 */
@@ -31,8 +37,8 @@ class ViewGraph;
 class ViewStats
 {
 public:
-  ViewStats() {};
-  ~ViewStats() {};
+  ViewStats() {}
+  virtual ~ViewStats() {}
 
   // Initialize the statistics collection
   virtual void Init(ViewGraph *vw) { _vw = vw; }
