@@ -20,7 +20,16 @@
 /*
   $Id$
 
-  $Log$
+  Revision 1.76  1999/09/30 15:02:05  wenger
+  Changed things around so that session file paths sent by the JS always
+  start from the "base" session directory -- the devised doesn't "remember"
+  which subdirectory it's in.
+
+  Revision 1.75.2.1  1999/10/01 22:17:06  wenger
+  Devised now creates child views of all top-level views, not just all GIF
+  views -- fixes problem when we have piled parent views containing piled
+  view symbols.
+
   Revision 1.75  1999/09/29 00:56:01  wenger
   Improved handing of session files in JavaScreen support: better error
   checking, devised won't go up from 'base' session directory;
@@ -1773,6 +1782,25 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		EraseChangedCursors();
 	}
 
+	int viewIndex2 = _topLevelViews.InitIterator();
+	while (_topLevelViews.More(viewIndex2)) {
+		View *view = (View *)_topLevelViews.Next(viewIndex2);
+
+		if (update) {
+			DeleteChildViews(view);
+		}
+
+		int subViewIndex = view->InitIterator();
+		while (view->More(subViewIndex)) {
+			View *subView = (View *)view->Next(subViewIndex);
+			subView->SetZ(view->GetZ() + 1.0);
+			CreateView(subView, view);
+			SendViewDataArea(subView);
+		}
+		view->DoneIterator(subViewIndex);
+	}
+	_topLevelViews.DoneIterator(viewIndex2);
+
 	//
 	// For each "GIF view", if it's dirty, dump it to the GIF file, and send
 	// the command for the JavaScreen to update the appropriate window.
@@ -1792,23 +1820,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 #endif
 		    dirtyGifList.Append(view);
 
-			if (update) {
-				DeleteChildViews(view);
-			}
-
 			SendViewDataArea(view);
-
-            //TEMP -- should probably create subviews of *all* views here --
-			// in case there are cursors in view symbols
-			// Create any subviews of this view.
-			int subViewIndex = view->InitIterator();
-			while (view->More(subViewIndex)) {
-				View *subView = (View *)view->Next(subViewIndex);
-				subView->SetZ(view->GetZ() + 1.0);
-				CreateView(subView, view);
-				SendViewDataArea(subView);
-			}
-			view->DoneIterator(subViewIndex);
 
     		ControlCmdType tmpResult = DONE;
 			int	filesize;
