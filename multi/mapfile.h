@@ -261,12 +261,7 @@ public:
       /* aborted? */
       symbol->color = abortColor;
     else {
-      int index;
-      if (data->cycles == 0)
-	index = 2;
-      else
-	index = (data->cycles -1) %3;
-      index = (index + 1) % 3;
+      int index = data->cycles % 6;
       symbol->color = 
 	mapInfo->colorArrays[index][mapInfo->job_ordering[data->job]];
     }
@@ -303,12 +298,7 @@ public:
       /* aborted? */
       symbol->color = abortColor;
     else {
-      int index;
-      if (data->cycles == 0)
-	index = 2;
-      else
-	index = (data->cycles -1) %3;
-      index = (index + 1) % 3;
+      int index = data->cycles % 6;
       symbol->color = 
 	mapInfo->colorArrays[index][mapInfo->job_ordering[data->job]];
     }
