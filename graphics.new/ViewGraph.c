@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.141  2000/03/28 17:55:57  wenger
+  Oops!  Used 'f' and 'F' for flip, so 'c' or 'C' now makes cursor fill
+  destination view (slightly different than before -- it previously did
+  a home on the source view, but I think filling the dest. view is better).
+
   Revision 1.140  2000/03/14 21:51:49  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -1592,7 +1597,7 @@ ViewGraph::CursorHome()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("ViewGraph(%s)::GoHome()\n", GetName());
+  printf("ViewGraph(%s)::CursorHome()\n", GetName());
 #endif
 
   VisualFilter filter;
@@ -1600,12 +1605,15 @@ ViewGraph::CursorHome()
   int index = _cursors->InitIterator();
   while (_cursors->More(index)) {
     DeviseCursor *cursor = _cursors->Next(index);
-    ViewGraph *srcView = (ViewGraph *)cursor->GetSource();
-    if (srcView && !cursor->GetFixedSize()) {
+    if (!cursor->GetFixedSize()) {
 #if defined(DEBUG)
       printf("  Doing home on cursor <%s>\n", cursor->GetName());
 #endif
-      srcView->SetVisualFilterCommand(filter);
+      Coord x = (filter.xHigh + filter.xLow) / 2.0;
+      Coord y = (filter.yHigh + filter.yLow) / 2.0;
+      Coord width = filter.xHigh - filter.xLow;
+      Coord height = filter.yHigh - filter.yLow;
+      cursor->MoveSource(x, y, width, height);
     }
   }
   _cursors->DoneIterator(index);

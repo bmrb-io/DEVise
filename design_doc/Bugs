@@ -2255,6 +2255,11 @@ Num Date        Status  Description
 576 03/28/00	OPEN	Various columns in link/cursor info dialog can
 			be scrolled separately (with arrow keys). (oz/rkw)
 
+577 04/05/00	FIXED	'c' (full cursor) bypasses type (X, Y, or XY) of
+			cursor, probably also whether cursor is fixed
+			size. (rkw)
+			(Fixed by rkw, 4/6/00.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
