@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:53:16  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:14  jussi
   Added CVS header.
 */
@@ -38,7 +41,9 @@ BufMgrNull::BufMgrNull()
   
   BUF_SIZE = Init::PageSize();
   _buf = new char[BUF_SIZE];
-  _recPtrs = new void *[BUF_SIZE];
+  _recPtrs = new void * [BUF_SIZE];
+  DOASSERT(_buf && _recPtrs, "Out of memory");
+
   _bufInUse = false;
 }
 
