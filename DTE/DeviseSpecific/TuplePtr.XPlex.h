@@ -23,6 +23,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 #define _TuplePtrXPlex_h 1
 
+#ifdef OK
+     #undef OK
+#endif
+
 #include "TuplePtr.Plex.h"
 
 class TuplePtrXPlex: public TuplePtrPlex

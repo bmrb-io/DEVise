@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/03/07 17:40:37  donjerko
+  Moved query execution from TDataDQLInterpClassInfo::CreateWithParams
+  to TDataDQL::runQuery
+
   Revision 1.6  1997/03/02 00:03:12  donjerko
   Moved the query execution into TDataDQLInterp::CreateWithParameters.
   It used to be done in TDataDQLInterp constructor.
@@ -57,7 +61,8 @@ class TDataDQLInterpClassInfo: public ClassInfo {
 public:
   TDataDQLInterpClassInfo(char* tableName, const char* query);
   TDataDQLInterpClassInfo(char *className,
-  AttrList attrs,char * name,char * type,char *query,TData *tdata);
+  AttrList attrs,char * name,char * type,char *query,TData *tdata,
+  char* tableName);
 
   virtual ~TDataDQLInterpClassInfo();
 
@@ -90,6 +95,7 @@ public:
 private:
   char *_query;
   char * _name;
+  char* _tableName;
   char * _className; 
   char * _type;
   TData *_tdata;
@@ -99,6 +105,7 @@ private:
   AttrList _attrs;
   TuplePtrXPlex _result;
   int* _sizes;
+  int _counter;
 };
 class RecInterp;
 

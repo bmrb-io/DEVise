@@ -84,7 +84,9 @@ void TDataDQL::runQuery(){
      _types = engine.getTypeIDs();
      Tuple* tup;
 	Tuple* highTup = new Tuple[_numFlds];
+	memset(highTup, 0, _numFlds * sizeof(Tuple));
 	Tuple* lowTup = new Tuple[_numFlds];
+	memset(lowTup, 0, _numFlds * sizeof(Tuple));
 
 	engine.initialize();
 	Tuple* firstTup = engine.getNext();
@@ -94,6 +96,9 @@ void TDataDQL::runQuery(){
 			highTup[i] = firstTup[i];
 		}
           _result.add_high(firstTup);
+	}
+	else{
+		cout << "Empty result set" << endl;
 	}
 	OperatorPtr* lessPtrs = new OperatorPtr[_numFlds];
 	OperatorPtr* greaterPtrs = new OperatorPtr[_numFlds];
@@ -113,6 +118,7 @@ void TDataDQL::runQuery(){
           _result.add_high(tup);
      }
 
+	cout << "Done with query ----------------------------------\n";
 #ifdef DEBUG
      for(int j = _result.low(); j < _result.fence(); j++){
           for(int i = 0; i < _numFlds; i++){
@@ -140,6 +146,9 @@ void TDataDQL::runQuery(){
 		// Devise will not take high and low values for strings
 
 		bool hasHighLow = true;
+		if(!hiVal || !loVal){
+			hasHighLow = false;
+		}
 		if(_types[i].through(5).contains("string")){
 			hasHighLow = false;
 		}

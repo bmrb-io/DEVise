@@ -48,7 +48,7 @@ typedef Tuple* TuplePtr;
 // initial capacity for structures requiring one
 
 #ifndef DEFAULT_INITIAL_CAPACITY
-#define DEFAULT_INITIAL_CAPACITY 100
+#define DEFAULT_INITIAL_CAPACITY 1000
 #endif
 
 // HASHTABLE_TOO_CROWDED(COUNT, SIZE) is true iff a hash table with COUNT
