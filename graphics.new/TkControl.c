@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/01/12 15:25:05  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.27  1996/01/10 18:47:36  jussi
   Attribute hi/lo values are now conditional; a boolean value
   returned from getSchema indicates which values are default
@@ -147,6 +150,8 @@ extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+extern int www_extract(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = NULL;
@@ -261,6 +266,9 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for SEQ data */
   Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
+
+  /* Create a new tcl command for WWW data */
+  Tcl_CreateCommand(_interp, "www_extract", www_extract, 0, 0);
 
   char *envPath = getenv("DEVISE_LIB");
   char *control;
