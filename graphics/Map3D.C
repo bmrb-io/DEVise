@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/10 18:59:18  jussi
+  Moved 3D transform variables to WindowRep.
+
   Revision 1.4  1996/06/27 22:54:41  jussi
   Added support for XOR color value.
 
@@ -291,12 +294,12 @@ void Map3D::MapBlockPlanes(WindowRep *win,
 					  cameraPoint);
       _plane[_numPlanes].color = block_data[i].color;
       _numPlanes++;
-      _plane[_numPlanes].pt[0].x = pts[block_data[i].sd[j].pt[0]].x;
-      _plane[_numPlanes].pt[0].y = pts[block_data[i].sd[j].pt[0]].y;
-      _plane[_numPlanes].pt[1].x = pts[block_data[i].sd[j].pt[2]].x;
-      _plane[_numPlanes].pt[1].y = pts[block_data[i].sd[j].pt[2]].y;
-      _plane[_numPlanes].pt[2].x = pts[block_data[i].sd[j].pt[3]].x;
-      _plane[_numPlanes].pt[2].y = pts[block_data[i].sd[j].pt[3]].y;
+      _plane[_numPlanes].pt[0].x = pts[block_data[i].sd[j].pt[2]].x;
+      _plane[_numPlanes].pt[0].y = pts[block_data[i].sd[j].pt[2]].y;
+      _plane[_numPlanes].pt[1].x = pts[block_data[i].sd[j].pt[3]].x;
+      _plane[_numPlanes].pt[1].y = pts[block_data[i].sd[j].pt[3]].y;
+      _plane[_numPlanes].pt[2].x = pts[block_data[i].sd[j].pt[0]].x;
+      _plane[_numPlanes].pt[2].y = pts[block_data[i].sd[j].pt[0]].y;
       _plane[_numPlanes].dist = TriDistSq(block_data[i],
 					  block_data[i].sd[j].pt[0],
 					  block_data[i].sd[j].pt[2],
@@ -384,8 +387,11 @@ void Map3D::DrawPlanes(WindowRep *win)
 	      _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
     win->Line(_plane[i].pt[1].x, _plane[i].pt[1].y,
 	      _plane[i].pt[2].x, _plane[i].pt[2].y, 1);
+#if 0
+    // don't draw diagonal line
     win->Line(_plane[i].pt[2].x, _plane[i].pt[2].y,
 	      _plane[i].pt[0].x, _plane[i].pt[0].y, 1);
+#endif
   }
 }
 
