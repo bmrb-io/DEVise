@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1996/05/13 21:56:16  jussi
+  Moved initialization of _mode to Control.c. Changed code to
+  reflect new interface with batch files and XDisplay.
+
   Revision 1.51  1996/05/13 18:11:20  jussi
   Emptied ViewCreated and ViewDestroyed and moved them to
   the header file.
@@ -328,6 +332,9 @@ void TkControlPanel::StartSession()
       Exit::DoExit(1);
     }
   }
+
+  if (Init::BatchFile())
+    SetSyncNotify();
 }
 
 void TkControlPanel::DestroySessionData()
@@ -393,13 +400,6 @@ Boolean TkControlPanel::IsBusy()
   return (_busy > 0);
 }
 
-void TkControlPanel::ExecuteScript(char *script)
-{
-  char cmd[256];
-  sprintf(cmd, "ExecuteScript %s", script);
-  (void)Tcl_Eval(_interp, cmd);
-}
-
 void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
 				   int flushed)
 {
@@ -435,4 +435,22 @@ void TkControlPanel::SelectView(View *view)
   char cmd[256];
   sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
   (void)Tcl_Eval(_interp, cmd);
+}
+
+void TkControlPanel::SyncNotify()
+{
+  char *batchFile = Init::BatchFile();
+
+  if (!batchFile)
+    return;
+
+  char cmd[256];
+  int code = Tcl_EvalFile(_interp, batchFile);
+  if (code != TCL_OK) {
+    fprintf(stderr, "Cannot execute batch file %s\n", batchFile);
+    fprintf(stderr,"%s\n", _interp->result);
+    Exit::DoExit(1);
+  }
+
+  ClearSyncNotify();
 }
