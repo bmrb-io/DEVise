@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/05/31 20:54:24  jussi
+  Fixed computation in Arc().
+
   Revision 1.37  1996/05/31 15:32:12  jussi
   Added 'state' variable to HandleButton(). This tells the callee
   whether the shift/control keys were pressed in conjunction with
@@ -244,6 +247,17 @@ void XWindowRep::Init()
                      fontStruct->max_bounds.descent;
   AllocBitmap(_srcBitmap, bitmapWidth, bitmapHeight);
   AllocBitmap(_dstBitmap, 3 * bitmapWidth, 3 * bitmapHeight);
+
+  _NumXSegs = 0;
+  // set the reference axis
+  _AxisPt[1].x_ = _AxisPt[3].z_ = 1.5;  _AxisPt[2].y_ = _AxisPt[1].x_ * 1.5;
+  _AxisPt[1].y_ = _AxisPt[1].z_ = 0.0;
+  _AxisPt[2].x_ = _AxisPt[2].z_ = 0.0;
+  _AxisPt[3].x_ = _AxisPt[3].y_ = 0.0;
+  _AxisPt[0].x_ = _AxisPt[0].y_ = _AxisPt[0].z_ = 0.0;
+  _Axis[0].p = 0;  _Axis[0].q = 1;  // x axis
+  _Axis[1].p = 0;  _Axis[1].q = 2;  // y axis
+  _Axis[2].p = 0;  _Axis[2].q = 3;  // z axis
 
 #ifdef TK_WINDOW_old
   _tkPathName[0] = 0;
@@ -2307,58 +2321,24 @@ void XWindowRep::DetachFromTkWindow()
 
 // #define YLC
 
-// ----------------------------------------------------------
-POINT XWindowRep::CompLocationOnViewingSpace(POINT pt)
-{
-	double Wvec[4], // vector in world coordinates
-		  Vvec[4], // vector in viewing coordinates
-		  sum;
-	POINT  NewPt;
-	Wvec[0] = pt.x_;
-	Wvec[1] = pt.y_;
-	Wvec[2] = pt.z_;
-	Wvec[3] = 1.0;
-
-	int i, j;
-	for (i = 0; i < 4; i++) {
-		sum = 0.0;
-		for (j = 0; j < 4; j++)
-			sum += Wvec[j] * _TransformViewMatrix[j][i];
-		Vvec[i] = sum;
-	}
-	NewPt.x_ = Vvec[0];
-	NewPt.y_ = Vvec[1];
-	NewPt.z_ = Vvec[2];
-	return (NewPt);
-} // end of CompLocationOnViewingSpace
-
 // ---------------------------------------------------------- 
-XPoint XWindowRep::CompProjectionOnViewingPlane(POINT viewPt)
-{
-	XPoint screenPt;
-	double z_over_dvs = viewPt.z_ / _dvs;
-
-	if (_perspective == 1) {
-		screenPt.x = (short)(fabs(viewPt.z_) == 0 ? viewPt.x_ :
-								viewPt.x_ / z_over_dvs);
-		screenPt.y = (short)(fabs(viewPt.z_) == 0 ? viewPt.y_ :
-								viewPt.y_ / z_over_dvs);
-	} else {
-		screenPt.x = (short)viewPt.x_;
-		screenPt.y = (short)viewPt.y_;
-	}
-	return (screenPt);
-}  // end of CompProjectionOnViewingPlane
-
-
-// ---------------------------------------------------------- 
+// draw the edges of the shapes
 void XWindowRep::DrawXSegments()
 {
 	int  index = 0,
-	requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
-	evenAmount = (_NumXSegs / requestSize) * requestSize,
-	remainder  = _NumXSegs - evenAmount;
-	
+		requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
+		evenAmount = (_NumXSegs / requestSize) * requestSize,
+		remainder  = _NumXSegs - evenAmount;
+
+#ifdef YLC
+	printf ("---------- Begin DrawXSegments ---- \n");
+	printf ("\treqSize = %d evenA = %d remain = %d\n", requestSize,
+		evenAmount, remainder);
+#endif
+
+	// this while-loop allow the programs to handle arbitary
+	// segments that are sent to this function; because
+	// XDrawSegments can only handle so many segments at once
 	while (index < evenAmount) {
 	  XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], requestSize);
 	  index += requestSize;
@@ -2366,61 +2346,133 @@ void XWindowRep::DrawXSegments()
 
 	if (remainder)
 	  XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], remainder);
-} // end of MapAllPoints()
+} // end of DrawXSegements()
 
 // ---------------------------------------------------------- 
 // map the actual user data points, use XFillArcs to make the 
 // points a little bigger
-void XWindowRep::MapAllPoints(BLOCK *block_data, int numSyms)
+void XWindowRep::MapAllXPoints(BLOCK *block_data, int numSyms,
+	Camera camera, int H, int V)
 {
 	POINT tmppt;
 	int arc_size = 5;
+	Point pt;
 	XPoint lxpts[numSyms]; // local xpts
-	int xsize = sizeof (XPoint), ang1 = 0, ang2 = 64 * 360,
-		H = _width / 2, V = _height / 2;
+	int xsize = sizeof (XPoint), ang1 = 0, ang2 = 64 * 360;
 	XArc x_arcs[numSyms];
-
-#ifdef YLC
-	printf ("--------------> _width/4 = %d  _height/4 = %d\n", H, V);
-#endif
+	int numArcs = 0;
+	double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 
 	for (int i = 0; i < numSyms; i++) {
-		tmppt = CompLocationOnViewingSpace(block_data[i].pt);
-		lxpts[i] = CompProjectionOnViewingPlane(tmppt);
-		lxpts[i].x += H;
-		lxpts[i].y =(lxpts[i].y < 0 ? V+abs(lxpts[i].y) 
-									: V-lxpts[i].y);
-#ifdef YLC
-	printf("\tx = %d        y = %d\n", lxpts[i].x, lxpts[i].y);
+
+          // ---------  CLIPPING BEGINS HERE -------------
+          block_data[i].clipout = FALSE;  // by default
+
+          if (block_data[i].pt.x_ >= 0 && camera.x_ >= 0)
+               x1 = fabs(block_data[i].pt.x_ - camera.x_);
+          else if (block_data[i].pt.x_ < 0 && camera.x_ < 0)
+               x1 = fabs(block_data[i].pt.x_ - camera.x_);
+          else x1 = block_data[i].W + 1;
+          if (block_data[i].pt.y_ >= 0 && camera.y_ >= 0)
+               y1 = fabs(block_data[i].pt.y_ - camera.y_);
+          else if (block_data[i].pt.y_ < 0 && camera.y_ < 0)
+               y1 = fabs(block_data[i].pt.y_ - camera.y_);
+          else y1 = block_data[i].D + 1;
+          if (block_data[i].pt.z_ >= 0 && camera.z_ >= 0)
+               z1 = fabs(block_data[i].pt.z_ - camera.z_);
+          else if (block_data[i].pt.z_ < 0 && camera.z_ < 0)
+               z1 = fabs(block_data[i].pt.z_ - camera.z_);
+          else z1 = block_data[i].H + 1;
+
+          if (x1<block_data[i].W && y1<block_data[i].D && z1<block_data[i].H)
+               // if camera is inside a shape, clip out that pt
+               block_data[i].clipout = TRUE;
+          else {
+               if ( (camera.x_ > 0 && 
+				 block_data[i].pt.x_ == (camera.x_+block_data[i].W*2.0)) ||
+                    (camera.x_ < 0 && 
+				 block_data[i].pt.x_ == (camera.x_-block_data[i].W*2.0)) ||
+                    (camera.y_ > 0 && 
+				 block_data[i].pt.y_ == (camera.y_+block_data[i].H*2.0)) ||
+                    (camera.y_ < 0 && 
+				 block_data[i].pt.y_ == (camera.y_-block_data[i].H*2.0)) ||
+                    (camera.z_ > 0 && 
+				 block_data[i].pt.z_ == (camera.z_+block_data[i].D*2.0)) ||
+                    (camera.z_ < 0 && 
+				 block_data[i].pt.z_ == (camera.z_-block_data[i].D*2.0)))
+                    // when a camera and a pt at the same place, clip pt
+                    block_data[i].clipout = TRUE;
+#define _closeness_ 1.3
+               else if ( (block_data[i].pt.x_ > 0 && camera.x_ > 0 && 
+					 camera.x_ < block_data[i].pt.x_ && 
+					 block_data[i].pt.x_ * _closeness_ > camera._rho) ||
+                    	(block_data[i].pt.x_ < 0 && camera.x_ < 0 && 
+					 camera.x_ > block_data[i].pt.x_ &&
+					 block_data[i].pt.x_ * _closeness_ < -camera._rho) ||
+                    	(block_data[i].pt.y_ > 0 && camera.y_ > 0 && 
+					 camera.y_ < block_data[i].pt.y_ &&
+					 block_data[i].pt.y_ * _closeness_ > camera._rho) ||
+                    	(block_data[i].pt.y_ < 0 && camera.y_ < 0 && 
+					 camera.y_ > block_data[i].pt.y_ &&
+					 block_data[i].pt.y_ * _closeness_ < -camera._rho) ||
+                    	(block_data[i].pt.z_ > 0 && camera.z_ > 0 && 
+					 camera.z_ < block_data[i].pt.z_ &&
+					 block_data[i].pt.z_ * _closeness_ > camera._rho) ||
+					(block_data[i].pt.z_ < 0 && camera.z_ < 0 && 
+					 camera.z_ > block_data[i].pt.z_ &&
+					 block_data[i].pt.z_ * _closeness_ < -camera._rho)) {
+                    // when a pt is behind the camera, clip pt
+                    block_data[i].clipout = TRUE;
+               } else
+                    // everything else display it
+                    block_data[i].clipout = FALSE;
+          }
+          // ---------  CLIPPING ENDS HERE -------------
+
+		if (! block_data[i].clipout) {
+			tmppt = CompLocationOnViewingSpace(block_data[i].pt);
+			pt = CompProjectionOnViewingPlane(tmppt, camera);
+			lxpts[i].x = (short)pt.x;
+			lxpts[i].y = (short)pt.y;
+			if (abs(lxpts[i].x) > (H * 1.2) || abs(lxpts[i].y) > (V * 1.2))
+				block_data[i].clipout = TRUE;
+			else
+			  XFillArc (_display, DRAWABLE, _gc, 
+				lxpts[i].x - arc_size / 2, 
+				lxpts[i].y - arc_size / 2,
+				arc_size, arc_size, ang1, ang2);
+#ifdef YLC1
+	printf("\tcamera:x = %f  y = %f  z = %f\n",camera.x_,camera.y_,camera.z_);
+	printf("\tblk.pt:x = %f  y = %f  z = %f\n",block_data[i].pt.x_,block_data[i].pt.y_,block_data[i].pt.z_);
+	printf("\ttmppt: x = %f  y = %f  z = %f\n",tmppt.x_,tmppt.y_,tmppt.z_);
+	printf("\tpt:    x = %f  y = %f\n",pt.x, pt.y);
+	// printf("\tlpxpts: x = %d        y = %d\n", lxpts[i].x, lxpts[i].y);
+	printf("\t       H = %d  V = %d\n", H, V);
 #endif
-		x_arcs[i].x = lxpts[i].x;
-		x_arcs[i].y = lxpts[i].y;
-		x_arcs[i].width = x_arcs[i].height = arc_size;
-		x_arcs[i].angle1 = ang1;
-		x_arcs[i].angle2 = ang2;
+		}
 	} // end of for-loop
-	XFillArcs (_display, DRAWABLE, _gc, x_arcs, numSyms);
 } // end of MapAllPoints()
 
 // ---------------------------------------------------------- 
-void XWindowRep::MapAllSegments(BLOCK *block_data, int numSyms)
+void XWindowRep::MapAllXSegments(BLOCK *block_data, int numSyms,
+	Camera camera, int H, int V)
 {
 	POINT tmppt;
 	int vsize = sizeof (XPoint), ssize = sizeof(XSegment), 
-		i, j, H = _width / 2, V = _height / 2;
+	    i, j; 
 	XPoint xpts[numSyms][BLOCK_VERTEX];
+	Point pt;
 
 	_NumXSegs = 0;
 	for (i = 0; i < numSyms; i++) {
-		for (j = 0; j < BLOCK_VERTEX; j++) {
+		for (j = 0; j < BLOCK_VERTEX && ! block_data[i].clipout; j++) {
 			tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
-			xpts[i][j] = CompProjectionOnViewingPlane(tmppt);
-			xpts[i][j].x += H;
-			xpts[i][j].y = (xpts[i][j].y < 0 ?
-				V + abs(xpts[i][j].y) : V - xpts[i][j].y);
+			pt = CompProjectionOnViewingPlane(tmppt, camera);
+			xpts[i][j].x = (short)pt.x;
+			xpts[i][j].y = (short)pt.y;
 		} // 1st inner for-loop
 
-		for (j = 0; j < BLOCK_EDGES; j++) {
+		for (j = 0; j < BLOCK_EDGES && ! block_data[i].clipout; j++) {
 			_xsegs[_NumXSegs].x1 = xpts[i][block_data[i].ed[j].p].x;
 			_xsegs[_NumXSegs].y1 = xpts[i][block_data[i].ed[j].p].y;
 			_xsegs[_NumXSegs].x2 = xpts[i][block_data[i].ed[j].q].x;
@@ -2429,28 +2481,38 @@ void XWindowRep::MapAllSegments(BLOCK *block_data, int numSyms)
 		} // 2nd inner for-loop
 	} // end of for-loop
 #ifdef YLC
-	printf ("\n.................... NumXSegs = %d\n\n", NumXSegs);
+	printf ("\n.................... NumXSegs = %d\n\n", _NumXSegs);
 #endif
 } // end of MapAllPoints()
 
 // ---------------------------------------------------------- 
-void XWindowRep::DrawRefAxis()
+void XWindowRep::DrawRefAxis(Camera camera)
 {
 	int H = _width / 2, V = _height / 2;
      POINT sa_pts; // screen axis pts
      XPoint xtmp[4];  // temp XPoints for axis pts
+	Point pt;
 
-	 int i;
-     for (i = 0; i < 4; i++) {
-          // clipping alg should goes here or before the loop
-          sa_pts = CompLocationOnViewingSpace(_AxisPt[i]);
-          xtmp[i]   = CompProjectionOnViewingPlane(sa_pts);
-          xtmp[i].x += H;
-          xtmp[i].y = (xtmp[i].y < 0 ? V + abs(xtmp[i].y) : V - xtmp[i].y);
+#ifdef YLC
+	printf ("\t\t---------- Begin DrawRefAxis ---- \n");
+#endif
+
+     for (int j = 0; j < 4; j++) {
+          sa_pts = CompLocationOnViewingSpace(_AxisPt[j]);
+		pt = CompProjectionOnViewingPlane(sa_pts, camera);
+          xtmp[j].x = (short)pt.x;
+          xtmp[j].y = (short)pt.y;
      }
+
      char string[3][5]={"X", "Y", "Z"};
      int  len = strlen(string[0]);
-     for (i = 0; i < 3; i++) {
+     for (int i = 0; i < 3; i++) {
+		// make sure the points of are on the same pixel
+		if ( abs(xtmp[_Axis[i].p].x - xtmp[_Axis[i].q].x) < 2)
+			xtmp[_Axis[i].p].x = xtmp[_Axis[i].q].x;
+		if ( abs(xtmp[_Axis[i].p].y - xtmp[_Axis[i].q].y) < 2)
+			xtmp[_Axis[i].p].y = xtmp[_Axis[i].q].y;
+
           // draw the axis
           XDrawLine(_display, DRAWABLE, _gc,
                xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
@@ -2459,7 +2521,63 @@ void XWindowRep::DrawRefAxis()
           XDrawString(_display, DRAWABLE, _gc, xtmp[_Axis[i].q].x + 1,
                xtmp[_Axis[i].q].y + 1, string[i], len);
      }
-} // end of DrawRefAxis
+#ifdef YLC
+	printf ("\t\t---------- End DrawRefAxis ---- \n");
+#endif
 
+#define YLC1
+#ifdef YLC1
+	// this ifdef portion define the aim (or focus) axis
+	// it draws the camera axis
+	_AimAxisPt[0].x_ = camera.fx;
+	_AimAxisPt[0].y_ = camera.fy;
+	_AimAxisPt[0].z_ = camera.fz;
+
+	_AimAxisPt[1].x_ = _AimAxisPt[0].x_ + 1.0;
+	_AimAxisPt[1].y_ = _AimAxisPt[0].y_;
+	_AimAxisPt[1].z_ = _AimAxisPt[0].z_;
+
+	_AimAxisPt[2].x_ = _AimAxisPt[0].x_;
+	_AimAxisPt[2].y_ = _AimAxisPt[0].y_ + 1.0;
+	_AimAxisPt[2].z_ = _AimAxisPt[0].z_;
+
+	_AimAxisPt[3].x_ = _AimAxisPt[0].x_;
+	_AimAxisPt[3].y_ = _AimAxisPt[0].y_;
+	_AimAxisPt[3].z_ = _AimAxisPt[0].z_ + 1.0;
+
+	_AimAxis[0].p = 0;  _AimAxis[0].q = 1;  // x axis
+	_AimAxis[1].p = 0;  _AimAxis[1].q = 2;  // y axis
+	_AimAxis[2].p = 0;  _AimAxis[2].q = 3;  // z axis
+
+     for (int j = 0; j < 4; j++) {
+          sa_pts = CompLocationOnViewingSpace(_AimAxisPt[j]);
+		pt = CompProjectionOnViewingPlane(sa_pts, camera);
+          xtmp[j].x = (short)pt.x;
+          xtmp[j].y = (short)pt.y;
+     }
+
+	strcpy(string[0], "x");
+	strcpy(string[1], "y");
+	strcpy(string[2], "z");
+     len = strlen(string[0]);
+     for (i = 0; i < 3; i++) {
+		// make sure the points of are on the same pixel
+		if ( abs(xtmp[_Axis[i].p].x - xtmp[_Axis[i].q].x) < 2)
+			xtmp[_Axis[i].p].x = xtmp[_Axis[i].q].x;
+		if ( abs(xtmp[_Axis[i].p].y - xtmp[_Axis[i].q].y) < 2)
+			xtmp[_Axis[i].p].y = xtmp[_Axis[i].q].y;
+
+          // draw the axis
+          XDrawLine(_display, DRAWABLE, _gc,
+               xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
+               xtmp[_Axis[i].q].x, xtmp[_Axis[i].q].y);
+          // label the axis
+          XDrawString(_display, DRAWABLE, _gc, xtmp[_Axis[i].q].x + 1,
+               xtmp[_Axis[i].q].y + 1, string[i], len);
+     }
+
+#endif
+
+} // end of DrawRefAxis
 
 
