@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/28 00:06:02  jussi
+  Increased MaxInterpShapes to reflect the addition of polygon and
+  oval shapes.
+
   Revision 1.5  1995/11/25  01:20:14  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -75,7 +79,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 5;
+const int MaxInterpShapes = 6;
 
 class MappingInterp: public TDataMapDispatch {
 public:
