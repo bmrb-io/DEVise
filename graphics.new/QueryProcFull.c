@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/23 21:59:07  jussi
+  Minor improvements in code readability. Also fixed missing
+  initialization of qdata->isRandom.
+
   Revision 1.13  1996/04/23 20:34:05  jussi
   Improved scatter plot query support.
 
   Revision 1.12  1996/04/20 19:56:49  kmurli
-  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
-  needed instead of being continuosly polled by the Dispatcher.
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
 
   Revision 1.11  1996/04/18 18:13:52  jussi
   Name of batch file variable in Init class has changed to batchFile.
@@ -610,14 +614,11 @@ void QueryProcFull::ProcessQuery()
     
     /*
        If all queries have been executed (system is idle) and
-       a batch file has been defined, execute batch file and
-       then exit.
+       we need to notify control panel that everything is in
+       sync, then do so.
     */
-    char *batchFile = Init::BatchFile();
-    if (batchFile) {
-      ControlPanel::Instance()->ExecuteScript(batchFile);
-      Exit::DoExit(1);
-    }
+    if (ControlPanel::Instance()->GetSyncNotify())
+      ControlPanel::Instance()->SyncNotify();
 
     /* Do conversion, then return */
     DoGDataConvert();

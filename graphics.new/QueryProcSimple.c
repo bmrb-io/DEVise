@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/20 19:56:53  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.7  1996/04/10 01:45:56  jussi
   Added call to Flush() when query processor becomes idle.
 
@@ -317,6 +321,14 @@ void QueryProcSimple::ProcessQuery(){
 			    DeviseDisplay::DefaultDisplay()->Flush();
 			    _needDisplayFlush = false;
 			  }
+			  /*
+			     If all queries have been executed (system
+			     is idle) and we need to notify control panel
+			     that everything is in sync, then do so.
+			  */
+			  if (ControlPanel::Instance()->GetSyncNotify())
+			    ControlPanel::Instance()->SyncNotify();
+
 			}
 			break;
 		case NewCmd:

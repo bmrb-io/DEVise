@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/13 21:58:18  jussi
+  Moved initialization of _mode to Control.c. Added support
+  for changing _batchMode and querying it.
+
   Revision 1.9  1996/05/13 18:05:38  jussi
   Changed type of "flag" argument to ReturnVal().
 
@@ -110,8 +114,11 @@ public:
   virtual Boolean GetBatchMode() { return _batchMode; }
   virtual void SetBatchMode(Boolean mode) { _batchMode = mode; }
 
-  /* Execute script */
-  virtual void ExecuteScript(char *script) = 0;
+  /* Set/clear/get sync notify status */
+  virtual void SetSyncNotify() { _syncNotify = true; }
+  virtual void ClearSyncNotify() { _syncNotify = false; }
+  virtual Boolean GetSyncNotify() { return _syncNotify; }
+  virtual void SyncNotify() {}
 
   /* Instantiate control panel into display */
   static void InsertDisplay(DeviseDisplay *disp,
@@ -228,6 +235,7 @@ protected:
   static ControlPanel *_controlPanel;
   static Mode _mode;                    // layout or display mode
   static Boolean _batchMode;            // true if we're in batch mode
+  static Boolean _syncNotify;           // true if sync notify needed
 
 private:
   void UpdateNewDispatcher() {}

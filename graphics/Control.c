@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/13 21:57:43  jussi
+  Moved initialization of _mode to Control.c from ServerAPI.c
+  and TkControl.c.
+
   Revision 1.7  1996/05/11 19:10:48  jussi
   Moved a bunch of empty functions to header file.
 
@@ -49,6 +53,7 @@ ControlPanel *ControlPanel::_controlPanel;
 ClassDir *ControlPanel::_classDir = 0;
 ControlPanel::Mode ControlPanel::_mode = ControlPanel::DisplayMode;
 Boolean ControlPanel::_batchMode = false;
+Boolean ControlPanel::_syncNotify = false;
 
 ClassDir *ControlPanel::GetClassDir()
 {
