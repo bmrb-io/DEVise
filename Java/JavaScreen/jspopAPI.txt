@@ -1,0 +1,257 @@
+jspop protocol:
+
+I:  structure 
+    1. jspop and DEVise server running on the same machine, i.e. the web 
+       server. (at least for now)
+    2. There are two command channel, between jspop and devise server,
+       and between jspop and js. This way, jspop can maintain full control.
+    3. There are one image channel, between devise server and js. (we may
+       change it later to let all communication channel through jspop, so 
+       devise server can run on different machine)
+    4. If any error happened at js or devise server, they will inform jspop.
+       Or, if jspop detect there is an error at js or devise server, it will
+       record the event, inform both parties if possible, and make necessary
+       clean up.
+    5. jspop always write import event into a log file, such as saving 
+       session, open connection to js, close connection to js, ... In case
+       jspop crash itself, when it restarts, it will look through the log 
+       file to see if there is a hanging js and make necessary correction.
+    6. If there is no user action for a certain timeout value(defined by 
+       jspop during startup), js will inform jspop and quit itself temporary. 
+    7. js will send all commands to jspop, jspop then check to see if there
+       is anything meant for it, if not, it will just pass the command to 
+       devise server. Same procedure applys to devise server's command.
+    
+II. start
+    1. js send request to jspop along with a priority code. (This priority
+       code is used to determine whether or not this js can access certain
+       directory or session files or other sensitive information jspop had).
+    2. jspop check to see if there is a devise server available or start 
+       a new one if possible.
+    3. If there is no devise server available, jspop will instruct js to
+       quit or wait. If js wants to wait, then jspop will inform js whenever
+       there is a devise server available.
+    4. If there is a devise server available, jspop will send js the image 
+       port, along with a connection id, a user time out value.
+    5. js will open image channel to the devise server using the image 
+       port it just received.
+    6. Now js can send command to devise server through jspop to open session
+       or do whatever it wants to do and capable of doing.  
+       
+III.stop
+    1. js inform jspop that it had enough and want to quit.
+    2. jspop inform the devise server to close its image channel, then tells
+       js to go ahead close its connection.
+    3. after all connection are closed, jspop ask the devise server to quit.
+
+IV. API commands
+
+1. Control commands:
+
+    *1. Format: "JAVAC_Done"
+        Arguments: None
+        Semantic: indicate successful execution of received commands and end
+                  of sending of responding commands.
+        User: Server <-> jspop <-> js
+    *2. Format: "JAVAC_Fail"
+        Arguments: None
+        Semantic: indicate any fatal failure (unrecoverable) of execution of
+                  received commands and end of sending of responding commands.
+        User: Server <-> jspop <-> js
+    *3. Format: "JAVAC_Error <errMsg>"
+        Arguments: One
+               errMsg: error message
+        Semantic: indicate any failure (may be recoverable) of execution of
+                  received commands and end of sending of responding commands. 
+        User: Server <-> jspop <-> js
+    
+2. User Action:
+
+    *1. Format: "JAVAC_MouseAction_Click <viewName> <x> <y>"
+        Arguments: Three
+               viewName: name of the view that event happened
+               x: x position
+               y: y position
+        Semantic: indicate a mouse single_click event, either get a record
+                  value at that position or select view as current view.
+        User: js -> jspop -> server
+    *2. Format: "JAVAC_MouseAction_DoubleClick <viewName> <x> <y>"
+        Arguments: Three
+               viewName: name of the view that event happened
+               x: x position
+               y: y position
+        Semantic: indicate a mouse double_click event, process cursor (such as
+                  get GData) at that position if exists.
+        User: js -> jspop -> server
+    *3. Format: "JAVAC_MouseAction_RubberBand <viewName> <x0> <y0> <width> <height>"
+        Arguments: Five
+               viewName: name of the view that event happened
+               x0: upleft corner x position
+               y0: upleft corner y position
+               width: width of rubber band
+               height: height of rubber band
+        Semantic: indicate a mouse single_click event, visual filtering
+        User: js -> jspop -> server
+
+    *4. Format: "JAVAC_KeyAction <viewName> <whichKey>"
+        Arguments: Two
+               viewName: name of the view that event happened
+               whichKey: name of the key
+        Semantic: indicate a key pressed event, meaning is not yet be defined
+        User: js -> jspop -> server
+
+3. jspop control commands
+
+    *1. Format: "JAVAC_SaveSession <Name>"
+        Arguments: one
+               Name: name of the session, may include connection ID and 
+                     session ID
+        Semantic: instruct server to save a session
+        User: jspop -> server
+
+    *2. Format: "JAVAC_OpenSession <Name>"
+        Arguments: one
+               Name: name of the session, may include connection ID and 
+                     session ID
+        Semantic: instruct server to open a session
+        User: jspop -> server
+    
+    *3. Format: "JAVAC_ServerExit"
+        Arguments: None
+        Semantic: instruct server to quit
+        User: jspop -> server
+    
+    *4. Format: "JAVAC_ClientExit"
+        Arguments: None
+        Semantic: instruct js to quit 
+        User: jspop -> js
+        
+    *5. Format: "JAVAC_ClientConnect <ConnectID> <Port> <Timeout>"
+        Arguments: three
+               ConnectID: connection ID
+               Port: image port
+               Timeout: user action timeout value
+        Semantic: instruct js either its connection request is granted or it
+                  need to reopen a new connection to a new server in case old
+                  server is dead
+        User: jspop -> js
+
+    *6. Format: "JAVAC_ClientSessionID <SessionID>"
+        Arguments: one
+               SessionID: new session ID
+        Semantic: inform js its current session id, will send to js while it
+                  open a new session or just saved a session
+        User: jspop -> js
+    
+    *7. Format: "JAVAC_ServerCloseSocket"
+        Arguments: None
+        Semantic: instruct server to close image socket
+        User: jspop -> server
+        
+    *8. Format: "JAVAC_GetControlTable"
+        Arguments: None
+        Semantic: instruct jspop to send current Control table to js
+        User: js -> jspop
+
+    *9. Format: "JAVAC_SetControlTable <TableEntry> ..."
+        Arguments: variable
+               TableEntry: one entry of the control table, contain information 
+                           about current active server or js
+        Semantic: instruct js to receive the control table
+        User: jspop -> js
+    
+    *10.Format: "JAVAC_ImageChannel <IsPortOrFile>"
+        Arguments: one
+               IsPortOrFile: 1 or 0
+        Semantic: instruct server to save image to a socket or a temporary
+                  file, used only in startup
+        User: jspop -> server 
+       
+    *11. Format: "JAVAC_UpdateImage <Name>"
+        Arguments: one
+               Name: name of the temporary image file including path 
+        Semantic: instruct jspop of a new image file
+        User: jspop <- server
+       
+    *12.Any other commands? I am still thinking ...
+
+4. Commands that change visual appearance:
+
+    *1. Format: "JAVAC_UpdateSessionList <name1> <isdir> <priority>..."
+        Arguments: Variable
+               name: name of the session
+               isdir: whether or not the name is a directory
+               priority: priority level 
+        Semantic: Return a list of current available session to Client
+        User: server -> jspop -> js
+    *2. Format: "JAVAC_UpdateRecordValue <value>"
+        Arguments: One
+               value: record value
+        Semantic: Return a record value to Client
+        User: server -> jspop -> js
+    *3. Format: "JAVAC_UpdateGData <name1> <value1> ..."
+        Arguments: Variable
+               name: name of one table entry in GData
+               value: value of one table entry in GData
+        Semantic: Return Gdata (a list of name-value pairs) to Client
+        User: server -> jspop -> js
+    *4. Format: "JAVAC_CreateWindow <windowName> <x0> <y0> <width> <height> 
+                 <imageSize> <numOfView> <view1Name> <view1X> <view1Y> 
+                 <view1Width> <view1Height> ..."
+        Arguments: Variable
+               windowName: name of the window
+               x0: upleft corner x position of the window
+               y0: upleft corner y position of the window
+               width: width of the window
+               height: height of the window
+               imageSize: the size of the image assiciated with the window
+               numOfView: number of views contained in the window
+               viewName: name of the view
+               viewX: upleft corner x position of the view in the window
+               viewY: upleft corner y position of the view in the window
+               viewWidht: width of the view
+               viewHeight: height of the view               
+        Semantic: Tell client to open a window, only used in reply to 
+                  'OpenSession' now.
+        User: server -> jspop -> js
+    *5. Format: "JAVAC_UpdateWindow <name> <imageSize>"
+        Arguments: Two
+               name: name of the window to be updated
+               value: size of the updated image
+        Semantic: Tell client to update a window with the new image
+        User: server -> jspop -> js
+    *6. ... whatever in your guy's mind  
+
+5. Other Action:
+
+    *1. Format: "JAVAC_GetSessionList"
+        Arguments: None
+        Semantic: Client want to view current available sessions.
+                  Server need to send client a list of available session names
+        User: js -> jspop -> server
+    
+    *2. Format: "JAVAC_OpenSession <sessionName>" ---- replaced by jspop
+                                                       control command
+        Arguments: One
+               sessionName: the name of the session need to be opened.
+        Semantic: Client want to start a new session.
+                  Server need to instruct client to build visual
+                  representation of a new session.
+        User: js -> jspop -> server 
+        
+    *3. Format: "JAVAC_CloseCurrentSession"
+        Arguments: None
+        Semantic: Client want to close current session.
+                  Server do not need to send client anything except control 
+                  command.
+        User: js -> jspop -> server
+        
+    *4. Format: "JAVAC_Exit"
+        Arguments: None
+        Semantic: Client is quit.
+                  Server do not need to send client anything except control 
+                  command.
+        User: js -> jspop
+        
+    *5. ... whatever in your guy's mind.
+        
