@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1999/11/01 17:57:49  wenger
+#  Slight cleanup.
+#
 #  Revision 1.26  1999/02/19 15:16:17  wenger
 #  Eliminated unnecessary libraries from link (reduces process size).
 #
@@ -103,11 +106,10 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
-               -L/s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
+ARCH_LDFLAGS = -L/s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
 #ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
 #               -ltk -ltcl -lXmu -lX11 -lm
-ARCH_SYSLIBS = -lopengldum -ltk -ltcl -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 

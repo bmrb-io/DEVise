@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1999/07/12 19:03:15  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.3  1998/06/30 19:12:48  wenger
 # Got DEVise to compile on linux again.
 #
@@ -37,48 +40,27 @@ depend:
 
 # DO NOT DELETE
 
-Attr.o: Attr.h /usr/include/stdlib.h /usr/include/features.h
+Attr.o: udParam.h /usr/include/stdlib.h /usr/include/features.h
 Attr.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Attr.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
 Attr.o: /usr/include/sys/types.h /usr/include/bits/types.h
 Attr.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
 Attr.o: /usr/include/sys/select.h /usr/include/bits/select.h
 Attr.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-Attr.o: /usr/include/alloca.h IntStack.h Traits.h /usr/include/string.h
-Attr.o: bitmap.h /usr/include/limits.h /usr/include/bits/posix1_lim.h
-Attr.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-Attr.o: /usr/include/bits/posix2_lim.h PerlFrag.h /usr/include/stdio.h
+Attr.o: /usr/include/alloca.h RecId.h Schema.h /usr/include/stdio.h
 Attr.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 Attr.o: /usr/include/libio.h /usr/include/_G_config.h
 Attr.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
 Attr.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 Attr.o: /usr/include/bits/mathcalls.h
 Attr.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-Attr.o: Lexer.h udParam.h RecId.h Schema.h /usr/include/unistd.h
-Attr.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-Attr.o: /usr/include/getopt.h Enum.h Comment.h Config.h UniData.h SlideBuf.h
-Attr.o: getftime.h DateTime.h /usr/include/assert.h
-Comment.o: Comment.h
+Attr.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+Attr.o: /usr/include/bits/confname.h /usr/include/getopt.h Attr.h IntStack.h
+Attr.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
+Attr.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+Attr.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h PerlFrag.h
+Attr.o: Lexer.h Enum.h Comment.h Config.h UniData.h SlideBuf.h
 DateTime.o: DateTime.h
-Enum.o: Enum.h /usr/include/string.h /usr/include/features.h
-Enum.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-Enum.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-Enum.o: Attr.h /usr/include/stdlib.h /usr/include/sys/types.h
-Enum.o: /usr/include/bits/types.h /usr/include/time.h /usr/include/endian.h
-Enum.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-Enum.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-Enum.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h IntStack.h
-Enum.o: Traits.h bitmap.h /usr/include/limits.h
-Enum.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-Enum.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h PerlFrag.h
-Enum.o: /usr/include/stdio.h
-Enum.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-Enum.o: /usr/include/libio.h /usr/include/_G_config.h
-Enum.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
-Enum.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-Enum.o: /usr/include/bits/mathcalls.h
-Enum.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-Enum.o: Lexer.h
 IntStack.o: /usr/include/stdlib.h /usr/include/features.h
 IntStack.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 IntStack.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -87,29 +69,24 @@ IntStack.o: /usr/include/time.h /usr/include/endian.h
 IntStack.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 IntStack.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 IntStack.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h IntStack.h
-PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/features.h
+PerlFrag.o: Attr.h /usr/include/stdlib.h /usr/include/features.h
 PerlFrag.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 PerlFrag.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-PerlFrag.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-PerlFrag.o: /usr/include/bits/types.h /usr/include/libio.h
-PerlFrag.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-PerlFrag.o: /usr/include/string.h /usr/include/math.h
-PerlFrag.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-PerlFrag.o: /usr/include/bits/mathcalls.h
-PerlFrag.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-PerlFrag.o: Lexer.h Attr.h /usr/include/stdlib.h /usr/include/sys/types.h
+PerlFrag.o: /usr/include/sys/types.h /usr/include/bits/types.h
 PerlFrag.o: /usr/include/time.h /usr/include/endian.h
 PerlFrag.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 PerlFrag.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 PerlFrag.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h IntStack.h
-PerlFrag.o: Traits.h bitmap.h /usr/include/limits.h
+PerlFrag.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
 PerlFrag.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 PerlFrag.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-PerlFrag.o: /usr/include/assert.h
-Schema.o: /usr/include/string.h /usr/include/features.h
+PerlFrag.o: PerlFrag.h /usr/include/math.h /usr/include/bits/huge_val.h
+PerlFrag.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+PerlFrag.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+PerlFrag.o: Lexer.h /usr/include/assert.h
+Schema.o: Schema.h /usr/include/stdio.h /usr/include/features.h
 Schema.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Schema.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-Schema.o: Schema.h /usr/include/stdio.h
 Schema.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 Schema.o: /usr/include/bits/types.h /usr/include/libio.h
 Schema.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
@@ -122,23 +99,22 @@ Schema.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
 Schema.o: /usr/include/endian.h /usr/include/bits/endian.h
 Schema.o: /usr/include/sys/select.h /usr/include/bits/select.h
 Schema.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-Schema.o: /usr/include/alloca.h IntStack.h Traits.h bitmap.h
-Schema.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+Schema.o: /usr/include/alloca.h IntStack.h Traits.h /usr/include/string.h
+Schema.o: bitmap.h /usr/include/limits.h /usr/include/bits/posix1_lim.h
 Schema.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
 Schema.o: /usr/include/bits/posix2_lim.h PerlFrag.h Lexer.h Enum.h Comment.h
-Schema.o: Config.h Token.h getftime.h DateTime.h /usr/include/assert.h
-SlideBuf.o: /usr/include/stdlib.h /usr/include/features.h
+Schema.o: Config.h Token.h getftime.h DateTime.h
+SlideBuf.o: /usr/include/string.h /usr/include/features.h
 SlideBuf.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 SlideBuf.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+SlideBuf.o: /usr/include/errno.h /usr/include/bits/errno.h
+SlideBuf.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+SlideBuf.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
 SlideBuf.o: /usr/include/sys/types.h /usr/include/bits/types.h
 SlideBuf.o: /usr/include/time.h /usr/include/endian.h
 SlideBuf.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 SlideBuf.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-SlideBuf.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
-SlideBuf.o: /usr/include/string.h /usr/include/errno.h
-SlideBuf.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-SlideBuf.o: /usr/include/asm/errno.h /usr/include/fcntl.h
-SlideBuf.o: /usr/include/bits/fcntl.h /usr/include/sys/stat.h
+SlideBuf.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 SlideBuf.o: /usr/include/bits/stat.h Config.h SlideBuf.h
 SlideBuf.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
 SlideBuf.o: /usr/include/bits/confname.h /usr/include/getopt.h Comment.h
@@ -154,29 +130,17 @@ Token.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 Token.o: /usr/include/bits/types.h /usr/include/libio.h
 Token.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h Lexer.h
 Token.o: Token.h
-Traits.o: Traits.h /usr/include/stdlib.h /usr/include/features.h
-Traits.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-Traits.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-Traits.o: /usr/include/sys/types.h /usr/include/bits/types.h
-Traits.o: /usr/include/time.h /usr/include/endian.h
-Traits.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-Traits.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-Traits.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
-Traits.o: /usr/include/string.h bitmap.h /usr/include/limits.h
-Traits.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-Traits.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-UniData.o: /usr/include/stdlib.h /usr/include/features.h
+UniData.o: /usr/include/string.h /usr/include/features.h
 UniData.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 UniData.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+UniData.o: /usr/include/errno.h /usr/include/bits/errno.h
+UniData.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+UniData.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
 UniData.o: /usr/include/sys/types.h /usr/include/bits/types.h
 UniData.o: /usr/include/time.h /usr/include/endian.h
 UniData.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 UniData.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-UniData.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
-UniData.o: /usr/include/string.h /usr/include/errno.h
-UniData.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-UniData.o: /usr/include/asm/errno.h /usr/include/fcntl.h
-UniData.o: /usr/include/bits/fcntl.h /usr/include/sys/stat.h
+UniData.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 UniData.o: /usr/include/bits/stat.h Config.h UniData.h /usr/include/unistd.h
 UniData.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 UniData.o: /usr/include/getopt.h RecId.h SlideBuf.h Schema.h
@@ -187,11 +151,12 @@ UniData.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
 UniData.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 UniData.o: /usr/include/bits/mathcalls.h
 UniData.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-UniData.o: Attr.h IntStack.h Traits.h bitmap.h /usr/include/limits.h
+UniData.o: Attr.h /usr/include/stdlib.h /usr/include/alloca.h IntStack.h
+UniData.o: Traits.h bitmap.h /usr/include/limits.h
 UniData.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 UniData.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 UniData.o: PerlFrag.h Lexer.h Enum.h Comment.h udParam.h udIndex.h
-UniData.o: fast_atof.h getftime.h DateTime.h /usr/include/assert.h
+UniData.o: fast_atof.h getftime.h DateTime.h
 conv_uddr.o: UniData.h /usr/include/unistd.h /usr/include/features.h
 conv_uddr.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 conv_uddr.o: /usr/include/bits/posix_opt.h /usr/include/bits/types.h
@@ -242,28 +207,6 @@ udIndex.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 udIndex.o: /usr/include/bits/posix_opt.h /usr/include/bits/types.h
 udIndex.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
 udIndex.o: /usr/include/bits/confname.h /usr/include/getopt.h RecId.h
-udParam.o: udParam.h /usr/include/stdlib.h /usr/include/features.h
-udParam.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-udParam.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-udParam.o: /usr/include/sys/types.h /usr/include/bits/types.h
-udParam.o: /usr/include/time.h /usr/include/endian.h
-udParam.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-udParam.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-udParam.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h RecId.h
-udParam.o: Schema.h /usr/include/stdio.h
-udParam.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-udParam.o: /usr/include/libio.h /usr/include/_G_config.h
-udParam.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
-udParam.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-udParam.o: /usr/include/bits/mathcalls.h
-udParam.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-udParam.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-udParam.o: /usr/include/bits/confname.h /usr/include/getopt.h Attr.h
-udParam.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
-udParam.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-udParam.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-udParam.o: /usr/include/bits/posix2_lim.h PerlFrag.h Lexer.h Enum.h Comment.h
-udParam.o: Config.h
 umain.o: /usr/include/stdlib.h /usr/include/features.h
 umain.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 umain.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

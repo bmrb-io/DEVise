@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  2001/07/31 15:53:22  wenger
+  Added -fontkludge argument to allow bypassing of font families that
+  don't work with Xvfb on SPARC/Solaris.
+
   Revision 1.29  2000/08/10 16:10:39  wenger
   Phase 1 of getting rid of shared-memory-related code.
 
@@ -217,8 +221,6 @@ class Init {
 
     static float DrawTimeout() { return _drawTimeout; }
 
-    static Boolean UseOpenGL() { return _useOpenGL; }
-
     static int Port() { return _port; }
 	static int SwitchPort() {return _switchport;}
 	static int ImagePort() {return _imageport;}
@@ -290,8 +292,6 @@ protected:
     static Boolean _forceTapeSearch;   /* force search for tape sources */
 
     static float _drawTimeout;     /* timeout for drawing a "chunk" of data */
-
-    static Boolean _useOpenGL;     /* whether we use opengl */
 
     static int _port;              /* port for server to listen on */
     static int _switchport;        /* port for server to listen on */

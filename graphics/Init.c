@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  2001/07/31 16:36:27  wenger
+  Oops!  Default for fontKludge should be false.
+
   Revision 1.66  2001/07/31 15:53:21  wenger
   Added -fontkludge argument to allow bypassing of font families that
   don't work with Xvfb on SPARC/Solaris.
@@ -368,7 +371,6 @@ int Init::_screenHeight = -1;
 
 Boolean Init::_forceBinarySearch = false;
 Boolean Init::_forceTapeSearch = false;
-Boolean Init::_useOpenGL = false;
 
 float Init::_drawTimeout = 10.0;
 
@@ -442,7 +444,6 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
   fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
   fprintf(stderr, "\t-drawTO <value>: symbol drawing timeout\n");
-  fprintf(stderr, "\t-gl: use OpenGL to draw\n");
   fprintf(stderr, "\t-port <value>: port for server to listen on\n");
   fprintf(stderr, "\t-switchport <value>: port for server to listen on\n");
   fprintf(stderr, "\t-imageport <value>: port for image socket (-1 means don't listen)\n");
@@ -818,11 +819,6 @@ void Init::DoInit(int &argc, char **argv)
       else if (strcmp(&argv[i][1], "forceTapeSearch") == 0) {
 	_forceTapeSearch = true;
         printf("Enabling searches on tape\n");
-	MoveArg(argc,argv,i,1);
-      }
-      else if (strcmp(&argv[i][1], "gl") == 0) {
-	_useOpenGL = true;
-	printf("Use OpenGL graphics\n");
 	MoveArg(argc,argv,i,1);
       }
 

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.16  2000/08/10 16:09:51  wenger
+# Phase 1 of getting rid of shared-memory-related code.
+#
 # Revision 1.15  2000/03/23 19:51:31  wenger
 # Updated dependencies for Solaris 2.7.
 #
@@ -72,8 +75,7 @@ DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h ../graphics/Exit.h ../graphics.new/TData.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 DevRead.o: ../graphics/Dispatcher.h ../graphics/DList.h
-DevRead.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-DevRead.o: ../graphics.new/DataSeg.h
+DevRead.o: ../graphics/AttrList.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 drtest.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  2001/07/31 15:53:21  wenger
+  Added -fontkludge argument to allow bypassing of font families that
+  don't work with Xvfb on SPARC/Solaris.
+
   Revision 1.22  1998/09/22 17:23:41  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -120,7 +124,6 @@
 //#define DEBUG
 
 #include "XDisplay.h"
-#include "GLDisplay.h"
 #include "PSDisplay.h"
 #include "Util.h"
 #ifndef LIBCS
@@ -141,16 +144,7 @@ Get the default display
 DeviseDisplay *DeviseDisplay::DefaultDisplay()
 {
   if (!_defaultDisplay) {
-#ifndef LIBCS
-    // changed for testing GLDisplay
-    if (Init::UseOpenGL()) {
-      _defaultDisplay = new GLDisplay();
-    } else {
-      _defaultDisplay = new XDisplay(NULL, Init::FontKludge());
-    }
-#else
     _defaultDisplay = new XDisplay(NULL, Init::FontKludge());
-#endif
   }
   return _defaultDisplay;
 }

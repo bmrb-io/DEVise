@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  2000/08/10 16:09:51  wenger
+# Phase 1 of getting rid of shared-memory-related code.
+#
 # Revision 1.9  2000/03/23 19:58:29  wenger
 # Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
 # g++ 2.95.2).
@@ -76,9 +79,8 @@ DevRead.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 DevRead.o: /usr/include/bits/mathcalls.h ../graphics/Exit.h
 DevRead.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
 DevRead.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
-DevRead.o: ../graphics/DList.h ../graphics/AttrList.h /usr/include/sys/time.h
-DevRead.o: /usr/include/bits/time.h ../graphics/Init.h
-DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+DevRead.o: ../graphics/DList.h ../graphics/AttrList.h
+DevRead.o: ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/features.h
 drtest.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

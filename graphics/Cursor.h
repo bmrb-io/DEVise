@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  2001/01/08 20:32:41  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.27.2.2  2000/12/27 19:38:54  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -165,7 +169,6 @@
 #include "DList.h"
 #include "VisualArg.h"
 #include "ViewCallback.h"
-#include "CursorStore.h"
 #include "WindowRep.h"
 
 #include "Color.h"
@@ -218,8 +221,6 @@ class DeviseCursor : private ViewCallback
     edgeGrid = _edgeGrid;
   }
   void SetGrid(Boolean useGrid, Coord gridX, Coord gridY, Boolean edgeGrid);
-  void ReadCursorStore(WindowRep*);
-  void DrawCursorStore(WindowRep*);
   void DrawCursorFill(WindowRep*);
   void DrawCursorBorder(WindowRep*);
 
@@ -292,7 +293,6 @@ private:
   Coord _gridX;
   Coord _gridY;
   Boolean _edgeGrid;
-  CursorStore _cursor_store[12];
   PColorID _cursorColor;
   Boolean _fixedSize;
   Boolean _partInDest;

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1999/07/12 19:02:39  wenger
+#  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 #  Revision 1.14  1999/02/18 18:01:19  wenger
 #  OpenGL is now disabled except on SGI platform.
 #
@@ -87,10 +90,10 @@ include ../Makefile.config
 
 #ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 ARCH_LDFLAGS = -L/home/zhenhai/Mesa-2.4/lib -Xlinker -rpath -Xlinker /home/zhenhai/Mesa-2.4/lib -L/usr/lib -L/usr/X11R6/lib
-#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -lX11 -lm
-ARCH_SYSLIBS = -L../graphics -lopengldum -ltk8.0 -ltcl8.0 -lX11 -lm -ldl
+#ARCH_SYSLIBS = -L../graphics -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -L../graphics -ltcl7.5 -ldl -lX11 -lm
+#ARCH_SYSLIBS = -L../graphics -ltk4.2 -ltcl7.6 -lX11 -lm
+ARCH_SYSLIBS = -L../graphics -ltk8.0 -ltcl8.0 -lX11 -lm -ldl
 #ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = 
 # to make everything statically-linked...

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1998/08/21 22:18:39  wenger
+#  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+#  linked DEVise for distribution.
+#
 #  Revision 1.14  1998/03/04 18:41:56  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -53,7 +57,7 @@
 include ../Makefile.config
 
 ARCH_LDFLAGS =  -L/s/tcl7.4/lib
-ARCH_SYSLIBS = -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.64  1999/11/16 17:01:58  wenger
+#  Removed all DTE-related conditional compiles; changed version number to
+#  1.7.0 because of removing DTE; removed DTE-related schema editing and
+#  data source creation GUI.
+#
 #  Revision 1.63  1999/04/26 15:26:23  wenger
 #  Makefiles are smarter about not building DTE-related stuff if it's not
 #  necessary.
@@ -220,7 +225,6 @@ include ../../Makefile.common
 
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../src/color/export -I../../src/utils/export -I../../tape \
-	$(GLINCLUDE)\
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup/export

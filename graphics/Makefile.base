@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.82  2001/02/20 20:02:43  wenger
+#  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+#  to the trunk.
+#
 #  Revision 1.81.4.1  2001/02/16 21:37:46  wenger
 #  Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
 #  a web browser) on 'sets' of visual filters.
@@ -282,7 +286,6 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../csgroup/export \
 	-I../../src/data/export \
-	$(GLINCLUDE) \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) \
 	$(DEBUGFLAGS) -DUNIX -DGRAPHICS
 
@@ -296,12 +299,11 @@ LIBSRC = AttrList.c \
 	Util.c View.c ViewWin.c ViewLayout.C \
 	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	GLDisplay.c GLWindowRep.c \
 	xvgifwr.c xv24to8.c xvgrab.c \
 	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c \
+	GDataSock.c RangeDesc.c PileStack.c \
 	ViewGeom.c HangCheck.c DevAxis.c MetaVisDesc.c DeviseHistory.c
 
 SRCc = $(filter %.c,$(LIBSRC))
@@ -322,14 +324,12 @@ ALLSRC = $(LIBSRC) $(OTHERSRC)
 
 LIBNAME = libgraphics.a
 
-all: $(LIBNAME) libopengldum.a
-lib: $(LIBNAME) libopengldum.a
+all: $(LIBNAME)
+lib: $(LIBNAME)
 
 #$(LIBNAME): $(LIBNAME)($(LIBOBJ))
 $(LIBNAME): $(LIBOBJ)
 	$(AR) cr libgraphics.a $(LIBOBJ)
-
-libopengldum.a: libopengldum.a(OpenGLDum.o)
 
 #$(LIBNAME)(xvgifwr.o):	xvgifwr.c
 xvgifwr.o:	xvgifwr.c
@@ -365,8 +365,8 @@ Makefile.depend:
 	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
-	-rm $(LIBNAME) libopengldum.a testWindowRep TestDevStatus \
+	-rm $(LIBNAME) testWindowRep TestDevStatus \
 		Makefile.depend
 
 mostlyclean:
-	-rm $(LIBOBJ) $(OTHEROBJ) OpenGLDum.o
+	-rm $(LIBOBJ) $(OTHEROBJ)

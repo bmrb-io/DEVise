@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.237  2001/07/27 18:32:11  wenger
+  Found and fixed bug 684 (problem with home on linked views).
+
   Revision 1.236  2001/05/03 19:39:02  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -2929,9 +2932,6 @@ View::DrawCursors()
     for(index = _cursors->InitIterator(); _cursors->More(index);) {
       DeviseCursor *cursor = _cursors->Next(index);
 	  if (_drawCursors) {
-        if (Init::UseOpenGL()) {
-          cursor->ReadCursorStore(winRep);
-        }
 	  }
     }
     _cursors->DoneIterator(index);
@@ -2939,11 +2939,7 @@ View::DrawCursors()
     for(index = _cursors->InitIterator(); _cursors->More(index);) {
       DeviseCursor *cursor = _cursors->Next(index);
 	  if (_drawCursors) {
-        if (Init::UseOpenGL()) {
-          cursor->DrawCursorFill(winRep);
-        } else {
-          DoDrawCursor(winRep, cursor);
-        }
+        DoDrawCursor(winRep, cursor);
 	  }
 	  if (_jsCursors) {
 	    JavaScreenCmd::DrawCursor(this, cursor);
@@ -2951,15 +2947,6 @@ View::DrawCursors()
     }
     _cursors->DoneIterator(index);
 
-    for(index = _cursors->InitIterator(); _cursors->More(index);) {
-      DeviseCursor *cursor = _cursors->Next(index);
-	  if (_drawCursors) {
-        if (Init::UseOpenGL()) {
-          cursor->DrawCursorBorder(winRep);
-        }
-	  }
-    }
-    _cursors->DoneIterator(index);
     _cursorsOn = true;
     return true;
   }
@@ -2990,11 +2977,7 @@ View::HideCursors()
     for(index = _cursors->InitIterator(); _cursors->More(index);) {
       DeviseCursor *cursor = _cursors->Next(index);
 	  if (_drawCursors) {
-        if (Init::UseOpenGL()) {
-          cursor->DrawCursorStore(winRep);
-        } else {
-          DoDrawCursor(winRep, cursor);
-        }
+        DoDrawCursor(winRep, cursor);
 	  }
 	  if (_jsCursors) {
 		// JavaScreen automatically erases a cursor when it gets a
