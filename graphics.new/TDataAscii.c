@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/11/18 22:29:31  jussi
+  Added estimation of total number of records in data set.
+
   Revision 1.44  1996/11/18 18:10:54  donjerko
   New files and changes to make DTE work with Devise
 
@@ -268,7 +271,9 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
     _data->Seek(0, SEEK_SET);
 
+#ifdef DEBUG
     printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
+#endif
 
     Dispatcher::Current()->Register(this, 10, AllState, 
 				    false, _data->AsyncFd());
