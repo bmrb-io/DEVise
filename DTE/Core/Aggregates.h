@@ -350,13 +350,15 @@ public:
 
     TypeID retVal;  // is a dummy	       
     TRY(comparePtr = getOperatorPtr("comp", inputT, inputT, retVal), NULL); 
+    assert(comparePtr);
+    
     return typeID;
   }
 
   ExecGroupAttr* createExec(){
     ADTCopyPtr copyPtr;
     TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
+    
     size_t valueSize;
     Type *value = allocateSpace(typeID, valueSize);
 
@@ -466,10 +468,10 @@ public:
 			}
 			if (groupBy){
 			  numGrpByFlds = groupBy->cardinality();
+			  positions = new int[numGrpByFlds];
 			  grpByFuncs = new (GroupAttribute*)[numGrpByFlds];
 			  for (int i = 0; i < numGrpByFlds; i++)
 			    grpByFuncs[i] = NULL;
-			  positions = new int[numGrpByFlds];
 			}
 		}
 		else {
