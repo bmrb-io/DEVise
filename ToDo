@@ -341,6 +341,9 @@ Allow aggregates/group by (defining bucket ranges for histograms). (rr/rkw
 
 Transition user manual from TeX/PostScript to html. (rr/rkw 1/29/97)
 
+Add a new rectangular shape type whose location is specified by the
+lower left corner rather than the center. (ml/rkw 1/29/97)
+
 
 COMPLETED
 ---------

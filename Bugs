@@ -583,6 +583,37 @@ Num Date        Status  Description
 			the title font to 18 points -> the title is drawn
 			with the old background color. (rkw)
 
+140 01/30/97	OPEN	Cursor and selection box colors (drawn with XOR)
+			aren't very good. (kb/rkw)
+			Deferred
+
+141 01/30/97	OPEN	Clicking twice in exactly the same location in a
+			view with a cursor hides the cursor. (kb/rkw)
+			Deferred
+
+142 01/30/97	OPEN	Cursor is sometimes drawn one pixel too low/right,
+			leaving a mark when the cursor is moved. (kb/rkw)
+			Deferred
+
+143 01/30/97	OPEN	Defining an X and a Y cursor should probably produce
+			a single XY cursor. (kb/rkw)
+			Deferred
+
+144 01/30/97	OPEN	When a view has both an X & a Y cursor (ie, destination
+			of more than one cursor), only one cursor can be moved
+			by clicking on the view and there is no way to choose
+			that cursor. (kb/rkw)
+			Deferred
+
+145 01/30/97	OPEN	Mapping window is not updated when a new view is
+			selected. (kb/rkw) (See related item of 8/2/96 in
+			the to-do list.)
+			Deferred
+
+146 01/30/97	OPEN	KGraph doesn't always redraw properly (when covered
+			then resized & raised). (kb/rkw)
+			Deferred
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

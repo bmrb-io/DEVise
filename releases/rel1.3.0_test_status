@@ -4,7 +4,7 @@
 x- Intel/Solaris GUI: Kent
 x- SPARC/Solaris GUI: Guangshun
 x- SPARC/SunOS GUI: Jussi
-- HP GUI: Kevin
+x- HP GUI: Kevin
 x- Linux GUI: Kent
 
 x- Binary TData: Kent
@@ -14,10 +14,10 @@ x- Client/server library: Kent
 x- Composite parsers: Kent
 x- Display (Display, WindowRep, Transform, 3D stuff): Kent
 x- DTE: Donko
-- Links (record links, regular links): Kevin
+x- Links (record links, regular links): Kevin
 x- Histograms: Guangshun
 x- Large data sets: Jussi
-- Mapping: Kevin
+x- Mapping: Kevin
 x- Multi: Jussi
 x- Printing: Kent
 x- Purify Devise: Guangshun/Kent
@@ -32,3 +32,6 @@ a- Automatic test scripts: Kent
 x = done
 ~ = almost done
 a = active (in progress)
+? = perhaps needs to be done
+! = don't do
+
