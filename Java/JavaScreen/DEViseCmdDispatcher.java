@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2001/03/20 17:49:45  xuk
+// Added collaboration for 3D Views.
+//
 // Revision 1.85  2001/03/19 23:10:31  xuk
 // Fixed bug for no available JavaScreen for collaboration.
 //
@@ -1213,13 +1216,18 @@ public class DEViseCmdDispatcher implements Runnable
         MediaTracker tracker = new MediaTracker(jsc);
         Toolkit kit = jsc.getToolkit();
         Image image = kit.createImage(imageData);
-        tracker.addImage(image, 0);
+	final int imageId = 0;
+        tracker.addImage(image, imageId);
         try {
-            tracker.waitForID(0);
+            tracker.waitForID(imageId);
         }  catch (InterruptedException e) {
+	    System.err.println("tracker.waitForID() failed: " +
+	      e.getMessage());
+	    jsc.jsValues.debug.log("tracker.waitForID() failed: " +
+	      e.getMessage());
         }
 
-        if (tracker.isErrorID(0)) {
+        if (tracker.isErrorID(imageId)) {
             throw new YException("Invalid image data for view \"" +
               viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
         }
@@ -1460,10 +1468,13 @@ public class DEViseCmdDispatcher implements Runnable
         imgData = commSocket.receiveData(size);
 
         jsc.pn("Successfully received data (" + size + ") from socket ...");
-	jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
+	jsc.pn("  First: " + imgData[0] + "; middle: " +
+	  imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
 	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
         jsc.jsValues.debug.log("Successfully received data (" + size +
 	  ") from socket ...");
+	jsc.jsValues.debug.log("  First: " + imgData[0] + "; middle: " +
+	  imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
 
         // turn off the receive light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);

@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/03/09 20:24:36  wenger
+// Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+// to the trunk; updated linux and solaris dependencies.
+//
 // Revision 1.2  2001/02/20 20:02:19  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -84,7 +88,7 @@ public class DEViseCheckPop
 		    _log.write("FAIL\n");
 		}
 	        System.err.println("DEViseCheckPop fails for " +
-		  _date.hashCode());
+		  _date.getTime());
                 if (DEBUG >= 1) {
 		    System.err.println("Wrote " + _bytesWritten + " bytes");
 		}
@@ -107,7 +111,7 @@ public class DEViseCheckPop
 	}
 
 	if (DEBUG_LOG >= 1) {
-	    _log = new Log("check_connect.out." + _date.hashCode());
+	    _log = new Log("check_connect.out." + _date.getTime());
 	}
 
 	checkArgs(args);
@@ -191,7 +195,7 @@ public class DEViseCheckPop
 	    //
 	    // Send JAVAC_Connect and receive the response.
 	    //
-	    sock.sendCmd(DEViseCommands.CHECK_POP + " " + _date.hashCode());
+	    sock.sendCmd(DEViseCommands.CHECK_POP + " " + _date.getTime());
 	    if (DEBUG_LOG >= 2) {
 	        _log.write("  Sent command\n");
             }

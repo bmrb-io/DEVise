@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2001/03/08 21:10:13  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.19  2001/03/03 20:14:02  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 //
@@ -420,7 +424,8 @@ public class DEViseCommSocket
             os.flush();
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Error occurs while writing to output stream", "DEViseCommSocket:sendCmd()");
+            throw new YException("Error occurs while writing to output " +
+	      "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
         }
     }
 
@@ -570,8 +575,8 @@ public class DEViseCommSocket
                            // actually does nothing
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Error occurs while writing to output stream",
-	      "DEViseCommSocket:sendData()");
+            throw new YException("Error occurs while writing to output " +
+	      "stream" + e.getMessage(), "DEViseCommSocket:sendData()");
         }
     }
 

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2001/03/20 17:49:45  xuk
+// Added collaboration for 3D Views.
+//
 // Revision 1.33  2001/03/03 20:11:27  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 // 1.Changes in getCmd() to process JAVAC_SaveCurSession command.
@@ -660,6 +663,8 @@ public class DEViseClient
 		    if (collabInit != 1) {
 			pop.pn("Sending data to client(" + ID + " " + hostname +
 			       ") (" + d.length + " bytes)");
+			pop.pn("  First: " + d[0] + "; middle: " +
+			  d[d.length/2] + "; last: " + d[d.length-1]);
 			socket.sendData(d);
 			pop.pn("  Done sending data");
 		    }
@@ -667,13 +672,17 @@ public class DEViseClient
 		    if (! collabSockets.isEmpty()) { // also send to collab JS
 			if (collabInit == 1) {
 			    DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
-			    pop.pn("Sending data to collabration client" + "(" + d.length + " bytes)");
+			    pop.pn("Sending data to collabration client (" + d.length + " bytes)");
+			    pop.pn("  First: " + d[0] + "; middle: " +
+			      d[d.length/2] + "; last: " + d[d.length-1]);
 			    sock.sendData(d);
 			    pop.pn("Done sending data");
 			} else {
 			    for (int j = 0; j < collabSockets.size(); j++) {
 				DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(j);
-				pop.pn("Sending data to collabration client" + " " + j + "(" + d.length + " bytes)");
+				pop.pn("Sending data to collabration client" + " " + j + " (" + d.length + " bytes)");
+			        pop.pn("  First: " + d[0] + "; middle: " +
+			          d[d.length/2] + "; last: " + d[d.length-1]);
 				sock.sendData(d);
 				pop.pn("Done sending data");	
 			    }

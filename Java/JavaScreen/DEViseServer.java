@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2001/03/20 17:50:12  xuk
+// *** empty log message ***
+//
 // Revision 1.53  2001/03/05 16:45:26  xuk
 // Clear follower's JavaScreen when leader close session.
 // Changes in cmdCloseSession().
@@ -500,6 +503,8 @@ public class DEViseServer implements Runnable
 			    
 			    client.sendCmd(serverCmds);
 			    client.sendData(serverDatas);
+		            pop.pn("Done sending all data to " +
+			      "collaboration client");
 			    serverDatas.removeAllElements();
 			    serverCmds = null;
 			}
@@ -513,8 +518,7 @@ public class DEViseServer implements Runnable
                         // since client.getCmd() will not block, this is
 			// meaningless
                     } catch (YException e) {
-                        pop.pn("Client communication error");
-                        pop.pn(e.getMsg());
+                        pop.pn("Client communication error1: " + e.getMsg());
                         removeCurrentClient();
 
                         isEnd = true;
@@ -567,8 +571,8 @@ public class DEViseServer implements Runnable
 			      " {Communication error occurs while talk to devised}");
                             switchClient();
                         } catch (YException e1) {
-                            pop.pn("Client communication error");
-                            pop.pn(e1.getMsg());
+                            pop.pn("Client communication error2: " +
+			      e1.getMsg());
                             removeCurrentClient(false);
                         }
                     }
@@ -584,6 +588,7 @@ public class DEViseServer implements Runnable
                 try {
                     client.sendCmd(serverCmds);
                     client.sendData(serverDatas);
+		    pop.pn("Done sending all data to client(s)");
 		    
 		    if (client.useCgi()) {
 			client.getSocket().closeSocket();
@@ -595,8 +600,7 @@ public class DEViseServer implements Runnable
                         removeCurrentClient(false);
                     }
                 } catch (YException e) {
-                    pop.pn("Client communication error3");
-                    pop.pn(e.getMsg());
+                    pop.pn("Client communication error3: " + e.getMsg());
                     removeCurrentClient();
                 }
             }
@@ -753,7 +757,7 @@ public class DEViseServer implements Runnable
 		} catch (InterruptedIOException e) {}
 	    } else {
 		pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
-		       + "to collabration client" + " " + i);
+		       + " to collabration client" + " " + i);
 		sock.sendCmd(DEViseCommands.CLOSE_SESSION);
 	    }			    
 	}
