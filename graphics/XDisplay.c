@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/14 21:13:40  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.6  1995/12/06 21:22:33  jussi
   Tries to allocate a color by using a close color approximation
   if requested color cannot be allocated.
@@ -419,7 +422,8 @@ void XDisplay::InternalProcessing()
 
     /* dispatch event to appropriate window.*/
     Boolean found = false;
-    for(int index = _winList.InitIterator(); _winList.More(index);) {
+    int index;
+    for(index = _winList.InitIterator(); _winList.More(index);) {
       XWindowRep *win = _winList.Next(index);
       if (win->_win == event.xany.window) {
 	/* Note: got to be careful here. We need to

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 21:11:27  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.5  1995/12/02 21:25:20  jussi
   Added support for TK_WINDOW i.e. Tk controls surrounding views
   and windows. Fixed some bugs.
@@ -286,7 +289,8 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 int ViewWin::TotalWeight()
 {
   int w = 0;
-  for(int index = InitIterator(); More(index);) {
+  int index;
+  for(index = InitIterator(); More(index);) {
     ViewWin *vw= Next(index);
     w += vw->GetWeight();
   }

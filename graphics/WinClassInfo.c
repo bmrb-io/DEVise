@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 15:29:38  jussi
+  Replaced WinVertical and WinHorizontal with TileLayout which can
+  do both, depending on run-time, user-settable parameters.
+
   Revision 1.3  1995/12/02 21:26:25  jussi
   Added horizontal view layout.
 
@@ -50,7 +54,7 @@ TileLayoutInfo::~TileLayoutInfo()
 
 /* Get names of parameters */
 
-virtual void TileLayoutInfo::ParamNames(int &argc, char **&argv)
+void TileLayoutInfo::ParamNames(int &argc, char **&argv)
 {
   argc = 5;
   argv = arg;
