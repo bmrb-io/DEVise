@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/03/25 17:59:25  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.61  1997/03/20 22:12:32  guangshu
   Added DEVise command SetBuckRefresh, checkGstat, isXDateType.
 
@@ -296,6 +299,7 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
+#include "MappingInterp.h"
 
 #include "CatalogComm.h"
 #define PURIFY 0
@@ -383,10 +387,14 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	!strcmp(argv[2], "WinHorizontal")){
       argv[2] = "TileLayout";
 	}
-
+#if defined(DEBUG)
+    for(int i=0; i<argc; i++) {
+    	printf("ParseAPI: argv[%d]=%s \n", i, argv[i]);
+    }
+#endif
     char *name = classDir->CreateWithParams(argv[1], argv[2],
 					    argc - 3, &argv[3]);
-#ifdef DEBUG
+#if defined(DEBUG) || 0
     printf("Create - return value = %s\n", name);
 #endif
     control->SetIdle();
@@ -394,6 +402,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "");
     else
       control->ReturnVal(API_ACK, name);
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getTDataName")) {
+    TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+    if (!tdata) {
+        control->ReturnVal(API_NAK, "Cannot find TData");
+        return -1;
+    }
+    char *tname = tdata->GetName();
+    control->ReturnVal(API_ACK, tname); 
     return 1;
   }
 
@@ -472,6 +491,33 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     return 1;
   }
 
+  if (!strcmp(argv[0], "setHistViewname")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+            control->ReturnVal(API_NAK, "Cannot find view");
+            return -1;
+    }
+    char *viewName = new char[strlen(argv[2]) + 1];
+    strcpy(viewName, argv[2]);
+    view->setHistViewname(viewName);
+
+    control->ReturnVal(API_ACK, "done");
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getHistViewname")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+    	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+    }
+    char *name = NULL;
+    name = view->getHistViewname();
+
+    control->ReturnVal(API_ACK, name);
+    return 1;
+  }
+
   if (!strcmp(argv[0], "checkGstat")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -490,6 +536,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     return 1;
   }
 
+  if (!strcmp(argv[0], "getSourceName")) {
+   ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    TData *tdata = map->GetTData();
+    char *sourceName = tdata->GetTableName();
+    control->ReturnVal(API_ACK, sourceName); 
+
+    return 1;
+  }
+
   if (!strcmp(argv[0], "isXDateType")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -497,14 +557,90 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
     }
     if(view->IsXDateType()) {
-	printf("X type is date\n");
+//	printf("X type is date\n");
         strcpy(result, "1");
     } else {
-	printf("X type is NOT date\n");
+//	printf("X type is NOT date\n");
         strcpy(result, "0");
     }
     control->ReturnVal(API_ACK, result);
 
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "isYDateType")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    if(view->IsYDateType()) {
+//	printf("Y type is date\n");
+        strcpy(result, "1");
+    } else {
+//	printf("Y type is NOT date\n");
+        strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "mapG2TAttr")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    if (!map) {
+	control->ReturnVal(API_NAK, "Cannot find Mapping");
+        return -1;
+    }
+    AttrInfo *attr = NULL;
+    if (!strcasecmp(argv[2], "X")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_X);
+    } else if (!strcasecmp(argv[2], "Y")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_Y);
+    } else if (!strcasecmp(argv[2], "Z")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_Z);
+    } else if (!strcasecmp(argv[2], "Color")) {
+        attr = map->MapGAttr2TAttr(MappingCmd_Color);
+    } else {
+      	fprintf(stderr, "Not implemented yet\n");
+      	control->ReturnVal(API_NAK, "GAttr type not implemented");
+	return -1;
+    }
+    if (attr) {
+      strcpy(result, attr->name);
+    } else {
+      strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "mapT2GAttr")) {
+    char *gname = NULL;
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    if (!map) {
+        control->ReturnVal(API_NAK, "Cannot find Mapping");
+        return -1;
+    }
+    printf("argv[2] is %s\n", argv[2]);
+    gname = map->MapTAttr2GAttr(argv[2]);
+    if (gname == NULL) {
+	strcpy(result, "0");
+    } else {
+	strcpy(result, gname);
+    }
+    control->ReturnVal(API_ACK, result);
+    delete gname; 
     return 1;
   }
 
@@ -937,7 +1073,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       
-#ifdef DEBUG
+#if defined(DEBUG) || 0
       printf("getSchema: \n");
       attrList->Print();
 #endif
@@ -1261,9 +1397,15 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
           buff[i] = new char[64];  /*64 bytes is enough for double type */
       }
       BasicStats *allStats = vg->GetStatObj();
-      sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
-      sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
-      sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
+      if (vg->IsYDateType()) {
+      	sprintf(buff[0], "%s", DateString(allStats->GetStatVal(STAT_MAX)));
+      	sprintf(buff[1], "%s", DateString(allStats->GetStatVal(STAT_MEAN)));
+      	sprintf(buff[2], "%s", DateString(allStats->GetStatVal(STAT_MIN)));
+      } else {
+      	sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
+      	sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
+      	sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
+      }
       sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
 #if defined(DEBUG) || 0
       printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
@@ -1288,13 +1430,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         } else if(!strncmp(argv[1], "Hist:", 5)) {
 	  type = HIST_TYPE;
 	  viewName = &argv[1][5];
-        } else if(!strncmp(argv[1], "GstatX: ", 8)) {
+        } else if(!strncmp(argv[1], "GstatX", 6)) {
 	  //e.g. argv[1] = GstatX: View 1
 	  type = GSTATX_TYPE;
-	  viewName = &argv[1][8];
-        } else if(!strncmp(argv[1], "GstatY: ", 8)) {
+	  viewName = strchr(argv[1], ':');
+	  viewName ++;
+	  while (*viewName == ' ') viewName ++;
+	  if (!strncmp(argv[1], "GstatXDTE", 9)) {
+	  	char *pos = strrchr(viewName, ':');
+		if (pos) *pos = '\0';
+	  }
+        } else if(!strncmp(argv[1], "GstatY", 6)) {
 	  type = GSTATY_TYPE;
-	  viewName = &argv[1][8];
+	  viewName = strchr(argv[1], ':');
+	  viewName ++;
         } else {
 	  control->ReturnVal(API_NAK, "Invalid stat type");
 	  return -1;
