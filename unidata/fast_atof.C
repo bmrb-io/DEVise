@@ -35,7 +35,7 @@ double UtilStrtod(char *str, char **ptr)
     str++;
   }
 
-  if (*str != '.' && *str != 'e')
+  if (*str != '.' && *str != 'e' && *str != 'E')
   {
     double value = sign * wholePart;
     if (ptr)
@@ -57,7 +57,7 @@ double UtilStrtod(char *str, char **ptr)
       str++;
     }
   }
-  if (*str != 'e')
+  if (*str != 'e' && *str != 'E')
   {
     double value = sign * (wholePart + fractPart);
     if (ptr)

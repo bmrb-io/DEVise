@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/23 19:57:28  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.15  1997/05/28 15:38:55  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -240,7 +244,7 @@ inline double UtilAtof(char *str)
     str++;
   }
 
-  if (*str != '.' && *str != 'e')
+  if (*str != '.' && *str != 'e' && *str != 'E')
   {
     double value = sign * wholePart;
     return value;
@@ -260,7 +264,7 @@ inline double UtilAtof(char *str)
       str++;
     }
   }
-  if (*str != 'e')
+  if (*str != 'e' && *str != 'E')
   {
     double value = sign * (wholePart + fractPart);
     return value;

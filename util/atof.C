@@ -13,9 +13,16 @@
 */
 
 /*
+ * Code for testing string-to-number functions.
+ */
+
+/*
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 00:21:10  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.3  1996/06/19 19:57:24  wenger
   Improved UtilAtof() to increase speed; updated code for testing it.
 
@@ -60,12 +67,8 @@ void Exit::DoAbort(char *reason, char *file, int line)
 
 //#define MYATOI
 
-#if 0
-static const double power10[] = { 1, 10, 100, 1000, 10000, 100000,
-				  1e6, 1e7, 1e8, 1e9 };
-static const int maxDecimals = sizeof power10 / sizeof power10[0];
-#endif
 static const double maxErr = 1e-15;
+static const double maxRelErr = 1e-15;
 
 #ifdef MYATOI
 static const long ipower10[] = { 1, 10, 100, 1000, 10000, 100000,
@@ -89,63 +92,6 @@ inline long myatol(char *&str)
 }
 #endif
 
-#if 0
-inline double myatof(char *str)
-{
-  int sign = 1;
-  if (*str == '-') {
-    sign = -1;
-    str++;
-  } else if (*str == '+')
-    str++;
-
-  long int integer = atol(str);
-  while(isdigit(*str))
-    str++;
-
-  if (*str != '.' && *str != 'e')
-    return sign * integer;
-
-  long int fraction = 0;
-  int decimals = 0;
-
-  if (*str == '.') {
-    char *start = ++str;
-    fraction = atol(str);
-    while(isdigit(*str))
-      str++;
-    decimals = str - start;
-  }
-
-  assert(decimals >= 0 && decimals < maxDecimals);
-
-  if (*str != 'e') {
-    double ret = sign * (integer + fraction / power10[decimals]);
-    return ret;
-  }
-
-  double scale = 1.0;
-  int esign = 1;
-  str++;
-  if (*str == '-') {
-    esign = -1;
-    str++;
-  } else if (*str == '+')
-    str++;
-  int escale = atoi(str);
-  while (escale >= maxDecimals) {
-    scale *= power10[maxDecimals - 1];
-    escale -= maxDecimals - 1;
-  }
-  scale *= power10[escale];
-  if (esign < 0)
-    scale = 1 / scale;
-
-  double ret = sign * (integer + fraction / power10[decimals]) * scale;
-  return ret;
-}
-#endif
-
 int main(int argc, char **argv)
 {
   char *strings[] = { "1.2345", "1234.1232", "-0.65464", "6",
@@ -154,7 +100,7 @@ int main(int argc, char **argv)
 		      "-.234234", "2334234.",
 		      "1e6", "1e-6",
 		      "1.1234e-22", "+5.23e+24", "-.3422e-2",
-		      "+5e+2", "-4e-2",
+		      "+5e+2", "-4E-2",
 		      "-87654321.87654321",
 		      "-987654321.987654321",
 		      "1230000000000000000000000000.0",
@@ -164,11 +110,13 @@ int main(int argc, char **argv)
   cout << "Verifying accuracy of UtilAtof()..." << endl;
   int i;
   for(i = 0; i < numbers; i++) {
-    if (fabs(UtilAtof(strings[i]) - atof(strings[i])) > maxErr) {
+    double error = fabs(UtilAtof(strings[i]) - atof(strings[i]));
+    double relError = fabs(UtilAtof(strings[i]) / atof(strings[i]) - 1.0);
+    if (error > maxErr && relError > maxRelErr) {
       cout << "Failure at number " << i << endl;
-      cout << "UtilAtof(" << strings[i] << ") == "
-	   << UtilAtof(strings[i])
-	   << ", should be " << atof(strings[i]) << endl;
+      cout << "UtilAtof(" << strings[i] << ") == " << UtilAtof(strings[i]) <<
+      ", should be " << atof(strings[i]) << " (error is " << error << ")" <<
+      endl;
       exit(1);
     }
   }

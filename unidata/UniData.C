@@ -1270,8 +1270,11 @@ int UniData::TxtCopy_Int(char *dst, char *src, udParam *ud)
     src += tem_ws ;
     *i = strtol(src, &ptr, 10);
 
-    if (ptr == src) 
-    		cerr << "Defined Field is not an integer for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
+    if (ptr == src) {
+    		cerr << "Defined Field (" << src << ") is not an integer for "
+		    << ud->attr->flat_name() <<" in line : " << (_cur_line+1)
+		    << endl;
+    }
 
     if (ud->use_slide)
         _slbuf->set_init(ptr);
@@ -1300,8 +1303,11 @@ int UniData::TxtCopy_Float(char *dst, char *src, udParam *ud)
 	
     *f = UtilStrtod(src, &ptr);
 
-    if (ptr == src)
-              cerr << "Defined Field is not a float for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
+    if (ptr == src) {
+              cerr << "Defined Field (" << src << ") is not a float for "<<
+		  ud->attr->flat_name() <<" in line : " << (_cur_line+1) <<
+		  endl;
+    }
 
     if (ud->use_slide)
         _slbuf->set_init(ptr);
@@ -1332,8 +1338,11 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 
     *d = UtilStrtod(src, &ptr);
 
-    if (ptr == src)
-              cerr << "Defined Field is not a double for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
+    if (ptr == src) {
+              cerr << "Defined Field (" << src << ") is not a double for "
+		  << ud->attr->flat_name() <<" in line : " << (_cur_line+1)
+		  << endl;
+    }
 
     if (ud->use_slide)
         _slbuf->set_init(ptr);
