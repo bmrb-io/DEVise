@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 19:04:26  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.2  1995/12/14 15:30:24  jussi
   Small fixes.
 
@@ -40,14 +43,18 @@ TileLayout:: TileLayout(char *name,  Coord x, Coord y, Coord w, Coord h) :
       (unsigned)(w * width), (unsigned)(h * height));
 }
 
-void TileLayout::SetPreferredLayout(int v, int h)
+void TileLayout::SetPreferredLayout(int v, int h, Boolean stacked)
 {
-  // note that the layout can be fixed in only one direction
-  horRequested = (h < 1 ? -1 : h);
-  if (horRequested >= 1)
-    verRequested = -1;
-  else
-    verRequested = (v < 1 ? -1 : v);
+  _stacked = stacked;
+
+  if (!stacked) {
+    // note that the layout can be fixed in only one direction
+    horRequested = (h < 1 ? -1 : h);
+    if (horRequested >= 1)
+      verRequested = -1;
+    else
+      verRequested = (v < 1 ? -1 : v);
+  }
 
   if (Mapped())
     MapChildren(0, true);
@@ -68,6 +75,31 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
   int _x, _y;
   unsigned int _w, _h;
   Geometry(_x, _y, _w, _h);
+
+  if (_stacked) {
+    // in a stacked view, all children get the total screen space;
+    // only the top view is visible, and it's up to someone else
+    // to decide which view is on top
+#ifdef DEBUG
+    printf("TileLayout::MapChildren: stacking views\n");
+#endif
+    int index;
+    for(index = InitIterator(); More(index);) {
+      ViewWin *vw = Next(index);
+      if (resize)
+	vw->MoveResize(_x, _y, _w, _h);
+      else
+	vw->Map(_x, _y, _w, _h);
+    }
+    DoneIterator(index);
+    if (x) {
+      *x = _x;
+      *y = _y;
+      *w = _w;
+      *h = _h;
+    }
+    return;
+  }
 
   const unsigned int numViews = NumChildren() + (x ? 1 : 0);
   ComputeLayout(_w, _h, numViews);

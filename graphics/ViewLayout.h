@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/14 15:31:40  jussi
+  Moved Replace and SwapChildren to this base class from derived class
+  (used to be WinVertical and WinHorizontal, now TileLayout).
+
   Revision 1.1  1995/12/02  20:53:06  jussi
   Initial revision.
 */
@@ -45,11 +49,11 @@ public:
 			    unsigned width, unsigned height);
   virtual void Iconify(Boolean iconified);
 
-  virtual void SetPreferredLayout(int v, int h) {
+  virtual void SetPreferredLayout(int v, int h, Boolean stacked = false) {
     verRequested = v; horRequested = h;
   }
-  virtual void GetPreferredLayout(int &v, int &h) {
-    v = verRequested; h = horRequested;
+  virtual void GetPreferredLayout(int &v, int &h, Boolean &stacked) {
+    v = verRequested; h = horRequested; stacked = _stacked;
   }
 
 protected:
@@ -63,6 +67,7 @@ protected:
 
   int verRequested;                     // requested height of view layout
   int horRequested;                     // requested width of view layout
+  Boolean _stacked;                     // true if stacked view requested
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/28 19:04:32  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.1  1995/12/06  21:25:14  jussi
   Initial revision.
 */
@@ -30,7 +33,7 @@ public:
   TileLayout(char *name, Coord x = 0.1, Coord y = 0.0, 
 	     Coord w = 0.8, Coord h = 0.9);
 
-  virtual void SetPreferredLayout(int v, int h);
+  virtual void SetPreferredLayout(int v, int h, Boolean stacked);
 
 protected:
   virtual void MapChildren(ViewWin *single = 0, Boolean resize = false,
