@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.130  1999/08/05 21:42:41  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.129  1999/07/30 21:27:06  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -2724,7 +2729,8 @@ void XWindowRep::HandleEvent(XEvent &event)
       */
       WindowRep::HandleButtonPress(buttonX1, buttonY1,
 				   buttonX2, buttonY2,
-				   event.xbutton.button);
+				   event.xbutton.button,
+				   event.xbutton.state);
 
 #if 0 // This is now handled in the PileStack class.
       // Propagate the button press to any other WindowReps outputting
@@ -2734,7 +2740,8 @@ void XWindowRep::HandleEvent(XEvent &event)
         XWindowRep *wr = _inputWins.Next(index);
 	    wr->WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
 				       buttonXhigh, buttonYhigh,
-				       event.xbutton.button);
+				       event.xbutton.button,
+				       event.xbutton.state);
       }
       _inputWins.DoneIterator(index);
 #endif

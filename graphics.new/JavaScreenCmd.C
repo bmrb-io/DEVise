@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  1999/08/09 20:08:21  wenger
+  Better error message if failure to open session directory; re-tries with
+  "base" directory.
+
   Revision 1.65  1999/08/05 21:42:50  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -1129,7 +1133,7 @@ JavaScreenCmd::MouseAction_Click()
 
 	_postponeCursorCmds = true;
 
-    view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
+    view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1, 0);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
@@ -1222,7 +1226,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 	int xHigh = MAX(startX, endX);
 	int yHigh = MAX(startY, endY);
 	// button = 3 for XY zoom
-    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3);
+    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3, 0);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.121  1999/08/10 20:13:03  wenger
+  Added code for "inverse" zoom (currently disabled).
+
   Revision 1.120  1999/08/05 21:42:51  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -2323,7 +2326,7 @@ void	ViewGraph::PrintLinkInfo(void)
 // See PileStack::HandlePress().
 
 void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
-							   int x2, int y2, int button)
+							   int x2, int y2, int button, int state)
 {
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::HandlePress(%d, %d, %d, %d, %d)\n", this,
@@ -2340,14 +2343,14 @@ void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
   }
 
   if (IsInPileMode()) {
-    GetParentPileStack()->HandlePress(NULL, x1, y1, x2, y2, button);
+    GetParentPileStack()->HandlePress(NULL, x1, y1, x2, y2, button, state);
   } else {
-    DoHandlePress(NULL, x1, y1, x2, y2, button);
+    DoHandlePress(NULL, x1, y1, x2, y2, button, state);
   }
 }
 
 void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
-							     int x2, int y2, int button)
+							     int x2, int y2, int button, int state)
 {
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
@@ -2395,21 +2398,21 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 		FindWorld(xlow, ylow, xhigh, yhigh,
 				  worldXLow, worldYLow, worldXHigh, worldYHigh);
 
-#if 0 //TEMP
-		// "Inverse" zoom -- a zoom and then an inverse zoom on the same
-		// pixels gets the visual filter back to where it was.
-        Coord oldXSize = _filter.xHigh - _filter.xLow;
-		Coord newXSize = worldXHigh - worldXLow;
-		Coord xRatio = oldXSize / newXSize;
-		worldXLow = _filter.xLow + (_filter.xLow - worldXLow) * xRatio;
-		worldXHigh = _filter.xHigh + (_filter.xHigh - worldXHigh) * xRatio;
+		if (state == 8) { // alt
+		    // "Inverse" zoom -- a zoom and then an inverse zoom on the same
+		    // pixels gets the visual filter back to where it was.
+            Coord oldXSize = _filter.xHigh - _filter.xLow;
+		    Coord newXSize = worldXHigh - worldXLow;
+		    Coord xRatio = oldXSize / newXSize;
+		    worldXLow = _filter.xLow + (_filter.xLow - worldXLow) * xRatio;
+		    worldXHigh = _filter.xHigh + (_filter.xHigh - worldXHigh) * xRatio;
 
-		Coord oldYSize = _filter.yHigh - _filter.yLow;
-		Coord newYSize = worldYHigh - worldYLow;
-		Coord yRatio = oldYSize / newYSize;
-		worldYLow = _filter.yLow + (_filter.yLow - worldYLow) * yRatio;
-		worldYHigh = _filter.yHigh + (_filter.yHigh - worldYHigh) * yRatio;
-#endif //TEMP
+		    Coord oldYSize = _filter.yHigh - _filter.yLow;
+		    Coord newYSize = worldYHigh - worldYLow;
+		    Coord yRatio = oldYSize / newYSize;
+		    worldYLow = _filter.yLow + (_filter.yLow - worldYLow) * yRatio;
+		    worldYHigh = _filter.yHigh + (_filter.yHigh - worldYHigh) * yRatio;
+		}
 		
 		_action->AreaSelected(this, worldXLow, worldYLow, worldXHigh, 
 							  worldYHigh, button);

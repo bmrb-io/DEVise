@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/08/05 21:42:37  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.35  1999/07/30 21:27:05  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -266,7 +271,8 @@ void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 /* called by derived class when button pressed */
 
 void WindowRep::HandleButtonPress(int x1, int y1, 
-				  int x2, int y2, int button)
+				  int x2, int y2, int button,
+				  int state)
 {
 #if defined(DEBUG)
   printf("WindowRep::HandleButtonPress(%d,%d,%d,%d,%d)\n",
@@ -276,7 +282,7 @@ void WindowRep::HandleButtonPress(int x1, int y1,
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
-    c->HandlePress(this, x1, y1, x2, y2, button);
+    c->HandlePress(this, x1, y1, x2, y2, button, state);
   }
   DoneIterator(index);
 }

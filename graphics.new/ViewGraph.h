@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/08/05 21:42:51  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.74  1999/06/04 16:32:32  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -849,9 +854,10 @@ public:
 
 		// Callback methods (WindowRepCallback)
 		virtual void	HandlePress(WindowRep *, int x1, int y1,
-									int x2, int y2, int button);
+									int x2, int y2, int button, int state);
 		virtual void	DoHandlePress(WindowRep *, int x1, int y1,
-									  int x2, int y2, int button);
+									  int x2, int y2, int button,
+									  int state);
 		virtual void	HandleKey(WindowRep*, int key, int x, int y);
 		virtual void	DoHandleKey(WindowRep*, int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,

@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/08/05 21:42:34  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.16  1999/07/30 21:27:02  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -1056,7 +1061,7 @@ PileStack::ViewIsSelected()
  */
 void
 PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
-    int y2, int button)
+    int y2, int button, int state)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
@@ -1095,7 +1100,7 @@ PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
     int index = InitIterator();
     while (More(index)) {
       ViewGraph *view = (ViewGraph *)Next(index);
-      view->DoHandlePress(NULL, x1, y1, x2, y2, button);
+      view->DoHandlePress(NULL, x1, y1, x2, y2, button, state);
     }
     DoneIterator(index);
   }

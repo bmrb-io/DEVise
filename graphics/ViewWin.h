@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/08/05 21:42:37  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.40  1999/07/30 21:27:05  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -497,7 +502,8 @@ private:
 									 int button, int state, int type) {}
 #else
 		virtual void	HandlePress(WindowRep* w, int x1, int y1,
-									int x2, int y2, int button) {}
+									int x2, int y2, int button,
+									int state) {}
 #endif
 
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
@@ -549,9 +555,10 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
 		}
 #else
 		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
-									int xhigh, int yhigh, int button)
+									int xhigh, int yhigh, int button,
+									int state)
 		{
-			_parent->HandlePress(w, xlow, ylow, xhigh, yhigh, button);
+			_parent->HandlePress(w, xlow, ylow, xhigh, yhigh, button, state);
 		}
 #endif
 
