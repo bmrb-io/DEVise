@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2001/05/11 20:36:16  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.14  2001/01/08 20:31:59  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -400,8 +403,7 @@ public class jss implements Runnable
                                 connectToJSPOP();
 				//TEMP -- get rid of imgPort here!
                                 sendToJSPOP(DEViseCommands.S_ADD + " " +
-								  jssPort + " " + server.cmdPort + " " +
-								  server.imgPort);
+								  jssPort + " " + server.cmdPort);
                                 disconnectFromJSPOP();
                             }
     

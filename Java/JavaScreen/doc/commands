@@ -467,7 +467,7 @@ see comments in DEViseCommSocket.java.
 
     7.1 JSS_Add
     Purpose: tells JSPoP to add a new devised in its devised_server list
-    Arguments: 3
+    Arguments: 2
         <jss port>: the port used by this JSS to listen to JSPoP request
         <cmd port>: the command port used by the specified devised
 
