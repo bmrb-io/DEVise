@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.169  1999/05/12 21:01:00  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.168  1999/05/07 14:13:43  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -3568,9 +3571,6 @@ void	View::Run(void)
 	  histFilter.xLow, histFilter.yLow, histFilter.xHigh, histFilter.yHigh);
 	printf("  _filter: %d, (%g, %g), (%g, %g)\n", _filter.flag,
 	  _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh);
-	printf("  _queryFilter: %d, (%g, %g), (%g, %g)\n", _queryFilter.flag,
-	  _queryFilter.xLow, _queryFilter.yLow, _queryFilter.xHigh,
-	  _queryFilter.yHigh);
 	printf("  _lastFilter: %d, (%g, %g), (%g, %g)\n", _lastFilter.flag,
 	  _lastFilter.xLow, _lastFilter.yLow, _lastFilter.xHigh,
 	  _lastFilter.yHigh);
@@ -3822,9 +3822,8 @@ void	View::Run(void)
 
 	if (piledDisplay || _filterChanged || _refresh)
 	{									// Need to redraw the whole screen
-		_queryFilter = _filter;
 		_hasLastFilter = true;
-		_lastFilter = _queryFilter;
+		_lastFilter = _filter;
 		_hasExposure = false;
 	}
 
@@ -3850,28 +3849,6 @@ void	View::Run(void)
 #if defined(DEBUG)
 		printf("--> (%d,%d),(%d,%d)\n", _exposureRect.xLow, _exposureRect.yLow,
 			   _exposureRect.xHigh, _exposureRect.yHigh);
-#endif
-	
-		// I don't understand at all why we're changing the query filter here.
-		// It makes the query filter not correspond to the visual filter, and
-		// it means that simply resizing the view changes the query filter,
-		// thus changing the view statistics as well. For that matter, I don't
-		// understand why we have two different filters (_queryFilter and
-		// _filter). And then we've got _lastFilter and _filterQueue -- why do
-		// we have so damn many copies of the visual filter(s)?  RKW 8/14/1997
-
-#if 0
-		_queryFilter.flag = VISUAL_LOC; 
-		FindWorld(_exposureRect.xLow, _exposureRect.yLow,
-				  _exposureRect.xHigh, _exposureRect.yHigh,
-				  _queryFilter.xLow, _queryFilter.yLow, 
-				  _queryFilter.xHigh, _queryFilter.yHigh);
-#endif
-
-#if defined(DEBUG)
-		printf("exposure world %f,%f,%f,%f\n",
-			   _queryFilter.xLow, _queryFilter.yLow,
-			   _queryFilter.xHigh, _queryFilter.yHigh);
 #endif
 	}
 #endif
@@ -3983,12 +3960,12 @@ void	View::Run(void)
 
 #if defined(DEBUG)
 		printf("View %s sending query\n", GetName());
-		printf("  filter: %d, (%f, %f, %f, %f)\n", _queryFilter.flag,
-			   _queryFilter.xLow, _queryFilter.xHigh, _queryFilter.yLow,
-			   _queryFilter.yHigh);
+        printf("  filter: %d, (%f, %f, %f, %f)\n", _filter.flag,
+			   _filter.xLow, _filter.xHigh, _filter.yLow,
+			   _filter.yHigh);
 #endif
 
-		DerivedStartQuery(_queryFilter, _timeStamp);
+		DerivedStartQuery(_filter, _timeStamp);
 	}
 	else
 	{

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.69  1999/04/22 19:29:54  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.68  1999/04/16 20:59:24  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -719,7 +725,6 @@ public:
 
   PointStorage _pstorage;          /* storage for missing data points */
 
-  //TEMP -- why do we have _queryFilter here, when View already has one?
   VisualFilter _queryFilter;
   int          _timestamp;
   QueryProc    *_queryProc;

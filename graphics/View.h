@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1999/05/12 21:01:02  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.83  1999/05/07 14:13:45  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -818,8 +821,6 @@ protected:
 				      and needs to be redrawn */
 	
 	Boolean _querySent;	    /* TRUE if query has been sent */
-	VisualFilter _queryFilter;  /* filter used for query */
-	ViewRect _queryRect;        /* screen coordinates used for query */
 
 	int _id;                    /* id of this view */
 	static int _nextId;         /* id of next view */
