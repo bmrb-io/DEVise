@@ -12,12 +12,8 @@ LDFLAGS = $(ARCH_LDFLAGS) \
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused -O -DUNIX
 
-all: generic issm
+all: generic
 
 generic: generic.o ../graphics.new/libobj.o ../tape/tapeobj.o \
-	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
-	$(CC) -o $@ $@.o $(LDFLAGS)
-
-issm:   issm.o ../graphics.new/libobj.o ../tape/tapeobj.o \
 	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
