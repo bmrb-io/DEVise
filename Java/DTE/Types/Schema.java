@@ -18,9 +18,20 @@ public class Schema {
       typeIDs = new TypeDesc[numFlds];
       attributeNames = new String[ numFlds ];
 
+      String s;
       while( st.hasMoreTokens() ){
 	for(int i=0; i<numFlds; i++){
-	  typeIDs[i] = new TypeDesc(st.nextToken());
+          s = st.nextToken();
+          if( s.equals("int"))
+	    typeIDs[i] = new IntDesc;
+          else if(s.equals("double"))
+	    typeIDs[i] = new DoubleDesc;
+          else if(s.equals("string"))
+	    typeIDs[i] = new StringDesc;
+          else 
+	    typeIDs[i] = null;
+
+          
 	  attributeNames[i] = st.nextToken();
 	}
       }
@@ -38,8 +49,19 @@ public class Schema {
 	typeIDs = new TypeDesc[ numFlds ];
 	attributeNames = new String[ numFlds ];
 
+        String s;
 	for(int i=0; i< numFlds; i++){
-	  typeIDs[i] = new TypeDesc(st1.nextToken());
+          s = st1.nextToken();
+	  if( s.equals("int"))
+	    typeIDs[i] = new IntDesc;
+          else if(s.equals("double"))
+	    typeIDs[i] = new DoubleDesc;
+          else if(s.equals("string"))
+	    typeIDs[i] = new StringDesc;
+          else 
+	    typeIDs[i] = null;
+	  
+ 
 	  attributeNames[i] = st2.nextToken();
 	}
       }
@@ -67,8 +89,17 @@ public class Schema {
       attributeNames = new String[st.nval];
       
       for(count=0; count<st.nval; count++){
-	if(st.nextToken() == StreamTokenizer.TT_WORD)
-	  typeIDs[count] = new TypeDesc(st.sval);
+	if(st.nextToken() == StreamTokenizer.TT_WORD){
+          if( st.sval.equals("int"))
+	    typeIDs[count] = new IntDesc;
+          else if(st.sval.equals("double"))
+	    typeIDs[count] = new DoubleDesc;
+          else if(st.sval.equals("string"))
+	    typeIDs[count] = new StringDesc;
+          else 
+	    typeIDs[count] = null;
+	} 
+	 
 	else throw new IOException("Misplaced, ATTRTYPE expected");
 	
 	if(st.nextToken() == StreamTokenizer.TT_WORD)
