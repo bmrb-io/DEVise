@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/01/09 16:36:26  jussi
+  Added references to Seq.c and seq_extract.
+
   Revision 1.24  1995/12/28 20:01:59  jussi
   Small fix to remove compiler warning.
 
@@ -724,24 +727,32 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 					*/
 					switch(info->type){
 						case FloatAttr:
-							sprintf(attrBuf,"%s float %d",info->name,
-								info->isSorted);
+							sprintf(attrBuf,"%s float %d %g %g",
+								info->name, info->isSorted,
+								(info->hasHiVal ? info->hiVal.floatVal : 100),
+								(info->hasLoVal ? info->loVal.floatVal : 0));
 							break;
 						case DoubleAttr:
-							sprintf(attrBuf,"%s double %d",info->name,
-								info->isSorted);
+							sprintf(attrBuf,"%s double %d %g %g",
+								info->name, info->isSorted,
+								(info->hasHiVal ? info->hiVal.doubleVal : 100),
+								(info->hasLoVal ? info->loVal.doubleVal : 0));
 							break;
 						case StringAttr:
 							sprintf(attrBuf,"%s string %d",info->name,
 								info->isSorted);
 							break;
 						case IntAttr:
-							sprintf(attrBuf,"%s int %d",info->name,
-								info->isSorted);
+							sprintf(attrBuf,"%s int %d %ld %ld",
+								info->name, info->isSorted,
+								(long)(info->hasHiVal ? info->hiVal.intVal : 100),
+								(long)(info->hasLoVal ? info->loVal.intVal : 0));
 							break;
 						case DateAttr:
-							sprintf(attrBuf,"%s date %d",info->name,
-								info->isSorted);
+							sprintf(attrBuf,"%s date %d %ld %ld",
+								info->name, info->isSorted,
+								(long)(info->hasHiVal ? info->hiVal.dateVal : 100),
+								(long)(info->hasLoVal ? info->loVal.dateVal : 0));
 							break;
 						default:
 							printf("TkControl:unknown attr\n");

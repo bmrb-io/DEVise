@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.25  1995/12/29 17:33:04  jussi
+#	Changed format of view instance names created automatically.
+#	Removed Double-Button-1 binding of group selection list.
+#	Cleaned up code that initializes associative arrays.
+#
 #	Revision 1.24  1995/12/14 15:49:16  jussi
 #	Added support for TileLayout with automatic or manual view layout
 #	control.
@@ -398,7 +403,7 @@ proc MacroDefHelp {} {
 ############################################################
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x xtype sortedx yvar selgrp schemaname schema
+    global schemas modified x yvar selgrp schemaname schema
     global viewsel viewselname macroSelectColor macroMenuSelectColor
     global layoutsel linksel winnamesel titlesel
     global xaxissel yaxissel sourceList
@@ -409,9 +414,6 @@ proc MacroDefAuto {tdata} {
 
     set sname [lindex $schemas($tdata) 0]
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
-    set x ""
-    set xtype ""
-    set sortedx 0
     set sfname [lindex $sourceList($tdata) 3]
     set schemaname [file tail $sfname]
 
@@ -559,13 +561,10 @@ proc MacroDefAuto {tdata} {
     frame .auto.ysel.sel
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
 
-    setupButtons .auto.ysel.sel $selgrp $selgrp
-
-    #  For selecting Y attrs - a button here will pop up a new window
+    # For selecting Y attrs - a button here will pop up a new window
     # containing a list of name from which a selection can be made
-#    button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
-#           -command {selYAuto $selgrp $selgrp}
-#    pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
+
+    setupButtons .auto.ysel.sel $selgrp $selgrp
 
     # Have a list containing the name of the selected group.
     # In every iteration of the loop, create a menu with the name ending
@@ -594,56 +593,17 @@ proc MacroDefAuto {tdata} {
 	}
     }
 
-#    menu .auto.xsel.attr.menu -tearoff 0
-
-#    set row -1
-#    set col -1
-#    set maxcol 4
-#    set varcnt 0
-
+    # Try to select default X to be a sorted attribute
+    set x [lindex [lindex $schema 0] 0]
     foreach attr $schema {
 	set name [lindex $attr 0]
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
-#	.auto.xsel.attr.menu add radiobutton -label $name \
-#		-variable x -value $name
-	if {$sorted > 0 && $name != "recId" && $x == ""} {
+	if {$sorted > 0 && $name != "recId"} {
 	    set x $name
-	    set xtype $type
-	    set sortedx $sorted
+	    break
 	}
-#	if {$col < 0} {
-#	    incr row
-#	    set col 0
-#	    frame .auto.ysel.row$row
-#	    pack .auto.ysel.row$row -side top -fill x -expand 1
-#	}
-#	checkbutton .auto.ysel.row$row.col$col -text $name \
-#		-variable yvar($name) -width 15 -anchor w \
-#		-indicatoron 0 -selectcolor $macroSelectColor
-#	set yvar($name) 0
-#	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
-#	incr col
-#	if {$col >= $maxcol} {
-#	    set col -1
-#	}
     }
-
-    # add empty frame to end of last row so that existing buttons
-    # on that row won't get expanded more than buttons on other
-    # (full) rows
-#    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
-#	label .auto.ysel.row$row.col$col -text "" -width 15 \
-#		-relief flat -borderwidth 4
-#	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
-#    }
-
-    if {$x == ""} {
-	set x [lindex [lindex $schema 0] 0]
-	set xtype [lindex [lindex $schema 0] 1]
-	set sortedx [lindex [lindex $schema 0] 2]
-    }
-
 
     tk_menuBar .auto.xsel .auto.xsel.attr
 
@@ -661,22 +621,12 @@ proc MacroDefAuto {tdata} {
 		    mapping." "" 0 OK
 	    return
 	}
-	# We have the correct value for x only - need to find 
-	# out the values for xtype and sortedx before calling
-	# this function
-	foreach attr $schema {
-	    set name [lindex $attr 0]
-	    if {$name != $x} {continue}
-	    set xtype [lindex $attr 1]
-	    set sortedx [lindex $attr 2]
-	    break
-	}
+
 	# puts "The value of x is $x"
-	# puts "The value of xtype is $xtype"
-	# puts "The value of sortedx is $sortedx"
 	# puts "The ylist is $ylist"
+
 	MacroDefAutoActual $tdata $viewsel $linksel $winnamesel $layoutsel \
-		$titlesel $xaxissel $yaxissel $x $xtype $sortedx $ylist
+		$titlesel $xaxissel $yaxissel $x $ylist
 	destroy .auto
     }
     button .auto.but.cancel -text Cancel -width 15 -command {
@@ -690,7 +640,7 @@ proc MacroDefAuto {tdata} {
 ############################################################
 
 proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
-                         xaxissel yaxissel x xtype sortedx ylist} {
+                         xaxissel yaxissel x ylist} {
     global schemas maps mappings views links windows modified none
     global viewDefault
 
@@ -718,31 +668,32 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	eval "DEVise setWindowLayout \{$window\} $layoutparam"
     }
     
+    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
+
+    set sortedx 0
+    set xlo 0.0
+    set xhi 1000.0
+
+    # Find out type of X and whether it is sorted or not
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	if {$name != $x} {continue}
+	set sortedx [lindex $attr 2]
+	set xhi [lindex $attr 3]
+	set xlo [lindex $attr 4]
+	break
+    }
+
     if {$sortedx > 0} {
 	set sortedx SortedX
     } else {
 	set sortedx Scatter
     }
+    # puts "The value of sortedx is $sortedx"
 
-    # should scan x in file and compute xlo and xhi
-
-    set xlo 0.0
-    set xhi 1000.0
     set bgColor white
 
-    set viewParams ""
-    catch { set viewParams $viewDefault($xtype) }
-    foreach param $viewParams {
-	set pname [lindex $param 0]
-	set value [lindex $param 1]
-	if {$pname == "xlow"} {
-	    set xlo $value
-	}
-	if {$pname == "xhigh"} {
-	    set xhi $value
-	}
-    }
-    # puts "Auto mappings will have xlo $xlo and xhi $xhi"
+    # puts "Mapping will have xlo $xlo and xhi $xhi"
 
     set linkname [format "%s Link" $x]
     if {$linksel} {
@@ -761,7 +712,6 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     }
 
     set sname [lindex $schemas($tdata) 0]
-    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
     set color 2
     set shape $viewsel
     set size 1
@@ -779,9 +729,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 
     foreach attr $schema {
 	set name [lindex $attr 0]
+	if {[lsearch $ylist $name] < 0} { continue }
+
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
-	if {[lsearch $ylist $name] < 0} { continue }
+	set yhi [lindex $attr 3]
+	set ylo [lindex $attr 4]
 
 	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
@@ -789,24 +742,6 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	    set defn [list $x $name $color $size $pattern $orient $shape]
 	    set mappings($mapname) $defn
 	    lappend maps($sname) $mapname
-	}
-
-	# should scan y in file and compute ylo and yhi for each view
-
-	set ylo 0.0
-	set yhi 100.0
-
-	set viewParams ""
-	catch {	set viewParams $viewDefault($type) }
-	foreach param $viewParams {
-	    set pname [lindex $param 0]
-	    set value [lindex $param 1]
-	    if {$pname == "ylow"} {
-		set ylo $value
-	    }
-	    if {$pname == "yhigh"} {
-		set yhi $value
-	    }
 	}
 
 	set viewname [format "%s View" $name]
@@ -851,14 +786,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 		    $shapeAttr1]
 	}
 
-	set mapinstance "$tdata#$mapname"
-	if {[lsearch [GdataSet] $mapinstance] < 0} {
-	    # ask DEVise to create an instance of mapping
-	    set result [DEVise create mapping $mapname $tdata $mapinstance \
-		    "" \$$x \$$name $color $size $pattern $orient $shape \
-		    $shapeAttr0 $shapeAttr1]
-	    DEVise setPixelWidth $mapinstance 1
-	}
+	set mapinstance [UniqueName "$tdata#$mapname"]
+	# ask DEVise to create an instance of mapping
+	set result [DEVise create mapping $mapname $tdata $mapinstance \
+		"" \$$x \$$name $color $size $pattern $orient $shape \
+		$shapeAttr0 $shapeAttr1]
+	DEVise setPixelWidth $mapinstance 1
 
 	# ask DEVise to insert $viewinstance into $mapinstance
 	set result [DEVise insertMapping $viewinstance $mapinstance]
@@ -1195,14 +1128,13 @@ proc DefSource {} {
     set schemafile [lindex $sourceList($sname) 3]
 
     # load schema file if necessary - it is not sufficient to check if
-    # the physical schema by the same name has been loaded bcos the same
+    # the physical schema by the same name has been loaded because the same
     # physical schema may be shared by several logical schemas - the best
     # way of checking is to see that we have no groups defined under the 
     # logical schema name
-    set schemaTypes [DEVise get tdata]
-    set tg [DEVise getTopGroups [file tail $schemafile]]
-#    if {[lsearch $schemaTypes $schema] < 0} 
-    if {[llength $tg] == 0} {
+
+    set topgrps [DEVise getTopGroups [file tail $schemafile]]
+    if {[llength $topgrps] == 0} {
 	set result [DEVise importFileType $schemafile]
 	if {$result == ""} {
 	    return
@@ -2022,5 +1954,5 @@ proc setupButtons {win grpname topgrp} {
 
 ############################################################
 
-# INITIALIZE macro definition utility
+# Initialize the macro definition utility
 MacroDefInit
