@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/03 20:38:51  jussi
+  Revised completely to support concurrent requests and better
+  handling of processed record ranges. Collapsed several interfaces
+  into one Init/Get/Done interface.
+
   Revision 1.4  1996/11/23 21:21:40  jussi
   Made code use shared memory in MemMgr. Simplified some routines.
 
@@ -41,6 +46,7 @@
 class BufMgrFull: public BufMgr {
   public:
     BufMgrFull(int bufSize);
+    virtual ~BufMgrFull();
 
     /*
        For documentation on the public methods of this class, see

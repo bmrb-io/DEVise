@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/04 00:22:57  jussi
+  Temporarily changed SelectReady() so that the first request on
+  the list is always completed before the second one is started.
+  There appears to be an intricate timing problem when several
+  requests are executed in parallel *and* they use the same TData...
+  I'll investigate and fix this next week.
+
   Revision 1.12  1996/12/03 20:38:50  jussi
   Revised completely to support concurrent requests and better
   handling of processed record ranges. Collapsed several interfaces
@@ -131,6 +138,20 @@ BufMgrFull::BufMgrFull(int bufSize)
     _reqhead.next = 0;
     _reqhead.prev = 0;
     _lastReadyReq = _reqhead.next;
+}
+
+BufMgrFull::~BufMgrFull()
+{
+    while (_reqhead.next) {
+        BufMgrRequest *req = _reqhead.next->next;
+        delete _reqhead.next;
+        _reqhead.next = req;
+    }
+
+    delete _memoryRanges;
+    delete _policy;
+    delete _defaultPolicy;
+    delete _memMgr;
 }
 
 /*
