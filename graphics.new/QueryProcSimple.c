@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 19:43:23  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.3  1995/12/14 21:18:41  jussi
   Replaced 0x%x with 0x%p.
 
@@ -73,9 +90,11 @@ Definition of Cover: a range of gdata pages convers a range of tdata page if
 rids in gdata a superset of rids in in tdata, and vice versa.
 
 *************************************************************************/
+
 #include <stdio.h>
-#include <libc.h>
 #include <stdlib.h>
+#include <math.h>
+
 #include "Exit.h"
 #include "Init.h"
 #include "QueryProcSimple.h"
@@ -86,13 +105,10 @@ rids in gdata a superset of rids in in tdata, and vice versa.
 #include "BufPolicy.h"
 #include "BufferPolicy.h"
 #include "Journal.h"
-#include <math.h>
-/*
-#include "ams.h"
-*/
 #include "GData.h"
 #include "GDataBin.h"
 #include "PageSize.h"
+
 static int debug=0;
 
 /* temp page to hold data for converting tdata into gdata. */

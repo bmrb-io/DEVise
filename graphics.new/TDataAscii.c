@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/09 16:35:00  jussi
+  Improved console output messages.
+
   Revision 1.7  1995/12/28 19:59:41  jussi
   Small fixes to remove compiler warnings.
 
@@ -40,7 +43,7 @@
 #include <iostream.h>
 #include <assert.h>
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>

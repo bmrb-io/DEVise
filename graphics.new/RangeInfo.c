@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 22:04:13  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.3  1995/12/14 18:14:52  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -24,7 +27,7 @@
 */
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 #include "RangeInfo.h"

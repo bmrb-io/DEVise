@@ -16,12 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:04:44  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:07  jussi
   Added CVS header.
 */
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

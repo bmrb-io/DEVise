@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/01/10 18:47:36  jussi
+  Attribute hi/lo values are now conditional; a boolean value
+  returned from getSchema indicates which values are default
+  and which are not.
+
   Revision 1.26  1996/01/10 00:37:40  jussi
   Added support for hi/lo values defined in schema.
 
@@ -101,7 +106,8 @@
 */
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
+
 #include "TkControl.h"
 #include "ClassDir.h"
 #include "ViewGraph.h"
