@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/10/08 21:49:00  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.8  1996/09/27 21:08:59  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -246,13 +250,19 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 
 void *ClassDir::FindInstance(char *name)
 {
+#if defined(DEBUG) || 0
+  printf("Trying to find %s\n", name);
+#endif
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {
       ClassRec *classRec = catRec->_classRecs[j];
       for(int k = 0; k < classRec->_numInstances; k++) {
-	if (!strcmp(classRec->_instances[k]->InstanceName(), name))
-	  return classRec->_instances[k]->GetInstance();
+#if defined(DEBUG) || 0
+      printf("category name %s name %s\n", catRec->name, classRec->_instances[k]->InstanceName());
+#endif
+	if (!strncmp(classRec->_instances[k]->InstanceName(), name, strlen(name))) {
+	  return classRec->_instances[k]->GetInstance(); }
       }
     }
   }
