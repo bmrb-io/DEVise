@@ -40,12 +40,6 @@ if ($#argv == 1) then
       set jardir = "/var/home/www/public"
       set cgidir = "/var/home/www/cgi-bin"
       set idstr = "regular"
-
-      #TEMPTEMP
-      set popdir = "/local.pumori/devise/js.test"
-      set servdir = "/local.pumori/devise/js.test"
-      set jardir = "/var/home/www/public/test2"
-      set idstr = "test"
     else if ($location == cs_soil) then
       set popdir = "/local.pumori/devise/js.soil"
       set servdir = "/local.pumori/devise/js.soil"
