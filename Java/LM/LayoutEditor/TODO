@@ -1,0 +1,26 @@
+Rivets
+- Update rivets while resizing DONE
+- Multiple colinear overlaping rivets should be merged DONE
+- align edges  - DONE
+- Distribute space equally - DONE
+- GroupBox resize semantics - DONE
+- GroupBox rivet semantics - DONE
+- move with rivet semantics - DONE (auto grouping ???)
+- move group with rivet semantics - DONE
+- equalize, group resize semantics with rivets ???
+- unrivet - DONE
+- Should be able to widen or narrow or rivets. 
+- Hide/show rivets
+- Customize background, foreground etc etc
+- Grouping of groups / across groups  causes trouble!! - DONE
+- Some problem with rivets and groups - cannot duplicate...
+Edit 
+- Resize by corners - DONE
+- Copy using control - DONE
+- Multiple equally spaced (!!not quite) copies - DONE
+- Cut and paste
+
+Appearance
+- Image buttons and toolbar - DONE
+- Cascaded menus - DONE
+- Drag and Drop - Next release of java
