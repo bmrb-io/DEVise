@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/24 20:37:21  jussi
+  Removed an ifdef condition left from previous editing sessions.
+
   Revision 1.17  1996/06/24 19:41:08  jussi
   All dispatcher clients are now handled in a single select().
   The dispatcher no longer supports timer events (see Timer.c
@@ -410,17 +413,18 @@ void Dispatcher::Run1()
   */
 
 #ifndef HPUX
-  fd_set fdread;
+  fd_set fdread,fdexc;
 #else
-  int fdread;
+  int fdread,fdexc;
 #endif
   memcpy(&fdread, &fdset, sizeof fdread);
+  memcpy(&fdexc, &fdset, sizeof fdread);
 
   struct timeval timeout;
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 
-  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, 0,
+  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, &fdexc,
 			      (_playback ? &timeout : 0));
 
   // Check if any one of the fds have something to be read...
@@ -435,11 +439,12 @@ void Dispatcher::Run1()
       if (callback->flag & _stateFlag) {
 	if (callback->fd >= 0) {
 #ifndef HPUX
-	  if (FD_ISSET(callback->fd, &fdread)) {
+	  if (FD_ISSET(callback->fd, &fdread)
+	      || FD_ISSET(callback->fd, &fdexc)) {
 #else
-	  if (fdread & (1 << callback->fd)) {
+	  if ((fdread & (1 << callback->fd))
+	      || (fdexc & (1 << callback->fd))) {
 #endif
-
 #ifdef DEBUG
 	    printf("Check for correctness: called fd = %d\n", callback->fd); 
 #endif
@@ -455,9 +460,11 @@ void Dispatcher::Run1()
       if (callback->flag & _stateFlag) {
 	if (callback->fd >= 0) {
 #ifndef HPUX
-	  if (FD_ISSET(callback->fd, &fdread)) {
+	  if (FD_ISSET(callback->fd, &fdread)
+	      || FD_ISSET(callback->fd, &fdexc)) {
 #else
-	  if (fdread & (1 << callback->fd)) {
+	  if ((fdread & (1 << callback->fd))
+	      || (fdexc & (1 << callback->fd))) {
 #endif
 #ifdef DEBUG
 	    printf("Check for correctness: called fd = %d\n", callback->fd);
