@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/10/02 19:48:32  jussi
+  Added support for writing data through an HTTP connection.
+  Also made it possible to use simple POST/GET transactions
+  using a single IOUnixWebTask.
+
   Revision 1.2  1996/10/02 15:23:49  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -959,18 +964,6 @@ int UnixWebIOTask::WriteEOF()
     if (_webfd < 0)
         return -1;
 
-    _isInput = true;
-    _cacheSize = 0;
-
-    _cache = freopen(_cacheName, "w+", _cache);
-    if (!_cache) {
-        fprintf(stderr, "Could not truncate cache file %s\n", _cacheName);
-        perror("freopen");
-        close(_webfd);
-        _webfd = -1;
-        return -1;
-    }
-
     return 0;
 }
 
@@ -1118,6 +1111,21 @@ void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
            this, (req.type == ReadReq ? "read" : "write"), _fd,
            req.offset, req.bytes);
 #endif
+
+    // If someone tries to read from an output stream, attempt
+    // to straighten out situation.
+    if (!_isInput && req.type == ReadReq) {
+        _isInput = true;
+        _cacheSize = 0;
+        _cache = freopen(_cacheName, "w+", _cache);
+        if (!_cache) {
+            fprintf(stderr, "Could not truncate cache file %s\n", _cacheName);
+            perror("freopen");
+            close(_webfd);
+            reply.result = _webfd = -1;
+            return;
+        }
+    }
 
     // Writing to an FTP or HTTP site?
     if (req.type == WriteReq) {
