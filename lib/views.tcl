@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/04/13 22:00:10  jussi
+#  When copying a view, the user is no longer asked for the name of
+#  the new view. It is automatically generated.
+#
 #  Revision 1.5  1996/04/11 18:23:03  jussi
 #  Major changes in the organization of the user interface.
 #
@@ -43,16 +47,6 @@ proc RefreshAllViews {} {
 	    DEVise refreshView $inst
 	}
     }
-}
-
-############################################################
-
-proc ProcessViewCreated { view } {
-}
-
-############################################################
-
-proc ProcessViewDestroyed { view } {
 }
 
 ############################################################
