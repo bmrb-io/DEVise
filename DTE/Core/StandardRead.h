@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/09/05 22:20:13  donjerko
+  Made changes for port to NT.
+
   Revision 1.18  1997/08/21 21:04:27  donjerko
   Implemented view materialization
 
@@ -178,18 +181,6 @@ public:
 		out << ")";
 		stats->display(out);
 		return out;
-	}
-	virtual void writeHeader(ostream& out){
-		int i;
-		out << numFlds << " ";
-		for(i = 0; i < numFlds; i++){
-			out << typeIDs[i] << " ";
-		}
-		cout << endl;
-		for(i = 0; i < numFlds; i++){
-			out << attributeNames[i] << " ";
-		}
-		out << ";" << endl;
 	}
 	virtual Iterator* createExec(){
 		ReadPtr* readPtrs = new ReadPtr[numFlds];

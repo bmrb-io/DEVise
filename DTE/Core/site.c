@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/09/05 22:20:20  donjerko
+  Made changes for port to NT.
+
   Revision 1.24  1997/08/22 23:13:06  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -459,9 +462,6 @@ void LocalTable::writeOpen(int mode = ios::app){
 	const TypeID* types = getTypeIDs();
 	for(int i = 0; i < numFlds; i++){
 		TRY(writePtrs[i] = getWritePtr(types[i]), NVOID );
-	}
-	if(mode == ios::out){
-		iterat->writeHeader(*fout);
 	}
 }
 

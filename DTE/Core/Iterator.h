@@ -71,9 +71,6 @@ public:
 		out << "display not implemented for this reader" << endl;
 		return out;
 	}
-	virtual void writeHeader(ostream& out){
-		assert(0);
-	}
 	virtual Iterator* createExec() = 0;
 };
 

@@ -135,18 +135,6 @@ public:
 		out << ")";
 		return out;
 	}
-	virtual void writeHeader(ostream& out){
-		int i;
-		out << numFlds << " ";
-		for(i = 0; i < numFlds; i++){
-			out << typeIDs[i] << " ";
-		}
-		cout << endl;
-		for(i = 0; i < numFlds; i++){
-			out << attributeNames[i] << " ";
-		}
-		out << ";" << endl;
-	}
 	virtual Iterator* createExec();
 };
 
