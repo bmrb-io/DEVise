@@ -1451,9 +1451,10 @@ Num Date        Status  Description
 382 08/11/98	FIXED	Change to client connection protocol for JavaScreen
 			makes deviseb and devisec not work. (rkw)
 
-383 08/12/98	OPEN	If you quit Devise without ever having displayed
+383 08/12/98	FIXED	If you quit Devise without ever having displayed
 			any data, it for some reason creates the buffer
 			pool during the process of quitting. (rkw)
+			(Fixed by rkw 9/28/98.)
 
 384 08/18/98	FIXED	Devisec doesn't actually quit when you select 'Quit'
 			from the Session menu. (rkw)
@@ -1519,6 +1520,11 @@ Num Date        Status  Description
 			force the devised to switch to a different JavaScreen,
 			and then try to switch back, the devised crashes. (rkw)
 			(Fixed by rkw, 9/25/98.)
+
+398 09/28/98	FIXED	Record link creation GUI doesn't work right if you
+			already have the master view selected when you create
+			the link. (rkw)
+			(Fixed by rkw, 9/28/98.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

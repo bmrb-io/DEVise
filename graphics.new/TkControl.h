@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/09/22 17:24:00  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.23  1998/02/26 20:49:06  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -153,7 +161,6 @@ public:
 
   /* Start/restart session */
   virtual void StartSession();
-  virtual void DestroySessionData();
   virtual void RestartSession() { DoQuit(); }
 
   /* Perform sync operation  */

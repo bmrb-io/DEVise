@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/05/02 09:00:50  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.35  1998/02/12 17:17:07  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -276,33 +279,6 @@ void ServerAPI::DoAbort(char *reason)
   fprintf(stderr, "Server aborts.\n");
   delete _server;
   exit(0);
-}
-
-void ServerAPI::DestroySessionData()
-{
-#if defined(DEBUG)
-  printf("ServerAPI(0x%p)::DestroySessionData()\n", this);
-#endif
-
-  ClassDir *classDir = GetClassDir();
-
-  // destroy tdata, gdata, cursor, view link, win, axis, action
-  classDir->DestroyAllInstances();
-
-  // clear query processor
-  classDir->DestroyTransientClasses();
-  QueryProc::Instance()->ClearQueries();
-  ClearCats();
-
-  // clear top groups
-  delete gdir;
-  gdir = new GroupDir();
-
-  // clear string storage space
-  StringStorage::Clear();
-
-  // call base class
-  ControlPanel::DestroySessionData();
 }
 
 void ServerAPI::RestartSession()

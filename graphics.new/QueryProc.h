@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/09/22 17:23:57  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.17  1998/04/29 17:53:52  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -141,6 +149,8 @@ class QueryProc {
   public:
     /* get one and only instance of query processor */
     static QueryProc *Instance();
+
+    static Boolean QPExists() { return _queryProc != NULL; }
     
     /* batch a query. For now, we'll just queue it up.  */
     virtual void BatchQuery(TDataMap *map, VisualFilter &filter,

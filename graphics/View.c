@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.145  1998/09/25 20:52:55  wenger
+  Fixed bug 390 (cursor drawn in slightly wrong location) (partly caused
+  by problems in JavaScreenCmd code and partly by problems in XWindowRep).
+
   Revision 1.144  1998/09/10 23:24:27  wenger
   Fixed JavaScreen client switch GIF geometry problem.
 
@@ -4134,8 +4138,8 @@ View::SelectView()
   if (prevSelView != this) {
     if (prevSelView != NULL) prevSelView->Highlight(false);
     Highlight(true);
-    ControlPanel::Instance()->SelectView(this);
   }
+  ControlPanel::Instance()->SelectView(this);
 }
 
 //******************************************************************************

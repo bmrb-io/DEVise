@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1998/05/02 09:00:52  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.83  1998/03/02 22:03:40  taodb
   Add control parameter to Run() invocations
 
@@ -516,33 +519,6 @@ void TkControlPanel::StartSession()
 
   if (Init::BatchFile())
     SetSyncNotify();
-}
-
-void TkControlPanel::DestroySessionData()
-{
-#ifdef DEBUG
-  printf("Destroying session data\n");
-#endif
-
-  ClassDir *classDir = GetClassDir();
-
-  // destroy tdata, gdata, cursor, view link, win, axis, action
-  classDir->DestroyAllInstances();
-
-  // clear query processor
-  classDir->DestroyTransientClasses();
-  QueryProc::Instance()->ClearQueries();
-  ClearCats();
-
-  // clear top groups
-  delete gdir;
-  gdir = new GroupDir();
-
-  // clear string storage space
-  StringStorage::Clear();
-
-  // call base class
-  ControlPanel::DestroySessionData();
 }
 
 void TkControlPanel::DoAbort(char *reason)

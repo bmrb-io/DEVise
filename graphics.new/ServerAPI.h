@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/09/22 17:24:00  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.16  1998/05/02 09:00:51  taodb
   Added support for JAVA Screen and command logging
 
@@ -121,7 +129,6 @@ public:
 
   /* Start/restart session */
   virtual void StartSession() {}
-  virtual void DestroySessionData();
   virtual void RestartSession();
 
   /* Perform sync operation  */

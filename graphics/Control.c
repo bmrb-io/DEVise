@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/09/08 16:07:16  wenger
+  Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
+  the creation of multiple classes with the same name; fixed session file.
+
   Revision 1.16  1998/01/09 20:45:20  wenger
   Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
   previous merge.
@@ -83,6 +87,12 @@
 #include "Journal.h"
 #include "Util.h"
 #include "Display.h"
+#include "QueryProc.h"
+#include "ParseCat.h"
+#include "StringStorage.h"
+#include "GroupDir.h"
+
+extern GroupDir *gdir;
 
 ControlPanel *ControlPanel::_controlPanel = 0;
 ClassDir *ControlPanel::_classDir = 0;
@@ -105,6 +115,27 @@ ClassDir *ControlPanel::GetClassDir()
 
 void ControlPanel::DestroySessionData()
 {
+#if defined(DEBUG)
+  printf("ControlPanel::DestroySessionData()\n");
+#endif
+
+  ClassDir *classDir = GetClassDir();
+
+  // destroy tdata, gdata, cursor, view link, win, axis, action
+  classDir->DestroyAllInstances();
+
+  // clear query processor
+  classDir->DestroyTransientClasses();
+  if (QueryProc::QPExists()) QueryProc::Instance()->ClearQueries();
+  ClearCats();
+
+  // clear top groups
+  delete gdir;
+  gdir = new GroupDir();
+
+  // clear string storage space
+  StringStorage::Clear();
+
   _batchMode = false;
   _syncNotify = false;
   _syncAllowed = false;
