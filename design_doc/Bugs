@@ -2723,6 +2723,13 @@ Num Date        Status  Description
 			links. (rkw)
 			(Fixed by rkw, 7/27/01.)
 
+685 08/15/01	OPEN	Rename a data file and create a new version, visualize
+			the new version with DEVise, then move the original
+			version back into place -- the index file does not
+			match the original version of the data file, but
+			DEVise does not detect this because it is newer than
+			the data file. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
