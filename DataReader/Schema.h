@@ -1,8 +1,7 @@
 #ifndef DATAREADER_SCHEMA_H
 #define DATAREADER_SCHEMA_H
 
-#include <iostream.h>
-#include <stdlib.h>
+#include "sysdep.h"
 #include <vector>
 
 // Constants used for several definitions

@@ -1,7 +1,7 @@
 #ifndef DATAREADER_BUFFER_H
 #define DATAREADER_BUFFER_H
 
-#include <fstream.h>
+#include "sysdep.h"
 #include "Schema.h"
 
 class Buffer;

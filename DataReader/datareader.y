@@ -1,6 +1,7 @@
 %{
 #include "DataReaderParser.h"
-#include <string.h>
+#include "sysdep.h"
+
 #include <vector>
 #define drparse DataReaderParser::drparse
 vector<char*>* tmpVector;

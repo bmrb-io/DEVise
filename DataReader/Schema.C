@@ -1,6 +1,5 @@
 #include "Schema.h"
-#include <limits.h>
-#include <strstream.h>
+#include "sysdep.h"
 #include "DateTime.h"
 
 Attribute::Attribute(char* fieldName) {

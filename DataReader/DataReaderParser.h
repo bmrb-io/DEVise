@@ -1,10 +1,10 @@
 #ifndef _DataReader_PARSER_H_
 #define _DataReader_PARSER_H_
 
+#include "sysdep.h"
 #include <assert.h>
-#include <iostream.h>
-#include <strstream.h>
 #include "Schema.h"
+
 extern int drdebug;
 #define YYSTYPE DataReaderParser::yystype
 

@@ -3,8 +3,7 @@
 %option yyclass="DataReaderParser"
 %option noyywrap
 %{
-#include <string.h>
-#include <ctype.h>
+#include "sysdep.h"
 #include "DataReaderParser.h"
 #include "datareader.tab.h"
 int escCheck = 0;

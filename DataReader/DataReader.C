@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <fstream.h>
-#include <iostream.h>
+#include "sysdep.h"
 #include "DataReader.h"
 
 DataReader::DataReader(char* dataFile, char* schemaFile) {
