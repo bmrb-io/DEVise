@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2001/03/20 17:49:45  xuk
+// Added collaboration for 3D Views.
+//
 // Revision 1.68  2001/01/08 20:31:50  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -1199,12 +1202,25 @@ public class DEViseCanvas extends Container
                 repaint();
 
 		// send command to collaborations if necessary
-		Point p = event.getPoint();		
+		Point p = new Point();
+		p.x = op.x;
+		p.y = op.y;
+
+		int action = 0;
+
+                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+		    action = 1;
+                } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+		    action = 2;
+                } else {
+		    action = 0;
+                }
 		
 		if (jsc.specialID == -1) {
 		    String cmd = DEViseCommands.COLLAB_3DVIEW + 
 			" {3} " + activeView.getCurlyName() + 
-			" {" + p.x + "}" + " {" + p.y + "}";
+			" {" + p.x + "}" + " {" + p.y + "}" + 
+			" {" + action + "}";
 		    dispatcher.start(cmd);	
 		}	
 
@@ -1378,6 +1394,8 @@ public class DEViseCanvas extends Container
         public void mouseDragged(MouseEvent event)
         {
 
+	    int action = 0;
+
             if (DEBUG >= 2) {
                 System.out.println("DEViseCanvas(" + view.viewName +
 		  ").ViewMouseMotionListener.mouseDragged()");
@@ -1396,10 +1414,13 @@ public class DEViseCanvas extends Container
 
                 if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
                     crystal.translate(dx, dy);
+		    action = 1;
                 } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
                     crystal.scale(dx, dy);
+		    action = 2;
                 } else {
                     crystal.rotate(dx, dy);
+		    action = 0;
                 }
 
                 jsc.jsValues.canvas.isInteractive = true;
@@ -1409,11 +1430,13 @@ public class DEViseCanvas extends Container
 		// send command to collaborations if necessary
 		mouseDragCount++;
 
-		if ((mouseDragCount % 10) == 0) {
+		if ((mouseDragCount % 20) == 0) {
+		    mouseDragCount = 0;
 		    if (jsc.specialID == -1) {
 			String cmd = DEViseCommands.COLLAB_3DVIEW + 
 			    " {4} " + activeView.getCurlyName() + 
-			    " {" + p.x + "}" + " {" + p.y + "}";
+			    " {" + p.x + "}" + " {" + p.y + "}" +
+			    " {" + action + "}";
 			dispatcher.start(cmd);	
 		    }	
 		}
