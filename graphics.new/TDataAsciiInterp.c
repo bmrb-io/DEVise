@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/04/30 21:45:39  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.30  1997/04/22 15:25:45  wenger
   Conditionaled out lots of debug code; fixed data source visualization
   window so the window for the data again defaults to 'New' if there are
@@ -494,9 +502,11 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 #endif
 
     if (doPrint) {
+    /*
       printf("Too few arguments (%d < %d) or commented line\n",
 	     numArgs, _numPhysAttrs);
       PrintRec(numArgs, args);
+	*/
     }
     return false;
   }

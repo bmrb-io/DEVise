@@ -12,12 +12,6 @@
   Development Group.
 */
 
-/*
-  $Id$
-
-  $Log$
-*/
-
 // #define DEBUG
 #include <assert.h>
 #include <iostream.h>
@@ -87,9 +81,9 @@ TDataDQL::TDataDQL(
 
 void TDataDQL::runQuery(){
 
-  Timer::StopTimer();
-  _result.clear();
-  Engine engine(_query);
+	Timer::StopTimer();
+	_result.clear();
+     Engine engine(_query);
      TRY(engine.optimize(), );
      _numFlds = engine.getNumFlds();
      _types = engine.getTypeIDs();
@@ -141,7 +135,7 @@ void TDataDQL::runQuery(){
 #if defined(DEBUG)
 	cout << "Done with query ----------------------------------\n";
 #endif
-#if defined(DEBUG)
+#ifdef DEBUG
      for(int j = _result.low(); j < _result.fence(); j++){
           for(int i = 0; i < _numFlds; i++){
                displayAs(cout, _result[j][i], _types[i]);
@@ -157,6 +151,45 @@ void TDataDQL::runQuery(){
 		attrList->rewind();
 	}
 	_attrs.Clear();
+
+	// generate the query;
+	String MMquery;
+	MMquery = "select ";
+	for (int MMi = 0; MMi<_numFlds; MMi++)
+	{
+	  	MMquery += "min(";
+		MMquery += _attributeNames[MMi];
+		MMquery += "), ";
+		MMquery += "max(";
+                MMquery += _attributeNames[MMi];
+		if (MMi == _numFlds - 1)
+			MMquery += ") ";
+		else
+			MMquery += "), ";
+	}
+	MMquery += "from ";
+	MMquery += _tableName;
+	MMquery += " as t";
+	
+	// start the engine
+	// cout << "*************** New Max/Min *************"; // for debugging
+	Engine MMengine(MMquery);
+  	MMengine.optimize();
+	CATCH(
+        	cout << "DTE error coused by query: \n";
+        	cout << "   " << MMquery << endl;
+        	currExcept->display();
+        	currExcept = NULL;
+        	cout << endl;
+        	exit(0);
+	)
+	Tuple MMtup[_numFlds];
+	MMengine.initialize();
+	MMengine.getNext(MMtup);
+	 
+	
+		
+
 	for(int i = 0; i < _numFlds; i++){
 
 		const char* atname = NULL;
@@ -173,16 +206,6 @@ void TDataDQL::runQuery(){
 		cout << "atname = " << atname << endl;
 #endif
 		TRY(int deviseSize = packSize(_types[i]), );
-#if defined(DEBUG)
-		cout << "deviseSize = " << deviseSize << endl;
-#endif
-
-/*
-		if(deviseSize % 4){
-			deviseSize += 4 - deviseSize % 4; 
-		}
-		assert(! (deviseSize % 4));
-*/
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
 		bool hasHighLow = false;
@@ -197,8 +220,8 @@ void TDataDQL::runQuery(){
 		else if(highTup[i] && lowTup[i]){
 			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
 			hasHighLow = true;
-			_marshalPtrs[i](highTup[i], (char*) hiVal);
-			_marshalPtrs[i](lowTup[i], (char*) loVal);
+			_marshalPtrs[i](MMtup[i*2+1], (char*) hiVal);
+			_marshalPtrs[i](MMtup[i*2], (char*) loVal);
 		}
 
 		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
@@ -311,9 +334,64 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
+
+//  this is the only thing that need to be changed in the SQL version  
+//  ReadRec(req->nextId, numRecs, buf);
+
+//  Issue a query to the engine;
+  String SQLquery;
+  SQLquery="select ";
+  SQLquery+="* ";
+  SQLquery+="from ";
+  SQLquery+=_tableName;
+  SQLquery+=" as t where ";
+  char whereClause[29+sizeof(unsigned long)*2];
+  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", req->nextId, (unsigned long)((req->nextId)+numRecs-1));
+  SQLquery+=whereClause;
+  String query(SQLquery);
+
+// debugging
+   cout << "SQL query issued as: \n" << query << "\n";
+// end of debugging;
+
+  Engine engine(query);
+  engine.optimize();
+CATCH(
+	cout << "DTE error coused by query: \n";
+	cout << "   " << query << endl;
+	currExcept->display();
+	currExcept = NULL;
+	cout << endl;
+	exit(0);
+)
+
+  int numFlds = engine.getNumFlds();
+  assert(numFlds > 0);
+	WritePtr* writePtrs = engine.getWritePtrs(); // do I need it?
+  String* types = engine.getTypeIDs();
+  Tuple tup[numFlds];
+  int sizeOfFields[numFlds];
+  for (int i=0; i < numFlds; i++){
+    sizeOfFields[i]=packSize(types[i]);
+     	DBDQLNEW(sizeOfFields[i]);
+	DBDQLNEW(types[i]);}
   
-  ReadRec(req->nextId, numRecs, buf);
-  
+  char *ptr = (char *)buf;
+  engine.initialize();
+  int counter=0; // how many tuples have been written to buf;
+  // int offset=0; // where in the buf should the next field go into;
+  while ( (engine.getNext(tup)) && (counter<numRecs) )
+    {
+      for(int i = 0; i < numFlds; i++)
+	{
+	  _marshalPtrs[i](tup[i], (char*) ptr);
+
+	  ptr+=sizeOfFields[i];
+	}
+      counter++;
+    }
+  // end of the changes in the SQL version;
+      
   startRid = req->nextId;
   dataSize = numRecs * _recSize;
   req->nextId += numRecs;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/05/08 18:10:38  wenger
+  Minor changes to fix Linux compile problems.
+
   Revision 1.2  1997/03/28 16:07:37  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -95,4 +98,11 @@ int ControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     return TCL_ERROR;
 
   return TCL_OK;
+}
+
+main()
+{
+  ControlPanel control;
+
+  control.StartSession();
 }

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.39  1997/06/05 21:31:38  wenger
+# Re-made sun, solaris, and hp dependencies.
+#
 # Revision 1.38  1997/05/29 15:20:22  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -530,6 +533,71 @@ TuplePtr.XPlex.o: /usr/include/values.h ../../graphics/DevStatus.h
 TuplePtr.XPlex.o: ../../graphics/DList.h ../../graphics/Exit.h
 TuplePtr.XPlex.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
 TuplePtr.XPlex.o: ../Core/Utility.h
+new.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+new.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+new.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdio.h
+new.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+new.o: /usr/include/stdlib.h /usr/include/fcntl.h /usr/include/sys/types.h
+new.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+new.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
+new.o: /usr/include/sys/fcntl.h /usr/include/limits.h /usr/include/unistd.h
+new.o: /usr/include/sys/unistd.h /usr/include/errno.h
+new.o: /usr/include/sys/errno.h /usr/include/sys/stat.h /usr/include/string.h
+new.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+new.o: /usr/include/values.h ../../graphics/DevStatus.h
+new.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+new.o: ../../graphics/BufPolicy.h ../../graphics/Timer.h
+new.o: ../../graphics/Parse.h TDataDQL.h ../../graphics/Dispatcher.h
+new.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
+new.o: ../../graphics/Color.h ../../graphics/Pattern.h ../Core/queue.h
+new.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
+new.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+new.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+new.o: /usr/include/sys/shm.h ../../graphics.new/machdep.h
+new.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+new.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+new.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+new.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+new.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+new.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+new.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+new.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+new.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+new.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+new.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+new.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+new.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+new.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+new.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+new.o: ../../graphics.new/FileIndex.h TuplePtr.XPlex.h TuplePtr.Plex.h
+new.o: /s/gcc-2.7.2/lib/g++-include/std.h /s/gcc-2.7.2/lib/g++-include/stddef
+new.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+new.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+new.o: /s/gcc-2.7.2/lib/g++-include/cstdlib
+new.o: /s/gcc-2.7.2/lib/g++-include/std/cstdlib.h
+new.o: /s/gcc-2.7.2/lib/g++-include/cstring
+new.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+new.o: /s/gcc-2.7.2/lib/g++-include/cstdio
+new.o: /s/gcc-2.7.2/lib/g++-include/std/cstdio.h
+new.o: /s/gcc-2.7.2/lib/g++-include/cerrno
+new.o: /s/gcc-2.7.2/lib/g++-include/std/cerrno.h
+new.o: /s/gcc-2.7.2/lib/g++-include/Pix.h TuplePtr.defs.h ../Core/types.h
+new.o: /s/gcc-2.7.2/lib/g++-include/String.h
+new.o: /s/gcc-2.7.2/lib/g++-include/Regex.h ../Core/exception.h
+new.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+new.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
+new.o: ../../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+new.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+new.o: ../../graphics.new/DataSourceFileStream.h
+new.o: ../../graphics.new/DataSourceSegment.h
+new.o: ../../graphics.new/DataSourceBuf.h ../../graphics/DevError.h
+new.o: ../../graphics.new/DataSeg.h ../../graphics.new/QueryProc.h
+new.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+new.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+new.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
+new.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
+new.o: ../Core/StandardRead.h ../Core/FunctionRead.h
+new.o: ../../graphics.new/DataSourceWeb.h
 
 Aggregates.o: Aggregates.h types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -1668,6 +1736,27 @@ scriptServer.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
 scriptServer.o: /usr/include/unistd.h ../Core/SockStream.h ../Core/listop.h
 scriptServer.o: ../Core/Iterator.h ../Core/StandardRead.h
 scriptServer.o: ../Core/FunctionRead.h ncsa.h
+trash.o: /usr/include/memory.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+trash.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+trash.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
+trash.o: /usr/include/sys/feature_tests.h /usr/include/unistd.h
+trash.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+trash.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+trash.o: /usr/include/sys/time.h /usr/include/time.h
+trash.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+trash.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+trash.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+trash.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+trash.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+trash.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+trash.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
+trash.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+trash.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+trash.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+trash.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+trash.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+trash.o: /usr/include/ctype.h /usr/include/netdb.h /usr/include/string.h
+trash.o: /usr/include/arpa/inet.h common.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 

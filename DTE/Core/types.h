@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/05/30 15:49:59  arvind
+  Added a "comp" operator for all data types. Semantics are same as for
+  strcmp(left, right):
+  Returns a neg num if left < right,
+          zero      if left = right,
+          a pos num if left > right.
+
   Revision 1.18  1997/04/18 20:46:31  donjerko
   Added function pointers to marshall types.
 
@@ -209,7 +216,9 @@ Type* intAdd(Type* arg1, Type* arg2);
 Type* intSub(Type* arg1, Type* arg2);
 Type* intEq(Type* arg1, Type* arg2);
 Type* intLT(Type* arg1, Type* arg2);
+Type* intLE(Type* arg1, Type* arg2);
 Type* intGT(Type* arg1, Type* arg2);
+Type* intGE(Type* arg1, Type* arg2);
 Type* intComp(Type *arg1,Type *arg2);
 
 Type* dateEq(Type* arg1, Type* arg2);
@@ -314,10 +323,18 @@ public:
 			retType = "bool";
 			return new GeneralPtr(intLT, boolSize, oneOver3);
 		}
+		else if(name == "<="){
+			retType = "bool";
+			return new GeneralPtr(intLE, boolSize, oneOver3);
+                }
 		else if(name == ">"){
 			retType = "bool";
 			return new GeneralPtr(intGT, boolSize, oneOver3);
 		}
+		else if(name == ">="){
+                        retType = "bool";
+                        return new GeneralPtr(intGE, boolSize, oneOver3);
+                }
 		else if(name == "comp"){
 			retType = "int";
 			return new GeneralPtr(intComp, sameSize);

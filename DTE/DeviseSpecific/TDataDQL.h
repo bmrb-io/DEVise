@@ -35,6 +35,13 @@
 #include "AttrList.h"
 #include "TuplePtr.XPlex.h"
 
+#ifdef TDATADQLNEW_DEBUG
+        #define DBDQLNEW(a) {cout << __FILE__ << ':' << __LINE__ << ' ' << a << endl;}
+
+#else
+        #define DBDQLNEW(a) {}
+#endif
+
 class TDataDQL: public TData, private DispatcherCallback {
 public:
 	TDataDQL(AttrList attrs,char *name,char *type,
