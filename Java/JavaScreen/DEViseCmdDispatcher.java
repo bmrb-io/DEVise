@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.88  2001/04/01 03:51:17  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.87  2001/03/20 20:11:38  wenger
 // Added more debug output to the JS client and jspop.
 //
@@ -948,7 +951,8 @@ public class DEViseCmdDispatcher implements Runnable
                   response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
             }
 
-            jsc.showServerState(args[1]);
+            if (jsc.specialID == -1) // only for normal JS
+		jsc.showServerState(args[1]);
 
         } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
 	    createView(response, args);
