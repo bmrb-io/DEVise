@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.105  1997/02/03 19:39:59  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
   Revision 1.104  1997/01/28 19:46:33  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
   fixes to Exit class for client/server library.
@@ -453,7 +462,9 @@
 #include "DevError.h"
 #include "Util.h"
 #include "View.h"
+#ifdef VIEW_TABLE
 #include "DataSourceFixedBuf.h"
+#endif
 
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
