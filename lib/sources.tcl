@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.8  1995/11/24  07:44:49  ravim
+#	Mapping between different types of data sources incorporated using
+#	mapping tables.
+#
 #	Revision 1.7  1995/11/20 22:37:16  jussi
 #	Reworked caching interface to include record ranges. Schema files
 #	are now scanned (not imported) to find the schema type when a
@@ -209,7 +213,7 @@ proc defineStream {base edit} {
 
     label .srcdef.top.row3.l1 -text "Schema File:"
     entry .srcdef.top.row3.e1 -relief sunken -textvariable schemafile \
-	    -width 32
+	    -width 40
     button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
 	global schemadir fsBox
 	set fsBox(path) $schemadir
@@ -525,7 +529,7 @@ proc selectSourceKey {source} {
 ############################################################
 
 proc selectUnixFile {} {
-    global schemafile command fsBox datadir schemadir
+    global schemafile fsBox datadir schemadir
 
     # Get file name
     set fsBox(path) $datadir
@@ -546,7 +550,10 @@ proc selectUnixFile {} {
     }
 
     set schemafile $file2
-    set command [file dirname $file]
+    # command is a text widget so we must insert the text
+    # into the widget; setting the variable not enough
+    .srcdef.top.row5.e1 delete 1.0 end
+    .srcdef.top.row5.e1 insert end [file dirname $file]
     set file [file tail $file]
 
     return "$file $file"
