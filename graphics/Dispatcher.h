@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/12 14:55:34  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.12  1996/05/09 18:12:06  kmurli
   No change to this makefile.
 
@@ -76,12 +84,6 @@
 #include "Journal.h"
 #include "Exit.h"
 
-/* uncomment to compile with select() */
-//#define USE_SELECT
-
-/* dispatcher timer interval, in milliseconds */
-const long DISPATCHER_TIMER_INTERVAL = 500;
-
 class DispatcherCallback {
 public:
   virtual char *DispatchedName() = 0;
@@ -112,41 +114,53 @@ class Dispatcher;
 class View;
 class Selection;
 
-DefinePtrDList(DeviseWindowList,DeviseWindow *);
-DefinePtrDList(DispatcherInfoList,DispatcherInfo *);
+DefinePtrDList(DeviseWindowList, DeviseWindow *);
+DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
 DefinePtrDList(DispatcherTimerCallbackList, DispatcherTimerCallback *);
-DefinePtrDList(DispatcherList,Dispatcher *);
+DefinePtrDList(DispatcherList, Dispatcher *);
 
 class Dispatcher {
 public:
   Dispatcher(StateFlag state = GoState );
 
-  static void InsertMarker(int writeFd);
-  static void FlushMarker(int readFd);
-  static void CreateMarker(int &readFd,int& writeFd);
-  static void CloseMarker(int readFd,int writeFd);
-
   virtual ~Dispatcher(){
     DeleteDispatcher();
   }
 
+  /* Create a pipe for markers, insert a marker, flush all markers,
+     and close pipe */
+
+  static void CreateMarker(int &readFd, int &writeFd);
+  static void InsertMarker(int writeFd) {
+    // Insert one marker to the pipe
+    char tempBuff = 'a';
+    if (writeFd != -1)
+      write(writeFd, &tempBuff, sizeof tempBuff);
+  }
+  static void FlushMarker(int readFd) {
+    // Consume all markers from the pipe
+      char tempBuff;
+    while(read(readFd, &tempBuff, sizeof tempBuff) > 0);
+  }
+  static void CloseMarker(int readFd, int writeFd);
+
   /* Return the current dispatcher */
   static Dispatcher *Current() {
-    if (_current_dispatcher == NULL)
+    if (!_current_dispatcher)
       _current_dispatcher = new Dispatcher();
     return _current_dispatcher;
   }
 
   /* Register to be called by dispatcher on timer up */
   static void RegisterTimer(DispatcherTimerCallback *callback) {
-    if (_current_dispatcher == NULL)
+    if (!_current_dispatcher)
       _current_dispatcher = new Dispatcher();
     _current_dispatcher->DoRegisterTimer(callback);
   }
   
   /* Unregister timer */
   static void UnregisterTimer(DispatcherTimerCallback *callback) {
-    if (_current_dispatcher == NULL)
+    if (!_current_dispatcher)
       _current_dispatcher = new Dispatcher();
     _current_dispatcher->DoUnregisterTimer(callback);
   }
@@ -158,7 +172,7 @@ public:
   
   /* Unregister window */
   void UnregisterWindow(DeviseWindow *win) {
-    (void)_windows.Delete(win);
+    _windows.Delete(win);
   }
 
   /* Register callback, all == TRUE if register with ALL dispatchers. */
@@ -211,11 +225,10 @@ public:
       }
     }
     _dispatchers.DoneIterator(index);
-    fprintf(stderr,"Dispatcher::NextDispatcher() fatal error\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot find next dispatcher");
   }
 
-  /* Return from run */
+  /* Return from Run() */
   static void ReturnCurrent() {
     _returnFlag = true;
   }
@@ -225,13 +238,12 @@ public:
 
   /* Cleanup all dispatchers */
   static void Cleanup() {
-  // Temporary hack..
-  	exit(0);
-
-    for (int index = _dispatchers.InitIterator();_dispatchers.More(index);) {
+    int index;
+    for(index = _dispatchers.InitIterator(); _dispatchers.More(index);) {
       Dispatcher *dispatcher = _dispatchers.Next(index);
       dispatcher->DoCleanup();
     }
+    _dispatchers.DoneIterator(index);
   }
 
   /* Change the state of the dispatcher */
@@ -284,7 +296,7 @@ private:
   
   /* Run, no return */
   void DoRunNoReturn() {
-    for(;;)
+    while(1)
       Run1();
   }
 
@@ -295,7 +307,7 @@ private:
 
   /* Remove a dispatcher */
   void DeleteDispatcher() {
-    if (_current_dispatcher  == this)
+    if (_current_dispatcher == this)
       NextDispatcher();
     _dispatchers.Delete(this);
   }
@@ -333,7 +345,6 @@ private:
   /* All dispatchers */
   static DispatcherList _dispatchers;
   
-#ifdef USE_SELECT
   /* Set of file descriptors to inspect for potential input */
 #ifndef HPUX
   static fd_set fdset;
@@ -341,7 +352,6 @@ private:
   static int fdset;
 #endif
   static int maxFdCheck;
-#endif
 
   /* Set to true when dispatcher should quit */
   static Boolean _quit;
@@ -356,6 +366,7 @@ public:
   DispatcherAutoRegister() {
     Dispatcher::Current()->Register(this);
   }
+
   virtual ~DispatcherAutoRegister() {
     Dispatcher::Current()->Unregister(this);
   }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/05/09 18:12:04  kmurli
+  No change to this makefile.
+
   Revision 1.13  1996/04/30 15:58:52  jussi
   Added #ifdef USE_SELECT which can be used to disable the use
   of select(). The display update problem still plagues the
@@ -83,7 +86,11 @@
 #include "Time.h"
 
 //#define DEBUG
+#define USE_SELECT
 //#define DISPATCHER_SLEEP
+
+/* dispatcher timer interval, in milliseconds */
+#define DISPATCHER_TIMER_INTERVAL 500
 
 Dispatcher *Dispatcher::_current_dispatcher = NULL;
 DispatcherList Dispatcher::_dispatchers;
@@ -98,57 +105,12 @@ Boolean Dispatcher::_returnFlag;
 */
 Boolean Dispatcher::_quit = false;
 
-#ifdef USE_SELECT
 #ifndef HPUX
 fd_set Dispatcher::fdset;
 #else
 int Dispatcher::fdset;
 #endif
 int Dispatcher::maxFdCheck = 0;
-#endif
-
-void Dispatcher::InsertMarker(int writeFd)
-{
-	char tempBuff = 'a';
-	if (writeFd != -1 )
-		write(writeFd,&tempBuff,sizeof(char));
-}
-
-void Dispatcher::FlushMarker(int readFd)
-{
- // Read thru the pipe and check if anyone needs the ProcQuery to
- // start from the first - if so return 1 else return 0;
- 
- char tempBuff = 'a';
- int status = 0;
-
- while((status = read(readFd,&tempBuff,sizeof(char))) > 0);
-
-}
-
-void Dispatcher::CreateMarker(int & readFd,int & writeFd)
-{
-	int pipeFd[2];
-
-	if ( pipe(pipeFd) < 0 ){
-	
-	 perror("Pipe cannot be formed\n");
-	 readFd = writeFd = -1;
-	}
-
-	readFd = pipeFd[0];
-	writeFd = pipeFd[1];
-
-     if (fcntl(readFd,F_SETFL,O_NDELAY) < 0)
-	  perror("Error in DEVise");
-}
-
-void Dispatcher::CloseMarker(int readFd,int writeFd)
-{
-	if (readFd) close(readFd);
-	if (writeFd) close(writeFd);
-}
-
 
 Dispatcher::Dispatcher(StateFlag state)
 {
@@ -180,6 +142,26 @@ Dispatcher::Dispatcher(StateFlag state)
 				     _nextFilter, _nextHint,
 				     d1, d2, d3, d4);
   }
+}
+
+void Dispatcher::CreateMarker(int &readFd, int &writeFd)
+{
+  int pipeFd[2];
+  if (pipe(pipeFd) < 0) {
+    DOASSERT(0, "Cannot create pipe");
+  }
+
+  readFd = pipeFd[0];
+  writeFd = pipeFd[1];
+
+  int status = fcntl(readFd, F_SETFL, O_NDELAY);
+  DOASSERT(status >= 0, "Cannot fcntl pipe");
+}
+
+void Dispatcher::CloseMarker(int readFd, int writeFd)
+{
+  if (readFd) close(readFd);
+  if (writeFd) close(writeFd);
 }
 
 /***********************************************************
@@ -404,7 +386,7 @@ void Dispatcher::RunNoReturn()
 
 #ifdef DISPATCHER_SLEEP
     long end = DeviseTime::Now();
-    if (end - start < 500) {
+    if (end - start < DISPATCHER_TIMER_INTERVAL) {
 #ifdef DEBUG
       printf("Dispatcher sleeps...\n");
 #endif
@@ -430,7 +412,7 @@ void Dispatcher::Run1()
 {
   if (_quit) {
     Cleanup();
-    exit(2);
+    Exit::DoExit(0);
   }
 
   /* Register all those waiting to be registered or unregistered */
@@ -473,6 +455,7 @@ void Dispatcher::Run1()
     _timerCallbacks.DoneIterator(index);
   }
 
+#ifdef USE_SELECT
   // Now wait for something to happen using the select function
   // Here the time is set to 0 so that it comes out immediately after checking
   // Changing the time to a NULL value will make this wait forever
@@ -481,7 +464,6 @@ void Dispatcher::Run1()
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 
-#ifdef USE_SELECT
 #ifndef HPUX
   fd_set fdread;
 #else
@@ -490,15 +472,14 @@ void Dispatcher::Run1()
   memcpy(&fdread, &fdset, sizeof fdread);
 
   int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, 0, &timeout);
-
-  if (NumberFdsReady < 0)
-    perror("select");
-
+  DOASSERT(NumberFdsReady >= 0, "Invalid select() status");
 
   // Check if any one of the fds have something to be read...
 
   if (NumberFdsReady > 0) { 
-  //printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
+#ifdef DEBUG
+    printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
+#endif
     for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
       DispatcherInfo *callback = _allCallbacks.Next(index);
       if (callback->flag & _stateFlag) {
@@ -510,7 +491,7 @@ void Dispatcher::Run1()
 #endif
 
 #ifdef DEBUG
-	printf(" Check for correctness.. Called fd = %d \n", callback->fd); 
+	    printf("Check for correctness: called fd = %d\n", callback->fd); 
 #endif
 	    callback->callBack->Run();
 	  }
@@ -529,7 +510,7 @@ void Dispatcher::Run1()
 	  if (fdread & (1 << callback->fd)) {
 #endif
 #ifdef DEBUG
-      	printf(" Check for correctness.. Called FD %d \n",callback->fd);
+	    printf("Check for correctness: called fd = %d\n", callback->fd);
 #endif
 	    callback->callBack->Run();
 	  }
@@ -586,8 +567,7 @@ void Dispatcher::Run1()
     break;
 
   default:
-    fprintf(stderr, "Dispatcher::Run1: unexpected event\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Enexpected event in journal");
   }
 
   /* get next event */
@@ -623,8 +603,6 @@ void Dispatcher::DoCleanup()
       callback->callBack->Cleanup();
   }
   _allCallbacks.DoneIterator(index);
-  
-  Exit::DoExit(0);
 }
 
 void Dispatcher::ActivateDispatcher()
@@ -674,4 +652,3 @@ void Dispatcher::Print()
   }
   _allCallbacks.DoneIterator(index);
 }
-
