@@ -1,0 +1,11 @@
+type CondorUser ascii
+comment //
+whitespace ' '
+
+attr time date
+
+attr user string 80
+
+attr jobs_running int
+attr total_jobs int
+

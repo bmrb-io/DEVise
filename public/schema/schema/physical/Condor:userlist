@@ -1,0 +1,9 @@
+type CondorUserList ascii
+comment #
+whitespace '	'
+
+attr UserName string 80
+attr TDataName string 80
+attr ViewName string 80
+attr X int
+attr Y int

@@ -1,0 +1,15 @@
+type Condor ascii
+comment //
+whitespace ' '
+attr time date
+
+# arch_opsys
+attr arch string 30
+
+attr owner float
+
+# owner_unclaimed
+attr oun float
+
+# owner_unclaimed_claimed
+attr oun_c float

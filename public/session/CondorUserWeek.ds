@@ -1,0 +1,217 @@
+# DEVise session file created by create_condor_session
+
+# Create views
+DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9
+DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter UserList_view 1
+DEVise viewSetDisabledActions UserList_view 1 0 0 1
+DEVise viewSetJSSendP UserList_view 0 1 0 {} 1 { } 1
+DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 2
+DEVise viewSetImplicitHome {Select1_view} 1 1 1 1 0.55 0.55 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter Select1_view 1
+DEVise viewSetDisabledActions Select1_view 1 0 0 1
+
+DEVise create {view} {Scatter} Select2_view 0 1 0 1 36 9
+DEVise viewSetImplicitHome {Select2_view} 1 1 1 1 0.55 0.55 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter Select2_view 1
+DEVise viewSetDisabledActions Select2_view 1 0 0 1
+
+DEVise create {view} {Scatter} User1_viewA 0 1 -1 -2 36 2
+DEVise viewSetImplicitHome {User1_viewA} 1 1 2 1 0.5 0.5 -0.5 21.5 0.5 22.5
+DEVise setViewAutoFilter User1_viewA 1
+DEVise viewSetDisabledActions User1_viewA 1 1 1 1
+
+DEVise create {view} {Scatter} User1_viewB 0 1 -1 -2 36 2
+DEVise viewSetImplicitHome {User1_viewB} 1 1 2 1 0.5 0.5 -0.5 21.5 0.5 22.5
+DEVise setViewAutoFilter User1_viewB 1
+DEVise viewSetDisabledActions User1_viewB 1 1 1 1
+
+DEVise create {view} {Scatter} User2_viewA 0 1 -1 -2 36 9
+DEVise viewSetImplicitHome {User2_viewA} 1 1 2 1 0.5 0.5 -0.5 20.5 0.5 21.5
+DEVise setViewAutoFilter User2_viewA 1
+DEVise viewSetDisabledActions User2_viewA 1 1 1 1
+
+DEVise create {view} {Scatter} User2_viewB 0 1 -1 -2 36 9
+DEVise viewSetImplicitHome {User2_viewB} 1 1 2 1 0.5 0.5 -0.5 20.5 0.5 21.5
+DEVise setViewAutoFilter User2_viewB 1
+DEVise viewSetDisabledActions User2_viewB 1 1 1 1
+
+DEVise create {view} {Scatter} TotalLinked_viewA -0.5 0.5 -0.5 0.5 36 9
+DEVise viewSetDisabledActions TotalLinked_viewA 1 1 1 1
+
+DEVise create {view} {Scatter} TotalLinked_viewB -0.5 0.5 -0.5 0.5 36 9
+DEVise viewSetDisabledActions TotalLinked_viewB 1 1 1 1
+
+DEVise create {view} {Scatter} Total_viewA -0.5 0.5 -0.5 0.5 36 9
+DEVise viewSetDisabledActions Total_viewA 1 1 1 1
+
+DEVise create {view} {Scatter} Total_viewB -0.5 0.5 -0.5 0.5 36 9
+DEVise viewSetDisabledActions Total_viewB 1 1 1 1
+
+DEVise create {view} {Scatter} User1_viewsymA 0 1 0 1 36 2
+DEVise viewSetImplicitHome {User1_viewsymA} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {User1_viewsymA} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter User1_viewsymA 1
+DEVise setAxisDisplay User1_viewsymA {Y} 1
+DEVise setXAxisDateFormat User1_viewsymA {%b %d %H:%M}
+DEVise setFont User1_viewsymA {x axis} 0 10 0 0
+DEVise setFont User1_viewsymA {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} User1_viewsymB 0 1 0 1 36 2
+DEVise viewSetImplicitHome {User1_viewsymB} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {User1_viewsymB} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter User1_viewsymB 1
+DEVise setAxisDisplay User1_viewsymB {Y} 1
+DEVise setXAxisDateFormat User1_viewsymB {%b %d %H:%M}
+DEVise setFont User1_viewsymB {x axis} 0 10 0 0
+DEVise setFont User1_viewsymB {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} User2_viewsymA 0 1 0 1 36 9
+DEVise viewSetImplicitHome {User2_viewsymA} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {User2_viewsymA} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter User2_viewsymA 1
+DEVise setAxisDisplay User2_viewsymA {Y} 1
+DEVise setXAxisDateFormat User2_viewsymA {%b %d %H:%M}
+DEVise setFont User2_viewsymA {x axis} 0 10 0 0
+DEVise setFont User2_viewsymA {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} User2_viewsymB 0 1 0 1 36 9
+DEVise viewSetImplicitHome {User2_viewsymB} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {User2_viewsymB} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter User2_viewsymB 1
+DEVise setAxisDisplay User2_viewsymB {Y} 1
+DEVise setXAxisDateFormat User2_viewsymB {%b %d %H:%M}
+DEVise setFont User2_viewsymB {x axis} 0 10 0 0
+DEVise setFont User2_viewsymB {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} TotalLinked_viewsymA 0 1 0 1 36 9
+DEVise viewSetImplicitHome {TotalLinked_viewsymA} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {TotalLinked_viewsymA} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter TotalLinked_viewsymA 1
+DEVise setAxisDisplay TotalLinked_viewsymA {X} 1
+DEVise setAxisDisplay TotalLinked_viewsymA {Y} 1
+DEVise setXAxisDateFormat TotalLinked_viewsymA {%b %d %H:%M}
+DEVise setFont TotalLinked_viewsymA {x axis} 0 10 0 0
+DEVise setFont TotalLinked_viewsymA {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} TotalLinked_viewsymB 0 1 0 1 36 9
+DEVise viewSetImplicitHome {TotalLinked_viewsymB} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {TotalLinked_viewsymB} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter TotalLinked_viewsymB 1
+DEVise setAxisDisplay TotalLinked_viewsymB {X} 1
+DEVise setAxisDisplay TotalLinked_viewsymB {Y} 1
+DEVise setXAxisDateFormat TotalLinked_viewsymB {%b %d %H:%M}
+DEVise setFont TotalLinked_viewsymB {x axis} 0 10 0 0
+DEVise setFont TotalLinked_viewsymB {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} Total_viewsymA 0 1 0 1 36 9
+DEVise viewSetImplicitHome {Total_viewsymA} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {Total_viewsymA} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter Total_viewsymA 1
+DEVise setAxisDisplay Total_viewsymA {X} 1
+DEVise setAxisDisplay Total_viewsymA {Y} 1
+DEVise setXAxisDateFormat Total_viewsymA {%b %d %H:%M}
+DEVise setFont Total_viewsymA {x axis} 0 10 0 0
+DEVise setFont Total_viewsymA {y axis} 0 10 0 0
+
+DEVise create {view} {Scatter} Total_viewsymB 0 1 0 1 36 9
+DEVise viewSetImplicitHome {Total_viewsymB} 0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise viewSetHome {Total_viewsymB} 1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0
+DEVise setViewAutoFilter Total_viewsymB 1
+DEVise setAxisDisplay Total_viewsymB {X} 1
+DEVise setAxisDisplay Total_viewsymB {Y} 1
+DEVise setXAxisDateFormat Total_viewsymB {%b %d %H:%M}
+DEVise setFont Total_viewsymB {x axis} 0 10 0 0
+DEVise setFont Total_viewsymB {y axis} 0 10 0 0
+
+DEVise viewSetDisabledActions Total_viewsymA 1 0 0 1
+
+# Create mapping class
+DEVise createMappingClass {condor_user_mc}
+
+# Create mappings
+DEVise create {mapping} condor_user_mc .Condor_UserList AllUser#condor_user_mc {} {0} {$X} {} 8 0.9 0 0 17 {$ViewName} 1 1 {} {} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList UserList#condor_user_mc {} {0} {$X} {} 37 0.9 0 360 12 {$UserName} {} {-2} {0.6} {} {-3} {4} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList Select1#condor_user_mc {} {0} {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList Select2#condor_user_mc {} {0} {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList User1A#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"User1_viewsymA"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList User1B#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"User1_viewsymB"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList User2A#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"User2_viewsymA"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList User2B#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"User2_viewsymB"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList TotalA#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"Total_viewsymA"} 1 1 {} {"TotalPile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList TotalB#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"Total_viewsymB"} 1 1 {} {"TotalPile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList TotalLinkedA#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymA"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc .Condor_UserList TotalLinkedB#condor_user_mc {} {0} {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymB"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total User1symA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total User1symB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total User2symA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total User2symB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total TotalsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total TotalsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total TotalLinkedsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+DEVise create {mapping} condor_user_mc ..Condor_Total TotalLinkedsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} {3} {} {} {} {} {}
+
+# Insert mappings into views
+DEVise insertMapping {UserList_view} {UserList#condor_user_mc}
+DEVise insertMapping {Select1_view} {Select1#condor_user_mc}
+DEVise insertMapping {Select2_view} {Select2#condor_user_mc}
+DEVise insertMapping {User1_viewA} {User1A#condor_user_mc}
+DEVise insertMapping {User1_viewB} {User1B#condor_user_mc}
+DEVise insertMapping {User2_viewA} {User2A#condor_user_mc}
+DEVise insertMapping {User2_viewB} {User2B#condor_user_mc}
+DEVise insertMapping {User1_viewsymA} {User1symA#condor_user_mc}
+DEVise insertMapping {User1_viewsymB} {User1symB#condor_user_mc}
+DEVise insertMapping {User2_viewsymA} {User2symA#condor_user_mc}
+DEVise insertMapping {User2_viewsymB} {User2symB#condor_user_mc}
+DEVise insertMapping {Total_viewsymA} {TotalsymA#condor_user_mc}
+DEVise insertMapping {Total_viewsymB} {TotalsymB#condor_user_mc}
+DEVise insertMapping {TotalLinked_viewsymA} {TotalLinkedsymA#condor_user_mc}
+DEVise insertMapping {TotalLinked_viewsymB} {TotalLinkedsymB#condor_user_mc}
+DEVise insertMapping {Total_viewA} {TotalA#condor_user_mc}
+DEVise insertMapping {Total_viewB} {TotalB#condor_user_mc}
+DEVise insertMapping {TotalLinked_viewA} {TotalLinkedA#condor_user_mc}
+DEVise insertMapping {TotalLinked_viewB} {TotalLinkedB#condor_user_mc}
+DEVise create {cursor} {Cursor} UserCursor1 2 1 1.000000 1.000000
+DEVise setCursorFixedSize UserCursor1 1
+DEVise setCursorSrc {UserCursor1} {User1_viewA}
+DEVise setCursorDst {UserCursor1} {Select1_view}
+DEVise create {cursor} {Cursor} UserCursor2 2 1 1.000000 1.000000
+DEVise setCursorFixedSize UserCursor2 1
+DEVise setCursorSrc {UserCursor2} {User2_viewA}
+DEVise setCursorDst {UserCursor2} {Select2_view}
+DEVise create {link} {Visual_Link} TimeLink 1
+DEVise insertLink {TimeLink} {User1_viewsymA}
+DEVise insertLink {TimeLink} {User2_viewsymA}
+DEVise insertLink {TimeLink} {TotalLinked_viewsymA}
+DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 1.000000
+DEVise setCursorSrc {TimeCursor} {User1_viewsymA}
+DEVise setCursorDst {TimeCursor} {Total_viewsymA}
+
+# Create windows and insert views
+DEVise create {window} {TileLayout} UserList 0.10 0.20 0.15 0.74 0 0
+DEVise insertWindow {UserList_view} {UserList}
+DEVise create {window} {TileLayout} Total 0.25 0.87 0.73 0.07 0 0
+DEVise insertWindow {Total_viewA} {Total}
+DEVise insertWindow {Total_viewB} {Total}
+DEVise create {window} {TileLayout} Select1 0.02 0.20 0.04 0.74 0 0
+DEVise insertWindow {Select1_view} {Select1}
+DEVise create {window} {TileLayout} Select2 0.06 0.20 0.04 0.74 0 0
+DEVise insertWindow {Select2_view} {Select2}
+DEVise create {window} {TileLayout} User1 0.25 0.20 0.73 0.22 0 0
+DEVise insertWindow {User1_viewA} {User1}
+DEVise insertWindow {User1_viewB} {User1}
+DEVise create {window} {TileLayout} User2 0.25 0.42 0.73 0.22 0 0
+DEVise insertWindow {User2_viewA} {User2}
+DEVise insertWindow {User2_viewB} {User2}
+DEVise create {window} {TileLayout} TotalLinked 0.25 0.64 0.73 0.23 0 0
+DEVise insertWindow {TotalLinked_viewA} {TotalLinked}
+DEVise insertWindow {TotalLinked_viewB} {TotalLinked}
+DEVise setPileStackState {User1} 4
+DEVise setPileStackState {User2} 4
+DEVise setPileStackState {TotalLinked} 4
+DEVise setPileStackState {Total} 4
+DEVise updateFilters
+DEVise viewGoHome Total_viewsymA
+DEVise waitForQueries
+DEVise viewGoHome User1_viewsymA
+DEVise viewGoHome Total_viewsymA

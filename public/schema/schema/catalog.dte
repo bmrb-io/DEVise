@@ -15,7 +15,27 @@
 "BAA_plan"UNIXFILE BAA.plan BaaPlan ../schema/schema/logical/BaaPlan "" 100 50 "../dat" "" ;
 "BAA_amm"UNIXFILE BAA.amm BaaAmm ../schema/schema/logical/BaaAmm "" 100 50 "../dat" "" ;
 
-
-
-
-
+"Condor_UserList" UNIXFILE UserList CondorUserList ../schema/schema/physical/Condor:userlist "" 100 50 "../dat/userdat" "" ;
+"Condor_Total" UNIXFILE Total.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_dman@cs_wisc_edu" UNIXFILE dman@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_ericro@cs_wisc_edu" UNIXFILE ericro@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_ferris@cs_wisc_edu" UNIXFILE ferris@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_jbasney@cs_wisc_edu" UNIXFILE jbasney@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_johnbent@cs_wisc_edu" UNIXFILE johnbent@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_metaneos@cs_wisc_edu" UNIXFILE metaneos@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_mikeu@cs_wisc_edu" UNIXFILE mikeu@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_mikihavl@cs_wisc_edu" UNIXFILE mikihavl@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_nice-user_condor@karr_ecn_purdue_edu" UNIXFILE nice-user_condor@karr_ecn_purdue_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_nice-user_condor@peta_ecn_purdue_edu" UNIXFILE nice-user_condor@peta_ecn_purdue_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_nice-user_jbasney@cs_wisc_edu" UNIXFILE nice-user_jbasney@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_psilord@cs_wisc_edu" UNIXFILE psilord@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_qun@cs_wisc_edu" UNIXFILE qun@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_rajwar@cs_wisc_edu" UNIXFILE rajwar@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_rpw@cs_wisc_edu" UNIXFILE rpw@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_sodani@cs_wisc_edu" UNIXFILE sodani@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_tannenba@cs_wisc_edu" UNIXFILE tannenba@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_testneos@cs_wisc_edu" UNIXFILE testneos@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_thain@cs_wisc_edu" UNIXFILE thain@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_yoderme@cs_wisc_edu" UNIXFILE yoderme@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_zhaohua@cs_wisc_edu" UNIXFILE zhaohua@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
+"Condor_zilles@cs_wisc_edu" UNIXFILE zilles@cs_wisc_edu.dat CondorUser ../schema/schema/physical/Condor:user1 "" 100 50 "../dat/userdat" "" ;
