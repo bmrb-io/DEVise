@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:37  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 // This is DTEControl.c
@@ -35,6 +39,7 @@
     exit(1);
   }
 
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
   _mainWindow = Tk_CreateMainWindow(_interp, 0, "DTE", "DTE");
   
   if (!_mainWindow) {
@@ -45,6 +50,7 @@
   Tk_MoveWindow(_mainWindow, 0, 0);
   Tk_GeometryRequest(_mainWindow, 100, 200);
   Tk_MakeWindowExist( _mainWindow);
+#endif
 
   if (Tk_Init(_interp) == TCL_ERROR) {
     cerr << "Cannot initialize Tk. Is TK_LIBRARY pointing to\n";

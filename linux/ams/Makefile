@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1997/01/18 20:49:25  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.3  1996/11/23 20:57:25  jussi
 #  Added ARCH_SYSLIBS.
 #
@@ -39,6 +42,7 @@
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
 ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

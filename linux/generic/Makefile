@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/04/11 18:46:02  wenger
+#  Added proper static flags to generic Makefiles for various architectures.
+#
 #  Revision 1.5  1997/01/18 20:49:26  jussi
 #  Removed inclusion of Xaw and related X extensions.
 #
@@ -46,6 +49,7 @@
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 

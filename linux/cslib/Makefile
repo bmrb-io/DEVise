@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/01/18 20:49:25  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.1  1996/10/17 20:50:36  jussi
 #  Initial revision.
 #
@@ -24,6 +27,7 @@
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../cslib
