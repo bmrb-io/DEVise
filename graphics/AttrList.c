@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/11 22:49:46  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/03/07 17:41:40  donjerko
   Added method Clear() that resets attrList to empty.
 
@@ -67,6 +70,7 @@ AttrList::AttrList(char *name)
 
 void AttrList::Clear(){
   for(int i = 0; i < MAX_ATTRLIST_SIZE; i++){
+    printf("Deleted attrs[%d] = %p\n", i, _attrs[i]);
     delete _attrs[i];
     _attrs[i] = NULL;
   }
@@ -122,6 +126,8 @@ void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
   }
 
   AttrInfo *info = new AttrInfo;
+  printf("Allocared info (attrname = %s, num = %d)= %p\n",
+	 name, attrNum,info);
   info->attrNum = attrNum;
   info->name = CopyString(name);
   info->offset = offset;
@@ -180,12 +186,25 @@ AttrInfo *AttrList::Find(char *name)
   return NULL;
 }
 
+int AttrList::GetAttrNum(char *name)
+{
+  for(int index = 0; index < _size; index++) {
+    AttrInfo *info = _attrs[index];
+    if (info && !strcmp(info->name, name))
+      return index;
+  }
+  return -1;
+}
+
+
 AttrInfo *AttrList::Get(int n)
 {
-  if (n < 0 || n >= _size) {
-    fprintf(stderr, "AttrList::Get(%d): %d existing attrs\n", n, _size);
-    Exit::DoExit(2);
-  }
+  if (n > 0  && n <= _size) {
+#ifdef DEBUG
+    printf("AttrList::Get : attr does not exist");
+#endif
+    return _attrs[n];
+  } 
   return _attrs[n];
 }
 

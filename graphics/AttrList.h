@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/03/07 17:41:40  donjerko
+  Added method Clear() that resets attrList to empty.
+
   Revision 1.8  1996/11/23 21:22:46  jussi
   Removed Config.h. Includes Init.h or ApInit.h instead.
 
@@ -109,6 +112,9 @@ public:
 
   /* Get ith attribute info */
   AttrInfo *Get(int index);
+
+  /* Get attr number, given its name */
+  int GetAttrNum(char *name);
 
   /* Get # of attributes */
   int NumAttrs() { return _size;}
