@@ -16,6 +16,10 @@
    $Id$
 
    $Log$
+   Revision 1.7  1996/10/04 17:24:15  wenger
+   Moved handling of indices from TDataAscii and TDataBinary to new
+   FileIndex class.
+
    Revision 1.6  1996/08/04 21:59:52  beyer
    Added UpdateLinks that allow one view to be told to update by another view.
    Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -75,7 +79,7 @@ class TData {
     virtual int Dimensions(int *sizeDimension)=0;
 
     /* Return record size, or -1 if variable record size */
-    int RecSize() { return _recSize; };
+    virtual int RecSize() { return _recSize; };
 
     /* Return page size of TData, or -1 if no paging structure */
     virtual int PageSize() { return -1; }
