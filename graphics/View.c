@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1996/08/04 21:03:35  beyer
+  Added view-locks and changed key handling.
+
   Revision 1.63  1996/08/03 15:48:37  jussi
   Pixmaps are restored only for 2D views.
 
@@ -281,7 +284,8 @@ static const Coord DELTA_Y = .000000000001;
 /* id for the next view created. view == NULL return id = 0. */
 
 int View::_nextId = 0;
-ViewList *View::_viewList = NULL;   /* list of all views */
+static ViewList theViewList;
+ViewList *View::_viewList = &theViewList;   /* list of all views */
 
 int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList = 0;
@@ -382,8 +386,6 @@ View::View(char *name, VisualFilter &initFilter,
 
   _id = ++_nextId;
   
-  if (!_viewList)
-    _viewList = new ViewList;
   _viewList->Insert(this);
   
   ControlPanel::Instance()->InsertCallback(this);
