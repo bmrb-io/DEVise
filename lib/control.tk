@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.183  1999/04/14 15:30:27  wenger
+#	Improved 'switch TData': moved the code from Tcl to C++, functionality
+#	is more flexible -- schemas don't have to match exactly as long as the
+#	appropriate TData attributes are present; TData can now be specified for
+#	view symbols in parent view mapping; updated shape help.
+#	
 #	Revision 1.182  1999/03/24 17:26:20  wenger
 #	Non-DTE data source code prevents adding duplicate data source names;
 #	added "nice axis" feature (sets axis limits to multiples of powers of
@@ -1022,6 +1028,7 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save" -command DoSave
 .mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
+.mbar.session.menu add command -label "Refresh" -command DoRefresh
 .mbar.session.menu add command -label "Update Filters" -command {DEVise updateFilters}
 .mbar.session.menu add command -label "Open, Update, and Save" -command {DoUpdate}
 # <<< Changes for saving sessions as batch scripts only...
@@ -1969,30 +1976,7 @@ proc DoOpen { asTemplate } {
 	return
     }
 
-    set sessionName "session.tk"
-    ClearDescription
-    set restoring 1
-    if {$asTemplate} {
-	set template 1
-    }
-    Puts "Restoring session from $file"
-    set err [catch { DEVise openSession $file } ]
-
-    # Make sure to clean up if things didn't work or the user cancelled.
-    if {[DEVise getWinCount] <= 1} {
-      DoClose 0
-    }
-    set restoring 0
-    set template 0
-
-    if {!$err} {
-	set sessionName $file
-    } else {
-	puts "Could not restore session"
-        puts $errorInfo
-    }
-
-    UpdateLinkCursorInfo
+    DoActualOpen $file $asTemplate
 }
 
 # Update a session file.

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44  1998/10/21 17:17:03  wenger
+#  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+#  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+#  closing set link sessions); fixed bug 423 (saving session file over
+#  directory).
+#
 #  Revision 1.43  1997/11/24 23:15:46  weaver
 #  Changes for the new ColorManager.
 #
@@ -185,6 +191,37 @@
 
 ############################################################
 
+proc DoActualOpen { sessionFile {asTemplate 0} } {
+    global restoring template sessionName errorInfo
+
+    set sessionName "session.tk"
+    ClearDescription
+    set restoring 1
+    if {$asTemplate} {
+	set template 1
+    }
+    Puts "Restoring session from $sessionFile"
+    set err [catch { DEVise openSession $sessionFile } ]
+
+    # Make sure to clean up if things didn't work or the user cancelled.
+    if {[DEVise getWinCount] <= 1} {
+      DoClose 0
+    }
+    set restoring 0
+    set template 0
+
+    if {!$err} {
+	set sessionName $sessionFile
+    } else {
+	puts "Could not restore session"
+        puts $errorInfo
+    }
+
+    UpdateLinkCursorInfo
+}
+
+############################################################
+
 # Save session
 proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     global templateMode schemadir datadir
@@ -290,6 +327,18 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     DoActualSave $file $asTemplate $asExport $withData $asBatchScript
     if {!$asTemplate} {
 	set sessionName $file
+    }
+}
+
+####################################################################
+
+proc DoRefresh {} {
+    global sessionName
+
+    set tmpSession $sessionName
+
+    if {[DoClose 1]} {
+        DoActualOpen $tmpSession
     }
 }
 
