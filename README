@@ -1,0 +1,108 @@
+		DEVise Source Code README File
+			$Date$
+
+*** Checkout and Setup
+
+You should have gotten this file by doing a 'cvs checkout world', or some
+variation on that, with your CVSROOT environment variable set to
+/p/devise/cvs.
+
+Immediately after doing the checkout, run the command 'setup' in the
+same directory in which you did the checkout.  Setup makes some symbolic
+links in the source tree that you will need for compiling on most
+architectures.
+
+
+*** Compiling
+
+To compile DEVise, cd to the directory appropriate for your system
+architecture (hp, solaris, solsparc, etc.).  Most of the system architecture
+directory names should be pretty self-explanatory.  Note that 'solaris'
+is for Intel/Solaris, and 'solsparc' is for SPARC/Solaris.
+
+To build the "normal" (monolithic) version of DEVise, make the target
+'generic' in the appropriate architecture directory.  This will end up
+making an executable called 'generic' in the 'generic' subdirectory.
+Other targets include 'all', 'devise', 'multi', 'static' (for some
+architectures), 'pure' (for some architectures), and 'cslib'.
+
+You may need to update the dependency files to get the sources to compile
+correctly.  To do this, go to the top level source directory (where you
+did the 'cvs checkout') and enter the command:
+
+	makedep <arch>
+
+where <arch> is replaced by the Makefile suffix for your architecture
+(hp, sun, etc.).  Don't commit the updated makefiles to the source
+repository unless you're sure you want to do that.  If you don't commit
+them, you can still use them to compile your copy of the sources.
+
+
+*** Executables
+
+Most executables are produced in the generic subdirectory under the
+appropriate architecture directory (solaris/generic/generic, for
+example).  One exception to this is the 'multi' executable, which is
+<arch>/multi/disp.
+
+When you are developing DEVise, you will probably want to make a customized
+version or versions of the devise startup script that run your DEVise
+executable with your DEVise Tcl/Tk code.  You can produce such a script
+by modifying the default startup script (/p/devise/run/devise).  Here is
+an example:
+
+    #! /bin/csh -f
+    # Run my DEVise executable and Tcl/Tk code with global sessions, schemas,
+    # and data.
+
+    # Allow core dumps for developers...
+    #limit coredumpsize 0
+    limit descriptors 256
+
+    setenv DEVISE_ROOT    /p/devise
+
+    setenv DEVISE_DAT     $DEVISE_ROOT/dat
+    setenv DEVISE_CACHE   $DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
+    setenv DEVISE_SESSION $DEVISE_ROOT/session
+    setenv DEVISE_LIB     ../lib
+    setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
+    setenv DEVISE_WORK    /tmp/`whoami`-devise-work
+    setenv DEVISE_EXEC    generic/generic
+
+    if (! -f $DEVISE_EXEC) then
+      echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+      exit 1
+    endif
+
+    $DEVISE_EXEC -sharedMem 0 $*
+
+
+*** Releasing Software
+
+Most DEVise developers should not do releases, at least not to
+/p/devise/public.
+
+(This section is not yet complete.)
+(release, release.linux, release.devcs, release.cslib)
+
+
+*** Generating Distributions
+
+Most DEVise developers should not generate distribution files.
+
+(This section is not yet complete.)
+(gen_dist)
+
+
+*** Mailing List
+
+All developers should be on the deviseproj mailing list.  You can subscribe
+to this mailing list by sending mail to deviseproj-request@cs.wisc.edu with
+the following as the message body:
+
+    subscribe
+
+When you commit changes to the code, please send a short description of
+them to the deviseproj mailing list.  This makes it easier to know when
+to release new versions of the code, and so on.
