@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/09 18:14:32  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
+
   Revision 1.4  1996/03/26 21:08:57  jussi
   Minor improvements.
 
@@ -96,113 +101,50 @@ void GroupDir::add_topgrp(char *schema, Group *gp)
 
 // Find all top level groups in the given schema.
 
-void GroupDir::top_level_groups(Tcl_Interp *interp, char *schema)
-{
-  Group *currgrp = NULL;
-  SchemaList *curr = list;
-  
-  while ((curr) && (strcmp(curr->sname, schema)))
-    curr = curr->next;
-
-  if (!curr) {
-    cout << "Could not find schema "<< schema 
-      << " in the schema directory "<<endl;
-    return;
-  }
-
-  currgrp = curr->topgrps->first_item();
-  while (currgrp) {
-    Tcl_AppendElement(interp, currgrp->name);
-    currgrp = curr->topgrps->next_item();
-  }
-}
-
-// Find all top level groups in the given schema.
-
 void GroupDir::top_level_groups(char *result, char *schema)
 {
-  Group *currgrp = NULL;
+  Group *currgrp = 0;
   SchemaList *curr = list;
 
-  strcpy(result,"");
-  while ((curr) && (strcmp(curr->sname, schema)))
+  result[0] = 0;
+
+  while (curr && strcmp(curr->sname, schema))
     curr = curr->next;
 
   if (!curr) {
-    cout << "Could not find schema "<< schema
-      << " in the schema directory "<<endl;
+    cout << "Could not find schema " << schema
+         << " in the schema directory " << endl;
     return;
   }
 
   currgrp = curr->topgrps->first_item();
   while (currgrp) {
-
-//Tcl_AppendElement(interp, currgrp->name);
     strcat(result,"{");
     strcat(result, currgrp->name);
     strcat(result,"} ");
-
     currgrp = curr->topgrps->next_item();
   }
 }
 
-// Searches through the schema directory to find the appropriate entry.
-// Then search through the topgrps list for that schema.
-// Finally, perform a recursive search till we find the group with the
-// given name.
-// Then, call subitems method on that group.
-
-void GroupDir::get_items(Tcl_Interp *interp, char *schema,
+void GroupDir::get_items(char *result, char *schema,
 			 char *topgname, char *gname)
 {
   SchemaList *curr = list;
   Group *currgrp, *retgrp;
-
-  while ((curr) && (strcmp(curr->sname, schema)))
-    curr = curr->next;
-
-  if (!curr) {
-    cout << "Could not find schema "<< schema << endl;
-    return;
-  }
-
-  currgrp = curr->topgrps->first_item();
-  while ((currgrp) && (strcmp(currgrp->name, topgname)))
-    currgrp = curr->topgrps->next_item();
-
-  if (!currgrp) {
-    cout << "Could not find top group " << topgname
-         << " in schema " << schema << endl;
-    return;
-  }
-
-  retgrp = find_grp(currgrp, gname);
-  if (!retgrp) {
-    cout << "Could not find group with name " << gname << endl;
-    return;
-  }
-
-  retgrp->subitems(interp);
-}
-
-void GroupDir::get_items(char *result, char *schema,
-             char *topgname, char *gname)
-{
-  SchemaList *curr = list;
-  Group *currgrp, *retgrp;
    
-    strcpy(result,"");
-  while ((curr) && (strcmp(curr->sname, schema)))
+  result[0] = 0;
+
+  while (curr && strcmp(curr->sname, schema))
     curr = curr->next;
 
   if (!curr) {
     cout << "Could not find schema "<< schema << endl;
     return;
-
-}
+  }
 
   currgrp = curr->topgrps->first_item();
-  while ((currgrp) && (strcmp(currgrp->name, topgname)))
+
+  while (currgrp && strcmp(currgrp->name, topgname))
     currgrp = curr->topgrps->next_item();
 
   if (!currgrp) {

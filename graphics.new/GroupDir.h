@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/09 18:14:33  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
+
   Revision 1.4  1995/12/28 19:41:59  jussi
   Small fix to remove compiler warnings.
 
@@ -52,10 +57,8 @@ public:
   void add_entry(char *schema);
 
   void add_topgrp(char *schema, Group *gp);
-  void top_level_groups(Tcl_Interp *interp, char *schema);
   void top_level_groups(char *result, char *schema);
   
-  void get_items(Tcl_Interp *interp, char *schema, char *topgname, char *gname);
   void get_items(char *result, char *schema, char *topgname, char *gname);
   int find_entry(char *schema);
   int num_topgrp(char *schema);

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/09 18:14:31  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
+
   Revision 1.5  1996/01/11 21:56:06  jussi
   Replaced libc.h with stdlib.h.
 
@@ -37,7 +42,6 @@
 
 #include <stdlib.h>
 
-#include "TkControl.h"
 #include "ClassDir.h"
 #include "ViewGraph.h"
 #include "View.h"
@@ -69,7 +73,6 @@ public:
   Group *insert_item(char *name);
   Group *insert_group(char *name);
   Group *parent_group();
-  void subitems(Tcl_Interp *interp);
   void subitems(char *);
 };
 

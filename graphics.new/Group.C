@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/09 18:14:29  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
+
   Revision 1.5  1995/11/18 01:57:28  ravim
   Groups associated with schema.
 
@@ -77,92 +82,38 @@ Group *Group::parent_group()
   return parent;
 }
 
-void Group::subitems(Tcl_Interp *interp)
-{
-  char attrbuf[MAX_STR_LEN];
-  Group *curr;
-
-  /* If this is a top level group there is an additional item called
-     "recId" which is not stored in our lists */
-  if (type == TOPGRP)
-  {
-    sprintf(attrbuf, "recId leaf");
-    Tcl_AppendElement(interp, attrbuf);
-  }    
-  
-  curr = subgrps->first_item();
-  while (curr)
-  {
-#ifdef DEBUG
-    printf("Item : %s ", curr->name);
-#endif
-    if (curr->type == SUBGRP)
-    {
-#ifdef DEBUG
-      printf(" is a GROUP item\n");
-#endif
-      sprintf(attrbuf, "%s intr", curr->name);
-    }
-    else if (curr->type == ITEM)
-    {
-#ifdef DEBUG
-      printf(" is a leaf item\n");
-#endif
-      sprintf(attrbuf, "%s leaf", curr->name);
-    }
-    else
-    {
-      printf("Error: top level group within group \n");
-      exit(0);
-    }
-
-    Tcl_AppendElement(interp, attrbuf);
-    curr = subgrps->next_item();
-  }
-}
 void Group::subitems(char *result)
 {
-  char attrbuf[MAX_STR_LEN];
   Group *curr;
 
   /* If this is a top level group there is an additional item called
      "recId" which is not stored in our lists */
   if (type == TOPGRP)
-  {
-    sprintf(attrbuf, "{recId leaf} ");
-    //Tcl_AppendElement(interp, attrbuf);
-    strcat(result,attrbuf);
-  }
+    strcpy(result, "{recid leaf} ");
 
   curr = subgrps->first_item();
-  while (curr)
-  {
+  while (curr) {
 #ifdef DEBUG
     printf("Item : %s ", curr->name);
 #endif
- if (curr->type == SUBGRP)
-    {
+ if (curr->type == SUBGRP) {
 #ifdef DEBUG
-      printf(" is a GROUP item\n");
+      printf("is a GROUP item\n");
 #endif
-      sprintf(attrbuf, "{%s intr} ", curr->name);
-    }
-    else if (curr->type == ITEM)
-    {
+      strcat(result, "{");
+      strcat(result, curr->name);
+      strcat(result, " intr} ");
+    } else if (curr->type == ITEM) {
 #ifdef DEBUG
-      printf(" is a leaf item\n");
+      printf("is a leaf item\n");
 #endif
-      sprintf(attrbuf, "{%s leaf} ", curr->name);
-    }
-    else
-    {
-      printf("Error: top level group within group \n");
+      strcat(result, "{");
+      strcat(result, curr->name);
+      strcat(result, " leaf} ");
+    } else {
+      printf("Error: top level group within group\n");
       exit(0);
-
- }
-
-    //Tcl_AppendElement(interp, attrbuf);
-    strcat(result, attrbuf);
+    }
     curr = subgrps->next_item();
   }
 }
