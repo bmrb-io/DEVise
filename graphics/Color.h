@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 21:57:55  jussi
+  Added some 20 missing colors which were defined in ColorMgr.c
+  but not listed here. Now Devise can refer to all colors by the
+  color constants. Also added the copyright notice.
+
   Revision 1.2  1995/09/05 21:12:27  jussi
   Added/updated CVS header.
 */
@@ -46,25 +51,31 @@ const Color KhakiColor		= 17;
 const Color GoldenRodColor	= 18;
 const Color YellowColor		= 19;
 const Color SiennaColor		= 20;
-const Color GreenColor_2	= 21;
-const Color BlueColor_2		= 22;
-const Color OrangeColor_2	= 23;
+const Color LightCoralColor	= 21;
+const Color AntiqueWhiteColor	= 22;
+const Color LemonChiffonColor	= 23;
 const Color LightGrayColor	= 24;
-const Color RedColor1		= 25;
-const Color RedColor2		= 26;
-const Color GreenColor1		= 27;
-const Color GreenColor2		= 28;
-const Color BlueColor1		= 29;
-const Color BlueColor2		= 30;
-const Color GoldColor1		= 31;
-const Color GoldColor2		= 32;
-const Color BlueColor1_2	= 33;
-const Color BlueColor2_2	= 34;
-const Color BlueColor3		= 35;
-const Color BlueColor4		= 36;
+const Color LavenderColor	= 25;
+const Color LavenderBlushColor	= 26;
+const Color MistyRoseColor	= 27;
+const Color NavyBlueColor	= 28;
+const Color SlateBlueColor	= 29;
+const Color MediumBlueColor	= 30;
+const Color DeepSkyBlueColor	= 31;
+const Color SkyBlueColor	= 32;
+const Color RedColor1		= 33;
+const Color RedColor2		= 34;
+const Color GreenColor1		= 35;
+const Color GreenColor2		= 36;
+const Color BlueColor1		= 37;
+const Color BlueColor2		= 38;
+const Color BlueColor3		= 39;
+const Color BlueColor4		= 40;
+const Color GoldColor1		= 41;
+const Color GoldColor2		= 42;
 
 const Color ForegroundColor	= BlackColor;
-const Color BackgroundColor	= WhiteColor;
+const Color BackgroundColor	= AntiqueWhiteColor;
 const Color HighlightColor	= RedColor;
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:39:26  jussi
+  Minor fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/05 21:56:39  jussi
   Moved list of default colors to be a structure array rather than
   repeated code, and also made the code use the color constants
@@ -57,22 +60,28 @@ static struct {
   { GoldenRodColor, "goldenrod1" },
   { YellowColor, "yellow" },
   { SiennaColor, "sienna1" },
-  { GreenColor_2, "green" },
-  { BlueColor_2, "blue" },
-  { OrangeColor_2, "orange" },
+  { LightCoralColor, "LightCoral" },
+  { AntiqueWhiteColor, "AntiqueWhite" },
+  { LemonChiffonColor, "LemonChiffon" },
   { LightGrayColor, "LightGray" },
+  { LavenderColor, "Lavender" },
+  { LavenderBlushColor, "LavenderBlush" },
+  { MistyRoseColor, "MistyRose" },
+  { NavyBlueColor, "NavyBlue" },
+  { SlateBlueColor, "SlateBlue" },
+  { MediumBlueColor, "MediumBlue" },
+  { DeepSkyBlueColor, "DeepSkyBlue" },
+  { SkyBlueColor, "SkyBlue" },
   { RedColor1, "red1" },
   { RedColor2, "red2" },
   { GreenColor1, "green1" },
   { GreenColor2, "green2" },
   { BlueColor1, "blue1" },
   { BlueColor2, "blue2" },
-  { GoldColor1, "gold1" },
-  { GoldColor2, "gold2" },
-  { BlueColor1_2, "blue1" },
-  { BlueColor2_2, "blue2" },
   { BlueColor3, "blue3" },
-  { BlueColor4, "blue4" }
+  { BlueColor4, "blue4" },
+  { GoldColor1, "gold1" },
+  { GoldColor2, "gold2" }
 };
 
 ColorMgr::ColorMgr()
