@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/12/06 18:41:06  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.56  1999/11/16 20:13:01  wenger
   Improvements to debug logging: the beginning of the log isn't overwritten
   when the log wraps around; the values of important environment variables
@@ -319,10 +323,10 @@
 static const char *	version = "1.7.0";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-1999";
+static const char *	copyright = "Copyright (c) 1992-2000";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 1999";
+static const char *	winLogo = "Visualization by DEVise (tm) 2000";
 
 
 #if !defined(lint) && defined(RCSID)
