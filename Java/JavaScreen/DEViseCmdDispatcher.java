@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  1999/08/24 08:45:53  hongyu
+// *** empty log message ***
+//
 // Revision 1.38  1999/08/17 06:15:16  hongyu
 // *** empty log message ***
 //
@@ -73,12 +76,14 @@ public class DEViseCmdDispatcher implements Runnable
     private synchronized void setStatus(int arg)
     {
         status = arg;
-        
-        MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
-        Toolkit tk = jsc.jscreen.getToolkit();
-        //EventQueue queue = new EventQueue();
-        EventQueue queue = tk.getSystemEventQueue();
-        queue.postEvent(finishEvent);
+
+        if (!DEViseGlobals.isApplet) {
+            MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
+            Toolkit tk = jsc.jscreen.getToolkit();
+            EventQueue queue = tk.getSystemEventQueue();
+            //EventQueue queue = new EventQueue();
+            queue.postEvent(finishEvent);
+        }
     }
 
     public synchronized boolean getOnlineStatus()
@@ -103,7 +108,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     // it is assumed that status = 0 while method start() is called
     // it is also assumed that while status = 0, dispatcher thread is not running
-    
+
     public void start(String cmd)
     {
         if (getStatus() != 0) {
@@ -267,19 +272,21 @@ public class DEViseCmdDispatcher implements Runnable
                     processCmd(commands[i]);
                 } else {
                     processCmd(commands[i]);
-                }                
+                }
             }
 
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
             //jsc.jscreen.setCursor(jsc.lastCursor);
-            
-            MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
-            Toolkit tk = jsc.jscreen.getToolkit();
-            //EventQueue queue = new EventQueue();
-            EventQueue queue = tk.getSystemEventQueue();
-            queue.postEvent(finishEvent);
-            
+
+            if (!DEViseGlobals.isApplet) {
+                MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
+                Toolkit tk = jsc.jscreen.getToolkit();
+                //EventQueue queue = new EventQueue();
+                EventQueue queue = tk.getSystemEventQueue();
+                queue.postEvent(finishEvent);
+            }
+
             // turn off the counter and the traffic light
             //jsc.viewInfo.updateImage(0, 0);
             //jsc.viewInfo.updateCount(0);
@@ -361,7 +368,7 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showServerState(cmd[1]);
             } else if (rsp[i].startsWith("JAVAC_CreateView")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 24) {
+                if (cmd == null || cmd.length < 25) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
@@ -374,21 +381,22 @@ public class DEViseCmdDispatcher implements Runnable
                     int w = Integer.parseInt(cmd[6]);
                     int h = Integer.parseInt(cmd[7]);
                     double z = (Double.valueOf(cmd[8])).doubleValue();
+                    int dim = Integer.parseInt(cmd[9]);
                     Rectangle viewloc = new Rectangle(x, y, w, h);
-                    x = Integer.parseInt(cmd[9]);
-                    y = Integer.parseInt(cmd[10]);
-                    w = Integer.parseInt(cmd[11]);
-                    h = Integer.parseInt(cmd[12]);
+                    x = Integer.parseInt(cmd[10]);
+                    y = Integer.parseInt(cmd[11]);
+                    w = Integer.parseInt(cmd[12]);
+                    h = Integer.parseInt(cmd[13]);
                     Rectangle dataloc = new Rectangle(x, y, w, h);
 
                     int bg, fg;
-                    Color color = DEViseGlobals.convertColor(cmd[13]);
+                    Color color = DEViseGlobals.convertColor(cmd[14]);
                     if (color != null) {
                         fg = color.getRGB();
                     } else {
                         throw new NumberFormatException();
                     }
-                    color = DEViseGlobals.convertColor(cmd[14]);
+                    color = DEViseGlobals.convertColor(cmd[15]);
                     if (color != null) {
                         bg = color.getRGB();
                     } else {
@@ -397,8 +405,7 @@ public class DEViseCmdDispatcher implements Runnable
                     //int bg = (Color.white).getRGB();
                     //int fg = (Color.black).getRGB();
 
-                    String xtype = cmd[15], ytype = cmd[16];
-                    String viewtitle = cmd[17];
+                    String xtype = cmd[16], ytype = cmd[17];
                     double gridx = (Double.valueOf(cmd[18])).doubleValue();
                     double gridy = (Double.valueOf(cmd[19])).doubleValue();
                     int rb = Integer.parseInt(cmd[20]);
@@ -406,7 +413,63 @@ public class DEViseCmdDispatcher implements Runnable
                     int dd = Integer.parseInt(cmd[22]);
                     int ky = Integer.parseInt(cmd[23]);
 
-                    DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
+                    String viewtitle = cmd[24];
+                    int dtx = 0, dty = 0;
+                    Font dtf = null;
+                    if (viewtitle.length() > 0) {
+                        if (cmd.length != 31) {
+                            throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                        }
+
+                        dtx = Integer.parseInt(cmd[25]);
+                        dty = Integer.parseInt(cmd[26]);
+                        int dtff;
+                        if (cmd[27].equals("")) {
+                            dtff = 0;
+                        } else {
+                            dtff = Integer.parseInt(cmd[27]);
+                        }
+                        int dtfs;
+                        if (cmd[28].equals("")) {
+                            dtfs = 14;
+                        } else {
+                            dtfs = Integer.parseInt(cmd[28]);
+                        }
+                        int dtb;
+                        if (cmd[29].equals("")) {
+                            dtb = 0;
+                        } else {
+                            dtb = Integer.parseInt(cmd[29]);
+                        }
+                        int dti;
+                        if (cmd[30].equals("")) {
+                            dti = 0;
+                        } else {
+                            dti = Integer.parseInt(cmd[30]);
+                        }
+
+                        dtf = DEViseGlobals.getFont(dtfs, dtff, dtb, dti);
+                        if (dtf != null) {
+                            Toolkit tk = Toolkit.getDefaultToolkit();
+                            FontMetrics fm = tk.getFontMetrics(dtf);
+                            int ac = fm.getAscent(), dc = fm.getDescent(), ld = fm.getLeading();
+                            ac = ac + ld / 2;
+                            dc = dc + ld / 2;
+                            int sh = fm.getHeight();
+                            int sw = fm.stringWidth(viewtitle);
+                            int height = 0, width = 0;
+                            dty = dty + height / 2 + ac - sh / 2;
+                            dtx = dtx + width / 2 - sw / 2;
+                        }
+                    }
+
+                    DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, dim, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
+                    if (view != null) {
+                        view.viewDTFont = dtf;
+                        view.viewDTX = dtx;
+                        view.viewDTY = dty;
+                    }
+
                     jsc.jscreen.addView(view);
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -486,9 +549,9 @@ public class DEViseCmdDispatcher implements Runnable
                         if (results == null || results.length == 0) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
-                        
+
                         DEViseGData.defaultFont = null;
-                        
+
                         for (int k = 0; k < results.length; k++) {
                             DEViseGData data = null;
                             jsc.pn("Received gdata is: \"" + results[k] + "\"");

@@ -1,22 +1,5 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1999
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-
-// $Id$
-
-// $Log$
-
-// ========================================================================
-
 // YException.java
+// last updated on 07/27/99
 
 public class YException extends Exception
 {
@@ -24,10 +7,14 @@ public class YException extends Exception
     private int id;
     // indicate where this exception happened
     private String where = null;
+    // indicate the error message
+    private String msg = null;
+
+    private static String defaultMsg = "YException has been throwed!";
 
     public YException()
     {
-        this("YException been throwed!", null, 0);
+        this(null, null, 0);
     }
 
     public YException(String s)
@@ -47,10 +34,11 @@ public class YException extends Exception
 
     public YException(String s, String w, int i)
     {
-        super(s);
+        super( ((s == null)?defaultMsg:s) + ((w == null)?"":(" in " + w)) );
 
-        where = w;
         id = i;
+        where = w;
+        msg = s;
     }
 
     public int getID()
@@ -61,17 +49,17 @@ public class YException extends Exception
     public String getWhere()
     {
         if (where == null)
-            return new String("program");
+            return new String("");
         else
             return where;
     }
 
     public String getMsg()
     {
-        if (where != null) {
-            return getMessage() + " in " + where;
+        if (msg == null) {
+            return new String("");
         } else {
-            return getMessage();
+            return msg;
         }
     }
 }

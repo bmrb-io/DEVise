@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  1999/08/24 08:45:52  hongyu
+// *** empty log message ***
+//
 // Revision 1.13  1999/08/19 07:20:51  hongyu
 // *** empty log message ***
 //
@@ -223,7 +226,13 @@ public class DEViseCanvas extends Container
             g.setColor(new Color(view.viewBg));
             g.fillRect(0, 0, canvasDim.width - 1, canvasDim.height - 1);
         }
-
+        
+        if (view.viewDTFont != null && view.viewTitle != null) {
+            g.setColor(new Color(view.viewFg));
+            g.setFont(view.viewDTFont);
+            g.drawString(view.viewTitle, view.viewDTX, view.viewDTY);
+        }
+            
         Rectangle loc = null;
 
         // draw all the cursors, include the cursors for child view and piled view
@@ -279,6 +288,15 @@ public class DEViseCanvas extends Container
 
         // draw all the GDatas, assuming piled view and child view will not have GData
         if (view.viewGDatas.size() != 0) {
+            if (view.viewDimension == 3) {
+                if (view.crystal == null) {
+                    view.buildCrystal();
+                } 
+                
+                if (view.crystal != null) {
+                    view.crystal.paint(this, g);
+                }    
+            } else {                    
             for (int i = 0; i < view.viewGDatas.size(); i++) {
                 DEViseGData gdata = view.getGData(i);
                 if ((gdata.symbolType == 12 || gdata.symbolType == 16) && gdata.string != null) {
@@ -286,6 +304,7 @@ public class DEViseCanvas extends Container
                     g.setFont(gdata.font);
                     g.drawString(gdata.string, gdata.x, gdata.y);
                 }
+            }
             }
         }
 
@@ -420,6 +439,10 @@ public class DEViseCanvas extends Container
             DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
             int actualKey = 0;
             
+            if (activeView != null && activeView.viewDimension == 3) {
+                return;
+            }
+            
             if (dispatcher.getStatus() != 0) {
                 //jsc.showMsg("Java Screen still talking to the Server!\nPlease try again later or press STOP button!");
                 return;
@@ -553,11 +576,15 @@ public class DEViseCanvas extends Container
             // Each mouse click will be here once, so double click actually will enter
             // this twice
             // the position of this event will be relative to this view, and will not
-            // exceed the range of this view, ie, p.x >= 0 && p.x < view.width ...
+            // exceed the range of this view, ie, p.x >= 0 && p.x < view.width ...                        
             sp = event.getPoint();
             ep.x = op.x = sp.x;
             ep.y = op.y = sp.y;
-
+            
+            if (view.viewDimension == 3) {
+                return;
+            }
+            
             isMouseDragged = false;
 
             mousePosition = view.checkPos(sp);
@@ -640,7 +667,11 @@ public class DEViseCanvas extends Container
         }
 
         public void mouseReleased(MouseEvent event)
-        {
+        {   
+            if (view.viewDimension == 3) {
+                return;
+            }
+            
             // Each mouse click will be here once, so double click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
@@ -781,7 +812,10 @@ public class DEViseCanvas extends Container
         }
 
         public void mouseClicked(MouseEvent event)
-        {
+        {   
+            if (view.viewDimension == 3) {
+                return;
+            }
             // before this event is reported, mousePressed and mouseReleased events
             // will be reported
             // the position for this event will be within the range of this view
@@ -865,7 +899,30 @@ public class DEViseCanvas extends Container
         // you first start the dragging(so might have value that is less than zero), and
         // the dragging event is still send back to the view where you first start dragging.
         public void mouseDragged(MouseEvent event)
-        {
+        {   
+            if (view.viewDimension == 3) {
+                ep = event.getPoint();
+                int dx = ep.x - sp.x, dy = ep.y - sp.y;
+                sp = ep;
+                double ddx = dx * view.crystal.pixelToX, ddy = dy * view.crystal.pixelToY;
+                if (lastKey == KeyEvent.VK_ALT) {
+                    view.crystal.lcs.translate(ddx, ddy, 0.0);
+                } else if (lastKey == KeyEvent.VK_CONTROL) {
+                    double factor = Math.sqrt(dx * dx + dy * dy) / view.viewDataLoc.width;                
+                    if (dx < 0) {
+                        factor = -factor;
+                    }
+                    view.crystal.lcs.scale(1 + factor, 1 + factor, 1 + factor);
+                } else {    
+                    view.crystal.lcs.xrotate(Math.asin((double)dy * -2 / view.viewDataLoc.width) * YGlobals.rad);
+                    view.crystal.lcs.yrotate(Math.asin((double)dx * 2 / view.viewDataLoc.height) * YGlobals.rad);
+                }
+                    
+                view.crystal.isTransformed = false;
+                repaint();
+                return;
+            }
+            
             // in this event, the position might exceed the range of this view
             Point p = event.getPoint();
 

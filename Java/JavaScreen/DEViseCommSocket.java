@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  1999/08/03 05:56:49  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.3  1999/06/23 20:59:16  wenger
 // Added standard DEVise header.
 //
@@ -70,6 +73,9 @@ public class DEViseCommSocket
             imgos = new DataOutputStream(imgSocket.getOutputStream());
             imgis = new DataInputStream(imgSocket.getInputStream());
             imgSocket.setSoTimeout(timeout);
+        } catch (NoRouteToHostException e) {
+            closeSocket();
+            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
         } catch (SocketException e) {
             closeSocket();
             throw new YException("Can not set timeout for sockets", "DEViseCommSocket:constructor");
@@ -101,6 +107,9 @@ public class DEViseCommSocket
         try {
             socket = new Socket(hostname, cmdport);
             imgSocket = new Socket(hostname, imgport);
+        } catch (NoRouteToHostException e) {
+            closeSocket();
+            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
         } catch (UnknownHostException e) {
             closeSocket();
             throw new YException("Unkonwn host {" + hostname + "}", "DEViseCommSocket:constructor");
@@ -117,6 +126,9 @@ public class DEViseCommSocket
             imgos = new DataOutputStream(imgSocket.getOutputStream());
             imgis = new DataInputStream(imgSocket.getInputStream());
             imgSocket.setSoTimeout(timeout);
+        } catch (NoRouteToHostException e) {
+            closeSocket();
+            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
         } catch (SocketException e) {
             closeSocket();
             throw new YException("Can not set timeout for sockets", "DEViseCommSocket:constructor");

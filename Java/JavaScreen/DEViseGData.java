@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  1999/08/19 07:21:06  hongyu
+// *** empty log message ***
+//
 // Revision 1.17  1999/08/17 06:15:16  hongyu
 // *** empty log message ***
 //
@@ -41,7 +44,8 @@ public class DEViseGData
     public jsdevisec jsc = null;
     public DEViseView parentView = null;
     public String viewname = null;
-    public int x = 0, y = 0, width = 0, height = 0;
+    public int x = 0, y = 0, z = 0, width = 0, height = 0;
+    public double x0, y0, z0;
     public String[] data = null;
     public Component symbol = null;
     public boolean isJavaSymbol = false;
@@ -65,12 +69,15 @@ public class DEViseGData
         if (data == null || data.length != 23)
             throw new YException("Invalid GData + {" + gdata + "}");
 
-        double x0 = 0, y0 = 0, size = 0;
+        //double x0 = 0, y0 = 0, z0 = 0, size = 0;
+        double size = 0;
         try {
             x0 = (Double.valueOf(data[0])).doubleValue();
             x = (int)(x0 * xm + xo);
             y0 = (Double.valueOf(data[1])).doubleValue();
             y = (int)(y0 * ym + yo);
+            z0 = (Double.valueOf(data[2])).doubleValue();
+            z = (int)(y0 * ym + yo);
             size = (Double.valueOf(data[4])).doubleValue();
             symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
@@ -260,6 +267,22 @@ public class DEViseGData
                 y = y + height - dc;
                 x = x + width - sw;
                 break;
+            }
+        } else if (symbolType == 4) {
+            isJavaSymbol = false;    
+
+            width = (int)(size * xm);
+            height = (int)(size * ym);
+            if (width < 0)
+                width = -width;
+            if (height < 0)
+                height = -height;
+                        
+            color = DEViseGlobals.convertColor(data[3]);
+            if (color.getRed() == 0) {
+                string = "Zn";
+            } else {
+                string = "Se";
             }
         } else {
             isJavaSymbol = false;

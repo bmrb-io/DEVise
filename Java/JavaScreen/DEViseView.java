@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  1999/08/03 05:56:50  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.33  1999/07/27 17:11:18  hongyu
 // *** empty log message ***
 //
@@ -37,12 +40,14 @@ public class DEViseView
 
     public String viewName = null;
     public String curlyName = null;
-    public String viewTitle = null;
     // viewLoc is the location within parent, parent could be another view or the screen
     public Rectangle viewLoc = null;
     public double viewZ = 0.0;
+    public int viewDimension = 0;
     public int viewBg, viewFg;
-
+    
+    public YCrystal crystal = null;
+    
     // viewDataLoc is the location relative to this view
     public Rectangle viewDataLoc = null;
     public double viewDataXMin = 0.0, viewDataXMax = 0.0;
@@ -50,6 +55,10 @@ public class DEViseView
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
 
+    public String viewTitle = null;
+    public int viewDTX, viewDTY;
+    public Font viewDTFont = null;
+    
     public DEViseView parentView = null;
     public DEViseView piledView = null;
     public Vector viewPiledViews = new Vector();
@@ -74,7 +83,7 @@ public class DEViseView
     public Rectangle oldRect = null;
     public boolean isFirstTime = true;
 
-    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
+    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
     {
         jsc = panel;
 
@@ -82,6 +91,7 @@ public class DEViseView
         viewTitle = title;
         viewLoc = loc;
         viewZ = Z;
+        viewDimension = dim;
         viewBg = bg;
         viewFg = fg;
 
@@ -120,8 +130,36 @@ public class DEViseView
         }
 
         curlyName = "{" + viewName + "}";
+        
+        if (jsc.currentSession != null && jsc.currentSession.indexOf("ZnSe") != -1) {
+            viewDimension = 3;
+        }            
     }
-
+    
+    public void buildCrystal()
+    {
+        if (viewDimension != 3) {
+            return;
+        }
+        
+        Y3DLCS lcs = new Y3DLCS();
+        int n = viewGDatas.size();
+        String[] atomType = new String[n];
+        double[][] atomPos = new double[n][3];
+        
+        jsc.pn("gdata number is " + n);
+        
+        for (int i = 0; i < n; i++) {
+            DEViseGData gdata = (DEViseGData)viewGDatas.elementAt(i);
+            atomPos[i][0] = gdata.x0;
+            atomPos[i][1] = gdata.y0;
+            atomPos[i][2] = gdata.z0;
+            atomType[i] = gdata.string;
+        }
+        
+        crystal = new YCrystal(viewDataLoc.width, viewDataLoc.height, lcs, atomType, atomPos);                
+    }
+    
     public String getCurlyName()
     {
         return curlyName;

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  1999/08/24 08:45:53  hongyu
+// *** empty log message ***
+//
 // Revision 1.23  1999/08/17 06:15:17  hongyu
 // *** empty log message ***
 //
@@ -41,7 +44,7 @@ public final class DEViseGlobals
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644;
-    public static final String VERSION = new String("2.1");
+    public static final String VERSION = new String("3.0");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
