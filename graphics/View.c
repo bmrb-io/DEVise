@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/04/05 20:12:34  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.26  1996/03/29 18:13:57  wenger
   Got testWindowRep to compile and run, added drawing in
   windows; fixed a few more compile warnings, etc.
@@ -1663,7 +1669,7 @@ void View::GetYCursorArea(int &x, int &y, int &w, int &h)
 Boolean View::DrawCursors()
 {
 #ifdef DEBUG
-  printf("Drawcursors for %s\n", GetName());
+  printf("DrawCursors for %s\n", GetName());
 #endif
 
   if (!Mapped()) {
@@ -1685,7 +1691,7 @@ Boolean View::DrawCursors()
 Boolean View::HideCursors()
 {
 #ifdef DEBUG
-  printf("Hidecursors for %s\n", GetName());
+  printf("HideCursors for %s\n", GetName());
 #endif
 
   if (!Mapped()) {
@@ -1720,11 +1726,6 @@ void View::DoDrawCursors()
     VisualFilter *filter;
     Color color;
     cursor->GetVisualFilter(filter, color);
-#if 0
-    // cursor drawn in xor mode, so foreground color won't matter
-    // (and should not be set here)
-    winRep->SetFgColor(color);
-#endif
 
     if (filter->flag & VISUAL_X) {
 #ifdef DEBUG
