@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2001/05/27 18:49:31  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.7  2001/05/03 19:39:02  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -86,8 +89,10 @@ DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
   _attrType = FloatAttr;
   _dateFormat = CopyString(GetDefaultDateFormat());
 
-  char buf[128];
-  sprintf(buf, "%%.%dg", significantDigits);
+  const int bufSize = 128;
+  char buf[bufSize];
+  int formatted = snprintf(buf, bufSize, "%%.%dg", significantDigits);
+  checkAndTermBuf(buf, bufSize, formatted);
   _floatFormat = CopyString(buf);
 
   switch (_type) {
@@ -425,6 +430,13 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
 	  Coord labelValue = tickMark;
 	  labelValue = _multFactor * tickMark;
 	  if (labelValue == -0.0) labelValue = 0.0;
+	  if (labelValue != 0.0) {
+	    // Check whether labelValue is "very close" to zero.  Note: test
+		// is relative to tickInc in case we are very zoomed in.
+		if (fabs(labelValue / tickInc) < 1.0e-4) {
+		  labelValue = 0.0;
+		}
+	  }
       int formatted = snprintf(buf, bufSize, _floatFormat, labelValue);
 	  checkAndTermBuf(buf, bufSize, formatted);
 	}
