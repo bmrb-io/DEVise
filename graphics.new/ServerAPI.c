@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/08/04 22:58:39  jussi
+  Server unregisters a socket connection only when an existing
+  connection is broken.
+
   Revision 1.19  1996/07/18 01:17:32  jussi
   Added call to DestroySessionData() of base class.
 
@@ -146,9 +150,10 @@ ServerAPI::ServerAPI()
   View::InsertViewCallback(this);
 	
   _busy = false;
-  _listenFd = _socketFd = -1;
+  _listenFd = _socketFd = _dataFd = -1;
 
   _replicate = 0;
+  clientAddr.sin_family = clientAddr.sin_port = clientAddr.sin_addr.s_addr = 0;
 
   // see if any replicas are defined
 
@@ -444,11 +449,10 @@ void ServerAPI::RestartSession()
   printf("\n");
   printf("Server waiting for client connection.\n");
 
-  struct sockaddr_in tempaddr;
-  int len = sizeof(tempaddr);
+  int len = sizeof(clientAddr);
 
   do {
-    _socketFd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
+    _socketFd = accept(_listenFd, (struct sockaddr *)&clientAddr, &len);
   } while (_socketFd < 0 && errno == EINTR);
 
   if (_socketFd < 0) {
@@ -462,6 +466,34 @@ void ServerAPI::RestartSession()
   printf("Client connection established.\n");
     
   Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
+}
+
+void ServerAPI::OpenDataChannel(int port){
+  _dataFd = socket(AF_INET, SOCK_STREAM, 0);
+  if (_dataFd < 0) {
+      perror("Cannot create socket in OpenDataChannel");
+      return;
+  }
+  
+  if (port == 0) clientAddr.sin_port = htons(DefaultDataPort); 
+  else clientAddr.sin_port = htons(port);
+  clientAddr.sin_family = AF_INET;
+
+  int ind;
+  if(clientAddr.sin_addr.s_addr > 0) {
+      ind = connect(_dataFd, (struct sockaddr *)&clientAddr,
+			 sizeof(struct sockaddr));
+      if (ind < 0) {
+	  perror("Cannot open the data channel");
+	  close(_dataFd);
+	  return;
+      }
+#ifdef DEBUG
+      printf("Data channel established\n");
+#endif
+  } else {
+      printf("Must establish the initial connection first.");
+  }
 }
 
 void ServerAPI::SetBusy()
