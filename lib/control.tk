@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.216  2000/06/24 14:49:46  wenger
+#	Added GUI for implicit view home.
+#	
 #	Revision 1.215  2000/06/20 22:17:12  wenger
 #	Added floating-point format for axes and mouse location display.
 #	
@@ -1250,6 +1253,8 @@ menu .mbar.session.menu.descMenu -tearoff 0
 	-command { SaveSessionDesc 1 }
 .mbar.session.menu.descMenu add command -label "Range/MQL..." \
 	-command { SaveRangeDesc }
+.mbar.session.menu.descMenu add command -label "Metavisualization..." \
+	-command { SaveMetaVisDesc }
 
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}

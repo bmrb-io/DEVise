@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  2000/06/20 22:17:05  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.57  2000/06/20 16:57:45  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -1975,6 +1978,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setYAxisFloatFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(writeMetaVisDesc) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

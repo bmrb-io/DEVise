@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/03/10 16:32:01  wenger
+  Found and fixed bug 572 (problem with switching stations in ASOS and
+  AWON sessions).
+
   Revision 1.26  2000/02/15 16:16:25  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -351,6 +355,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     if (ps) {
       ps->InsertView(viewsym);
     }
+
+    viewsym->SetChildView(true);
   }
 }
 

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/04/26 19:39:00  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.8  2000/01/13 23:07:05  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -83,6 +89,7 @@
 #define FILE_TYPE_DEBUGLOG	"debugLog"
 #define FILE_TYPE_CMDLOG	"commandLog"
 #define FILE_TYPE_JSCMDCACHE	"javaScreenCmdCache"
+#define FILE_TYPE_METAVIS	"sessionDescMetaVis"
 
 class DevFileHeader
 {

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/04/26 19:39:00  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.7  2000/01/13 23:07:04  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -106,7 +112,8 @@ DevFileHeader::Get(const char *fileType)
 		!strcmp(fileType, FILE_TYPE_LINKDESC) ||
 		!strcmp(fileType, FILE_TYPE_DEBUGLOG) ||
 		!strcmp(fileType, FILE_TYPE_CMDLOG) ||
-		!strcmp(fileType, FILE_TYPE_JSCMDCACHE))
+		!strcmp(fileType, FILE_TYPE_JSCMDCACHE) ||
+		!strcmp(fileType, FILE_TYPE_METAVIS))
 	{
 		// File type is legal.
 	}

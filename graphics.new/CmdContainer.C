@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  2000/06/20 22:17:04  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.63  2000/06/20 16:57:43  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -638,6 +641,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getYAxisFloatFormat)
 	REGISTER_COMMAND(setXAxisFloatFormat)
 	REGISTER_COMMAND(setYAxisFloatFormat)
+	REGISTER_COMMAND(writeMetaVisDesc)
 }
 
 CmdContainer::~CmdContainer()

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  2000/02/16 14:44:06  wenger
+  Changed master copyright string to 2000.
+
   Revision 1.57  1999/12/06 18:41:06  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -320,7 +323,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.0";
+static const char *	version = "1.7.1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2000";

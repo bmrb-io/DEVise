@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.109  2000/06/20 22:16:56  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.108  2000/06/20 16:57:34  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -550,6 +553,7 @@ class View : public ViewWin
 		friend class JavaScreenCmd;
 		friend class PileStack;
 		friend class DevAxis;
+		friend class MetaVisDesc;
 
 		// This is here to allow direct access to dispatcherCallback
 		friend class ActionDefault;
@@ -879,6 +883,9 @@ class View : public ViewWin
 	static void SetGlobalShowMouseLocation(Boolean show) {
 	    _globalShowMouseLocation = show; }
 
+    Boolean IsChildView() { return _isChildView; }
+	void SetChildView(Boolean isChild) { _isChildView = isChild; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -1085,6 +1092,8 @@ protected:
 		const char *_viewHelp;
 		Boolean _showMouseLocation;
 		static Boolean _globalShowMouseLocation;
+
+		Boolean _isChildView;
 
     private:
         ObjectValid _objectValid;

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.66  2000/04/19 16:16:36  wenger
+#  Found and fixed bug 579 (crash if opening session fails); found bug
+#  580; better handling of session opening errors on the Tcl side;
+#  improved WindowVisible and WindowExists procedures.
+#
 #  Revision 1.65  1999/12/03 22:16:26  wenger
 #  Reduced the number of commands required to update the mapping dialog.
 #
@@ -1165,6 +1170,20 @@ proc SaveRangeDesc {} {
   }
 }
 
+############################################################
+# Save metavisualization session description to a file.
+
+proc SaveMetaVisDesc {} {
+  global fsBox
+
+  set fsBox(path) [CWD]
+  set fsBox(pattern) *
+  set filename [ FSBox "Select file for session description" ]
+
+  if {$filename != ""} {
+    DEVise writeMetaVisDesc $filename
+  }
+}
 
 
 ############################################################

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/12/23 17:52:44  wenger
+  Fixed bug 528, cleaned up bug list some.
+
   Revision 1.5  1999/02/11 19:54:35  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -113,6 +116,74 @@ SessionDesc::Write(char *filename, Boolean physical)
       sprintf(errBuf, "Unable to close file '%s'\n", filename);
       reportErrSys(errBuf);
       result += StatusFailed;
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: SessionDesc::LinkTypeString
+ * Get the string corresponding to the type of the given link.
+ */
+DevStatus
+SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
+{
+#if defined(DEBUG)
+  printf("SessionDesc::LinkTypeString(%s)\n", link->GetName());
+#endif
+
+  DevStatus result(StatusOk);
+
+  //
+  // Figure out the type of link.
+  //
+  char *baseStr;
+  VisualFlag flag = link->GetFlag();
+
+  if (flag & VISUAL_RECORD) {
+    RecordLinkType recLinkType = link->GetLinkType();
+    if (recLinkType == Positive) {
+      sprintf(buffer, "reclink+");
+    } else if (recLinkType == Negative) {
+      sprintf(buffer, "reclink-");
+    } else {
+      sprintf(buffer, "reclink?");
+    }
+
+    if (flag & ~VISUAL_RECORD) {
+      char errBuf[256];
+      sprintf("Warning: record link %s also has other link attributes",
+	  link->GetName());
+      reportErrNosys(errBuf);
+      result += StatusWarn;
+    }
+  } else if (flag & VISUAL_TATTR) {
+    TAttrLink *setLink = (TAttrLink *)link;
+         const char *leaderAttr = setLink->GetMasterAttrName();
+    if (!leaderAttr) leaderAttr= "";
+    const char *followerAttr = setLink->GetSlaveAttrName();
+    if (!followerAttr) followerAttr = "";
+    sprintf(buffer, "set (%s/%s)", leaderAttr, followerAttr);
+  } else {
+    //
+    // Non-pile (user-created) links are not allowed to have a
+    // name starting with "Pile: ".
+    //
+    if (DeviseLink::IsPileLinkName(link->GetName())) {
+      baseStr = "pile";
+    } else {
+      baseStr = "vislink";
+    }
+
+    if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
+      sprintf(buffer, "%sXY", baseStr);
+    } else if (flag & VISUAL_X) {
+      sprintf(buffer, "%sX", baseStr);
+    } else if (flag & VISUAL_Y) {
+      sprintf(buffer, "%sY", baseStr);
+    } else {
+      sprintf(buffer, "unknown");
     }
   }
 
@@ -333,55 +404,8 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	//
 	// Figure out the type of link.
 	//
-	char *baseStr;
 	char linkType[32];
-	VisualFlag flag = link->GetFlag();
-
-	if (flag & VISUAL_RECORD) {
-	  RecordLinkType recLinkType = link->GetLinkType();
-	  if (recLinkType == Positive) {
-	    sprintf(linkType, "reclink+");
-	  } else if (recLinkType == Negative) {
-	    sprintf(linkType, "reclink-");
-	  } else {
-	    sprintf(linkType, "reclink?");
-	  }
-
-	  if (flag & ~VISUAL_RECORD) {
-	    char errBuf[256];
-	    sprintf("Warning: record link %s also has other link attributes",
-		link->GetName());
-	    reportErrNosys(errBuf);
-	    status += StatusWarn;
-	  }
-	} else if (flag & VISUAL_TATTR) {
-	  TAttrLink *setLink = (TAttrLink *)link;
-          const char *leaderAttr = setLink->GetMasterAttrName();
-	  if (!leaderAttr) leaderAttr= "";
-	  const char *followerAttr = setLink->GetSlaveAttrName();
-	  if (!followerAttr) followerAttr = "";
-	  sprintf(linkType, "set (%s/%s)", leaderAttr, followerAttr);
-	} else {
-	  //
-	  // Non-pile (user-created) links are not allowed to have a
-	  // name starting with "Pile: ".
-	  //
-	  if (DeviseLink::IsPileLinkName(link->GetName())) {
-	    baseStr = "pile";
-	  } else {
-	    baseStr = "vislink";
-	  }
-
-	  if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
-	    sprintf(linkType, "%sXY", baseStr);
-	  } else if (flag & VISUAL_X) {
-	    sprintf(linkType, "%sX", baseStr);
-	  } else if (flag & VISUAL_Y) {
-	    sprintf(linkType, "%sY", baseStr);
-	  } else {
-	    sprintf(linkType, "unknown");
-	  }
-	}
+	status += SessionDesc::LinkTypeString(link, linkType);
 
 	//
 	// Get a list of the views connected to this link.

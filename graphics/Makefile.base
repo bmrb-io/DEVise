@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.80  2000/05/09 16:34:04  wenger
+#  Added opengldum to 'all' target.
+#
 #  Revision 1.79  1999/11/19 21:34:40  wenger
 #  Removed Journal class and related code (no longer works); removed various
 #  other unused or unnecessary code.
@@ -291,7 +294,7 @@ LIBSRC = AttrList.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
 	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c \
-	ViewGeom.c HangCheck.c DevAxis.c
+	ViewGeom.c HangCheck.c DevAxis.c MetaVisDesc.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

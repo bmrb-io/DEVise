@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.103  2000/06/20 22:17:04  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.102  2000/06/20 16:57:44  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -523,6 +526,7 @@
 #include "DRUtils.h"
 #include "DebugLog.h"
 #include "CommandLog.h"
+#include "MetaVisDesc.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -6666,5 +6670,39 @@ IMPLEMENT_COMMAND_BEGIN(setYAxisFloatFormat)
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(writeMetaVisDesc)
+    // Arguments: <file name> [write header] [write comments]
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc >= 2 && argc <= 4) {
+		DevStatus result;
+		if (argc == 2) {
+		  result = MetaVisDesc::Write(argv[1]);
+		} else if (argc == 3) {
+		  result = MetaVisDesc::Write(argv[1], atoi(argv[2]));
+		} else {
+		  result = MetaVisDesc::Write(argv[1], atoi(argv[2]), atoi(argv[3]));
+		}
+
+		if (result.IsComplete()) {
+          ReturnVal(API_ACK, "done");
+	      return 1;
+		} else {
+          ReturnVal(API_NAK, DevError::GetLatestError());
+          return -1;
+		}
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in writeMetaVisDesc\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
 
 /*============================================================================*/

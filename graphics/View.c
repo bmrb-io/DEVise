@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.226  2000/06/20 22:16:55  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.225  2000/06/20 16:57:29  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -1193,6 +1196,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	SetDisabledActions(false, false, false, false);
 
 	_refreshPending = false;
+
+	_isChildView = false;
 
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
@@ -4611,6 +4616,7 @@ View::CleanUpViewSyms()
     if (view->GetParentPileStack()) {
       view->GetParentPileStack()->DeleteView(view);
     }
+    ((View *)view)->SetChildView(false);
   }
   DoneIterator(index);
   DetachChildren();
