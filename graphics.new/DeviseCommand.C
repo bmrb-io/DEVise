@@ -1050,7 +1050,7 @@ DeviseCommand_setViewLensParams::Run(int argc, char** argv)
            return -1;
          }
          lens->SetMode(argv[2]);
-         VisualLink *link = (VisualLink *)classDir->FindInstance(argv[3]);
+         DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[3]);
          if (!link) {
             control->ReturnVal(API_NAK,"Cannot find link");
             return -1;
@@ -1441,7 +1441,7 @@ DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -1486,7 +1486,7 @@ DeviseCommand_getLinkMaster::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -2024,7 +2024,7 @@ DeviseCommand_getLinkFlag::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -2310,7 +2310,7 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -3098,7 +3098,7 @@ DeviseCommand_setLinkMaster::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -3549,7 +3549,7 @@ DeviseCommand_setLinkFlag::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -3716,7 +3716,7 @@ DeviseCommand_insertLink::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -3742,7 +3742,7 @@ DeviseCommand_viewInLink::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;
@@ -3770,7 +3770,7 @@ DeviseCommand_unlinkView::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
     	control->ReturnVal(API_NAK, "Cannot find link");
     	return -1;

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.77  1998/03/05 20:36:21  wenger
+#  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+#  problems related to *ClassInfo classes.
+#
 #  Revision 1.76  1998/03/04 18:40:04  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -232,7 +236,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
-	CmdContainer.C DeviseCommand.C ExtStack.C
+	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

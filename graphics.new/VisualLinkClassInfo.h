@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/07/22 15:36:38  wenger
+  Added capability to dump human-readable information about all links
+  and cursors.
+
   Revision 1.1  1996/05/31 15:37:43  jussi
   Moved to the graphics.new directory.
 
@@ -54,12 +58,12 @@ protected:
   static DevLinkList _linkList;
 };
 
-class VisualLink;
+class DeviseLink;
 
 class VisualLinkClassInfo: public ClassInfo {
 public:
   VisualLinkClassInfo();
-  VisualLinkClassInfo(char *name, VisualFlag flag, VisualLink *link);
+  VisualLinkClassInfo(char *name, VisualFlag flag, DeviseLink *link);
   virtual ~VisualLinkClassInfo();
 
   /* Info for category */
@@ -95,7 +99,7 @@ public:
 private:
   VisualFlag _flag;
   char *_name;
-  VisualLink *_link;
+  DeviseLink *_link;
 };
 
 #endif

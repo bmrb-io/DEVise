@@ -453,7 +453,7 @@ Num Date        Status  Description
 			view 'Location 1 Visits', print -> the data in the
 			'BAA.am' view doesn't get printed.
 
-115 01/13/97	OPEN    Load session test/molbio_demo.tk
+115 01/13/97	FIXED?	Load session test/molbio_demo.tk
                         XY zoom with mouse (button 3) produces what looks
                         like an X zoom and you must hit button '5' twice
                         to get the proper filter.
@@ -522,7 +522,7 @@ Num Date        Status  Description
 			nothing. (rkw)
 			Workaround: removed the buttons.
 
-128 01/22/97	OPEN	If you change both the X and Y values in the Query
+128 01/22/97	FIXED	If you change both the X and Y values in the Query
 			Tool on a view with X and Y links, only the X change
 			takes effect. (rkw)
 			Deferred
@@ -1177,8 +1177,14 @@ Num Date        Status  Description
 
 310 03/04/98	OPEN	The collaborator uses lots of CPU when idle. (rkw)
 
-311 03/06/98	OPEN	Visual links don't always update correctly (see the CustomerAna.ds
+311 03/06/98	FIXED	Visual links don't always update correctly (see the CustomerAna.ds
 			session in the BankOne demo). (ml/rkw)
+			(See also bugs 115, 128.)
+
+312 03/07/98	OPEN	Attempting to show link info sometimes fails with 'bad window
+			path name' inside the dialogInfo procedure. (rkw)
+
+313 03/07/98	OPEN	It's possible to create a link with no link attribute. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

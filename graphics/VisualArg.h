@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/02/26 22:59:37  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.7  1997/12/16 17:53:53  zhenhai
   Added OpenGL features to graphics.
 
@@ -47,6 +52,8 @@
 
 #ifndef VisualArg_h
 #define VisualArg_h
+
+#include <stdio.h>
 
 #include "DeviseTypes.h"
 
@@ -97,7 +104,8 @@ inline unsigned VisualComplement(VisualFlag flag)
 
 /* A visual filter: used to filter symbols inside a view. */
 
-struct VisualFilter {
+class VisualFilter {
+public:
   VisualFlag flag;	           /* which attribute is to test.
 				      set to 0 if no filter  */
   Coord xLow, xHigh;               /* X filter */
@@ -113,6 +121,11 @@ struct VisualFilter {
   
   Boolean marked;                  /* TRUE if this is marked in the
 				      control panel list box */
+
+  void Print(FILE *stream = stdout) {
+    fprintf(stream, "Visual filter X (%f, %f), Y (%f, %f)\n", xLow, xHigh,
+	  yLow, yHigh);
+  }
 };
 
 /* A CameraFlag indicates whether the attributes are changeable or tested */

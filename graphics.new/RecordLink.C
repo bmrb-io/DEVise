@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/09/05 22:36:26  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.12  1997/06/25 17:05:37  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -104,8 +108,8 @@ static int RecordRangeCompare(const void *r1, const void *r2)
   return 0;
 }
 
-RecordLink::RecordLink(char *name, VisualFlag flag, RecordLinkType type) :
-	VisualLink(name, flag)
+RecordLink::RecordLink(char *name, RecordLinkType type) :
+	DeviseLink(name, VISUAL_RECORD)
 {
 #if defined(DEBUG)
   printf("RecordLink::RecordLink(%s)\n", name);
@@ -372,7 +376,7 @@ void RecordLink::InsertView(ViewGraph *view)
 #if defined(DEBUG)
   printf("RecordLink(%s)::InsertView()\n", _name);
 #endif
-  VisualLink::InsertView(view);
+  DeviseLink::InsertView(view);
   view->AddAsSlaveView(this);
 }
 
@@ -386,7 +390,7 @@ bool RecordLink::DeleteView(ViewGraph *view)
   if( view == _masterView ) {
       view->DropAsMasterView(this);
       _masterView = NULL;
-  } else if( VisualLink::DeleteView(view) ) {
+  } else if( DeviseLink::DeleteView(view) ) {
       view->DropAsSlaveView(this);
   } else {
       // view was not part of this link
@@ -421,6 +425,11 @@ void RecordLink::FlushToDisk()
 
 void RecordLink::Print()
 {
-  VisualLink::Print();
+  DeviseLink::Print();
     printf("Master = %s\n", _masterView->GetName());
+}
+
+void RecordLink::SetFlag(VisualFlag flag)
+{
+  fprintf(stderr, "Cannot change link type of record link\n");
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,9 +13,28 @@
 */
 
 /*
+  I've changed considerably how links, especially visual links, work.  There are two
+  main changes:
+  1. I've introduced the new DeviseLink class, which is now the superclass of all of
+     the other types of links.  This avoids having RecordLinks have all of the filter-
+     related stuff in VisualLinks, which they don't use.
+  2. VisualLinks are now DispatcherCallbacks, and they store their own visual filter.
+     This is done so that when one view controls several links, the filters for each
+     link are set and locked before the links start updating other views.  This
+     prevents the subsequent view updates from goofing up the links (see bugs 115,
+     128, and 311.
+  RKW Mar 7, 1998.
+ */
+
+/*
   $Id$
 
   $Log$
+  Revision 1.9  1998/02/26 22:59:58  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.8  1997/09/05 22:36:33  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -58,80 +77,55 @@
 
 #include "VisualLink.h"
 #include "ViewGraph.h"
-
-// hp's stdio.h has _flag #define'd
-#ifdef _flag
-#undef _flag
-#endif
-
+#include "Scheduler.h"
 
 //#define DEBUG
 
-
-VisualLink::VisualLink(char *name, VisualFlag linkFlag)
+VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
+  DeviseLink(name, linkFlag)
 {
-  _name = name;
-  _flag = linkFlag;
-  _viewList = new LinkViewList;//TEMPTEMP -- leaked
-  _updating = false; 
+  _filterValid = false;
+  _filterLocked = false;
+  _originatingView = NULL;
 
-  View::InsertViewCallback(this);
+  _dispID = Dispatcher::Current()->Register(this);
 }
 
 VisualLink::~VisualLink()
 {
-  View::DeleteViewCallback(this);
-
-  int index = InitIterator();
-  while(More(index)) {
-    ViewGraph *view = Next(index);
-    _viewList->DeleteCurrent(index);
-  }
-  DoneIterator(index);
+  Dispatcher::Current()->Unregister(this);
 }
-
-/* return true if view belongs to this link */
-
-Boolean VisualLink::ViewInLink(ViewGraph *view)
-{
-  return _viewList->Find(view);
-}
-
-/* insert view into visual link */
 
 void VisualLink::InsertView(ViewGraph *view)
 {
-  if (_viewList->Find(view))
+  if (_viewList->Find(view)) {
     /* view already inserted */
     return;
+  }
 
-#if defined(DEBUG)
-  printf("Adding view %s to link %s\n", view->GetName(), GetName());
-#endif
-
-  _viewList->Append(view);
+  DeviseLink::InsertView(view);
 
   if (_viewList->Size() > 1) {
-    View *firstView = _viewList->GetFirst();
-    VisualFilter *filter = firstView->GetVisualFilter();
-    SetVisualFilter(view, *filter);
+    DOASSERT(_filterValid, "Visual link's filter is invalid");
+    _filterLocked = true;
+    SetVisualFilter(view, _filter);
+    _filterLocked = false;
+  } else {
+    view->GetVisualFilter(_filter);
+    _filterValid = true;
   }
 }
 
-/* delete view from visual link */
-
-bool VisualLink::DeleteView(ViewGraph *view)
+void VisualLink::SetFlag(VisualFlag flag)
 {
-  if (!_viewList->Find(view)) {
-      /* view not in list */
-      return false;
+  if (_filterLocked) {
+    fprintf(stderr, "Illegal attempt to set link type with filter locked (link %s)\n",
+	GetName());
+  } else {
+    _linkAttrs = flag;
   }
-#ifdef DEBUG
-  printf("Removing view %s from link %s\n", view->GetName(), GetName());
-#endif
-  _viewList->Delete(view);
-  return true;
 }
+
 
 /* Called by View when its visual filter has changed.
    flushed == index if 1st element in the history that has been flushed.*/
@@ -140,60 +134,77 @@ void VisualLink::FilterChanged(View *view, VisualFilter &filter,
 			       int flushed)
 {
 #if defined(DEBUG)
-  printf("VisualLink::FilterChanged()\n");
+  printf("VisualLink(%s)::FilterChanged(%s, ", GetName(), view->GetName());
+  filter.Print();
+  printf(")\n");
 #endif
 
+  // If the filter is locked, we don't do anything here.
+  if (_filterLocked) {
+#if defined(DEBUG)
+    printf("filter for visual link %s is locked\n", GetName());
+#endif
+  } else {
   /* first, make sure that this view is under our control */
-  Boolean found = false;
-  int index;
-  for(index = _viewList->InitIterator(); _viewList->More(index);) {
-    View *viewInList = _viewList->Next(index);
-    if (viewInList == view) {
-      found = true;
-      break;
-    }
-  }
-  _viewList->DoneIterator(index);
+    Boolean found = ViewInLink((ViewGraph *)view);
   
-  if (found)
-    ProcessFilterChanged(view, filter);
-}
+    if (found) {
+      // Now find out if the new filter is different from the current filter.
+      Boolean filterDifferent = !_filterValid;
 
+      // Note: we'll have to add stuff here if we implement filter attributes other than
+      // X and Y.
+      if (!filterDifferent) {
+	if ((_linkAttrs & VISUAL_X) &&
+	    (filter.xLow != _filter.xLow || filter.xHigh != filter.xHigh)) {
+	  filterDifferent = true;
+	}
+      }
+      if (!filterDifferent) {
+	if ((_linkAttrs & VISUAL_Y) &&
+	    (filter.yLow != _filter.yLow || filter.yHigh != _filter.yHigh)) {
+	  filterDifferent = true;
+	}
+      }
 
-void VisualLink::ViewDestroyed(View *view)
-{
-    DeleteView((ViewGraph *)view);
-}
-
-
-void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
-{
+      if (filterDifferent) {
 #if defined(DEBUG)
-  printf("VisualLink(%s)::ProcessFilterChanged()\n", GetName());
+        printf("changing filter for visual link %s\n", GetName());
 #endif
-
-  /* We need to do this because once a visual link starts changing
-     the filter of its views, this function can be called subsequently by
-     those views, and we need to ignore all those calls because we have
-     already changed those filters. */
-
-  if (_updating) {
+	_filter = filter;
+	_filterValid = true;
+	_filterLocked = true;
+	_originatingView = view;
+	Scheduler::Current()->RequestCallback(_dispID);
+      } else {
 #if defined(DEBUG)
-    printf("ignored because updating\n");
+        printf("new filter for visual link %s is same as old filter\n", GetName());
 #endif
-    return;
-  }
-	
-  int index;
-  for(index = _viewList->InitIterator(); _viewList->More(index);) {
-    View *viewInList = _viewList->Next(index);
-    if (viewInList!= view) {
-      /* Change this view */
-      SetVisualFilter(viewInList, filter);
+      }
     }
   }
-  _viewList->DoneIterator(index);
 }
+
+
+void VisualLink::Run()
+{
+#if defined(DEBUG)
+  printf("VisualLink(%s)::Run()\n", GetName());
+#endif
+
+  int index;
+  for(index = InitIterator(); More(index);) {
+    View *viewInList = Next(index);
+    if (viewInList!= _originatingView) {
+      /* Change this view */
+      SetVisualFilter(viewInList, _filter);
+    }
+  }
+  DoneIterator(index);
+
+  _filterLocked = false;
+}
+
 
 /* update visual filters for view views. */
 
@@ -202,12 +213,11 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
 #if defined(DEBUG)
   printf("VisualLink ->%s setVF view: %s\n", GetName(), view->GetName());
 #endif
-  _updating = true;
 
   VisualFilter tempFilter;
   view->GetVisualFilter(tempFilter);
   VisualFlag testFlag;
-  testFlag = _flag;
+  testFlag = _linkAttrs;
   Boolean change = false;
   
   if ((testFlag & VISUAL_X) && (tempFilter.xLow != filter.xLow 
@@ -267,53 +277,14 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
     change = true;
   }
 #endif
-  
-  if (change)
+
+  if (change) {
     view->SetVisualFilter(tempFilter, false);
-    
-  _updating = false;
+  }
 }
 
-int VisualLink::InitIterator()
-{
-  return _viewList->InitIterator();
-}
-
-Boolean VisualLink::More(int index)
-{
-  return _viewList->More(index);
-}
-
-ViewGraph *VisualLink::Next(int index)
-{
-  return _viewList->Next(index);
-}
-
-void VisualLink::DoneIterator(int index)
-{
-  _viewList->DoneIterator(index);
-}
 
 void VisualLink::Print() {
-  printf("Name = %s, Flag = %d\n", GetName(),GetFlag() );
-  printf("Views in Link ->\n");
-  int index = _viewList->InitIterator();
-  while(_viewList->More(index)) {
-     printf("   %s ", _viewList->Next(index)->GetName());
-  }
-  printf("\n");
-  _viewList->DoneIterator(index);
+  printf("Name = %s, Flag = %d\n", GetName(), GetFlag());
+  DeviseLink::Print();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

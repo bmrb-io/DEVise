@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.128  1998/03/05 08:10:27  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.127  1998/03/04 19:11:13  wenger
   Fixed some more dynamic memory errors.
 
@@ -864,7 +869,7 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
   printf("View(%s)::SetVisualFilter()\n", GetName());
 #endif
 #if defined(DEBUG)
-  printf("%s View::SetVisualFilter %f %f %f %f %f, %f, %f, %f\n", GetName(),
+  printf("%s View::SetVisualFilter %f %f %f %f; %f %f %f %f\n", GetName(),
 	 filter.xLow, filter.yLow,
 	 filter.xHigh, filter.yHigh,_filter.xLow, _filter.yLow,
 	 _filter.xHigh, _filter.yHigh);

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.72  1998/03/05 08:10:56  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.71  1998/02/26 22:59:57  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -557,7 +562,8 @@ void ViewGraph::AddAsMasterView(RecordLink *link)
     // remove this view from the slave view list of the link; then add
     // the link as one of the links whose master this view is
     
-    if (link->VisualLink::DeleteView(this))
+    // Why don't we let this call RecordLink::DeleteView()?  RKW Mar. 6, 1998.
+    if (link->DeviseLink::DeleteView(this))
       DropAsSlaveView(link);
     if (!_masterLink.Find(link)) {
 #ifdef DEBUG

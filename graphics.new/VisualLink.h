@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/01/23 17:40:04  jussi
+  Removed references to GetXMin().
+
   Revision 1.4  1996/11/26 16:51:43  ssl
   Added support for piled viws
 
@@ -43,58 +46,39 @@
 #ifndef VisualLink_h
 #define VisualLink_h
 
-#include "DList.h"
-#include "ViewCallback.h"
+#include "DeviseLink.h"
 #include "VisualArg.h"
+#include "Dispatcher.h"
 
+class View;
 class ViewGraph;
 
-
-DefinePtrDList(LinkViewList, ViewGraph *)
-
-class VisualLink: public ViewCallback {
+class VisualLink: public DeviseLink, DispatcherCallback {
 public:
   VisualLink(char *name, VisualFlag linkFlag);
   virtual ~VisualLink();
 
-  /* Return name of link */
-  char *GetName() { return _name; }
+  virtual void InsertView(ViewGraph *view);
 
   /* Set/get visual flag */
-  void SetFlag(VisualFlag flag) { _flag = flag; }
-  VisualFlag GetFlag() { return _flag; }
-
-  /* Set view as link master, or reset */
-  virtual void SetMasterView(ViewGraph *view) {}
-  virtual ViewGraph *GetMasterView() { return 0; }
-
-  /* Insert/delete view from link's view list */
-  virtual void InsertView(ViewGraph *view);
-  virtual bool DeleteView(ViewGraph *view);
-
-  /* Return TRUE if view is part of this link */
-  virtual Boolean ViewInLink(ViewGraph *view);	
+  virtual void SetFlag(VisualFlag flag);
 
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewDestroyed(View *view);
+
+  virtual void Print();
+
+  // From DispatcherCallback:
+  virtual char *DispatchedName() { return "VisualLink"; }
+  virtual void Run();
   
-  /* Iterator for view list */
-  int InitIterator();
-  Boolean More(int index);
-  ViewGraph *Next(int index);
-  void DoneIterator(int index);
-
-  void Print();
-
 protected:
-  void ProcessFilterChanged(View *view, VisualFilter &filter);
-
   void SetVisualFilter(View *view,  VisualFilter &filter);
 
-  LinkViewList *_viewList;
-  Boolean _updating;          /* TRUE if we are currently updating view */
-  VisualFlag _flag;
-  char *_name;
+  VisualFilter _filter;
+  Boolean _filterValid;
+  Boolean _filterLocked;
+  View *_originatingView;
+  DispatcherID _dispID;
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/09/05 22:36:31  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.2  1996/11/26 16:51:40  ssl
   Added support for piled viws
 
@@ -37,7 +41,7 @@
 
 
 UpdateLink::UpdateLink(char* name)
-: VisualLink(name, 0),
+: DeviseLink(name, 0),
   _master(NULL)
 {
 }
@@ -74,7 +78,7 @@ void UpdateLink::InsertView(ViewGraph *view)
     printf("UpdateLink::InsertView[%p - %s]\n", view, view->GetName());
 #endif
   DOASSERT(view != _master, "Cannot add master as a slave of UpdateLink");
-  VisualLink::InsertView(view);
+  DeviseLink::InsertView(view);
 }
 
 
@@ -110,11 +114,11 @@ bool UpdateLink::DeleteView(ViewGraph *view)
 	_master = NULL;
 	return true;
     }
-    return VisualLink::DeleteView(view);
+    return DeviseLink::DeleteView(view);
 }    
 
 void UpdateLink::Print() {
-  VisualLink::Print();
+  DeviseLink::Print();
   printf("master = %s\n", _master->GetName());
 }
 

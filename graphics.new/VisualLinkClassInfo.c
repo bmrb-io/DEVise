@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/07/22 15:36:38  wenger
+  Added capability to dump human-readable information about all links
+  and cursors.
+
   Revision 1.1  1996/05/31 15:37:42  jussi
   Moved to the graphics.new directory.
 
@@ -79,7 +83,7 @@ VisualLinkClassInfo::VisualLinkClassInfo()
 }
 
 VisualLinkClassInfo::VisualLinkClassInfo(char *name, VisualFlag flag, 
-					 VisualLink *link)
+					 DeviseLink *link)
 {
 #if defined(DEBUG)
   printf("VisualLinkClassInfo(%p)::VisualLinkClassInfo(%s)\n", this, name);
@@ -134,7 +138,7 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc, char **argv)
   int flag = atoi(argv[1]);
 
   if (flag & VISUAL_RECORD) {
-    RecordLink *link = new RecordLink(name, flag);
+    RecordLink *link = new RecordLink(name);
     return new VisualLinkClassInfo(name, flag, link);
   }
 

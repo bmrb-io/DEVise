@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/06/25 17:05:37  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.6  1997/02/26 16:31:43  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -51,7 +56,7 @@
 
 #include "RecId.h"
 #include "RecFile.h"
-#include "VisualLink.h"
+#include "DeviseLink.h"
 
 struct RecordRange {
   RecId start;
@@ -61,10 +66,12 @@ struct RecordRange {
 DefinePtrDList(RecordRangeList, RecordRange *)
 enum RecordLinkType { Positive, Negative };
 
-class RecordLink : public VisualLink {
+class RecordLink : public DeviseLink {
  public:
-  RecordLink(char *name, VisualFlag linkFlag, RecordLinkType type = Positive);
+  RecordLink(char *name, RecordLinkType type = Positive);
   virtual ~RecordLink();
+
+  virtual void SetFlag(VisualFlag flag);
 
   char *GetFileName() { return (_file ? _file->GetName() : "none"); }
 

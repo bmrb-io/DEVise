@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/02/10 21:13:20  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.8  1997/12/12 05:50:46  weaver
   *** empty log message ***
 
@@ -71,6 +76,7 @@
 #include "WindowRep.h"
 #include "DList.h"
 #include "ViewCallback.h"
+#include "DeviseLink.h"
 
 #include "Color.h"
 
@@ -103,7 +109,7 @@ class ViewLens : public ViewGraph
 
 		ViewInfoList*	_lensList;
 		Boolean			_viewLensUpdate;
-		VisualLink*		_lensLink;		// Visual link to all views in the lens
+		DeviseLink*		_lensLink;		// Visual link to all views in the lens
 		ViewLensMode	_mode;
 		ViewLensDim		_dimension;
 		ViewGraph*		_curView;
@@ -135,8 +141,8 @@ class ViewLens : public ViewGraph
 		char*			GetMode(void);
 		void			SetMode(char* modestr);
 
-		VisualLink*		GetLink(void)				{ return _lensLink; } 
-		void			SetLink(VisualLink* link)	{ _lensLink = link; }
+		DeviseLink*		GetLink(void)				{ return _lensLink; } 
+		void			SetLink(DeviseLink* link)	{ _lensLink = link; }
 
   /* iterate through all views */
   /* if lenslist is NULL, the functions do stuff so that the caller gets

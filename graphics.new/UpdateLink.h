@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/26 16:51:40  ssl
+  Added support for piled viws
+
   Revision 1.1  1996/08/04 21:59:57  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -28,11 +31,11 @@
 #ifndef UpdateLink_h
 #define UpdateLink_h
 
-#include "VisualLink.h"
+#include "DeviseLink.h"
 
 
 class UpdateLink
-: public VisualLink
+: public DeviseLink
 {
   public:
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/03 05:21:03  taodb
+  Added extendable stack to command object
+
   Revision 1.2  1998/03/02 22:03:38  taodb
   Add control parameter to Run() invocations
 
@@ -40,7 +43,6 @@
 #include "Parse.h"
 #include "GroupDir.h"
 #include "ViewLayout.h"
-#include "VisualLink.h"
 #include "RecordLink.h"
 #include "FilterQueue.h"
 #include "DataSeg.h"
@@ -52,7 +54,6 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
-#include "VisualLinkClassInfo.h"
 #include "CursorClassInfo.h"
 #include "MappingInterp.h"
 #include "QueryProc.h"
