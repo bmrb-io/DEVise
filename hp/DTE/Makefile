@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/23 01:52:12  donjerko
+#  added standalone option
+#
 #  Revision 1.2  1996/11/21 16:22:51  wenger
 #  Updated dependencies; fixed some compile errors and warnings.
 #
@@ -30,9 +33,9 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.solaris
+include $(DTE_DIR)/Makefile.hp
 
 dte: $(STAND_ALONE_OBJ)
-        cd ../devread; make libdevread.a; cd ../DTE;
-        $(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+	cd ../devread; make libdevread.a; cd ../DTE;
+	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm
 

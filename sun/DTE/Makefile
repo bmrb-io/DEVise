@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/23 22:47:37  jussi
+#  Added tcl include directory to ARCH_FLAGS.
+#
 #  Revision 1.2  1996/11/23 01:58:52  donjerko
 #  added standalone option
 #
@@ -33,5 +36,5 @@ include $(DTE_DIR)/Makefile.sun
 
 dte: $(STAND_ALONE_OBJ)
 	cd ../devread; make libdevread.a; cd ../DTE;
-	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm
 
