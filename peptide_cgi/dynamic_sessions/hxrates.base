@@ -1,9 +1,12 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 10 1999 17:52:40
-# DEVise version: 1.7.0
-# DEVise date: Dec  7 1999
+# file date: Aug 03 2000 14:59:33
+# DEVise version: 1.7.1
+# DEVise date: Jul 20 2000
 # DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {}
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4096r" UNIXFILE 4096r.dat HXRates /p/devise/demo/schema/schema/physical/bmrb:HXRatesLog "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
@@ -17,9 +20,9 @@ DEVise setViewDimensions {View 1} 2
 DEVise setViewSolid3D {View 1} 2
 DEVise setViewXYZoom {View 1} 1
 DEVise setViewDisplayDataValues {View 1} 0
-DEVise setFont {View 1} {title} 2 12 0 0
-DEVise setFont {View 1} {x axis} 2 12 0 0
-DEVise setFont {View 1} {y axis} 2 12 0 0
+DEVise setFont {View 1} {title} 2 14 0 0
+DEVise setFont {View 1} {x axis} 2 8 0 0
+DEVise setFont {View 1} {y axis} 2 8 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
@@ -29,10 +32,15 @@ DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 1} 0 6.41 10
 DEVise setCountMapping {View 1} 0 {} {}
 DEVise viewSetIsHighlight {View 1} 0
+DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 1} {%.4g}
+DEVise setYAxisFloatFormat {View 1} {%.4g}
 DEVise setViewAutoFilter {View 1} {0}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setShowMouseLocation {View 1} {1}
 DEVise create {view} {SortedX} {View 2} 2.000000 147.000000 -2.000000 8.000000 37 0
 DEVise setLabel {View 2} 1 16 {Log (H-exchange protection factors)}
 DEVise setViewStatistics {View 2} 00000000
@@ -40,9 +48,9 @@ DEVise setViewDimensions {View 2} 2
 DEVise setViewSolid3D {View 2} 2
 DEVise setViewXYZoom {View 2} 1
 DEVise setViewDisplayDataValues {View 2} 0
-DEVise setFont {View 2} {title} 2 12 0 0
-DEVise setFont {View 2} {x axis} 2 12 0 0
-DEVise setFont {View 2} {y axis} 2 12 0 0
+DEVise setFont {View 2} {title} 2 14 0 0
+DEVise setFont {View 2} {x axis} 2 8 0 0
+DEVise setFont {View 2} {y axis} 2 8 0 0
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
@@ -52,10 +60,15 @@ DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 2} 1.0086 10.382 10
 DEVise setCountMapping {View 2} 0 {} {}
 DEVise viewSetIsHighlight {View 2} 0
+DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 2} {%.4g}
+DEVise setYAxisFloatFormat {View 2} {%.4g}
 DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setShowMouseLocation {View 2} {1}
 DEVise create {view} {SortedX} {View 5} 2.000000 147.000000 -2.000000 8.000000 37 0
 DEVise setLabel {View 5} 1 16 {Log (H-exchange protection factors)}
 DEVise setViewStatistics {View 5} 00000000
@@ -63,9 +76,9 @@ DEVise setViewDimensions {View 5} 2
 DEVise setViewSolid3D {View 5} 2
 DEVise setViewXYZoom {View 5} 1
 DEVise setViewDisplayDataValues {View 5} 0
-DEVise setFont {View 5} {title} 2 12 0 0
-DEVise setFont {View 5} {x axis} 2 12 0 0
-DEVise setFont {View 5} {y axis} 2 12 0 0
+DEVise setFont {View 5} {title} 2 14 0 0
+DEVise setFont {View 5} {x axis} 2 8 0 0
+DEVise setFont {View 5} {y axis} 2 8 0 0
 DEVise viewSetHome {View 5} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 5} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
@@ -75,10 +88,15 @@ DEVise viewSetJSSendP {View 5} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 5} -2 8 10
 DEVise setCountMapping {View 5} 0 {} {}
 DEVise viewSetIsHighlight {View 5} 0
+DEVise setXAxisDateFormat {View 5} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 5} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 5} {%.4g}
+DEVise setYAxisFloatFormat {View 5} {%.4g}
 DEVise setViewAutoFilter {View 5} {0}
 DEVise setDupElim {View 5} {0}
 DEVise setNiceAxes {View 5} 0 0
 DEVise viewSetDisabledActions {View 5} 0 0 0 0
+DEVise setShowMouseLocation {View 5} {1}
 DEVise create {view} {SortedX} {View 6} 2.000000 147.000000 -2.000000 8.000000 37 0
 DEVise setLabel {View 6} 1 16 {Log (H-exchange protection factors)}
 DEVise setViewStatistics {View 6} 00000000
@@ -86,9 +104,9 @@ DEVise setViewDimensions {View 6} 2
 DEVise setViewSolid3D {View 6} 2
 DEVise setViewXYZoom {View 6} 1
 DEVise setViewDisplayDataValues {View 6} 0
-DEVise setFont {View 6} {title} 2 12 0 0
-DEVise setFont {View 6} {x axis} 2 12 0 0
-DEVise setFont {View 6} {y axis} 2 12 0 0
+DEVise setFont {View 6} {title} 2 14 0 0
+DEVise setFont {View 6} {x axis} 2 8 0 0
+DEVise setFont {View 6} {y axis} 2 8 0 0
 DEVise viewSetHome {View 6} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 6} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 6} 1 0.500000 1.000000
@@ -98,10 +116,15 @@ DEVise viewSetJSSendP {View 6} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 6} -2 8 10
 DEVise setCountMapping {View 6} 0 {} {}
 DEVise viewSetIsHighlight {View 6} 0
+DEVise setXAxisDateFormat {View 6} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 6} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 6} {%.4g}
+DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
 DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise setShowMouseLocation {View 6} {1}
 DEVise create {view} {Scatter} {View 3} -6.408940 0.000000 0.000000 1.000000 37 0
 DEVise setLabel {View 3} 1 16 {H_exchange_rate_min_value() vs. recId}
 DEVise setViewStatistics {View 3} 00000000
@@ -121,10 +144,15 @@ DEVise viewSetJSSendP {View 3} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 3} 0 0.167 10
 DEVise setCountMapping {View 3} 0 {} {}
 DEVise viewSetIsHighlight {View 3} 0
+DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 3} {%.4g}
+DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise setShowMouseLocation {View 3} {1}
 DEVise create {view} {Scatter} {View 4} -6.408940 0.000000 0.000000 0.001000 37 0
 DEVise setLabel {View 4} 1 16 {H_exchange_rate_max_value() vs. recId}
 DEVise setViewStatistics {View 4} 00000000
@@ -144,10 +172,15 @@ DEVise viewSetJSSendP {View 4} 1 0 0 "" 1 " " 1
 DEVise setHistogram {View 4} 0 1e-09 10
 DEVise setCountMapping {View 4} 0 {} {}
 DEVise viewSetIsHighlight {View 4} 0
+DEVise setXAxisDateFormat {View 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 4} {%.4g}
+DEVise setYAxisFloatFormat {View 4} {%.4g}
 DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise setShowMouseLocation {View 4} {1}
 DEVise create {view} {Scatter} {View 7} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 7} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 7} 00000000
@@ -163,14 +196,19 @@ DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
 DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 7} 0 100 10
+DEVise viewSetJSSendP {View 7} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View 7} -1 1 10
 DEVise setCountMapping {View 7} 0 {} {}
 DEVise viewSetIsHighlight {View 7} 0
+DEVise setXAxisDateFormat {View 7} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 7} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 7} {%.4g}
+DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise setShowMouseLocation {View 7} {1}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Log_H_exchange_rate_value_vs_Residue_seq_code}
@@ -194,13 +232,13 @@ DEVise create {mapping} {H_exchange_rate_min_value_vs_Residue_seq_code} .4096r .
 DEVise setPixelWidth {.4096r#H_exchange_rate_min_value_vs_Residue_seq_code} 1
 DEVise create {mapping} {H_exchange_rate_max_value_vs_Residue_seq_code} .4096r .4096r#H_exchange_rate_max_value_vs_Residue_seq_code {} {$Residue_seq_code} {$H_exchange_rate_max_value * 8E9} {} 19 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4096r#H_exchange_rate_max_value_vs_Residue_seq_code} 1
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 14 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
 # Create windows
-DEVise create {window} {TileLayout} DEViseWn0 0.000000 0.000000 0.500000 0.312500 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.000000 0.328125 0.500000 0.453125 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.000000 0.791667 0.500000 0.032552 0 0
+DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.191406 0.500000 0.312500 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.156250 0.504883 0.500000 0.351562 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.156250 0.857422 0.500000 0.032227 0 0
 
 # Set up window layouts
 DEVise setWindowLayout {DEViseWn0} -1 -1 0
@@ -317,12 +355,14 @@ DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
+DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} -121
 DEVise clearViewHistory {View 4}
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 0
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
+DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} -121
 DEVise clearViewHistory {View 7}
 DEVise insertViewHistory {View 7} {0.00} {0.00} {100.00} {100.00} 0
 DEVise insertViewHistory {View 7} {-1.00} {-1.00} {1.00} {1.00} 0

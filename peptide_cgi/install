@@ -59,6 +59,7 @@ if (! -e $targetdir) then
   fs setacl $targetdir system:anyuser write
 endif
 cp -p dynamic_sessions/*.base $targetdir
+chmod a+r $targetdir/*.base
 
 # Create and set up the data/html directory.
 set targetdir = $demohome/dat/bmrb/dynamic_data
@@ -69,26 +70,27 @@ if (! -e $targetdir) then
   fs setacl $targetdir system:anyuser write
 endif
 cp -p html/* $targetdir
-chmod 755 $targetdir/summarize
+chmod a+r $targetdir/*
+chmod a+rx $targetdir/summarize
 
 # Create and set up the java classes directory.
 set targetdir = $demohome/dat/bmrb/dynamic_data/java_classes
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod 755 $targetdir
+  chmod a+rx $targetdir
 endif
 cp java_classes/*.class $targetdir
 cp java_classes/*.jar $targetdir
-chmod 644 $targetdir/*
+chmod a+r $targetdir/*.*
 
 # Create and set up the directory containing the "front-end" html file.
 set targetdir = $wwwhome/public/bmrb
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod 755 $targetdir
+  chmod a+rx $targetdir
 endif
 cp -p bmrb_select.html $targetdir
-chmod 644 $targetdir/bmrb_select.html
+chmod a+r $targetdir/bmrb_select.html
 
 # Create the link that we use to have the browser find the summary page.
 set targetdir = $wwwhome/public/bmrb/html
@@ -100,10 +102,10 @@ endif
 set targetdir = $wwwhome/cgi-bin/bmrb
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod 755 $targetdir
+  chmod a+rx $targetdir
 endif
 cp -p cgi-bin/make_view $targetdir
-chmod 755 $targetdir/make_view
+chmod a+rx $targetdir/make_view
 
 # Link data directory to CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
