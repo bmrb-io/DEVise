@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/13 18:17:22  jussi
+  Minor improvements.
+
   Revision 1.7  1996/05/22 21:07:06  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -47,7 +50,7 @@
 #include "TDataCycle.h"
 #include "TDataViewX.h"
 #include "Snapshot.h"
-#include "ViewScatter.h"
+#include "ViewClassInfo.h"
 #include "MappingClassInfo.h"
 #include "MapInterpClassInfo.h"
 #include "HostMappingClassInfo.h"
@@ -144,6 +147,7 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new CycleOccMappingInfo);
   ControlPanel::RegisterClass(new CycleEffMappingInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo);
+  ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
   ControlPanel::RegisterClass(new HostClassInfo);
   ControlPanel::RegisterClass(new CycleClassInfo);
