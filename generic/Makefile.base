@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1998/02/16 18:13:16  wenger
+#  Added collaborator to appropriate release scripts; got deviseb to compile
+#  and link.
+#
 #  Revision 1.42  1998/02/12 17:15:40  wenger
 #  Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -136,7 +140,7 @@
 include ../../Makefile.common
 
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/color -I../../src/utils -I../../tape \
+	-I../../src/include -I../../tape \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/02/12 17:16:09  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.14.6.1  1998/01/28 22:43:42  taodb
   Added support for group communicatoin
 
@@ -362,7 +365,10 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
 #ifdef DEBUG
     //printf("Element %d is \"%s\"\n", i, ptr);
 #endif
-    argv[i] = ptr;
+    // Note: casting 'const char *' to 'char *' here to get rid of compiler
+    // complaint; that's not really the right thing to do, but I don't want
+    // to delve into this more at the present time.  RKW Feb. 17, 1998.
+    argv[i] = (char *) ptr;
 
     ptr += size;
   }

@@ -1,10 +1,28 @@
-//******************************************************************************
-// class PaletteManager
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: PaletteManager.h
-// Last modified: Tue Nov  4 18:24:02 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// Exceptionally stupid right now. Just a layer over template manager.
+// But, DEVise will allow palette editing/multiple palettes later.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -32,14 +50,12 @@
 
 #include "manager.h"
 
+#include "Color.h"
 #include "Palette.h"
 
 //******************************************************************************
 // Types and Constants
 //******************************************************************************
-
-typedef unsigned long	PaletteID;
-const PaletteID			nullPaletteID = 0;
 
 //******************************************************************************
 // class PaletteManager

@@ -1,10 +1,27 @@
-//******************************************************************************
-// class ActivePalette
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: ActivePalette.C
-// Last modified: Thu Sep 25 16:33:15 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Implementation of the ActivePalette class.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //

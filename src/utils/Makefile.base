@@ -7,6 +7,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1998/02/10 21:13:46  wenger
+#  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+#  to pass back lists of records drawn (not implemented yet); moved
+#  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+#
 #  Revision 1.5  1997/12/28 16:41:41  beyer
 #  Eliminated dependency on DTE.
 #
@@ -76,6 +81,9 @@ Makefile.depend: $(VPATH)/*.[cCh]
 $(LIBNAME)(templates.o):
 	$(CC) -c $(CFLAGS_T) $(VPATH)/templates.C $<
 	$(AR) cr $@ $%
+	cp -p $(VPATH)/manager.h ../../src/include
+	cp -p $(VPATH)/BooleanArray.h ../../src/include
+	cp -p $(VPATH)/debug.h ../../src/include
 
 #	$(RM) $%
 

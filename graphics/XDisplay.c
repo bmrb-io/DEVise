@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  1998/02/09 17:28:45  wenger
+  Added more diagnostic/debug output.
+
   Revision 1.64  1998/01/30 02:16:43  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -308,6 +311,7 @@
 #include "Version.h"
 
 #include "Color.h"
+#include "XColor.h"
 
 #define String XVString
 #define black XVblack
@@ -379,6 +383,15 @@ XDisplay::XDisplay(char *name)
 #ifndef LIBCS
   Register();
 #endif
+
+  if (!InitColor(_display)) {
+    reportErrNosys("Color initialization failed");
+  }
+}
+
+XDisplay::~XDisplay()
+{
+  TermColor();
 }
 
 /* Register the display with the dispatcher */

@@ -33,6 +33,7 @@
 #include "Version.h"
 
 #include "Color.h"
+#include "XColor.h"
 
 #define String XVString
 #define black XVblack
@@ -102,6 +103,15 @@ GLDisplay::GLDisplay(char *name)
 #ifndef LIBCS
   Register();
 #endif
+
+  if (!InitColor(_display)) {
+    reportErrNosys("Color initialization failed");
+  }
+}
+
+GLDisplay::~GLDisplay()
+{
+  TermColor();
 }
 
 /* Register the display with the dispatcher */

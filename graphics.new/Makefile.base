@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.69  1998/02/12 17:16:35  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.68  1998/02/09 18:10:35  wenger
 #  Removed ViewScatter class (totally replaced by ViewData, which is a
 #  renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -167,7 +170,7 @@ include ../../Makefile.common
 
 CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics -I../../LM \
-	-I../../src/color -I../../src/utils \
+	-I../../src/include \
 	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
 	-I../../csgroup\
 	-I../unidata\

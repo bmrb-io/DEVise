@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/11/24 23:15:20  weaver
+  Changes for the new ColorManager.
+
   Revision 1.24  1997/11/18 23:27:03  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -141,6 +144,7 @@
 
 //#include "ViewGraph.h"
 #include "Color.h"
+#include "XColor.h"
 #include "Coloring.h"
 
 class AttrList;

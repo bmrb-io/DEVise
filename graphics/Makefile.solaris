@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.86  1998/02/09 21:13:16  donjerko
+# *** empty log message ***
+#
 # Revision 1.85  1998/02/09 18:10:16  wenger
 # Removed ViewScatter class (totally replaced by ViewData, which is a
 # renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -465,16 +468,17 @@ GDataSock.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 GDataSock.o: ../graphics.new/PointStorage.h ../src/color/Color.h
 GDataSock.o: ../graphics.new/TDataMap.h Exit.h DList.h Pattern.h
 GDataSock.o: ../graphics.new/ShapeID.h VisualArg.h ../graphics.new/GDataRec.h
-GDataSock.o: AttrList.h Init.h BufPolicy.h ../src/color/Coloring.h
-GDataSock.o: ../graphics.new/Shape.h WindowRep.h Geom.h /usr/include/math.h
-GDataSock.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-GDataSock.o: Transform.h DevisePixmap.h Compress.h DevError.h
-GDataSock.o: /usr/include/errno.h /usr/include/sys/errno.h ETkIfc.h
-GDataSock.o: /usr/include/string.h ETk.h Xdef.h /s/X11/include/X11/Xlib.h
-GDataSock.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-GDataSock.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-GDataSock.o: /s/X11/include/X11/Xutil.h GraphicsDebug.h Temp.h Map3D.h
-GDataSock.o: Control.h ClassDir.h ../graphics.new/StringStorage.h
+GDataSock.o: AttrList.h Init.h BufPolicy.h ../src/color/XColor.h
+GDataSock.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+GDataSock.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+GDataSock.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+GDataSock.o: ../src/color/Coloring.h ../graphics.new/Shape.h WindowRep.h
+GDataSock.o: Geom.h /usr/include/math.h /usr/include/floatingpoint.h
+GDataSock.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
+GDataSock.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
+GDataSock.o: ETkIfc.h /usr/include/string.h ETk.h Xdef.h GraphicsDebug.h
+GDataSock.o: Temp.h Map3D.h Control.h ClassDir.h
+GDataSock.o: ../graphics.new/StringStorage.h
 GLDebug.o: GLDebug.h /usr/include/assert.h /usr/include/stdio.h
 GLDebug.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 GLDisplay.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -494,19 +498,19 @@ GLDisplay.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 GLDisplay.o: /s/X11/include/X11/Xutil.h GraphicsDebug.h
 GLDisplay.o: ../src/color/Coloring.h GLWindowRep.h Util.h
 GLDisplay.o: /usr/include/stdlib.h /usr/include/ctype.h XBitmap.h Control.h
-GLDisplay.o: ClassDir.h Init.h BufPolicy.h ../graphics.new/Version.h xv.h
-GLDisplay.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
-GLDisplay.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
-GLDisplay.o: /usr/include/sys/unistd.h /usr/include/malloc.h
-GLDisplay.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
-GLDisplay.o: /s/X11/include/X11/keysymdef.h /s/X11/include/X11/Intrinsic.h
-GLDisplay.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
-GLDisplay.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-GLDisplay.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-GLDisplay.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
-GLDisplay.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-GLDisplay.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-GLDisplay.o: WinClassInfo.h
+GLDisplay.o: ClassDir.h Init.h BufPolicy.h ../graphics.new/Version.h
+GLDisplay.o: ../src/color/XColor.h xv.h /s/X11/include/X11/Xos.h
+GLDisplay.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+GLDisplay.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+GLDisplay.o: /usr/include/malloc.h /s/X11/include/X11/cursorfont.h
+GLDisplay.o: /s/X11/include/X11/keysym.h /s/X11/include/X11/keysymdef.h
+GLDisplay.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xresource.h
+GLDisplay.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
+GLDisplay.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
+GLDisplay.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/Xmd.h
+GLDisplay.o: /usr/include/signal.h /usr/include/sys/signal.h
+GLDisplay.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+GLDisplay.o: /usr/include/vm/faultcode.h WinClassInfo.h
 GLWindowRep.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
 GLWindowRep.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 GLWindowRep.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
@@ -526,8 +530,9 @@ GLWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 GLWindowRep.o: /s/X11/include/X11/Xutil.h GraphicsDebug.h
 GLWindowRep.o: ../src/color/Coloring.h Util.h /usr/include/stdlib.h
 GLWindowRep.o: GLDisplay.h Display.h Dispatcher.h Journal.h ViewWin.h
-GLWindowRep.o: XBitmap.h DaliIfc.h ../xvertext/rotated.h Init.h BufPolicy.h
-GLWindowRep.o: xv.h /s/X11/include/X11/Xos.h /usr/include/fcntl.h
+GLWindowRep.o: XBitmap.h DaliIfc.h ../xvertext/rotated.h
+GLWindowRep.o: ../src/color/XColor.h Init.h BufPolicy.h xv.h
+GLWindowRep.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 GLWindowRep.o: /usr/include/sys/fcntl.h /usr/include/malloc.h
 GLWindowRep.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/Intrinsic.h
 GLWindowRep.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
@@ -869,7 +874,7 @@ XDisplay.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 XDisplay.o: /s/X11/include/X11/Xutil.h GraphicsDebug.h
 XDisplay.o: ../src/color/Coloring.h XWindowRep.h Util.h /usr/include/stdlib.h
 XDisplay.o: /usr/include/ctype.h XBitmap.h Control.h ClassDir.h Init.h
-XDisplay.o: BufPolicy.h ../graphics.new/Version.h xv.h
+XDisplay.o: BufPolicy.h ../graphics.new/Version.h ../src/color/XColor.h xv.h
 XDisplay.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 XDisplay.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
 XDisplay.o: /usr/include/sys/unistd.h /usr/include/malloc.h
@@ -901,7 +906,7 @@ XWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 XWindowRep.o: /s/X11/include/X11/Xutil.h GraphicsDebug.h
 XWindowRep.o: ../src/color/Coloring.h Util.h /usr/include/stdlib.h XDisplay.h
 XWindowRep.o: Display.h Dispatcher.h Journal.h ViewWin.h XBitmap.h DaliIfc.h
-XWindowRep.o: ../xvertext/rotated.h Init.h BufPolicy.h
+XWindowRep.o: ../xvertext/rotated.h ../src/color/XColor.h Init.h BufPolicy.h
 XWindowRep.o: ../graphics.new/MapIntToInt.h ../graphics.new/DeviseKey.h
 jstat.o: /usr/include/math.h /usr/include/floatingpoint.h
 jstat.o: /usr/include/sys/ieeefp.h Journal.h DeviseTypes.h

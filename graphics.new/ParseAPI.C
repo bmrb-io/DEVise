@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.90  1998/02/05 23:46:04  wenger
+  Added view-level specification of symbol alignment, API commands, simple
+  GUI for Sanjay.
+
   Revision 1.89  1998/02/03 23:46:36  wenger
   Fixed a problem Hongyu had with getting GData on socket; fixed bugs
   283 and 285 (resulted from problems in color manager merge);
@@ -1919,7 +1923,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
         return -1;
       }
       if (StringStorage::Load(argv[1]) != 0) {
-        control->ReturnVal(API_NAK, "can't save string space");
+        control->ReturnVal(API_NAK, "can't load string space");
         return -1;
       }
       View::RefreshAll();

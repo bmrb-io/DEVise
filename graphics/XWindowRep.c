@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.104  1998/02/03 18:31:29  zhenhai
+  Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
+  postscript printing.
+
   Revision 1.103  1998/01/31 20:02:04  wenger
   Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
   written at the end.
@@ -454,6 +458,7 @@
 #include "ETkIfc.h"
 #include "DaliIfc.h"
 #include "../xvertext/rotated.h"
+#include "XColor.h"
 
 #if !defined(LIBCS)
 #include "Init.h"

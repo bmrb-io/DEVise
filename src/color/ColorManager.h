@@ -1,20 +1,18 @@
-//******************************************************************************
-// class ColorManager
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: ColorManager.h
-// Last modified: Thu Sep 25 18:32:37 1997 by Chris Weaver
-//******************************************************************************
-// Modification History:
-//
-// 970331 [weaver]: Original file.
-// 970505 [weaver]: New version.
-// 970513 [weaver]: Updated to standard C++ class String.
-// 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
 // An abstract class for color management. Provides a way to map logical RGB
 // values into physical RGB values.
 //
@@ -38,6 +36,21 @@
 //
 // N.B.: The X in XColorIDs means external, not X windows. That is, the
 // physical color mechanism is indexed.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
+//******************************************************************************
+// Modification History:
+//
+// 970331 [weaver]: Original file.
+// 970505 [weaver]: New version.
+// 970513 [weaver]: Updated to standard C++ class String.
+// 970925 [weaver]: Updated to C++ standard libraries.
 //
 //******************************************************************************
 
@@ -52,21 +65,13 @@
 #include <stl.h>
 
 #include "manager.h"
+#include "Color.h"
+#include "XColor.h"
 #include "RGB.h"
 
 //******************************************************************************
 // Types and Constants
 //******************************************************************************
-
-typedef unsigned long	ulong;
-
-typedef ulong	ColorID;
-const ColorID	nullColorID = 0;
-
-typedef ulong	XColorID;
-const XColorID	nullXColorID = 0;
-
-typedef vector<RGB>		RGBList;
 
 //******************************************************************************
 // class ColorManager (abstract)

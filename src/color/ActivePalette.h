@@ -1,20 +1,18 @@
-//******************************************************************************
-// class ActivePalette
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: ActivePalette.h
-// Last modified: Thu Sep 25 18:32:09 1997 by Chris Weaver
-//******************************************************************************
-// Modification History:
-//
-// 970408 [weaver]: Original file.
-// 970505 [weaver]: Modified for new ColorManager.
-// 970513 [weaver]: Updated to standard C++ class String.
-// 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
 // An ActivePalette is a table mapping a PColorID into an XColorID.
 //
 // In DEVise, this allows faster lookup of an XColor pixel given a color value
@@ -22,6 +20,21 @@
 //
 // For active use by a session. Whenever there's a change in the corresponding
 // Palette, call SetColors().
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
+//******************************************************************************
+// Modification History:
+//
+// 970408 [weaver]: Original file.
+// 970505 [weaver]: Modified for new ColorManager.
+// 970513 [weaver]: Updated to standard C++ class String.
+// 970925 [weaver]: Updated to C++ standard libraries.
 //
 //******************************************************************************
 

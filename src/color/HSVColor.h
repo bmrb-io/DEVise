@@ -1,10 +1,31 @@
-//******************************************************************************
-// class HSVColor
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: HSVColor.h
-// Last modified: Thu Sep 25 16:34:25 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// HSVColor contains a hue-saturation-value (HSV) representation of color.
+//
+// DEVise doesn't use this code yet. It will be used for more flexible color
+// selection (via the tcl interface) and more advanced mappings->color
+// conversions later.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -12,14 +33,6 @@
 // 970331 [weaver]: Added iostream operators and FromString().
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
-// HSVColor contains a hue-saturation-value (HSV) representation of color.
-//
-// DEVise doesn't use this code yet. It will be used for more flexible color
-// selection (via the tcl interface) and more advanced mappings->color
-// conversions later.
 //
 //******************************************************************************
 

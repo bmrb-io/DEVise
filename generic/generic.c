@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/12/12 05:50:15  weaver
+  *** empty log message ***
+
   Revision 1.50  1997/11/24 23:14:06  weaver
   Changes for the new ColorManager.
 
@@ -228,23 +231,14 @@
 #include "WinClassInfo.h"
 #include "MapInterpClassInfo.h"
 #include "VisualLinkClassInfo.h"
-#include "VisualArg.h"
-#include "View.h"
-#include "AxisLabelClassInfo.h"
 #include "ViewClassInfo.h"
 #include "CompositeParser.h"
 #include "RecInterp.h"
-#include "AttrList.h"
-#include "ViewGraph.h"
-#include "TDataMap.h"
-#include "TData.h"
 #include "CursorClassInfo.h"
-#include "ParseCat.h"
 #include "StringStorage.h"
 #include "DevError.h"
 #include "StateMap.h"
 #include "Util.h"
-#include "XDisplay.h"
 
 static time_t GetTime(struct tm &now)
 {
@@ -1643,20 +1637,7 @@ int main(int argc, char **argv)
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();
 
-  // Color code gets called before main() in a static method or global ctor
-  // somewhere. I've put a workaround in to handle it. CEW 971118.
-  // "Closest color" allocation is currently off in the color manager, so
-  // initialization may fail, e.g. with netscape running. I'll fix this
-  // when I return. CEW 971211.
-  if (!InitColor(((XDisplay*)disp)->GetDisplay()))
-  {
-	  fprintf(stderr, "\nColor initialization failed.\n");
-	  return 1;
-  }
-
   Dispatcher::RunNoReturn();
 
-  TermColor();	// Never reaches here...
-  
   return 1;
 }

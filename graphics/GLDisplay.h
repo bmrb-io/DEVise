@@ -39,6 +39,7 @@ const int LINE_SIZE = 512;
 class GLDisplay: public DeviseDisplay {
 public:
     GLDisplay(char *name = 0);
+    ~GLDisplay();
 
 #ifdef TK_WINDOW_EV2
     virtual ~GLDisplay();

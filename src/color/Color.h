@@ -1,25 +1,18 @@
-//******************************************************************************
-// Color Module
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: Color.h
-// Last modified: Thu Dec 11 18:45:17 1997 by Chris Weaver
-//******************************************************************************
-// Modification History:
-//
-// 970331 [weaver]: Original file.
-// 970409 [weaver]: Modified to add globals gColorManager and gDefaultPalette.
-// 971016 [weaver]: Added CM_GetRGBList(), CM_GetColorID().
-// 971017 [weaver]: Added lensBackColor.
-// 971106 [weaver]: Added basic palette-handling methods.
-// 971107 [weaver]: Improved palette initialization, alloc/free and swapping.
-// 971203 [weaver]: Added PM_GetRGBList().
-// 971204 [weaver]: Added AP_GetRawXColorID().
-// 971211 [weaver]: Changed InitColor() return type to bool.
-//
-//******************************************************************************
-//
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
 // Defines a unique, global ColorManager and a unique, global, default Palette.
 //
 // The hard-coded default palette is for use when other palettes (default
@@ -35,6 +28,26 @@
 //
 // This interface is minimal, and will need to be expanded greatly for
 // palette swapping, color reference counts, etc.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
+//******************************************************************************
+// Modification History:
+//
+// 970331 [weaver]: Original file.
+// 970409 [weaver]: Modified to add globals gColorManager and gDefaultPalette.
+// 971016 [weaver]: Added CM_GetRGBList(), CM_GetColorID().
+// 971017 [weaver]: Added lensBackColor.
+// 971106 [weaver]: Added basic palette-handling methods.
+// 971107 [weaver]: Improved palette initialization, alloc/free and swapping.
+// 971203 [weaver]: Added PM_GetRGBList().
+// 971204 [weaver]: Added AP_GetRawXColorID().
+// 971211 [weaver]: Changed InitColor() return type to bool.
 //
 //******************************************************************************
 
@@ -47,25 +60,16 @@
 
 #include <string>
 
-extern "C" {
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-}
-
-// All color-related headers (management)
-#include "RGB.h"
-#include "ColorManager.h"
-#include "XColorManager.h"
+// Necessary color-related headers (management)
 #include "Palette.h"
-#include "PaletteColor.h"
-#include "PaletteManager.h"
-#include "ActivePalette.h"
 
 // Add these in later (color selection stuff)
 //#include "TriColor.h"
 //#include "RGBColor.h"
 //#include "HSVColor.h"
 
+// Coloring.h should probably be included here, but that causes problems
+// because of circular dependencies.  RKW Feb. 17, 1998.
 class Coloring;
 
 //******************************************************************************
@@ -107,6 +111,14 @@ enum GlobalColor
 	maxGlobalColor
 };
 
+typedef unsigned long	PaletteID;
+const PaletteID			nullPaletteID = 0;
+
+typedef unsigned long	ColorID;
+const ColorID			nullColorID = 0;
+
+typedef vector<RGB>		RGBList;
+
 //******************************************************************************
 // Externed Globals
 //******************************************************************************
@@ -114,13 +126,6 @@ enum GlobalColor
 //******************************************************************************
 // Function Prototypes (Initialization and Termination)
 //******************************************************************************
-
-// Initializes the ColorManager and supporting default and active palettes
-// given an X display (which must be set previously). The colors in the default
-// palette are allocated in X. Returns true if initialization completed, false
-// if an error occurred (some colors in the default palette could not be
-// allocated).
-bool		InitColor(Display* display);
 
 // Terminates the ColorManager and supporting palettes. Any colors in the
 // manager are freed in X.
@@ -148,10 +153,6 @@ const Coloring&		GetKGraphDefColoring(void);
 // Function Prototypes (Utilities, Color Manager)
 //******************************************************************************
 
-// Maps (via the ColorManager) a ColorID to an XColorID. Returns nullXColorID
-// (invalid XColorID) if the ColorID is invalid (not in the ColorManager).
-XColorID	CM_GetXColorID(ColorID cid);
-
 // Maps (via the ColorManager) a ColorID to an RGB. Returns false if the
 // ColorID is invalid (not in the ColorManager), true if valid.
 bool		CM_GetRGB(ColorID cid, RGB& rgb);
@@ -178,6 +179,10 @@ RGBList		PM_GetRGBList(void);
 // RGB is invalid (not in the current palette), true if valid.
 bool		PM_GetPColorID(const RGB& rgb, PColorID& pcid);
 
+// If the requested RGB is in the current palette, returns its PColorID;
+// otherwise, attempts to allocate it in the current palette.
+bool		PM_GetOrAllocColor(const RGB& rgb, PColorID& pcid);
+
 // Maps (via the PaletteManager) a PColorID to an ColorID. Returns nullColorID
 // (invalid ColorID) if the PColorID is invalid (not in the current palette).
 ColorID		PM_GetColorID(PColorID pcid);
@@ -197,20 +202,6 @@ PaletteID	PM_NewPalette(const string& s);
 
 // Deletes a palette. Does not free colors in the palette.
 bool		PM_DeletePalette(PaletteID pid);
-
-//******************************************************************************
-// Function Prototypes (Utilities, Active Palette)
-//******************************************************************************
-
-// Maps (via the Active Palette) a PColorID (modulus the current palette size)
-// to an XColorID. ALWAYS returns a valid XColorID.
-// The mapping is an array lookup operation - use whenever possible for speed.
-XColorID	AP_GetXColorID(PColorID cid);
-
-// Maps (via the Active Palette) to an XColorID. Returns nullXColorID (invalid
-// XColorID) if the PColorID is invalid (not in the active palette). This is a
-// simple array lookup operation - use whenever possible for speed.
-XColorID	AP_GetRawXColorID(PColorID pcid);
 
 //******************************************************************************
 #endif

@@ -486,6 +486,9 @@ Have GUI to rename schemas. (ag/rkw 2/16/98)
 
 Allow log-scale axes. (ag/rkw 2/16/98)
 
+templates.C (in src/utils) should be split up so that we only grab the
+template instantiations we need for libdevwin, etc. (rkw 2/17/98)
+
 
 COMPLETED
 ---------

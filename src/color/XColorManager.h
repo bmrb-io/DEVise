@@ -1,10 +1,29 @@
-//******************************************************************************
-// class XColorManager
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: XColorManager.h
-// Last modified: Thu Sep 25 16:35:56 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// Use only one ColorManager instance in an application.
+// XColorManager performs color management when X supplies the RGB values
+// (via integer indexes, previously called LocalColors).
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -12,12 +31,6 @@
 // 970505 [weaver]: Updated for new Color Manager.
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
-// Use only one ColorManager instance in an application.
-// XColorManager performs color management when X supplies the RGB values
-// (via integer indexes, previously called LocalColors).
 //
 //******************************************************************************
 

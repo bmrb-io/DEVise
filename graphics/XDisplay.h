@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/12/16 17:53:56  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.31  1997/11/24 23:14:40  weaver
   Changes for the new ColorManager.
 
@@ -166,6 +169,7 @@ class XDisplay : public DeviseDisplay
 
     // Constructors and Destructors
     XDisplay(char *name = 0);
+	~XDisplay();
 
     // Getters and Setters
     Display* GetDisplay(void)  { return _display;	}

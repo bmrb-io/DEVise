@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:55  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:00  liping
   Added CVS header
 
@@ -81,7 +84,8 @@
 **
 */ 
 
-#define _POSIX_SOURCE
+// Commented this out so we get strdup() definition. RKW Feb. 17, 1998.
+//#define _POSIX_SOURCE
 
 #include "log.h"
 

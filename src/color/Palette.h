@@ -1,10 +1,29 @@
-//******************************************************************************
-// class Palette
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: Palette.h
-// Last modified: Thu Sep 25 16:34:44 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// A Palette maps PColorID indicies onto PaletteColors.
+//
+// A. more flexible color addition/removal method will be needed later.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -15,12 +34,6 @@
 // 970505 [weaver]: Modified for new ColorManager.
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
-// A Palette maps PColorID indicies onto PaletteColors.
-//
-// A. more flexible color addition/removal method will be needed later.
 //
 //******************************************************************************
 
@@ -45,6 +58,7 @@ typedef unsigned long	ulong;
 
 typedef long	PColorID;
 const PColorID	nullPColorID = -1;
+
 
 //******************************************************************************
 // class Palette

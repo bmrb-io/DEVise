@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/02/12 17:14:35  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.3.2.2  1998/02/12 05:02:22  taodb
 #  Made code proceed even if DEVISE_COLLABORATOR environmental variable is not defined
 #
@@ -28,7 +31,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape -I../../csgroup -I../../src/color -I../../src/utils \
+	-I../../tape -I../../csgroup -I../../src/include \
 	-I/s/mesa-2.4/include \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS -D__tcltk

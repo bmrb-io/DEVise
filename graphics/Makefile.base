@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.54  1998/02/12 17:15:58  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.53.2.2  1998/02/12 05:04:52  taodb
 #  Removed -g option
 #
@@ -147,7 +150,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
-	-I../../src/color -I../../src/utils \
+	-I../../src/include \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \

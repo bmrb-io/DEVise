@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/02/13 15:51:39  wenger
+  Changed ViewData to be based on old ViewScatter class instead of
+  TDataViewX; ViewData now returns a list of the records drawn to
+  the query processor; removed unused GDataBinX class.
+
   Revision 1.11  1998/02/10 21:13:19  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved
@@ -79,7 +84,7 @@
 
 #include "ViewLens.h"
 #include "WindowRep.h"
-#include "XWindowRep.h"
+#include "XWindowRep.h"//TEMPTEMP -- shouldn't be here!!!
 #include "TimeStamp.h"
 #include "TDataMap.h"
 #include "Shape.h"
@@ -87,6 +92,7 @@
 #include "RecordLink.h"
 #include "DrawTimer.h"
 #include "Scheduler.h"
+#include "XColor.h"
 
 //#define DEBUG
 

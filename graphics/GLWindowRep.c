@@ -29,6 +29,7 @@
 #include "ETkIfc.h"
 #include "DaliIfc.h"
 #include "../xvertext/rotated.h"
+#include "XColor.h"
 
 
 #if !defined(LIBCS)

@@ -59,6 +59,7 @@
 //******************************************************************************
 
 #include "Color.h"
+#include "ColorManager.h"
 
 #include <stl.h>
 #include <string>

@@ -1,10 +1,31 @@
-//******************************************************************************
-// class PaletteColor
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: PaletteColor.h
-// Last modified: Thu Sep 25 16:38:42 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// A PaletteColor is simply an RGB value and a name (string). Palettes contain
+// this special class (instead of the RGB values alone) for future addition
+// of palette statistics, special PaletteColor values, etc.
+//
+// DEVise currently eschews color naming.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -13,14 +34,6 @@
 // 970401 [weaver]: Changed FromString() to use new class String tokenization.
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
-//
-//******************************************************************************
-//
-// A PaletteColor is simply an RGB value and a name (string). Palettes contain
-// this special class (instead of the RGB values alone) for future addition
-// of palette statistics, special PaletteColor values, etc.
-//
-// DEVise currently eschews color naming.
 //
 //******************************************************************************
 

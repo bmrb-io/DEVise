@@ -39,8 +39,7 @@ DTE_INCLUDES = \
      -I../../RTree/src/Common \
      -I../../RTree/src/RTree \
 	-I../../tape \
-	-I../../src/utils \
-	-I../../src/color \
+	-I../../src/include \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../unidata \

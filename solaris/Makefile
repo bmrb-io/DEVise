@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.35  1998/02/16 18:13:34  wenger
+# Added collaborator to appropriate release scripts; got deviseb to compile
+# and link.
+#
 # Revision 1.34  1998/02/12 17:18:07  wenger
 # Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -101,8 +105,8 @@
 # Makefile for all components of DEVise
 #
 
-LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext color utils csgroup 
+LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
+	unidata DTE RTree xvertext csgroup 
 
 #devread is obsolete
 #attrproj is broken
@@ -118,6 +122,7 @@ all: date
 
 clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
+	-rm ../src/include/*.h
 
 date:
 	cd generic; make CompDate.o

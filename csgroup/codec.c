@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:44  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:52  liping
   Added CVS header
 
@@ -86,7 +89,7 @@ XferMsgType(int fd, int mode, int *type) {
 
 int
 XferMsg(int fd, int mode, int elements, ...) {
-	int nbytes;
+	int nbytes = -1;
 	va_list pvar;
 	int type;
 	int *intArg;

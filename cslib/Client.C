@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/12 17:15:26  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.1  1998/01/28 22:43:10  taodb
   Added support for group communicatoin
 
@@ -51,8 +54,10 @@
 
 #include "Client.h"
 #include "ClientAPI.h"
-#include "Exit.h"
+
 //#define DEBUG
+
+#define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 
 char *CompDate::Get()
 {

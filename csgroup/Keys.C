@@ -20,11 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:33  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:49  liping
   Added CVS header
 
 */
 
+#include <stdio.h>
 #include <iostream.h>
 #include <string.h>
 #include "keys.h"
@@ -98,7 +102,7 @@ CSgroupKey::analyseStr(char* cskey)
 		keysize = sizeof(GroupKey);
 		_cskey = strdup(cskey);
 		_gkp = new GroupKey;
-		if (strlen(_cskey) < keysize)
+		if (((int) strlen(_cskey)) < keysize)
 		{
 			int	i = 0;
 			while ((i<keysize)&&(cskey[i++]!=seperator));

@@ -1,10 +1,30 @@
-//******************************************************************************
-// class Coloring
-// Copyright (c) 1997 DEVise Group
-// DEVise Color Management
-//******************************************************************************
-// File: Coloring.h
-// Last modified: Thu Dec  4 18:31:52 1997 by Chris Weaver
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1997-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+// Colored objects (shapes, windows, views, etc.) are derived from this class.
+//
+// Add a more flexible data color addition/removal mechanism when it becomes
+// necessary.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 //******************************************************************************
 // Modification History:
 //
@@ -14,13 +34,6 @@
 // 970925 [weaver]: Updated to C++ standard libraries.
 // 971118 [weaver]: Changed from ColorID to PColorID for palette operations.
 // 971203 [weaver]: Added RMSDistance() methods.
-//
-//******************************************************************************
-//
-// Colored objects (shapes, windows, views, etc.) are derived from this class.
-//
-// Add a more flexible data color addition/removal mechanism when it becomes
-// necessary.
 //
 //******************************************************************************
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/01/07 19:27:56  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.19  1997/12/12 05:49:46  weaver
   *** empty log message ***
 
@@ -139,6 +144,7 @@
 #include "WinServer.h"
 #include "ClientAPI.h"
 #include "DualWindowRep.h"
+#include "DualWindowRep.h"
 
 static char *_progName = 0;
 
@@ -185,13 +191,24 @@ class SampleWinServer : public WinServer {
 										   parent, minWidth,
 										   minHeight, relative, winBoundary);
 	    assert(win);
+
+		// Compensate for inversion of Y axis in version 1.5.
+		win->Scale(1.0, -1.0);
+		win->Translate(0.0, -height);
+
 	    win->RegisterCallback(this);
 	    _winReps.SetScreenWinRep(win);
 	    
 	    win = _fileDisp->CreateWindowRep(_name, x, y, width, height,
 										 parent, minWidth,
 										 minHeight, relative, winBoundary);
+
+		// Compensate for inversion of Y axis in version 1.5.
+		win->Scale(1.0, -1.0);
+		win->Translate(0.0, -height);
+
 	    _winReps.SetFileWinRep(win); 
+
 	    _winReps.SetScreenOutput();
 	    
 	    Redraw();
@@ -202,14 +219,13 @@ class SampleWinServer : public WinServer {
 		{
 			int				x, y;
 			unsigned int	w, h;
-			PColorID		fgid = GetColorID(blackColor);
 
 	assert(_winReps.GetWindowRep());
 	_winReps.GetWindowRep()->Origin(x, y);
 	_winReps.GetWindowRep()->Dimensions(w, h);
 	
 	/* outline the whole window */
-	_winReps.GetWindowRep()->SetForeground(fgid);
+	_winReps.GetWindowRep()->SetForeground(GetColorID(blackColor));
 	_winReps.GetWindowRep()->Line(x, y, x + w - 1, y, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y, x + w - 1, y + h - 1, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y + h - 1, x, y + h - 1, 1);
@@ -274,11 +290,12 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->DrawRubberband(10, 10, 100, 100);
 	
 	/* use color from local colormap (see Color.h) */
-//	_winReps.GetWindowRep()->SetFgColor(SeaGreenColor);
+	_winReps.GetWindowRep()->SetForeground((PColorID) 12);
+    PColorID pcid = _winReps.GetWindowRep()->GetForeground();
+	RGB rgb;
+	PM_GetRGB(pcid, rgb);
+	printf("Color 5 RGB: %d %d %d\n", rgb.r, rgb.g, rgb.b);
 
-//	float	red, green, blue;
-//	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
-//	printf("SeaGreenColor RGB: %f %f %f\n", red, green, blue);
 	_winReps.GetWindowRep()->FillRect(x + 0.25 * w, y + 0.25 * h, 0.5 * w,
 					  0.5 * h);
 	
@@ -287,10 +304,13 @@ class SampleWinServer : public WinServer {
 					  0.3 * h);
 	_winReps.GetWindowRep()->SetCopyMode();
 	
-//	_winReps.GetWindowRep()->SetFgColor(BlackColor);
-//	_winReps.GetWindowRep()->SetBgColor(SlateBlueColor);
-//	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
-//	printf("BlackColor RGB: %f %f %f\n", red, green, blue);
+	_winReps.GetWindowRep()->SetForeground(GetPColorID(blackColor));
+	_winReps.GetWindowRep()->SetBackground((PColorID) 4);
+
+    pcid = _winReps.GetWindowRep()->GetForeground();
+	PM_GetRGB(pcid, rgb);
+	printf("blackColor RGB: %d %d %d\n", rgb.r, rgb.g, rgb.b);
+
 	_winReps.GetWindowRep()->SetNormalFont();
 	_winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
 					      WindowRep::AlignCenter, false);
@@ -298,41 +318,41 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->AbsoluteText("AlignWest", x, y, w, h,
 					      WindowRep::AlignWest, false);
 	
-//	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+	_winReps.GetWindowRep()->SetForeground((PColorID) 26);
 	_winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/45);
-//	_winReps.GetWindowRep()->SetFgColor(BlackColor);
-//	_winReps.GetWindowRep()->SetBgColor(PurpleColor);
+	_winReps.GetWindowRep()->SetForeground(GetPColorID(blackColor));
+	_winReps.GetWindowRep()->SetBackground((PColorID) 18);
 	_winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4,
 					    w/3, h/45,
 					    WindowRep::AlignCenter, false);
 	
-//	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+	_winReps.GetWindowRep()->SetForeground((PColorID) 26);
 	_winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
-//	_winReps.GetWindowRep()->SetFgColor(RedColor);
-//	_winReps.GetWindowRep()->SetBgColor(DarkSeaGreen);
+	_winReps.GetWindowRep()->SetForeground((PColorID) 16);
+	_winReps.GetWindowRep()->SetBackground((PColorID) 4);
 	_winReps.GetWindowRep()->ScaledText("abcdefg", x + w/2, y + h/4,
 					    w/2, h/8,
 					    WindowRep::AlignNorthEast, false);
 	
-	/* bypass local colormap */
+	/* Allocate and use our own colors by RGB. */
 	for(float i = 0; i < 1.0; i += 0.1) {
-//	    _winReps.GetWindowRep()->SetFgRGB(1 - i, 0, 0);
+	    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(1 - i, 0.0, 0.0));
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.80 * h, 0.1 * w,
 					      0.05 * h);
-//	    _winReps.GetWindowRep()->SetFgRGB(0, i, 0);
+	    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(0.0, i, 0.0));
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.85 * h, 0.1 * w,
 					      0.05 * h);
-//	    _winReps.GetWindowRep()->SetFgRGB(0, 0, 1 - i);
+	    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(0.0, 0.0, i));
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.90 * h, 0.1 * w,
 					      0.05 * h);
-//	    _winReps.GetWindowRep()->SetFgRGB(i, i, i);
+	    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(i, i, i));
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.95 * h, 0.1 * w,
 					      0.05 * h);
 	}
 	
 	/* test the Arc() and Pattern() functions */
-//	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 1.0);
-//	_winReps.GetWindowRep()->SetBgRGB(1.0, 0.0, 0.0);
+    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(0.0, 0.0, 1.0));
+    _winReps.GetWindowRep()->SetBackground(GetOrAllocRGB(1.0, 0.0, 0.0));
 	
 	Coord xCenter1 = x + 0.25 * w;
 	Coord yCenter1 =  y + 0.12 * h;
@@ -353,7 +373,7 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->SetLineWidth(0);
 	_winReps.GetWindowRep()->SetPattern(Pattern0);
 	
-//	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 0.0);
+    _winReps.GetWindowRep()->SetForeground(GetOrAllocRGB(0.0, 0.0, 0.0));
 	
 	Coord size = 0.03;
 	Coord lineWidth = 2.0;
@@ -400,11 +420,27 @@ class SampleWinServer : public WinServer {
     virtual void HandleResize(WindowRep *w, int xlow,
 			      int ylow, unsigned width,
 			      unsigned height) {
-	Redraw();
+		// Compensate for inversion of Y axis in version 1.5.
+		WindowRep *win = _winReps.GetScreenWinRep();
+		win->MakeIdentity();
+		win->Scale(1.0, -1.0);
+		win->Translate(0.0, -1.0 * (Coord) height);
+		win = _winReps.GetFileWinRep();
+		win->MakeIdentity();
+		win->Scale(1.0, -1.0);
+		win->Translate(0.0, -1.0 * (Coord) height);
+	    Redraw();
         SendControl(API_CTL, "puts \"Handling resize.\"");
     }
     
     DualWindowRep _winReps;	// note: _not_ a pointer to a DualWindowRep
+
+	PColorID GetOrAllocRGB(float red, float green, float blue) {
+	  // Note: I tried to get this to actually add a new color to the
+	  // current palette, but I wasn't able to do so, so this is just
+	  // a way of returning different colors. RKW Feb. 19, 1998.
+	  return (PColorID) (15 * red + 10 * green + 5 * blue);
+	}
     
   private:
     virtual void Print();
