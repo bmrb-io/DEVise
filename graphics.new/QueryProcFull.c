@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.61  1997/05/28 16:56:52  wenger
+  Changed back to the query processor version that sometimes returns
+  too many records to hopefully avoid returning too few; other minor
+  cleanups, etc.
+
   Revision 1.60  1997/05/28 15:39:28  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -777,7 +782,7 @@ void QueryProcFull::InitQPFullScatter(QPFullData *query)
 
 void QueryProcFull::PrepareProcessedList(QPFullData *query)
 {
-#if  0
+#if  1
   if (!query->isRecLinkSlave)
     return;
   
