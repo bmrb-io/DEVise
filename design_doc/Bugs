@@ -1644,9 +1644,9 @@ Num Date        Status  Description
 			directory with the GUI, because you always get the
 			message 'Discarding selection of ".."'. (rkw)
 
-428 10/28/98	OPEN	Negative value for color causes DEVise to crash. (rkw)
+428 10/28/98	FIXED	Negative value for color causes DEVise to crash. (rkw)
 
-429 10/28/98	OPEN	Show mapping dialog, close session, open another
+429 10/28/98	FIXED	Show mapping dialog, close session, open another
 			session, select a view -> mapping dialog is not 
 			properly enabled. (rkw)
 
@@ -1745,6 +1745,10 @@ Num Date        Status  Description
 			view, it queries the DTE to get the catalog entry
 			for the appropriate TData, instead of just getting
 			the list of attributes from the TData object. (kb/rkw)
+			(Note: this may be hard to fix as long as we support
+			attribute groups in logical schemas, because the
+			TData doesn't seem to know about the attribute groups.
+			rkw, 03/04/99.)
 
 454 02/02/99	OPEN	'sorted' and 'key' in DataReader schemas don't do
 			anything. (rkw)
@@ -1800,6 +1804,8 @@ Num Date        Status  Description
 			then change the mapping to an unsorted attribute,
 			the query is still run using binary search. (rkw)
 			(Fixed by rkw, 03/02/99.)
+
+468 03/09/99	OPEN	Changing cursor color seems to have no effect. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -15,6 +15,13 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.179  1999/03/04 15:11:18  wenger
+#	Implemented 'automatic filter update' features: views can be designated
+#	to have their visual filters automatically updated with the 'Update
+#	Filters' menu selection; alternatively, a session can be opened with
+#	the 'Open, Update, and Save' selection, which updates the designated
+#	filters and saves the updated session.
+#	
 #	Revision 1.178  1999/03/01 17:47:23  wenger
 #	Implemented grouping/ungrouping of views to allow custom view geometries.
 #	
@@ -1381,12 +1388,10 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu.schemaMenu add command -label "Browse..." \
 	-command SchemaBrowse
 .mbar.tdata.menu.schemaMenu add separator
-.mbar.tdata.menu.schemaMenu add command -label "Physical..." \
+.mbar.tdata.menu.schemaMenu add command -label "Physical UNIXFILE..." \
 	-command {SchemaEdit 0}
-.mbar.tdata.menu.schemaMenu add command -label "Physical Unidata..." \
+.mbar.tdata.menu.schemaMenu add command -label "Physical DataReader..." \
 	-command {SchemaEdit 3}
-#TEMP .mbar.tdata.menu.schemaMenu add command -label "Physical DataReader..." \
-#TEMP	-command {SchemaEdit 4}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
 #.mbar.tdata.menu.schemaMenu add command -label "Query..." \

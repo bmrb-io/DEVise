@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/02/04 20:04:26  wenger
+  Implemented simplified DataReader schema format; field separators
+  now propagate to quoted string attributes; fixed some bugs in some
+  special cases; updated documentation (still needs some work).
+
   Revision 1.12  1999/02/01 19:18:50  wenger
   Added DataReader functions to set and get file offset.
 
@@ -68,53 +73,18 @@ DataReader::DataReader(const char* dataFile, const char* schemaFile)
 	  ")\n";
 #endif
 
-	int rc;
 	_uStat = OK;
 	myDRSchema = NULL;
 	myBuffer = NULL;
 
-	ifstream schemaStream;
-	schemaStream.open(schemaFile);
-	if (schemaStream.fail()) {
-		cout << "DRSchema File " << schemaFile << " can't be opened !..."
-		  << endl;
-		perror("open");
+	myDRSchema = CreateSchema(schemaFile);
+	if (myDRSchema == NULL) {
 		_uStat = FAIL;
 	} else {
-		DataReaderParser *myParser = new DataReaderParser(&schemaStream,0);
-
-		myDRSchema = new DRSchema();
-		myParser->setDRSchema(myDRSchema);
-
-		rc = myParser->parse();
-		schemaStream.close();
-		delete myParser;
-
-		myDRSchema->setDRSchemaName(strdup(schemaFile));
-
-#if defined(DEBUG)
-		cout << "\nSchema before finalizing\n";
-		cout << *myDRSchema << endl;
-#endif
-
-		if (rc != 0) {
-			cerr << "Parse Error, DRSchema file " << schemaFile <<
-			  " can't be parsed !" << endl;
+		Status bufStatus;
+		myBuffer = new Buffer(dataFile, myDRSchema, bufStatus);
+		if (bufStatus != OK) {
 			_uStat = FAIL;
-		} else {
-			if (myDRSchema->finalizeDRSchema() == OK) {
-#if defined(DEBUG)
-			cout << "\nSchema after finalizing\n";
-			cout << *myDRSchema << endl;
-#endif
-				Status bufStatus;
-				myBuffer = new Buffer(dataFile, myDRSchema, bufStatus);
-				if (bufStatus != OK) {
-					_uStat = FAIL;
-				}
-			} else {
-				_uStat = FAIL;
-			}
 		}
 	}
 
@@ -199,4 +169,60 @@ operator<<(ostream &out, const DataReader &dr)
 	if (dr.myDRSchema != NULL) out << *dr.myDRSchema;
 
 	return out;
+}
+
+//---------------------------------------------------------------------------
+DRSchema *
+DataReader::CreateSchema(const char* schemaFile, bool finalize)
+{
+#if defined(DEBUG)
+    cout << "DataReader::CreateSchema(" << schemaFile << ")\n";
+#endif
+
+	DRSchema *schema = NULL;
+
+	ifstream schemaStream;
+	schemaStream.open(schemaFile);
+	if (schemaStream.fail()) {
+		cout << "DRSchema File " << schemaFile << " can't be opened !..."
+		  << endl;
+		perror("open");
+	} else {
+		DataReaderParser *parser = new DataReaderParser(&schemaStream, 0);
+
+		schema = new DRSchema();
+		parser->setDRSchema(schema);
+
+		int parseResult = parser->parse();
+		schemaStream.close();
+		delete parser;
+
+#if defined(DEBUG)
+		cout << "\nSchema before finalizing\n";
+		cout << *schema << endl;
+#endif
+
+		if (parseResult != 0) {
+			cerr << "Parse Error, DRSchema file " << schemaFile <<
+			  " can't be parsed !" << endl;
+			delete schema;
+			schema = NULL;
+		} else {
+			if (finalize) {
+				if (schema->finalizeDRSchema() != OK) {
+					cerr << "Parse Error, DRSchema file " << schemaFile <<
+			  				" can't be finalized !" << endl;
+					delete schema;
+					schema = NULL;
+				} else {
+#if defined(DEBUG)
+					cout << "\nSchema after finalizing\n";
+					cout << *schema << endl;
+#endif
+				}
+			}
+		}
+	}
+
+	return schema;
 }

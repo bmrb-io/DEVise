@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/03/04 15:11:10  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.47  1999/03/01 17:47:44  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -274,6 +281,7 @@
 #include "Layout.h"
 #include "PileStack.h"
 #include "ViewGeom.h"
+#include "DRUtils.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -5394,6 +5402,29 @@ IMPLEMENT_COMMAND_BEGIN(updateFilters)
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in updateFilters\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(parseDRSchema)
+    // Arguments: <schema file name>
+    // Returns: <schema in Tcl list>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		char *list = DRSchema2TclList(argv[1]);
+		if (list == NULL) {
+    	  ReturnVal(API_NAK, "Unable to parse schema file");
+    	  return -1;
+		}
+
+       	ReturnVal(API_ACK, list);
+		delete list;
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in parseDRSchema\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

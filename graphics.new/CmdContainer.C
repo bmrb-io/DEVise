@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/03/04 15:11:10  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.30  1999/03/01 23:09:09  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -458,6 +465,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getViewAutoFilter)
 	REGISTER_COMMAND(setViewAutoFilter)
 	REGISTER_COMMAND(updateFilters)
+	REGISTER_COMMAND(parseDRSchema)
 }
 
 CmdContainer::~CmdContainer()

@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.93  1999/01/20 22:47:10  beyer
+#  Major changes to the DTE.
+#  * Added a new type system.
+#  * Rewrote expression evaluation and parsing
+#  * And many other changes...
+#
 #  Revision 1.92  1999/01/04 15:33:31  wenger
 #  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
 #  compiles; added code (GUI is currently disabled) to manually set view
@@ -281,6 +287,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics.new -I../../tape -I../../generic $(GLINCLUDE)\
 	-I.. -I../../src/include \
 	-I../../src/data/export \
+	-I../../DataReader \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) -DUNIX \
 	-DHAVE_CONFIG_H
 
@@ -307,7 +314,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
-	JavaScreenCmd.h JavaScreenCmd.C
+	JavaScreenCmd.h JavaScreenCmd.C DRUtils.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

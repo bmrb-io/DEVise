@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/03/04 15:11:11  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.26  1999/03/01 17:47:47  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -1590,6 +1597,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(updateFilters) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(parseDRSchema) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

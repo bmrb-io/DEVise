@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/02/01 19:18:51  wenger
+  Added DataReader functions to set and get file offset.
+
   Revision 1.9  1999/01/18 22:34:15  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -84,6 +87,9 @@ public:
 	friend ostream& operator<<(ostream &out, const DataReader &dr);
 
 	DRSchema* myDRSchema; // DRSchema Object associated with this Reader
+
+	// Create a schema (read and parse the schema file).
+	static DRSchema* CreateSchema(const char* schemaFile, bool finalize = true);
 };
 
 #endif
