@@ -137,12 +137,6 @@ GDataBin.o: ../graphics/DeviseTypes.h RecId.h Connector.h ../graphics/Color.h
 GDataBin.o: ShapeID.h ../graphics/Pattern.h ConnectorShape.h TDataMap.h
 GDataBin.o: ../graphics/DList.h ../graphics/VisualArg.h Bitmap.h GDataRec.h
 GDataBin.o: TDataCMap.h ../graphics/Init.h ../graphics/BufPolicy.h
-GDataBinX.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-GDataBinX.o: /usr/include/math.h ../graphics/Exit.h QueryProc.h
-GDataBinX.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-GDataBinX.o: ../graphics/Color.h RecId.h GDataBinX.h SymbolBin.h Connector.h
-GDataBinX.o: ShapeID.h ../graphics/Pattern.h ConnectorShape.h TDataMap.h
-GDataBinX.o: ../graphics/DList.h Bitmap.h GDataRec.h TDataCMap.h GDataBin.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 GDataRangeMap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 GDataRangeMap.o: /usr/include/sys/fcntl.h /usr/include/limits.h
@@ -309,12 +303,6 @@ Snapshot.o: ../graphics/Config.h ../graphics/Cursor.h ../graphics/Util.h
 Snapshot.o: /usr/include/assert.h /usr/include/stdlib.h /usr/include/time.h
 Snapshot.o: /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h
 StringHash.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h StringHash.h
-SymbolBin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-SymbolBin.o: /usr/include/math.h ../graphics/Exit.h QueryProc.h
-SymbolBin.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-SymbolBin.o: ../graphics/Color.h RecId.h SymbolBin.h ams.h TDataMap.h
-SymbolBin.o: ../graphics/DList.h ../graphics/Pattern.h ShapeID.h Bitmap.h
-SymbolBin.o: GDataRec.h
 TData.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h TData.h
 TData.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h ../graphics/VisualArg.h
 TData.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
@@ -328,13 +316,13 @@ TDataAppend.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h
 TDataAppend.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataAppend.o: ../graphics/DList.h DiskFile.h BufMgr.h
 TDataAppend.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h PageFile.h
-TDataAscii.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-TDataAscii.o: /usr/include/sys/types.h /usr/include/sys/stat.h
-TDataAscii.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+TDataAscii.o: /usr/include/assert.h /usr/include/stdio.h
+TDataAscii.o: /usr/include/sys/stdsyms.h /usr/include/fcntl.h
+TDataAscii.o: /usr/include/sys/fcntl.h /usr/include/sys/types.h
 TDataAscii.o: /usr/include/limits.h /usr/include/sys/param.h
 TDataAscii.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 TDataAscii.o: /usr/include/sys/time.h /usr/include/unistd.h
-TDataAscii.o: /usr/include/sys/unistd.h /usr/include/assert.h
+TDataAscii.o: /usr/include/sys/unistd.h /usr/include/sys/stat.h
 TDataAscii.o: ../graphics/Parse.h TDataAscii.h ../graphics/DeviseTypes.h
 TDataAscii.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 TDataAscii.o: ../graphics/VisualArg.h ../graphics/Color.h
@@ -342,9 +330,9 @@ TDataAscii.o: ../graphics/Journal.h TData.h RecId.h RecOrder.h
 TDataAscii.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
 TDataAscii.o: /usr/include/strings.h /usr/include/string.h
 TDataAscii.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
-TDataAsciiInterp.o: /usr/include/string.h TDataAsciiInterp.h
-TDataAsciiInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
-TDataAsciiInterp.o: TDataAscii.h /usr/include/stdio.h
+TDataAsciiInterp.o: /usr/include/string.h /usr/include/assert.h
+TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
+TDataAsciiInterp.o: ../graphics/ClassDir.h TDataAscii.h /usr/include/stdio.h
 TDataAsciiInterp.o: /usr/include/sys/stdsyms.h ../graphics/Dispatcher.h
 TDataAsciiInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataAsciiInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
@@ -353,9 +341,8 @@ TDataAsciiInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
 TDataAsciiInterp.o: ../graphics/Config.h RecInterp.h /usr/include/sys/types.h
 TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
 TDataAsciiInterp.o: ../graphics/Control.h ../graphics/Util.h
-TDataAsciiInterp.o: /usr/include/assert.h /usr/include/stdlib.h
-TDataAsciiInterp.o: /usr/include/time.h /usr/include/strings.h
-TDataAsciiInterp.o: /usr/include/ctype.h
+TDataAsciiInterp.o: /usr/include/stdlib.h /usr/include/time.h
+TDataAsciiInterp.o: /usr/include/strings.h /usr/include/ctype.h
 TDataMap.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 TDataMap.o: /usr/include/strings.h /usr/include/string.h ../graphics/Config.h
 TDataMap.o: ../graphics/Init.h ../graphics/DeviseTypes.h

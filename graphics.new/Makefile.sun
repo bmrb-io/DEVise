@@ -136,13 +136,6 @@ GDataBin.o: Connector.h ../graphics/Color.h ShapeID.h ../graphics/Pattern.h
 GDataBin.o: ConnectorShape.h TDataMap.h ../graphics/DList.h
 GDataBin.o: ../graphics/VisualArg.h Bitmap.h GDataRec.h TDataCMap.h
 GDataBin.o: ../graphics/Init.h ../graphics/BufPolicy.h
-GDataBinX.o: /usr/include/stdio.h /usr/include/math.h
-GDataBinX.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-GDataBinX.o: ../graphics/Exit.h QueryProc.h ../graphics/DeviseTypes.h
-GDataBinX.o: ../graphics/VisualArg.h ../graphics/Color.h RecId.h GDataBinX.h
-GDataBinX.o: SymbolBin.h Connector.h ShapeID.h ../graphics/Pattern.h
-GDataBinX.o: ConnectorShape.h TDataMap.h ../graphics/DList.h Bitmap.h
-GDataBinX.o: GDataRec.h TDataCMap.h GDataBin.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 GDataRangeMap.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 GDataRangeMap.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
@@ -226,7 +219,18 @@ ParseCat.o: /usr/include/sys/stdtypes.h ../graphics/Config.h
 ParseCat.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
 ParseCat.o: /usr/include/assert.h /usr/include/stdlib.h
 ParseCat.o: /usr/include/strings.h /usr/include/ctype.h ../graphics/Init.h
-ParseCat.o: ../graphics/BufPolicy.h
+ParseCat.o: ../graphics/BufPolicy.h Group.h TkControl.h /s/tcl/include/tcl.h
+ParseCat.o: /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+ParseCat.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+ParseCat.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+ParseCat.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+ParseCat.o: ../graphics/ViewCallback.h ViewGraph.h ../graphics/View.h
+ParseCat.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+ParseCat.o: /usr/include/math.h /usr/include/floatingpoint.h
+ParseCat.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
+ParseCat.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ParseCat.o: ../graphics/Compress.h ../graphics/Cursor.h TDataMap.h ShapeID.h
+ParseCat.o: Bitmap.h GDataRec.h MapInterpClassInfo.h GroupDir.h ItemList.h
 QPRange.o: /usr/include/stdio.h ../graphics/Exit.h QPRange.h
 QPRange.o: ../graphics/DeviseTypes.h RecId.h
 QueryProc.o: QueryProc.h ../graphics/DeviseTypes.h ../graphics/VisualArg.h
@@ -299,12 +303,6 @@ Snapshot.o: ../graphics/Config.h ../graphics/Cursor.h ../graphics/Util.h
 Snapshot.o: /usr/include/assert.h /usr/include/stdlib.h
 Snapshot.o: /usr/include/strings.h /usr/include/ctype.h
 StringHash.o: /usr/include/stdio.h StringHash.h
-SymbolBin.o: /usr/include/stdio.h /usr/include/math.h
-SymbolBin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-SymbolBin.o: ../graphics/Exit.h QueryProc.h ../graphics/DeviseTypes.h
-SymbolBin.o: ../graphics/VisualArg.h ../graphics/Color.h RecId.h SymbolBin.h
-SymbolBin.o: ams.h TDataMap.h ../graphics/DList.h ../graphics/Pattern.h
-SymbolBin.o: ShapeID.h Bitmap.h GDataRec.h
 TData.o: /usr/include/stdio.h TData.h ../graphics/DeviseTypes.h RecId.h
 TData.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
 TData.o: ../graphics/DList.h ../graphics/Exit.h
@@ -317,20 +315,21 @@ TDataAppend.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h
 TDataAppend.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataAppend.o: ../graphics/DList.h DiskFile.h BufMgr.h
 TDataAppend.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h PageFile.h
-TDataAscii.o: /usr/include/stdio.h /usr/include/sys/types.h
-TDataAscii.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-TDataAscii.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-TDataAscii.o: /usr/include/sys/fcntlcom.h /usr/include/limits.h
-TDataAscii.o: /usr/include/unistd.h /usr/include/assert.h ../graphics/Parse.h
-TDataAscii.o: TDataAscii.h ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+TDataAscii.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/fcntl.h
+TDataAscii.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
+TDataAscii.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+TDataAscii.o: /usr/include/sys/sysmacros.h /usr/include/limits.h
+TDataAscii.o: /usr/include/unistd.h ../graphics/Parse.h TDataAscii.h
+TDataAscii.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataAscii.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
 TDataAscii.o: ../graphics/Color.h ../graphics/Journal.h TData.h RecId.h
 TDataAscii.o: RecOrder.h ../graphics/Util.h /usr/include/stdlib.h
 TDataAscii.o: /usr/include/time.h /usr/include/strings.h /usr/include/ctype.h
 TDataAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
-TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
-TDataAsciiInterp.o: ../graphics/ClassDir.h TDataAscii.h /usr/include/stdio.h
+TDataAsciiInterp.o: /usr/include/assert.h TDataAsciiInterp.h
+TDataAsciiInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
+TDataAsciiInterp.o: TDataAscii.h /usr/include/stdio.h
 TDataAsciiInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataAsciiInterp.o: ../graphics/Exit.h ../graphics/VisualArg.h
 TDataAsciiInterp.o: ../graphics/Color.h ../graphics/Journal.h TData.h RecId.h
@@ -339,8 +338,8 @@ TDataAsciiInterp.o: /usr/include/time.h ../graphics/Config.h RecInterp.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
 TDataAsciiInterp.o: ../graphics/Control.h ../graphics/Util.h
-TDataAsciiInterp.o: /usr/include/assert.h /usr/include/stdlib.h
-TDataAsciiInterp.o: /usr/include/strings.h /usr/include/ctype.h
+TDataAsciiInterp.o: /usr/include/stdlib.h /usr/include/strings.h
+TDataAsciiInterp.o: /usr/include/ctype.h
 TDataMap.o: /usr/include/stdio.h /usr/include/strings.h ../graphics/Config.h
 TDataMap.o: ../graphics/Init.h ../graphics/DeviseTypes.h
 TDataMap.o: ../graphics/BufPolicy.h TDataMap.h ../graphics/Exit.h
@@ -416,7 +415,7 @@ TkControl.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
 TkControl.o: /usr/include/strings.h /usr/include/ctype.h
 TkControl.o: ../graphics/VisualLink.h ../graphics/FilterQueue.h ParseCat.h
 TkControl.o: ../graphics/Action.h MapInterpClassInfo.h ../graphics/Parse.h
-TkControl.o: QueryProc.h
+TkControl.o: QueryProc.h Group.h GroupDir.h ItemList.h
 UnixDiskFile.o: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
 UnixDiskFile.o: /usr/include/errno.h /usr/include/sys/errno.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/types.h
