@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.84  1996/07/15 14:25:13  jussi
+#	Added statement that sets the window title of the main
+#	control panel.
+#
 #	Revision 1.83  1996/07/13 00:21:47  jussi
 #	Added View/Color Statistics menu option.
 #
@@ -865,9 +869,9 @@ proc DoEditMapping {} {
     set yParm [lindex [lindex $params 4] 1]
     set zParm [lindex [lindex $params 5] 1]
     set colorParm [findNameValue $DEViseColors [lindex [lindex $params 6] 1]]
-    set orientParm [lindex [lindex $params 7] 1]
-    set sizeParm [lindex [lindex $params 8] 1]
-    set patternParm [lindex [lindex $params 9] 1]
+    set sizeParm [lindex [lindex $params 7] 1]
+    set patternParm [lindex [lindex $params 8] 1]
+    set orientParm [lindex [lindex $params 9] 1]
     set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
     set shapeAttr0 [lindex [lindex $params 11] 1]
     set shapeAttr1 [lindex [lindex $params 12] 1]
@@ -891,9 +895,9 @@ proc DoEditMapping {} {
 	    [list Y {0 1 2 3 4 5 6 7 8 9 10} $yParm] \
 	    [list Z {0 1 2 3 4 5 6 7 8 9 10} $zParm] \
 	    [list Color $DEViseColors $colorParm] \
-	    [list Orientation {1} $orientParm] \
 	    [list Size {0 1 2 3 4} $sizeParm] \
-	    [list Pattern {0} $patternParm] \
+	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10} $patternParm] \
+	    [list Orientation {1} $orientParm] \
 	    [list Shape $DEViseShapes $shapeParm] \
 	    [list "ShapeAttr0" {0 0.1 0.5 1 2} $shapeAttr0] \
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
