@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/08 15:42:24  jussi
+  Removed IOTask::Initialize() and SetBuffering(). Added support
+  for streaming via ReadStream() and WriteStream().
+
   Revision 1.6  1996/11/07 17:37:13  jussi
   Memory pool is no longer a separate process but a reentrant
   function library.
@@ -67,7 +71,9 @@
 //#define SHARED_MEMORY
 
 #if defined(SOLARIS)
-#define THREAD_TASK
+//#define THREAD_TASK
+#define PROCESS_TASK
+#define SHARED_MEMORY
 #else
 #define PROCESS_TASK
 #define SHARED_MEMORY
@@ -116,30 +122,11 @@ class MemPool {
     // Page types
     enum PageType { Cache, Buffer };
 
-    int Allocate(PageType type, char *&page) {
-        AcquireMutex();
-        int status = _Allocate(type, page);
-        ReleaseMutex();
-        return status;
-    }
-    int Release(PageType type, char *&page) {
-        AcquireMutex();
-        int status = _Release(type, page);
-        ReleaseMutex();
-        return status;
-    }
-    int Deallocate(PageType type, char *page) {
-        AcquireMutex();
-        int status = _Deallocate(type, page);
-        ReleaseMutex();
-        return status;
-    }
-    int Convert(char *page, PageType oldType, PageType &newType) {
-        AcquireMutex();
-        int status = _Convert(page, oldType, newType);
-        ReleaseMutex();
-        return status;
-    }
+    int Allocate(PageType type, char *&page);
+    int Release(PageType type, char *&page);
+    int Deallocate(PageType type, char *page);
+    int Convert(char *page, PageType oldType, PageType &newType);
+
     int FreeLeft() {
         AcquireMutex();
         int num = *_numFree;
@@ -163,12 +150,6 @@ class MemPool {
     // Acquire and release free semaphore
     void AcquireFree() { _free->acquire(1); }
     void ReleaseFree() { _free->release(1); }
-
-    // Allocate, release and deallocate pages
-    int _Allocate(PageType type, char *&page);
-    int _Release(PageType type, char *&page);
-    int _Deallocate(PageType type, char *page);
-    int _Convert(char *page, PageType oldType, PageType &newType);
 
     // Number of memory pages and their size
     const int _numPages;
@@ -199,21 +180,59 @@ class MemPool {
 #endif
 };
 
+// Data Pipe
+
+class DataPipe {
+  public:
+    DataPipe(int maxPages);
+    ~DataPipe();
+
+    int Consume(char *&buf);
+    int Produce(char *buf, int bytes);
+
+  protected:
+    // Acquire and release mutex
+    void AcquireMutex() { _sem->acquire(1); }
+    void ReleaseMutex() { _sem->release(1); }
+
+    // Acquire and release free semaphore
+    void AcquireFree() { _free->acquire(1); }
+    void ReleaseFree() { _free->release(1); }
+
+    // Acquire and release data semaphore
+    void AcquireData() { _data->acquire(1); }
+    void ReleaseData() { _data->release(1); }
+
+    SemaphoreV *_sem;                   // mutex for synchronization
+    SemaphoreV *_free;
+    SemaphoreV *_data;
+
+#ifdef SHARED_MEMORY
+    SharedMemory *_shm;                 // shared memory
+#endif
+
+    int _maxPages;                      // maximum pipe size
+
+    char **_streamData;                 // stream data structures
+    int *_streamBytes;
+    int *_streamHead;
+    int *_streamTail;
+    int *_streamFree;
+};
+
 // I/O task
 
 class IOTask {
   public:
-    IOTask(int blockSize = -1) : _blockSize(blockSize) {}
+    // Create and destroy I/O task
+    IOTask(int blockSize = -1);
     virtual int WriteEOF() { return 0; }
-    virtual ~IOTask() {}
+    virtual ~IOTask();
 
-    // Terminate I/O task
-    virtual void Terminate() = 0;
-
-    // Read specified byte range
-    virtual int Read(unsigned long long offset,
-                     unsigned long bytes,
-                     char *&addr) = 0;
+    // Read specified byte range from file
+    int Read(unsigned long long offset,
+             unsigned long bytes,
+             char *&addr);
 
     // Read specified block range
     int ReadP(int blockOffset, int blocks, char *&addr) {
@@ -223,14 +242,10 @@ class IOTask {
         return result / _blockSize;
     }
 
-    // Read stream
-    virtual int ReadStream(unsigned long bytes = 0) = 0;
-    virtual int Consume(char *&buf) = 0;
-
-    // Write specified byte range
-    virtual int Write(unsigned long long offset,
-                      unsigned long bytes,
-                      char *&addr) = 0;
+    // Write specified byte range to file
+    int Write(unsigned long long offset,
+              unsigned long bytes,
+              char *&addr);
 
     // Write specified block range
     int WriteP(int blockOffset, int blocks, char *&addr) {
@@ -240,53 +255,29 @@ class IOTask {
         return result / _blockSize;
     }
 
-    // Write stream
-    virtual int WriteStream() = 0;
-    virtual int Produce(char *buf, int bytes) = 0;
-
-    // Return busy/idle status
-    virtual Boolean IsBusy() = 0;
-
-  protected:
-    int _blockSize;
-};
-
-class UnixIOTask : public IOTask {
-  public:
-    // Create and destroy Unix I/O task
-    UnixIOTask(int blockSize = -1);
-    virtual ~UnixIOTask();
-
-    // Terminate I/O task
-    void Terminate();
-
-    // Read specified byte range from file
-    int Read(unsigned long long offset,
-             unsigned long bytes,
-             char *&addr);
-
     // Read stream
-    int ReadStream(unsigned long bytes);
-    int Consume(char *&buf);
-
-    // Write specified byte range to file
-    int Write(unsigned long long offset,
-              unsigned long bytes,
-              char *&addr);
+    int ReadStream(unsigned long bytes, int pipeSize);
+    int Consume(char *&buf) {
+        return _dataPipe->Consume(buf);
+    }
 
     // Write stream
-    int WriteStream();
-    int Produce(char *buf, int bytes);
+    int WriteStream(int pipeSize);
+    int Produce(char *buf, int bytes) {
+        return _dataPipe->Produce(buf, bytes);
+    }
+
+    // Terminate I/O stream
+    int Terminate();
 
     // Return busy/idle status
     Boolean IsBusy();
 
   protected:
-    int Initialize();
+    int StartChild(int pipeSize);
 
     // Request types
-    enum ReqType { ReadReq, WriteReq, ReadStreamReq,
-                   WriteStreamReq, TerminateReq };
+    enum ReqType { ReadReq, WriteReq };
 
     // Request structure
     struct Request {
@@ -297,9 +288,9 @@ class UnixIOTask : public IOTask {
         int result;
     };
 
-    // Child process for communicating with parent
-    static void *ProcessReq(void *arg);
-    void *ProcessReq();
+    // Child process for streaming data
+    static void *DoStream(void *arg);
+    void *DoStream();
 
     // Function for handling actual I/O
     virtual void DeviceIO(Request &req, Request &reply) = 0;
@@ -314,32 +305,17 @@ class UnixIOTask : public IOTask {
     void _WriteStream();
 
     // Set/clear device busy flag
-    void SetDeviceBusy();
-    void SetDeviceIdle();
+    void SetDeviceBusy() { _isBusy->acquire(1); }
+    void SetDeviceIdle() { _isBusy->release(1); }
 
-    // Acquire and release mutex
-    void AcquireMutex() { _sem->acquire(1); }
-    void ReleaseMutex() { _sem->release(1); }
+    const int _pageSize;                // size of memory pool pages
+    int _blockSize;                     // (user) data block size
 
-    // Acquire and release free semaphore
-    void AcquireFree() { _free->acquire(1); }
-    void ReleaseFree() { _free->release(1); }
-
-    // Acquire and release data semaphore
-    void AcquireData() { _data->acquire(1); }
-    void ReleaseData() { _data->release(1); }
-
-    // Fd's of pipes for requests
-    int _reqFd[2];
-    int _replyFd[2];
-
+    DataPipe *_dataPipe;                // data pipe
     Boolean _readStream;                // read streaming enabled
     Boolean _writeStream;               // write streaming enabled
+    unsigned long _readStreamLength;
 
-    DefinePtrDList(ReqList, Request *);
-    ReqList _buffer;                    // read/write buffer
-
-    unsigned long int _totalCount;      // total # requests processed
     unsigned long long int _readBytes;  // # bytes read
     unsigned long long int _writeBytes; // # bytes written
     unsigned long long int _seekBytes;  // total seek distance in bytes
@@ -351,31 +327,15 @@ class UnixIOTask : public IOTask {
     pthread_t _child;                   // thread id of child
 #endif
 
-    const int _pageSize;                // size of memory pool pages
-
     SemaphoreV *_isBusy;                // flag indicating busy device
-    SemaphoreV *_sem;                   // mutex for synchronization
-    SemaphoreV *_free;
-    SemaphoreV *_data;
-
-#ifdef SHARED_MEMORY
-    SharedMemory *_shm;                 // shared memory
-#endif
-
-    const int _maxStream = 1024;        // maximum stream length
-    char **_streamData;                 // stream data structures
-    int *_streamBytes;
-    int *_streamHead;
-    int *_streamTail;
-    int *_streamFree;
 };
 
 // I/O task for Unix file descriptors
 
-class UnixFdIOTask : public UnixIOTask {
+class FdIOTask : public IOTask {
   public:
-    // Create Unix I/O task using file descriptors
-    UnixFdIOTask(int fd, int blockSize = -1);
+    // Create I/O task using file descriptors
+    FdIOTask(int fd, int blockSize = -1);
 
   protected:
     // Function for handling actual I/O
@@ -388,13 +348,13 @@ class UnixFdIOTask : public UnixIOTask {
     unsigned long long _offset;         // current offset on device
 };
 
-// I/O task for Unix Web connections
+// I/O task for Web connections
 
-class UnixWebIOTask : public UnixFdIOTask {
+class WebIOTask : public FdIOTask {
   public:
-    // Create Unix Web I/O task
-    UnixWebIOTask(char *url, Boolean isInput, int blockSize = -1);
-    virtual ~UnixWebIOTask();
+    // Create Web I/O task
+    WebIOTask(char *url, Boolean isInput, int blockSize = -1);
+    virtual ~WebIOTask();
 
     // Finish writing to HTTP
     virtual int WriteEOF();
@@ -422,10 +382,10 @@ class UnixWebIOTask : public UnixFdIOTask {
 
 // I/O task for TapeDrive objects
 
-class UnixTapeIOTask : public UnixIOTask {
+class TapeIOTask : public IOTask {
   public:
-    // Create, initialize and destroy Unix tape I/O task
-    UnixTapeIOTask(TapeDrive &tape);
+    // Create tape I/O task
+    TapeIOTask(TapeDrive &tape);
 
   protected:
     // Function for handling actual I/O

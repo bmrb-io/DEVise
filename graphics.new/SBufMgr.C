@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/08 15:42:22  jussi
+  Removed IOTask::Initialize() and SetBuffering(). Added support
+  for streaming via ReadStream() and WriteStream().
+
   Revision 1.7  1996/11/07 17:36:58  jussi
   Memory pool is no longer a separate process but a reentrant
   function library.
@@ -62,10 +66,6 @@
 #include <signal.h>
 #include <string.h>
 
-#ifdef PROCESS_TASK
-#include <sys/wait.h>
-#endif
-
 #ifdef __GNUG__
 #pragma implementation "HashTable.h"
 #endif
@@ -74,6 +74,10 @@
 #include "Web.h"
 #include "Exit.h"
 #include "DevError.h"
+
+#ifdef PROCESS_TASK
+#include <sys/wait.h>
+#endif
 
 #define DEBUGLVL 0
 
@@ -124,22 +128,18 @@ static int writen(int fd, char *buf, int nbytes)
     return nbytes - nleft;
 }
 
-UnixIOTask::UnixIOTask(int blockSize) :
-	IOTask(blockSize), _readStream(false), _writeStream(false),
-        _totalCount(0), _readBytes(0), _writeBytes(0), _seekBytes(0),
-        _pageSize(MemPool::Instance()->PageSize())
+DataPipe::DataPipe(int maxPages) : _maxPages(maxPages)
 {
-    (void)Initialize();
-}
+    if (_maxPages < 2) {
+        _maxPages = 2;
+        fprintf(stderr, "Adjusting pipe size to %d\n", _maxPages);
+    }
 
-int UnixIOTask::Initialize()
-{
+#if DEBUGLVL >= 1
+    printf("Creating new data pipe, size %d\n", _maxPages);
+#endif
+
     int status;
-    _isBusy = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_isBusy, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _isBusy->setValue(1);
-
     _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
     DOASSERT(_sem, "Out of memory");
     DOASSERT(status >= 0, "Cannot create semaphore");
@@ -155,7 +155,7 @@ int UnixIOTask::Initialize()
     DOASSERT(status >= 0, "Cannot create semaphore");
     _data->setValue(0);
 
-    int size = _maxStream * (sizeof(char *) + sizeof(int)) + 3 * sizeof(int);
+    int size = _maxPages * (sizeof(char *) + sizeof(int)) + 3 * sizeof(int);
     char *buf = 0;
 
 #ifdef SHARED_MEMORY
@@ -166,7 +166,8 @@ int UnixIOTask::Initialize()
     if (!created)
         printf("Warning: pre-existing shared memory initialized\n");
 #if DEBUGLVL >= 1
-    printf("Created a %d-byte shared memory segment at 0x%p\n", size, buf);
+    printf("Created a %d-byte shared memory segment (key %d) at 0x%p\n",
+           size, _shmKey, buf);
 #endif
 #else
     buf = new char [size];
@@ -178,32 +179,141 @@ int UnixIOTask::Initialize()
     DOASSERT(buf, "Out of memory");
 
     _streamData = (char **)buf;
-    _streamBytes = (int *)(buf + _maxStream * sizeof(char *));
-    _streamHead = _streamBytes + _maxStream;
+    _streamBytes = (int *)(buf + _maxPages * sizeof(char *));
+    _streamHead = _streamBytes + _maxPages;
     _streamTail = _streamHead + 1;
     _streamFree = _streamTail + 1;
 
-    for(int i = 0; i < _maxStream; i++) {
+    for(int i = 0; i < _maxPages; i++) {
         _streamData[i] = 0;
         _streamBytes[i] = 0;
     }
     *_streamHead = *_streamTail = 0;
-    *_streamFree = _maxStream;
+    *_streamFree = _maxPages;
+}
 
-    if (pipe(_reqFd) < 0) {
-        perror("UnixIOTask::Initialize: pipe");
-        return -1;
-    }
-#ifdef SOLARIS
-    // Pipes are bi-directional in Solaris
-    _replyFd[0] = _reqFd[1];
-    _replyFd[1] = _reqFd[0];
+DataPipe::~DataPipe()
+{
+#ifdef SHARED_MEMORY
+    delete _shm;
 #else
-    if (pipe(_replyFd) < 0) {
-        perror("UnixIOTask::Initialize: pipe");
-        return -1;
-    }
+    delete _streamData;
 #endif
+
+    _data->destroy();
+    delete _data;
+
+    _free->destroy();
+    delete _free;
+
+    _sem->destroy();
+    delete _sem;
+}
+
+int DataPipe::Produce(char *buf, int bytes)
+{
+    AcquireMutex();
+
+    while (!*_streamFree) {
+#if DEBUGLVL >= 3
+        printf("Pipe 0x%p has to wait for consumer's free space\n", this);
+#endif
+        ReleaseMutex();
+        AcquireFree();
+        AcquireMutex();
+    }
+
+    (*_streamFree)--;
+
+#if DEBUGLVL >= 3
+    printf("Pipe 0x%p has %d free space left\n", this, *_streamFree);
+#endif
+
+    _streamData[*_streamHead] = buf;
+    _streamBytes[*_streamHead] = bytes;
+    *_streamHead = (*_streamHead + 1) % _maxPages;
+    if (*_streamFree == _maxPages - 1) {
+#if DEBUGLVL >= 3
+        printf("Pipe 0x%p signaling consumer about data\n", this);
+#endif
+        ReleaseData();
+    }
+
+    ReleaseMutex();
+
+    return 0;
+}
+
+int DataPipe::Consume(char *&buf)
+{
+    AcquireMutex();
+
+    while (*_streamFree == _maxPages) {
+#if DEBUGLVL >= 3
+        printf("Pipe 0x%p has to wait for producer's data\n", this);
+#endif
+        ReleaseMutex();
+        AcquireData();
+        AcquireMutex();
+    }
+
+    buf = _streamData[*_streamTail];
+    int bytes = _streamBytes[*_streamTail];
+    *_streamTail = (*_streamTail + 1) % _maxPages;
+
+    (*_streamFree)++;
+#if DEBUGLVL >= 3
+    printf("Pipe 0x%p has %d free space left\n", this, *_streamFree);
+#endif
+
+    if (*_streamFree == 1) {
+#if DEBUGLVL >= 3
+        printf("Pipe 0x%p signaling producer about free space\n", this);
+#endif
+        ReleaseFree();
+    }
+
+    ReleaseMutex();
+
+    return bytes;
+}
+
+IOTask::IOTask(int blockSize) :
+	_pageSize(MemPool::Instance()->PageSize()), _blockSize(blockSize),
+	_dataPipe(0), _readStream(false), _writeStream(false),
+        _readStreamLength(0), _readBytes(0), _writeBytes(0),
+        _seekBytes(0), _child(0)
+{
+    int status;
+    _isBusy = new SemaphoreV(Semaphore::newKey(), status, 1);
+    DOASSERT(_isBusy, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _isBusy->setValue(1);
+}
+
+IOTask::~IOTask()
+{
+    if (_child) {
+        fprintf(stderr, "Calling IOTask::Terminate() first\n");
+        (void)Terminate();
+    }
+
+    if (!_readStream && !_writeStream) {
+        printf("I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+               _readBytes / 1048576.0, _writeBytes / 1048576.0,
+               _seekBytes / 1048576.0);
+    }
+
+    _isBusy->destroy();
+    delete _isBusy;
+}
+
+int IOTask::StartChild(int pipeSize)
+{
+    DOASSERT(!_dataPipe, "Data pipe exists already");
+
+    _dataPipe = new DataPipe(pipeSize);
+    DOASSERT(_dataPipe, "Invalid data pipe");
 
 #if DEBUGLVL >= 1
     printf("Creating I/O task process/thread...\n");
@@ -212,25 +322,19 @@ int UnixIOTask::Initialize()
 #ifdef PROCESS_TASK
     _child = fork();
     if (_child < 0) {
-        perror("UnixIOTask::Initialize: fork");
+        perror("IOTask::StartChild: fork");
         return -1;
     }
 
     if (!_child) {
-        (void)ProcessReq(this);
-        close(_reqFd[0]);
-        close(_reqFd[1]);
-#ifndef SOLARIS
-        close(_replyFd[0]);
-        close(_replyFd[1]);
-#endif
+        (void)DoStream(this);
         exit(1);
     }
 #endif
 
 #ifdef THREAD_TASK
-    if (pthread_create(&_child, 0, ProcessReq, this)) {
-        perror("UnixIOTask::Initialize: pthread_create");
+    if (pthread_create(&_child, 0, DoStream, this)) {
+        perror("IOTask::StartChild: pthread_create");
         return -1;
     }
 #endif
@@ -242,274 +346,170 @@ int UnixIOTask::Initialize()
     return 0;
 }
 
-UnixIOTask::~UnixIOTask()
+int IOTask::Terminate()
 {
-    DOASSERT(_reqFd[0] < 0, "Must call Terminate() first");
-
-#ifdef SHARED_MEMORY
-    delete _shm;
-#else
-    delete _streamData;
-#endif
-
-    _free->destroy();
-    delete _free;
-
-    _sem->destroy();
-    delete _sem;
-
-    _isBusy->destroy();
-    delete _isBusy;
-}
-
-void UnixIOTask::Terminate()
-{
-    if (_reqFd[0] < 0)
-        return;
+    if (!_child) {
+        fprintf(stderr, "Child process/thread no longer exists\n");
+        return 0;
+    }
 
 #if DEBUGLVL >= 1
     printf("Terminating child process/thread %ld...\n", (long int)_child);
 #endif
 
-    Request req = { TerminateReq, 0, 0, 0, 0 };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::~UnixIOTask: write");
-    } else {
 #ifdef PROCESS_TASK
-        while(1) {
-            int status;
-            pid_t child = wait(&status);
-            if (child < 0) {
-                if (errno == EINTR)
-                    continue;
-                if (errno != ECHILD) {
-                    perror("UnixIOTask::~UnixIOTask: wait");
-                    break;
-                }
-            } else
+    while(1) {
+        int status;
+        pid_t child = wait(&status);
+        if (child < 0) {
+            if (errno == EINTR)
+                continue;
+            if (errno != ECHILD) {
+                perror("IOTask::WaitForChild: wait");
                 break;
-        }
+            }
+        } else
+            break;
+    }
 #endif
 #ifdef THREAD_TASK
-        (void)pthread_join(_child, 0);
-#endif
-    }
-
-    close(_reqFd[0]);
-    close(_reqFd[1]);
-#ifndef SOLARIS
-    close(_replyFd[0]);
-    close(_replyFd[1]);
+    (void)pthread_join(_child, 0);
 #endif
 
-    _reqFd[0] = -1;
+    _child = 0;
+
+    delete _dataPipe;
+    _dataPipe = 0;
 
 #if DEBUGLVL >= 1
     printf("Child process/thread terminated\n");
 #endif
+
+    return 0;
 }
     
-int UnixIOTask::Read(unsigned long long offset,
+int IOTask::Read(unsigned long long offset,
                      unsigned long bytes,
                      char *&addr)
 {
-    SetDeviceBusy();
+    if (!addr) {
+#if DEBUGLVL >= 3
+        printf("Task 0x%p allocating cache page\n", this);
+#endif
+        int status = MemPool::Instance()->Allocate(MemPool::Cache, addr);
+        if (status < 0 || !addr) {
+            fprintf(stderr, "Failed to allocate cache space\n");
+            return -1;
+        }
+    }
 
     Request req = { ReadReq, offset, bytes, addr };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::Read: write");
-        SetDeviceIdle();
-        return -1;
-    }
-
     Request reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("UnixIOTask::Read: read");
-        SetDeviceIdle();
-        return -1;
-    }
-    addr = reply.addr;
 
-    if (reply.result < 0) {
-        SetDeviceIdle();
-        return reply.result;
-    }
-
-    SetDeviceIdle();
-
-    return reply.bytes;
-}
-
-int UnixIOTask::ReadStream(unsigned long bytes)
-{
-    Request req = { ReadStreamReq, 0, bytes, 0 };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::ReadStream: write");
-        return -1;
-    }
-
-    Request reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("UnixIOTask::ReadStream: read");
-        return -1;
-    }
-
-    return reply.result;
-}
-
-int UnixIOTask::Write(unsigned long long offset,
-                      unsigned long bytes,
-                      char *&addr)
-{
     SetDeviceBusy();
-
-    Request req = { WriteReq, offset, bytes, addr };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::Write: write");
-        SetDeviceIdle();
-        return -1;
-    }
-
-    Request reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("UnixIOTask::Write: read");
-        SetDeviceIdle();
-        return -1;
-    }
-    addr = reply.addr;
-
+    DeviceIO(req, reply);
     SetDeviceIdle();
 
     if (reply.result < 0)
         return reply.result;
 
+    addr = reply.addr;
+
     return reply.bytes;
 }
 
-int UnixIOTask::WriteStream()
+int IOTask::Write(unsigned long long offset,
+                      unsigned long bytes,
+                      char *&addr)
 {
-    Request req = { WriteStreamReq, 0, 0, 0 };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::WriteStream: write");
-        return -1;
-    }
-
+    Request req = { WriteReq, offset, bytes, addr };
     Request reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("UnixIOTask::WriteStream: read");
+
+    SetDeviceBusy();
+    DeviceIO(req, reply);
+    SetDeviceIdle();
+
+    if (reply.result < 0)
+        return reply.result;
+
+    DOASSERT(req.addr == reply.addr, "Invalid page address 1");
+    // Deallocate page since it was not buffered
+    if (MemPool::Instance()->Deallocate(MemPool::Cache, req.addr) < 0)
+        return -1;
+
+    addr = reply.addr = 0;
+
+    return reply.bytes;
+}
+
+int IOTask::ReadStream(unsigned long bytes, int pipeSize)
+{
+    if (_readStream || _writeStream) {
+        fprintf(stderr, "Already participating in one stream\n");
         return -1;
     }
 
-    return reply.result;
-}
+    _readStreamLength = bytes;
+    _readStream = true;
 
-void *UnixIOTask::ProcessReq(void *arg)
-{
-    UnixIOTask &me = *(UnixIOTask *)arg;
-    return me.ProcessReq();
-}
-
-void *UnixIOTask::ProcessReq()
-{
-#if defined(PROCESS_TASK) && DEBUGLVL >= 9
-    char fname[64];
-    sprintf(fname, "task.fd.%d", _reqFd[0]);
-    printf("Task 0x%p log file is %s\n", this, fname);
-    FILE *out = freopen(fname, "w", stdout);
-    if (!out)
-        perror("freopen");
-#endif
-
-    while(1) {
-        Request req;
-        int status = readn(_reqFd[0], (char *)&req, sizeof req);
-        if (status < (int)sizeof req) {
-            perror("UnixIOTask::ProcessReq: read");
-            break;
-        }
-
-        if (req.type == TerminateReq) {
-#if DEBUGLVL >= 1
-            printf("\nTask 0x%p received quit command\n", this);
-#endif
-            printf("I/O task: %lu requests, read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
-                   _totalCount, _readBytes / 1048576.0,
-                   _writeBytes / 1048576.0, _seekBytes / 1048576.0);
-            break;
-        }
-
-#if DEBUGLVL >= 3
-        printf("\nTask 0x%p received request: %d, %llu, %lu, 0x%p\n",
-               this, req.type, req.offset, req.bytes, req.addr);
-#endif
-
-        _totalCount++;
-
-        DOASSERT(req.bytes % _pageSize == 0, "Invalid page request");
-        DOASSERT(req.offset % _pageSize == 0, "Invalid page offset");
-
-        Request reply;
-
-        if (req.type == ReadStreamReq || req.type == WriteStreamReq) {
-            reply = req;
-            reply.result = 0;
-            status = writen(_replyFd[1], (char *)&reply, sizeof reply);
-            if (status < (int)sizeof reply) {
-                perror("UnixIOTask::ProcessReq: write");
-                break;
-            }
-            if (req.type == ReadStreamReq)
-                _ReadStream(req.bytes);
-            else
-                _WriteStream();
-#if DEBUGLVL >= 5
-            printf("Task 0x%p request completed\n", this);
-#endif
-            continue;
-        }
-
-        if (!req.addr) {
-#if DEBUGLVL >= 3
-            printf("Task 0x%p allocating cache page\n", this);
-#endif
-            int status = MemPool::Instance()->Allocate(MemPool::Cache,
-                                                       req.addr);
-            if (status < 0 || !req.addr) {
-                fprintf(stderr, "Failed to allocate cache space\n");
-                break;
-            }
-        }
-
-        DeviceIO(req, reply);
-
-        if (req.type == WriteReq) {
-            DOASSERT(req.addr == reply.addr, "Invalid page address 1");
-            // Deallocate page since it was not buffered
-            if (MemPool::Instance()->Deallocate(MemPool::Cache, req.addr) < 0)
-                break;
-            reply.addr = 0;
-        }
-
-        status = writen(_replyFd[1], (char *)&reply, sizeof reply);
-        if (status < (int)sizeof reply) {
-            perror("UnixIOTask::ProcessReq: write");
-            break;
-        }
-
-#if DEBUGLVL >= 5
-        printf("Task 0x%p request completed\n", this);
-#endif
-    }
-
-#if DEBUGLVL >= 5
-    printf("Task 0x%p terminates\n", this);
-#endif
+    if (StartChild(pipeSize) < 0)
+        return -1;
 
     return 0;
 }
 
-void UnixIOTask::_ReadStream(unsigned long totbytes)
+int IOTask::WriteStream(int pipeSize)
 {
+    if (_readStream || _writeStream) {
+        fprintf(stderr, "Already participating in one stream\n");
+        return -1;
+    }
+
+    _writeStream = true;
+
+    if (StartChild(pipeSize) < 0)
+        return -1;
+
+    return 0;
+}
+
+void *IOTask::DoStream(void *arg)
+{
+    IOTask &me = *(IOTask *)arg;
+    return me.DoStream();
+}
+
+void *IOTask::DoStream()
+{
+#ifdef THREAD_TASK
+    // Find out the priority of this thread
+    int policy;
+    struct sched_param sparam;
+    if (pthread_getschedparam(pthread_self(), &policy, &sparam) < 0) {
+        perror("pthread_getschedparam");
+        exit(1);
+    }
+#if DEBUGLVL >= 5
+    printf("IOTask::DoStream: Priority %d\n", sparam.sched_priority);
+#endif
+#endif
+
+    if (_readStream)
+        _ReadStream(_readStreamLength);
+    else
+        _WriteStream();
+
+    printf("I/O task: read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+           _readBytes / 1048576.0, _writeBytes / 1048576.0,
+           _seekBytes / 1048576.0);
+
+    return 0;
+}
+
+void IOTask::_ReadStream(unsigned long totbytes)
+{
+    SetDeviceBusy();
+
     unsigned long long offset = 0;
 
     while (!totbytes || offset < totbytes) {
@@ -521,7 +521,11 @@ void UnixIOTask::_ReadStream(unsigned long totbytes)
             reqsize = totbytes - offset;
         Request req = { ReadReq, offset, reqsize, page };
         Request reply;
+#if 1
         DeviceIO(req, reply);
+#else
+        reply.result = req.bytes;
+#endif
         if (reply.result >= 0) {
             if (Produce(page, reply.result) < 0)
                 break;
@@ -530,10 +534,14 @@ void UnixIOTask::_ReadStream(unsigned long totbytes)
             break;
         offset += _pageSize;
     }
+
+    SetDeviceIdle();
 }
 
-void UnixIOTask::_WriteStream()
+void IOTask::_WriteStream()
 {
+    SetDeviceBusy();
+
     unsigned long long offset = 0;
 
     while(1) {
@@ -543,66 +551,22 @@ void UnixIOTask::_WriteStream()
             break;
         Request req = { WriteReq, offset, bytes, page };
         Request reply;
+#if 1
         DeviceIO(req, reply);
+#else
+        reply.result = req.bytes;
+#endif
         if (reply.result != bytes)
             break;
         int status = MemPool::Instance()->Deallocate(MemPool::Buffer, page);
         DOASSERT(status >= 0 && page, "Failed to deallocate buffer space\n");
         offset += bytes;
     }
+
+    SetDeviceIdle();
 }
 
-int UnixIOTask::Produce(char *buf, int bytes)
-{
-    AcquireMutex();
-    while (!*_streamFree) {
-#if DEBUGLVL >= 3
-        printf("Task 0x%p has to wait for consumer's free space\n", this);
-#endif
-        ReleaseMutex();
-        AcquireFree();
-        AcquireMutex();
-    }
-    (*_streamFree)--;
-    _streamData[*_streamHead] = buf;
-    _streamBytes[*_streamHead] = bytes;
-    *_streamHead = (*_streamHead + 1) % _maxStream;
-    if (*_streamFree == _maxStream - 1) {
-#if DEBUGLVL >= 3
-        printf("Task 0x%p signaling consumer about data\n", this);
-#endif
-        ReleaseData();
-    }
-    ReleaseMutex();
-    return 0;
-}
-
-int UnixIOTask::Consume(char *&buf)
-{
-    AcquireMutex();
-    while (*_streamFree == _maxStream) {
-#if DEBUGLVL >= 3
-        printf("Task 0x%p has to wait for producer's data\n", this);
-#endif
-        ReleaseMutex();
-        AcquireData();
-        AcquireMutex();
-    }
-    buf = _streamData[*_streamTail];
-    int bytes = _streamBytes[*_streamTail];
-    *_streamTail = (*_streamTail + 1) % _maxStream;
-    (*_streamFree)++;
-    if (*_streamFree == 1) {
-#if DEBUGLVL >= 3
-        printf("Task 0x%p signaling producer about free space\n", this);
-#endif
-        ReleaseFree();
-    }
-    ReleaseMutex();
-    return bytes;
-}
-
-Boolean UnixIOTask::IsBusy()
+Boolean IOTask::IsBusy()
 {
     int status = _isBusy->test();
     DOASSERT(status >= 0, "Unable to test semaphore");
@@ -612,25 +576,13 @@ Boolean UnixIOTask::IsBusy()
     return false;
 }
 
-void UnixIOTask::SetDeviceBusy()
-{
-    int status = _isBusy->acquire();
-    DOASSERT(status > 0, "Unable to acquire semaphore");
-}
-
-void UnixIOTask::SetDeviceIdle()
-{
-    int status = _isBusy->release();
-    DOASSERT(status > 0, "Unable to release semaphore");
-}
-
-UnixFdIOTask::UnixFdIOTask(int fd, int blockSize) :
-	UnixIOTask(blockSize), _fd(fd)
+FdIOTask::FdIOTask(int fd, int blockSize) :
+	IOTask(blockSize), _fd(fd)
 {
     _offset = lseek(fd, SEEK_CUR, 0);
 }
 
-void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
+void FdIOTask::DeviceIO(Request &req, Request &reply)
 {
 #if DEBUGLVL >= 3
     printf("Task 0x%p performing %s fd %d, offset %llu, %lu bytes\n",
@@ -646,7 +598,7 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
 #endif
         off_t offset = lseek(_fd, (off_t)req.offset, SEEK_SET);
         if (offset < 0) {
-            perror("UnixFdIOTask::DeviceIO: lseek");
+            perror("FdIOTask::DeviceIO: lseek");
             reply.result = offset;
             return;
         }
@@ -666,7 +618,7 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
         reply.result = readn(_fd, req.addr, req.bytes);
         if (reply.result < 0) {
             printf("Cannot read to address 0x%p (%d)\n", req.addr, errno);
-            perror("UnixFdIOTask::DeviceIO: read");
+            perror("FdIOTask::DeviceIO: read");
         }
         else
             _readBytes += reply.result;
@@ -678,14 +630,9 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
 #endif
         reply.result = writen(_fd, req.addr, req.bytes);
         if (reply.result < 0)
-            perror("UnixFdIOTask::DeviceIO: write");
+            perror("FdIOTask::DeviceIO: write");
         else
             _writeBytes += reply.result;
-        break;
-
-      case ReadStreamReq:
-      case WriteStreamReq:
-      case TerminateReq:
         break;
     }
 
@@ -695,18 +642,18 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
         _offset += reply.bytes;
 }
 
-UnixTapeIOTask::UnixTapeIOTask(TapeDrive &tape) :
-	UnixIOTask(tape.getBlockSize()), _tape(tape)
+TapeIOTask::TapeIOTask(TapeDrive &tape) :
+	IOTask(tape.getBlockSize()), _tape(tape)
 {
     _offset = _tape.tell();
 }
 
-UnixWebIOTask::UnixWebIOTask(char *url, Boolean isInput, int blockSize) :
-	UnixFdIOTask(OpenURL(url, isInput), blockSize)
+WebIOTask::WebIOTask(char *url, Boolean isInput, int blockSize) :
+	FdIOTask(OpenURL(url, isInput), blockSize)
 {
 }
 
-UnixWebIOTask::~UnixWebIOTask()
+WebIOTask::~WebIOTask()
 {
     // Write cached HTTP file to Web site
     if (!_isInput && _url && !strncmp(_url, "http://", 7))
@@ -736,7 +683,7 @@ UnixWebIOTask::~UnixWebIOTask()
     delete _cacheName;
 }
 
-int UnixWebIOTask::WriteEOF()
+int WebIOTask::WriteEOF()
 {
     if (_isInput || !_url || strncmp(_url, "http://", 7))
         return 0;
@@ -753,7 +700,7 @@ int UnixWebIOTask::WriteEOF()
     return 0;
 }
 
-int UnixWebIOTask::OpenURL(char *url, Boolean isInput)
+int WebIOTask::OpenURL(char *url, Boolean isInput)
 {
     _isInput = isInput;
     _webfd = -1;
@@ -814,7 +761,7 @@ int UnixWebIOTask::OpenURL(char *url, Boolean isInput)
     return fileno(_cache);
 }
 
-char *UnixWebIOTask::MakeCacheName(char *url)
+char *WebIOTask::MakeCacheName(char *url)
 {
     unsigned long int sum = 0;
     unsigned long int xor = 0;
@@ -832,7 +779,7 @@ char *UnixWebIOTask::MakeCacheName(char *url)
     return name;
 }
 
-void UnixWebIOTask::WriteHTTP()
+void WebIOTask::WriteHTTP()
 {
 #if DEBUGLVL >= 3
     printf("Writing cached HTTP file (%ld bytes) to %s\n",
@@ -890,7 +837,7 @@ void UnixWebIOTask::WriteHTTP()
     }
 }
 
-void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
+void WebIOTask::DeviceIO(Request &req, Request &reply)
 {
 #if DEBUGLVL >= 3
     printf("Task 0x%p performing %s fd %d, offset %llu, %lu bytes\n",
@@ -917,7 +864,7 @@ void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
     if (req.type == WriteReq) {
         DOASSERT(!_isInput, "Inconsistent I/O request");
         // Write to FTP site or HTTP file cache
-        UnixFdIOTask::DeviceIO(req, reply);
+        FdIOTask::DeviceIO(req, reply);
         if (reply.bytes > 0)
             _cacheSize += reply.bytes;
         return;
@@ -972,10 +919,10 @@ void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
     }
 
     // Perform I/O from cache file
-    UnixFdIOTask::DeviceIO(req, reply);
+    FdIOTask::DeviceIO(req, reply);
 }
 
-void UnixTapeIOTask::DeviceIO(Request &req, Request &reply)
+void TapeIOTask::DeviceIO(Request &req, Request &reply)
 {
     reply = req;
 
@@ -983,7 +930,7 @@ void UnixTapeIOTask::DeviceIO(Request &req, Request &reply)
         DOASSERT(req.type == ReadReq, "Random writes not supported on tapes");
         long long offset = _tape.seek((long long)req.offset);
         if (offset < 0) {
-            perror("UnixTapeIOTask::DeviceIO: seek");
+            perror("TapeIOTask::DeviceIO: seek");
             reply.result = offset;
             return;
         }
@@ -998,13 +945,13 @@ void UnixTapeIOTask::DeviceIO(Request &req, Request &reply)
     if (req.type == ReadReq) {
         reply.result = _tape.read(req.addr, req.bytes);
         if (reply.result < 0)
-            perror("UnixTapeIOTask::DeviceIO: read");
+            perror("TapeIOTask::DeviceIO: read");
         else
             _readBytes += reply.result;
     } else {
         reply.result = _tape.append(req.addr, req.bytes);
         if (reply.result < 0)
-            perror("UnixTapeIOTask::DeviceIO: append");
+            perror("TapeIOTask::DeviceIO: append");
         else
             _writeBytes += reply.result;
     }
@@ -1098,58 +1045,60 @@ MemPool::~MemPool()
     delete _free;
 }
 
-int MemPool::_Allocate(PageType type, char *&page)
+int MemPool::Allocate(PageType type, char *&page)
 {
-    for(;;) {
-        if (*_numFree > 0) {
-            --(*_numFree);
-            page = _freePage[*_numFree ];
-            DOASSERT(page, "Invalid page");
-            _freePage[*_numFree] = 0;
-            if (type == Buffer)
-                (*_numBuffer)++;
-            else
-                (*_numCache)++;
-#if DEBUGLVL >= 3
-            printf("Allocated %s page 0x%p\n",
-                   (type == Cache ? "cache" : "buffer"), page);
-#endif
-            return 0;
-        }
+    AcquireMutex();
 
+    while (!(*_numFree)) {
 #if DEBUGLVL >= 5
         printf("Out of free pages: %d cache, %d buffer\n",
                *_numCache, *_numBuffer);
 #endif
-
         ReleaseMutex();
         AcquireFree();
         AcquireMutex();
-
 #if DEBUGLVL >= 5
         printf("Woke up from sleep, free pages: %d cache, %d buffer\n",
                *_numCache, *_numBuffer);
 #endif
     }
+           
+    --(*_numFree);
+    page = _freePage[*_numFree];
+    DOASSERT(page, "Invalid page");
+    _freePage[*_numFree] = 0;
+    if (type == Buffer)
+        (*_numBuffer)++;
+    else
+        (*_numCache)++;
+
+#if DEBUGLVL >= 3
+    printf("Allocated %s page 0x%p\n",
+           (type == Cache ? "cache" : "buffer"), page);
+#endif
+
+    ReleaseMutex();
 
     return 0;
 }
 
-int MemPool::_Release(PageType type, char *&page)
+int MemPool::Release(PageType type, char *&page)
 {
     // Make decision whether to reclaim page or not; decision
     // based on ratio of cache/buffer pages, for example
 
     if (1) {
-        _Deallocate(type, page);
+        Deallocate(type, page);
         page = 0;
     }
 
     return 0;
 }
 
-int MemPool::_Deallocate(PageType type, char *page)
+int MemPool::Deallocate(PageType type, char *page)
 {
+    AcquireMutex();
+
     DOASSERT(!_freePage[*_numFree], "Invalid page");
     _freePage[(*_numFree)++] = page;
     if (type == Buffer) {
@@ -1168,28 +1117,33 @@ int MemPool::_Deallocate(PageType type, char *page)
     if (*_numFree == 1)
         ReleaseFree();
 
+    ReleaseMutex();
+
     return 0;
 }
 
-int MemPool::_Convert(char *page, PageType oldType, PageType &newType)
+int MemPool::Convert(char *page, PageType oldType, PageType &newType)
 {
+    AcquireMutex();
+
     page = page;
 
-    if (oldType == newType)
-        return 0;
-
-    if (oldType == Cache) {
-        (*_numCache)--;
-        (*_numBuffer)++;
-    } else {
-        (*_numCache)++;
-        (*_numBuffer)--;
-    }
+    if (oldType != newType) {
+        if (oldType == Cache) {
+            (*_numCache)--;
+            (*_numBuffer)++;
+        } else {
+            (*_numCache)++;
+            (*_numBuffer)--;
+        }
 
 #if DEBUGLVL >= 3
-    printf("Memory pool now has %d cache pages, %d buffer pages\n",
-           *_numCache, *_numBuffer);
+        printf("Memory pool now has %d cache pages, %d buffer pages\n",
+               *_numCache, *_numBuffer);
 #endif
+    }
+
+    ReleaseMutex();
 
     return 0;
 }
