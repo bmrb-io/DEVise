@@ -43,6 +43,8 @@ class ExecCountStar : public ExecAgg
 
 public:
 
+  ExecCountStar() : ExecAgg(DteIntAdt(false), 0), count(0) {}
+
   // adt & pos are ignored
   ExecCountStar(const DteAdt& adt, int pos)
     : ExecAgg(DteIntAdt(false), 0), count(0) {}
@@ -139,6 +141,58 @@ public:
     return Adt::getTypePtr(value);
   }
 };
+
+#if 0
+//kb: cov(X,Y) takes two arguments!!
+//kb: var/cov not really needed; var = avg(x*x) - avg(x)^2
+//kb: cov = avg(x*y)-avg(x)*avg(y)
+template<class Adt>
+class ExecVar : public ExecAgg
+{
+  typedef typename Adt::ManagedType T;
+  int4 count;
+  T sum;
+  T sumSquares;
+  T value;
+
+public:
+
+  ExecVar(const DteAdt& adt, int pos)
+    : ExecAgg(adt, pos), count(0), sum(0), sumSquares(0) { setNullable(); }
+
+  void init() { count = 0; sum = 0; sumSquares = 0; }
+
+  void add(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      count++;
+      T x = Adt::cast(v);
+      sum += x;
+      sumSquares += x * x;
+    }
+  }
+
+  bool remove(const Tuple* t) {
+    const Type* v = t[pos];
+    if( v != NULL ) {
+      assert(count > 0);
+      count--;
+      T x = Adt::cast(v);
+      sum -= x;
+      sumSquares -= x * x;
+    }
+    return false;
+  }
+
+  const Type* getValue() {
+    if( count == 0 ) return NULL;
+    value = (sumSquares - (sum * sum) / count) / count;
+    return Adt::getTypePtr(value);
+  }
+};
+
+#endif
+
 
 template<class Adt>
 class ExecMin : public ExecAgg
@@ -284,6 +338,10 @@ static int findFunction(const string& fn, int type)
 
 ExecAgg* ExecAgg::create(const string& fn, const DteAdt& adt, int pos)
 {
+  if( fn == "count" && pos < 0 ) { // count(*)
+    return new ExecCountStar();
+  }
+  assert(pos >= 0);
   int k = findFunction(fn, adt.getTypeID());
   if( k < 0 ) {
     string msg("aggregate function not found: ");
@@ -364,10 +422,88 @@ const Tuple* StandAggsExec::getNext()
 }
 
 
+//---------------------------------------------------------------------------
+
+
+SortedGroupByExec::SortedGroupByExec(Iterator* input,
+                                     const vector<int>& groupPos,
+                                     const ExecAggList& aggs)
+: input(input), groupPos(groupPos), aggs(aggs), retTuple(aggs.size())
+{
+  const DteTupleAdt& inAdt = input->getAdt();
+  int G = groupPos.size();
+  for(int i = 0 ; i < G ; i++) {
+    const DteAdt& adt = inAdt.getAdt(groupPos[i]);
+    groupAdt.push_back(adt);
+    resultAdt.push_back(adt);
+  }
+  for(ExecAggList::const_iterator i = aggs.begin() ; i != aggs.end() ; i++) {
+    resultAdt.push_back((*i)->getAdt());
+  }
+}
+
+SortedGroupByExec::~SortedGroupByExec()
+{
+  delete_all(aggs);
+  delete input;
+}
+
+void SortedGroupByExec::initialize()
+{
+  input->initialize();
+  tuple = input->getNext();
+}
+
+inline
+bool SortedGroupByExec::isSameGroup()
+{
+  const Tuple* saveTup = (Tuple*)saveBuffer.data;
+  int G = groupPos.size();
+  for(int i = 0 ; i < G ; i++) {
+    int pos = groupPos[i];
+    if( groupAdt.getAdt(i).not_equal_to(tuple[pos], saveTup[i]) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+const Tuple* SortedGroupByExec::getNext()
+{
+  if( !tuple ) return NULL;
+
+  // only save copy of group fields
+  const int G = groupPos.size();
+  for(int i = 0 ; i < G ; i++) {
+    retTuple[i] = tuple[groupPos[i]];
+  }
+  const Tuple* saveTup = groupAdt.copyNonNull(retTuple, saveBuffer);
+
+  const int N = aggs.size();
+
+  for(int i = 0 ; i < N ; i++) {
+    aggs[i]->init();
+  }
+
+  while( tuple && isSameGroup() ) {
+    for(int i = 0 ; i < N ; i++) {
+      aggs[i]->add(tuple);
+    }
+    tuple = input->getNext();
+  }
+
+  for(int i = 0 ; i < G ; i++) {
+    retTuple[i] = saveTup[i];
+  }
+  for(int i = 0 ; i < N ; i++) {
+    retTuple[G+i] = aggs[i]->getValue();
+  }
+  return retTuple;
+}
+
+
 
 #if 0
-
-
 //---------------------------------------------------------------------------
 
 AggFn::AggFn(const string& fn_name, const Field& field)

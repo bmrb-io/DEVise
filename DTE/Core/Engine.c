@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/01/20 22:46:06  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.27  1998/10/28 19:21:36  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -113,6 +119,7 @@ const char* queryString;
 bool rescan;
 DefaultExceptHndl defaultExceptHndl;
 ITimer iTimer;
+bool quitRequested = false;
 
 Engine::~Engine(){
 	delete topNodeIt;
@@ -132,9 +139,10 @@ const ParseTree* Engine::parse(){
 	globalParseTree = 0;
 #endif
 	queryString = query.c_str();
-        cerr << "parsing query: " << queryString << endl;
+	cerr << "parsing query: " << queryString << endl;
 	rescan = true;
-        //yydebug = 0;
+	//yydebug = 0;
+	quitRequested = false;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
 		globalParseTree = 0;
@@ -142,8 +150,8 @@ const ParseTree* Engine::parse(){
 		THROW(new Exception(msg), 0);
 		// throw Exception(msg);
 	}
-        cerr << "query parsed\n";
-	assert(globalParseTree);
+	cerr << "query parsed\n";
+	assert(quitRequested || globalParseTree);
 	parseTree = globalParseTree;
 	globalParseTree = 0;
 	return parseTree;
@@ -152,6 +160,9 @@ const ParseTree* Engine::parse(){
 const ISchema* Engine::typeCheck(){
 	if(!parseTree){
 		TRY(parse(), 0);
+	}
+	if(!parseTree) {
+		return NULL;
 	}
 	assert(schema == 0);
 	// This may leak a bunch of memory.  RKW 7/6/98.
@@ -167,13 +178,16 @@ int Engine::optimize(){
 	if(!schema){
 		TRY(typeCheck(), 0);
 	}
+	if(!parseTree) {
+		return 0;
+	}
 	// This may leak a bunch of memory.  RKW 7/6/98.
 	TRY(topNodeIt = parseTree->createExec(), 0);
-        if( topNodeIt ) {
-          cerr << "iterator schema: " << topNodeIt->getAdt().getTypeSpec() << endl;
-        } else {
-          cerr << "no iterator returned\n";
-        }
+	if( topNodeIt ) {
+		cerr << "iterator schema: " << topNodeIt->getAdt().getTypeSpec() << endl;
+	} else {
+		cerr << "no iterator returned\n";
+	}
 	return 0;
 }
 

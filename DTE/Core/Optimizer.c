@@ -5,6 +5,7 @@
 #include "Stats.h"
 #include "Interface.h"
 #include "ExecOp.h"
+#include "Sort.h"
 //#include "listop.h"
 #include "DteProtocol.h"
 #include "StandardRead.h"
@@ -13,12 +14,14 @@
 
 #include <algorithm>
 #include "DTE/util/DteAlgo.h"
+#include "DTE/util/Del.h"
 #include "DTE/types/DteBoolAdt.h"
 
 
 DTESite THIS_SITE;
 
-ExprList* createExecExprs(const OptExprList& projList, const OptExprListList& inputLists)
+static ExprList* createExecExprs(const OptExprList& projList,
+																 const OptExprListList& inputLists)
 {
 	ExprList* retVal = new ExprList();
 	OptExprList::const_iterator it;
@@ -37,6 +40,19 @@ string& operator<<(string& s, const LogicalProp&){
 OptNode::OptNode(TableMap tableMap, const SiteDesc* siteDesc) : 
 		tableMap(tableMap) //,	siteDesc(siteDesc)
 {}
+
+int OptNode::findExpr(const OptExprList& exprList, const OptExpr* expr)
+{
+  int N = exprList.size();
+  for(int i = 0 ; i < N ; i++) {
+    if( exprList[i]->match(expr) ) { // found
+			return i;
+    }
+  }
+	return -1;
+}
+
+
 
 LogicalProp OptNode::getLogProp(const LogPropTable& logPropTab) const
 {
@@ -481,12 +497,15 @@ QueryNeeded::~QueryNeeded()
   delete root;
 }
 
-AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc) : OptNode(tableMap, siteDesc)
+AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap,
+															 const SiteDesc* siteDesc)
+	: OptNode(tableMap, siteDesc), agglessQuery(NULL), root(NULL)
 {
 	OptExprList::const_iterator it;
-	OptExprList agglessSelList;   //kb:who's in charge of deleting the elements?
+	OptExprList agglessSelList = query.getGroupByList();
+	aggResultSelList = query.getGroupByList();
 
-	OptExprList selectList = query.getSelectList();
+	const OptExprList& selectList = query.getSelectList();
 
 	for(it = selectList.begin(); it != selectList.end(); ++it) {
 		OptExpr* curr = *it;
@@ -497,12 +516,16 @@ AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap, const Site
         OptExprList& args = f->getArgs();
         assert(args.size() == 1 && 
                "only aggregates with one arg are currently supported");
+				aggResultSelList.push_back(f);
         createAgg(agglessSelList, f);
         continue;
 			}
 		}
-    // non aggregate
-    assert(!"group by is not yet supported");
+    // non-aggregate
+		if( findExpr(query.getGroupByList(), curr) < 0 ) {
+			cerr << "expression must be in group by: " << *curr << endl;
+			assert(0);
+		}
 	}
 
 	OptExprList predList = query.getPredicateList();
@@ -521,31 +544,78 @@ AggQueryNeeded::~AggQueryNeeded()
 }
 
 
+bool AggQueryNeeded::expand(const Query& q, NodeTable& nodeTab,
+														const LogPropTable& logPropTab)
+{
+	return root->expand(*agglessQuery, nodeTab, logPropTab);
+}
+
 void AggQueryNeeded::createAgg(OptExprList& agglessSelList, OptFunction* f)
 {
   //OptExpr* a = f->stealFirstArg();
-  OptExpr* a = f->getArgs()[0];
-  assert(a);
+  OptExpr* arg = f->getArgs()[0];
+  assert(arg);
 
   // check for duplicate expression
-  int M = agglessSelList.size();
-  int pos;
-  for(pos = 0 ; pos < M ; pos++) {
-    if( agglessSelList[pos]->match(a) ) { // duplicate
-      //delete a;
-      break;
-    }
+  int pos = findExpr(agglessSelList, arg);
+  if( pos < 0 ) {								// arg not in select list, so add it at end
+		pos = agglessSelList.size();
+    agglessSelList.push_back(arg);
   }
-  if( pos == M ) {              // not a dup
-    agglessSelList.push_back(a);
-  }
-  aggs.push_back(ExecAgg::create(f->getName(), a->getAdt(), pos));
+  aggs.push_back(ExecAgg::create(f->getName(), arg->getAdt(), pos));
 }
 
 Iterator* AggQueryNeeded::createExec(const Query& q, bool isTop) const
 {
-	Iterator* input = root->createExec(*agglessQuery, true);
-	return new StandAggsExec(input, aggs);
+	//kb: should push sort down to input (for group by)
+	Del<Iterator> inputIter = root->createExec(*agglessQuery, true);
+	int numGroupBys = q.getGroupByList().size();
+	if( numGroupBys == 0 ) {
+		// not a group by
+		return new StandAggsExec(inputIter.steal(), aggs);
+	}
+
+	// group by query
+	vector<bool> sortOrder(numGroupBys);
+	vector<int> groupFields(numGroupBys);
+	for(int i = 0 ; i < numGroupBys ; i++) {
+		sortOrder[i] = true;				// ascending
+		groupFields[i] = i;					// group-by fields at beginning
+	}
+	Del<Iterator> se = new SortExec(inputIter.steal(), sortOrder, false);
+	Del<Iterator> ge = new SortedGroupByExec(se.steal(), groupFields, aggs);
+
+	// need to arrange output and apply having clause
+	//kb: this is more or less copied from SPQueryProduced::createExec - can we share code?
+	OptExprListList inputs;
+	inputs.push_back(aggResultSelList);
+	OptExprList projList;
+	//if( isTop ) {
+	projList = q.getSelectList();
+	//} else {
+	//projList = getProjectList(q);
+	//}
+
+	ExprList* project = NULL;
+	ExprList* having = new ExprList();
+	try {
+		project = createExecExprs(projList, inputs);
+		const OptExpr* havingPred = q.getHavingPredicate();
+		if( havingPred ) {
+			ExecExpr* execPred = havingPred->createExec(inputs);
+			assert(execPred);
+			having->push_back(execPred);
+		}
+	} catch(...) {
+		if( project ) {
+			delete_all(*project);
+			delete project;
+		}
+		delete_all(*having);
+		delete having;
+		throw;
+	}
+	return new SelProjExec(ge.steal(), having, project);
 }
 
 vector<OptNode*> AggQueryNeeded::getLevel(int level)

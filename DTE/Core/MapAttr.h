@@ -11,16 +11,16 @@ class MapAttrExec : public ExecExpr
 {
 public:
 
-  typedef map<ADT, int4> MapType;
+  typedef typename ADT::ManagedType T;
+  typedef map<T, int4> MapType;
 
   MapAttrExec(ExecExpr* in /*, string mapTable*/ )
-    : ExecExpr(INT_TP), input(in), nextID(0) {}
+    : ExecExpr(DteIntAdt(false)), input(in), nextID(0) {}
   
   virtual ~MapAttrExec() {}
 
-  virtual const Type* evaluate(const Tuple* left, const Tuple* right) {
-    ADT::ManagedType x = ADT::cast( input->evaluate(left, right) );
-    int4 id;
+  virtual const Type* eval(const Tuple* left, const Tuple* right) {
+    T x = ADT::cast( input->eval(left, right) );
     MapType::const_iterator mi = attrMap.find(x);
     if( mi == attrMap.end() ) {
       id = nextID++;
@@ -35,9 +35,11 @@ protected:
 
   ExecExpr* input;
 
+  MapType attrMap;
+
   int4 nextID;
 
-  MapType attrMap;
+  int4 id;
 
 private:
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/01/25 16:36:36  beyer
+  Field access again requires table alias (for support of structured attributes).
+
   Revision 1.45  1999/01/20 22:46:32  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -147,6 +150,7 @@
 #include "DTE/types/DteDoubleAdt.h"
 #include "DTE/types/DteBoolAdt.h"
 #include "DTE/util/Del.h"
+#include "DTE/mql/MqlStmt.h"
 //#include <iostream.h>    erased for sysdep
 #include <assert.h>
 #include <stdlib.h>
@@ -178,6 +182,7 @@ typedef Del<TableName> TabDel;
 	vector<IdentType>* ident_type_vec;
 	IdentType* ident_type;
         TableName* tableName;
+        vector<int>* intList;
 }
 
 %token <integer> INTY
@@ -216,6 +221,7 @@ typedef Del<TableName> TabDel;
 %token REGISTER
 %token UNREGISTER
 %token ADD
+%token DECLARE QUERY_TOK SET RUN QUIT_TOK
 %token <stringLit> STRING_CONST
 %left UNION
 %left '.'
@@ -243,8 +249,7 @@ typedef Del<TableName> TabDel;
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
 %type <sel> optWhereClause
-%type <sel> predicate
-%type <sel> constant
+%type <sel> expr predicate constant
 %type <selList> optSequenceByClause
 %type <stringLit> index_name
 %type <tableName> table_name
@@ -253,9 +258,12 @@ typedef Del<TableName> TabDel;
 %type <listOfStrings> keyAttrs
 %type <listOfStrings> optIndAdd 
 %type <listOfStrings> listOfStrings 
-%type <parseTree> sql query definition
+%type <parseTree> sql query definition mql
 %type <ident_type_vec> ident_type_pairs
 %type <ident_type> ident_type_pair
+%type <stringLit> type var
+%type <intList> intList
+
 
 %%
 input : sql opt_semicolon {
@@ -269,12 +277,47 @@ input : sql opt_semicolon {
                   YYABORT;
                 }
         }
+        | QUIT_TOK opt_semicolon {
+          extern bool quitRequested; //kb: make parser class...
+          quitRequested = true;
+          YYACCEPT;
+        }
         ;
 
 opt_semicolon: /* empty */ | ';' ;
 
 sql:      query
         | definition
+        | mql
+        ;
+
+mql:
+	  DECLARE type var
+          { $$ = new DeclareVariableStmt(*SDel($2), *SDel($3)); }
+        | DECLARE QUERY_TOK INTY AS query
+          /*kb: I think this cast is bad for unions... */
+          { $$ = new DeclareQueryStmt($3, static_cast<QueryTree*>($5)); }
+        | SET var '=' expr
+          { $$ = new SetVariableStmt(*SDel($2), $4); }
+        | RUN intList
+          { $$ = new RunStmt(*$2); delete $2; }
+	| DROP var
+          { $$ = new DropVariableStmt(*SDel($2)); }
+	| DROP QUERY_TOK INTY
+          { $$ = new DropQueryStmt($3); }
+	;
+
+type:     STRING
+        ;
+
+var:      '$' STRING { $$ = $2; }
+        ;
+
+intList:
+          INTY
+          { $$ = new vector<int>(); $$->push_back($1); }
+        | intList ',' INTY
+          { $$ = $1; $$->push_back($3); }
         ;
 
 definition:
@@ -513,6 +556,9 @@ optOrdering: ASC {
 		$$ = new string("ascending");
 	}
 	;
+
+expr:     predicate ;
+
 predicate : predicate OR predicate {
           $$ = new OptOr($1, $3);
 	}
@@ -604,6 +650,10 @@ selection :
 		$$ = new OptFunction(*SDel($1), e);
 	}
 	| constant {
+	}
+	| var {
+                //kb: fix vars up to use typechecking, etc;
+                $$ = new OptVariable(*SDel($1));
 	}
 	| '(' predicate ')' {
 		$$ = $2;

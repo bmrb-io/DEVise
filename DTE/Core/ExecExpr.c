@@ -25,6 +25,8 @@ Promotions:
 #include "DTE/types/DteDoubleAdt.h"
 #include "DTE/types/DteStringAdt.h"
 #include "DTE/types/DteDateAdt.h"
+#include "DTE/Core/MapAttr.h"
+#include "DTE/mql/MqlSession.h"
 
 //kb: move these type ids
 static const int DteBoolId = DteBoolAdt::typeID;
@@ -32,6 +34,16 @@ static const int DteIntId = DteIntAdt::typeID;
 static const int DteDoubleId = DteDoubleAdt::typeID;
 static const int DteStringId = DteStringAdt::typeID;
 static const int DteDateId = DteDateAdt::typeID;
+
+
+template <class Arg1, class Arg2, class Arg3, class Result>
+struct ternary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Arg3 third_argument_type;
+    typedef Result result_type;
+};      
+
 
 
 class ExecExprField
@@ -81,6 +93,30 @@ private:
 
   ExecExprFieldRight(const ExecExprFieldRight& x);
   ExecExprFieldRight& operator=(const ExecExprFieldRight& x);
+};
+
+template <class T>
+struct BucketOp : public ternary_function<T, T, T, int4>
+{
+	int4 operator()(const T& x, const T& start, const T& step) const {
+		// be safe about negative cast to int; assumes step > 0
+		if( x > start ) {
+			return (int4)( (x-start) / step );
+		}
+		return -(int4)( (start-x) / step ) - 1;
+	}
+};
+
+template <class T>
+struct BinOp : public ternary_function<T, T, T, T>
+{
+	T operator()(const T& x, const T& start, const T& step) const {
+		// be safe about negative cast to int; assumes step > 0
+		if( x > start ) {
+			return ((int4)( (x-start) / step )) * step + start;
+		}
+		return (-(int4)( (start-x) / step ) - 1) * step + start;
+	}
 };
 
 
@@ -223,7 +259,7 @@ ExecExpr* createBinary(ExecExprList& args)
 template<class E> static
 ExecExpr* createTernary(ExecExprList& args)
 {
-  assert(args.size() == 2);
+  assert(args.size() == 3);
   return new E(args[0], args[1], args[2]);
 }
 
@@ -398,6 +434,46 @@ private:
   ExecExprBinary& operator=(const ExecExprBinary& x);
 };
 
+
+class ExecExprTernary
+: public ExecExpr
+{
+protected:
+
+  ExecExpr* arg1;
+  ExecExpr* arg2;
+  ExecExpr* arg3;
+
+public:
+
+  ExecExprTernary(ExecExprList args) {
+    assert( args.size() == 3 );
+    arg1 = args[0];
+    arg2 = args[1];
+    arg3 = args[2];
+  }
+
+  ExecExprTernary(ExecExpr* arg1, ExecExpr* arg2, ExecExpr* arg3) {
+    this->arg1 = arg1;
+    this->arg2 = arg2;
+    this->arg3 = arg3;
+  }
+
+  ~ExecExprTernary() {
+    delete arg1;
+    delete arg2;
+    delete arg3;
+  }
+
+private:
+
+  ExecExprTernary(const ExecExprTernary& x);
+  ExecExprTernary& operator=(const ExecExprTernary& x);
+};
+
+
+
+
 template<class Adt, class Op>
 class ExecExprUnaryOp
 : public ExecExprUnary
@@ -501,6 +577,50 @@ protected:
 };
 
 
+template<class Adt, class Op>
+class ExecExprOp3
+: public ExecExprTernary
+{
+public:
+
+  typedef typename Op::first_argument_type Arg1;
+  typedef typename Op::second_argument_type Arg2;
+  typedef typename Op::third_argument_type Arg3;
+  typedef typename Adt::BasicType Res;
+
+  ExecExprOp3(ExecExpr* arg1, ExecExpr* arg2, ExecExpr* arg3)
+		: ExecExprTernary(arg1, arg2, arg3)
+	{
+    bool nullable = arg1->getAdt().isNullable()
+			|| arg2->getAdt().isNullable() || arg3->getAdt().isNullable();
+    setResultAdt(Adt(nullable));
+  }
+
+  ~ExecExprOp3() {}
+
+  const Type* eval(const Tuple* tup1, const Tuple* tup2) {
+    const Type* x1 = arg1->eval(tup1,tup2);
+    if( x1 ) {
+      const Type* x2 = arg2->eval(tup1,tup2);
+      if( x2 ) {
+				const Type* x3 = arg3->eval(tup1,tup2);
+				if( x3 ) {
+					result = op(*(Arg1*)x1, *(Arg2*)x2, *(Arg3*)x3);
+					return &result;
+				}
+      }
+    }
+    return NULL;
+  }
+
+protected:
+
+  Res result;
+  Op op;
+};
+
+
+
 //kb: improve and move these
 Type* allocateBool(bool x) {
   char* p = new char;
@@ -535,6 +655,7 @@ Type* allocateString(const char* x) {
 }
 
 
+//---------------------------------------------------------------------------
 
 class ExecConstant : public ExecExpr
 {
@@ -555,6 +676,31 @@ private:
   ExecConstant& operator=(const ExecConstant& x);
 };
 
+
+//---------------------------------------------------------------------------
+
+class ExecVariable : public ExecExpr
+{
+  OptConstant* value;           // do NOT delete
+
+public:
+
+  ExecVariable(OptConstant* v)
+    : ExecExpr(v->getAdt()), value(v) {}
+
+  ~ExecVariable() {}
+
+  const Type* eval(const Tuple* tup1, const Tuple* tup2)
+    { return value->getValue(); }
+
+private:
+
+  ExecVariable(const ExecVariable& x);
+  ExecVariable& operator=(const ExecVariable& x);
+};
+
+
+//---------------------------------------------------------------------------
 
 #include <stl_function.h>
 
@@ -701,8 +847,32 @@ static FunctionDesc functionTable[] = {
 
   {"+", 2, {DteIntId, DteIntId}, DteIntId,
    createBinary<ExecExprOp<DteIntAdt, plus<int4> > >},
+  {"-", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, minus<int4> > >},
+  {"*", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, multiplies<int4> > >},
+  {"/", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, divides<int4> > >},
+  {"div", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, divides<int4> > >},
+  {"%", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, modulus<int4> > >},
+  {"mod", 2, {DteIntId, DteIntId}, DteIntId,
+   createBinary<ExecExprOp<DteIntAdt, modulus<int4> > >},
+
   {"+", 2, {DteDoubleId, DteDoubleId}, DteDoubleId,
    createBinary<ExecExprOp<DteDoubleAdt, plus<float8> > >},
+  {"-", 2, {DteDoubleId, DteDoubleId}, DteDoubleId,
+   createBinary<ExecExprOp<DteDoubleAdt, minus<float8> > >},
+  {"*", 2, {DteDoubleId, DteDoubleId}, DteDoubleId,
+   createBinary<ExecExprOp<DteDoubleAdt, multiplies<float8> > >},
+  {"/", 2, {DteDoubleId, DteDoubleId}, DteDoubleId,
+   createBinary<ExecExprOp<DteDoubleAdt, divides<float8> > >},
+  {"bucket", 3, {DteDoubleId, DteDoubleId, DteDoubleId}, DteIntId,
+   createTernary< ExecExprOp3<DteIntAdt, BucketOp<float8> > >},
+  {"bin", 3, {DteDoubleId, DteDoubleId, DteDoubleId}, DteDoubleId,
+   createTernary< ExecExprOp3<DteDoubleAdt, BinOp<float8> > >},
+
   {"concat", 2, {DteStringId, DteStringId}, DteStringId,
    createBinary<ExecExprStringConcat>},
   {"||", 2, {DteStringId, DteStringId}, DteStringId,
@@ -712,6 +882,10 @@ static FunctionDesc functionTable[] = {
 
   {"toUnixTime", 1, {DteDateId}, DteIntId,
    createUnary<ExecExprUnaryOp<DteIntAdt, ToUnixTime> >},
+
+  {"map", 1, {DteStringId}, DteIntId, createUnary< MapAttrExec<DteStringAdt> >},
+  {"map", 1, {DteIntId}, DteIntId, createUnary< MapAttrExec<DteIntAdt> >},
+  {"map", 1, {DteDoubleId}, DteIntId, createUnary< MapAttrExec<DteIntAdt> >},
 
   {NULL}
 };
@@ -730,6 +904,12 @@ static bool canPromote(int from, int to)
   return false;
 }
 
+bool ExecExpr::canPromote(const DteAdt& from, const DteAdt& to)
+{
+	//kb: consider type args??
+	return ::canPromote(from.getTypeID(), to.getTypeID());
+}
+
 static ExecExpr* getPromoteExpr(int from, int to, ExecExpr* expr)
 {
   assert(expr);
@@ -744,6 +924,13 @@ static ExecExpr* getPromoteExpr(int from, int to, ExecExpr* expr)
   assert(0);
   return NULL;
 }
+
+ExecExpr* ExecExpr::getPromotion(const DteAdt& from, const DteAdt& to,
+																 ExecExpr* expr)
+{
+	return ::getPromoteExpr(from.getTypeID(), to.getTypeID(), expr);
+}
+
 
 static int findFunction(const string& fn, const vector<int>& types)
 {
@@ -782,17 +969,24 @@ static int findFunction(const string& fn, const vector<int>& types)
   return -1;
 }
 
-class Exception
-{
-public:
-  string msg;
-  Exception(const string& msg) : msg(msg) {}
-};
+//  class Exception
+//  {
+//  public:
+//    string msg;
+//    Exception(const string& msg) : msg(msg) {}
+//  };
 
 
 ExecExpr* ExecExpr::createConstant(const DteAdt& adt, Type* x)
 {
   return new ExecConstant(adt, x);
+}
+
+ExecExpr* ExecExpr::createVariable(const string& varName)
+{
+  OptConstant* value = mqlSession.findVariable(varName);
+  assert( value != NULL && "unknown variable" );
+  return new ExecVariable(value);
 }
 
 //kb: need a wildcard type to handle null constants
@@ -854,7 +1048,7 @@ ExecExpr* ExecExpr::createFunction(const string& fn, ExecExprList& args)
     char sep = '(';
     for(int i = 0 ; i < N ; i++) {
       msg += sep;
-      const DteAdt& adt = args[0]->getAdt();
+      const DteAdt& adt = args[i]->getAdt();
       msg += adt.getTypeName();
       sep = ',';
     }
@@ -887,7 +1081,7 @@ DteAdt* ExecExpr::typeCheck(const string& functionName,
     args[i] = createConstant(*argTypes[i], NULL);
   }
   DteAdt* retType = NULL;
-  ExecExpr* expr;
+  ExecExpr* expr = NULL;
   try {
     expr = createFunction(functionName, args);
   } catch(...) {

@@ -1,6 +1,7 @@
 #include "types.h"
 #include "catalog.h"
 #include "RelationManager.h"
+#include "DTE/mql/MqlSession.h"
 
 const DteEnvVars DTE_ENV_VARS;
 
@@ -24,3 +25,4 @@ const Directory MINMAX_DIR(DTE_ENV_VARS.minmaxCatalog);
 
 RelationManager RELATION_MNGR;
 
+MqlSession mqlSession;

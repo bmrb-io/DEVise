@@ -8,6 +8,7 @@
 #include "DTE/comm/TupleStream.h"
 #include "DTE/types/DteIntAdt.h"
 #include "DTE/types/DteBoolAdt.h"
+#include "DTE/types/DteStringAdt.h"
 
 //---------------------------------------------------------------------------
 //kb: these should be put somewhere else...
@@ -368,6 +369,16 @@ SingleAnswerIt::SingleAnswerIt(Type* arg, const DteAdt& type)
 {
   resultAdt.push_back(type);
   retVal = arg;
+}
+
+
+SingleAnswerIt::SingleAnswerIt(const string& result)
+: done(false)
+{
+  int len = result.length();
+  DteStringAdt adt(len);
+  resultAdt.push_back(adt);
+  retVal = adt.allocateCopy(result.c_str());
 }
 
 

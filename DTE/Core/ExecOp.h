@@ -188,8 +188,10 @@ class SingleAnswerIt
 : public Iterator
 {
 public:
-  // arg and type will be deleted by this object
+  // arg will be deleted by this object
   SingleAnswerIt(Type* arg, const DteAdt& type);
+
+  SingleAnswerIt(const string& result);
 
   virtual ~SingleAnswerIt();
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/01/20 22:46:33  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.52  1998/11/23 19:18:55  donjerko
   Added support for gestalts
 
@@ -224,6 +230,7 @@ public:
 
   enum ExprType {
     CONST_ID,
+    VARIABLE_ID,
     FIELD_ID,
     FUNCTION_ID,
   };
@@ -364,7 +371,12 @@ public:
 
   virtual ~OptConstant();
 
-  const Type* getValue() { return value; }  
+  const Type* getValue() { return value; }
+
+  void setValue(Type* v) {
+    adt->deallocate(value);
+    value = v;
+  }
 
   virtual bool typeCheck(const DteSymbolTable& symbols);
 
@@ -405,6 +417,34 @@ public:
   //}
 };
 
+
+//---------------------------------------------------------------------------
+
+class OptVariable : public OptExpr
+{
+  string varName;
+
+public:
+
+  OptVariable(const string& varName);
+
+  virtual ~OptVariable();
+
+  //kb: should pass MqlSession to typeCheck()
+  virtual bool typeCheck(const DteSymbolTable& symbols);
+
+  virtual void display(ostream& out, int detail = 0) const;
+
+  virtual OptExpr* duplicate();
+
+  virtual void collect(TableMap group, OptExprList& to);
+
+  virtual OptExpr::ExprType getExprType() const;
+
+  virtual bool match(const OptExpr* x) const;
+
+  ExecExpr* createExec(const OptExprListList& inputs) const;
+};
 
 //---------------------------------------------------------------------------
 

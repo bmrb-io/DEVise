@@ -15,6 +15,12 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/01/20 22:46:32  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.35  1998/10/16 20:57:31  beyer
   parser now accepts negative numbers and unary minus (I hope!)
 
@@ -191,6 +197,11 @@ LessGreat    ">="|">"|"<="|"<"|"<>"
 [Gg][Ee][Ss][Tt][Aa][Ll][Tt]    {return GESTALT;}
 [Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return REGISTER;}
 [Un][Nn][Rr][Ee][Gg][Ii][Ss][Tt][Ee][Rr]        {return UNREGISTER;}
+declare         {return DECLARE;}
+query           {return QUERY_TOK;}
+set             {return SET;}
+run             {return RUN;}
+quit            {return QUIT_TOK;}
 
 {String}     {yylval.stringLit = new string(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INTY;}

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/01/20 22:46:33  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.43  1998/12/28 21:32:26  donjerko
   Optimizer is now used by default.
 
@@ -174,6 +180,7 @@
 #include "AccessMethod.h"        // for getAccessMethods
 #include "DteSymbolTable.h"
 #include "Aggregates.h"
+#include "DTE/mql/MqlSession.h"
 
 
 //---------------------------------------------------------------------------
@@ -253,6 +260,69 @@ bool OptConstant::match(const OptExpr* x) const
 ExecExpr* OptConstant::createExec(const OptExprListList& inputs) const
 {
   return ExecExpr::createConstant(*adt, adt->allocateCopy(value));
+}
+
+
+//---------------------------------------------------------------------------
+
+OptVariable::OptVariable(const string& varName)
+  : varName(varName)
+{
+}
+
+
+OptVariable::~OptVariable()
+{
+}
+
+
+bool OptVariable::typeCheck(const DteSymbolTable& symbols)
+{
+  assert(adt == NULL);
+  OptConstant* value = mqlSession.findVariable(varName);
+  if( value == NULL ) {
+    cerr << "variable not found: $" << varName << endl;
+    return false;
+  }
+  adt = value->getAdt().clone();
+  return true;
+}
+
+
+void OptVariable::display(ostream& out, int detail = 0) const
+{
+  out << '$' << varName;
+  OptExpr::display(out, detail);
+}
+
+
+OptExpr* OptVariable::duplicate()
+{
+  return new OptVariable(varName);
+}
+
+
+void OptVariable::collect(TableMap group, OptExprList& to)
+{
+}
+
+
+OptExpr::ExprType OptVariable::getExprType() const
+{
+  return VARIABLE_ID;
+}
+
+
+bool OptVariable::match(const OptExpr* x) const
+{
+  if( getExprType() != x->getExprType() ) return false;
+  return varName == ((OptVariable*)x)->varName;
+}
+
+
+ExecExpr* OptVariable::createExec(const OptExprListList& inputs) const
+{
+  return ExecExpr::createVariable(varName);
 }
 
 

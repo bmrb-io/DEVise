@@ -138,14 +138,13 @@ UniqueInserter::~UniqueInserter()
         // istr deleted by inp
 	TRY(StandReadExec* inp = new StandReadExec(tupAdt, istr), NVOID);
 
-        FieldList* sort_fields = new FieldList;
 	int numFlds = tupAdt.getNumFields();
+        vector<bool> ascDesc(numFlds);
 	for(int i = 0; i < numFlds; i++) {
-          sort_fields->push_back(Field(tupAdt.getAdt(i), i));
+          ascDesc[i] = true;
         }
 
-	TRY(Iterator* inp2 = new SortExec(inp, sort_fields, Ascending, true),
-            NVOID);
+	TRY(Iterator* inp2 = new SortExec(inp, ascDesc, true), NVOID);
 
 	const Tuple* tup;
 	for(tup = inp2->getFirst(); tup; tup = inp2->getNext()){

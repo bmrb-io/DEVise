@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/01/20 22:46:01  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.51  1998/07/09 19:31:01  wenger
   Fixed bug 374 (Tables failing on SPARC/Solaris).
 
@@ -387,7 +393,36 @@ protected:
   STuple retTuple;
 };
 
+//---------------------------------------------------------------------------
 
+class SortedGroupByExec : public Iterator {
+public:
+
+  // input & aggs's elements now belong to this
+  SortedGroupByExec(Iterator* input, const vector<int>& groupPos,
+                    const ExecAggList& aggs);
+  
+  virtual ~SortedGroupByExec();
+  
+  virtual void initialize();
+  
+  virtual const Tuple* getNext();
+
+protected:
+   
+  Iterator* input;
+  vector<int> groupPos;
+  ExecAggList aggs;
+  STuple retTuple;
+  const Tuple* tuple;
+  DteTupleAdt groupAdt;
+  PageBuf saveBuffer;
+
+  bool isSameGroup();
+};
+
+
+#if 0
 //---------------------------------------------------------------------------
 
 // Assumes input is sorted on grouping attributes
@@ -468,7 +503,6 @@ protected:
 
 //---------------------------------------------------------------------------
 
-#if 0
 //kb: remove class
 class Aggregates : public Site {
 	vector<BaseSelection*>& selList;

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/01/20 22:46:25  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.22  1998/11/06 17:27:08  beyer
   Eliminated getFirst from derived Iterators.
 
@@ -83,54 +89,75 @@
 
 //#include <fstream.h>   erased for sysdep.h
 
-//#include "site.h"
+#define _SYS_STREAM_H //kb: hack: why is sys/stream.h included?
 #include "Iterator.h"
-#include "StandardRead.h"
 #include "types.h"
-#include "PQueue.h"
 #include "sysdep.h"
+#include "TupleCompare.h"       //kb: move this
+#include <vector>
+#include "DTE/util/PriorityQueue.h"
+
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-#define MAX_MEM         100000		// number of tuples in each run
-#define NUM_RUNS       	1000
+class HeapRangeReader;
+class HeapInserter;
 
-class Inserter;
-class TupleLoader;
+template <class T>
+struct AttrLess : public binary_function<T, T, bool> {
+  bool operator()(const Tuple* x, const Tuple* y) const {
+    return *(T*)x[0] < *(T*)y[0];
+  }
+};
 
-//kb: improve sorting...
 
-class SortExec : public Iterator {
-	Iterator* inpIter;
-	TupleLoader* tupleLoader;
-	SortOrder order;          // Ascending or Descending
-	int       Nruns;          // Number of runs
-	PQueue *Q;                // Internal Priority Queue
-	Iterator**  input_buf;    // Used to read in sorted runs while merging
-	char      temp_filename[20]; // Name of temporary file to hold a run
-        bool dedup;
 
-protected:
-	int       *sortFlds;     // Index of fields to be sorted on 
-	int numSortFlds;    // Number of fields on which tuple is to be sorted
-private:
-	Node* node_ptr;
+class SortExec : public Iterator
+{
+  struct QNode {
+    QNode() : tuple(0), run(0) {}
+    QNode(const Tuple* t, HeapRangeReader* r) : tuple(t), run(r) {}
+    const Tuple* tuple;
+    HeapRangeReader* run;
+    operator const Tuple*() const { return tuple; } //kb: hack to make TupleLess work
+  };
 
-        void addNext();
-	void generate_runs();
-        const Tuple *find_pivot(const Tuple **, int, int);
-	inline void swap(const Tuple *&, const Tuple*&);
-	void qsort(const Tuple **, int, int);
-	void insert_sort(const Tuple **, int);
-	void sort_and_write_run(const Tuple **, int);
+  static const int MAX_RUN_SIZE = 100000; // number of tuples in each run
+
+  Iterator* inpIter;
+
+  bool dedup;
+
+  TupleEqual tupleEqual;
+  TupleLess tupleLess;
+
+  int tempFd;                   // file descriptor of temporary file
+
+  vector<Offset> runStart;
+  vector<HeapRangeReader*> runIters;
+
+  PriorityQueue<QNode, TupleLess> Q; // Internal Priority Queue
+  //PriorityQueue<QNode, AttrLess<int> > Q; // Internal Priority Queue
+  QNode curNode;                // last node taken from Q
+  
+  void addNext();
+
+  void generate_runs(HeapInserter* tempFile);
+
+  void sort_and_write_run(const Tuple* table[], int N,
+                          HeapInserter* tempFile);
+
 public:
-	SortExec(Iterator* inpIter, FieldList* sort_fields,
-                 SortOrder order, bool dedup = false);
-	virtual ~SortExec();
-        virtual void initialize();         // To be called once at the start
-        virtual const Tuple* getNext(); // returns NULL when no more tuples
+
+  SortExec(Iterator* inpIter, const vector<bool>& ascDesc, bool dedup);
+
+  virtual ~SortExec();
+
+  virtual void initialize();         // To be called once at the start
+
+  virtual const Tuple* getNext(); // returns NULL when no more tuples
 };
 
 

@@ -30,6 +30,11 @@ public:
   static DteAdt* typeCheck(const string& functionName,
                            const DteAdtList& argTypes);
 
+	static bool canPromote(const DteAdt& from, const DteAdt& to);
+
+	static ExecExpr* getPromotion(const DteAdt& from, const DteAdt& to,
+																ExecExpr* expr);
+
   static ExecExpr* createFunction(const string& functionName,
                                   ExecExprList& args);
 
@@ -47,6 +52,8 @@ public:
 
   // x now belongs to this expr
   static ExecExpr* createConstant(const DteAdt& adt, Type* x);
+
+  static ExecExpr* createVariable(const string& varName);
 
   //kb: need wildcard type for null...
   static ExecExpr* createNull();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/03/18 22:15:06  beyer
+  fixed seeks and handling of remote tables
+
   Revision 1.25  1999/01/20 22:46:25  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -149,6 +152,9 @@ const Tuple* StandReadExec::getNext()
 {
   assert(in);
 
+  if( in->eof() ) {
+    return NULL;
+  }
   if( !in->good() ) {
     cerr << "error before reading file: " << url << endl;
     return NULL;

@@ -61,10 +61,15 @@ public:
 };
 
 class Query {
+	// these thing are not deleted here:
 	OptExprList selectList;
 	vector<TableAlias*> tableList;
 	OptExprList predList;
-	vector<SortCriterion> orderBy;
+	OptExprList groupByList;
+	OptExprList seqByList;
+	const OptExpr* withPredicate;
+	const OptExpr* havingPredicate;
+	vector<SortCriterion> orderByList;
 public:
 /*
 	Query(const OptExprList& selectList,
@@ -78,11 +83,26 @@ public:
 	// temporary Query constructor
 
 	Query(const OptExprList& selectList,
-		const vector<TableAlias*>& tableList,
-		const OptExprList& predList) :
+				const vector<TableAlias*>& tableList,
+				const OptExprList& predList,
+				const OptExprList& groupBy,
+				const OptExprList& seqBy,
+				const OptExpr* with,
+				const OptExpr* having,
+				const vector<SortCriterion>& orderBy)
+		: selectList(selectList), tableList(tableList), predList(predList),
+			groupByList(groupBy), seqByList(seqBy),
+			withPredicate(with), havingPredicate(having),
+			orderByList(orderBy)
+	{}
 
-		selectList(selectList), tableList(tableList), predList(predList){
-	}
+	Query(const OptExprList& selectList,
+				const vector<TableAlias*>& tableList,
+				const OptExprList& predList)
+		: selectList(selectList), tableList(tableList), predList(predList),
+			withPredicate(NULL), havingPredicate(NULL)
+	{}
+
 	const OptExprList& getSelectList() const {
 		return selectList;
 	}
@@ -92,8 +112,20 @@ public:
 	const vector<TableAlias*>& getTableList() const {
 		return tableList;
 	}
+	const OptExprList& getGroupByList() const {
+		return groupByList;
+	}
+	const OptExprList& getSequenceByList() const {
+		return seqByList;
+	}
+	const OptExpr* getWithPredicate() const {
+		return withPredicate;
+	}
+	const OptExpr* getHavingPredicate() const {
+		return havingPredicate;
+	}
 	const vector<SortCriterion>& getOrderBy() const {
-		return orderBy;
+		return orderByList;
 	}
 	ostream& display(ostream& out) const;
 	bool hasAggregates() const;
@@ -191,6 +223,7 @@ public:
 	TableMap getTableMap() const {
 		return tableMap;
 	}
+	static int findExpr(const OptExprList& exprList, const OptExpr* expr);
 };
 
 class SPJQueryProduced : public OptNode {
@@ -261,20 +294,16 @@ public:
 
 class AggQueryNeeded : public OptNode {
 	Query* agglessQuery;
+	OptExprList aggResultSelList;
 	ExecAggList aggs;
 	OptNode* root;
-        void createAgg(OptExprList& agglessSelList, OptFunction* f);
+	void createAgg(OptExprList& agglessSelList, OptFunction* f);
 
 public:
 	AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
 	~AggQueryNeeded();
-	virtual bool expand(
-		const Query& q, 
-		NodeTable& nodeTab, 
-		const LogPropTable& logPropTab)
-	{
-		return root->expand(*agglessQuery, nodeTab, logPropTab);
-	}
+	virtual bool expand(const Query& q, NodeTable& nodeTab, 
+											const LogPropTable& logPropTab);
 	virtual Iterator* createExec(const Query& q, bool isTop) const;
 	virtual string toString() const {return "aggregates";}
 	virtual Cost getCost(const LogPropTable& logPropTab) {

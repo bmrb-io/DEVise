@@ -25,7 +25,8 @@ DTE_DIR = $(DTE_BASE)/DTE
 
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
         $(DTE_DIR)/Script $(DTE_DIR)/GUI \
-	$(DTE_DIR)/types $(DTE_DIR)/comm $(DTE_DIR)/util $(DTE_DIR)/misc 
+	$(DTE_DIR)/types $(DTE_DIR)/comm $(DTE_DIR)/util $(DTE_DIR)/misc \
+        $(DTE_DIR)/plan $(DTE_DIR)/proc $(DTE_DIR)/mql
 
 NO_RTREE = 1
 
@@ -50,6 +51,7 @@ DTE_INCLUDES = \
 	-I../../DataReader \
 	-I.. \
 	-I../../src/include \
+        -I/s/flex/include
 
 CFLAGS_WO_TEMPLATES = -MMD $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 	$(OPTFLAG) -DUNIX -DLIBCS -DHAVE_CONFIG_H -Wall -Wno-sign-compare
@@ -59,11 +61,11 @@ CFLAGS_WO_TEMPLATES = -MMD $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 
 CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
 
-#ifdef DTE_DEBUG
-#	CFLAGS += -g
-#else
-#	CFLAGS += -O2
-#endif
+ifdef DTE_DEBUG
+	CFLAGS += -g
+else
+	CFLAGS += -O2
+endif
 
 #temporary flag for testing the optimizer
 
@@ -72,7 +74,7 @@ ifdef USE_OPTIMIZER
 endif
 
 CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c types.c \
-	catalog.c SockStream.c url.c StandardRead.c \
+	catalog.c SockStream.c Socket.C url.c StandardRead.c \
 	Engine.c Aggregates.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
@@ -82,7 +84,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c types.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
 	RelationId.c Iterator.c DataRead.c ODBCParse.dummy.c ODBCInfo.c \
 	ODBCCatalogParse.c AccessMethod.c CreateGestaltParse.c \
-        DteTupleAdt.C TupleStream.C
+	DteTupleAdt.C TupleStream.C MqlSession.C RadixCube.C
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
@@ -146,6 +148,9 @@ lib: $(LIBNAME)
 
 .PHONY: datareader rtree
 
+unidata:
+	cd ../unidata/ && make libunidata.a && cd ../DTE
+
 datareader:
 	cd ../DataReader/ && make libdatareader.a && cd ../DTE
 	
@@ -200,6 +205,20 @@ gui: $(GUI_OBJ)
 	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
+plan: DteProc.o plan.o Plan.tab.o Plan.lex.o $(LIBNAME)
+	$(CC) $(CFLAGS) -o $@ $^ $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) -lpthread
+
+plan.pure: DteProc.o plan.o Plan.tab.o Plan.lex.o $(LIBNAME)
+	purify $(CC) $(CFLAGS) -o $@ $^ $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) -lpthread
+
+plan.quant: DteProc.o plan.o Plan.tab.o Plan.lex.o $(LIBNAME)
+	quantify $(CC) $(CFLAGS) -o $@ $^ $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) -lpthread
+
+MqlServer: MqlServer.o $(LIBNAME)
+	$(CC) $(CFLAGS) -o $@ $^ $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) -lpthread
+
+
+
 # $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
 $(LIBNAME): $(LIBOBJ)
@@ -242,6 +261,12 @@ mostlyclean:
             $(DEPEND_FILES)
 
 #kb: depend stuff should be moved to Makefile.common
+
+%.lex.C: %.l %.tab.h
+	flex -t $< > $@
+
+%.tab.c %.tab.h: %.y
+	bison --verbose --defines --debug $<
 
 depend: $(DEPEND_FILES)
 

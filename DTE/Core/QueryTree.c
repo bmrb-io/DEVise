@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/01/20 22:46:20  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.57  1998/12/28 21:32:22  donjerko
   Optimizer is now used by default.
 
@@ -422,7 +428,18 @@ Iterator* QueryTree::createExec(){
 #ifdef USE_OPTIMIZER
 
 //	Query query(selectVec, tableVec, predicateVec, orderByVec);
-	Query query(selectVec, tableVec, predicateVec);
+
+	//kb: should parse proper order by...
+	vector<SortCriterion> orderBy(orderByVec.size());
+	Ordering ordering = ASC;
+	if( sortOrdering == "desc" ) ordering = DESC;
+	for(OptExprList::iterator i = orderByVec.begin() ; i != orderByVec.end() ; i++) {
+		orderBy.push_back(SortCriterion(*i, ordering));
+	}
+
+	Query query(selectVec, tableVec, predicateVec,
+							groupByVec, sequenceByVec, withPredicate,
+							havingPredicate, orderBy);
 	Optimizer optimizer(query);
 	optimizer.run();
 //	optimizer.display(cerr);
