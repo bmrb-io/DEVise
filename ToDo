@@ -371,6 +371,11 @@ Devise should automatically launch a Tasvir server if one is needed.
 
 Allow direct importing of GData files. (ml/rkw 4/4/97)
 
+When you bring up the "expression editor" from the mapping window, the
+buttons in the mapping window itself should be disabled (and there are
+probably other similar situations in other parts of the GUI). (ml/rkw
+4/14/97)
+
 
 COMPLETED
 ---------
