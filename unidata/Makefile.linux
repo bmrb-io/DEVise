@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/11/12 15:51:55  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.1.2.1  1997/10/30 20:18:56  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -50,11 +54,8 @@ Attr.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 Attr.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 Attr.o: /usr/include/sys/bitypes.h Enum.h Comment.h Config.h
 Attr.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/linux/time.h
-Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h sysdep.h
-Attr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
-Attr.o: /usr/include/assert.h
+Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h /usr/include/assert.h
 Comment.o: Comment.h
-DateTime.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
 DateTime.o: DateTime.h
 Enum.o: Enum.h /usr/include/string.h /usr/include/features.h
 Enum.o: /usr/include/sys/cdefs.h
@@ -108,9 +109,7 @@ Schema.o: /usr/include/limits.h /usr/include/posix1_lim.h
 Schema.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
 Schema.o: Lexer.h Enum.h Comment.h Config.h /usr/include/time.h
 Schema.o: /usr/include/sys/time.h /usr/include/linux/time.h Token.h
-Schema.o: getftime.h DateTime.h sysdep.h
-Schema.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
-Schema.o: /usr/include/assert.h
+Schema.o: getftime.h DateTime.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/features.h
 SlideBuf.o: /usr/include/sys/cdefs.h
 SlideBuf.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
@@ -168,9 +167,7 @@ UniData.o: /usr/include/ieee854.h Attr.h IntStack.h Traits.h bitmap.h
 UniData.o: /usr/include/limits.h /usr/include/posix1_lim.h
 UniData.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h DateTime.h sysdep.h
-UniData.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
-UniData.o: /usr/include/assert.h
+UniData.o: getftime.h DateTime.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/features.h
 fast_atof.o: /usr/include/sys/cdefs.h /usr/include/endian.h
 fast_atof.o: /usr/include/bytesex.h
@@ -185,7 +182,6 @@ getftime.o: /usr/include/sys/time.h /usr/include/linux/types.h
 getftime.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
 getftime.o: /usr/include/asm/types.h /usr/include/linux/time.h
 getftime.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h DateTime.h
-getftime.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
 pmain.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 pmain.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
 pmain.o: /usr/include/huge_val.h /usr/include/endian.h /usr/include/bytesex.h
@@ -245,4 +241,3 @@ umain.o: Attr.h IntStack.h Traits.h /usr/include/string.h bitmap.h
 umain.o: /usr/include/limits.h /usr/include/posix1_lim.h
 umain.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
 umain.o: Lexer.h Enum.h Comment.h Config.h udParam.h getftime.h DateTime.h
-umain.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1998/05/08 14:00:02  wenger
+#  Updated Linux dependencies.
+#
 #  Revision 1.6  1998/03/11 18:44:08  wenger
 #  Updated Linux dependencies.
 #
@@ -60,29 +63,35 @@ LMAPI.o: /usr/include/features.h
 LMAPI.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 LMAPI.o: /usr/include/stdlib.h /usr/include/errno.h
 LMAPI.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-LMAPI.o: /usr/include/alloca.h LMAPI.h LMControl.h LMWindow.h LMHashTable.h
-LMAPI.o: LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMAPI.o: ../graphics/Dispatcher.h /usr/include/sys/types.h
-LMAPI.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-LMAPI.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-LMAPI.o: /usr/include/sys/bitypes.h ../graphics/DeviseTypes.h
-LMAPI.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
+LMAPI.o: /usr/include/alloca.h LMAPI.h LMControl.h /s/tcl/include/tcl.h
+LMAPI.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+LMAPI.o: /usr/include/sys/types.h /usr/include/linux/types.h
+LMAPI.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+LMAPI.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+LMAPI.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMAPI.o: /s/X11/include/X11/Xosdefs.h LMWindow.h LMHashTable.h LMLayout.h
+LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMAPI.o: ../graphics/VisualArg.h ../graphics/ViewDir.h LMError.h
 LMControl.o: /usr/include/stdlib.h /usr/include/features.h
 LMControl.o: /usr/include/sys/cdefs.h
 LMControl.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 LMControl.o: /usr/include/errno.h /usr/include/linux/errno.h
 LMControl.o: /usr/include/asm/errno.h /usr/include/alloca.h
-LMControl.o: /usr/include/string.h LMControl.h LMWindow.h LMHashTable.h
-LMControl.o: LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMControl.o: ../graphics/Dispatcher.h /usr/include/sys/types.h
-LMControl.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-LMControl.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-LMControl.o: /usr/include/sys/bitypes.h ../graphics/DeviseTypes.h
-LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
-LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMControl.o: /usr/include/stdio.h /usr/include/libio.h
-LMControl.o: /usr/include/_G_config.h ../graphics/ViewDir.h LMAPI.h
+LMControl.o: /usr/include/string.h LMControl.h /s/tcl/include/tcl.h
+LMControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+LMControl.o: /usr/include/sys/types.h /usr/include/linux/types.h
+LMControl.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+LMControl.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+LMControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMControl.o: /s/X11/include/X11/Xosdefs.h LMWindow.h LMHashTable.h LMLayout.h
+LMControl.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+LMControl.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMControl.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMControl.o: ../graphics/VisualArg.h /usr/include/stdio.h
+LMControl.o: /usr/include/libio.h /usr/include/_G_config.h
+LMControl.o: ../graphics/ViewDir.h LMAPI.h
 LMHashTable.o: /usr/include/string.h /usr/include/features.h
 LMHashTable.o: /usr/include/sys/cdefs.h
 LMHashTable.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
@@ -96,28 +105,34 @@ LMLayout.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 LMLayout.o: /usr/include/values.h /usr/include/ieee754.h
 LMLayout.o: /usr/include/ieee854.h LMWindow.h LMHashTable.h
 LMLayout.o: ../graphics/DList.h ../graphics/Exit.h
-LMMain.o: LMControl.h LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMMain.o: ../graphics/Exit.h ../graphics/Dispatcher.h
-LMMain.o: /usr/include/sys/types.h /usr/include/linux/types.h
-LMMain.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-LMMain.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMMain.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+LMMain.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+LMMain.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+LMMain.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+LMMain.o: /usr/include/sys/bitypes.h /s/X11/include/X11/X.h
+LMMain.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+LMMain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h LMWindow.h
+LMMain.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
+LMMain.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+LMMain.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
 LMMain.o: ../graphics/VisualArg.h /usr/include/stdio.h /usr/include/libio.h
 LMMain.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 LMMain.o: ../graphics/ViewDir.h /usr/include/string.h /usr/include/features.h
-LMMain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMWindow.o: ../graphics/Exit.h LMControl.h ../graphics/Dispatcher.h
+LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
+LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 LMWindow.o: /usr/include/sys/types.h /usr/include/linux/types.h
 LMWindow.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
 LMWindow.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMWindow.o: ../graphics/VisualArg.h /usr/include/stdio.h /usr/include/libio.h
+LMWindow.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMWindow.o: /s/X11/include/X11/Xosdefs.h
+LMWindow.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+LMWindow.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+LMWindow.o: /usr/include/values.h ../graphics/DevStatus.h
+LMWindow.o: ../graphics/Journal.h ../graphics/VisualArg.h
+LMWindow.o: /usr/include/stdio.h /usr/include/libio.h
 LMWindow.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 LMWindow.o: ../graphics/ViewDir.h /usr/include/string.h
 LMWindow.o: /usr/include/features.h
-LMWindow.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

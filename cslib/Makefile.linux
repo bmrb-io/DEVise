@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1998/05/08 14:00:23  wenger
+# Updated Linux dependencies.
+#
 # Revision 1.7  1998/03/04 20:35:59  wenger
 # Updated dependencies.
 #
@@ -161,7 +164,6 @@ WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 WinServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 WinServer.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-WinServer.o: ../graphics/CursorStore.h
 client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
 client.o: /usr/include/features.h
@@ -200,4 +202,4 @@ server.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 server.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-server.o: ../graphics/CursorStore.h ../graphics/DualWindowRep.h
+server.o: ../graphics/DualWindowRep.h

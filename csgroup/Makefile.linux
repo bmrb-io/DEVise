@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1998/05/08 14:00:17  wenger
+# Updated Linux dependencies.
+#
 # Revision 1.9  1998/04/27 16:44:42  wenger
 # Some updates of Linux-specific stuff.
 #
@@ -332,15 +335,17 @@ server_serv.o: /usr/include/errno.h /usr/include/linux/errno.h
 server_serv.o: /usr/include/asm/errno.h /usr/include/alloca.h
 server_serv.o: /usr/include/string.h /usr/include/signal.h
 server_serv.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
+server_serv.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+server_serv.o: /usr/include/fcntl.h /usr/include/gnu/types.h
+server_serv.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
 server_serv.o: /usr/include/unistd.h /usr/include/posix_opt.h
-server_serv.o: /usr/include/gnu/types.h /usr/include/confname.h
-server_serv.o: /usr/include/memory.h /usr/include/sys/resource.h
-server_serv.o: /usr/include/sys/time.h /usr/include/linux/time.h
-server_serv.o: /usr/include/time.h /usr/include/limits.h
-server_serv.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-server_serv.o: /usr/include/posix2_lim.h /usr/include/linux/resource.h
-server_serv.o: /usr/include/asm/resource.h /usr/include/syslog.h
-server_serv.o: /usr/include/sys/syslog.h
+server_serv.o: /usr/include/confname.h /usr/include/memory.h
+server_serv.o: /usr/include/sys/resource.h /usr/include/sys/time.h
+server_serv.o: /usr/include/linux/time.h /usr/include/time.h
+server_serv.o: /usr/include/limits.h /usr/include/posix1_lim.h
+server_serv.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+server_serv.o: /usr/include/linux/resource.h /usr/include/asm/resource.h
+server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
 server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
 server_serv.o: /usr/include/strings.h colbr.h /usr/include/arpa/inet.h
 server_serv.o: /usr/include/sys/param.h /usr/include/linux/param.h
@@ -411,8 +416,10 @@ CmdLog.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
 CmdLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 CmdLog.o: /usr/include/confname.h /usr/include/fcntl.h
 CmdLog.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
-CmdLog.o: /usr/include/sys/stat.h /usr/include/linux/stat.h CmdLog.h
-CmdLog.o: CmdSerialize.h /usr/include/sys/varargs.h
+CmdLog.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+CmdLog.o: /usr/include/sys/time.h /usr/include/linux/time.h
+CmdLog.o: /usr/include/time.h CmdLog.h CmdSerialize.h
+CmdLog.o: /usr/include/sys/varargs.h
 CmdLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
 CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
@@ -493,6 +500,9 @@ Server.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 Server.o: /usr/include/linux/param.h /usr/include/asm/param.h dbase.h
 Server.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h keys.h
 Server.o: Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
+Server.o: ../graphics/Util.h /usr/include/time.h /usr/include/sys/time.h
+Server.o: /usr/include/linux/time.h /usr/include/ctype.h ../graphics/Init.h
+Server.o: ../graphics/BufPolicy.h
 TclClient.o: /usr/include/stdio.h /usr/include/libio.h
 TclClient.o: /usr/include/_G_config.h /usr/include/stdlib.h
 TclClient.o: /usr/include/features.h /usr/include/sys/cdefs.h

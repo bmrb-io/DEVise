@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/05/08 14:00:45  wenger
+# Updated Linux dependencies.
+#
 # Revision 1.10  1998/03/11 18:44:18  wenger
 # Updated Linux dependencies.
 #
@@ -92,7 +95,6 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xutil.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/GraphicsDebug.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/CursorStore.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -197,7 +199,6 @@ CycleEffMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleEffMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleEffMappingClassInfo.o: /usr/include/X11/Xutil.h
 CycleEffMappingClassInfo.o: ../graphics/GraphicsDebug.h
-CycleEffMappingClassInfo.o: ../graphics/CursorStore.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -290,7 +291,6 @@ CycleOccMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleOccMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleOccMappingClassInfo.o: /usr/include/X11/Xutil.h
 CycleOccMappingClassInfo.o: ../graphics/GraphicsDebug.h
-CycleOccMappingClassInfo.o: ../graphics/CursorStore.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -394,7 +394,6 @@ CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xutil.h
 CycleSuspendedMappingClassInfo.o: ../graphics/GraphicsDebug.h
-CycleSuspendedMappingClassInfo.o: ../graphics/CursorStore.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -504,7 +503,6 @@ CycleWorkingMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleWorkingMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleWorkingMappingClassInfo.o: /usr/include/X11/Xutil.h
 CycleWorkingMappingClassInfo.o: ../graphics/GraphicsDebug.h
-CycleWorkingMappingClassInfo.o: ../graphics/CursorStore.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -603,7 +601,7 @@ HostMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
 HostMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
 HostMappingClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
 HostMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-HostMappingClassInfo.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+HostMappingClassInfo.o: ../graphics/GraphicsDebug.h
 HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
@@ -677,15 +675,15 @@ MappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 MappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 MappingClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 MappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-MappingClassInfo.o: ../graphics/CursorStore.h ../graphics.new/RectShape.h
-MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
-MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
-MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
-MappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+MappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
+MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MappingClassInfo.o: ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
@@ -960,4 +958,3 @@ disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 disp.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 disp.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-disp.o: ../graphics/CursorStore.h
