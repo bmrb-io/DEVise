@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/10 19:00:40  jussi
+  Updated to reflect new transformation interface.
+
   Revision 1.6  1996/06/27 19:06:51  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -58,12 +61,14 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
   for(int i = 0; i < numSyms; i++) {
     char *gdata = (char *)gdataArray[i];
     
+    Coord size = GetSize(gdata, map, offset);
+
     block_data[i].pt.x_ = GetX(gdata, map, offset);
     block_data[i].pt.y_ = GetY(gdata, map, offset);
     block_data[i].pt.z_ = GetZ(gdata, map, offset);
-    block_data[i].W = fabs(GetShapeAttr0(gdata, map, offset));
-    block_data[i].H = fabs(GetShapeAttr1(gdata, map, offset));
-    block_data[i].D = fabs(GetShapeAttr2(gdata, map, offset));
+    block_data[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
+    block_data[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
+    block_data[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
     block_data[i].color = GetColor(view, gdata, map, offset);
 
     Map3D::AssignBlockVertices(block_data[i]);
