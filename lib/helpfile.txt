@@ -1,8 +1,9 @@
 BEGINTAG DEVise
-section 0: DEVise: Introduction
+
+Section 0: DEVise: Introduction
 
     DEVise (A Data Exploration and Visualization Environment) is designed
-for 2D visualization of stream data. A streams is an append-only
+for 2D visualization of stream data. A data stream is an append-only
 object, e.g, an append-only text file. 
 
 DEVise is designed with the following features:
@@ -25,10 +26,10 @@ DEVise is designed with the following features:
 
 	+ Structured interface that takes the user from the input file
 	to the final visualization.
-
 ENDTAG DEVise
 BEGINTAG file
-Section1: FILE
+
+Section 1: FILE
     The input file is provided by the user. It is stored on disk in
 ascii. An example of an ascii file containing sin(time) and cos(time) might
 look like:
@@ -45,9 +46,9 @@ We will use this example throughout the help window.
 To visualize the contents of a file, use the 'Visualize/File' menu
 from the control panel. A separate 'schema' file is also needed by
 DEVise. (See the 'schema' section.)
-
 ENDTAG file
 BEGINTAG schema
+
 Section 2: SCHEMA
 	Step 1: import a file into DEVise through a schema file.
 The schema file describes the layout of an ascii input file.
@@ -76,10 +77,10 @@ The remaining lines describe attribute names and types.
 While executing 'visuazlize/File' the user is asked to select a file type. If
 no file type is available, DEVise automatically asks the user
 to select a schema file.
-
 ENDTAG schema
 BEGINTAG tdata
-section 3: TDATA
+
+Section 3: TDATA
 After selecting the file type, the user is asked to enter an alias
 for the tdata. The default name is the name of the input file,
 stripped of its path information. After entering the alias, the
@@ -91,11 +92,10 @@ user uses the tdata to create visualizations. This can be done by
 following the steps in the 'visualize/file' menu when starting
 from scratch, or using the 'visaulize/tdata' menu when the tdata
 has already been created.
-
-
 ENDTAG tdata
 BEGINTAG mapping
-section 4: MAPPING
+
+Section 4: MAPPING
 	Step 2: Convert textual data (TData) into graphical data (GData).
 A mapping converts textual data (tdata) attributes into graphical 
 data (gdata) attributes. The user decides how tdata is visualize by
@@ -125,19 +125,19 @@ For our example, we can create the following example mappings:
 
 Once a mapping is created, it can be used on all tdata with the
 same file type.
-
 ENDTAG mapping
 BEGINTAG gdata
-section 5: GDATA
+
+Section 5: GDATA
     The graphical data (gdata) is the graphical representation of the
 tdata. It consists of attributes: x, y, color, pattern, size, orientation,
 shape, and shape specific attributes. Using the 'Visualize/File' or the 
 'Visualize/TData' menu, the user selects the mapping that is used to 
 create the gdata.
-
 ENDTAG gdata
 BEGINTAG visual
-section 6: Visual Filter
+
+Section 6: Visual Filter
 	Step 3: use visual filter to specify portions of GData to be viewed.
 A visual filter defines a range query over the graphical data
 attributes of the gdata. The user sets the visual filter as follows:
@@ -165,11 +165,10 @@ then:
 	The left button zooms in to X, while the right button zooms in X and Y.
 	v)The user can also create a cursor to display the view boundaries
 	of one view inside another view. See the section on 'link, cursor'.
-
-
 ENDTAG visual
 BEGINTAG view
-section 7: VIEW
+
+Section 7: VIEW
 	A view is used to display those gdata that fall within the range
 of the visual filter. Currently we have two types of views: Scatter
 and SortedX. The Scatter view is used to draw a scattered plot.
@@ -184,10 +183,10 @@ automatic in the future.)
 'Visualize/File', 'Visualize/TData', or 'Visualize/GData' menu.
 Note that currently we do not allow more than one gdata to
 be inserted in a view.
-
 ENDTAG view
 BEGINTAG window
-section 8: WINDOW
+
+Section 8: WINDOW
 	
 	A window provides the screen real estate used by views to
 draw the gdata. It it also responsible for arranging views in its
@@ -200,10 +199,10 @@ It can also be moved to a different window by using the
 'View/Move to Window' menu.
 
 	Windows can be duplicated using the 'Window/duplicate' menu.
-
 ENDTAG window
 BEGINTAG link
-section 9: LINK, CURSOR
+
+Section 9: LINK, CURSOR
 
 	Step 5: Link multiple views together.
 A link is used to link visual filters so that updating one
@@ -222,10 +221,10 @@ of the source view are drawn as line segments in the axes
 of the destination view. Click in the axes area of the destination view
 to move the source view (by changing its visual filter)
 to the location clicked.
-
 ENDTAG link
 BEGINTAG tour
-section 10: Tour using the sample data.
+
+Section 10: Tour using the sample data.
 
 	We now take the user through the steps necessary to create a visualization
 of the sample file. Let us assume that the name of the file is sensor.dat,
@@ -312,9 +311,9 @@ and it looks as follows:
 
 	To see the result of this session: 
 		Choose Session/Demo menu to load the demo session.
-
 ENDTAG tour
 BEGINTAG gui 
+
 Section 11: Graphical User Interface (GUI)
 	This section contains a brief description of the GUI implemented
 	by DEVise. The GUI consists of the control panel,
@@ -502,3 +501,60 @@ Section 11B- Data Windows
 	the destination view moves the source view to the clicked region
 	by changing its visual filter.
 ENDTAG gui
+
+  ------------------------------------------------------------------------
+BEGINTAG copyright
+
+    DEVise Data Visualization Software
+    (c) Copyright 1992-1995
+    By the DEVise Development Group
+    Madison, Wisconsin
+    All Rights Reserved.
+ENDTAG copyright
+BEGINTAG disclaimer
+
+  ------------------------------------------------------------------------
+  RESEARCH SOFTWARE DISCLAIMER -------------------------------------------
+  ------------------------------------------------------------------------
+
+    As unestablished research software, this program is provided free of 
+    charge on an "as is" basis without warranty of any kind, either 
+    express or implied.  Acceptance and use of this program constitutes 
+    the user's understanding that (s)he will have no recourse for any 
+    actual or consequential damages, including, but not limited to, 
+    lost profits or savings, arising out of the use of or inability to 
+    use this program.  
+ENDTAG disclaimer
+BEGINTAG agreement
+
+  ------------------------------------------------------------------------
+  USER AGREEMENT ---------------------------------------------------------
+  ------------------------------------------------------------------------
+
+     BY ACCEPTANCE AND USE OF THIS EXPERIMENTAL PROGRAM
+     THE USER AGREES TO THE FOLLOWING:
+
+     a.  This program is provided free of charge for the user's personal, 
+         non-commercial, experimental use.
+
+     b.  All title, ownership and rights to this program and any copies 
+         remain with the copyright holder, irrespective of the ownership 
+         of the media on which the program resides.
+
+     c.  The user is permitted to create derivative works to this program.  
+         However, all copies of the program and its derivative works must
+         contain the DEVise COPYRIGHT NOTICE, the RESEARCH SOFTWARE 
+         DISCLAIMER and this USER AGREEMENT.
+
+     d.  The user understands and agrees that this program and any 
+         derivative works are to be used solely for experimental purposes 
+         and are not to be sold or commercially exploited in any manner 
+         WITHOUT EXPRESS WRITTEN PERMISSION.
+
+     e.  We request that the user supply us with a copy of any changes, 
+         enhancements, or derivative works which the user may create,
+         with the user's permission to redistribute it.
+         Copies of such material should be sent to: DEVISE@CS.WISC.EDU
+
+-------------------------------------------------------------------------
+ENDTAG agreement
