@@ -6,6 +6,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/22 17:33:14  jussi
+#	Added ownership message.
+#
 #	Revision 1.3  1995/09/21 15:35:53  jussi
 #	Minor changes.
 #
@@ -225,14 +228,14 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
     -text "Pathname:"
   catch ".fsBox.path.paths.paths config $tmpButtonOpt"
 
-  menu .fsBox.path.paths.paths.menu
+  menu .fsBox.path.paths.paths.menu -tearoff 0
   catch ".fsBox.path.paths.paths.menu config $tmpButtonOpt"
 
   .fsBox.path.paths.paths.menu add command \
      -label "[string trimright $fsBox(internalPath) {/@}]" \
      -command "
        global fsBox
-       FSBoxFSShow \[.fsBox.path.path get\] \
+       FSBoxFSShow [string trimright $fsBox(internalPath) {/@}] \
          \[.fsBox.pattern.pattern get\] \$fsBox(all)
        .fsBox.path.path delete 0 end
        .fsBox.path.path insert 0 [string trimright $fsBox(internalPath) {/@}]"
@@ -263,7 +266,7 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
     -text "Selection pattern:"
   catch ".fsBox.pattern.patterns.patterns config $tmpButtonOpt"
 
-  menu .fsBox.pattern.patterns.patterns.menu
+  menu .fsBox.pattern.patterns.patterns.menu -tearoff 0
   catch ".fsBox.pattern.patterns.patterns.menu config $tmpButtonOpt"
 
   .fsBox.pattern.patterns.patterns.menu add checkbutton \
@@ -334,8 +337,9 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
   FSBoxFSShow $fsBox(internalPath) $fsBox(pattern) $fsBox(all)
 
   # bindings
-#  bind .fsBox.files.files <Double-Button-1> "
-#    FSBoxFSFileSelectDouble %W $fsBox(showPixmap) \{$fsBoxActionOk\} %y"
+  bind .fsBox.files.files <Double-Button-1> "
+    FSBoxFSFileSelectDouble %W $fsBox(showPixmap) \{$fsBoxActionOk\} %y
+    break"
   bind .fsBox.files.files <ButtonPress-1> "
     FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
   bind .fsBox.files.files <Button1-Motion> "
@@ -592,6 +596,8 @@ proc FSBoxFSInsertPath {} {# xf ignore me 6
 
   set fsBoxLast [.fsBox.path.paths.paths.menu index last]
   set fsBoxNewEntry [string trimright [.fsBox.path.path get] "/@"]
+
+  # see if new path already exists in the paths menu
   for {set fsBoxCounter 0} {$fsBoxCounter <= $fsBoxLast} {incr fsBoxCounter 1} {
     if {"$fsBoxNewEntry" == \
           "[lindex [.fsBox.path.paths.paths.menu entryconfigure \
@@ -599,6 +605,8 @@ proc FSBoxFSInsertPath {} {# xf ignore me 6
       return
     }
   }
+
+  # if less than 9 items on the paths menu, simply add the new path to menu
   if {$fsBoxLast < 9} {
     .fsBox.path.paths.paths.menu add command \
       -label "$fsBoxNewEntry" \
@@ -608,7 +616,10 @@ proc FSBoxFSInsertPath {} {# xf ignore me 6
           \[.fsBox.pattern.pattern get\] \$fsBox(all)
         .fsBox.path.path delete 0 end
         .fsBox.path.path insert 0 $fsBoxNewEntry"
-  } {
+
+  } else {
+
+    # otherwise shift all entries by one and add new path to menu
     for {set fsBoxCounter 0} {$fsBoxCounter < $fsBoxLast} {incr fsBoxCounter 1} {
       .fsBox.path.paths.paths.menu entryconfigure \
         $fsBoxCounter -label \
@@ -626,14 +637,13 @@ proc FSBoxFSInsertPath {} {# xf ignore me 6
               [expr $fsBoxCounter+1] -label] 4]"
     }
     .fsBox.path.paths.paths.menu entryconfigure $fsBoxLast \
-      -label "$fsBoxNewEntry"
+	    -label "$fsBoxNewEntry"
     .fsBox.path.paths.paths.menu entryconfigure $fsBoxCounter \
-      -command "
-        global fsBox
-        FSBoxFSShow \[.fsBox.path.path get\] \
-          \[.fsBox.pattern.pattern get\] \$fsBox(all)
-        .fsBox.path.path delete 0 end
-        .fsBox.path.path insert 0 $fsBoxNewEntry"
+	    -command "global fsBox
+                      FSBoxFSShow \[.fsBox.path.path get\] \
+			      \[.fsBox.pattern.pattern get\] \$fsBox(all)
+                     .fsBox.path.path delete 0 end
+                     .fsBox.path.path insert 0 $fsBoxNewEntry"
   }
 }
 
@@ -794,7 +804,7 @@ proc FSBoxFSShow {fsBoxPath fsBoxPattern fsBoxAll} {# xf ignore me 6
       catch {destroy $fsBoxCounter}
     }
   }
-  menu .fsBox.pattern.patterns.patterns.menu
+  menu .fsBox.pattern.patterns.patterns.menu -tearoff 0
   catch ".fsBox.pattern.patterns.patterns.menu config $tmpButtonOpt"
 
   if {$fsBox(extensions)} {
