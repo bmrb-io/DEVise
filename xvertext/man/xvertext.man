@@ -1,0 +1,94 @@
+.\" @(#)xvertext 5.0 18/4/93; Copyright (c) 1993 Alan Richardson
+.TH xvertext 3 "19 Apr 1993" "xvertext routines"
+.SH NAME
+xvertext - a collection of functions for rendering rotated text in an
+X window
+.SH GENERAL
+As of version 5.0 there are 8 functions in the xvertext package 
+intended for general use. These are
+.I XRotVersion,
+.I XRotSetMagnification,
+.I XRotSetBoundingBoxPad,
+.I XRotTextExtents,
+.I XRotDrawString,
+.I XRotDrawImageString,
+.I XRotDrawAlignedString
+and
+.I XRotDrawAlignedImageString.
+.SH REMARK
+Rotation at any angle is an improvement over the vertical text
+available in version 2.0. Some functions have been deleted from that
+version, and some remaining functions
+.I have had their arguments changed.
+.PP
+As of version 4.0, a cache has been added to speed up redraws. This 
+feature is enabled at compile time.
+.SH USAGE
+.I XRotVersion 
+is used to obtain the current release number and a copyright string.
+.PP
+.I XRotSetMagnification
+is used to indicate with what factor all subsequent fonts should be 
+magnified.
+.PP
+.I XRotTextExtents
+is used to obtain the bounding box a string will have when painted in
+a particular font at a given angle/position.
+.I XRotSetBoundingBoxPad
+is used to indicate by how many pixels the bounding box should be
+padded out.
+.PP
+Using the painting routines typically involves three steps: creating 
+a GC, loading a font and calling the painting function.
+For example:
+
+|
+.br
+|
+.br
+GC gc;
+.br
+XFontStruct *font;
+.br
+char *fontname=
+"lucidasans-bold-18";
+.br
+.PP
+font=XLoadQueryFont(dpy, fontname);
+.br
+    if(font==NULL) {
+        fprintf(stderr, "no font `%s'\\n", fontname);
+        font=XLoadQueryFont(dpy, "fixed");
+    }
+.PP
+gc=XCreateGC(dpy, window, NULL, 0);
+.br
+XSetForeground(dpy, gc, WhitePixel(dpy, DefaultScreen(dpy)));
+.br
+XSetBackground(dpy, gc, BlackPixel(dpy, DefaultScreen(dpy)));
+.PP
+XRotDrawAlignedImageString(dpy, font, 45., 
+window, gc, 300, 300, "hello", BLEFT);
+.br
+|
+.br
+|
+.PP
+Note that dpy and window are a display connection and a window,
+already assumed created.
+This code segment obtains an XFontStruct for the font 
+"lucidasans-bolditalic-10" if it exists, or "fixed" if not.
+A graphics context is created with white foreground and black
+background. The string "hello" is then painted at 45 degrees with
+bottom left hand corner at (300, 300).
+.SH SEE ALSO
+XRotVersion,
+XRotSetMagnification,
+XRotSetBoundingBoxPad,
+XRotTextExtents,
+XRotDrawString,
+XRotDrawImageString,
+XRotDrawAlignedString,
+XRotDrawAlignedImageString.
+
+

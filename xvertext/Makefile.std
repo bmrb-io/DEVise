@@ -1,0 +1,98 @@
+#############################################################################
+
+
+# Makefile.std for xvertext version 5.0
+
+
+#############################################################################
+
+
+# Cache status:
+# ------------
+#  Add one of `-DCACHE_XIMAGES' or `-DCACHE_BITMAPS' to decide what is
+#   cached.
+#
+#  Add `-DCACHE_SIZE_LIMIT=xxxx' where xxxx is the cache size in kilobytes.
+#   A cache size of zero turns caching off.
+#
+#  Add `-DCACHE_FID' if you want to cache font ID's in those instances
+#   when the font name can't be determined. 
+#
+#  You could also add `-DDEBUG', and watch the cache in operation.
+
+
+              CACHE = -DCACHE_BITMAPS -DCACHE_SIZE_LIMIT=300 -DCACHE_FID
+
+
+#############################################################################
+
+
+#  If your X11 is release 3, add -DX11R3 to this line
+#    (you won't be able to use the stipple feature with rotated text)
+
+
+                RELEASE =
+
+
+#############################################################################
+
+
+# This is where the library, header files and manual pages will go, if
+#  you use the `install' and `install.man' options with make.
+
+
+          THELIBDIR = ./lib
+          THEINCDIR = ./include
+          THEMANDIR = ./man/man3
+
+
+#############################################################################
+
+
+# No user serviceable parts below! 
+
+
+#############################################################################
+
+
+                 CC = cc
+             CFLAGS = $(CACHE) $(RELEASE) 
+               OBJS = rotated.o example.o
+              SHELL = /bin/sh
+
+all: libXrot.a
+
+example: $(OBJS) rotated.h
+	$(CC) $(CFLAGS) -o example $(DEFS) $(OBJS) -lX11 -lm
+
+libXrot.a: rotated.o rotated.h
+	rm -f libXrot.a
+	ar cq libXrot.a rotated.o 
+	ranlib libXrot.a
+
+install: libXrot.a 
+	@if [ -d $(THELIBDIR) ]; then set +x; \
+	else (set -x; mkdir $(THELIBDIR)); fi
+	cp libXrot.a $(THELIBDIR)
+	@if [ -d $(THEINCDIR) ]; then set +x; \
+	else (set -x; mkdir $(THEINCDIR)); fi
+	cp rotated.h $(THEINCDIR)
+
+install.man:
+	@if [ -d $(THEMANDIR) ]; then set +x; \
+	else (set -x; mkdir $(THEMANDIR)); fi
+	cp man/XRotDrawAlignedString.man $(THEMANDIR)/XRotDrawAlignedImageString.3
+	cp man/XRotDrawAlignedString.man $(THEMANDIR)/XRotDrawAlignedString.3
+	cp man/XRotDrawAlignedString.man $(THEMANDIR)/XRotDrawImageString.3
+	cp man/XRotDrawAlignedString.man $(THEMANDIR)/XRotDrawString.3
+	cp man/XRotVersion.man $(THEMANDIR)/XRotVersion.3
+	cp man/xvertext.man $(THEMANDIR)/xvertext.3
+	cp man/XRotSetMagnification.man $(THEMANDIR)/XRotSetMagnification.3
+	cp man/XRotTextExtents.man $(THEMANDIR)/XRotTextExtents.3
+	cp man/XRotTextExtents.man $(THEMANDIR)/XRotSetBoundingBoxPad.3
+
+clean:
+	rm -f $(OBJS) example example~ libXrot.a
+
+
+

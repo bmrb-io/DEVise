@@ -1,0 +1,32 @@
+.\" @(#)XRotVersion 5.0 18/4/92; Copyright (c) 1993 Alan Richardson
+.TH XRotVersion 3 "18 Apr 1993" "xvertext routines"
+.SH NAME
+XRotVersion \- return version number and copyright of xvertext routines
+.SH SYNOPSIS
+.B float XRotVersion(copyright, nmax)
+.br
+.B "   " char *copyright;
+.br
+.B "   " int nmax;
+.SH ARGUMENTS
+.IP \fIcopyright\fP 1i
+A character string to hold copyright information.
+.IP \fInmax\fP 1i
+The maximum number of characters to be placed in \fIcopyright\fP.
+.SH DESCRIPTION
+.PP
+The
+.I XRotVersion
+function returns the current version number of the xvertext routines.
+It also places into
+.I copyright
+at most
+.I nmax
+characters of a copyright string.
+.SH SEE ALSO
+xvertext,
+XRotDrawString,
+XRotDrawImageString,
+XRotDrawAlignedString,
+XRotDrawAlignedImageString.
+

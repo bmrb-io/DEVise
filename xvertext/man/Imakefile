@@ -1,0 +1,26 @@
+#############################################################################
+
+
+# man page-installing Imakefile for xvertext version 5.0
+
+
+#############################################################################
+
+
+#if XRelease >= 50
+#include <Library.tmpl>
+#endif
+
+#include "../xvertext.tmpl"
+
+MANSUFFIX = $(LIBMANSUFFIX)
+
+all::
+
+InstallManPage(XRotDrawAlignedString,$(THEMANDIR))
+InstallManPage(XRotVersion,$(THEMANDIR))
+InstallManPage(xvertext,$(THEMANDIR))
+InstallManPage(XRotSetMagnification,$(THEMANDIR))
+InstallManPage(XRotTextExtents,$(THEMANDIR))
+
+

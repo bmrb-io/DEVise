@@ -1,0 +1,57 @@
+   How to compile this stuff (version 5.0)
+   ---------------------------------------
+
+   Included in this package is an Imakefile which generates an example
+program and, optionally, makes and installs a linking library, header
+file and manual pages. For those people without imake, or who can't get
+it to work, a Makefile.std is also includes.
+
+   To configure the package, edit `xvertext.tmpl' if you want to use imake,
+or the `Makefile.std' if not. You may which to change the cache status, and/or
+the directories used for any installing. If you have X11R3, indicate this.
+
+   If you have imake, type:
+
+         xmkmf
+         make Makefiles
+
+   to create the Makefiles, else
+
+         cp Makefile.std Makefile
+
+   if you haven't.
+
+   Typing `make example' produces the example program `example'. Run it. 
+Depending on your machine you might be pleasantly :-) or unpleasantly :-(
+surprised! (Note that if your server memory is small and limited, such as
+in an X terminal, the example program may fail with in `insufficient resources'
+error. Try turning the cache off in this case, and destroying some other
+windows - but not this one!)
+
+   Typing `make libXrot.a' (or just plain `make') calls `ar' to produce an
+archive	file libXrot.a. Typing `make install' installs this and the header 
+file rotated.h.
+
+   Typing `make install.man' installs the manual pages.
+
+
+   Something gone wrong?
+   ---------------------
+
+   Mail me and I'll do my best.
+
+
+   Successful compilations
+   -----------------------
+
+   The programs in this package have been successfully compiled and
+run by myself on:
+
+   o HP 9000s300, 9000s700 and 9000s800 machines
+   o Solbournes running SunOS 4.1.1
+   o A Sequent Symmetry running DYNIX
+
+   and on many other machines by other people. Good luck with anything else :-)
+
+
+   Alan Richardson, 26/4/93 (mppa3@uk.ac.sussex.syma)

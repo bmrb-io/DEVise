@@ -1,0 +1,109 @@
+   Version 5.0 (25/4/92):
+   ----------------------
+
+   Fonts can now be magnified to greater than their normal size.
+Obviously since they're bitmap fonts the effect isn't startling, but it's 
+better than you might think.
+
+   --
+
+   Font ID's can be cached, albeit unreliably, if font names aren't
+available. Thanks to Paul "E." Maisano <pem@aaii.oz.au>.
+
+   --
+
+   Bounding boxes can now be deduced and returned in an XPoint list.
+Vasco Lopes Paulo (vlp@latina.inesc.pt) suggested this.
+
+   --
+
+   You can set the stipple bitmap,x-y origin and plane on the gc you pass into
+the functions (only R4+). Vasco Lopes Paulo (vlp@latina.inesc.pt) worked
+on this.
+
+   --
+
+   Wrote some more demo screens to illustrate above features.
+
+   --
+   
+   Vasco Lopes Paulo (vlp@latina.inesc.pt) suggested changes to `rotated.h'
+to make it C++ compliant.
+
+   --
+
+   Corrected minor positional bugs.
+
+   --
+
+   Added an Imakefile, thanks to Nicole Seiffert 
+<seiffert@iti.informatik.th-darmstadt.de> who wrote this. I hacked it a 
+bit so I hope I haven't broken it :-(
+
+
+-------------------------------------------------------------------------------
+
+
+   Version 4.0 (18/4/92):
+   ----------------------
+
+   Added a cache to store items of rotated text, so that redraws are 
+much faster. See the README for details.
+  
+   --
+
+   Corrected (I hope!) several memory leaks in version 3.1. Many people got
+in touch about this - thanks to:
+
+      Per-Erik Nordbo <pererik@afrodite.cmr.no>
+      Damian Packer <Damian_Packer@MathWorks.COM>
+      Richard van de Stadt <stadt@cs.utwente.nl>
+
+   --
+
+   Corrected a `segmentation violation' causing bug.
+
+   --
+
+   The AIX c compiler rejected `| =', ie it didn't like the space; thanks to:
+
+      pturner@amb4.ccalmr.ogi.edu (Paul J Turner)
+
+
+-------------------------------------------------------------------------------
+
+
+   Version 3.0 (31/3/92):
+   ----------------------
+
+   The biggest change since version 2.0 is this:
+
+                *****************************************
+
+	 	xvertext now paints strings at any angle!
+
+                *****************************************
+
+   The way xvertext works now is not to bother pre-rotating a font
+before drawing, just draw the whole string horizontally and rotate it all
+at once. Is this good or bad news?
+
+    Advantages:
+    -----------
+       o  A single function call will rotate and paint you a string.
+       o  Text looks good at any angle, particularly big fonts.
+       o  Small strings are quick to draw.
+
+    Disadvantages:
+    --------------
+       o  The arguments to the remaining functions (XRotDraw.....) are
+*different* to their counterparts in version 2.0. Thus code using the
+earlier version will need altering (which will probably mean deleting
+loads of stuff, and altering a fer arguments).
+       o  Long strings in big fonts take a while.
+       o  Speed seems more dependent now on computing power rather
+than X server speed (the maths involved in rotating big bitmaps!)
+
+
+
+

@@ -1,0 +1,40 @@
+.\" @(#)XRotSetMagnification 5.0 25/4/93; Copyright (c) 1993 Alan Richardson
+.TH XRotSetMagnification 3 "25 Apr 1993" "xvertext routines"
+.SH NAME
+XRotSetMagnification \- set font magnification factor
+.SH SYNOPSIS
+.B void XRotSetMagnification(m)
+.br
+.B float m;
+.SH ARGUMENTS
+.IP \fIm\fP 1i     
+The magnification factor. Must be greater than zero. Values greater 
+than 1 give magnification, less than 1 give reduction.
+.SH DESCRIPTION
+.PP
+As of version 5.0, the xvertext package allows you to 
+magnify
+existing fonts. Since X11 fonts are bitmap fonts, 
+.I the quality of magnified fonts
+.I may be poor.
+Having said that, magnification is done using
+bilinear interpolation
+and some fonts don't look half bad at say twice their
+normal size. In particular, roman fonts are better than italic
+fonts since they have more vertical and horizontal bits to them.
+.PP
+The function
+.I XRotSetMagnification()
+sets the level of magnification. Always use the biggest bitmap font
+available to get large text. Values of
+.I m
+greater than 1 produce magnification. Values of
+.I m
+less than 1 produce a reduced font, but you would be better advised
+to use a smaller pre-defined bitmap font.
+.PP
+The default value is 1 (no magnification/reduction).
+.PP
+Note that magnifying fonts will result in a speed penalty. Say no more!
+.SH SEE ALSO
+xvertext

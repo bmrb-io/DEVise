@@ -1,0 +1,197 @@
+.\" @(#)XRotDrawAlignedString 5.0 18/4/93; Copyright (c) 1993 Alan Richardson
+.TH XRotDrawAlignedString 3 "18 Apr 1993" "xvertext routines"
+.SH NAME
+XRotDrawString, XRotDrawImageString,
+XRotDrawAlignedString, XRotDrawAlignedImageString \- draw strings 
+at any angle
+.SH SYNOPSIS
+.B int XRotDrawString(dpy, font, angle, drawable,
+.B gc, x, y, text)
+.br
+.B Display *dpy;
+.br
+.B XFontStruct *font;
+.br
+.B float angle;
+.br
+.B Drawable drawable;
+.br
+.B GC gc;
+.br
+.B int x, y;
+.br
+.B char *text;
+.PP
+.B int XRotDrawImageString(dpy, font, angle, drawable,
+.B gc, x, y, text)
+.br
+.B Display *dpy;
+.br
+.B XFontStruct *font;
+.br
+.B float angle;
+.br
+.B Drawable drawable;
+.br
+.B GC gc;
+.br
+.B int x, y;
+.br
+.B char *text;
+.PP
+.B int XRotDrawAlignedString(dpy, font, angle, drawable,
+.B gc, x, y, text, align)
+.br
+.B Display *dpy;
+.br
+.B XFontStruct *font;
+.br
+.B float angle;
+.br
+.B Drawable drawable;
+.br
+.B GC gc;
+.br
+.B int x, y;
+.br
+.B char *text;
+.br
+.B int align;
+.PP
+.B int XRotDrawAlignedImageString(dpy, font, angle, drawable,
+.B gc, x, y, text, align)
+.br
+.B Display *dpy;
+.br
+.B XFontStruct *font;
+.br
+.B float angle;
+.br
+.B Drawable drawable;
+.br
+.B GC gc;
+.br
+.B int x, y;
+.br
+.B char *text;
+.br
+.B int align;
+.SH ARGUMENTS
+.IP \fIdisplay\fP 1i     
+Specifies the connection to the X server.
+.IP \fIfont\fP 1i
+Pointer to an XFontStruct structure.
+.IP \fIangle\fP 1i
+Angle in degrees between direction of text and horizontal
+(anticlockwise is positive).
+.IP \fIdrawable\fP 1i
+The window or pixmap in which to paint the text.
+.IP \fIgc\fP 1i
+The graphics context to use when painting text.
+.IP \fIx\,\ y\fP 1i
+Coordinates whose relation to the position of the painted text is given
+by \fIalign\fP.
+.IP \fItext\fP 1i
+A character string.
+.IP \fIalign\fP 1i
+Describes the alignment with which to draw the string.
+.SH DESCRIPTION
+.PP
+These four functions are used to draw text at any angle in an X window
+or pixmap. 
+All four have several arguments in common. In particular, 
+.I font
+is an XFontStruct structure describing which font to use.
+The foreground and background colours and plane depth of
+.I gc
+are used in all four functions. The stipple bitmap and stipple origin
+of
+.I gc
+are used in the none-`Image' functions (not X11R3), providing the
+fill style is FillStippled or FillOpaqueStippled.
+The coordinate pair
+.I (x\,\ y)
+describes the location to place the string on the
+drawable - exactly what `location' means depends on the function
+called.
+.PP
+The two functions
+.I XRotDrawString
+and
+.I XRotDrawImageString
+paint a string such that the specified point
+.I (x\,\ y)
+coincides with the origin of the first character in the string,
+after rotation.
+No interpretation is placed on newline characters appearing in the
+string.
+.PP
+The
+.I XRotDrawAlignedString
+and
+.I XRotDrawAlignedImageString
+functions interpret newline characters in the string as delimiters of
+smaller strings to appear on seperate lines. These seperate
+strings are aligned with respect to one another according to the value
+of
+.I align,
+which can take the values
+.I TLEFT, TCENTRE, TRIGHT, MLEFT, MCENTRE, MRIGHT,
+.I BLEFT, BCENTRE, BRIGHT.
+Alignment is done before rotation.
+The first character corresponds to the position of the block of text
+relative to
+.I (x\,\ y):
+.I T
+places the top of the block at 
+.I y,
+.I M
+places the middle of the block there and
+.I B
+the bottom. The remaining word indicates horizontal alignment:
+.I LEFT
+places the left of the block at
+.I x,
+and so on.
+Rotation of the whole block is then performed around
+.I (x\,\ y).
+.PP
+The two functions with `Image' in their names fill in the
+text background with the background colour of
+.I gc
+before painting the text. The remaining two functions leave
+the background untouched.
+.SH ALIGNMENT EXAMPLE
+Suppose the string "This\\nis\\nno\\nordinary\\ntest" were passed to
+.I XRotDrawAlignedString()
+with an alignment of
+.I MLEFT
+and no rotation;
+the result would be:
+.PP
+                              |This
+                              |is
+                     ---------+no-------
+                              |ordinary
+                              |test
+.PP
+where the cross hairs indicate the position of
+.I (x\,\ y).
+Alignments of MCENTER and MRIGHT would result in:
+.PP
+                 |                                   |
+                This                         This    |
+                 is                          is      |
+         --------no--------                 -no------+---------
+              ordinary                       ordinary|
+                test                         test    |
+                 |                                   |
+
+.SH RETURN VALUE
+All four functions return 0 on success, 1 on failure. Failure is
+probably due to an unsuccessful call to malloc().
+.SH SEE ALSO
+xvertext,
+XRotSetMagnification,
+XRotSetBoundingBoxPad,
+XRotTextExtents.

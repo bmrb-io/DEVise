@@ -1,0 +1,87 @@
+.\" @(#)XRotTextExtents 5.0 25/4/93; Copyright (c) 1993 Alan Richardson
+.TH XRotDrawAlignedString 3 "25 Apr 1993" "xvertext routines"
+.SH NAME
+XRotTextExtents, XRotSetBoundingBoxPad \- obtain and
+manipulate text bounding boxes
+.SH SYNOPSIS
+.B XPoint *XRotTextExtents(dpy, font, angle, 
+.B x, y, text, align)
+.br
+.B Display *dpy;
+.br
+.B XFontStruct *font;
+.br
+.B float angle;
+.br
+.B int x, y;
+.br
+.B char *text;
+.br
+.B int align;
+.PP
+.B void XRotSetBoundingBoxPad(pad)
+.br
+.B int pad;
+.SH ARGUMENTS
+.IP \fIdisplay\fP 1i     
+Specifies the connection to the X server.
+.IP \fIfont\fP 1i
+Pointer to an XFontStruct structure.
+.IP \fIangle\fP 1i
+Angle in degrees between direction of text and horizontal
+(anticlockwise is positive).
+.IP \fIx\,\ y\fP 1i
+Coordinates whose relation to the position of the painted text is given
+by \fIalign\fP.
+.IP \fItext\fP 1i
+A character string.
+.IP \fIalign\fP 1i
+Describes the alignment with which the string would be drawn.
+.IP \fIpad\fP 1i
+Pad out subsequent bounding boxes out by this number of pixels.
+.I Pad
+must be greater than or equal to zero.
+.SH DESCRIPTION
+.PP
+The function
+.I XRotTextExtents
+computes the bounding box which would surround a line or block of
+text if one of the drawing functions, such as
+.I XRotDrawAlignedText,
+were used to paint it.
+The arguments
+.I dpy,
+.I font,
+.I angle,
+.I x, y,
+.I text and
+.I align
+have the same meanings as when passed to
+the drawing functions. 
+.PP
+The bounding box is returned as a
+.I XPoint
+array with five members. The first four specify the coordinates of
+the four bounding box corners, in a clockwise sense. The last member
+duplicates the first to produce a closed figure. This list can then 
+be sent to 
+.I XDrawLines
+straight away to draw the bounding box.
+When the XPoint array is no longer required, the user should free
+it with a call to
+.I free.
+.PP
+The function
+.I XRotSetBoundingBoxPad
+causes all subsequent bounding boxes to be padded out by 
+.I pad
+pixels. This often produces more pleasing boxes around text.
+.SH RETURN VALUE
+.I XRotTextExtents
+returns a null pointer if something went wrong.
+.SH SEE ALSO
+XRotDrawString,
+XRotDrawImageString,
+XRotDrawAlignedString,
+XRotDrawAlignedImageString.
+

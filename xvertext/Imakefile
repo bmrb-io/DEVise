@@ -1,0 +1,35 @@
+#############################################################################
+
+
+# Imakefile for xvertext version 5.0
+
+# Cache and directory options set in the file `xvertext.tmpl'
+
+# Nicole Seiffert <seiffert@iti.informatik.th-darmstadt.de> wrote most
+#  of this - thanks!
+
+#############################################################################
+
+
+#if XRelease >= 50
+#include <Library.tmpl>
+#endif
+
+#include "xvertext.tmpl"
+
+DEFINES = $(CACHE) $(RELEASE)
+
+#define IHaveSubdirs
+#define PassCDebugFlags
+SUBDIRS = man
+MakeSubdirs($(SUBDIRS))
+
+NormalLibraryTarget(Xrot,rotated.o)
+NormalProgramTarget(example,rotated.o example.o,,$(XLIB),-lm)
+
+install:: rotated.h libXrot.a
+	MakeDir($(THELIBDIR))
+	$(INSTALL) -c $(INSTLIBFLAGS) libXrot.a $(THELIBDIR)/libXrot.a
+	MakeDir($(THEINCDIR))
+	$(INSTALL) -c $(INSTLIBFLAGS) rotated.h $(THEINCDIR)/rotated.h
+

@@ -1,0 +1,131 @@
+   This is version 5.0 of xvertext (25/4/92)
+   -----------------------------------------
+
+   This package contains routines which can be used to draw text at ANY
+ANGLE in an X window or pixmap. This is done via a single call to one of
+four functions:
+
+	XRotDrawString();
+	XRotDrawImageString();
+	XRotDrawAlignedString();
+	XRotDrawAlignedImageString();
+
+   The difference between these functions is given in the manual page.
+
+
+   Why is it called xvertext?
+   --------------------------
+   Previous versions only used to be able to do vertical text. This version is
+not so limited. Unfortunately programs using version 2.0 and earlier are not
+comaptible with this release, although the changes that need making should
+be straight forward.
+
+
+   Is it fast?
+   -----------
+   Depends on your X server and processing power. In general, it's faster
+for short strings in small fonts (although bigger fonts look better).
+If you're doing a lot of vertical text, use version 2.0. If you're 
+implementing a word processor at 45 degrees, get a LIFE!
+   Speed very much depends on how fast your 'puter can do floating 
+point stuff. If you can see a way to do this stuff using integer
+arithmetic that would still be portable, please share it with me. You'd
+be a friend for life!
+   Note that in the case of text `the right way up' (ie horizontal),
+no rotation is done and these functions are just a wrapper around Xlib's
+own XDrawText() and XDrawImageText() functions. In this way,
+XRotDrawAlignedString() provides an easy way of doing centered horizontal text
+(with no speed penalty).
+
+   As of version 4.0, a cache is provided to retain copies of previously
+rotated strings, thus making redraws faster. Either bitmaps or XImages
+can be cached. The former is faster, but since bitmaps are stored in
+the server this will consume server memory. Caching XImages can be
+somewhat slower (although faster than doing the full rotation), but
+XImages are stored on the client side and so don't use server memory.
+The maximum cache size is fixed at compile time. Since the cache is
+implemented as a linked list, the cache will grow until it reaches
+the maximum size after which items at the front of the list are
+removed.
+
+   You'll see the benefit of caching if you cause an Expose event, eg
+by iconifying then de-iconifying the window. Also the second
+rosette demo will illustrate. And after you've gone back to the start
+of the demo, everything should be cached and thus fast.
+
+   Note that the program doesn't know for sure how much memory a one-plane
+bitmap uses, so it guesses. And I can't guarantee that the size the
+program thinks its XImage cache is is exactly right - but it should be
+close.
+
+|  From 5.0, if the font name can't be determined for any reason the font
+|  ID can be cached instead. This may cause identical strings to be 
+|  cached more than once, since if you free a font and load it again
+|  or even load it twice without freeing, you'll probably get different IDs
+|  for the same font. Still, this is better than no caching at all.
+|  A word of caution though. If you suspect that your X server recycles
+|  font IDs, turn this option off - otherwise you may get different fonts
+|  with the same ID and incorrect caching. The only situation I've heard
+|  about where font names aren't available is under Sun's OpenWindows when
+|  a font is dyamically scaled. Paul "E." Maisano <pem@aaii.oz.au> told
+|  me about this, and suggested caching FIDs. 
+|  FID caching is turned on by default. Remove the `-DCACHE_FID' in
+|  `xvertext.tmpl' or `Makefile.std' to turn it off.
+
+   Other goodies
+   -------------
+|  As of 5.0, fonts can be magnified to greater than their normal size.
+|  Now, X11 fonts are bitmap fonts and so they don't look brilliant at
+|  large magnification. But if you take the biggest available pre-defined
+|  font, particularly the not-so-angular roman fonts, they come out OK at say
+|  twice the size. If you don't like it, don't use it. I can't say I know
+|  of any better way to get large fonts, unless there are big bitmap
+|  fonts out there somewhere. The function XRotSetMagnification() sets
+|  the magnification.
+| 
+|  Also, bounding boxes can be obtained using XRotTextExtents(). The 
+|  function XRotSetBoundingBoxPad() lets you pad these out.
+| 
+|  The stipple bitmap and x-y origin (in X11R4+) and plane depth set in the GC
+|  passed into the drawing functions are now honoured. Note that, just like
+|  XDrawImageString(), the stipple is ignored by the `Image' functions.
+|  Also you can't do tiling - it's way too hard to implement! Thanks go to
+|  Vasco Lopes Paulo (vlp@latina.inesc.pt) for help on this.
+
+   Any bugs?
+   ---------
+   Some small fonts look poor at some angles. I've tried to prevent the 
+dropping of bits during rotation - if you can see a problem, please write
+and tell me about it! 
+   Some machines I've tried it on have been unacceptably slow (eq HP 9000s300).
+Again, if you can see a speed up please let me know.
+
+
+   So what's in the package?
+   -------------------------
+   You get `rotated.c' and `rotated.h', the source and header files
+for the rotating routines. There's also an example program to illustrate
+their use, and Imakefile and Makefile.std. See the file `INSTALL' to make
+the code.
+   There are also a few cursory manual pages.
+
+
+   How do I use the functions in my own program?
+   ---------------------------------------------
+   You can either:
+
+     o Copy `rotated.c' and `rotated.h' to sit with your program's source files
+and compile them all together. Or:
+
+     o Type `make install' to create a linking library and install it
+and the header file into directories of your choice. You then specify
+`-lXrot' prior to `-lX11' when linking your program. Remember that if you
+don't install in a standard place like /usr/lib, you'll need to use the
+-L and -I compiler options.
+
+     If you want to distribute programs using these routines you're very
+welcome; all I ask is that you let me know, and give me a mention!
+
+
+     Alan Richardson, 18/4/93 (mppa3@uk.ac.sussex.syma)
+     --------------------------------------------------  

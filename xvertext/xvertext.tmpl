@@ -1,0 +1,61 @@
+#ifndef XCOMM
+#ifdef GNUCPP
+#define XCOMM \#
+#else
+#define XCOMM #
+#endif
+#endif
+
+XCOMM #######################################################################
+
+
+XCOMM Imakefile template for xvertext version 5.0
+
+
+XCOMM #######################################################################
+
+
+XCOMM Cache status:
+XCOMM ------------
+XCOMM  Add one of `-DCACHE_XIMAGES' or `-DCACHE_BITMAPS' to decide what is
+XCOMM   cached.
+XCOMM
+XCOMM  Add `-DCACHE_SIZE_LIMIT=xxxx' where xxxx is the cache size in kilobytes.
+XCOMM   A cache size of zero turns caching off.
+XCOMM
+XCOMM  Add `-DCACHE_FID' if you want to cache font ID's in those instances
+XCOMM   when the font name can't be determined.
+XCOMM
+XCOMM  You could also add `-DDEBUG', and watch the cache in operation.
+
+
+                  CACHE = -DCACHE_BITMAPS -DCACHE_SIZE_LIMIT=300 -DCACHE_FID
+
+
+XCOMM #######################################################################
+
+
+XCOMM  If your X11 is release 3, add -DX11R3 to this line
+XCOMM    (you won't be able to use the stipple feature with rotated text)
+
+
+                RELEASE = 
+
+
+XCOMM #######################################################################
+
+
+XCOMM  This is where the library, header files and manual pages will go, if
+XCOMM   you use the `install' and `install.man' options with make.
+
+XCOMM  Specify full pathnames if you don't want to use these defaults.
+
+
+XCOMM #######################################################################
+
+
+              THELIBDIR = $(USRLIBDIR)
+              THEINCDIR = $(INCROOT)
+              THEMANDIR = $(MANDIR)
+
+
