@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/18 01:53:37  ravim
+  SchemaList created and groups stored with corr. schema.
+
   Revision 1.2  1995/09/27 23:59:49  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -36,7 +39,7 @@ public:
     char *sname;
     ItemList *topgrps;
     SchemaList *next;
-  } SchemaList;
+  };
 
   SchemaList *list;
 
