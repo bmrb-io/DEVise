@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/03/27 15:27:27  jussi
+  Added initialization of dateAttr.
+
   Revision 1.10  1996/03/26 20:22:34  jussi
   Added tape query processor.
 
@@ -419,10 +422,12 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new CursorClassInfo());
 
   /* hack to start control panel so that it'll read the RC files */
+
   ControlPanel *ctrl = ControlPanel::Instance();
 
   /* This is a hack to create a display before running Dispatcher.
      Otherwise, we'll get an error */
+
   DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
 
   /* keep compiler happy */
