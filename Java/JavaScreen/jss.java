@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2001/11/27 18:14:31  xuk
+// Return error message to JS, when there is no devised running on JSPoP side.
+//
 // Revision 1.18  2001/10/05 15:51:35  wenger
 // Minor cleanup: fixed usage messages, improved argument checking.
 //
@@ -477,7 +480,7 @@ public class jss implements Runnable
                 if (!args[i].substring(7).equals("")) {
                     try {
                         devisedNumber = Integer.parseInt(args[i].substring(7));
-                        if (devisedNumber < 1 || devisedNumber > 10) {
+                        if (devisedNumber < 1 || devisedNumber > 100) {
 			// For testing no devised 
 			// if (devisedNumber < 0 || devisedNumber > 10) {
                             throw new NumberFormatException();

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/10/25 21:35:42  wenger
+// Added heartbeat count to heartbeat command (for debugging); other minor
+// cleanup and debug code additions.
+//
 // Revision 1.3  2001/05/11 20:36:08  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -46,7 +50,7 @@ public class DEViseThreadChecker implements Runnable
 {
     private static final int DEBUG = 0;
     private static final int CHECK_INTERVAL = 10 * 1000; // millisec
-    private static final int HUNG_INTERVAL = 60 * 1000; // millisec
+    private static final int HUNG_INTERVAL = 600 * 1000; // millisec
 
     private Thread _thread = null;
 

@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2001/11/28 21:56:21  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.74  2001/11/19 17:17:03  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -915,11 +918,13 @@ public class jspop implements Runnable
 		    // this client need to be removed
                     removedClient.addElement(newclient);
                     continue;
-                } else if (status == DEViseClient.REQUEST) {
+		} else if (status == DEViseClient.REQUEST) {
+		    //} else if (status == DEViseClient.REQUEST || 
+		    //   ! newclient.cmdBuffer.isEmpty()) {
 		    // only clients that are requesting service will be served
                     clientTime = (float)(newclient.getPriority() *
-		      newclient.getSuspendTime());
-
+					 newclient.getSuspendTime());
+		    
 		    // Keep track of the client that's been waiting the
 		    // longest (accounting for priority).
                     if (time < 0.0) {
@@ -1172,6 +1177,8 @@ public class jspop implements Runnable
                 state = state + "null";
             } else {
                 state = state + client.getHostname();
+		state = state + " " + client.getStatus() + " " + client.cmdBuffer.isEmpty();
+ 
             }
 	    state += "} ";
         }
@@ -1588,11 +1595,6 @@ public class jspop implements Runnable
 			pn("Incorrect password.");
 			client.sendCmd(DEViseCommands.ERROR +
 				       " {Incorrect password. Please try again.}");
-                        // TEMP: send this command in String[] format
-                        /*
-                          client.sendCmd(new String[] {DEViseCommands.ERROR,
-                          "Incorrect password. Please try again."});
-                        */
 		    }
 		} else { // disable collaboration
 		    pn("Disabled to collaborate with client.");

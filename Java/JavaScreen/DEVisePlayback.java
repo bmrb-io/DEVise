@@ -17,6 +17,9 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.12  2001/11/29 17:37:13  xuk
+// DEViseCommands.CONNECT command is not a special case now
+//
 // Revision 1.11  2001/10/19 20:05:45  xuk
 // Fixed bug 709.
 // Sleep one more ms before starting dispatcher, when it is still running.
@@ -55,6 +58,8 @@ package JavaScreen;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
+import java.text.*;
 
 public class DEVisePlayback implements Runnable
 {
@@ -84,7 +89,10 @@ public class DEVisePlayback implements Runnable
     public void run()
     {
 	long pretime = 0;
-
+	long t1 = 0, t2 = 0;
+	Date d = null;
+	DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+							DateFormat.MEDIUM);
 	try {
 	    _jsc.isPlayback = true;
 	    _jsc.playbackMode();
@@ -103,7 +111,12 @@ public class DEVisePlayback implements Runnable
 		_logFile = new BufferedReader(new FileReader(_filename));
 	    }
 
-	    System.out.println("Starting playback of command log " + _filename);
+	    d = new Date();
+	    t1 = d.getTime();
+
+	    System.out.println("Starting playback of command log " +
+			       _filename + "\n @ " + dtf.format(d));
+
 	    _jsc.pn("Starting playback of command log " + _filename);
 
 	    JSCommand cmd = null;
@@ -194,7 +207,14 @@ public class DEVisePlayback implements Runnable
 	    System.err.println("File read error (" + e.getMessage() + "): " +
 	      _filename);
 	} finally {
-	    System.out.println("Done playing back command log");
+	    d = new Date();
+	    t2 = d.getTime();
+		
+	    String elapse = new Long(t2-t1).toString();
+	    System.out.println("Done playing back command log" + 
+			       "\n @ " + dtf.format(d));
+	    System.out.println("Elapse time: " + elapse + " ms.");
+
 	    _jsc.pn("Done playing back command log");
 	    if (!_jsc.isDisplay) {
 		//
@@ -206,6 +226,10 @@ public class DEVisePlayback implements Runnable
 	    _jsc.isDisplay = true;
 	    _jsc.isPlayback = false;
 	    _jsc.socketMode();
+
+	    // TEMP: destroy JS on exit.
+	    _jsc.destroy();
+
 	    stop();
 	}
     }

@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2001/12/04 18:59:37  wenger
+// Added missing space in JAVAC_Set3DConfig commands; better debug
+// info in DEViseCommSocket.java.
+//
 // Revision 1.35  2001/11/19 22:20:38  xuk
 // Changes for String[] format socket/commands.
 //
@@ -481,7 +485,7 @@ public class DEViseCommSocket
                     if (imageBytes < 0) {
 		        clearStream(is, checkingSocketTimeout);
                     } else if (imageBytes > 0) {
-		        is.skipBytes(imageBytes);
+			is.skipBytes(imageBytes);
                     } 
 
                     socket.setSoTimeout(timeout);
@@ -1030,7 +1034,7 @@ public class DEViseCommSocket
                     b = is.read();
                     if (b < 0) {
                         closeSocket();
-                        throw new YException("Abrupt end of input stream reached", "DEViseCommSocket.receiveCmd()");
+                        throw new YException("Abrupt end of input stream reached 1", "DEViseCommSocket.receiveCmd()");
                     }
 
                     dataRead[numberRead] = (byte)b;
@@ -1064,7 +1068,7 @@ public class DEViseCommSocket
                 b = is.read();
                 if (b < 0) {
                     closeSocket();
-                    throw new YException("Abrupt end of input stream reached",
+                    throw new YException("Abrupt end of input stream reached 2",
 		      "DEViseCommSocket.receiveCmd()");
                 }
 

@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2001/11/28 21:56:20  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.73  2001/11/19 17:17:03  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -1092,7 +1095,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     count = -1;
                     pop.pn(ee.getMessage());
                 }
+		pop.pn("$$$ after send open_session. $$$ " + count);
                 socket.clearSocket(count);
+		// socket.clearSocket(-1);
+		pop.pn("$$$ after clear socket. $$$ ");
             } else {
                 pop.pn("Switch error: client switch not successful");
             }
@@ -1105,6 +1111,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 int count;
                 try {
                     count = countData();
+		    
                 } catch (YException ee) {
                     count = -1;
                     pop.pn(ee.getMessage());
@@ -1192,7 +1199,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     currentDir = new Vector();
                     currentDir.addElement(rootDir);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed2");
+                    pop.pn("DEViseServer failed.");
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
