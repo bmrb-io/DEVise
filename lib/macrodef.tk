@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.41  1996/04/23 20:39:10  jussi
+#	Corrected default value of view label.
+#
 #	Revision 1.40  1996/04/23 14:40:25  jussi
 #	Added mising variable name to global name list, fixed color
 #	assignment with new mappings.
@@ -798,12 +801,18 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	set yhi ""
 	set hasyhi [lindex $attr 3]
 	if {$hasyhi} {
-	    set yhi [ScaleUpper [lindex $attr 4]]
+	    set yhi [lindex $attr 4]
+	    if {$viewsel == 2} {
+		set yhi [ScaleUpper $yhi]
+	    }
 	}
 	set ylo ""
 	set hasylo [lindex $attr 5]
 	if {$hasylo} {
-	    set ylo [ScaleLower [lindex $attr 6]]
+	    set ylo [lindex $attr 6]
+	    if {$viewsel == 2} {
+		set ylo [ScaleLower $ylo]
+	    }
 	}
 
 	# also consult lo/hi values defined in .rc file
@@ -2472,12 +2481,18 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	set yhi ""
 	set hasyhi [lindex $attr 3]
 	if {$hasyhi} {
-	    set yhi [ScaleUpper [lindex $attr 4]]
+	    set yhi [lindex $attr 4]
+	    if {$viewsel == 2} {
+		set yhi [ScaleUpper $yhi]
+	    }
 	}
 	set ylo ""
 	set hasylo [lindex $attr 5]
 	if {$hasylo} {
-	    set ylo [ScaleLower [lindex $attr 6]]
+	    set ylo [lindex $attr 6]
+	    if {$viewsel == 2} {
+		set ylo [ScaleLower $ylo]
+	    }
 	}
 
 	# also consult lo/hi values defined in .rc file
