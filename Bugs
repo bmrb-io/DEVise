@@ -305,7 +305,10 @@ Num Date        Status  Description
 			the image. (ml/rkw)
 
 090 12/03/96	OPEN	Load session test/MM1System.tk, print to PostScript;
-			'Pwi' text comes out at wrong place. (rkw)
+			'Pwi' text comes out at wrong place. (ml/rkw)
+
+091 12/03/96	OPEN	Print all windows to PostScript with more than one
+			window -> core dump. (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
