@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/09/16 21:30:49  wenger
+  Added YyDdd_HhMmComposite composite parser for dates of the form YYDDD, HHMM
+  (needed for Soil Science).
+
   Revision 1.34  1996/09/05 23:13:44  kmurli
   Generic.c modified to read composite.ini from the DEVISE_LIB directory. (DEVISE_LIB env variable ) to register the composite parsers for various schema
   CVS ----------------------------------------------------------------------
@@ -138,6 +142,7 @@
 */
 
 #include <stdio.h>
+#include <errno.h>
 #include <time.h>
 #include <string.h>
 #include <math.h>
@@ -1181,6 +1186,12 @@ int main(int argc, char **argv)
   env += "/composite.ini";
  	
   ifstream fin(env);
+  if(!fin) {
+	fprintf(stderr, "Cannot open %s for read: %s\n", 
+			env.chars(), strerror(errno));
+	exit(1);
+  }
+  fprintf(stderr, "\nReading composite file %s\n", env.chars());
 
   while(fin){
 	
