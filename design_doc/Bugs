@@ -598,11 +598,11 @@ Num Date        Status  Description
 			a single XY cursor. (kb/rkw)
 			Deferred
 
-144 01/30/97	OPEN	When a view has both an X & a Y cursor (ie, destination
+144 01/30/97	FIXED	When a view has both an X & a Y cursor (ie, destination
 			of more than one cursor), only one cursor can be moved
 			by clicking on the view and there is no way to choose
 			that cursor. (kb/rkw)
-			Deferred
+			(Fixed by being able to drag cursors.)
 
 145 01/30/97	FIXED	Mapping window is not updated when a new view is
 			selected. (kb/rkw) (See related item of 8/2/96 in
@@ -791,7 +791,7 @@ Num Date        Status  Description
 			the (visually) top view. (rkw)
 			(Fixed by rkw.)
 
-191 06/17/97	OPEN	Attempting to do a group-by on a UNIXFILE should
+191 06/17/97	NLR	Attempting to do a group-by on a UNIXFILE should
 			result in an error message as opposed to a crash.
 			(rkw)
 
@@ -889,7 +889,7 @@ Num Date        Status  Description
 			symbols from being drawn (see Mars demo, MolBio
 			demo). (rkw)
 
-219 09/11/97    OPEN    Group by's are not working.  Seems related to new
+219 09/11/97    NLR?    Group by's are not working.  Seems related to new
                         schema file format. (ksb)
 
 220 09/11/97    CD	'5' doesn't go to 0 for Y min on bar graphs. (ksb)
@@ -930,15 +930,16 @@ Num Date        Status  Description
 230 09/25/97	FIXED	If you try to show the mapping dialog for a histogram
 			view, an assertion fails in the DTE. (rkw)
 
-231 09/25/97	OPEN	DTE doesn't recognize when it adds duplicate entries
+231 09/25/97	NLR	DTE doesn't recognize when it adds duplicate entries
 			to the data source catalog. (rkw)
 
 232 09/26/97	OPEN	Dots ('.') in data source names goof things up. (rkw)
 			(See also 245.)
 
-233 10/01/97	OPEN	Schema editor GUI (for both old and UniData schemas)
+233 10/01/97	DUP	Schema editor GUI (for both old and UniData schemas)
 			doesn't let you add a new attribute prior to an
 			existing attribute. (rkw)
+			(Duplicate of 170.)
 
 234 10/08/97	OPEN	The number of BasicStats objects created by
 			ViewScatter and/or TDataViewX can be very large
@@ -1017,7 +1018,7 @@ Num Date        Status  Description
 255 12/12/97	FIXED	Trademark notice no longer shows up in DEVise windows.
 			(rkw)
 
-256 12/15/97	OPEN	Drill-down on compiled mappings (multi) causes
+256 12/15/97	NLR	Drill-down on compiled mappings (multi) causes
 			crash. (rr/rkw)
 
 257 12/15/97	FIXED	GData attributes with recId get goofed up in mappings
@@ -1063,7 +1064,7 @@ Num Date        Status  Description
 			if you try to pile the views in the Zones 2 window
 			of the COD1.ds session. (rkw)
 
-270 01/14/98	OPEN	dev/mul script doesn't work for starting multi on
+270 01/14/98	NLR	dev/mul script doesn't work for starting multi on
 			Linux. (rkw)
 
 271 01/23/98	FIXED	Color allocation fails on anything but 8 bit displays.
@@ -1074,9 +1075,10 @@ Num Date        Status  Description
 273 01/28/98	NLR	UniData cannot recognize pipes (|) as field delimiters
 			(also check about any other characters).  (rkw/ad)
 
-274 01/29/98	OPEN	When generating a GIF, DEVise should check whether
+274 01/29/98	DUP	When generating a GIF, DEVise should check whether
 			the window is entirely on the screen so we can
 			prevent a fatal X error. (rkw)
+			(Duplicate of bug 248.)
 
 275 01/29/98	FIXED	There are expression evaluation errors in the
 			search engine demo. (rkw)
@@ -1212,7 +1214,7 @@ Num Date        Status  Description
 317 03/11/98	FIXED (donko) Trying to materialize a data source that's not a
 			view causes DEVise to crash. (rkw)
 
-318 03/11/98	OPEN	SQLFilter->New dialog doesn't have any place to set
+318 03/11/98	NLR	SQLFilter->New dialog doesn't have any place to set
 			the 'from' clause. (rkw)
 
 319 03/11/98	OPEN	It is possible to create data sources with duplicate
@@ -1297,10 +1299,10 @@ Num Date        Status  Description
 			V1->V2->V3 with set links, and you unlink V2,
 			DEVise crashes. (rkw)
 
-339 05/07/98	OPEN	Duplicate elimination in UniqueInserter doesn't work
+339 05/07/98	NLR	Duplicate elimination in UniqueInserter doesn't work
 			for strings. (rkw)
 
-340 05/07/98	OPEN	RELATION_MNGR.deleteRelation() doesn't do anything.
+340 05/07/98	NLR	RELATION_MNGR.deleteRelation() doesn't do anything.
 			(rkw)
 
 341 05/07/98	OPEN	When running without OpenGL on the SGI, DEVise seems
@@ -1602,7 +1604,7 @@ Num Date        Status  Description
 
 416 10/12/98	OPEN	'float' type should be implemented in DataReader. (rkw)
 
-417 10/12/98	OPEN	DTE should not exit if DataReader schema cannot be
+417 10/12/98	NLR	DTE should not exit if DataReader schema cannot be
 			parsed. (rkw)
 
 418 10/14/98	FIXED	If mapping dialog is shown and you open a new session,
@@ -1891,7 +1893,7 @@ Num Date        Status  Description
 			unless they're in the last (top) view of the pile.
 			(rkw)
 
-489 02/16/99	OPEN	Set links don't work (because of changes to the DTE).
+489 02/16/99	NLR	Set links don't work (because of changes to the DTE).
 			(rkw)
 
 490 05/18/99	FIXED	If a session contains piled views containing view
@@ -1982,8 +1984,9 @@ Num Date        Status  Description
 			the windows to move slightly. (rkw)
 			(Fixed by rkw, 10/4/99.)
 
-509 09/27/99	OPEN	Tcl code for generating unique view names comes up
+509 09/27/99	DUP	Tcl code for generating unique view names comes up
 			with stupid names (e.g., View 1116). (rkw)
+			(Duplicate of bug 107.)
 
 510 10/05/99	FIXED	Disabling actions in piled views doesn't seem to
 			work right. (rkw)
@@ -2063,8 +2066,9 @@ Num Date        Status  Description
 527 10/29/99	KLUDGED	Condor/UserWeek.ds session doesn't work right. (rkw)
 			(Kludgily fixed by rkw, 10/30/99.)
 
-528 10/30/99	OPEN	Open Condor/UserWeek.ds session, try to save logical
+528 10/30/99	FIXED	Open Condor/UserWeek.ds session, try to save logical
 			session description -> devise crashes. (rkw)
+			(Fixed by rkw, 12/23/99.)
 
 529 10/30/99	OPEN	JavaScreen doesn't deal correctly with text alignment
 			(see Condor/UserWeek.ds). (rkw)
@@ -2130,6 +2134,9 @@ Num Date        Status  Description
 
 545 12/15/99	OPEN	Window moves and resizes are not logged in command
 			log. (rkw)
+
+546 12/21/99	OPEN	Cursor drawing in the JavaScreen doesn't seem to do
+			XOR with text symbol pixels. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/02/11 19:54:35  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.4.2.1  1999/02/11 18:24:03  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -290,7 +295,7 @@ SessionDescPrv::LogWriteViews(FILE *file)
     char *viewTitle;
     view->GetLabelParam(occupyTop, extent, viewTitle);
     fprintf(file, "\"%s\"\t\"%s\"\tview\tnull\tnull\n", view->GetName(),
-	viewTitle);
+	viewTitle ? viewTitle : "NULL");
   }
   View::DoneViewIterator(index);
 
