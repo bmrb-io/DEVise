@@ -5,15 +5,18 @@ LIBSRC = binconv.C extract.C rectape.C
 
 LIBOBJ = $(LIBSRC:.C=.o)
 
-all: issmobj.o
+LIBNAME = libissm.a
 
-issmobj.o: $(LIBOBJ)
-	ld -r -o $@ $(LIBOBJ)
+all: $(LIBNAME)
+
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm issmobj.o
+	-rm $(RANLIB)
 
 mostlyclean:
 	-rm $(LIBOBJ)

@@ -2,6 +2,7 @@ CC = g++
 
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../graphics -I../../graphics.new \
 	-I../../tape -Wall -Wno-unused -fexternal-templates
+LDFLAGS = $(ARCH_LDFLAGS) -L. -lcrsp -L../tape -ltape $(ARCH_LDPOST)
 
 LIBSRC	= sec.C cal.C crsp_extract.C
 
@@ -9,25 +10,28 @@ LIBOBJ	= $(LIBSRC:.C=.o)
 
 TESTSRC = crsp_index.C main.C
 
+TESTOBJ = $(TESTSRC:.C=.o)
+
 ALLSRC	= $(LIBSRC) $(TESTSRC) 
 
-LIBOBJS	= $(LIBOBJ) ../tape/tapedrive.o
+LIBNAME = libcrsp.a
 
-all: crspobj.o
+all: $(LIBNAME)
 
-crspobj.o: $(LIBOBJ)
-	ld -r -o $@ $(LIBOBJ)
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
-main:	main.o $(LIBOBJS)
-	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
+main:	main.o $(LIBNAME) ../tape/libtape.a
+	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)
 
-crsp_index: crsp_index.o ../graphics/ExitClean.o $(LIBOBJS)
-	$(CC) $(CPPFLAGS) -o $@ $@.o ../graphics/ExitClean.o $(LIBOBJS)
+crsp_index: crsp_index.o $(LIBNAME) ../tape/libtape.a
+	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm crspobj.o main crsp_index
+	-rm $(LIBNAME) main crsp_index
 
 mostlyclean:
-	-rm $(LIBOBJ) main.o crsp_index.o
+	-rm $(LIBOBJ) $(TESTOBJ)

@@ -5,15 +5,18 @@ LIBSRC = tapedrive.C QueryProcTape.C Templates.C
 
 LIBOBJ = $(LIBSRC:.C=.o)
 
-all: tapeobj.o
+LIBNAME = libtape.a
 
-tapeobj.o: $(LIBOBJ)
-	ld -r -o $@ $(LIBOBJ)
+all: $(LIBNAME)
+
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm tapeobj.o
+	-rm $(LIBNAME)
 
 mostlyclean:
 	-rm $(LIBOBJ)

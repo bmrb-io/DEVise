@@ -1,15 +1,38 @@
-LD = ld
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
 CC = g++
-LDFLAGS = $(ARCH_LDFLAGS) $(OTHEROBJ) \
-	-ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
-	$(ARCH_LDPOST)
+
 CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
 	-I../../graphics.new -I../../tape -Wall -Wno-unused -O -DUNIX
 
-.c.o:
-	$(CC) -c $(CFLAGS) $<
+LDFLAGS = $(ARCH_LDFLAGS) \
+	-L../graphics.new -L../graphics -L../tape -L../issm \
+	-L../crsp -L../compustat -lmonolith -lgraphics.new -lgraphics \
+	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
+	$(ARCH_LDPOST)
 
-ALLSRC= disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+ALLSRC = disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 	MappingClassInfo.c HostMappingClassInfo.c \
 	CycleOccMappingClassInfo.c \
 	CycleEffMappingClassInfo.c \
@@ -19,13 +42,17 @@ ALLSRC= disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 
 ALLOBJ = $(ALLSRC:.c=.o)
 
-OTHEROBJ = ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
-	../graphics.new/monolith.o ../compustat/cstatobj.o ../crsp/crspobj.o
+ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
+	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
+	../crsp/libcrsp.a ../graphics.new/libmonolith.a
 
 all: disp
 
-disp: $(ALLOBJ) $(OTHEROBJ)
-	$(CC)  -o $@ $(ALLOBJ) $(LDFLAGS)
+disp: $(ALLOBJ) $(ALLLIBS)
+	$(CC) -o $@ $(ALLOBJ) $(LDFLAGS)
+
+mapefile.h: map
+	../parser/parser -o $@ < $?
 
 map_host.h: map_host
 	../parser/parser -o $@ < $?

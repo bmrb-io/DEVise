@@ -23,7 +23,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C VisualLink.c \
 	VisualLinkClassInfo.c XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c
+	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c
 
 SRC1 = $(filter %.c,$(LIBSRC))
 SRC2 = $(filter %.C,$(LIBSRC))
@@ -37,24 +37,15 @@ OTHEROBJ = $(OTHERSRC:.c=.o)
 TESTOBJ = testWindowRep.o ../graphics.new/libobj.o ../tape/tapeobj.o \
 	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 
-all: allobj.o
-
-allobj.o: $(LIBOBJ)
-	$(LD) -r -o $@ $(LIBOBJ)
-
-count:
-	wc $(LIBSRC) 
-
 ALLSRC = $(LIBSRC) $(OTHERSRC)
 
 LIBNAME = libgraphics.a
 
-install: $(LIBNAME)
-	install $(LIBNAME) /u1/mcheng/lib
+all: $(LIBNAME)
 
-lib: $(LIBOBJ) 
-	ar ru $(LIBNAME) $(LIBOBJ)
-	ranlib $(LIBNAME)
+$(LIBNAME): $(LIBOBJ) 
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
 xvgifwr.o:	xvgifwr.c
 	gcc -c $(CFLAGS) $<
@@ -63,6 +54,9 @@ xv24to8.o:	xv24to8.c
 	gcc -c $(CFLAGS) $<
 
 xvgrab.o:	xvgrab.c
+	gcc -c $(CFLAGS) $<
+
+xvgif.o:	xvgif.c
 	gcc -c $(CFLAGS) $<
 
 jstat: jstat.o $(LIBOBJ)
@@ -76,7 +70,7 @@ testWindowRep: $(TESTOBJ)
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm allobj.o $(LIBNAME) jstat testWindowRep
+	-rm $(LIBNAME) jstat testWindowRep
 
 mostlyclean:
 	-rm $(LIBOBJ) $(OTHEROBJ)

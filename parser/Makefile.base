@@ -1,5 +1,7 @@
 CC = g++
+
 CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX
+LDFLAGS = $(ARCH_LDFLAGS) -ll $(ARCH_LDPOST)
 
 SRC = main.c parse.c codegen.c
 
@@ -11,11 +13,12 @@ GENOBJ = $(GENSRC:.c=.o)
 
 ALLOBJ = $(OBJ) $(GENOBJ)
 
-all: parser
+TARGET = parser
+
+all: $(TARGET)
 
 parser: $(ALLOBJ)
-	$(CC) $(ARCH_LDFLAGS) -o parser $(ALLOBJ) \
-		-ll $(ARCH_LDPOST)
+	$(CC) -o $@ $(ALLOBJ) $(LDFLAGS)
 
 #lex.yy.o: lex.yy.c
 
@@ -25,7 +28,7 @@ lex.yy.c: scan.lex tokens.h
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm parser
+	-rm $(TARGET)
 
 mostlyclean:
 	-rm $(ALLOBJ) $(GENSRC)

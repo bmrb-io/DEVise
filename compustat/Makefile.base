@@ -1,33 +1,35 @@
 CC = g++
+
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../graphics -I../../graphics.new \
 	-I../../tape -Wall -Wno-unused -fexternal-templates
+LDFLAGS = $(ARCH_LDFLAGS) -L. -lcstat -L../tape -ltape $(ARCH_LDPOST)
 
 LIBSRC = compustat.c
 
 LIBOBJ = $(LIBSRC:.c=.o)
 
-TESTSRC = index.c extract.c project.c
+TESTSRC = index.c project.c
 
 TESTOBJ = $(TESTSRC:.c=.o)
 
-all: cstatobj.o
+LIBNAME = libcstat.a
 
-cstatobj.o: $(LIBOBJ)
-	ld -r -o $@ $(LIBOBJ)
+all: $(LIBNAME)
 
-index:	index.o
-	$(CC) $(CPPFLAGS) -o $@ $@.o ../tape/tapedrive.o
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	ranlib $@
 
-extract:	extract.o $(LIBOBJ)
-	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJ) ../tape/tapedrive.o
+index:	index.o $(LIBNAME) ../tape/libtape.a
+	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)
 
-project:	project.o
-	$(CC) $(CPPFLAGS) -o $@ $@.o ../tape/tapedrive.o
+project:	project.o $(LIBANME) ../tape/libtape.a
+	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm cstatobj.o index extract project
+	-rm $(LIBNAME) index extract project
 
 mostlyclean:
 	-rm $(LIBOBJ) $(TESTOBJ)

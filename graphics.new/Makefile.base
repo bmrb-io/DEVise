@@ -14,9 +14,9 @@ CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused -O -DUNIX -I../../graphics \
 	-I../../graphics.new -I../../tape -fexternal-templates
 
 .c.o: 
-	$(CC) -c  $(CFLAGS) $<
+	$(CC) $(CFLAGS) -c $<
 .C.o: 
-	$(CC) -c  $(CFLAGS) $<
+	$(CC) $(CFLAGS) -c $<
 
 # Buffer manager
 
@@ -74,40 +74,43 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
 	StringHash.c testViewRanges.c testXY.c
 
-CLIENTSRC = ClientAPI.c 
-SERVERSRC = ServerAPI.c 
-MONLITHSRC = TkControl.c 
-
-ALLSRC = $(LIBSRC) $(TESTSRC) $(SERVERSRC) $(MONOLITHSRC)
-
 LIBOBJS = $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
 
-all: libobj.o clientobj.o servobj.o monolith.o
+LIBNAME = libgraphics.new.a
 
-monolith.o: TkControl.o
-	$(LD) -r -o $@ TkControl.o
+all: $(LIBNAME) libclient.a libserver.a libmonolith.a
 
-clientobj.o: ClientAPI.o
-	$(LD) -r -o $@ ClientAPI.o 
+#TkControl.o: TkControl.c
+#	$(CC) $(CFLAGS) -fno-inline -fno-default-inline \
+#		-fkeep-inline-functions -c $<
 
-servobj.o: ServerAPI.o ClientAPI.o
-	$(LD) -r -o $@ ServerAPI.o ClientAPI.o
+libmonolith.a: TkControl.o
+	ar cr $@ TkControl.o
+	ranlib $@
 
-libobj.o: $(LIBOBJS) ../graphics/allobj.o
-	$(LD) -r -o $@ ../graphics/allobj.o $(LIBOBJS)
+libclient.a: ClientAPI.o
+	ar cr $@ ClientAPI.o
+	ranlib $@
 
-BufMgrObj.o: $(BufMgrObj)
-	$(LD) -r -o $@ $(BufMgrObj)
+libserver.a: ServerAPI.o ClientAPI.o
+	ar cr $@ ServerAPI.o ClientAPI.o
+	ranlib $@
+
+$(LIBNAME): $(LIBOBJS)
+	ar cr $@ $(LIBOBJS)
+	ranlib $@
+
+libbufmgr.a: $(BufMgrObj)
+	ar cr $@ $(BufMgrObj)
+	ranlib $@
 
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
-		../graphics/allobj.o $(ARCH_LDFLAGS) \
-		-ltk -lXaw -lXmu -lXt -lXext -lX11 -lm
+		-L../graphics -lgraphics $(ARCH_LDFLAGS) -lX11 -lm
 
-testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testStr.o StringHash.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
-	 $(CMDOBJ)  StringHash.o ../graphics/allobj.o  \
-	-lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testStr.o StringHash.o
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) StringHash.o \
+		-lbufmgr -L../graphics -lgraphics $(ARCH_LDFLAGS) -lX11 -lm
 
 genStrData: genStrData.o
 	$(CC) -o $@ $@.o
@@ -125,7 +128,7 @@ testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 testGDataRange: testGDataRange.o GDataRangeMap.o ../graphics/Parse.o \
 	../graphics/ExitClean.o
 	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o \
-	../graphics/ExitClean.o
+		../graphics/ExitClean.o
 	
 testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o RangeInfo.o \
 	../graphics/Exit.o
@@ -135,29 +138,26 @@ testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o RangeInfo.o \
 testRecRange: testRecRange.o ../graphics/Parse.o RecRange.o ../graphics/Exit.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o RecRange.o ../graphics/ExitClean.o
 
-testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o ../graphics/Exit.o
+testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o \
+	../graphics/Exit.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o VoidArray.o \
-	../graphics/ExitClean.o
+		../graphics/ExitClean.o
 
-testraw: testraw.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
-		$(CMDOBJ) ../graphics/allobj.o \
-		-lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+testraw: testraw.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-test2d: test2d.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
-		$(CMDOBJ) ../graphics/allobj.o \
-		-lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+test2d: test2d.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-testAms1: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testAms1.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
-		$(CMDOBJ) ../graphics/allobj.o -L/usr/unsup/lib \
-		-ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+testAms1: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testAms1.o
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+		-lbufmgr -L../graphics -lgraphics -lX11 -lm
 
-testXY: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testXY.o
-	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \
-		$(CMDOBJ) ../graphics/allobj.o \
-		-lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
+testXY: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testXY.o
+	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
+		-lbufmgr -L../graphics -lgraphics-lX11 -lm
 
 testBufMgrNull: testBufMgrNull.o BufMgrNull.o TDataRec.o RecFile.o\
 		UnixRecFile.o
@@ -177,13 +177,12 @@ testBufPage: testBufPage.o BufPage.o
 mapfile.h: map1
 	parser < map1
 
-makeGData: makeGData.o BufMgrObj.o
-	$(CC) -o $@ $@.o BufMgrObj.o ../graphics/DList.o \
-		../graphics/Exit.o -lm
+makeGData: makeGData.o libbufmgr.a
+	$(CC) -o $@ $@.o ../graphics/DList.o ../graphics/Exit.o \
+		-lbufmgr -lm
 
-testAms1Sym: testAms1Sym.o  TDataMap.o
-	$(CC) -o $@ $@.o TDataMap.o ../graphics/allobj.o -lXaw -lXmu -lXt \
-		-lXext -lX11 -lm
+testAms1Sym: testAms1Sym.o TDataMap.o
+	$(CC) -o $@ $@.o TDataMap.o ../graphics/allobj.o -lX11 -lm
 
 testQueryProc: $(LIBOBJ) testQueryProc.o
 	$(CC) -o $@ $@.o $(LIBOBJ) ../graphics/Symbol.o \
@@ -223,7 +222,7 @@ testTdata: $(BufMgrObj) testTdata.o
 	$(CC) -o $@ $@.o $(BufMgrObj)
 
 PFILEOBJ = BufHash.o BufPageList.o BufMgr.o \
-	DiskFile.o PageFile.o  UnixDiskFile.o
+	DiskFile.o PageFile.o UnixDiskFile.o
 
 testpfile: $(PFILEOBJ) testpfile.o
 	$(CC) -o $@ $@.o $(PFILEOBJ)
@@ -241,9 +240,10 @@ testpage: $(LIBOBJ) testpage.o
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm libobj.o genStrData strData monolith.o 
+	-rm $(LIBNAME) genStrData strData libclient.a libsercer.a\
+		libmonolith.a
 
 mostlyclean:
-	-rm $(LIBOBJ) BufMgrObj.o genStrData.o rstat.o testGDataRange.o \
+	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
 	testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
 	ClientAPI.o ServerAPI.o TkControl.o
