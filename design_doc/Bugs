@@ -2141,8 +2141,9 @@ Num Date        Status  Description
 546 12/21/99	OPEN	Cursor drawing in the JavaScreen doesn't seem to do
 			XOR with text symbol pixels. (rkw)
 
-547 12/23/99	OPEN	'5' (home) key functionality should take into account
+547 12/23/99	FIXED	'5' (home) key functionality should take into account
 			symbol bounding boxes. (rkw)
+			(Fixed by rkw, 7/13/01.)
 
 548 12/29/99	FIXED	Quotes around UNIXFILE or Table in data source
 			catalog goof things up. (rkw)
@@ -2184,8 +2185,9 @@ Num Date        Status  Description
 556 01/12/00	FIXED?	Open Test/bug556.ds, destroy or remove View 6 -> DEVise
 			crashes. (rkw)
 
-557 01/21/00	OPEN	'5' (home) on a view containing view symbols doesn't
+557 01/21/00	FIXED	'5' (home) on a view containing view symbols doesn't
 			take into account the size of the view symbols. (oz/rkw)
+			(Fixed by rkw, 7/13/01.)
 
 558 02/02/00	OPEN	There's no GUI to change a cursor from X to XY, etc.
 			(rkw)

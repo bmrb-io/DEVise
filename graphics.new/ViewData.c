@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.25  2000/03/14 21:51:48  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -355,14 +359,16 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 
       if (_dataRangeFirst) {
-		_dataXMin = _dataXMax = x;
-		_dataYMin = _dataYMax = y;
+	    _dataXMin = ULx;
+		_dataXMax = LRx;
+		_dataYMin = LRy;
+		_dataYMax = ULy;
 	    _dataRangeFirst = false;
 	  } else {
-	    _dataXMin = MIN(_dataXMin, x);
-		_dataXMax = MAX(_dataXMax, x);
-		_dataYMin = MIN(_dataYMin, y);
-		_dataYMax = MAX(_dataYMax, y);
+	    _dataXMin = MIN(_dataXMin, ULx);
+		_dataXMax = MAX(_dataXMax, LRx);
+		_dataYMin = MIN(_dataYMin, LRy);
+		_dataYMax = MAX(_dataYMax, ULy);
 	  }
 
 	  ShapeID shape = symArray[recNum].shape = mapping->GetShape(dataP);
