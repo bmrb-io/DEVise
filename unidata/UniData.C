@@ -23,6 +23,14 @@
 #include  "fast_atof.h"
 #include  "getftime.h"
 
+extern "C" {
+#    define  explicit explic      // A C++ keyword?
+#    include "EXTERN.h"
+#    include "perl.h"
+#    undef   explicit
+}
+
+
 #undef    assert        // defined by perl includes
 #include  <assert.h>
 
@@ -493,17 +501,17 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             prm = params->pop();
             delete prm;
         } else if (prm->subparam->count() == 1)
-            prm->attrfunc = Split_White;
+            prm->attrfunc = &Split_White;
         else if (attr->format())
-            prm->attrfunc = Split_Format;
+            prm->attrfunc = &Split_Format;
         else if (attr->reader())
-            prm->attrfunc = ReaderCall;
+            prm->attrfunc = &ReaderCall;
         else if (have_pos)
-            prm->attrfunc = Split_Position;
+            prm->attrfunc = &Split_Position;
         else if (*(_schema->attr0()->seperator()))
-            prm->attrfunc = Split_Seper;
+            prm->attrfunc = &Split_Seper;
         else
-            prm->attrfunc = Split_White;
+            prm->attrfunc = &Split_White;
 
     } else {
 
@@ -517,7 +525,7 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             // Add a fake param above this type.
             prm = params->pop();
             udParam *rdprm = prm->dup();
-            rdprm->attrfunc = ReaderCall;
+            rdprm->attrfunc = &ReaderCall;
             params->push(rdprm);
             rdprm->subparam = new ParamStk();
             rdprm->subparam->push(prm);
@@ -526,7 +534,7 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             // Add a fake param above this type.
             prm = params->pop();
             udParam *fmtprm = prm->dup();
-            fmtprm->attrfunc = Split_Format;
+            fmtprm->attrfunc = &Split_Format;
             params->push(fmtprm);
             fmtprm->subparam = new ParamStk();
             fmtprm->subparam->push(prm);
@@ -534,52 +542,52 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
 
         if (attr->value()) {
             prm = params->pop();
-            prm->attrfunc = ValueCall;
+            prm->attrfunc = &ValueCall;
             _sys_params->push(prm);
 
         } else if (_schema->getType() == Schema::BINARY)
-            prm->attrfunc = BinCopy_Native;
+            prm->attrfunc = &BinCopy_Native;
 
         else
             switch (attr->_type) {
     
               case Int_Attr:
-                  prm->attrfunc = TxtCopy_Int;
+                  prm->attrfunc = &TxtCopy_Int;
                   break;
     
               case Float_Attr:
-                  prm->attrfunc = TxtCopy_Float;
+                  prm->attrfunc = &TxtCopy_Float;
                   break;
     
               case Double_Attr:
-                  prm->attrfunc = TxtCopy_Double;
+                  prm->attrfunc = &TxtCopy_Double;
                   break;
     
               case String_Attr:
-                  prm->attrfunc = TxtCopy_String;
+                  prm->attrfunc = &TxtCopy_String;
                   break;
     
               case UnixTime_Attr:
-                  prm->attrfunc = TxtCopy_UnixTime;
+                  prm->attrfunc = &TxtCopy_UnixTime;
                   break;
 
               case DateTime_Attr:
-                  prm->attrfunc = TxtCopy_DateTime;
+                  prm->attrfunc = &TxtCopy_DateTime;
                   break;
 
               default:
                   if (attr->_type > UserDefined_Attr) {
                     prm->my_enum = _schema->_enums->findtype(attr->_type);
-                    prm->attrfunc = TxtCopy_Enum;
+                    prm->attrfunc = &TxtCopy_Enum;
                   } else
-                      prm->attrfunc = NullCopy;
+                      prm->attrfunc = &NullCopy;
                   break;
             }
 
               // Add a filter if we have one.
             if (attr->filter()) {
                 udParam *sysprm = prm->dup();
-                sysprm->attrfunc = FilterCall;
+                sysprm->attrfunc = &FilterCall;
                 _sys_params->push(sysprm);
             }
     }
@@ -597,9 +605,9 @@ int  UniData::get_params()
 
     if (_schema->getType() == Schema::TEXT) {
         // Assume delimited for now?
-        _getrec = getRec_delimit;
+        _getrec = &getRec_delimit;
     } else
-        _getrec = getRec_recsze;
+        _getrec = &getRec_recsze;
 
     if (_getrec == (GetRecFunc) NULL)
         _status = UD_FAIL;
@@ -671,7 +679,7 @@ UD_Status UniData::getRec(char *buff, off_t *offset)
     if (isOk()) {
 
         off_t off;
-        (_getrec)(buff, &off);
+        (this->*_getrec)(buff, &off);
 
         if (offset)
            *offset = off;
@@ -693,7 +701,7 @@ UD_Status UniData::getRndRec(char *buff, off_t offset)
 
           // offset isn't intended to be passed back here,
           // we already have it anyhow.
-        (_getrec)(buff, &offset);
+        (this->*_getrec)(buff, &offset);
     }
 
     return _status;
@@ -716,7 +724,7 @@ UD_Status UniData::getRecs(char *buff, int bufsze, int& numRecs,
         off_t off;
         cnt++;
 
-        (_getrec)(buff, &off);
+        (this->*_getrec)(buff, &off);
 
         if (offsets)
            offsets[cnt] = off;
@@ -895,8 +903,8 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
         
            *offset = _slbuf->getoff();
     
-            ok = (_params->ith(0)->attrfunc)(buff,_slbuf->getcur(),
-                                                 _params->ith(0));
+            ok = (this->*(_params->ith(0)->attrfunc))(buff,_slbuf->getcur(),
+                                                      _params->ith(0));
     
             if (ok)
                 ok &= run_SysParams(buff);
@@ -955,7 +963,8 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 			  } else 
 				 have_sent = 0;
 
-			  ok = (prm->attrfunc)(buff,_slbuf->getcur(),prm);
+			  ok = (this->*(prm->attrfunc))(buff,
+                                                        _slbuf->getcur(),prm);
 
 			  if (have_sent) {
 				 // This may have changed when calling someone.
@@ -995,7 +1004,7 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 
 		   for (int j=0; j < _sys_params->count(); j++) {
 			  udParam *prm = _sys_params->ith(j);
-			  ok &= (prm->attrfunc)(rcrd,NULL,prm);
+			  ok &= (this->*(prm->attrfunc))(rcrd,NULL,prm);
 		   }
 
 		   grab_vars(rcrd);
@@ -1030,7 +1039,7 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 
 		   char *buf = _slbuf->getpos(param->buf_pos);
 
-		   ok = (param->attrfunc)(dst,buf,param);
+		   ok = (this->*(param->attrfunc))(dst,buf,param);
 
 		   if (!ok)
 			  return 0;
@@ -1068,7 +1077,7 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 		   char *sent = NULL;
 		   off_t soff;
 
-		   if ( !last && !param->attr->seperator) {
+		   if ( !last && param->attr->seperator() != NULL) {
 
 			  sent = strchr(buf, *(ud->attr->seperator()) );
 
@@ -1079,7 +1088,7 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 			  }
 		   }
 
-		   ok = (param->attrfunc)(dst,buf,param);
+		   ok = (this->*(param->attrfunc))(dst,buf,param);
 
 		   // This may have changed when calling someone.
 		   if (sent) {
@@ -1146,14 +1155,14 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
             sentinel = *sent;
             *sent = '\0';
 
-            ok = (param->attrfunc)(dst, _slbuf->getpos(ud->buf_pos,
+            ok = (this->*(param->attrfunc))(dst, _slbuf->getpos(ud->buf_pos,
                                    attr->lpos()), param);
 
               // This may have changed when calling someone.
             sent = _slbuf->getpos(ud->buf_pos,attr->rpos()+1);
             *sent = sentinel;
         } else
-            ok = (param->attrfunc)(dst,_slbuf->getpos(ud->buf_pos,
+            ok = (this->*(param->attrfunc))(dst,_slbuf->getpos(ud->buf_pos,
                                    attr->lpos()), param);
 
         if (!ok)
@@ -1211,7 +1220,7 @@ int UniData::Split_Format(char *dst, char * /* src */, udParam *ud)
         buf = SvPV(sv,na);
         param->use_slide = 0;
 
-        ok = (param->attrfunc)(dst, buf, param);
+        ok = (this->*(param->attrfunc))(dst, buf, param);
 
         if (!ok)
             return 0;
@@ -1539,7 +1548,7 @@ int UniData::ReaderCall(char *dst, char * /* src */, udParam *ud)
         buf = SvPV(sv,na);
         param->use_slide = 0;
 
-        ok = (param->attrfunc)(dst, buf, param);
+        ok = (this->*(param->attrfunc))(dst, buf, param);
 
         if (!ok)
             return 0;

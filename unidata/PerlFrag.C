@@ -16,6 +16,14 @@
 
 #include <iostream.h>
 
+extern "C" {
+#    define  explicit explic      // A C++ keyword?
+#    include "EXTERN.h"
+#    include "perl.h"
+#    undef   explicit
+}
+
+
 #undef assert
 #include <assert.h>
 

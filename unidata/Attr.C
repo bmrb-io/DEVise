@@ -15,6 +15,14 @@
 #include  "UniData.h"    // For definitions of copying functions.
 #include  "getftime.h"
 
+extern "C" {
+#    define  explicit explic      // A C++ keyword?
+#    include "EXTERN.h"
+#    include "perl.h"
+#    undef   explicit
+}
+
+
 #undef    assert        // defined by perl includes
 #include  <assert.h>
 

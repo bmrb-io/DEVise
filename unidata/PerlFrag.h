@@ -20,14 +20,16 @@
 #include <math.h>             // We need to get to it before perl does
 #include <iostream.h>
 
-extern "C" {
-#    define  explicit explic      // A C++ keyword?
-#    include "EXTERN.h"
-#    include "perl.h"
-#    undef   explicit
-}
+//kb: took the needed perl typedefs so we don't depend on perl in devise & dte
+typedef struct interpreter PerlInterpreter;
+typedef long int I32;
+typedef struct hv HV;
+typedef struct sv SV;
+typedef struct av AV;
 
 #include "Lexer.h"
+
+
 
 class Attr;
 
