@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/22 21:02:45  jussi
+  Added ImportImage() method.
+
   Revision 1.15  1996/05/20 18:45:01  jussi
   Merged with ClientServer library code.
 
@@ -113,7 +116,7 @@ public:
 #ifdef RAWMOUSEEVENTS
   /* Handle button event */
   virtual void HandleButton(WindowRep *w, int x, int y,
-			    int button, int type) {}
+			    int button, int state, int type) {}
 #else
   /* Handle button press event */
   virtual void HandlePress(WindowRep * /*w*/, int /*xlow*/, 
@@ -465,7 +468,7 @@ protected:
   
 #ifdef RAWMOUSEEVENTS
   /* called by derived class with button even */
-  virtual void HandleButton(int x, int y, int button, int type);
+  virtual void HandleButton(int x, int y, int button, int state, int type);
 #else
   /* called by derived class when button presssed: Report event to all
      callbacks */

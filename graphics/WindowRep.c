@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:45:00  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/02/28 17:48:12  yuc
   Update the WindowRep's constructor with the new protected variables
   for 3D.  Included the member functions: CompRhoPhiTheta and
@@ -108,16 +111,17 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 called by derived class with button event: Report event to all callbacks 
 ******************************************************************/
 
-void WindowRep::HandleButton(int x, int y, int button, int type)
+void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 {
 #ifdef DEBUG
-  printf("WindowRep::HandleButton(%d,%d,%d,%d)\n", x, y, button, type);
+  printf("WindowRep::HandleButton(%d,%d,%d,%d,%d)\n",
+	 x, y, button, state, type);
 #endif
 
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
-    c->HandleButton(this, x, y, button, type);
+    c->HandleButton(this, x, y, button, state, type);
   }
   DoneIterator(index);
 }

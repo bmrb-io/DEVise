@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/05/22 21:02:47  jussi
+  Added ImportImage() method.
+
   Revision 1.35  1996/05/20 18:45:04  jussi
   Merged with ClientServer library code.
 
@@ -1176,7 +1179,8 @@ void XWindowRep::HandleEvent(XEvent &event)
   case ButtonRelease:
   case MotionNotify:
     WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
-			    event.xbutton.button, event.xbutton.type);
+			    event.xbutton.button, event.xbutton.state,
+			    event.xbutton.type);
 #else
   case ButtonPress:
     int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
