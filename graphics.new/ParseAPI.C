@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/06/12 14:56:23  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.10  1996/06/04 14:21:38  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -225,6 +233,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       link->SetMasterView(0);
       control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[1], "get3DLocation")) {
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+#if 0
+      Camera c = view->GetCamera();
+      sprintf(result, "%g %g %g", c.x_, c.y_, c.z_);
+      control->ReturnVal(API_ACK, result);
+#endif
+      control->ReturnVal(API_ACK, "0 0 0");
       return 1;
     }
     if (!strcmp(argv[0], "getLinkMaster")) {
@@ -1108,6 +1130,21 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 4) {
+    if (!strcmp(argv[0], "setMappingLegend")) {
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
+      if (!map) {
+	control->ReturnVal(API_NAK, "Cannot find mapping");
+	return -1;
+      }
+      view->SetMappingLegend(map, argv[3]);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "markViewFilter")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
