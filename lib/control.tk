@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.104  1996/12/26 17:32:49  wenger
+#	Fixed a mistake in Donko and Shaun's GUI changes.
+#
 #	Revision 1.103  1996/12/23 22:20:38  donjerko
 #	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
 #	  pairs to have OK always on the left, Cancel on the right.  Renamed
@@ -649,7 +652,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
 menu .mbar.tdata.menu -tearoff 0
-.mbar.tdata.menu add command -label "Import" -command { MacroImport 0 0 }
+.mbar.tdata.menu add command -label "Import" -command { defineStream "" 0 }
+.mbar.tdata.menu add command -label "Edit" -command { MacroImport 0 0 }
 
 .mbar.tdata.menu add cascade -label "Schema" \
 	-menu .mbar.tdata.menu.schemaMenu 
@@ -670,7 +674,7 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 #.mbar.tdata.menu add cascade -label "Mapping" \
 #   -menu .mbar.tdata.menu.mappingMenu
 
-.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
+.mbar.tdata.menu add command -label "Active Tables" -command { MacroImport 1 0 }
 
 #.mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
 .mbar.tdata.menu add separator

@@ -15,6 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.51  1996/12/23 22:20:41  donjerko
+#	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
+#	  pairs to have OK always on the left, Cancel on the right.  Renamed
+#	  and moved around various menu items; to avoid confusion.
+#
+#	  More changes will follow later, after you're had time to adjust.
+#
+#	  Shaun/Donko
+#
 #	Revision 1.50  1996/12/15 07:01:39  donjerko
 #	Added the window to create an index on streams.
 #
@@ -288,6 +297,22 @@ proc saveSources {} {
 }
 
 ############################################################
+
+proc updateStreamDef_and_display {dispname} {
+	global sourceList
+
+	updateStreamDef
+	set tdata [OpenAndDefineDataSources 0 $dispname]
+	if {$tdata == ""} {
+		puts "tdata = NULL"
+		return
+	}
+	set schemafile [lindex $sourceList($tdata) 3]
+	MacroDefAuto $tdata $schemafile
+
+#	proc OpenAndDefineDataSources {derivedOnly snames}
+#    proc MacroDefAuto {tdata schemafile} 
+}
 
 proc updateStreamDef {} {
     global schemadir
@@ -619,9 +644,11 @@ proc defineStream {base edit} {
 
     button .srcdef.but.index -text Index -width 10 -command indexUpdate 
     button .srcdef.but.ok -text OK -width 10 -command updateStreamDef
+    button .srcdef.but.display -text Display -width 10 \
+    		-command {updateStreamDef_and_display $dispname}
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
-    pack .srcdef.but.index .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
+    pack .srcdef.but.index .srcdef.but.display .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
 	    -side left -padx 7m
 
     tkwait visibility .srcdef

@@ -15,6 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.69  1996/12/23 22:20:40  donjerko
+#	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
+#	  pairs to have OK always on the left, Cancel on the right.  Renamed
+#	  and moved around various menu items; to avoid confusion.
+#
+#	  More changes will follow later, after you're had time to adjust.
+#
+#	  Shaun/Donko
+#
 #	Revision 1.68  1996/12/16 11:14:38  kmurli
 #	No change
 #
@@ -430,6 +439,8 @@ proc OpenNewDataSource {derivedOnly} {
 ############################################################
 
 proc OpenAndDefineDataSources {derivedOnly snames} {
+	puts "in OpenAnd.."
+	puts $snames
     global sourceList derivedSourceList
 
     foreach sname $snames {
@@ -657,7 +668,7 @@ proc MacroImport {mode derivedOnly} {
 
     if {!$derivedOnly && $mode > 0} {
 	set tdataSet [TdataSet]
-	if {[llength $tdataSet] > 0} {
+	if {[llength $tdataSet] >= 0} {
 	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
 		    "Select a data stream" \
 		    "" 0 { OK New Cancel } $tdataSet ]
