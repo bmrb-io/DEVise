@@ -1,3 +1,5 @@
+RBMROOT		= `pwd`/..
+
 CC		= g++
 
 CFLAGS		= -I. $(INC) -Wall \
