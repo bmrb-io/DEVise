@@ -29,5 +29,11 @@ endif
 ln -s ../../$ARCH/generic/devised .
 
 if (! -e lib) then
-  ln -s ../../lib .
+  mkdir lib
 endif 
+
+if (! -e lib/composite.ini) then
+  cd lib
+  ln -s ../../../lib/composite.ini .
+  cd ..
+endif
