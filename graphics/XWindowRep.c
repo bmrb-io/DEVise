@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.121  1999/02/11 19:54:43  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.120  1999/01/05 20:53:52  wenger
   Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
   of the text symbol code.
@@ -743,7 +748,7 @@ XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
   _win = 0;
   _myWin = 0;
   _pixmap = pixmap;
-  _myPixmap = _pixmap;
+  _myPixmap = pixmap;
 
   Init();
 //  ClearPixmap();
@@ -3496,17 +3501,27 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
     XMoveResizeWindow(_display, _win, x, y, w, h);
   } else {
     /* Resizing a pixmap involves deleting it and creating a new one */
-    XFreePixmap(_display, _pixmap);
+	Boolean self = _pixmap == _myPixmap; // outputting to self?
+    XFreePixmap(_display, _myPixmap);
     unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
-    _pixmap = XCreatePixmap(_display, DefaultRootWindow(_display),
+    _myPixmap = XCreatePixmap(_display, DefaultRootWindow(_display),
 			    w, h, depth);
-    DOASSERT(_pixmap, "Cannot create pixmap");
+    DOASSERT(_myPixmap, "Cannot create pixmap");
+	if (self) _pixmap = _myPixmap; // output to new pixmap
     _x = x;
     _y = y;
 
+	// Update all other WindowReps outputting via this WindowRep.
+    int index = _inputWins.InitIterator();
+	while (_inputWins.More(index)) {
+		XWindowRep *xwr = _inputWins.Next(index);
+		xwr->_pixmap = _myPixmap;
+	}
+	_inputWins.DoneIterator(index);
+
     // clear all pixels in pixmap
     SetForeground(GetBackground());
-    XFillRectangle(_display, _pixmap, _gc, 0, 0, w, h);
+    XFillRectangle(_display, _myPixmap, _gc, 0, 0, w, h);
   }
 
   UpdateWinDimensions();
