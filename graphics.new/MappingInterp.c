@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/28 00:04:53  jussi
+  Added polygon and oval shapes.
+
   Revision 1.6  1995/11/25  01:20:12  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -409,7 +412,9 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	 printf("eval y\n");
       */
       *((double *)(gPtr+_offsets->yOffset)) = _interpResult;
-      printf("y is %f\n", _interpResult);
+      /*
+	 printf("y is %f\n", _interpResult);
+      */
     }
     
     if (_offsets->colorOffset >= 0 ) {
@@ -425,7 +430,9 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	 printf("eval color\n");
       */
       *((Color *)(gPtr+_offsets->colorOffset)) = (Color)_interpResult;
-      printf("color is %f\n", _interpResult);
+      /*
+	 printf("color is %f\n", _interpResult);
+      */
     }
     
     if (_offsets->sizeOffset >= 0) {
