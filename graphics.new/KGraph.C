@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/07 02:19:00  ravim
+  Init() clears the display.
+
   Revision 1.2  1995/12/06 05:45:08  ravim
   Initial version.
 */
@@ -30,23 +33,26 @@ KGraph::KGraph(DeviseDisplay *dis)
   _dis = dis;
 
   // Create a new window
-  _win = _dis->CreateWindowRep("KGraph", 0, 0, 0.40, 0.25,
+  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.40, 0.25,
 			       BlackColor, WhiteColor);
 
   _naxes = 0;
   _pts = NULL;
+  _xyarr = NULL;
+  _winame = NULL;
 }
 
 KGraph::~KGraph()
 {
   delete [] _pts;
-
+  delete [] _xyarr;
 }
 
-void KGraph::Init()
+void KGraph::Init(char *winname, char *statname)
 {
   _naxes = 0;
   delete [] _pts;
+  delete [] _xyarr;
 
   // Clear up any existing display on the windowrep - is this the right way??
   // We want to reuse the window for displaying a different graph.
@@ -57,12 +63,16 @@ void KGraph::Init()
   _win->SetFgColor(WhiteColor);
   _win->FillRect(x0, y0, w, h);
 
+  // Copy window name
+  _winame = winname;
+  _statname = statname;
 }
 
 void KGraph::setAxes(int num)
 {
   _naxes = num;
   _pts = new Coord[num];
+  _xyarr = new Point[num];
   for (int i = 0; i < num; i++)
     _pts[i] = 0.0;
 }
@@ -79,12 +89,12 @@ void KGraph::Display()
 
   // Draw the circle
   DrawCircle();
-  // Draw Axes
-  DrawAxes();
   // Plot points
   PlotPoints();
   // Show values
   ShowVal();
+  // Draw Axes
+  DrawAxes();
 }
 
 
@@ -118,7 +128,7 @@ void KGraph::DrawAxes()
   for (int i = 0; i < _naxes; i++)
   {
     Rotate(rad/2, i*theta, x, y);
-    _win->Line(cx, cy, x, y, 2);
+    _win->Line(cx, cy, x, y, 1);
   }
 
   // Generate origin label
@@ -144,10 +154,17 @@ void KGraph::PlotPoints()
   for (i = 0; i < _naxes ; i++)
   {
     Rotate(Scale(_pts[i], max), i*theta, x2, y2);
+    // store this point in a x-y array - need to fill polygon later
+    _xyarr[i].x = x2;
+    _xyarr[i].y = y2;
+
     _win->Line(x1, y1, x2, y2, 2);
     x1 = x2;
     y1 = y2;
   }
+
+  // Finally have to fill the interior region with some color.
+  _win->FillPoly(_xyarr, _naxes);
 }
 
 void KGraph::ShowVal()
@@ -156,7 +173,6 @@ void KGraph::ShowVal()
   unsigned int w,h;
   _win->Origin(x0, y0);
   _win->Dimensions(w, h);
-  _win->SetFgColor(BlueColor);
 
   // Show the plotted values by the side
   // xval to start at
@@ -164,6 +180,16 @@ void KGraph::ShowVal()
   Coord starty = y0 + 10;
   
   // First a generic message
+  
+  _win->SetFgColor(RedColor);
+  _win->AbsoluteText(_winame, startx, starty, 500, 13,
+		     WindowRep::AlignWest);
+  starty += 17;
+  _win->AbsoluteText(_statname, startx, starty, 500, 13,
+		     WindowRep::AlignWest);
+  starty += 17;
+
+  _win->SetFgColor(BlueColor);
   _win->AbsoluteText("Values clockwise from O", startx, starty, 500, 13,
 		     WindowRep::AlignWest);
 
