@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/13 22:07:28  jussi
+  Added debugging statements. If symbol width or height is non-constant
+  (depends on user data), then we cannot use the pixel array display
+  optimization because there's no good way to determine the maximum
+  bounding box and hence to determine whether ALL symbols reduce to
+  single pixels.
+
   Revision 1.8  1995/11/28 00:24:01  jussi
   Moved a couple of #include statements to Shape.h.
 
@@ -92,7 +99,7 @@ public:
     int i = 0;
     while (i < numSyms) {
 
-      Color firstColor;
+      Color firstColor = 0;
       int count = 0;
 
       for(; i < numSyms; i++) {
@@ -140,7 +147,6 @@ public:
       win->Transform(0, 0, x0, y0);
       win->Transform(1, 1, x1, y1);
       Coord pixelWidth = 1 / fabs(x1 - x0);
-      Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #ifdef DEBUG
       printf("RectXShape: maxW %.2f, pixelW %.2f\n", maxWidth, pixelWidth);
@@ -206,10 +212,9 @@ public:
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
     Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #ifdef DEBUG
-    printf("BarShape: pixelW %.2f, pixelH %.2f\n", pixelWidth, pixelHeight);
+    printf("BarShape: pixelW %.2f\n", pixelWidth);
 #endif
 
     for(int i = 0; i < numSyms; i++) {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/14 00:36:57  jussi
+  Minor fix to conversion of shape attributes to GData.
+
   Revision 1.9  1995/12/14 00:28:24  jussi
   Fixed interpretation of shape attributes; shape attributes were not
   converted to GData at all in some cases. This resulted in width or
@@ -783,7 +786,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_Shape) {
     if (IsConstCmd(_cmd->shapeCmd, constVal)) {
       ShapeID shape = (ShapeID)constVal;
-      if (shape <0 ||shape >= MaxInterpShapes)
+      if (shape < 0 || shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
       _tclCmd->shapeCmd = NULL;
@@ -876,7 +879,6 @@ static void InsertString(char *string)
     fprintf(stderr, "InsertString: no more space\n");
     Exit::DoExit(2);
   }
-  int i;
   char *ptr = &_stringBuf[_numChar];
   while (*string != '\0') {
     *ptr++ = *string++;
@@ -981,7 +983,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	char buf[80];
 	int len = ptr - 1 - (cmd + 1) + 1;
 	if (len >= sizeof buf) {
-	  fprintf(stderr, "can not handle variable name > %d\n",
+	  fprintf(stderr, "can not handle variable name > %ld\n",
 		  sizeof buf);
 	  Exit::DoExit(2);
 	}
@@ -1103,7 +1105,6 @@ void MappingInterp::PrintCmd()
 
   } else {
 
-    int code;
     printf("complex command\n");
     if (_cmdFlag & MappingCmd_X)
       printf("x: %s --> %s\n", _cmd->xCmd, _tclCmd->xCmd);
@@ -1147,7 +1148,6 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
 {
   AttrInfo *info;
   int offset;
-  double *dptr;
 
   switch(entry->cmdType) {
   case MappingSimpleCmdEntry::AttrCmd:
