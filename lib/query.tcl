@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/06/20 21:38:57  jussi
+#  Added radial coordinates of the camera and rectangular coordinates
+#  of the focal point to the 3D query dialog.
+#
 #  Revision 1.3  1996/06/20 17:22:11  guangshu
 #  Added statistics button but commented it out.
 #
@@ -426,7 +430,11 @@ proc Do3DQuery {} {
 	set x [.query3d.recLoc.x.e get]
 	set y [.query3d.recLoc.y.e get]
 	set z [.query3d.recLoc.z.e get]
-	DEVise set3DLocation $curView $x $y $z
+	set loc [DEVise get3DLocation $curView]
+	set fx [lindex $loc 4]
+	set fy [lindex $loc 5]
+	set fz [lindex $loc 6]
+	DEVise set3DLocation $curView $x $y $z $fx $fy $fz
 	Update3DLocation
     }
     button .query3d.bot.but.close -text Close -width 10 \

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/06/26 17:22:06  wenger
+#  Finished code for saving data to templates (includes quite a bit of
+#  cleanup of the DoActualSave procedure).
+#
 #  Revision 1.11  1996/06/24 15:52:02  wenger
 #  First version of Tcl code to save data to templates.
 #
@@ -707,7 +711,7 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
     SaveCategory $fileId "axisLabel"
     puts $fileId ""
 
-    puts $fileId "# Create Actions"
+    puts $fileId "# Create actions"
     SaveCategory $fileId "action"
     puts $fileId ""
 
@@ -757,7 +761,10 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
 	set x [lindex $camera 1]
 	set y [lindex $camera 2]
 	set z [lindex $camera 3]
-	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z"
+	set fx [lindex $camera 4]
+	set fy [lindex $camera 5]
+	set fz [lindex $camera 6]
+	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z $fx $fy $fz"
     }
 }
 
