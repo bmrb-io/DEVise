@@ -1,0 +1,148 @@
+# Makerules
+#***************************************************************************
+#
+# Java Project Makefile common rules
+#
+# (C) 1999 Jacob Dreyer - Geotechnical Software Services
+# jacob.dreyer@geosoft.no - http://geosoft.no
+#
+# Modified by Hao Wang - May 14, 2000
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#***************************************************************************
+
+#***************************************************************************
+#
+# Section 1: Directories.
+# 
+# This section describes the directory structure of the development area.
+# The convention is to use a common root directory for development which
+# includes sub directories for source, classes and documentation.
+#
+#***************************************************************************
+
+ROOT_DIR   = ../../..
+
+SOURCE_DIR = $(ROOT_DIR)/src
+CLASS_DIR  = $(ROOT_DIR)/classes
+DOC_DIR    = $(ROOT_DIR)/docs
+
+
+
+#***************************************************************************
+#
+# Section 2. Documentation.
+#
+# These variables define some of the layout of the javadoc HTML
+# output. See javadoc manual for details.
+#
+#***************************************************************************
+
+WINDOWTITLE = 'Experiment Management - XMan'
+DOCTITLE    = 'XMan Java API'
+HEADER      = 'XMan Java API'
+BOTTOM      = 'Copyright 2000 - University of Wisconsin'
+
+
+#***************************************************************************
+#
+# Section 3. Tools.
+#
+# This section list the tools required to build the java classes and 
+# packages. The actual list may need to be adjusted when make is applied
+# on different OS platforms.
+#
+#***************************************************************************
+
+JAVAC   = javac
+JAVAH   = javah
+RMIC    = rmic
+JAR     = jar
+JAVADOC = javadoc
+RM      = rm -f
+
+JAVAC_OPTIONS    = -g -d $(CLASS_DIR) -sourcepath $(SOURCE_DIR) -classpath $(CLASS_DIR)
+RMIC_OPTIONS     = -d $(CLASS_DIR)
+JAVADOC_OPTIONS = \
+        -d $(DOC_DIR) \
+        -sourcepath $(SOURCE_DIR) \
+        -use \
+        -splitIndex \
+        -windowtitle $(WINDOWTITLE) \
+        -doctitle $(DOCTITLE) \
+        -header $(HEADER) \
+        -bottom $(BOTTOM)
+
+
+#***************************************************************************
+#
+# Section 4. Rules and dependencies.
+#
+#***************************************************************************
+
+PACKAGE_DIR     = $(CLASS_DIR)/$(PACKAGE_LOC)
+CLASS_FILES     = $(SOURCE:%.java=$(PACKAGE_DIR)/%.class)
+JNI_CLASS_FILES = $(JNI_SOURCE:%.java=$(PACKAGE_DIR)/%.class)
+JNI_HEADERS     = $(JNI_SOURCE:%.java=%.h)
+RMI_CLASS_FILES = $(RMI_SOURCE:%.java=$(PACKAGE_DIR)/%.class)
+RMI_STUB_FILES  = $(RMI_SOURCE:%.java=$(PACKAGE_DIR)/%_Stub.class)
+RMI_SKEL_FILES  = $(RMI_SOURCE:%.java=$(PACKAGE_DIR)/%_Skel.class)
+ALL_CLASS_FILES = $(CLASS_FILES) $(RMI_STUB_FILES) $(RMI_SKEL_FILES)
+JARFILE         = $(PACKAGE_DIR).jar
+
+
+$(PACKAGE_DIR)/%.class : %.java
+	$(JAVAC) $(JAVAC_OPTIONS) $< 
+
+%.class : %.java
+	$(MAKE) $(PACKAGE_DIR)/$@
+
+$(SOURCE_DIR)/$(PACKAGE_LOC)/%.h : $(PACKAGE_DIR)/%.class
+	$(JAVAH) $(JAVAH_OPTIONS) $(PACKAGE).$*
+
+%.h : %.class
+	$(MAKE) $(SOURCE_DIR)/$(PACKAGE_LOC)/$@
+
+$(PACKAGE_DIR)/%_Stub.class : $(PACKAGE_DIR)/%.class
+	$(RMIC) $(RMIC_OPTIONS) $(PACKAGE).$*
+
+$(PACKAGE_DIR)/%_Skel.class : $(PACKAGE_DIR)/%.class
+	$(RMIC) $(RMIC_OPTIONS) $(PACKAGE).$*
+
+%_Stub.class : %.class
+	$(MAKE) $(PACKAGE_DIR)/$@
+
+%_Skel.class : %.class
+	$(MAKE) $(PACKAGE_DIR)/$@
+
+classes: $(CLASS_FILES)
+
+$(JARFILE) : $(ALL_CLASS_FILES)
+	$(JAR) cvf $(JARFILE) $(ALL_CLASS_FILES) $(JAR_EXTRAS)
+
+doc       :
+	$(JAVADOC) $(JAVADOC_OPTIONS) $(PACKAGE)
+
+jar       : $(JARFILE)
+
+jni       : $(JNI_CLASS_FILES) $(JNI_HEADERS)
+
+rmi       : $(RMI_CLASS_FILES) $(RMI_STUB_FILES) $(RMI_SKEL_FILES)
+
+clean     :
+	$(RM) $(ALL_CLASS_FILES) $(JARFILE) $(JNI_HEADERS)
+
+all       : classes jni rmi jar doc
