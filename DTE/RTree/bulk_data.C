@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/12 18:45:52  wenger
+  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+  makefiles; various other makefile cleanups.
+
   Revision 1.3  1997/03/28 16:07:48  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -133,8 +137,8 @@ int bulk_data_t::SortCmp (int *A,
   double CenterA, CenterB;
   if (QSortPoint)
     {
-      CenterA = A[QSortCol];
-      CenterB = B[QSortCol];
+      memcpy(&CenterA, &A[QSortCol], sizeof(double));
+      memcpy(&CenterB, &B[QSortCol], sizeof(double));
     }
   else
     {
