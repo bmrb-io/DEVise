@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/07/20 18:47:20  jussi
+  Added solid3D flag.
+
   Revision 1.31  1996/07/13 17:26:55  jussi
   Added ViewRecomputed() callback interface.
 
@@ -290,6 +293,10 @@ public:
 	Boolean GetSolid3D() { return _solid3D; }
 	void SetSolid3D(Boolean solid);
 
+	/* Get/set XY zoom or X/Y zoom */
+	Boolean IsXYZoom() { return _xyZoom; }
+	void SetXYZoom(Boolean xyZoom) { _xyZoom = xyZoom; }
+
 	/* Get/set override color */
 	Color GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;
@@ -510,6 +517,8 @@ private:
 
 	int _numDimensions;             /* number of dimensions */
         Boolean _solid3D;               /* true if solid 3D objects */
+
+        Boolean _xyZoom;                /* true if XY zooms */
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
