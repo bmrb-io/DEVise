@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/09/21 16:47:34  wenger
+  Fixed bug 395 (Condorview GIF dumping problem) (caused by waitForQueries
+  not returning a value); made Dispatcher::WaitForQueries a little safer;
+  added code in DeviseCommand class to print an error message and return
+  a default value if a command does not return a value.
+
   Revision 1.47  1998/09/10 23:22:58  wenger
   Third interrupt now forces DEVise to quit without going back through
   the Dispatcher loop, in case you're stuck somewhere.
@@ -284,6 +290,8 @@ Dispatcher::Dispatcher(StateFlag state)
 
   _callback_requests = 0;
 
+  _processingDepth = 0;
+
   /* init current time */
   _oldTime = DeviseTime::Now();
   _playTime = _oldTime;
@@ -493,6 +501,8 @@ void Dispatcher::CheckUserInterrupt()
 
 long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 {
+  _processingDepth++;
+
   long waitfor_secs = -1;
   struct timeval	tv;
   struct timezone	tz;
@@ -512,7 +522,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *info = _callbacks.Next(index);
-    if( info->flag == 0 ) {
+    if ((info->flag == 0) && (_processingDepth == 1)) {
       // callback has been unregistered - remove it 
       // note: info->callBack could very well be an invalid pointer!
 #if defined(DEBUG)
@@ -596,6 +606,9 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
     _callback_requests);
   DebugLog::DefaultLog()->Message(_logBuf);
 #endif
+
+	_processingDepth--;
+
 	return waitfor_secs;
 }
 

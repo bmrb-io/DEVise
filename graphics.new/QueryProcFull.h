@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/04/10 18:29:29  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.24  1997/10/07 17:06:05  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -218,6 +223,8 @@ public:
 
   void ReOrderQueries();
   void PrintQueryData(QPFullData *query);
+  virtual void CheckQueryList() {
+    DOASSERT(_queries->ListOk(), "Error in query list"); }
 
 protected:
   Boolean _prefetch;

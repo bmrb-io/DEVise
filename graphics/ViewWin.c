@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/09/10 23:24:29  wenger
+  Fixed JavaScreen client switch GIF geometry problem.
+
   Revision 1.46  1998/05/21 18:18:32  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -345,6 +348,14 @@ ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
   DO_DEBUG(printf("ViewWin(%s)::ExportImage(_parent = %p, filename = %s)\n",
     GetName(), _parent, filename));
   DevStatus result = StatusOk;
+
+#if 0 //TEMP
+  static int count = 0;
+  if (++count % 5 == 0) {
+      reportErrNosys("ExportImage failed for test");
+      return StatusFailed;
+  }
+#endif //TEMP
 
 #if DIRECT_POSTSCRIPT
   if ((format == POSTSCRIPT || format == EPS) && !_printAsPixmap)

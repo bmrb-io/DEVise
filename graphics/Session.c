@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/09/08 20:25:58  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.28  1998/08/10 19:08:22  wenger
   Moved command result buffer from DeviseCommand class to ControlPanel
   class -- saves 7 MB of memory!
@@ -188,10 +192,12 @@ public:
   }
 
   virtual int ReturnVal(u_short flag, char *result) {
+    _valueReturned = true;
     Tcl_SetResult(_interp, result, TCL_VOLATILE);
     return 1;
   }
   virtual int ReturnVal(int argc, char **argv) {
+    _valueReturned = true;
     Tcl_ResetResult(_interp);
     for(int i = 0; i < argc; i++) 
       Tcl_AppendElement(_interp, argv[i]);

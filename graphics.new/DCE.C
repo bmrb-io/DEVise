@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/12/11 04:25:41  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
   Revision 1.12  1997/11/05 00:23:18  donjerko
   Made changes for RTree.
 
@@ -372,6 +376,10 @@ int SemaphoreV::create()
 SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
 	key(key), size(size), addr(0)
 {
+#if defined(DEBUG)
+  printf("SharedMemory::SharedMemory(%d, %d)\n", key, size);
+#endif
+
   // assume creation of shared memory segment fails
 
   address = 0;
@@ -424,13 +432,14 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
          << endl;
 #endif
     id = shmget(key, size, SHM_R | SHM_W | IPC_CREAT);
-    created = 1;
   }
 
   if (id < 0) {
     perror("shmget");
     return;
   }
+
+  created = 1;
 
 #ifdef DEBUG
   cerr << "%%  Shared memory id " << id << endl;

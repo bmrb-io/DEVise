@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/04/29 17:53:52  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.16  1998/04/10 18:29:26  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -174,6 +179,7 @@ class QueryProc {
                                 Boolean approximate = false) = 0;
     virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf) = 0;
     virtual void DoneTDataQuery() = 0;
+	virtual void CheckQueryList() = 0;
     
   protected:
     static QueryProc *_queryProc;         /* the query process being used */

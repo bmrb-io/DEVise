@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/08/10 19:08:21  wenger
+  Moved command result buffer from DeviseCommand class to ControlPanel
+  class -- saves 7 MB of memory!
+
   Revision 1.25  1998/05/14 18:20:59  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -248,6 +252,11 @@ public:
   {
 		return ReturnVal(argc, argv);
   }
+
+  // Find out whether a command value has been returned.
+  void SetValueReturned(Boolean valueReturned) {
+	_valueReturned = valueReturned; }
+  Boolean GetValueReturned() { return _valueReturned; }
   
   /* Get ClassDir info */
   static ClassDir *GetClassDir();
@@ -337,6 +346,8 @@ protected:
   Boolean _batchMode;            // true if we're in batch mode
   Boolean _syncNotify;           // true if sync notify needed
   Boolean _syncAllowed;          // true when qp allowed to synchronize
+
+  Boolean _valueReturned;
 
 private:
   void UpdateNewDispatcher() {}

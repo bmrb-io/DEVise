@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.70  1998/09/10 23:21:10  wenger
+  Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
+  name, which was then used as part of temp file name); default for
+  JavaScreen is to save selected view when saving a session.
+
   Revision 1.69  1998/05/05 15:14:55  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -447,7 +452,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
                        char *width, float pointSize)
 {
 #if defined(DEBUG)
-  printf("XDisplay::SetFont(%s %s %s %s %f\n", family, weight, slant, width,
+  printf("XDisplay::SetFont(%s %s %s %s %f)\n", family, weight, slant, width,
     pointSize);
 #endif
 
@@ -890,8 +895,8 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
   }
 
   XColor *colors = 0;
-  int ncolors = getxcolors(&xwa, &colors, _display);//TEMPTEMP -- xv function
-  int code = convertImage(image, colors, ncolors, &xwa);//TEMPTEMP -- xv function
+  int ncolors = getxcolors(&xwa, &colors, _display);//TEMP -- xv function
+  int code = convertImage(image, colors, ncolors, &xwa);//TEMP -- xv function
 
   XDestroyImage(image);
   if (colors)

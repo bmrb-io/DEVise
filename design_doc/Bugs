@@ -1506,6 +1506,13 @@ Num Date        Status  Description
 			fails). (ay/rkw)
 			(Fixed by rkw, 09/17/98.)
 
+396 09/22/98	OPEN	devised eventually crashes if there's an error
+			exporting a window image to the JavaScreen (to
+			duplicate, turn on test code in ViewWin::ExportImage()
+			and load FamMed_pre_post_natal.tk three times).
+			(QueryProcFull::_queries list gets corrupted
+			somehow.) (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

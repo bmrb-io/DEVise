@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/04/30 21:45:23  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.9  1996/11/26 16:47:42  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -108,6 +116,8 @@ public:\
 	void DeleteAll();\
 	void PrintIterators();\
 \
+	int ListOk(); \
+\
 protected:\
 	/* insert node2 after node 1 */\
 	void _Insert(ListElement *node1, ListElement *node2);\
@@ -134,7 +144,11 @@ listName::listName(){\
 \
 }\
 \
-listName::~listName() { DeleteAll(); delete _head; }\
+listName::~listName() { \
+    DeleteAll(); \
+	delete _head; \
+	_head = NULL; \
+}\
 \
 int listName::Size() { return _size; }\
 \
@@ -313,6 +327,7 @@ void listName::_DListDelete(ListElement *node){\
 	DOASSERT(node != _head, "Cannot delete head of list");\
 	node->next->prev = node->prev;\
 	node->prev->next = node->next;\
+	node->next = node->prev = NULL;\
 	delete node;\
 	_size--;\
 }\
@@ -350,6 +365,26 @@ void listName::DeleteAll(){\
 		_DListDelete(_head->next);\
 	_size = 0;\
 }\
+\
+int listName::ListOk() { \
+	ListElement *node = _head; \
+    for (int count = 0; count <= _size; count++) { \
+		node = node->next; \
+	} \
+	if (node != _head) { \
+		fprintf(stderr, "Error in next pointers\n"); \
+		return 0; \
+	} \
+\
+    for (int count = 0; count <= _size; count++) { \
+		node = node->prev; \
+	} \
+	if (node != _head) { \
+		fprintf(stderr, "Error in prev pointers\n"); \
+		return 0; \
+	} \
+	return 1; \
+} \
 
 /* define a void list */
 DefineDList(VoidList, void *)
@@ -398,6 +433,8 @@ public:\
 	}\
 	void DoneIterator(int index){_voidList.DoneIterator(index);}\
 	void PrintIterators() {_voidList.PrintIterators();}\
+\
+	int ListOk() { return _voidList.ListOk(); } \
 private:\
 	VoidList _voidList; \
 };

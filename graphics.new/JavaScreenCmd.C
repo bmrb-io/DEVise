@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/09/15 22:29:17  wenger
+  Fixed bug 392 (MolBio.tk crash in JavaScreen -- caused by cursor not
+  connected to any views); workaround to bug 391 (problems with Xvfb).
+
   Revision 1.32  1998/09/15 17:34:06  wenger
   Changed JavaScreen communication protocol so that image data is sent
   after all associated commands (fixes bug 387); made opening a session
@@ -634,7 +638,7 @@ JavaScreenCmd::OpenSession()
 	// Dump all window images to files and send commands requesting the
 	// creation of the windows in the JavaScreen.
 	int winIndex = DevWindow::InitIterator();
-	while (DevWindow::More(winIndex))
+	while (DevWindow::More(winIndex) && (_status == DONE))
 	{
 	  ClassInfo *info = DevWindow::Next(winIndex);
 	  ViewWin *window = (ViewWin *)info->GetInstance();
@@ -653,18 +657,24 @@ JavaScreenCmd::OpenSession()
 			}
 		}
 
-		imageNames[winNum] = CopyString(winInfo->_imageName.c_str());
-        winNum++;
+		if (_status == DONE) {
+		    imageNames[winNum] = CopyString(winInfo->_imageName.c_str());
+            winNum++;
+		}
 
 		delete winInfo;
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
 
-	DOASSERT(winNum == winCount, "Incorrect number of windows");
+	if (_status == DONE) {
+		DOASSERT(winNum == winCount, "Incorrect number of windows");
+	}
 
 	_postponeCursorCmds = false;
-	DrawAllCursors();
+	if (_status == DONE) {
+		DrawAllCursors();
+	}
 
 	// Send DONE here so jspop and js start reading from the image socket.
     if (_status == DONE) {
@@ -675,14 +685,23 @@ JavaScreenCmd::OpenSession()
 
 	// Send the window images.
     for (winNum = 0; winNum < winCount; winNum++) {
-		(void) SendWindowImage(imageNames[winNum]);
+		if (_status == DONE) {
+			(void) SendWindowImage(imageNames[winNum]);
+		}
 		delete [] imageNames[winNum];
 	}
 	delete [] imageNames;
 
 	// avoid unnecessary JAVAC_Done command, after sending back images
-	if (_status == DONE)
+	if (_status == DONE) {
 		_status = NULL_COMMAND;
+    } else {
+		// Clean up if things didn't work.
+#if defined(DEBUG)
+    	printf("Cleaning up partially-opened session\n");
+#endif
+		DoCloseSession();
+	}
 
 #if 0
     struct timeval stopTime;
@@ -1708,7 +1727,10 @@ JavaScreenCmd::DoCloseSession()
 
     int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
     int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
+
     ControlPanel::Instance()->DestroySessionData();
+	Dispatcher::Current()->WaitForQueries();
+
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
     DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
 

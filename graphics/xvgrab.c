@@ -9,6 +9,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/09/15 22:29:10  wenger
+  Fixed bug 392 (MolBio.tk crash in JavaScreen -- caused by cursor not
+  connected to any views); workaround to bug 391 (problems with Xvfb).
+
   Revision 1.4  1998/03/25 14:51:53  wenger
   Added standard headers to all graphics sources.
 
@@ -710,7 +714,8 @@ static int convertImage(image, colors, ncolors, xwap)
 	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
 	// prevents us from getting into an infinite loop below, but we
 	// still end up with a blank image. RKW 1998-09-15.
-	fprintf(stderr, "No bits of rmask set\n");
+	fprintf(stderr, "Warning: no bits of rmask set at %s: %d\n",
+	  __FILE__, __LINE__);
         tmp = 1;
 	r8shift = 1;
     }
@@ -725,7 +730,8 @@ static int convertImage(image, colors, ncolors, xwap)
 	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
 	// prevents us from getting into an infinite loop below, but we
 	// still end up with a blank image. RKW 1998-09-15.
-	fprintf(stderr, "No bits of gmask set\n");
+	fprintf(stderr, "Warning: no bits of gmask set at %s: %d\n",
+	  __FILE__, __LINE__);
         tmp = 1;
 	g8shift = 1;
     }
@@ -740,7 +746,8 @@ static int convertImage(image, colors, ncolors, xwap)
 	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
 	// prevents us from getting into an infinite loop below, but we
 	// still end up with a blank image. RKW 1998-09-15.
-	fprintf(stderr, "No bits of bmask set\n");
+	fprintf(stderr, "Warning: no bits of bmask set at %s: %d\n",
+	  __FILE__, __LINE__);
         tmp = 1;
 	b8shift = 1;
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/05/02 09:00:51  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.15  1998/02/26 20:49:04  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -156,13 +159,16 @@ private:
   static MapInterpClassInfo *_interpProto;
 
   virtual int ReturnVal(u_short flag, char *result) {
+	_valueReturned = true;
     return _server->ReturnVal(flag, result);
   }
   virtual int ReturnVal(int argc, char **argv) {
+	_valueReturned = true;
     return _server->ReturnVal(argc, argv);
   }
 
   virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
+	_valueReturned = true;
     return _server->ReturnVal(flag, argc,argv, addBrace);
   } 
   virtual int SendControl(u_short flag, char *result, bool grp_enable) {

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/01/07 19:28:28  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.20  1997/12/16 17:53:38  zhenhai
   Added OpenGL features to graphics.
 
@@ -130,10 +135,11 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
   if (!_defaultDisplay) {
 #ifndef LIBCS
     // changed for testing GLDisplay
-    if (Init::UseOpenGL())
+    if (Init::UseOpenGL()) {
       _defaultDisplay = new GLDisplay();
-    else
+    } else {
       _defaultDisplay = new XDisplay();
+    }
 #else
     _defaultDisplay = new XDisplay();
 #endif
@@ -172,6 +178,10 @@ DeviseDisplay::DeviseDisplay()
 
 DeviseDisplay::~DeviseDisplay()
 {
+#if defined(DEBUG)
+  printf("DeviseDisplay::~DeviseDisplay()\n");
+#endif
+
 #ifndef LIBCS
   Dispatcher::Current()->Unregister(this);
 #endif

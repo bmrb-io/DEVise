@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.86  1998/08/17 18:51:52  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.85  1998/07/06 21:06:55  wenger
   More memory leak hunting -- partly tracked down some in the DTE.
 
@@ -409,7 +413,7 @@
 #include "DrawTimer.h"
 #include "BooleanArray.h"
 
-#define DEBUGLVL 0
+//#define DEBUGLVL 3
 //#define DEBUG_NEG_LINKS 0
 //#define NEW_RECORD_LINKS 1
 #ifdef NEW_RECORD_LINKS
@@ -460,6 +464,7 @@ QueryProcFull::QueryProcFull()
 {
   _queries = new QPFullDataList;
   DOASSERT(_queries, "Out of memory");
+  DOASSERT(_queries->ListOk(), "Error in query list");
 
   _numMappings = 0;
   _convertIndex = 0;
@@ -627,6 +632,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->DoneIterator(index);
   _queries->Append(query);
 #endif
+  DOASSERT(_queries->ListOk(), "Error in query list");
 
 #if DEBUGLVL >= 5
   printf("List of queries in the query processor:\n");
@@ -1341,10 +1347,12 @@ void QueryProcFull::ProcessQuery()
   
   /* move query to end of query list */
   _queries->Delete(query);
+  DOASSERT(_queries->ListOk(), "Error in query list");
   if( query->state == QPFull_EndState ) {
     EndQuery(query);
   } else {
     _queries->Append(query);
+    DOASSERT(_queries->ListOk(), "Error in query list");
   }
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
@@ -1373,6 +1381,7 @@ void QueryProcFull::EndQueries()
     }
   }
   _queries->DoneIterator(index);
+  DOASSERT(_queries->ListOk(), "Error in query list");
 }
 
 

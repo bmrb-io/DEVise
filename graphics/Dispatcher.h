@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/08/28 22:01:09  wenger
+  Made Dispatcher::WaitForQueries() function -- improved over earlier
+  versions because it also checks the callback list (this fixes bug 367);
+  fixed other piled-related JavaScreen support problems; JAVAC_OpenSession
+  closes any existing session before opening the new one.
+
   Revision 1.32  1998/06/23 17:51:37  wenger
   Added client timeout to Devise -- quits if no commands from client
   within specified period.
@@ -326,6 +332,8 @@ private:
   int _maxFdCheck;
 
   time_t _lastCmdTime;
+
+  int _processingDepth;
 };
 
 #if 0

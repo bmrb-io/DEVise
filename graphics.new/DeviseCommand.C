@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/09/21 16:47:42  wenger
+  Fixed bug 395 (Condorview GIF dumping problem) (caused by waitForQueries
+  not returning a value); made Dispatcher::WaitForQueries a little safer;
+  added code in DeviseCommand class to print an error message and return
+  a default value if a command does not return a value.
+
   Revision 1.23  1998/09/08 20:26:15  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -226,10 +232,13 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	result = control->resultBuf;
 	result[0] = '\0';
 
-	_valueReturned = false;
+	control->SetValueReturned(false);
 	retval = Run(argc, argv);
-	if (!_valueReturned) {
-		reportErrNosys("No command value returned");
+	if (!control->GetValueReturned()) {
+		char errBuf[1024];
+		sprintf(errBuf, "No command value returned from command %s\n",
+		  argv[0]);
+		reportErrNosys(errBuf);
     	ReturnVal(API_NAK, "No command value returned");
 	}
 
@@ -247,7 +256,6 @@ DeviseCommand::ReturnVal(u_short flag, char *result)
     printf("DeviseCommand::ReturnVal(%d, %s)\n", flag, result);
 #endif
 
-	_valueReturned = true;
     return control->ReturnVal(flag, result);
 }
 
@@ -260,7 +268,6 @@ DeviseCommand::ReturnVal(int argc, char **argv)
 	printf(")\n");
 #endif
 
-	_valueReturned = true;
     return control->ReturnVal(argc, argv);
 }
 
@@ -279,9 +286,6 @@ DeviseCommand::ReturnVal(int argc, char **argv)
 //		(see CmdContainer.C)
 //		.REGISTER_COMMANND : use default command option
 //		.REGISTER_COMMAND_WITH_OPTION: specify your own option
-//**********************************************************************
-// DTE Command objects
-//**********************************************************************
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_GetSessionList)
 	JavaScreenCmd jc(control,JavaScreenCmd::GETSESSIONLIST,
@@ -361,6 +365,9 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_ImageChannel)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
+//**********************************************************************
+// DTE Command objects
+//**********************************************************************
 /*
 // alternatively, we can write this, instead of the Macro
 int

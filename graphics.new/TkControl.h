@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/02/26 20:49:06  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.22  1998/01/07 19:29:59  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -206,10 +209,12 @@ private:
   char *_argv0;
 
   virtual int ReturnVal(u_short flag, char *result) {
+	_valueReturned = true;
     Tcl_SetResult(_interp, result, TCL_VOLATILE);
     return 1;
   }
   virtual int ReturnVal(int argc, char **argv) {
+	_valueReturned = true;
     Tcl_ResetResult(_interp);
     for(int i = 0; i < argc; i++) 
       Tcl_AppendElement(_interp, argv[i]);

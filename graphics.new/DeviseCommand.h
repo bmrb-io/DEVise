@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/09/21 16:47:43  wenger
+  Fixed bug 395 (Condorview GIF dumping problem) (caused by waitForQueries
+  not returning a value); made Dispatcher::WaitForQueries a little safer;
+  added code in DeviseCommand class to print an error message and return
+  a default value if a command does not return a value.
+
   Revision 1.13  1998/09/08 20:26:17  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -104,7 +110,6 @@ class DeviseCommand
 			 _controlStack->pop();
 			 control =(ControlPanel*) _controlStack->top();
 		}
-		Boolean _valueReturned;
 	protected:
 		// only friend class can construct this class
 		ControlPanel* control;
