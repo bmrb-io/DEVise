@@ -1,4 +1,4 @@
-CC = gcc
+CC = g++
 CFLAGS = $(ARCH_FLAGS)
 
 ALLSRC = main.c parse.c codegen.c

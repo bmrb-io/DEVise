@@ -2,7 +2,6 @@
 
 %{
 #include "tokens.h"
-extern char *malloc();
 %}
 
 %%
@@ -47,7 +46,7 @@ int index = 0;
 char *text;
 
     while (!done){
-        c = input();
+        c = lex_input();
         if (c == 0)
             syntax_error();
         else if (c == '{'){
@@ -67,7 +66,7 @@ char *text;
     }
 	buf[index++] = '\0';
 
-	if ((text = malloc(index))==NULL){
+	if ((text = (char *)malloc(index))==NULL){
 		printf("no memory\n");
 		exit(2);
 	}
@@ -81,10 +80,16 @@ Return the current text
 char *GetTokenText(){
 	char *text;
 
-	if ((text=malloc(yyleng+1))==NULL){
+	if ((text=(char *)malloc(yyleng+1))==NULL){
 		printf("no memory\n");
 		exit(2);
 	}
 	strcpy(text, yytext);
 	return text;
+}
+
+yywrap()
+{
+
+
 }

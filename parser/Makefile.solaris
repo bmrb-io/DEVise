@@ -5,4 +5,6 @@ depend:
 codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h parse.h
 main.o: parse.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 parse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h parse.h
-parse.o: tokens.h codegen.h
+parse.o: tokens.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+parse.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+parse.o: /usr/include/sys/time.h /usr/include/sys/time.h codegen.h

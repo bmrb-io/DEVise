@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:56:21  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:35:17  jussi
   Added CVS header.
 */
@@ -27,9 +30,7 @@
 
 #include "parse.h"
 
-main(argc,argv)
-     int argc;
-     char **argv;
+main(int argc,char **argv)
 {
   char *fname= "mapfile.h";
   FILE *mapFile;

@@ -16,11 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:56:20  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:35:16  jussi
   Added CVS header.
 */
 
-#ifdef CODEGEN_H
+#ifndef CODEGEN_H
 #define CODEGEN_H
 
 void CodeGen(MappingRec *rec, FILE *mapFile);

@@ -16,12 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/22 16:54:48  jussi
+  Replacing file with real contents.
+
   Revision 1.3  1995/09/05 20:35:15  jussi
   Added CVS header.
 */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "parse.h"
+#include "codegen.h"
 
 #define PROTODIR  "/p/miron/miron/DEVise/parser/proto"
 

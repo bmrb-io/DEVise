@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.4  1995/09/22 15:56:24  jussi
+  Added copyright message.
+*/
 
 #ifndef TOKENS_H
 #define TOKENS_H
@@ -51,4 +54,5 @@ extern unsigned char yytext[];
 extern char yytext[];
 #endif
 
+#include <malloc.h>
 #endif
