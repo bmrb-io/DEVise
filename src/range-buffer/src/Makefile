@@ -36,6 +36,13 @@ OBJS		= $(RBM_OBJS) $(UTIL_OBJS) $(SUPP_OBJS)
 Default:	$(OBJS)
 		mv $(OBJS) $(RBMROOT)/obj/
 
+
+demo:		$(OBJS) demo.c
+		$(CC) $(CFLAGS) demo.c  $(OBJS) \
+					-o demo
+		mv demo $(RBMROOT)/bin/
+		mv $(OBJS) $(RBMROOT)/obj/
+
 testPhonyRAM:	$(OBJS) testPhonyRAM.c
 		$(CC) $(CFLAGS) testPhonyRAM.c  $(OBJS) \
 					-o testPhonyRAM

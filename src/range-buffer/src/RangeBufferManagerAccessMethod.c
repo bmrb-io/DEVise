@@ -180,7 +180,7 @@ int RangeBufferManagerAccessMethod::nextRec(void *&record)
 	{
 	    /* no more record in Mem, advance to the second phase */
 	    _inMemPhase = false;
-	    TELL_FACT("End of all memory residing records");
+	    TELL_FACT("End of all memory residing records.\n");
 	
 	    /* Create all BBoxEntrys for records that'll come from low level. */
 

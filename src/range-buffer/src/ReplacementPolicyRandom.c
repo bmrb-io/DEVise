@@ -27,7 +27,9 @@ ObjectDescriptor *ReplacementPolicyRandom::pickVictim()
 	    if (ret->_pinCount == 0)
 	    {
 		/* victim found */
+		printf("------------------------------\n");
 		printf("Object %d replaced as a victim.\n", ret->_obj);
+		printf("------------------------------\n");
 		return ret;
 	    }
 	    
