@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2001/12/17 23:18:35  wenger
+#  Added Solaris 2.8 link.
+#
 #  Revision 1.7  2001/12/17 16:50:43  wenger
 #  Added check to release script to warn if we're not doing the release on
 #  trigger (needed because of the dynamic libraries).
@@ -153,7 +156,7 @@ foreach arch ($arches)
     set otherarches = (i386_linux22 i386_rh61 i386_rh62)
   else if ($arch == solaris) then
     set mainarch = sunx86_54
-    set otherarches = (sunx86_55 sunx86_56 sunx86_57)
+    set otherarches = (sunx86_55 sunx86_56 sunx86_57 sunx86_58)
   else if ($arch == solsparc) then
     set mainarch = sun4m_54
     set otherarches = (sun4m_55 sun4x_55 sun4x_56 sun4x_57 sun4x_58)
