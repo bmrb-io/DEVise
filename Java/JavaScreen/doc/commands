@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 5.1.
+version 7.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -35,8 +35,9 @@ see comments in DEViseCommSocket.java.
     Purpose: establish connection between JavaScreen and JSPoP
     Arguments: 4
         <username>: default is "guest"
-        <password>: default is ""
-        <protocol-version>:
+        <password>: default is "guest"
+        <protocol-version>: the JavaScreen protocol version, in the form
+	                    <major>.<minor>.
 	<collaboration info>: a string indicating whether allowing
                               collaboration on this user.
 
@@ -61,23 +62,16 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
 	<passwd>: the collaboration password.
 
-    2.6 JAVAC_SaveCurSession
+    2.7 JAVAC_SaveCurSession
     Purpose: Save the current session when a user goes into collaboration
              mode during a session is open.
     Arguments: 0
 
-    2.6 JAVAC_ReopenSession
+    2.8 JAVAC_ReopenSession
     Purpose: Reopen saved session when a user goes back to "socket" mode
              from collaboration mode
     Arguments: 0
 
-    2.7 JAVAC_Set3DConfig
-    Purpose: Set 3D view configurations, support 3D view collaboration
-    Arguments: 15
-	<view name>: a string indicating the active view name
-	<data matrix>: 9 floats indicating current data[3][3] matrix
-	<origin>: 3 floats indicating current origin[3] matrix
-	<shifted>: 2 ints indicating current shifted X, Y position
 
 3. JSPoP to JavaScreen
 
@@ -100,22 +94,26 @@ see comments in DEViseCommSocket.java.
     3.4 JAVAC_Clients
     Purpose: send the active client list to collaboration JavaScreen
     Arguments: variable number of IDs of active clients.
+	<client 1 ID>: the ID of client 1
+	<client 1 host>: the host of client 1
+	<client 1 session>: the session of client 1
+	<client 1 ID>: the ID of client 2
+	<client 2 host>: the host of client 2
+	<client 2 session>: the session of client 2
+	...
         
     3.5 JAVAC_CollabState
     Purpose: send the collaboration status back to JavaScreen
-    Arguments: variable nember of hostnames of collaborating followers.
+    Arguments: variable number of hostnames of collaborating followers.
+        <hostname 1>: hostname of first collaboration follower
+	<hostname 2>: hostname of second collaboration follower
+	...
 
     3.6 JAVAC_CollabExit
     Purpose: Close the collaboration JavaScreens, when the "leader" exits
     Arguments: 0
 
-    3.7 JAVAC_Set3DConfig
-    Purpose: Set 3D view configurations, support 3D view collaboration
-    Arguments: 15
-	<view name>: a string indicating the active view name
-	<data matrix>: 9 floats indicating current data[3][3] matrix
-	<origin>: 3 floats indicating current origin[3] matrix
-	<shifted>: 2 ints indicating current shifted X, Y position
+    3.7 JAVAC_Set3DConfig (see section 2.9).
 
 
 4. JavaScreen to devised (via JSPoP)
@@ -247,14 +245,16 @@ see comments in DEViseCommSocket.java.
     Purpose: requests that the devised return TData record information for
              the given location (drill down) in a three-dimensional view.
              Note: this command is not yet fully implemented.
-    Arguments: 4
+    Arguments: variable
         <view name>: name of view for which records are to be shown.
-        <x location>: x location of event causing records to be shown, in
-                      data units.
-        <y location>: y location of event causing records to be shown, in
-                      data units.
-        <z location>: z location of event causing records to be shown, in
-                      data units.
+	<count>: number of objects for which data should be shown
+        <x location 1>: x location of object 1, in data units.
+        <y location 1>: y location of object 1, in data units.
+        <z location 1>: z location of object 1, in data units.
+        <x location 2>: x location of object 2, in data units.
+        <y location 2>: y location of object 2, in data units.
+        <z location 2>: z location of object 2, in data units.
+	...
 
     4.17 JAVAC_ResetFilters
     Purpose: tells the devised to reset the visual filters of all views to
@@ -271,6 +271,14 @@ see comments in DEViseCommSocket.java.
                       in pixels, relative to the left edge of the view.
         <y location>: y location of event causing help info to be shown,
                       in pixels, relative to the top edge of the view.
+
+    4.19 JAVAC_Set3DConfig
+    Purpose: Set 3D view configurations, support 3D view collaboration
+    Arguments: 15
+	<view name>: a string indicating the active view name
+	<data matrix>: 9 floats indicating current data[3][3] matrix
+	<origin>: 3 floats indicating current origin[3] matrix
+	<shifted>: 2 ints indicating current shifted X, Y position
 
 
 5. Devised to JavaScreen (via JSPoP)
@@ -437,6 +445,8 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <view name>: name of view be deleted.
 
+    5.12 JAVAC_Set3DConfig (see section 4.19).
+
 
 6. JSPoP to JSS
 
@@ -464,3 +474,9 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <timestamp>: used to uniquely identify a particular check on
 	  both ends
+
+9. Other
+
+Some of the information exchanged in setting up a collaboration is not
+included in these commands, but is apparently exchanged at a lower level
+(this should be documented in more detail).

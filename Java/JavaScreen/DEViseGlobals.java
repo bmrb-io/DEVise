@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2001/04/18 16:04:53  wenger
+// Changed the JSA version of the JavaScreen to have two rows of buttons
+// because we're running out of space; changed JS version to 4.1.
+//
 // Revision 1.50  2001/04/01 03:51:18  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -192,8 +196,8 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("4.1");
-    public static final String PROTOCOL_VERSION = new String("6.0");
+    public static final String VERSION = new String("4.2");
+    public static final String PROTOCOL_VERSION = new String("6.1");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2001/04/20 19:22:21  xuk
+// Changes for 3D drill-down of segment objects.
+//
 // Revision 1.72  2001/04/20 01:23:46  xuk
 // Added Functionality for 3D view drill-down.
 // 1.Changed mouseReleased() function;
@@ -1368,7 +1371,6 @@ public class DEViseCanvas extends Container
 		    if (activeView.isDrillDown) {
                         cmd = DEViseCommands.SHOW_RECORDS + " " +
 			  activeView.getCurlyName() + " " +
-			  "0 " +   
 			  activeView.translateX(p.x, 2) + " " +
 			  activeView.translateY(p.y, 2);
 		    }
@@ -1898,7 +1900,7 @@ public class DEViseCanvas extends Container
 	    jsc.pn("No atom.");
 
 	if (atomList.size() > 0) {
-	    String cmd = DEViseCommands.SHOW_RECORDS + " " + 
+	    String cmd = DEViseCommands.SHOW_RECORDS3D + " " + 
 	    activeView.getCurlyName() + " " + atomList.size();
 	    
 	    for (int i=0; i<atomList.size(); i++) {

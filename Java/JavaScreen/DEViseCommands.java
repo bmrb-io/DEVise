@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/04/01 03:51:18  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.10  2001/03/20 17:49:45  xuk
 // Added collaboration for 3D Views.
 //
@@ -135,6 +138,8 @@ public final class DEViseCommands
     public static final String SET_DISPLAY_SIZE = JS_PREFIX + "SetDisplaySize";
 
     public static final String SHOW_RECORDS = JS_PREFIX + "ShowRecords";
+
+    public static final String SHOW_RECORDS3D = JS_PREFIX + "ShowRecords3D";
 
     public static final String SHOW_VIEW_HELP = JS_PREFIX + "ShowViewHelp";
 

@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.113  2001/04/02 16:09:57  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.112  2001/01/08 20:32:54  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -553,7 +558,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 6;
-static const int protocolMinorVersion = 0;
+static const int protocolMinorVersion = 1;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -1447,30 +1452,28 @@ JavaScreenCmd::ShowRecords3D()
 	  "JavaScreenCmd::ShowRecords3D(", _argc, _argv, ")\n");
 #endif
 
+	const char *usage = "Usage: ShowRecords3D <view name> <count> <x1> "
+	  "<y1> <z1> <x2> <y2> <z2> ...";
+
 	// Note: x, y, and z are the values from the relevant GData record.
-	if (_argc != 4)
+	if (_argc < 5)
 	{
-		errmsg = "Usage: ShowRecords3D <view name> <x> <y> <z>";
+		errmsg = usage;
 		_status = ERROR;
 		return;
 	}
 
-    ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
-	if (view == NULL) {
-		errmsg = "Can't find specified view";
+	int count = atoi(_argv[1]);
+
+	if (_argc != 2 + 3 * count) {
+		errmsg = usage;
 		_status = ERROR;
 		return;
 	}
 
-    int msgCount;
-	char **msgs;
-#if 1 //TEMP
-    msgCount = 1;
-	char *msg = "Testing ShowRecords3D";
-	msgs = &msg;
-#endif //TEMP
-
-	_status = RequestUpdateRecordValue(msgCount, msgs);
+    const char *msg = "3D drill-down not yet handled by DEVise";//TEMP
+	const char **args = &msg;
+	_status = RequestUpdateRecordValue(1, (char **)args);
 }
 
 //====================================================================
