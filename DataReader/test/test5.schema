@@ -2,6 +2,7 @@ schema test5_schema {
 	# no delimiter -- I'm trying to see if we can have ends-of-records
 	# defined purely by the field count
 
+	delimiter = [];
 	separator = [	]+;
 
 	attr rider {
