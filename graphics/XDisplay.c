@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/06/24 19:38:35  jussi
+  Cleaned up a little and made XDisplay now use the ConnectionNumber()
+  as the file descriptor. Also added a Flush() to InternalProcessing()
+  in order to synchronize the client and the server; there still seems
+  to be a problem in that some keyboard events aren't received
+  in a timely manner.
+
   Revision 1.23  1996/06/21 19:30:10  jussi
   Replaced MinMax calls with MIN() and MAX().
 
@@ -104,6 +111,7 @@
 */
 
 #include <math.h>
+#include <X11/Xatom.h>
 
 #include "XDisplay.h"
 #include "XWindowRep.h"
@@ -415,6 +423,20 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   realFgnd = GetLocalColor(fgnd);
   realBgnd = GetLocalColor(bgnd);
 
+  /* Define event mask. */
+
+  unsigned long int mask = ExposureMask | ButtonPressMask 
+	                   | ButtonReleaseMask | Button1MotionMask
+                           | Button2MotionMask | Button3MotionMask
+                           | StructureNotifyMask | KeyPressMask
+                           | VisibilityChangeMask;
+
+#ifdef RAWMOUSEEVENTS
+  mask |= PointerMotionMask;
+#endif
+  
+  /* Define window attributes. */
+
   XSetWindowAttributes attr;
   attr.background_pixmap 	= None;
   attr.background_pixel  	= realBgnd;
@@ -426,30 +448,15 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.backing_planes  		= AllPlanes;
   attr.backing_pixel  		= 0;
   attr.save_under  		= False;
-  attr.event_mask  		= 0;
+  attr.event_mask  		= mask;
   attr.do_not_propagate_mask	= 0;
   attr.override_redirect  	= False;
   attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
   attr.cursor  			= None;
 
-  /*
-   * Deal with providing the window with an initial position & size.
-   * Fill out the XSizeHints struct to inform the window manager. See
-   * Sections 9.1.6 & 10.3.
-   */
-
-  XSizeHints xsh;
-  xsh.flags 	= PPosition | PSize | PMinSize;
-  xsh.height 	= (int)realHeight;
-  xsh.width 	= (int)realWidth;
-  xsh.x 	= (int)realX;
-  xsh.y 	= (int)realY;
-  xsh.min_width = (int)real_min_width;
-  xsh.min_height = (int)real_min_height;
-
   /* Create the window. */
-  unsigned int border_width;
 
+  unsigned int border_width;
   if (winBoundary)
     border_width = (!parent ? 5 : 1);
   else
@@ -468,20 +475,25 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 	 (unsigned)realHeight, border_width);
 #endif
 
-  XSelectInput(_display, w, ExposureMask | ButtonPressMask 
-	       | ButtonReleaseMask | Button1MotionMask | Button2MotionMask
-	       | Button3MotionMask | StructureNotifyMask | KeyPressMask
-#ifdef RAWMOUSEEVENTS
-               | PointerMotionMask
-#endif
-	       | VisibilityChangeMask);
-  
   /*
-   * Set the standard properties for the window managers. See Section
-   * 9.1.
+   * Deal with providing the window with an initial position & size.
+   * Fill out the XSizeHints struct to inform the window manager. See
+   * Sections 9.1.6 & 10.3.
    */
 
+  XSizeHints xsh;
+  xsh.flags 	= PPosition | PSize | PMinSize;
+  xsh.height 	= (int)realHeight;
+  xsh.width 	= (int)realWidth;
+  xsh.x 	= (int)realX;
+  xsh.y 	= (int)realY;
+  xsh.min_width = (int)real_min_width;
+  xsh.min_height = (int)real_min_height;
+
   XSetStandardProperties(_display, w, name, name, None, 0, 0, &xsh);
+
+  /* Set window manager hints for iconification. */
+
 #if 0
   if (ControlPanel::Instance()->Restoring() && Init::Iconify()) {
     xwmh.flags = InputHint | StateHint | IconPositionHint;
@@ -491,19 +503,31 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     xwmh.icon_y = (unsigned)realY;
   }
 #endif
+
   xwmh.flags = InputHint | StateHint;
   xwmh.input = true;
   xwmh.initial_state = NormalState;
   XSetWMHints(_display, w, &xwmh);
   
+  /* Allow window manager to send WM_DELETE_WINDOW messages. */
+
+  Atom deleteWindowAtom = XInternAtom(_display, "WM_DELETE_WINDOW", False);
+  Atom protocolAtom = XInternAtom(_display, "WM_PROTOCOLS", False);
+  XChangeProperty(_display, w, protocolAtom, XA_ATOM, 32,
+                  PropModeReplace, (unsigned char *)&deleteWindowAtom, 1);
+
   /* Map the window so that it appears on the display. */
+
   if (XMapWindow(_display, w) < 0)
     return NULL;
 
-  /* Do a sync to force the window to appear immediately */
+  /* Do a sync to force the window to appear immediately. */
+
   XSync(_display, false);
 
 #if 0
+  /* Wait for MapNotify event to come back from server. */
+
   XEvent e;
   e.event = 0;
   while (e.event != MapNotify) {
@@ -511,7 +535,8 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 #endif
 
-  /* return the XWindowRep structure */
+  /* Return the XWindowRep structure. */
+
   XWindowRep *xwin = new XWindowRep(_display, w, this, fgnd, bgnd, false);
   DOASSERT(xwin, "Cannot create XWindowRep");
   _winList.Insert(xwin);
