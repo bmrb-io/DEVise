@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2000/05/24 14:07:09  wenger
+// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
+// DEViseAtomInCrystal, DEVise3DLCS).
+//
 // Revision 1.15  2000/05/22 17:52:48  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -492,7 +496,7 @@ public class DEViseCrystal
         }
     }
 
-    private synchronized void resetAll(boolean flag)
+    public synchronized void resetAll(boolean flag)
     {
         if (flag) {
             boxLength = newBoxLength;

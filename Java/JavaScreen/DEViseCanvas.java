@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2000/05/24 18:52:28  wenger
+// Fixed problem with grabbing of cursor edges not working well.
+//
 // Revision 1.46  2000/05/22 17:52:48  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -95,6 +98,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.47  2000/05/24 18:52:28  wenger
+// Fixed problem with grabbing of cursor edges not working well.
+//
 // Revision 1.46  2000/05/22 17:52:48  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -734,12 +740,17 @@ public class DEViseCanvas extends Container
         {
             DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
 
+            char keyChar = event.getKeyChar();
+            int keyCode = event.getKeyCode();
+
             if (view.viewDimension == 3) {
+		if ((keyChar == 'r' || keyChar == 'R') && crystal != null) {
+		    crystal.resetAll(true);
+		    repaint();
+		}
                 return;
             }
 
-            char keyChar = event.getKeyChar();
-            int keyCode = event.getKeyCode();
             int actualKey = 0;
 
             if (keyChar != KeyEvent.CHAR_UNDEFINED) {

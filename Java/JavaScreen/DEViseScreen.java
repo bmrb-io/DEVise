@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2000/05/22 17:52:49  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.57  2000/05/12 20:43:56  wenger
 // Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
 // classes and cleaned up the code; commented out unused code; added
@@ -565,10 +569,22 @@ public class DEViseScreen extends Panel
         }
 
         if (view.viewDimension == 3 && view.canvas != null) {
-	        view.canvas.crystal = null;
-	        view.canvas.createCrystal();
-	    } else if (view.pileBaseView != null && view.pileBaseView.viewDimension == 3 && view.pileBaseView.canvas != null) {
+	    DEVise3DLCS oldLcs = null;
+	    if (view.canvas.crystal != null) {
+	        oldLcs = view.canvas.crystal.lcs;
+	    }
+	    view.canvas.crystal = null;
+	    view.canvas.createCrystal();
+	    if (oldLcs != null) view.canvas.crystal.lcs = oldLcs;
+	} else if (view.pileBaseView != null &&
+	  view.pileBaseView.viewDimension == 3 &&
+	  view.pileBaseView.canvas != null) {
+	    DEVise3DLCS oldLcs = null;
+	    if (view.pileBaseView.canvas.crystal != null) {
+	        oldLcs = view.pileBaseView.canvas.crystal.lcs;
+	    }
             view.pileBaseView.canvas.createCrystal();
+	    if (oldLcs != null) view.pileBaseView.canvas.crystal.lcs = oldLcs;
         }
 
         repaint();
