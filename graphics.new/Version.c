@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/10/23 14:57:13  wenger
+  Renamed LandsendDateDiffComposite composite parser to
+  MailorderDateDiffComposite as part of getting rid of the "Land's
+  End" name in visible places; schema types changed from "LANDSEND..."
+  to "MAILORDER...".
+
   Revision 1.13  1996/10/08 21:49:10  wenger
   ClassDir now checks for duplicate instance names; fixed bug 047
   (problem with FileIndex class); fixed various other bugs.
@@ -94,7 +100,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.13";
+static const char *	version = "1.1.14";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  1996/11/18 18:12:53  donjerko
+  Added DTE make stuff
+
   Revision 1.82  1996/11/13 16:56:13  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -342,7 +345,7 @@
 
 #include <time.h>
 
-// #define DEBUG
+//#define DEBUG
 
 #include "Util.h"
 #include "View.h"
@@ -925,7 +928,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
        over the highlight border
     */
     x += 2;
-    width = winWidth - 2 - 2;
+    width = winWidth - 2;
     height = winHeight - _label.extent;
   } else {
     /* _label occupies left of view */
@@ -942,8 +945,9 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
       height -= 2;
     
     if (yAxis.inUse) {
-      x += yAxis.width;
-      width -= yAxis.width;
+      /* Put back in the 2 pixels we took out for the highlight border. */
+      x += (yAxis.width - 2);
+      width -= (yAxis.width - 2);
     }
   }
   
@@ -2890,7 +2894,7 @@ DevStatus
 View::PrintPS()
 {
 #if defined(DEBUG)
-  printf("View::PrintPS(%s)\n", _name);
+  printf("View(0x%p)::PrintPS(%s)\n", this, _name);
 #endif
   DevStatus result(StatusOk);
 
@@ -2912,7 +2916,11 @@ View::PrintPS()
 
   Rectangle parentGeom;
   unsigned int width, height;
+#if defined(MARGINS) || defined(TK_WINDOW)
+  _parent->RealGeometry(xVal, yVal, width, height);
+#else
   _parent->Geometry(xVal, yVal, width, height);
+#endif
   parentGeom.x = xVal;
   parentGeom.y = yVal;
   parentGeom.width = width;

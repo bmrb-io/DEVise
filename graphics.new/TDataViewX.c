@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/18 18:10:56  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.41  1996/11/13 16:57:11  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -374,6 +377,9 @@ void TDataViewX::QueryInit(void *userData)
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 			     void *gdata, int numGData)
 {
+#if defined(DEBUG)
+  printf("TDataViewX::ReturnGData()\n");
+#endif
   DOASSERT(_index >= 0, "Invalid iterator index");
 
   mapping->UpdateMaxSymSize(gdata, numGData);

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/13 16:56:09  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.4  1996/10/28 15:55:41  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -101,187 +111,8 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 {
   DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
 
-  return new PSWindowRep(this/*TEMPTEMP?*/, fgnd, bgnd, NULL/*TEMPTEMP?*/,
-    (int) x, (int) y);
-
-#if 0 //TEMPTEMP
-  Window parent = DefaultRootWindow(_display);
-
-  Coord realX, realY, realWidth, realHeight;
-  Coord real_min_width, real_min_height;
-  if (relative) {
-    RealWindowDimensions(parent, x, y, width, height, realX, realY,
-			 realWidth, realHeight);
-    RealWindowWidthHeight(parent, min_width, min_height,
-			  real_min_width, real_min_height);
-  } else {
-    realX = x;
-    realY = y;
-    realWidth = width;
-    realHeight = height;
-    real_min_width = min_width;
-    real_min_height = min_height;
-  }
-
-#ifndef LIBCS
-  if (ControlPanel::Instance()->GetBatchMode()) {
-    // we're in batch mode -- create a pixmap instead of a window
-
-    unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
-    Pixmap pixmap = XCreatePixmap(_display, parent, (unsigned)realWidth,
-				  (unsigned)realHeight, depth);
-    DOASSERT(pixmap, "Cannot create pixmap");
-
-#ifdef DEBUG
-    printf("XDisplay: Created X pixmap 0x%lx at %u,%u, size %ux%u\n",
-	   pixmap, (unsigned)realX, (unsigned)realY,
-	   (unsigned)realWidth, (unsigned)realHeight);
-#endif
-
-    XWindowRep *xwin = new XWindowRep(_display, pixmap, this,
-				      (XWindowRep *)parentRep,
-				      fgnd, bgnd, (int)realX, (int)realY);
-    DOASSERT(xwin, "Cannot create XWindowRep");
-
-    _winList.Insert(xwin);
-  
-    return xwin;
-  }
-#endif
-
-  //TEMPTEMP -- what is going on here?
-  LocalColor realFgnd, realBgnd;
-  realFgnd = GetLocalColor(fgnd);
-  realBgnd = GetLocalColor(bgnd);
-
-  /* Define event mask. */
-
-  unsigned long int mask = ExposureMask | ButtonPressMask 
-	                   | ButtonReleaseMask | Button1MotionMask
-                           | Button2MotionMask | Button3MotionMask
-                           | StructureNotifyMask | KeyPressMask
-                           | VisibilityChangeMask;
-
-#ifdef RAWMOUSEEVENTS
-  mask |= PointerMotionMask;
-#endif
-  
-  /* Define window attributes. */
-
-  XSetWindowAttributes attr;
-  attr.background_pixmap 	= None;
-  attr.background_pixel  	= realBgnd;
-  attr.border_pixmap  		= CopyFromParent;
-  attr.border_pixel  		= realFgnd;
-  attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
-  attr.win_gravity  		= NorthWestGravity;
-  attr.backing_store  		= Always;          /* WhenMapped/NotUseful */
-  attr.backing_planes  		= AllPlanes;
-  attr.backing_pixel  		= 0;
-  attr.save_under  		= False;
-  attr.event_mask  		= mask;
-  attr.do_not_propagate_mask	= 0;
-  attr.override_redirect  	= False;
-  attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
-  attr.cursor  			= None;
-
-  /* Create the window. */
-
-  if (parentRep)
-    parent = ((XWindowRep *)parentRep)->GetWinId();
-
-  unsigned int border_width;
-  if (winBoundary)
-    border_width = (!parent ? 5 : 1);
-  else
-    border_width = (!parent ? 5 : 0);
-
-  Window w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
-			   (unsigned)realWidth, (unsigned)realHeight,
-			   border_width, 0, InputOutput, CopyFromParent,
-			   AllPlanes, &attr);
-  DOASSERT(w, "Cannot create window");
-
-#ifdef DEBUG
-  printf("XDisplay: Created X window 0x%lx to parent 0x%lx at %u,%u,\n",
-	 w, parent, (unsigned)realX, (unsigned)realY);
-  printf("          size %u,%u, borderwidth %d\n", (unsigned)realWidth,
-	 (unsigned)realHeight, border_width);
-#endif
-
-  /*
-   * Deal with providing the window with an initial position & size.
-   * Fill out the XSizeHints struct to inform the window manager. See
-   * Sections 9.1.6 & 10.3.
-   */
-
-  XSizeHints xsh;
-  xsh.flags 	= PPosition | PSize | PMinSize;
-  xsh.height 	= (int)realHeight;
-  xsh.width 	= (int)realWidth;
-  xsh.x 	= (int)realX;
-  xsh.y 	= (int)realY;
-  xsh.min_width = (int)real_min_width;
-  xsh.min_height = (int)real_min_height;
-
-  XSetStandardProperties(_display, w, name, name, None, 0, 0, &xsh);
-
-  /* Set window manager hints for iconification. */
-
-#if 0
-  if (ControlPanel::Instance()->Restoring() && Init::Iconify()) {
-    xwmh.flags = InputHint | StateHint | IconPositionHint;
-    xwmh.input = true;
-    xwmh.initial_state = IconicState;
-    xwmh.icon_x = (unsigned)realX;
-    xwmh.icon_y = (unsigned)realY;
-  }
-#endif
-
-  xwmh.flags = InputHint | StateHint;
-  xwmh.input = true;
-  xwmh.initial_state = NormalState;
-  XSetWMHints(_display, w, &xwmh);
-  
-  /* Allow window manager to send WM_DELETE_WINDOW messages. */
-
-  Atom deleteWindowAtom = XInternAtom(_display, "WM_DELETE_WINDOW", False);
-  Atom protocolAtom = XInternAtom(_display, "WM_PROTOCOLS", False);
-  XChangeProperty(_display, w, protocolAtom, XA_ATOM, 32,
-                  PropModeReplace, (unsigned char *)&deleteWindowAtom, 1);
-
-  /* Map the window so that it appears on the display. */
-
-  if (XMapWindow(_display, w) < 0)
-    return NULL;
-
-  /* Do a sync to force the window to appear immediately. */
-
-  XSync(_display, false);
-
-#if 0
-  /* Wait for MapNotify event to come back from server. */
-
-  XEvent e;
-  e.event = 0;
-  while (e.event != MapNotify) {
-    XNextEvent(_display, &e);
-  }
-#endif
-
-  /* Return the XWindowRep structure. */
-
-  XWindowRep *xwin = new XWindowRep(_display, w, this,
-                                    (XWindowRep *)parentRep,
-                                    fgnd, bgnd, false);
-  DOASSERT(xwin, "Cannot create XWindowRep");
-  _winList.Insert(xwin);
-  
-  return xwin;
-#endif //TEMPTEMP
-
-  /* do something */
-  return 0;
+  return new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
+    (PSWindowRep *) parentRep, (int) x, (int) y);
 }
 
 /**************************************************************
@@ -291,40 +122,6 @@ Destroy a window
 void PSDisplay::DestroyWindowRep(WindowRep *win)
 {
   DO_DEBUG(printf("PSDisplay::DestroyWindowRep(%p)\n", win));
-
-#if 0 //TEMPTEMP
-  XWindowRep *xwin = (XWindowRep *)win;
-  if (!_winList.Delete(xwin)) {
-    fprintf(stderr, "XDisplay:Window to be deleted not found\n");
-    Exit::DoExit(1);
-  }
-
-  // Free the Dali images and sleep before destroying the X window so
-  // Dali doesn't get 'bad window' errors.
-  if (xwin->DaliImageCount() > 0)
-  {
-    (void) xwin->DaliFreeImages();
-    sleep(1);
-  }
-
-  if (xwin->GetWinId()) {
-#ifdef DEBUG
-    printf("XDisplay::DestroyWindowRep 0x%p, window 0x%lx\n",
-	   xwin, xwin->GetWinId());
-#endif
-    XDestroyWindow(_display, xwin->GetWinId());
-  } else {
-#ifdef DEBUG
-    printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
-	   xwin, xwin->GetPixmapId());
-#endif
-    XFreePixmap(_display, xwin->GetPixmapId());
-  }
-
-  delete xwin;
-
-  XSync(_display, false);
-#endif //TEMPTEMP
 
   delete win;
 }
@@ -379,15 +176,68 @@ void PSDisplay::PrintPSHeader()
 {
   DOASSERT(_printFile != NULL, "No print file");
 
+  /* Print header info. */
   fprintf(_printFile, "%%!PS-Adobe-1.0\n");
-  fprintf(_printFile, "%%%%BoundingBox: 0 0 558 480\n");
-  fprintf(_printFile, "%%%%Creator: trigger:wenger (R. Kent Wenger)\n");
-  fprintf(_printFile, "%%%%Title: stdin (xwdump)\n");
-  fprintf(_printFile, "%%%%CreationDate: Tue Sep 17 14:43:11 1996\n");
+
+  /* Note: we may want to output a bounding box here. RKW 11/15/96. */
+//TEMPTEMP -- make bounding box the size of the page (minus the margin?)
+// for now
+
+  char *userName = getenv("USER");
+  if (userName == NULL) userName = "user unknown";
+  fprintf(_printFile, "%%%%Creator: %s\n", userName);
+
+  fprintf(_printFile, "%%%%Title: DEVise visualization\n");
+
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  DateString(tv.tv_sec);
+  fprintf(_printFile, "%%%%CreationDate: %s\n", DateString(tv.tv_sec));
+
   fprintf(_printFile, "%%%%EndComments\n");
   fprintf(_printFile, "%%%%Pages: 1\n");
   fprintf(_printFile, "%%%%EndProlog\n");
   fprintf(_printFile, "%%%%Page: 1 1\n");
+
+
+  /* Print a procedure to draw a filled rectangle. */
+  fprintf(_printFile, "/DevFillRect  %% stack: x1, y1, x2, y2\n");
+  fprintf(_printFile, "{ newpath\n");
+  fprintf(_printFile, "/y2 exch def\n");
+  fprintf(_printFile, "/x2 exch def\n");
+  fprintf(_printFile, "/y1 exch def\n");
+  fprintf(_printFile, "/x1 exch def\n");
+  fprintf(_printFile, "x1 y1 moveto\n");
+  fprintf(_printFile, "x1 y2 lineto\n");
+  fprintf(_printFile, "x2 y2 lineto\n");
+  fprintf(_printFile, "x2 y1 lineto\n");
+  fprintf(_printFile, "x1 y1 lineto\n");
+  fprintf(_printFile, "closepath\n");
+  fprintf(_printFile, "fill\n");
+  fprintf(_printFile, "} def\n");
+
+
+  /* Print a procedure to draw a line. */
+  fprintf(_printFile, "/DevDrawLine  %% stack: x1, y1, x2, y2\n");
+  fprintf(_printFile, "{ newpath\n");
+  fprintf(_printFile, "moveto\n");
+  fprintf(_printFile, "lineto\n");
+  fprintf(_printFile, "stroke\n");
+  fprintf(_printFile, "} def\n");
+
+
+  /* Print a procedure to find text extents. */
+  fprintf(_printFile, "/DevTextExtents  %% stack: string\n");
+  fprintf(_printFile, "%% returns width height on stack\n");
+  fprintf(_printFile, "{ 0 0 moveto\n");
+  fprintf(_printFile, "true charpath flattenpath pathbbox\n");
+  fprintf(_printFile, "/y2 exch def\n");
+  fprintf(_printFile, "/x2 exch def\n");
+  fprintf(_printFile, "/y1 exch def\n");
+  fprintf(_printFile, "/x1 exch def\n");
+  fprintf(_printFile, "x2 x1 sub\n");
+  fprintf(_printFile, "y2 y1 sub\n");
+  fprintf(_printFile, "} def\n");
 }
 
 /**************************************************************

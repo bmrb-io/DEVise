@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/07 22:40:08  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.2  1996/10/28 15:55:36  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -121,6 +129,8 @@ DualWindowRep::SetScreenOutput()
 {
   DO_DEBUG(printf("DualWindowRep(0x%p)::SetScreenOutput()\n", this));
 
+  DOASSERT(_screenWinRep != NULL, "No screen WindowRep");
+
   _windowRep = _screenWinRep;
 }
 
@@ -135,6 +145,11 @@ DualWindowRep::SetFileOutput(const Rectangle &viewGeom,
   const Rectangle &parentGeom)
 {
   DO_DEBUG(printf("DualWindowRep(0x%p)::SetFileOutput()\n", this));
+
+  DOASSERT(_fileWinRep != NULL, "No file WindowRep");
+
+  /* Initialize the file WindowRep. */
+  ((PSWindowRep *) _fileWinRep)->Init();
 
   /* Set up the "pixel" to point transform. This MUST be done before
    * the WindowRep state is copied so that the "pixel" to point transform

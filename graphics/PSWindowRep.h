@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/13 16:56:10  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.8  1996/11/07 22:40:11  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -211,12 +221,16 @@ public:
 protected:
     friend class PSDisplay;
 
+    friend class DualWindowRep;
+
     /* called by PSDisplay to create new window */
     PSWindowRep(DeviseDisplay *display,
                 GlobalColor fgndColor, GlobalColor bgndColor,
                 PSWindowRep *parent, int x, int y); 
 
-    /* called by constructors to initialize object */
+    /* Called to initialize this object -- must be called ONLY when
+     * the output file is open -- therefore CANNOT be called by the
+     * constructor. */
     void Init();
 
     /* destructor */
@@ -232,7 +246,7 @@ private:
       Coord y2);
     void SetClipPath(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
-    void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 0.5);
+    void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 1.0);
 
     /* current dimensions of window */
     int _x, _y;

@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/13 16:56:12  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.1  1996/11/07 22:40:12  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -200,10 +210,14 @@ example, local colors are meaningless.  FindLocalColor() and related
 functions in DeviseDisplay should probably be virtual and PSDisplay
 should fail an assertion if you call FindLocalColor() on it.
 
+--- 4.4 WINDOW MARGINS
+
+Window margins are a special case, because they're part of each window,
+but not part of any of the views in the window.  Therefore, they're
+printed by the ViewWin class, not the View class like the other stuff.
+
 
 --- 5 FUTURE TASKS
-
-Print the trademark notice at the top of each window.
 
 Get patterns working.
 
@@ -212,8 +226,9 @@ Deal with output larger than a single page.
 Only draw to the available resolution, don't redraw stuff that overlaps, etc.,
 so that the PostScript file doesn't get so huge.
 
-Perhaps define subroutines in the generated PostScript to reduce the size
-of the output.
+Perhaps define procedures in the generated PostScript to reduce the size
+of the output.  (I have defined some procedures as of 11/14/96.  It's
+possible that there could be more defined.  RKW)
 
 Have an option to generate encapsulated PostScript.
 
@@ -223,3 +238,11 @@ Clean up the Display classes so that things that apply only to X are
 confined to XDisplay.
 
 Get this to work with Tasvir images.
+
+Do something to simulate XOR drawing.
+
+Give the user a choice of preserving the aspect ratio or filling the page.
+
+Maybe print the window titles.
+
+The vertical alignment of text still needs some work.

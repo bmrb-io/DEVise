@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.73  1996/11/13 16:56:21  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.72  1996/10/28 15:55:49  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -1036,8 +1046,6 @@ void XWindowRep::SetBgRGB(float r, float g, float b)
 
 void XWindowRep::GetFgRGB(float &r, float &g, float &b)
 {
-//TEMPTEMP  -- whoa -- does this take a GlobalColor or LocalColor as
-//an argument?
   GetDisplay()->FindLocalColor(_rgbForeground, r, g, b);
 #ifdef DEBUG
   printf("Current foreground color is %lu: %.2f,%.2f,%.2f\n",
@@ -1047,8 +1055,6 @@ void XWindowRep::GetFgRGB(float &r, float &g, float &b)
 
 void XWindowRep::GetBgRGB(float &r, float &g, float &b)
 {
-//TEMPTEMP  -- whoa -- does this take a GlobalColor or LocalColor as
-//an argument?
   GetDisplay()->FindLocalColor(_rgbBackground, r, g, b);
 #ifdef DEBUG
   printf("Current background color is %lu: %.2f,%.2f,%.2f\n",
@@ -1328,7 +1334,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, 
 			  Coord height)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          xlow, ylow, width, height);
 #endif
@@ -2210,6 +2216,9 @@ void XWindowRep::SetCopyMode()
 
 void XWindowRep::SetNormalFont()
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::SetNormalFont()\n", this);
+#endif
   GetDisplay()->SetNormalFont();
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
@@ -2217,6 +2226,9 @@ void XWindowRep::SetNormalFont()
 
 void XWindowRep::SetSmallFont()
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::SetSmallFont()\n", this);
+#endif
   GetDisplay()->SetSmallFont();
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);

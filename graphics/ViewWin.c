@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/11/13 16:56:15  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.22  1996/11/07 22:40:17  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -493,7 +503,7 @@ int ViewWin::TotalWeight()
 void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
 			   unsigned width, unsigned height)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
 	 this, xlow, ylow, width, height);
 #endif
@@ -619,7 +629,7 @@ void ViewWin::GetMargins(unsigned int &lm, unsigned int &rm,
 #ifdef MARGINS
 void ViewWin::DrawMargins()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewWin::DrawMargins\n");
 #endif
 
@@ -788,12 +798,35 @@ DevStatus
 ViewWin::PrintPS()
 {
 #if defined(DEBUG)
-  printf("ViewWin::PrintPS(%s)\n", _name);
+  printf("ViewWin(0x%p)::PrintPS(%s)\n", this, _name);
 #endif
   DevStatus result = StatusOk;
 
   if (!_hasPrintIndex)
   {
+#ifdef MARGINS
+  if (Init::DisplayLogo()) {
+    Rectangle geom;
+    int xVal, yVal;
+    unsigned int width, height;
+    RealGeometry(xVal, yVal, width, height);
+    geom.x = xVal;
+    geom.y = yVal;
+    geom.width = width;
+    geom.height = height;
+    SetFileOutput(geom, geom);
+    DrawMargins();
+    SetScreenOutput();
+  }
+#endif
+#if 0//TEMPTEMP
+  int xVal, yVal;
+  unsigned int width, height;
+  RealGeometry(xVal, yVal, width, height);
+  Coord centerX = xVal + width / 2.0;
+  Coord centerY = yVal + height / 2.0;
+  _winReps.GetFileWinRep()->FillPixelRect(centerX, centerY, (Coord) width, (Coord) height);
+#endif
     _printIndex = _children.InitIterator();
     _hasPrintIndex = true;
   }
@@ -818,6 +851,7 @@ ViewWin::PrintPS()
       PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
       psDispP->PrintPSTrailer();
       result += psDispP->ClosePrintFile();
+      printf("Done generating print file\n");
     }
   }
 

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/13 16:56:10  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.7  1996/11/07 22:40:10  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -67,6 +77,8 @@
 
 #define ROUND(type, value) ((type)(value + 0.5))
 
+#define USE_PS_PROCEDURES 1
+
 typedef struct {
     short x, y;
 } XPoint;
@@ -96,14 +108,13 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
 
   _x = x;
   _y = y;
-
-  Init();
 }
 
 
 
 /**********************************************************************
 Initializer
+Must be called only when the output file is open.
 ***********************************************************************/
 
 void PSWindowRep::Init()
@@ -113,6 +124,9 @@ void PSWindowRep::Init()
 #endif
   UpdateWinDimensions();
   _pixToPointTrans.MakeIdentity();
+  SetCopyMode();
+  WindowRep::SetPattern(Pattern0);
+  SetNormalFont();
 }
 
 
@@ -936,11 +950,11 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   Coord tx1, ty1, tx2, ty2;
   Transform(x, y, tx1, ty1);
   Transform(x + width, y + height, tx2, ty2);
-  int winX, winY, winWidth, winHeight;
-  winX = ROUND(int, MIN(tx1, tx2));
-  winY = ROUND(int, MIN(ty1, ty2));
-  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
+  Coord winX, winY, winWidth, winHeight;
+  winX = MIN(tx1, tx2);
+  winY = MIN(ty1, ty2);
+  winWidth = MAX(tx1, tx2) - winX + 1;
+  winHeight = MAX(ty1, ty2) - winY + 1;
   
   if (skipLeadingSpace) {
     /* skip leading spaces before drawing text */
@@ -1037,25 +1051,15 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   fprintf(printFile, "[] 0 setdash\n");
 #endif
 
-  /* Set up the font.  For right now we're just using a fixed font, but
-   * that should be changed eventually.  RKW 11/6/96. */
-  fprintf(printFile, "/Times-Roman findfont\n");
-  fprintf(printFile, "15 scalefont\n");
-  fprintf(printFile, "setfont\n");
-
   /* Get the width and height of the given string in the given font. */
-  fprintf(printFile, "(%s) stringwidth\n", text);
+  fprintf(printFile, "(%s) DevTextExtents\n", text);
   fprintf(printFile, "/textHeight exch def\n");
   fprintf(printFile, "/textWidth exch def\n");
 
-  /* Note: we're forcing textHeight to be 15 because stringwidth seems
-   * to return zero for the height. RKW 11/6/96. */
-  fprintf(printFile, "/textHeight 15 def\n");
-
-  fprintf(printFile, "/winX %d def\n", winX);
-  fprintf(printFile, "/winY %d def\n", winY);
-  fprintf(printFile, "/winWidth %d def\n", winWidth);
-  fprintf(printFile, "/winHeight %d def\n", winHeight);
+  fprintf(printFile, "/winX %f def\n", winX);
+  fprintf(printFile, "/winY %f def\n", winY);
+  fprintf(printFile, "/winWidth %f def\n", winWidth);
+  fprintf(printFile, "/winHeight %f def\n", winHeight);
 
   /* Calculate some values based on the "text window" size and the size
    * of the text. */
@@ -1169,8 +1173,18 @@ void PSWindowRep::SetCopyMode()
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::SetNormalFont()
 {
-  DOASSERT(false, "PSWindowRep::SetNormalFont() not yet implemented");
-    /* do something */
+#ifdef GRAPHICS
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  /* Set up the font.  For right now we're just using a fixed font, but
+   * that should be changed eventually.  RKW 11/6/96. */
+  int fontSize = 12;
+  fprintf(printFile, "/Helvetica findfont\n");
+  fprintf(printFile, "%d scalefont\n", fontSize);
+  fprintf(printFile, "setfont\n");
+#endif
 }
 
 
@@ -1178,8 +1192,18 @@ void PSWindowRep::SetNormalFont()
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::SetSmallFont()
 {
-  DOASSERT(false, "PSWindowRep::SetSmallFont() not yet implemented");
-    /* do something */
+#ifdef GRAPHICS
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  /* Set up the font.  For right now we're just using a fixed font, but
+   * that should be changed eventually.  RKW 11/6/96. */
+  int fontSize = 8;
+  fprintf(printFile, "/Helvetica findfont\n");
+  fprintf(printFile, "%d scalefont\n", fontSize);
+  fprintf(printFile, "setfont\n");
+#endif
 }
 
 
@@ -1351,10 +1375,14 @@ void PSWindowRep::Lower()
 void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
     Coord x2, Coord y2)
 {
+#if USE_PS_PROCEDURES
+  fprintf(printFile, "%f %f %f %f DevDrawLine\n", x1, y1, x2, y2);
+#else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);
   fprintf(printFile, "%f %f lineto\n", x2, y2);
   fprintf(printFile, "stroke\n");
+#endif
 
   return;
 }
@@ -1367,6 +1395,9 @@ void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
 void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
     Coord x2, Coord y2)
 {
+#if USE_PS_PROCEDURES
+  fprintf(printFile, "%f %f %f %f DevFillRect\n", x1, y1, x2, y2);
+#else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);
   fprintf(printFile, "%f %f lineto\n", x1, y2);
@@ -1375,6 +1406,7 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
   fprintf(printFile, "%f %f lineto\n", x1, y1);
   fprintf(printFile, "closepath\n");
   fprintf(printFile, "fill\n");
+#endif
 
   return;
 }
@@ -1391,7 +1423,6 @@ void PSWindowRep::SetClipPath(FILE *printFile, Coord x1, Coord y1,
    * but there doesn't seem to be any other way to get rid of the clip mask
    * for the previous view (if any) when setting things up for this view. */
   fprintf(printFile, "initclip\n");
-
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);
   fprintf(printFile, "%f %f lineto\n", x1, y2);
@@ -1412,14 +1443,20 @@ void PSWindowRep::SetClipPath(FILE *printFile, Coord x1, Coord y1,
 void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
     Coord size)
 {
+  Coord halfsize = size / 2.0;
+#if USE_PS_PROCEDURES
+  fprintf(printFile, "%f %f %f %f DevFillRect\n", x1 - halfsize,
+    y1 - halfsize, x1 + halfsize, y1 + halfsize);
+#else
   fprintf(printFile, "newpath\n");
-  fprintf(printFile, "%f %f moveto\n", x1 - size, y1 - size);
-  fprintf(printFile, "%f %f lineto\n", x1 - size, y1 + size);
-  fprintf(printFile, "%f %f lineto\n", x1 + size, y1 + size);
-  fprintf(printFile, "%f %f lineto\n", x1 + size, y1 - size);
-  fprintf(printFile, "%f %f lineto\n", x1 - size, y1 - size);
+  fprintf(printFile, "%f %f moveto\n", x1 - halfsize, y1 - halfsize);
+  fprintf(printFile, "%f %f lineto\n", x1 - halfsize, y1 + halfsize);
+  fprintf(printFile, "%f %f lineto\n", x1 + halfsize, y1 + halfsize);
+  fprintf(printFile, "%f %f lineto\n", x1 + halfsize, y1 - halfsize);
+  fprintf(printFile, "%f %f lineto\n", x1 - halfsize, y1 - halfsize);
   fprintf(printFile, "closepath\n");
   fprintf(printFile, "fill\n");
+#endif
 
   return;
 }

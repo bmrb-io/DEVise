@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/11/07 22:40:31  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.34  1996/09/06 07:00:12  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -847,6 +855,9 @@ void QueryProcFull::ProcessQPFullScatter(QPFullData *qData)
 
 void QueryProcFull::ProcessQuery()
 {
+#if defined(DEBUG)
+  printf("QueryProcFull::ProcessQuery()\n");
+#endif
   if (NoQueries()) {
     /*
        If all queries have been executed (system is idle) and
@@ -1071,7 +1082,7 @@ void QueryProcFull::InitScan()
 Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high, 
 			      Boolean tdataOnly, int &recsScanned)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
 #endif
 

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/11/13 16:56:17  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.40  1996/09/26 20:38:31  jussi
   Removed duplicate default argument.
 
@@ -793,7 +803,7 @@ void XDisplay::AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb)
   // substitute base color instead of requested color
   DeviseDisplay::MapColor(_baseColor, globalColor);
   printf("Color %s mapped to color %s\n", name, baseColorName);
-//TEMPTEMP -- set rgb
+  FindLocalColor(_baseColor, rgb.red, rgb.green, rgb.blue);
 }
 
 /*********************************************************************
@@ -838,7 +848,7 @@ void XDisplay::AllocColor(RgbVals &rgb, GlobalColor globalColor)
   DeviseDisplay::MapColor(_baseColor, globalColor);
   printf("Color <%.2f,%.2f,%.2f> mapped to color %s\n",
 	 rgb.red, rgb.green, rgb.blue, baseColorName);
-//TEMPTEMP -- set rgb
+  FindLocalColor(_baseColor, rgb.red, rgb.green, rgb.blue);
 }
 
 #ifdef LIBCS
@@ -861,15 +871,21 @@ LocalColor XDisplay::FindLocalColor(float r, float g, float b)
 
 void XDisplay::FindLocalColor(GlobalColor c, float &r, float &g, float &b)
 {
+  LocalColor lColor = GetLocalColor(c);
+  FindLocalColor(lColor, r, g, b);
+}
+#endif
+
+void XDisplay::FindLocalColor(LocalColor c, float &r, float &g, float &b)
+{
   XColor color;
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
-  color.pixel = GetLocalColor(c);
+  color.pixel = c;
   XQueryColor(_display, cmap, &color);
   r = color.red / (double) MaxColorIntensity;
   g = color.green / (double) MaxColorIntensity;
   b = color.blue / (double) MaxColorIntensity;
 }
-#endif
 
 void XDisplay::Dimensions(Coord &width, Coord &height)
 {
