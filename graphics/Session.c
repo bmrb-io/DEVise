@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/06/10 18:04:03  wenger
+  Improved new cursor drawing (bug in Mesa implementation sometimes makes
+  it look ugly); cursor color now saved in sessions.
+
   Revision 1.26  1998/06/04 22:07:17  wenger
   View symbol alignment is now saved in session files.
 
@@ -465,6 +469,7 @@ Session::CreateTData(char *name)
     catEntry = CopyString("");
   } else {
     // Get the DTE catalog entry for this data source.
+	// TEMP -- memory may be leaked in here
     catEntry = dteShowCatalogEntry(name);
     if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
       char errBuf[256];
@@ -542,6 +547,7 @@ Session::CreateTData(char *name)
   if (status.IsComplete()) {
     char *result ;
     if (isDteSource) {
+	  // TEMP -- memory may be leaked in here
       result = dteImportFileType(name);
     } else {
       result = ParseCat(schemaFile);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/05/14 18:20:59  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.24  1998/05/02 09:02:25  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -340,6 +344,10 @@ private:
   static ClassDir *_classDir; 
 
   ControlPanelCallbackList *_callbacks;
+
+protected:
+  friend class DeviseCommand;
+  char resultBuf[10*1024];
 };
 
 class ControlPanelCallback {

@@ -27,3 +27,4 @@ byte buffer for the result.
 	- This is probably the most elegant fix, but probably also requires
 	  the greatest amount of modification to the current code.
     - Instantiate result buffer *when command is called*.
+    - Put result buffers in Control objects.

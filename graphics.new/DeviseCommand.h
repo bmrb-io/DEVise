@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/08/03 18:38:39  wenger
+  Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
+  implemented several other new commands for the JavaScreen.
+
   Revision 1.10  1998/07/07 17:59:04  wenger
   Moved #define of PURIFY from DeviseCommand.h to DeviseCommand.C so the
   "outside world" doesn't see it.
@@ -99,6 +103,7 @@ class DeviseCommand
 		{
 			_cmdOption = cmdOption;
 			_controlStack = new ExtStack(5, NULL);
+			result = NULL;
 		}
 		virtual ~DeviseCommand()
 		{
@@ -106,7 +111,7 @@ class DeviseCommand
 		}
 		virtual int Run(int argc, char** argv) = 0;
 	protected:
-		char		result[10*1024];
+        char		*result;
 		ClassDir	*classDir;
 		int			numArgs;
 		char**		args;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/08/03 18:38:38  wenger
+  Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
+  implemented several other new commands for the JavaScreen.
+
   Revision 1.19  1998/07/07 17:59:02  wenger
   Moved #define of PURIFY from DeviseCommand.h to DeviseCommand.C so the
   "outside world" doesn't see it.
@@ -203,9 +207,14 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	pushControl(cntl);
 
 	classDir = control->GetClassDir();
+	DOASSERT(result != control->resultBuf,
+	  "Command result buffer conflict");
+	result = control->resultBuf;
 	result[0] = '\0';
 
 	retval = Run(argc, argv);
+
+	result = NULL;
 
 	// restore the orignal value to control
 	popControl();
