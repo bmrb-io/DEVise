@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/06/21 19:31:54  jussi
+  Replaced MinMax calls with calls to MIN() and MAX().
+
   Revision 1.43  1996/06/20 21:40:14  jussi
   Added call to SetVisualFilter() to SetCamera() which causes the
   (non-existent) filter change to be reported to clients, including
@@ -257,7 +260,7 @@ View::View(char *name, VisualFilter &initFilter,
   _camera._perspective = 1;
   _camera.flag = false;
   _camera.fix_focus = true;
-  _camera.spherical_coord = false;
+  _camera.spherical_coord = true;
   _camera.H = 0;
   _camera.V = 0;
 }
