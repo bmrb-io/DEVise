@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2000/05/04 15:53:32  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.44  2000/04/24 20:22:01  hongyu
 // remove UI dependency of jspop and js
 //
@@ -122,7 +127,7 @@ public class DEViseView
 
     public boolean isRubberBand, isCursorMove, isDrillDown, isKey;
     public float dataXStep, dataYStep;
-    public float gridx, gridy;
+    //public float gridx, gridy; // mouse movement grid -- not used
 
     public boolean isFirstTime = true;
 
@@ -155,8 +160,8 @@ public class DEViseView
 
         viewLocInCanvas = getLocInCanvas();
 
-        gridx = gx;
-        gridy = gy;
+        // gridx = gx; // mouse movement grid -- not used
+        // gridy = gy; // mouse movement grid -- not used
 
         isRubberBand = (rb == 1);
 
