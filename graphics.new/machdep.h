@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/21 19:14:09  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.13  1996/09/26 18:58:31  jussi
   Removed extraneous definition on Alpha/OSF.
 
@@ -321,7 +325,7 @@ union semun {
   #include <sys/tape.h>
   /* need to define mapping from mtio #defines to AIX ones */
   #define MTIOCTOP   STIOCTOP
-  #define MTIOCGET   /* unsupported */
+  #define MTIOCGET   0 /* not supported */
   #define mtop       stop
   #define mt_op      st_op
   #define mt_count   st_count
@@ -361,7 +365,7 @@ union semun {
   #include <sys/uio.h>
 #endif
 
-#if defined(__ultrix) || defined(__sun) || defined(__aix)
+#if defined(__ultrix) || defined(__sun)
   EXTERNC int ioctl(int, int, char *);
 #endif
 
