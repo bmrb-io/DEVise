@@ -383,6 +383,8 @@ the hash key. (ml/rkw 4/18/97)
 Add an 'Apply' button to the Expression dialog in the mapping dialog.
 (ml/rkw 5/6/97)
 
+Add a cursor info dialog like the link info dialog. (rkw 5/21/97)
+
 
 COMPLETED
 ---------

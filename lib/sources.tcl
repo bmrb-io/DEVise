@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.67  1997/05/28 15:39:55  wenger
+#	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #	Revision 1.66.4.1  1997/05/20 16:11:33  ssl
 #	Added layout manager to DEVise
 #
@@ -293,6 +296,7 @@ set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
 set sourceFile $datadir/sourcedef.tcl
 #set sourceFile /local.doc/oldstuff/coral/newrun/northeast/devise/sourcedef.tcl
 if {[file exists $sourceFile]} {
+#TEMPTEMP -- this is still old-style data source code!!!
     Puts "Using data stream catalog $sourceFile"
     source $sourceFile
 }

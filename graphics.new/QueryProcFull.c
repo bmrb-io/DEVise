@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1997/05/28 15:39:28  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.59  1997/05/08 01:57:43  wenger
   Fixed bug in QueryProcFull::InitQPFullX() that caused query processor
   to return too many records when recId is mapped to X.
@@ -701,7 +704,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 1
+#if 0//TEMPTEMP
   if (!DoBinarySearch(query, query->filter.xLow, false, query->low,
     false, 0, 0, false)) {
 #else
@@ -723,7 +726,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 1
+#if 0//TEMPTEMP
       if (DoBinarySearch(query, query->filter.xHigh, false,
                          lastId, true, query->low, query->high, true))
 #else
