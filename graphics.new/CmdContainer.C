@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/07/29 14:20:26  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.13  1998/07/03 23:42:18  wenger
   Fixed some memory leaks; added provision to print data segment size
   at certain places in the code.
@@ -144,6 +148,11 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_MouseAction_DoubleClick)
 	REGISTER_COMMAND(JAVAC_MouseAction_RubberBand)
 	REGISTER_COMMAND(JAVAC_SetDisplaySize)
+	REGISTER_COMMAND(JAVAC_KeyAction)
+	REGISTER_COMMAND(JAVAC_SaveSession)
+	REGISTER_COMMAND(JAVAC_ServerExit)
+	REGISTER_COMMAND(JAVAC_ServerCloseSocket)
+	REGISTER_COMMAND(JAVAC_ImageChannel)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)

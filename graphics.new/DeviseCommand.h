@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/07/07 17:59:04  wenger
+  Moved #define of PURIFY from DeviseCommand.h to DeviseCommand.C so the
+  "outside world" doesn't see it.
+
   Revision 1.9  1998/06/12 19:55:29  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -165,6 +169,36 @@ DECLARE_CLASS_END
 //Class definition: DeviseCommand_JAVAC_JAVAC_SetDisplaySize
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_SetDisplaySize)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_KeyAction
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_KeyAction)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_SaveSession
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_SaveSession)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_ServerExit
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ServerExit)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_ServerCloseSocket
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ServerCloseSocket)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_ImageChannel
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ImageChannel)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

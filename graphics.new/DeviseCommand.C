@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/07/07 17:59:02  wenger
+  Moved #define of PURIFY from DeviseCommand.h to DeviseCommand.C so the
+  "outside world" doesn't see it.
+
   Revision 1.18  1998/07/06 21:06:53  wenger
   More memory leak hunting -- partly tracked down some in the DTE.
 
@@ -271,6 +275,36 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_SetDisplaySize)
 	JavaScreenCmd jc(control,JavaScreenCmd::SETDISPLAYSIZE,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_KeyAction)
+	JavaScreenCmd jc(control,JavaScreenCmd::KEYACTION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_SaveSession)
+	JavaScreenCmd jc(control,JavaScreenCmd::SAVESESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ServerExit)
+	JavaScreenCmd jc(control,JavaScreenCmd::SERVEREXIT,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ServerCloseSocket)
+	JavaScreenCmd jc(control,JavaScreenCmd::SERVERCLOSESOCKET,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ImageChannel)
+	JavaScreenCmd jc(control,JavaScreenCmd::IMAGECHANNEL,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END

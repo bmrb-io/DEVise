@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/06/17 17:20:42  wenger
+  Devised now sends "real" session file list to JavaScreen.
+
   Revision 1.7  1998/06/03 17:09:41  wenger
   Rubberband line in JavaScreen now sends updates of all changed windows
   using the "dirty GIF" flag; updated DEVise version to 1.5.3.
@@ -119,7 +122,12 @@ class JavaScreenCmd
 			MOUSEACTION_RUBBERBAND,
 			JAVAEXIT,
 			CLOSECURRENTSESSION,
-			SETDISPLAYSIZE
+			SETDISPLAYSIZE,
+			KEYACTION,
+			SAVESESSION,
+			SERVEREXIT,
+			SERVERCLOSESOCKET,
+			IMAGECHANNEL
 		}ServiceCmdType;
 
 		typedef enum
@@ -132,6 +140,7 @@ class JavaScreenCmd
 			DONE,
 			ERROR,
 			FAIL,
+			UPDATEIMAGE,
 			CONTROLCMD_NUM,
 			NULL_COMMAND
 		}ControlCmdType;
@@ -142,6 +151,7 @@ class JavaScreenCmd
 			ServiceCmdType ctype, int argc, char** argv);
 		int Run();
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
+
 	private:
 		static char* _controlCmdName[CONTROLCMD_NUM];
 		ControlPanel	*_control;
@@ -160,6 +170,11 @@ class JavaScreenCmd
 		void MouseAction_DoubleClick();
 		void MouseAction_RubberBand();
 		void SetDisplaySize();
+		void KeyAction();
+		void SaveSession();
+		void ServerExit();
+		void ServerCloseSocket();
+		void ImageChannel();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);

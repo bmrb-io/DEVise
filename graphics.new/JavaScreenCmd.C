@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/07/29 14:20:26  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.14  1998/06/17 18:00:41  wenger
   MAXNAMELEN should have been MAXPATHLEN.
 
@@ -467,6 +471,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 	window->DoneIterator(index);
 }
 
+//====================================================================
 void
 JavaScreenCmd::CloseCurrentSession()
 {
@@ -485,6 +490,7 @@ JavaScreenCmd::CloseCurrentSession()
 	return;
 }
 
+//====================================================================
 void
 JavaScreenCmd::SetDisplaySize()
 {
@@ -503,6 +509,105 @@ JavaScreenCmd::SetDisplaySize()
 
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(_argv[0]);
     DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(_argv[1]);;
+
+	_status = DONE;
+	return;
+}
+
+//====================================================================
+void
+JavaScreenCmd::KeyAction()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::KeyAction(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+//TEMP -- add body of function
+
+	_status = DONE;
+	return;
+}
+
+//====================================================================
+void
+JavaScreenCmd::SaveSession()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::SaveSession(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+	if (_argc != 1)
+	{
+		errmsg = "{Usage: SaveSession <file name>}";
+		_status = ERROR;
+		return;
+	}
+
+	//TEMP -- is arg full path or just file name?
+
+	if (!Session::Save(_argv[0], false, false, false).IsComplete()) {
+		errmsg = "{Error saving session}";
+		_status = ERROR;
+	} else {
+		_status = DONE;
+	}
+
+	return;
+}
+
+//====================================================================
+void
+JavaScreenCmd::ServerExit()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::ServerExit(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+	printf("Server exiting on command from JavaScreen\n");
+	ControlPanel::Instance()->DoQuit();
+
+	_status = DONE;
+	return;
+}
+
+//====================================================================
+void
+JavaScreenCmd::ServerCloseSocket()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::ServerCloseSocket(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+//TEMP -- add body of function
+
+	_status = DONE;
+	return;
+}
+
+//====================================================================
+void
+JavaScreenCmd::ImageChannel()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::ImageChannel(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
+//TEMP -- add body of function
 
 	_status = DONE;
 	return;
@@ -602,6 +707,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_Done",
 	"JAVAC_Error",
 	"JAVAC_Fail"
+	"JAVAC_UpdateImage"
 };
 
 JavaScreenCmd::~JavaScreenCmd()
@@ -706,6 +812,21 @@ JavaScreenCmd::Run()
 			break;
 		case SETDISPLAYSIZE:
 			SetDisplaySize();
+			break;
+		case KEYACTION:
+			KeyAction();
+			break;
+		case SAVESESSION:
+			SaveSession();
+			break;
+		case SERVEREXIT:
+			ServerExit();
+			break;
+		case SERVERCLOSESOCKET:
+			ServerCloseSocket();
+			break;
+		case IMAGECHANNEL:
+			ImageChannel();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
