@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1997/08/21 21:02:41  donjerko
+#  Changed SPECIFIC_PATH to FALSE
+#
 #  Revision 1.17  1997/08/21 17:04:08  wenger
 #  Changed back from -g to -gstabs for debug because -g still causes warnings.
 #
@@ -132,6 +135,8 @@ endif
 .c.o:
 	$(CC) -c $(CFLAGS) $< 
 .C.o:
+	$(CC) -c $(CFLAGS) $<
+.cc.o:
 	$(CC) -c $(CFLAGS) $<
 
 # Purify
