@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/05/05 17:07:24  wenger
+  Minor improvements to JavaScreenCmd.[Ch].
+
   Revision 1.2  1998/05/02 09:00:44  taodb
   Added support for JAVA Screen and command logging
 
@@ -295,6 +298,14 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_Error",
 	"JAVAC_Fail"
 };
+JavaScreenCmd::~JavaScreenCmd()
+{
+	int	i;
+	for (i=0; i< _argc; ++i)
+		delete []_argv[i];
+	delete []_argv;
+}
+
 char* 
 JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 {
@@ -303,11 +314,53 @@ JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
+	int	i;
+	static	char	leftBrace ='{';
+	static  char	rightBrace ='}';
+
+
 	_control  = control;
 	_ctype = ctype;
 	_argc = argc;
-	_argv = argv;
+	_argv = new (char*)[argc](NULL);
 	errmsg = NULL;
+
+    for (i=0; i< _argc; ++i)
+    {
+        int j = 0;
+        int arglen = strlen(argv[i]);
+        int startPos, endPos;
+ 
+        startPos = -1;
+        endPos = arglen;
+        _argv[i] = new (char)[arglen+1](0);
+        while (argv[i][j]&&(
+            (argv[i][j]==' ')||
+            (argv[i][j]=='\t')&&
+            (argv[i][j]!= leftBrace)))
+            ++j;
+        if (argv[i][j]==leftBrace)
+        {
+            startPos = j;
+            j = arglen -1;
+            while ((j>0)&&(
+                (argv[i][j]==' ')||
+                (argv[i][j]=='\t')&&
+                (argv[i][j]!= rightBrace))
+            )
+                --j;
+            if (j > startPos)
+            {
+                endPos = j;
+            }
+            else
+            {
+                fprintf(stderr, " { expected\n");
+                startPos = -1;
+            }
+        }
+        strncpy(_argv[i], argv[i]+startPos +1, endPos - startPos -1);
+    }
 }
 
 int

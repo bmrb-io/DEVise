@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/05/05 17:07:25  wenger
+  Minor improvements to JavaScreenCmd.[Ch].
+
   Revision 1.2  1998/05/02 09:00:45  taodb
   Added support for JAVA Screen and command logging
 
@@ -116,6 +119,7 @@ class JavaScreenCmd
 		}ControlCmdType;
 
 		// argv does not contain the command name!
+		~JavaScreenCmd();
 		JavaScreenCmd(ControlPanel* server,
 			ServiceCmdType ctype, int argc, char** argv);
 		int Run();
