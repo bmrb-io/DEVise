@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/19 18:00:30  guangshu
+  Added support for histograms.
+
   Revision 1.29  1996/07/19 17:31:31  jussi
   Fixed problem in InsertSymbol().
 
@@ -410,9 +413,10 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   _index = -1;
 
   _allStats.Done();
+  _allStats.Report();
   yMax = _allStats.GetStatVal(STAT_MAX);
   yMin = _allStats.GetStatVal(STAT_MIN);
-  _allStats.Report();
+
 
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Done();

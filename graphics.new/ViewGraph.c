@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/19 18:00:31  guangshu
+  Added support for histograms.
+
   Revision 1.24  1996/07/13 00:22:21  jussi
   ViewGraph writes only the minimum number of necessary records
   in the color statistics buffer.
@@ -514,14 +517,16 @@ void ViewGraph::PrepareStatsBuffer()
         strcat(_statBuffer, line);
     }
 
-    for(int i=0; i<HIST_NUM; i++) {
-	sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
-		_allStats.GetHistVal(i));
-	if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
-	    fprintf(stderr, "Out of histogram buffer space\n");
-	    break;
-	}
-	strcat(_histBuffer, line);
+    if(_allStats.GetHistWidth()>0){
+	for(int i=0; i<HIST_NUM; i++) {
+	    sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
+		    _allStats.GetHistVal(i));
+	    if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
+	        fprintf(stderr, "Out of histogram buffer space\n");
+	        break;
+	    }
+	    strcat(_histBuffer, line);
+        }
     }
 #ifdef DEBUG
     printf("%s\n", _statBuffer);
