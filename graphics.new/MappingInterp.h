@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/11/23 21:19:32  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.25  1996/09/27 15:53:20  wenger
   Fixed a number of memory leaks.
 
@@ -166,7 +169,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 15;
+const int MaxInterpShapes = 16;
 
 class MappingInterp: public TDataMap {
   friend inline double ConvertOne(char *from,
@@ -184,6 +187,7 @@ public:
   MappingInterpCmd *GetMappingCmd() { return _cmd; }
 
   virtual Boolean IsInterpreted() { return true; }
+				  
   virtual Boolean IsComplexShape(ShapeID shape) {
     if (shape <= 10)
       return false;
@@ -205,7 +209,15 @@ public:
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num);
 
-  virtual AttrInfo *MapGAttr2TAttr(char *attrName);
+  /* Get the AttrInfo for a GData attribute. which_attr should be */
+  /* one of the MappingCmd_??? constants defined at the top of    */
+  /* this file.                                                   */
+  // Andy: OLD VERSION: virtual AttrInfo *MapGAttr2TAttr(char *attrName);
+  virtual AttrInfo *MapGAttr2TAttr(int which_attr);
+
+  /* Get the AttrInfo for shape attribute i */
+  virtual AttrInfo *MapShapeAttr2TAttr(int i);
+				  
 
 protected:	
   /* convert from Tdata to Gdata. buf contains buffer for data. */
@@ -277,3 +289,4 @@ private:
 };
 
 #endif
+

@@ -17,6 +17,13 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/12/18 18:52:08  wenger
+  Devise requests Tasvir not to use subwindows for its images; sizing of
+  Tasvir images now basically works like a RectX, except that the aspect
+  ratio is fixed by the image itself; fixed a bug in action of +/- keys
+  for RectX shapes; Devise won't request Tasvir images smaller than two
+  pixels (causes error in Tasvir).
+
   Revision 1.28  1996/12/15 20:22:44  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -154,7 +161,6 @@
 #define IMAGE_TYPE_DALI_IMAGE		(3)
 
 //---------------------------------------------------------------------------
-
 
 int FullMapping_RectShape::NumShapeAttrs()
 {
@@ -1335,9 +1341,11 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     // then at least the user sees some symbol in the window
 
     for(int i = 0; i < numSyms; i++) {
+
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	// Transform the data X and Y to pixels.
 	Coord tx, ty;
@@ -1353,6 +1361,9 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	win->PopTransform();
 #endif
 
+	if (color == XorColor)
+	  win->SetCopyMode();
+	
 	// Get the name of the image file or the image itself.
 	char *shapeAttr0 = NULL;
 	if (offset->shapeAttrOffset[0] >= 0) {

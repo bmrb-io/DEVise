@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/12/30 16:12:10  wenger
+  Removed unecessary assertion in MappingInterp::ConvertToGDataSimple().
+
   Revision 1.44  1996/11/23 21:19:31  jussi
   Removed failing support for variable-sized records.
 
@@ -209,6 +212,7 @@
 #include "Temp.h"
 #include "MappingInterp.h"
 #include "MapInterpShape.h"
+#include "ETkWindowShape.h"
 #include "Exit.h"
 #include "Util.h"
 #include "Exit.h"
@@ -304,8 +308,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 	TDataMap(name, tdata, name,
                  FindGDataSize(cmd, tdata->GetAttrList(),
                                flag, attrFlag),
-                 MappingInterpAllFlags, MappingInterpAllFlags,
-                 Init::MaxGDataPages(),
+                 MappingInterpAllFlags, attrFlag,
+		 Init::MaxGDataPages(),
                  dimensionInfo, numDimensions, true)
 {
 #ifdef DEBUG
@@ -335,6 +339,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[12] = new FullMapping_TextLabelShape;
     _shapes[13] = new FullMapping_LineShape;
     _shapes[14] = new FullMapping_LineShadeShape;
+    _shapes[15] = new FullMapping_ETkWindowShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {
@@ -397,6 +402,10 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   _cmd = cmd;
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
+  
+  /* Need to keep the flags in the TDataMap object consistent */
+  SetDynamicShapeAttrs(_cmdAttrFlag);
+  
   AttrList *attrList = GDataAttrList();
   delete attrList;
   attrList = InitCmd(GetName());
@@ -419,6 +428,7 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
   return _cmd;
 }
 
+/*
 AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
 {
   MappingSimpleCmdEntry entry;
@@ -445,6 +455,84 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
     return entry.cmd.attr;
 
   return 0;
+}
+*/
+
+/* Get the AttrInfo for a GData attribute. */
+AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
+{
+    MappingSimpleCmdEntry entry;
+    AttrType attrType;
+    Boolean isSorted;
+    Boolean simpleCmd = false;
+
+    if (!(_cmdFlag & which_attr))
+	return 0;
+    
+    switch (which_attr)
+    {
+      case MappingCmd_X:
+	simpleCmd = ConvertSimpleCmd(_cmd->xCmd, entry, attrType, isSorted);
+	break;
+      case MappingCmd_Y:
+	simpleCmd = ConvertSimpleCmd(_cmd->yCmd, entry, attrType, isSorted);
+	break;
+      case MappingCmd_Z:
+	simpleCmd = ConvertSimpleCmd(_cmd->zCmd, entry, attrType, isSorted);
+	break;
+      case MappingCmd_Color:
+	simpleCmd = ConvertSimpleCmd(_cmd->colorCmd, entry, attrType,
+				     isSorted);
+	break;
+      case MappingCmd_Size:
+	simpleCmd = ConvertSimpleCmd(_cmd->sizeCmd, entry, attrType,
+				     isSorted);
+	break;
+      case MappingCmd_Pattern:
+	simpleCmd = ConvertSimpleCmd(_cmd->patternCmd, entry, attrType,
+				     isSorted);
+	break;
+      case MappingCmd_Orientation:
+	simpleCmd = ConvertSimpleCmd(_cmd->orientationCmd, entry, attrType,
+				     isSorted);
+	break;
+      case MappingCmd_Shape:
+	simpleCmd = ConvertSimpleCmd(_cmd->shapeCmd, entry, attrType,
+				     isSorted);
+	break;
+      default:
+	return 0;
+
+    }
+    
+    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
+	return entry.cmd.attr;
+    
+    return 0;
+    
+}
+
+/* Get the AttrInfo for shape attribute i */
+AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
+{
+    MappingSimpleCmdEntry entry;
+    AttrType attrType;
+    Boolean isSorted;
+    Boolean simpleCmd = false;
+    
+    if (!(_cmdAttrFlag & (1 << i)))
+    {
+	return 0;
+    }
+    
+    simpleCmd = ConvertSimpleCmd(_cmd->shapeAttrCmd[i], entry,
+				 attrType, isSorted);
+    
+    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
+	return entry.cmd.attr;
+    
+    return 0;
+
 }
 
 void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/19 03:23:04  jussi
+  Removed LineShadeShape, which is now derived from LineShape.
+
   Revision 1.12  1996/07/19 02:52:32  jussi
   Added LineShape and LineShadeShape.
 
@@ -124,6 +127,11 @@ class PolylineShape : public Shape {};
    attribute 0 at (X,Y). */
 
 class GifImageShape : public Shape {};
+
+/* ETkWindow: displays an embedded Tk window at (X,Y) and executes a
+Tcl/Tk whose filename is given in shape attribute 0 */
+
+class ETkWindowShape : public Shape {};
 
 /* PolylineFile: draws a polygon whose origin is at (X,Y) and whose
    data points are read from a file given in shape attribute 0.

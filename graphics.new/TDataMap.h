@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/23 21:17:17  jussi
+  Removed reference to DEVISE_PAGESIZE. Removed StripPath() which
+  is already in Util.c.
+
   Revision 1.17  1996/11/13 16:57:10  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -129,7 +133,9 @@ public:
      gdataName:  name of GData (name of this mapping instance */
 
   TDataMap(char *name, TData *tdata, char *gdataName, int gdataRecSize,
-	   VisualFlag dynamicArgs, int dynamicShapeAttrs, int maxGDataPages,
+	   VisualFlag dynamicArgs,
+	   unsigned long dynamicShapeAttrs,
+	   int maxGDataPages,
 	   VisualFlag *dimensionInfo, int numDimensions,
 	   Boolean createGData = true);
   
@@ -161,7 +167,9 @@ public:
   RecId GetDefaultRecId() { return 0; }
 
   VisualFlag GetDynamicArgs() { return _dynamicArgs; }
-  int GetDynamicShapeAttrs() { return _dynamicAttrs; }
+
+  unsigned long GetDynamicShapeAttrs() { return _dynamicAttrs; }
+  
   void GetDefaultLocation(Coord &x, Coord &y) { x = _x; y = _y; }
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
@@ -174,6 +182,8 @@ public:
   int GetDefaultNumShapeAttrs() { return _numShapeAttr; }
   ShapeAttr *GetDefaultShapeAttrs() { return _shapeAttrs; }
 
+  void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
+  
   int GetPixelWidth() { return _pixelWidth; }
   void SetPixelWidth(int width) { _pixelWidth = width; }
   
@@ -240,7 +250,11 @@ public:
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
 
-  virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
+  // Andy: OLD VERSION: virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
+  virtual AttrInfo *MapGAttr2TAttr(int which_attr) { return 0; }
+  
+  /* Get the AttrInfo for shape attribute i */
+  virtual AttrInfo *MapShapeAttr2TAttr(int i) { return 0; }
 
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);
@@ -305,7 +319,9 @@ private:
   TData *_tdata;
   GData *_gdata;
   VisualFlag _dynamicArgs; /* attributes that are set dynamically */
-  int _dynamicAttrs;
+  
+  unsigned long _dynamicAttrs;
+  
   void *_tmpPtr[1]; /* used as temp storage for storing data used
 		       in hint calculation */
   

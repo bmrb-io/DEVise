@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.52  1996/12/15 06:48:46  donjerko
+#  Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
+#
 #  Revision 1.51  1996/12/11 20:36:20  wenger
 #  Added 'cslib' target to top-level makefiles; added 'lib' targets
 #  to library makefiles.
@@ -85,7 +88,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
-        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C
+        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
+	ETkWindowShape.C
 	
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/26 16:51:41  ssl
+  Added support for piled viws
+
   Revision 1.42  1996/11/20 16:51:09  jussi
   Replaced AbortAndReexecute() with AbortQuery() and Refresh().
 
@@ -183,6 +186,8 @@
 #include "RecordLink.h"
 #include "TData.h"
 
+// Andy
+#include "MappingInterp.h"
 
 ImplementDList(GStatList, int)
 
@@ -322,7 +327,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     if (!MoreMapping(index)) {
       // this is the first mapping
       // update the histogram bucket sizes
-      AttrInfo *yAttr = map->MapGAttr2TAttr("y");
+      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
       if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
 	// y min & max known for the file, so use those to define buckets
 	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
@@ -468,9 +473,9 @@ void ViewGraph::UpdateAutoScale()
     }
 
     TDataMap *map = NextMapping(index)->map;
-    AttrInfo *xAttr = map->MapGAttr2TAttr("x");
-    AttrInfo *yAttr = map->MapGAttr2TAttr("y");
-    AttrInfo *zAttr = map->MapGAttr2TAttr("z");
+    AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
+    AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+    AttrInfo *zAttr = map->MapGAttr2TAttr(MappingCmd_Z);
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
@@ -781,7 +786,7 @@ void ViewGraph::SetHistogramWidthToFilter()
 	int index = InitMappingIterator();
 	if (MoreMapping(index)) {
 	    MappingInfo *info = NextMapping(index);
-	    AttrInfo *yAttr = info->map->MapGAttr2TAttr("y");
+	    AttrInfo *yAttr = info->map->MapGAttr2TAttr(MappingCmd_Y);
 	    if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
 		lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
 		hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);

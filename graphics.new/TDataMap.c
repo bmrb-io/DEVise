@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/23 21:17:16  jussi
+  Removed reference to DEVISE_PAGESIZE. Removed StripPath() which
+  is already in Util.c.
+
   Revision 1.17  1996/09/27 21:09:37  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -90,7 +94,7 @@ int TDataMap::_incarnation= 0;
 
 TDataMap::TDataMap(char *name, TData *tdata, char *gdataName, 
 		   int gdataRecSize, VisualFlag dynamicArgs,
-                   int dynamicAttrs, int maxGDataPages,
+                   unsigned long dynamicAttrs, int maxGDataPages,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
