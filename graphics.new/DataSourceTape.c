@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/07 22:53:58  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.4  1996/07/01 19:31:34  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -133,6 +137,7 @@ DataSourceTape::Close()
 	DO_DEBUG(printf("DataSourceTape::Close()\n"));
 
 	if (_tapeP != NULL) delete _tapeP;
+        _tapeP = NULL;
 
 	return StatusOk;
 }
@@ -146,13 +151,16 @@ DataSourceTape::Fgets(char *buffer, int size)
 {
 	DO_DEBUG(printf("DataSourceTape::Fgets()\n"));
 
-	char *		result = buffer;
+	char *result = buffer;
 
-	if (_tapeP->gets(buffer, size) != size)
-	{
+        int bytes = _tapeP->gets(buffer, size);
+        if (bytes < 0) {
 	  reportErrSys("Tape::gets()");
 	  result = NULL;
-	}
+	} else if (!bytes)
+          result = NULL;
+        else if (bytes < size)
+          *(result + bytes) = 0;
 
 	return result;
 }
