@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/03/23 23:34:16  jussi
+  Added MdDdYy to DATE composite parser.
+
   Revision 1.8  1996/03/23 21:40:22  jussi
   Added support for date fields as they appear in Department of Labor
   statistics.
@@ -62,6 +65,7 @@
 #include "RecInterp.h"
 #include "AttrList.h"
 #include "QueryProc.h"
+#include "QueryProcTape.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "TData.h"
@@ -117,6 +121,7 @@ public:
       char *primAttrs[] = { "YYMMDD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
+      assert(attrOffset);
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
@@ -127,6 +132,8 @@ public:
 	  Exit::DoExit(2);
 	}
 	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "DATE"))
+	  dateAttr = info;
       }
       _init = true;
     }
@@ -145,10 +152,20 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
+
+    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
+      dateAttr->hiVal.dateVal = *datePtr;
+      dateAttr->hasHiVal = true;
+    }
+    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
+      dateAttr->loVal.dateVal = *datePtr;
+      dateAttr->hasLoVal = true;
+    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -174,6 +191,7 @@ public:
       char *primAttrs[] = { "MONTH", "DAY", "YEAR", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
+      assert(attrOffset);
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
@@ -184,6 +202,8 @@ public:
 	  Exit::DoExit(2);
 	}
 	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "DATE"))
+	  dateAttr = info;
       }
       _init = true;
     }
@@ -201,10 +221,20 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     *datePtr = GetTime(now);
+
+    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
+      dateAttr->hiVal.dateVal = *datePtr;
+      dateAttr->hasHiVal = true;
+    }
+    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
+      dateAttr->loVal.dateVal = *datePtr;
+      dateAttr->hasLoVal = true;
+    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -232,6 +262,7 @@ public:
 			    "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
+      assert(attrOffset);
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
@@ -242,6 +273,8 @@ public:
 	  Exit::DoExit(2);
 	}
 	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "DATE"))
+	  dateAttr = info;
       }
       _init = true;
     }
@@ -259,10 +292,20 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[6]);
     *datePtr = GetTime(now);
+
+    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
+      dateAttr->hiVal.dateVal = *datePtr;
+      dateAttr->hasHiVal = true;
+    }
+    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
+      dateAttr->loVal.dateVal = *datePtr;
+      dateAttr->hasLoVal = true;
+    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -288,6 +331,7 @@ public:
       char *primAttrs[] = { "YEAR", "PERIOD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
+      assert(attrOffset);
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
@@ -298,6 +342,8 @@ public:
 	  Exit::DoExit(2);
 	}
 	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "DATE"))
+	  dateAttr = info;
       }
       _init = true;
     }
@@ -321,12 +367,27 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[2]);
     *datePtr = GetTime(now);
+
+    if (!dateAttr->hasHiVal || *datePtr > dateAttr->hiVal.dateVal) {
+      dateAttr->hiVal.dateVal = *datePtr;
+      dateAttr->hasHiVal = true;
+    }
+    if (!dateAttr->hasLoVal || *datePtr < dateAttr->loVal.dateVal) {
+      dateAttr->loVal.dateVal = *datePtr;
+      dateAttr->hasLoVal = true;
+    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *dateAttr;            /* date attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
+
+QueryProc *genQueryProcTape()
+{
+  return new QueryProcTape;
+}
 
 main(int argc, char **argv)
 {
@@ -339,6 +400,9 @@ main(int argc, char **argv)
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
+
+  /* Register known query processors */
+  QueryProc::Register("Tape", genQueryProcTape);
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);
