@@ -52,6 +52,9 @@ see comments in DEViseCommSocket.java.
     Purpose: tells JSPoP that the JavaScreen is "alive".
     Arguments: 0
 
+    2.5 JAVAC_GetCollabList
+    Purpose: get current collaboration status.
+    Arguments: 0
 
 3. JSPoP to JavaScreen
 
@@ -75,7 +78,11 @@ see comments in DEViseCommSocket.java.
     Purpose: send the active client list to collaboration JavaScreen
     Arguments: variable number of IDs of active clients.
         
-
+    3.5 JAVAC_CollabState
+    Purpose: send the collaboration status back to JavaScreen
+    Arguments: 1
+        <status>: a string containing a number indicating how many 
+		JavaScreens are collaborating with this user.
 
 4. JavaScreen to devised (via JSPoP)
 
