@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1997/08/12 18:46:42  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.34  1997/08/11 14:15:19  wenger
 #  Modifications to get DEVise to compile on Linux.
 #
@@ -82,10 +86,12 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
-LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
+# dd: dte need stuff from Jussi's SBM which is in graphics.new
+
+LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -L../LM -L../xvertext \
 	-lgraphicsnew -lgraphics \
-	-lgraphicsnew -ldte \
+	-ldte -lrtree -lgraphicsnew \
 	-llm -lXrot \
 	-lissm -lcrsp -lcstat -ltape \
 	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
@@ -108,6 +114,7 @@ OBJ += $(SRCC:.C=.o)
 ALLLIBS = ../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a ../unidata/libunidata.a \
 	../DTE/libdte.a \
+	../RTree/librtree.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a  ../LM/liblm.a ../xvertext/libXrot.a
 
