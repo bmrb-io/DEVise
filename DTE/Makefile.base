@@ -82,7 +82,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
 	RelationId.c Iterator.c DataRead.c ODBCParse.dummy.c ODBCInfo.c \
-	ODBCCatalogParse.c AccessMethod.c
+	ODBCCatalogParse.c AccessMethod.c CreateGestaltParse.c
 	
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
