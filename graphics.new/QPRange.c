@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/31 15:43:18  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.4  1995/12/28 21:12:03  jussi
   Small fix to remove compiler warning.
 
@@ -50,6 +53,12 @@ QPRange::~QPRange()
     FreeRec(temp);
   }
 }
+
+/*
+   Find a processed range that is immediately to the left of the id
+   passed as the parameter. If the id is contained within a processed
+   range, return that.
+*/
 
 QPRangeRec *QPRange::Search(RecId id)
 {
@@ -283,8 +292,10 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
   }
 }
 
-/* Get next unprocessed recId range >= currentId
-   Return true if high is not set (no upper bound).  */
+/*
+   Get next unprocessed record range beginning at or immediately to
+   the right of currentId. Return true if high is not set (no upper bound).
+*/
 
 Boolean QPRange::NextUnprocessed(RecId currentId, RecId &low, RecId &high)
 {
