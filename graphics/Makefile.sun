@@ -1,5 +1,6 @@
 depend:
-	makedepend -fMakefile.sun -I/s/X11/include *.c *.C
+	makedepend -fMakefile.sun -I../graphics.new \
+		-I/s/X11/include *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -125,7 +126,7 @@ Init.o: /usr/include/vm/faultcode.h Dispatcher.h DeviseTypes.h DList.h Exit.h
 Init.o: Journal.h VisualArg.h Color.h Pattern.h Init.h BufPolicy.h Time.h
 Init.o: /usr/include/sys/time.h /usr/include/sys/time.h Util.h
 Init.o: /usr/include/ctype.h /usr/include/math.h /usr/include/floatingpoint.h
-Init.o: /usr/include/sys/ieeefp.h
+Init.o: /usr/include/sys/ieeefp.h ../graphics.new/Version.h
 Journal.o: /usr/include/stdio.h /usr/include/sys/types.h
 Journal.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 Journal.o: /usr/include/unistd.h /usr/include/sys/stat.h /usr/include/fcntl.h
