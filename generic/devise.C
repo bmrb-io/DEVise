@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/13 18:08:17  jussi
+  The code now accepts API_CTL type messages in between API_CMD
+  and API_ACK/API_NAK messages. Control channel was merged with
+  the regular socket pair.
+
   Revision 1.3  1996/05/11 21:30:01  jussi
   Fixed problem with interp->result overrun.
 
@@ -28,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -46,6 +52,9 @@ static char *_hostName = "localhost";
 static int _portNum = DefaultDevisePort;
 static int _deviseFd = -1;
 
+static char *_idleScript = 0;
+static int   _isBusy = 0;
+
 static Tcl_Interp *_interp = 0;
 static Tk_Window _mainWindow = 0;
 static char *_restoreFile = 0;
@@ -59,6 +68,23 @@ void DoAbort(char *reason)
   (void)Tcl_Eval(_interp, cmd);
   (void)DeviseClose(_deviseFd);
   exit(1);
+}
+
+void ControlCmd(char *result)
+{
+  if (strncmp(result, "ChangeStatus", 12))
+    return;
+
+  char *space = strchr(result, ' ');
+  if (!space) {
+    printf("Ignoring invalid ChangeStatus command: \"%s\"\n", result);
+    return;
+  }
+
+  _isBusy = atoi(space + 1);
+#ifdef DEBUG
+  printf("Server is now in %s state.\n", (_isBusy ? "busy" : "idle"));
+#endif
 }
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
@@ -80,6 +106,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #ifdef DEBUG
       printf("Executing Tcl command: \"%s\"\n", _buffer);
 #endif
+      ControlCmd(_buffer);
       (void)Tcl_Eval(_interp, _buffer);
     }
   } while (flag != API_ACK && flag != API_NAK);
@@ -115,6 +142,7 @@ void ReadServer(ClientData cd, int mask)
   printf("Executing Tcl command: \"%s\"\n", _buffer);
 #endif
 
+  ControlCmd(_buffer);
   (void)Tcl_Eval(_interp, _buffer);
 }
 
@@ -158,6 +186,10 @@ void SetupConnection()
   printf("Connection established.\n\n");
 
   char *controlFile = "control.tk";
+  if (_idleScript) {
+    controlFile = "batch.tcl";
+    (void)Tcl_Eval(_interp, "DEVise setBatchMode 1");
+  }
 
   char *envPath = getenv("DEVISE_LIB");
   char *control;
@@ -179,10 +211,10 @@ void SetupConnection()
 
   if (_restoreFile) {
     Tcl_SetVar(_interp, "restoring", "1", 0);
-    int code = Tcl_EvalFile(_interp,_restoreFile);
+    int code = Tcl_EvalFile(_interp, _restoreFile);
     Tcl_SetVar(_interp, "restoring", "0", 0);
     if (code != TCL_OK) {
-      fprintf(stderr, "Can't restore session file %s\n", _restoreFile);
+      fprintf(stderr, "Cannot restore session file %s\n", _restoreFile);
       fprintf(stderr, "%s\n", _interp->result);
     } else {
       Tcl_SetVar(_interp, "sessionName", _restoreFile, 0);
@@ -192,7 +224,8 @@ void SetupConnection()
 
 void Usage()
 {
-  fprintf(stderr, "Usage: %s [-h host] [-p port] [session]\n", _progName);
+  fprintf(stderr, "Usage: %s [-h host] [-p port] [session] [idlescript]\n",
+	  _progName);
 }
 
 int main(int argc, char **argv)
@@ -217,19 +250,45 @@ int main(int argc, char **argv)
       _portNum = atoi(argv[i + 1]);
       i++;
     } else {
-      if (_restoreFile) {
+      if (!_restoreFile)
+	_restoreFile = argv[i];
+      else if(!_idleScript)
+	_idleScript = argv[i];
+      else {
 	Usage();
 	exit(1);
       }
-      _restoreFile = argv[i];
     }
   }
 
   SetupConnection();
-  Tk_MainLoop();
+
+  if (_idleScript) {
+    printf("Waiting for server synchronization.\n");
+    while(_isBusy) {
+      u_short flag;
+      if (DeviseReceive(_deviseFd, _buffer, flag, "Control command") < 0)
+	DOASSERT(0, "Server has terminated");
+      if (flag == API_CTL) {
+	ControlCmd(_buffer);
+	(void)Tcl_Eval(_interp, _buffer);
+      }
+    }
+    printf("Executing script file %s\n", _idleScript);
+    int code = Tcl_EvalFile(_interp, _idleScript);
+    if (code != TCL_OK) {
+      fprintf(stderr, "Cannot execute script file %s\n", _idleScript);
+      fprintf(stderr, "%s\n", _interp->result);
+      (void)DeviseClose(_deviseFd);
+      return 2;
+    }
+  } else {
+    Tk_MainLoop();
 #ifdef DEBUG
-  printf("Returned from Tk loop\n");
+    printf("Returned from Tk loop\n");
 #endif
+  }
+
   Tk_DeleteFileHandler(_deviseFd);
   (void)DeviseClose(_deviseFd);
 
