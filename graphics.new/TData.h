@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.14  1997/01/11 20:56:20  jussi
+   Added nextChunk to TData request structure.
+
    Revision 1.13  1996/12/18 19:34:04  jussi
    Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
 
@@ -174,6 +177,7 @@ class TData {
 
     /* Get name */
     virtual char *GetName() { return _name; }
+    virtual char *GetTableName() { return _name; }
 
     /* convert RecId into index */
     virtual void GetIndex(RecId id, int *&indices) = 0;
