@@ -243,6 +243,12 @@ Num Date        Status  Description
 			views sometimes overdraws the X axis and is drawn
 			to the left of the Y axis. (rkw)
 
+072 11/19/96    OPEN    (With multi) Open test/multidemo2.tk, close it ->
+			core dump (at least on HP and SPARC/Solaris). (rkw)
+
+073 11/19/96    OPEN    Hit connector key ('c') on a scatter plot ->
+			internal error. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
