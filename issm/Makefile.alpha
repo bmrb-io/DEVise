@@ -1,296 +1,168 @@
-.c.o:
-	$(CC) -c $(CFLAGS) $<
+CPPFLAGS =  -g -O -DUNIX  -I/p/miron/miron/DEVise/src/graphics \
+	-I/p/miron/miron/DEVise/src/graphics.new -I/usr/unsup/include \
+	-I/usr/sup/tcl/include $(ARCH_FLAGS) -Wall -fexternal-templates
 
-CC = g++
+LIBSRC = binconv.C extract.C rectape.C
 
-BUFMGR_DIR = /p/miron/miron/DEVise/src/graphics
-DV_DIR = /p/miron/miron/DEVise/src/graphics.new
-TAPE_DIR = /p/miron/miron/DEVise/src/tape
-LDFLAGS = $(ARCH_LDFLAGS) -L/usr/unsup/lib ../graphics.new/libobj.o \
-	../tape/tapeobj.o -tcl -ltk \
-	-lXaw -lXmu -lXt -lXext -lX11 -lm
-CFLAGS = -g -I$(BUFMGR_DIR) -I$(DV_DIR) -I$(TAPE_DIR) $(ARCH_FLAGS) \
-         -fexternal-templates
+LIBOBJ = binconv.o extract.o rectape.o
 
-ISSM_SRC = issm.c
-ISSM_OBJ = issm.o
+ALLSRC= $(LIBSRC) $(TESTSRC) 
 
-ALLSRC = $(ISSM_SRC)
+LIBOBJS= $(LIBOBJ)
 
-all: issm
-
-issm: $(ISSM_OBJ) ../graphics.new/libobj.o ../tape/tapeobj.o
-	$(CC) -o issm $(ISSM_OBJ) $(LDFLAGS)
-
+issmobj.o: $(LIBOBJS)
+	ld -r -o $@ $(LIBOBJS)
+	
 depend:
-	makedepend -fMakefile.alpha -I/usr/misc/C++/include \
-                   -I$(BUFMGR_DIR) -I$(DV_DIR) -I$(TAPE_DIR) $(ALLSRC)
+	makedepend -fMakefile.alpha -I/usr/psup/gcc/lib/g++-include \
+		-I../tape $(ALLSRC)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ams.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ams.o: /usr/include/sys/time.h /usr/include/stdio.h
-ams.o: /p/miron/miron/DEVise/src/graphics/DeviseTypes.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Dispatcher.h
-ams.o: /p/miron/miron/DEVise/src/graphics/DList.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Exit.h
-ams.o: /p/miron/miron/DEVise/src/graphics/VisualArg.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Color.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Journal.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Display.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Geom.h /usr/include/math.h
-ams.o: /p/miron/miron/DEVise/src/graphics/ColorMgr.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Control.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Init.h
-ams.o: /p/miron/miron/DEVise/src/graphics/BufPolicy.h
-ams.o: /p/miron/miron/DEVise/src/graphics/WinClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/graphics/ClassDir.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/MapInterpClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/graphics/VisualLinkClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/graphics/View.h
-ams.o: /p/miron/miron/DEVise/src/graphics/ViewWin.h
-ams.o: /p/miron/miron/DEVise/src/graphics/WindowRep.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Transform.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Pattern.h
-ams.o: /p/miron/miron/DEVise/src/graphics/DevisePixmap.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Compress.h
-ams.o: /p/miron/miron/DEVise/src/graphics/ViewCallback.h
-ams.o: /p/miron/miron/DEVise/src/graphics/AttrList.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Config.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Cursor.h
-ams.o: /p/miron/miron/DEVise/src/graphics/AxisLabelClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/ViewClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/CompositeParser.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/RecInterp.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/QueryProc.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/RecId.h
-ams.o: /p/miron/miron/DEVise/src/tape/QueryProcTape.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/QPRange.h
-ams.o: /p/miron/miron/DEVise/src/tape/SortedTable.h /usr/include/assert.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/GData.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/TData.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/RecOrder.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/BufMgr.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/BufHint.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/BufferPolicy.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/ViewGraph.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/TDataMap.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/ShapeID.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/Bitmap.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/GDataRec.h
-ams.o: /p/miron/miron/DEVise/src/graphics/CursorClassInfo.h
-ams.o: /p/miron/miron/DEVise/src/tape/TDataTapeInterp.h
-ams.o: /p/miron/miron/DEVise/src/tape/TDataTape.h
-ams.o: /p/miron/miron/DEVise/src/tape/tapedrive.h
-ams.o: /p/miron/miron/DEVise/src/tape/machdep.h /usr/include/limits.h
-ams.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-ams.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-ams.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-ams.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-ams.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-ams.o: /p/miron/miron/DEVise/src/graphics/ParseCat.h
-ams.o: /p/miron/miron/DEVise/src/graphics.new/Command.h
-ams.o: /p/miron/miron/DEVise/src/graphics/Timer.h MapClassInfo.h
-MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
-MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/DeviseTypes.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Display.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Geom.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Dispatcher.h
-MapClassInfo.o: /usr/include/stdio.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/DList.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Exit.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/VisualArg.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Color.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Journal.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/ColorMgr.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/RectShape.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Transform.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/WindowRep.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Pattern.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/DevisePixmap.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Compress.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/Shape.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Control.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/TDataCMap.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/ConnectorShape.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/Connector.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/ShapeID.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/GDataBin.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/RecId.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/ActionDefault.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Action.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Util.h
-MapClassInfo.o: /usr/include/assert.h /usr/include/stdlib.h
-MapClassInfo.o: /usr/include/ctype.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Selection.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/View.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/ViewWin.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/ViewCallback.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/AttrList.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Config.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Cursor.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/Init.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/BufPolicy.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/TDataMapDispatch.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/TDataMap.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/Bitmap.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/GDataRec.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/DispQueryProc.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/QueryProcSimple.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/QueryProc.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/BufHint.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/QueryProcFull.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/QPRange.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/BufMgr.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/BufferPolicy.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/RecOrder.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/Temp.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics/ViewWinVer.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/Snapshot.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/ViewScatter.h
-MapClassInfo.o: /p/miron/miron/DEVise/src/graphics.new/ViewGraph.h
-MapClassInfo.o: MapClassInfo.h /p/miron/miron/DEVise/src/graphics/ClassDir.h
-MapClassInfo.o: Soil.h AmsMap.h
-extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-extendAms.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-extendAms.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-extendAms.o: /usr/include/sys/time.h /usr/include/sys/time.h
-extendAms.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-extendAms.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-extendAms.o: /usr/include/sys/uio.h /usr/include/unistd.h
-extendAms.o: /usr/include/sys/unistd.h
-extendAms.o: /p/miron/miron/DEVise/src/graphics.new/ams.h /usr/include/math.h
-amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-amsStat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-amsStat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-amsStat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-amsStat.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-amsStat.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-amsStat.o: /usr/include/sys/uio.h /usr/include/unistd.h
-amsStat.o: /usr/include/sys/unistd.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/TDataAppend.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/TData.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics/DeviseTypes.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/RecId.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/RecOrder.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics/VisualArg.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics/Color.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics/DList.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics/Exit.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/DiskFile.h
-amsStat.o: /p/miron/miron/DEVise/src/graphics.new/ams.h /usr/include/math.h
-issm.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-issm.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-issm.o: /usr/include/sys/select.h /usr/include/sys/time.h
-issm.o: /usr/include/sys/time.h /usr/include/stdio.h
-issm.o: /p/miron/miron/DEVise/src/graphics/DeviseTypes.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Dispatcher.h
-issm.o: /p/miron/miron/DEVise/src/graphics/DList.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Exit.h
-issm.o: /p/miron/miron/DEVise/src/graphics/VisualArg.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Color.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Journal.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Display.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Geom.h /usr/include/math.h
-issm.o: /p/miron/miron/DEVise/src/graphics/ColorMgr.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Control.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Init.h
-issm.o: /p/miron/miron/DEVise/src/graphics/BufPolicy.h
-issm.o: /p/miron/miron/DEVise/src/graphics/WinClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/graphics/ClassDir.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/MapInterpClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/graphics/VisualLinkClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/graphics/View.h
-issm.o: /p/miron/miron/DEVise/src/graphics/ViewWin.h
-issm.o: /p/miron/miron/DEVise/src/graphics/WindowRep.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Transform.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Pattern.h
-issm.o: /p/miron/miron/DEVise/src/graphics/DevisePixmap.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Compress.h
-issm.o: /p/miron/miron/DEVise/src/graphics/ViewCallback.h
-issm.o: /p/miron/miron/DEVise/src/graphics/AttrList.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Config.h
-issm.o: /p/miron/miron/DEVise/src/graphics/Cursor.h
-issm.o: /p/miron/miron/DEVise/src/graphics/AxisLabelClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/ViewClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/CompositeParser.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/RecInterp.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/QueryProc.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/RecId.h
-issm.o: /p/miron/miron/DEVise/src/tape/QueryProcTape.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/QPRange.h
-issm.o: /p/miron/miron/DEVise/src/tape/SortedTable.h /usr/include/assert.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/GData.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/TData.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/RecOrder.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/BufMgr.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/BufHint.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/BufferPolicy.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/ViewGraph.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/TDataMap.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/ShapeID.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/Bitmap.h
-issm.o: /p/miron/miron/DEVise/src/graphics.new/GDataRec.h
-issm.o: /p/miron/miron/DEVise/src/graphics/CursorClassInfo.h
-issm.o: /p/miron/miron/DEVise/src/tape/TDataTapeInterp.h
-issm.o: /p/miron/miron/DEVise/src/tape/TDataTape.h
-issm.o: /p/miron/miron/DEVise/src/tape/tapedrive.h
-issm.o: /p/miron/miron/DEVise/src/tape/machdep.h /usr/include/limits.h
-issm.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-issm.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-issm.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-issm.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-issm.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-issm.o: /p/miron/miron/DEVise/src/graphics/ParseCat.h
-generic.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-generic.o: /usr/include/sys/select.h /usr/include/sys/time.h
-generic.o: /usr/include/sys/time.h /usr/include/stdio.h
-generic.o: /p/miron/miron/DEVise/src/graphics/DeviseTypes.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Dispatcher.h
-generic.o: /p/miron/miron/DEVise/src/graphics/DList.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Exit.h
-generic.o: /p/miron/miron/DEVise/src/graphics/VisualArg.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Color.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Journal.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Display.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Geom.h /usr/include/math.h
-generic.o: /p/miron/miron/DEVise/src/graphics/ColorMgr.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Control.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Init.h
-generic.o: /p/miron/miron/DEVise/src/graphics/BufPolicy.h
-generic.o: /p/miron/miron/DEVise/src/graphics/WinClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics/ClassDir.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/MapInterpClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics/VisualLinkClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics/View.h
-generic.o: /p/miron/miron/DEVise/src/graphics/ViewWin.h
-generic.o: /p/miron/miron/DEVise/src/graphics/WindowRep.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Transform.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Pattern.h
-generic.o: /p/miron/miron/DEVise/src/graphics/DevisePixmap.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Compress.h
-generic.o: /p/miron/miron/DEVise/src/graphics/ViewCallback.h
-generic.o: /p/miron/miron/DEVise/src/graphics/AttrList.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Config.h
-generic.o: /p/miron/miron/DEVise/src/graphics/Cursor.h
-generic.o: /p/miron/miron/DEVise/src/graphics/AxisLabelClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/ViewClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/CompositeParser.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/RecInterp.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/QueryProc.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/RecId.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/ViewGraph.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/TDataMap.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/ShapeID.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/Bitmap.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/GDataRec.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/TData.h
-generic.o: /p/miron/miron/DEVise/src/graphics.new/RecOrder.h
-generic.o: /p/miron/miron/DEVise/src/graphics/CursorClassInfo.h
-generic.o: /p/miron/miron/DEVise/src/graphics/ParseCat.h
+TDataTape.o: /usr/psup/gcc/lib/g++-include/iostream.h
+TDataTape.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+TDataTape.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/assert.h
+TDataTape.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+TDataTape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+TDataTape.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
+TDataTape.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+TDataTape.o: /usr/include/sys/sysmacros.h /usr/include/limits.h
+TDataTape.o: /usr/include/unistd.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Parse.h TDataTape.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Journal.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h tapedrive.h
+TDataTape.o: machdep.h /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTape.o: /usr/include/sys/time.h /usr/include/sys/timeb.h
+TDataTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Util.h
+TDataTape.o: /usr/include/strings.h /usr/include/ctype.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Init.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+TDataTapeInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+TDataTapeInterp.o: /usr/include/assert.h TDataTapeInterp.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/ClassDir.h
+TDataTapeInterp.o: TDataTape.h /usr/include/stdio.h /usr/include/sys/types.h
+TDataTapeInterp.o: /usr/include/sys/sysmacros.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+TDataTapeInterp.o: /usr/psup/gcc/lib/g++-include/libc.h /usr/include/stdlib.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Journal.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+TDataTapeInterp.o: tapedrive.h machdep.h /usr/include/limits.h
+TDataTapeInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTapeInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTapeInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTapeInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTapeInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTapeInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTapeInterp.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTapeInterp.o: /usr/include/sys/time.h /usr/include/sys/timeb.h
+TDataTapeInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTapeInterp.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/AttrList.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Config.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecInterp.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/CompositeParser.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Parse.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Control.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Util.h
+TDataTapeInterp.o: /usr/include/strings.h /usr/include/ctype.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/iostream.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/unistd.h
+tapedrive.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+tapedrive.o: /usr/include/assert.h tapedrive.h /usr/include/stdio.h machdep.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+tapedrive.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+tapedrive.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+tapedrive.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+tapedrive.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+tapedrive.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/timeb.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+tapedrive.o: /usr/include/sys/sem.h
+QueryProcTape.o: /usr/include/assert.h QueryProcTape.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/QueryProc.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/QPRange.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+QueryProcTape.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+QueryProcTape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Journal.h SortedTable.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/iostream.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/libio.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GData.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgr.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufHint.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufferPolicy.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Init.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgrFull.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RangeInfo.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgrNull.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TDataMap.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Pattern.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/ShapeID.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/Bitmap.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GDataRec.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GDataBin.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/MappingInterp.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TDataMapDispatch.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/AttrList.h
+QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Config.h
+Templates.o: QueryProcTape.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/QueryProc.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/QPRange.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+Templates.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Journal.h SortedTable.h
+Templates.o: /usr/psup/gcc/lib/g++-include/iostream.h
+Templates.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+Templates.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/assert.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/GData.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgr.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufHint.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufferPolicy.h
