@@ -2201,9 +2201,10 @@ Num Date        Status  Description
 			Test/pop_clip.ds). (rkw)  (Probably needs major
 			changes to how queries are started.)
 
-564 02/21/00	OPEN	If you run a jss with two deviseds, all of the
+564 02/21/00	FIXED	If you run a jss with two deviseds, all of the
 			commands get sent to one of the deviseds, and
 			the other one doesn't do any work. (rkw)
+			(Fixed by Hongyu, 2/22/00.)
 
 565 02/21/00	OPEN	JavaScreen has "Invalid image data for view" errors
 			with bmrb/4096_backbone_var.ds session when jspop
