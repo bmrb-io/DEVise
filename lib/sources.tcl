@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.15  1996/01/10 00:41:44  jussi
+#	Added support for automatically generated SEQ schemas when a SEQ
+#	query is edited.
+#
 #	Revision 1.14  1996/01/09 16:37:30  jussi
 #	Changed call to seq_extract.
 #
@@ -317,7 +321,7 @@ proc defineStream {base edit} {
 		if {$but > 0} {
 		    return
 		}
-		exec rm $oldCachefile
+		uncacheData $oldDispName
 	    }
 	    unset sourceList($oldDispName)
 	}
@@ -549,6 +553,7 @@ proc uncacheData {dispname} {
 
     set pattern [format "%s*" $cachefile]
     foreach cachefile [glob -nocomplain $pattern] {
+	puts "Removing cache file $cachefile"
 	exec rm $cachefile
     }
 }
@@ -770,10 +775,30 @@ proc selectStream {} {
     button .srcsel.bot.but.select -text Select -width 10 -command {
 	set streamSelected [getSelectedSource]
     }
+    button .srcsel.bot.but.uncache -text Uncache -width 10 -command {
+	set uncacheDisp [getSelectedSource]
+	if {$uncacheDisp == ""} { return }
+	set src [lindex $sourceList($uncacheDisp) 0]
+	if {$src == "UNIXFILE"} {
+	    set but [dialog .cannotUncache "Cannot Uncache" \
+		    "Unix files cannot be uncached." \
+		    "" 0 OK]
+	    return
+	}
+	set but [dialog .uncacheDisp "Uncache Data Stream" \
+		"Okay to remove cache file for \"$uncacheDisp\"?" \
+		"" 1 OK Cancel]
+	if {$but > 0} {
+	    return
+	}
+	uncacheData $uncacheDisp
+	updateSources
+    }
     button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
 	set streamSelected ""
     }
-    pack .srcsel.bot.but.select .srcsel.bot.but.cancel -side left -padx 3m
+    pack .srcsel.bot.but.select .srcsel.bot.but.uncache \
+	    .srcsel.bot.but.cancel -side left -padx 3m
 
     set streamSelected ""
     tkwait variable streamSelected
