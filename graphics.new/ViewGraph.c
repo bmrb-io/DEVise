@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.101  1999/04/05 21:09:47  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.100  1999/04/05 16:16:02  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -472,6 +477,7 @@
 #include "DepMgr.h"
 #include "DupElim.h"
 #include "PileStack.h"
+#include "MapInterpClassInfo.h"
 
 #define STEP_SIZE 20
 
@@ -2529,6 +2535,128 @@ ViewGraph::RefreshAndHome()
 
   Refresh();
   _homeAfterQueryDone = true;
+}
+
+//---------------------------------------------------------------------------
+DevStatus
+ViewGraph::SwitchTData(char *tdName)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SwitchTData(%s)\n", GetName(), tdName);
+#endif
+
+  DevStatus result = StatusOk;
+  char errBuf[1024];
+
+  // TEMP -- possibly allow a view to not have a TData assigned
+
+  //
+  // Make sure the TData name is (possibly) valid.
+  //
+  if (!tdName || !strcmp("", tdName)) {
+    reportErrNosys("Invalid (null or blank) TData name");
+	result = StatusFailed;
+  }
+
+  //
+  // Make sure the view has exactly one mapping.
+  //
+  if (result.IsComplete()) {
+    if (_mappings.Size() == 0) {
+      sprintf(errBuf, "View <%s> has no mapping; cannot switch TData",
+          GetName());
+      reportErrNosys(errBuf);
+      result = StatusFailed;
+    } else if (_mappings.Size() > 1) {
+      sprintf(errBuf, "View <%s> has multiple mappings; cannot switch TData",
+          GetName());
+      reportErrNosys(errBuf);
+      result = StatusFailed;
+    }
+  }
+
+  if (result.IsComplete()) {
+    //
+    // Make sure we don't already have the requested TData.
+    //
+    TDataMap *tdMap = GetFirstMap();
+    TData *oldTData = tdMap->GetLogTData();
+    if (!strcmp(tdName, oldTData->GetName())) {
+#if defined(DEBUG)
+      printf("View <%s> already has TData %s\n", GetName(), tdName);
+#endif
+    } else {
+
+	  //
+	  // Try to create a new mapping that's the same as the existing one
+	  // except for the TData.  Note that creating the mapping this way
+	  // automatically creates the TData if necessary.
+	  //
+      // Note that we must create the new mapping via the class directory so
+	  // that the user will be able to edit it.  RKW 1999-04-13.
+	  //
+	  // TEMP -- should we check here whether the mapping already exists?
+      MappingInterp *oldMapping, *newMapping;
+
+	  ClassDir *classDir = ControlPanel::GetClassDir();
+      ClassInfo *oldInfo = classDir->FindClassInfo(tdMap->GetName());
+
+	  // Get creation arguments of old mapping.
+      int argc;
+	  char **argv;
+	  oldInfo->CreateParams(argc, argv);
+
+	  // Change the TData name and mapping name.
+	  argv[0] = tdName;
+
+      char newName[1024];
+      sprintf(newName, "%s#%s", tdName, GetName());
+      argv[1] = newName;
+#if defined(DEBUG)
+      printf("Creating new mapping: <%s>\n", newName);
+#endif
+
+      // This is kind of a kludgey way to check for errors in the constructor.
+      // RKW 1999-04-13.
+      DevError::ResetError();
+	  char *instName = classDir->CreateWithParams(oldInfo->CategoryName(),
+	      oldInfo->ClassName(), argc, argv);
+      if (!instName || strcmp("", DevError::GetLatestError())) {
+	    classDir->DestroyInstance(newName);
+	    result = StatusFailed;
+      } else {
+	    oldMapping = (MappingInterp *)oldInfo->GetInstance();
+        newMapping = (MappingInterp *)classDir->FindInstance(instName);
+
+		newMapping->SetStringTable(TDataMap::TableX, _stringXTableName);
+		newMapping->SetStringTable(TDataMap::TableY, _stringYTableName);
+		newMapping->SetStringTable(TDataMap::TableZ, _stringZTableName);
+		newMapping->SetStringTable(TDataMap::TableGen, _stringGenTableName);
+
+		newMapping->SetPixelWidth(oldMapping->GetPixelWidth());
+	  }
+
+	  //
+	  // If we successfully created the new mapping, switch mappings and refresh
+	  // the view; then destroy the old mapping.
+	  //
+      if (result.IsComplete()) {
+        RemoveMapping(oldMapping);
+        InsertMapping(newMapping);
+        if (AutoUpdateFilter()) {
+          RefreshAndHome();
+        } else {
+          Refresh();
+        }
+
+		// This assumes that no other view uses the mapping...
+	    classDir->DestroyInstance(oldMapping->GetName());
+	    oldMapping = NULL;
+      }
+    }
+  }
+
+  return result;
 }
 
 //******************************************************************************

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.102  1998/11/23 19:19:58  donjerko
+#	*** empty log message ***
+#	
 #	Revision 1.101  1998/02/20 08:46:29  beyer
 #	resurected histograms
 #
@@ -491,90 +494,8 @@ proc GetSchema {tdata} {
 
 proc OpenDataSource {sname} {
     return [DEVise createTData $sname]
-
-    if {[string index $sname 0] != "."} {
-        set newname ""
-        regsub -all {\.| |,} $sname _ newname
-        set newname ".$newname"
-        # dialog .oldTableName "Old Table Name Format" \
-                # "Table name $sname will be converted to $newname" \
-                # "" 0 OK
-        set sname $newname
-    }
-    #	puts "looking up \"$sname\""
-
-    # sname has the full path
-     set errCode [catch {DEVise dteShowCatalogEntry $sname} sourcedef]
-     if {$errCode != 0} {
-          dialog .noName "DTE Error" $sourcedef "" 0 OK
-          return
-     }
-
-	set err [expr [llength $sourcedef] == 0]
-	if {$err == 0} {
-		# entry exists
-		set fname "[lindex $sourcedef 8]/[lindex $sourcedef 2]"
-		set stype [lindex $sourcedef 1]
-		set schemafile [lindex $sourcedef 4]
-		set schema [lindex $sourcedef 3]
-	}
-
-    if {$err} {
-	set but [dialog .sourceNotExists "Undefined Data Stream" \
-		"Data stream \"$sname\" does not exist." \
-		"" 0 OK "Select Another"]
-	if {$but == 0} { return "" }
-	while {1} {
-	    set sname [selectStream]
-	    if {$sname == ""} { return "" }
-	    # must choose a single data stream
-	    if {[llength $sname] > 1} {
-		dialog .singleStream "Select Single Stream" \
-			"You have selected more than one data stream.\
-			Please select a single data stream." "" 0 Continue
-		continue
-	    }
-	    break
-	}
-	set sname [lindex $sname 0]
-    }
-
-#   # cache data to disk right now
-#   if {[isCached $sname -1 -1] == ""} {
-#	set but [dialog .cacheData "Caching Data" \
-#		"Cache \"$sname\" to disk now?" \
-#		"" 1 Yes No]
-#	if {$but == 1} {
-#	    dialog .notCached "Must Cache Data Stream" \
-#		    "Cannot visualize data without caching it to disk first." \
-#		    "" 0 OK
-#	    return ""
-#	}
-#   }
-#
-#   set fname [cacheData $sname -1 -1]
-#   if {$fname == ""} {
-#	return ""
-#   }
-
-    # Tell the C++ code whether this data is only a portion of a file.
-#    set fileSeg [lindex $sourceList($sname) 8]
-	set fileSeg [lindex $sourcedef 9]
-
-	# fname for DQL was SQL command ??;
-    DEVise dataSegment $sname $fname [lindex $fileSeg 0] [lindex $fileSeg 1]
-
-#   set stype [lindex $sourceList($sname) 0]
-#   if {$stype != "DQL" && $stype != "WWW" && $stype != "UNIXFILE"} {
-#       set stype "UNIXFILE"
-#   }
-
-	if { ![isDTEType $stype] } {
-		set stype "UNIXFILE"
-	}
-
-	return [list $sname $fname $stype $schemafile $schema]
 }
+
 ############################################################
 
 proc CacheMultipleDataSources {snames} {
@@ -633,133 +554,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set sname [string trimright $sname "}"]
         OpenDataSource $sname
     }
-    return
-
-
-    global sourceList derivedSourceList
-
-#    puts "In OpenAndDefineDataSources($derivedOnly, $snames)"
-
-    if {[llength $snames] > 1} {
-	dialog .singleStream "Select Single Stream" \
-                "You have selected more than one data stream.\
-                Only the first stream will be visualized." "" 0 Continue
-	set snames [lindex $snames 0]
-    }
-    set result ""
-
-    foreach sname $snames {
-
-       set sname [string trimleft $sname "{"]
-       set sname [string trimright $sname "}"]
-       set sourcedef [OpenDataSource $sname]
-
-        if {$sourcedef == ""} {
-            return ""
-        }
-
-        set sname [lindex $sourcedef 0]
-        set param [lindex $sourcedef 1]
-        set stype [lindex $sourcedef 2]
-	   set schemafile [lindex $sourcedef 3]
-	   set schema [lindex $sourcedef 4]
-      	
-        # see if data stream already open
-	set tdata_exist 0 
-        if {[lsearch [TdataSet] $sname] >= 0} {
-#	    set pos [string first : $sname ]
-#	    if {$pos > 0} { 
-#	    	set prefix [string range $sname 0 [expr $pos-1]]
-#	    	if {$prefix == "Hist" || $prefix == "HistDate" || $prefix == "GstatX" 
-#	        	|| $prefix == "GstatXDTE" || $prefix == "GstatXDate" 
-#			|| $prefix == "GstatY" || $prefix == "GstatYDate" } { 
-#			set tdata_exist 1 
-#	    	} 
-#	    }
-	    set tdata_exist 1
-        }
-
-# 	if {$derivedOnly} {
-
-# 	    set schema [lindex $derivedSourceList($sname) 2]
-# 	    set schemafile [lindex $derivedSourceList($sname) 3]
-#         } else {
-# #           set schema [lindex $sourceList($sname) 2]
-# #           set schemafile [lindex $sourceList($sname) 3]
-#         }
-
-        # load schema file if necessary - it is not sufficient to check if
-        # the physical schema by the same name has been loaded because the same
-        # physical schema may be shared by several logical schemas - the best
-        # way of checking is to see that we have no groups defined under the 
-        # logical schema name
-
-	if { [isDTEType $stype] } {
-		set schema $sname
-		set topgrps [DEVise getTopGroups $sname]
-        	if {[llength $topgrps] == 0} {
-			set result [DEVise dteImportFileType $sname]
-		}
-		if {$tdata_exist == 0} {
-			# do nothing
-		} else { 
-			set result [DEVise getTDataName $sname]
-		}
-
-   	} else {
-          	set topgrps [DEVise getTopGroups [file tail $schemafile]]
-		#puts "topgrps = $topgrps"
-        	if {[llength $topgrps] == 0} {
-
-            	    if {![file readable $schemafile]} {
-                	dialog .schemaError "Schema Not Found" \
-                          "Cannot open schema $schemafile" "" 0 OK
-                	return ""
-            	    }
-			# Send the file type UNIXFILE etc.. 
-			# followed by schemaFile Name
-			# followed by the dataFile name (param)
-			
-			# this call appears to parse the schema ??? DD
-			#
-            	    set result [DEVise importFileType $stype $schemafile $param]
-            
-		    if {$result == ""} {
-                	return ""
-                    }
-            	    if {$result != $schema} {
-                	puts "File $schemafile appears to contain schema $result,\
-                        	not $schema"
-                	set schema $result
-            	    }
-                }
-
-        statusWindow .info "Status" \
-                "Creating an index on \"$sname\".\n\n\This may take a while."
-        update
-
-	if {$tdata_exist == 0} {
-        	# ask DEVise to create tdata
-        	set result [DEVise create tdata $schema $sname $stype $param]
-	} else { 
-		set result [DEVise getTDataName $sname]
-	}
-
-        catch {destroy .info}
-
-        if {$result == ""} {
-            dialog .tdataError "Data Stream Error" \
-                    "Cannot open data stream $sname" "" 0 OK
-            return ""
-        }
-	}
-    }
-
-    if { [isDTEType $stype] } {
-	return [list [lindex $snames 0] $sname 1]
-    } else {
-	return [list $result [file tail $schemafile] 0]
-    }
+    return $sname
 }
 
 ############################################################

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/04/02 22:54:58  wenger
+  Improved safety of setAxisDisplay command.
+
   Revision 1.54  1999/04/02 16:49:05  wenger
   Added timestamp to error messages.
 
@@ -5597,6 +5600,33 @@ IMPLEMENT_COMMAND_BEGIN(setNiceAxes)
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setNiceAxes\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(switchTData)
+    // Arguments: <view name> <tdata name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		if (view->SwitchTData(argv[2]).IsComplete()) {
+       	  ReturnVal(API_ACK, "done");
+		  return 1;
+		} else {
+    	  ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+    	  return -1;
+		}
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in switchTData\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

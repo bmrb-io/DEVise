@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.182  1999/03/24 17:26:20  wenger
+#	Non-DTE data source code prevents adding duplicate data source names;
+#	added "nice axis" feature (sets axis limits to multiples of powers of
+#	10 if enabled); improved the propagation of DEVise errors back to the
+#	GUI; fixed bug 474 (problem with view home).
+#	
 #	Revision 1.181  1999/03/12 18:46:13  wenger
 #	Implemented duplicate symbol elimination.
 #	
@@ -2156,80 +2162,8 @@ proc DoSwitchTData {} {
 
     if {$tdata == ""} { return }
 
-    # Get mapping for the view
-    set map [lindex [DEVise getViewMappings $curView] 0]
-    
-    # Compare the schema of the tdata
-    set curMapClass [GetClass mapping $map]
-    # puts "curMapClass $curMapClass tdata $tdata"
-    set curMapParam [DEVise getCreateParam mapping $curMapClass $map]
-    set curViewTData [lindex $curMapParam 0]
-    
-    if {$curViewTData == $tdata} {
-	dialog .switchTDataErr "Same Data Stream" \
-		"You have selected the same data stream." "" 0 OK
-	return
-    }
-    
-    set viewTDataClass [GetClass tdata $curViewTData]
-    set tdataClass [GetClass tdata $tdata]
-    if {$viewTDataClass != $tdataClass} {
-	dialog .switchTDataErr "Incompatible Data Stream" \
-		"The selected data stream has type $tdataClass,\n\
-		incompatible with the tdata in the view." "" 0 OK
-	return
-    }
-    
-    # See if the new view is already created.
-    set view [GetView $tdata $curMapClass [GetClass view $curView]]
-    if {$view == ""} {
-	# need to create a new view
-	# First, see if we need to create a new GData
-	set mapName [GetMapping $tdata $curMapClass]
-	if {$mapName == ""} { 
-	    # create a new mapping.
-	    set mapName [UniqueName "$tdata#$curMapClass"]
-	    set newMapParam [linsert [lrange $curMapParam 2 end] 0 $tdata \
-		    $mapName]
-	    set cmd "DEVise create mapping $curMapClass $newMapParam"
-	    set result [eval $cmd]
-	    if {$result == ""} {
-		dialog .createError "Mapping Error" \
-			"Can't create mapping." "" 0 OK
-		return
-	    }
-	}
-
-	# Create a new view
-	set curViewClass [GetClass view $curView]
-	set curViewParam [DEVise getCreateParam view $curViewClass $curView]
-	set view [UniqueName $curView]
-	set newViewParam [linsert [lrange $curViewParam 1 end] 0 $view]
-	set cmd "DEVise create view $curViewClass $newViewParam"
-	set result [eval $cmd]
-	if {$result == ""} {
-	    dialog .createError "View Error" "Can't create view." "" 0 OK
-	    return
-	}
-
-	set viewLabelParams [DEVise getLabel $curView]
-	eval DEVise setLabel {$view} $viewLabelParams
-	set viewStatParams [DEVise getViewStatistics $curView]
-	eval DEVise setViewStatistics {$view} $viewStatParams
-	set stat [DEVise getAxisDisplay $curView X]
-	eval DEVise setAxisDisplay {$view} X $stat
-	set stat [DEVise getAxisDisplay $curView Y]
-	eval DEVise setAxisDisplay {$view} Y $stat
-	
-	DEVise insertMapping $view $mapName
-    } 
-
-    # select new view
-    if {$view != ""} {
-	DEVise replaceView $curView $view
-	set curView ""
-	ProcessViewSelected $view
-    }
+    DEVise switchTData $curView $tdata
+    return
 }
 
 ############################################################

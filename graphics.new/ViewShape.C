@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/03/03 18:22:07  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.10  1999/01/04 15:33:33  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -173,6 +178,22 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       reportErrNosys(errBuf);
       continue;
     }
+
+    // Figure out whether anything is specified for shapeAttr_3.
+    AttrList *attrList = map->GDataAttrList();
+    AttrInfo *info = attrList->Find("shapeAttr_3");
+    if (info && info->type == StringAttr) {
+      key = (int)GetShapeAttr3(gdata, map, offset);
+
+      char *tdName = NULL;
+      code = stringTable->Lookup(key, tdName);
+      if (code < 0) {
+        reportErrNosys("Can't find TData name in string table");
+      } else {
+        viewsym->SwitchTData(tdName);
+      }
+    }
+
 
     if (view->GetDisplayDataValues()) {
       win->SetForeground(view->GetForeground());

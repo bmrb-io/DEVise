@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.66  1999/04/05 21:09:47  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.65  1999/04/05 16:16:03  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -524,6 +529,9 @@ public:
       return NULL;
       }
   }
+
+  // Switch TDatas.
+  DevStatus SwitchTData(char *tdName);
 
   /* Return true if restoring pixmaps is allowed */
   virtual Boolean PixmapEnabled() {

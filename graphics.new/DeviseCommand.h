@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1999/03/24 17:26:12  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.29  1999/03/12 18:46:03  wenger
   Implemented duplicate symbol elimination.
 
@@ -1640,6 +1646,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setNiceAxes) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(switchTData) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

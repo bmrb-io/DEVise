@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/03/24 17:26:10  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.33  1999/03/12 18:46:01  wenger
   Implemented duplicate symbol elimination.
 
@@ -478,6 +484,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(niceifyAxes)
 	REGISTER_COMMAND(getNiceAxes)
 	REGISTER_COMMAND(setNiceAxes)
+	REGISTER_COMMAND(switchTData)
 }
 
 CmdContainer::~CmdContainer()

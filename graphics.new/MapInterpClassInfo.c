@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/03/01 23:09:10  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.19  1998/11/20 18:38:46  wenger
   Fixed bug 440 (crash caused by empty mapping command for X in combination
   with other errors).
@@ -97,6 +100,7 @@
 #include "MapInterpClassInfo.h"
 #include "Util.h"
 #include "Session.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -217,7 +221,23 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     cmd->shapeAttrCmd[i] = 0;
   
   tdataAlias = CopyString(argv[0]);
-  tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+
+  ClassInfo *info = ControlPanel::GetClassDir()->FindClassInfo(tdataAlias);
+  if (info) {
+    if (strcmp("tdata", info->CategoryName())) {
+    char errBuf[1024];
+      sprintf(errBuf,
+          "Name conflict: a non-TData object named <%s> already exists",
+	  tdataAlias);
+      reportErrNosys(errBuf);
+      return StatusFailed;
+    } else {
+      tdata = (TData *)info->GetInstance();
+    }
+  } else {
+    tdata = NULL;
+  }
+
   // If we don't already have this TData, try to create it.
   if (!tdata) {
     Session::CreateTData(tdataAlias);
