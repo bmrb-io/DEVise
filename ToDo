@@ -154,6 +154,26 @@ Make a script to easily do a release of Devise to the outside world.
 
 Handle images in data better (don't treat them as strings).  (rkw 8/29/96)
 
+Add "shape format" so that shapes can be described in many ways, eg
+a rectangle could be described by (lower-left & upper-right) or 
+(upper-right & height & width).  (kb 9/3/96)
+
+Alter record query to be aware of the shape's size, eg, you can click
+anywhere on a rectangle rather than its center.   (kb/jm 9/3/96)
+
+Rename WindowRep::FillRect* to DrawRect* since the rectangle drawn
+is not always filled.  (kb 9/3/96)
+
+Move LineWidth from ShapeAttr3 to its own Gdata spot, next to Pattern.
+Should LineWidth be absolute pixel size, or in user coords? 
+How should the LineWidth be handled for the Line symbol?
+The LineWidth might need to be stored in the PointStorage.
+Large line width for Line plots doesn't look right. (kb 9/4/96)
+
+Support for custom fill bitmaps and/or user defined fill palette (kb 9/5/96)
+
+Support for custom colors and/or user defined color palette (kb 9/5/96)
+
 
 COMPLETED
 ---------
