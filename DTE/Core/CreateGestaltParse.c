@@ -28,7 +28,7 @@ CreateGestaltParse::~CreateGestaltParse()
 Iterator* CreateGestaltParse::createExec()
 {
 	List<ConstantSelection*>* lconst = new List<ConstantSelection*>;
-	string s = new string();
+	string s;
 	char buf [100];
 	sprintf (buf, "%d", (int) (identTypePairs -> size ()));
 	s = s + "\"" + gestaltName -> fileName() + "\" Gestalt " + buf + " "; 
