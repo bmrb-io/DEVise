@@ -999,13 +999,18 @@ main(int argc, char *argv[])
 	exit(1);
     }
     
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
     Tk_CreateFileHandler(listenFd, TK_READABLE,
 			 ServiceConnectionRequest, (ClientData) listenFd);
-#else
+#  else
     Tcl_CreateFileHandler(Tcl_GetFile((void *) listenFd, TCL_UNIX_FD),
 			  TCL_READABLE,
 			  ServiceConnectionRequest, (ClientData) listenFd);
+#  endif
+#else
+    Tcl_CreateFileHandler(listenFd, TCL_READABLE,
+      ServiceConnectionRequest, (ClientData) listenFd);
 #endif
     
     fprintf(stderr, "-----------------------------------------------------\n");
@@ -1027,10 +1032,14 @@ main(int argc, char *argv[])
     //
     // Currently there is no way to reach this part of the code
     //
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
     Tk_DeleteFileHandler(listenFd);
-#else
+#  else
     Tcl_DeleteFileHandler(Tcl_GetFile((void *) listenFd, TCL_UNIX_FD));
+#  endif
+#else
+    Tcl_DeleteFileHandler(listenFd);
 #endif
     close(listenFd);
     ETk_ShutDown();

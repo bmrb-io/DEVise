@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/07/16 21:36:06  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.4  1999/06/25 15:58:20  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -109,7 +117,7 @@ DebugLog::Message(const char *msg)
     write(_fd, logBuf, strlen(logBuf));
     write(_fd, msg, strlen(msg));
 
-    if (tell(_fd) > _maxSize) {
+    if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
       if (lseek(_fd, 0, SEEK_SET) == -1) {
         fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
       }
@@ -141,7 +149,7 @@ DebugLog::Message(const char *msg1, int argc, const char * const *argv,
 
     write(_fd, msg2, strlen(msg2));
 
-    if (tell(_fd) > _maxSize) {
+    if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
       if (lseek(_fd, 0, SEEK_SET) == -1) {
         fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
       }
@@ -158,7 +166,7 @@ DebugLog::DefaultLog()
 {
   if (_defaultLog == NULL) {
     char filename[128];
-    sprintf(filename, "devise_debug_log_%ld", getpid());
+    sprintf(filename, "devise_debug_log_%ld", (long)getpid());
     _defaultLog = new DebugLog(filename);
   }
 
