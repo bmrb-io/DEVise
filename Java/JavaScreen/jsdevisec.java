@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.133  2001/11/28 21:56:21  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.132  2001/11/27 18:14:31  xuk
 // Return error message to JS, when there is no devised running on JSPoP side.
 //
@@ -612,9 +615,13 @@ public class jsdevisec extends Panel
             button = new Component[5];
             button[0] = restartButton;
             button[1] = stopButton;
-            button[2] = modeButton;
-            button[3] = logButton;
-            button[4] = helpButton;
+            button[2] = setButton;
+            button[3] = filterButton;
+            button[4] = modeButton;
+	    button[5] = collabButton;
+	    button[6] = playbackButton;
+            button[7] = logButton;
+            button[8] = helpButton;
         } else {
             button = new Component[12];
             button[0] = openButton;
