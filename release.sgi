@@ -17,14 +17,18 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/03/25 17:00:38  jussi
+#  Added transfer of *.ps and *.txt files.
+#
 #  Revision 1.1  1996/01/31 18:20:48  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-set files = "sgi/generic/generic lib/control.tk doc/Agreement \
-	doc/Copyright doc/Disclaimer"
+set files = "sgi/generic/generic sgi/generic/devised \
+	sgi/generic/devise sgi/generic/deviseb \
+	lib/control.tk doc/Agreement doc/Copyright doc/Disclaimer"
 set target = /usr/people/zoo/devise
 
 if ($#argv > 0) then
@@ -63,6 +67,12 @@ echo ""
 echo Releasing new copy of Devise executables...
 ls -l sgi/generic/generic $target/bin/devise
 cp -p sgi/generic/generic $target/bin/devise
+ls -l sgi/generic/devised $target/bin/devised
+cp -p sgi/generic/devised $target/bin/devised
+ls -l sgi/generic/devise $target/bin/devisec
+cp -p sgi/generic/devise $target/bin/devisec
+ls -l sgi/generic/deviseb $target/bin/deviseb
+cp -p sgi/generic/deviseb $target/bin/deviseb
 
 echo ""
 echo Releasing new Tcl/Tk code...
