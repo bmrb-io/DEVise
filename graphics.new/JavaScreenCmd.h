@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/09/01 20:13:19  wenger
+  Fixed problems with sometimes sending incorrect cursor coordinates to
+  JavaScreen and sending DrawCursor commands before windows are created;
+  removed extra braces on error messages to JavaScreen; changed from
+  sending x0, y0, x1, y1 to x0, y0, width, height in JAVAC_CreateWindow
+  commands.
+
   Revision 1.12  1998/08/25 20:56:32  wenger
   Implemented support for JavaScreen cursors (not yet fully tested).
 
@@ -183,7 +190,7 @@ class JavaScreenCmd
 		ControlCmdType	_status;
 		char			*errmsg;
 
-		static Boolean	_openingSession;
+		static Boolean	_postponeCursorCmds;
 
 		// JavaScreen->Server Requests
 		void GetSessionList();
@@ -216,6 +223,7 @@ class JavaScreenCmd
 		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);
 		void DrawAllCursors();
+		void DoCloseSession();
 
 	protected:
 		friend class View;

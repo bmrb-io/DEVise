@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/09/04 17:26:49  wenger
+  Added code for timing JavaScreenCmd::OpenSession() and other debug code.
+
   Revision 1.25  1998/09/01 21:48:27  wenger
   Another minor fix to cursor coords.
 
@@ -145,7 +148,7 @@
 
 //#define DEBUG
 
-Boolean JavaScreenCmd::_openingSession = false;
+Boolean JavaScreenCmd::_postponeCursorCmds = false;
 
 static char *_sessionDir = NULL;
 
@@ -241,15 +244,11 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	_openingSession = true;
+	_postponeCursorCmds = true;
 
 	// Close the current session, if any, to prevent possible name conflicts
 	// and other problems.
-    int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
-    int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
-    ControlPanel::Instance()->DestroySessionData();
-    DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
-    DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
+	DoCloseSession();
 
 	if (_sessionDir == NULL) {
 		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
@@ -385,7 +384,7 @@ JavaScreenCmd::OpenSession()
 	}
 	DevWindow::DoneIterator(winIndex);
 
-	_openingSession = false;
+	_postponeCursorCmds = false;
 
 	DrawAllCursors();
 
@@ -605,7 +604,7 @@ JavaScreenCmd::CloseCurrentSession()
 
 //TEMP -- check _argc
 
-	ControlPanel::Instance()->DestroySessionData();
+	DoCloseSession();
 
 	_status = DONE;
 	return;
@@ -719,7 +718,7 @@ JavaScreenCmd::ServerExit()
 #endif
 
 	printf("Server exiting on command from JavaScreen\n");
-	ControlPanel::Instance()->DestroySessionData();
+	DoCloseSession();
 	ControlPanel::Instance()->DoQuit();
 
 	_status = DONE;
@@ -783,6 +782,7 @@ JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 	return DONE;
 }
 
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
@@ -814,6 +814,7 @@ getFileSize(const char* filename)
 	return filesize;
 }
 
+//====================================================================
 JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
 	string& imageName, int viewCount, JavaViewInfo **views)
 {
@@ -830,6 +831,7 @@ JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
 	}
 }
 
+//====================================================================
 JavaWindowInfo::~JavaWindowInfo()
 {
 	delete []_viewList;
@@ -853,6 +855,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_UpdateImage"
 };
 
+//====================================================================
 JavaScreenCmd::~JavaScreenCmd()
 {
 #if defined(DEBUG)
@@ -865,12 +868,14 @@ JavaScreenCmd::~JavaScreenCmd()
 	delete []_argv;
 }
 
+//====================================================================
 char* 
 JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 {
 	return JavaScreenCmd::_controlCmdName[(int)ctype];
 }
 
+//====================================================================
 JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
@@ -926,6 +931,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
     }
 }
 
+//====================================================================
 int
 JavaScreenCmd::Run()
 {
@@ -983,6 +989,7 @@ JavaScreenCmd::Run()
 	return ControlCmd(_status);
 }
 
+//====================================================================
 int
 JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 {
@@ -1020,6 +1027,7 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 	return DONE;
 }
 
+//====================================================================
 void
 JavaScreenCmd::FillInt(char** argv, int& pos, const int x)
 {
@@ -1028,6 +1036,7 @@ JavaScreenCmd::FillInt(char** argv, int& pos, const int x)
 	argv[pos++] = strdup(buf);
 }
 
+//====================================================================
 void
 JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 {
@@ -1042,6 +1051,7 @@ JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 	argv[pos ++] = strdup(buf);
 }
 
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 {
@@ -1090,6 +1100,7 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 	return status;
 }
 
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendChangedWindows()
 {
@@ -1140,6 +1151,7 @@ JavaScreenCmd::SendChangedWindows()
 	return result;
 }
 
+//====================================================================
 JavaScreenCmd::ControlCmdType 
 JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 {
@@ -1147,6 +1159,7 @@ JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 	return DONE;
 }
 
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 {
@@ -1233,7 +1246,7 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 	return status;
 }
 
-
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 {
@@ -1251,6 +1264,7 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 	return DONE;
 }
 
+//====================================================================
 void
 JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 {
@@ -1259,7 +1273,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
       cursor->GetName());
 #endif
 
-	if (_openingSession) {
+	if (_postponeCursorCmds) {
 #if defined (DEBUG)
         printf("Cursor draw postponed until done opening session.\n");
 #endif
@@ -1406,6 +1420,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	delete [] argv[5];
 }
 
+//====================================================================
 void
 JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 {
@@ -1414,7 +1429,7 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
       cursor->GetName());
 #endif
 
-	if (_openingSession) {
+	if (_postponeCursorCmds) {
 #if defined (DEBUG)
         printf("Cursor erase postponed until done opening session.\n");
 #endif
@@ -1430,6 +1445,7 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
     jsc.ReturnVal(2, argv);
 }
 
+//====================================================================
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
@@ -1474,6 +1490,7 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 #endif
 }
 
+//====================================================================
 void
 JavaScreenCmd::CloseJavaConnection()
 {
@@ -1482,6 +1499,7 @@ JavaScreenCmd::CloseJavaConnection()
 	server->CloseClient();
 }
 
+//====================================================================
 void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
 	if (_sessionDir == NULL) {
@@ -1540,6 +1558,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	  (char **)args.GetArgs());	
 }
 
+//====================================================================
 void
 JavaScreenCmd::DrawAllCursors()
 {
@@ -1559,4 +1578,19 @@ JavaScreenCmd::DrawAllCursors()
 		}
 	}
 	DevCursor::DoneIterator(index);
+}
+
+//====================================================================
+void
+JavaScreenCmd::DoCloseSession()
+{
+	_postponeCursorCmds = true;
+
+    int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
+    int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
+    ControlPanel::Instance()->DestroySessionData();
+    DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
+    DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
+
+	_postponeCursorCmds = false;
 }
