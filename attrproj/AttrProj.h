@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/01 16:19:35  wenger
+  Initial version of code to project attributes now working.
+
   Revision 1.2  1996/04/30 15:31:52  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -35,10 +38,11 @@
 
 
 #include "DeviseTypes.h"
-#include "TData.h"
+#include "RecId.h"
 #include "VectorArray.h"
 #include "ProjectionList.h"
 
+class TData;
 
 class AttrProj
 {
@@ -49,6 +53,11 @@ public:
 	/* Get the first and last record ID for the data. */
 	DevStatus FirstRecId(RecId &recId);
 	DevStatus LastRecId(RecId &recId);
+
+	/* Get information about the number, cardinality, and size (in bytes)
+	 * of the records that will be returned when data is read. */
+	DevStatus GetDataSize(int &projCount, const int *&attrCounts,
+		const int *&projSizes);
 
 	/* Create a VectorArray properly set up to hold the attribute projections
 	 * specified in the attribute projection file. */
@@ -68,6 +77,8 @@ private:
 	int			_recBufSize;
 
 	ProjectionList	_projList;
+	int *		_attrCounts;	// For GetDataSize.
+	int *		_projSizes;		// For GetDataSize.
 };
 
 

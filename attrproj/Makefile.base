@@ -26,12 +26,11 @@ LIBOBJ = \
 	../graphics.new/CompositeParser.o \
 	../graphics.new/TData.o \
 	../tape/tapedrive.o \
-	$(BIRCH_DIR)/vector.o \
 	$(LOCALOBJ)
 
 LIB = AttrProjLib.o
 
-ALLOBJ = $(TESTOBJ) $(LIB)
+ALLOBJ = $(TESTOBJ) $(LIB) $(BIRCH_DIR)/vector.o
 
 all: aptest
 

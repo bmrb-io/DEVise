@@ -155,15 +155,17 @@ ApTDataBinaryInterp.o: ../graphics/Util.h /usr/include/stdlib.h
 ApTDataBinaryInterp.o: /usr/include/ctype.h
 AttrProj.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
-AttrProj.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-AttrProj.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-AttrProj.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
-AttrProj.o: VectorArray.h ApParseCat.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/ctype.h ../graphics/AttrList.h
-AttrProj.o: /usr/include/sys/time.h /usr/include/sys/types.h
-AttrProj.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-AttrProj.o: /usr/include/sys/select.h ../graphics/Config.h
+AttrProj.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
+AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+AttrProj.o: ../graphics/Exit.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj.o: /usr/include/sys/time.h /usr/include/ctype.h
+AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+AttrProj.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+AttrProj.o: ../graphics/Config.h
+ProjectionList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ProjectionList.o: ProjectionList.h ../graphics/DeviseTypes.h
 VectorArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h ../graphics/Util.h
 VectorArray.o: /usr/include/stdlib.h /usr/include/sys/time.h
@@ -172,7 +174,5 @@ aptest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 aptest.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 aptest.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 aptest.o: /usr/include/sys/time.h /usr/include/sys/time.h AttrProj.h
-aptest.o: ../graphics/DeviseTypes.h ../graphics.new/TData.h
-aptest.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-aptest.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-aptest.o: ../graphics/Exit.h VectorArray.h ApInit.h ../graphics/BufPolicy.h
+aptest.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h VectorArray.h
+aptest.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h

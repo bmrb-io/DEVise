@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/01 16:19:32  wenger
+  Initial version of code to project attributes now working.
+
   Revision 1.3  1996/04/30 18:53:32  wenger
   Attrproj now generates a single projection of all attributes of the
   real data.
@@ -60,15 +63,29 @@ static char *	srcFile = __FILE__;
  */
 AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 {
-	DO_DEBUG(printf("AttrProj::AttrProj()\n"));
+	DO_DEBUG(printf("AttrProj::AttrProj(%s, %s, %s)\n", schemaFile,
+		attrProjFile, dataFile));
 
 //TEMPTEMP  do something with return value
 	ParseCat(schemaFile, dataFile, _tDataP);
-
 	ParseProjection(attrProjFile);
 
 	_recBufSize = _tDataP->RecSize();
 	_recBuf = new char[_recBufSize];
+
+	_attrCounts = new int[_projList.GetProjCount()];
+	_projSizes = new int[_projList.GetProjCount()];
+
+	int		projNum = 0;
+	Projection *	projP = _projList.GetFirstProj();
+	while (projP != NULL)
+	{
+		_attrCounts[projNum] = projP->attrCount;
+		_projSizes[projNum] = projP->attrCount * sizeof(double);
+
+		projP = _projList.GetNextProj();
+		projNum++;
+	}
 }
 
 /*------------------------------------------------------------------------------
@@ -81,6 +98,8 @@ AttrProj::~AttrProj()
 
 	delete _tDataP;
 	delete [] _recBuf;
+	delete [] _attrCounts;
+	delete [] _projSizes;
 }
 
 /*------------------------------------------------------------------------------
@@ -110,6 +129,26 @@ AttrProj::LastRecId(RecId &recId)
 	DevStatus	result = StatusOk;
 
 	if (!_tDataP->LastID(recId)) result = StatusFailed;
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: AttrProj::GetDataSize
+ * Returns information about the size of data that will be produced when
+ * a record is read.
+ */
+DevStatus
+AttrProj::GetDataSize(int &projCount, const int *&attrCounts,
+	const int *&projSizes)
+{
+	DO_DEBUG(printf("AttrProj::GetDataSize()\n"));
+
+	DevStatus	result = StatusOk;
+
+	projCount = _projList.GetProjCount();
+	attrCounts = _attrCounts;
+	projSizes = _projSizes;
 
 	return result;
 }
@@ -305,9 +344,6 @@ AttrProj::ParseProjection(char *attrProjFile)
 
 			StripTrailingNewline(buf);
 			DO_DEBUG(printf("%s\n", buf));
-
-
-
 
 			Projection	projection;
 			projection.attrCount = atoi(strtok(buf, separators));

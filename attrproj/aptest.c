@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/01 16:19:38  wenger
+  Initial version of code to project attributes now working.
+
   Revision 1.4  1996/04/30 18:53:40  wenger
   Attrproj now generates a single projection of all attributes of the
   real data.
@@ -46,7 +49,7 @@
 
 /*------------------------------------------------------------------------------
  * function: main
- * description
+ * Main function for the aptest program.
  */
 int				/* description */
 main(
@@ -77,22 +80,47 @@ main(
 	/* Initialize Devise stuff for command-line arguments. */
 	Init::DoInit(argc, argv);
 
-	AttrProj		ap(schemaFile, projectionFile, dataFile);
+	AttrProj *		apP = new AttrProj(schemaFile, projectionFile, dataFile);
 	RecId			firstId;
 	RecId			lastId;
 	RecId			recId;
 	VectorArray *	vecArrayP;
 
-	ap.CreateRecordList(vecArrayP);
+	{
+		int			projCount;
+		const int *	attrCounts;
+		const int *	projSizes;
 
-	ap.FirstRecId(firstId);
-	ap.LastRecId(lastId);
+		apP->GetDataSize(projCount, attrCounts, projSizes);
+		printf("projection count = %d\n", projCount);
+
+		int			projNum;
+
+		printf("attribute counts = ");
+		for (projNum = 0; projNum < projCount; projNum++)
+		{
+			printf("%d ", attrCounts[projNum]);
+		}
+		printf("\n");
+
+		printf("projection sizes = ");
+		for (projNum = 0; projNum < projCount; projNum++)
+		{
+			printf("%d ", projSizes[projNum]);
+		}
+		printf("\n");
+	}
+
+	apP->CreateRecordList(vecArrayP);
+
+	apP->FirstRecId(firstId);
+	apP->LastRecId(lastId);
 
 	for (recId = firstId; recId <= lastId; recId++)
 	{
 		printf("\nRecord %d:\n", (int) recId);
 
-		ap.ReadRec(recId, *vecArrayP);
+		apP->ReadRec(recId, *vecArrayP);
 		int			vecCount = vecArrayP->GetVecCount();
 
 		int		vecNum;
