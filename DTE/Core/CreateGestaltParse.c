@@ -28,17 +28,17 @@ CreateGestaltParse::~CreateGestaltParse()
 Iterator* CreateGestaltParse::createExec()
 {
 	List<ConstantSelection*>* lconst = new List<ConstantSelection*>;
-	string* s = new string();
+	string s = new string();
 	char buf [100];
 	sprintf (buf, "%d", (int) (identTypePairs -> size ()));
-	*s = *s + "\"" + gestaltName -> fileName() + "\" Gestalt " + buf + " "; 
+	s = s + "\"" + gestaltName -> fileName() + "\" Gestalt " + buf + " "; 
 	
 	vector<IdentType*>::iterator i;
 	for(i = identTypePairs->begin(); i != identTypePairs->end(); ++i)
-	        *s = *s + *((*i)->first) + " " + *((*i)->second) + " ";
-	*s = *s + *fileName + " ;";
+	        s += *((*i)->first) + " " + *((*i)->second) + " ";
+	s = s + *fileName + " ;";
 
-	lconst -> append(new ConstantSelection("string", strdup(s -> c_str())));
+	lconst -> append(new ConstantSelection("string", strdup(s.c_str())));
 	InsertParse* ip = new InsertParse(gestaltName -> dirName().returnAsList(), lconst);
 	ip -> createExec();
 	return NULL;
