@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/15 20:31:41  jussi
+  Replaced call to MemMgr::Release() with MemMgr::Deallocate().
+
   Revision 1.5  1996/11/12 17:23:41  jussi
   Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
   to reflect the new terms (cache manager, memory manager) used in
@@ -43,7 +46,7 @@
 
 #include "SBufMgr.h"
 
-#if defined(THREAD_TASK) && defined(SOLARIS)
+#if defined(SBM_THREAD)
 #include <thread.h>
 #endif
 
@@ -77,6 +80,8 @@ void sleepms(int ms)
 
 void WriterP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
 {
+    streampos_t offset = 0;
+
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!cacheMgr) {
@@ -85,11 +90,12 @@ void WriterP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
                 exit(1);
             }
             assert(page);
-            if (task->Produce(page, pageSize) < 0) {
+            if (task->Produce(page, offset, pageSize) < 0) {
                 perror("Writer produce");
                 exit(1);
             }
-#if defined(THREAD_TASK) && defined(SOLARIS)
+            offset += pageSize;
+#if defined(SBM_THREAD) && defined(SOLARIS)
             // Circumvent stupid scheduling policy in Solaris thread package
             thr_yield();
 #endif
@@ -107,13 +113,7 @@ void WriterP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
     }
 
     if (!cacheMgr) {
-        char *page = 0;
-        if (MemMgr::Instance()->Allocate(MemMgr::Buffer, page) < 0) {
-            perror("Writer alloc");
-            exit(1);
-        }
-        assert(page);
-        if (task->Produce(page, 0) < 0) {
+        if (task->Produce(0, offset, 0) < 0) {
             perror("Writer produce");
             exit(1);
         }
@@ -134,20 +134,25 @@ void *Writer(void *arg)
 
 void ReaderP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
 {
+    streampos_t offset = 0;
+
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!cacheMgr) {
-            int bytes = task->Consume(page);
-            if (bytes < 0) {
+            streampos_t off;
+            iosize_t bytes;
+            int status = task->Consume(page, off, bytes);
+            if (status < 0) {
                 perror("Reader read");
                 exit(1);
             }
-            assert(page);
+            assert(page && offset == off && (int)bytes == pageSize);
+            offset += pageSize;
             if (MemMgr::Instance()->Deallocate(MemMgr::Buffer, page) < 0) {
                 perror("Reader dealloc");
                 exit(1);
             }
-#if defined(THREAD_TASK) && defined(SOLARIS)
+#if defined(SBM_THREAD) && defined(SOLARIS)
             // Circumvent stupid scheduling policy in Solaris thread package
             thr_yield();
 #endif
@@ -267,8 +272,8 @@ int main(int argc, char **argv)
 
     CacheMgr *cacheMgr = 0;
     if (!iotaskDirect) {
-        cacheMgr = new CacheMgrLRU(*memMgr, bufPages);
-        assert(cacheMgr);
+        cacheMgr = new CacheMgrLRU(*memMgr, bufPages, status);
+        assert(cacheMgr && status >= 0);
     }
 
     // test buffer manager
@@ -286,7 +291,7 @@ int main(int argc, char **argv)
 
     int pipeSize = poolSize / numFiles;
 
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     pthread_t child[numFiles];
 #endif
 
@@ -299,18 +304,18 @@ int main(int argc, char **argv)
             fprintf(stderr, "Could not create %s\n", files[i]);
             exit(1);
         }
-        task[i] = new FdIOTask(fileno(fp[i]));
-        assert(task[i]);
+        task[i] = new FdIOTask(status, fileno(fp[i]));
+        assert(task[i] && status >= 0);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
         }
         if (!cacheMgr) {
             if (readOnly) {
-                if (task[i]->ReadStream(fileSize * pageSize, pipeSize) < 0) {
-                    perror("Reader stream");
-                    exit(1);
-                }
+               if (task[i]->ReadStream(0, fileSize * pageSize, pipeSize) < 0) {
+                   perror("Reader stream");
+                   exit(1);
+               }
             } else {
                 if (task[i]->WriteStream(pipeSize) < 0) {
                     perror("Writer stream");
@@ -324,7 +329,7 @@ int main(int argc, char **argv)
         printf("\nAllocating pages...\n");
 
         for(f = 0; f < numFiles; f++) {
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
             pid_t child = fork();
             if (child < 0) {
                 perror("fork");
@@ -336,7 +341,7 @@ int main(int argc, char **argv)
                 exit(1);
             }
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
             FileReq *req = new FileReq;
             req->cacheMgr = cacheMgr;
             req->task = task[f];
@@ -352,7 +357,7 @@ int main(int argc, char **argv)
         printf("\nReading pages...\n");
 
         for(f = 0; f < numFiles; f++) {
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
             pid_t child = fork();
             if (child < 0) {
                 perror("fork");
@@ -364,7 +369,7 @@ int main(int argc, char **argv)
                 exit(1);
             }
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
             FileReq *req = new FileReq;
             req->cacheMgr = cacheMgr;
             req->task = task[f];
@@ -378,7 +383,7 @@ int main(int argc, char **argv)
     }
 
     for(f = 0; f < numFiles; f++) {
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
         int status;
         pid_t child = wait(&status);
         if (child < 0) {
@@ -392,7 +397,7 @@ int main(int argc, char **argv)
             printf("Child completed...\n");
         }
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
         (void)pthread_join(child[f], 0);
         printf("Child completed...\n");
 #endif

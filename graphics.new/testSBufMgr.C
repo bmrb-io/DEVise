@@ -19,7 +19,7 @@ int main()
     const int bufPages = poolSize - buffSize * numFiles;
 
     int i,j,f,iter;
-    unsigned long int len;
+    iosize_t len;
 
     char *page, *url;
     char cmp[pageSize];
@@ -92,8 +92,8 @@ int main()
     }
     CALL(memMgr->Deallocate(MemMgr::Cache, page, j));
 
-    cacheMgr = new CacheMgrLRU(*memMgr, memMgr->NumPages());
-    assert(cacheMgr);
+    cacheMgr = new CacheMgrLRU(*memMgr, memMgr->NumPages(), status);
+    assert(cacheMgr && status >= 0);
 
     // test buffer manager
 
@@ -102,7 +102,7 @@ int main()
     printf("\nTesting Web read data access...\n");
 
     url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
-    task[0] = new WebIOTask(url, true);
+    task[0] = new WebIOTask(status, url, true);
     assert(task[0]);
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
@@ -135,7 +135,7 @@ int main()
     printf("\nTesting Web write data access...\n");
 
     url = "http://cgi.cs.wisc.edu/scripts/jussi/echotest";
-    task[0] = new WebIOTask(url, false);
+    task[0] = new WebIOTask(status, url, false);
     assert(task[0]);
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
@@ -199,7 +199,7 @@ int main()
             fprintf(stderr, "Could not create %s\n", buf);
             exit(1);
         }
-        task[i] = new FdIOTask(fileno(fp[i]));
+        task[i] = new FdIOTask(status, fileno(fp[i]));
         assert(task[i]);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
@@ -348,7 +348,7 @@ int main()
             fprintf(stderr, "Could not create %s\n", buf);
             exit(1);
         }
-        task[i] = new FdIOTask(fileno(fp[i]));
+        task[i] = new FdIOTask(status, fileno(fp[i]));
         assert(task[i]);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
