@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.4  1996/10/10 16:45:26  wenger
+    Changed function names, etc., in ApParseCat.c to get rid of name clashes
+    when Donko puts transformation engine code into DEVise.
+
     Revision 1.3  1996/08/15 19:55:01  wenger
     Added 'pure' targets for attrproj and devread; fixed some dynamic
     memory problems.  Found some bugs while demo'ing for soils science
@@ -35,7 +39,7 @@
 
 #define _DevRead_c_
 
-//#define DEBUG
+#define DEBUG
 
 #include <stdio.h>
 #include <string.h>

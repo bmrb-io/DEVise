@@ -4,24 +4,60 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-DevRead.o: /usr/include/stdio.h /usr/include/string.h
-DevRead.o: /usr/include/sys/stdtypes.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DevRead.o: /usr/include/string.h DevRead.h ../graphics/DeviseTypes.h
 DevRead.o: /usr/include/values.h ../graphics/DevStatus.h
-DevRead.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+DevRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+DevRead.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+DevRead.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
-DevRead.o: /usr/include/netinet/in.h marshal.h ../graphics/Util.h
-DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
+DevRead.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DevRead.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DevRead.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+DevRead.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+DevRead.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+DevRead.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+DevRead.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DevRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DevRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DevRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DevRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h marshal.h
+DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 DevRead.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DevRead.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics/AttrList.h
-DevRead.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/DList.h
-DevRead.o: ../graphics.new/DataSeg.h
-drtest.o: /usr/include/stdio.h /usr/include/sys/types.h
-drtest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h DevRead.h
+DevRead.o: ../graphics/Config.h ../graphics/DList.h ../graphics.new/DataSeg.h
+drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+drtest.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+drtest.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+drtest.o: /usr/include/sys/time.h /usr/include/sys/time.h DevRead.h
 drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h
 drtest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
-drtest.o: /usr/include/assert.h /usr/include/netinet/in.h marshal.h
+drtest.o: /usr/include/assert.h /usr/include/netinet/in.h
+drtest.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+drtest.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+drtest.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+drtest.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+drtest.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+drtest.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+drtest.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+drtest.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+drtest.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+drtest.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+drtest.o: /usr/include/sys/byteorder.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-types.o: /usr/include/netinet/in.h
+types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+types.o: /usr/include/sys/time.h /usr/include/sys/time.h
+types.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+types.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+types.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+types.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+types.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+types.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+types.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+types.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+types.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+types.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+types.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
