@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2001/01/24 16:35:04  xuk
+// Add setCgi() method for set cgi mode.
+//
 // Revision 1.21  2001/01/22 17:08:12  wenger
 // Added DEViseCheckPop to actually connect to the jspop when checking
 // with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -462,23 +465,6 @@ public class DEViseClient
                 //close();
                 throw e;
             }
-        } else {
-            throw new YException("Invalid client");
-        }
-    }
-
-    private synchronized String receiveCmd() throws YException, InterruptedIOException
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID.intValue() +
-	      ").receiveCmd() in thread " + Thread.currentThread());
-	}
-
-        if (status != CLOSE) {
-            String cmd = socket.receiveCmd();
-            pop.pn("Received command from client(" + ID + " " + hostname +
-	      ") :  \"" + cmd + "\"");
-            return cmd;
         } else {
             throw new YException("Invalid client");
         }
