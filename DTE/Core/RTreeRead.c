@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/11/05 00:19:40  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.15  1997/08/25 15:28:11  donjerko
   Added minmax table
 
@@ -188,7 +191,7 @@ void RTreeReadExec::initialize(){
 
      db_mgr = new db_mgr_jussi(fileToContainRTree, cacheMgr);
 
-	typed_rtree_t* rtree = new typed_rtree_t(db_mgr);
+	rtree = new typed_rtree_t(db_mgr);
 
 	rtree->open(root);
 
@@ -249,7 +252,8 @@ Offset RTreeReadExec::getNextOffset(){
 	assert(cursor);
 	assert(ret_key);
 	void* dataVoidPtr;
-	if (rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
+	assert(rtree);
+	if(rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
 		assert(0);
 	}
 	dataContent = (char*) dataVoidPtr;
