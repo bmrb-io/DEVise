@@ -1,0 +1,10 @@
+depend:
+	makedepend -fMakefile.sgi -I../parser *.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+codegen.o: /usr/include/stdio.h /usr/include/string.h /usr/include/stdlib.h
+codegen.o: /usr/include/sgidefs.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h
+parse.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+parse.o: parse.h tokens.h /usr/include/malloc.h codegen.h

@@ -1,0 +1,101 @@
+depend:
+	makedepend -fMakefile.sgi \
+		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
+		*.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/types.h
+MapClassInfo.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+MapClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
+MapClassInfo.o: /usr/include/math.h ../graphics/DeviseTypes.h
+MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
+MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
+MapClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapClassInfo.o: ../graphics.new/Temp.h ../graphics/Control.h
+MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
+MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Action.h
+MapClassInfo.o: ../graphics/Util.h /usr/include/assert.h
+MapClassInfo.o: /usr/include/stdlib.h /usr/include/string.h
+MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
+MapClassInfo.o: ../graphics.new/DispQueryProc.h
+MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
+MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
+MapClassInfo.o: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
+MapClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
+MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
+MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
+MapClassInfo.o: ../graphics.new/ViewStats.h MapClassInfo.h
+MapClassInfo.o: ../graphics/ClassDir.h Soil.h AmsMap.h
+ams.o: /usr/include/sys/types.h /usr/include/sgidefs.h
+ams.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+ams.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/stdio.h
+ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h ../graphics/DList.h
+ams.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+ams.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: /usr/include/math.h ../graphics/ColorMgr.h ../graphics/Control.h
+ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
+ams.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ams.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+ams.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+ams.o: ../tape/SortedTable.h /usr/include/assert.h ../graphics.new/GData.h
+ams.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+ams.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+ams.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
+ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
+ams.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
+ams.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
+ams.o: /usr/include/sys/signal.h /usr/include/sys/ioctl.h
+ams.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+ams.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+ams.o: /usr/include/sys/ttydev.h /usr/include/sys/wait.h
+ams.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+ams.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
+ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
+amsStat.o: /usr/include/stdio.h /usr/include/sys/types.h
+amsStat.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+amsStat.o: /usr/include/sys/select.h /usr/include/sys/stat.h
+amsStat.o: /usr/include/sys/time.h /usr/include/fcntl.h
+amsStat.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+amsStat.o: /usr/include/sys/uio.h /usr/include/unistd.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
+amsStat.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat.o: /usr/include/math.h
+extendAms.o: /usr/include/stdio.h /usr/include/sys/types.h
+extendAms.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+extendAms.o: /usr/include/sys/select.h /usr/include/sys/stat.h
+extendAms.o: /usr/include/sys/time.h /usr/include/fcntl.h
+extendAms.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+extendAms.o: /usr/include/sys/uio.h /usr/include/unistd.h
+extendAms.o: ../graphics.new/ams.h /usr/include/math.h
+testdir.o: /usr/include/stdio.h /usr/include/sys/types.h
+testdir.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+testdir.o: /usr/include/sys/select.h /usr/include/sys/dir.h
