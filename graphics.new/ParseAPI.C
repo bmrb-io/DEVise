@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/15 16:02:37  wenger
+  Restored 'parseSchema' command (got lost in one of the recent changes);
+  added 'Bugs' file to keep track of bugs in a central area.
+
   Revision 1.5  1996/05/13 21:57:53  jussi
   Added setBatchMode command.
 
@@ -81,7 +85,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   if (!strcmp(argv[0], "createInterp")) {
     /* This command is supported for backward compatibility only */
     MapInterpClassInfo *interp = control->GetInterpProto();
-    ClassInfo *classInfo = interp->CreateWithParams(argc-1, &argv[1]);
+    ClassInfo *classInfo = interp->CreateWithParams(argc - 1, &argv[1]);
     if (!classInfo) {
       control->ReturnVal(API_NAK, "Cannot create mapping");
       return -1;
@@ -118,7 +122,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
     /* Number of views */
     int nview = argc - 4;
-    ViewGraph **vlist = (ViewGraph **)malloc(nview*sizeof(ViewGraph *));
+    ViewGraph **vlist = (ViewGraph **)malloc(nview * sizeof(ViewGraph *));
     for(int i = 0; i < nview; i++) {
       vlist[i] = (ViewGraph *)classDir->FindInstance(argv[5 + i]);
       if (!vlist[i]) {
@@ -144,20 +148,26 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
   if (!strcmp(argv[0], "createMappingClass")) {
     MapInterpClassInfo *interp = control->GetInterpProto();
-    ClassInfo *classInfo = interp->CreateWithParams(argc-1,&argv[1]);
+    ClassInfo *classInfo = interp->CreateWithParams(argc - 1, &argv[1]);
     if (!classInfo) {
       control->ReturnVal(API_NAK, "Cannot create mapping class");
       return -1;
     }
     ControlPanel::RegisterClass(classInfo, true);
-    control->ReturnVal(API_ACK,classInfo->ClassName());
+    control->ReturnVal(API_ACK, classInfo->ClassName());
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "setDefault")) {
+    classDir->SetDefault(argv[1], argv[2], argc - 3, &argv[3]);
+    control->ReturnVal(API_ACK, "done");
     return 1;
   }
 
   if (argc == 1) {
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
-      control->ReturnVal(API_ACK,DateString(tm));
+      control->ReturnVal(API_ACK, DateString(tm));
       return 1;
     }
     if (!strcmp(argv[0], "printDispatcher")) {
@@ -179,9 +189,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
+    if (!strcmp(argv[0], "sync")) {
+      control->SetSyncNotify();
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 2) {
@@ -203,13 +215,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
     if (!strcmp(argv[0], "createMappingClass")) {
       MapInterpClassInfo *interp = control->GetInterpProto();
-      ClassInfo *classInfo = interp->CreateWithParams(argc-1,&argv[1]);
+      ClassInfo *classInfo = interp->CreateWithParams(1, &argv[1]);
       if (!classInfo) {
 	control->ReturnVal(API_NAK, "Cannot create mapping class");
 	return -1;
       }
       ControlPanel::RegisterClass(classInfo, true);
-      control->ReturnVal(API_ACK,classInfo->ClassName());
+      control->ReturnVal(API_ACK, classInfo->ClassName());
       return 1;
     }
     if (!strcmp(argv[0], "readLine")) {
@@ -218,7 +230,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       int len = strlen(result);
       if (len > 0 && result[len - 1] == '\n')
 	result[len - 1] = '\0';
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "close")) {
@@ -234,7 +246,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       sprintf(result, "%d", (vg->Mapped() ? 1 : 0 ));
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getLabel")) {
@@ -249,7 +261,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       vg->GetLabelParam(occupyTop, extent, name);
       sprintf(result, "%d %d {%s}", (occupyTop ? 1 : 0), extent,
 	      (name ? name : ""));
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "tdataFileName")) {
@@ -258,7 +270,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find tdata");
 	return -1;
       }
-      control->ReturnVal(API_ACK,tdata->GetName());
+      control->ReturnVal(API_ACK, tdata->GetName());
       return 1;
     }
     if (!strcmp(argv[0], "getViewWin")) {
@@ -271,7 +283,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       if (!viewWin)
 	control->ReturnVal(API_ACK, "");
       else
-	control->ReturnVal(API_ACK,viewWin->GetName());
+	control->ReturnVal(API_ACK, viewWin->GetName());
       return 1;
     }
     if (!strcmp(argv[0], "clearViewHistory")) {
@@ -312,7 +324,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       TData *tdata = map->GetTData();
-      control->ReturnVal(API_ACK,classDir->FindInstanceName(tdata));
+      control->ReturnVal(API_ACK, classDir->FindInstanceName(tdata));
       return 1;
     }
     if (!strcmp(argv[0], "destroy")) {
@@ -337,7 +349,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result, "1");
       else
 	strcpy(result, "0");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "isInterpreted")) {
@@ -345,7 +357,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       strcpy(result, "0");
       if (isInterp && *isInterp)
 	strcpy(result, "1");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getPixelWidth")) {
@@ -355,12 +367,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       sprintf(result, "%d", map->GetPixelWidth());
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getTopGroups")) {
       control->GetGroupDir()->top_level_groups(result, argv[1]);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getWindowLayout")) {
@@ -373,7 +385,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       Boolean stacked;
       layout->GetPreferredLayout(v, h, stacked);
       sprintf(result, "%d %d %d", v, h, (stacked ? 1 : 0));
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getSchema")) {
@@ -397,7 +409,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       args[0] = new char[25];
       strcpy(args[0], "recId int 1 0 0 0 0");
       
-      for(int i = 0; i < numAttrs; i++) {
+      int i;
+      for(i = 0; i < numAttrs; i++) {
 	char attrBuf[160];
 	AttrInfo *info = attrList->Get(i);
 #ifdef DEBUG
@@ -448,7 +461,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(args[i + 1], attrBuf);
       }
       control->ReturnVal(numAttrs + 1, args) ;
-      for(int i = 0; i < numAttrs + 1; i++)
+      for(i = 0; i < numAttrs + 1; i++)
 	delete args[i];
       delete args;
       return 1;
@@ -465,7 +478,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result , "");
       else
 	strcpy(result,action->GetName());
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getLinkFlag")) {
@@ -475,7 +488,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       sprintf(result, "%d",link->GetFlag());
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "importFileType")) {
@@ -494,7 +507,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result, "1");
       else
 	strcpy(result, "0");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getInstParam")) {
@@ -537,7 +550,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result, "0");
       else
 	strcpy(result, "1");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "removeView")) {
@@ -568,7 +581,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcat(result, "} ");
       }
       view->DoneMappingIterator(index);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "refreshView")) {
@@ -595,7 +608,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcat(result, "} ");
       }
       win->DoneIterator(index);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getLinkViews")) {
@@ -612,7 +625,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcat(result, "} ");
       }
       link->DoneIterator(index);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getCurVisualFilter")) {
@@ -624,7 +637,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       VisualFilter *filter = view->GetVisualFilter();
       sprintf(result, "%.2f %.2f %.2f %.2f", filter->xLow, filter->yLow,
 	      filter->xHigh, filter->yHigh);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getVisualFilters")) {
@@ -660,7 +673,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 		xHighBuf, yHighBuf, filter.marked);
 	strcat(result, buf);
       }
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getViewStatistics")) {
@@ -670,7 +683,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       /* Return status of statistics display */
-      control->ReturnVal(API_ACK,vg->GetDisplayStats());
+      control->ReturnVal(API_ACK, vg->GetDisplayStats());
       return 1;
     }
     if (!strcmp(argv[0], "getViewDimensions")) {
@@ -681,7 +694,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Return status of statistics display */
       sprintf(result, "%d", vg->GetNumDimensions());
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "getViewOverrideColor")) {
@@ -694,7 +707,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       Color color = view->GetOverrideColor(active);
       sprintf(result, "%d %d", (active ? 1 : 0),
 	      (int)color);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "raiseView")) {
@@ -717,9 +730,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
   }
 
   if (argc == 3) {
@@ -751,7 +761,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       sprintf(result, "%ld", (long)file);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "setViewStatistics")) {
@@ -762,7 +772,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Turn on/off display of statistics */
       vg->SetDisplayStats(argv[2]);
-      control->ReturnVal(API_ACK, "API_ACK");
+      control->ReturnVal(API_ACK, "done");
       return 1;
     }
     if (!strcmp(argv[0], "setViewDimensions")) {
@@ -814,19 +824,19 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result , "1");
       else
 	strcpy(result , "0");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "replaceView")) {
       View *view1 = (View *)classDir->FindInstance(argv[1]);
       View *view2 = (View *)classDir->FindInstance(argv[2]);
       if (!view1 || !view2) {
-	control->ReturnVal(API_NAK, "TkControl:Cannot find view for replaceView");
+	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
       }
       ViewWin *win = view1->GetParent();
       if (!win) {
-	control->ReturnVal(API_NAK, "TkControl:Cannot find window for replaceView");
+	control->ReturnVal(API_NAK, "Cannot find window");
 	return -1;
       }
       win->Replace(view1, view2);
@@ -892,7 +902,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       if (!label)
 	control->ReturnVal(API_ACK, "");
       else
-	control->ReturnVal(API_ACK,label->GetName());
+	control->ReturnVal(API_ACK, label->GetName());
       return 1;
     }
     if (!strcmp(argv[0], "setAction")) {
@@ -932,12 +942,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "get")) {
-      classDir->InstanceNames(argv[1],argv[2], numArgs, args);
+      classDir->InstanceNames(argv[1], argv[2], numArgs, args);
       control->ReturnVal(numArgs, args);
       return 1;
     }
     if (!strcmp(argv[0], "getparam")) {
-      classDir->GetParams(argv[1],argv[2],numArgs, args);
+      classDir->GetParams(argv[1], argv[2], numArgs, args);
       control->ReturnVal(numArgs, args);
       return 1;
     }
@@ -967,7 +977,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find mapping");
 	return -1;
       }
-      control->ReturnVal(API_ACK,view->GetMappingLegend(map));
+      control->ReturnVal(API_ACK, view->GetMappingLegend(map));
       return 1;
     }
     if (!strcmp(argv[0], "insertLink")) {
@@ -1000,7 +1010,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcpy(result, "1");
       else
 	strcpy(result , "0");
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "unlinkView")) {
@@ -1049,9 +1059,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
   }
 
   if (argc == 4) {
@@ -1085,16 +1092,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-    if (!strcmp(argv[0], "setDefault")) {
-      classDir->SetDefault(argv[1],argv[2],argc-3,&argv[3]);
-      control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
     if (!strcmp(argv[0], "swapView")) {
-      if (argc != 4) {
-	control->ReturnVal(API_NAK, "Invalid number of parameters");
-	return -1;
-      }
       ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[1]);
       View *view1 = (View *)classDir->FindInstance(argv[2]);
       View *view2 = (View *)classDir->FindInstance(argv[3]);
@@ -1131,7 +1129,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
     if (!strcmp(argv[0], "getItems")) {
       control->GetGroupDir()->get_items(result, argv[1], argv[2], argv[3]);
-      control->ReturnVal(API_ACK,result);
+      control->ReturnVal(API_ACK, result);
       return 1;
     }
     if (!strcmp(argv[0], "setWindowLayout")) {
@@ -1185,20 +1183,15 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-	if (!strcmp(argv[0], "parseSchema"))
-	{
-	  char *name = ParseSchema(argv[1], argv[2], argv[3]);
-	  if (name == NULL)
-	  {
-		control->ReturnVal(API_NAK, "Cannot parse schema(s)");
-		return -1;
-	  }
+    if (!strcmp(argv[0], "parseSchema")) {
+      char *name = ParseSchema(argv[1], argv[2], argv[3]);
+      if (!name) {
+	control->ReturnVal(API_NAK, "Cannot parse schema(s)");
+	return -1;
+      }
       control->ReturnVal(API_ACK, name);
       return 1;
-	}
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
+    }
   }
 
   if (argc == 5) {
@@ -1223,9 +1216,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
   }
 
   if (argc == 6) {
@@ -1237,7 +1227,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       VisualFilter filter;
       view->GetVisualFilter(filter);
-      if (!ParseFloatDate(argv[2],filter.xLow) ||
+      if (!ParseFloatDate(argv[2], filter.xLow) ||
 	  !ParseFloatDate(argv[3], filter.yLow) ||
 	  !ParseFloatDate(argv[4], filter.xHigh) ||
 	  !ParseFloatDate(argv[5], filter.yHigh)) {
@@ -1248,9 +1238,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
   }
   
   if (argc == 7) {
@@ -1270,12 +1257,9 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-
-    control->ReturnVal(API_NAK, "wrong args");
-    return -1;
   }
 
-  control->ReturnVal(API_NAK, "wrong args");
+  control->ReturnVal(API_NAK, "Unrecognized command");
   return -1;
 }
 
