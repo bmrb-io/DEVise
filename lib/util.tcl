@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/01/26 23:22:46  jussi
+#  Added ExecuteScript procedure.
+#
 #  Revision 1.8  1996/01/23 20:51:42  jussi
 #  Moved general utility functions from control.tk.
 #
@@ -71,6 +74,7 @@ proc UniqueName {name} {
 
 # Return line width of string. New lines are accounted for.
 # For example, "abc\ndefg" has a line width of 4
+
 proc LineWidth { txt } {
     set strLen [string length $txt]
     set width 0
@@ -95,6 +99,7 @@ proc LineWidth { txt } {
 
 # Return # of lines in string 
 # For example, "abc\ndefg" has 2 lines
+
 proc LineHeight { txt } {
     set strLen [string length $txt]
     set height 0
@@ -110,6 +115,7 @@ proc LineHeight { txt } {
 ############################################################
 
 # eliminate string attributes from schema
+
 proc ElimStringAttr { attrs } {
     set newAttrs ""
     foreach attr $attrs {
@@ -124,6 +130,7 @@ proc ElimStringAttr { attrs } {
 ############################################################
 
 # drop attribute types and sorted flags
+
 proc DropAttrTypes { attrs } {
     set newAttrs ""
     foreach attr $attrs {
@@ -158,6 +165,7 @@ proc findNameValue {list key} {
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
+
 proc DictInsert { dict name val }  {
     set element [list $name $val]
     return [lappend dict $element]
@@ -166,6 +174,7 @@ proc DictInsert { dict name val }  {
 ############################################################
 
 # lookup val based on name
+
 proc DictLookup { dict name } {
     foreach element $dict {
 	if {$name == [lindex $element 0]} {
@@ -178,6 +187,7 @@ proc DictLookup { dict name } {
 ############################################################
 
 # Get all instances for a category
+
 proc CategoryInstances {category } {
     set inst {}
     set classes [ DEVise get $category ]
@@ -190,6 +200,7 @@ proc CategoryInstances {category } {
 ############################################################
 
 # Get the class of an instance belonging to category
+
 proc GetClass { category instance } {
     set classes [DEVise get $category ]
     foreach c $classes {
@@ -207,6 +218,7 @@ proc GetClass { category instance } {
 
 # All instances of tdata that we have
 # Form: {tdatafilebasename1 tdatafilebasename2 ...}
+
 proc TdataSet {} {
     return [CategoryInstances "tdata" ]
 }
@@ -215,6 +227,7 @@ proc TdataSet {} {
 
 # All instances of GData
 # Form: {gdataname1 gdataname2 ...}
+
 proc GdataSet {} {
     return [ CategoryInstances "mapping" ]
 }
@@ -222,6 +235,7 @@ proc GdataSet {} {
 ############################################################
 
 # All interpreted GData
+
 proc InterpretedGData {} {
     set gSet [ GdataSet ]
     set result ""
@@ -236,13 +250,15 @@ proc InterpretedGData {} {
 ############################################################
 
 # list of all views
+
 proc ViewSet {} {
     return [ CategoryInstances "view" ]
 }
 
 ############################################################
 
-#list of all cursors
+# list of all cursors
+
 proc CursorSet {} {
     return [ CategoryInstances "cursor" ]
 }
@@ -250,6 +266,7 @@ proc CursorSet {} {
 ############################################################
 
 # list of all links
+
 proc LinkSet {} { 
     return [ CategoryInstances "link" ]
 }
@@ -257,6 +274,7 @@ proc LinkSet {} {
 ############################################################
 
 # list of all windows
+
 proc WinSet {} {
     return [ CategoryInstances "window" ]
 }
@@ -264,6 +282,7 @@ proc WinSet {} {
 ############################################################
 
 # list of all axis 
+
 proc AxisSet {} {
     return [ CategoryInstances "axisLabel" ]
 }
@@ -271,6 +290,7 @@ proc AxisSet {} {
 ############################################################
 
 # list of all actions
+
 proc ActionSet {} {
     return [ CategoryInstances "action" ]
 }
@@ -278,6 +298,7 @@ proc ActionSet {} {
 ############################################################
 
 # Return name of schema for a given tdata
+
 proc GetSchemaName {name} {
     foreach schema [DEVise get tdata] {
 	foreach tdata [DEVise get tdata $schema] {
@@ -296,6 +317,7 @@ proc GetSchemaName {name} {
 ############################################################
 
 # Print the name of all instances in category
+
 proc PrintCategory { category } {
     set classes [ DEVise get $category ]
     puts "classes $classes"
@@ -317,6 +339,65 @@ proc DoExit {} {
     if { $answer == 1 } {
 	DEVise exit
     }
+}
+
+############################################################
+
+proc getColor {varname} {
+    global $varname DEViseColors
+
+    # see if .getColor window already exists; if so, just return
+    set err [catch {wm state .getColor}]
+    if {!$err} { wm deiconify .getColor; return }
+
+    toplevel .getColor
+    wm title .getColor "Choose Color"
+    wm geometry .getColor +100+100
+
+    frame .getColor.top -relief groove -borderwidth 2
+    frame .getColor.bot
+    pack .getColor.top -side top -fill both -expand 1
+    pack .getColor.bot -side top -pady 5m -fill x
+    frame .getColor.bot.but
+    pack .getColor.bot.but -side top
+
+    set row -1
+    set col -1
+    set maxcol 8
+    set size 5
+
+    foreach val $DEViseColors {
+	set color [lindex $val 1]
+	if {$col < 0} {
+	    incr row
+	    set col 0
+	    frame .getColor.top.row$row
+	    pack .getColor.top.row$row -side top -fill x -expand 1
+	}
+	button .getColor.top.row$row.col$col -background $color \
+		-activebackground $color -width $size \
+		-command "set $varname $color; destroy .getColor"
+	pack .getColor.top.row$row.col$col -side left -fill x -expand 1
+	incr col
+	if {$col >= $maxcol} {
+	    set col -1
+	}
+    }
+    
+    # Add empty frames at end of last row
+    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+	button .getColor.top.row$row.col$col -relief flat -width $size \
+		-state disabled
+	pack .getColor.top.row$row.col$col -side left -fill x -expand 1
+    }
+
+    button .getColor.bot.but.cancel -text Cancel -width 10 \
+	    -command "destroy .getColor"
+    pack .getColor.bot.but.cancel -side left
+
+    tkwait visibility .getColor
+    grab set .getColor
+    tkwait window .getColor
 }
 
 ############################################################
