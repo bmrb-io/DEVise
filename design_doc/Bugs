@@ -1440,6 +1440,14 @@ Num Date        Status  Description
 			    whitespace = '  ' ;
 			(mjh/rkw)
 
+380 07/15/98	OPEN	'x', 'X', etc., keys force a redraw on 2-dimensional
+			views even though they don't actually change anything.
+			(rkw)
+
+381 07/16/98	OPEN	It's possible to set the same view to be the master
+			*and* slave of the same set link; if you do this,
+			and then zoom in that view, DEVise crashes. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
