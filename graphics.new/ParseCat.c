@@ -1,7 +1,26 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/13 02:07:09  ravim
+  Groups are identified not by the physical schema name but by the logical
+  schema file name - which is guaranteed to be unique since they are all files
+  in the same directory.
+
   Revision 1.6  1995/12/12 03:42:45  ravim
   Fixed a bug.
 
@@ -20,6 +39,7 @@
 */
 
 #include <stdio.h>
+
 #include "ParseCat.h"
 #include "TDataAsciiInterp.h"
 #include "AttrList.h"
@@ -92,8 +112,12 @@ GenClassInfo *FindGenClass(char *source){
 		if (strcmp(_genClasses[i].source,source) == 0)
 			return _genClasses[i].genInfo;
 	}
+
 	fprintf(stderr,"Can't find TData generator for input sourrce %s\n",source);
 	Exit::DoExit(1);
+
+	// keep compiler happy
+	return 0;
 }
 
 
@@ -134,7 +158,6 @@ static char separators[MAX_SEPARATORS];
 static int numSeparators;
 
 Boolean ParseSeparator(int numArgs, char **args){
-	Boolean hasSeparator = false;
 	if (numArgs >= MAX_SEPARATORS){
 		fprintf(stderr,"ParseCat: too many separators, max = %d\n",
 			MAX_SEPARATORS);
@@ -153,7 +176,6 @@ Boolean ParseSeparator(int numArgs, char **args){
 static char whitespaces[MAX_SEPARATORS];
 static int numWhitespace;
 Boolean ParseWhiteSpace(int numArgs, char **args){
-	Boolean hasWhiteSpace = false;
 	if (numArgs >= MAX_SEPARATORS){
 		fprintf(stderr,"ParseCat: too many separators, max = %d\n",
 			MAX_SEPARATORS);
@@ -167,11 +189,6 @@ Boolean ParseWhiteSpace(int numArgs, char **args){
 	numWhitespace = numArgs-1;
 	return true;
 }
-
-
-const int NumDefaultSeparator = 2;
-static char defaultSeparator[] = { ' ', '\t' };
-
 
 char *ParseCat(char *catFile) 
 {
@@ -202,28 +219,27 @@ char *ParseCat(char *catFile)
   return ParseCatLogical(catFile, sname);
 }
 
-
 char *ParseCatOriginal(char *catFile){
 	FILE *file= NULL;
 	Boolean hasSource = false;
-	char *source; /* source of data. Which interpreter we use depends
-					on this */
+	char *source = 0; /* source of data. Which interpreter we use depends
+			     on this */
 
 	char buf[LINESIZE];
 	Boolean hasFileType = false;
 	Boolean hasSeparator = false;
 	Boolean hasWhitespace = false;
 	Boolean hasComment = false;
-	Boolean mergeSeparator = true; /* true if separators should be merged */
+
 	Boolean isAscii = false;
 	Boolean GLoad = true;
-	char *fileType;
+	char *fileType = 0;
 	int numArgs;
 	char **args;
 	int recSize = 0;
 	int attrLength;
 	AttrType attrType;
-	char *commentString;
+	char *commentString = 0;
 	Group *currgrp = NULL;
 	attrs = NULL;
 	numAttrs = 0;
@@ -251,7 +267,6 @@ char *ParseCatOriginal(char *catFile){
 		Parse(buf,numArgs, args);
 		if (numArgs == 0)
 			continue;
-		int ind;
 
 		/*
 		printf("parse: ");
@@ -421,7 +436,7 @@ char *ParseCatOriginal(char *catFile){
 				attrs = new AttrList(fileType);
 			}
 
-			int roundAmount;
+			int roundAmount = 0;
 			switch(attrType){
 				case FloatAttr:
 					roundAmount = sizeof(float);
@@ -603,23 +618,23 @@ error:
 char *ParseCatPhysical(char *catFile){
 	FILE *file= NULL;
 	Boolean hasSource = false;
-	char *source; /* source of data. Which interpreter we use depends
-					on this */
+	char *source = 0; /* source of data. Which interpreter we use depends
+			     on this */
 
 	char buf[LINESIZE];
 	Boolean hasFileType = false;
 	Boolean hasSeparator = false;
 	Boolean hasWhitespace = false;
 	Boolean hasComment = false;
-	Boolean mergeSeparator = true; /* true if separators should be merged */
+
 	Boolean isAscii = false;
-	char *fileType;
+	char *fileType = 0;
 	int numArgs;
 	char **args;
 	int recSize = 0;
 	int attrLength;
 	AttrType attrType;
-	char *commentString;
+	char *commentString = 0;
 	attrs = NULL;
 	numAttrs = 0;
 
@@ -646,7 +661,6 @@ char *ParseCatPhysical(char *catFile){
 		Parse(buf,numArgs, args);
 		if (numArgs == 0)
 			continue;
-		int ind;
 
 		/*
 		printf("parse: ");
@@ -805,7 +819,7 @@ char *ParseCatPhysical(char *catFile){
 				attrs = new AttrList(fileType);
 			}
 
-			int roundAmount;
+			int roundAmount = 0;
 			switch(attrType){
 				case FloatAttr:
 					roundAmount = sizeof(float);
@@ -952,14 +966,12 @@ char *ParseCatLogical(char *catFile, char *sname)
   int numArgs;
   char **args;
 
-
   file = fopen(catFile, "r");
   if (file == NULL){
       fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
       goto error;
     }
   _line = 0;
-
   
   /* read the first line first */
   fgets(buf, LINESIZE, file);
@@ -980,11 +992,6 @@ char *ParseCatLogical(char *catFile, char *sname)
     GLoad = true;
   }
  
-
-
-
-
-
   while (fgets(buf,LINESIZE, file) != NULL) {
       int len = strlen(buf);
       if (len > 0 && buf[len-1] == '\n')
@@ -999,8 +1006,7 @@ char *ParseCatLogical(char *catFile, char *sname)
       Parse(buf,numArgs, args);
       if (numArgs == 0)
 	continue;
-      int ind;
-      
+     
       /*
 	 printf("parse: ");
 	 for (ind=0; ind < numArgs; ind++){
