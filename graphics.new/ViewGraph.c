@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  1998/01/14 16:39:23  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.64  1997/12/12 05:50:45  weaver
   *** empty log message ***
 
@@ -1570,9 +1573,32 @@ void	ViewGraph::PrintLinkInfo(void)
 void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
 							   int xhigh, int yhigh, int button)
 {
+#if defined(DEBUG)
+    printf("ViewGraph(0x%p %s)::HandlePress(%d, %d, %d, %d, %d)\n", this,
+	  GetName(), xlow, ylow, xhigh, yhigh, button);
+#endif
+
 	if ((xlow == xhigh) && (ylow == yhigh) &&
 		CheckCursorOp(w, xlow, ylow, button))	// Was a cursor event?
           return;
+
+	// Note: doing the unhighlight and highlight here breaks the dependency
+	// we had on the client doing this for us.  RKW Jan 27, 1998.
+
+	// Unhighlight previously-selected view, if any, and highlight the
+	// newly-selected view (do nothing if they are the same view).
+	View *prevSelView = NULL;
+	int index = InitViewIterator();
+	while (MoreView(index) && prevSelView == NULL) {
+	  View *tmpView = NextView(index);
+	  if (tmpView->IsHighlighted()) prevSelView = tmpView;
+	}
+	DoneViewIterator(index);
+
+	if (prevSelView != this) {
+	  if (prevSelView != NULL) prevSelView->Highlight(false);
+	  Highlight(true);
+	}
 
 	ControlPanel::Instance()->SelectView(this);
 

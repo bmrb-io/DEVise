@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/06/10 19:49:14  wenger
+  Need break with debug code turned off...
+
   Revision 1.21  1997/06/10 19:22:01  wenger
   Removed (some) debug output.
 
@@ -127,7 +130,6 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			  Coord xhigh, Coord yhigh, int button)
 {
   if (xlow == xhigh || ylow == yhigh) {
-    ControlPanel::Instance()->SelectView(view);
     return;
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/12/16 17:53:52  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.56  1997/12/12 05:50:22  weaver
   *** empty log message ***
 
@@ -569,6 +572,8 @@ class View : public ViewWin
 	    return true;
 	  }
 	}
+
+    Boolean IsHighlighted() { return _highlight; }
 
 protected:
 	/* called by base class when it has been mapped/unmapped */

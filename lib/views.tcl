@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1998/01/14 22:24:47  wenger
+#  Changed 'Bring View Back' to 'Restore View'.
+#
 #  Revision 1.42  1997/11/24 23:15:48  weaver
 #  Changes for the new ColorManager.
 #
@@ -244,6 +247,8 @@ proc ProcessViewSelected { view } {
 
     if {$curView != ""} {
 	# unhighlight old view
+	# Note: because of changes to ViewGraph, this command is now needed
+	# only for collaboration.  RKW Jan. 27, 1998.
 	DEVise highlightView $curView 0
     }
  
@@ -278,6 +283,8 @@ proc ProcessViewSelected { view } {
     .panel.query.button2 configure -state normal
 
     # highlight new view
+    # Note: because of changes to ViewGraph, this command is now needed
+    # only for collaboration.  RKW Jan. 27, 1998.
     DEVise highlightView $curView 1
 }
 
