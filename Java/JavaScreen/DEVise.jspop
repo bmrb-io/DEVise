@@ -19,7 +19,7 @@ setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_CACHE		$DEVISE_ROOT/cache
 setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
-setenv DEVISE_SESSION		$DEVISE_ROOT/session
+setenv DEVISE_SESSION		$DEVISE_ROOT/session.js
 setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
 
 setenv DEVISE_TMP		/tmp/$USER-devise-tmp
@@ -32,6 +32,6 @@ setenv LM_LIB                   $DEVISE_LIB/LM
 #setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
 setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 
-$DEVISE_EXEC $*
+$DEVISE_EXEC $* >& devised.out
 
 rmmem

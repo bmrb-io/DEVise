@@ -13,6 +13,7 @@ public class DEViseClient
     public String savedSessionName = null;
     public boolean isSessionSaved = false;
     public boolean isSessionOpened = false;
+    public boolean isSwitched = false;
 
     private Vector cmdBuffer = new Vector();
 

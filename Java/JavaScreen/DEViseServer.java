@@ -283,7 +283,7 @@ public class DEViseServer implements Runnable
     {
         if (client == null)
             return;
-        
+
         if (client.isSessionOpened) {
             client.isSessionOpened = false;
 
@@ -293,8 +293,7 @@ public class DEViseServer implements Runnable
                 if (cmds != null && cmds.length == 1) {
                     if (cmds[0].startsWith("JAVAC_Done")) {
                         client.isSessionSaved = true;
-                        client.insertCmd("JAVAC_OpenSession {" + client.savedSessionName + "}");
-                    } else {
+                   } else {
                     }
                 } else { // something wrong with the server
                     YGlobals.Ydebugpn("Something wrong with the server while saving session!");
@@ -307,18 +306,20 @@ public class DEViseServer implements Runnable
                         pop.dispatcher.suspendClient(client);
                         client.closeSocket();
                     }
-                    
+
                     closeSocket();
                     startSocket();
-                    
+
                     return;
                 }
-                
+
+                client.isSwitched = true;
+
                 cmds = sendCmd("JAVAC_CloseCurrentSession");
-                if (cmds != null && cmds.length == 1) {
-                    if (cmds[0].startsWith("JAVAC_Done")) {
-                    } else {
-                    }
+                if (cmds != null) { //&& cmds.length == 1) {
+                    //if (cmds[0].startsWith("JAVAC_Done")) {
+                    //} else {
+                    //}
                 } else { // something wrong with the server
                     YGlobals.Ydebugpn("Something wrong with the server while closing session!");
                     try {
@@ -329,17 +330,17 @@ public class DEViseServer implements Runnable
                         pop.dispatcher.suspendClient(client);
                         client.closeSocket();
                     }
-                    
+
                     closeSocket();
                     startSocket();
-                    
+
                     return;
-                } 
-                
+                }
+
                 pop.dispatcher.suspendClient(client);
             } catch (YException e) {
                 YGlobals.Ydebugpn(e.getMessage());
-                
+
                 try {
                     client.sendCmd(new String[] {"JAVAC_Error {CMD socket communication error with DEVise server!}"});
                     pop.dispatcher.suspendClient(client);
@@ -348,7 +349,7 @@ public class DEViseServer implements Runnable
                     pop.dispatcher.suspendClient(client);
                     client.closeSocket();
                 }
-                
+
                 closeSocket();
                 startSocket();
             }
@@ -375,12 +376,16 @@ public class DEViseServer implements Runnable
                 isRunning = false;
             } else if (todo == 1) {
                 removeClient();
-                
+
                 // when is current client been serviced
                 clientStartTime = YGlobals.getTime();
 
                 client = newClient;
                 newClient = null;
+
+                if (client.isSwitched && client.isSessionSaved) {
+                    client.insertCmd("JAVAC_OpenSession {" + client.savedSessionName + "}", 0);
+                }
 
                 setAction(0);
             } else {
@@ -393,13 +398,13 @@ public class DEViseServer implements Runnable
                             client.receiveCmd(false);
                             isEnd = true;
                         } catch (InterruptedIOException e) {
-                            if (getAction() != 0) 
+                            if (getAction() != 0)
                                 isEnd = true;
                         }
                     }
-                    
-                    if (getAction() != 0) 
-                        continue;                    
+
+                    if (getAction() != 0)
+                        continue;
 
                     // check whether client command buffer is empty, will block
                     if (client.getCmd() == null) {
@@ -407,16 +412,16 @@ public class DEViseServer implements Runnable
                         while (!isEnd) {
                             try {
                                 client.receiveCmd(true);
-                                isEnd = true;                            
+                                isEnd = true;
                             } catch (InterruptedIOException e) {
                                 if (getAction() != 0)
                                     isEnd = true;
                             }
                         }
                     }
-                    
-                    if (getAction() != 0) 
-                        continue;                        
+
+                    if (getAction() != 0)
+                        continue;
                 } catch (YException e) {
                     YGlobals.Ydebugpn(e.getMessage());
 
@@ -430,11 +435,11 @@ public class DEViseServer implements Runnable
                 String clientCmd = client.getCmd();
                 if (clientCmd == null)
                     continue;
-                
+
                 // erase the command from client command buffer, so if any server error,
-                // this command will be losted 
+                // this command will be losted
                 client.removeCmd();
-                
+
                 String[] serverCmds = null;
                 Vector images = new Vector();
 
@@ -461,8 +466,9 @@ public class DEViseServer implements Runnable
                             throw new YException("Invalid response received from DEVise server!", 5);
                         }
 
+                        // actually open a new session
                         if (clientCmd.startsWith("JAVAC_OpenSession")) {
-                            client.isSessionOpened = true;                       
+                            client.isSessionOpened = true;
                         } else if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
                             client.isSessionOpened = false;
                             client.isSessionSaved = false;
@@ -614,15 +620,19 @@ public class DEViseServer implements Runnable
                 }
 
                 // sending results back to clients
-                try {
-                    client.sendCmd(serverCmds);
-                    client.sendImg(images);
-                } catch (YException e) {
-                    YGlobals.Ydebugpn(e.getMessage());
+                if (clientCmd.startsWith("JAVAC_OpenSession") && client.isSwitched) {
+                    client.isSwitched = false;
+                } else {
+                    try {
+                        client.sendCmd(serverCmds);
+                        client.sendImg(images);
+                    } catch (YException e) {
+                        YGlobals.Ydebugpn(e.getMessage());
 
-                    removeClient();
-                    client.closeSocket();
-                    client = null;
+                        removeClient();
+                        client.closeSocket();
+                        client = null;
+                    }
                 }
             }
         }
