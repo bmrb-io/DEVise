@@ -70,3 +70,5 @@ if (! -f $DEVISE_EXEC) then
 endif
 
 $DEVISE_EXEC $*
+
+rmmem
