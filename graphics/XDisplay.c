@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/01/24 21:18:54  wenger
+  Fixed memory leak in X font handling code; noted other minor leaks.
+
   Revision 1.49  1997/01/24 16:38:25  wenger
   Fixed bugs 078, 103, 125; also improved X font handling (does a better
   job of finding fonts).
@@ -225,6 +228,9 @@
 */
 
 #include <math.h>
+#ifdef SUN
+#include <strings.h>
+#endif
 #include <X11/Xatom.h>
 
 #include "XDisplay.h"

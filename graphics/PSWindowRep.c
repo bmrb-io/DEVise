@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/01/29 17:02:31  wenger
+  Fixed PSWindowRep::ScaledText().
+
   Revision 1.23  1997/01/28 19:46:31  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
   fixes to Exit class for client/server library.
@@ -135,6 +138,9 @@
 
 #include <stdio.h>
 #include <math.h>
+#ifdef SUN
+#include <strings.h>
+#endif
 
 #include "PSWindowRep.h"
 #include "PSDisplay.h"
