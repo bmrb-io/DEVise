@@ -28,7 +28,7 @@ public class Operator implements Expression {
         }
         Operator opObj = (Operator) obj;
         return operator.equals(opObj.operator) &&
-            left.equals(opObj) && right.equals(opObj);
+            left.equals(opObj.left) && right.equals(opObj.right);
     }
 
     public String toString( ) {

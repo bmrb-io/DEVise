@@ -12,6 +12,14 @@ public class DTE_Double extends DTE_Type  //implements Cloneable
      return String.valueOf( val );
   }
 
+     public boolean equals(Object obj){
+          if(! getClass().equals(obj.getClass())){
+               return false;
+          }
+          DTE_Double cObj = (DTE_Double) obj;
+          return val == cObj.val;
+     }
+
   public DTE_Double()
   {
     val = 0;

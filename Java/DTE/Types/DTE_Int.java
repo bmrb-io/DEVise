@@ -12,6 +12,14 @@ public class DTE_Int extends DTE_Type// implements Cloneable
      return  String.valueOf( val );
   }
   
+     public boolean equals(Object obj){
+          if(! getClass().equals(obj.getClass())){
+               return false;
+          }
+          DTE_Int cObj = (DTE_Int) obj;
+          return val == cObj.val;
+     }
+
   public DTE_Int( )
   {
     val = 0;

@@ -9,7 +9,7 @@ public class ListOp
   {
     for(int i = 0; i < list.length; i++)
       {
-	if(list[i].evaluate(left, right) == null)
+	if(!((DTE_Boolean) list[i].evaluate(left, right)).getValue())
 	  return false;
       }
     return true;

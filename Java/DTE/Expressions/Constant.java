@@ -42,6 +42,14 @@ public class Constant implements Expression {
 		return this;
 	}
 
+	public boolean equals(Object obj){
+		if(! getClass().equals(obj.getClass())){
+			return false;
+		}
+		Constant cObj = (Constant) obj;
+		return value.equals(cObj.value);
+	}
+
 	public ExecExpr createExec(Vector[] projLists) throws InternalError {
 		return new ExecConst( value );
 	}

@@ -11,6 +11,14 @@ public class DTE_Boolean extends DTE_Type //implements Cloneable
     val = true;
   }
   
+     public boolean equals(Object obj){
+          if(! getClass().equals(obj.getClass())){
+               return false;
+          }
+          DTE_Boolean cObj = (DTE_Boolean) obj;
+          return val == cObj.val;
+     }
+
   public DTE_Boolean( boolean b )
   {
     val = b;
