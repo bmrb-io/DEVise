@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/06/30 18:23:10  wenger
+#  check_jspop now causes jspop to run two deviseds; jspop script sleeps
+#  after launching Xvfb.
+#
 #  Revision 1.1  1999/06/17 18:55:27  wenger
 #  Fixed kill_devised2 script for problems with 'ps'; added check_jspop
 #  script for restarting jspop if necessary.
@@ -67,6 +71,9 @@ if (!$foundJspop) {
   # with the jspop, so kill it and start over.
   KillJspop();
   SaveLogs();
+
+  # Make sure the first Xvfb done getting killed before we start things up.
+  sleep 15;
   system("jspop -server2 &");
 }
 
