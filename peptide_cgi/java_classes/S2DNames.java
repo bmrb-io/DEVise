@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2002/02/23 19:30:19  wenger
+// Peptide-cgi now identifies related PDB entries.
+//
 // Revision 1.13  2002/01/10 22:14:07  wenger
 // Added structure type selection to atomic coordinate sessions.
 //
@@ -183,6 +186,12 @@ public class S2DNames
     // set according to the s2d.props file value.
     //
     public static String BMRB_STAR_URL = null;
+
+    //
+    // URL for getting mmCIF files from PDB.  Note: this will be
+    // set according to the s2d.props file value.
+    //
+    public static String PDB_FILE_URL = null;
 
     //
     // URL for 3D example.  Note: this will be set according to the

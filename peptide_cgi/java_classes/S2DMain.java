@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2002/02/23 19:30:19  wenger
+// Peptide-cgi now identifies related PDB entries.
+//
 // Revision 1.31  2002/01/15 22:16:13  wenger
 // Added residue selection to atomic coordiate sessions.
 //
@@ -251,6 +254,12 @@ public class S2DMain {
 	if (S2DNames.BMRB_STAR_URL == null) {
 	    throw new S2DError("Unable to get value for " +
 	      "bmrb_mirror.star_url property");
+	}
+
+	S2DNames.PDB_FILE_URL = props.getProperty("bmrb_mirror.pdb_file_url");
+	if (S2DNames.PDB_FILE_URL == null) {
+	    throw new S2DError("Unable to get value for " +
+	      "bmrb_mirror.pdb_file_url property");
 	}
 
 	S2DNames.BMRB_3D_URL = props.getProperty("bmrb_mirror.3d_url");
@@ -492,7 +501,7 @@ public class S2DMain {
 
 	for (int index = 0; index < _pdbIds.size(); index++) {
 	    String id = (String)_pdbIds.elementAt(index);
-	    processPDB(id);
+	    //TEMP processPDB(star, id);
 	}
 
 	_summary.close();
@@ -1132,11 +1141,17 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Process a PDB entry (get the atomic coordinates).
-    void processPDB(String pdbId)
+    void processPDB(S2DStarIfc star, String pdbId) throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("processPDB(" + pdbId + ")");
 	}
+
+	//TEMP -- what do we do if there's some error processing the
+	// mmCIF file?  we should still show the stuff from the NMR-Star
+	// file
+
+	S2DCifIfc cif = new S2DCifIfc(star.getParser(), pdbId);
     }
 }
 

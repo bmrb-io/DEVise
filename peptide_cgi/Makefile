@@ -58,6 +58,7 @@ s2d_props:
 	-rm $(S2D_PROPS_FILE)
 	echo "# Configuration-specific s2d properties" > $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.star_url=$(STAR_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.pdb_file_url=$(PDB_FILE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.3d_url=$(3D_EXAMPLE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.summary_page_dir=$(SUMMARY_PAGE_DIR)" >> \
 	  $(S2D_PROPS_FILE)

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2002/02/23 19:30:19  wenger
+// Peptide-cgi now identifies related PDB entries.
+//
 // Revision 1.11  2001/12/12 19:56:43  wenger
 // Got 4038/4096 star file combination working; fixed maximum bond length.
 //
@@ -137,6 +140,16 @@ public class S2DStarIfc {
 	}
 
 	return date;
+    }
+
+    //-------------------------------------------------------------------
+    // This method is provided so that the StarParser can be re-used to
+    // parse mmCIF files, since static variables within the StarParser
+    // code mean that we can only successfully construct one parser during
+    // a single run of the program.
+    public StarParser getParser()
+    {
+        return _parser;
     }
 
     //-------------------------------------------------------------------

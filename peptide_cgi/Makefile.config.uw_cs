@@ -29,6 +29,7 @@ PERL_BIN = /s/std/bin
 # Where to find stuff on the web.
 WEB_DOMAIN = www.bmrb.wisc.edu
 STAR_URL = http://$(WEB_DOMAIN)/data_library/files/
+PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF/all/
 3D_EXAMPLE_URL = http://$(WEB_DOMAIN)/devise/4096_side3h.html
 
 SUMMARY_PAGE_DIR = http://pumori.cs.wisc.edu/bmrb/html
