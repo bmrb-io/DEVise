@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/25 14:33:00  guangshu
+  Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
+
   Revision 1.24  1996/07/23 17:26:08  jussi
   Added support for piled views.
 
@@ -202,9 +205,6 @@ public:
   virtual PointStorage *GetPointStorage() { return &_pstorage; }
 
  protected:
-  /* Hash function assuming index now is integer */
-/*  static int HashFun(int &index, int numOfBucks) { return index%numOfBucks; }*/
-
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer();
 
