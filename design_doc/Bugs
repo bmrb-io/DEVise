@@ -2881,6 +2881,10 @@ Num Date        Status  Description
 720 10/22/01	OPEN	JavaScreen: all clients are blocked if the JSPoP
 			blocks while reading a client command. (rkw)
 
+721 10/23/01	OPEN	JavaScreen: when a collaboration client exits or
+			goes out of collaboration mode, the corresponding
+			socket is not closed in the JSPoP. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
