@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/23 21:33:35  jussi
+  Fixed some bugs when compiled with PROCESS_TASK.
+
   Revision 1.13  1996/10/02 15:24:02  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -222,7 +225,7 @@ void TapeDrive::waitForChildProcess()
   if (_child > 0) {
     TAPEDBG(cout << "Waiting for tape " << fileno(file)
             << " to become idle" << endl);
-#ifdef THREAD_TASK
+#ifdef TAPE_THREAD
     (void)pthread_join(_child, 0);
 #else
     while(1) {
@@ -506,7 +509,7 @@ void TapeDrive::Recover(struct mtget &otstat, short mt_op,
   DOASSERT(status >= 0, "Recovery attempt failed");
 }
 
-#ifdef THREAD_TASK
+#ifdef TAPE_THREAD
 void *TapeDrive::ProcessCmd(void *arg)
 {
   TapeDrive &me = *(TapeDrive *)arg;
@@ -572,7 +575,7 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
   waitForChildProcess();
   DOASSERT(_child <= 0, "Invalid child process ID");
 
-#ifdef THREAD_TASK
+#ifdef TAPE_THREAD
   _proc_mt_op = mt_op;
   _proc_mt_count = mt_count;
   if (pthread_create(&_child, 0, ProcessCmd, this)) {

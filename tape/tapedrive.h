@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/23 21:33:35  jussi
+  Fixed some bugs when compiled with PROCESS_TASK.
+
   Revision 1.8  1996/10/04 19:59:45  wenger
   Temporarily (?) removed threads from Devise (removed -lpthread from
   some Makefiles so Purify works); other minor cleanups.
@@ -58,10 +61,10 @@
 #define TAPE_BLOCKING                   // blocked access to tape
 //#define TAPE_BLOCK_PADDING              // records do not cross blocks
 //#define PARTIAL_BLOCK_ERROR             // error if partial blocks read
-//#define THREAD_TASK                     // use threads
+//#define TAPE_THREAD                     // use threads
 
 #ifdef SOLARIS
-//#define THREAD_TASK
+//#define TAPE_THREAD
 #endif
 
 #ifdef TAPE_DEBUG
@@ -82,7 +85,7 @@
 #endif
 #include "machdep.h"
 
-#ifdef THREAD_TASK
+#ifdef TAPE_THREAD
 #include <pthread.h>
 #endif
 
@@ -221,7 +224,7 @@ protected:
   char *_fwriteBuf;                     // block given to fwrite()
   int  atEof;                           // 1 if tape at EOF
 
-#ifdef THREAD_TASK
+#ifdef TAPE_THREAD
   static void *ProcessCmd(void *arg);   // thread/process for commands
   pthread_t _child;                     // ID of child thread
   short _proc_mt_op;                    // cached value for ProcessCmd()
