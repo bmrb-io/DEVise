@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.92  1999/07/13 17:32:43  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.91  1999/06/30 17:38:49  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -946,8 +950,40 @@ MappingInterp::SubstituteParentValue()
 
   const char *parentValStr = "#parentVal";
 
-  if (!strcmp(_internalCmd->xCmd, parentValStr)) _internalCmd->xCmd = _parentValue;
-  if (!strcmp(_internalCmd->yCmd, parentValStr)) _internalCmd->yCmd = _parentValue;
+  if (_internalCmd->xCmd && !strcmp(_internalCmd->xCmd, parentValStr)) {
+    _internalCmd->xCmd = _parentValue;
+  }
+  if (_internalCmd->yCmd && !strcmp(_internalCmd->yCmd, parentValStr)) {
+    _internalCmd->yCmd = _parentValue;
+  }
+  if (_internalCmd->zCmd && !strcmp(_internalCmd->zCmd, parentValStr)) {
+    _internalCmd->zCmd = _parentValue;
+  }
+  if (_internalCmd->colorCmd &&
+      !strcmp(_internalCmd->colorCmd, parentValStr)) {
+    _internalCmd->colorCmd = _parentValue;
+  }
+  if (_internalCmd->sizeCmd && !strcmp(_internalCmd->sizeCmd, parentValStr)) {
+    _internalCmd->sizeCmd = _parentValue;
+  }
+  if (_internalCmd->patternCmd &&
+      !strcmp(_internalCmd->patternCmd, parentValStr)) {
+    _internalCmd->patternCmd = _parentValue;
+  }
+  if (_internalCmd->orientationCmd &&
+      !strcmp(_internalCmd->orientationCmd, parentValStr)) {
+    _internalCmd->orientationCmd = _parentValue;
+  }
+  if (_internalCmd->shapeCmd &&
+      !strcmp(_internalCmd->shapeCmd, parentValStr)) {
+    _internalCmd->shapeCmd = _parentValue;
+  }
+  for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
+    if (_internalCmd->shapeAttrCmd[attrNum] &&
+        !strcmp(_internalCmd->shapeAttrCmd[attrNum], parentValStr)) {
+      _internalCmd->shapeAttrCmd[attrNum] = _parentValue;
+    }
+  }
 }
 
 //--------------------------------------------------------------------------
@@ -980,6 +1016,8 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
 #endif
 
   InitOffsets();
+
+  InitializeDefaults();
 
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
@@ -1173,6 +1211,8 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
  * RKW 4/24/97. */
 
   InitOffsets();
+
+  InitializeDefaults();
 
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
