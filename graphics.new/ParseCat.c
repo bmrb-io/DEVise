@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/12 18:24:47  wenger
+  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+  to TDataAscii.
+
   Revision 1.25  1996/05/22 17:52:10  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -606,13 +610,6 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 	char *commentString = 0;
 	Group *currgrp = NULL;
 
-#if 0 /* If this line is not executed, it causes a memory leak; however,
-		 if it _is_ executed, it causes errors for sessions with more than
-		 one physical schema.  This needs to be fixed up somehow, perhaps
-		 by having the TData object store a copy of the AttrList (attrs)
-		 instead of just a pointer to it.  RKW 4/22/96. */
-	if (attrs != NULL) delete attrs;
-#endif
 	attrs = NULL;
 	numAttrs = 0;
 
@@ -789,8 +786,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 	  gdir->add_topgrp(StripPath(schemaSource->getLabel()), newgrp);
 	  for (i=0; i < numAttrs; i++) {
 	    AttrInfo *iInfo = attrs->Get(i);
-	    if (iInfo->type != StringAttr)
-	      newgrp->insert_item(iInfo->name);
+            newgrp->insert_item(iInfo->name);
 	  }
 	}
 	}
@@ -1002,8 +998,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
     gdir->add_topgrp(schemaSource->getLabel(), newgrp);
     for(int i = 0; i < numAttrs; i++) {
       AttrInfo *iInfo = attrs->Get(i);
-      if (iInfo->type != StringAttr)
-	newgrp->insert_item(iInfo->name);
+      newgrp->insert_item(iInfo->name);
     }
   }
 
