@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.143  2000/07/12 20:53:42  wenger
+  Added more debug code.
+
   Revision 1.142  2000/04/06 19:43:54  wenger
   Fixed bug 577 'c' bypasses cursor grid, etc.
 
@@ -811,6 +814,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gdsParams.sendText = true;
   _gdsParams.separator = ' ';
   _gdsParams.rgbColor = true;
+  _gdsPostponed = false;
 
   _jsDrawToScreen = true;
   _jsSendToSocket = false;
@@ -2244,13 +2248,19 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     if (_sendToSocket) {
       if (_gds != NULL) {
         reportErrNosys("Duplicate GDataSock creation");
-      } else {
+      } else if ((_gdsParams.file != NULL && strcmp(_gdsParams.file, "")) ||
+          (_gdsParams.portNum != 0)) {
+	_gdsPostponed = false;
         _gds = new GDataSock(_gdsParams);
         if (!_gds->GetStatus().IsComplete()) {
-	  reportErrNosys("Error creating GDataSock object");
+	  if (_gds->GetStatus().IsError()) {
+	    reportErrNosys("Error creating GDataSock object");
+	  }
 	  delete _gds;
 	  _gds = NULL;
         }
+      } else {
+        _gdsPostponed = true;
       }
     }
   } else {
@@ -2363,6 +2373,28 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
 
   _gdsParams = params;
   _gdsParams.file = CopyString(_gdsParams.file);
+}
+
+DevStatus
+ViewGraph::Send(void **gdataArray, TDataMap *map, int recCount)
+{
+#if defined(DEBUG)
+  printf("ViewGraph::Send(%d)\n", recCount);
+#endif
+
+  if (_gdsPostponed) {
+#if defined(DEBUG)
+    printf("GData send postponed\n");
+#endif
+    return StatusCancel;
+  } else {
+    if (_gds != NULL) {
+      return _gds->Send(this, gdataArray, map, recCount);
+    } else {
+      reportErrNosys("No GDataSock object");
+      return StatusFailed;
+    }
+  }
 }
 
 //******************************************************************************

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  2000/03/14 21:51:50  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.81  2000/02/24 18:50:31  wenger
   F/f ("full" cursor) in a view does home on the source views of any cursors
   for which the selected view is the destination view.
@@ -719,14 +723,8 @@ public:
   void SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
     const GDataSock::Params &params);
 
-  DevStatus Send(void **gdataArray, TDataMap *map, int recCount) {
-    if (_gds != NULL) {
-      return _gds->Send(this, gdataArray, map, recCount);
-    } else {
-      reportErrNosys("No GDataSock object");
-      return StatusFailed;
-    }
-  }
+  // Send GData to socket or file.
+  DevStatus Send(void **gdataArray, TDataMap *map, int recCount);
 
   virtual char *CreateDerivedTable(char *namePrefix, char *masterAttrName) {
     return NULL; }
@@ -860,6 +858,7 @@ public:
   Boolean _drawToScreen;
   Boolean _sendToSocket;
   GDataSock::Params _gdsParams;
+  Boolean _gdsPostponed;
   Boolean _jsDrawToScreen;
   Boolean _jsSendToSocket;
   GDataSock::Params _jsGdsParams;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  2000/03/14 17:05:05  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.14  1999/10/18 17:32:35  wenger
   Fixed bug 515 (small problem with cursor dragging) and bug 516 (we now
   eliminate any extraneous control-D's in GData strings).
@@ -159,6 +163,7 @@ GDataSock::GDataSock(Params &params)
 
   _params = params;
   _params.file = CopyString(_params.file);
+  _fd = -1;
 
   // Note: at the present time I'm only allowing one view to output to the
   // data socket to keep things simple.  If we want to allow multiple views
@@ -192,7 +197,7 @@ GDataSock::GDataSock(Params &params)
         reportErrSys(buf);
         _status = StatusFailed;
       }
-    } else {
+    } else if (_params.portNum != 0) {
 #if defined(DEBUG)
       printf("  Opening data socket.\n");
 #endif
@@ -203,6 +208,9 @@ GDataSock::GDataSock(Params &params)
         reportErrNosys("Can't open data channel (socket)");
         _status = StatusFailed;
       }
+    } else {
+      reportErrNosys("No valid file name or port number specified");
+      _status = StatusFailed;
     }
   }
 }
