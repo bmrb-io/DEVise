@@ -15,20 +15,38 @@
 /*
   Implementation of FileIndex class.
 
-  Note:  structure of an index file is as follows:
-	magic number
-	a copy of the first fileCompareBytes bytes of the actual data
-	information about the attributes (written by the TDataAsciiInterp
-	  or TDataBinaryInterp class)
-	the last position in the data
-	the number of records in the data
-	the actual indices
+  Note:  the structure of an "old" index file is as follows:
+	* magic number
+	* a copy of the first fileCompareBytes bytes of the actual data
+	* information about the attributes (written by the TData class)
+	* the last position in the data
+	* the number of records in the data
+	* the actual indices
+
+  The structure of a "new" index file is as follows:
+	* magic number
+	* information about the attributes (written by the TData class)
+	* the last position in the data
+	* the number of records in the data
+	* modification date of data file
+	* a copy of the first newFileCompareBytes bytes of the actual data
+	* a copy of the last newFileCompareBytes bytes of the actual data
+	* the actual indices
+
+  Note: lastPos seems to be the index of the byte *after* the last byte
+  in the file (e.g., if a file has bytes 0-999, lastPos is 1000).
+
+  Note: TData::LastID() will invadilate the index if the data has shrunk.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.9  2000/03/14 17:05:28  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.8  2000/01/11 22:28:31  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -91,6 +109,9 @@
 static const unsigned long indexMagicNumber = 0xdeadbeef;
 static const int fileCompareBytes = 4096;
 
+static const unsigned long newIndexMagicNumber = 0xdeadfeed;
+static const int newFileCompareBytes = 2048;
+
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
@@ -134,6 +155,8 @@ FileIndex::~FileIndex()
     FreeString(_indexFileName);
     _indexFileName = NULL;
   }
+
+  _highestValidIndex = -1;
 }
 
 /*------------------------------------------------------------------------------
@@ -219,7 +242,7 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     // Don't report an error, because we can recover from this.  (This is
     // not necessarily an error -- we may just not have an index for this
     // data yet.)
-#if defined(DEBUG)
+#if (DEBUGLVL >= 1)
     reportErrSys("Can't open index file");
 #endif
     result += StatusFailed;
@@ -238,92 +261,26 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     }
     else
     {
-      if (magicNumber != indexMagicNumber)
+      if (magicNumber == indexMagicNumber)
+      {
+#if (DEBUGLVL >= 2)
+        printf("  Old-style index file\n");
+#endif
+        result += OldInitialize(dataP, indexFd, tdataP, lastPos, totalRecs);
+      }
+      else if (magicNumber == newIndexMagicNumber)
+      {
+#if (DEBUGLVL >= 2)
+        printf("  New-style index file\n");
+#endif
+        result += NewInitialize(dataP, indexFd, tdataP, lastPos, totalRecs);
+      }
+      else
       {
 	reportErrNosys("Index file incompatible (bad magic number)");
 	result += StatusFailed;
       }
     }
-  }
-
-/*
- * Make sure the index file corresponds to the data.
- */
-  char fileContent[fileCompareBytes];
-  if (result.IsComplete())
-  {
-    if (dataP->Seek(0, SEEK_SET) < 0)
-    {
-      reportErrNosys("Error seeking on data file");
-      result += StatusFailed;
-    }
-    else
-    {
-      if (dataP->Fread(fileContent, fileCompareBytes, 1) != 1)
-      {
-        reportErrNosys("Error reading data file");
-        result += StatusFailed;
-      }
-    }
-  }
-
-  char indexFileContent[fileCompareBytes];
-  if (result.IsComplete())
-  {
-    if (read(indexFd, indexFileContent, fileCompareBytes) != fileCompareBytes)
-    {
-      reportErrNosys("Error reading data file");
-      result += StatusFailed;
-    }
-    else
-    {
-      if (memcmp(fileContent, indexFileContent, fileCompareBytes))
-      {
-	reportErrNosys("Index file invalid");
-	result += StatusFailed;
-      }
-    }
-  }
-
-/*
- * If we got here without any errors, the data has not changed since the
- * index file was built.
- */
-
-/*
- * Let TData subclass read index.
- */
-  if (result.IsComplete())
-  {
-    if (!tdataP->ReadIndex(indexFd))
-    {
-      result += StatusFailed;
-    }
-  }
-
-/*
- * Read last file position and number of records.
- */
-  if (result.IsComplete())
-  {
-    if (read(indexFd, &lastPos, sizeof(lastPos)) != sizeof(lastPos))
-    {
-      reportErrSys("Error reading index file");
-      result += StatusFailed;
-    }
-    else if (read(indexFd, &totalRecs, sizeof(totalRecs)) != sizeof(totalRecs))
-    {
-      reportErrSys("Error reading index file");
-      result += StatusFailed;
-    }
-  }
-
-/*
- * Read the actual index data.
- */
-  if (result.IsComplete())
-  {
-    result += Read(indexFd, totalRecs);
   }
 
 /*
@@ -369,6 +326,12 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     _changedSinceCheckpoint = false;
   }
 
+#if (DEBUGLVL >= 1)
+  printf("  FileIndex::Initialize returning: ");
+  result.Print();
+  printf("\n");
+#endif
+
   return result;
 }
 
@@ -381,7 +344,7 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
     long lastPos, long totalRecs)
 {
 #if (DEBUGLVL >= 1)
-  printf("FileIndex::Checkpoint()\n");
+  printf("FileIndex::Checkpoint(%s)\n", indexFileName);
 #endif
 
   DevStatus result(StatusOk);
@@ -415,8 +378,8 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
  */
   if (result.IsComplete())
   {
-    if (write(indexFd, &indexMagicNumber, sizeof(indexMagicNumber)) !=
-      sizeof(indexMagicNumber))
+    if (write(indexFd, &newIndexMagicNumber, sizeof(newIndexMagicNumber)) !=
+      sizeof(newIndexMagicNumber))
     {
       reportErrSys("Error writing index file");
       result += StatusFailed;
@@ -424,46 +387,7 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
   }
 
 /*
- * Read the first fileCompareBytes from the data and write it to the index
- * file.
- */
-  char fileContent[fileCompareBytes];
-  if (result.IsComplete())
-  {
-    if (dataP->Seek(0, SEEK_SET) < 0)
-    {
-      reportErrNosys("Error seeking on data file");
-      result += StatusFailed;
-    }
-    else
-    {
-      if (dataP->Fread(fileContent, fileCompareBytes, 1) != 1)
-      {
-	if (errno != 0)
-	{
-          reportErrSys("Error reading data file");
-          result += StatusFailed;
-	}
-	else
-	{
-	  fprintf(stderr, "File not checkpointed due to its small size\n");
-	  result += StatusCancel;
-	}
-      }
-    }
-  }
-
-  if (result.IsComplete())
-  {
-    if (write(indexFd, fileContent, fileCompareBytes) != fileCompareBytes)
-    {
-      reportErrSys("Error writing index file");
-      result += StatusFailed;
-    }
-  }
-
-/*
- * Let the TData subclass write its index.
+ * Have the TData write the list of its attributes.
  */
   if (result.IsComplete())
   {
@@ -488,6 +412,32 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
       reportErrSys("Error writing index file");
       result += StatusFailed;
     }
+  }
+
+/*
+ * Write the file's modification time.
+ */
+  if (result.IsComplete())
+  {
+    int modTime = dataP->GetModTime();
+    if (write(indexFd, &modTime, sizeof(modTime)) != sizeof(modTime))
+    {
+      reportErrSys("Error writing index file");
+      result += StatusFailed;
+    }
+  }
+
+/*
+ * Save the first and last newFileCompareBytes of the actual data to
+ * the index file.
+ */
+  if (result.IsComplete())
+  {
+    char fileContent[newFileCompareBytes];
+    result += ReadAndWriteBytes(dataP, indexFd, 0, newFileCompareBytes,
+        fileContent);
+    result += ReadAndWriteBytes(dataP, indexFd, lastPos-newFileCompareBytes,
+        newFileCompareBytes, fileContent);
   }
 
 /*
@@ -521,6 +471,11 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
   if (result.IsComplete()) {
     _changedSinceCheckpoint = false;
   }
+
+#if (DEBUGLVL >= 3)
+  printf("  Status at end of FileIndex::Checkpoint() ");
+  result.Print();
+#endif
 
   return result;
 }
@@ -577,6 +532,286 @@ FileIndex::Write(int fd, long recordCount)
   {
     reportErrSys("Error writing index");
     result += StatusFailed;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: FileIndex::OldInitialize
+ * Initialize the index from an old-style index file.
+ */
+DevStatus
+FileIndex::OldInitialize(DataSource *dataP, int indexFd, TData *tdataP,
+    long &lastPos, long &totalRecs)
+{
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::OldInitialize()\n");
+#endif
+
+  DevStatus result(StatusOk);
+
+/*
+ * Make sure the index file corresponds to the data.
+ */
+  char fileContent[fileCompareBytes];
+  char indexFileContent[fileCompareBytes];
+
+  result += ReadAndCompareBytes(dataP, indexFd, 0L, fileCompareBytes,
+      fileContent, indexFileContent);
+
+/*
+ * If we got here without any errors, we think that the data has not
+ * changed since the index file was built.
+ */
+
+/*
+ * Have the TData read and check the list of attributes from the index
+ * file.
+ */
+  if (result.IsComplete())
+  {
+    if (!tdataP->ReadIndex(indexFd))
+    {
+      result += StatusFailed;
+    }
+  }
+
+/*
+ * Read last file position and number of records.
+ */
+  if (result.IsComplete())
+  {
+    if (read(indexFd, &lastPos, sizeof(lastPos)) != sizeof(lastPos))
+    {
+      reportErrSys("Error reading index file");
+      result += StatusFailed;
+    }
+    else if (read(indexFd, &totalRecs, sizeof(totalRecs)) != sizeof(totalRecs))
+    {
+      reportErrSys("Error reading index file");
+      result += StatusFailed;
+    }
+  }
+
+/*
+ * Read the actual index data.
+ */
+  if (result.IsComplete())
+  {
+    result += Read(indexFd, totalRecs);
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: FileIndex::NewInitialize
+ * Initialize the index from an new-style index file.
+ */
+DevStatus
+FileIndex::NewInitialize(DataSource *dataP, int indexFd, TData *tdataP,
+    long &lastPos, long &totalRecs)
+{
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::NewInitialize()\n");
+#endif
+
+  DevStatus result(StatusOk);
+
+/*
+ * Have the TData read and check the list of attributes from the index
+ * file.
+ */
+  if (result.IsComplete())
+  {
+    if (!tdataP->ReadIndex(indexFd))
+    {
+      result += StatusFailed;
+    }
+  }
+
+/*
+ * Read last file position and number of records.
+ */
+  if (result.IsComplete())
+  {
+    if (read(indexFd, &lastPos, sizeof(lastPos)) != sizeof(lastPos))
+    {
+      reportErrSys("Error reading index file");
+      result += StatusFailed;
+    }
+    else if (read(indexFd, &totalRecs, sizeof(totalRecs)) != sizeof(totalRecs))
+    {
+      reportErrSys("Error reading index file");
+      result += StatusFailed;
+    }
+  }
+
+/*
+ * Read file modification time.
+ */
+  if (result.IsComplete())
+  {
+    int indexModTime;
+    if (read(indexFd, &indexModTime, sizeof(indexModTime)) !=
+        sizeof(indexModTime))
+    {
+      reportErrSys("Error reading index file");
+      result += StatusFailed;
+    }
+    else
+    {
+      int dataModTime = dataP->GetModTime();
+#if (DEBUGLVL >= 3)
+      time_t indexT = (time_t)indexModTime;
+      time_t dataT = (time_t)dataModTime;
+      // Note: must have two separate print statements here because DateString
+      // uses static buffer.
+      printf("Index mod time = %d (%s);", indexModTime, DateString(indexT));
+      printf(" data mod time = %d (%s)\n", dataModTime, DateString(dataT));
+#endif
+      if (dataModTime != indexModTime) {
+	// If the file has grown, assume data got added onto the end, and
+	// the index we have is valid for the "old" part; otherwise, we
+	// assume that the existing part of the file got changed and the
+	// index is invalid.
+	if (dataP->gotoEnd() <= lastPos) {
+	  reportErrNosys("Data and index modification times disagree");
+          result += StatusFailed;
+	}
+      }
+    }
+  }
+
+/*
+ * Make sure the index file corresponds to the data.
+ */
+  if (result.IsComplete())
+  {
+    char fileContent[newFileCompareBytes];
+    char indexFileContent[newFileCompareBytes];
+    result += ReadAndCompareBytes(dataP, indexFd, 0, newFileCompareBytes,
+        fileContent, indexFileContent);
+    result += ReadAndCompareBytes(dataP, indexFd,
+        lastPos-newFileCompareBytes, newFileCompareBytes, fileContent,
+	indexFileContent);
+  }
+
+/*
+ * If we got here without any errors, we think that the data has not
+ * changed since the index file was built.
+ */
+
+/*
+ * Read the actual index data.
+ */
+  if (result.IsComplete())
+  {
+    result += Read(indexFd, totalRecs);
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: FileIndex::ReadAndCompareBytes
+ * Read bytes from the given data file and index file, see whether they
+ * are the same.  (Offset refers to the offset in the data file; bytes
+ * are read from the index file at the current location.)  StatusFailed
+ * will be returned if the bytes are not the same.
+ */
+DevStatus
+FileIndex::ReadAndCompareBytes(DataSource *dataP, int indexFd, long offset,
+    int length, char buffer1[], char buffer2[])
+{
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::ReadAndCompareBytes(%ld, %d)\n", offset, length);
+#endif
+
+  DevStatus result(StatusOk);
+
+/*
+ * Make sure the index file corresponds to the data.
+ */
+  if (result.IsComplete())
+  {
+    if (dataP->Seek(offset, SEEK_SET) < 0)
+    {
+      reportErrNosys("Error seeking on data file");
+      result += StatusFailed;
+    }
+    else if (dataP->Fread(buffer1, length, 1) != 1)
+    {
+      reportErrNosys("Error reading data file");
+      result += StatusFailed;
+    }
+  }
+
+  if (result.IsComplete())
+  {
+    if (read(indexFd, buffer2, length) != length)
+    {
+      reportErrNosys("Error reading index file");
+      result += StatusFailed;
+    }
+    else if (memcmp(buffer1, buffer2, length))
+    {
+      reportErrNosys("Index file invalid");
+      result += StatusFailed;
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: FileIndex::ReadAndWriteBytes
+ * Read length bytes from the data file at the given offset, write them
+ * to the index file.
+ */
+DevStatus
+FileIndex::ReadAndWriteBytes(DataSource *dataP, int indexFd, long offset,
+    int length, char buffer[])
+{
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::ReadAndWriteBytes(%ld, %d)\n", offset, length);
+#endif
+
+  DevStatus result(StatusOk);
+
+  if (result.IsComplete())
+  {
+    if (dataP->Seek(offset, SEEK_SET) < 0)
+    {
+      reportErrNosys("Error seeking on data file");
+      result += StatusFailed;
+    }
+    else
+    {
+      if (dataP->Fread(buffer, length, 1) != 1)
+      {
+	if (errno != 0)
+	{
+          reportErrSys("Error reading data file");
+          result += StatusFailed;
+	}
+	else
+	{
+	  fprintf(stderr, "File not checkpointed due to its small size\n");
+	  result += StatusCancel;
+	}
+      }
+    }
+  }
+
+  if (result.IsComplete())
+  {
+    if (write(indexFd, buffer, length) != length)
+    {
+      reportErrSys("Error writing index file");
+      result += StatusFailed;
+    }
   }
 
   return result;

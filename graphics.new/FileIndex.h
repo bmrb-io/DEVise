@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/01/11 22:28:32  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.3  1996/11/18 22:51:05  jussi
   Improved the way the index array is allocated and reallocated.
 
@@ -71,10 +77,21 @@ private:
   DevStatus Read(int fd, long recordCount);
   DevStatus Write(int fd, long recordCount);
 
+  DevStatus OldInitialize(DataSource *dataP, int indexFd, TData *tdataP,
+      long &lastPos, long &totalRecs);
+  DevStatus NewInitialize(DataSource *dataP, int indexFd, TData *tdataP,
+      long &lastPos, long &totalRecs);
+
+  static DevStatus ReadAndCompareBytes(DataSource *dataP, int indexFd,
+      long offset, int length, char buffer1[], char buffer2[]);
+
+  static DevStatus ReadAndWriteBytes(DataSource *dataP, int indexFd,
+      long offset, int length, char buffer[]);
+
   void ExpandArray(RecId recId);
 
-  int _indexSize;
-  int _highestValidIndex;
+  int _indexSize; // current size of _indexArray
+  int _highestValidIndex; // highest record currently indexed
   OffsetType *_indexArray;
 
   char *_indexFileName;
