@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/03 20:31:36  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.14  1996/11/23 21:14:24  jussi
   Removed failing support for variable-sized records.
 
@@ -222,6 +225,8 @@ private:
   void RebuildIndex();
 
   TD_Status ReadRec(RecId id, int numRecs, void *buf);
+  TD_Status ReadRecAsync(TDataRequest *req, RecId id,
+                         int numRecs, void *buf);
 
   /* Print indices */
   void PrintIndices();
@@ -236,8 +241,6 @@ private:
   long _lastPos;                  // position of last record in file
   long _currPos;                  // current file position
   long _lastIncompleteLen;        // length of last incomplete record
-
-  char *_recBuf;                  // record buffer
 
   Boolean _fileOpen;              // true if file is okay
 
