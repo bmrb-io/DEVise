@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  1998/03/11 18:44:15  wenger
+# Updated Linux dependencies.
+#
 # Revision 1.14  1998/03/04 20:36:01  wenger
 # Updated dependencies.
 #
@@ -87,7 +90,7 @@ DeviseClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 DeviseClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 DeviseClient.o: /usr/include/sys/bitypes.h ../csgroup/TclClient.h
 DeviseClient.o: ../csgroup/Client.h
-collaborator.o: ../csgroup/server.h ../csgroup/types.h
+collaborator.o: ../csgroup/server.h ../csgroup/CollabTypes.h
 collaborator.o: /usr/include/sys/types.h /usr/include/linux/types.h
 collaborator.o: /usr/include/linux/posix_types.h
 collaborator.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
@@ -139,14 +142,15 @@ generic.o: /usr/include/values.h /usr/include/ieee754.h
 generic.o: /usr/include/ieee854.h ../graphics/DeviseTypes.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Display.h ../graphics/Geom.h
-generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/Pattern.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
-generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
-generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-generic.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+generic.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
+generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
+generic.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
+generic.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
+generic.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+generic.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
+generic.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
 generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics.new/MapInterpClassInfo.h
@@ -169,12 +173,14 @@ testWindowSpeed.o: /usr/include/linux/time.h /usr/include/sys/types.h
 testWindowSpeed.o: /usr/include/sys/bitypes.h ../graphics/TestControl.h
 testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
 testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/ClassDir.h
-testWindowSpeed.o: ../graphics/Display.h ../graphics/Geom.h
-testWindowSpeed.o: /usr/include/math.h /usr/include/huge_val.h
-testWindowSpeed.o: /usr/include/endian.h /usr/include/bytesex.h
-testWindowSpeed.o: /usr/include/nan.h
+testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+testWindowSpeed.o: /usr/include/string.h
+testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
+testWindowSpeed.o: /usr/include/huge_val.h /usr/include/endian.h
+testWindowSpeed.o: /usr/include/bytesex.h /usr/include/nan.h
 testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 testWindowSpeed.o: /usr/include/ieee754.h /usr/include/ieee854.h
 testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
@@ -183,9 +189,8 @@ testWindowSpeed.o: ../graphics/Transform.h ../graphics/Pattern.h
 testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
 testWindowSpeed.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-testWindowSpeed.o: ../graphics/ETkIfc.h /usr/include/string.h
-testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 testWindowSpeed.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+testWindowSpeed.o: ../graphics/CursorStore.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.13  1998/03/11 18:44:06  wenger
+# Updated Linux dependencies.
+#
 # Revision 1.12  1998/03/04 20:35:51  wenger
 # Updated dependencies.
 #
@@ -66,9 +69,32 @@ Aggregates.o: /usr/include/huge_val.h /usr/include/endian.h
 Aggregates.o: /usr/include/bytesex.h /usr/include/nan.h
 Aggregates.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Aggregates.o: /usr/include/values.h /usr/include/ieee754.h
-Aggregates.o: /usr/include/ieee854.h myopt.h url.h SockStream.h listop.h
-Aggregates.o: site.h Iterator.h MemoryMgr.h TypeCheck.h StringLess.h
-Aggregates.o: SeqSimVecAggregate.h
+Aggregates.o: /usr/include/ieee854.h myopt.h TableUtils.h url.h SockStream.h
+Aggregates.o: RelationId.h listop.h site.h Iterator.h MemoryMgr.h TypeCheck.h
+Aggregates.o: StringLess.h SeqSimVecAggregate.h
+CreateTableParse.o: /usr/include/stdlib.h /usr/include/features.h
+CreateTableParse.o: /usr/include/sys/cdefs.h
+CreateTableParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+CreateTableParse.o: /usr/include/errno.h /usr/include/linux/errno.h
+CreateTableParse.o: /usr/include/asm/errno.h /usr/include/alloca.h
+CreateTableParse.o: /usr/include/sys/types.h /usr/include/linux/types.h
+CreateTableParse.o: /usr/include/linux/posix_types.h
+CreateTableParse.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+CreateTableParse.o: /usr/include/sys/bitypes.h /usr/include/netinet/in.h
+CreateTableParse.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+CreateTableParse.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+CreateTableParse.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+CreateTableParse.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+CreateTableParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+CreateTableParse.o: exception.h Utility.h Array.h SeqSimVec.h
+CreateTableParse.o: /usr/include/math.h /usr/include/huge_val.h
+CreateTableParse.o: /usr/include/endian.h /usr/include/bytesex.h
+CreateTableParse.o: /usr/include/nan.h
+CreateTableParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+CreateTableParse.o: /usr/include/values.h /usr/include/ieee754.h
+CreateTableParse.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+CreateTableParse.o: RelationId.h listop.h TypeCheck.h StringLess.h ExecOp.h
+CreateTableParse.o: ExecExpr.h Iterator.h Interface.h RelationManager.h
 DeleteParse.o: /usr/include/assert.h /usr/include/features.h
 DeleteParse.o: /usr/include/sys/cdefs.h /usr/include/math.h
 DeleteParse.o: /usr/include/huge_val.h /usr/include/endian.h
@@ -76,9 +102,9 @@ DeleteParse.o: /usr/include/bytesex.h /usr/include/nan.h
 DeleteParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 DeleteParse.o: /usr/include/values.h /usr/include/ieee754.h
 DeleteParse.o: /usr/include/ieee854.h queue.h myopt.h types.h exception.h
-DeleteParse.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h
-DeleteParse.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
-DeleteParse.o: StringLess.h ExecExpr.h MemoryMgr.h
+DeleteParse.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+DeleteParse.o: RelationId.h listop.h site.h Iterator.h catalog.h ParseTree.h
+DeleteParse.o: TypeCheck.h StringLess.h ExecExpr.h MemoryMgr.h
 DevRead.o: types.h /usr/include/assert.h /usr/include/features.h
 DevRead.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 DevRead.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -102,8 +128,9 @@ DropIndexParse.o: /usr/include/endian.h /usr/include/bytesex.h
 DropIndexParse.o: /usr/include/nan.h
 DropIndexParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 DropIndexParse.o: /usr/include/values.h /usr/include/ieee754.h
-DropIndexParse.o: /usr/include/ieee854.h url.h SockStream.h listop.h
-DropIndexParse.o: TypeCheck.h StringLess.h Engine.h site.h Iterator.h
+DropIndexParse.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+DropIndexParse.o: RelationId.h listop.h TypeCheck.h StringLess.h Engine.h
+DropIndexParse.o: site.h Iterator.h
 Engine.o: /usr/include/assert.h /usr/include/features.h
 Engine.o: /usr/include/sys/cdefs.h /usr/include/math.h
 Engine.o: /usr/include/huge_val.h /usr/include/endian.h
@@ -111,16 +138,17 @@ Engine.o: /usr/include/bytesex.h /usr/include/nan.h
 Engine.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Engine.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
 Engine.o: queue.h myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
-Engine.o: url.h SockStream.h listop.h Engine.h site.h Iterator.h ParseTree.h
-Engine.o: TypeCheck.h StringLess.h ExecOp.h ExecExpr.h
-ExecOp.o: ExecOp.h queue.h /usr/include/assert.h /usr/include/features.h
-ExecOp.o: /usr/include/sys/cdefs.h Array.h ExecExpr.h types.h exception.h
-ExecOp.o: Utility.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
+Engine.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Engine.h
+Engine.o: site.h Iterator.h ParseTree.h TypeCheck.h StringLess.h ExecOp.h
+Engine.o: ExecExpr.h
+ExecOp.o: ExecOp.h Array.h /usr/include/assert.h /usr/include/features.h
+ExecOp.o: /usr/include/sys/cdefs.h ExecExpr.h types.h exception.h Utility.h
+ExecOp.o: queue.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 ExecOp.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 ExecOp.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ExecOp.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-ExecOp.o: Iterator.h listop.h RTreeRead.h myopt.h url.h SockStream.h
-ExecOp.o: StandardRead.h MemoryMgr.h
+ExecOp.o: Iterator.h listop.h RTreeRead.h myopt.h TableUtils.h url.h
+ExecOp.o: SockStream.h RelationId.h StandardRead.h MemoryMgr.h
 FunctionRead.o: FunctionRead.h Iterator.h /usr/include/assert.h
 FunctionRead.o: /usr/include/features.h /usr/include/sys/cdefs.h types.h
 FunctionRead.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
@@ -130,6 +158,15 @@ FunctionRead.o: /usr/include/nan.h
 FunctionRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 FunctionRead.o: /usr/include/values.h /usr/include/ieee754.h
 FunctionRead.o: /usr/include/ieee854.h url.h SockStream.h
+GlobalConstructors.o: types.h /usr/include/assert.h /usr/include/features.h
+GlobalConstructors.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h
+GlobalConstructors.o: Array.h SeqSimVec.h /usr/include/math.h
+GlobalConstructors.o: /usr/include/huge_val.h /usr/include/endian.h
+GlobalConstructors.o: /usr/include/bytesex.h /usr/include/nan.h
+GlobalConstructors.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+GlobalConstructors.o: /usr/include/values.h /usr/include/ieee754.h
+GlobalConstructors.o: /usr/include/ieee854.h catalog.h RelationManager.h
+GlobalConstructors.o: Interface.h RelationId.h
 IndexParse.o: /usr/include/memory.h /usr/include/features.h
 IndexParse.o: /usr/include/sys/cdefs.h /usr/include/string.h
 IndexParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
@@ -143,10 +180,10 @@ IndexParse.o: /usr/include/errno.h /usr/include/linux/errno.h
 IndexParse.o: /usr/include/asm/errno.h /usr/include/alloca.h
 IndexParse.o: /usr/include/stdio.h /usr/include/libio.h
 IndexParse.o: /usr/include/_G_config.h queue.h myopt.h types.h exception.h
-IndexParse.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h
-IndexParse.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
-IndexParse.o: StringLess.h Aggregates.h MemoryMgr.h Inserter.h MinMax.h
-IndexParse.o: StandardRead.h Interface.h
+IndexParse.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+IndexParse.o: RelationId.h listop.h site.h Iterator.h catalog.h ParseTree.h
+IndexParse.o: TypeCheck.h StringLess.h Aggregates.h MemoryMgr.h Inserter.h
+IndexParse.o: MinMax.h StandardRead.h Interface.h
 IndexParse.dummy.o: /usr/include/assert.h /usr/include/features.h
 IndexParse.dummy.o: /usr/include/sys/cdefs.h /usr/include/math.h
 IndexParse.dummy.o: /usr/include/huge_val.h /usr/include/endian.h
@@ -154,10 +191,10 @@ IndexParse.dummy.o: /usr/include/bytesex.h /usr/include/nan.h
 IndexParse.dummy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 IndexParse.dummy.o: /usr/include/values.h /usr/include/ieee754.h
 IndexParse.dummy.o: /usr/include/ieee854.h queue.h myopt.h types.h
-IndexParse.dummy.o: exception.h Utility.h Array.h SeqSimVec.h url.h
-IndexParse.dummy.o: SockStream.h listop.h site.h Iterator.h catalog.h
-IndexParse.dummy.o: ParseTree.h TypeCheck.h StringLess.h Aggregates.h
-IndexParse.dummy.o: MemoryMgr.h
+IndexParse.dummy.o: exception.h Utility.h Array.h SeqSimVec.h TableUtils.h
+IndexParse.dummy.o: url.h SockStream.h RelationId.h listop.h site.h
+IndexParse.dummy.o: Iterator.h catalog.h ParseTree.h TypeCheck.h StringLess.h
+IndexParse.dummy.o: Aggregates.h MemoryMgr.h
 InsertParse.o: /usr/include/assert.h /usr/include/features.h
 InsertParse.o: /usr/include/sys/cdefs.h /usr/include/math.h
 InsertParse.o: /usr/include/huge_val.h /usr/include/endian.h
@@ -165,9 +202,9 @@ InsertParse.o: /usr/include/bytesex.h /usr/include/nan.h
 InsertParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 InsertParse.o: /usr/include/values.h /usr/include/ieee754.h
 InsertParse.o: /usr/include/ieee854.h queue.h myopt.h types.h exception.h
-InsertParse.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h
-InsertParse.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
-InsertParse.o: StringLess.h
+InsertParse.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+InsertParse.o: RelationId.h listop.h site.h Iterator.h catalog.h ParseTree.h
+InsertParse.o: TypeCheck.h StringLess.h
 Inserter.o: url.h /usr/include/assert.h /usr/include/features.h
 Inserter.o: /usr/include/sys/cdefs.h SockStream.h exception.h Inserter.h
 Inserter.o: types.h Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
@@ -176,16 +213,17 @@ Inserter.o: /usr/include/bytesex.h /usr/include/nan.h
 Inserter.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Inserter.o: /usr/include/values.h /usr/include/ieee754.h
 Inserter.o: /usr/include/ieee854.h StandardRead.h Iterator.h MemoryMgr.h
+Inserter.o: Sort.h site.h myopt.h TableUtils.h RelationId.h listop.h PQueue.h
 Interface.o: types.h /usr/include/assert.h /usr/include/features.h
 Interface.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 Interface.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 Interface.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 Interface.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Interface.o: /usr/include/values.h /usr/include/ieee754.h
-Interface.o: /usr/include/ieee854.h Interface.h site.h myopt.h url.h
-Interface.o: SockStream.h listop.h Iterator.h DevRead.h StandardRead.h
-Interface.o: Inserter.h Engine.h catalog.h ParseTree.h TypeCheck.h
-Interface.o: StringLess.h
+Interface.o: /usr/include/ieee854.h Interface.h site.h myopt.h TableUtils.h
+Interface.o: url.h SockStream.h RelationId.h listop.h Iterator.h DevRead.h
+Interface.o: StandardRead.h Inserter.h Engine.h catalog.h ParseTree.h
+Interface.o: TypeCheck.h StringLess.h
 MaterializeParse.o: ParseTree.h queue.h /usr/include/assert.h
 MaterializeParse.o: /usr/include/features.h /usr/include/sys/cdefs.h myopt.h
 MaterializeParse.o: types.h exception.h Utility.h Array.h SeqSimVec.h
@@ -194,9 +232,9 @@ MaterializeParse.o: /usr/include/endian.h /usr/include/bytesex.h
 MaterializeParse.o: /usr/include/nan.h
 MaterializeParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 MaterializeParse.o: /usr/include/values.h /usr/include/ieee754.h
-MaterializeParse.o: /usr/include/ieee854.h url.h SockStream.h listop.h
-MaterializeParse.o: TypeCheck.h StringLess.h site.h Iterator.h catalog.h
-MaterializeParse.o: Engine.h Interface.h Inserter.h
+MaterializeParse.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+MaterializeParse.o: RelationId.h listop.h TypeCheck.h StringLess.h site.h
+MaterializeParse.o: Iterator.h catalog.h Engine.h Interface.h Inserter.h
 MemoryMgr.o: types.h /usr/include/assert.h /usr/include/features.h
 MemoryMgr.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 MemoryMgr.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -210,7 +248,8 @@ MinMax.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 MinMax.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 MinMax.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 MinMax.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-MinMax.o: url.h SockStream.h listop.h StandardRead.h Iterator.h catalog.h
+MinMax.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+MinMax.o: StandardRead.h Iterator.h catalog.h
 ODBCInterface.dummy.o: types.h /usr/include/assert.h /usr/include/features.h
 ODBCInterface.dummy.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h
 ODBCInterface.dummy.o: Array.h SeqSimVec.h /usr/include/math.h
@@ -219,9 +258,18 @@ ODBCInterface.dummy.o: /usr/include/bytesex.h /usr/include/nan.h
 ODBCInterface.dummy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ODBCInterface.dummy.o: /usr/include/values.h /usr/include/ieee754.h
 ODBCInterface.dummy.o: /usr/include/ieee854.h Interface.h site.h myopt.h
-ODBCInterface.dummy.o: url.h SockStream.h listop.h Iterator.h DevRead.h
-ODBCInterface.dummy.o: StandardRead.h Inserter.h Engine.h catalog.h
-Optimizer.o: Optimizer.h StringLess.h
+ODBCInterface.dummy.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+ODBCInterface.dummy.o: Iterator.h DevRead.h StandardRead.h Inserter.h
+ODBCInterface.dummy.o: Engine.h catalog.h
+Optimizer.o: TableUtils.h types.h /usr/include/assert.h
+Optimizer.o: /usr/include/features.h /usr/include/sys/cdefs.h exception.h
+Optimizer.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+Optimizer.o: /usr/include/huge_val.h /usr/include/endian.h
+Optimizer.o: /usr/include/bytesex.h /usr/include/nan.h
+Optimizer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Optimizer.o: /usr/include/values.h /usr/include/ieee754.h
+Optimizer.o: /usr/include/ieee854.h myopt.h url.h SockStream.h RelationId.h
+Optimizer.o: listop.h Iterator.h Optimizer.h StringLess.h
 PQueue.o: PQueue.h types.h /usr/include/assert.h /usr/include/features.h
 PQueue.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 PQueue.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -234,10 +282,10 @@ QueryTree.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 QueryTree.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 QueryTree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 QueryTree.o: /usr/include/values.h /usr/include/ieee754.h
-QueryTree.o: /usr/include/ieee854.h url.h SockStream.h listop.h site.h
-QueryTree.o: Iterator.h catalog.h DevRead.h Aggregates.h MemoryMgr.h
-QueryTree.o: TypeCheck.h StringLess.h ParseTree.h Sort.h StandardRead.h
-QueryTree.o: PQueue.h MinMax.h Interface.h Optimizer.h
+QueryTree.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+QueryTree.o: RelationId.h listop.h site.h Iterator.h catalog.h DevRead.h
+QueryTree.o: Aggregates.h MemoryMgr.h TypeCheck.h StringLess.h ParseTree.h
+QueryTree.o: Sort.h StandardRead.h PQueue.h MinMax.h Interface.h Optimizer.h
 RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h
 RTreeRead.o: /usr/include/features.h /usr/include/sys/cdefs.h queue.h types.h
 RTreeRead.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
@@ -245,8 +293,8 @@ RTreeRead.o: /usr/include/huge_val.h /usr/include/endian.h
 RTreeRead.o: /usr/include/bytesex.h /usr/include/nan.h
 RTreeRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 RTreeRead.o: /usr/include/values.h /usr/include/ieee754.h
-RTreeRead.o: /usr/include/ieee854.h url.h SockStream.h listop.h Iterator.h
-RTreeRead.o: StandardRead.h
+RTreeRead.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+RTreeRead.o: RelationId.h listop.h Iterator.h StandardRead.h
 RTreeRead.dummy.o: RTreeRead.h myopt.h /usr/include/assert.h
 RTreeRead.dummy.o: /usr/include/features.h /usr/include/sys/cdefs.h queue.h
 RTreeRead.dummy.o: types.h exception.h Utility.h Array.h SeqSimVec.h
@@ -255,8 +303,18 @@ RTreeRead.dummy.o: /usr/include/endian.h /usr/include/bytesex.h
 RTreeRead.dummy.o: /usr/include/nan.h
 RTreeRead.dummy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 RTreeRead.dummy.o: /usr/include/values.h /usr/include/ieee754.h
-RTreeRead.dummy.o: /usr/include/ieee854.h url.h SockStream.h listop.h
-RTreeRead.dummy.o: Iterator.h StandardRead.h
+RTreeRead.dummy.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+RTreeRead.dummy.o: RelationId.h listop.h Iterator.h StandardRead.h
+RelationId.o: RelationId.h
+RelationManager.o: RelationManager.h Interface.h types.h
+RelationManager.o: /usr/include/assert.h /usr/include/features.h
+RelationManager.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h
+RelationManager.o: Array.h SeqSimVec.h /usr/include/math.h
+RelationManager.o: /usr/include/huge_val.h /usr/include/endian.h
+RelationManager.o: /usr/include/bytesex.h /usr/include/nan.h
+RelationManager.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+RelationManager.o: /usr/include/values.h /usr/include/ieee754.h
+RelationManager.o: /usr/include/ieee854.h RelationId.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h
 SchemaParse.o: /usr/include/features.h /usr/include/sys/cdefs.h myopt.h
 SchemaParse.o: types.h exception.h Utility.h Array.h SeqSimVec.h
@@ -265,8 +323,9 @@ SchemaParse.o: /usr/include/endian.h /usr/include/bytesex.h
 SchemaParse.o: /usr/include/nan.h
 SchemaParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 SchemaParse.o: /usr/include/values.h /usr/include/ieee754.h
-SchemaParse.o: /usr/include/ieee854.h url.h SockStream.h listop.h TypeCheck.h
-SchemaParse.o: StringLess.h site.h Iterator.h catalog.h Interface.h
+SchemaParse.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+SchemaParse.o: RelationId.h listop.h TypeCheck.h StringLess.h site.h
+SchemaParse.o: Iterator.h catalog.h Interface.h
 SeqSimVecAggregate.o: SeqSimVecAggregate.h Aggregates.h types.h
 SeqSimVecAggregate.o: /usr/include/assert.h /usr/include/features.h
 SeqSimVecAggregate.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h
@@ -275,9 +334,9 @@ SeqSimVecAggregate.o: /usr/include/huge_val.h /usr/include/endian.h
 SeqSimVecAggregate.o: /usr/include/bytesex.h /usr/include/nan.h
 SeqSimVecAggregate.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 SeqSimVecAggregate.o: /usr/include/values.h /usr/include/ieee754.h
-SeqSimVecAggregate.o: /usr/include/ieee854.h myopt.h url.h SockStream.h
-SeqSimVecAggregate.o: listop.h site.h Iterator.h MemoryMgr.h TypeCheck.h
-SeqSimVecAggregate.o: StringLess.h
+SeqSimVecAggregate.o: /usr/include/ieee854.h myopt.h TableUtils.h url.h
+SeqSimVecAggregate.o: SockStream.h RelationId.h listop.h site.h Iterator.h
+SeqSimVecAggregate.o: MemoryMgr.h TypeCheck.h StringLess.h
 Sort.o: /usr/include/assert.h /usr/include/features.h
 Sort.o: /usr/include/sys/cdefs.h Sort.h site.h queue.h types.h exception.h
 Sort.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
@@ -285,8 +344,8 @@ Sort.o: /usr/include/huge_val.h /usr/include/endian.h /usr/include/bytesex.h
 Sort.o: /usr/include/nan.h
 Sort.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Sort.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-Sort.o: myopt.h url.h SockStream.h listop.h Iterator.h StandardRead.h
-Sort.o: PQueue.h Inserter.h MemoryMgr.h
+Sort.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h
+Sort.o: Iterator.h StandardRead.h PQueue.h Inserter.h MemoryMgr.h
 StandardRead.o: StandardRead.h types.h /usr/include/assert.h
 StandardRead.o: /usr/include/features.h /usr/include/sys/cdefs.h exception.h
 StandardRead.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
@@ -296,6 +355,15 @@ StandardRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 StandardRead.o: /usr/include/values.h /usr/include/ieee754.h
 StandardRead.o: /usr/include/ieee854.h Iterator.h url.h SockStream.h ExecOp.h
 StandardRead.o: ExecExpr.h
+TableUtils.o: TableUtils.h types.h /usr/include/assert.h
+TableUtils.o: /usr/include/features.h /usr/include/sys/cdefs.h exception.h
+TableUtils.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+TableUtils.o: /usr/include/huge_val.h /usr/include/endian.h
+TableUtils.o: /usr/include/bytesex.h /usr/include/nan.h
+TableUtils.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+TableUtils.o: /usr/include/values.h /usr/include/ieee754.h
+TableUtils.o: /usr/include/ieee854.h ExecOp.h ExecExpr.h Iterator.h
+TableUtils.o: StandardRead.h myopt.h url.h SockStream.h RelationId.h listop.h
 Templates.o: queue.h /usr/include/assert.h /usr/include/features.h
 Templates.o: /usr/include/sys/cdefs.h Array.h types.h exception.h Utility.h
 Templates.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -303,15 +371,17 @@ Templates.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 Templates.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Templates.o: /usr/include/values.h /usr/include/ieee754.h
 Templates.o: /usr/include/ieee854.h ExecExpr.h MemoryMgr.h listop.h myopt.h
-Templates.o: url.h SockStream.h Optimizer.h StringLess.h
+Templates.o: TableUtils.h url.h SockStream.h RelationId.h Optimizer.h
+Templates.o: StringLess.h ParseTree.h TypeCheck.h
 TypeCheck.o: myopt.h /usr/include/assert.h /usr/include/features.h
 TypeCheck.o: /usr/include/sys/cdefs.h queue.h types.h exception.h Utility.h
 TypeCheck.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 TypeCheck.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 TypeCheck.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 TypeCheck.o: /usr/include/values.h /usr/include/ieee754.h
-TypeCheck.o: /usr/include/ieee854.h url.h SockStream.h listop.h TypeCheck.h
-TypeCheck.o: StringLess.h catalog.h Interface.h
+TypeCheck.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+TypeCheck.o: RelationId.h listop.h TypeCheck.h StringLess.h catalog.h
+TypeCheck.o: Interface.h
 UnionParse.o: ParseTree.h queue.h /usr/include/assert.h
 UnionParse.o: /usr/include/features.h /usr/include/sys/cdefs.h myopt.h
 UnionParse.o: types.h exception.h Utility.h Array.h SeqSimVec.h
@@ -319,8 +389,9 @@ UnionParse.o: /usr/include/math.h /usr/include/huge_val.h
 UnionParse.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 UnionParse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 UnionParse.o: /usr/include/values.h /usr/include/ieee754.h
-UnionParse.o: /usr/include/ieee854.h url.h SockStream.h listop.h TypeCheck.h
-UnionParse.o: StringLess.h site.h Iterator.h
+UnionParse.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+UnionParse.o: RelationId.h listop.h TypeCheck.h StringLess.h site.h
+UnionParse.o: Iterator.h
 Util.o: types.h /usr/include/assert.h /usr/include/features.h
 Util.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 Util.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -336,14 +407,29 @@ catalog.o: /usr/include/bytesex.h /usr/include/nan.h
 catalog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 catalog.o: /usr/include/values.h /usr/include/ieee754.h
 catalog.o: /usr/include/ieee854.h Iterator.h catalog.h url.h SockStream.h
-catalog.o: site.h myopt.h listop.h Inserter.h Interface.h
+catalog.o: site.h myopt.h TableUtils.h RelationId.h listop.h Inserter.h
+catalog.o: Interface.h
 joins.o: joins.h site.h queue.h /usr/include/assert.h /usr/include/features.h
 joins.o: /usr/include/sys/cdefs.h types.h exception.h Utility.h Array.h
 joins.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 joins.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 joins.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 joins.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-joins.o: myopt.h url.h SockStream.h listop.h Iterator.h
+joins.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h
+joins.o: Iterator.h
+lex.yy.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+lex.yy.o: /usr/include/assert.h /usr/include/features.h
+lex.yy.o: /usr/include/sys/cdefs.h myopt.h queue.h types.h exception.h
+lex.yy.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+lex.yy.o: /usr/include/huge_val.h /usr/include/endian.h
+lex.yy.o: /usr/include/bytesex.h /usr/include/nan.h
+lex.yy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+lex.yy.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+lex.yy.o: TableUtils.h url.h SockStream.h RelationId.h listop.h ParseTree.h
+lex.yy.o: TypeCheck.h StringLess.h my.yacc.tab.h /usr/include/stdlib.h
+lex.yy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+lex.yy.o: /usr/include/errno.h /usr/include/linux/errno.h
+lex.yy.o: /usr/include/asm/errno.h /usr/include/alloca.h
 listop.o: /usr/include/assert.h /usr/include/features.h
 listop.o: /usr/include/sys/cdefs.h /usr/include/math.h
 listop.o: /usr/include/huge_val.h /usr/include/endian.h
@@ -351,23 +437,41 @@ listop.o: /usr/include/bytesex.h /usr/include/nan.h
 listop.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 listop.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
 listop.o: queue.h myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
-listop.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h ExecExpr.h
+listop.o: TableUtils.h url.h SockStream.h RelationId.h listop.h site.h
+listop.o: Iterator.h catalog.h ExecExpr.h
+my.yacc.tab.o: myopt.h /usr/include/assert.h /usr/include/features.h
+my.yacc.tab.o: /usr/include/sys/cdefs.h queue.h types.h exception.h Utility.h
+my.yacc.tab.o: Array.h SeqSimVec.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/huge_val.h /usr/include/endian.h
+my.yacc.tab.o: /usr/include/bytesex.h /usr/include/nan.h
+my.yacc.tab.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+my.yacc.tab.o: /usr/include/values.h /usr/include/ieee754.h
+my.yacc.tab.o: /usr/include/ieee854.h TableUtils.h url.h SockStream.h
+my.yacc.tab.o: RelationId.h listop.h ParseTree.h TypeCheck.h StringLess.h
+my.yacc.tab.o: /usr/include/stdlib.h
+my.yacc.tab.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+my.yacc.tab.o: /usr/include/errno.h /usr/include/linux/errno.h
+my.yacc.tab.o: /usr/include/asm/errno.h /usr/include/alloca.h
+my.yacc.tab.o: /usr/include/stdio.h /usr/include/libio.h
+my.yacc.tab.o: /usr/include/_G_config.h
 resolve.o: types.h /usr/include/assert.h /usr/include/features.h
 resolve.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 resolve.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 resolve.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 resolve.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 resolve.o: /usr/include/values.h /usr/include/ieee754.h
-resolve.o: /usr/include/ieee854.h myopt.h url.h SockStream.h listop.h site.h
-resolve.o: Iterator.h ExecExpr.h catalog.h Interface.h
+resolve.o: /usr/include/ieee854.h myopt.h TableUtils.h url.h SockStream.h
+resolve.o: RelationId.h listop.h site.h Iterator.h ExecExpr.h catalog.h
+resolve.o: Interface.h RelationManager.h
 site.o: site.h queue.h /usr/include/assert.h /usr/include/features.h
 site.o: /usr/include/sys/cdefs.h types.h exception.h Utility.h Array.h
 site.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
 site.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 site.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 site.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-site.o: myopt.h url.h SockStream.h listop.h Iterator.h Interface.h ExecOp.h
-site.o: ExecExpr.h RTreeRead.h StandardRead.h MemoryMgr.h
+site.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h
+site.o: Iterator.h Interface.h ExecOp.h ExecExpr.h RTreeRead.h StandardRead.h
+site.o: MemoryMgr.h
 types.o: types.h /usr/include/assert.h /usr/include/features.h
 types.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 types.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -416,4 +520,14 @@ SBMInit.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 SBMInit.o: /usr/include/netinet/in.h /usr/include/linux/in.h
 SBMInit.o: /usr/include/asm/byteorder.h InitShut.h
 SBMInit.dummy.o: InitShut.h
+TableCreate.o: ../Core/RelationManager.h ../Core/Interface.h ../Core/types.h
+TableCreate.o: /usr/include/assert.h /usr/include/features.h
+TableCreate.o: /usr/include/sys/cdefs.h ../Core/exception.h ../Core/Utility.h
+TableCreate.o: ../Core/queue.h ../Core/Array.h ../Core/SeqSimVec.h
+TableCreate.o: /usr/include/math.h /usr/include/huge_val.h
+TableCreate.o: /usr/include/endian.h /usr/include/bytesex.h
+TableCreate.o: /usr/include/nan.h
+TableCreate.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+TableCreate.o: /usr/include/values.h /usr/include/ieee754.h
+TableCreate.o: /usr/include/ieee854.h ../Core/RelationId.h ../Core/Inserter.h
 main.o: InitShut.h Common.h

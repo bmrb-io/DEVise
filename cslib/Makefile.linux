@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1998/03/04 20:35:59  wenger
+# Updated dependencies.
+#
 # Revision 1.6  1998/01/07 19:27:48  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -147,17 +150,18 @@ WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 WinServer.o: /usr/include/ieee754.h /usr/include/ieee854.h
 WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/ViewDir.h /usr/include/string.h
+WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
 WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 WinServer.o: ../graphics/DevError.h /usr/include/errno.h
 WinServer.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-WinServer.o: ../graphics/ETkIfc.h /usr/include/string.h
-WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-WinServer.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
-WinServer.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-WinServer.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h
+WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+WinServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+WinServer.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+WinServer.o: ../graphics/CursorStore.h
 client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
 client.o: /usr/include/features.h
@@ -188,11 +192,12 @@ server.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 server.o: /usr/include/ieee754.h /usr/include/ieee854.h
 server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewWin.h
-server.o: ../graphics/WindowRep.h ../graphics/Transform.h
-server.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
-server.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
-server.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-server.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+server.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+server.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+server.o: ../graphics/CursorStore.h ../graphics/DualWindowRep.h

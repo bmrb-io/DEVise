@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/03/04 20:35:53  wenger
+# Updated dependencies.
+#
 # Revision 1.10  1998/01/07 19:27:11  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -65,9 +68,10 @@ ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
 ApInit.o: /usr/include/linux/time.h /usr/include/time.h ../graphics/Journal.h
-ApInit.o: ../graphics/VisualArg.h ../graphics/Timer.h ../graphics/Util.h
-ApInit.o: /usr/include/ctype.h /usr/include/endian.h /usr/include/bytesex.h
-ApInit.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/endian.h
+ApInit.o: /usr/include/bytesex.h /usr/include/math.h /usr/include/huge_val.h
+ApInit.o: /usr/include/nan.h
 ApInit.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ApInit.o: /usr/include/ieee754.h /usr/include/ieee854.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/libio.h
@@ -112,12 +116,13 @@ ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 ApParseCat.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat.o: ../graphics/Parse.h ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Parse.h
+ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
 ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
 ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/huge_val.h /usr/include/nan.h
 ApParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ApParseCat.o: /usr/include/ieee754.h /usr/include/ieee854.h
@@ -163,13 +168,14 @@ ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 ApParseCat2.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat2.o: ../graphics/ViewDir.h /usr/include/string.h
 ApParseCat2.o: ../graphics/Parse.h ApInit.h
 ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat2.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/huge_val.h /usr/include/nan.h
 ApParseCat2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ApParseCat2.o: /usr/include/ieee754.h /usr/include/ieee854.h
