@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1996/07/12 22:24:37  jussi
+#  Views are now saved before tdata and mappings in a session file.
+#  Exporting template with data does not add "addDataSource"
+#  statements for BASICSTAT data sources.
+#
 #  Revision 1.21  1996/07/12 18:25:07  wenger
 #  Fixed bugs with handling file headers in schemas; added DataSourceBuf
 #  to TDataAscii.
@@ -101,8 +106,7 @@
 # Save a info about creating a class instance into file f
 proc SaveInstance { f category class instance } {
     set params [ DEVise getCreateParam $category $class $instance ]
-    puts $f "DEVise create $category $class $params"
-    flush $f
+    puts $f "DEVise create \{$category\} \{$class\} $params"
 }
 
 ############################################################
@@ -111,7 +115,7 @@ proc SaveInstance { f category class instance } {
 proc SaveClass { f category class } {
     set instances [ DEVise get $category $class]
     foreach i $instances {
-	SaveInstance $f $category $class $i 
+	SaveInstance $f $category $class $i
     }
 }
 
@@ -121,30 +125,38 @@ proc SaveClass { f category class } {
 proc SaveCategory { f category } {
     set classes [ DEVise get $category ]
     foreach i $classes {
-	SaveClass $f $category $i 
+	SaveClass $f $category $i
     }
 }
 
 ############################################################
 
 # Save info about mappings to all views into file f
-proc SaveAllViewMappings { f mappingDict viewDict } {
+proc SaveAllViewMappings { f mappingDict viewDict asBatchScript } {
     # Get all mapping classes
     set viewClasses [ DEVise get "view" ]
     foreach vClass $viewClasses {
 	# Get all views for this class
 	set views [ DEVise get "view" $vClass ]
 	foreach v $views {
-	    set viewVar [DictLookup $viewDict $v]
+            set viewName "\{$v\}"
+            if {!$asBatchScript} {
+	        set viewVar [DictLookup $viewDict $v]
+	        set viewName "\$$viewVar"
+            }
 	    # Get all mappings for this view
 	    set mappings [ DEVise getViewMappings $v ]
 	    foreach map $mappings {
-		set mapVar [DictLookup $mappingDict $map]
-		puts $f "DEVise insertMapping \$$viewVar \$$mapVar"
+                set mapName "\{$map\}"
+                if {!$asBatchScript} {
+                    set mapVar [DictLookup $mappingDict $map]
+                    set mapName "\$$mapVar"
+                }
+                puts $f "DEVise insertMapping $viewName $mapName"
 		set label [DEVise getMappingLegend $v $map]
 		if {$label != ""} {
-		    puts $f "DEVise setMappingLegend \$$viewVar \$$mapVar \{$label\}"
-		}
+                    puts $f "DEVise setMappingLegend $viewName $mapName \{$label\}"
+                }
 	    }
 	}
     }
@@ -153,29 +165,33 @@ proc SaveAllViewMappings { f mappingDict viewDict } {
 ############################################################
 
 # Save info about axis labels to all views 
-proc SaveAllViewAxisLabel { f viewDict } {
+proc SaveAllViewAxisLabel { f viewDict asBatchScript } {
     set viewClasses [ DEVise get "view" ]
     foreach vClass $viewClasses {
 	# Get all views for this class
 	set views [ DEVise get "view" $vClass ]
 	foreach v $views {
-	    set viewVar [DictLookup $viewDict $v]
+            set viewName "\{$v\}"
+            if {!$asBatchScript} {
+	        set viewVar [DictLookup $viewDict $v]
+	        set viewName "\$$viewVar"
+            }
 	    set xAxisLabel [ DEVise getAxis $v x]
 	    if {$xAxisLabel != ""} {
-		puts $f "DEVise setAxis \$$viewVar $xAxisLabel x"
+		puts $f "DEVise setAxis $viewName \{$xAxisLabel\} x"
 	    }
 	    
 	    set yAxisLabel [ DEVise getAxis $v y]
 	    if {$yAxisLabel != ""} {
-		puts $f "DEVise setAxis \$$viewVar $yAxisLabel y"
+		puts $f "DEVise setAxis $viewName \{$yAxisLabel\} y"
 	    }
 	    
 	    # Set axis display on/off.
 	    set stat [DEVise getAxisDisplay $v X]
-	    puts $f "DEVise setAxisDisplay \$$viewVar X $stat"
+	    puts $f "DEVise setAxisDisplay $viewName X $stat"
 	    
 	    set stat [DEVise getAxisDisplay $v Y]
-	    puts $f "DEVise setAxisDisplay \$$viewVar Y $stat"
+	    puts $f "DEVise setAxisDisplay $viewName Y $stat"
 	}
     }
 }
@@ -183,16 +199,20 @@ proc SaveAllViewAxisLabel { f viewDict } {
 ############################################################
 
 # Save info about action
-proc SaveAllViewAction { f dict} {
+proc SaveAllViewAction { f dict asBatchScript } {
     set viewClasses [ DEVise get "view" ]
     foreach vClass $viewClasses {
 	# Get all views for this class
 	set views [ DEVise get "view" $vClass ]
 	foreach v $views {
-	    set viewVar [DictLookup $dict $v]
+            set viewName "\{$v\}"
+            if {!$asBatchScript} {
+	        set viewVar [DictLookup $dict $v]
+	        set viewName "\$$viewVar"
+            }
 	    set action [DEVise getAction $v]
 	    if {$action != ""} {
-		puts $f "DEVise setAction \$$viewVar $action"
+		puts $f "DEVise setAction $viewName \{$action\}"
 	    }
 	}
     }
@@ -201,7 +221,7 @@ proc SaveAllViewAction { f dict} {
 ############################################################
 
 # Save info about views inserted into windows into file f
-proc SaveAllWindowViews { f viewDict} {
+proc SaveAllWindowViews { f viewDict asBatchScript } {
     # Get all window classes
     set windowClasses [ DEVise get "window" ]
     foreach winClass $windowClasses {
@@ -211,8 +231,12 @@ proc SaveAllWindowViews { f viewDict} {
 	    # Get all views inserted into this window
 	    set views [DEVise getWinViews $win ]
 	    foreach v $views {
-		set viewVar [DictLookup $viewDict $v]
-		puts $f "DEVise insertWindow \$$viewVar \{$win\}"
+                set viewName "\{$v\}"
+                if {!$asBatchScript} {
+                    set viewVar [DictLookup $viewDict $v]
+                    set viewName "\$$viewVar"
+                }
+		puts $f "DEVise insertWindow $viewName \{$win\}"
 	    }
 	}
     }
@@ -221,18 +245,26 @@ proc SaveAllWindowViews { f viewDict} {
 ############################################################
 
 # Save name of views in links
-proc SaveLinkViews { file dict} {
+proc SaveLinkViews { file dict asBatchScript } {
     set linkSet [LinkSet]
     foreach link $linkSet {
 	set views [DEVise getLinkViews $link]
-	foreach view $views {
-	    set viewVar [DictLookup $dict $view]
-	    puts $file "DEVise insertLink \{$link\} \$$viewVar"
+	foreach v $views {
+            set viewName "\{$v\}"
+            if {!$asBatchScript} {
+	        set viewVar [DictLookup $dict $v]
+	        set viewName "\$$viewVar"
+            }
+	    puts $file "DEVise insertLink \{$link\} $viewName"
 	}
-	set view [DEVise getLinkMaster $link]
-	if {$view != ""} {
-	    set viewVar [DictLookup $dict $view]
-	    puts $file "DEVise setLinkMaster \{$link\} \$$viewVar"
+	set v [DEVise getLinkMaster $link]
+	if {$v != ""} {
+            set viewName "\{$v\}"
+            if {!$asBatchScript} {
+	        set viewVar [DictLookup $dict $v]
+	        set viewName "\$$viewVar"
+            }
+	    puts $file "DEVise setLinkMaster \{$link\} $viewName"
 	}
     }
 }
@@ -240,17 +272,27 @@ proc SaveLinkViews { file dict} {
 ############################################################
 
 # Save name of views in cursors
-proc SaveCursorViews { file dict} {
+proc SaveCursorViews { file dict asBatchScript } {
     set cursorSet [CursorSet]
     foreach cursor $cursorSet {
 	set views [DEVise getCursorViews $cursor]
-	set src [DictLookup $dict [lindex $views 0]]
-	set dst [DictLookup $dict [lindex $views 1]]
+	set src [lindex $views 0]
+	set dst [lindex $views 1]
 	if {$src != ""} {
-	    puts $file "DEVise setCursorSrc \{$cursor\} \$$src"
+            set viewName ""
+            if {!$asBatchScript} {
+                set viewVar [DictLookup $dict $src]
+                set viewName "\$$viewVar"
+            }
+	    puts $file "DEVise setCursorSrc \{$cursor\} $viewName"
 	}
 	if {$dst != ""} {
-	    puts $file "DEVise setCursorDst \{$cursor\} \$$dst"
+            set viewName ""
+            if {!$asBatchScript} {
+                set viewVar [DictLookup $dict $dst]
+                set viewName "\$$viewVar"
+            }
+	    puts $file "DEVise setCursorDst \{$cursor\} $viewName"
 	}
     }
 }
@@ -258,15 +300,23 @@ proc SaveCursorViews { file dict} {
 ############################################################
 
 # Save session
-proc DoActualSave { infile asTemplate asExport withData } {
-    global mode
-    global templateMode schemadir datadir
+proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
+    global mode templateMode schemadir datadir
 
     # you can't save an imported file until it has been merged
     if {$templateMode} { 
 	dialog .open "Merge Data" \
 	    "You must merge an imported template before saving it" "" 0 OK
 	return
+    }
+
+    if {$asBatchScript} {
+        if {$asTemplate || $asExport || $withData} {
+            dialog .open "Incompatible Selection" \
+                    "Cannot save batch script as a template\
+                    or as an exported template or with data" "" 0 OK
+            return
+        }
     }
 
     if {[file exists $infile]} {
@@ -321,23 +371,25 @@ proc DoActualSave { infile asTemplate asExport withData } {
 
     # Save the commands needed to create the views.
     set viewDict ""
-    SaveViews $f viewDict
+    SaveViews $f viewDict $asBatchScript
 
-    # Save the commands needed to create the data sources.
-    set positionOffsets(dummy) ""
-    set lengthOffsets(dummy) ""
-    SaveDataSources $f $asExport $asTemplate $withData positionOffsets \
-	lengthOffsets
+    if {!$asBatchScript} {
+        # Save the commands needed to create the data sources.
+        set positionOffsets(dummy) ""
+        set lengthOffsets(dummy) ""
+        SaveDataSources $f $asExport $asTemplate $withData \
+                positionOffsets lengthOffsets
+    }
 
     # Save the commands needed to create the TDatas.
     set fileDict ""
-    SaveCreateTDatas $f $asTemplate fileDict
+    SaveCreateTDatas $f $asTemplate fileDict $asBatchScript
 
     # Save the commands needed to create the mappings.
     set mapDict ""
-    SaveMappings $f $fileDict mapDict
+    SaveMappings $f $fileDict mapDict $asBatchScript
 
-    SaveMisc $f $asTemplate $asExport $viewDict $mapDict
+    SaveMisc $f $asTemplate $asExport $viewDict $mapDict $asBatchScript
 
     if { $mode == 1 } {
         puts $f ""
@@ -355,7 +407,7 @@ proc DoActualSave { infile asTemplate asExport withData } {
 	SaveAllData $f positionOffsets lengthOffsets
     }
 
-    if {$asTemplate || $asExport} {
+    if {$asTemplate || $asExport || $asBatchScript} {
 	ChangeStatus 0
 	close $f
 	return
@@ -384,12 +436,12 @@ proc DoSave {} {
 	return
     }
 
-    DoActualSave $sessionName 0 0 0
+    DoActualSave $sessionName 0 0 0 0
 }
 
 ############################################################
 
-proc DoSaveAs { asTemplate asExport withData } {
+proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     global sessionName fsBox sessiondir templateMode
 
     # Get file name
@@ -403,7 +455,7 @@ proc DoSaveAs { asTemplate asExport withData } {
 	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
     if {$button != 1} { return }
 
-    DoActualSave $file $asTemplate $asExport $withData
+    DoActualSave $file $asTemplate $asExport $withData $asBatchScript
     if {!$asTemplate} {
 	set sessionName $file
     }
@@ -495,7 +547,7 @@ proc DoTemplateMerge {} {
 # Save all schemas to the given file.
 proc SaveAllSchemas { fileId asExport } {
     puts $fileId "# Import schemas"
-    set catFile [DEVise catFiles]
+    set catFile [ DEVise catFiles ]
     foreach file $catFile {
 	SaveOneSchema $fileId $asExport $file
     }
@@ -551,7 +603,7 @@ proc ReadSchemaFile { schemaFile schemaRef } {
     set len [readSchemaLine $fileP line]
     while {$len >= 0} {
         set schema "$schema$line\n"
-        set len [readSchemaLine $fileP line]
+        set len [ readSchemaLine $fileP line ]
     }
 
     close $fileP
@@ -560,8 +612,8 @@ proc ReadSchemaFile { schemaFile schemaRef } {
 ############################################################
 
 # Save the appropriate commands to create the data sources.
-proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
-    lenOffRef } {
+proc SaveDataSources { fileId asExport asTemplate withData
+                       posOffRef lenOffRef } {
     upvar $posOffRef positionOffsets
     upvar $lenOffRef lengthOffsets
     global sourceList derivedSourceList
@@ -639,7 +691,7 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 ############################################################
 
 # Save the commands to create the TDatas to the given file.
-proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
+proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
     upvar $fileDictRef fileDict
 
     set fileNum 1
@@ -653,7 +705,10 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
 	    set param [lindex $params 2]
 	    set fileDict [DictInsert $fileDict $sname tdata_$fileNum]
 	    set tdataVar tdata_$fileNum
-	    if {$asTemplate} {
+            if {$asBatchScript} {
+		puts $fileId "DEVise dataSegment \{$sname\} \{$param\} 0 0"
+		puts $fileId "DEVise create tdata \{$class\} \{$sname\} \{$stype\} \{$param\}"
+            } elseif {$asTemplate} {
 		puts $fileId "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
 		puts $fileId "if \{\$$tdataVar == \"\"\} \{"
 		puts $fileId "\treturn 0"
@@ -675,7 +730,7 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
 		puts $fileId "\tset sname \[lindex \$source 0\]"
 		puts $fileId "\tset param \[lindex \$source 1\]"
 		puts $fileId "\tset stype \[lindex \$source 2\]"
-		puts $fileId "\tDEVise create tdata $class \$sname \$stype \$param"
+		puts $fileId "\tDEVise create tdata \{$class\} \$sname \$stype \$param"
 		puts $fileId "\tif \{\$sname != \$$tdataVar\} \{"
 		puts $fileId "\t\tset loadPixmap 0"
 		puts $fileId "\t\tset $tdataVar \$sname"
@@ -683,7 +738,7 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
 		puts $fileId "\}"
 	    }
 
-	    set fileNum [expr $fileNum+1]
+	    incr fileNum
 	}
     }
     puts $fileId  ""
@@ -692,7 +747,7 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
 ############################################################
 
 # Save mappings to the given file.
-proc SaveMappings { fileId fileDict mapDictRef } {
+proc SaveMappings { fileId fileDict mapDictRef asBatchScript } {
     upvar $mapDictRef mapDict
 
     # build up list of class names of interpreted mappings
@@ -707,8 +762,7 @@ proc SaveMappings { fileId fileDict mapDictRef } {
 
     puts $fileId "# Create interpreted mapping classes"
     foreach mclass $interpretedGDataClasses {
-	# puts "mclass $mclass"
-	puts $fileId "DEVise createMappingClass $mclass"
+	puts $fileId "DEVise createMappingClass \{$mclass\}"
     }
     puts $fileId ""
 
@@ -716,33 +770,36 @@ proc SaveMappings { fileId fileDict mapDictRef } {
     set mapDict ""
     set mapNum 1
     foreach mapClass [DEVise get mapping] {
-	foreach inst [DEVise get mapping $mapClass] {
-	    set params [DEVise getCreateParam mapping $mapClass $inst]
+	foreach map [DEVise get mapping $mapClass] {
+	    set params [DEVise getCreateParam mapping $mapClass $map]
 	    set fileAlias [lindex $params 0]
-	    set fileVar [DictLookup $fileDict $fileAlias]
 	    set gdataName [lindex $params 1]
-	    regsub $fileAlias $gdataName \%s gdataExpr
-	    puts $fileId "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
-	    puts $fileId "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
-	    set mapDict [DictInsert $mapDict $inst map_$mapNum]
+            if {$map != $gdataName} {
+                puts "Warning: mapping $map is named $gdataName"
+            }
+            set width [ DEVise getPixelWidth $map ]
+            if {$asBatchScript} {
+                puts $fileId "DEVise create mapping \{$mapClass\} \{$fileAlias\} \{$map\} [lrange $params 2 end]"
+                puts $fileId "DEVise setPixelWidth \{$map\} \{$width\}"
+            }
+            set fileVar [ DictLookup $fileDict $fileAlias ]
+            regsub $fileAlias $map \%s gdataExpr
+            if {!$asBatchScript} {
+                puts $fileId "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
+                puts $fileId "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
+                puts $fileId "DEVise setPixelWidth \$map_$mapNum \{$width\}"
+            }
+	    set mapDict [ DictInsert $mapDict $map map_$mapNum ]
 	    incr mapNum
+            puts $fileId ""
 	}
     }
-    puts $fileId ""
-
-    puts $fileId "# Save pixel width for mappings"
-    foreach map [ GdataSet ] {
-	set width [DEVise getPixelWidth $map]
-	set gdataVar [DictLookup $mapDict $map]
-	puts $fileId "DEVise setPixelWidth \$$gdataVar $width"
-    }
-    puts $fileId ""
 }
 
 ############################################################
 
 # Save views to the given file.
-proc SaveViews { fileId viewDictRef } {
+proc SaveViews { fileId viewDictRef asBatchScript } {
     upvar $viewDictRef viewDict
 
     puts $fileId "# Create views"
@@ -752,35 +809,42 @@ proc SaveViews { fileId viewDictRef } {
 	foreach inst [ DEVise get view $viewClass ] {
 	    set params [DEVise getCreateParam view $viewClass $inst]
 	    set viewVar view_$viewNum
-            puts $fileId "set $viewVar \{$inst\}"
-	    puts $fileId "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
+            set viewName "\{$inst\}"
+            if {!$asBatchScript} {
+                puts $fileId "set $viewVar \{$inst\}"
+	        set viewName "\$$viewVar"
+            }
+	    puts $fileId "DEVise create view \{$viewClass\} $viewName [lrange $params 1 end]"
 	    set viewLabelParams [DEVise getLabel $inst]
-	    puts $fileId "DEVise setLabel \$$viewVar $viewLabelParams"
+	    puts $fileId "DEVise setLabel $viewName $viewLabelParams"
 	    set viewStatParams [DEVise getViewStatistics $inst]
-	    puts $fileId "DEVise setViewStatistics \$$viewVar $viewStatParams"
+	    puts $fileId "DEVise setViewStatistics $viewName $viewStatParams"
 	    set viewDimensions [DEVise getViewDimensions $inst]
-	    puts $fileId "DEVise setViewDimensions \$$viewVar $viewDimensions"
+	    puts $fileId "DEVise setViewDimensions $viewName $viewDimensions"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
-	    set viewNum [expr $viewNum+1]
+	    incr viewNum
 	}
     }
     puts $fileId ""
-    puts $fileId "scanDerivedSources"
-    puts $fileId ""
+
+    if {!$asBatchScript} {
+        puts $fileId "scanDerivedSources"
+        puts $fileId ""
+    }
 }
 
 ############################################################
 
 # Save miscellaneous stuff to the given file.
-proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
+proc SaveMisc { fileId asTemplate asExport viewDict mapDict asBatchScript } {
     puts $fileId "# Create windows"
     SaveCategory $fileId "window" 
     puts $fileId ""
 
     puts $fileId "# Setup window layouts"
-    foreach win [WinSet] {
-	set layout [DEVise getWindowLayout $win]
+    foreach win [ WinSet ] {
+	set layout [ DEVise getWindowLayout $win ]
 	puts $fileId "DEVise setWindowLayout \{$win\} $layout"
     }
     puts $fileId ""
@@ -802,47 +866,56 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
     puts $fileId ""
 
     puts $fileId "# Put labels into views"
-    SaveAllViewAxisLabel $fileId $viewDict
+    SaveAllViewAxisLabel $fileId $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Put action into view"
-    SaveAllViewAction $fileId $viewDict
+    SaveAllViewAction $fileId $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Link views"
-    SaveLinkViews $fileId $viewDict
+    SaveLinkViews $fileId $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Put views in cursors"
-    SaveCursorViews $fileId $viewDict
+    SaveCursorViews $fileId $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Put axis label into views"
     puts $fileId ""
 
     puts $fileId "# Insert mappings into views"
-    SaveAllViewMappings $fileId $mapDict $viewDict 
+    SaveAllViewMappings $fileId $mapDict $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Insert views into windows"
-    SaveAllWindowViews $fileId $viewDict
+    SaveAllWindowViews $fileId $viewDict $asBatchScript
     puts $fileId ""
 
     puts $fileId "# Init history of view"
     foreach view [ViewSet] {
-	set viewVar [DictLookup $viewDict $view]
-	puts $fileId "DEVise clearViewHistory \$$viewVar"
-	if {$asTemplate || $asExport} {
+        set viewName "\{$view\}"
+        if {!$asBatchScript} {
+            set viewVar [DictLookup $viewDict $view]
+            set viewName "\$$viewVar"
+        }
+	puts $fileId "DEVise clearViewHistory $viewName"
+	if {$asTemplate || $asExport || $asBatchScript} {
 	    continue
 	}
-	foreach hist [ DEVise getVisualFilters $view ] {
-	    puts $fileId "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
-	}
+        foreach hist [ DEVise getVisualFilters $view ] {
+            puts $fileId "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
+        }
     }
 
     puts $fileId ""
     puts $fileId "# Set camera location for each view"
     foreach view [ViewSet] {
+        set viewName "\{$view\}"
+        if {!$asBatchScript} {
+            set viewVar [DictLookup $viewDict $view]
+            set viewName "\$$viewVar"
+        }
 	set camera [DEVise get3DLocation $view]
 	set x [lindex $camera 1]
 	set y [lindex $camera 2]
@@ -850,8 +923,7 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
 	set fx [lindex $camera 4]
 	set fy [lindex $camera 5]
 	set fz [lindex $camera 6]
-	set viewVar [DictLookup $viewDict $view]
-	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z $fx $fy $fz"
+	puts $fileId "DEVise set3DLocation $viewName $x $y $z $fx $fy $fz"
     }
 }
 
