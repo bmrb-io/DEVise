@@ -1,5 +1,6 @@
 # Data source configuration
 
 set "sourceConfig(COMPUSTAT)" {/dev/nrst11 23 512 32768}
-set "sourceConfig(CRSP)" {/dev/nrst11 20 512 32768}
-set "sourceConfig(ISSM)" {/dev/nrst11 4 0 32768}
+set "sourceConfig(CRSP)"      {/dev/nrst11 20 512 32768}
+set "sourceConfig(CRSP_NSDQ)" {/dev/nrst11 21 512 32768}
+set "sourceConfig(ISSM)"      {/dev/nrst11 4 0 32768}
