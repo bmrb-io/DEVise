@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/01/18 22:34:13  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.18  1998/11/03 17:53:31  okan
   Fixed Several bugs and changed DataReader to use UtilAtof
 
@@ -220,9 +228,6 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 	maxLens = new int[myDRSchema->qAttr];
 	fieldLens = new int[myDRSchema->qAttr];
 	quoteChars = new char[myDRSchema->qAttr];
-	_tmpB = new char[40];
-	_tmpBStart = _tmpB;
-
 
 	// Initialize _separatorCheck to make faster separator comparison
 	// Also, initialize ext and val Funcs to proper extractor functions

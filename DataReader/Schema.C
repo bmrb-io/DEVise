@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/01/18 22:34:16  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.14  1999/01/18 18:09:29  beyer
   All objects are now aligned on MAX_ALIGN in buffer.
   Also, changed stringstream usage.
@@ -225,7 +233,6 @@ void DRSchema::addAttribute(Attribute* newAttr) {
 
 
 Status DRSchema::finalizeDRSchema() {
-	int curOff = 0;
 	int i,j,k;
 	bool compoundFound = true;
 	int fLen = 0;
@@ -297,9 +304,8 @@ Status DRSchema::finalizeDRSchema() {
 
 		// calculate record length, length of fields and offsets of fields in
 		// the destination buffer
-                curOff = Align(curOff, MAX_ALIGN);//kb: hack to make everything aligned
-		tableAttr[i]->offset = curOff;
-		curOff += fLen;
+                _recSize = Align(_recSize, MAX_ALIGN);//kb: hack to make everything aligned
+		tableAttr[i]->offset = _recSize;
 		tableAttr[i]->setLength(fLen);
 		_recSize += fLen;
 				

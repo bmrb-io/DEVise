@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/01/18 22:34:13  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.10  1998/11/03 17:53:32  okan
   Fixed Several bugs and changed DataReader to use UtilAtof
 
@@ -159,8 +167,6 @@ private:
 	int _nAttr;
 	char** _months; // array of month names
 	char** _monthAbbr; // array of abbreviated month names
-	char* _tmpB; // temporary Buffer for double types
-	char* _tmpBStart;
 
 public:
 	Buffer(const char* fileName, DRSchema* myDRSchema, Status &status);
