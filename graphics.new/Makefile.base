@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.86  1998/05/06 22:04:54  wenger
+#  Single-attribute set links are now working except where the slave of
+#  one is the master of another.
+#
 #  Revision 1.85  1998/05/05 15:15:17  zhenhai
 #  Implemented 3D Cursor as a rectangular block in the destination view
 #  showing left, right, top, bottom, front and back cutting planes of the
@@ -249,6 +253,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 	-I../../csgroup/export\
 	-I../unidata\
 	-I../../graphics.new -I../../tape -I../../generic $(GLINCLUDE)\
+	-I.. -I../../src/include \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX \
 	-DNEW_LAYOUT -DVIEW_SHAPE -DHAVE_CONFIG_H
 
