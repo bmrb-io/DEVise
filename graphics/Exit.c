@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/15 06:52:31  donjerko
+  Added the initialization and shutdown for RTree code.
+
   Revision 1.10  1996/11/26 09:29:59  beyer
   The exit code now removes the temp directory for its process.
   This could be more portable -- right now it just calls 'rm -fr'.
@@ -55,19 +58,23 @@
 #include <unistd.h>
 
 #include "Exit.h"
-#ifndef LIBCS
+#if !defined(LIBCS) && !defined(ATTRPROJ)
 #include "Init.h"
 #include "Control.h"
 #include "DaliIfc.h"
 #endif
 
+#if !defined(LIBCS) && !defined(ATTRPROJ)
 #include "RTreeCommon.h"
+#endif
 
 void Exit::DoExit(int code)
 {
-	shutdown_system(VolumeName, RTreeFile, VolumeSize);
+#if !defined(LIBCS) && !defined(ATTRPROJ)
+  shutdown_system(VolumeName, RTreeFile, VolumeSize);
+#endif
 
-#ifndef LIBCS
+#if !defined(LIBCS) && !defined(ATTRPROJ)
   if (Init::DoAbort()) {
     fflush(stdout);
     fflush(stderr);
@@ -101,7 +108,7 @@ void Exit::DoAbort(char *reason, char *file, int line)
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
   fprintf(stderr, "  %s\n", fulltext);
 
-#ifndef LIBCS
+#if !defined(LIBCS) && !defined(ATTRPROJ)
   ControlPanel::Instance()->DoAbort(fulltext);
 
   if (Init::DaliQuit()) {
