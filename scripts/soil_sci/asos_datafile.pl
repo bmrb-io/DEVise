@@ -1,8 +1,16 @@
 #!/s/std/bin/perl
 
+############################################################
+
+# Perl script to update ASOS data files.
+
+# $Id$
+
+############################################################
+
 $asosdir = "/p/devise/ftp/soil_data";
-$asosdat = "/p/devise/twilson2/devise/dat/asos_data/zp/stn_data";
-$homedir = "/p/devise/twilson2/devise/dat/asos_data/perl_program";
+$asosdat = "/local.biron/devise/dat/Asos";
+$homedir = "/local.biron/devise/dat/Asos/scripts";
 
 $year = 2000000;
 $yr = $year;
