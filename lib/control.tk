@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.75  1996/06/20 17:12:30  guangshu
+#	Statistics is now a separate window instead of a cascaded menu.
+#
 #	Revision 1.74  1996/06/20 16:48:20  jussi
 #	Replaced green1 with DarkSeaGreen.
 #
@@ -297,9 +300,9 @@ set DEViseColors \
 
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 {Regular Polygon}} {4 Oval} \
-	{5 Vector} {6 Block} {7 3DVector} {8 HorLine} {9 Segment} \
-	{10 HighLow} {11 Polyline} {12 {GIF Image}} \
-	{13 {Polyline File}} {14 {Text Label}}}
+	{5 Vector} {6 HorLine} {7 Segment} \
+	{8 HighLow} {9 Polyline} {10 {GIF Image}} \
+	{11 {Polyline File}} {12 {Text Label}}}
 
 # global variables:
 # restoring: true if restoring session or template
