@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/06 15:30:29  jussi
+  Added creation of extractStocksCmd command for ISSM data
+
   Revision 1.2  1995/09/05 22:16:09  jussi
   Added CVS header.
 */
@@ -227,7 +230,7 @@ Commands:
 	setAction view action : set action for view
 	getAction view: get action for view
 
-	getSchema tdata: get schema for tdata. Retur:
+	getSchema tdata: get schema for tdata. Return:
 		{ {attr type sorted} {attr type sorted} ... }
 
 	getPixelWidth mapping: get current pixel width for mapping
@@ -1240,19 +1243,19 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
 
 void TkControlPanel::ViewCreated(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewCreated %s", view->GetName());
+	sprintf(cmd,"ProcessViewCreated \"%s\"", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 void TkControlPanel::ViewDestroyed(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewDestroyed %s", view->GetName());
+	sprintf(cmd,"ProcessViewDestroyed \"%s\"", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 
 /* Make view the current view int he control panel */
 void TkControlPanel::SelectView(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewSelected %s", view->GetName());
+	sprintf(cmd,"ProcessViewSelected \"%s\"", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 
