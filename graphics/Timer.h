@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/01 19:17:47  jussi
+  Made StopTimer() and StartTimer() public.
+
   Revision 1.4  1996/06/24 19:34:09  jussi
   Fixed small bugs, removed unused code, and added some
   debugging statements.
@@ -41,14 +44,17 @@ struct TimerQueueEntry;
 
 class Timer {
 public:
-  /* queue timer.
-     when == # of milliseconds from now.
+  /* Queue timer.
+     ms == # of milliseconds from now.
      callback == callback to call when time is up.
+     arg == argument given back to callback.
+     first == true if timer event should be placed first in queue.
   */
-  static void Queue(long when, TimerCallback *callback, int arg = 0);
+  static void Queue(long ms, TimerCallback *callback, int arg = 0,
+                    Boolean first = false);
 
-  /* initialize the timer */
-  static void InitTimer();
+  /* Cancel timer event */
+  static void Cancel(TimerCallback *callback, int arg = 0);
 
   /* Return current time */
   static long Now() { return _now; }
@@ -63,20 +69,23 @@ public:
   static void StartTimer();
 
 private:
-  /* Handler on timer interrupt */
+  /* Initialize the timer */
+  static void InitTimer();
+
+  /* Handler of timer interrupt */
   static void TimerHandler(int arg);
 
-  static Boolean _initialized; /* TRUE if timer has been initialized */
+  static Boolean _initialized;  /* TRUE if timer has been initialized */
+  static Boolean _inHandler;    /* TRUE if timer handler active */
 
-  static long _now;	/* current time in milliseconds from beginning */
+  static long _now;	        /* current time in ms from beginning */
 
-  /* head of timer queue */
-  static TimerQueueEntry *_head;
+  static TimerQueueEntry *_head;        /* head of timer queue */
   static TimerQueueEntry *_freeHead;	/* head of free list */
 
-  /* Allocate a free entry */
+  /* Allocate and free entry */
   static TimerQueueEntry *AllocEntry();
-  static void FreeEntry(TimerQueueEntry *);
+  static void FreeEntry(TimerQueueEntry *entry);
 };
 
 #endif

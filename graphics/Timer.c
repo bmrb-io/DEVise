@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/01 19:17:37  jussi
+  Minor fix in StartTimer().
+
   Revision 1.7  1996/06/24 19:33:58  jussi
   Fixed small bugs, removed unused code, and added some
   debugging statements.
@@ -47,20 +50,18 @@
 
 //#define DEBUG
 
-/* timer interrupt interval in milliseconds */
-const int TIMER_INTERVAL = 500;
-
 struct TimerQueueEntry {
-  TimerQueueEntry *next;
-  long when;
-  int arg;
-  TimerCallback *callback;
+    TimerQueueEntry *next;
+    long when;
+    int arg;
+    TimerCallback *callback;
 };
 
 Boolean Timer::_initialized = false;
+Boolean Timer::_inHandler = false;
 TimerQueueEntry *Timer::_head = 0;
 TimerQueueEntry *Timer::_freeHead = 0;
-long Timer::_now;
+long Timer::_now = 0;
 
 /***********************************************************
 Alloc timer queue entry
@@ -68,14 +69,14 @@ Alloc timer queue entry
 
 TimerQueueEntry *Timer::AllocEntry()
 {
-  TimerQueueEntry *entry;
-  if (!_freeHead)
-    entry = new TimerQueueEntry;
-  else {
-    entry = _freeHead;
-    _freeHead = entry->next;
-  }
-  return entry;
+    TimerQueueEntry *entry;
+    if (!_freeHead)
+        entry = new TimerQueueEntry;
+    else {
+        entry = _freeHead;
+        _freeHead = entry->next;
+    }
+    return entry;
 }
 
 /**************************************************************
@@ -84,45 +85,86 @@ Free a timer queue entry
 
 void Timer::FreeEntry(TimerQueueEntry *entry)
 {
-  entry->next = _freeHead;
-  _freeHead = entry;
+    entry->next = _freeHead;
+    _freeHead = entry;
 }
 
 /*****************************************************************
 Queue up a timer event
 *******************************************************************/
 
-void Timer::Queue(long when, TimerCallback *callback, int arg)
+void Timer::Queue(long ms, TimerCallback *callback, int arg, Boolean first)
 {
-  if (!_initialized)
-    InitTimer();
+    if (!_initialized)
+        InitTimer();
 
-  TimerQueueEntry *entry = AllocEntry();
-  entry->when = _now + when;
-  entry->callback = callback;
-  entry->arg = arg;
-  
+    StopTimer();
+
 #ifdef DEBUG
-  printf("Queue %ld, %ld\n", when, entry->when);
+    printf("Queueing timer 0x%p, arg %d at %ld, %s\n", callback, arg,
+           _now + ms, (first ? "first" : "sorted"));
 #endif
 
-  StopTimer();
+    TimerQueueEntry *entry = AllocEntry();
+    entry->when = _now + ms;
+    entry->callback = callback;
+    entry->arg = arg;
+  
+    if (first) {
+        /* place event first in queue */
+        entry->next = _head;
+        _head = entry;
+    } else {
+        /* queue event in ascending time order */
+        TimerQueueEntry *next = _head;
+        TimerQueueEntry *prev = 0;
+        while (next && entry->when > next->when) {
+            prev = next;
+            next = next->next;
+        }
+        if (!prev)
+            _head = entry;
+        else 
+            prev->next = entry;
+        entry->next = next;
+    }
+    
+    StartTimer();
+}
 
-  /* queue up in ascending time order  */
-  TimerQueueEntry *next = _head;
-  TimerQueueEntry *prev = 0;
-  while (next && entry->when > next->when) {
-    prev = next;
-    next = next->next;
-  }
-  if (!prev)
-    _head = entry;
-  else 
-    prev->next = entry;
-  
-  entry->next = next;
-  
-  StartTimer();
+/*****************************************************************
+Cancel a timer event
+*******************************************************************/
+
+void Timer::Cancel(TimerCallback *callback, int arg)
+{
+#ifdef DEBUG
+    printf("Canceling timer 0x%p, arg %d\n", callback, arg);
+#endif
+
+    if (!_initialized)
+        return;
+
+    StopTimer();
+
+    TimerQueueEntry *entry = _head;
+    TimerQueueEntry *prev = 0;
+    while (entry) {
+        if (entry->callback == callback && entry->arg == arg) {
+            if (!prev)
+                _head = entry->next;
+            else
+                prev->next = entry->next;
+            FreeEntry(entry);
+#ifdef DEBUG
+            printf("Timer canceled\n");
+#endif
+            break;
+        }
+        entry = entry->next;
+    }
+    
+    StartTimer();
 }
 
 /********************************************************************
@@ -131,25 +173,29 @@ Handler of timer interrupt
 
 void Timer::TimerHandler(int arg)
 {
+    StopTimer();
+
+    _inHandler = true;
+
+    TimerQueueEntry *entry;
+    while (_head && _head->when <= _now) {
+        entry = _head;
+        _head = _head->next;
 #ifdef DEBUG
-  printf("In TimerHandler\n");
+        printf("Waking up timer 0x%p, arg %d at %ld\n",
+               entry->callback, entry->arg, entry->when);
+#endif
+        entry->callback->TimerWake(entry->arg);
+        FreeEntry(entry);
+    }
+    
+#ifdef DEBUG
+    printf("Done with TimerHandler\n");
 #endif
 
-  (void)signal(SIGALRM, SIG_IGN);
+    _inHandler = false;
 
-  _now += TIMER_INTERVAL;
-  TimerQueueEntry *entry;
-  while (_head && _head->when <= _now) {
-    entry = _head;
-    _head = _head->next;
-#ifdef DEBUG
-    printf("Waking up %ld at %ld\n", entry->when, _now);
-#endif
-    entry->callback->TimerWake(entry->arg);
-    FreeEntry(entry);
-  }
-
-  (void)signal(SIGALRM, TimerHandler);
+    StartTimer();
 }
 
 /************************************************************************
@@ -158,36 +204,54 @@ Initialize the timer
 
 void Timer::InitTimer()
 {
-  if (_initialized)
-    return;
+    if (_initialized)
+        return;
   
-  _now = 0;
-  
-  /* init interrupt */
-  (void)signal(SIGALRM, TimerHandler);
-  
-  struct itimerval timerVal;
-  timerVal.it_interval.tv_sec = 0;
-  timerVal.it_interval.tv_usec = TIMER_INTERVAL * 1000;
-  timerVal.it_value.tv_sec = 0;
-  timerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
-  setitimer(ITIMER_REAL, &timerVal, 0);
-  
-  _initialized = true;
+    _now = 0;
+
+    /* set timer value to zero */
+    struct itimerval timerVal;
+    timerVal.it_value.tv_sec = 0;
+    timerVal.it_value.tv_usec = 0;
+    timerVal.it_interval.tv_sec = 0;
+    timerVal.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &timerVal, 0);
+
+    _inHandler = false;
+    _initialized = true;
 }
 
 /***********************************************************************
 Stop the timer
 ************************************************************************/
 
-static itimerval oldtimerVal;	/* value of timer when we stopped it */
-
 void Timer::StopTimer()
 {
-  struct itimerval timerVal;
-  timerVal.it_value.tv_sec = 0;
-  timerVal.it_value.tv_usec = 0;
-  setitimer(ITIMER_REAL, &timerVal, &oldtimerVal);
+    if (_inHandler)
+        return;
+
+    (void)signal(SIGALRM, SIG_IGN);
+    struct itimerval timerVal;
+    struct itimerval oldTimerVal;
+    timerVal.it_value.tv_sec = 0;
+    timerVal.it_value.tv_usec = 0;
+    timerVal.it_interval.tv_sec = 0;
+    timerVal.it_interval.tv_usec = 0;
+    setitimer(ITIMER_REAL, &timerVal, &oldTimerVal);
+
+    long vdelta = oldTimerVal.it_value.tv_sec * 1000
+                  + oldTimerVal.it_value.tv_usec / 1000;
+    long idelta = oldTimerVal.it_interval.tv_sec * 1000
+                  + oldTimerVal.it_interval.tv_usec / 1000;
+
+    if (vdelta < idelta)
+        _now += idelta - vdelta;
+    else
+        _now += idelta;
+
+#ifdef DEBUG
+    printf("Timer now at %ld\n", _now);
+#endif
 }
 
 /***********************************************************************
@@ -196,14 +260,29 @@ Restart the timer
 
 void Timer::StartTimer()
 {
-  /* Reset timer to its old value */
-  if (oldtimerVal.it_value.tv_sec == 0 &&
-      oldtimerVal.it_value.tv_usec == 0) {
-    oldtimerVal.it_interval.tv_sec = 0;
-    oldtimerVal.it_interval.tv_usec = TIMER_INTERVAL * 1000;
-    oldtimerVal.it_value.tv_sec = 0;
-    oldtimerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
-  }
-  setitimer(ITIMER_REAL, &oldtimerVal, 0);
-  (void)signal(SIGALRM, TimerHandler);
+    if (_inHandler)
+        return;
+
+    if (!_head) {
+#ifdef DEBUG
+        printf("No timer event to schedule\n");
+#endif
+        return;
+    }
+
+    (void)signal(SIGALRM, TimerHandler);
+
+    long ms = _head->when - _now;
+
+#ifdef DEBUG
+    printf("Next timer event is after %ld ms\n", ms);
+#endif
+
+    /* Set timer */
+    struct itimerval timerVal;
+    timerVal.it_interval.tv_sec = ms / 1000;
+    timerVal.it_interval.tv_usec = (ms % 1000) * 1000;
+    timerVal.it_value.tv_sec = ms / 1000;
+    timerVal.it_value.tv_usec = (ms % 1000) * 1000;
+    setitimer(ITIMER_REAL, &timerVal, 0);
 }
