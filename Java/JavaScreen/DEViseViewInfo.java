@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2000/07/20 22:38:27  venkatan
+// Mouse Location Format display:
+// 1. Both X and Y axis formats are recognised.
+// 2. "-" is recognised for "" String.
+// 3. %.0f is now recognised.
+//
 // Revision 1.47  2000/07/20 16:26:07  venkatan
 // Mouse Location Display format - is now controlled by printf type
 // format strings specified by the VIEW_DATA_AREA command
@@ -191,7 +197,6 @@ public class DEViseViewInfo extends Panel
        return result;
        }
        catch(Exception e){
-      	  System.out.println( "mumbo");
 	  e.printStackTrace();
 	}
 	return result;
@@ -505,7 +510,6 @@ class PrintfFormatter {
 	else if (fmt == 'X')
 	    r = convert(x, 4, 15, "0123456789ABCDEF");
 	else {
-	    System.out.println("level3");
 	    throw new java.lang.IllegalArgumentException();
 	}
 	
@@ -519,7 +523,6 @@ class PrintfFormatter {
     public String form(char c)
     {  
 	if (fmt != 'c'){
-	    System.out.println("level4");
 	    throw new java.lang.IllegalArgumentException();
 	}
 	
@@ -534,7 +537,6 @@ class PrintfFormatter {
     public String form(String s)
     { 
 	if (fmt != 's'){
-	    System.out.println("level5");
 	    throw new java.lang.IllegalArgumentException();}
 	if (precision >= 0) s = s.substring(0, precision);
 	return pad(s);

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2000/07/21 16:17:44  venkatan
+// Mouse Format display :  "-" is now recognised.
+//
 // Revision 1.51  2000/07/20 22:38:26  venkatan
 // Mouse Location Format display:
 // 1. Both X and Y axis formats are recognised.
@@ -492,7 +495,6 @@ public class DEViseView
 
     public String getX(int x)
     {
-	System.out.println( "format X" + viewInfoFormatX);
 	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX.equals("-")){
 
 	   return "";
@@ -537,7 +539,6 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
-	System.out.println( "format Y" + viewInfoFormatY);
 	if(!isViewInfo || viewDimension == 3 || viewInfoFormatY.equals("-")){
 	   return "";
         }
