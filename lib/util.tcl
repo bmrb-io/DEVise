@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/01/17 21:02:16  jussi
+#  Added appropriate suffixes to file names.
+#
 #  Revision 1.6  1996/01/17 20:53:45  jussi
 #  Added support for additional image export formats.
 #
@@ -36,6 +39,275 @@
 # Revision 1.1  1995/11/28  00:02:52  jussi
 # Initial revision.
 #
+
+############################################################
+
+proc UniqueName {name} {
+    while { [DEVise exists $name] } {
+	set len [string length $name]
+	set lastChar [string index $name [expr $len - 1]]
+	if { [scan $lastChar "%d" temp] == 1 } {
+	    # numeric for the last character
+	    set name [format "%s%d" [string range $name 0 [expr $len - 2]] \
+		    [expr $lastChar + 1]]
+	} else {
+	    set name "$name 2"
+	}
+    }
+    return $name
+}
+
+############################################################
+
+# Return line width of string. New lines are accounted for.
+# For example, "abc\ndefg" has a line width of 4
+proc LineWidth { txt } {
+    set strLen [string length $txt]
+    set width 0
+    set curWidth 0
+    for { set i 0} { $i < $strLen } {set i [expr $i+1] } {
+	if { [string compare [string index $txt $i] \n] == 0 } {
+	    if {$curWidth > $width} {
+		set width $curWidth
+	    }
+	    set curWidth 0
+	} else {
+	    set curWidth [expr $curWidth+1]
+	}
+    }
+    if {$curWidth > $width} {
+	set width $curWidth
+    }
+    return $width
+}
+
+############################################################
+
+# Return # of lines in string 
+# For example, "abc\ndefg" has 2 lines
+proc LineHeight { txt } {
+    set strLen [string length $txt]
+    set height 0
+    for { set i 0} { $i < $strLen } {set i [expr $i+1] } {
+	if { [string compare [string index $txt $i] \n] == 0 } {
+	    set height [expr $height+1]
+	}
+    }
+    set height [expr $height+1]
+    return $height
+}
+
+############################################################
+
+# eliminate string attributes from schema
+proc ElimStringAttr { attrs } {
+    set newAttrs ""
+    foreach attr $attrs {
+	set attrType [lindex $attr 1]
+	if {$attrType != "string"} {
+	    lappend newAttrs $attr
+	}
+    }
+    return $newAttrs
+}
+
+############################################################
+
+# drop attribute types and sorted flags
+proc DropAttrTypes { attrs } {
+    set newAttrs ""
+    foreach attr $attrs {
+	lappend newAttrs [list [lindex $attr 0]]
+    }
+    return $newAttrs
+}
+
+############################################################
+
+proc findNumericValue {list value} {
+    foreach item $list {
+	if {[lindex $item 1] == $value} {
+	    return [lindex $item 0]
+	}
+    }
+    return $value
+}
+
+############################################################
+
+proc findNameValue {list key} {
+    foreach item $list {
+	if {[lindex $item 0] == $key} {
+	    return [lindex $item 1]
+	}
+    }
+    return $key
+}
+
+############################################################
+
+# abstract data type for dictionary
+# Insert name and val into dictionary. Return new dictionary.
+proc DictInsert { dict name val }  {
+    set element [list $name $val]
+    return [lappend dict $element]
+}
+
+############################################################
+
+# lookup val based on name
+proc DictLookup { dict name } {
+    foreach element $dict {
+	if {$name == [lindex $element 0]} {
+	    return [lindex $element 1]
+	}
+    }
+    return ""
+}
+
+############################################################
+
+# Get all instances for a category
+proc CategoryInstances {category } {
+    set inst {}
+    set classes [ DEVise get $category ]
+    foreach c $classes {
+	set inst [ concat $inst [ DEVise get $category $c ] ]
+    }
+    return $inst
+}
+
+############################################################
+
+# Get the class of an instance belonging to category
+proc GetClass { category instance } {
+    set classes [DEVise get $category ]
+    foreach c $classes {
+	set insts [DEVise get $category $c]
+	foreach inst $insts {
+	    # puts "comparing $category $c $inst"
+	    if {$inst == $instance} {
+		return $c
+	    }
+	}
+    }
+}
+
+############################################################
+
+# All instances of tdata that we have
+# Form: {tdatafilebasename1 tdatafilebasename2 ...}
+proc TdataSet {} {
+    return [CategoryInstances "tdata" ]
+}
+
+############################################################
+
+# All instances of GData
+# Form: {gdataname1 gdataname2 ...}
+proc GdataSet {} {
+    return [ CategoryInstances "mapping" ]
+}
+
+############################################################
+
+# All interpreted GData
+proc InterpretedGData {} {
+    set gSet [ GdataSet ]
+    set result ""
+    foreach gdata  $gSet {
+	if { [DEVise isInterpretedGData $gdata ] } {
+	    lappend result $gdata
+	}
+    }
+    return $result
+}
+
+############################################################
+
+# list of all views
+proc ViewSet {} {
+    return [ CategoryInstances "view" ]
+}
+
+############################################################
+
+#list of all cursors
+proc CursorSet {} {
+    return [ CategoryInstances "cursor" ]
+}
+
+############################################################
+
+# list of all links
+proc LinkSet {} { 
+    return [ CategoryInstances "link" ]
+}
+
+############################################################
+
+# list of all windows
+proc WinSet {} {
+    return [ CategoryInstances "window" ]
+}
+
+############################################################
+
+# list of all axis 
+proc AxisSet {} {
+    return [ CategoryInstances "axisLabel" ]
+}
+
+############################################################
+
+# list of all actions
+proc ActionSet {} {
+    return [ CategoryInstances "action" ]
+}
+
+############################################################
+
+# Return name of schema for a given tdata
+proc GetSchemaName {name} {
+    foreach schema [DEVise get tdata] {
+	foreach tdata [DEVise get tdata $schema] {
+	    set params [DEVise getCreateParam tdata $schema $tdata]
+	    set fileAlias [lindex $params 1]
+	    if {$fileAlias == $name} {
+		return $schema
+	    }
+	}
+    }
+
+    puts "Error: Schema of $tdata not found."
+    exit 1
+}
+
+############################################################
+
+# Print the name of all instances in category
+proc PrintCategory { category } {
+    set classes [ DEVise get $category ]
+    puts "classes $classes"
+    foreach c  $classes {
+	set instances [ DEVise get $category $c]
+	foreach i $instances {
+	    puts -nonewline "$i "
+	}
+    }
+    puts ""
+}
+
+############################################################
+
+proc DoExit {} {
+    set answer [ dialog .quit "Quit" \
+	    "Are you sure you want to quit?" "" 1 \
+	    { Cancel} { Ok } ]
+    if { $answer == 1 } {
+	DEVise exit
+    }
+}
 
 ############################################################
 
@@ -118,6 +390,8 @@ proc PrintView {} {
 
     tkwait visibility .printdef
 }
+
+############################################################
 
 proc PrintActual {toprinter printcmd filename allviews format} {
     global curView
