@@ -32,7 +32,8 @@ public class Operator implements Expression {
     }
 
     public String toString( ) {
-        return left.toString() +" "+ operator +" "+ right.toString();
+        return "(" + left.toString() + " " + operator + " " + 
+        right.toString() + ")";
     }
 
     public TypeDesc getType( ) {

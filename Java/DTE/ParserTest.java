@@ -10,7 +10,7 @@ import Parser.*;
 public class ParserTest {
 	private static Query query;
 
-	public static void parse() throws ParseException{	// throws parse error
+	public static void parse() throws Parser.ParseException {	// throws parse error
 
 		// Jin has to implement this function and stuff closely related
 		// to it.
@@ -34,7 +34,7 @@ public class ParserTest {
 	{
 	parse();
 
-	}catch (ParseException e )
+	}catch (Parser.ParseException e )
 	{
 	   System.out.println("opps!" + e );
         }

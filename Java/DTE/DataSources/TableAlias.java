@@ -19,6 +19,10 @@ public class TableAlias{
 		return alias;
 	}
 
+	public RelationId getRelationId(){
+		return relId;
+	}
+
 	// implement toString
      
         public String toString()

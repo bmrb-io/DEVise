@@ -3,12 +3,16 @@ package Expressions;
 import java.io.*;
 import java.util.*;
 import DataSources.*;
+import Types.*;
+import Optimizer.*;
+import Iterators.*;
+
 /**  */
 
 public class Query {
 	Vector selectClause;
 	Vector fromClause;
-	Expression whereClause;
+	private Expression whereClause;
 
 	// this member is created;
 
@@ -31,9 +35,11 @@ public class Query {
 	public Vector getSelectClause(){
 		return selectClause;
 	}
+	/*
 	public Expression getWhereClause(){
 		return whereClause;
 	}
+	*/
 	public Vector createProjList(Vector aliases){
 		Vector retVal = new Vector();
 		for(int i = 0; i < selectClause.size(); i++){
@@ -65,9 +71,6 @@ public class Query {
 		predList = newPredList;
 		return retVal;
 	}
-
-	// Jie, add toString function that will return string like:
-	// "select t.x + 1 from 1.1 as t"
 
         public String toString(){
                String s = "SELECT ";
@@ -103,5 +106,47 @@ public class Query {
 
 
         }
-}
 
+	public void typeCheck(RelationManager relMngr) throws IOException {
+		SymbolTable symbolTable = new SymbolTable( );
+		for(int i = 0; i < fromClause.size(); i++){
+			TableAlias ta = (TableAlias) fromClause.elementAt(i);
+			RelationId relId = ta.getRelationId();
+			String alias = ta.getAlias();
+			DataSource dataSrc = relMngr.createDataSource(relId);
+			Schema schema = dataSrc.getSchema();
+			TypeDesc[] types = schema.getTypeDescs();
+			String[] attrs = schema.getAttributeNames();
+			for(int j = 0; j < attrs.length; j++){
+				symbolTable.put(new Selection(alias, attrs[j], types[j]));
+			}
+			ta.setDataSource(dataSrc);
+		}
+		for(int i = 0; i < selectClause.size(); i++){
+			Expression e = (Expression) selectClause.elementAt(i);
+			e = e.typeCheck(symbolTable);
+			selectClause.setElementAt(e, i);
+		}
+		for(int i = 0; i < predList.size(); i++){
+			Expression e = (Expression) predList.elementAt(i);
+			e = e.typeCheck(symbolTable);
+			predList.setElementAt(e, i);
+		}
+	}
+	public String printTypes(){
+
+		// to avoid writing new code, maybe we should parametrize
+		// print function (0 for no types, 1 for print with types).
+
+		return toString();
+	}
+	public PlanNode optimize() throws IOException {
+		PlanNode topNode = null;
+          for(int j = 0; j < fromClause.size(); j++){
+               TableAlias curTa = (TableAlias) fromClause.elementAt(j);
+               PlanNode planNode = new FileScanNode(curTa, this);
+               topNode = planNode;
+          }
+		return topNode;
+	}
+}

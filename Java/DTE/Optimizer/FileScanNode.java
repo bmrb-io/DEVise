@@ -51,6 +51,7 @@ public class FileScanNode implements PlanNode {
 		ExecExpr[] exPred = new ExecExpr[predList.size()];
 		for(int i = 0; i < predList.size(); i++){
 			Expression e = (Expression) predList.elementAt(i);
+			System.out.println("_____ " + e);
 			exPred[i] = e.createExec(fsOut);
 		}
 		projList = query.createProjList(aliases);

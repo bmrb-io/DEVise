@@ -1,18 +1,27 @@
 DEBUG=-g -deprecation
 CLASSES = Classes
 
-SRC =   DTE_Type.java \
-	Iterator.java \
-	ListOp.java \
-	ExecExpr.java \
-	DataSource.java \
-    
-PACKAGES = Types Iterators Expressions NameToIdMaps DataSources
+JAVA_CC_OPT =
+
+# Uncomment the following line to debug the parser
+
+#JAVA_CC_OPT = -DEBUG_TOKEN_MANAGER=true
+
+PACKAGES = Types Iterators Expressions Optimizer DataSources Parser
+
+SRCS = $(PACKAGES:%=%/*.java)
 
 .SUFFIXES: .java.class 
 
+all: dte register
 
-all:
+dte: Parser/SQLParser.java
+	javac DTE.java $(SRCS) -d $(CLASSES)
+	
+register:
+	javac Register.java -d $(CLASSES)
+
+fileScanTest:
 	javac FileScanIteratorTest.java -d $(CLASSES)
 
 hj:
@@ -24,8 +33,8 @@ doc:
 opt:
 	javac OptimizerTest.java -d $(CLASSES)
 
-Parser/SQLParser.java: Parser/SQLParser.jj
-	cd Parser && javacc -DEBUG_TOKEN_MANAGER=true SQLParser.jj   && cd ..
+Parser/%.java: Parser/SQLParser.jj
+	cd Parser && javacc $(JAVA_CC_OPT) SQLParser.jj   && cd ..
 
 parser: Parser/SQLParser.java
 	javac ParserTest.java Parser/*.java -d $(CLASSES)
