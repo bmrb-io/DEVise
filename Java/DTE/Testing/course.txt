@@ -9,6 +9,7 @@ cs 364 intr-dbms
 bio 536 analogy-biology
 cs 367 intr-datastructure
 cs 371 tech-cbb
+law 512 suitlaw
 cs 412 intr-numerical-meth
 cs 425 intr-co
 bus 312 micro-economics
