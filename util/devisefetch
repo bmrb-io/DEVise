@@ -1,0 +1,62 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+if ($#argv < 1) then
+  echo "Content-type: text/html"
+  echo ""
+  echo "<html>"
+  echo "<head>"
+  echo "<title>DEVise Session File Not Specified</title>"
+  echo "</head>"
+  echo "<body>"
+  echo ""
+  echo "<h1>"
+  echo "DEVise session file not specified."
+  echo "</h1>"
+  echo ""
+  echo "</body>"
+  echo "</html>"
+  exit 1
+endif
+
+if (! -f $1) then
+  echo "Content-type: text/html"
+  echo ""
+  echo "<html>"
+  echo "<head>"
+  echo "<title>DEVise Session File Not Found</title>"
+  echo "</head>"
+  echo "<body>"
+  echo ""
+  echo "<h1>"
+  echo "DEVise session file $1 cannot be accessed."
+  echo "</h1>"
+  echo ""
+  echo "</body>"
+  echo "</html>"
+  exit 1
+endif
+
+echo "Content-type: application/devise"
+echo ""
+
+cat $1
