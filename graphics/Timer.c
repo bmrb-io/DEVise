@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/12 18:13:31  jussi
+  Rewrote Timer code to use fewer timer interrupts and also
+  allow for timer events which should precede any events
+  already in the queue.
+
   Revision 1.8  1996/07/01 19:17:37  jussi
   Minor fix in StartTimer().
 
@@ -277,6 +282,11 @@ void Timer::StartTimer()
 #ifdef DEBUG
     printf("Next timer event is after %ld ms\n", ms);
 #endif
+
+    if (ms < 1) {
+        /* cannot set to zero, as the timer would be canceled */
+        ms = 1;
+    }
 
     /* Set timer */
     struct itimerval timerVal;
