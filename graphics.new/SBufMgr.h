@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/11 15:50:57  jussi
+  Removed IOTask virtual base class and substituted UnixIOTask for
+  it. When SBufMgr accesses an IOTask, no separate process is
+  created. A process is created only when a ReadStream() or WriteStream()
+  function of IOTask is called. In Solaris, switched to using processes
+  instead of threads.
+
   Revision 1.7  1996/11/08 15:42:24  jussi
   Removed IOTask::Initialize() and SetBuffering(). Added support
   for streaming via ReadStream() and WriteStream().
@@ -112,12 +119,12 @@ struct PageRange {
 
 DefineDList(PageRangeList, PageRange);
 
-// Memory pool
+// Memory manager
 
-class MemPool {
+class MemMgr {
   public:
-    MemPool(int numPages, int pageSize, int &status);
-    ~MemPool();
+    MemMgr(int numPages, int pageSize, int &status);
+    ~MemMgr();
 
     // Page types
     enum PageType { Cache, Buffer };
@@ -137,7 +144,7 @@ class MemPool {
     int PageSize() { return _pageSize; }
     int NumPages() { return _numPages; }
 
-    static MemPool *Instance() { return _instance; }
+    static MemMgr *Instance() { return _instance; }
 
   protected:
     // Initialization
@@ -168,7 +175,7 @@ class MemPool {
     const float _maxBuff;
 
     // An instance of this class
-    static MemPool *_instance;
+    static MemMgr *_instance;
 
     // Mutex for synchronization
     SemaphoreV *_sem;
@@ -308,7 +315,7 @@ class IOTask {
     void SetDeviceBusy() { _isBusy->acquire(1); }
     void SetDeviceIdle() { _isBusy->release(1); }
 
-    const int _pageSize;                // size of memory pool pages
+    const int _pageSize;                // size of memory manager pages
     int _blockSize;                     // (user) data block size
 
     DataPipe *_dataPipe;                // data pipe
@@ -415,8 +422,8 @@ inline int operator==(PageAddr &addr1, PageAddr &addr2)
 // Page frame information
 
 class PageFrame {
-  friend class SBufMgr;
-  friend class SBufMgrLRU;
+  friend class CacheMgr;
+  friend class CacheMgrLRU;
 
   public:
     PageFrame() {
@@ -459,10 +466,10 @@ class PageFrame {
 
 // Streaming buffer manager
 
-class SBufMgr {
+class CacheMgr {
   public:
-    SBufMgr(MemPool &pool, int frames);
-    virtual ~SBufMgr();  
+    CacheMgr(MemMgr &mgr, int frames);
+    virtual ~CacheMgr();  
 
     // Request types
     enum ReqType { PinPageReq, UnPinPageReq, UnPinReq, TerminateReq };
@@ -479,7 +486,7 @@ class SBufMgr {
         Boolean force;                  // true if page must be forced out
     };
 
-    // Direct (same process) interface to memory pool
+    // Direct (same process) interface to memory manager
     int AllocPage(IOTask *stream, int pageNo, char *&page) {
         return PinPage(stream, pageNo, page, false);
     }
@@ -511,7 +518,7 @@ class SBufMgr {
         return result;
     }
 
-    static SBufMgr *Instance() { return _instance; }
+    static CacheMgr *Instance() { return _instance; }
 
  protected:
     // Initialization
@@ -530,7 +537,7 @@ class SBufMgr {
                   PageRangeList *&inMemory);
 
     // An instance of this class
-    static SBufMgr *_instance;
+    static CacheMgr *_instance;
 
     void _AllocMemory();
     void _DeallocMemory();
@@ -565,8 +572,8 @@ class SBufMgr {
     // Print diagnostic information
     virtual void Dump();
 
-    // Memory pool
-    MemPool &_pool;
+    // Memory manager
+    MemMgr &_mgr;
 
     // Number of frames and page size
     const int _numFrames;
@@ -587,10 +594,10 @@ class SBufMgr {
 
 // LRU buffer manager
 
-class SBufMgrLRU : public SBufMgr {
+class CacheMgrLRU : public CacheMgr {
   public:
-    SBufMgrLRU(MemPool &pool, int frames);
-    virtual ~SBufMgrLRU() {}
+    CacheMgrLRU(MemMgr &mgr, int frames);
+    virtual ~CacheMgrLRU() {}
 
  protected:
     // Pick victim for replacement

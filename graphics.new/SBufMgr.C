@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/11 15:50:56  jussi
+  Removed IOTask virtual base class and substituted UnixIOTask for
+  it. When SBufMgr accesses an IOTask, no separate process is
+  created. A process is created only when a ReadStream() or WriteStream()
+  function of IOTask is called. In Solaris, switched to using processes
+  instead of threads.
+
   Revision 1.8  1996/11/08 15:42:22  jussi
   Removed IOTask::Initialize() and SetBuffering(). Added support
   for streaming via ReadStream() and WriteStream().
@@ -279,7 +286,7 @@ int DataPipe::Consume(char *&buf)
 }
 
 IOTask::IOTask(int blockSize) :
-	_pageSize(MemPool::Instance()->PageSize()), _blockSize(blockSize),
+	_pageSize(MemMgr::Instance()->PageSize()), _blockSize(blockSize),
 	_dataPipe(0), _readStream(false), _writeStream(false),
         _readStreamLength(0), _readBytes(0), _writeBytes(0),
         _seekBytes(0), _child(0)
@@ -396,7 +403,7 @@ int IOTask::Read(unsigned long long offset,
 #if DEBUGLVL >= 3
         printf("Task 0x%p allocating cache page\n", this);
 #endif
-        int status = MemPool::Instance()->Allocate(MemPool::Cache, addr);
+        int status = MemMgr::Instance()->Allocate(MemMgr::Cache, addr);
         if (status < 0 || !addr) {
             fprintf(stderr, "Failed to allocate cache space\n");
             return -1;
@@ -434,7 +441,7 @@ int IOTask::Write(unsigned long long offset,
 
     DOASSERT(req.addr == reply.addr, "Invalid page address 1");
     // Deallocate page since it was not buffered
-    if (MemPool::Instance()->Deallocate(MemPool::Cache, req.addr) < 0)
+    if (MemMgr::Instance()->Deallocate(MemMgr::Cache, req.addr) < 0)
         return -1;
 
     addr = reply.addr = 0;
@@ -514,7 +521,7 @@ void IOTask::_ReadStream(unsigned long totbytes)
 
     while (!totbytes || offset < totbytes) {
         char *page;
-        int status = MemPool::Instance()->Allocate(MemPool::Buffer, page);
+        int status = MemMgr::Instance()->Allocate(MemMgr::Buffer, page);
         DOASSERT(status >= 0 && page, "Failed to allocate buffer space\n");
         unsigned long reqsize = _pageSize;
         if (totbytes > 0 && totbytes - offset < reqsize)
@@ -558,7 +565,7 @@ void IOTask::_WriteStream()
 #endif
         if (reply.result != bytes)
             break;
-        int status = MemPool::Instance()->Deallocate(MemPool::Buffer, page);
+        int status = MemMgr::Instance()->Deallocate(MemMgr::Buffer, page);
         DOASSERT(status >= 0 && page, "Failed to deallocate buffer space\n");
         offset += bytes;
     }
@@ -960,9 +967,9 @@ void TapeIOTask::DeviceIO(Request &req, Request &reply)
     _offset += reply.bytes;
 }
 
-MemPool *MemPool::_instance = 0;
+MemMgr *MemMgr::_instance = 0;
 
-MemPool::MemPool(int numPages, int pageSize, int &status) :
+MemMgr::MemMgr(int numPages, int pageSize, int &status) :
 	_numPages(numPages), _pageSize(pageSize), _maxBuff(0.3)
 {
     _instance = this;
@@ -970,7 +977,7 @@ MemPool::MemPool(int numPages, int pageSize, int &status) :
     status = Initialize();
 }
 
-int MemPool::Initialize()
+int MemMgr::Initialize()
 {
     int status;
     _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
@@ -1006,7 +1013,7 @@ int MemPool::Initialize()
     DOASSERT(_buf, "Out of memory");
 
 #if DEBUGLVL >= 1
-    printf("Initializing memory pool\n");
+    printf("Initializing memory manager\n");
 #endif
 
     memset(_buf, 0, _numPages * _pageSize);
@@ -1030,7 +1037,7 @@ int MemPool::Initialize()
     return 0;
 }
 
-MemPool::~MemPool()
+MemMgr::~MemMgr()
 {
 #ifdef SHARED_MEMORY
     delete _shm;
@@ -1045,7 +1052,7 @@ MemPool::~MemPool()
     delete _free;
 }
 
-int MemPool::Allocate(PageType type, char *&page)
+int MemMgr::Allocate(PageType type, char *&page)
 {
     AcquireMutex();
 
@@ -1082,7 +1089,7 @@ int MemPool::Allocate(PageType type, char *&page)
     return 0;
 }
 
-int MemPool::Release(PageType type, char *&page)
+int MemMgr::Release(PageType type, char *&page)
 {
     // Make decision whether to reclaim page or not; decision
     // based on ratio of cache/buffer pages, for example
@@ -1095,7 +1102,7 @@ int MemPool::Release(PageType type, char *&page)
     return 0;
 }
 
-int MemPool::Deallocate(PageType type, char *page)
+int MemMgr::Deallocate(PageType type, char *page)
 {
     AcquireMutex();
 
@@ -1122,7 +1129,7 @@ int MemPool::Deallocate(PageType type, char *page)
     return 0;
 }
 
-int MemPool::Convert(char *page, PageType oldType, PageType &newType)
+int MemMgr::Convert(char *page, PageType oldType, PageType &newType)
 {
     AcquireMutex();
 
@@ -1138,7 +1145,7 @@ int MemPool::Convert(char *page, PageType oldType, PageType &newType)
         }
 
 #if DEBUGLVL >= 3
-        printf("Memory pool now has %d cache pages, %d buffer pages\n",
+        printf("Memory manager now has %d cache pages, %d buffer pages\n",
                *_numCache, *_numBuffer);
 #endif
     }
@@ -1148,11 +1155,11 @@ int MemPool::Convert(char *page, PageType oldType, PageType &newType)
     return 0;
 }
 
-SBufMgr *SBufMgr::_instance = 0;
+CacheMgr *CacheMgr::_instance = 0;
 
-SBufMgr::SBufMgr(MemPool &pool, int frames) :
-	_pool(pool), _numFrames(frames),
-        _pageSize(pool.PageSize())
+CacheMgr::CacheMgr(MemMgr &mgr, int frames) :
+	_mgr(mgr), _numFrames(frames),
+        _pageSize(mgr.PageSize())
 #ifndef SHARED_MEMORY
         , _ht(103, AddrHash)
 #endif
@@ -1162,7 +1169,7 @@ SBufMgr::SBufMgr(MemPool &pool, int frames) :
     (void)Initialize();
 }
 
-int SBufMgr::Initialize()
+int CacheMgr::Initialize()
 {
     int status;
     _mutex = new SemaphoreV(Semaphore::newKey(), status);
@@ -1201,7 +1208,7 @@ int SBufMgr::Initialize()
     return 0;
 }
 
-SBufMgr::~SBufMgr()
+CacheMgr::~CacheMgr()
 {
     _DeallocMemory();
 
@@ -1215,7 +1222,7 @@ SBufMgr::~SBufMgr()
     delete _mutex;
 }
 
-void SBufMgr::_DeallocMemory()
+void CacheMgr::_DeallocMemory()
 {
     AcquireMutex();
 
@@ -1224,13 +1231,13 @@ void SBufMgr::_DeallocMemory()
     for(int i = 0; i < _numFrames; i++) {
         PageFrame &frame = _frames[i];
         if (frame.page)
-            _pool.Deallocate(MemPool::Cache, frame.page);
+            _mgr.Deallocate(MemMgr::Cache, frame.page);
     }
 
     ReleaseMutex();
 }
 
-int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
+int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 {
     if (!stream) {
         printf("No stream\n");
@@ -1288,8 +1295,8 @@ int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 
     if (!read || !newPage) {
         if (!frame.page) {
-            if ((status = _pool.Allocate(MemPool::Cache, frame.page)) < 0) {
-                printf("Cannot get free page from pool\n");
+            if ((status = _mgr.Allocate(MemMgr::Cache, frame.page)) < 0) {
+                printf("Cannot get free page from manager\n");
                 return status;
             }
             frame.size = _pageSize;
@@ -1324,7 +1331,7 @@ int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     return frame.size;
 }
 
-int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
+int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
                         int size, Boolean force)
 {
     if (!stream) {
@@ -1368,11 +1375,11 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     if (frame.pinCnt == 1) {
         DOASSERT(frame.page, "Invalid page address 3");
         if (!frame.dirty) {
-            // Release unpinned non-dirty pages back to memory pool
+            // Release unpinned non-dirty pages back to memory manager
 #if DEBUGLVL >= 5
-            printf("Releasing page 0x%p to memory pool\n", frame.page);
+            printf("Releasing page 0x%p to memory manager\n", frame.page);
 #endif
-            _pool.Release(MemPool::Cache, frame.page);
+            _mgr.Release(MemMgr::Cache, frame.page);
         } else if (force) {
 #if DEBUGLVL >= 5
             printf("Forcibly writing page %ld to device\n", frame.addr.pageNo);
@@ -1394,7 +1401,7 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
             AcquireMutex();
             frame.iopending = false;
             if (frame.page)
-                _pool.Release(MemPool::Cache, frame.page);
+                _mgr.Release(MemMgr::Cache, frame.page);
 #ifndef SHARED_MEMORY
             if ((status = _ht.remove(frame.addr)) < 0) {
                 return status;
@@ -1414,7 +1421,7 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     return 0;
 }
 
-int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
+int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
 {
     for(int i = 0; i < _numFrames; i++) {
         PageFrame &frame = _frames[i];
@@ -1451,7 +1458,7 @@ int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
                 frame.iopending = false;
             }
             if (frame.page)
-                _pool.Release(MemPool::Cache, frame.page);
+                _mgr.Release(MemMgr::Cache, frame.page);
             frame.Clear();
         }
     }
@@ -1459,7 +1466,7 @@ int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
     return 0;
 }
 
-int SBufMgr::_InMemory(IOTask *stream, int pageStart, int pageEnd,
+int CacheMgr::_InMemory(IOTask *stream, int pageStart, int pageEnd,
                        PageRangeList *&inMemory)
 {
     if (!stream) {
@@ -1483,7 +1490,7 @@ int SBufMgr::_InMemory(IOTask *stream, int pageStart, int pageEnd,
     return 0;
 }
 
-int SBufMgr::AllocFrame()
+int CacheMgr::AllocFrame()
 {
     int i = PickVictim();
     if (i < 0) {
@@ -1499,12 +1506,12 @@ int SBufMgr::AllocFrame()
     return i;
 }
 
-int SBufMgr::AddrHash(PageAddr &addr, int numBuckets)
+int CacheMgr::AddrHash(PageAddr &addr, int numBuckets)
 {
     return (((long)addr.stream) + addr.pageNo) % numBuckets;
 }
 
-void SBufMgr::Dump()
+void CacheMgr::Dump()
 {
     printf("Buffer frames:\n");
     for(int i = 0; i < _numFrames; i++) {
@@ -1518,14 +1525,14 @@ void SBufMgr::Dump()
     }
 }
 
-SBufMgrLRU::SBufMgrLRU(MemPool &pool, int frames) :
-	SBufMgr(pool, frames), _clockHand(_numFrames - 1)
+CacheMgrLRU::CacheMgrLRU(MemMgr &mgr, int frames) :
+	CacheMgr(mgr, frames), _clockHand(_numFrames - 1)
 {
 }
 
-int SBufMgrLRU::PickVictim()
+int CacheMgrLRU::PickVictim()
 {
-    int freePool = _pool.FreeLeft();
+    int freeMgr = _mgr.FreeLeft();
 
     while(1) {
 
@@ -1539,10 +1546,10 @@ int SBufMgrLRU::PickVictim()
             printf("Clock hand now at %d\n", _clockHand);
 #endif
             PageFrame &frame = _frames[_clockHand];
-            // If no pages available in memory pool, reuse pages
+            // If no pages available in memory manager, reuse pages
             // in frames that are not pinned; otherwise find an
-            // unused frame and allocate page from memory pool.
-            if (!freePool) {
+            // unused frame and allocate page from memory manager.
+            if (!freeMgr) {
                 if (frame.valid && !frame.pinCnt && frame.page
                     && !frame.iopending)
                     break;
@@ -1606,7 +1613,7 @@ int SBufMgrLRU::PickVictim()
         }
 
         if (frame.page)
-            _pool.Release(MemPool::Cache, frame.page);
+            _mgr.Release(MemMgr::Cache, frame.page);
 
         frame.Clear();
 

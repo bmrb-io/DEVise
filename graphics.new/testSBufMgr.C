@@ -36,15 +36,15 @@ int main()
 
     // create buffer pool and buffer manager
 
-    MemPool *memPool = new MemPool(poolSize, pageSize, status);
-    assert(memPool);
+    MemMgr *memMgr = new MemMgr(poolSize, pageSize, status);
+    assert(memMgr);
     if (status < 0) {
-        fprintf(stderr, "Cannot create memory pool\n");
+        fprintf(stderr, "Cannot create memory manager\n");
         exit(1);
     }
 
-    SBufMgr *bufMgr = new SBufMgrLRU(*memPool, memPool->NumPages());
-    assert(bufMgr);
+    CacheMgr *cacheMgr = new CacheMgrLRU(*memMgr, memMgr->NumPages());
+    assert(cacheMgr);
 
     // test buffer manager
 
@@ -74,9 +74,9 @@ int main()
     int pageNum;
     for(pageNum = 0;; pageNum++) {
         char *addr;
-        int bytes = bufMgr->PinPage(task[0], pageNum, addr);
+        int bytes = cacheMgr->PinPage(task[0], pageNum, addr);
         CALL(bytes);
-        CALL(bufMgr->UnPinPage(task[0], pageNum, false));
+        CALL(cacheMgr->UnPinPage(task[0], pageNum, false));
         len += bytes;
         if (bytes < pageSize)
             break;
@@ -107,9 +107,9 @@ int main()
     j = 4;
     for(pageNum = 0; pageNum < j; pageNum++) {
         char *addr;
-        CALL(bufMgr->AllocPage(task[0], pageNum, addr));
+        CALL(cacheMgr->AllocPage(task[0], pageNum, addr));
         sprintf(addr, "Page %d\n", pageNum);
-        CALL(bufMgr->UnPinPage(task[0], pageNum, true, pageSize, true));
+        CALL(cacheMgr->UnPinPage(task[0], pageNum, true, pageSize, true));
     }
 
     status = task[0]->WriteEOF();
@@ -126,14 +126,14 @@ int main()
 
     for(pageNum = 0;; pageNum++) {
         char *addr;
-        int bytes = bufMgr->PinPage(task[0], pageNum, addr);
+        int bytes = cacheMgr->PinPage(task[0], pageNum, addr);
         CALL(bytes);
 #if 0
         printf("Page %d (%d bytes): \"%s\"\n", pageNum, bytes, addr);
         sprintf(cmp, "test.%d Page %d %7.1f", f, i, (float)i);
         assert(strcmp(addr, cmp) == 0);
 #endif
-        CALL(bufMgr->UnPinPage(task[0], pageNum, false));
+        CALL(cacheMgr->UnPinPage(task[0], pageNum, false));
         len += bytes;
         if (bytes < pageSize)
             break;
@@ -154,7 +154,7 @@ int main()
     FILE *fp[numFiles];
     for(i = 0; i < numFiles; i++) {
         char buf[64];
-        sprintf(buf, "/tmp/bufmgr.%d", i);
+        sprintf(buf, "/tmp/cacheMgr.%d", i);
         fp[i] = fopen(buf, "w+");
         if (!fp[i]) {
             fprintf(stderr, "Could not create %s\n", buf);
@@ -172,9 +172,9 @@ int main()
     gettimeofday(&start, 0);
     for(f = 0; f < numFiles; f++) {
         for(i = 0; i < fileSize; i++) {
-            CALL(bufMgr->AllocPage(task[f], i, page));
+            CALL(cacheMgr->AllocPage(task[f], i, page));
             sprintf(page, "test.%d Page %d %7.1f", f, i, (float)i);
-            CALL(bufMgr->UnPinPage(task[f], i, true));
+            CALL(cacheMgr->UnPinPage(task[f], i, true));
         }
     }
     gettimeofday(&stop, 0);
@@ -185,19 +185,19 @@ int main()
     printf("\nReading pages back...\n");
     for(f = 0; f < numFiles; f++) {
         for(i = 0; i < 2; i++) {
-            CALL(bufMgr->PinPage(task[f], i, page));
+            CALL(cacheMgr->PinPage(task[f], i, page));
             sprintf(cmp, "test.%d Page %d %7.1f", f, i, (float)i);
             assert(memcmp(page, cmp, strlen(cmp)) == 0);
-            CALL(bufMgr->UnPinPage(task[f], i, false));
+            CALL(cacheMgr->UnPinPage(task[f], i, false));
         }
     }
     gettimeofday(&start, 0);
     for(f = 0; f < numFiles; f++) {
         for(i = 2; i < fileSize; i++) {
-            CALL(bufMgr->PinPage(task[f], i, page));
+            CALL(cacheMgr->PinPage(task[f], i, page));
             sprintf(cmp, "test.%d Page %d %7.1f", f, i, (float)i);
             assert(memcmp(page, cmp, strlen(cmp)) == 0);
-            CALL(bufMgr->UnPinPage(task[f], i, false));
+            CALL(cacheMgr->UnPinPage(task[f], i, false));
         }
     }
     gettimeofday(&stop, 0);
@@ -211,12 +211,12 @@ int main()
         for(i = 0; i < bufPages; i++) {
             f = rand() % numFiles;
             j = rand() % fileSize;
-            CALL(bufMgr->PinPage(task[f], j, page));
+            CALL(cacheMgr->PinPage(task[f], j, page));
             sprintf(cmp, "test.%d Page %d %7.1f", f, j, (float)j);
             assert(memcmp(page, cmp, strlen(cmp)) == 0);
         }
         for(f = 0; f < numFiles; f++)
-            CALL(bufMgr->UnPin(task[f], false));
+            CALL(cacheMgr->UnPin(task[f], false));
     }
     gettimeofday(&stop, 0);
     secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
@@ -227,40 +227,40 @@ int main()
     for(i = 0; i < bufPages; i++) {
         f = i / fileSize;
         j = i % fileSize;
-        CALL(bufMgr->PinPage(task[f], j, page));
+        CALL(cacheMgr->PinPage(task[f], j, page));
         sprintf(cmp, "test.%d Page %d %7.1f", f, j, (float)j);
         assert(memcmp(page, cmp, strlen(cmp)) == 0);
     }
 
     printf("\nTesting false positives...\n");
-    if (bufMgr->PinPage(task[0], fileSize + 1, page) > 0) {
+    if (cacheMgr->PinPage(task[0], fileSize + 1, page) > 0) {
         printf("Buffer manager succeeded when it shouldn't have\n");
         goto error;
     }
 
     printf("\nTesting multiple pinnings...\n");
-    CALL(bufMgr->PinPage(task[0], 0, page));
+    CALL(cacheMgr->PinPage(task[0], 0, page));
     for(i = 0; i < 100; i++) {
         char *page2;
-        CALL(bufMgr->PinPage(task[0], 0, page2));
+        CALL(cacheMgr->PinPage(task[0], 0, page2));
         assert(page == page2);
     }
     for(i = 0; i < 101; i++)
-        CALL(bufMgr->UnPinPage(task[0], 0, false));
+        CALL(cacheMgr->UnPinPage(task[0], 0, false));
 
     for(f = 0; f < numFiles; f++)
-        CALL(bufMgr->UnPin(task[f], false));
+        CALL(cacheMgr->UnPin(task[f], false));
     
     if (numFiles >= 2) {
         printf("\nCopy file 1 to file 2...\n");
         gettimeofday(&start, 0);
         for(i = 0; i < fileSize; i++) {
-            CALL(bufMgr->PinPage(task[0], i, page));
+            CALL(cacheMgr->PinPage(task[0], i, page));
             char *page2;
-            CALL(bufMgr->PinPage(task[1], i, page2));
+            CALL(cacheMgr->PinPage(task[1], i, page2));
             memcpy(page2, page, pageSize);
-            CALL(bufMgr->UnPinPage(task[1], i, true));
-            CALL(bufMgr->UnPinPage(task[0], i, false));
+            CALL(cacheMgr->UnPinPage(task[1], i, true));
+            CALL(cacheMgr->UnPinPage(task[0], i, false));
         }
 
         gettimeofday(&stop, 0);
@@ -272,12 +272,12 @@ int main()
         printf("\nComparing files 1 and 2...\n");
         gettimeofday(&start, 0);
         for(i = 0; i < fileSize; i++) {
-            CALL(bufMgr->PinPage(task[0], i, page));
+            CALL(cacheMgr->PinPage(task[0], i, page));
             char *page2;
-            CALL(bufMgr->PinPage(task[1], i, page2));
+            CALL(cacheMgr->PinPage(task[1], i, page2));
             assert(memcmp(page, page2, strlen(page2)) == 0);
-            CALL(bufMgr->UnPinPage(task[0], i, false));
-            CALL(bufMgr->UnPinPage(task[1], i, false));
+            CALL(cacheMgr->UnPinPage(task[0], i, false));
+            CALL(cacheMgr->UnPinPage(task[1], i, false));
         }
 
         gettimeofday(&stop, 0);
@@ -288,7 +288,7 @@ int main()
     }
 
     for(f = 0; f < numFiles; f++)
-        CALL(bufMgr->UnPin(task[f], false));
+        CALL(cacheMgr->UnPin(task[f], false));
     
     printf("\n");
 
@@ -297,14 +297,14 @@ int main()
         delete task[i];
         fclose(fp[i]);
         char buf[64];
-        sprintf(buf, "/tmp/bufmgr.%d", i);
+        sprintf(buf, "/tmp/cacheMgr.%d", i);
         (void)unlink(buf);
     }
 
 #if 0
     for(i = 0; i < numFiles; i++) {
         char buf[64];
-        sprintf(buf, "/tmp/bufmgr.%d", i);
+        sprintf(buf, "/tmp/cacheMgr.%d", i);
         fp[i] = fopen(buf, "w+");
         if (!fp[i]) {
             fprintf(stderr, "Could not create %s\n", buf);
@@ -325,13 +325,13 @@ int main()
         sizes[f] = rand() % pageSize;
         printf(" %d", sizes[f]);
         if (sizes[f] < 128) sizes[f] = 128;
-        CALL(bufMgr->PinPage(task[f], i, page));
+        CALL(cacheMgr->PinPage(task[f], i, page));
         sprintf(page, "test.%d Page %d %7.1f", f, i, (float)i);
-        CALL(bufMgr->UnPinPage(task[f], i, true, sizes[f]));
+        CALL(cacheMgr->UnPinPage(task[f], i, true, sizes[f]));
     }
     for(f = 0; f < numFiles; f++) {
         i = 0;
-        int status = bufMgr->PinPage(task[f], i, page);
+        int status = cacheMgr->PinPage(task[f], i, page);
         CALL(status);
         if (status != sizes[f]) {
             printf("Error reading back %d-byte file page\n", sizes[f]);
@@ -339,7 +339,7 @@ int main()
         }
         sprintf(cmp, "test.%d Page %d %7.1f", f, i, (float)i);
         assert(memcmp(page, cmp, strlen(cmp)) == 0);
-        CALL(bufMgr->UnPinPage(task[f], i, false));
+        CALL(cacheMgr->UnPinPage(task[f], i, false));
     }
 
     for(i = 0; i < numFiles; i++) {
@@ -347,13 +347,13 @@ int main()
         delete task[i];
         fclose(fp[i]);
         char buf[64];
-        sprintf(buf, "/tmp/bufmgr.%d", i);
+        sprintf(buf, "/tmp/cacheMgr.%d", i);
         (void)unlink(buf);
     }
 #endif
 
-    delete bufMgr;
-    delete memPool;
+    delete cacheMgr;
+    delete memMgr;
 
     printf("\nPassed all tests.\n");
 
@@ -368,7 +368,7 @@ int main()
         delete task[i];
         fclose(fp[i]);
         char buf[64];
-        sprintf(buf, "tmp/bufmgr.%d", i);
+        sprintf(buf, "tmp/cacheMgr.%d", i);
         (void)unlink(buf);
     }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/11 15:51:39  jussi
+  Names of IOTask classes have changed.
+
   Revision 1.3  1996/11/08 15:42:24  jussi
   Removed IOTask::Initialize() and SetBuffering(). Added support
   for streaming via ReadStream() and WriteStream().
@@ -46,7 +49,7 @@ static int pageSize = 32 * 1024;
 // ===================================================================
 
 struct FileReq {
-    SBufMgr *bufMgr;
+    CacheMgr *cacheMgr;
     IOTask *task;
     int fileSize;
     int pipeSize;
@@ -67,12 +70,12 @@ void sleepms(int ms)
 
 // ===================================================================
 
-void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
+void WriterP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
 {
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
-        if (!bufMgr) {
-            if (MemPool::Instance()->Allocate(MemPool::Buffer, page) < 0) {
+        if (!cacheMgr) {
+            if (MemMgr::Instance()->Allocate(MemMgr::Buffer, page) < 0) {
                 perror("Writer alloc");
                 exit(1);
             }
@@ -86,21 +89,21 @@ void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
             thr_yield();
 #endif
         } else {
-            if (bufMgr->AllocPage(task, i, page) < 0) {
+            if (cacheMgr->AllocPage(task, i, page) < 0) {
                 perror("Writer pin");
                 exit(1);
             }
             sprintf(page, "test.%d Page %d %7.1f", i, i, (float)i);
-            if (bufMgr->UnPinPage(task, i, true, pageSize, true) < 0) {
+            if (cacheMgr->UnPinPage(task, i, true, pageSize, true) < 0) {
                 perror("Writer unpin");
                 exit(1);
             }
         }
     }
 
-    if (!bufMgr) {
+    if (!cacheMgr) {
         char *page = 0;
-        if (MemPool::Instance()->Allocate(MemPool::Buffer, page) < 0) {
+        if (MemMgr::Instance()->Allocate(MemMgr::Buffer, page) < 0) {
             perror("Writer alloc");
             exit(1);
         }
@@ -117,25 +120,25 @@ void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 void *Writer(void *arg)
 {
     FileReq *req = (FileReq *)arg;
-    WriterP(req->bufMgr, req->task, req->fileSize);
+    WriterP(req->cacheMgr, req->task, req->fileSize);
     delete arg;
     return (void *)0;
 }
 
 // ===================================================================
 
-void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
+void ReaderP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
 {
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
-        if (!bufMgr) {
+        if (!cacheMgr) {
             int bytes = task->Consume(page);
             if (bytes < 0) {
                 perror("Reader read");
                 exit(1);
             }
             assert(page);
-            if (MemPool::Instance()->Release(MemPool::Buffer, page) < 0) {
+            if (MemMgr::Instance()->Release(MemMgr::Buffer, page) < 0) {
                 perror("Reader dealloc");
                 exit(1);
             }
@@ -145,11 +148,11 @@ void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
             thr_yield();
 #endif
         } else {
-            if (bufMgr->PinPage(task, i, page) < 0) {
+            if (cacheMgr->PinPage(task, i, page) < 0) {
                 perror("Reader pin");
                 exit(1);
             }
-            if (bufMgr->UnPinPage(task, i, false) < 0) {
+            if (cacheMgr->UnPinPage(task, i, false) < 0) {
                 perror("Reader unpin");
                 exit(1);
             }
@@ -162,7 +165,7 @@ void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 void *Reader(void *arg)
 {
     FileReq *req = (FileReq *)arg;
-    ReaderP(req->bufMgr, req->task, req->fileSize);
+    ReaderP(req->cacheMgr, req->task, req->fileSize);
     delete arg;
     return (void *)0;
 }
@@ -249,19 +252,19 @@ int main(int argc, char **argv)
     int status = SemaphoreV::create(16);
     assert(status >= 0);
 
-    // create buffer pool and buffer manager
+    // create memory and cache manager
 
-    MemPool *memPool = new MemPool(poolSize, pageSize, status);
-    assert(memPool);
+    MemMgr *memMgr = new MemMgr(poolSize, pageSize, status);
+    assert(memMgr);
     if (status < 0) {
-        fprintf(stderr, "Cannot create memory pool\n");
+        fprintf(stderr, "Cannot create memory manager\n");
         exit(1);
     }
 
-    SBufMgr *bufMgr = 0;
+    CacheMgr *cacheMgr = 0;
     if (!iotaskDirect) {
-        bufMgr = new SBufMgrLRU(*memPool, bufPages);
-        assert(bufMgr);
+        cacheMgr = new CacheMgrLRU(*memMgr, bufPages);
+        assert(cacheMgr);
     }
 
     // test buffer manager
@@ -298,7 +301,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
         }
-        if (!bufMgr) {
+        if (!cacheMgr) {
             if (readOnly) {
                 if (task[i]->ReadStream(fileSize * pageSize, pipeSize) < 0) {
                     perror("Reader stream");
@@ -325,13 +328,13 @@ int main(int argc, char **argv)
             }
             if (!child) {
                 printf("Child %d started...\n", f);
-                WriterP(bufMgr, task[f], fileSize);
+                WriterP(cacheMgr, task[f], fileSize);
                 exit(1);
             }
 #endif
 #ifdef THREAD_TASK
             FileReq *req = new FileReq;
-            req->bufMgr = bufMgr;
+            req->cacheMgr = cacheMgr;
             req->task = task[f];
             req->fileSize = fileSize;
             if (pthread_create(&child[f], 0, Writer, req)) {
@@ -353,13 +356,13 @@ int main(int argc, char **argv)
             }
             if (!child) {
                 printf("Child %d started...\n", f);
-                ReaderP(bufMgr, task[f], fileSize);
+                ReaderP(cacheMgr, task[f], fileSize);
                 exit(1);
             }
 #endif
 #ifdef THREAD_TASK
             FileReq *req = new FileReq;
-            req->bufMgr = bufMgr;
+            req->cacheMgr = cacheMgr;
             req->task = task[f];
             req->fileSize = fileSize;
             if (pthread_create(&child[f], 0, Reader, req)) {
@@ -389,7 +392,7 @@ int main(int argc, char **argv)
         (void)pthread_join(child[f], 0);
         printf("Child completed...\n");
 #endif
-        if (!bufMgr)
+        if (!cacheMgr)
             (void)task[f]->Terminate();
         delete task[f];
     }
@@ -405,8 +408,8 @@ int main(int argc, char **argv)
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            (numFiles * fileSize * pageSize) / 1048576.0 / secs);
 
-    delete bufMgr;
-    delete memPool;
+    delete cacheMgr;
+    delete memMgr;
 
     printf("\nPassed all tests.\n");
 
