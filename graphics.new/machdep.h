@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/26 15:35:01  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.3  1996/02/15 18:01:10  jussi
   Small fix for ioctl() on AIX.
 
@@ -100,6 +105,10 @@
 
 #if defined(WINNT) && !defined(__winnt)
 #error "Are you sure this is a Windows NT machine?"
+#endif
+
+#if defined(LINUX) && !defined(__linux__)
+#error "Are you sure this is a Linux machine?"
 #endif
 
 /*
@@ -269,6 +278,8 @@ union semun {
 
 #ifdef __hpux
 #define FILE2FD(f) (f->__fileL + (f->__fileH << 8))
+#elif defined(__linux__)
+#define FILE2FD(f) (f->_fileno)
 #else
 #define FILE2FD(f) (f->_file)
 #endif
@@ -286,7 +297,7 @@ union semun {
 #endif
 
 #if !defined(__alpha) && !defined(__hpux) && !defined(__solaris) \
-    && !defined(__sgi)
+    && !defined(__sgi) && !defined(__linux__)
   EXTERNC int readv(int, struct iovec *, int);
   EXTERNC int writev(int, struct iovec *, int);
 #endif

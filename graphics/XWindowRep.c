@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/03/26 15:34:41  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.25  1996/02/28 17:37:34  yuc
   Added CompLocationOnViewingSpace, CompProjectionOnViewingPlane,
   DrawXSegments, MapAllPoints, MapAllSegments, and DrawRefAxis.  These
@@ -283,7 +288,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   char cmd[256];
 
-#if defined(SUN) || defined(HPUX)
+#if defined(SUN) || defined(HPUX) || defined(LINUX)
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
 	    _win, filename);
@@ -347,7 +352,11 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
 
   for(int attempt = 0; attempt < 10; attempt++) {
     int status = system(cmd);
+#if defined(LINUX)
+    if ((status != -1) && (status != 127))
+#else
     if (status != errorcode)
+#endif
       break;
     if (errno == EAGAIN && attempt < 10 - 1) {
       perror("system");

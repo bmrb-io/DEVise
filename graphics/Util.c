@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/02/13 16:20:16  jussi
+  Fixed for AIX.
+
   Revision 1.7  1996/01/10 19:11:17  jussi
   Added error checking to CopyString.
 
@@ -96,13 +99,13 @@ void ClearDir(char *dir)
 
   DIR *dirp = opendir(dir);
   if (dirp != NULL){
-#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
+#if defined(PENTIUM) || defined(HPUX) || defined(AIX) || defined(LINUX)
     struct dirent *dp;
 #else
     struct direct *dp;
 #endif
     for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
-#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
+#if defined(PENTIUM) || defined(HPUX) || defined(AIX) || defined(LINUX)
       struct dirent *realdp = (struct dirent *)dp;
 #else
       struct direct *realdp = dp;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/14 22:59:24  jussi
+  Added necessary definitions for a Pentium processor. Fixed
+  problems with static member functions.
+
   Revision 1.3  1995/11/02 16:52:42  jussi
   Updated copyright message.
 
@@ -32,7 +36,8 @@
 #include <string.h>
 
 #if !defined(PENTIUM) && !defined(SUN4) && !defined(MIPS) \
-    && !defined(SUN3) && !defined(VAX) && !defined(IBM370)
+    && !defined(SUN3) && !defined(VAX) && !defined(IBM370) \
+    && !defined(LINUX)
 #define SUN4
 #endif
 
@@ -46,6 +51,13 @@
 #endif
 
 #ifdef PENTIUM	                // Pentium machine
+#   define SWAPBYTES
+#   define NEED_WORD_ALIGNED
+#   define CONVREALS
+#   undef  CONVEBCDIC
+#endif
+
+#ifdef LINUX	                // Linux/Intel machine
 #   define SWAPBYTES
 #   define NEED_WORD_ALIGNED
 #   define CONVREALS

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/03/26 15:34:50  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.7  1996/03/05 23:24:02  jussi
   Added a destructor which closes an open file.
 
@@ -304,7 +309,7 @@ void Command::Run()
 #define BUFSIZE 256
   char buf[BUFSIZE];
   struct timeval timeout;
-#ifdef AIX
+#if defined(AIX) || defined(LINUX)
   fd_set readfds;
 #else
   int readfds;
@@ -328,14 +333,14 @@ void Command::Run()
   case ReadInput:
     /* read next input */
     fd = fileno(_input);
-#ifdef AIX
+#if defined(AIX) || defined(LINUX)
     FD_SET(fd, &readfds);
 #else
     readfds = 1 << fd;
 #endif
     timeout.tv_sec = 0;
     timeout.tv_usec = 0;
-#if defined(AIX) || defined(HPUX)
+#if defined(AIX) || defined(HPUX) || defined(LINUX)
     ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 #else
     ret = select(fd + 1, (fd_set *)&readfds, NULL, NULL, &timeout);
