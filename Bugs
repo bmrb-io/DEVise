@@ -69,6 +69,12 @@ Num Date        Status  Description
 
 023 08/04/96	OPEN	Doing an extreme zoom in causes extra records to 
 			suddenly appear. (kb)
+			9/6/96: cause of problem found:
+			Overflow problem when converting from devise
+			coordinates (double) to X coordinates (short).
+			See XWindowRep::FillRectArray for one possible
+			solution which works for rectangles, but it won't
+			quite right work for other types (eg lines).
 
 024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
 			DEVise to fail an assertion. (kb)
