@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.148  1997/12/05 16:51:46  wenger
+#	Removed some unused Tcl code; removed 'Remove' selection from window
+#	menu (duplicated 'Destroy'); removed Layout Manager menu selection.
+#
 #	Revision 1.147  1997/12/04 04:06:46  donjerko
 #	New View interface.
 #
@@ -944,6 +948,7 @@ proc displayTable {table} {
 		return
 	}
 
+#	puts "returning:::::::::::: $entry"
 	set oldTableName [lindex $entry 0]
 	set type [lindex $entry 1]
 	set retVal [define$type $entry]
