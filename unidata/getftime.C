@@ -106,6 +106,8 @@ static char *time_zones[] = {
                                NULL
                             };
 
+static int atoin( char *s, int n, int *used=NULL );
+
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 //   Returns 1 if strings are equal, ignoring case, 0 otherwise.
 //   Only checks for equality up to the shorter length of
@@ -137,16 +139,23 @@ static int findstr( char *s, char **strs )
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Read in an integer from the string, using up at most n chars.
 // n == 0 means no limit.
-static int atoin( char *s, int n )
+static int atoin( char *s, int n, int *used )
 {
-    int ret;
-    char sent;
+    int   ret;
+    char  sent;
+    char *end;
 
     sent = s[n];
     if (n)
       s[n] = '\0';
-    ret = atoi(s);
+    ret = strtol(s,&end,10);
     s[n] = sent;
+
+    if (used) 
+      if (end)
+        *used = end - s;
+      else
+        *used = 0;
 
     return ret;
 }
@@ -157,7 +166,7 @@ static int atoin( char *s, int n )
 int getftime(char *buf, char *format, struct tm *tme)
 {
     int  len, tot=0;          // The total chars consumed
-    int  v, got_fn=0, repeat;
+    int  v, got_fn=0, repeat, used;
          // For building a 24-hour clock from 12-hour plus am/pm.
     int  have_hour = 0, hour_sum = 0;
     int  weeknum = -1, weeknum1 = -1;
@@ -243,8 +252,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %d - day of the month as an int (01-31)
               case 'd':
-                v = atoin(buf,repeat);
-                if ((v < 1) || (v > 31)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 1) || (v > 31)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid day of month (" << v << "): '"
                          << buf << "'.\n";
@@ -255,10 +264,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -266,8 +273,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %H - the hour (24-hour clock) as an int (00-23)
               case 'H':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 23)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 23)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid 24-hour clock hour (" << v << "): '"
                          << buf << "'.\n";
@@ -279,10 +286,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -290,8 +295,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %I - the hour (12-hour clock) as an int (01-12)
               case 'I':
-                v = atoin(buf,repeat);
-                if ((v < 1) || (v > 12)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 1) || (v > 12)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid 12-hour clock hour (" << v << "): '"
                          << buf << "'.\n";
@@ -302,10 +307,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -313,8 +316,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %j - day of the year as a decimal number (001-366)
               case 'j':
-                v = atoin(buf,repeat);
-                if ((v < 1) || (v > 366)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 1) || (v > 366)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid day of year (" << v << "): '"
                          << buf << "'.\n";
@@ -325,12 +328,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
-                else if ((v < 100) && (*buf != '0'))
-                    len = 2;
                 else
-                    len = 3;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -338,8 +337,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %m - month, as a decimal number (01-12)
               case 'm':
-                v = atoin(buf,repeat);
-                if ((v < 1) || (v > 12)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 1) || (v > 12)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid month (" << v << "): '"
                          << buf << "'.\n";
@@ -350,10 +349,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -361,8 +358,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %M - minute, as a decimal number (00-59)
               case 'M':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 59)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 59)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid minute (" << v << "): '"
                          << buf << "'.\n";
@@ -373,10 +370,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -401,8 +396,8 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %S - second, as an int (00-61)
                     //      (allows for up to 2 leap-seconds - 60 and 61)
               case 'S':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 61)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 61)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid second (" << v << "): '"
                          << buf << "'.\n";
@@ -413,10 +408,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -426,8 +419,8 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //     (Week number 1 has the first Sunday; previous
                     //      days are week 0.) 
               case 'U':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 53)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 53)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid week of year (" << v << "): '"
                          << buf << "'.\n";
@@ -439,10 +432,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -450,8 +441,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %w - weekday as a decimal number (0-6, Sunday=0)
               case 'w':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 6)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 6)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid weekday number (" << v << "): '"
                          << buf << "'.\n";
@@ -463,7 +454,7 @@ int getftime(char *buf, char *format, struct tm *tme)
                 if (repeat)
                     len = repeat;
                 else
-                    len = 1;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -473,8 +464,8 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //     (Week number 1 has the first Monday; previous
                     //      days are week 0.) 
               case 'W':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 53)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 53)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid week number (" << v << "): '"
                          << buf << "'.\n";
@@ -486,10 +477,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -497,8 +486,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %y - year without century as a decimal number (00-99)
               case 'y':
-                v = atoin(buf,repeat);
-                if ((v < 0) || (v > 99)) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0) || (v > 99)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid 2-digit year (" << v << "): '"
                          << buf << "'.\n";
@@ -511,10 +500,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if ((v < 10) && (*buf != '0'))
-                    len = 1;
                 else
-                    len = 2;
+                    len = used;
 
                 buf += len;
                 tot += len;
@@ -522,8 +509,8 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %Y - year with century as a decimal number, eg, 1952
               case 'Y':
-                v = atoin(buf,repeat);
-                if (v < 0) {
+                v = atoin(buf,repeat,&used);
+                if ((used == 0) || (v < 0)) {
 #ifdef    VERBOSE_ERROR
                     cout << "Invalid 4-digit year (" << v << "): '"
                          << buf << "'.\n";
@@ -536,7 +523,7 @@ int getftime(char *buf, char *format, struct tm *tme)
                 if (repeat)
                     len = repeat;
                 else
-                    len = 4;    // Change here for year 10000+, :^)
+                    len = used;
 
                 buf += len;
                 tot += len;
