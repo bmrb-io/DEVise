@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/07/27 16:11:23  wenger
+// Added standard DEVise headers.
+//
 
 // ========================================================================
 
@@ -50,10 +53,10 @@ public class GetBackbone
 	    output_file = args[1];
 	}
 
-        LocalStar2Devise starfile = 
-            new LocalStar2Devise(file_name);
+        Star2Devise starfile = Star2Devise.LocalStar2Devise(file_name);
         System.out.println(file_name + " parsed successfully.");
 
+	//TEMP -- remove hard-coded 4096s
 //  	if (starfile.calcChemShifts("4096"))
 //  	    System.out.println
 //  		("Chemical shift indices computed successfully.");

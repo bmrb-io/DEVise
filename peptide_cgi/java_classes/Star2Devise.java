@@ -12,7 +12,8 @@
 
 // ------------------------------------------------------------------------
 
-// Reads a local star file and outputs data for DEVise.
+// Reads a star file (either local or via the web) and outputs data for
+// DEVise.
 
 // ------------------------------------------------------------------------
 
@@ -25,13 +26,14 @@
 import java.io.*;
 import EDU.bmrb.starlibj.*;
 import java.util.Vector;
+import java.net.URL;
 
 // for chemical shifts
 import java.util.Enumeration;
 import AssgDataManager.AssgEntry;
 import ShiftDataManager.Pair;
 
-public class LocalStar2Devise {
+public class Star2Devise {
 
     private static final boolean DEBUG = true;
     private static final String RESIDUE_CODE = "_Residue_seq_code";
@@ -43,14 +45,44 @@ public class LocalStar2Devise {
     // Location of RESIDUE_CODE tag in average_refined_structure,
     //   the first LoopTableNode in value_vector
     private static final int RESIDUE_LOCATION = 2;
+
+    public static Star2Devise LocalStar2Devise(String file_name)
+    {
+	Star2Devise s2d = null;
+	try {
+            FileInputStream stream = new FileInputStream(file_name);
+	    s2d = new Star2Devise(file_name, stream);
+	} catch (FileNotFoundException ex) {
+	    System.err.println("File not found exception: " + ": " +
+	      ex.getMessage() );
+	}
+
+	return s2d;
+    }
+
+    public static Star2Devise WebStar2Devise(String file_name)
+    {
+	Star2Devise s2d = null;
+
+	try {
+	java.net.URL starfile =
+	  new java.net.URL("http://www.bmrb.wisc.edu/data_library/files/" +
+	  file_name);
+
+	    s2d = new Star2Devise(file_name, starfile.openStream());
+        } catch(Exception ex) {//TEMP
+	    System.err.println("Exception: " + ": " + ex.getMessage() );//TEMP
+	}
+
+	return s2d;
+    }
     
-    public LocalStar2Devise(String file_name) {
+    public Star2Devise(String file_name, InputStream stream) {
 	try {
 	    this.file_name = file_name;
 
 	    StarParser aParser = 
-		new StarParser(
-			  new FileInputStream(file_name));
+		new StarParser(stream);
 	    
 	    aParser.StarFileNodeParse(aParser);
 	    
@@ -59,11 +91,6 @@ public class LocalStar2Devise {
 	    aStarTree = aParser.endResult();
 
 	    value_vector = new Vector();
-
-	} catch (IOException e) {
-	    System.err.println("IO Exception: "
-			       + ": " + e.getMessage() );
-
 	} catch (ParseException e) {
 	    System.err.println("NMR-Star file parse error: " 
 			       + e.getMessage() );
@@ -193,10 +220,10 @@ public class LocalStar2Devise {
 
 		return true;
 		
-	    } else if (saveFrameVec.size() == 0) // none found
+	    } else if (saveFrameVec.size() == 0) { // none found
 		return false;
 
-	    else {		// multiple search strings found
+	    } else {		// multiple search strings found
 		throw new IllegalArgumentException
 		    ("Found " + saveFrameVec.size()
 		     + " save frames,"
@@ -559,10 +586,11 @@ public class LocalStar2Devise {
 	FileWriter deltashift_writer, csi_writer, percent_writer;
 	String the_number = null;
 
-	if (acc_num == null)
+	if (acc_num == null) {
 	    the_number = file_name.substring( 3, 7);
-	else
+	} else {
 	    the_number = acc_num;
+	}
 	    
 	try {
 	    //Output error log
@@ -635,51 +663,56 @@ public class LocalStar2Devise {
 		    ( "_Chem_shift_value", 
 		      nestLevel,
 		      returnIndex);
-		if( returnIndex.num == -1) 
+		if( returnIndex.num == -1) {
 		    break;
-		else
+		} else {
 		    chemShiftValueIndex = returnIndex.num;
+		}
 		
 		//Retrieve atom name
 		currentDataLoop.getNames().tagPositionDeep
 		    ( "_Atom_name", 
 		      nestLevel,
 		      returnIndex );
-		if( returnIndex.num == -1 )
+		if( returnIndex.num == -1 ) {
 		    break;
-		else
+		} else {
 		    atomNameIndex = returnIndex.num;
+		}
 		
 		//Retrieve residue label
 		currentDataLoop.getNames().tagPositionDeep
 		    ( "_Residue_label",
 		      nestLevel,
 		      returnIndex );
-		if( returnIndex.num == -1 )
+		if( returnIndex.num == -1 ) {
 		    break;
-		else
+		} else {
 		    residueLabelIndex = returnIndex.num;
+		}
 		  
 		//Retrieve sequence numbers
 		currentDataLoop.getNames().tagPositionDeep
 		    ( "_Residue_seq_code",
 		      nestLevel,
 		      returnIndex );
-		if( returnIndex.num == -1 )
+		if( returnIndex.num == -1 ) {
 		    break;
-		else
+		} else {
 		    residueSeqIndex = returnIndex.num;
+                }
 
 		//Retrieve atom type
 		currentDataLoop.getNames().tagPositionDeep
 		    ( "_Atom_type",
 		      nestLevel,
 		      returnIndex );
-		if( returnIndex.num == -1 )
+		if( returnIndex.num == -1 ) {
 		    break;
-		else
+		} else {
 		    atomTypeIndex = returnIndex.num;
-		
+		}
+
 		//Do the shift computations here
 		deltashift_writer = new FileWriter( the_number + "d.dat" );
 		
@@ -765,11 +798,11 @@ public class LocalStar2Devise {
 			 {
 			     ha_deltashift = deltashift;
 			     prevAtomName = "HA";
-			 } else if (currAtomName.compareTo("C") == 0)
+			 } else if (currAtomName.compareTo("C") == 0) {
 			     c_deltashift = deltashift;
-			 else if (currAtomName.compareTo("CA") == 0)
+			 } else if (currAtomName.compareTo("CA") == 0) {
 			     ca_deltashift = deltashift;
-			 else if (currAtomName.compareTo("CB") == 0
+			 } else if (currAtomName.compareTo("CB") == 0
 				  || (currAtomName.compareTo("HA3") == 0
 				      && currResLabel.compareTo("GLY") == 0))
 			 {
@@ -874,12 +907,13 @@ public class LocalStar2Devise {
 			
 			//And now to compute the CSI's
 			int csi ;
-			if(deltashift > standardValue.offset)
+			if (deltashift > standardValue.offset) {
 			    csi = 1;
-			else if(deltashift < -1.0*standardValue.offset)
+			} else if(deltashift < -1.0*standardValue.offset) {
 			    csi = -1;
-			else
+			} else {
 			    csi = 0;
+			}
 		    
 			//The special cases of combining HA with HA2
 			//and HA3 with CB as per algorithm
@@ -925,7 +959,7 @@ public class LocalStar2Devise {
 		
 		int currRowNum = 0;
 		while (currRowNum < maxRows)
-		    {
+		{
 		    LoopRowNode currRow 
 			= currentDataLoop.getVals().elementAt(currRowNum);
 		    
@@ -961,12 +995,13 @@ public class LocalStar2Devise {
 			      String new_atom =
 				  currRow.elementAt(atomTypeIndex).getValue();
 			      
-			      if (new_atom.equals("H"))
+			      if (new_atom.equals("H")) {
 				  starnumH++;
-			      else if (new_atom.equals("C"))
+			      } else if (new_atom.equals("C")) {
 				  starnumC++;
-			      else if (new_atom.equals("N"))
+			      } else if (new_atom.equals("N")) {
 				  starnumN++;
+			      }
 
 			      if (++currRowNum < maxRows)
 				  currRow
@@ -1065,49 +1100,52 @@ public class LocalStar2Devise {
 
 	    // generate a web page here
 	    String the_number = null;
-	    the_number = outFileName;
-
-//   	    FileOutputStream outStream 
-// 		= new FileOutputStream(the_number + "y.html");
-//  	    PrintWriter summary_writer 
-//  		= new PrintWriter(new BufferedWriter
-//  				  ( new OutputStreamWriter ( outStream ))) ;
-// 	    summary_writer.println("<html><head><title>Summary for " +
-// 				   file_name + "</title></head>" + 
-// 				   "<body bgcolor = white>");
-// 	    summary_writer.println("<h3>DEVise plots for:");
-// 	    summary_writer.println(system_name + "</h3>");
-// 	    summary_writer.println("Title: <tt>" + title + "</tt>");
+	    if (outFileName == null) {
+	        the_number = file_name.substring(3, 7);
+	    } else {
+	        the_number = outFileName;
+	    }
+  	    FileOutputStream outStream 
+		= new FileOutputStream(the_number + "y.html");
+ 	    PrintWriter summary_writer 
+ 		= new PrintWriter(new BufferedWriter
+ 				  ( new OutputStreamWriter ( outStream ))) ;
+	    summary_writer.println("<html><head><title>Summary for " +
+				   file_name + "</title></head>" + 
+				   "<body bgcolor = white>");
+	    summary_writer.println("<h3>DEVise plots for:");
+	    summary_writer.println(system_name + "</h3>");
+	    summary_writer.println("Title: <tt>" + title + "</tt>");
 	    
 	    // new display- pages generated my make_view
-// 	    StringBuffer display_link =
-// 		new StringBuffer
-// 		("<br><br><a href=\"" + the_number + "c.html");
+	    StringBuffer display_link =
+		new StringBuffer
+		("<br><br><a href=\"" + the_number + "c.html");
 	    
 	    // DataLoopNode contains DataLoopNameListNode, and LoopTableNode
- 	    for ( int i = 0; i < category_vals.size(); i++) {
- 		String current_tag =
- 		    category_vals.elementAt(i).firstElement().getValue();
-// 		if (current_tag.equals("assigned_chemical_shifts")) {
+	    for ( int i = 0; i < category_vals.size(); i++) {
+		String current_tag =
+		    category_vals.elementAt(i).firstElement().getValue();
+		if (current_tag.equals("assigned_chemical_shifts")) {
 		    
 		    // generate the files
-// 		    calcChemShifts(null);
+		    calcChemShifts(null);
 
 		    // and create links
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print("\">Chemical Shift Index</a>");
+		    summary_writer.print(display_link);
+		    summary_writer.print("\">Chemical Shift Index</a>");
 
-// 		    display_link.setCharAt(21, 'd');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print
-// 			("\">Chemical Shift Delta</a>");
+		    display_link.setCharAt(21, 'd');
+		    summary_writer.print(display_link);
+		    summary_writer.print
+			("\">Chemical Shift Delta</a>");
 
-// 		    display_link.setCharAt(21, 'p');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print
-// 			("\">Percent Assigned Atoms</a>");
- 		    
-// 		} 
+		    display_link.setCharAt(21, 'p');
+		    summary_writer.print(display_link);
+		    summary_writer.print
+			("\">Percent Assigned Atoms</a>");
+		    
+		} 
 		
 		if (current_tag.equals("T1_relaxation")) {
 
@@ -1160,25 +1198,40 @@ public class LocalStar2Devise {
 					   "save frame not found.");
 
 		    // and create the links
-// 		    display_link.setCharAt(21, 'h');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print("\">H-Exchange Rates</a>");
+		    display_link.setCharAt(21, 'h');
+		    summary_writer.print(display_link);
+		    summary_writer.print("\">H-Exchange Rates</a>");
 
-// 		    display_link.setCharAt(21, 'o');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print("\">Order Parameters</a>");
+		    display_link.setCharAt(21, 'o');
+		    summary_writer.print(display_link);
+		    summary_writer.print("\">Order Parameters</a>");
 
-// 		    display_link.setCharAt(21, 'r');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print("\">Relaxation Parameters</a>");
+		    display_link.setCharAt(21, 'r');
+		    summary_writer.print(display_link);
+		    summary_writer.print("\">Relaxation Parameters</a>");
 
-// 		    display_link.setCharAt(21, 'g');
-// 		    summary_writer.print(display_link);
-// 		    summary_writer.print("\">Coupling Constants</a>");
+		    display_link.setCharAt(21, 'g');
+		    summary_writer.print(display_link);
+		    summary_writer.print("\">Coupling Constants</a>");
 		}
 	    }
-    
-// 	    summary_writer.print("</body></html>");
+
+	    summary_writer.print("</body></html>");
+
+// loop_
+// _Saveframe_category_type 
+// _Saveframe_category_type_count 
+// coupling_constants 1 
+// T1_relaxation 1 
+// T2_relaxation 2 
+// heteronuclear_NOE 1 
+// S2_parameters 1 
+// H_exchange_rate 1 
+// H_exchange_protection_factors 1 
+// representative_structure 1 
+// structure_coordinate_set 1 
+// stop_
+
 
 	    // to print out a DataLoopNode
 // 	    DataLoopNode categoryLoop =
@@ -1195,10 +1248,15 @@ public class LocalStar2Devise {
 //   	    theUnparser.writeOut((DataLoopNode)categoryVec.firstElement(), 0);
 //    	    theUnparser.writeOut(category_vals, 0);
 
-// 	    summary_writer.println("</body></html>");
+	    summary_writer.println("</body></html>");
 
-// 	    summary_writer.close();
-//  	    outStream.close();
+
+
+	    summary_writer.close();
+ 	    outStream.close();
+
+
+
 	    
 // 	    VectorCheckType chemshiftVec =
 // 		categoryLoop.searchForTypeByName
@@ -1209,31 +1267,30 @@ public class LocalStar2Devise {
 // 	    if( chemshiftVec.size() == 1 )
 // 	    {
 // 		int assg_chem_shift_count =
-// 		    Integer.parseInt( ((LoopRowNode) chemshiftVec
-// 	            .firstElement()).elementAt(1).getValue() );
+// 		    new Integer( ((LoopRowNode) chemshiftVec.firstElement())
+// 				 .elementAt(1).getValue() ).intValue();
 // 		System.out.println("Chem shift count = " +
 // 				   assg_chem_shift_count);
 // // 		return true;
 // 	    }
 
 	    // Now check for other data...
-    
+	    
 	    return true;
 
         	} catch (ClassNotFoundException e) {
  	    System.err.println("Class not found exception:  "
  			       + e.getMessage() );
-//         	} catch (FileNotFoundException e) {
-//  	    System.err.println("File not found exception:  "
-//  			       + e.getMessage() );
-//         	} catch (IOException e) {
-//  	    System.err.println("IO exception:  "
-//  			       + e.getMessage() );
+        	} catch (FileNotFoundException e) {
+ 	    System.err.println("File not found exception:  "
+ 			       + e.getMessage() );
+        	} catch (IOException e) {
+ 	    System.err.println("IO exception:  "
+ 			       + e.getMessage() );
  	} finally {}
 
  	return false;
-    } // end summarize
-
+    }
 
     /* Function sqaure
      *  takes a Float, and squares the number

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/07/27 16:11:24  wenger
+// Added standard DEVise headers.
+//
 
 // ========================================================================
 
@@ -37,14 +40,11 @@ public class Summarize
 		System.exit(1);
 	    }
 
-// 	String the_number = args[0].substring( 3, 7);
+ 	String the_number = args[0].substring(3, 7);
 
-	WebStar2Devise starfile = 
-	    new WebStar2Devise(args[0]);
+        Star2Devise starfile = Star2Devise.WebStar2Devise(args[0]);
 
-	starfile.summarize("summary");
+	starfile.summarize(the_number);
 	
     } // end main
-
-
 }

@@ -51,7 +51,7 @@ chdir ($data_dir)
 # that we don't have to do anything.
 if (! -e $summary_page) {
   system ("./summarize $acc_no" ) 
-   && dienice("could not generate data files with java");
+   and dienice("could not generate data files with java");
 
   # Make sure the summary page is world-readable.
   chmod 0644, "$summary_page";
