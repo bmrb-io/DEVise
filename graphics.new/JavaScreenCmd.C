@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.122  2001/10/08 19:21:02  wenger
+  Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
+
   Revision 1.121  2001/10/05 15:49:02  wenger
   Turn off error logging while checking session files.
 
@@ -597,7 +600,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 7;
+static const int protocolMajorVersion = 8;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;

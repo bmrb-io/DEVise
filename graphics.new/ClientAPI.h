@@ -16,6 +16,11 @@
    $Id$
 
    $Log$
+   Revision 1.17  2001/10/12 18:30:26  wenger
+   Fixed problems with network header reading/writing code (old code
+   assumed that the NetworkHeader struct would never contain any extra
+   space for alignment, other problems).
+
    Revision 1.16  2001/01/08 20:32:52  wenger
    Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
    back onto the trunk.
@@ -80,11 +85,7 @@ typedef struct {
 
   u_short msgType;                      // type of message (see API_CMD, etc.
   					// in ParseAPI.h)
-#if 1 //TEMP
-  u_short jsId;				// JavaScreen ID
-#else //TEMP
   long long jsId;			// JavaScreen ID
-#endif //TEMP
   u_short useCgi;			// (boolean) whether to use CGI
   u_short nelem;                        // number of elements in message
   u_short size;                         // total size of message
