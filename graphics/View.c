@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/05 17:02:00  jussi
+  Moved _stats to ViewGraph (superclass) so that statistics can be
+  turned on and displayed without having to redisplay the data itself.
+
   Revision 1.9  1995/12/04 18:06:05  jussi
   Added GetLabelParams and replaced ToggleStatDisplay with SetStatDisplay.
 
@@ -1714,7 +1718,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
 
 #if 0
   if (_pixmap != NULL) {
-    printf("RestorePixmap %s\n",GetName());
+    printf("RestorePixmap %s\n", GetName());
     printf("cur filter: %f,%f %f,%f\n", filter.xLow, filter.xHigh,
 	   filter.yLow, filter.yHigh);
     printf("pix filter: %f,%f %f,%f\n",
@@ -1757,10 +1761,25 @@ void View::SavePixmaps(FILE *file)
 {
 #ifdef DEBUG
   printf("SavePixmap at bytes %d\n", ftell(file));
-  printf("View SavePixmaps bytes %d\n",_bytes);
+  printf("View SavePixmaps bytes %d\n", _bytes);
 #endif
 
+  // Store a known 4-byte integer at head of file to distinguish
+  // the byte order (little/big endian) used on this machine; at
+  // load time, check the value of the integer.
+
+  unsigned long int magic = 0xdeadbeef;
+  if (fwrite(&magic, sizeof magic, 1, file) != 1) {
+    perror("View::SavePixmaps");
+    Exit::DoExit(1);
+  }
+  
 #ifndef JPEG
+
+  //
+  // Save pixmap in run-length-encoded format
+  //
+
   int saved = 0;
   DevisePixmap *pixmap;
   if (Iconified()|| !Mapped() ||_refresh ||_bytes < VIEW_BYTES_BEFORE_SAVE) {
@@ -1768,23 +1787,23 @@ void View::SavePixmaps(FILE *file)
       /* save old pixmap */
       saved = 1;
       pixmap = _pixmap;
-    }
-    else saved = 0;
-  }
-  else {
+    } else
+      saved = 0;
+  } else {
     /* save current pixmap */
     saved = 1;
     WindowRep *winRep = GetWindowRep();
     pixmap = winRep->GetPixmap();
-    if (pixmap == NULL) {
+    if (!pixmap) {
       saved = 0;
     }
   }
   
-  if (fwrite(&saved,sizeof(saved),1,file) != 1) {
+  if (fwrite(&saved, sizeof(saved), 1, file) != 1) {
     perror("View::SavePixmaps");
     Exit::DoExit(1);
   }
+
   if (!saved)
     return;
   
@@ -1815,21 +1834,25 @@ void View::SavePixmaps(FILE *file)
 	 pixmap->filter.yLow, pixmap->filter.yHigh);
 #endif
 		
-  if (fwrite(pixmap,sizeof(*pixmap),1,file) != 1) {
+  if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1) {
     perror("View::SavePixmaps 1");
     Exit::DoExit(1);
   }
-  if (fwrite(pixmap->data,pixmap->compressedBytes,1,file) != 1) {
+  if (fwrite(pixmap->data, pixmap->compressedBytes, 1, file) != 1) {
     perror("View::SavePixmaps 2");
     Exit::DoExit(1);
   }
 
 #else
 
-  int num[2] = {0,0};
+  //
+  // Save pixmap in JPEG format
+  //
+
+  int num[2] = {0, 0};
   int pos = ftell(file);
-  if (!Mapped() || /*_bytes < VIEW_BYTES_BEFORE_SAVE ||*/ _refresh) {
-    num[1] = pos+2*sizeof(int);
+  if (!Mapped() || _bytes < 0 * VIEW_BYTES_BEFORE_SAVE || _refresh) {
+    num[1] = pos + 2 * sizeof(int);
     if (fwrite(num, sizeof(num), 1, file) != 1) {
       perror("View::SavePixmaps");
       Exit::DoExit(1);
@@ -1839,31 +1862,37 @@ void View::SavePixmaps(FILE *file)
   
   /* Save window pixmap */
   num[0] = 1;
-  /*
-     if (fwrite(&num, sizeof(num), 1, file) != 1) {
-     perror("View::SavePixmaps num");
-     Exit::DoExit(1);
-     }
-     */
+
+#if 0
+  if (fwrite(&num, sizeof(num), 1, file) != 1) {
+    perror("View::SavePixmaps num");
+    Exit::DoExit(1);
+  }
+#endif
+
   WindowRep *winRep = GetWindowRep();
   DevisePixmap *pixmap = winRep->GetPixmap();
   pixmap->dataBytes = _bytes;
   pixmap->filter = _filter;
   
+#ifdef DEBUG
   printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d, pad %d\n",
 	 pixmap->dataBytes, pixmap->imageBytes, pixmap->width,
 	 pixmap->height, pixmap->bytes_per_line, pixmap->padding);
   fwrite(pixmap->data,sizeof(char),pixmap->imageBytes,file);
   return;
+#endif
   
 #if 0
-  if (fwrite(pixmap,sizeof(*pixmap),1,file) != 1 ) {
+  if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
     perror("View::SavePixmaps: pixmap");
     Exit::DoExit(1);
   }
 #endif
   
+#ifdef DEBUG
   printf("before compress, at %d\n", ftell(file));
+#endif
 
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -1880,31 +1909,53 @@ void View::SavePixmaps(FILE *file)
   jpeg_start_compress(&cinfo, TRUE);
   
   unsigned char *data = (unsigned char *)pixmap->data;
-  int i;
-  for (i=0; i < pixmap->height; i++) {
-    row_pointer[0] = &data[i*pixmap->bytes_per_line];
-    (void)jpeg_write_scanlines(&cinfo,row_pointer, 1);
+  for(int i = 0; i < pixmap->height; i++) {
+    row_pointer[0] = &data[i * pixmap->bytes_per_line];
+    (void)jpeg_write_scanlines(&cinfo, row_pointer, 1);
   }
   jpeg_finish_compress(&cinfo);
   jpeg_destroy_compress(&cinfo);
   
   int posNow = ftell(file);
-  fseek(file, pos+sizeof(int), 0);
-  fwrite(&posNow, sizeof(int),1, file);
-  fseek(file,posNow,0);
+  fseek(file, pos + sizeof(int), 0);
+  fwrite(&posNow, sizeof(int), 1, file);
+  fseek(file, posNow, 0);
   
+#ifdef DEBUG
   printf("after compress, at %d\n", ftell(file));
 #endif
-
+#endif
 }
 
 /* Restore pixmaps from an open file into pixmap buffer*/
 
 void View::LoadPixmaps(FILE  *file)
 {
+  // The first 4-byte integer contains a known value. Check the value
+  // to make sure we're reading data stored in the same endian order
+  // as this machine is using.
+
+  unsigned long int check;
+  if (fread(&check, sizeof check, 1, file) != 1) {
+    perror("View::LoadPixmaps");
+    Exit::DoExit(1);
+  }
+
+  if (check != 0xdeadbeef) {
+    printf("Note: Pixel image for %s not in compatible format.\n",
+	   GetName());
+    _pixmap = NULL;
+    return;
+  }
+  
 #ifndef JPEG
+
+  //
+  // Load image stored in run-length-encoded format
+  //
+
   int saved;
-  if (fread(&saved,sizeof(saved),1,file) != 1 ) {
+  if (fread(&saved, sizeof(saved), 1, file) != 1 ) {
     perror("View::LoadPixmaps num");
     Exit::DoExit(1);
   }
@@ -1921,23 +1972,26 @@ void View::LoadPixmaps(FILE  *file)
 #endif
 
   DevisePixmap *pixmap = new DevisePixmap();
-  if (fread(pixmap,sizeof(*pixmap),1,file) != 1 ) {
+  if (fread(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
     perror("View::LoadPixmaps 1");
     Exit::DoExit(1);
   }
-  if ((pixmap->data = (unsigned char *)malloc(pixmap->compressedBytes)) 
-      == NULL) {
+  if (!(pixmap->data = (unsigned char *)malloc(pixmap->compressedBytes))) {
     fprintf(stderr,"View::LoadPixmaps out of memory\n");
     Exit::DoExit(1);
   }
   
-  if (fread(pixmap->data,pixmap->compressedBytes,1,file) != 1 ) {
+  if (fread(pixmap->data, pixmap->compressedBytes, 1, file) != 1 ) {
     perror("View::LoadPixmaps 2");
     Exit::DoExit(1);
   }
   _pixmap = pixmap;
   
 #else
+
+  //
+  // Load image stored in JPEG format
+  //
 
   fseek(file, _nextPos, 0);
   printf("Load pixmap at bytes %d\n", ftell(file));
@@ -1953,20 +2007,26 @@ void View::LoadPixmaps(FILE  *file)
     return;
   
   if (num[0] > 1) {
-    fprintf(stderr,"View::LoadPixmaps: %d pixmaps>1\n",num);
+    fprintf(stderr, "View::LoadPixmaps: %d pixmaps > 1\n", num);
     Exit::DoExit(2);
   }
   
   _pixmap = new DevisePixmap();
-  if (fread(_pixmap,sizeof(*_pixmap),1,file) != 1) {
+  if (fread(_pixmap, sizeof(*_pixmap), 1, file) != 1) {
     perror("View::LoadPixmap");
     Exit::DoExit(1);
   }
+
+#ifdef DEBUG
   printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d pad %d\n",
 	 _pixmap->dataBytes, _pixmap->imageBytes, _pixmap->width,
 	 _pixmap->height, _pixmap->bytes_per_line, _pixmap->padding);
+#endif
   
+#ifdef DEBUG
   printf("before decompress, at %d\n", ftell(file));
+#endif
+
   struct jpeg_decompress_struct cinfo;
   struct jpeg_error_mgr jerr;
   cinfo.err = jpeg_std_error(&jerr);
@@ -1975,49 +2035,53 @@ void View::LoadPixmaps(FILE  *file)
   jpeg_stdio_src(&cinfo,file);
   (void)jpeg_read_header(&cinfo,TRUE);
   jpeg_start_decompress(&cinfo);
+
+#ifdef DEBUG
   printf("allocating %d bytes\n", _pixmap->imageBytes);
-  unsigned char *data = (unsigned char *)
-    malloc(_pixmap->imageBytes);
-  if (data == NULL) {
+#endif
+
+  unsigned char *data = (unsigned char *)malloc(_pixmap->imageBytes);
+  if (!data) {
     fprintf(stderr,"View::LoadPixmap: no memory\n");
     Exit::DoExit(1);
   }
+
   _pixmap->data = data;
-  
   unsigned char *buffer[1];
-  int i;
-  for (i=0; i < _pixmap->height; i++) {
-    buffer[0] = &data[i*_pixmap->bytes_per_line];
-    /*
-       printf("reading line %d\n", i);
-       */
+  for(int i = 0; i < _pixmap->height; i++) {
+    buffer[0] = &data[i * _pixmap->bytes_per_line];
+#ifdef DEBUG
+    printf("reading line %d\n", i);
+#endif
     jpeg_read_scanlines(&cinfo,buffer,1);
   }
+
   (void)jpeg_finish_decompress(&cinfo);
-  
   jpeg_destroy_decompress(&cinfo);
 
+#ifdef DEBUG
   printf("after decompress, at %d\n", ftell(file));
+#endif
 #endif
 }
 
 /* Print view statistics */
+
 void View::PrintStat()
 {
-  int total =  _jump+ _zoomIn+ _zoomOut+ _scrollLeft+ _scrollRight+ _unknown;
-  printf("View %s: total ops %d\n", GetName(),total);
-  if (total > 0) {
-    printf("jump %d, %.2f%%\n",_jump, 
-	   (float)_jump/(float)total*100.0);
-    printf("zoomIn %d, %.2f%%\n",_zoomIn, 
-	   (float)_zoomIn/(float)total*100.0);
-    printf("zoomOut %d, %.2f%%\n",_zoomOut,
-	   (float)_zoomOut/(float)total*100.0);
-    printf("ScrollLeft %d, %.2f%%\n",_scrollLeft, 
-	   (float)_scrollLeft/(float)total*100.0);
-    printf("scrollRight %d, %.2f%%\n",_scrollRight, 
-	   (float)_scrollRight/(float)total*100.0);
-    printf("unknown %d, %.2f%%\n",_unknown, 
-	   (float)_unknown/(float)total*100.0);
-  }
+  int total = _jump + _zoomIn + _zoomOut + _scrollLeft + _scrollRight
+              + _unknown;
+  printf("View %s: total operationss %d\n", GetName(), total);
+
+  if (total <= 0)
+    return;
+
+  printf("  Jump %d, %.2f%%\n", _jump, 100.0 * _jump / total);
+  printf("  ZoomIn %d, %.2f%%\n", _zoomIn, 100.0 * _zoomIn / total);
+  printf("  ZoomOut %d, %.2f%%\n", _zoomOut, 100.0 * _zoomOut / total);
+  printf("  ScrollLeft %d, %.2f%%\n", _scrollLeft,
+	 100.0 * _scrollLeft / total);
+  printf("  ScrollRight %d, %.2f%%\n", _scrollRight,
+	 100.0 * _scrollRight / total);
+  printf("  Unknown %d, %.2f%%\n", _unknown, 100.0 * _unknown / total);
 }
