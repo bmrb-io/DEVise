@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1997/03/20 22:38:49  guangshu
+#  Added new statistics interface for histogram, groupby and basic stats.
+#
 #  Revision 1.30  1997/03/20 20:46:09  donjerko
 #  DTE Tdata generates unique names by appending sequential numbers to the
 #  end of the table name. This way, same table can be opened multiple times.
@@ -1906,7 +1909,7 @@ proc DoGroupByStat {} {
     scanDerivedSources
     updateDerivedSources
 
-    if { $xDate == "1" && $byAttr == "Date"} {
+    if { $xDate == "1" && $byAttr == "DATE"} {
     	set sourceName [string trimleft $sname "{"]
     	set sourceName [string trimright $sourceName "}"]
 	set schematype GDATASTAT_DATE
