@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/11/15 18:19:34  jussi
+  Added definition of crsp_extract command.
+
   Revision 1.9  1995/09/28 00:00:12  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -396,11 +399,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			QueryProc::Instance()->PrintStat();
 			control->DoQuit();
 		}
-		else if (strcmp(argv[1], "getTopGroups") == 0)
-		{
-		  printf("Getting top groups\n");
-		  gdir->top_level_groups(interp);
-		}
 		else {
 			interp->result = "wrong args";
 			goto error;
@@ -558,34 +556,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(buf,"%d", map->GetPixelWidth());
 			Tcl_AppendElement(interp,buf);
 		}
-		else if (strcmp(argv[1], "getItems") == 0)
+		else if (strcmp(argv[1], "getTopGroups") == 0)
 		{
-		  printf("Getting subitems for group %s\n", argv[2]);
-		  grp = gdir->get_entry(argv[2]);
-		  grp->subitems(interp);
-		}
-		else if (strcmp(argv[1], "defaultGroup") == 0)
-		{
-		  printf("Generating default group\n");
-		  TData *tdata = (TData *)classDir->FindInstance(argv[2]);
-		  if (tdata == NULL)
-		  {
-		    interp->result = "Can't find tdata in getSchema";
-		    goto error;
-		  }
-		  AttrList *attrList = tdata->GetAttrList();
-		  Group *newgrp = new Group("__default", NULL, TOPGRP);
-		  gdir->add_entry(newgrp);
-		  if (attrList != NULL)
-		  {
-		    int numAttrs = attrList->NumAttrs();
-		    int i;
-		    for (i=0; i < numAttrs; i++)
-		    {
-		      AttrInfo *info = attrList->Get(i);
-		      newgrp->insert_item(info->name);
-		    }
-		  }
+		  gdir->top_level_groups(interp, argv[2]);
 		}
 		else if (strcmp(argv[1],"getSchema") == 0 ){
 
@@ -1205,6 +1178,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			get parameters used to recreate an instance */
 			classDir->CreateParams(argv[2],argv[3],argv[4],numArgs,args);
 			MakeReturnVals(interp, numArgs, args);
+		}
+		else if (strcmp(argv[1], "getItems") == 0)
+		{
+		  gdir->get_items(interp, argv[2], argv[3], argv[4]);
 		}
 	}
 	else if (argc == 7 ) {
