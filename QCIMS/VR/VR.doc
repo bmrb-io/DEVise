@@ -1,0 +1,1013 @@
+
+/* 
+** Copyright 1995,1996,1997 by Viresh Ratnakar, Miron Livny
+** 
+** Permission to use and copy this software and its documentation
+** for any non-commercial purpose and without fee is hereby granted,
+** provided that the above copyright notice appear in all copies and that
+** both that copyright notice and this permission notice appear in
+** supporting documentation.
+** 
+**
+** The University of Wisconsin and the copyright holders make no
+** representations about the suitability of this software for any
+** purpose.  It is provided "as is" without express or implied warranty.
+** 
+** 
+** THE UNIVERSITY OF WISCONSIN AND THE COPYRIGHT HOLDERS DISCLAIM ALL
+** WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES
+** OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE UNIVERSITY OF
+** WISCONSIN OR THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT
+** OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+** OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+** OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
+** OR PERFORMANCE OF THIS SOFTWARE.
+** 
+** Author:  Viresh Ratnakar
+** Email:   ratnakar@cs.wisc.edu
+**
+*/ 
+
+
+Documentation for the VR library
+------------------------------------------------------------------------
+You might also want to read some of the info in VR.h.
+
+Contents:
+------------------------------------------------------------------------
+1. What *is* the VR library?
+2. Basics
+3. Basic interface
+4. Error handling
+5. Event handling
+6. Advanced usage
+7. Example (a good place to start reading!)
+8. Compiling
+
+
+1. What *is* the VR library?
+------------------------------------------------------------------------
+   This library can be used to display images using X: it hides
+   the details about color allocation, quantization, dithering,
+   etc. from the user, providing a clean interface to simply
+   "show an image in a window". "VR" is a weird contraction of
+   VieweR. VR also happen to be the initials of the author :)
+
+2. Basics
+------------------------------------------------------------------------
+   VR has the notion of three kinds of objects:
+   1. VR_Image
+   2. VR_Window
+   3. VR_Translator
+   A translator is the object that will map the colors in the
+   image to colors currently available from X. If you have
+   an image stored in a buffer, and want to show it in an
+   X window, the steps involved are:
+   1. Create a VR_Image (iid), associating your stored image-data with
+      it.
+   2. Create a VR_Translator (tid) using the VR_Image
+   3. Create a VR_Window (wid), associating tid with it
+   4. Show iid in wid
+
+   VR_Translators can be reused, but the best results for an image
+   can be achieved only with a translator that was created specifically
+   for that image. VR_Windows can use already existing X windows,
+   or VR can create new ones for you.
+
+
+3. Basic interface
+------------------------------------------------------------------------
+
+   1. Initialization 
+      
+      extern VR_ReturnCode VR_InitViewer(char *dname, FILE * errfile);
+      
+        The application needs to call this once, before using anything
+        else in the VR library.
+
+        Purpose:
+	  Set up connection with the X server, allocate and set up some
+	  book-keeping structures.
+
+        Parameters:
+	  dname: The name of the display (like "foo.cs.wisc.edu:0"). You
+	       can pass NULL (ie, 0) as dname to use the value of the
+	       environment variable DISPLAY.
+	  errfile: A stream where error messages from X will be dumped.
+	       You can pass this as 0 to use stderr.
+      
+        Return:
+	  If everything went well, the return value will be
+	  VR_SUCCESS. If not, the return code will indicate the
+	  kind of error that occurred. To see a text representation
+	  of the error, see documentation for VR_ReturnCodeToString().
+
+   2. Displaying images
+
+      VR understands two kinds of images: Grayscale and Color (RGB).
+      You should have already read the image into a buffer. VR is
+      fairly flexible about the possible formats for storing images
+      in your buffers. For example, you can have RGB data in your
+      buffer as RGBRGBRGB... or you can have three buffers, one each
+      for R, G, B. VR is going to use only the 8 most significant
+      bits of pixel intensities, but the buffers can have arbitrary
+      bit-widths of pixels.
+
+      First, you need to create a VR_Image, using the function:
+
+      extern VR_ImId VR_GetNewImage(int width, int height,
+				    VR_ImKind kind, char * name);
+	
+	Purpose:
+	  Create a VR_Image object. Note that VR does *not* allocate
+	  buffers for storing the actual image data---their creation
+	  and management is the application's responsibility.
+
+	Parameters:
+	  width: Width of the image
+	  height: Height of the image
+	  kind: Pass either VR_Gray or VR_RGB, depending on the
+		image kind.
+	  name: You can associate a name with the image, if you like.
+		You can pass name as NULL, in which case VR will set
+		the name to "Untitled"
+	Return:
+	  On successful return, a non-negative value will be returned,
+	  that is to be used subsequently to refer to the VR_Image
+	  object created. A negative value returned indicates that
+	  some error occured. A corresponding error message can
+	  be found in the global variable VR_errmsg. See "Error
+	  handling" below for details.
+
+      Now, you need to associate actual image data with the VR_Image
+      object created. A single VR_Image object can be reused again
+      and again, provided you use the same image kind (VR_Gray or
+      VR_RGB).
+
+      The simplest way to associate image data is with the function:
+
+      extern VR_ReturnCode VR_SetImageData(VR_ImId iid,
+					   unsigned char * data);
+
+	Purpose:
+	  Associate image data with the VR_Image iid
+
+	Parameters:
+	  iid: VR_Image identifier returned previously by VR_GetNewImage
+	  data: Pixel intensities stored as raw bytes. Note that
+	    VR won't free this buffer after it's done--VR only uses
+	    this data. If the image kind is VR_Gray, data should point
+	    to a buffer of size width*height bytes, with the pixel
+	    values stored in row-major order. If the image kind is
+	    VR_RGB data should point to a buffer of size width*height*3
+	    bytes, with the pixel values syored in row-major order as
+	    RGBRGBRGBRGB....
+        
+	Return:
+	  VR_SUCCESS on success. On error, an error code, that can
+	  be interpreted using VR_ReturnCodeToString() (See "Error
+	  handling" below).
+
+      Of course, your application might find it more convenient to
+      store pixel data in some other format. There are three other
+      ways for setting image data:
+
+      extern VR_ReturnCode VR_SetRGBImageData(VR_ImId iid,
+					      unsigned char * red,
+					      unsigned char * green,
+					      unsigned char * blue);
+
+	This can be used only with VR_RGB images. red, green, and
+	blue are each buffers with width*height bytes, storing
+	the corresponding image component in row-major format.
+
+      If the image data has more than one byte for each pixel, you
+      can use these two functions:
+
+      extern VR_ReturnCode VR_SetNon8ImageData(VR_ImId iid,
+					       unsigned char * data,
+					       int pixw1,
+					       int pixw2,
+					       int pixw3);
+	For VR_Gray images, this indicates that the image pixels
+	are stored in row-major order in the buffer pointed at by
+	"data", and that each pixel value uses "pixw1" bytes. Only the
+	most-significant byte will actually be used. For VR_RGB images,
+	this means that the pixels are stored in a buffer pointed at
+	by data in row-major RGBRGBRGB.. format, with R pixels using
+	pixw1 bytes each, G pixels using pixw2 bytes each, and B pixels
+	pixw3 bytes each. Again, only the most-significant bytes from
+	each R,G, and B value will be used.
+      
+      extern VR_ReturnCode VR_SetNon8RGBImageData(VR_ImId iid,
+						  unsigned char * red,
+						  unsigned char * green,
+						  unsigned char * blue,
+					          int pixw1,
+					          int pixw2,
+					          int pixw3);
+	This can be used only with VR_RGB images. red, green, and
+	blue point to buffers holding the red, green, and blue planes,
+	each R pixel has pixw1 bytes, ..G has pixw2.., ..B has pixw3.
+
+
+      Having created the VR_Image and associated actual data with it,
+      you need to create a VR_Translator. If you already have a
+      translator from some previous image, and don't mind reusing it,
+      you can skip this step. Note that a VR_Translator also has
+      a "kind" (VR_Gray or VR_RGB). You cannot use VR_RGB translators
+      with VR_Gray images and vice versa.
+
+
+      extern VR_TransId VR_GetTranslator(VR_ImId iid, int ColorFlag);
+
+	Purpose:
+	  Create a translator that can map actual image colors to
+	  colors available from X.
+	
+	Parameters:
+	  iid: A VR_Image identifier returned by some previous call
+	       to VR_GetNewImage(). Also, the image data must have
+	       been slready been set using (for example)
+	       VR_SetImageData().
+	  ColorFlag:
+	       Controls the color allocation. Set this to zero to
+	       get reasonable defaults.
+	       Using ColorFlag, you can indicate the following
+	       preferences:
+	       1. Shared/Private colors
+	       2. RGB bits to be used to gather usage statistics for
+		  the color-allocation/quantization algorithm. This
+		  is used only for VR_RGB images.
+	       3. Maximum number of X colors to be used.
+               
+	       ColorFlag is built by logical-ORing choices for each
+	       of these. Use a piece of code that will look like:
+		 ..
+		 int cfl, shared_flag, rgb_bits_flag, ncolors;
+		 ..
+		 cfl = shared_flag | rgb_bits_flag;
+		 VR_CFL_SET_NCOLORS(cfl,ncolors);
+		 tid = VR_GetTranslator(iid, cfl);
+		 ...
+               shared_flag can be:
+		 VR_CFL_FORCE_DEFAULT: force the use of shared
+		   colors from the default colormap (default)
+		 VR_CFL_TRY_DEFAULT: try to get shared colors from
+		   the default colormap. if not enough colors are
+		   available, use a private colormap
+		 VR_CFL_PRIVATE: use a private colormap
+	       rgb_bits_flag can be:
+		 (Note that VR_CCC_GxRxB indicates G bits used from
+		  green, R from red, and B from blue.)
+                 VR_CCC_3x3x3 (default, reasonably adequate performance)
+                 VR_CCC_2x2x2 (fastest)
+                 VR_CCC_4x4x4 (best tradeoff between speed and perf.)
+                 VR_CCC_5x5x5 (very good)
+                 VR_CCC_6x5x5 (best and slowest)
+                 VR_CCC_3x3x2
+                 VR_CCC_4x2x2
+                 VR_CCC_8x0x0
+               ncolors is the max number of X colors you want to
+	       use. You can skip VR_CFL_SET_NCOLORS(cfl,ncolors)
+	       to indicate that you want to get as many colors as
+	       you can, which is the default.
+               
+	       In addition to all this you can also logical-OR
+	       the ColorFlag with VR_YCC_PRESENT, if you want to
+	       use color-statistics in the YCbCr domain. Not really
+	       needed..
+  
+
+      OK, now that you have a VR_Image (iid) and a translator (tid),
+      you can show the image in a window. First, the VR_Window object
+      needs to be created, if you don't already have one.
+
+      If your application has already created an X window, use the
+      function:
+
+      extern VR_WinId VR_SetWindow(int width, int height,
+				   int locx, int locy,
+				   VR_TransId tid,
+				   Window the_win,
+				   int norefresh,
+				   int noq,
+				   int *trybacking,
+				   int retain_wattribs);
+
+	Purpose:
+	  Create a VR_Window object.
+	
+	Parameters:
+	  width, height: Dimensions of the X window
+	  locx, locy: Coordinates of the top-left corner of the
+	    area that VR should use for displaying images in this
+	    window. The coordinates are relative to the top-left
+	    corner of the X-window. Pass 0,0, unless you plan to
+	    use a single large X window and show different images
+	    in different parts.
+	  tid: The identifier for a VR_Translator returned by some
+	    previous call to VR_GetTranslator(). Note that you can
+	    subsequently change the translator used by a VR_Window
+	    (See VR_ChangeTranslator() below).
+          the_win: The X window identifier returned by XCreateWindow
+	  norefresh: if this is set to 0, VR will automatically
+	    handle Expose events and repaint exposed windows, if they
+	    are showing any images, and you are using the Event-
+	    processing function (VR_WaitForSomething()) given by
+	    VR. X itself is sometimes capable of
+	    doing this, using "backing stores". See the "trybacking"
+	    parameter below. If you set norefresh to 1, VR will not
+	    intercept the Expose events. You can do more sophisticated
+	    event handling too (see "Event handling" below).
+	  noq: if this is set to 0, VR will automatically free and
+	    kill VR_Windows when the key "q" is pressed in them, within
+	    a loop calling VR_WaitForSomething(). Again,
+	    you can do this in better ways (see "Event handling").
+	    Also, if you do set noq to 0, your application process
+	    will exclusively grab all KeyPress events.
+	  *trybacking: pointer to an integer whose value dictates
+	    whether to try X's backing stores. If the value is set to
+	    1, and VR does not change it to zero, that means that
+	    the X server does support backing stores, and that they
+	    are being used. If trybacking succeeds, norefresh is
+	    ignored.
+          retain_wattribs: If set to 1, VR will not try to change
+	    any X window attributes for the_win. This would rule
+	    out norefresh=0 and noq=0. Also, X-backing will be
+	    provided only if the X window attributes already
+	    have backing_stores set. An application would do
+	    this (ie, set retain_wattrib to 1) if it is doing
+	    other stuff with the X window and just wants to use VR
+	    to paint and forget images. 
+
+      If you don't have an X window, VR can create one and
+      associate it to a VR_Window with the following function that
+      you would call instead of VR_SetWindow().
+
+      extern VR_WinId VR_GetWindow(int width, int height,
+				   int locx, int locy,
+				   VR_TransId tid,
+				   int parent_given, Window parent,
+				   int norefresh,
+				   int noq,
+				   int *trybacking);
+       
+        Essentially the same as VR_SetWindow(), except that VR will
+	create the X window itself. locx and locy are the coordinates
+	of the top-left corner relative to the parent window. The
+	root window will be used as the parent if parent_given is
+	passed as 0. If parent_given is 1, then the parameter "parent"
+	should be a valid X window identifier. 
+
+      OK, now we have all the ingredients needed to show an image.
+      To show an image iid in a window wid, just call the function:
+
+      extern VR_ReturnCode VR_ShowImage(VR_ImId iid, VR_WinId wid,
+                                        int dodither);
+      
+	Purpose:
+	  Show an image in a window
+	
+	Parameters:
+	  iid: The image identifier returned by a previous call
+	    to VR_GetNewImage(). 
+          wid: A window identifier returned by a previous call tp
+	    VR_GetWindow() or VR_SetWindow(). The translator used in
+	    creating the VR_Window wid must have the same kind (VR_Gray
+	    or VR_RGB) as the VR_Image iid.
+	  dodither: 1 or 0 depending on whether you want Floyd-Steinberg
+	    dithering to be used or not. It is a good idea to set this 
+	    to 1, especially if you couldn't get a lot of colors out
+	    of X.
+      
+      When done with a VR_Image call VR_FreeImage():
+
+      extern VR_ReturnCode VR_FreeImage(VR_ImId iid);
+
+        Purpose:
+	  Free the storage associated with an image. Does not free
+	  the buffer storing the actual image, which had been
+	  associated to iid using (for example) VR_SetImageData().
+	
+	Parameters:
+	  iid: The VR_Image identifier
+	
+	Return:
+	  VR_SUCCESS on success, an error code on error which can
+	  be interpreted using VR_ReturnCodeToString().
+
+
+      When done with a VR_Window call this function: 
+
+      extern VR_ReturnCode VR_FreeWindow(VR_WinId wid);
+
+	Purpose:
+	  Free the storage associated with a VR_Window. Also,
+	  free the X window if it was created by VR itself (ie,
+	  VR_GetWindow() was used). Free the colors used in this
+	  window, if those colors are not being used elsewhere.
+	  Also, if the VR_Translator that
+	  was being by wid is not in use by any other VR_Window,
+	  call VR_FreeTranslator() automatically.
+
+	Parameters:
+	  wid: The VR_Window identifier
+	
+	Return:
+	  VR_SUCCESS on success, an error code on error which can
+	  be interpreted using VR_ReturnCodeToString().
+
+      When done with a VR_Translator call this function: 
+
+      extern VR_ReturnCode VR_FreeTranslator(VR_TransId tid);
+
+	Purpose:
+	  Free the storage associated with a VR_Translator. 
+	  Also, call VR_FreeWindow() automatically, for all
+	  VR_Windows using tid. 
+
+	Parameters:
+	  tid: The VR_Translator id returned by a previous call to
+	    VR_GetTranslator(). 
+	
+	Return:
+	  VR_SUCCESS on success, an error code on error which can
+	  be interpreted using VR_ReturnCodeToString().
+      
+
+      When done with using VR, call:
+
+      extern VR_ReturnCode VR_CloseViewer(void);
+
+	Purpose:
+	  Close the X server connection, free all windows, images,
+	  translators.
+
+	Return:
+	  VR_SUCCESS or an error code.
+
+
+4. Error handling 
+------------------------------------------------------------------------
+   Every function in VR that has the return type "VR_ReturnCode"
+   returns a value that is VR_SUCCESS on successful completion. On
+   errors, the error code is returned. The corresponding error message
+   can be seen with VR_ReturnCodeToString() as in this example:
+
+   if ((stat = VR_ShowImage(iid, wid, 1)) != VR_SUCCESS) {
+     fprintf(stderr,"Could not show: %s\n",
+		VR_ReturnCodeToString(stat));
+     ... /* take appropriate action */
+   } 
+
+
+   extern char * VR_ReturnCodeToString(VR_ReturnCode rc);
+
+   Purpose:
+     Get a textual representation of an error code
+   
+   Parameters:
+     rc: a return code returned by some VR call.
+
+   Return:
+     A string containing the corresponding error message. Note that
+     the string returned by VR_ReturnCodeToString() is off a static
+     table, and not the heap, so it should not be free'd.
+
+   There are some VR functions whose return types are identifiers for
+   newly created VR objects (for example, VR_GetNewImage(),
+   VR_GetTranslator(), VR_GetWindow() and VR_SetWindow()). On success,
+   these return a non-negative value. On error, they return -1, and
+   a descriptive error message can be found in the global string
+   "VR_errmsg".
+
+   For example, 
+   if (VR_GetTranslator(iid, 0) < 0) {
+     fprintf(stderr,"Could not get translator: %s\n", VR_errmsg); 
+     ... /*  take appropriate action */
+   } 
+
+
+5. Event handling 
+------------------------------------------------------------------------
+   You have two choices: You can do all the event gathering yourself
+   (and call VR_RefreshWindow() on an Expose event, for example), or
+   you can let VR do all that. In the latter case, you need to set
+   up an event loop using VR, using VR_WaitForSomething() and your
+   application does not need any X awareness. 
+
+   For the first case, that is, when the application is fairly
+   X-aware, and you have set up your own X event loop. Note that
+   the connection to th X server is opened within VR_InitViewer()
+   itself (which calls XOpenDisplay()). So you shouldn't do it
+   again. You can access the Display, Visual, etc via some VR 
+   variables, macros and functions (See "Advanced usage" below):
+
+   Here is what you would be doing:
+
+   { 
+     int tryback, W, H;
+     VR_WinId wid;
+     VR_TransId tid;
+     VR_ImId iid; 
+     fd_set *fds; 
+     ... other declarations
+
+     VR_InitViewer(0,0);
+     ... code to read the image, create a VR_Image, a VR_Translator
+     tryback = 1; /* should try to get backing stores from X */ 
+     wid = VR_GetWindow(W, H, 0, 0, tid, 0, 0,
+		   /* norefresh = */ 1, 
+		   /* noq = */ 1, 
+		   &tryback);
+     ... check wid < 0
+     VR_ShowImage(iid, wid, 1); 
+   
+     /* this is the X event gathering loop that you have set up */
+     while (1) {
+       .. XGetEvent() or something to grab an event..
+
+       switch(event->type) {
+       ...
+       case Expose:
+	 /* note that if tryback==1 after VR_GetWindow(), then
+	    Expose events are never generated for the window */ 
+	 if (VR_Windows[wid].win == event->window) {
+	   /* yes, feel free to access structure fields directly!
+	      this library is not highly object-orientd */ 
+	   VR_RefreshWindow(wid); 
+	 } 
+	 break;
+       ...
+
+       }
+     }
+     VR_CloseViewer(); /* will free memory and close X connection */ 
+   } 
+
+
+   The other case is when you use VR's capabilities to handle X
+   events, and don't care to know much about X. 
+   For example, consider an application that wants to simply
+   show an image in an X window, and exit when the key "q" is
+   pressed in the window. It would do something like:
+
+   { 
+     int tryback, W, H;
+     VR_WinId wid;
+     VR_TransId tid;
+     VR_ImId iid; 
+     fd_set *fds; 
+     ... other declarations
+
+     VR_InitViewer(0,0);
+     ... code to read the image, create a VR_Image, a VR_Translator
+     tryback = 1; /* should try to get backing stores from X */ 
+     wid = VR_GetWindow(W, H, 0, 0, tid, 0, 0,
+		   /* norefresh = */ 0, 
+		   /* noq = */ 0, 
+		   &tryback);
+     ... check wid < 0
+     VR_ShowImage(iid, wid, 1); 
+   
+     VR_WaitForSomething(&fds);
+     VR_CloseViewer(); /* will free memory and close X connection */ 
+   } 
+       
+   If, in addition, you want to respond to other user commands
+   read from an open file-descriptor "fd", you would have done:
+
+     ... 
+     VR_ShowImage(iid, wid, 1); 
+
+     VR_RegisterFd(fd);
+     while (1) { 
+       VR_WaitForSomething(&fds);
+       if (FD_ISSET(fd, fds)) {
+	 ... take appropriate action in response to the command 
+       } else {
+	 break; 
+       } 
+     } 
+     ...
+
+   And now, for a detailed description of VR_WaitForSomething(). 
+
+   extern VR_ReturnCode VR_WaitForSomething(fd_set * * return_fds);
+
+   Purpose:
+     To be used in an endless loop, to automatically handle
+     X events like Expose (other events can also be handled:
+     see VR_RegisterEventHandler() below), and return control to
+     the application if any of a bunch of file descriptors is
+     ready for input.
+
+   Parameters:
+     return_fds: pointer to an fd_set pointer. When return-value
+       is VR_SUCCESS and some fds were registered through 
+       VR_RegisterFd(), examine the fd_set pointer to see if
+       some fd is set (using FD_ISSET--see below).
+
+   Return:
+     (Assuming you called VR_WaitForSomething(&fdsetptr) with fdsetptr
+     declared as "fd_set * fdsetptr".
+
+     VR_SUCCESS: if no fds were registered, VR_SUCCESS means that
+       all the windows VR was managing have been destroyed. If
+       some fd's (say fd1, fd2, .., fdn) were registered, it might
+       be the case that some of them are ready for input. You can
+       check that case by checking FD_ISSET(fd1, fdsetptr),
+       FD_ISSET(fd2, fdsetptr), ... FD_ISSET(fdn, fdsetptr).
+       If some FD_ISSET returns TRUE, then your application would read
+       from the corresponding fd, and re-enter the loop that calls
+       VR_WaitForSomething(). If none of the fd's is set, that means
+       (as before) that all the VR_Windows have been destroyed.
+     VR_BAD_FD: one of the registered fd's is invalid
+     VR_SIGNAL_OCCURRED: the process caught a signal
+
+   The function to register fd's is:
+
+   extern VR_ReturnCode VR_RegisterFd(int fd);
+     Purpose (register an open fd for VR_WaitForSomething()),
+     Parameters (fd), and Return (VR_SUCCESS or error code)
+     should be obvious.. 
+
+5. Event handling 
+------------------------------------------------------------------------
+   VR_WaitForSomething() quietly handles all X events according to
+   certain event handler functions. Three event handlers are already
+   there in VR. They handle the following events:
+
+   Expose:
+     VR_WaitForSomething() will grab Expose events for those
+     VR_Windows which were created using VR_GetWindow() or 
+     VR_SetWindow() with the parameter norefresh set to 0,
+     provided that the prameter *trybacking was set to or
+     returned 0 (when X backing stores are used, Expose events
+     aren't collected). Also, if VR_SetWindow() was used, the
+     parameter retain_wattribs should have been passed as 0. 
+     The refreshing is done by (automatically) calling
+     VR_RefreshWindow(). 
+
+   KeyPress-q:
+     If the key "q" is pressed in a VR_Window that was created
+     using VR_GetWindow() or VR_SetWindow() with the parameter
+     noq set to 0, then VR_WaitForSomething() will automatically
+     call VR_FreeWindow() for that window. Again, if VR_SetWindow()
+     was used, the parameter retain_wattribs should have been passed 
+     as 0. 
+
+   Destroy:
+     If a window is destroyed externally (using the window manager,
+     for example), then VR_WaitForSomething() will automatically
+     call VR_FreeWindow(). 
+
+   You can set up other event handlers and replace the first 2 of the
+   above with your own, if you like. The way to do that is by
+   registering event handlers using the function
+   VR_RegisterEventHandler(). An event handler, for VR, is a function
+   of the following type: 
+
+   typedef int (*VR_EventHandler) (VR_WinId wid, XEvent *event);
+     The return value from a handler should be 1 on success and
+     0 on failure. In any case, VR_WaitForSomething() ignores the
+     return value. There is a slightly lower level VR function
+     called VR_HandleEvent(XEvent *event) which returns the value
+     returned by the handler, if you really care about it. 
+
+   For example, the event handler used for Expose by VR is:
+
+   static int VR_WinRefresher(VR_WinId wid, XEvent *evt)
+   {
+     if (VR_RefreshWindow(wid) == VR_SUCCESS) return(1);
+     else return(0);
+   }
+
+   The way to associate an event handler with an event in a window
+   is by using:
+
+   extern VR_ReturnCode VR_RegisterEventHandler(VR_WinId wid,
+						int etype,
+					        long val,
+					       VR_EventHandler handler);
+   
+     Purpose:
+       Register an event handler, so that if the event indicated by
+       etype and val occurs in the X window used by wid, then handler
+       is automatically invoked by VR_WaitForSomething().
+     
+     Parameters:
+       wid: The identifier for a VR_Window.
+       etype and val: etype can be one of the following, and
+	  unless possible values for val are listed for a particular
+	  value of etype, val is ignored. 
+	  1. Expose
+	  2. ConfigureNotify
+	  3. KeyPress or KeyRelease
+	     For these two, val must be specified. val can be:
+	       any of the constants given in the X documentation, for
+	       the type KeySym. For example, XK_a, XK_b, ...
+	  4. ButtonPress and ButtonRelease
+	     For these two, val must be one of:
+		AnyButton, Button1, Button2, Button3, Button4, Button5
+        handler: A function to be invoked when the event occurs
+
+      Return:
+	VR_SUCCESS on success, error-code on error.
+
+      For example, if you want to set things up so that whenever
+      the left button is pressed in the VR_Window wid, the image
+      being shown should increase in brightness by 10:
+
+      Make sure that you remember which wid is showing which iid
+      somewhere.. Assuming there is only one window and one image
+      being shown, and that the image being shown is a VR_Gray
+      image with 8-bits per pixel, and that the id for that image
+      is stored in the global variable ImId:
+
+      int Brightener(VR_WinId wid, XEvent *evt)
+      {
+	int i;
+	for (i=0;i<VR_Images[ImId].width*VR_Images[ImId].height;i++) {
+	  VR_Images[ImId].data[i] += 10; 
+	  if (VR_Images[ImId].data[i] > 255) 
+	    VR_Images[ImId].data[i] = 255;  
+	}
+	(void) VR_ShowImage(ImId, wid, 1); 
+	return(1); 
+      } 
+
+      Set this handler for the window WinId in which ImId is being
+      shown by calling:
+
+      VR_RegisterEventHandler(WinId, ButtonPress, Button1, Brightener);
+
+      Now, in the loop that calls VR_WaitForSomething(), image
+      brightness will be automatically increased whenever the left
+      button is pressed. If you wanted this behavior from pressing
+      the "b" key rather than a button-press, you would have called:
+
+      VR_RegisterEventHandler(WinId, KeyPress, XK_b, Brightener);
+
+
+6. Advanced usage
+------------------------------------------------------------------------
+   
+   6.1 Accessing X structures and variables:
+
+       The following global variables will all get defined after
+       VR_InitViewer().
+
+       extern Display * VR_TheDisplay;
+       
+       extern GC VR_TheGC;
+
+       extern int VR_TheScreen;
+       
+       extern Visual * VR_TheVisual;
+
+       extern int VR_Depth, VR_BitsPerPixel;
+	 /* VR_Depth is the number of bits used by X pixel values,
+	    VR_BitsPerPixel is usually equal to VR_Depth, but might
+	    be slightly more for padding to byte boundaries. 
+	    VR_BitsPerPixel is the number of bits per X pixel in
+	    an Ximage.
+	  */
+
+       extern int VR_VisualClass;
+	  /* will be one of PseudoColor StaticColor StaticGray
+	     GrayScale TrueColor DirectColor */ 
+
+
+   And now, here is a long list of other functions, variables,
+   and macros that you might want to use. There are a few others
+   too, so check in VR.h. Most of the ones not described here are
+   simple enough to be understood from their source code.
+
+   extern char * VR_ViewerClassName(int vclass);
+     Returns a string with the name of a visual class. 
+     The string is off a static table and should not be free'd.
+   
+   extern VR_ReturnCode VR_InitViewerVisual(char *dname, FILE * errfile, int vclass);
+     This is an alternative to VR_InitViewer(). VR_InitViewer() uses
+     the default Visual. With VR_InitViewerVisual(), you can
+     specify a preferred visual other than the default. vclass
+     can be one of StaticGray,GrayScale,PseudoColor,StaticColor,
+     TrueColor, and DirectColor. The "vclass" visual might not be
+     available, in that case VR tries other visual classes.DirectColor
+     down to StaticGray. 
+   
+   extern VR_ReturnCode VR_CloseViewer(void);
+     Clean up everything.. should be called in the end. 
+   
+   extern VR_ReturnCode VR_UnRegisterEventHandler(VR_WinId wid,
+                int etype, long val);
+     Unregister the previously registered event handler.
+
+   extern void VR_FreeWindowXImage(VR_WinId wid); 
+     Free the ximage associated with wid. 
+   
+   extern VR_ReturnCode VR_ChangeTranslator(VR_WinId wid,
+				     VR_TransId tid);
+     Start using a new translator in the VR_Window wid. It will
+     automatically call VR_FreeTranslator() for the translator
+     previously being used by wid, if no other window is using that
+     translator. Free the colors used by the old translator in this
+     window, if those colors are not being used elsewhere (after the
+     new translator has been installed).
+     This is a very useful function: Consider a case
+     when you are changing the image data (because of progressive
+     compression or some image manipulation, say). The new colors
+     in the image may not be mapped to the available X colors in the
+     best possible way by the old translator. So, you would be doing 
+     something like..
+
+     ..read the image, call VR_GetNewImage(), call VR_GetTranslator()
+       and VR_GetWindow()
+     VR_ShowImage(iid, wid);
+
+     ..
+     .. now the image data is refined/manipulated by the application
+     new_tid = VR_GetTranslator(iid, ColorFlag)
+     VR_ChangeTranslator(wid, new_tid);
+     VR_ShowImage(iid, wid);
+     ..
+
+     A good idea (for progressive refinement) is to use a fast
+     ColorFlag initially, and a slow-excellent ColorFlag in the
+     end.
+
+   
+   extern VR_ReturnCode VR_ShowImageRect(VR_ImId iid, VR_WinId wid,
+   	  int wherex, int wherey, int forx, int fory, int dodither);
+     This function is similar to VR_ShowImage(), except that it
+     only paints a rectangle of the image defined by (wherex,wherey)
+     (coordinates of top-left corner) and (forx,fory) (width and
+     height). 
+    
+   extern VR_ReturnCode VR_RefreshWindow(VR_WinId wid);
+     Redisplay the image last shown in window wid. 
+   
+   extern Window VR_WidToWin(VR_WinId wid);
+     Get the X Window corresponding to wid. 
+   
+   extern VR_ReturnCode VR_HandleEvent(XEvent *event);
+     Handle an X event using the appropriate handler registered
+     with VR. Returns VR_SUCCESS or an error-code. This is
+     a slightly lower level event handling mechanism than
+     VR_WaitForSomething().
+
+   extern VR_ReturnCode VR_UnRegisterFd(int fd);
+     Delete fd from the list of registered file descriptors. 
+   
+   extern unsigned long VR_ForeGround, VR_BackGround;
+     Values of foreground and background pixels in VR_TheGC 
+   
+   extern int VR_ColorSupported;
+     1 iff visual is not one of StaticGray and GrayScale 
+
+   extern int VR_FixedColors;
+     1 iff visual is one of StaticGray or TrueColor or StaticColor
+   
+   VR_IidValid(iid)  
+     Macro that returns 1 iff iid is a valid VR_Image idetifier 
+   
+   VR_SetImageName(iid, name) 
+     Macro to reset the title of an image 
+   
+   extern int VR_NumImages;
+     The number of VR_Images currently extant 
+   
+   extern int VR_NumTranslators;
+     The number of VR_Translators currently extant 
+   
+   extern int VR_NumWindows;
+     The number of VR_Windows currently extant 
+   
+   VR_WidValid(wid)
+     Macro that returns 1 iff wid is a valid VR_Window identifier
+
+   extern int VR_ImageByteOrder; /* 0==LSBFirst,1==MSBFirst */
+   
+   VR_SetTitle(s) 
+     Macro to overwrite the default window title prefix, which is
+     "VR" 
+   
+   extern FILE * VR_errfile;
+     Stream where error messages are dumped 
+   
+   extern void VR_ShowWaitCursor(VR_WinId wid); 
+     Changes the cursor in wid to a watch 
+   
+   extern void VR_ShowNormalCursor(VR_WinId wid); 
+     Changes the cursor in wid to an arrow 
+   
+   extern unsigned long VR_TranslateGrayPixel(VR_TransId tid,
+            int grayval, int *gray_ans);
+     Translates a gray value into a pixel value, according to
+     the translatoe tid. *gray_ans returns the actual gray
+     value of the returned pixel. grayval should be in [0,255]
+
+   extern unsigned long VR_TranslateRGBPixel(VR_TransId tid,
+            int r, int g, int b,
+            int *r_ans, int *g_ans, int *b_ans);
+     Translates an RGB value into a pixel value, according to
+     the translatoe tid. *r_ans, *g_ans, *b_ans return the actual 
+     color values of the returned pixel. r,g,b should each be in [0,255]
+
+
+7. Example
+------------------------------------------------------------------------
+   A complete example application is in the file VR_PNMexample.c
+   The program reads and displays PGM and PPM format images,
+   and illustrates some of the main features of VR
+
+8. Compiling
+------------------------------------------------------------------------
+   I have included makefiles for the following platforms
+
+   Solaris on Pentium-PCs: makefile.PENTIUM
+   Solaris on SunSparc:    makefile.SUN
+   LINUX:                  makefile.LINUX
+   IBM AIX:                makefile.RS6000
+
+   It shouldn't be too hard to configure things for your system.
+   Here are the things you need to do, to port the software to
+   a unix system MYUNIX:
+
+   copy one of the above makefiles into makefile.MYUNIX
+
+   Edit it, changing the following:
+
+     BINPATH
+       path to the directory where you want the library to reside
+     XLIBPATH
+       "-L" followed by path to where the X11 library can be found
+     XLIBINCLUDE
+       "-I" followed by path to where the X11 library include 
+       files can be found
+     NETLIBPATH, NETLIB
+       if you need to specify a network library for using X11
+       (for example, on Solaris). typically, you can set 
+       this to blank
+     
+     Also, in CFLAGS, get rid of -D_SUN or -D_whatever, and
+     replace it by -D_MYUNIX
+
+     Finally, you can specify -D_TRUST_XIDS in CFLAGS. By default,
+     VR tries to verify the validity of X window identifiers by
+     calling XQueryTree. With -D_TRUST_XIDS, you can avoid this
+     overhead (it might also be useful if the display you are using
+     does not allow XQueryTree for security reasons).
+
+   Now, edit VR.h
+     
+     Around line 52-76, you can find some system-dependent
+     configurations. Add yours here within 
+
+     #ifdef _MYUNIX
+     ...
+     #endif /* _MYUNIX */
+     
+     Basically, you need to know three system-dependent things:
+     1. Endian of the machine.
+	Compile and execute the simple program "endian.c" that
+	is included:
+	  gcc endian.c -o endian
+	  endian
+	If the output is VR_ULONG_MSB_FIRST, you don't need to
+	do anything. Otherwise (output is VR_ULONG_LSB_FIRST),
+	add the lines
+	  #undef VR_ULONG_MSB_FIRST
+	  #define VR_ULONG_LSB_FIRST
+	between the #ifdef _MYUNIX and #endif
+     
+     2. Include path for using "select"
+	Some systems require <sys/select.h> to be included for
+	using select, others do not. Do a "man select" to
+	find out if MYUNIX needs any include-file for select.
+	If so, add the line
+	  #include <sys/select.h> (or whatever the file is)
+	between the #ifdef _MYUNIX and #endif
+     
+     3. Some systems use the macro FD_CLEAR for clearing a
+	set of file-descriptors, others use FD_ZERO. If
+	yours uses FD_ZERO, you need to add
+	  #define FD_CLEAR FD_ZERO
+	between the #ifdef _MYUNIX and #endif. the file
+	select.h, if it is there on your system, can tell
+	you which macro it uses. in any case, you can try
+	compiling using FD_CLEAR, and if you get an error,
+	then add the above line.
+
+   You are all set. Just type
+     make -f makefile.MYUNIX
+   
+   If you wish to compile the example application, do:
+     make -f makefile.MYUNIX VR_pnm
+
+
+Send Comments/Errors/Bugs to
+ratnakar@cs.wisc.edu (Viresh Ratnakar)
+
