@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/02/01 18:00:11  jussi
+  Added detection of 'no such file' response from ftp server.
+  Also added error messages in case of network or protocol
+  errors.
+
   Revision 1.3  1996/01/30 22:44:24  jussi
   Added ftp and cbstp protocol support.
 
@@ -67,7 +72,7 @@ static Tcl_Interp *globalInterp = 0;
 
 #define HTTP_PORT	80
 
-#define HTTP_GET_FORMAT "GET %s HTTP/1.0"
+#define HTTP_GET_FORMAT "GET %s HTTP/1.0\n\n"
 
 #define HTTP_C_LENGTH "content-length"
 #define HTTP_C_LENGTH_LEN strlen(HTTP_C_LENGTH)
@@ -81,22 +86,25 @@ static Tcl_Interp *globalInterp = 0;
 #define FTP_PASV_RESP	227
 #define FTP_TYPE_RESP	200
 #define FTP_NOFILE_RESP 550
+#define FTP_OPEN_CONN   150
 
-#define ASCII_CR ('M' - ' ')
-#define ASCII_LF ('J' - ' ')
 #define BUF_LENGTH 1024
 
 static char *uname = "anonymous";
 static char *passwd = "dummy@";
 
+static char buffer[BUF_LENGTH];
+
 static void
 tolowcase(char *s)
 {
-  int c,i=0,delta;
+  int c, i = 0, delta;
   while ((c = s[i]) != '\0') {
-    if (((delta = (c - 'A')) >= 0) && (delta < 26)) s[i] = 'a' + delta;
+    if (((delta = (c - 'A')) >= 0) && (delta < 26))
+      s[i] = 'a' + delta;
     i++;
-    if (i == BUF_LENGTH) break;
+    if (i == BUF_LENGTH)
+      break;
   }
 }
 
@@ -109,15 +117,12 @@ readline(int fd, char *buf)
 	int		rval;
 
 	for(;;) {
-		if ((rval = read(fd, buf, 1)) < 0) {
+		if ((rval = read(fd, buf, 1)) < 0)
 			return rval;
-		}
-		if (*buf != '\n') {
-			count++;
-			buf++;
-		} else {
+		if (!rval || *buf == '\n')
 			break;
-		}
+		count++;
+		buf++;
 	}
 	return	count;
 }
@@ -131,7 +136,7 @@ string_to_sin(char *string, struct sockaddr_in *sin)
 	char    *cur_byte;
 	char    *end_string;
 
-	string++;					/* skip the leading '<' */
+	string++;				/* skip the leading '<' */
 	cur_byte = (char *) &(sin->sin_addr);
 	for(end_string = string; end_string != 0; ) {
 		end_string = strchr(string, '.');
@@ -200,18 +205,17 @@ int condor_bytes_stream_open_ckpt_file( char *name )
 static
 char *get_ftpd_response(int sock_fd, int resp_val)
 {
-  static char	resp[1024];
-  int		ftp_resp_num;
+  int		ftp_resp_num = -1;
   
   do {
-    if (readline(sock_fd, resp) < 0) {
+    if (readline(sock_fd, buffer) < 0) {
       fprintf(stderr, "Premature end of data from ftp server.\n");
       return 0;
     }
-    sscanf(resp, "%d", &ftp_resp_num);
+    sscanf(buffer, "%d", &ftp_resp_num);
   } while (ftp_resp_num != resp_val);
 
-  return resp;
+  return buffer;
 }
 
 static
@@ -224,7 +228,6 @@ int open_ftp( const char *name )
   char		*end_of_addr;
   int		port_num = FTP_PORT;
   struct hostent *he;
-  char		ftp_cmd[1024];
   int		read_count;
   char		*ftp_resp;
   int		ip_addr[4];
@@ -282,8 +285,8 @@ int open_ftp( const char *name )
   printf("ftp: sending username\n");
 #endif
 
-  sprintf(ftp_cmd, "USER %s\n", uname);
-  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(buffer, "USER %s\n", uname);
+  write(sock_fd, buffer, strlen(buffer));
   if (get_ftpd_response(sock_fd, FTP_PASSWD_RESP) == 0) {
     fprintf(stderr, "No password message from ftp server.\n");
     goto error;
@@ -293,11 +296,22 @@ int open_ftp( const char *name )
   printf("ftp: sending password\n");
 #endif
 
-  sprintf(ftp_cmd, "PASS %s\n", passwd);
-  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(buffer, "PASS %s\n", passwd);
+  write(sock_fd, buffer, strlen(buffer));
 
-  sprintf(ftp_cmd, "PASV\n");
-  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+#ifdef DEBUG
+  printf("ftp: setting binary data transfer type\n");
+#endif
+
+  sprintf(buffer, "TYPE I\n");
+  write(sock_fd, buffer, strlen(buffer));
+  if (get_ftpd_response(sock_fd, FTP_TYPE_RESP) == 0) {
+    fprintf(stderr, "Cannot set ftp server to binary mode.\n");
+    goto error;
+  }
+
+  sprintf(buffer, "PASV\n");
+  write(sock_fd, buffer, strlen(buffer));
 
   ftp_resp = get_ftpd_response(sock_fd, FTP_PASV_RESP);
   if (ftp_resp == 0) {
@@ -311,36 +325,35 @@ int open_ftp( const char *name )
     goto error;
   }
 
-#ifdef DEBUG
-  printf("ftp: setting binary data transfer type\n");
-#endif
-
-  sprintf(ftp_cmd, "TYPE I\n");
-  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
-  if (get_ftpd_response(sock_fd, FTP_TYPE_RESP) == 0) {
-    fprintf(stderr, "Cannot set ftp server to binary mode.\n");
-    goto error;
+  sprintf(buffer, "cbstp:<%d.%d.%d.%d:%d>", ip_addr[0], ip_addr[1], 
+	  ip_addr[2], ip_addr[3], port[0] << 8 | port[1]);
+  rval = condor_bytes_stream_open_ckpt_file( buffer );
+  if (rval < 0) {
+    fprintf(stderr, "Cannot connect to ftp secondary port.\n");
+    close(sock_fd);
+    return rval;
   }
 
 #ifdef DEBUG
   printf("ftp: sending retrieve command\n");
 #endif
 
-  sprintf(ftp_cmd, "RETR %s\n", name);
-  write(sock_fd, ftp_cmd, strlen(ftp_cmd));
+  sprintf(buffer, "RETR %s\n", name);
+  write(sock_fd, buffer, strlen(buffer));
 
-  if (readline(sock_fd, ftp_cmd) < 0) {
+  if (readline(sock_fd, buffer) < 0) {
     fprintf(stderr, "Premature end of data from ftp server.\n");
     goto error;
   }
-  if (atoi(ftp_cmd) == FTP_NOFILE_RESP) {
+  if (atoi(buffer) == FTP_NOFILE_RESP) {
     fprintf(stderr, "File not found at ftp server: %s.\n", name);
     goto error;
   }
+  if (atoi(buffer) != FTP_OPEN_CONN) {
+    fprintf(stderr, "Unknown error at ftp server: %s.\n", buffer);
+    goto error;
+  }
 
-  sprintf(ftp_cmd, "cbstp:<%d.%d.%d.%d:%d>", ip_addr[0], ip_addr[1], 
-	  ip_addr[2], ip_addr[3], port[0] << 8 | port[1]);
-  rval = condor_bytes_stream_open_ckpt_file( ftp_cmd );
   close(sock_fd);
 
 #ifdef DEBUG
@@ -368,7 +381,6 @@ int open_http( char *name, size_t * bytes_in_body)
   int	stat_code, l;
   int	port_num = HTTP_PORT;
   struct hostent *he;
-  char	http_cmd[BUF_LENGTH];
 
   sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (sock_fd < 0) {
@@ -376,16 +388,16 @@ int open_http( char *name, size_t * bytes_in_body)
     return sock_fd;
   }
 
-  if (strncmp(name,"http://",7)) {
+  if (strncmp(name,"http://", 7))
     return -1;
-  }
+
   name += 7;
 
   port_sep = strchr(name, ':');
   end_of_addr = strchr(name, '/');
-  if (end_of_addr == 0) {
+  if (!end_of_addr)
     return -1;
-  }
+
   *end_of_addr = '\0';
 
   if (port_sep) {
@@ -412,28 +424,26 @@ int open_http( char *name, size_t * bytes_in_body)
   }
 
   *end_of_addr = '/';
-  name = end_of_addr;
-  sprintf(http_cmd, HTTP_GET_FORMAT, name);
-  l = strlen(http_cmd);
-  http_cmd[l++] = ASCII_CR;
-  http_cmd[l++] = ASCII_LF;
-  http_cmd[l++] = ASCII_CR;
-  http_cmd[l++] = ASCII_LF;
-  http_cmd[l] = '\0';
-  write(sock_fd, http_cmd, l);
+  sprintf(buffer, HTTP_GET_FORMAT, end_of_addr);
+
+#ifdef DEBUG
+  printf("http: sending get command\n");
+#endif
+
+  write(sock_fd, buffer, strlen(buffer));
 
   /* get status line */
-  if (readline(sock_fd, http_cmd) <= 0) {
+  if (readline(sock_fd, buffer) <= 0) {
     fprintf(stderr, "Bad http connection\n");
     goto error;
   }
 
-  if (strncmp(http_cmd, HTTP_VERSION, HTTP_VERSION_LEN)) {
+  if (strncmp(buffer, HTTP_VERSION, HTTP_VERSION_LEN)) {
     fprintf(stderr, "Bad http header received\n");
     goto error;
   }
 
-  if (!(stat_code_start = strchr(http_cmd,' '))) { 
+  if (!(stat_code_start = strchr(buffer,' '))) { 
     fprintf(stderr, "Bad http header received\n");
     goto error;
   }
@@ -473,14 +483,11 @@ int open_http( char *name, size_t * bytes_in_body)
 
   /* Skip the header part, but extract Content-Length */
   *bytes_in_body = 0;
-  while (readline(sock_fd, http_cmd) > 0) {
-    tolowcase(http_cmd);
-    if (!strncmp(http_cmd, HTTP_C_LENGTH, HTTP_C_LENGTH_LEN)) {
-      if ((clength_start = strchr(http_cmd,':'))) {
-	clength_start++;
-	while (*clength_start == ' ') clength_start++;
-	*bytes_in_body = atoi(clength_start);
-      }
+  while (readline(sock_fd, buffer) > 0) {
+    tolowcase(buffer);
+    if (!strncmp(buffer, HTTP_C_LENGTH, HTTP_C_LENGTH_LEN)) {
+      sscanf(buffer, "%*s %d", bytes_in_body);
+      break;
     }  
   }
 
@@ -523,11 +530,9 @@ int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
     return TCL_ERROR;
   }
 
-  char url_data[BUF_LENGTH];
-  
-  while((len = read(fd, url_data, sizeof url_data)) > 0) {
+  while((len = read(fd, buffer, sizeof buffer)) > 0) {
     UPDATE_TCL;
-    if (fwrite(url_data, len, 1, fp) != 1) {
+    if (fwrite(buffer, len, 1, fp) != 1) {
       fprintf(stderr, "Cannot write to cache file %s: ", cachefile);
       perror("fwrite");
       close(fd);
