@@ -2,6 +2,7 @@
 
 if ($#argv == 0) then
   echo "Usage: $0 solaris|sun|hp|sgi|linux"
+  exit 1
 endif
  
 set arch = $1
