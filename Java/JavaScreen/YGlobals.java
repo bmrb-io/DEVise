@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2000/03/23 16:26:17  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.16  1999/12/10 15:37:01  wenger
 // Added standard headers to source files.
 //
@@ -28,9 +31,9 @@
 public final class YGlobals
 {
     // math constants
-    public final static double e = Math.E;
-    public final static double pi = Math.PI;
-    public final static double rad = 180.0 / Math.PI;
+    public final static float e = (float)Math.E;
+    public final static float pi = (float)Math.PI;
+    public final static float rad = (float)(180.0 / Math.PI);
 
     // control constants
     public static boolean isdebug = true;
@@ -83,4 +86,4 @@ public final class YGlobals
     // java.util.Date, java.util.TimeZone, java.util.Locale and java.text.DateFormat
 
 }
-           
+

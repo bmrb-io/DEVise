@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2000/04/03 21:21:22  wenger
+// When new GData arrives for a view, we remove the old GData from the
+// view and call the garbage collector before constructing the new
+// GData objects, so that the old GData objects are at least hopefully
+// destroyed before the new ones are created.
+//
 // Revision 1.48  2000/04/03 05:29:35  hongyu
 // *** empty log message ***
 //
@@ -410,7 +416,7 @@ public class DEViseCmdDispatcher implements Runnable
                     int y = Integer.parseInt(cmd[5]);
                     int w = Integer.parseInt(cmd[6]);
                     int h = Integer.parseInt(cmd[7]);
-                    double z = (Double.valueOf(cmd[8])).doubleValue();
+                    float z = (Float.valueOf(cmd[8])).floatValue();
                     int dim = Integer.parseInt(cmd[9]);
                     Rectangle viewloc = new Rectangle(x, y, w, h);
                     x = Integer.parseInt(cmd[10]);
@@ -436,8 +442,8 @@ public class DEViseCmdDispatcher implements Runnable
                     //int fg = (Color.black).getRGB();
 
                     String xtype = cmd[16], ytype = cmd[17];
-                    double gridx = (Double.valueOf(cmd[18])).doubleValue();
-                    double gridy = (Double.valueOf(cmd[19])).doubleValue();
+                    float gridx = (Float.valueOf(cmd[18])).floatValue();
+                    float gridy = (Float.valueOf(cmd[19])).floatValue();
                     int rb = Integer.parseInt(cmd[20]);
                     int cm = Integer.parseInt(cmd[21]);
                     int dd = Integer.parseInt(cmd[22]);
@@ -545,19 +551,19 @@ public class DEViseCmdDispatcher implements Runnable
                 String viewname = cmd[1];
 
 		// Remove the old GData from the view and hopefully free it.
-                DEViseView view = jsc.jscreen.getView(viewname);
-		if (view != null) {
-		    view.removeAllGData();
-		    System.gc();
-		}
+        //        DEViseView view = jsc.jscreen.getView(viewname);
+		//if (view != null) {
+		//    view.removeAllGData();
+		//    System.gc();
+		//}
 
-                double xm, xo, ym, yo;
+                float xm, xo, ym, yo;
                 int gdataSize;
                 try {
-                    xm = (Double.valueOf(cmd[2])).doubleValue();
-                    xo = (Double.valueOf(cmd[3])).doubleValue();
-                    ym = (Double.valueOf(cmd[4])).doubleValue();
-                    yo = (Double.valueOf(cmd[5])).doubleValue();
+                    xm = (Float.valueOf(cmd[2])).floatValue();
+                    xo = (Float.valueOf(cmd[3])).floatValue();
+                    ym = (Float.valueOf(cmd[4])).floatValue();
+                    yo = (Float.valueOf(cmd[5])).floatValue();
                     gdataSize = Integer.parseInt(cmd[6]);
                     if (gdataSize <= 0) {
                         throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -565,6 +571,10 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
+
+//            System.out.println("Free memory(before new GData): " +
+//	      Runtime.getRuntime().freeMemory() + "/" +
+//	      Runtime.getRuntime().totalMemory());
 
                 byte[] gdata = receiveData(gdataSize);
 
@@ -603,7 +613,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                         for (int k = 0; k < results.length; k++) {
                             DEViseGData data = null;
-                            jsc.pn("Received gdata is: \"" + results[k] + "\"");
+                            //jsc.pn("Received gdata is: \"" + results[k] + "\"");
                             try {
                                 data = new DEViseGData(jsc, viewname, results[k], xm, xo, ym, yo);
                             } catch (YException e1) {
@@ -612,11 +622,24 @@ public class DEViseCmdDispatcher implements Runnable
                             }
 
                             gdList.addElement(data);
+                            results[k] = null;
                         }
 
+                        System.out.println("number of new gdata: " + results.length);
+
                         jsc.jscreen.updateGData(viewname, gdList);
+                        results = null;
+                        gdList = null;
                     }
                 }
+
+                gdata = null;
+
+//                System.gc();
+
+//          System.out.println("Free memory(after new GData): " +
+//	      Runtime.getRuntime().freeMemory() + "/" +
+//	      Runtime.getRuntime().totalMemory());
             } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {
@@ -641,8 +664,8 @@ public class DEViseCmdDispatcher implements Runnable
                     String move = cmd[7];
                     String resize = cmd[8];
                     Rectangle rect = new Rectangle(x0, y0, w, h);
-                    double gridx = (Double.valueOf(cmd[9])).doubleValue();
-                    double gridy = (Double.valueOf(cmd[10])).doubleValue();
+                    float gridx = (Float.valueOf(cmd[9])).floatValue();
+                    float gridy = (Float.valueOf(cmd[10])).floatValue();
                     int isedge = Integer.parseInt(cmd[11]);
                     Color color = DEViseGlobals.convertColor(cmd[12]);
                     //TEMP int type = Integer.parseInt(cmd[13]);
@@ -682,8 +705,8 @@ public class DEViseCmdDispatcher implements Runnable
                 try {
                     String viewname = cmd[1];
                     String viewaxis = cmd[2];
-                    double min = (Double.valueOf(cmd[3])).doubleValue();
-                    double max = (Double.valueOf(cmd[4])).doubleValue();
+                    float min = (Float.valueOf(cmd[3])).floatValue();
+                    float max = (Float.valueOf(cmd[4])).floatValue();
 
                     jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max);
                 } catch (NumberFormatException e) {
@@ -734,6 +757,12 @@ public class DEViseCmdDispatcher implements Runnable
 
         // turn off the 'process' light
         jsc.viewInfo.updateImage(3, 0);
+
+        System.gc();
+
+        //System.out.println("Memory: " +
+	    //Runtime.getRuntime().freeMemory() + "/" +
+	    //Runtime.getRuntime().totalMemory());
     }
 
     private byte[] receiveData(int size) throws YException

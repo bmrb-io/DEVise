@@ -19,6 +19,11 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.28  2000/04/03 22:24:53  wenger
+// Added named constants for GData symbol types; 3D GData symbols are now
+// differentiated by symbol type instead of string; removed some commented-
+// out code.
+//
 // Revision 1.27  2000/03/31 19:29:16  wenger
 // Changed code so that views and GData objects get garbage collected when
 // a session is closed; added debug code for tracking construction and
@@ -90,14 +95,14 @@ public class DEViseGData
     public DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
     public String viewname = null; //TEMP -- do we really need this for *every* GData record???
 
-    public Rectangle GDataLoc = null;
+    //public Rectangle GDataLoc = null;
     public Rectangle GDataLocInScreen = null;
 
     //TEMP -- why do we need x, y, etc, *and* GDataLoc
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
-    public double x0, y0, z0, x1, y1, z1;
+    public float x0, y0, z0, x1, y1, z1;
 
-    public String[] data = null;
+    //public String[] data = null;
     public Component symbol = null;
     public boolean isJavaSymbol = false;
     public int symbolType = 0;
@@ -119,8 +124,8 @@ public class DEViseGData
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
     // <symbol type> <shape attr 0> ... <shape attr 14>
-    public DEViseGData(jsdevisec panel, String vname, String gdata, double xm,
-      double xo, double ym, double yo) throws YException
+    public DEViseGData(jsdevisec panel, String vname, String gdata, float xm,
+      float xo, float ym, float yo) throws YException
     {
 	_gdCount++;
 	if (_debug) {
@@ -138,20 +143,21 @@ public class DEViseGData
             throw new YException("Invalid parent view for GData!");
         }
 
-        data = DEViseGlobals.parseString(gdata);
+        String[] data = DEViseGlobals.parseString(gdata);
         if (data == null || data.length != 23)
             throw new YException("Invalid GData + {" + gdata + "}");
+        gdata = null;
 
-        //double x0 = 0, y0 = 0, z0 = 0, size = 0;
-        double size = 0;
+        //float x0 = 0, y0 = 0, z0 = 0, size = 0;
+        float size = 0;
         try {
-            x0 = (Double.valueOf(data[0])).doubleValue();
+            x0 = (Float.valueOf(data[0])).floatValue();
             x = (int)(x0 * xm + xo);
-            y0 = (Double.valueOf(data[1])).doubleValue();
+            y0 = (Float.valueOf(data[1])).floatValue();
             y = (int)(y0 * ym + yo);
-            z0 = (Double.valueOf(data[2])).doubleValue();
+            z0 = (Float.valueOf(data[2])).floatValue();
             z = (int)(y0 * ym + yo);
-            size = (Double.valueOf(data[4])).doubleValue();
+            size = (Float.valueOf(data[4])).floatValue();
             symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData!");
@@ -160,25 +166,25 @@ public class DEViseGData
 	//TEMP -- perhaps this should be done when the symbol is
 	// drawn, instead of now
         if (symbolType == _symEmbeddedTk) { // check symbol type
-	    EmbeddedTk(size, xm, ym);
+	    EmbeddedTk(data, size, xm, ym);
 
 	} else if (symbolType == _symText) {
-	    TextLabel(size, xm, ym);
+	    TextLabel(data, size, xm, ym);
 
         } else if (symbolType == _symFixedText) {
-	    FixedTextLabel(size);
+	    FixedTextLabel(data, size);
 
         } else if (symbolType == _symOval) {
-	    Oval(size, xm, ym);
+	    Oval(data, size, xm, ym);
 
 	} else if (symbolType == _symSegment) {
-            Segment(size, xm, ym);
+            Segment(data, size, xm, ym);
 
         } else {
-	    DefaultSymbol(size, xm, ym);
+	    DefaultSymbol(data, size, xm, ym);
         }
 
-        GDataLoc = new Rectangle(x, y, width, height);
+        //GDataLoc = new Rectangle(x, y, width, height);
         GDataLocInScreen = getLocInScreen();
     }
 
@@ -215,22 +221,22 @@ public class DEViseGData
         return r;
     }
 
-    protected void TextLabel(double size, double xm, double ym)
+    protected void TextLabel(String[] data, float size, float xm, float ym)
       throws YException
     {
         isJavaSymbol = false;
 
         string = data[8];
 
-        double w = 0.0, h = 0.0;
+        float w = 0.0f, h = 0.0f;
         int align, ff, fw, fs;
 
 	// Note: format is ignored for now.  RKW 1999-11-03.
 
         // default font is courier, regular, nonitalic
         try {
-            w = (Double.valueOf(data[10])).doubleValue();
-            h = (Double.valueOf(data[11])).doubleValue();
+            w = (Float.valueOf(data[10])).floatValue();
+            h = (Float.valueOf(data[11])).floatValue();
 
             if (data[12].equals("")) {
                 outline = 0;
@@ -283,7 +289,7 @@ public class DEViseGData
         // efficient, but the previous version of this code failed
         // if we needed different fonts for different symbols.
         // RKW 1999-11-02.
-        if (w < 0.0) {
+        if (w < 0.0f) {
             font = DEViseGlobals.getFont(string, height, ff, fw, fs);
         } else {
             font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
@@ -300,13 +306,13 @@ public class DEViseGData
         y = parentView.viewLocInCanvas.y + y;
     }
 
-    protected void FixedTextLabel(double size) throws YException
+    protected void FixedTextLabel(String[] data, float size) throws YException
     {
         isJavaSymbol = false;
 
         string = data[8];
 
-        double w = 0.0, h = 0.0;
+        float w = 0.0f, h = 0.0f;
         int align, ff, fw, fs;
 
         // default font is courier, regular, nonitalic
@@ -351,10 +357,10 @@ public class DEViseGData
         // if we needed different fonts for different symbols.
         // RKW 1999-11-02.
         int fsize;
-        if (size > 1.0) {
-            fsize = (int)(size + 0.25);
+        if (size > 1.0f) {
+            fsize = (int)(size + 0.25f);
         } else {
-            fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25);
+            fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25f);
         }
         font = DEViseGlobals.getFont(fsize, ff, fw, fs);
 
@@ -369,7 +375,7 @@ public class DEViseGData
         y = parentView.viewLocInCanvas.y + y;
     }
 
-    protected void EmbeddedTk(double size, double xm, double ym)
+    protected void EmbeddedTk(String[] data, float size, float xm, float ym)
     {
         isJavaSymbol = true;
 
@@ -416,7 +422,7 @@ public class DEViseGData
         symbol = button;
     }
 
-    protected void Oval(double size, double xm, double ym)
+    protected void Oval(String[] data, float size, float xm, float ym)
     {
         isJavaSymbol = false;
 
@@ -433,7 +439,7 @@ public class DEViseGData
         string = data[10];
     }
 
-    protected void Segment(double size, double xm, double ym)
+    protected void Segment(String[] data, float size, float xm, float ym)
     {
         isJavaSymbol = false;
 
@@ -446,13 +452,13 @@ public class DEViseGData
 
         color = DEViseGlobals.convertColor(data[3]);
 
-        x1 = x0 + size * (Double.valueOf(data[8])).doubleValue();
-        y1 = y0 + size * (Double.valueOf(data[9])).doubleValue();
-        z1 = z0 + size * (Double.valueOf(data[10])).doubleValue();
+        x1 = x0 + size * (Float.valueOf(data[8])).floatValue();
+        y1 = y0 + size * (Float.valueOf(data[9])).floatValue();
+        z1 = z0 + size * (Float.valueOf(data[10])).floatValue();
         //z1 = (int)(z0 + size * ym * z1 );
     }
 
-    protected void DefaultSymbol(double size, double xm, double ym)
+    protected void DefaultSymbol(String[] data, float size, float xm, float ym)
     {
         isJavaSymbol = false;
 

@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2000/04/03 22:24:53  wenger
+// Added named constants for GData symbol types; 3D GData symbols are now
+// differentiated by symbol type instead of string; removed some commented-
+// out code.
+//
 // Revision 1.11  2000/03/23 16:26:13  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -44,13 +49,13 @@ public class DEViseCrystal
 
     Dimension viewArea = new Dimension(0, 0);
     int viewShift = 0;
-    double boxLength, viewDistance, halfViewDistance, boxViewRatio = 1.0, pixelToDataUnit = 0.1;
-    double newBoxLength, newTotalX, newTotalY, newTotalZ, maxiX = -1000000.0, miniX = 10000000.0, maxiY = -10000000.0, miniY = 10000000.0, maxiZ = -10000000.0, miniZ = 1000000.0;
+    float boxLength, viewDistance, halfViewDistance, boxViewRatio = 1.0f, pixelToDataUnit = 0.1f;
+    float newBoxLength, newTotalX, newTotalY, newTotalZ, maxiX = -1000000.0f, miniX = 10000000.0f, maxiY = -10000000.0f, miniY = 10000000.0f, maxiZ = -10000000.0f, miniZ = 1000000.0f;
 
-    double totalX, totalY, totalZ, totalScaleFactor = 1.0, totalXRotation, totalYRotation;
+    float totalX, totalY, totalZ, totalScaleFactor = 1.0f, totalXRotation, totalYRotation;
     int shiftedX, shiftedY, totalShiftedX, totalShiftedY, totalAtomNumber;
 
-    double minBondLength, maxBondLength;
+    float minBondLength, maxBondLength;
     public int bondWidth = 2;
 
     public Color selectColor = Color.cyan;
@@ -67,11 +72,11 @@ public class DEViseCrystal
     // about the atoms to draw a ball?
     public static Hashtable AtomTable = new Hashtable();
     static {
-        AtomTable.put("se", new DEViseAtomType("Se", 1.25, 200, 200, 0));
-        AtomTable.put("zn", new DEViseAtomType("Zn", 1.17, 192, 192, 192));
+        AtomTable.put("se", new DEViseAtomType("Se", 1.25f, 200, 200, 0));
+        AtomTable.put("zn", new DEViseAtomType("Zn", 1.17f, 192, 192, 192));
     }
 
-    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, double min, double max)
+    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, float min, float max)
     {
         YGlobals.yassert(LCS != null, "Null argument", "DEViseCrystal::constructor");
         YGlobals.yassert(width > 0 && height > 0, "Invalid size argument", "DEViseCrystal::constructor");
@@ -90,7 +95,7 @@ public class DEViseCrystal
         newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
-    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, double min, double max, String[] atomName, double[][] atomPos)
+    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, float min, float max, String[] atomName, float[][] atomPos)
     {
         YGlobals.yassert(LCS != null, "Null argument", "DEViseCrystal::constructor");
         YGlobals.yassert(width > 0 && height > 0, "Invalid size argument", "DEViseCrystal::constructor");
@@ -119,7 +124,7 @@ public class DEViseCrystal
         //newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
-    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, double min, double max, String[] atomName, double[][] atomPos, Color[] atomColor, double[][][] bondPos, Color[] bondColor)
+    public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS, float min, float max, String[] atomName, float[][] atomPos, Color[] atomColor, float[][][] bondPos, Color[] bondColor)
     {
         YGlobals.yassert(LCS != null, "Null argument", "DEViseCrystal::constructor");
         YGlobals.yassert(width > 0 && height > 0, "Invalid size argument", "DEViseCrystal::constructor");
@@ -186,8 +191,8 @@ public class DEViseCrystal
         }
 
         int x, y, x1, y1, xm, ym, index, index1;
-        double z;
-        double[] pos = new double[3];
+        float z;
+        float[] pos = new float[3];
         byte[] flag = new byte[atomList.size()];
         DEViseAtomInCrystal atom = null, atom1 = null;
 
@@ -201,8 +206,8 @@ public class DEViseCrystal
             }
 
             atom = (DEViseAtomInCrystal)atomList.elementAt(index);
-            x = (int)(atom.lcspos[0] + 0.5) + shiftedX;
-            y = (int)(atom.lcspos[1] + 0.5) + shiftedY;
+            x = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
+            y = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
 
             flag[index] = 1;
 
@@ -223,8 +228,8 @@ public class DEViseCrystal
                 }
 
                 atom1 = (DEViseAtomInCrystal)atomList.elementAt(index1);
-                x1 = (int)(atom1.lcspos[0] + 0.5) + shiftedX;
-                y1 = (int)(atom1.lcspos[1] + 0.5) + shiftedY;
+                x1 = (int)(atom1.lcspos[0] + 0.5f) + shiftedX;
+                y1 = (int)(atom1.lcspos[1] + 0.5f) + shiftedY;
 
                 //xm = (x + x1) / 2;
                 //ym = (y + y1) / 2;
@@ -285,18 +290,18 @@ public class DEViseCrystal
 
         z = 20 / pixelToDataUnit;
         pos = lcs.point(z, 0, 0, false);
-        x = (int)(pos[0] + 0.5) + shiftedX;
-        y = (int)(pos[1] + 0.5) + shiftedY;
+        x = (int)(pos[0] + 0.5f) + shiftedX;
+        y = (int)(pos[1] + 0.5f) + shiftedY;
         gc.drawLine(shiftedX, shiftedY, x, y);
         gc.drawString("a", x, y);
         pos = lcs.point(0, z, 0, false);
-        x = (int)(pos[0] + 0.5) + shiftedX;
-        y = (int)(pos[1] + 0.5) + shiftedY;
+        x = (int)(pos[0] + 0.5f) + shiftedX;
+        y = (int)(pos[1] + 0.5f) + shiftedY;
         gc.drawLine(shiftedX, shiftedY, x, y);
         gc.drawString("b", x, y);
         pos = lcs.point(0, 0, z, false);
-        x = (int)(pos[0] + 0.5) + shiftedX;
-        y = (int)(pos[1] + 0.5) + shiftedY;
+        x = (int)(pos[0] + 0.5f) + shiftedX;
+        y = (int)(pos[1] + 0.5f) + shiftedY;
         gc.drawLine(shiftedX, shiftedY, x, y);
         gc.drawString("c", x, y);
 
@@ -304,27 +309,27 @@ public class DEViseCrystal
         gc.setFont(oldfont);
     }
 
-    public double[] getPos(double[] pos)
+    public float[] getPos(float[] pos)
     {
         return oldlcs.point(pos);
     }
 
-    public int addAtom(String name, double x, double y, double z)
+    public int addAtom(String name, float x, float y, float z)
     {
         return addAtom(name, x, y, z, null, 0);
     }
 
-    public int addAtom(String name, double x, double y, double z, Color color)
+    public int addAtom(String name, float x, float y, float z, Color color)
     {
         return addAtom(name, x, y, z, color, 0);
     }
 
-    public int addAtom(String name, double x, double y, double z, int status)
+    public int addAtom(String name, float x, float y, float z, int status)
     {
         return addAtom(name, x, y, z, null, status);
     }
 
-    public int addAtom(String name, double x, double y, double z, Color color, int status)
+    public int addAtom(String name, float x, float y, float z, Color color, int status)
     {
         if (name == null) {
             name = new String("UnknownAtom");
@@ -382,8 +387,8 @@ public class DEViseCrystal
 
         // find the bond information for the new atom
         DEViseAtomInCrystal atom = null;
-        //double dx, dy, dz, d;
-        double[] pos1 = new double[3], pos2 = new double[3];
+        //float dx, dy, dz, d;
+        float[] pos1 = new float[3], pos2 = new float[3];
         oldlcs.point(newAtom.pos, pos1);
         /*
         boolean checkBond = (minBondLength > 0.0 && maxBondLength > 0.0 && maxBondLength > minBondLength);
@@ -447,7 +452,7 @@ public class DEViseCrystal
             resort();
             lcs.point(newAtom.pos, newAtom.lcspos);
         } else if (status == 2) {
-            double dx = Math.abs(maxiX - miniX), dy = Math.abs(maxiY - miniY), dz = Math.abs(maxiZ - miniZ), maxi = dx;
+            float dx = (float)Math.abs(maxiX - miniX), dy = Math.abs(maxiY - miniY), dz = Math.abs(maxiZ - miniZ), maxi = dx;
             if (dy > maxi) {
                 maxi = dy;
             }
@@ -530,7 +535,7 @@ public class DEViseCrystal
 
         }
 
-        double x = totalX / totalAtomNumber, y = totalY / totalAtomNumber, z = totalZ / totalAtomNumber;
+        float x = totalX / totalAtomNumber, y = totalY / totalAtomNumber, z = totalZ / totalAtomNumber;
         lcs.translate(-x, -y, -z);
         lcs.scale(pixelToDataUnit);
 
@@ -539,7 +544,7 @@ public class DEViseCrystal
         lcs.yrotate(totalYRotation);
 
         viewDistance = boxViewRatio * boxLength * pixelToDataUnit * totalScaleFactor;
-        halfViewDistance = 0.5 * viewDistance;
+        halfViewDistance = 0.5f * viewDistance;
 
         isReady = true;
         isTransformed = true;
@@ -694,13 +699,13 @@ public class DEViseCrystal
 
     public synchronized void scale(int dx, int dy)
     {
-        double factor = Math.sqrt((double)dx * dx + (double)dy * dy) / Math.sqrt((double)viewArea.width * viewArea.width + (double)viewArea.height * viewArea.height);
+        float factor = (float)Math.sqrt((float)dx * dx + (float)dy * dy) / (float)Math.sqrt((float)viewArea.width * viewArea.width + (float)viewArea.height * viewArea.height);
         if (dx < 0) {
             factor = -factor;
         }
         factor = factor + totalScaleFactor;
 
-        double d = factor / totalScaleFactor;
+        float d = factor / totalScaleFactor;
         lcs.scale(d, d, d);
         halfViewDistance *= d;
         viewDistance *= d;
@@ -738,8 +743,8 @@ public class DEViseCrystal
         dxx = (dx > 0) ? -dxx : dxx;
         dyy = (dy > 0) ? dyy : -dyy;
 
-        double anglex = Math.asin((double)dyy / viewArea.width) * YGlobals.rad;
-        double angley = Math.asin((double)dxx / viewArea.height) * YGlobals.rad;
+        float anglex = (float)Math.asin((float)dyy / viewArea.width) * YGlobals.rad;
+        float angley = (float)Math.asin((float)dxx / viewArea.height) * YGlobals.rad;
 
         lcs.xrotate(anglex);
         lcs.yrotate(angley);
@@ -754,7 +759,7 @@ public class DEViseCrystal
     {
         int index1 = -1, index2 = -1;
         int tmp;
-        double r1, r2, dx, dy;
+        float r1, r2, dx, dy;
         DEViseAtomInCrystal atom1 = null, atom2 = null;
         byte[] flag = new byte[atomList.size()];
 
@@ -766,10 +771,10 @@ public class DEViseCrystal
 
             atom1 = (DEViseAtomInCrystal)atomList.elementAt(index1);
 
-            r1 = atom1.drawSize / 2.0;
+            r1 = atom1.drawSize / 2.0f;
             dx = x - atom1.drawX;
             dy = y - atom1.drawY;
-            r2 = Math.sqrt(dx * dx + dy * dy);
+            r2 = (float)Math.sqrt(dx * dx + dy * dy);
             if (r2 < r1) {
                 break;
             }
@@ -788,7 +793,7 @@ public class DEViseCrystal
                 atom2 = (DEViseAtomInCrystal)atomList.elementAt(index2);
 
                 if ((x >= atom2.drawX - bondWidth && x <= atom1.drawX + bondWidth) || (x >= atom1.drawX - bondWidth && x <= atom2.drawX + bondWidth)) {
-                    tmp = (int)((double)(atom2.drawY - atom1.drawY) / (atom2.drawX - atom1.drawX) * (x - atom1.drawX)) + atom1.drawY;
+                    tmp = (int)((float)(atom2.drawY - atom1.drawY) / (atom2.drawX - atom1.drawX) * (x - atom1.drawX)) + atom1.drawY;
 
                     if (y >= (tmp - bondWidth) && y <= (tmp + bondWidth)) {
                         atom1.lastSelectedBondIndex = index2;
@@ -827,10 +832,10 @@ public class DEViseCrystal
         }
     }
 
-    public void setSelect(double x, double y, double z, Color c, boolean isBond)
+    public void setSelect(float x, float y, float z, Color c, boolean isBond)
     {
         DEViseAtomInCrystal atom = null;
-        double xx, yy, zz;
+        float xx, yy, zz;
 
         for (int i = 0; i < atomList.size(); i++) {
             atom = (DEViseAtomInCrystal)atomList.elementAt(i);
@@ -839,10 +844,10 @@ public class DEViseCrystal
                 continue;
             }
 
-            xx = Math.abs(x - atom.pos[0]);
-            yy = Math.abs(y - atom.pos[1]);
-            zz = Math.abs(z - atom.pos[2]);
-            if (xx < 1.0e-5 && yy < 1.0e-5 && zz < 1.0e-5) {
+            xx = (float)Math.abs(x - atom.pos[0]);
+            yy = (float)Math.abs(y - atom.pos[1]);
+            zz = (float)Math.abs(z - atom.pos[2]);
+            if (xx < 1.0e-5f && yy < 1.0e-5f && zz < 1.0e-5f) {
                 if (!isBond) {
                     atom.isSelected = 1;
                     atom.type.setSelectColor(c);

@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2000/03/31 19:29:17  wenger
+// Changed code so that views and GData objects get garbage collected when
+// a session is closed; added debug code for tracking construction and
+// finalization of DEViseView and DEViseGData objects; other minor GData-
+// related improvements.
+//
 // Revision 1.39  2000/03/23 16:26:15  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -69,14 +75,14 @@ public class DEViseView
 
     public Rectangle viewLoc = null;
     public Rectangle viewLocInCanvas = null;
-    public double viewZ = 0.0;
+    public float viewZ = 0.0f;
     public int viewDimension = 0;
     public int viewBg, viewFg;
 
     // viewDataLoc is the location relative to this view
     public Rectangle viewDataLoc = null;
-    public double viewDataXMin = 0.0, viewDataXMax = 0.0;
-    public double viewDataYMin = 0.0, viewDataYMax = 0.0;
+    public float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
+    public float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
 
@@ -92,14 +98,14 @@ public class DEViseView
     public Vector viewCursors = new Vector();
 
     public boolean isRubberBand, isCursorMove, isDrillDown, isKey;
-    public double dataXStep, dataYStep;
-    public double gridx, gridy;
+    public float dataXStep, dataYStep;
+    public float gridx, gridy;
 
     public boolean isFirstTime = true;
 
     private static boolean _debug = false;
 
-    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
+    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, float Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy, int rb, int cm, int dd, int ky)
     {
         jsc = panel;
 
@@ -298,7 +304,7 @@ public class DEViseView
             System.out.println("DEViseView(" + viewName +
 	      ").removeAllGData()");
         }
-        viewGDatas.removeAllElements();
+        viewGDatas = new Vector();
     }
 
     public void removeAllCursor()
@@ -381,13 +387,13 @@ public class DEViseView
         }
     }
 
-    public void updateDataRange(String axis, double min, double max)
+    public void updateDataRange(String axis, float min, float max)
     {
         if (axis.equals("X")) {
             viewDataXMin = min;
             viewDataXMax = max;
 
-            dataXStep = 0.0;
+            dataXStep = 0.0f;
             if (viewDataLoc.width > 0)
                 dataXStep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
 
@@ -395,7 +401,7 @@ public class DEViseView
             viewDataYMin = min;
             viewDataYMax = max;
 
-            dataYStep = 0.0;
+            dataYStep = 0.0f;
             if (viewDataLoc.height > 0)
                 dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
         }
@@ -412,12 +418,12 @@ public class DEViseView
 
         x = x - loc.x;
 
-        double xstep = dataXStep;
+        float xstep = dataXStep;
         // x0 represent the value at the left side of that pixel x
-        double x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
+        float x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
 
         if ((viewDataXType.toLowerCase()).equals("date")) {
-            x0 = x0 * 1000.0;
+            x0 = x0 * 1000.0f;
             Date date = new Date((long)x0);
             DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
             Calendar cal = Calendar.getInstance();
@@ -428,9 +434,9 @@ public class DEViseView
             return (format.format(date) + time);
         } else {
             if (x0 > 0) {
-                x0 = (int)(x0 * 1000.0 + 0.5) / 1000.0;
+                x0 = (int)(x0 * 1000.0f + 0.5f) / 1000.0f;
             } else {
-                x0 = (int)(x0 * 1000.0 - 0.5) / 1000.0;
+                x0 = (int)(x0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
             return ("" + x0);
@@ -448,12 +454,12 @@ public class DEViseView
 
         y = y - loc.y;
 
-        double ystep = dataYStep;
+        float ystep = dataYStep;
         // y0 represent the value at the top side of that pixel
-        double y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;
+        float y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;
 
         if ((viewDataYType.toLowerCase()).equals("date")) {
-            y0 = y0 * 1000.0;
+            y0 = y0 * 1000.0f;
             Date date = new Date((long)y0);
             DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
             Calendar cal = Calendar.getInstance();
@@ -464,9 +470,9 @@ public class DEViseView
             return (format.format(date) + time);
         } else {
             if (y0 > 0) {
-                y0 = (int)(y0 * 1000.0 + 0.5) / 1000.0;
+                y0 = (int)(y0 * 1000.0f + 0.5f) / 1000.0f;
             } else {
-                y0 = (int)(y0 * 1000.0 - 0.5) / 1000.0;
+                y0 = (int)(y0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
             return ("" + y0);

@@ -19,6 +19,12 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.49  2000/03/31 19:29:16  wenger
+// Changed code so that views and GData objects get garbage collected when
+// a session is closed; added debug code for tracking construction and
+// finalization of DEViseView and DEViseGData objects; other minor GData-
+// related improvements.
+//
 // Revision 1.48  2000/03/23 16:26:14  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -528,7 +534,7 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public void updateViewDataRange(String name, String axis, double min, double max)
+    public void updateViewDataRange(String name, String axis, float min, float max)
     {
         DEViseView view = getView(name);
 
@@ -580,18 +586,14 @@ public class DEViseScreen extends Panel
 
             removeAll();
 
-            allCanvas.removeAllElements();
-            allViews.removeAllElements();
-	    viewTable.clear();
+            allCanvas = new Vector();
+            allViews = new Vector();
+            javaGDatas = new Vector();
+            obsoleteGData = new Vector();
+            newGData = new Vector();
+            newCanvas = new Vector();
+            obsoleteCanvas = new Vector();
 
-            javaGDatas.removeAllElements();
-            obsoleteGData.removeAllElements();
-            newGData.removeAllElements();
-
-            newCanvas.removeAllElements();
-            obsoleteCanvas.removeAllElements();
-
-	    viewTable = null;
             viewTable = new Hashtable();
 
             currentView = null;
@@ -610,7 +612,8 @@ public class DEViseScreen extends Panel
 
 	    // We've just set a whole bunch of references to null, so
 	    // this should be a good time to garbage collect.
-	    System.gc();
+	        System.gc();
+
             repaint();
         }
     }
@@ -632,7 +635,7 @@ public class DEViseScreen extends Panel
         }
     }
 
-    // Enable double-buffering
+    // Enable float-buffering
     public synchronized void update(Graphics gc)
     {
         if (offScrImg == null) {
@@ -682,6 +685,7 @@ public class DEViseScreen extends Panel
             remove(gdata.symbol);
             obsoleteGData.removeElement(gdata);
         }
+        //obsoleteGData = new Vector();
 
         while (newGData.size() > 0) {
             DEViseGData gdata = (DEViseGData)newGData.firstElement();
@@ -690,6 +694,7 @@ public class DEViseScreen extends Panel
             gs.setBounds(gdata.GDataLocInScreen);
             newGData.removeElement(gdata);
         }
+        //newGData = new Vector();
 
         super.paint(g);
     }

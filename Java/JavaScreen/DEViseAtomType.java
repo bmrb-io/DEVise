@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/03/23 16:26:12  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.6  2000/01/12 14:37:48  hongyu
 // *** empty log message ***
 //
@@ -36,7 +39,7 @@ public class DEViseAtomType {
     public String name = new String("UnknownAtom");
 
     // the radius in data unit
-    public double radius = 1.0;
+    public float radius = 1.0f;
     // The radius, diameter in pixel
     public int R, D;
     // The color for the atom
@@ -83,7 +86,7 @@ public class DEViseAtomType {
         XORcolor = new Color(xorcolor(color.getRGB()));
     }
 
-    public DEViseAtomType(String n, double rr, int r, int g, int b)
+    public DEViseAtomType(String n, float rr, int r, int g, int b)
     {
         if (n != null) {
             name = n;
@@ -155,15 +158,15 @@ public class DEViseAtomType {
         D = 2 * R;
         rangeD = D - minD;
 
-        radius = radius * (double)R / oldR;
+        radius = radius * (float)R / oldR;
 
         data = null;
         image = null;
     }
 
-    public void setRadius(double r)
+    public void setRadius(float r)
     {
-        double oldradius = radius;
+        float oldradius = radius;
 
         if (r > 0) {
             radius = r;
@@ -187,13 +190,13 @@ public class DEViseAtomType {
         image = null;
     }
 
-    public void reset(double pixelToUnit)
+    public void reset(float pixelToUnit)
     {
-        if (pixelToUnit <= 0.0) {
+        if (pixelToUnit <= 0.0f) {
             pixelToUnit = 10;
         }
 
-        R = (int)(radius * pixelToUnit + 0.5);
+        R = (int)(radius * pixelToUnit + 0.5f);
         if (R < 5) {
             R = 5;
         }
@@ -227,12 +230,12 @@ public class DEViseAtomType {
         }
 
         if (scheme == 1) {
-            int maxR = 0, hx = (int)(0.2 * D + 0.5), hy = (int)(0.2 * D + 0.5);
+            int maxR = 0, hx = (int)(0.2f * D + 0.5f), hy = (int)(0.2f * D + 0.5f);
             int pos, x0, xx, yy, r;
 
             for (int y = 0; y < D; y++) {
                 // the effect Y range is the range that line X = x intersect with the circle
-                x0 = (int)(Math.sqrt(R * R - (y - R) * (y - R)) + 0.5);
+                x0 = (int)(Math.sqrt(R * R - (y - R) * (y - R)) + 0.5f);
                 // the starting position of this range in the data array
                 pos = y * D + R - x0;
                 for (int x = -x0; x < x0; x++) {
@@ -241,7 +244,7 @@ public class DEViseAtomType {
                     yy = y - R + hy;
 
                     // the distance from (x, y) to (hx, hy)
-                    r = (int)(Math.sqrt(xx * xx + yy * yy) + 0.5);
+                    r = (int)(Math.sqrt(xx * xx + yy * yy) + 0.5f);
 
                     // recording the maximum r
                     if (r > maxR) {
@@ -289,12 +292,12 @@ public class DEViseAtomType {
         return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) | ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
     }
 
-    public void paint(Component component, Graphics gc, int x, int y, double zfactor, int isSelected)
+    public void paint(Component component, Graphics gc, int x, int y, float zfactor, int isSelected)
     {
-        if (zfactor < 0.0) {
+        if (zfactor < 0.0f) {
             drawSize = minD;
         } else {
-            drawSize = minD + (int)(zfactor * rangeD + 0.5);
+            drawSize = minD + (int)(zfactor * rangeD + 0.5f);
         }
 
         paint(component, gc, x, y, drawSize, isSelected);

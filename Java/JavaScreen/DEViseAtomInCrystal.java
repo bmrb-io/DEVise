@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/03/23 16:26:12  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.4  2000/02/04 15:51:44  hongyu
 // *** empty log message ***
 //
@@ -37,7 +40,7 @@ public class DEViseAtomInCrystal
     public int isSelected;
     public Color color = null;
 
-    double[] pos = new double[3], lcspos = new double[3];
+    float[] pos = new float[3], lcspos = new float[3];
 
     public int bondNumber;
     // From physics point of view, number of bond for an atom will not exceed 8,
@@ -48,7 +51,7 @@ public class DEViseAtomInCrystal
 
     public int drawX, drawY, drawSize;
 
-    public DEViseAtomInCrystal(DEViseAtomType t, double x, double y, double z)
+    public DEViseAtomInCrystal(DEViseAtomType t, float x, float y, float z)
     {
         type = t;
 

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2000/03/23 16:26:18  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.33  2000/02/18 22:21:17  wenger
 // Various changes to make cron scripts work better with new two-machine
 // setup: added -id argument to devise, jspop, jss; updated cron scripts
@@ -181,6 +184,11 @@ public class js extends Frame
 
         // necessary for processEvent method to work
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+/*
+        System.out.println("Memory: " +
+	    Runtime.getRuntime().freeMemory() + "/" +
+	    Runtime.getRuntime().totalMemory());
+*/
     }
 
     protected void processEvent(AWTEvent event)

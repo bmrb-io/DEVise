@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2000/03/30 19:14:36  wenger
+// Improved error messages for socket creation failures.
+//
 // Revision 1.25  2000/03/23 16:26:19  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -401,7 +404,7 @@ public class jspop implements Runnable
     // this method will also check which client need to be removed and remove it
     public synchronized DEViseClient getNextRequestingClient()
     {
-        double time = -1.0, clientTime = 0.0;
+        float time = -1.0, clientTime = 0.0;
         DEViseClient client = null;
         Vector removedClient = new Vector();
 
@@ -413,7 +416,7 @@ public class jspop implements Runnable
                     removedClient.addElement(newclient);
                     continue;
                 } else if (status == DEViseClient.REQUEST) { // only client that are requesting service will be served
-                    clientTime = (double)(newclient.getPriority() * newclient.getSuspendTime());
+                    clientTime = (float)(newclient.getPriority() * newclient.getSuspendTime());
 
                     if (time < 0.0) {
                         time = clientTime;
@@ -507,7 +510,7 @@ public class jspop implements Runnable
     {
         DEViseServer server = null;
         DEViseClient client = null;
-        double time = -1.0, clientTime = 0.0;
+        float time = -1.0, clientTime = 0.0;
 
         for (int i = 0; i < servers.size(); i++) {
             DEViseServer newserver = (DEViseServer)servers.elementAt(i);
@@ -530,7 +533,7 @@ public class jspop implements Runnable
                         return newserver;
                     }
 
-                    clientTime = (double)client.getActiveTime() / (double)client.getPriority();
+                    clientTime = (float)client.getActiveTime() / (float)client.getPriority();
                     if (time < 0.0) {
                         time = clientTime;
                         server = newserver;

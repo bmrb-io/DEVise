@@ -19,6 +19,9 @@
 // ADD COMMENT: overall description of the function of this class
 
 // $Log$
+// Revision 1.16  2000/03/23 16:26:14  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.15  2000/02/16 08:53:58  hongyu
 // *** empty log message ***
 //
@@ -61,7 +64,7 @@ public class DEViseCursor
     public Rectangle cursorLocInCanvas = null;
 
     public boolean isXMovable, isYMovable, isXResizable, isYResizable;
-    public double gridxx, gridyy;
+    public float gridxx, gridyy;
     public int gridx, gridy;
 
     public String name = null, viewname = null;
@@ -72,7 +75,7 @@ public class DEViseCursor
     public int cursorType = 0;
     public int gridType = 0;
 
-    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy, int gtype, int ctype, Color c) throws YException
+    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, float gx, float gy, int gtype, int ctype, Color c) throws YException
     {
         if (cn == null) {
             throw new YException("Invalid cursor name");
@@ -107,13 +110,13 @@ public class DEViseCursor
 
         cursorLocInCanvas = getLocInCanvas();
 
-        if (parentView.dataXStep != 0.0) {
+        if (parentView.dataXStep != 0.0f) {
             gridx = (int)(gridxx / parentView.dataXStep);
         } else {
             gridx = 0;
         }
 
-        if (parentView.dataYStep != 0.0) {
+        if (parentView.dataYStep != 0.0f) {
             gridy = (int)(gridyy / parentView.dataYStep);
         } else {
             gridy = 0;
@@ -184,7 +187,7 @@ public class DEViseCursor
         if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 || p.y > loc.y + loc.height - 1) {
             return -1;
         } else {
-            int xedge = (int)(loc.width / 4 + 0.4), yedge = (int)(loc.height / 4 + 0.4);
+            int xedge = (int)(loc.width / 4 + 0.4f), yedge = (int)(loc.height / 4 + 0.4f);
             if (xedge < 1) {
                 xedge = 1;
             } else if (xedge > 10) {

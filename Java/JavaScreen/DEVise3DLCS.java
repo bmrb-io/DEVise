@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/03/23 16:26:11  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.2  1999/12/10 15:37:00  wenger
 // Added standard headers to source files.
 //
@@ -28,25 +31,25 @@
 // assume in this coordinate system, all vectors are row vectors
 public class DEVise3DLCS
 {
-    protected double[][] data = new double[3][3];
-    protected double[] origin = new double[3];
-    public double a = 1.0, b = 1.0, c = 1.0, alpha = 90.0, beta = 90.0, gamma = 90.0;
+    protected float[][] data = new float[3][3];
+    protected float[] origin = new float[3];
+    public float a = 1.0f, b = 1.0f, c = 1.0f, alpha = 90.0f, beta = 90.0f, gamma = 90.0f;
 
     // default constructor, a unit 3DLCS
     public DEVise3DLCS() throws YException
     {
-        this(1.0, 0.0);
+        this(1.0f, 0.0f);
     }
 
-    public DEVise3DLCS(double v) throws YException
+    public DEVise3DLCS(float v) throws YException
     {
-        this(v, 0.0);
+        this(v, 0.0f);
     }
 
-    public DEVise3DLCS(double v, double o) throws YException
+    public DEVise3DLCS(float v, float o) throws YException
     {
         //YGlobals.yassert(v > 0.0, "Incorrect coordinate system parameters", "DEVise3DLCS::constructor");
-        YGlobals.ythrow(v > 0.0, "Incorrect coordinate system parameters", "DEVise3DLCS::constructor");
+        YGlobals.ythrow(v > 0.0f, "Incorrect coordinate system parameters", "DEVise3DLCS::constructor");
 
         for (int i = 0; i < 3; i++) {
             data[i][i] = v;
@@ -61,14 +64,14 @@ public class DEVise3DLCS
         }
     }
 
-    public DEVise3DLCS(double[][] v) throws YException
+    public DEVise3DLCS(float[][] v) throws YException
     {
         this(v, null);
     }
 
-    public DEVise3DLCS(double[][] v, double[] o) throws YException
+    public DEVise3DLCS(float[][] v, float[] o) throws YException
     {
-        this(1.0, 0.0);
+        this(1.0f, 0.0f);
 
         assign(v);
 
@@ -85,14 +88,14 @@ public class DEVise3DLCS
         }
     }
 
-    public DEVise3DLCS(double[] v) throws YException
+    public DEVise3DLCS(float[] v) throws YException
     {
         this(v, null);
     }
 
-    public DEVise3DLCS(double[] v, double[] o) throws YException
+    public DEVise3DLCS(float[] v, float[] o) throws YException
     {
-        this(1.0, 0.0);
+        this(1.0f, 0.0f);
 
         assign(v);
 
@@ -109,14 +112,14 @@ public class DEVise3DLCS
         }
     }
 
-    public DEVise3DLCS(double aa, double ab, double ac, double aalpha, double abeta, double agamma) throws YException
+    public DEVise3DLCS(float aa, float ab, float ac, float aalpha, float abeta, float agamma) throws YException
     {
         this(aa, ab, ac, aalpha, abeta, agamma, null);
     }
 
-    public DEVise3DLCS(double aa, double ab, double ac, double aalpha, double abeta, double agamma, double[] o) throws YException
+    public DEVise3DLCS(float aa, float ab, float ac, float aalpha, float abeta, float agamma, float[] o) throws YException
     {
-        this(1.0, 0.0);
+        this(1.0f, 0.0f);
 
         a = aa;
         b = ab;
@@ -142,7 +145,7 @@ public class DEVise3DLCS
     {
         YGlobals.ythrow(lcs != null, "Null coordinate system argument", "DEVise3DLCS::constructor");
 
-        double[][] tmp = lcs.getData();
+        float[][] tmp = lcs.getData();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -157,24 +160,24 @@ public class DEVise3DLCS
         beta = lcs.beta;
         gamma = lcs.gamma;
 
-        double[] tmpdata = lcs.getOrigin();
+        float[] tmpdata = lcs.getOrigin();
 
         for (int i = 0; i < 3; i++) {
             origin[i] = tmpdata[i];
         }
     }
 
-    public double[] getOrigin()
+    public float[] getOrigin()
     {
         return origin;
     }
 
-    public double[][] getData()
+    public float[][] getData()
     {
         return data;
     }
 
-    private void assign(double d[])
+    private void assign(float d[])
     {
         if (d != null) {
             // the type for array index and array length is 'int'
@@ -187,7 +190,7 @@ public class DEVise3DLCS
         }
     }
 
-    private void assign(double d[][])
+    private void assign(float d[][])
     {
         if (d != null) {
             int r = (3 > d.length) ? d.length : 3;
@@ -216,56 +219,56 @@ public class DEVise3DLCS
         a = DEVise3DLCS.ynorm(data[0], true);
         b = DEVise3DLCS.ynorm(data[1], true);
         c = DEVise3DLCS.ynorm(data[2], true);
-        alpha = YGlobals.rad * Math.acos(DEVise3DLCS.ydot(data[1], data[2]) / (c * b));
-        beta = YGlobals.rad * Math.acos(DEVise3DLCS.ydot(data[0], data[2]) / (a * c));
-        gamma = YGlobals.rad * Math.acos(DEVise3DLCS.ydot(data[0], data[1]) / (a * b));
+        alpha = YGlobals.rad * (float)Math.acos(DEVise3DLCS.ydot(data[1], data[2]) / (c * b));
+        beta = YGlobals.rad * (float)Math.acos(DEVise3DLCS.ydot(data[0], data[2]) / (a * c));
+        gamma = YGlobals.rad * (float)Math.acos(DEVise3DLCS.ydot(data[0], data[1]) / (a * b));
     }
 
     private void findBaseVector()
     {
-        double rgamma = gamma / YGlobals.rad;
-        double ralpha = alpha / YGlobals.rad;
-        double rbeta = beta / YGlobals.rad;
+        float rgamma = gamma / YGlobals.rad;
+        float ralpha = alpha / YGlobals.rad;
+        float rbeta = beta / YGlobals.rad;
 
         data[0][0] = a;
         data[0][1] = 0;
         data[0][2] = 0;
 
-        data[1][0] = b * Math.cos(rgamma);
-        data[1][1] = b * Math.sin(rgamma);
+        data[1][0] = b * (float)Math.cos(rgamma);
+        data[1][1] = b * (float)Math.sin(rgamma);
         data[1][2] = 0;
 
-        data[2][0] = c * Math.cos(rbeta);
+        data[2][0] = c * (float)Math.cos(rbeta);
         // L is the project of c onto a-b plane
         // theta is the angle between a and L
         // aa is the projection of L onto a, aa = c * cos(beta)
         // bb is the projection of L onto b, bb = c * cos(alpha)
         // aa / cos(theta) = L = bb / cos(gamma - theta);
         // tan(theta) = (bb - aa * cos(gamma)) / (aa * sin(gamma))
-        double aa = c * Math.cos(rbeta);
-        double bb = c * Math.cos(ralpha);
-        data[2][1] = (bb - aa * Math.cos(rgamma)) / Math.sin(rgamma);
-        data[2][2] = Math.sqrt(c * c - data[2][0] * data[2][0] - data[2][1] * data[2][1]);
+        float aa = c * (float)Math.cos(rbeta);
+        float bb = c * (float)Math.cos(ralpha);
+        data[2][1] = (bb - aa * (float)Math.cos(rgamma)) / (float)Math.sin(rgamma);
+        data[2][2] = (float)Math.sqrt(c * c - data[2][0] * data[2][0] - data[2][1] * data[2][1]);
     }
 
-    public double volume()
+    public float volume()
     {
         return DEVise3DLCS.ydot(data[0], DEVise3DLCS.ycross(data[1], data[2]));
     }
 
-    public void translate(double ox, double oy, double oz)
+    public void translate(float ox, float oy, float oz)
     {
         origin[0] += ox;
         origin[1] += oy;
         origin[2] += oz;
     }
 
-    public void scale(double d)
+    public void scale(float d)
     {
         scale(d, d, d);
     }
 
-    public void scale(double da, double db, double dc)
+    public void scale(float da, float db, float dc)
     {
         data[0][0] *= da;
         data[0][1] *= da;
@@ -288,9 +291,9 @@ public class DEVise3DLCS
 
     // all rotation angles are in mathematically positive sense and in degrees
 
-    public void xrotate(double angle)
+    public void xrotate(float angle)
     {
-        double c = Math.cos(angle / YGlobals.rad), s = Math.sin(angle / YGlobals.rad), tmp;
+        float c = (float)Math.cos(angle / YGlobals.rad), s = (float)Math.sin(angle / YGlobals.rad), tmp;
 
         tmp = data[0][1];
         data[0][1] = data[0][1] * c - data[0][2] * s;
@@ -307,9 +310,9 @@ public class DEVise3DLCS
         origin[2] = tmp * s + origin[2] * c;
     }
 
-    public void yrotate(double angle)
+    public void yrotate(float angle)
     {
-        double c = Math.cos(angle / YGlobals.rad), s = Math.sin(angle / YGlobals.rad), tmp;
+        float c = (float)Math.cos(angle / YGlobals.rad), s = (float)Math.sin(angle / YGlobals.rad), tmp;
 
         tmp = data[0][0];
         data[0][0] = data[0][0] * c + data[0][2] * s;
@@ -326,9 +329,9 @@ public class DEVise3DLCS
         origin[2] = -tmp * s + origin[2] * c;
     }
 
-    public void zrotate(double angle)
+    public void zrotate(float angle)
     {
-        double c = Math.cos(angle / YGlobals.rad), s = Math.sin(angle / YGlobals.rad), tmp;
+        float c = (float)Math.cos(angle / YGlobals.rad), s = (float)Math.sin(angle / YGlobals.rad), tmp;
 
         tmp = data[0][0];
         data[0][0] = data[0][0] * c - data[0][1] * s;
@@ -346,14 +349,14 @@ public class DEVise3DLCS
     }
 
     // convert position in this coordinate system to reference system
-    public double[] point(double x, double y, double z)
+    public float[] point(float x, float y, float z)
     {
         return point(x, y, z, true);
     }
 
-    public double[] point(double x, double y, double z, boolean originEffect)
+    public float[] point(float x, float y, float z, boolean originEffect)
     {
-        double[] newpos = new double[3];
+        float[] newpos = new float[3];
 
         newpos[0] = x * data[0][0] + y * data[1][0] + z * data[2][0];
         newpos[1] = x * data[0][1] + y * data[1][1] + z * data[2][1];
@@ -368,16 +371,16 @@ public class DEVise3DLCS
         return newpos;
     }
 
-    public double[] point(double[] pos)
+    public float[] point(float[] pos)
     {
         return point(pos, true);
     }
 
-    public double[] point(double[] pos, boolean originEffect)
+    public float[] point(float[] pos, boolean originEffect)
     {
         YGlobals.yassert(pos != null && pos.length >= 3, "Invalid position vector", "DEVise3DLCS::point()");
 
-        double[] newpos = new double[3];
+        float[] newpos = new float[3];
 
         newpos[0] = pos[0] * data[0][0] + pos[1] * data[1][0] + pos[2] * data[2][0];
         newpos[1] = pos[0] * data[0][1] + pos[1] * data[1][1] + pos[2] * data[2][1];
@@ -392,12 +395,12 @@ public class DEVise3DLCS
         return newpos;
     }
 
-    public void point(double[] ipos, double[] opos)
+    public void point(float[] ipos, float[] opos)
     {
         point(ipos, opos, true);
     }
 
-    public void point(double[] ipos, double[] opos, boolean originEffect)
+    public void point(float[] ipos, float[] opos, boolean originEffect)
     {
         YGlobals.yassert(ipos != null && opos != null && ipos.length >= 3 && opos.length >= 3, "Invalid position vector", "DEVise3DLCS::point()");
 
@@ -413,12 +416,12 @@ public class DEVise3DLCS
     }
 
     // convert line direction in this system to reference system and normalize it
-    public double[] line(double h, double k, double l)
+    public float[] line(float h, float k, float l)
     {
-        double[] r = point(h, k, l, false);
-        double norm = DEVise3DLCS.ynorm(r, true);
+        float[] r = point(h, k, l, false);
+        float norm = DEVise3DLCS.ynorm(r, true);
 
-        YGlobals.yassert(norm > 0.0, "Invalid line direction argument [0,0,0]", "DEVise3DLCS::line()");
+        YGlobals.yassert(norm > 0.0f, "Invalid line direction argument [0,0,0]", "DEVise3DLCS::line()");
 
         r[0] /= norm;
         r[1] /= norm;
@@ -428,25 +431,25 @@ public class DEVise3DLCS
     }
 
     // convert plane normal in this system to reference system and normalize it
-    public double[] plane(double h, double k, double l)
+    public float[] plane(float h, float k, float l)
     {
-        double[] r = null;
-        double d = 0.0;
+        float[] r = null;
+        float d = 0.0f;
 
-        if (h == 0.0) {
-            if (k == 0.0) {
-                if (l == 0.0) {
+        if (h == 0.0f) {
+            if (k == 0.0f) {
+                if (l == 0.0f) {
                     throw new YError("Invalid plane normal argument (0,0,0)", "DEVise3DLCS::plane()");
                 } else {
                     r = DEVise3DLCS.ycross(data[0], data[1]);
                     d = DEVise3DLCS.ydot(r, data[2]) / l;
                 }
             } else {
-                if (l == 0.0) {
+                if (l == 0.0f) {
                     r = DEVise3DLCS.ycross(data[0], data[2]);
                     d = DEVise3DLCS.ydot(r, data[1]) / k;
                 } else {
-                    double[] tmp = new double[3];
+                    float[] tmp = new float[3];
                     tmp[0] = data[1][0] / k - data[2][0] / l;
                     tmp[1] = data[1][1] / k - data[2][1] / l;
                     tmp[2] = data[1][2] / k - data[2][2] / l;
@@ -455,12 +458,12 @@ public class DEVise3DLCS
                 }
             }
         } else {
-            if (k == 0.0) {
-                if (l == 0.0) {
+            if (k == 0.0f) {
+                if (l == 0.0f) {
                     r = DEVise3DLCS.ycross(data[1], data[2]);
                     d = DEVise3DLCS.ydot(r, data[0]) / h;
                 } else {
-                    double[] tmp = new double[3];
+                    float[] tmp = new float[3];
                     tmp[0] = data[0][0] / h - data[2][0] / l;
                     tmp[1] = data[0][1] / h - data[2][1] / l;
                     tmp[2] = data[0][2] / h - data[2][2] / l;
@@ -468,15 +471,15 @@ public class DEVise3DLCS
                     d = DEVise3DLCS.ydot(r, data[0]) / h;
                 }
             } else {
-                if (l == 0.0) {
-                    double[] tmp = new double[3];
+                if (l == 0.0f) {
+                    float[] tmp = new float[3];
                     tmp[0] = data[0][0] / h - data[1][0] / k;
                     tmp[1] = data[0][1] / h - data[1][1] / k;
                     tmp[2] = data[0][2] / h - data[1][2] / k;
                     r = DEVise3DLCS.ycross(data[2], tmp);
                     d = DEVise3DLCS.ydot(r, data[0]) / h;
                 } else {
-                    double[] tmp = new double[3], tmp1 = new double[3];
+                    float[] tmp = new float[3], tmp1 = new float[3];
                     tmp[0] = data[0][0] / h - data[1][0] / k;
                     tmp[1] = data[0][1] / h - data[1][1] / k;
                     tmp[2] = data[0][2] / h - data[1][2] / k;
@@ -489,10 +492,10 @@ public class DEVise3DLCS
             }
         }
 
-        YGlobals.yassert(d > 0.0, "Invalid plane normal argument", "DEVise3DLCS::plane()");
+        YGlobals.yassert(d > 0.0f, "Invalid plane normal argument", "DEVise3DLCS::plane()");
 
         // normalize this vector to the distance between planes in the set
-        double norm = DEVise3DLCS.ynorm(r, true);
+        float norm = DEVise3DLCS.ynorm(r, true);
         d = d / norm;
         r[0] = r[0] * d / norm;
         r[1] = r[1] * d / norm;
@@ -502,33 +505,33 @@ public class DEVise3DLCS
     }
 
     // calculate the angle between two line direction
-    public double lineAngle(double h1, double k1, double l1, double h2, double k2, double l2)
+    public float lineAngle(float h1, float k1, float l1, float h2, float k2, float l2)
     {
-        double[] r1 = line(h1, k1, l1), r2 = line(h2, k2, l2);
-        double angle = DEVise3DLCS.ydot(r1, r2) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
-        return YGlobals.rad * Math.acos(angle);
+        float[] r1 = line(h1, k1, l1), r2 = line(h2, k2, l2);
+        float angle = DEVise3DLCS.ydot(r1, r2) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
+        return YGlobals.rad * (float)Math.acos(angle);
     }
 
     // calculate the angle between two plane normal
-    public double planeAngle(double h1, double k1, double l1, double h2, double k2, double l2)
+    public float planeAngle(float h1, float k1, float l1, float h2, float k2, float l2)
     {
-        double[] r1 = plane(h1, k1, l1), r2 = plane(h2, k2, l2);
-        double angle = DEVise3DLCS.ydot(r1, r2) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
-        return YGlobals.rad * Math.acos(angle);
+        float[] r1 = plane(h1, k1, l1), r2 = plane(h2, k2, l2);
+        float angle = DEVise3DLCS.ydot(r1, r2) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
+        return YGlobals.rad * (float)Math.acos(angle);
     }
 
     // calculate the angle between line and plane
-    public double linePlaneAngle(double h1, double k1, double l1, double h2, double k2, double l2)
+    public float linePlaneAngle(float h1, float k1, float l1, float h2, float k2, float l2)
     {
-        double[] r1 = line(h1, k1, l1), r2 = plane(h2, k2, l2);
-        double angle = Math.abs(DEVise3DLCS.ydot(r1, r2)) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
-        return YGlobals.rad * Math.asin(angle);
+        float[] r1 = line(h1, k1, l1), r2 = plane(h2, k2, l2);
+        float angle = (float)Math.abs(DEVise3DLCS.ydot(r1, r2)) / (DEVise3DLCS.ynorm(r1, true) * DEVise3DLCS.ynorm(r2, true));
+        return YGlobals.rad * (float)Math.asin(angle);
     }
 
     // calculate the distance between two points
-    public double pointDistance(double x1, double y1, double z1, double x2, double y2, double z2)
+    public float pointDistance(float x1, float y1, float z1, float x2, float y2, float z2)
     {
-        double[] p = new double[3], p1 = point(x1, y1, z1, false), p2 = point(x2, y2, z2, false);
+        float[] p = new float[3], p1 = point(x1, y1, z1, false), p2 = point(x2, y2, z2, false);
 
         p[0] = p1[0] - p2[0];
         p[1] = p1[1] - p2[1];
@@ -538,9 +541,9 @@ public class DEVise3DLCS
     }
 
     // calculate the distance between a point and a line(pass through the point(x1, y1, z1))
-    public double pointLineDistance(double x, double y, double z, double h, double k, double l, double x1, double y1, double z1)
+    public float pointLineDistance(float x, float y, float z, float h, float k, float l, float x1, float y1, float z1)
     {
-        double[] p1 = point(x, y, z, false), p2 = point(x1, y1, z1, false), ld = line(h, k, l), p = new double[3];
+        float[] p1 = point(x, y, z, false), p2 = point(x1, y1, z1, false), ld = line(h, k, l), p = new float[3];
 
         p[0] = p1[0] - p2[0];
         p[1] = p1[1] - p2[1];
@@ -550,22 +553,22 @@ public class DEVise3DLCS
     }
 
     // calculate the distance between a point and a plane(pass through the origin)
-    public double pointPlaneDistance(double x, double y, double z, double h, double k, double l)
+    public float pointPlaneDistance(float x, float y, float z, float h, float k, float l)
     {
-        double[] p = point(x, y, z, false), pl = plane(h, k, l), pd = new double[3];
+        float[] p = point(x, y, z, false), pl = plane(h, k, l), pd = new float[3];
 
         pd[0] = p[0] - pl[0];
         pd[1] = p[1] - pl[1];
         pd[2] = p[2] - pl[2];
 
-        return Math.abs(DEVise3DLCS.ydot(pl, pd)) / DEVise3DLCS.ynorm(pl, true);
+        return (float)Math.abs(DEVise3DLCS.ydot(pl, pd)) / DEVise3DLCS.ynorm(pl, true);
     }
 
-    public static double ynorm(double[][] v, boolean isRoot)
+    public static float ynorm(float[][] v, boolean isRoot)
     {
         YGlobals.yassert(v != null, "Null array argument", "DEVise3DLCS::ynorm()");
 
-        double t = 0.0;
+        float t = 0.0f;
         for (int i = 0; i < v.length; i++) {
             for (int j = 0; j < v[i].length; j++) {
                 t += v[i][j] * v[i][j];
@@ -573,34 +576,34 @@ public class DEVise3DLCS
         }
 
         if (isRoot) {
-            return Math.sqrt(t);
+            return (float)Math.sqrt(t);
         } else {
             return t;
         }
     }
 
-    public static double ynorm(double[] v, boolean isRoot)
+    public static float ynorm(float[] v, boolean isRoot)
     {
         YGlobals.yassert(v != null, "Null array argument", "DEVise3DLCS::ynorm()");
 
-        double t = 0.0;
+        float t = 0.0f;
         for (int i = 0; i < v.length; i++) {
             t += v[i] * v[i];
         }
 
         if (isRoot) {
-            return Math.sqrt(t);
+            return (float)Math.sqrt(t);
         } else {
             return t;
         }
     }
 
-    public static double ydot(double[] v1, double[] v2)
+    public static float ydot(float[] v1, float[] v2)
     {
         YGlobals.yassert(v1 != null && v2 != null, "Null matrix argument", "DEVise3DLCS::ydot() static");
 
         int len = (v1.length > v2.length) ? v2.length : v1.length;
-        double v = 0.0;
+        float v = 0.0f;
         for (int i = 0; i < len; i++) {
             v += v1[i] * v2[i];
         }
@@ -608,12 +611,12 @@ public class DEVise3DLCS
         return v;
     }
 
-    public static double ydot(double[][] v1, double[][] v2)
+    public static float ydot(float[][] v1, float[][] v2)
     {
         YGlobals.yassert(v1 != null && v2 != null, "Null matrix argument", "DEVise3DLCS::ydot() static");
 
         int len = (v1.length > v2.length) ? v2.length : v1.length;
-        double v = 0.0;
+        float v = 0.0f;
         for (int i = 0; i < len; i++) {
             int len1 = (v1[i].length > v2[i].length) ? v2[i].length : v1[i].length;
             for (int j = 0; j < len1; j++) {
@@ -624,12 +627,12 @@ public class DEVise3DLCS
         return v;
     }
 
-    public static double[] ycross(double[] v1, double[] v2)
+    public static float[] ycross(float[] v1, float[] v2)
     {
         YGlobals.yassert(v1 != null && v2 != null, "Null matrix argument", "DEVise3DLCS::ycross() static");
         YGlobals.yassert(v1.length == 3 && v2.length == 3, "Null matrix argument", "DEVise3DLCS::ycross() static");
 
-        double[] r = new double[3];
+        float[] r = new float[3];
         r[0] = v1[1] * v2[2] - v1[2] * v2[1];
         r[1] = -(v1[0] * v2[2] - v1[2] * v2[0]);
         r[2] = v1[0] * v2[1] - v1[1] * v2[0];

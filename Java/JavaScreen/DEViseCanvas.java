@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2000/04/03 22:24:52  wenger
+// Added named constants for GData symbol types; 3D GData symbols are now
+// differentiated by symbol type instead of string; removed some commented-
+// out code.
+//
 // Revision 1.36  2000/03/23 16:26:12  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -45,6 +50,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.37  2000/04/03 22:24:52  wenger
+// Added named constants for GData symbol types; 3D GData symbols are now
+// differentiated by symbol type instead of string; removed some commented-
+// out code.
+//
 // Revision 1.36  2000/03/23 16:26:12  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -245,11 +255,11 @@ public class DEViseCanvas extends Container
             isImageUpdated = true;
         }
 
-        // Necessary to draw correct image because double-buffering is used
+        // Necessary to draw correct image because float-buffering is used
         //offScrImg = null;
     }
 
-    // Enable double-buffering
+    // Enable float-buffering
     public void update(Graphics gc)
     {
         if (gc == null) {
@@ -450,8 +460,8 @@ public class DEViseCanvas extends Container
                     gc.setColor(atom.type.color);
                     if (atom1 == null) {
                         gc.drawString(atom.type.name + "(" + oldHighlightAtomIndex + ")", x + 5 , y + 10);
-                        double[] pos = crystal.getPos(atom.pos);
-                        String xs = Double.toString(pos[0]), ys = Double.toString(pos[1]), zs = Double.toString(pos[2]);
+                        float[] pos = crystal.getPos(atom.pos);
+                        String xs = Float.toString(pos[0]), ys = Float.toString(pos[1]), zs = Float.toString(pos[2]);
                         xs = xs.substring(0, (xs.length() > 6) ? 6 : xs.length());
                         ys = ys.substring(0, (ys.length() > 6) ? 6 : ys.length());
                         zs = zs.substring(0, (zs.length() > 6) ? 6 : zs.length());
@@ -460,10 +470,10 @@ public class DEViseCanvas extends Container
                         gc.drawString("z = " + zs, x + 5, y + 43);
                     } else {
                         gc.drawString("" + atom.type.name + "(" + oldHighlightAtomIndex + ")" + "-" + atom1.type.name + "(" + atom.lastSelectedBondIndex + ")", x + 5, y + 13);
-                        double[] pos1 = crystal.getPos(atom.pos), pos2 = crystal.getPos(atom1.pos);
-                        double dx = pos1[0] - pos2[0], dy = pos1[1] - pos2[1], dz = pos1[2] - pos2[2];
-                        double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                        String dd = Double.toString(d);
+                        float[] pos1 = crystal.getPos(atom.pos), pos2 = crystal.getPos(atom1.pos);
+                        float dx = pos1[0] - pos2[0], dy = pos1[1] - pos2[1], dz = pos1[2] - pos2[2];
+                        float d = (float)Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        String dd = Float.toString(d);
                         dd = dd.substring(0, (dd.length() > 6) ? 6 : dd.length());
                         gc.drawString("Length = " + dd, x + 5, y + 23);
                         atom.lastSelectedBondIndex = -1;
@@ -822,7 +832,7 @@ public class DEViseCanvas extends Container
         {
             // The starting point will be in this view, otherwise this event will not be catched
 
-            // Each mouse click will be here once, so double click actually will enter this twice
+            // Each mouse click will be here once, so float click actually will enter this twice
 
             // The position of this event will be relative to this view, and will not exceed the
             // range of this view, ie, p.x >= 0 && p.x < view.width ...
@@ -849,7 +859,7 @@ public class DEViseCanvas extends Container
 
         public void mouseReleased(MouseEvent event)
         {
-            // Each mouse click will be here once, so double click actually will enter
+            // Each mouse click will be here once, so float click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
 
@@ -1285,14 +1295,14 @@ public class DEViseCanvas extends Container
 
         if (crystal == null) {
             int size = view.viewGDatas.size();
-            //double[][] atomPos = new double[size][3];
-            //double[][][] bondPos = new double[size][
+            //float[][] atomPos = new float[size][3];
+            //float[][][] bondPos = new float[size][
             //String[] atomName = new String[size];
             Vector aPos = new Vector(size), aName = new Vector(size), aColor = new Vector(size), bPos = new Vector(size), bColor = new Vector(size);
             for (int i = 0; i < size; i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
 				if (gdata.symbolType == gdata._symSegment) {
-                    double[][] pos = new double[2][3];
+                    float[][] pos = new float[2][3];
                     pos[0][0] = gdata.x0;
                     pos[0][1] = gdata.y0;
                     pos[0][2] = gdata.z0;
@@ -1303,7 +1313,7 @@ public class DEViseCanvas extends Container
                     bColor.addElement(gdata.color);
                 } else {
                     aName.addElement(gdata.string);
-                    double[] pos = new double[3];
+                    float[] pos = new float[3];
                     pos[0] = gdata.x0;
                     pos[1] = gdata.y0;
                     pos[2] = gdata.z0;
@@ -1313,8 +1323,8 @@ public class DEViseCanvas extends Container
             }
 
             String[] atomName = null;
-            double[][] atomPos = null;
-            double[][][] bondPos = null;
+            float[][] atomPos = null;
+            float[][][] bondPos = null;
             Color[] bondColor = null;
             Color[] atomColor = null;
             if (aName.size() > 0) {
@@ -1325,9 +1335,9 @@ public class DEViseCanvas extends Container
             }
 
             if (aPos.size() > 0) {
-                atomPos = new double[aPos.size()][3];
+                atomPos = new float[aPos.size()][3];
                 for (int i = 0; i < atomPos.length; i++) {
-                    atomPos[i] = (double[])aPos.elementAt(i);
+                    atomPos[i] = (float[])aPos.elementAt(i);
                 }
             }
 
@@ -1339,9 +1349,9 @@ public class DEViseCanvas extends Container
             }
 
             if (bPos.size() > 0) {
-                bondPos = new double[bPos.size()][2][3];
+                bondPos = new float[bPos.size()][2][3];
                 for (int i = 0; i < bondPos.length; i++) {
-                    bondPos[i] = (double[][])bPos.elementAt(i);
+                    bondPos[i] = (float[][])bPos.elementAt(i);
                 }
             }
 
@@ -1402,7 +1412,7 @@ public class DEViseCanvas extends Container
             boolean isEnd = false;
 
             // step 1: read information about the origin and base vector
-            double[] origin = null, baseVector = null, scaleFactor = null;
+            float[] origin = null, baseVector = null, scaleFactor = null;
             while (!isEnd) {
                 switch(input.nextToken()) {
                     case StreamTokenizer.TT_EOF:
@@ -1435,7 +1445,7 @@ public class DEViseCanvas extends Container
             // step 2: read information about atoms
             isEnd = false;
             int numberOfAtoms = -1, unita = -1, unitb = -1, unitc = -1;
-            double[][] atomPos = null;
+            float[][] atomPos = null;
             String[] atomName = null;
             while (!isEnd) {
                 switch(input.nextToken()) {
@@ -1452,7 +1462,7 @@ public class DEViseCanvas extends Container
 
                             YGlobals.ythrow(numberOfAtoms > 0, "Number of atoms (" + numberOfAtoms + ") is invalid at line " + input.lineno());
 
-                            atomPos = new double[numberOfAtoms][3];
+                            atomPos = new float[numberOfAtoms][3];
                             atomName = new String[numberOfAtoms];
 
                             if (isBasis) {
@@ -1496,7 +1506,7 @@ public class DEViseCanvas extends Container
 
             // step 3: read information about bonds
             isEnd = false;
-            double min = 0.0, max = 0.0;
+            float min = 0.0f, max = 0.0f;
             while (!isEnd) {
                 switch(input.nextToken()) {
                     case StreamTokenizer.TT_EOF:
@@ -1510,7 +1520,7 @@ public class DEViseCanvas extends Container
                             min = getData(input);
                             max = getData(input);
 
-                            YGlobals.ythrow(min > 0.0 && max > 0.0 && min < max, "Invalid bond limit (min = " + min + ", max = " + max + ")");
+                            YGlobals.ythrow(min > 0.0f && max > 0.0f && min < max, "Invalid bond limit (min = " + min + ", max = " + max + ")");
 
                             isEnd = true;
                         } else {
@@ -1557,13 +1567,13 @@ public class DEViseCanvas extends Container
 
             if (unita > 0 && unitb > 0 && unitc > 0) {
                 Vector an = new Vector(), ap = new Vector();
-                double[] pos = null;
+                float[] pos = null;
 
                 for (int n = 0; n < atomName.length; n++) {
                     for (int i = 0; i <= unita; i++) {
                         for (int j = 0; j <= unitb; j++) {
                             for (int k = 0; k <= unitc; k++) {
-                                pos = new double[3];
+                                pos = new float[3];
 
                                 pos[0] = atomPos[n][0] + i;
                                 pos[1] = atomPos[n][1] + j;
@@ -1579,11 +1589,11 @@ public class DEViseCanvas extends Container
                 }
 
                 atomName = new String[an.size()];
-                atomPos = new double[an.size()][3];
+                atomPos = new float[an.size()][3];
 
                 for (int i = 0; i < an.size(); i++) {
                     atomName[i] = (String)an.elementAt(i);
-                    atomPos[i] = (double[])ap.elementAt(i);
+                    atomPos[i] = (float[])ap.elementAt(i);
                 }
             } else {
                 lcs = new DEVise3DLCS();
@@ -1600,15 +1610,15 @@ public class DEViseCanvas extends Container
         }
     }
 
-    private double[] getData(StreamTokenizer input, int number) throws YException, IOException
+    private float[] getData(StreamTokenizer input, int number) throws YException, IOException
     {
-        double[] data = new double[number];
+        float[] data = new float[number];
         int count = 0, type;
 
         while (count < number) {
             type = input.nextToken();
             if (type == StreamTokenizer.TT_NUMBER) {
-                data[count] = input.nval;
+                data[count] = (float)input.nval;
                 count++;
             } else if (type == StreamTokenizer.TT_EOF) {
                 throw new YException("Unexpected end of input stream at line " + input.lineno());
@@ -1620,14 +1630,14 @@ public class DEViseCanvas extends Container
         return data;
     }
 
-    private double getData(StreamTokenizer input) throws YException, IOException
+    private float getData(StreamTokenizer input) throws YException, IOException
     {
         int type;
 
         while (true) {
             type = input.nextToken();
             if (type == StreamTokenizer.TT_NUMBER) {
-                return input.nval;
+                return (float)input.nval;
             } else if (type == StreamTokenizer.TT_EOF) {
                 throw new YException("Unexpected end of input stream at line " + input.lineno());
             } else {
