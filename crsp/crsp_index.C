@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/09 22:44:44  jussi
+  Converted to use tape drive instead of regular file. Changed
+  output to comma-delimited with quotes surrounding company name
+  because name may include spaces.
+
   Revision 1.1  1995/11/09 15:30:53  ravim
   Initial revision
 */
@@ -23,15 +28,16 @@
 // File containing routine that generates the index file for a CRSP tape
 
 // Format of a crsp index file
-// The index file contains the foll. fields separated by blanks
-// starting record number for this company - will be used for access later
-// PERMNO 
-// Latest CUSIP
-// HEXCD
-// HSICCD
-// Latest company name
-// Beginning date of data array
-// end date of data array
+// The index file contains the following fields separated by commas:
+//   Byte offset of record in tape file
+//   Starting record number for this company - will be used for access later
+//   PERMNO 
+//   Latest CUSIP
+//   HEXCD
+//   HSICCD
+//   Latest company name (enclosed in quotes)
+//   Beginning date of data array
+//   End date of data array
 
 #include <stdio.h>
 #include <iostream.h>
