@@ -6,6 +6,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/11/10 21:55:48  jussi
+#	Minor fix.
+#
 #	Revision 1.5  1995/11/10 21:45:08  jussi
 #	Changed type of text message from 'text' to 'message'.
 #
@@ -80,7 +83,9 @@ proc dialog {w title text bitmap default args} {
 		bind $w <Return> "$w.bot.button$default flash; \
 			set button $default"
 	}
+
 	set oldFocus [focus]
+	tkwait visibility $w
 	grab set $w
 	focus $w
 
