@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/20 16:25:44  jussi
+  Improved support for multiple semaphore vectors.
+
   Revision 1.9  1996/12/18 15:32:51  jussi
   Replaced ~SharedMemory() with destroy().
 
@@ -71,6 +74,11 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdio.h>
+
+#ifdef HPUX
+#undef MIN
+#undef MAX
+#endif
 #include <limits.h>
 
 #ifdef MODIFIED

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/01/09 18:38:40  wenger
+  Updated copyright dates to 1997.
+
   Revision 1.22  1997/01/08 19:01:52  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -137,7 +140,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.6";
+static const char *	version = "1.2.7";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/21 19:13:47  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.1  1996/04/17 20:32:36  jussi
   Initial revision.
 */
@@ -263,11 +267,35 @@ static int quick_quant(p24,w,h, p8, rmap,gmap,bmap, nc)
      checked already */
   
 /* up to 256 colors:     3 bits R, 3 bits G, 2 bits B  (RRRGGGBB) */
+
+#if defined(RMASK)
+#undef RMASK
+#endif
 #define RMASK      0xe0
+
+#if defined(RSHIFT)
+#undef RSHIFT
+#endif
 #define RSHIFT        0
+
+#if defined(GMASK)
+#undef GMASK
+#endif
 #define GMASK      0xe0
+
+#if defined(GSHIFT)
+#undef GSHIFT
+#endif
 #define GSHIFT        3
+
+#if defined(BMASK)
+#undef BMASK
+#endif
 #define BMASK      0xc0
+
+#if defined(BSHIFT)
+#undef BSHIFT
+#endif
 #define BSHIFT        6
 
   byte *pp;

@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/20 16:30:29  jussi
+  Added count of transferred bytes.
+
   Revision 1.7  1996/10/04 17:10:43  wenger
   Fixed error in open_ftp() call that prevented compile.
 
@@ -213,8 +216,8 @@ DataSourceWeb::ChildProc()
     while (1) {
         int len = read(fd, buffer, sizeof buffer);
         if (len == 0) {
-            printf("Data transfer from %s complete (%d bytes)\n",
-                   _url, totlen);
+            printf("Data transfer from %s complete (%ld bytes)\n",
+                   _url, (long) totlen);
             close(fd);
             fclose(cfile);
             return StatusOk;

@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1996/11/25 22:31:36  beyer
+#  1. extended .devise.rc search
+#  2. added DestroyView command
+#  3. query window updated properly, history window update changed
+#  4. filter properly set to (0,100) instead of (100,0) when high,low values
+#     are not known.
+#
 #  Revision 1.19  1996/08/29 22:32:31  guangshu
 #  Removed some unnecessary comment.
 #
@@ -584,9 +591,9 @@ proc DoLinkCreate {} {
 
     set but [dialogCkBut .createLink "Create Link" \
 	    "Enter parameters for creating a new link" "" \
-	    0 {Cancel OK} name \
+	    0 { OK Cancel } name \
 	    {x y color size pattern orientation shape record} {3}]
-    if { $but != 1 } {
+    if { $but != 0 } {
 	return ""
     }
 
@@ -645,14 +652,14 @@ proc DoViewLink {} {
 	} else {
 	    set answer [ dialogList .getLink "Select Link" \
 		    "Select a link for view\n$curView" "" 0 \
-		    { Info New Cancel OK } $linkSet ]
-	    if { $answer == 0 } {
+		    { OK Info New Cancel } $linkSet ]
+	    if { $answer == 1 } {
 		if {$dialogListVar(selected) != ""} {
 		    DisplayLinkInfo $dialogListVar(selected)
 		}
-	    } elseif { $answer == 1 } {
+	    } elseif { $answer == 2 } {
 		set link [ DoLinkCreate ]
-	    } elseif {$answer == 2 || $dialogListVar(selected) == ""} {
+	    } elseif {$answer == 3 || $dialogListVar(selected) == ""} {
 		set link ""
 		break
 	    } else {
@@ -693,8 +700,8 @@ proc DoViewUnlink {} {
     } else {
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to unlink" "" 0 \
-		{ Cancel OK } $viewLinks ]
-	if { $answer == 0 } {
+		{ OK Cancel OK } $viewLinks ]
+	if { $answer == 1 } {
 	    return
 	} elseif { $dialogListVar(selected) == "" } {
 	    return
@@ -726,14 +733,14 @@ proc DoSetLinkMaster {} {
 	set linkSet [LinkSet]
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link for view\n$curView" "" 0 \
-		{ Info New Cancel OK } $linkSet ]
-	if { $answer == 0 } {
+		{ OK Info New Cancel } $linkSet ]
+	if { $answer == 1 } {
 	    if {$dialogListVar(selected) != ""} {
 		DisplayLinkInfo $dialogListVar(selected)
 	    }
-	} elseif { $answer == 1 } {
+	} elseif { $answer == 2 } {
 	    DoLinkCreate
-	} elseif {$answer == 2 || $dialogListVar(selected) == ""} {
+	} elseif {$answer == 3 || $dialogListVar(selected) == ""} {
 	    return
 	} else {
 	    set link $dialogListVar(selected)
@@ -759,12 +766,12 @@ proc DoResetLinkMaster {} {
     while {1} {
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to reset" "" 0 \
-		{ Info Cancel OK } $linkSet ]
-	if { $answer == 0 } {
+		{ OK Info Cancel OK } $linkSet ]
+	if { $answer == 1 } {
 	    if {$dialogListVar(selected) != ""} {
 		DisplayLinkInfo $dialogListVar(selected)
 	    }
-	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
+	} elseif {$answer == 2 || $dialogListVar(selected) == ""} {
 	    return
 	} else {
 	    set link $dialogListVar(selected)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.98  1997/01/14 15:48:08  wenger
+  Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
+  flexibility in overriding startup script default; fixed bug 116
+  (off-by-one error in BufMgrFull caused buffer overflow in XWindowRep).
+
   Revision 1.97  1997/01/11 23:04:00  jussi
   Fixed bugs #071 and 098: clipping in piled views.
 
@@ -1043,7 +1048,6 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   int winX, winY; 
   unsigned int winW, winH;
   Geometry(winX, winY, winW, winH);
-  printf("  Geometry(): %d %d %d %d\n", winX, winY, winW, winH);
   
   /* Make it possible to update the label areas */
   win->PushClip(winX, winY, winW - 1, winH - 1);
