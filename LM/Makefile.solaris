@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1997/05/29 15:20:38  wenger
+#  Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+#  compile on linux.
+#
 #  Revision 1.3  1997/05/28 20:48:04  wenger
 #  Added directories and makefiles for layout mananger to compile for hp,
 #  linux, solsparc, and sun.
@@ -39,7 +43,6 @@ LMAPI.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
 LMAPI.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-LMAPI.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMAPI.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
@@ -53,9 +56,7 @@ LMControl.o: /usr/include/sys/time.h /usr/include/time.h
 LMControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 LMControl.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
 LMControl.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMControl.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-LMControl.o: /usr/include/sys/va_list.h /usr/include/unistd.h
-LMControl.o: /usr/include/sys/unistd.h ../graphics/DeviseTypes.h
+LMControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
 LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
 LMControl.o: ../graphics/Color.h ../graphics/Pattern.h LMAPI.h
@@ -73,9 +74,6 @@ LMMain.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
 LMMain.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMMain.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMMain.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-LMMain.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-LMMain.o: /usr/include/stdlib.h /usr/include/unistd.h
-LMMain.o: /usr/include/sys/unistd.h /usr/include/string.h
 LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMMain.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
@@ -88,9 +86,6 @@ LMWindow.o: /usr/include/sys/select.h /usr/include/sys/time.h
 LMWindow.o: /usr/include/time.h /s/X11/include/X11/X.h
 LMWindow.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
-LMWindow.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-LMWindow.o: /usr/include/stdlib.h /usr/include/unistd.h
-LMWindow.o: /usr/include/sys/unistd.h /usr/include/string.h
 LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMWindow.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h

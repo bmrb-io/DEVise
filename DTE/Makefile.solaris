@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.52  1997/08/25 15:27:58  donjerko
+# Added minmax table
+#
 # Revision 1.51  1997/08/21 21:03:14  donjerko
 # Implemented view materialization
 #
@@ -152,38 +155,37 @@ CatalogComm2.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 CatalogComm2.o: /usr/include/sys/time.h /usr/include/time.h
 CatalogComm2.o: ../../graphics/ClassDir.h TDataDQL.h /usr/include/stdio.h
 CatalogComm2.o: /usr/include/sys/va_list.h ../../graphics/Dispatcher.h
-CatalogComm2.o: /usr/include/stdlib.h /usr/include/unistd.h
-CatalogComm2.o: /usr/include/sys/unistd.h ../../graphics/DList.h
-CatalogComm2.o: ../../graphics/Exit.h ../../graphics/Journal.h
-CatalogComm2.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h
-CatalogComm2.o: /usr/include/assert.h /s/gcc/lib/g++-include/iostream.h
+CatalogComm2.o: ../../graphics/DList.h ../../graphics/Exit.h
+CatalogComm2.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
+CatalogComm2.o: ../../graphics/Color.h ../../graphics/Pattern.h
+CatalogComm2.o: ../Core/queue.h /usr/include/assert.h
+CatalogComm2.o: /s/gcc/lib/g++-include/iostream.h
 CatalogComm2.o: /s/gcc/lib/g++-include/streambuf.h
 CatalogComm2.o: /s/gcc/lib/g++-include/libio.h ../../graphics.new/TData.h
 CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
 CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
 CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-CatalogComm2.o: /usr/include/sys/shm.h /usr/include/errno.h
-CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
-CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
-CatalogComm2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-CatalogComm2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-CatalogComm2.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CatalogComm2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-CatalogComm2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-CatalogComm2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-CatalogComm2.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-CatalogComm2.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-CatalogComm2.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-CatalogComm2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-CatalogComm2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-CatalogComm2.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-CatalogComm2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-CatalogComm2.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-CatalogComm2.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
-CatalogComm2.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-CatalogComm2.o: ../Core/Engine.h ../Core/types.h
+CatalogComm2.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+CatalogComm2.o: /usr/include/errno.h /usr/include/sys/errno.h
+CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
+CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
+CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+CatalogComm2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+CatalogComm2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+CatalogComm2.o: /usr/include/netdb.h /usr/include/sys/socket.h
+CatalogComm2.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+CatalogComm2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+CatalogComm2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+CatalogComm2.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+CatalogComm2.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+CatalogComm2.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+CatalogComm2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+CatalogComm2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+CatalogComm2.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+CatalogComm2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+CatalogComm2.o: /usr/include/sys/byteorder.h ../../graphics.new/FileIndex.h
+CatalogComm2.o: ../../graphics/AttrList.h ../../graphics/Init.h
+CatalogComm2.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/types.h
 CatalogComm2.o: /s/gcc/lib/g++-include/string
 CatalogComm2.o: /s/gcc/lib/g++-include/std/string.h
 CatalogComm2.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -201,11 +203,11 @@ CatalogComm2.o: /s/gcc/lib/g++-include/iomanip.h ../Core/Utility.h
 CatalogComm2.o: ../Core/site.h ../Core/myopt.h
 CatalogComm2.o: /s/gcc/lib/g++-include/strstream.h
 CatalogComm2.o: /s/gcc/lib/g++-include/strfile.h ../Core/url.h
-CatalogComm2.o: ../Core/SockStream.h ../Core/listop.h ../Core/Array.h
-CatalogComm2.o: ../Core/Iterator.h TuplePtr.XPlex.h TuplePtr.Plex.h
-CatalogComm2.o: /s/gcc/lib/g++-include/std.h /s/gcc/lib/g++-include/stddef
-CatalogComm2.o: /s/gcc/lib/g++-include/cstdlib
-CatalogComm2.o: /s/gcc/lib/g++-include/std/cstdlib.h
+CatalogComm2.o: /usr/include/unistd.h ../Core/SockStream.h ../Core/listop.h
+CatalogComm2.o: ../Core/Array.h ../Core/Iterator.h TuplePtr.XPlex.h
+CatalogComm2.o: TuplePtr.Plex.h /s/gcc/lib/g++-include/std.h
+CatalogComm2.o: /s/gcc/lib/g++-include/stddef /s/gcc/lib/g++-include/cstdlib
+CatalogComm2.o: /s/gcc/lib/g++-include/std/cstdlib.h /usr/include/stdlib.h
 CatalogComm2.o: /s/gcc/lib/g++-include/cstring /s/gcc/lib/g++-include/cstdio
 CatalogComm2.o: /s/gcc/lib/g++-include/std/cstdio.h
 CatalogComm2.o: /s/gcc/lib/g++-include/cerrno
@@ -401,17 +403,17 @@ TDataDQLInterp.o: /s/gcc/lib/g++-include/std/sinst.h TDataDQLInterp.h
 TDataDQLInterp.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 TDataDQLInterp.o: ../../graphics/DevStatus.h ../../graphics/ClassDir.h
 TDataDQLInterp.o: TDataDQL.h /usr/include/stdio.h /usr/include/sys/va_list.h
-TDataDQLInterp.o: ../../graphics/Dispatcher.h /usr/include/stdlib.h
-TDataDQLInterp.o: ../../graphics/DList.h ../../graphics/Exit.h
-TDataDQLInterp.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-TDataDQLInterp.o: ../../graphics/Color.h ../../graphics/Pattern.h
-TDataDQLInterp.o: ../Core/queue.h ../../graphics.new/TData.h
-TDataDQLInterp.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
-TDataDQLInterp.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
-TDataDQLInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataDQLInterp.o: /usr/include/sys/stat.h ../../graphics.new/FileIndex.h
-TDataDQLInterp.o: ../../graphics/AttrList.h ../../graphics/Init.h
-TDataDQLInterp.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/types.h
+TDataDQLInterp.o: ../../graphics/Dispatcher.h ../../graphics/DList.h
+TDataDQLInterp.o: ../../graphics/Exit.h ../../graphics/Journal.h
+TDataDQLInterp.o: ../../graphics/VisualArg.h ../../graphics/Color.h
+TDataDQLInterp.o: ../../graphics/Pattern.h ../Core/queue.h
+TDataDQLInterp.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
+TDataDQLInterp.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+TDataDQLInterp.o: ../../graphics.new/DCE.h /usr/include/errno.h
+TDataDQLInterp.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
+TDataDQLInterp.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
+TDataDQLInterp.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
+TDataDQLInterp.o: ../Core/Engine.h ../Core/types.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/new.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/fstream.h
@@ -421,7 +423,7 @@ TDataDQLInterp.o: ../Core/SockStream.h ../Core/listop.h ../Core/Array.h
 TDataDQLInterp.o: ../Core/Iterator.h TuplePtr.XPlex.h TuplePtr.Plex.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std.h /s/gcc/lib/g++-include/stddef
 TDataDQLInterp.o: /s/gcc/lib/g++-include/cstdlib
-TDataDQLInterp.o: /s/gcc/lib/g++-include/std/cstdlib.h
+TDataDQLInterp.o: /s/gcc/lib/g++-include/std/cstdlib.h /usr/include/stdlib.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/cstring
 TDataDQLInterp.o: /s/gcc/lib/g++-include/cstdio
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/cstdio.h
@@ -1841,7 +1843,6 @@ url.o: /s/gcc/lib/g++-include/iomanip.h
 
 main.o: /s/gcc/lib/g++-include/iostream.h /s/gcc/lib/g++-include/streambuf.h
 main.o: /s/gcc/lib/g++-include/libio.h /usr/include/memory.h
-main.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 main.o: /usr/include/assert.h /usr/include/math.h
 main.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 main.o: ../Core/types.h /s/gcc/lib/g++-include/string
@@ -1851,7 +1852,8 @@ main.o: /s/gcc/lib/g++-include/std/stddef.h
 main.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 main.o: /s/gcc/lib/g++-include/std/straits.h
 main.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
-main.o: /s/gcc/lib/g++-include/std/cstring.h /s/gcc/lib/g++-include/cassert
+main.o: /usr/include/sys/feature_tests.h /s/gcc/lib/g++-include/std/cstring.h
+main.o: /usr/include/string.h /s/gcc/lib/g++-include/cassert
 main.o: /s/gcc/lib/g++-include/std/cassert.h
 main.o: /s/gcc/lib/g++-include/std/sinst.h /usr/include/sys/types.h
 main.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.30  1997/05/21 22:04:36  andyt
+# *** empty log message ***
+#
 # Revision 1.29  1997/03/28 16:08:21  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -82,11 +85,10 @@ ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
 ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
 ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
 ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
-ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
+ApParseCat.o: ../graphics/Dispatcher.h ../graphics/Journal.h
 ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ApParseCat2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApParseCat2.o: /usr/include/sys/va_list.h ApParseCat.h
@@ -126,11 +128,10 @@ ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Color.h
 ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
 ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
-ApParseCat2.o: /usr/include/unistd.h /usr/include/string.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
+ApParseCat2.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 AttrProj.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 AttrProj.o: /usr/include/sys/va_list.h /usr/include/string.h AttrProj.h
