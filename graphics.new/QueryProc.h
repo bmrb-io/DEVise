@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/26 16:51:36  ssl
+  Added support for piled viws
+
   Revision 1.7  1996/11/23 21:12:06  jussi
   Removed support for multiple query processors.
 
@@ -103,8 +106,6 @@ class QueryProc {
     virtual void ClearGData(GData *gdata) = 0;
     virtual void ResetGData(TData *tdata, GData *gdata) = 0;
     
-    virtual BufMgr *GetMgr() = 0;
-    
     /* TRUE if this qp is idle */
     virtual Boolean Idle() = 0;
     
@@ -119,9 +120,6 @@ class QueryProc {
                                 Boolean approximate = false) = 0;
     virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf) = 0;
     virtual void DoneTDataQuery() = 0;
-    
-    /* Get minimum X value for mapping. Return true if found */
-    virtual Boolean GetMinX(TDataMap *map, Coord &minX) = 0;
     
   protected:
     static QueryProc *_queryProc;         /* the query process being used */
