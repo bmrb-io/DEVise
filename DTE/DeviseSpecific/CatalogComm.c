@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/04/04 23:10:39  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.6  1997/04/03 16:37:15  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -101,7 +107,9 @@ char* dteListCatalog(const char* catName){
 
 	numFlds = 2;
 
+#if defined(DEBUG)
 	cout << "in dteListCatalog(" << catName << ")\n";
+#endif
 	String query = "select cat.entry.name, cat.entry.type from " +
 		String(catName) + " as cat";
 	char* retVal = executeQuery(query);
@@ -148,7 +156,9 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 }
 
 void dteDeleteCatalogEntry(const char* tableName){
+#if defined(DEBUG)
 	cout << "in dteDeleteCatalogEntry(" << tableName << ")\n";
+#endif
 	char* entryName;
 	char* catName;
 	getDirAndFileNames(tableName, catName, entryName);
@@ -162,8 +172,10 @@ void dteDeleteCatalogEntry(const char* catName, const char* entryName){
 
 	numFlds = 0;
 
+#if defined(DEBUG)
 	cout << "in dteDeleteCatalogEntry(" << catName << ", " 
 		<< entryName << ")\n";
+#endif
 	String query = "delete " +
 		String(catName) + " as cat where cat.entry.name = " +
 		addQuotes(entryName);
@@ -182,8 +194,10 @@ void dteInsertCatalogEntry(const char* catName, const char* values){
 
 	numFlds = 0;
 
+#if defined(DEBUG)
 	cout << "in dteInsertCatalogEntry(" << catName << ", " 
 		<< values << ")\n";
+#endif
 	String query = "insert into " + String(catName) + " values(" +
 		addQuotes(String(values) + " ;") + ")";
 	char* retVal = executeQuery(query);
@@ -251,7 +265,9 @@ extern void readFilter(String viewNm, String& select,
 	String*& attributeNames, int& numFlds, String& where);
 
 char* dteReadSQLFilter(const char* fileName){
+#if defined(DEBUG)
 	cout << "in dteReadSQLFilter(" << fileName << ")\n";
+#endif
 
 	String* attributeNames;
 	String select;
@@ -276,7 +292,9 @@ char* dteReadSQLFilter(const char* fileName){
 	retVal += "\" ";
 	retVal += addQuotes(where);
 	char* retval = strdup(retVal.chars());
+#if defined(DEBUG)
 	cout << "Returning: " << retval << endl;
+#endif
 	return retval;
 }
 
@@ -290,7 +308,9 @@ void dteCreateIndex(const char* tableName, const char* indexName,
 	}
 	String query = "create " + standAlone + "index " + indexName +
 		" on " + tableName + "(" + keyAttrs + ") add (" + dataAttrs + ")"; 
+#if defined(DEBUG)
 	cerr << "in dteCreateIndex, query =" << query << endl;
+#endif
 	char* retVal = executeQuery(query);
      CATCH(
           cout << "DTE error coused by query: \n";
@@ -315,7 +335,9 @@ String join(const String* src, int n, const String& sep){
 }
 
 char* dteShowIndexDesc(const char* tableName, const char* indexName){
+#if defined(DEBUG)
 	cout << "in dteShowIndexDesc(" << tableName << ", " << indexName << ")\n";
+#endif
 	numFlds = 1;
 	String query = 
 		String("select t.descriptor from .sysind as t where t.table = \"") +
@@ -355,7 +377,9 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 		retVal += "No";
 	}
 	retVal += "}";
+#if defined(DEBUG)
 	cout << "returning " << retVal << endl;
+#endif
 	return strdup(retVal.chars());
 }
 

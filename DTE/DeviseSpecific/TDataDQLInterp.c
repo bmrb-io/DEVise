@@ -70,13 +70,17 @@ TData *tdata, char* tableName): _attrs(attrs)
 
 TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo()
 {
+#if defined(DEBUG)
 	cout << "IN TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
+#endif
   if (_tdata)
     delete _tdata;
   if (_className) free (_className);
   if (_query) free (_query);
   if (_name)  free(_name);
+#if defined(DEBUG)
 	cout << "OUT TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
+#endif
 }
 
 char *TDataDQLInterpClassInfo::ClassName()
@@ -242,7 +246,9 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
   argc = 2;
   argv = args;
+#if defined(DEBUG)
   cout << "To recreate this table args are: " << _tableName << " " << _type << endl;
+#endif
   args[0] = _tableName;
   args[1] = _type;
 }

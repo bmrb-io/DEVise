@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/04/21 22:58:51  guangshu
+  Make statistics to deal with more cases.
+
   Revision 1.28  1997/03/25 17:59:27  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -296,7 +299,9 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
                                                  _numSeparators,
                                                  _isSeparator,
                                                  _commentString);
-printf("tdata=%p\n", tdata);
+#if defined(DEBUG)
+  printf("tdata=%p\n", tdata);
+#endif
   return new TDataAsciiInterpClassInfo(_className, name, type, param, tdata);
 }
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:35  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <string.h>
@@ -29,7 +33,9 @@ extern InsertCatFile(char* tableName);	// defined in graphics.new/ParseCat.c
 
 char* dteImportFileType(char* name){
 
+#if defined(DEBUG)
 	cout << "in dteImportFileType(" << name << ")\n";
+#endif
 	// String query = "select * from " + String(name) + " as t";
 	String query = "dummy";
 
@@ -42,8 +48,10 @@ char* dteImportFileType(char* name){
 	
 	/*
 	if (Init::PrintTDataAttr()){
+#if defined(DEBUG)
 		cout << "Should print attributes ?????????????????????" << endl;
 		//attrs->Print();
+#endif
 	}
 	*/
 

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.65  1997/04/21 23:08:27  guangshu
+#	Make statistics work with DTE.
+#
 #	Revision 1.64  1997/03/23 23:46:28  donjerko
 #	*** empty log message ***
 #
@@ -369,7 +372,7 @@ proc newViewFile {{schemaFile ""} {dataFile ""}} {
 	#	DEVise dteSaveSingleView $fileName $select $as $where
 
 		saveViewFile $fileName $select $as $where
-		puts "$viewName $select $as $where"
+#		puts "$viewName $select $as $where"
 		return $fileName
 	} else {
 		return ""
@@ -813,16 +816,16 @@ set _cwd [list]
 
 proc CWD {} {
 	global _cwd
-	puts "CWD returns .[join $_cwd .]"
+#	puts "CWD returns .[join $_cwd .]"
 	return ".[join $_cwd .]"
 }
 
 proc CD {path} {
 	global _cwd
-	puts "in CD\{$path\}"
-	puts "dir before = [CWD]"
+#	puts "in CD\{$path\}"
+#	puts "dir before = [CWD]"
 	lappend _cwd $path
-	puts "dir after = [CWD]"
+#	puts "dir after = [CWD]"
 	return [CWD]
 }
 
@@ -874,7 +877,7 @@ proc defineANY {sourcetype} {
 	set currentDir [CWD]
 
 	set retVal [define$sourcetype ""]
-	puts "retVal = $retVal"
+#	puts "retVal = $retVal"
 	set table [lindex $retVal 0]
 	if {$retVal != ""} {
 		DEVise dteInsertCatalogEntry $currentDir $retVal
@@ -1000,15 +1003,15 @@ proc defineSQLView {content} {
 	}
 	set as [lrange $content 3 [expr $queryIndex - 1]]
 	set as [join $as ", "]
-	puts "as = $as"
+#	puts "as = $as"
 	set query [lindex $content $queryIndex]
-	puts "query = $query"
+#	puts "query = $query"
 	set beginSelect [string first select $query]
 	incr beginSelect 7
 	set beginFrom [string first from $query]
 	incr beginFrom -1
 	set select [string range $query $beginSelect $beginFrom]
-	puts "select = $select"
+#	puts "select = $select"
 	incr beginFrom 6
 	set beginWhere [string first where $query]
 	if {$beginWhere < 0} {
@@ -1020,15 +1023,15 @@ proc defineSQLView {content} {
 		incr beginWhere 7
 		set where [string range $query $beginWhere end] 
 	}
-	puts "from = $from"
-	puts "where = $where"
+#	puts "from = $from"
+#	puts "where = $where"
 	set retVal [qbrowse 0 $viewName "" $from $select $as $where]
 	if {$retVal != ""} {
-		puts "^^^^^^^^^^ as = $as"
+#		puts "^^^^^^^^^^ as = $as"
 #		regsub "," $as " " spaceAs
 		set as [split $as ,]
 		set spaceAs [join $as " "]
-		puts "^^^^^^^^^^ spaceAs = $spaceAs"
+#		puts "^^^^^^^^^^ spaceAs = $spaceAs"
 		set attrCnt [llength $as]
 		if {$where == ""} {
 			set query "select $select from $from"
@@ -1290,7 +1293,7 @@ proc newDirectory {} {
 	if {$tableName != ""} {
 		set fullPath "$schemadir/$tableName.dte"
 		set f [open $fullPath w]
-		puts $f "1 catentry entry ;"
+#		puts $f "1 catentry entry ;"
 		close $f
 		set retVal $fullPath
 	}
@@ -1373,7 +1376,7 @@ proc scanSchema {schemafile} {
 
     close $f
 
-    puts "Schema file $schemafile has type $type"
+#    puts "Schema file $schemafile has type $type"
 
     return $type
 }
@@ -1442,7 +1445,7 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
 
-    puts "isCached dispname=$dispname, command=$command"
+#    puts "isCached dispname=$dispname, command=$command"
     
     if {$source == "DQL" || $source == "WWW" || $source == "BASICSTAT" \
 	||$source=="HISTOGRAM"||$source=="GDATASTAT_X"||$source=="GDATASTAT_X_DATE" \
@@ -1609,11 +1612,11 @@ proc cachePrune {avoid} {
     puts "Pruning cache, total size $total, limit $cacheSize"
 
     foreach p [lsort [array names cachep]] {
-	puts "$p: $cachep($p)"
+#	puts "$p: $cachep($p)"
 	foreach dispname $cachep($p) {
 	    set cachefile [lindex $sourceList($dispname) 4]
 	    set size [file size $cachefile]
-	    puts "$dispname, size $size, total $total"
+#	    puts "$dispname, size $size, total $total"
 	    if {[uncacheData $dispname "Cache full."]} {
 		incr total [expr -$size]
 	    }
@@ -1692,7 +1695,7 @@ proc uncacheData {dispname reason} {
 
     set pattern [format "%s*" $cachefile]
     foreach cachefile [glob -nocomplain $pattern] {
-	puts "Removing cache file $cachefile"
+#	puts "Removing cache file $cachefile"
 	exec rm $cachefile
     }
 
@@ -1932,7 +1935,7 @@ proc selectStream {{title "Select Table"}} {
 
 	set tmp [getSelectedLine]
 
-	puts "streamsSelected = $tmp"
+#	puts "streamsSelected = $tmp"
 
 	# check if the selected source is directory (need to change retVal)
 	# if so, update CWD, and list sources
@@ -1946,7 +1949,7 @@ proc selectStream {{title "Select Table"}} {
  	set table_type_pair [lindex $tmp 0]
 	set tableName [lindex $table_type_pair 0]
 	set typeName [lindex $table_type_pair 1]
-	puts "tableName = $tableName; typeName = $typeName"
+#	puts "tableName = $tableName; typeName = $typeName"
 	if { [isDirectory $typeName] } {
 		if {$tableName == ".."} {
 			CDup
@@ -1955,7 +1958,7 @@ proc selectStream {{title "Select Table"}} {
 		}
 		updateSources
 	} else {
-		puts "continuing with streamsSelected = $tableName"
+#		puts "continuing with streamsSelected = $tableName"
 		set streamsSelected [fullPathName $tableName]
 	}
     }
@@ -1969,7 +1972,7 @@ proc selectStream {{title "Select Table"}} {
 	set tmpStreamsSelected {}
 	set tmp [getSelectedLine]
 
-	puts "streamsSelected = $tmp"
+#	puts "streamsSelected = $tmp"
 
 #    if {[llength $tmp] != 1} {
 #        dialog .note "Note" "Please select only one table." "" 0 OK
@@ -1982,7 +1985,7 @@ proc selectStream {{title "Select Table"}} {
 		foreach table_type_pair $tmp {
 			set tableName [lindex $table_type_pair 0]
 			set typeName [lindex $table_type_pair 1]
-			puts "tableName = $tableName; typeName = $typeName"
+#			puts "tableName = $tableName; typeName = $typeName"
 			if {$tableName == ".."} {
 				dialog .note "Note" \
 					"Discarding selection of \"..\"." "" 0 OK

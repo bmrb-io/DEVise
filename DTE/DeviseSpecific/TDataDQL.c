@@ -132,7 +132,9 @@ void TDataDQL::runQuery(){
      }
 	delete tup;
 
+#if defined(DEBUG)
 	cout << "Done with query ----------------------------------\n";
+#endif
 #ifdef DEBUG
      for(int j = _result.low(); j < _result.fence(); j++){
           for(int i = 0; i < _numFlds; i++){
@@ -161,7 +163,9 @@ void TDataDQL::runQuery(){
 			atname = strchr(_attributeNames[i].chars(), '.') + sizeof(char);
 		}
 		assert(atname);
+#if defined(DEBUG)
 		cout << "atname = " << atname << endl;
+#endif
 		TRY(int deviseSize = packSize(_types[i]), );
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
@@ -193,8 +197,10 @@ void TDataDQL::runQuery(){
 
 //	DataSeg::Set(_tableName, _query, 0, 0);
 
+#if defined(DEBUG)
 //	cout << "Attr list is:\n";
 	_attrs.Print();
+#endif
 
 	Timer::StartTimer();
 }
@@ -351,7 +357,9 @@ void TDataDQL::Checkpoint()
 
 void TDataDQL::InvalidateTData()
 {
+#if defined(DEBUG)
     cout << "Invalidating TDataDQL" << endl;
+#endif
     runQuery();
 	CATCH(
 		cout << "DTE error coused by query: \n";
