@@ -56,6 +56,8 @@ class udParam {
 
     int       use_slide;  // The data is in the slide-buffer. 
 
+    Enum     *my_enum;    // For enums.
+
   public:
     udParam();
    ~udParam();

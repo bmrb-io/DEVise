@@ -69,16 +69,6 @@ class SlideBuf {
     SlideBuf(int datafd = -1);
    ~SlideBuf();
 
-/*
-      // Are we at EOF?
-    int isEOF() { return(_status == UD_EOF); }
-      // a failure condition?
-    int isFail() { return(_status == UD_FAIL); }
-      // or is everything fine?
-    int isOk() { return(_status == UD_OK); }
-*/
-
-
     // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
     // Small functions to skip over
     // whitespace and comments.
@@ -101,7 +91,8 @@ class SlideBuf {
 
       // set _buf_init to point here (within _buf!)
     void set_init(char *bptr) {
-                                _buf_init = bptr - _buf;
+                                if (_buf_init || _buf_end)
+                                  _buf_init = bptr - _buf;
                               }
 
       // empty out the buffer

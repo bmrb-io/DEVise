@@ -250,3 +250,15 @@ int EnumStk::find(char *name)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// Return a pointer to an Enum of this type.
+Enum *EnumStk::findtype(int type)
+{
+    for (int j=0; j < _num; j++) {
+        if (_stk[j] && (_stk[j]->type() == type))
+            return _stk[j];
+    }
+
+    return NULL;
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o

@@ -128,7 +128,6 @@ size_t  Attr::determ_size()
 {
     switch(_type) {
 
-      default:
       case Invalid_Attr:
         _size = (size_t) 0;
         break;
@@ -162,6 +161,10 @@ size_t  Attr::determ_size()
         if (_subattr)
             for (int j=0; j < _subattr->nAttrs(); j++)
                 _size += _subattr->ith(j)->size_of();
+
+      default:
+        // An Enum
+        _size = sizeof(ushort);
     }
 
     return _size;
@@ -565,8 +568,10 @@ ostream& operator<< (ostream& out, const Attr& attr)
 
     switch(attr._type) {
         default:
-            if (attr._type >= UserDefined_Attr)
+            if (attr._type == UserDefined_Attr)
                 out << "User-Defined\n";
+            else if (attr._type > UserDefined_Attr)
+                out << "Enum: " << (int) attr._type << endl;
             else
                 out << "<Unknown>\n";
             break;

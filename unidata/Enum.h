@@ -68,6 +68,8 @@ class Enum {
                return (ecode < _num) ? _vtypes[ecode] : _vtypes[0];
            }
 
+    void set_type(int typ) { _etype = typ; }
+
       // Add this symbol to this enumeration.
     ushort add(char *sym, char *val, attr_t vtype);
 
@@ -91,7 +93,7 @@ class EnumStk {
     int    _num;        // Number of Enums in the stack.  
     int    _sze;        // Size of the stack.
 
-    Enum **_stk;       // Doubling array of Enum*
+    Enum **_stk;        // Doubling array of Enum*
 
   public:
     EnumStk(int hint=DEFAULT_HINT);
@@ -113,6 +115,9 @@ class EnumStk {
       // Find an enum with this name;
       // return it's position, or -1 if not found.
     int find(char *name);
+
+      // Return a pointer to an Enum of this type.
+    Enum *findtype(int type);
 };
 
 #undef    DEFAULT_HINT

@@ -58,7 +58,7 @@ void Schema::init()
 
     _attr_own  = new AttrStk(16);
 
-  //  _enums     = NULL;
+    _enums     = NULL;
     _typedefs  = new AttrStk();
 
     _attr0     = NULL;
@@ -86,8 +86,11 @@ void Schema::clear()
 
     delete _global;
 
-//    delete _enums;
-//    _enums = NULL;
+    if (_enums)
+        _enums->empty(1);
+
+    delete _enums;
+    _enums = NULL;
 
     delete _typedefs;
     _typedefs = NULL;
@@ -384,6 +387,7 @@ int Schema::subParse(Attr *attr)
     UniLexType ult;
     int        tok;
     Attr      *subattr = NULL;
+    Enum      *enm = NULL;
     Comment   *cmmt;
     PerlFrag  *pf;
     int        m = 0, pos;
@@ -539,9 +543,123 @@ int Schema::subParse(Attr *attr)
                 break;
     
             case KY_ENUM:
+                // NYI - SPF
                 TOP_LEVEL("enum");
                 MATCH(SYMBOL, &ult);
-                // NYI
+                enm = new Enum(ult.Str);
+
+                if (!_enums)
+                    _enums = new EnumStk();
+
+                if (!match(KY_LBRACE,&ult)) {
+                    delete enm;
+                    dispose_token(tok,&ult);
+                    return(0);
+                }
+
+                enm->set_type(UserDefined_Attr + _enums->nEnums() + 1);
+
+                {
+                    int done = 0, saw_eq = 0;
+                    char *sym = NULL;
+                    char *val = NULL;
+
+                    while (!done) {
+                        // Read each line of the enum.
+                        tok = get_token(&ult);
+                        switch (tok) {
+                          default:
+                            *perr << filename << ":" << lineno
+                                  << ": Unexpected token: ";
+                            show_token(perr,tok,&ult);
+                            *perr << endl;
+                            dispose_token(tok,&ult);
+                            delete [] sym;
+                            delete [] val;
+                            delete enm;
+                            return(0);
+
+                          case SYMBOL:
+                          case STRING:
+                            if (saw_eq) {
+                              if (!val)
+                                  val = ult.Str;
+                              else {
+                                  *perr << filename << ":" << lineno
+                                        << ": Expecting semicolon token: ";
+                                  show_token(perr,tok,&ult);
+                                  *perr << endl;
+                                  dispose_token(tok,&ult);
+                                  delete [] sym;
+                                  delete [] val;
+                                  delete enm;
+                                  return(0);
+                              }
+                            } else {
+                              if (!sym)
+                                  sym = ult.Str;
+                              else {
+                                *perr << filename << ":" << lineno
+                                      << ": Expecting '=' token: ";
+                                show_token(perr,tok,&ult);
+                                *perr << endl;
+                                dispose_token(tok,&ult);
+                                delete [] sym;
+                                delete [] val;
+                                delete enm;
+                                return(0);
+                              }
+                            }
+                            break;
+
+                          case KY_EQ:
+                            if (sym)
+                                saw_eq = 1;
+                            else {
+                                *perr << filename << ":" << lineno
+                                      << ": Expecting symbol token: ";
+                                show_token(perr,tok,&ult);
+                                *perr << endl;
+                                dispose_token(tok,&ult);
+                                delete [] sym;
+                                delete [] val;
+                                delete enm;
+                                return(0);
+                            }
+                            break;
+
+                          case KY_COMMA:
+                          case KY_SEMICOLON:
+                            if (!sym || (saw_eq && !val)) {
+                                *perr << filename << ":" << lineno
+                                      << ": Expecting symbol token: ";
+                                show_token(perr,tok,&ult);
+                                *perr << endl;
+                                dispose_token(tok,&ult);
+                                delete [] sym;
+                                delete [] val;
+                                delete enm;
+                                return(0);
+                            }
+
+                            if (saw_eq)
+                                enm->add(sym,val,String_Attr);
+                            else
+                                enm->add(sym,sym,String_Attr);
+
+                            saw_eq = 0;
+                            sym    = NULL;
+                            val    = NULL;
+                            break;
+
+                          case KY_RBRACE:
+                            done = 1;
+                            break;
+                        }
+                    }
+                }
+
+                _enums->push(enm);
                 break;
     
             case KY_TYPE:
@@ -561,21 +679,28 @@ int Schema::subParse(Attr *attr)
                     attr->set_type(UserDefined_Attr);
 
                     // Need to find type, set this to a copy of it.
-                    // NYI: Need to check for enums as well.
+                    // If not a type, check for an enum.
                     pos = _typedefs->find(ult.Str);
 
-                    if (pos < 0) {
-                        *perr << filename << ":" << lineno
-                              << ": Invalid type name: ";
-                        show_token(perr,tok,&ult);
-                        *perr << endl;
+                    if (pos >= 0) {
                         dispose_token(tok,&ult);
-                        return(0);
-                    }
+                        subattr = _typedefs->ith(pos);
+                        attr->assign(subattr,_attr_own);
+                    } else {
 
-                    dispose_token(tok,&ult);
-                    subattr = _typedefs->ith(pos);
-                    attr->assign(subattr,_attr_own);
+                        pos = _enums->find(ult.Str);
+
+                        if (pos < 0) {
+                            *perr << filename << ":" << lineno
+                                  << ": Invalid type name: ";
+                            show_token(perr,tok,&ult);
+                            *perr << endl;
+                            dispose_token(tok,&ult);
+                            return(0);
+                        }
+
+                        attr->set_type((attr_t) _enums->ith(pos)->type());
+                    }
 
                     break;
 
@@ -1383,6 +1508,13 @@ void Schema::DeepThought(ostream *err)
         if (_flat_attrs->ith(j)->type() == Int_Attr) {
             _flat_attrs->ith(j)->_offset = offst;
             offst += INT_ALIGN;
+        }
+
+    // now enums
+    for (j=0; j < _nattrs; j++)
+        if (_flat_attrs->ith(j)->type() > UserDefined_Attr) {
+            _flat_attrs->ith(j)->_offset = offst;
+            offst += sizeof(ushort);
         }
 
     // and strings

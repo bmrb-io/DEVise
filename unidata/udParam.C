@@ -25,6 +25,8 @@ udParam::udParam()
     subparam  = NULL;
 
     use_slide = 1;
+
+    my_enum   = NULL;
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
@@ -48,6 +50,8 @@ udParam *udParam::dup()
     that->buf_pos   = buf_pos;
 
     that->use_slide = use_slide;
+
+    that->my_enum   = my_enum;
 
     // Don't copy subparam, this is only for "leaf" parameters.
 

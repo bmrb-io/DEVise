@@ -33,6 +33,7 @@ void showRec(char *buf, UniData *ud, UD_Status stat)
     float  *f;
     char   *c;
     time_t *t;
+    ushort *us;
 
     struct tm *t2;
     char tmebuf[200];
@@ -73,6 +74,13 @@ void showRec(char *buf, UniData *ud, UD_Status stat)
             strftime(tmebuf, 200, " '%m/%d/%y at %H:%M:%S' ", t2);
             cout << tmebuf;
             break;
+
+          default:
+            if (at->type() > UserDefined_Attr) {
+                us = (ushort*) &(buf[at->offset()]);
+                cout << " " << *us << " ";
+                break;
+            }
 
           case Invalid_Attr:
           case UserDefined_Attr:

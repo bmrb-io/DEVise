@@ -142,6 +142,8 @@ class UniData {
     int TxtCopy_DateTime(char *dst, char *src, udParam *ud);
     int TxtCopy_UnixTime(char *dst, char *src, udParam *ud);
 
+    int TxtCopy_Enum(char *dst, char *src, udParam *ud);
+
     int ReaderCall(char *dst, char *src, udParam *ud);
     int ValueCall(char *dst, char *src, udParam *ud);
     int FilterCall(char *dst, char *src, udParam *ud);

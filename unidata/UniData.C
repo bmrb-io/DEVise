@@ -499,7 +499,7 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
             prm->attrfunc = ReaderCall;
         else if (have_pos)
             prm->attrfunc = Split_Position;
-        else if (_schema->attr0()->seperator())
+        else if (*(_schema->attr0()->seperator()))
             prm->attrfunc = Split_Seper;
         else
             prm->attrfunc = Split_White;
@@ -567,7 +567,11 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
                   break;
 
               default:
-                  prm->attrfunc = NullCopy;
+                  if (attr->_type > UserDefined_Attr) {
+                    prm->my_enum = _schema->_enums->findtype(attr->_type);
+                    prm->attrfunc = TxtCopy_Enum;
+                  } else
+                      prm->attrfunc = NullCopy;
                   break;
             }
 
@@ -881,6 +885,9 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 
             _slbuf->room(_status,UD_BUFSLACK);
 
+            if (!isOk())
+                continue;
+
             nxt_buf_init = _slbuf->get_init() + _schema->_reclen;
         
            *offset = _slbuf->getoff();
@@ -926,6 +933,9 @@ int UniData::getRec_delimit(char *buff, off_t *offset)
                               _schema->attr0()->_white);
     
             _slbuf->room(_status,UD_BUFSLACK);
+
+            if (!isOk())
+                continue;
     
            *offset = _slbuf->getoff();
     
@@ -1008,6 +1018,9 @@ int UniData::Split_White(char *dst, char * /* src */, udParam *ud)
         _slbuf->room(_status,UD_BUFSLACK);
         _slbuf->room(_status,param->sze()+1);
 
+        if (!isOk())
+            return 0;
+
         char *buf = _slbuf->getpos(param->buf_pos);
 
         ok = (param->attrfunc)(dst,buf,param);
@@ -1040,6 +1053,9 @@ int UniData::Split_Seper(char *dst, char * /* src */, udParam *ud)
         _slbuf->setzero(param->buf_pos);
         _slbuf->room(_status,UD_BUFSLACK);
         _slbuf->room(_status,param->sze()+1);
+
+        if (!isOk())
+            return 0;
 
         char *buf = _slbuf->getpos(param->buf_pos);
         char *sent = NULL;
@@ -1096,8 +1112,14 @@ int UniData::Split_Position(char *dst, char * /* src */, udParam *ud)
         _slbuf->room(_status,param->sze()+1);
         _slbuf->room(_status,UD_BUFSLACK);
 
+        if (!isOk())
+            return 0;
+
         if (attr->have_rpos()) {
             _slbuf->room(_status, (attr->rpos() - attr->lpos() + 1));
+
+            if (!isOk())
+                return 0;
 
             char *sent = _slbuf->getpos(ud->buf_pos,attr->rpos()+1);
             // Should check that sent_pos is within the buffer, NYI.
@@ -1135,6 +1157,9 @@ int UniData::Split_Format(char *dst, char * /* src */, udParam *ud)
     _slbuf->SkipWhite(_status,ud->attr->whitespace());
     _slbuf->setzero(ud->buf_pos);
     _slbuf->room(_status,UD_BUFCHUNK);
+
+    if (!isOk())
+        return 0;
 
     char *buf = _slbuf->getpos(ud->buf_pos);
 
@@ -1299,6 +1324,32 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+int UniData::TxtCopy_Enum(char *dst, char *src, udParam *ud)
+{
+    char *ptr;
+                    // guarenteed to be aligned
+    ushort *us = (ushort*) &(dst[ud->dst_off]);
+
+#ifdef DEBUG_UNIDATA
+    cout << "In " << __FUNCTION__ << " for input '" << src << "'\n";
+#endif
+
+    src += strspn(src, ud->attr->whitespace());
+
+    *us = ud->my_enum->vfind(src, String_Attr);
+
+    if (!*us)
+        return 0;
+
+    if (ud->use_slide) {
+        ptr = src + strlen(ud->my_enum->value(*us));
+        _slbuf->set_init(ptr);
+    }
+
+    return 1;
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 int UniData::TxtCopy_DateTime(char *dst, char *src, udParam *ud)
 {
                     // guarenteed to be aligned
@@ -1340,6 +1391,9 @@ int UniData::ReaderCall(char *dst, char * /* src */, udParam *ud)
 
     _slbuf->setzero(ud->buf_pos);
     _slbuf->room(_status,UD_BUFCHUNK);
+
+    if (!isOk())
+        return 0;
 
     char *buf = _slbuf->getpos(ud->buf_pos);
 
