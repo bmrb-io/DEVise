@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/03/23 21:40:22  jussi
+  Added support for date fields as they appear in Department of Labor
+  statistics.
+
   Revision 1.7  1996/01/26 19:46:21  jussi
   Added two composite parsers for common date formats.
 
@@ -37,6 +41,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -139,6 +144,62 @@ public:
     now.tm_sec = 0;
 
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/* User composite function for dates of the form MMDDYY */
+
+class MmDdYyComposite : public UserComposite {
+public:
+
+  MmDdYyComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~MmDdYyComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "MONTH", "DAY", "YEAR", "DATE" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr,
+		  "MmDdYy composite parser: can't find attribute %s\n",
+		  primAttrs[i]);
+	  Exit::DoExit(2);
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    
+    /* decode date */
+    static struct tm now;
+    now.tm_mday = *(int *)(buf + attrOffset[1]);
+    now.tm_mon = *(int *)(buf + attrOffset[0]) - 1;
+    now.tm_year = *(int *)(buf + attrOffset[2]) - 1900;
+    now.tm_hour = 0;
+    now.tm_min = 0;
+    now.tm_sec = 0;
+
+    time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     *datePtr = GetTime(now);
   }
 
@@ -277,6 +338,7 @@ main(int argc, char **argv)
   CompositeParser::Register("ISSM-Trade", new ObsDateComposite);
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
+  CompositeParser::Register("DOWJONES", new MmDdYyComposite);
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);
