@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/05/14 16:46:48  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.37  1999/04/29 17:36:41  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -505,6 +508,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setCursorFixedSize)
 	REGISTER_COMMAND(viewGetVerPan)
 	REGISTER_COMMAND(viewSetVerPan)
+	REGISTER_COMMAND(viewGetJSSendP)
+	REGISTER_COMMAND(viewSetJSSendP)
 }
 
 CmdContainer::~CmdContainer()

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1999/05/14 16:46:52  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.70  1999/05/13 18:59:03  wenger
   Removed _queryFilter member from View class to avoid confusion with
   _queryFilter in ViewGraph.
@@ -626,13 +629,21 @@ public:
   void setHistViewname(char *name) { histViewName = name; }
   char *getHistViewname() { return histViewName; }
 
+  // Get parameters for drawing and/or sending GData.
   Boolean GetDrawToScreen() { return _drawToScreen; }
   Boolean GetSendToSocket() { return _sendToSocket; }
   void GetSendParams(GDataSock::Params &params) { params = _gdsParams; }
+  // Parameters specifically for use when connected to the JavaScreen.
+  void GetJSSendP(Boolean &drawToScreen, Boolean &sendToSocket,
+    GDataSock::Params &params);
 
+  // Set parameters for drawing and/or sending GData.
   void SetDrawToScreen(Boolean drawToScreen);
   void SetSendToSocket(Boolean sendToSocket);
   void SetSendParams(const GDataSock::Params &params);
+  // Parameters specifically for use when connected to the JavaScreen.
+  void SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
+    const GDataSock::Params &params);
 
   DevStatus Send(void **gdataArray, TDataMap *map, int recCount) {
     if (_gds != NULL) {
@@ -758,10 +769,15 @@ public:
   ViewHomeInfo _implicitHomeInfo;
   ViewPanInfo _horPanInfo;
   ViewPanInfo _verPanInfo;
+
   GDataSock *_gds;
   Boolean _drawToScreen;
   Boolean _sendToSocket;
   GDataSock::Params _gdsParams;
+  Boolean _jsDrawToScreen;
+  Boolean _jsSendToSocket;
+  GDataSock::Params _jsGdsParams;
+
   char *_stringXTableName;
   char *_stringYTableName;
   char *_stringZTableName;

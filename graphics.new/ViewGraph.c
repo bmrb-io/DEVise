@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.110  1999/05/14 16:46:51  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.109  1999/05/12 21:01:58  wenger
   Views containing view symbols can now be piled.
 
@@ -514,6 +517,7 @@
 #include "DupElim.h"
 #include "PileStack.h"
 #include "MapInterpClassInfo.h"
+#include "Session.h"
 
 #define STEP_SIZE 20
 
@@ -662,6 +666,12 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gdsParams.file = NULL;
   _gdsParams.sendText = true;
   _gdsParams.separator = ' ';
+  _jsDrawToScreen = true;
+  _jsSendToSocket = false;
+  _jsGdsParams.portNum = 0;
+  _jsGdsParams.file = NULL;
+  _jsGdsParams.sendText = true;
+  _jsGdsParams.separator = ' ';
 
   _countMapping = NULL;
   _dupElim = NULL;
@@ -727,6 +737,7 @@ ViewGraph::~ViewGraph(void)
     _glistY.DeleteAll();
 
     delete [] _gdsParams.file;
+	delete [] _jsGdsParams.file;
     delete _gds;
 	delete queryCallback;
 	delete _countMapping;
@@ -2759,6 +2770,42 @@ ViewGraph::SwitchTData(char *tdName)
   }
 
   return result;
+}
+
+//---------------------------------------------------------------------------
+void
+ViewGraph::GetJSSendP(Boolean &drawToScreen, Boolean &sendToSocket,
+    GDataSock::Params &params)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::GetJSSendP()\n", GetName());
+#endif
+
+  drawToScreen =  _jsDrawToScreen;
+  sendToSocket = _jsSendToSocket;
+  params = _jsGdsParams;
+}
+
+//---------------------------------------------------------------------------
+void
+ViewGraph::SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
+    const GDataSock::Params &params)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SetJSSendP()\n", GetName());
+#endif
+
+  _jsDrawToScreen = drawToScreen;
+  _jsSendToSocket = sendToSocket;
+  _jsGdsParams = params;
+  _jsGdsParams.file = CopyString(_jsGdsParams.file);
+
+  if (Session::GetIsJsSession()) {
+    SetDrawToScreen(_jsDrawToScreen);
+    SetSendToSocket(_jsSendToSocket);
+    SetSendParams(_jsGdsParams);
+    Refresh();
+  }
 }
 
 //******************************************************************************

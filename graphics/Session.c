@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/05/14 16:46:33  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.51  1999/05/14 13:59:52  wenger
   User can now control data font family, weight, and slant, on a per-view
   basis.
@@ -384,10 +387,6 @@ Session::Open(char *filename)
 #endif
 
   DevStatus status = StatusOk;
-
-  // This will get set later in JavaScreenCmd::Open if this function is
-  // being called from there.
-  _isJsSession = false;
 
   _openingSession = true;
 
@@ -1040,6 +1039,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetVerPan", "viewSetVerPan", instance);
 
   status += SaveParams(saveData, "getViewGDS", "setViewGDS", instance);
+  status += SaveParams(saveData, "viewGetJSSendP", "viewSetJSSendP",
+      instance, NULL, NULL, false);
 
   status += SaveParams(saveData, "getHistogram", "setHistogram", instance);
 

@@ -19,6 +19,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.1  1997/11/24 16:22:37  wenger
+#	Added GUI for saving GData; turning on GData to socket now forces
+#	redraw of view; GData to socket params now saved in session files;
+#	improvement to waitForQueries command.
+#
 
 ############################################################
 
@@ -82,6 +87,8 @@ proc SaveGData {} {
   tkwait window .saveGData
 }
 
+############################################################
+
 proc DoSaveGData {} {
   global curView
   global gdsFile gdsSeparator
@@ -89,4 +96,88 @@ proc DoSaveGData {} {
   DEVise setViewGDS $curView 1 1 0 $gdsFile 1 $gdsSeparator 
   DEVise waitForQueries
   DEVise setViewGDS $curView 1 0 0 $gdsFile 1 $gdsSeparator 
+}
+
+############################################################
+
+proc EditJSGData {} {
+  global curView
+  global jsGdsDraw jsGdsSend
+  global jsGdsFile jsGdsSeparator
+
+  # If this window already exists, raise it to the top and return.
+  if {[WindowVisible .jsGData]} {
+    return
+  }
+
+  set viewGDS [DEVise viewGetJSSendP $curView]
+  set jsGdsDraw [lindex $viewGDS 0]
+  set jsGdsSend [lindex $viewGDS 1]
+  set jsGdsFile [lindex $viewGDS 3]
+  set jsGdsSeparator [lindex $viewGDS 5]
+
+  # Create the top level widget and the frames we'll later use for
+  # positioning.
+  toplevel .jsGData
+  wm title .jsGData "JavaScreen GData Configuration"
+
+  frame .jsGData.row1
+  frame .jsGData.row2
+  frame .jsGData.row3
+  frame .jsGData.row4
+
+  # Create the various widgets.
+  button .jsGData.ok -text "OK" -width 10 \
+    -command {SetJSGData; destroy .jsGData}
+  button .jsGData.cancel -text "Cancel" -width 10 \
+    -command "destroy .jsGData"
+
+  checkbutton .jsGData.draw -variable jsGdsDraw -relief raised -bd 2 \
+    -text "Draw to Screen" -padx 2m -pady 1m
+  checkbutton .jsGData.send -variable jsGdsSend -relief raised -bd 2 \
+    -text "Send to Socket/File" -padx 2m -pady 1m
+
+  label .jsGData.fileLab -text "File name:"
+  entry .jsGData.fileEnt -width 20 -relief sunken -textvariable jsGdsFile
+  button .jsGData.fileBut -text "Select..." -command {
+    global fsBox datadir
+    set fsBox(path) $datadir
+    set fsBox(pattern) *
+    set jsGdsFile [FSBox "Select GData file"]
+  }
+
+  label .jsGData.sepLab -text "Separator char.:"
+  entry .jsGData.sepEnt -width 5 -relief sunken -textvariable jsGdsSeparator
+  # Allow tab for separator character.
+  bind .jsGData.sepEnt <Tab> { set jsGdsSeparator "\	" }
+
+  # Pack the widgets into the frames.
+  pack .jsGData.row1 -side bottom -pady 4m
+  pack .jsGData.row4 -side top -pady 3m
+  pack .jsGData.row2 -side top -pady 3m
+  pack .jsGData.row3 -side top -pady 3m
+
+  pack .jsGData.ok .jsGData.cancel -in .jsGData.row1 \
+    -side left -padx 3m
+  pack .jsGData.draw .jsGData.send -in .jsGData.row4 -side left -padx 3m
+  pack .jsGData.fileLab .jsGData.fileEnt .jsGData.fileBut \
+    -in .jsGData.row2 -side left -padx 3m
+  pack .jsGData.sepLab .jsGData.sepEnt -in .jsGData.row3 -side left \
+    -padx 3m
+
+  # Wait for the user to make a selection from this window.
+  tkwait visibility .jsGData
+  grab set .jsGData
+  tkwait window .jsGData
+}
+
+############################################################
+
+proc SetJSGData {} {
+  global curView
+  global jsGdsDraw jsGdsSend
+  global jsGdsFile jsGdsSeparator
+
+  DEVise viewSetJSSendP $curView $jsGdsDraw $jsGdsSend 0 $jsGdsFile 1 \
+    $jsGdsSeparator 
 }

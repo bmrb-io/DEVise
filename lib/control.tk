@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.192  1999/05/14 21:00:01  wenger
+#	DEVise GUI now "remembers" the most recent session directory.
+#	
 #	Revision 1.191  1999/05/14 17:42:53  wenger
 #	Minor menu improvements, including making data font accessible from window
 #	menu.
@@ -1582,6 +1585,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
     -menu .mbar.view.menu.configmenu
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
 .mbar.view.menu add command -label "Save GData..." -command SaveGData
+.mbar.view.menu add command -label "JavaScreen GData..." -command EditJSGData
 
 menu .mbar.view.menu.statMenu -tearoff 0
 

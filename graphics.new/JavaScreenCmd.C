@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/05/14 20:10:03  wenger
+  Fixed bugs 462 and 478 (both related to setting visual filters).
+
   Revision 1.55  1999/05/06 21:57:39  wenger
   New 'fixed-size-cursor' argument added to JS communication protocol.
 
@@ -929,6 +932,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	JSSessionInit();
 
 	// Open the session.
+	Session::SetIsJsSession(true);
     DevStatus result = Session::Open(fullpath);
 	if (!result.IsComplete())
 	{
@@ -1006,8 +1010,6 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 #endif
         DoCloseSession();
     }
-
-	Session::SetIsJsSession(true);
 
 #if JS_TIMER
     struct timeval stopTime;

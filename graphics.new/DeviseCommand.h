@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/05/14 16:46:50  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.34  1999/04/29 17:36:41  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -1706,6 +1709,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewSetVerPan) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetJSSendP) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewSetJSSendP) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

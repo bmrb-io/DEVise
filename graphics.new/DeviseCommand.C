@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/05/14 16:46:49  wenger
+  View vertical scroll can now be configured by the user.
+
   Revision 1.62  1999/05/07 14:13:53  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -5805,6 +5808,71 @@ IMPLEMENT_COMMAND_BEGIN(viewSetVerPan)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in viewSetVerPan\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
+    // Arguments: <viewName>
+	// Returns: <draw to screen> <send to socket> <port number> <file>
+	//  <send text> <separator>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+        Boolean drawToScreen;
+        Boolean sendToSocket;
+        GDataSock::Params params;
+        view->GetJSSendP(drawToScreen, sendToSocket, params);
+        if (params.file == NULL) params.file = "";
+        char buf[1024];
+        sprintf(buf, "%d %d %d \"%s\" %d \"%c\"", drawToScreen, sendToSocket,
+    	    params.portNum, params.file, params.sendText, params.separator);
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewGetJSSendP\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
+    // Arguments: <viewName> <draw to screen> <send to socket>
+	// <port number> <file> <send text> <separator>
+	// Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 8) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean drawToScreen = atoi(argv[2]);
+		Boolean sendToSocket = atoi(argv[3]);
+        GDataSock::Params params;
+        params.portNum = atoi(argv[4]);
+        params.file = argv[5];
+        params.sendText = atoi(argv[6]);
+        params.separator = argv[7][0];
+        view->SetJSSendP(drawToScreen, sendToSocket, params);
+    
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewSetJSSendP\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
