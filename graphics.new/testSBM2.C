@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/13 21:33:32  jussi
+  Updated to use SemaphoreV::maxNumSemaphores().
+
   Revision 1.8  1996/12/12 21:04:59  jussi
   Removed calls to Semaphore::DestroyAll() and SharedMemory::DestroyAll().
 
@@ -257,13 +260,9 @@ int main(int argc, char **argv)
     struct timeval stop;
     double secs;
 
-    // create space for 16 virtual semaphores
-
-    int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
-    assert(status >= 0);
-
     // create memory and cache manager
 
+    int status;
     MemMgr *memMgr = new MemMgr(poolSize, pageSize, status);
     assert(memMgr);
     if (status < 0) {

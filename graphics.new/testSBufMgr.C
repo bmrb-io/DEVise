@@ -31,17 +31,13 @@ int main()
     MemMgr *memMgr;
     CacheMgr *cacheMgr;
 
-    // create space for 16 virtual semaphores
-
-    int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
-    assert(status >= 0);
-
     time_t now = time(0);
     printf("Random number seed = %ld\n", now);
     srand(now);
 
     // create buffer manager
 
+    int status;
     memMgr = new MemMgr(poolSize, pageSize, status);
     assert(memMgr);
     if (status < 0) {

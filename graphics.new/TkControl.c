@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.73  1996/12/15 20:21:53  wenger
+  Added '-noshm' command line flag to allow user to disable shared memory;
+  temporarily disabled RTree stuff.
+
   Revision 1.72  1996/12/15 06:48:55  donjerko
   Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
 
@@ -373,14 +377,8 @@ TkControlPanel::TkControlPanel()
   ControlPanelMainWindow = _mainWindow;
 #endif
 
-  // attempt to create space for a large number of virtual semaphores
-  int status;
-  if (Init::UseSharedMem()) {
-    status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
-  } else {
-    status = -1;
-  }
-  if (status < 0) {
+  if (!Init::UseSharedMem()) {
+    SemaphoreV::setEnabled(0);
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
 

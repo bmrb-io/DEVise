@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/12/13 21:33:43  jussi
+  Updated to use SemaphoreV::maxNumSemaphores().
+
   Revision 1.25  1996/12/12 22:02:50  jussi
   Added checking of user interrupts when waiting for client connection.
 
@@ -183,10 +186,10 @@ ServerAPI::ServerAPI()
     fclose(fp);
   }
 
-  // attempt to create space for a large number of virtual semaphores
-  int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
-  if (status < 0)
+  if (!Init::UseSharedMem()) {
+    SemaphoreV::setEnabled(0);
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
+  }
 
   RestartSession();
 }
