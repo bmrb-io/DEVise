@@ -20,6 +20,7 @@
 /*
   $Id$
 
+  $Log$
   Revision 1.76  1999/09/30 15:02:05  wenger
   Changed things around so that session file paths sent by the JS always
   start from the "base" session directory -- the devised doesn't "remember"
@@ -2627,8 +2628,10 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	// it's relative to the *window* origin.
 	//
 	if (parent) {
-#if 0 // Either AbsoluteOrigin() got changed, or I just goofed this up
-      // in the first place.  RKW.
+#if NO_BATCH
+        // Note: view locations are reported differently in batch and
+        // non-batch mode.
+
 		// Make subview's location relative to parent.
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
