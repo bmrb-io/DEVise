@@ -11,6 +11,10 @@ public class Schema {
 
   public Schema(){}
 
+  public String[] getAttributeNames(){
+    return attributeNames;
+  }
+
   public TypeDesc[] getTypeDescs(){
     return typeIDs;
   }

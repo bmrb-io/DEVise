@@ -15,6 +15,10 @@ public class TableAlias{
 		this.alias = alias;
 	}
 
+	public String getAlias(){
+		return alias;
+	}
+
 	// implement toString
 
 	public void setDataSource(DataSource ds){

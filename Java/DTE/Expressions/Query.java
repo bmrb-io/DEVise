@@ -19,6 +19,12 @@ public class Query {
 	public Vector getFromClause(){
 		return fromClause;
 	}
+	public Vector getSelectClause(){
+		return selectClause;
+	}
+	public Expression getWhereClause(){
+		return whereClause;
+	}
 	// Jie, add toString function that will return string like:
 	// "select t.x + 1 from 1.1 as t"
 }

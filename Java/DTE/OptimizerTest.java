@@ -52,12 +52,33 @@ public class OptimizerTest {
 		// At the end, add select-project iterator.
 
 		Vector fromClause = query.getFromClause();
+		Vector selectClause = query.getSelectClause();
+		Expression whereClause = query.getWhereClause();
+
 		TableAlias curTa = (TableAlias) fromClause.firstElement();
 		DataSource curDs = curTa.getDataSource();
 		StandardTable st = (StandardTable) curDs;
 		String fileName = st.getFileName();
-		TypeDesc[] types = st.getSchema().getTypeDescs();
+		Schema schema = st.getSchema();
+		TypeDesc[] types = schema.getTypeDescs();
 		topIter = new FileScanIterator(fileName, types);
+
+		Vector fsOut = new Vector();
+		String[] attrs = schema.getAttributeNames();
+		for(int i = 0; i < attrs.length; i++){
+			fsOut.addElement(new Selection(curTa.getAlias() , attrs[i]));
+		}
+
+		ExecExpr[] exProj = new ExecExpr[selectClause.size()];
+		ExecExpr[] exWhere = new ExecExpr[(whereClause == null ? 0 : 1)];
+		TypeDesc[] curTypes = new TypeDesc[selectClause.size()];
+
+		for(int i = 0; i < selectClause.size(); i++){
+			curTypes[i] = ((Expression) selectClause.elementAt(i)).getType();
+			exProj[i] = new ExecSelect(0, 0);
+		}
+
+		topIter = new SelProj(topIter, exProj, exWhere, curTypes);
 		for(int i = 1; i < fromClause.size(); i++){
 			// make joins here
 		}
