@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/11/20 17:18:42  jussi
+  Re-enabled partial scans in DoScan() which let the dispatcher call
+  the user interface to process user events while queries are being
+  executed.
+
   Revision 1.36  1996/11/18 23:11:31  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -196,18 +201,14 @@ static char _tdataBuf[TDATA_BUF_SIZE];
    input */
 static const int QPFULL_MAX_FETCH = 81920;
 
-/* max symbols per batch returned */
-static const int QPFULL_MAXSYMS = 4096;
-
 /* # of records to be returned before randomize is to begin */
 static const int QPFULL_RANDOM_RECS = 10240;
 
-/* # of records to be returned for each batch */
-static const int QPFULL_RANDOM_RECS_PER_BATCH = 1024;
+/* max symbols per batch returned */
+static const int QPFULL_RECS_PER_BATCH = 1024;
 
-/* # of iterations to scan for data to simulation pseudo-random
-   display */
-static const int QPFULL_RANDOM_ITERATIONS = 5;
+/* # of skips to make in randomized processing */
+static const int QPFULL_RANDOM_SKIPS = 10;
 
 /* Get X associated with a recId */
 inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
@@ -519,20 +520,19 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
   qData->mgr->InitPolicy(_policy);
 
   if (DoBinarySearch(qData->mgr, qData->tdata, qData->map,
-		     qData->filter.xLow, false, qData->current)) {
+		     qData->filter.xLow, false, qData->low)) {
     /* Find where we have to stop */
     RecId lastId;
     (void)qData->tdata->LastID(lastId);
     if (!DoBinarySearch(qData->mgr, qData->tdata, qData->map,
 			qData->filter.xHigh, false, qData->high, true,
-			qData->current, lastId, false)) {
+			qData->low, lastId, false)) {
       qData->high = lastId;
     }
-    qData->hintId = (qData->high + qData->current) / 2;
+    qData->hintId = (qData->high + qData->low) / 2;
     qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
     qData->state = QPFull_ScanState;
-    qData->map->SetFocusId(qData->current);
-    qData->low = qData->current;
+    qData->map->SetFocusId(qData->low);
     if (Init::Randomize() && qData->high - qData->low > QPFULL_RANDOM_RECS) {
 #ifdef DEBUG
       printf("isRandom with %ld recs\n", qData->high - qData->low);
@@ -542,7 +542,7 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
     } else
       qData->isRandom = false;
 #ifdef DEBUG
-    printf("search [%ld,%ld]\n", qData->current, qData->high);
+    printf("search [%ld,%ld]\n", qData->low, qData->high);
 #endif
   } else {
     /* done */
@@ -564,12 +564,12 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData)
   qData->mgr->InitPolicy(_policy);
 
   TData *tdata = qData->tdata;
-  if (tdata->HeadID(qData->current) && tdata->LastID(qData->high)) {
+  if (tdata->HeadID(qData->low) && tdata->LastID(qData->high)) {
     qData->state = QPFull_ScanState;
-    qData->map->SetFocusId(qData->current);
+    qData->map->SetFocusId(qData->low);
     qData->isRandom = false;
 #ifdef DEBUG
-    printf("InitQPFullScatter search [%ld,%ld]\n", qData->current, qData->high);
+    printf("InitQPFullScatter search [%ld,%ld]\n", qData->low, qData->high);
 #endif
   } else {
     qData->state = QPFull_EndState;
@@ -603,6 +603,9 @@ Boolean QueryProcFull::InitQueries()
 	DOASSERT(0, "Unknown query type");
 	break;
       }
+
+      qData->current = qData->low;
+
       return true;
     }
   }
@@ -622,9 +625,6 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
   qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
 
   Boolean isTData = UseTDataQuery(qData->tdata, qData->filter);
-  InitScan();
-
-  Boolean cont;
   Boolean noHigh;
 
   if (qData->recLinkListIter >= 0) {
@@ -656,11 +656,10 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 
     /* execute a restricted, non-randomized query using the record
        ranges specified in recLink */
-    do {
-      RecId low, high;
+    RecId low, high;
 
-      /* fetch next record link record if needed */
-      if (qData->nextRecLinkRecId != qData->recLinkRecId) {
+    /* fetch next record link record if needed */
+    if (qData->nextRecLinkRecId != qData->recLinkRecId) {
         qData->recLinkRecId = qData->nextRecLinkRecId;
 #ifdef DEBUG
         printf("Fetching record %ld from record link file %s\n",
@@ -693,9 +692,8 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 #ifdef DEBUG
           printf("Skipping to next record link record\n");
 #endif
-          qData->nextRecLinkRecId = qData->recLinkRecId + 1;
-          cont = true;
-          continue;
+          qData->nextRecLinkRecId++;
+          return;
         }
         high = low + num - 1;
         qData->recLinkHigh = high;
@@ -715,118 +713,56 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
              qData->current);
 #endif
       int recsScanned;
-      cont = DoScan(qData, low, high, isTData, recsScanned);
+      DoScan(qData, low, high, isTData, recsScanned);
       qData->current += recsScanned;
       if (qData->current > high) {
 	/* go to next record range from record link */
         qData->nextRecLinkRecId++;
-      }
-    } while (cont);      
+    }
 
     return;
   }
 
-  if (!qData->isRandom) {
-    do {
-      RecId low, high;
-      noHigh = qData->range->NextUnprocessed(qData->current, low, high);
-      if (low > qData->high) {
-	/* done */
-	qData->state = QPFull_EndState;
-	break;
-      }
-      if (noHigh || high > qData->high)
-	high = qData->high;
-      
-      int recsScanned;
-      cont = DoScan(qData, low, high, isTData, recsScanned);
-      qData->current += recsScanned;
+  // Process query sequentially or using randomization.
 
-    } while(cont);
-    return;
+  RecId low, high;
+  noHigh = qData->range->NextUnprocessed(qData->current, low, high);
+  if (low > qData->high) {
+      // If we are past the end of query, wrap around to the beginning
+      // of the query. This is so that unprocessed ranges (which we may
+      // skipped because of randomization or the fact that records were
+      // returned out-of-order by the buffer manager) are properly processed.
+      qData->current = qData->low;
+      noHigh = qData->range->NextUnprocessed(qData->current, low, high);
   }
 
-  /* query must be executed in randomized fashion */
+  // Query is finished when no unprocessed record ranges can be found.
 
-#ifdef DEBUG
-  printf("Process Scan low %ld, cur %ld, high %ld\n",
-	 qData->low, qData->current, qData->high);
+  if (low > qData->high) {
+#if defined(DEBUG)
+      printf("query finished\n");
 #endif
+      qData->state = QPFull_EndState;
+      return;
+  }
 
-  do {
-    RecId low, high;
-    RecId endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
-    noHigh = qData->range->NextUnprocessed(qData->current, low, high);
-
-#ifdef DEBUG
-    printf(" 0 current %ld, low %ld, high %ld, noHigh %d\n",
-	   qData->current, low, high, noHigh);
-#endif
-
-    while(low > endId && low <= qData->high) {
-      qData->current += QPFULL_RANDOM_RECS_PER_BATCH *QPFULL_RANDOM_ITERATIONS;
-      endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
-      noHigh = qData->range->NextUnprocessed(qData->current, low, high);
-#ifdef DEBUG
-      printf(" 1 current %ld, low %ld, high %ld, noHigh %d\n",
-	     qData->current, low, high, noHigh);
-#endif
-    }
-
-    if (low >  qData->high) {
-      if (qData->iteration == QPFULL_RANDOM_ITERATIONS - 1) {
-	/* done */
-	qData->state = QPFull_EndState;
-	break;
-      } else {
-	/* Reinitialize to iterate next batch */
-	qData->iteration++;
-	low = qData->current = qData->low + qData->iteration
-	                       * QPFULL_RANDOM_RECS_PER_BATCH;
-	high = endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
-	noHigh = false;
-      }
-    }
-
-#ifdef DEBUG
-    printf(" 2 current %ld, low %ld, high %ld, noHigh %d\n",
-	   qData->current, low, high, noHigh);
-#endif
-      
-    if (noHigh || high > qData->high)
+  if (noHigh || high > qData->high)
       high = qData->high;
-#ifdef DEBUG
-    printf(" 3 current %ld, low %ld, high %ld, noHigh %d\n",
-	   qData->current, low, high, noHigh);
-#endif
-    if (high > endId)
-      high = endId;
-      
-#ifdef DEBUG
-    printf("scanning (%ld,%ld)\n",low,high);
+
+#if defined(DEBUG)
+  printf("low %ld, high %ld (%ld:%ld:%ld)\n",
+         low, high, qData->low, qData->high, qData->current);
 #endif
 
-    int recsScanned;
-    cont = DoScan(qData, low, high, isTData, recsScanned);
-      
-    /* there might be a problem here if DoScan() returns fewer
-       than QP_FULL_RANDOM_RECS_PER_BATCH records AND this
-       was not the final (last) fraction of records read from
-       the file; if, in the middle of a file, we request 1024
-       records but get only 1000, this algorithm ignores the
-       missing 24 and just moves on to the next interval */
+  int recsScanned;
+  DoScan(qData, low, high, isTData, recsScanned);
 
-    if (cont) {
-      if (high != endId) {
-        fprintf(stderr, "Warning: did not get full interval, %ld vs. %ld\n",
-                high, endId);
-      } else {
-        /* reset current */
-        qData->current += QPFULL_RANDOM_RECS_PER_BATCH
-                          * QPFULL_RANDOM_ITERATIONS;
-      }
-    }
-  } while (cont);
+  qData->current += recsScanned;
+
+  // In random mode, skip over a large number of records.
+
+  if (qData->isRandom)
+      qData->current += (qData->high - qData->low) / QPFULL_RANDOM_SKIPS;
 }
 
 void QueryProcFull::ProcessQPFullX(QPFullData *qData)
@@ -1075,19 +1011,12 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   return false;
 }
 
-/* Initialize scan by initializing the amount of memory used */
-
-void QueryProcFull::InitScan()
-{
-  _memFetched = 0;
-}
-
 /* Do scan of record ID range. Distribute data to all queries
    that need it. Return TRUE if have not exceeded
    amount of memory used for this iteration of the query processor */
 
-Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high, 
-			      Boolean tdataOnly, int &recsScanned)
+void QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high, 
+                           Boolean tdataOnly, int &recsScanned)
 {
 #if defined(DEBUG)
   printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
@@ -1101,7 +1030,6 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
   int gRecSize = qData->map->GDataRecordSize();
 		
   recsScanned = 0;
-  Boolean exceedMem = false;
 
   int numRecs;
   RecId startRid; 
@@ -1116,23 +1044,16 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 #endif
     if (isTData) {
       DistributeTData(qData, startRid, numRecs, buf, recs);
-      _memFetched += numRecs * tRecSize;
     } else {
       DistributeGData(qData, startRid, numRecs, buf, recs);
-      _memFetched += numRecs * gRecSize;
     }
     mgr->FreeRecs(buf, NoChange);
 
-    if (_memFetched >= QPFULL_MAX_FETCH) {
-      /* exceeded max amount to fetch */
-      exceedMem = true;
+    if (recsScanned >= QPFULL_RECS_PER_BATCH)
       break;
-    }
   }
 
   mgr->DoneGetRecs();
-
-  return (!exceedMem);
 }
 
 void QueryProcFull::QPRangeInserted(RecId low, RecId high)
@@ -1150,15 +1071,15 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
        Therefore, we have to convert in batches and send each batch
        of GData individually. */
     _rangeQData->bytes += (high-low+1)*tRecSize;
-    int numRecsPerBatch = GDATA_BUF_SIZE/gRecSize;
-    if (numRecsPerBatch > QPFULL_MAXSYMS)
-      numRecsPerBatch = QPFULL_MAXSYMS;
+    int numRecsPerBatch = GDATA_BUF_SIZE / gRecSize;
     
     int numRecs = high-low+1;
+
     int recsLeft = numRecs;
     int offset = low-_rangeStartId;
     char *dbuf = (char *)_rangeBuf + offset * tRecSize;
     RecId recId = low;
+
     while (recsLeft > 0) {
       int numToConvert = numRecsPerBatch;
       if (numToConvert > recsLeft)
@@ -1332,6 +1253,7 @@ void QueryProcFull::FreeEntry(QPFullData *entry)
 #endif
 
   delete entry->range;
+  entry->range = 0;
   entry->next = _freeList;
   _freeList = entry;
 }
