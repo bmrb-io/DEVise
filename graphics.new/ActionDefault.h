@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/07 16:36:33  jussi
+  Changed type of view parameter from View * to ViewGraph *.
+  Added handling of keypad number 5 (autoscale view).
+
   Revision 1.3  1995/12/28 20:47:21  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -38,7 +42,7 @@ public:
 		Boolean useLeftFlag = false,
 		Coord rightEdge = 0.0, Boolean useRightFlag = false);
 
-  void KeySelected(ViewGraph *view, char c, Coord x, Coord y);
+  void KeySelected(ViewGraph *view, int c, Coord x, Coord y);
 
   Boolean PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 		Coord yHigh, int button, char **& msgs, int & numMsgs);

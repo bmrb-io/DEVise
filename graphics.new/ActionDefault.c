@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/21 02:17:35  jussi
+  Added testing of xyZoom flag to determine zoom mode (XY or X/Y).
+
   Revision 1.20  1996/06/27 15:46:11  jussi
   Moved key '5' functionality to ViewGraph::UpdateAutoScale().
 
@@ -88,6 +91,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "ActionDefault.h"
 #include "TDataMap.h"
@@ -96,6 +100,9 @@
 #include "RecInterp.h"
 #include "QueryProc.h"
 #include "TData.h"
+#include "DeviseKey.h"
+
+//#define DEBUG
 
 ActionDefault::ActionDefault(char *name, Coord leftEdge,
 			     Boolean useLeftFlag, Coord rightEdge,
@@ -108,8 +115,12 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
     useRight = useRightFlag;
 }
 
-void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
+void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
+#if defined(DEBUG)
+    printf("ActionDefault::KeySelected(%s, '%c' %d, %g, %g)\n", 
+	   view->GetName(), isgraph(key) ? key : ' ', (int)key, x, y);
+#endif
     ControlPanel::Instance()->SelectView(view);
     VisualFilter filter;
 
@@ -117,78 +128,93 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     isScatterPlot |= (view->GetNumDimensions() != 2);
     isScatterPlot &= (view->IsXYZoom());
 
-    if (key == '+') {
-        /* increase pixel size */
-        Boolean changed = false;
-        int index = view->InitMappingIterator();
-        while(view->MoreMapping(index)) {
-            TDataMap *map = view->NextMapping(index)->map;
-            if (map->GetPixelWidth() < 30) {
-                changed = true;
-                map->SetPixelWidth(map->GetPixelWidth() + 1);
-            }
-        }
-        view->DoneMappingIterator(index);
-        if (changed)
-          view->Refresh();
-    }
+    switch(key) {
+      case '+': {
+	  /* increase pixel size */
+	  Boolean changed = false;
+	  int index = view->InitMappingIterator();
+	  while(view->MoreMapping(index)) {
+	      TDataMap *map = view->NextMapping(index)->map;
+	      if (map->GetPixelWidth() < 30) {
+		  changed = true;
+		  map->SetPixelWidth(map->GetPixelWidth() + 1);
+	      }
+	  }
+	  view->DoneMappingIterator(index);
+	  if (changed)
+	    view->Refresh();
+	  break;
+      }
+      case '-': {
+	  /* decrease pixel size */
+	  Boolean changed = false;
+	  int index = view->InitMappingIterator();
+	  while(view->MoreMapping(index)) {
+	      TDataMap *map = view->NextMapping(index)->map;
+	      if (map->GetPixelWidth() > 1) { 
+		  changed = true;
+		  map->SetPixelWidth(map->GetPixelWidth() - 1);
+	      }
+	  }
+	  view->DoneMappingIterator(index);
+	  if (changed)
+	    view->Refresh();
+	  break;
+      }
+      case DeviseKey::KP_5:
+      case DeviseKey::BEGIN:
+      case DeviseKey::KP_BEGIN: {
+	  view->UpdateAutoScale();
+	  break;
+      }
 
-    else if (key == '-') {
-        /* decrease pixel size */
-        Boolean changed = false;
-        int index = view->InitMappingIterator();
-        while(view->MoreMapping(index)) {
-            TDataMap *map = view->NextMapping(index)->map;
-            if (map->GetPixelWidth() > 1) { 
-                changed = true;
-                map->SetPixelWidth(map->GetPixelWidth() - 1);
-            }
-        }
-        view->DoneMappingIterator(index);
-        if (changed)
-          view->Refresh();
-    }
+#if 0
+	// this is defined almost identically in Action.c
+	// Why does action & actiondefault exist?
+      case '<':
+      case ',':
+      case DeviseKey::KP_4:
+      case DeviseKey::RIGHT: {
+	  /* scroll data left */
+	  view->GetVisualFilter(filter);
+	  Coord width = filter.xHigh - filter.xLow;
+	  Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+	  filter.xLow += halfWidth;
+	  filter.xHigh = filter.xLow + width;
+	  if (useRight && filter.xHigh > right) {
+	      filter.xHigh = right;
+	      filter.xLow = filter.xHigh - width;
+	  }
+	  view->SetVisualFilter(filter);
+	  break;
+      }
+      case DeviseKey::KP_9:
+      case DeviseKey::PAGE_UP: {
+	  /* zoom out */
+	  view->GetVisualFilter(filter);
+	  Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+	  if (halfWidth == 0.0)
+	    halfWidth = 1.0;
+	  filter.xLow -= halfWidth;
+	  filter.xHigh += halfWidth;
+	  Coord xMin;
+	  if (view->GetXMin(xMin) && filter.xLow < xMin)
+	    filter.xLow = xMin;
+	  /*
+	     if (useLeft && filter.xLow < left)
+	     filter.xLow = left;
+	     */
+	  if (useRight && filter.xHigh > right)
+	    filter.xHigh = right;
+	  view->SetVisualFilter(filter);
+	  break;
+      }
+#endif
 
-    else if (key == '5') {
-        view->UpdateAutoScale();
-    }
-
-    else if (!isScatterPlot && (key == '<' || key == ',' || key == '4')) {
-        /* scroll data left */
-        view->GetVisualFilter(filter);
-        Coord width = filter.xHigh - filter.xLow;
-        Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-        filter.xLow += halfWidth;
-        filter.xHigh = filter.xLow + width;
-        if (useRight && filter.xHigh > right) {
-            filter.xHigh = right;
-            filter.xLow = filter.xHigh - width;
-        }
-        view->SetVisualFilter(filter);
-    }
-
-    else if (!isScatterPlot && key == '9') {
-        /* zoom out */
-        view->GetVisualFilter(filter);
-        Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-        if (halfWidth == 0.0)
-          halfWidth = 1.0;
-        filter.xLow -= halfWidth;
-        filter.xHigh += halfWidth;
-        Coord xMin;
-        if (view->GetXMin(xMin) && filter.xLow < xMin)
-          filter.xLow = xMin;
-        /*
-           if (useLeft && filter.xLow < left)
-           filter.xLow = left;
-           */
-        if (useRight && filter.xHigh > right)
-          filter.xHigh = right;
-        view->SetVisualFilter(filter);
-    }
-
-    else
-      Action::KeySelected(view, key, x, y);
+      default: {
+	  Action::KeySelected(view, key, x, y);
+      }
+    } // end switch
 }
 
 static const int MAX_MSGS = 50;
