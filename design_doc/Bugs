@@ -2786,8 +2786,9 @@ Num Date        Status  Description
 			or Tcl/Tk.)
 			(Fixed by rkw, 10/03/01.)
 
-698 10/05/01	OPEN	JavaScreen: 3D manipulation doesn't work in command
-			playback. (xuk/rkw)
+698 10/05/01	FIXED	JavaScreen: 3D manipulation doesn't work in
+			command playback. (xuk/rkw)
+			(Fixed by xuk, 10/05/01.)
 
 699 10/05/01	OPEN	JavaScreen: if you specify a non-existant log file
 			with the -clientlog argument, the JS totally locks
