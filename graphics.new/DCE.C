@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/29 21:40:16  wenger
+  Fixed various compile errors and warnings.
+
   Revision 1.2  1996/07/18 02:12:52  jussi
   Added #include <sys/types.h>, needed by <sys/stat.h> in Ultrix.
 
@@ -36,7 +39,9 @@
 #include <iostream.h>
 #include <stdio.h>
 #include <assert.h>
+#ifdef MODIFIED
 #include <sys/types.h>
+#endif
 #include <sys/stat.h>
 
 #include "DCE.h"
@@ -138,9 +143,14 @@ int Semaphore::destroyAll()
 
 int Semaphore::setValue(int num, int sem)
 {
-#if defined(__sun)
-  int result = semctl(id, sem, SETVAL, &num);
-#elif defined(__linux)
+#if defined(__sun) || defined(__solaris)
+  union semun {
+    int val;
+    struct semid_ds *buf;
+    ushort *array;
+  };
+#endif
+#if defined(__linux) || defined(__sun) || defined(__solaris)
   union semun param;
   param.val = num;
   int result = semctl(id, sem, SETVAL, param);
@@ -232,7 +242,11 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
     cerr << "%%  Attached to existing shared memory (" << sbuf.shm_segsz
          << " bytes, " << sbuf.shm_nattch << " attachments)" << endl;
 #endif
-    if ((int) sbuf.shm_segsz != (int) size) {
+#ifdef MODIFIED
+    if (size > 0 && (int)sbuf.shm_segsz != size) {
+#else
+    if ((int)sbuf.shm_segsz != size) {
+#endif
       cerr << "Existing shared memory segment has incorrect size: "
 	   << sbuf.shm_segsz << " vs. " << size << endl;
       cerr << "Deleting old segment" << endl;
