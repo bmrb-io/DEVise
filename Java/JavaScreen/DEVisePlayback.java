@@ -18,6 +18,9 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.5  2001/10/05 20:00:25  xuk
+// Fixed bug 701: command log playwork can work for URL and simple file path.
+//
 // Revision 1.4  2001/10/05 19:26:32  xuk
 // Fixed bug 698: manipulating 3D command playback.
 //
@@ -128,10 +131,13 @@ public class DEVisePlayback implements Runnable
 	} catch (InterruptedException e) {
 	} catch (NumberFormatException e) {
 	    _jsc.showMsg("Wrong long number format.");
+	    stop();
 	} catch (FileNotFoundException e) {
 	    _jsc.showMsg("File not found: " + _filename);
+	    stop();
 	} catch (IOException e) {
 	    _jsc.showMsg("File read error: " + _filename);
+	    stop();
 	}
     }
 
