@@ -13,6 +13,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  1999/12/07 20:37:44  wenger
+// Changed reading of data from socket to a single system call to speed things
+// up.
+//
 // Revision 1.5  1999/09/24 17:11:47  hongyu
 // adding support for 3-d molecule view
 //
@@ -42,7 +46,8 @@ public class DEViseCommSocket
 
     // timeout = 0 means no time out
     private int timeout = 0;
-    private int checkingSocketTimeout = 100;
+    private int checkingCmdSocketTimeout = 100;
+    private int checkingImgSocketTimeout = 300;
 
     // the buffer size for BufferedOutputStream, JDK defaults is 512
     private int bufferSize = 512;
@@ -228,18 +233,25 @@ public class DEViseCommSocket
 
     public synchronized void clearSocket() throws YException
     {
+        clearSocket(-1);
+    }
+
+    public synchronized void clearSocket(int count) throws YException
+    {
         resetData();
 
+        //int count1 = 0, count2 = 0;
         try {
             if (socket!= null && is != null) {
                 socket.setSoTimeout(0);
 
                 int size = is.available();
+                //count1 += size;
                 boolean isEnd = false;
                 while (size > 0 || !isEnd) {
                     if (size <= 0) {
                         try {
-                            Thread.sleep(checkingSocketTimeout);
+                            Thread.sleep(checkingCmdSocketTimeout);
                         } catch (InterruptedException e1) {
                         }
                         isEnd = true;
@@ -249,6 +261,7 @@ public class DEViseCommSocket
                     }
 
                     size = is.available();
+                    //count1 += size;
                 }
 
                 socket.setSoTimeout(timeout);
@@ -257,21 +270,28 @@ public class DEViseCommSocket
             if (imgSocket!= null && imgis != null) {
                 imgSocket.setSoTimeout(0);
 
-                int size = imgis.available();
-                boolean isEnd = false;
-                while (size > 0 || !isEnd) {
-                    if (size <= 0) {
-                        try {
-                            Thread.sleep(checkingSocketTimeout);
-                        } catch (InterruptedException e1) {
+                if (count < 0) {
+                    int size = imgis.available();
+                    //count2 += size;
+                    boolean isEnd = false;
+                    while (size > 0 || !isEnd) {
+                        if (size <= 0) {
+                            try {
+                                Thread.sleep(checkingImgSocketTimeout);
+                            } catch (InterruptedException e1) {
+                            }
+                            isEnd = true;
+                        } else {
+                            byte[] tmpdat = new byte[size];
+                            imgis.readFully(tmpdat);
                         }
-                        isEnd = true;
-                    } else {
-                        byte[] tmpdat = new byte[size];
-                        imgis.readFully(tmpdat);
-                    }
 
-                    size = imgis.available();
+                        size = imgis.available();
+                        //count2 += size;
+                    }
+                } else if (count > 0) {
+                    byte [] tmpdat = new byte[count];
+                    imgis.readFully(tmpdat);
                 }
 
                 imgSocket.setSoTimeout(timeout);
@@ -280,6 +300,8 @@ public class DEViseCommSocket
             closeSocket();
             throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:clearSocket()");
         }
+
+        //System.out.println("CmdSocket cleared: " + count1 + " and ImgSocket cleared: " + count2);
     }
 
     private synchronized void resetData()

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2000/02/22 10:00:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.31  2000/02/18 22:21:15  wenger
 // Various changes to make cron scripts work better with new two-machine
 // setup: added -id argument to devise, jspop, jss; updated cron scripts
@@ -479,7 +482,14 @@ public class DEViseServer implements Runnable
                                     client.isSessionOpened = true;
                                 } else {
                                     // need to clear socket because there might be some data on data socket
-                                    socket.clearSocket();
+                                    int count;
+                                    try {
+                                        count = countData();
+                                    } catch (YException ee) {
+                                        count = -1;
+                                        pop.pn(ee.getMessage());
+                                    }
+                                    socket.clearSocket(count);
                                 }
                             }
 
@@ -535,8 +545,8 @@ public class DEViseServer implements Runnable
                                 if (client.screenDimX > 0 && client.screenDimY > 0) {
                                     if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
                                         error = true;
-                                    } else {
-                                        pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
+                                    //} else {
+                                    //    pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
                                     }
                                 }
 
@@ -546,10 +556,18 @@ public class DEViseServer implements Runnable
                                     } else {
                                         pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
                                     }
-
                                     // need to clear socket because there might be some useless data on data socket
-                                    socket.clearSocket();
+                                    //socket.clearSocket();
                                 }
+                                // need to clear socket because there might be some useless data on data socket
+                                int count;
+                                try {
+                                    count = countData();
+                                } catch (YException ee) {
+                                    count = -1;
+                                    pop.pn(ee.getMessage());
+                                }
+                                socket.clearSocket(count);
 
                                 //Vector path = findPath(client.path);
                                 //if (path != null) {
@@ -593,7 +611,14 @@ public class DEViseServer implements Runnable
                         if (client.isSessionOpened) {
                             if (!sendCmd(clientCmd)) {
                                 // need to clear data socket when error happened because there might be some data on data socket
-                                socket.clearSocket();
+                                int count;
+                                try {
+                                    count = countData();
+                                } catch (YException ee) {
+                                    count = -1;
+                                    pop.pn(ee.getMessage());
+                                }
+                                socket.clearSocket(count);
                             }
                         } else {
                             serverCmds = new String[1];
@@ -890,7 +915,7 @@ public class DEViseServer implements Runnable
                 if (cmds == null || cmds.length == 0) {
                     throw new YException("Ill-formated response \"" + response + "\" received from devised");
                 } else {
-                    pop.pn("Receive response \"" + response + "\" from devised");
+                    //pop.pn("Receive response \"" + response + "\" from devised");
 
                     String cmd = cmds[0];
                     // Rip off the { and } around the command but not the arguments
@@ -917,4 +942,47 @@ public class DEViseServer implements Runnable
 
         return !isError;
     }
+
+    private int countData() throws YException
+    {
+        int count = 0;
+        for (int i = 0; i < (serverCmds.length - 1); i++) {
+            if (serverCmds[i].startsWith("JAVAC_UpdateViewImage")) {
+                String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
+                if (cmds != null && cmds.length == 3) {
+                    try {
+                        int imgSize = Integer.parseInt(cmds[2]);
+                        if (imgSize < 1) {
+                            throw new NumberFormatException();
+                        }
+
+                        count += imgSize;
+                    } catch (NumberFormatException e1) {
+                        throw new YException("Invalid image size in command \"" + serverCmds[i] + "\" while counting data in the socket");
+                    }
+                } else {
+                    throw new YException("Ill-formated command \"" + serverCmds[i] + "\" while counting data in the socket");
+                }
+            } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
+                String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
+                if (cmds != null && cmds.length == 7) {
+                    try {
+                        int dataSize = Integer.parseInt(cmds[6]);
+                        if (dataSize < 1) {
+                            throw new NumberFormatException();
+                        }
+
+                        count += dataSize;
+                    } catch (NumberFormatException e1) {
+                        throw new YException("Invalid GData size in command \"" + serverCmds[i] + "\" while counting data in the socket");
+                    }
+                } else {
+                    throw new YException("Ill-formated command \"" + serverCmds[i] + "\" while counting data in the socket");
+                }
+            }
+        }
+
+        return count;
+    }
+
 }
