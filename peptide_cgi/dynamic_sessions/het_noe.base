@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jan 18 2001 13:15:43
+# file date: Feb 08 2001 11:44:28
 # DEVise version: 1.7.1
 # DEVise date: Sep 27 2000
 # DEVise endHeader
@@ -9,11 +9,11 @@
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267t11" UNIXFILE 4267t11.dat relax /p/devise/demo/schema/schema/physical/bmrb:relax "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267n1" UNIXFILE 4267n1.dat NOE /p/devise/demo/schema/schema/physical/bmrb:NOE "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
-DEVise create {view} {SortedX} {View 1} 3.000000 179.000000 0.000000 2.000000 37 0
+DEVise create {view} {SortedX} {View 1} 3.000000 179.000000 0.000000 1.950000 37 0
 DEVise setLabel {View 1} 1 16 {dummy title}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -23,13 +23,13 @@ DEVise setViewDisplayDataValues {View 1} 0
 DEVise setFont {View 1} {title} 2 14 0 0
 DEVise setFont {View 1} {x axis} 2 8 0 0
 DEVise setFont {View 1} {y axis} 2 8 0 0
-DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {View 1} 1 1 1 1 0.500000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 1 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
 DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 1} 0.487 1.95 10
+DEVise setHistogram {View 1} 0.657 0.84 10
 DEVise setCountMapping {View 1} 0 {} {}
 DEVise viewSetIsHighlight {View 1} 0
 DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
@@ -71,12 +71,12 @@ DEVise viewSetDisabledActions {View 2} 0 0 0 0
 DEVise setShowMouseLocation {View 2} {1}
 
 # Create interpreted mapping classes
-DEVise createMappingClass {relax_value_vs_Residue_seq_code}
+DEVise createMappingClass {NOE_value_vs_Residue_seq_code}
 DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {relax_value_vs_Residue_seq_code} .4267t11 .4267t11#relax_value_vs_Residue_seq_code {} {$Residue_seq_code} {$relax_value} {} 6 1 0 0 2 {} {$relax_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267t11#relax_value_vs_Residue_seq_code} 1
+DEVise create {mapping} {NOE_value_vs_Residue_seq_code} .4267n1 .4267n1#NOE_value_vs_Residue_seq_code {} {$Residue_seq_code} {$NOE_value} {} 36 1 0 0 2 {} {$NOE_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4267n1#NOE_value_vs_Residue_seq_code} 1
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 50 50 {} 37 14 0 0 16 {"Sequence Number"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
@@ -113,7 +113,7 @@ DEVise setAxisTicks {View 2} {Y} 1
 # Put axis label into views
 
 # Insert mappings into views
-DEVise insertMapping {View 1} {.4267t11#relax_value_vs_Residue_seq_code}
+DEVise insertMapping {View 1} {.4267n1#NOE_value_vs_Residue_seq_code}
 DEVise insertMapping {View 2} {.label#Label_text_vs_recId}
 
 # Link views
@@ -131,6 +131,7 @@ DEVise clearViewHistory {View 1}
 DEVise insertViewHistory {View 1} {0.00} {0.00} {100.00} {100.00} 0
 DEVise insertViewHistory {View 1} {3.00} {0.49} {179.00} {1.95} 0
 DEVise insertViewHistory {View 1} {3.00} {0.00} {179.00} {2.00} 0
+DEVise insertViewHistory {View 1} {3.00} {0.00} {179.00} {1.95} 0
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {0.00} {0.00} {100.00} {100.00} 0
 

@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.1.2.1  2001/02/09 16:57:13  wenger
+// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
+// (conversion doesn't fail if they are not found); added an X margin of
+// 0.5 in all sessions; updated star file list; misc. minor cleanups.
+//
+// Revision 1.1  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 
 // ========================================================================
 
@@ -134,9 +144,9 @@ public class S2DRelaxation {
 	      _resSeqCodes.length);
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing coupling constants: " +
+	    System.err.println("IOException writing relaxation data: " +
 	      ex.getMessage());
-	    throw new S2DError("Can't write coupling constants");
+	    throw new S2DError("Can't write relaxation data");
 	}
     }
 }

@@ -20,6 +20,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2001/02/09 16:57:13  wenger
+// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
+// (conversion doesn't fail if they are not found); added an X margin of
+// 0.5 in all sessions; updated star file list; misc. minor cleanups.
+//
+// Revision 1.2  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.1  2001/01/17 20:00:07  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -108,6 +118,12 @@ TEMP*/
 	    searchString = "4267t11";
 	    break;
 
+        case S2DUtils.TYPE_HETNOE:
+	    baseName = "het_noe.base";
+	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
+	    searchString = "4267n1";
+	    break;
+
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
@@ -139,7 +155,7 @@ TEMP*/
         } catch(IOException ex) {
 	    System.err.println("IOException writing session file: " +
 	      ex.getMessage());
-	    throw new S2DError("Can't write session file" + outFileName);
+	    throw new S2DError("Can't write session file " + outFileName);
 	}
     }
 }

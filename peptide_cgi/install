@@ -16,7 +16,7 @@
 
 #  Install the peptide-cgi setup.  Note: some of the installation is
 #  specific to a certain machine; this script is configured to do
-#  the installation on either pumori (cs) or yola (bmrb).  Changes
+#  the installation on either pumori (cs) or aden (bmrb).  Changes
 #  may be needed to do the installation on other machines.
 
 #  Note: CS install must be done on pumori; BMRB on aden.
@@ -43,6 +43,19 @@ if ($#argv == 1) then
     set cgihome = $wwwhome/cgi-bin/bmrb
     set sessionhome = /local.pumori/devise/bmrb/dynamic_sessions
     set datahome = /local.pumori/devise/bmrb/dynamic_data
+
+    # Check whether we're on the appropriate machine.
+    if (`hostname` != "pumori.cs.wisc.edu") then
+      echo "cs installation is normally done on pumori."
+      echo -n "Are you sure you want to continue? [n] "
+
+      set answer = $<
+      if ($answer != y && $answer != Y) then
+        echo Aborted.
+        exit 1
+      endif
+    endif
+
   else if ($location == bmrb) then
     set demohome = /p/devise/demo
     set wwwhome = /bmrb/htdocs
@@ -51,6 +64,19 @@ if ($#argv == 1) then
     set sessionhome = $pephome/session_dir
     set datahome = $pephome/data_dir
 
+    # Check whether we're on the appropriate machine.
+    if (`hostname` != "aden.bmrb.wisc.edu") then
+      echo "cs installation is normally done on aden."
+      echo -n "Are you sure you want to continue? [n] "
+
+      set answer = $<
+      if ($answer != y && $answer != Y) then
+        echo Aborted.
+        exit 1
+      endif
+    endif
+
+    # Check whether we've modified the files to work at BMRB.
     echo "Have you modified cgi-bin/make_view and bmrb_select.html"
     echo -n "for installation at bmrb? [n]"
     set answer = $<
@@ -68,6 +94,14 @@ else
 endif
 
 
+# Check that the Java code is compiled.
+set file = "java_classes/S2DMain.class"
+if (! -f $file) then
+  echo "Please compile the Java code before installing."
+  exit 1
+endif
+
+
 # Make sure the user really wants to do this.
 
 echo You are about to install the peptide-cgi setup.  This
@@ -81,14 +115,6 @@ if ($answer != y && $answer != Y) then
   echo Aborted.
   exit 1
 endif
-
-
-# Compile the Java code.
-
-cd java_classes
-source set_path
-make
-cd ..
 
 
 # Create and set up the directory containing the "front-end" html file.

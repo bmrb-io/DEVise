@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.2  2001/02/15 15:59:23  wenger
+// More details in some error messages.
+//
+// Revision 1.5.2.1  2001/02/09 16:57:13  wenger
+// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
+// (conversion doesn't fail if they are not found); added an X margin of
+// 0.5 in all sessions; updated star file list; misc. minor cleanups.
+//
+// Revision 1.5  2001/01/30 17:12:09  wenger
+// Modified code to take account of the fact that Star file tags, etc.,
+// are not supposed to be case-sensitive.
+//
 // Revision 1.4  2001/01/25 16:37:46  wenger
 // Fixed a bug that could cause an infinite loop in the perecent assignment
 // calculations; put filesize, cpu, and coredump limits in s2d script;
@@ -360,6 +372,39 @@ public class S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
+    // Return an array of Strings containing the values for the given
+    // name in the loop identified by loopId of the given frame.
+    // "Optional" indicates that if we can't get these values it is only
+    // a warning, not an error.
+    public String[] getOptionalFrameValues(SaveFrameNode frame, String loopId,
+      String name, int size, String defaultValue) throws S2DException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  S2DStarIfc.getOptionalFrameValues(" +
+	      frame.getLabel() + ", " + loopId + ", " + name + ", " +
+	      size + ", " + defaultValue + ")");
+        }
+
+	String[] result = null;
+
+        try {
+	    result = getFrameValues(frame, loopId, name);
+	} catch (S2DError ex) {
+	    System.err.println("Warning: " + ex.getMessage());
+
+	    // Generate default values.
+	    result = new String[size];
+	    for (int index = 0; index < size; index++) {
+	        result[index] = defaultValue;
+	    }
+	} catch (S2DWarning ex) {
+	    System.err.println("Warning: " + ex.getMessage());
+	}
+
+	return result;
+    }
+
+    //-------------------------------------------------------------------
     public String getFrameName(SaveFrameNode frame)
     {
         return frame.getLabel();
@@ -382,17 +427,16 @@ public class S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    public String getSpectrometerFreq(SaveFrameNode frame)
+    public String getOneFrameValue(SaveFrameNode frame, String name)
     {
-        String result = null;
+        String result = "";
 
-	//TEMP -- change string to constant
-        VectorCheckType list = frame.searchByName("_Spectrometer_frequency_1H");
+        VectorCheckType list = frame.searchByName(name);
         if (list.size() == 1) {
             DataItemNode node = (DataItemNode)list.elementAt(0);
 	    result = node.getValue();
         } else {
-	    result = "Spectrometer frequency not available for this " +
+	    result = name + " not available for this " +
 	      "save frame.";
         }
 
@@ -412,13 +456,14 @@ public class S2DStarIfc {
 
 	int residueCount = -1;
 
+	DataItemNode node = null;
         try {
 	    VectorCheckType list = _starTree.searchByName(
 	      S2DNames.RESIDUE_COUNT);
 
 	    boolean found = false;
 	    for (int index = 0; index < list.size(); index++) {
-	        DataItemNode node = (DataItemNode)list.elementAt(index);
+		node = (DataItemNode)list.elementAt(index);
 	        SaveFrameNode frame = (SaveFrameNode)S2DStarUtil.
 		  getParentByClass(node, S2DStarUtil._frameClass);
 
@@ -450,6 +495,9 @@ public class S2DStarIfc {
 	    if (!found) {
 		throw new S2DError("No protein residue count found");
 	    }
+	} catch(NumberFormatException ex) {
+	    System.err.println("NumberFormatException (" + ex.getMessage() +
+	      ") getting residue count at " + S2DStarUtil.node2String(node));
 	} catch(Exception ex) {
 	    System.err.println("Exception getting residue count: " +
 	      ex.getMessage());
@@ -592,6 +640,21 @@ class S2DStarUtil
 	}
 
         return returnIndex.num;
+    }
+
+    // ----------------------------------------------------------------------
+    // Convert a StarNode to a string, including line and column numbers.
+    public static String node2String(StarNode node)
+    {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+	StarUnparser up = new StarUnparser(os);
+	up.writeOut(node, 0);
+
+	String result = "star file at line " + node.getLineNum() +
+	  ", column " + node.getColNum() + ": " + os.toString();
+
+	return result;
     }
 }
 

@@ -20,6 +20,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2001/02/09 16:57:13  wenger
+// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
+// (conversion doesn't fail if they are not found); added an X margin of
+// 0.5 in all sessions; updated star file list; misc. minor cleanups.
+//
+// Revision 1.2  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.1  2001/01/17 20:00:07  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -84,6 +94,10 @@ TEMP*/
 
         case S2DUtils.TYPE_T2_RELAX:
 	    dataSuffix = S2DNames.T2_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_HETNOE:
+	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
 	    break;
 
 	default:

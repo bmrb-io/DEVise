@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.1  2001/02/09 16:57:12  wenger
+// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
+// (conversion doesn't fail if they are not found); added an X margin of
+// 0.5 in all sessions; updated star file list; misc. minor cleanups.
+//
+// Revision 1.5  2001/01/30 17:44:47  wenger
+// Added path for set_modes.
+//
 // Revision 1.4  2001/01/25 16:37:46  wenger
 // Fixed a bug that could cause an infinite loop in the perecent assignment
 // calculations; put filesize, cpu, and coredump limits in s2d script;
@@ -247,13 +255,30 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveHetNOE(S2DStarIfc star)
+    // Save all heteronuclear NOE values for this entry.
+    // Note: this can be tested with 4267.
+    private void saveHetNOE(S2DStarIfc star) throws S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveHetNOE()");
 	}
 
 	// add real code here
+	Enumeration frameList = star.getDataFramesByCat(
+	  S2DNames.HETERONUCLEAR_NOE);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFrameHetNOE(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving heteronuclear NOE for " +
+		  "frame " + star.getFrameName(frame) + ": " +
+		  ex.getMessage());
+	    }
+	    frameIndex++;
+        }
     }
 
     //-------------------------------------------------------------------
@@ -422,20 +447,19 @@ public class S2DMain {
 	String[] atomNames = star.getFrameValues(frame,
 	  "_T1_value", "_Atom_name");
 
-	//TEMP 4245 has _15N_T1_value, _15N_T1_value_error
 	String[] relaxValues = star.getFrameValues(frame,
 	  "_T1_value", "_T1_value");
 
-	//TEMP -- should we allow for this not being present?
-	String[] relaxErrors = star.getFrameValues(frame,
-	  "_T1_value", "_T1_value_error");
+	//TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
+	String[] relaxErrors = star.getOptionalFrameValues(frame,
+	  "_T1_value", "_T1_value_error", relaxValues.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
 	  _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
-	  star.getSpectrometerFreq(frame), resSeqCodes,
-	  resLabels, atomNames, relaxValues, relaxErrors);
+	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
+	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
 	relaxation.writeRelaxation(frameIndex);
 
@@ -462,19 +486,19 @@ public class S2DMain {
 	String[] atomNames = star.getFrameValues(frame,
 	  "_T2_value", "_Atom_name");
 
-	//TEMP 4245 has _15N_T2_value, _15N_T2_value_error
 	String[] relaxValues = star.getFrameValues(frame,
 	  "_T2_value", "_T2_value");
 
-	String[] relaxErrors = star.getFrameValues(frame,
-	  "_T2_value", "_T2_value_error");
+	//TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
+	String[] relaxErrors = star.getOptionalFrameValues(frame,
+	  "_T2_value", "_T2_value_error", relaxValues.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
 	  _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
-	  star.getSpectrometerFreq(frame), resSeqCodes,
-	  resLabels, atomNames, relaxValues, relaxErrors);
+	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
+	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
 	relaxation.writeRelaxation(frameIndex);
 
@@ -529,6 +553,43 @@ public class S2DMain {
 	  atom2Names, couplingConstValues, couplingConstErrors);
 
 	coupling.writeCoupling(frameIndex);
+
+	_summary.endFrame();
+    }
+
+    //-------------------------------------------------------------------
+    // Save heteronuclear NOE values for one save frame.
+    private void saveFrameHetNOE(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameHetNOE(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//TEMP -- change strings to named constants
+	String[] resSeqCodes = star.getFrameValues(frame,
+	  "_Heteronuclear_NOE_value", "_Residue_seq_code");
+
+	String[] resLabels = star.getFrameValues(frame,
+	  "_Heteronuclear_NOE_value", "_Residue_label");
+
+	String[] hetNOEValues = star.getFrameValues(frame,
+	  "_Heteronuclear_NOE_value", "_Heteronuclear_NOE_value");
+
+	String[] hetNOEErrors = star.getFrameValues(frame,
+	  "_Heteronuclear_NOE_value", "_Heteronuclear_NOE_value_error");
+
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	S2DHetNOE hetNOE = new S2DHetNOE(_accessionNum, _dataDir,
+	  _sessionDir, _summary,
+	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
+	  star.getOneFrameValue(frame, "_Atom_one_atom_name"),
+	  star.getOneFrameValue(frame, "_Atom_two_atom_name"),
+	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors);
+
+	hetNOE.writeHetNOE(frameIndex);
 
 	_summary.endFrame();
     }
