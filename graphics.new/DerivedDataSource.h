@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/12 03:52:29  jussi
+  Initial revision.
+*/
 
 #ifndef DerivedDataSource_h
 #define DerivedDataSource_h
@@ -27,7 +30,7 @@
 class DerivedDataSource {
   public:
     static Boolean IsDerivedDataType(char *type) {
-        if (!strcmp(type, "VIEWSTAT"))
+        if (!strcmp(type, "BASICSTAT"))
             return true;
         return false;
     }
