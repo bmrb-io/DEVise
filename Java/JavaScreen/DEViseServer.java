@@ -267,7 +267,8 @@ public class DEViseServer implements Runnable
                 action = DEViseServer.WORK;
             } else {
                 try {
-                    Thread.sleep(100);
+                    //Thread.sleep(100);
+		    wait(100);
                 } catch (InterruptedException e) {
                 }
             }    
