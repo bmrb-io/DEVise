@@ -18,21 +18,22 @@ extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
 extract.o: ../graphics.new/machdep.h /usr/include/limits.h
 extract.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 extract.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-extract.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-extract.o: /usr/include/netdb.h /usr/include/sys/socket.h
-extract.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-extract.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-extract.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-extract.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-extract.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-extract.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-extract.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-extract.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-extract.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-extract.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-extract.o: /usr/include/sys/byteorder.h binconv.h issmdata.h
+extract.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+extract.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+extract.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+extract.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+extract.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+extract.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+extract.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+extract.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+extract.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+extract.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+extract.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+extract.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+extract.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+extract.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h binconv.h
+extract.o: issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h rectape.h
 rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
 rectape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
@@ -42,18 +43,18 @@ rectape.o: /usr/include/sys/select.h /usr/include/sys/time.h
 rectape.o: /usr/include/sys/time.h /usr/include/sys/param.h
 rectape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 rectape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-rectape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-rectape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-rectape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-rectape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-rectape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-rectape.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-rectape.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-rectape.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-rectape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-rectape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-rectape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-rectape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-rectape.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/netdb.h /usr/include/sys/socket.h
+rectape.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+rectape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+rectape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+rectape.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+rectape.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+rectape.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+rectape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+rectape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+rectape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+rectape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+rectape.o: /usr/include/sys/byteorder.h binconv.h /usr/include/string.h
