@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.49  1996/07/01 19:37:33  jussi
+#	Made changes to reflect new TData constructor interface. Web
+#	data caching is now handled in the server, not in the client.
+#
 #	Revision 1.48  1996/06/20 17:14:09  guangshu
 #	Added support for derived TData sets (statistics for now).
 #
@@ -1256,7 +1260,7 @@ proc OpenDataSource {sname} {
 	}
         set stype [lindex $derivedSourceList($sname) 0]
 	DEVise dataSegment $sname $fname 0 0
-	return [list $sname $stype $fname]
+	return [list $sname $fname $stype]
     }
 
     # see if data source (still) defined (may be out-of-date in
