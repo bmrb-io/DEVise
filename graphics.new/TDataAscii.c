@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/03 23:13:55  jussi
+  Added call to _data->Close() in destructor. Renamed
+  _fileOkay to _fileOpen which is more accurate.
+
   Revision 1.29  1996/07/02 22:48:33  jussi
   Removed unnecessary dispatcher call.
 
@@ -837,9 +841,6 @@ void TDataAscii::Cleanup()
 
   if (_data->isTape())
     _data->printStats();
-
-  delete _data;
-  _data = NULL;
 }
 
 void TDataAscii::PrintIndices()
