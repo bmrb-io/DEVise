@@ -49,7 +49,9 @@ QPObj += $(QPSrc2:.C=.o)
 # View
 
 VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
-	KGraph.c ViewKGraph.c Seq.C Web.C Action.c ActionClassInfo.c
+	KGraph.c ViewKGraph.c Seq.C Web.C Action.c ActionClassInfo.c \
+	VisualLinkClassInfo.c VisualLink.c RecordLink.C
+
 VIEWSRC1 = $(filter %.c,$(VIEWSRC))
 VIEWSRC2 = $(filter %.C,$(VIEWSRC))
 VIEWSRC3 = $(filter %.h,$(VIEWSRC))
