@@ -505,6 +505,9 @@ Have GUI to automatically bring up the data source definition editor
 There should be a way to expand and contract the size of a cursor in its
 destination view (the view the cursor is drawn in). (rkw 5/22/98)
 
+Allow the user to specify which keys cause which actions (zoom, home, etc.).
+(rr/rkw 6/28/98)
+
 
 COMPLETED
 ---------

@@ -1402,6 +1402,12 @@ Num Date        Status  Description
 370 06/25/98	FIXED	Devise hangs during initialization if it fails to
 			allocate a color. (dd/rkw)
 
+371 06/28/98	OPEN	Devise leaks loads of memory when running the session
+			beyer/genome.ds. (kb/rkw)
+
+372 06/29/98	OPEN	Devise on SPARC/Solaris crashes when opening the
+			session beyer/genome.ds. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
