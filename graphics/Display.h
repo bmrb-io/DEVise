@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/30 00:02:31  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.2  1995/09/05 21:12:44  jussi
   Added/update CVS header.
 */
@@ -52,6 +56,8 @@ public:
   /* Create a new window rep, 
      relative == 1 if in relative dimensions.*/
   virtual WindowRep* CreateWindowRep(char *name, Coord x, Coord y,
+					 // Width and height as a fraction of parent's
+					 // width and height.
 				     Coord width, Coord height, 
 				     Color fgnd = ForegroundColor,
 				     Color bgnd = BackgroundColor, 

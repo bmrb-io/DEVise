@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/03/27 17:55:02  wenger
+  Changes to get DEVise to compile and run on Linux.
+
   Revision 1.26  1996/03/26 15:34:41  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -397,7 +400,7 @@ void XWindowRep::DrawPixel(Coord x, Coord y)
   WindowRep::Transform(x,y,tx,ty);
 
 #ifdef DEBUG
-  printf("DrawPixel: %.2f %.2f --> %.2f %.2f\n", x, y, tx, ty);
+  printf("XWindowRep::DrawPixel: %.2f %.2f --> %.2f %.2f\n", x, y, tx, ty);
 #endif
 
 #ifdef GRAPHICS
@@ -412,7 +415,7 @@ static XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
 void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 {
 #ifdef DEBUG
-  printf("DrawPixelArray: %d points, width = %d\n", num, width);
+  printf("XWindowRep::DrawPixelArray: %d points, width = %d\n", num, width);
 
   printf("Transformation matrix: ");
   WindowRep::PrintTransform();
@@ -493,7 +496,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 			       Coord *height, int num)
 {
 #ifdef DEBUG
-  printf("FillRectArray: %d points\n", num);
+  printf("XWindowRep::FillRectArray: %d points\n", num);
 
   printf("Transformation matrix: ");
   WindowRep::PrintTransform();
@@ -570,7 +573,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 			       Coord height, int num)
 {
 #ifdef DEBUG
-  printf("FillRectArray: %d points, width %.2f, height %.2f\n", num,
+  printf("XWindowRep::FillRectArray: %d points, width %.2f, height %.2f\n", num,
 	 width, height);
 
 #if MAXPIXELDUMP > 0
@@ -628,7 +631,7 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 			  Coord height)
 {
 #ifdef DEBUG
-  printf("FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", xlow, ylow,
+  printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", xlow, ylow,
 	 width, height);
 #endif
 
@@ -672,7 +675,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 			       Coord minWidth, Coord minHeight)
 {
 #ifdef DEBUG
-  printf("FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n", x, y,
+  printf("XWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n", x, y,
 	 width, height);
 #endif
 
@@ -683,7 +686,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   pixelY = ROUND(int, y - pixelHeight / 2);
 
 #ifdef DEBUG
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
+  printf("XWindowRep::After transformation: x %d, y %d, width %d, height %d\n",
 	 pixelX, pixelY, pixelWidth, pixelHeight);
 #endif
 
@@ -1293,7 +1296,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
 void XWindowRep::SetXorMode()
 {
 #ifdef DEBUG
-  printf("SetXorMode\n");
+  printf("XWindowRep::SetXorMode\n");
 #endif
 
 #ifdef GRAPHICS
@@ -1304,7 +1307,7 @@ void XWindowRep::SetXorMode()
 void XWindowRep::SetCopyMode()
 {
 #ifdef DEBUG
-  printf("SetCopyMode\n");
+  printf("XWindowRep::SetCopyMode\n");
 #endif
 
 #ifdef GRAPHICS
@@ -1343,7 +1346,7 @@ into _dstBitmap (0,0,dstWidth, dstHeight). X windows coords are used.
 void XWindowRep::CopyBitmap(int width,int height,int dstWidth,int dstHeight)
 {
 #ifdef DEBUG
-  printf("CopyBitmap: %d,%d,%d,%d\n", width, height, dstWidth, dstHeight);
+  printf("XWindowRep::CopyBitmap: %d,%d,%d,%d\n", width, height, dstWidth, dstHeight);
 #endif
 
   if (dstWidth > _dstBitmap.width || dstHeight > _dstBitmap.height)

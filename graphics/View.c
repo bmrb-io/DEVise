@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/03/06 19:35:40  jussi
+  Added GetNumDimensions() and SetNumDimensions().
+
   Revision 1.24  1996/02/06 19:32:41  jussi
   Moved logo drawing to ViewWin.c.
 
@@ -315,7 +318,7 @@ void View::SubClassUnmapped()
 void View::SetVisualFilter(VisualFilter &filter)
 {
 #ifdef DEBUG
-  printf("%s SetVisualFilter %f %f %f %f %f, %f, %f, %f\n", GetName(),
+  printf("%s View::SetVisualFilter %f %f %f %f %f, %f, %f, %f\n", GetName(),
 	 filter.xLow, filter.yLow,
 	 filter.xHigh, filter.yHigh,_filter.xLow, _filter.yLow,
 	 _filter.xHigh, _filter.yHigh);
@@ -650,7 +653,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   Geometry(x, y, winWidth, winHeight);
   
 #ifdef DEBUG
-  printf("GetDataArea: full area at %d,%d, size %d, %d\n",
+  printf("View::GetDataArea: full area at %d,%d, size %d, %d\n",
 	 x, y, winWidth, winHeight);
 #endif
 
@@ -688,14 +691,14 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   if (height <= 0) height = 1;
   
 #ifdef DEBUG
-  printf("GetDataArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+  printf("View::GetDataArea %s %d %d %d %d\n", GetName(), x, y, width, height);
 #endif
 }
 
 void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 {
 #ifdef DEBUG
-  printf("DrawAxesLabel %s %d %d %d %d\n", GetName(), x, y, w, h);
+  printf("View::DrawAxesLabel %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
 
   int winX, winY; 
@@ -768,7 +771,7 @@ void View::DrawLabel()
 void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 {
 #ifdef DEBUG
-  printf("DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
+  printf("View::DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
   assert(_numDimensions == 2);
@@ -848,7 +851,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 {
 #ifdef DEBUG
-  printf("DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
+  printf("View::DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
   assert(_numDimensions == 2);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/03/26 21:33:00  jussi
+  Added computation of max/min attribute values.
+
   Revision 1.8  1996/02/01 18:28:59  jussi
   Improved handling of case where data file has more attributes
   than schema defined.
@@ -282,7 +285,8 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
     return false;
   }
 	
-  for(int i = 0; i < _numAttrs; i++) {
+  int i;
+  for(i = 0; i < _numAttrs; i++) {
     AttrInfo *info = _attrList->Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!isdigit(args[i][0]))
@@ -296,7 +300,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
 
   assert(numArgs >= _numAttrs);
 
-  for(int i = 0; i < _numAttrs; i++) {
+  for(i = 0; i < _numAttrs; i++) {
 
     AttrInfo *info = _attrList->Get(i);
     char *ptr = (char *)recordBuf + info->offset;

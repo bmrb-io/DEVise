@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1995/12/02 21:52:56  jussi
+#  Added -I/s/tcl/include.
+#
 #  Revision 1.6  1995/09/28 15:10:03  jussi
 #  Added copyright and CVS log messages.
 #
@@ -22,6 +25,7 @@
 ############################################################
 
 ARCH_FLAGS = -DSUN -I/s/tcl/include
+ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

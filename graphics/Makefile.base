@@ -34,6 +34,9 @@ OTHERSRC = testWindowRep.c jstat.c
 
 OTHEROBJ = $(OTHERSRC:.c=.o)
 
+TESTOBJ = testWindowRep.o ../graphics.new/libobj.o ../tape/tapeobj.o \
+	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
+
 all: allobj.o
 
 allobj.o: $(LIBOBJ)
@@ -56,14 +59,15 @@ lib: $(LIBOBJ)
 jstat: jstat.o $(LIBOBJ)
 	$(CC) -o jstat jstat.o $(LIBOBJ) -lXaw -lXmu -lXt -lXext -lX11 -lm
 
-testWindowRep: testWindowRep.o allobj.o
-	$(CC) -o testWindowRep testWindowRep.o allobj.o -lXaw -lXmu -lXt \
-		-lXext -lX11 -lm
+testWindowRep: $(TESTOBJ)
+	$(CC) -o testWindowRep $(TESTOBJ) \
+		-ltcl -ltk -lXaw -lXmu -lXt \
+		-lXext -lX11 -lm $(ARCH_LDFLAGS)
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm allobj.o $(LIBNAME)
+	-rm allobj.o $(LIBNAME) jstat testWindowRep
 
 mostlyclean:
 	-rm $(LIBOBJ) $(OTHEROBJ)

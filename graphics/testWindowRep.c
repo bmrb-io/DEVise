@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 21:14:41  jussi
+  Replaced 0x%x with 0x%p. Added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:53  jussi
   Added/updated CVS header.
 */
@@ -24,6 +27,7 @@
 #include "Dispatcher.h"
 #include "Display.h"
 #include "WindowRep.h"
+#include "Init.h"
 
 class MyWinCallback: public WindowRepCallback{
 public:
@@ -61,13 +65,19 @@ public:
 		msgBuf[0] = "hello";
 		msgBuf[1] = "universe";
 		numMsgs = 2;
+
+		w->SetXorMode();
+		w->FillRect(0.0, 0.0, (double) x, (double) y);
+		w->SetCopyMode();
+
 		return true;
 	};
 private:
 char *msgBuf[2];
 };
 
-main(){
+main(int argc, char **argv){
+	Init::DoInit(argc,argv);
 	WindowRepCallback *callBack = new MyWinCallback();
 	WindowRep *win = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
 		"test",0.0, 0.0, .5, .5);
