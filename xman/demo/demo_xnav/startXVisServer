@@ -1,0 +1,2 @@
+cd ../../bin
+java -classpath ../classes xman.xvis.XVisServer $1

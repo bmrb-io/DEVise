@@ -1,0 +1,21 @@
+Sun May 14 20:08:57 CDT 2000
+----------------------------
+
+Description
+-----------
+
+This example opens up a XNav session and allows the user to navigate through and
+visualize an experiment.
+
+Steps
+-----
+
+1. Start XVisServer
+	
+	> startXVisServer <port#> &
+	
+   Wait for it to startup fully.
+
+2. Now start XNav 
+	
+	> startXNav <port#>
