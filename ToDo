@@ -265,6 +265,19 @@ max (needed if RecId is mapped to X, Y, or Z in GData). (kb/rkw 11/25/96)
 Have a 'reload' menu selection that closes and re-opens the current
 session, eliminating all caching, etc. (ml/rkw 12/03/96)
 
+Be able to deal with non-numerical axis values (for example, map a string
+attribute to the Y axis, where the strings are just categories, and a
+numerical value associated with them would be meaningless).  Or use
+numerical values, but be able to put text labels instead of numerical
+labels on the axis. (ds/rkw 12/09/96).
+
+Be able to position rectangles by a corner rather than by the center
+(ds/rkw 12/09/96).
+
+Have a command to invalidate all TData for a particular file, force
+rebuild of indices, etc. (to allow changing data in a view while the
+view is open).  (ds/rkw 12/09/96).
+
 
 COMPLETED
 ---------
@@ -306,6 +319,7 @@ CANCELLED
 
 
 at = andyt@cs.wisc.edu = Andrew Therber
+ds = sorin@cae.wisc.edu = Dan Sorin
 ff = 
 gc = 
 jpm = jussi@cs.wisc.edu = Jussi Myllymaki
