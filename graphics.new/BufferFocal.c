@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:20:30  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:14:25  jussi
   Added CVS header.
 */
@@ -27,105 +30,118 @@
 #include "TData.h"
 #include "GData.h"
 
-inline unsigned Distance(unsigned num1, unsigned num2){
-	if (num1 > num2)
-		return num1-num2;
-	else return num2-num1;
+static inline unsigned Distance(unsigned num1, unsigned num2)
+{
+  if (num1 > num2)
+    return num1 - num2;
+  return num2 - num1;
 }
 
-BufferFocal::BufferFocal(){
-	_phase = BufferPolicy::ScanPhase;
-	_hasFocus = false;
+BufferFocal::BufferFocal()
+{
+  _phase = BufferPolicy::ScanPhase;
+  _hasFocus = false;
 }
 
 void BufferFocal::Placement(RangeInfo *info, RangeInfoArrays *rangeArrays,
-	int &arrayNum, int &pos){
-	arrayNum = 0;
-	pos = rangeArrays->Size(0);
+			    int &arrayNum, int &pos)
+{
+  arrayNum = 0;
+  pos = rangeArrays->Size(0);
 }
 
-
 Boolean BufferFocal::PickFifo(RangeInfoArrays *rangeArrays,
-	int &arrayNum,int &pos){
+			      int &arrayNum, int &pos)
+{
 	/* do FIFO */
-	int i;
-	for (i=0; i < rangeArrays->Size(0); i++){
-		RangeInfo *rangeInfo = rangeArrays->GetRange(0,i);
-		if ( !rangeInfo->InUse()){
-			/* found one */
-			arrayNum = 0;
-			pos = i;
-			/*
-			printf("BufferFocal: picked Fifo victim %d\n",rangeInfo->low);
-			*/
-			return true;
-		}
-	}
-	/* can't find anything as victim */
-	return false;
+  for(int i = 0; i < rangeArrays->Size(0); i++) {
+    RangeInfo *rangeInfo = rangeArrays->GetRange(0, i);
+    if (!rangeInfo->InUse()) {
+      /* found one */
+      arrayNum = 0;
+      pos = i;
+      /*
+	 printf("BufferFocal: picked Fifo victim %d\n",rangeInfo->low);
+      */
+      return true;
+    }
+  }
+
+  /* can't find anything as victim */
+  return false;
 }
 
 Boolean BufferFocal::PickVictim(RangeInfoArrays *rangeArrays,
-	int &arrayNum,int &pos){
+				int &arrayNum, int &pos)
+{
+  if (!_hasFocus) {
+    /* no focus. Just pick the 1st one */
+    return PickFifo(rangeArrays, arrayNum, pos);
+  }
 
-	if (!_hasFocus){
-		/* no focus. Just pick the 1st one */
-		return PickFifo(rangeArrays, arrayNum, pos);
-	}
+  RecId low, high;
+  int i;
 
-	int i;
-	/* find 1st valid range */
-	Boolean found = false;
-	int index = 0;
-	RecId furthestId = 0;
-	for (i=0; i < rangeArrays->Size(0); i++){
-		RangeInfo *rangeInfo = rangeArrays->GetRange(0,i);
-		if (!rangeInfo->InUse() && 
-			(rangeInfo->tdata ==_focusTData || rangeInfo->tdata ==_focusGData)) {
-			index = i;
-			found = true; 
-			furthestId = rangeInfo->low;
-			break;
-		}
-	}
-	if (!found) return PickFifo(rangeArrays, arrayNum, pos);
+  /* find 1st valid range */
+  Boolean found = false;
+  int index = 0;
+  RecId furthestId = 0;
+  for(i = 0; i < rangeArrays->Size(0); i++) {
+    RangeInfo *rangeInfo = rangeArrays->GetRange(0, i);
+    if (!rangeInfo->InUse() && 
+	(rangeInfo->GetTData() ==_focusTData
+	 || rangeInfo->GetTData() ==_focusGData)) {
+      index = i;
+      found = true; 
+      rangeInfo->RecIds(furthestId, high);
+      break;
+    }
+  }
+  if (!found)
+    return PickFifo(rangeArrays, arrayNum, pos);
+  
+  /* continue and find the one furthest from the focus */
+  for(i = index + 1; i < rangeArrays->Size(0); i++) {
+    RangeInfo *rangeInfo = rangeArrays->GetRange(0, i);
+    rangeInfo->RecIds(low, high);
+    if (!rangeInfo->InUse() &&
+	(rangeInfo->GetTData()== _focusTData
+	 || rangeInfo->GetTData()== _focusGData) &&
+	Distance(low, _focusId) >
+	Distance(furthestId, _focusId)) {
+      index = i;
+      furthestId = low;
+    }
+  }
 
-		
-	/* continue and find the one furthest from the focus */
-	for (i=index+1; i < rangeArrays->Size(0); i++){
-		RangeInfo *rangeInfo = rangeArrays->GetRange(0,i);
-		if (!rangeInfo->InUse() &&
-			(rangeInfo->tdata== _focusTData || rangeInfo->tdata== _focusGData)&&
-			Distance(rangeInfo->low, _focusId) >
-			Distance(furthestId, _focusId)) {
-			index = i;
-			furthestId = rangeInfo->low;
-		}
-	}
-	/*
-	printf("BufferFocal: picked victim %d\n",furthestId);
-	*/
+  /*
+     printf("BufferFocal: picked victim %d\n", furthestId);
+  */
 
-	arrayNum = 0;
-	pos = index;
-	return true;
+  arrayNum = 0;
+  pos = index;
+  return true;
 }
 
-void BufferFocal::PhaseHint(BufferPolicy::Phase phase){ 
-	_phase = phase; 
+void BufferFocal::PhaseHint(BufferPolicy::Phase phase)
+{ 
+  _phase = phase; 
 }
 
-void BufferFocal::FocusHint(RecId focusId, TData *tdata, GData *gdata){
-/*
-printf("BufferFocal: Focus Hint %d\n",focusId);
-*/
-	_hasFocus = true;
-	_focusId = focusId;
-	_focusTData = tdata;
-	_focusGData = gdata;
+void BufferFocal::FocusHint(RecId focusId, TData *tdata, GData *gdata)
+{
+  /*
+     printf("BufferFocal: Focus Hint %d\n",focusId);
+  */
+
+  _hasFocus = true;
+  _focusId = focusId;
+  _focusTData = tdata;
+  _focusGData = gdata;
 }
 
-void BufferFocal::Clear(){
-	_phase = BufferPolicy::ScanPhase;
-	_hasFocus = false;
+void BufferFocal::Clear()
+{
+  _phase = BufferPolicy::ScanPhase;
+  _hasFocus = false;
 }
