@@ -1,7 +1,7 @@
 .c.o:
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $< -o $@
 .C.o:
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $< -o $@
 
 CC = g++
 
@@ -20,7 +20,7 @@ LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
 #The following sources are in other directories, but must be specially
 #compiled for attrproj.
 LOCALSRC += Exit.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
-	TDataBinaryInterp.c
+	TDataBinaryInterp.c DataSourceSegment.c
 
 SRC1 = $(filter %.c,$(LOCALSRC))
 SRC2 = $(filter %.C,$(LOCALSRC))
@@ -42,7 +42,6 @@ LIBOBJ = \
 	../graphics.new/DataSeg.o \
 	../graphics.new/DataSource.o \
 	../graphics.new/DataSourceFileStream.o \
-	../graphics.new/DataSourceSegment.o \
 	../graphics.new/DataSourceTape.o \
 	../tape/tapedrive.o \
 	$(LOCALOBJ)
@@ -53,6 +52,7 @@ ALLTESTOBJ = $(TESTOBJ) $(LIB)
 ALLSHOWOBJ = $(SHOWOBJ) $(LIB)
 
 all: aptest show
+lib: $(LIB)
 
 aptest: $(ALLTESTOBJ)
 	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
