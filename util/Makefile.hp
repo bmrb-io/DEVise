@@ -6,10 +6,21 @@ depend:
 
 atof.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
-atof.o: /usr/include/sys/time.h /usr/include/math.h
-http_url.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
+atof.o: /usr/include/sys/time.h /usr/include/math.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
+http_url.o: /usr/include/sys/stdsyms.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/unistd.h /usr/include/string.h
 http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
+http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
+http_url.o: /usr/include/sys/param.h /usr/include/sys/types.h
+http_url.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+http_url.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+http_url.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+http_url.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+http_url.o: /usr/include/arpa/inet.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
 mkbinfile.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
