@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1996/07/05 17:10:33  jussi
+  Added missing call to CompRhoPhiTheta().
+
   Revision 1.48  1996/06/27 19:04:48  jussi
   The user can now switch between 2D and 3D display, the
   data is refreshed and displayed accordingly.
@@ -1966,6 +1969,9 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
 	   _pixmap->width, _pixmap->height);
   }
 #endif
+
+  if (!PixmapEnabled())
+    return PixmapNone;
 
   if (Mapped() && _pixmap && 
       filter.xLow ==  _pixmap->filter.xLow &&
