@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:03  jussi
+  Added CVS header.
+*/
 
 #ifndef MappingInterp_h
 #define MappingInterp_h
@@ -108,7 +111,8 @@ private:
 		void **tRecs,int numRecs,void *gdataPtr);
 
 	/* Find size of GData given attribute flag information */
-	FindGDataSize(MappingInterpCmd *cmd, int flag, int attrFlag);
+	FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
+		      int flag, int attrFlag);
 
 	Boolean IsConstCmd(char *cmd, Coord &val);
 
