@@ -1264,6 +1264,10 @@ Num Date        Status  Description
 331 03/31/98	OPEN	Clicking in a collaboration slave's view with a
 			cursor in it erases the cursor. (rkw)
 
+332 04/01/98	FIXED	DEVise shouldn't exit when it can't find a data
+			source needed by a session. (rkw)
+			(Fixed by rkw 4/01/98)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

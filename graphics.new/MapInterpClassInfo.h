@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/15 14:25:02  jussi
+  Rewrote so that a variable number of shape attributes is
+  allowed when mapping is created.
+
   Revision 1.4  1996/04/14 00:18:15  jussi
   Removed the extraneous data structures and methods for recording
   new mapping class names. ClassDir records this information for
@@ -33,6 +37,7 @@
 
 #include "ClassDir.h"
 #include "VisualArg.h"
+#include "DevStatus.h"
 
 class MappingInterp;
 class TData;
@@ -92,7 +97,7 @@ public:
 	virtual void CreateParams(int &argc, char **&argv);
 
 private:
-	void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
+	DevStatus ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
 			    unsigned long int &cmdFlag,
 			    unsigned long int &attrFlag,
 			    VisualFlag *dimensionInfo, int &numDimensions,

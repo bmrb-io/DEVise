@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/24 23:15:06  weaver
+  Changes for the new ColorManager.
+
   Revision 1.16  1997/10/28 15:46:28  wenger
   Fixed bug 236.
 
@@ -153,6 +156,7 @@ MapInterpClassInfo::~MapInterpClassInfo()
 {
   delete _map;
   delete _dimensionInfo;
+  delete _cmd;
 }
 
 /* Return true if string is not empty. A string is not empty
@@ -168,7 +172,8 @@ static Boolean NotEmpty(char *str)
   return false;
 }
 
-void MapInterpClassInfo::ExtractCommand(int argc, char **argv, 
+DevStatus
+MapInterpClassInfo::ExtractCommand(int argc, char **argv, 
 					MappingInterpCmd *cmd,
 					unsigned long int &cmdFlag,
 					unsigned long int &attrFlag, 
@@ -189,7 +194,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
 
   if (argc < 12) {
     fprintf(stderr, "Invalid arguments in interpreted mapping\n");
-    Exit::DoExit(2);
+    return StatusFailed;
   }
 
   if (argc > 11 + MAX_GDATA_ATTRS) {
@@ -213,7 +218,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     fprintf(stderr, 
 	    "MapInterpClassInfo::CreateWithParams: can't find tdata %s\n",
 	    tdataAlias);
-    Exit::DoExit(2);
+    return StatusFailed;
   }
   
   name = CopyString(argv[1]);
@@ -283,6 +288,8 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
       }
     }
   }
+
+  return StatusOk;
 }
 
 void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
@@ -385,9 +392,11 @@ void MapInterpClassInfo::ChangeParams(int argc, char**argv)
   char *tdataAlias;
   char *name;
   TData *tdata;
-  ExtractCommand(argc, argv, _cmd, _cmdFlag, _attrFlag,
-		 _dimensionInfo, _numDimensions, tdataAlias, tdata, name);
-  _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, _dimensionInfo, _numDimensions);
+  if (ExtractCommand(argc, argv, _cmd, _cmdFlag, _attrFlag,
+		 _dimensionInfo, _numDimensions, tdataAlias, tdata,
+		 name).IsComplete()) {
+    _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, _dimensionInfo, _numDimensions);
+  }
 }
 
 
@@ -421,7 +430,7 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   printf("Creating new instance of interpreted mapping class {%s}\n", argv[0]);
 #endif
     
-  MappingInterpCmd *cmd = new MappingInterpCmd;//TEMPTEMP -- leaked
+  MappingInterpCmd *cmd = new MappingInterpCmd;
   TData *tdata;
   unsigned long int cmdFlag;
   unsigned long int attrFlag;
@@ -429,16 +438,20 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   int numDimensions;
   char *tdataAlias, *name;
 
-  ExtractCommand(argc, argv, cmd, cmdFlag, attrFlag,
-		 dimensionInfo, numDimensions, tdataAlias, tdata, name);
+  if (ExtractCommand(argc, argv, cmd, cmdFlag, attrFlag,
+		 dimensionInfo, numDimensions, tdataAlias, tdata,
+		 name).IsComplete()) {
+    MappingInterp *map = new MappingInterp(name, tdata, cmd,
+					   cmdFlag, attrFlag, dimensionInfo,
+					   numDimensions);
   
-  MappingInterp *map = new MappingInterp(name, tdata, cmd,
-					 cmdFlag, attrFlag, dimensionInfo,
-					 numDimensions);
-  
-  return new MapInterpClassInfo(_className, tdataAlias, name, dimensionInfo,
-				numDimensions, map, tdata, cmd, cmdFlag,
-				attrFlag);
+    return new MapInterpClassInfo(_className, tdataAlias, name, dimensionInfo,
+				  numDimensions, map, tdata, cmd, cmdFlag,
+				  attrFlag);
+  } else {
+    delete cmd;
+    return NULL;
+  }
 }
 
 /* Set default parameters */
