@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.84  1996/11/18 23:11:19  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.83  1996/11/18 18:12:53  donjerko
   Added DTE make stuff
 
@@ -584,13 +591,7 @@ void View::SubClassMapped()
 	
 void View::SubClassUnmapped()
 {
-  // If the View object is really anything other than a
-  // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
-  // this will call a pure virtual function.
-  if (_querySent) {
-    DerivedAbortQuery();
-    ReportQueryDone(0, true);
-  }
+  AbortQuery();
 }
 
 void View::SetVisualFilter(VisualFilter &filter)
@@ -1466,10 +1467,7 @@ void View::Run()
 #if defined(DEBUG)
         printf("View %s cannot continue\n", GetName());
 #endif
-        if (_querySent) {
-          DerivedAbortQuery();
-          ReportQueryDone(0, true);
-        }
+        AbortQuery();
         return;
       }
 #if defined(DEBUG)
@@ -1511,8 +1509,7 @@ void View::Run()
 #if defined(DEBUG)
       printf("View:: aborting\n");
 #endif
-      DerivedAbortQuery();
-      ReportQueryDone(0, true);
+      AbortQuery();
       _refresh = true;
     } else {
 #if defined(DEBUG)
@@ -2010,13 +2007,19 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
   return NotScrolled;
 }
 
-void View::AbortAndReexecuteQuery()
+void View::AbortQuery()
 {
+  // If the View object is really anything other than a
+  // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
+  // this will call a pure virtual function.
+
   if (_querySent) {
+#if defined(DEBUG)
+    printf("View %s aborting...\n", GetName());
+#endif
     DerivedAbortQuery();
     ReportQueryDone(0, true);
   }
-  Refresh();
 }
 
 void View::Refresh()
@@ -2142,10 +2145,8 @@ void View::DeleteViewCallback(ViewCallback *callBack)
 
 void View::Iconify(Boolean iconified)
 {
-  if (_querySent && iconified) {
-    DerivedAbortQuery();
-    ReportQueryDone(0, true);
-  }
+  if (iconified)
+    AbortQuery();
 
   Refresh();
 }
@@ -2161,8 +2162,7 @@ void View::ModeChange(ControlPanel::Mode mode)
 #if defined(DEBUG)
     printf("abort query from mode change\n");
 #endif
-    DerivedAbortQuery();
-    ReportQueryDone(0, true);
+    AbortQuery();
     _modeRefresh = true;
   }
 
