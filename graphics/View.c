@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  1996/07/13 17:25:38  jussi
+  When view is iconified, statistics are collected but data
+  is not drawn. Added ViewRecomputed() callback interface.
+
   Revision 1.52  1996/07/12 23:41:30  jussi
   When View is destroyed, it is removed from the _viewList.
   Got rid of Init() method, integrated it with the constructor.
@@ -1803,6 +1807,14 @@ void View::Highlight(Boolean flag)
   _highlight = flag;
 
   WindowRep *winRep = GetWindowRep();
+  if (!winRep) {
+    /* View is unmapped but is still selected, and we're told by the
+       client to unhighlight the view. This may occur when a window
+       is destroyed by the window manager and all views are unmapped,
+       but if a view among those is selected, it will stay selected. */
+    return;
+  }
+
   winRep->SetXorMode();
   DrawHighlight();
   winRep->SetCopyMode();
