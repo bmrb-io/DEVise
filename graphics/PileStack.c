@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/11/15 22:54:52  wenger
+  Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
+  caused by highlight view/pile problems).
+
   Revision 1.21  1999/11/10 18:48:17  wenger
   Changing view dimenion now changes all views in a pile; PileStack makes
   sure all views in pile have the same number of dimensions; fixed 'bad
@@ -147,6 +151,58 @@ static PileStackList _psList;
 #define DEBUG 0
 
 /*------------------------------------------------------------------------------
+ * function: PileStackViewList::GetViewList
+ * Return a pointer to the list of views in this pile.
+ */
+ViewWinList *
+PileStackViewList::GetViewList()
+{
+#if (DEBUG >= 4)
+  printf("PileStackViewList(%s)::GetViewList()\n", _name);
+#endif
+
+  return &_views;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStackViewList::GetFirstView
+ * Returns the first view in the pile.
+ */
+ViewWin *
+PileStackViewList::GetFirstView()
+{
+#if (DEBUG >= 2)
+  printf("PileStackViewList(%s)::GetFirstView()\n", _name);
+#endif
+
+  ViewWin *result = NULL;
+  if (GetViewCount() > 0) {
+    result = GetViewList()->GetFirst();
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStackViewList::GetLastView
+ * Returns the last view in the pile.
+ */
+ViewWin *
+PileStackViewList::GetLastView()
+{
+#if (DEBUG >= 2)
+  printf("PileStackViewList(%s)::GetLastView()\n", _name);
+#endif
+
+  ViewWin *result = NULL;
+  if (GetViewCount() > 0) {
+    result = GetViewList()->GetLast();
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: PileStack::PileStack
  * Constructor.
  */
@@ -185,12 +241,12 @@ PileStack::~PileStack()
   printf("PileStack(%s)::~PileStack()\n", _name);
 #endif
 
-  int index = _views.InitIterator();
-  while (_views.More(index)) {
-    ViewWin *view = _views.Next(index);
+  int index = InitIterator();
+  while (More(index)) {
+    ViewWin *view = Next(index);
     view->SetParentPileStack(NULL);
   }
-  _views.DoneIterator(index);
+  DoneIterator(index);
 
   if (_window) {
     _window->SetMyPileStack(NULL);
@@ -285,6 +341,21 @@ PileStack::SetState(State state)
 }
 
 /*------------------------------------------------------------------------------
+ * function: PileStack::SwapViews
+ * Swap the given views in the view list.
+ */
+void
+PileStack::SwapViews(ViewWin *view1, ViewWin *view2)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SwapViews()\n", _name);
+#endif
+
+  GetViewList()->Swap(view1, view2);
+}
+
+/*------------------------------------------------------------------------------
  * function: PileStack::Flip
  * Flip the pile or stack.
  */
@@ -296,7 +367,7 @@ PileStack::Flip()
   printf("PileStack(%s)::Flip()\n", _name);
 #endif
 
-  if (_state != PSNormal && _views.Size() > 1) {
+  if (_state != PSNormal && GetViewCount() > 1) {
     _disablePileRefresh = true;
 
     //
@@ -318,9 +389,11 @@ PileStack::Flip()
       if (prevView == NULL) {
         prevView = view;
       } else {
-        _window->SwapChildren(prevView, view);
-	//TEMP -- do we run into problems if there's an iterator on the list?
-	_views.Swap(prevView, view);
+	if (_window) {
+          _window->SwapChildren(prevView, view);
+	} else {
+	  SwapViews(prevView, view);
+	}
       }
     }
     GetViewList()->DoneIterator(index);
@@ -377,19 +450,19 @@ PileStack::InsertView(ViewWin *view)
   char errBuf[1024];
 
   // Make sure the view isn't already in this PileStack.
-  int index = _views.InitIterator();
-  while (_views.More(index)) {
-    ViewWin *tmpView = _views.Next(index);
+  int index = InitIterator();
+  while (More(index)) {
+    ViewWin *tmpView = Next(index);
     if (tmpView == view) {
       sprintf(errBuf, "View <%s> is already in PileStack <%s>",
           view->GetName(), GetName());
       reportErrNosys(errBuf);
-      _views.DoneIterator(index);
+      DoneIterator(index);
       _disablePileRefresh = false;
       return;
     }
   }
-  _views.DoneIterator(index);
+  DoneIterator(index);
 
   // Make sure the view isn't already in another PileStack.
   if (view->GetParentPileStack()) {
@@ -423,7 +496,7 @@ PileStack::InsertView(ViewWin *view)
     // Make sure the new view is consistent with the state of the pile as
     // far as axes, title, etc.
     //
-    if (_views.Size() < 1) {
+    if (GetViewCount() < 1) {
       // This is the first view in the pile, set the pile's properties based
       // on the view.
       SetPSProperties((View *)view);
@@ -449,21 +522,21 @@ PileStack::InsertView(ViewWin *view)
   //
   if (view->GetPileZ()) {
     Coord z = *(view->GetPileZ());
-    int index = _views.InitIterator();
+    int index = GetViewList()->InitIterator();
     Boolean done = false;
-    while (_views.More(index) && !done) {
-      ViewWin *tmpView = _views.Next(index);
+    while (GetViewList()->More(index) && !done) {
+      ViewWin *tmpView = Next(index);
       if (!tmpView->GetPileZ() || z < *(tmpView->GetPileZ())) {
-         _views.InsertBeforeCurrent(index, view);
+         GetViewList()->InsertBeforeCurrent(index, view);
 	 done = true;
       }
     }
     if (!done) {
-      _views.InsertAfterCurrent(index, view);
+      GetViewList()->InsertAfterCurrent(index, view);
     }
-    _views.DoneIterator(index);
+    GetViewList()->DoneIterator(index);
   } else {
-    _views.Append(view);
+    GetViewList()->Append(view);
   }
 
   //
@@ -496,7 +569,7 @@ PileStack::DeleteView(ViewWin *view)
 
   _disablePileRefresh = true;
 
-  if (!_views.Delete(view)) {
+  if (!GetViewList()->Delete(view)) {
     char errBuf[1024];
     sprintf(errBuf, "Trying to delete view %s; view is not in PileStack %s",
         view->GetName(), GetName());
@@ -543,21 +616,6 @@ PileStack::DeleteView(ViewWin *view)
 }
 
 /*------------------------------------------------------------------------------
- * function: PileStack::GetViewList
- * Return a pointer to the list of views in this pile.
- */
-ViewWinList *
-PileStack::GetViewList()
-{
-  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 4)
-  printf("PileStack(%s)::GetViewList()\n", _name);
-#endif
-
-  return &_views;
-}
-
-/*------------------------------------------------------------------------------
  * function: PileStack::SetNormal
  * Set this object to the "normal" state.
  */
@@ -585,7 +643,7 @@ PileStack::SetNormal()
   if (_window) _window->SetPreferredLayout(vert, horiz, false);
 
   CancelAllRefreshes();
-  if (_views.Size() > 1) {
+  if (GetViewCount() > 1) {
     if (GetFirstView()) GetFirstView()->Refresh(false);
   }
 
@@ -707,7 +765,7 @@ PileStack::SetPiled(Boolean doLink)
     if (ViewIsSelected()) SelectView();
 
     CancelAllRefreshes();
-    if (_views.Size() > 1) {
+    if (GetViewCount() > 1) {
       if (GetFirstView()) GetFirstView()->Refresh(false);
     }
 
@@ -1440,9 +1498,9 @@ PileStack::Dump(FILE *fp)
   fprintf(fp, "    window: <%s>\n", winName);
   fprintf(fp, "    views:\n");
   
-  int index = _views.InitIterator();
-  while (_views.More(index)) {
-    ViewWin *view = _views.Next(index);
+  int index = InitIterator();
+  while (More(index)) {
+    ViewWin *view = Next(index);
     fprintf(fp, "     <%s>", view->GetName());
     if (view->GetPileZ()) {
       fprintf(fp, " z = %g", *(view->GetPileZ()));
@@ -1451,7 +1509,7 @@ PileStack::Dump(FILE *fp)
     fprintf(fp, " IsInPileMode() = %d", ((View *)view)->IsInPileMode());
     fprintf(fp, "\n");
   }
-  _views.DoneIterator(index);
+  DoneIterator(index);
 }
 
 /*------------------------------------------------------------------------------
@@ -1561,46 +1619,6 @@ PileStack::StateToStr(State state)
   default:
     result = "invalid";
     break;
-  }
-
-  return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: PileStack::GetFirstView
- * Returns the first view in the pile.
- */
-ViewWin *
-PileStack::GetFirstView()
-{
-  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 2)
-  printf("PileStack(%s)::GetFirstView()\n", _name);
-#endif
-
-  ViewWin *result = NULL;
-  if (_views.Size() > 0) {
-    result = _views.GetFirst();
-  }
-
-  return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: PileStack::GetLastView
- * Returns the last view in the pile.
- */
-ViewWin *
-PileStack::GetLastView()
-{
-  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 2)
-  printf("PileStack(%s)::GetLastView()\n", _name);
-#endif
-
-  ViewWin *result = NULL;
-  if (_views.Size() > 0) {
-    result = _views.GetLast();
   }
 
   return result;

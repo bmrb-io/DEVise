@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/11/22 18:13:18  wenger
+  Fixed 'command buffer conflict' errors, other command-related cleanup.
+
   Revision 1.46  1999/11/19 18:19:02  wenger
   Removed (not really used) DeviseCommandOption class and related code.
 
@@ -1196,12 +1199,6 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getAxisDisplay) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
-DECLARE_CLASS_DeviseCommand_(replaceView) 
 DECLARE_CLASS_END
 
 //

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/11/24 15:44:21  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.53  1999/11/19 18:19:02  wenger
   Removed (not really used) DeviseCommandOption class and related code.
 
@@ -480,7 +485,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(savePixmap)
 	REGISTER_COMMAND(loadPixmap)
 	REGISTER_COMMAND(getAxisDisplay)
-	REGISTER_COMMAND(replaceView)
 	REGISTER_COMMAND(setCursorSrc)
 	REGISTER_COMMAND(setCursorDst)
 	REGISTER_COMMAND(setPixelWidth)

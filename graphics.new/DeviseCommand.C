@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.86  1999/11/24 15:44:22  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.85  1999/11/22 18:13:17  wenger
   Fixed 'command buffer conflict' errors, other command-related cleanup.
 
@@ -3531,29 +3536,7 @@ DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
     }
     return true;
 }
-int
-DeviseCommand_replaceView::Run(int argc, char** argv)
-{
-    {
-        {
-          View *view1 = (View *)_classDir->FindInstance(argv[1]);
-          View *view2 = (View *)_classDir->FindInstance(argv[2]);
-          if (!view1 || !view2) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          ViewWin *win = view1->GetParent();
-          if (!win) {
-    	ReturnVal(API_NAK, "Cannot find window");
-    	return -1;
-          }
-          win->Replace(view1, view2);
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
-    return true;
-}
+
 int
 DeviseCommand_setCursorSrc::Run(int argc, char** argv)
 {

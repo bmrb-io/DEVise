@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/24 23:14:35  weaver
+  Changes for the new ColorManager.
+
   Revision 1.5  1997/04/03 21:31:10  wenger
   Eliminated unnecessary tcl dependencies in graphics directory.
 
@@ -72,7 +75,6 @@ class ViewLayout : public ViewWin
   virtual void Append(ViewWin *child);
   virtual void Delete(ViewWin *child);
   
-  virtual void Replace(ViewWin *child1, ViewWin *child2);
   virtual void SwapChildren(ViewWin *child1, ViewWin *child2);
 
   virtual void Iconify(Boolean iconified);

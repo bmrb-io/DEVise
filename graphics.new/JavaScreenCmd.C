@@ -741,11 +741,7 @@ CreateViewLists()
 
 	    // For now, we don't include any info about which windows are on top
 	    // of others.  RKW 1999-03-17.
-		if (window->GetMyPileStack()->IsPiled()) {
-	      viewZ = (window->NumChildren() - 1) * viewZInc;
-		} else {
-		  viewZ = 0.0;
-		}
+
 		// Guard against roundoff errors causing a negative Z value.
 		viewZ += viewZInc / 2.0;
 
@@ -762,7 +758,7 @@ CreateViewLists()
 		  // how the data is drawn, that view is actually the view on the
 		  // *bottom* of the pile...  RKW 1999-03-17.
 		  view->SetZ(viewZ);
-		  if (view->IsInPileMode()) viewZ -= viewZInc;
+		  if (view->IsInPileMode()) viewZ += viewZInc;
 
 		  _topLevelViews.Append(view);
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/10/18 15:36:32  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.64  1999/10/08 19:57:46  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -863,35 +869,7 @@ Boolean ViewWin::Iconified()
   return true;
 }
 
-/* Replace child1 by child2. child1 must be a valid child.
-   Update the list of children.*/
-
-void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
-{
-#ifdef DEBUG
-  printf("ViewWin::Replace 0x%p with 0x%p\n", child1, child2);
-#endif
-
-  for(int index = InitIterator(); More(index);) {
-    ViewWin *win = Next(index);
-    if (win == child1) {
-      _children.InsertBeforeCurrent(index, child2);
-      child2->SetParent(this);
-      _children.DeleteCurrent(index);
-      DoneIterator(index);
-      child1->Unmap();
-      child1->SetParent(NULL);
-      return;
-    }
-  }
-
-  fprintf(stderr, "ViewWin::Replace: can't find child1\n");
-  Exit::DoExit(2);
-}
-
 /* Swap child1 and child2. Both must be valid children, and child1 != child2.*/
-/* Note that if views are piled, this should only be called from
- * PileStack::Flip().  RKW 1999-05-06. */
 
 void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
@@ -904,6 +882,9 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
     "Children have different parents");
 
   _children.Swap(child1, child2);
+  if (GetMyPileStack()) {
+    GetMyPileStack()->SwapViews(child1, child2);
+  }
 
   /* If one of these children becomes the top view in a pile, we need
    * to refresh it. */

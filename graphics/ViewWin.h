@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/10/04 19:36:59  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.43  1999/09/02 17:25:51  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -345,17 +348,9 @@ class ViewWin : public Coloring
     /* Delete child */
     virtual void Delete(ViewWin *child);
 
-    /* Replace child1 by child2. child1 must be a valid child.
-       Base class only updates list of children.*/
-    virtual void Replace(ViewWin *child1, ViewWin *child2);
-
     /* Swap child1 and child2. Both must be valid. Base
        class updates only list of children. */
     virtual void SwapChildren(ViewWin *child1, ViewWin *child2);
-
-    /* Clear parent without doing anything else. 
-       This is to facilitate implementation of Replace() */
-    void SetParent(ViewWin *win) { _parent = win; }
 
     /* Get the children */
     /* return # of children */

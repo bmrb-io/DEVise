@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/09/02 17:25:50  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.12  1999/04/20 14:13:32  wenger
   Improved debug output.
 
@@ -125,23 +130,6 @@ void ViewLayout::Delete(ViewWin *child)
     child->Unmap();
     MapChildren(0, true);
   }
-}
-
-/* Replace child1 by child2. child1 must be a valid child. */
-
-void ViewLayout::Replace(ViewWin *child1, ViewWin *child2)
-{
-#ifdef DEBUG
-  printf("ViewLayout::Replace: %s %s\n", child1->GetName(),
-	 child2->GetName());
-#endif
-
-  ViewWin::Replace(child1, child2);
-
-  if (!Mapped())
-    return;
-
-  MapChildren(child2);
 }
 
 /* Swap position of child1 and child2 */

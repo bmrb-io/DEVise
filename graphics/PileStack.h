@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/11/15 22:54:52  wenger
+  Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
+  caused by highlight view/pile problems).
+
   Revision 1.18  1999/11/10 18:48:31  wenger
   Changing view dimenion now changes all views in a pile; PileStack makes
   sure all views in pile have the same number of dimensions; fixed 'bad
@@ -127,7 +131,34 @@ class VisualLink;
 class ViewGraph;
 class View;
 
-class PileStack {
+
+// The purpose of the PileStackViewList class is just to control access
+// to the PileStack's view list.  This isn't strictly necessary, but I'm
+// doing it partly as a proof-of-concept.  RKW 1999-11-24.
+
+class PileStackViewList {
+public:
+  // Access view list.
+  ViewWin *GetFirstView();
+  ViewWin *GetLastView();
+
+  int GetViewCount() { return GetViewList()->Size(); }
+
+  int InitIterator() { return GetViewList()->InitIterator(); }
+  int More(int index) { return GetViewList()->More(index); }
+  ViewWin *Next(int index) { return GetViewList()->Next(index); }
+  void DoneIterator(int index) { GetViewList()->DoneIterator(index); }
+
+protected:
+  ViewWinList *GetViewList();
+
+private:
+  // Hide this from direct access from the PileStack class.
+  ViewWinList _views;
+};
+
+
+class PileStack : public PileStackViewList {
 public:
   // Constructor/destructor.
   PileStack(const char *name, ViewLayout *window);
@@ -153,14 +184,6 @@ public:
   // Insert/delete views.
   void InsertView(ViewWin *view);
   void DeleteView(ViewWin *view);
-
-  // Access view list.
-  ViewWin *GetFirstView();
-  ViewWin *GetLastView();
-  int InitIterator() { return _views.InitIterator(); }
-  int More(int index) { return _views.More(index); }
-  ViewWin *Next(int index) { return _views.Next(index); }
-  void DoneIterator(int index) { _views.DoneIterator(index); }
 
   // Called when parent window is destroyed.
   void DetachFromWindow() { _window = NULL; }
@@ -218,7 +241,9 @@ public:
   static Boolean SameViewOrSamePile(ViewWin *view1, ViewWin *view2);
 
 protected:
-  ViewWinList *GetViewList();
+  friend class ViewWin;
+
+  void SwapViews(ViewWin *view1, ViewWin *view2);
   Boolean PileOk();
   Boolean IsHighlightView(View *view);
 
@@ -229,8 +254,6 @@ private:
   State _state;
 
   VisualLink *_link;
-
-  ViewWinList _views;
 
   Boolean _xAxisOn, _yAxisOn;
   Boolean _xTicksOn, _yTicksOn;
