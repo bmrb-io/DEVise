@@ -2535,6 +2535,17 @@ Num Date        Status  Description
 			destroy the debug window, if there is one. (rkw)
 			(Fixed by rkw, 2/5/01.)
 
+641 02/13/01	OPEN	JavaScreen: run JSA in CGI mode, exit and start
+			a new one without reloading the web page -- it
+			starts out in CGI mode again, and runs into problems
+			receiving from the jspop. (rkw)
+
+642 02/19/01	FIXED	JavaScreen: if the JavaScreen connects to the jspop,
+			but the command read times out, clicking Exit in the
+			JS destroys the window, but doesn't actually end
+			the process. (rkw)
+			(Fixed by rkw, 2/19/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
