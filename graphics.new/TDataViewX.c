@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/15 15:07:26  jussi
+  Interface to ViewGraph's mapping iterator has changed. Added
+  call to DrawLegend().
+
   Revision 1.14  1996/04/10 15:33:30  jussi
   Cleaned up some debugging statements.
 
@@ -72,13 +76,12 @@
 #include "TDataViewX.h"
 #include "TDataMap.h"
 #include "ConnectorShape.h"
+#include "Shape.h"
 
 //#define DEBUG
 
-TDataViewX::TDataViewX(char *name, 
-		       VisualFilter &initFilter, QueryProc *qp, 
-		       Color fg, Color bg,
-		       AxisLabel *xAxis, AxisLabel *yAxis,
+TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
+		       Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
 		       Action *action) :
 	ViewGraph(name,initFilter, xAxis, yAxis, fg, bg, action)
 {
@@ -216,25 +219,26 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
   // Collect statistics only for last mapping
   if (!MoreMapping()) {
+
     // Update stats based on gdata
     char *tp = (char *)gdata;
+    GDataAttrOffset *offset = mapping->GetGDataOffset();
+
     for(int tmp = 0; tmp < numGData; tmp++) {
-      GDataBinRec *gt = (GDataBinRec *)tp;
+
+      // extract X, Y, shape, and color information from gdata record
+
+      Coord x = GetX(tp, mapping, offset);
+      Coord y = GetY(tp, mapping, offset);
+      ShapeID shape = GetShape(tp, mapping, offset);
+      Color color = mapping->GetDefaultColor();
+      if (offset->colorOffset >= 0)
+	color = *(Color *)(tp + offset->colorOffset);
 
       // eliminate records which won't appear on the screen
-      //
-      // for bar graphs, a vertical line is drawn from y = 0 to
-      //   y = gt->y, so we should eliminate record if 0 > filter.yHigh
-      //
-      // for scatter plots, we should eliminate record if gt->y > filter.yHigh
-      //
-      // plot type is known only later (may even depend on a record field)
-      // so the above elimination can't be done yet
 
-      if (gt->x >= _queryFilter.xLow &&
-	  gt->x <= _queryFilter.xHigh &&
-	  gt->y >= _queryFilter.yLow)
-	_stats.Sample(gt->x, gt->y);
+      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh)
+	_stats.Sample(x, y);
       
       tp += gRecSize;
     }

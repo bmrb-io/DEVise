@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/15 15:08:36  jussi
+  Interface to ViewGraph's mapping iterator has changed.
+
   Revision 1.9  1996/04/10 02:22:52  jussi
   Added support for > 1 mappings in a view.
 
@@ -50,6 +53,7 @@
 
 #include "ViewScatter.h"
 #include "TDataMap.h"
+#include "Shape.h"
 
 //#define DEBUG
 
@@ -111,10 +115,6 @@ void ViewScatter::QueryInit(void *userData)
 {
 }
 
-struct GDataTemp {
-  Coord x, y;
-};
-
 void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 			      void *gdata, int numGData)
 {
@@ -130,13 +130,25 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   VisualFilter *filter = GetVisualFilter();
   Coord maxWidth, maxHeight;
   mapping->MaxBoundingBox(maxWidth, maxHeight);
+  GDataAttrOffset *offset = mapping->GetGDataOffset();
 
   for(int i = 0; i < numGData; i++) {
-    GDataTemp *gdata = (GDataTemp *)ptr;
-    if (gdata->x < (filter->xLow - maxWidth) || 
-	gdata->x > (filter->xHigh + maxWidth) || 
-	gdata->y < (filter->yLow - maxHeight) || 
-	gdata->y > (filter->yHigh + maxHeight)) {
+
+    // extract X, Y, shape, and color information from gdata record
+
+    Coord x = GetX(ptr, mapping, offset);
+    Coord y = GetY(ptr, mapping, offset);
+    ShapeID shape = GetShape(ptr, mapping, offset);
+    Color color = mapping->GetDefaultColor();
+    if (offset->colorOffset >= 0)
+      color = *(Color *)(ptr + offset->colorOffset);
+
+    // eliminate records which won't appear on the screen
+
+    if (x + maxWidth < filter->xLow || 
+	x - maxWidth > filter->xHigh || 
+	y + maxHeight < filter->yLow || 
+	y - maxHeight > filter->yHigh) {
       ptr += gRecSize;
       continue;
     }
@@ -167,6 +179,8 @@ void ViewScatter::QueryDone(int bytes, void *userData)
 
   DoneMappingIterator();
   _map = 0;
+
+  DrawLegend();
 
   ReportQueryDone(bytes);
 }
