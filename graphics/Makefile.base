@@ -21,20 +21,20 @@ LIBSRC=  Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
-	Util.c View.c ViewWin.c ViewWinVer.c VisualLink.c \
+	Util.c View.c ViewWin.c ViewLayout.C VisualLink.c \
 	VisualLinkClassInfo.c XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	ViewWinHor.c ViewLayout.C
+	TileLayout.C
 
 LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
 	ClassDir.o ColorMgr.o Compress.o Control.o Cursor.o CursorClassInfo.o \
 	DevisePixmap.o Dispatcher.o Display.o DList.o\
 	Exit.o FilterQueue.o Geom.o \
 	Init.o Journal.o Parse.o Selection.o  Time.o Timer.o TimeStamp.o \
-	Util.o View.o ViewWin.o  ViewWinVer.o VisualLink.o \
+	Util.o View.o ViewWin.o ViewLayout.o VisualLink.o \
 	VisualLinkClassInfo.o XawControl.o XawWidget.o \
 	WindowRep.o WinClassInfo.o XBitmap.o XDisplay.o XWindowRep.o \
-	ViewWinHor.o ViewLayout.o
+	TileLayout.o
 
 OTHERSRC= testWindowRep.c testViewWin.c testView.c jstat.c
 
