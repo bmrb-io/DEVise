@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/04/11 18:13:07  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -192,7 +195,14 @@ proc DupWindow {} {
 	# replace name of view by name of new view
 	set newParam [linsert [lrange $params 1 end] 0 $newView]
 	eval DEVise create view $class $newParam
-	
+
+	# insert links of $view into $newView
+	foreach link [LinkSet] {
+	    if {[DEVise viewInLink $link $view]} {
+		DEVise insertLink $link $newView
+	    }
+	}
+
 	set viewLabelParams [DEVise getLabel $view]
 	eval DEVise setLabel {$newView} $viewLabelParams
 	set viewStatParams [DEVise getViewStatistics $view]
