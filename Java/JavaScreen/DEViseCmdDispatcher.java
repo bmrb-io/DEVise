@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2001/01/31 22:23:55  xuk
+// Modify processReceivedCommand(), for wrong collaboration JS ID. Stop current thread when receives JAVAC_ERROR command from jspop.
+//
 // Revision 1.71  2001/01/30 03:03:28  xuk
 // Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
 //
@@ -371,7 +374,7 @@ public class DEViseCmdDispatcher implements Runnable
         return isAbort;
     }
 
-    private synchronized void setAbortStatus(boolean flag)
+    public synchronized void setAbortStatus(boolean flag)
     {
         isAbort = flag;
     }
@@ -594,12 +597,14 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
-    private synchronized void disconnect()
+    public synchronized void disconnect()
     {
         if (commSocket != null) {
             commSocket.closeSocket();
             commSocket = null;
         }
+
+	_connectedAlready = false;
 
         isOnline = false;
         isAbort = false;
@@ -809,7 +814,7 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.specialID = 0;
 
 		disconnect();
-		_connectedAlready = false;
+		//_connectedAlready = false;
 
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
