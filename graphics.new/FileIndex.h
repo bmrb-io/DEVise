@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/05 16:24:46  wenger
+  Fixed up includes (didn't work on HP).
+
   Revision 1.1  1996/10/04 17:44:14  wenger
   Moved handling of indices from TDataAscii and TDataBinary to new
   FileIndex class.
@@ -46,7 +49,7 @@ typedef unsigned long OffsetType;
 class FileIndex
 {
 public:
-  FileIndex(int allocIncrement);
+  FileIndex(int initSize);
   ~FileIndex();
 
   OffsetType Get(RecId recId);
@@ -67,8 +70,8 @@ private:
 
   void ExpandArray(RecId recId);
 
-  int _allocIncrement;
   int _indexSize;
+  int _highestValidIndex;
   OffsetType *_indexArray;
 };
 

@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/10/08 21:49:08  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.2  1996/10/05 16:24:43  wenger
   Fixed up includes (didn't work on HP).
 
@@ -67,13 +71,15 @@ static char *	srcFile = __FILE__;
  * function: FileIndex::FileIndex
  * Constructor.
  */
-FileIndex::FileIndex(int allocIncrement)
+FileIndex::FileIndex(int initSize)
 {
   DO_DEBUG(printf("FileIndex::FileIndex()\n"));
 
-  _allocIncrement = allocIncrement;
   _indexSize = 0;
   _indexArray = NULL;
+  _highestValidIndex = -1;
+
+  ExpandArray(initSize);
 }
 
 /*------------------------------------------------------------------------------
@@ -97,7 +103,7 @@ FileIndex::Get(RecId recId)
 {
   DO_DEBUG(printf("FileIndex::Get()\n"));
 
-  DOASSERT((int) recId < _indexSize, "Illegal record ID");
+  DOASSERT((int) recId <= _highestValidIndex, "Illegal record ID");
 
   return _indexArray[recId];
 }
@@ -117,6 +123,7 @@ FileIndex::Set(RecId recId, OffsetType offset)
   }
 
   _indexArray[recId] = offset;
+  _highestValidIndex = MAX(((int)recId), _highestValidIndex);
 
   return;
 }
@@ -130,9 +137,7 @@ FileIndex::Clear()
 {
   DO_DEBUG(printf("FileIndex::Clear()\n"));
 
-  delete [] _indexArray;
-  _indexArray = NULL;
-  _indexSize = 0;
+  _highestValidIndex = -1;
 }
 
 
@@ -142,7 +147,7 @@ FileIndex::Clear()
  */
 DevStatus
 FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
-    long& lastPos, long& totalRecs)
+                      long& lastPos, long& totalRecs)
 {
   DO_DEBUG(printf("FileIndex::Initialize()\n"));
 
@@ -273,6 +278,8 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
       }
     }
   }
+
+  _highestValidIndex = totalRecs - 1;
 
 /*
  * Make sure the index file is closed.
@@ -492,8 +499,9 @@ FileIndex::ExpandArray(RecId recId)
 {
   DO_DEBUG(printf("FileIndex::ExpandArray(%d)\n", (int) recId));
 
-  int newIndexSize = _indexSize + _allocIncrement;
+  int newIndexSize = _indexSize + MAX(10000, _indexSize);
   if (recId + 1 > (unsigned) newIndexSize) newIndexSize = recId + 1;
+
   OffsetType *newArray = new OffsetType[newIndexSize];
   DOASSERT(newArray != NULL, "Out of memory");
   memcpy(newArray, _indexArray, _indexSize * sizeof(OffsetType));
