@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2001/12/03 19:43:40  xuk
+// Fixed bug: inproper client state during client switching.
+//
 // Revision 1.15  2001/11/28 21:56:18  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -167,7 +170,7 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
             if (client != null) {
 		System.out.println("Finding server for client " + client.ID);
 
-                server = pop.getNextAvailableServer();
+		server = pop.getNextAvailableServer();
                 if (server != null) {
                     server.setCurrentClient(client);
                 } else {
@@ -189,6 +192,11 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
 		// Try to avoid any delay in garbage collection of clients.
 		client = null;
             }
+	    /*
+	    else {
+		System.out.println("No available client. jspop state: " + pop.getServerState());
+	    }
+	    */
         }
 
         DEViseThreadChecker.getInstance().unregister(this);
