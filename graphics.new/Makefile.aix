@@ -16,9 +16,9 @@ Action: BasicStats.h ViewStats.h RecId.h
 ActionClassInfo: ActionClassInfo.h ../graphics/DeviseTypes.h
 ActionClassInfo: ../graphics/ClassDir.h Action.h ../graphics/View.h
 ActionClassInfo: ../graphics/Dispatcher.h ../graphics/DList.h
-ActionClassInfo: ../graphics/Exit.h ../graphics/VisualArg.h
-ActionClassInfo: ../graphics/Color.h ../graphics/Pattern.h
-ActionClassInfo: ../graphics/Journal.h ../graphics/ViewWin.h
+ActionClassInfo: ../graphics/Exit.h ../graphics/Journal.h
+ActionClassInfo: ../graphics/VisualArg.h ../graphics/Color.h
+ActionClassInfo: ../graphics/Pattern.h ../graphics/ViewWin.h
 ActionClassInfo: ../graphics/WindowRep.h ../graphics/Geom.h
 ActionClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ActionClassInfo: ../graphics/Compress.h ../graphics/Control.h
@@ -39,17 +39,14 @@ ActionDefault: ../graphics/Cursor.h BasicStats.h ViewStats.h
 ActionDefault: ../graphics/Selection.h RecInterp.h QueryProc.h TData.h
 ActionDefault: RecOrder.h
 AmsDiskFile: AmsDiskFile.h DiskFile.h ../graphics/DeviseTypes.h TDataAppend.h
-AmsDiskFile: TData.h RecId.h RecOrder.h ../graphics/VisualArg.h
-AmsDiskFile: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-AmsDiskFile: ../graphics/Exit.h ams.h
+AmsDiskFile: TData.h RecId.h RecOrder.h ams.h
 Bitmap: ../graphics/Exit.h Bitmap.h ../graphics/DeviseTypes.h
 BufHash: ../graphics/Exit.h BufHash.h ../graphics/DeviseTypes.h BufMgr.h
 BufHash: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h RecOrder.h
 BufHash: ../graphics/DList.h
 BufMech: BufMech.h ../graphics/DeviseTypes.h RecId.h RangeInfo.h
 BufMech: RangeInfoArray.h RangeHash.h BufferPolicy.h TData.h RecOrder.h
-BufMech: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BufMech: ../graphics/DList.h ../graphics/Exit.h
+BufMech: ../graphics/Exit.h
 BufMgr: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
 BufMgr: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
 BufMgr: ../graphics/Exit.h
@@ -57,39 +54,26 @@ BufMgrFull: ../graphics/Config.h ../graphics/Exit.h BufMgrFull.h BufMgr.h
 BufMgrFull: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
 BufMgrFull: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h RangeInfo.h
 BufMgrFull: TDataRangeList.h RangeInfoArray.h RangeList.h RecRange.h
-BufMgrFull: TDataAttr.h TData.h ../graphics/VisualArg.h ../graphics/Color.h
-BufMgrFull: ../graphics/Pattern.h GData.h ../graphics/Init.h BufferFifo.h
+BufMgrFull: TDataAttr.h TData.h GData.h ../graphics/Init.h BufferFifo.h
 BufMgrFull: BufferFocal.h BufferLifo.h BufferRnd.h
 BufMgrNull: ../graphics/Exit.h TData.h ../graphics/DeviseTypes.h RecId.h
-BufMgrNull: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-BufMgrNull: ../graphics/Pattern.h ../graphics/DList.h BufMgrNull.h BufMgr.h
-BufMgrNull: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
-BufMgrNull: ../graphics/Init.h
+BufMgrNull: RecOrder.h BufMgrNull.h BufMgr.h ../graphics/BufPolicy.h
+BufMgrNull: BufHint.h BufferPolicy.h ../graphics/DList.h ../graphics/Init.h
 BufPage: BufPage.h ../graphics/DeviseTypes.h PageSize.h ../graphics/Exit.h
 BufPageList: BufPageList.h ../graphics/DeviseTypes.h BufMgr.h
 BufPageList: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
 BufPageList: RecOrder.h ../graphics/DList.h ../graphics/Exit.h
 BufferFifo: RangeInfoArray.h ../graphics/DeviseTypes.h BufferFifo.h
 BufferFifo: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h RecOrder.h
-BufferFifo: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BufferFifo: ../graphics/DList.h ../graphics/Exit.h
 BufferFocal: RangeInfoArray.h ../graphics/DeviseTypes.h BufferFocal.h
 BufferFocal: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h
-BufferFocal: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-BufferFocal: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
-BufferFocal: GData.h
+BufferFocal: RecOrder.h GData.h ../graphics/DList.h ../graphics/Exit.h
 BufferLifo: RangeInfoArray.h ../graphics/DeviseTypes.h BufferLifo.h
 BufferLifo: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h RecOrder.h
-BufferLifo: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BufferLifo: ../graphics/DList.h ../graphics/Exit.h
 BufferLru: RangeInfoArray.h ../graphics/DeviseTypes.h BufferLru.h
 BufferLru: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h RecOrder.h
-BufferLru: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BufferLru: ../graphics/DList.h ../graphics/Exit.h
 BufferRnd: RangeInfoArray.h ../graphics/DeviseTypes.h BufferRnd.h
 BufferRnd: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h RecOrder.h
-BufferRnd: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BufferRnd: ../graphics/DList.h ../graphics/Exit.h
 ClientAPI: ClientAPI.h ParseAPI.h
 Command: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
 Command: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
@@ -109,9 +93,10 @@ ConnectorShape: LineConnector.h ConnectorShape.h ../graphics/DeviseTypes.h
 ConnectorShape: Connector.h ../graphics/Color.h ShapeID.h
 ConnectorShape: ../graphics/Pattern.h ../graphics/WindowRep.h
 ConnectorShape: ../graphics/Geom.h ../graphics/Transform.h
-ConnectorShape: ../graphics/DList.h ../graphics/Exit.h
-ConnectorShape: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
+ConnectorShape: ../graphics/VisualArg.h ../graphics/DList.h
+ConnectorShape: ../graphics/Exit.h ../graphics/DevisePixmap.h
 ConnectorShape: ../graphics/Compress.h
+DataSeg: DataSeg.h ../graphics/Util.h ../graphics/Exit.h
 DataSource: DataSource.h ../graphics/DeviseTypes.h ../graphics/Util.h
 DataSource: ../graphics/Exit.h ../graphics/DevError.h ../tape/tapedrive.h
 DataSource: machdep.h
@@ -121,7 +106,10 @@ DataSourceBuf: ../tape/tapedrive.h machdep.h
 DataSourceFileStream: DataSourceFileStream.h DataSource.h
 DataSourceFileStream: ../graphics/DeviseTypes.h ../graphics/Util.h
 DataSourceFileStream: ../graphics/Exit.h ../graphics/DevError.h
-DataSourceFileStream: ../tape/tapedrive.h machdep.h
+DataSourceSegment: DataSourceFileStream.h DataSource.h
+DataSourceSegment: ../graphics/DeviseTypes.h DataSourceTape.h
+DataSourceSegment: DataSourceSegment.h ../graphics/Util.h ../graphics/Exit.h
+DataSourceSegment: ../graphics/DevError.h
 DataSourceTape: DataSourceTape.h DataSource.h ../graphics/DeviseTypes.h
 DataSourceTape: ../graphics/Util.h ../graphics/Exit.h ../graphics/DevError.h
 DataSourceTape: ../tape/tapedrive.h machdep.h
@@ -130,36 +118,32 @@ DictGroup: ../graphics/Exit.h
 DiskFile: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
 DispQueryProc: DispQueryProc.h ../graphics/Dispatcher.h
 DispQueryProc: ../graphics/DeviseTypes.h ../graphics/DList.h
-DispQueryProc: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-DispQueryProc: ../graphics/Pattern.h ../graphics/Journal.h QueryProcSimple.h
-DispQueryProc: ../graphics/Config.h QueryProc.h RecId.h ../graphics/Init.h
-DispQueryProc: ../graphics/BufPolicy.h BufHint.h GDataRec.h ShapeID.h
+DispQueryProc: ../graphics/Exit.h ../graphics/Journal.h
+DispQueryProc: ../graphics/VisualArg.h ../graphics/Color.h
+DispQueryProc: ../graphics/Pattern.h QueryProcSimple.h ../graphics/Config.h
+DispQueryProc: QueryProc.h RecId.h ../graphics/BufPolicy.h BufHint.h
 DispQueryProc: QueryProcFull.h QPRange.h
 GData: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
-GData: RecId.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-GData: ../graphics/Pattern.h ../graphics/DList.h GData.h GDataRangeMap.h
-GData: GDataRec.h ShapeID.h UnixRecFile.h RecFile.h ../graphics/Init.h
-GData: ../graphics/BufPolicy.h
+GData: RecId.h RecOrder.h GData.h ../graphics/DList.h GDataRangeMap.h
+GData: GDataRec.h ../graphics/Color.h ShapeID.h ../graphics/Pattern.h
+GData: UnixRecFile.h RecFile.h ../graphics/Init.h ../graphics/BufPolicy.h
 GDataBin: ../graphics/Exit.h GDataBin.h ../graphics/DeviseTypes.h
 GDataBin: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-GDataBin: ../graphics/Transform.h RecId.h Connector.h ShapeID.h
-GDataBin: ConnectorShape.h TDataMap.h ../graphics/DList.h Bitmap.h GDataRec.h
-GDataBin: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+GDataBin: ../graphics/Transform.h ../graphics/Geom.h RecId.h Connector.h
+GDataBin: ShapeID.h ConnectorShape.h TDataMap.h ../graphics/DList.h Bitmap.h
+GDataBin: GDataRec.h ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 GDataBin: ../graphics/Journal.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-GDataBin: ../graphics/Geom.h ../graphics/DevisePixmap.h
-GDataBin: ../graphics/Compress.h ../graphics/Control.h ../graphics/ClassDir.h
+GDataBin: ../graphics/DevisePixmap.h ../graphics/Compress.h
+GDataBin: ../graphics/Control.h ../graphics/ClassDir.h
 GDataBin: ../graphics/ViewCallback.h ../graphics/AttrList.h
 GDataBin: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h ViewStats.h
 GDataBin: Action.h TDataCMap.h ../graphics/Init.h ../graphics/BufPolicy.h
 GDataRangeMap: ../graphics/Exit.h GDataRangeMap.h ../graphics/DeviseTypes.h
 GDataRangeMap: RecId.h GDataRec.h ../graphics/Color.h ShapeID.h
 GDataRangeMap: ../graphics/Pattern.h FileMacro.h TData.h RecOrder.h
-GDataRangeMap: ../graphics/VisualArg.h ../graphics/DList.h
 GDataRangeSource: GDataRangeSource.h RangeCallback.h
 GDataRangeSource: ../graphics/DeviseTypes.h ../graphics/DList.h
 GDataRangeSource: ../graphics/Exit.h GData.h TData.h RecId.h RecOrder.h
-GDataRangeSource: ../graphics/VisualArg.h ../graphics/Color.h
-GDataRangeSource: ../graphics/Pattern.h
 GDataSnap: ../graphics/DeviseTypes.h RectShape.h Shape.h TDataMap.h
 GDataSnap: ../graphics/Exit.h ../graphics/DList.h ../graphics/Color.h
 GDataSnap: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h Bitmap.h
@@ -189,18 +173,18 @@ MapInterpClassInfo: ViewStats.h Action.h TData.h RecOrder.h
 MapInterpClassInfo: MapInterpClassInfo.h ../graphics/Util.h
 MappingInterp: ../graphics/DeviseTypes.h Bitmap.h ../graphics/AttrList.h
 MappingInterp: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-MappingInterp: TData.h RecId.h RecOrder.h ../graphics/VisualArg.h
-MappingInterp: ../graphics/Color.h ../graphics/Pattern.h
-MappingInterp: ../graphics/WindowRep.h ../graphics/Geom.h
-MappingInterp: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MappingInterp: ../graphics/Compress.h Temp.h MappingInterp.h
-MappingInterp: TDataMapDispatch.h TDataMap.h ShapeID.h GDataRec.h ViewGraph.h
-MappingInterp: ../graphics/View.h ../graphics/Dispatcher.h
-MappingInterp: ../graphics/Journal.h ../graphics/ViewWin.h
-MappingInterp: ../graphics/Control.h ../graphics/ClassDir.h
-MappingInterp: ../graphics/ViewCallback.h ../graphics/Cursor.h BasicStats.h
-MappingInterp: ViewStats.h Action.h MapInterpShape.h RectShape.h Shape.h
-MappingInterp: ../graphics/Util.h ../graphics/Init.h ../graphics/BufPolicy.h
+MappingInterp: TData.h RecId.h RecOrder.h ../graphics/Pattern.h
+MappingInterp: ../graphics/Color.h ../graphics/WindowRep.h ../graphics/Geom.h
+MappingInterp: ../graphics/Transform.h ../graphics/VisualArg.h
+MappingInterp: ../graphics/DevisePixmap.h ../graphics/Compress.h Temp.h
+MappingInterp: MappingInterp.h TDataMapDispatch.h TDataMap.h ShapeID.h
+MappingInterp: GDataRec.h ViewGraph.h ../graphics/View.h
+MappingInterp: ../graphics/Dispatcher.h ../graphics/Journal.h
+MappingInterp: ../graphics/ViewWin.h ../graphics/Control.h
+MappingInterp: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MappingInterp: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+MappingInterp: MapInterpShape.h RectShape.h Shape.h ../graphics/Util.h
+MappingInterp: ../graphics/Init.h ../graphics/BufPolicy.h
 MultiArray: MultiArray.h ../graphics/DeviseTypes.h VoidArray.h
 MultiArray: ../graphics/Exit.h
 PageFile: ../graphics/Exit.h BufMgr.h ../graphics/DeviseTypes.h
@@ -211,26 +195,20 @@ PageRange: ../graphics/DeviseTypes.h
 ParseCat: ParseCat.h ../graphics/DeviseTypes.h ../graphics/ClassDir.h
 ParseCat: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
 ParseCat: ../graphics/Exit.h TDataAsciiInterp.h TDataAscii.h
-ParseCat: ../graphics/Dispatcher.h ../graphics/VisualArg.h
-ParseCat: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
-ParseCat: TData.h RecId.h RecOrder.h ../tape/tapedrive.h machdep.h
-ParseCat: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
-ParseCat: ../graphics/Control.h ../graphics/Util.h ../graphics/Init.h
-ParseCat: ../graphics/BufPolicy.h Group.h ViewGraph.h ../graphics/View.h
-ParseCat: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-ParseCat: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ParseCat: ../graphics/Compress.h ../graphics/ViewCallback.h
-ParseCat: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h TDataMap.h
-ParseCat: ShapeID.h Bitmap.h GDataRec.h MapInterpClassInfo.h GroupDir.h
-ParseCat: ItemList.h DataSourceBuf.h DataSource.h DataSourceFileStream.h
-ParseCat: ../graphics/DevError.h
+ParseCat: ../graphics/Dispatcher.h ../graphics/Journal.h
+ParseCat: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ParseCat: TData.h RecId.h RecOrder.h TDataBinaryInterp.h TDataBinary.h
+ParseCat: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+ParseCat: ../graphics/Init.h ../graphics/BufPolicy.h Group.h
+ParseCat: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
+ParseCat: DataSource.h DataSourceFileStream.h ../graphics/DevError.h
 QPRange: ../graphics/Exit.h QPRange.h ../graphics/DeviseTypes.h RecId.h
 QueryProc: QueryProc.h ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 QueryProc: ../graphics/Color.h ../graphics/Pattern.h RecId.h DispQueryProc.h
 QueryProc: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 QueryProc: ../graphics/Journal.h QueryProcSimple.h ../graphics/Config.h
-QueryProc: ../graphics/Init.h ../graphics/BufPolicy.h BufHint.h GDataRec.h
-QueryProc: ShapeID.h QueryProcFull.h QPRange.h
+QueryProc: ../graphics/BufPolicy.h BufHint.h QueryProcFull.h QPRange.h
+QueryProc: ../graphics/Init.h
 QueryProcFull: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -252,9 +230,9 @@ QueryProcSimple: ../graphics/Exit.h ../graphics/Init.h
 QueryProcSimple: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
 QueryProcSimple: QueryProcSimple.h ../graphics/Config.h QueryProc.h
 QueryProcSimple: ../graphics/VisualArg.h ../graphics/Color.h
-QueryProcSimple: ../graphics/Pattern.h RecId.h BufHint.h GDataRec.h ShapeID.h
-QueryProcSimple: TDataMap.h ../graphics/DList.h Bitmap.h ViewGraph.h
-QueryProcSimple: ../graphics/View.h ../graphics/Dispatcher.h
+QueryProcSimple: ../graphics/Pattern.h RecId.h BufHint.h TDataMap.h
+QueryProcSimple: ../graphics/DList.h ShapeID.h Bitmap.h GDataRec.h
+QueryProcSimple: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 QueryProcSimple: ../graphics/Journal.h ../graphics/ViewWin.h
 QueryProcSimple: ../graphics/WindowRep.h ../graphics/Geom.h
 QueryProcSimple: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -280,18 +258,16 @@ RecInterp: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
 RecInterp: RecInterp.h ../graphics/Util.h
 RecRange: ../graphics/Exit.h RecRange.h ../graphics/DeviseTypes.h RecId.h
 ServerAPI: ServerAPI.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-ServerAPI: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-ServerAPI: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
+ServerAPI: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ServerAPI: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ServerAPI: ../graphics/Control.h ../graphics/ClassDir.h
 ServerAPI: ../graphics/ViewCallback.h GroupDir.h ItemList.h Group.h
-ServerAPI: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-ServerAPI: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/Transform.h
+ServerAPI: MapInterpClassInfo.h ClientAPI.h ParseAPI.h QueryProc.h RecId.h
+ServerAPI: ParseCat.h ../graphics/AttrList.h ../graphics/Config.h
+ServerAPI: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+ServerAPI: ../graphics/Geom.h ../graphics/Transform.h
 ServerAPI: ../graphics/DevisePixmap.h ../graphics/Compress.h
-ServerAPI: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-ServerAPI: BasicStats.h ViewStats.h Action.h RecId.h TData.h RecOrder.h
-ServerAPI: TDataMap.h ShapeID.h Bitmap.h GDataRec.h ../graphics/Init.h
-ServerAPI: ../graphics/BufPolicy.h ../graphics/Util.h MapInterpClassInfo.h
-ServerAPI: ClientAPI.h ParseAPI.h QueryProc.h ParseCat.h
+ServerAPI: ../graphics/Cursor.h ../graphics/Util.h
 Snapshot: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h ../graphics/Exit.h
 Snapshot: ../graphics/DList.h ../graphics/Color.h ../graphics/Pattern.h
 Snapshot: ShapeID.h ../graphics/VisualArg.h Bitmap.h RecId.h GDataRec.h
@@ -307,51 +283,46 @@ Snapshot: BufMgr.h ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
 Snapshot: GDataRangeSource.h GData.h ViewRanges.h ../graphics/Util.h
 StringHash: StringHash.h
 TData: TData.h ../graphics/DeviseTypes.h RecId.h RecOrder.h
-TData: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-TData: ../graphics/DList.h ../graphics/Exit.h
+TData: ../graphics/Exit.h
 TData2DRec: TData2DRec.h TDataRec.h TData.h ../graphics/DeviseTypes.h RecId.h
-TData2DRec: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-TData2DRec: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
+TData2DRec: RecOrder.h
 TDataAppend: ../graphics/Exit.h TDataAppend.h TData.h
-TDataAppend: ../graphics/DeviseTypes.h RecId.h RecOrder.h
-TDataAppend: ../graphics/VisualArg.h ../graphics/Color.h
-TDataAppend: ../graphics/Pattern.h ../graphics/DList.h DiskFile.h BufMgr.h
-TDataAppend: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h PageFile.h
+TDataAppend: ../graphics/DeviseTypes.h RecId.h RecOrder.h DiskFile.h BufMgr.h
+TDataAppend: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+TDataAppend: ../graphics/DList.h PageFile.h
 TDataAscii: ../graphics/Parse.h TDataAscii.h ../graphics/DeviseTypes.h
 TDataAscii: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-TDataAscii: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-TDataAscii: ../graphics/Journal.h TData.h RecId.h RecOrder.h
-TDataAscii: ../tape/tapedrive.h machdep.h ../graphics/Util.h
-TDataAscii: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceFileStream.h
-TDataAscii: DataSource.h DataSourceTape.h ../graphics/DevError.h
+TDataAscii: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+TDataAscii: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
+TDataAscii: ../graphics/Util.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataAscii: DataSourceFileStream.h DataSource.h DataSourceSegment.h
+TDataAscii: DataSourceTape.h ../graphics/DevError.h DataSeg.h
 TDataAsciiInterp: TDataAsciiInterp.h ../graphics/DeviseTypes.h
 TDataAsciiInterp: ../graphics/ClassDir.h TDataAscii.h
 TDataAsciiInterp: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataAsciiInterp: ../graphics/Exit.h ../graphics/VisualArg.h
-TDataAsciiInterp: ../graphics/Color.h ../graphics/Pattern.h
-TDataAsciiInterp: ../graphics/Journal.h TData.h RecId.h RecOrder.h
-TDataAsciiInterp: ../tape/tapedrive.h machdep.h ../graphics/AttrList.h
-TDataAsciiInterp: ../graphics/Config.h RecInterp.h CompositeParser.h
-TDataAsciiInterp: ../graphics/Parse.h ../graphics/Control.h
+TDataAsciiInterp: ../graphics/Exit.h ../graphics/Journal.h
+TDataAsciiInterp: ../graphics/VisualArg.h ../graphics/Color.h
+TDataAsciiInterp: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
+TDataAsciiInterp: ../graphics/AttrList.h ../graphics/Config.h RecInterp.h
+TDataAsciiInterp: CompositeParser.h ../graphics/Parse.h ../graphics/Control.h
 TDataAsciiInterp: ../graphics/Util.h
 TDataBinary: ../graphics/Parse.h TDataBinary.h ../graphics/DeviseTypes.h
 TDataBinary: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-TDataBinary: ../graphics/VisualArg.h ../graphics/Color.h
-TDataBinary: ../graphics/Pattern.h ../graphics/Journal.h TData.h RecId.h
-TDataBinary: RecOrder.h ../tape/tapedrive.h machdep.h ../graphics/Util.h
-TDataBinary: ../graphics/Init.h ../graphics/BufPolicy.h
-TDataBinary: DataSourceFileStream.h DataSource.h DataSourceTape.h
-TDataBinary: ../graphics/DevError.h
+TDataBinary: ../graphics/Journal.h ../graphics/VisualArg.h
+TDataBinary: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
+TDataBinary: RecOrder.h ../graphics/Util.h ../graphics/Init.h
+TDataBinary: ../graphics/BufPolicy.h DataSourceFileStream.h DataSource.h
+TDataBinary: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
+TDataBinary: DataSeg.h
 TDataBinaryInterp: TDataBinaryInterp.h ../graphics/DeviseTypes.h
 TDataBinaryInterp: ../graphics/ClassDir.h TDataBinary.h
 TDataBinaryInterp: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataBinaryInterp: ../graphics/Exit.h ../graphics/VisualArg.h
-TDataBinaryInterp: ../graphics/Color.h ../graphics/Pattern.h
-TDataBinaryInterp: ../graphics/Journal.h TData.h RecId.h RecOrder.h
-TDataBinaryInterp: ../tape/tapedrive.h machdep.h ../graphics/AttrList.h
-TDataBinaryInterp: ../graphics/Config.h RecInterp.h CompositeParser.h
-TDataBinaryInterp: ../graphics/Parse.h ../graphics/Control.h
-TDataBinaryInterp: ../graphics/Util.h
+TDataBinaryInterp: ../graphics/Exit.h ../graphics/Journal.h
+TDataBinaryInterp: ../graphics/VisualArg.h ../graphics/Color.h
+TDataBinaryInterp: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
+TDataBinaryInterp: ../graphics/AttrList.h ../graphics/Config.h RecInterp.h
+TDataBinaryInterp: CompositeParser.h ../graphics/Parse.h
+TDataBinaryInterp: ../graphics/Control.h ../graphics/Util.h
 TDataMap: ../graphics/Config.h ../graphics/Init.h ../graphics/DeviseTypes.h
 TDataMap: ../graphics/BufPolicy.h TDataMap.h ../graphics/Exit.h
 TDataMap: ../graphics/DList.h ../graphics/Color.h ../graphics/Pattern.h
@@ -377,22 +348,16 @@ TDataMapDispatch: ../graphics/ViewCallback.h ../graphics/AttrList.h
 TDataMapDispatch: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 TDataMapDispatch: ViewStats.h Action.h TData.h RecOrder.h GData.h
 TDataMmap: TDataMmap.h TDataAppend.h TData.h ../graphics/DeviseTypes.h
-TDataMmap: RecId.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-TDataMmap: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
-TDataMmap: DiskFile.h
+TDataMmap: RecId.h RecOrder.h DiskFile.h
 TDataRangeList: TDataRangeList.h RangeList.h ../graphics/DeviseTypes.h
 TDataRangeList: RecId.h RangeInfo.h
 TDataRangeSource: TDataRangeSource.h RangeCallback.h
 TDataRangeSource: ../graphics/DeviseTypes.h ../graphics/DList.h
 TDataRangeSource: ../graphics/Exit.h BufMgr.h ../graphics/BufPolicy.h
 TDataRangeSource: BufHint.h RecId.h BufferPolicy.h RecOrder.h TData.h
-TDataRangeSource: ../graphics/VisualArg.h ../graphics/Color.h
-TDataRangeSource: ../graphics/Pattern.h
 TDataRec: ../graphics/Config.h ../graphics/Exit.h TDataRec.h TData.h
-TDataRec: ../graphics/DeviseTypes.h RecId.h RecOrder.h
-TDataRec: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-TDataRec: ../graphics/DList.h RecFile.h ../graphics/Init.h
-TDataRec: ../graphics/BufPolicy.h
+TDataRec: ../graphics/DeviseTypes.h RecId.h RecOrder.h RecFile.h
+TDataRec: ../graphics/Init.h ../graphics/BufPolicy.h
 TDataViewX: ../graphics/Init.h ../graphics/DeviseTypes.h
 TDataViewX: ../graphics/BufPolicy.h TDataViewX.h QueryProc.h
 TDataViewX: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
@@ -407,23 +372,20 @@ TDataViewX: BasicStats.h ViewStats.h Action.h GDataBin.h TDataCMap.h
 TDataViewX: ConnectorShape.h Connector.h ShapeID.h TDataMap.h Bitmap.h
 TDataViewX: GDataRec.h Shape.h Temp.h RecordLink.h RecFile.h VisualLink.h
 Temp: Temp.h ../graphics/DeviseTypes.h ../graphics/WindowRep.h
-Temp: ../graphics/Geom.h ../graphics/Transform.h ../graphics/DList.h
-Temp: ../graphics/Exit.h ../graphics/Color.h ../graphics/Pattern.h
-Temp: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
-Temp: ../graphics/Compress.h
+Temp: ../graphics/Geom.h ../graphics/Transform.h ../graphics/VisualArg.h
+Temp: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
+Temp: ../graphics/Exit.h ../graphics/DevisePixmap.h ../graphics/Compress.h
 TkControl: TkControl.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-TkControl: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-TkControl: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
+TkControl: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+TkControl: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 TkControl: ../graphics/Control.h ../graphics/ClassDir.h
 TkControl: ../graphics/ViewCallback.h GroupDir.h ItemList.h Group.h
-TkControl: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-TkControl: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/Transform.h
-TkControl: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TkControl: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-TkControl: BasicStats.h ViewStats.h Action.h RecId.h TData.h RecOrder.h
-TkControl: TDataMap.h ShapeID.h Bitmap.h GDataRec.h ../graphics/Init.h
-TkControl: ../graphics/BufPolicy.h ../graphics/Util.h MapInterpClassInfo.h
-TkControl: QueryProc.h ParseAPI.h ParseCat.h
+TkControl: MapInterpClassInfo.h QueryProc.h RecId.h ParseAPI.h ParseCat.h
+TkControl: ../graphics/AttrList.h ../graphics/Config.h ../graphics/View.h
+TkControl: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+TkControl: ../graphics/Transform.h ../graphics/DevisePixmap.h
+TkControl: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
+TkControl: ../graphics/Init.h ../graphics/BufPolicy.h
 UnixDiskFile: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
 UnixDiskFile: ../graphics/Exit.h PageSize.h
 UnixRecFile: UnixRecFile.h RecFile.h ../graphics/DeviseTypes.h
@@ -445,8 +407,8 @@ ViewClassInfo: ../graphics/Util.h ActionDefault.h VisualLink.h
 ViewClassInfo: ../graphics/ColorMgr.h ../graphics/Parse.h
 ViewGraph: ViewGraph.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewGraph: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-ViewGraph: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ViewGraph: ../graphics/Journal.h ../graphics/ViewWin.h
+ViewGraph: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ViewGraph: ../graphics/Pattern.h ../graphics/ViewWin.h
 ViewGraph: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/Transform.h
 ViewGraph: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ViewGraph: ../graphics/Control.h ../graphics/ClassDir.h
@@ -457,8 +419,8 @@ ViewGraph: ActionDefault.h ../graphics/Util.h RecordLink.h RecFile.h
 ViewGraph: VisualLink.h
 ViewRanges: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewRanges: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-ViewRanges: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ViewRanges: ../graphics/Journal.h ../graphics/ViewWin.h
+ViewRanges: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ViewRanges: ../graphics/Pattern.h ../graphics/ViewWin.h
 ViewRanges: ../graphics/WindowRep.h ../graphics/Geom.h
 ViewRanges: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ViewRanges: ../graphics/Compress.h ../graphics/Control.h
@@ -480,8 +442,8 @@ ViewScatter: ShapeID.h Bitmap.h GDataRec.h Shape.h Temp.h RecordLink.h
 ViewScatter: RecFile.h VisualLink.h
 VisualLink: VisualLink.h ViewGraph.h ../graphics/View.h
 VisualLink: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-VisualLink: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-VisualLink: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
+VisualLink: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+VisualLink: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 VisualLink: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
 VisualLink: ../graphics/Transform.h ../graphics/DevisePixmap.h
 VisualLink: ../graphics/Compress.h ../graphics/Control.h
@@ -507,27 +469,23 @@ genAms: ams.h
 genStrData: StrData.h
 makeGData: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
 makeGData: BufHint.h RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
-makeGData: ../graphics/Exit.h TDataAppend.h TData.h ../graphics/VisualArg.h
-makeGData: ../graphics/Color.h ../graphics/Pattern.h DiskFile.h GData.h ams.h
+makeGData: ../graphics/Exit.h TDataAppend.h TData.h DiskFile.h GData.h ams.h
 rstat: ../graphics/Parse.h
 testBufMgrFull: ../graphics/DeviseTypes.h ../graphics/Exit.h
-testBufMgrFull: ../graphics/Parse.h TData.h RecId.h RecOrder.h
-testBufMgrFull: ../graphics/VisualArg.h ../graphics/Color.h
-testBufMgrFull: ../graphics/Pattern.h ../graphics/DList.h RangeInfo.h
+testBufMgrFull: ../graphics/Parse.h TData.h RecId.h RecOrder.h RangeInfo.h
 testBufMgrFull: RangeInfoArray.h BufferPolicy.h BufMgrFull.h BufMgr.h
-testBufMgrFull: ../graphics/BufPolicy.h BufHint.h
+testBufMgrFull: ../graphics/BufPolicy.h BufHint.h ../graphics/DList.h
 testBufMgrNull: TDataRec.h TData.h ../graphics/DeviseTypes.h RecId.h
-testBufMgrNull: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-testBufMgrNull: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
-testBufMgrNull: BufMgrNull.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
-testBufMgrNull: BufferPolicy.h TestData.h
+testBufMgrNull: RecOrder.h BufMgrNull.h BufMgr.h ../graphics/BufPolicy.h
+testBufMgrNull: BufHint.h BufferPolicy.h ../graphics/DList.h
+testBufMgrNull: ../graphics/Exit.h TestData.h
 testBufPage: BufPage.h ../graphics/DeviseTypes.h PageSize.h
 testDictGroup: DictGroup.h ../graphics/DeviseTypes.h ../graphics/DList.h
 testDictGroup: ../graphics/Exit.h
 testGData: TDataAppend.h TData.h ../graphics/DeviseTypes.h RecId.h RecOrder.h
-testGData: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-testGData: ../graphics/DList.h ../graphics/Exit.h DiskFile.h GData.h
-testGData: TDataMap.h ShapeID.h Bitmap.h GDataRec.h ViewGraph.h
+testGData: DiskFile.h GData.h ../graphics/DList.h ../graphics/Exit.h
+testGData: TDataMap.h ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
+testGData: ../graphics/VisualArg.h Bitmap.h GDataRec.h ViewGraph.h
 testGData: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/Journal.h
 testGData: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
 testGData: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -540,9 +498,9 @@ testGDataRange: GDataRangeMap.h ../graphics/DeviseTypes.h RecId.h GDataRec.h
 testGDataRange: ../graphics/Color.h ShapeID.h ../graphics/Pattern.h
 testGDataRange: ../graphics/Parse.h
 testGDataVar: TDataAppend.h TData.h ../graphics/DeviseTypes.h RecId.h
-testGDataVar: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-testGDataVar: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
-testGDataVar: DiskFile.h GDataVar.h TDataMap.h ShapeID.h Bitmap.h GDataRec.h
+testGDataVar: RecOrder.h DiskFile.h GDataVar.h TDataMap.h ../graphics/Exit.h
+testGDataVar: ../graphics/DList.h ../graphics/Color.h ../graphics/Pattern.h
+testGDataVar: ShapeID.h ../graphics/VisualArg.h Bitmap.h GDataRec.h
 testGDataVar: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 testGDataVar: ../graphics/Journal.h ../graphics/ViewWin.h
 testGDataVar: ../graphics/WindowRep.h ../graphics/Geom.h
@@ -559,9 +517,9 @@ testQPRange: ../graphics/Parse.h QPRange.h ../graphics/DeviseTypes.h RecId.h
 testQueryProc: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
 testQueryProc: BufHint.h RecId.h BufferPolicy.h RecOrder.h
 testQueryProc: ../graphics/DList.h ../graphics/Exit.h TDataAppend.h TData.h
-testQueryProc: ../graphics/VisualArg.h ../graphics/Color.h
-testQueryProc: ../graphics/Pattern.h DiskFile.h TDataMap.h ShapeID.h Bitmap.h
-testQueryProc: GDataRec.h ViewGraph.h ../graphics/View.h
+testQueryProc: DiskFile.h TDataMap.h ../graphics/Color.h
+testQueryProc: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
+testQueryProc: Bitmap.h GDataRec.h ViewGraph.h ../graphics/View.h
 testQueryProc: ../graphics/Dispatcher.h ../graphics/Journal.h
 testQueryProc: ../graphics/ViewWin.h ../graphics/WindowRep.h
 testQueryProc: ../graphics/Geom.h ../graphics/Transform.h
@@ -577,19 +535,16 @@ testRecRange: RecRange.h ../graphics/DeviseTypes.h RecId.h
 testRecRange: ../graphics/Parse.h
 testStringHash: StringHash.h
 testTDataRec: TDataRec.h TData.h ../graphics/DeviseTypes.h RecId.h RecOrder.h
-testTDataRec: ../graphics/VisualArg.h ../graphics/Color.h
-testTDataRec: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
 testTDataRec: TestData.h
 testTdata: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
 testTdata: BufHint.h RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
-testTdata: ../graphics/Exit.h TDataAppend.h TData.h ../graphics/VisualArg.h
-testTdata: ../graphics/Color.h ../graphics/Pattern.h DiskFile.h
+testTdata: ../graphics/Exit.h TDataAppend.h TData.h DiskFile.h
 testViewRanges: ../graphics/TileLayout.h ../graphics/ViewLayout.h
 testViewRanges: ../graphics/ViewWin.h ../graphics/DList.h ../graphics/Exit.h
 testViewRanges: ../graphics/DeviseTypes.h ../graphics/WindowRep.h
 testViewRanges: ../graphics/Geom.h ../graphics/Transform.h
-testViewRanges: ../graphics/Color.h ../graphics/Pattern.h
-testViewRanges: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
+testViewRanges: ../graphics/VisualArg.h ../graphics/Color.h
+testViewRanges: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 testViewRanges: ../graphics/Compress.h ViewRanges.h ../graphics/View.h
 testViewRanges: ../graphics/Dispatcher.h ../graphics/Journal.h
 testViewRanges: ../graphics/Control.h ../graphics/ClassDir.h
@@ -611,8 +566,8 @@ testpfileGap: ../graphics/DList.h ../graphics/Exit.h PageRange.h
 BasicStats: ../graphics/XDisplay.h ../graphics/Display.h
 BasicStats: ../graphics/DeviseTypes.h ../graphics/Geom.h
 BasicStats: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-BasicStats: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-BasicStats: ../graphics/Journal.h ../graphics/ColorMgr.h ../graphics/Xdef.h
+BasicStats: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+BasicStats: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/Xdef.h
 BasicStats: ../graphics/XWindowRep.h ../graphics/WindowRep.h
 BasicStats: ../graphics/Transform.h ../graphics/DevisePixmap.h
 BasicStats: ../graphics/Compress.h ../graphics/XBitmap.h BasicStats.h
@@ -621,53 +576,26 @@ BasicStats: ../graphics/ViewWin.h ../graphics/Control.h
 BasicStats: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 BasicStats: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 BasicStats: Action.h RecId.h KGraph.h
-Group: Group.h ../graphics/ClassDir.h ../graphics/DeviseTypes.h ViewGraph.h
-Group: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/DList.h
-Group: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-Group: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/ViewWin.h
-Group: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/Transform.h
-Group: ../graphics/DevisePixmap.h ../graphics/Compress.h
-Group: ../graphics/Control.h ../graphics/ViewCallback.h
-Group: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-Group: BasicStats.h ViewStats.h Action.h RecId.h TData.h RecOrder.h
-Group: TDataMap.h ShapeID.h Bitmap.h GDataRec.h ../graphics/Init.h
-Group: ../graphics/BufPolicy.h ../graphics/Util.h MapInterpClassInfo.h
-Group: ItemList.h
-GroupDir: GroupDir.h ItemList.h Group.h ../graphics/ClassDir.h
-GroupDir: ../graphics/DeviseTypes.h ViewGraph.h ../graphics/View.h
-GroupDir: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+Group: Group.h MapInterpClassInfo.h ../graphics/ClassDir.h
+Group: ../graphics/DeviseTypes.h ../graphics/VisualArg.h ../graphics/Color.h
+Group: ../graphics/Pattern.h ItemList.h
+GroupDir: GroupDir.h ItemList.h Group.h MapInterpClassInfo.h
+GroupDir: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 GroupDir: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-GroupDir: ../graphics/Journal.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-GroupDir: ../graphics/Geom.h ../graphics/Transform.h
-GroupDir: ../graphics/DevisePixmap.h ../graphics/Compress.h
-GroupDir: ../graphics/Control.h ../graphics/ViewCallback.h
-GroupDir: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-GroupDir: BasicStats.h ViewStats.h Action.h RecId.h TData.h RecOrder.h
-GroupDir: TDataMap.h ShapeID.h Bitmap.h GDataRec.h ../graphics/Init.h
-GroupDir: ../graphics/BufPolicy.h ../graphics/Util.h MapInterpClassInfo.h
-ItemList: ItemList.h Group.h ../graphics/ClassDir.h ../graphics/DeviseTypes.h
-ItemList: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
-ItemList: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-ItemList: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
-ItemList: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-ItemList: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ItemList: ../graphics/Compress.h ../graphics/Control.h
-ItemList: ../graphics/ViewCallback.h ../graphics/AttrList.h
-ItemList: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h ViewStats.h
-ItemList: Action.h RecId.h TData.h RecOrder.h TDataMap.h ShapeID.h Bitmap.h
-ItemList: GDataRec.h ../graphics/Init.h ../graphics/BufPolicy.h
-ItemList: ../graphics/Util.h MapInterpClassInfo.h
+ItemList: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ClassDir.h
+ItemList: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+ItemList: ../graphics/Color.h ../graphics/Pattern.h
 KGraph: ../graphics/Transform.h ../graphics/DeviseTypes.h
-KGraph: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/DList.h
-KGraph: ../graphics/Exit.h ../graphics/Color.h ../graphics/Pattern.h
-KGraph: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
-KGraph: ../graphics/Compress.h KGraph.h ../graphics/Display.h
-KGraph: ../graphics/Dispatcher.h ../graphics/Journal.h ../graphics/ColorMgr.h
+KGraph: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+KGraph: ../graphics/Geom.h ../graphics/WindowRep.h ../graphics/DList.h
+KGraph: ../graphics/Exit.h ../graphics/DevisePixmap.h ../graphics/Compress.h
+KGraph: KGraph.h ../graphics/Display.h ../graphics/Dispatcher.h
+KGraph: ../graphics/Journal.h ../graphics/ColorMgr.h
 MapInterpShape: MapInterpShape.h ../graphics/Transform.h
-MapInterpShape: ../graphics/DeviseTypes.h ../graphics/Geom.h RectShape.h
-MapInterpShape: Shape.h TDataMap.h ../graphics/Exit.h ../graphics/DList.h
-MapInterpShape: ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
-MapInterpShape: ../graphics/VisualArg.h Bitmap.h RecId.h GDataRec.h
+MapInterpShape: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+MapInterpShape: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Geom.h
+MapInterpShape: RectShape.h Shape.h TDataMap.h ../graphics/Exit.h
+MapInterpShape: ../graphics/DList.h ShapeID.h Bitmap.h RecId.h GDataRec.h
 MapInterpShape: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 MapInterpShape: ../graphics/Journal.h ../graphics/ViewWin.h
 MapInterpShape: ../graphics/WindowRep.h ../graphics/DevisePixmap.h
@@ -688,13 +616,13 @@ ParseAPI: BasicStats.h ViewStats.h Action.h RecId.h KGraph.h
 ParseAPI: ../graphics/Display.h ../graphics/ColorMgr.h ../graphics/Util.h
 ParseAPI: ParseCat.h TData.h RecOrder.h TDataMap.h ShapeID.h Bitmap.h
 ParseAPI: GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h Group.h
-ParseAPI: ../graphics/Init.h ../graphics/BufPolicy.h MapInterpClassInfo.h
-ParseAPI: ../graphics/ViewLayout.h VisualLink.h ../graphics/FilterQueue.h
+ParseAPI: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
+ParseAPI: ../graphics/FilterQueue.h DataSeg.h
 RecordLink: RecordLink.h RecId.h RecFile.h ../graphics/DeviseTypes.h
 RecordLink: VisualLink.h ViewGraph.h ../graphics/View.h
 RecordLink: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-RecordLink: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-RecordLink: ../graphics/Journal.h ../graphics/ViewWin.h
+RecordLink: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+RecordLink: ../graphics/Pattern.h ../graphics/ViewWin.h
 RecordLink: ../graphics/WindowRep.h ../graphics/Geom.h
 RecordLink: ../graphics/Transform.h ../graphics/DevisePixmap.h
 RecordLink: ../graphics/Compress.h ../graphics/Control.h
@@ -705,8 +633,8 @@ RecordLink: ../graphics/BufPolicy.h ../graphics/Util.h
 Seq: machdep.h ../graphics/Util.h ../graphics/Exit.h ../graphics/Parse.h
 ViewKGraph: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/DList.h
-ViewKGraph: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-ViewKGraph: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/ViewWin.h
+ViewKGraph: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+ViewKGraph: ../graphics/Color.h ../graphics/Pattern.h ../graphics/ViewWin.h
 ViewKGraph: ../graphics/WindowRep.h ../graphics/Geom.h
 ViewKGraph: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ViewKGraph: ../graphics/Compress.h ../graphics/Control.h

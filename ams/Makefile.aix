@@ -6,24 +6,25 @@ depend:
 
 MapClassInfo: ../graphics/DeviseTypes.h ../graphics/Display.h
 MapClassInfo: ../graphics/Geom.h ../graphics/Dispatcher.h ../graphics/DList.h
-MapClassInfo: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-MapClassInfo: ../graphics/Pattern.h ../graphics/Journal.h
-MapClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-MapClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
-MapClassInfo: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MapClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
-MapClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MapClassInfo: ../graphics/Compress.h ../graphics/Control.h
-MapClassInfo: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MapClassInfo: ../graphics/AttrList.h ../graphics/Config.h
-MapClassInfo: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MapClassInfo: ../graphics.new/ViewStats.h ../graphics.new/Action.h
-MapClassInfo: ../graphics.new/Temp.h ../graphics.new/TDataCMap.h
-MapClassInfo: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-MapClassInfo: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
-MapClassInfo: ../graphics/Util.h ../graphics/Selection.h ../graphics/Init.h
+MapClassInfo: ../graphics/Exit.h ../graphics/Journal.h
+MapClassInfo: ../graphics/VisualArg.h ../graphics/Color.h
+MapClassInfo: ../graphics/Pattern.h ../graphics/ColorMgr.h
+MapClassInfo: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
+MapClassInfo: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+MapClassInfo: ../graphics/View.h ../graphics/ViewWin.h
+MapClassInfo: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapClassInfo: ../graphics/Control.h ../graphics/ClassDir.h
+MapClassInfo: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapClassInfo: ../graphics/Config.h ../graphics/Cursor.h
+MapClassInfo: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MapClassInfo: ../graphics.new/Action.h ../graphics.new/Temp.h
+MapClassInfo: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+MapClassInfo: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
+MapClassInfo: ../graphics.new/ActionDefault.h ../graphics/Util.h
+MapClassInfo: ../graphics/Selection.h ../graphics/Init.h
 MapClassInfo: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
 MapClassInfo: ../graphics.new/DispQueryProc.h
 MapClassInfo: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
@@ -33,8 +34,8 @@ MapClassInfo: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
 MapClassInfo: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
 MapClassInfo: MapClassInfo.h Soil.h AmsMap.h
 ams: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h ../graphics/DList.h
-ams: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-ams: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/Display.h
+ams: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+ams: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
 ams: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/Control.h
 ams: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 ams: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
@@ -43,24 +44,26 @@ ams: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 ams: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Config.h
 ams: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
-ams: ../graphics.new/ViewClassInfo.h ../graphics.new/CompositeParser.h
-ams: ../graphics.new/RecInterp.h ../graphics.new/QueryProc.h
-ams: ../graphics.new/RecId.h ../tape/QueryProcTape.h
-ams: ../graphics.new/QPRange.h ../tape/SortedTable.h ../graphics.new/GData.h
-ams: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-ams: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-ams: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
+ams: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
 ams: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-ams: ../graphics.new/Action.h ../graphics.new/TDataMap.h
-ams: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+ams: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+ams: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+ams: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+ams: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+ams: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams: ../tape/QueryProcTape.h ../graphics.new/QPRange.h ../tape/SortedTable.h
+ams: ../graphics.new/GData.h ../graphics.new/TData.h
+ams: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+ams: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+ams: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
 ams: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
 ams: ../graphics.new/ParseCat.h ../graphics.new/Command.h ../graphics/Timer.h
 ams: MapClassInfo.h
 amsStat: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-amsStat: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-amsStat: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-amsStat: ../graphics/Exit.h ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat: ../graphics.new/RecOrder.h ../graphics.new/DiskFile.h
+amsStat: ../graphics.new/ams.h
 extendAms: ../graphics.new/ams.h
 exttape: ../tape/tapedrive.h ../graphics.new/machdep.h

@@ -5,60 +5,63 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 ApExit: ../graphics/Exit.h
-ApGroup: ApGroup.h ApItemList.h
-ApGroupDir: ApGroupDir.h ApItemList.h ApGroup.h ../graphics/Util.h
-ApGroupDir: ../graphics/Exit.h
+ApGroup: ../graphics.new/Group.h ../graphics.new/MapInterpClassInfo.h
+ApGroup: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
+ApGroup: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ApGroup: ../graphics.new/ItemList.h
+ApGroupDir: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApGroupDir: ../graphics.new/Group.h ../graphics.new/MapInterpClassInfo.h
+ApGroupDir: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
+ApGroupDir: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ApGroupDir: ../graphics/Util.h ../graphics/Exit.h
 ApInit: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
 ApInit: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ApInit: ../graphics/Timer.h ../graphics/Util.h
-ApItemList: ApItemList.h ApGroup.h
+ApItemList: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApItemList: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
+ApItemList: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+ApItemList: ../graphics/Color.h ../graphics/Pattern.h
 ApParseCat: ApParseCat.h ../graphics/DeviseTypes.h ../graphics.new/TData.h
 ApParseCat: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
+ApParseCat: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
+ApParseCat: ../graphics/Exit.h ../graphics.new/GroupDir.h
+ApParseCat: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
 ApParseCat: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ApParseCat: ../graphics/DList.h ../graphics/Exit.h ../graphics/AttrList.h
-ApParseCat: ../graphics/Config.h ApGroupDir.h ApItemList.h ApGroup.h
 ApParseCat: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
 ApParseCat: ApTDataAsciiInterp.h ApTDataAscii.h ../tape/tapedrive.h
 ApParseCat: ../graphics.new/machdep.h ApTDataBinaryInterp.h ApTDataBinary.h
 ApParseCat: ../graphics/Util.h
 ApTDataAscii: ../graphics/Parse.h ApTDataAscii.h ../graphics/DeviseTypes.h
 ApTDataAscii: ../graphics.new/TData.h ../graphics.new/RecId.h
-ApTDataAscii: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-ApTDataAscii: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-ApTDataAscii: ../graphics/Exit.h ../tape/tapedrive.h
-ApTDataAscii: ../graphics.new/machdep.h ../graphics/Util.h ApInit.h
-ApTDataAscii: ../graphics/BufPolicy.h
+ApTDataAscii: ../graphics.new/RecOrder.h ../tape/tapedrive.h
+ApTDataAscii: ../graphics.new/machdep.h ../graphics/Exit.h ../graphics/Util.h
+ApTDataAscii: ApInit.h ../graphics/BufPolicy.h
 ApTDataAsciiInterp: ApTDataAsciiInterp.h ../graphics/DeviseTypes.h
-ApTDataAsciiInterp: ApTDataAscii.h ../graphics.new/TData.h
-ApTDataAsciiInterp: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApTDataAsciiInterp: ../graphics/VisualArg.h ../graphics/Color.h
-ApTDataAsciiInterp: ../graphics/Pattern.h ../graphics/DList.h
-ApTDataAsciiInterp: ../graphics/Exit.h ../tape/tapedrive.h
+ApTDataAsciiInterp: ../graphics/ClassDir.h ApTDataAscii.h
+ApTDataAsciiInterp: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApTDataAsciiInterp: ../graphics.new/RecOrder.h ../tape/tapedrive.h
 ApTDataAsciiInterp: ../graphics.new/machdep.h ../graphics/AttrList.h
-ApTDataAsciiInterp: ../graphics/Config.h ../graphics.new/RecInterp.h
+ApTDataAsciiInterp: ../graphics/Config.h ../graphics/DList.h
+ApTDataAsciiInterp: ../graphics/Exit.h ../graphics.new/RecInterp.h
 ApTDataAsciiInterp: ../graphics.new/CompositeParser.h ../graphics/Parse.h
 ApTDataAsciiInterp: ../graphics/Util.h
 ApTDataBinary: ../graphics/Parse.h ApTDataBinary.h ../graphics/DeviseTypes.h
 ApTDataBinary: ../graphics.new/TData.h ../graphics.new/RecId.h
-ApTDataBinary: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-ApTDataBinary: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-ApTDataBinary: ../graphics/Exit.h ../graphics/Util.h ApInit.h
-ApTDataBinary: ../graphics/BufPolicy.h
+ApTDataBinary: ../graphics.new/RecOrder.h ../graphics/Exit.h
+ApTDataBinary: ../graphics/Util.h ApInit.h ../graphics/BufPolicy.h
 ApTDataBinaryInterp: ApTDataBinaryInterp.h ../graphics/DeviseTypes.h
 ApTDataBinaryInterp: ApTDataBinary.h ../graphics.new/TData.h
 ApTDataBinaryInterp: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApTDataBinaryInterp: ../graphics/VisualArg.h ../graphics/Color.h
-ApTDataBinaryInterp: ../graphics/Pattern.h ../graphics/DList.h
-ApTDataBinaryInterp: ../graphics/Exit.h ../graphics/AttrList.h
-ApTDataBinaryInterp: ../graphics/Config.h ../graphics.new/CompositeParser.h
-ApTDataBinaryInterp: ../graphics/Parse.h ../graphics/Util.h
+ApTDataBinaryInterp: ../graphics/AttrList.h ../graphics/Config.h
+ApTDataBinaryInterp: ../graphics/DList.h ../graphics/Exit.h
+ApTDataBinaryInterp: ../graphics.new/CompositeParser.h ../graphics/Parse.h
+ApTDataBinaryInterp: ../graphics/Util.h
 AttrProj: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
 AttrProj: VectorArray.h ApParseCat.h ../graphics.new/TData.h
-AttrProj: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-AttrProj: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-AttrProj: ../graphics/Exit.h ../graphics/Util.h ../graphics/AttrList.h
-AttrProj: ../graphics/Config.h
+AttrProj: ../graphics.new/RecOrder.h ../graphics/Util.h ../graphics/Exit.h
+AttrProj: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
 VectorArray: VectorArray.h ../graphics/DeviseTypes.h ../graphics/Util.h
 VectorArray: ../graphics/Exit.h
 aptest: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
