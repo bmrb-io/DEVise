@@ -1,7 +1,7 @@
 rm *.class
 javac jsa.java
 jar cf jsa.jar *.class
-rm /var/home/www/public/jsa.jar
-mv jsa.jar /var/home/www/public
-chmod 755 /var/home/www/public/jsa.jar
+#rm /var/home/www/public/jsa.jar
+#mv jsa.jar /var/home/www/public
+#chmod 755 /var/home/www/public/jsa.jar
 rm *.class
