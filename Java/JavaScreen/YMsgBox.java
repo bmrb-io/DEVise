@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/03/23 16:26:18  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.5  1999/12/10 15:37:02  wenger
 // Added standard headers to source files.
 //
@@ -71,7 +74,7 @@ public class YMsgBox extends Dialog
             fg = Color.black;
 
         if (font == null)
-            font = new Font("Serif", Font.PLAIN, 14);
+            font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
 
         if (title == null) {
             title = new String("Program Information");

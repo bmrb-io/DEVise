@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2000/05/12 20:43:45  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.44  2000/05/11 20:19:32  wenger
 // Cleaned up jsdevisec.java and added comments; eliminated
 // jsdevisec.lastCursor (not really needed).
@@ -86,6 +91,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.45  2000/05/12 20:43:45  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.44  2000/05/11 20:19:32  wenger
 // Cleaned up jsdevisec.java and added comments; eliminated
 // jsdevisec.lastCursor (not really needed).
@@ -559,13 +569,24 @@ public class DEViseCanvas extends Container
 
         // handling itself
         DEViseGData gdata = null;
+	Color tmpColor = null;
+	Font tmpFont = null;
         for (int i = 0; i < v.viewGDatas.size(); i++) {
             gdata = (DEViseGData)v.viewGDatas.elementAt(i);
 
             if (gdata.string != null && (gdata.symbolType == gdata._symText ||
 	      gdata.symbolType == gdata._symFixedText)) {
-                gc.setColor(gdata.color);
-                gc.setFont(gdata.font);
+
+		// Set the color and font only when necessary.
+		if (!gdata.color.equals(tmpColor)) {
+                    gc.setColor(gdata.color);
+		    tmpColor = gdata.color;
+		}
+		if (!gdata.font.equals(tmpFont)) {
+                    gc.setFont(gdata.font);
+		    tmpFont = gdata.font;
+		}
+
                 gc.drawString(gdata.string, gdata.x, gdata.y);
             }
         }

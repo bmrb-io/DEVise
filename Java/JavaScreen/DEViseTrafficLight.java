@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/04/24 20:22:00  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.5  2000/03/23 16:26:15  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -65,13 +68,13 @@ public class DEViseTrafficLight extends Panel
             align = "RIGHT";
         }
 
-        setFont(new Font("Monospaced", Font.BOLD, 14));
+        setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
         setBackground(DEViseUIGlobals.bg);
         setForeground(DEViseUIGlobals.fg);
 
         Panel panel = new Panel();
         panel.setLayout(new GridLayout(2, 4));
-        panel.setFont(new Font("Monospaced", Font.BOLD, 14));
+        panel.setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
         panel.setBackground(DEViseUIGlobals.bg);
         panel.setForeground(DEViseUIGlobals.fg);
 

@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2000/05/12 20:43:56  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.56  2000/05/11 20:59:49  wenger
 // More comments.
 //
@@ -676,6 +681,10 @@ public class DEViseScreen extends Panel
 
             offScrImg = null;
 
+	    // Get rid of our current fonts, so the list of fonts doesn't
+	    // keep increasing as we perhaps draw different GDatas.
+	    DEViseFonts.ClearFonts();
+
 	    // We've just set a whole bunch of references to null, so
 	    // this should be a good time to garbage collect.
 	        System.gc();
@@ -734,6 +743,7 @@ public class DEViseScreen extends Panel
             jsc.repaint();
         }
 
+	// ADD COMMENT -- what is this stuff for??
         while (obsoleteCanvas.size() > 0) {
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             remove(c);

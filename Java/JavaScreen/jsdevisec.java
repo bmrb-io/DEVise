@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2000/05/12 20:43:57  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.61  2000/05/11 20:59:50  wenger
 // More comments.
 //
@@ -153,14 +158,20 @@ public class jsdevisec extends Panel
         int height = DEViseUIGlobals.maxScreenSize.height;
 
         if (width > 800 ) {
-            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 12);
-            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 12);
+            DEViseUIGlobals.font = DEViseFonts.getFont(12,
+	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.textFont = DEViseFonts.getFont(12,
+	      DEViseFonts.SERIF, 0, 0);
         } else if (width > 640) {
-            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 10);
-            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 10);
+            DEViseUIGlobals.font = DEViseFonts.getFont(10,
+	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.textFont = DEViseFonts.getFont(10,
+	      DEViseFonts.SERIF, 0, 0);
         } else {
-            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 8);
-            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 8);
+            DEViseUIGlobals.font = DEViseFonts.getFont(8,
+	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.textFont = DEViseFonts.getFont(8,
+	      DEViseFonts.SERIF, 0, 0);
         }
 
         setBackground(DEViseUIGlobals.bg);
@@ -223,7 +234,7 @@ public class jsdevisec extends Panel
         topPanel.add(viewInfo, BorderLayout.EAST);
 
         if (DEViseUIGlobals.inBrowser) {
-            topPanel.setFont(new Font("Serif", Font.PLAIN, 14));
+            topPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
             topPanel.add(new Label("                       " + DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
@@ -724,7 +735,7 @@ class SessionDlg extends Frame
 
         setTitle("JavaScreen Open Dialog");
 
-        label.setFont(new Font("Serif", Font.BOLD, 16));
+        label.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
         //label.setFont(DEViseUIGlobals.font);
         directory.setText("/" + jsc.currentDir);
         directory.setFont(DEViseUIGlobals.font);
@@ -1226,9 +1237,9 @@ class ServerStateDlg extends Dialog
 
         setTitle("JSPOP current state");
 
-        label1.setFont(new Font("Serif", Font.BOLD, 16));
-        label2.setFont(new Font("Serif", Font.BOLD, 16));
-        label3.setFont(new Font("Serif", Font.BOLD, 16));
+        label1.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
+        label2.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
+        label3.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
 
         serverList = new java.awt.List(4, false);
         serverList.setBackground(DEViseUIGlobals.textBg);

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2000/03/23 16:26:17  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.14  1999/12/10 15:37:01  wenger
 // Added standard headers to source files.
 //
@@ -32,7 +35,7 @@ public class YImageCanvas extends Canvas
 {
     Image image = null, offScrImg = null;
     String string = null;
-    Font font = new Font("Monospaced", Font.BOLD, 14);
+    Font font = DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0);
     Color fgcolor = new Color(255, 0, 0);
     Color bgcolor = new Color(255, 255, 255);
     int mx = 10, my = 10, maxLength = 2, xshift = 0;

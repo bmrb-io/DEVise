@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/03/23 16:26:17  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.6  1999/10/12 21:58:14  hongyu
 // *** empty log message ***
 //
@@ -82,7 +85,7 @@ public class YLogGUI extends Frame
         textarea = new TextArea(height, width);
 
         if (font == null)
-            font = new Font("Monospaced", Font.PLAIN, 14);
+            font = DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 0, 0);
         if (title == null)
             title = new String("Program Information");
         if (bg == null)

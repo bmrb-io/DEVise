@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2000/05/12 20:43:56  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.13  2000/04/05 06:25:39  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -291,7 +296,8 @@ public class DEViseCrystal
         }
 
         gc.setColor(axisColor);
-        Font oldfont = gc.getFont(), font = new Font("Serif", Font.PLAIN, 12);
+        Font oldfont = gc.getFont(), font = DEViseFonts.getFont(12,
+	  DEViseFonts.SERIF, 0, 0);
         gc.setFont(font);
 
         z = 20 / pixelToDataUnit;

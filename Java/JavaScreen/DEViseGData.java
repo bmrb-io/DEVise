@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2000/05/04 17:40:28  wenger
+// Added new text object feature: GData Z value specifies max size of
+// font in points (if > 1).  (Allows me to fix problems with BMRB 4096
+// protein session.)
+//
 // Revision 1.32  2000/04/24 20:22:00  hongyu
 // remove UI dependency of jspop and js
 //
@@ -421,7 +426,7 @@ public class DEViseGData
 
         Button button = new Button(data[11]);
         button.setActionCommand(data[10]);
-        button.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        button.setFont(DEViseFonts.getFont(10, DEViseFonts.MONOSPACED, 0, 0));
         button.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
