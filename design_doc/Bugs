@@ -2798,8 +2798,9 @@ Num Date        Status  Description
 			-playbackoriginal without specifying a log file,
 			the JS should print an error message. (rkw)
 
-701 10/05/01	OPEN	JavaScreen: simple file paths do not work for
+701 10/05/01	FIXED	JavaScreen: simple file paths do not work for
 			command log playback. (rkw)
+			(Fixed by xuk, 10/05/01.)
 
 702 10/05/01	OPEN	JavaScreen: bad command in log file being played
 			back gets the JS permanently stuck in playback
