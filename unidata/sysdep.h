@@ -115,6 +115,7 @@ MICROSOFT WINDOWS WIN32 API
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
+#include <float.h>
 
 #define NETREAD(s,b,l)  recv((s),(b),(l),0)
 #define NETWRITE(s,b,l) send((s),(b),(l),0)

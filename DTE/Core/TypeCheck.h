@@ -4,7 +4,7 @@
 #include <vector>
 #include "queue.h"
 #include <string>
-#include <map.h>
+#include <map>
 #include "StringLess.h"
 
 #ifndef __GNUG__

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/10 20:30:55  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.10  1997/07/22 15:00:53  donjerko
   *** empty log message ***
 
@@ -34,14 +37,10 @@
 
 #include "RTreeRead.h"
 
-RTreeReadExec::RTreeReadExec(
-	genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
-	int numKeyFlds, int numAddFlds, Tuple* tuple,
-	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition) :
-	rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
-	numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
-	tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
-	rtreeFldLens(rtreeFldLens){
+RTreeReadExec::RTreeReadExec(const IndexDesc& indexDesc,
+	int dataSize, Tuple* tuple,
+	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
+	typed_key_t* queryBox) {
 	
 	assert(!"rtree is not linked in");
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/11/12 23:17:41  donjerko
+  Improved error checking.
+
   Revision 1.33  1997/11/05 00:19:49  donjerko
   Separated typechecking from optimization.
 
@@ -102,13 +105,13 @@
 #include <string>
 #include <assert.h>
 
-// #include <set>
+#include <set>
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-template<class A, class B> class set;
+//template<class A, class B> class set;
 
 class RTreeIndex;
 class CGIEntry;

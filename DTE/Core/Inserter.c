@@ -20,7 +20,7 @@ void Modifier::replace
 	ifstream* ins = new ifstream(fileName.c_str());
 	if(!ins->good()){
 		string msg = "Could not open file: " + fileName;
-		THROW(new Exception(msg), );
+		THROW(new Exception(msg), NVOID);
 		// throw Exception(msg);
 	}
 	assert(ins && ins->good());
@@ -55,7 +55,7 @@ void Modifier::replace
 	}
 	delete iter;
 	if(!isReplaced){
-		ConstTuple localTup[numFlds];
+		ConstTuple* localTup = new ConstTuple[numFlds];
 		localTup[0] = IString::getTypePtr(key->c_str());
 		if(key2){
 			localTup[1] = IString::getTypePtr(key2->c_str());
@@ -63,6 +63,7 @@ void Modifier::replace
 		localTup[objIndex] = object;
 		copy = tupleLoader.insert(localTup);
 		tupleList.append(copy);
+		delete [] localTup;
 	}
 	Inserter newFile;
 	TRY(newFile.open(schema, fileName, ios::out), NVOID );

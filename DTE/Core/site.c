@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/11/12 23:17:40  donjerko
+  Improved error checking.
+
   Revision 1.30  1997/11/05 00:19:48  donjerko
   Separated typechecking from optimization.
 
@@ -270,7 +273,6 @@ void LocalTable::typify(string){	// Throws exception
      if(!directSite){
 		
 		// used to create executable etc ...
-
           directSite = new DirectSite(name, iterat);
      }
 
@@ -370,6 +372,7 @@ istream* contactURL(string name,
 
 void Site::typify(string option){	// Throws an exception
 	int count = 2;
+	int i;
 	string* options = new string[count];
 	string* values = new string[count];
 	options[0] = "query";
@@ -396,7 +399,7 @@ void Site::typify(string option){	// Throws an exception
 	assert(stats);
 	if(mySelect == NULL){
 		mySelect = new List<BaseSelection*>;
-		for(int i = 0; i < numFlds; i++){
+		for(i = 0; i < numFlds; i++){
 			string field = schema.getAttributeNames()[i];
 			int dotpos = field.find(".");
 			string* alias = new string(field.substr(0, dotpos));
@@ -407,12 +410,12 @@ void Site::typify(string option){	// Throws an exception
 	}
 	const TypeID* types = schema.getTypeIDs();
 	typeIDs = new TypeID[numFlds];
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		typeIDs[i] = types[i];
 	}
 	int* sizes = stats->fldSizes;
 	mySelect->rewind();
-	for(int i = 0; i < numFlds; i++){
+	for(i = 0; i < numFlds; i++){
 		mySelect->get()->setTypeID(types[i]);
 		mySelect->get()->setSize(sizes[i]);
 		mySelect->step();
@@ -439,6 +442,7 @@ void Site::display(ostream& out, int detail){
 }
 
 void CGISite::typify(string option){	// Throws a exception
+	int i;
 	TRY(URL* url = new URL(urlString), NVOID );
 	ostream* out = url->getOutputStream();
 	assert(myWhere);
@@ -449,7 +453,7 @@ void CGISite::typify(string option){	// Throws a exception
 		Operator* currOp = (Operator*) current;
 		string option = currOp->getAttribute();
 		string value = currOp->getValue();
-		int i = 0;
+		i = 0;
 		while(1){
 			if(i == entryLen){
 				myWhere->step();
@@ -464,7 +468,7 @@ void CGISite::typify(string option){	// Throws a exception
 		}
 	}
 
-	for(int i = 0; i < entryLen; i++){
+	for(i = 0; i < entryLen; i++){
 		if(entry[i].value.empty()){
 			string err = "Option " + name + "." + entry[i].option + 
 				" has to be specified";
@@ -472,7 +476,7 @@ void CGISite::typify(string option){	// Throws a exception
 		}
 	}
 
-	for(int i = 0; i < entryLen; i++){
+	for(i = 0; i < entryLen; i++){
 		stringstream ss;
 		ss << entry[i].value;
 		ostringstream* encoded = URL::encode(ss);

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/11/12 15:42:54  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.37.2.1  1997/10/30 20:13:40  wenger
   Got DEVise to compile, link, and run on sun and linux; compiles but
   doesn't link on hp (can't find memory mapping functions).  This includes
@@ -1396,11 +1400,11 @@ void updateHighLow(int numFlds, const OperatorPtr* lessPtrs,
 	Type* result;
 	for (int i = 0; i < numFlds; i++){
 		lessPtrs[i](tup[i], lowTup[i], result);
-		if(bool(result)){
+		if(result ? true : false){
 			lowTup[i] = tup[i];
 		}
 		greaterPtrs[i](tup[i], highTup[i], result);
-		if(bool(result)){
+		if(result ? true : false){
 			highTup[i] = tup[i];
 		}
 	}

@@ -282,8 +282,9 @@ void MovAggsExec::initialize(){
 }	
 
 void MovAggsExec::setupFirst() {
+  int i;
 
-  for(int i = 0; i < numFlds; i++){
+  for(i = 0; i < numFlds; i++){
     aggExecs[i]->initialize(currInTup[i]);
   }
   
@@ -292,7 +293,7 @@ void MovAggsExec::setupFirst() {
   nextDrop = 0;
   numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
   
-  for (int i = 1; i < fullWindowHeight; i++){
+  for (i = 1; i < fullWindowHeight; i++){
     numTuplesToBeDropped[i] = 0;   
   }
 
@@ -309,13 +310,13 @@ void MovAggsExec::setupFirst() {
       }
       
       // Add the currInTuple to end of the seq by queue
-      for (int i = 0; i < seqByPosLen; i++){
+      for (i = 0; i < seqByPosLen; i++){
 	aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
       }    
       currWindowHeight++;
     }
     
-    for(int i = 0; i < numAggs; i++){
+    for(i = 0; i < numAggs; i++){
       aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
     }
     
@@ -323,7 +324,7 @@ void MovAggsExec::setupFirst() {
     numTuplesToBeDropped[nextDrop]++;
   }
 
-  for(int i = 0; i < numFlds; i++){ 
+  for(i = 0; i < numFlds; i++){ 
     retTuple[i] = aggExecs[i]->getValue();
   }
   
@@ -340,21 +341,22 @@ void MovAggsExec::setupFirst() {
 }
 
 const Tuple* MovAggsExec::flushWindow(){
+  int i;
 
   if (!currWindowHeight)
     return NULL;
   
-  for(int i = 0; i < numAggs; i++){
+  for(i = 0; i < numAggs; i++){
     aggExecs[aggPos[i]]->dequeue(toDeque);  
   }
   
-  for (int i = 0; i < seqByPosLen; i++){
+  for (i = 0; i < seqByPosLen; i++){
     aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
   }    
   
   nextDrop = (nextDrop+1) % fullWindowHeight;
   
-  for(int i = 0; i < numFlds; i++){ 
+  for(i = 0; i < numFlds; i++){ 
     retTuple[i] = aggExecs[i]->getValue();
   }
   
@@ -362,6 +364,7 @@ const Tuple* MovAggsExec::flushWindow(){
 }
 
 const Tuple* MovAggsExec::getNext(){
+	int i;
 
 	// the first window has been calculated before a call to this function
 
@@ -379,12 +382,12 @@ const Tuple* MovAggsExec::getNext(){
 	}
 
 	// else update aggs with currInTup and read in tuples till next value
-	for(int i = 0; i < numAggs; i++){
+	for(i = 0; i < numAggs; i++){
 	  aggExecs[aggPos[i]]->dequeue(toDeque);  
 	  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 	}
 
-	for (int i = 0; i < seqByPosLen; i++){
+	for (i = 0; i < seqByPosLen; i++){
 	  aggExecs[seqByPos[i]]->dequeue(1);
 	  aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
 	}    
@@ -398,7 +401,7 @@ const Tuple* MovAggsExec::getNext(){
 	    endOfGroup = false;
 	    break;
 	  } 
-	  for(int i = 0; i < numAggs; i++){
+	  for(i = 0; i < numAggs; i++){
 	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 	  }
 	  currInTup = inputIter->getNext();
@@ -407,7 +410,7 @@ const Tuple* MovAggsExec::getNext(){
 
 	nextDrop = (nextDrop+1) % fullWindowHeight;
 
-	for(int i = 0; i < numFlds; i++){ 
+	for(i = 0; i < numFlds; i++){ 
 		retTuple[i] = aggExecs[i]->getValue();
 	}
 
@@ -458,16 +461,18 @@ void ExecMovAverage::dequeue(int n){
 
 const Tuple* MovGroupByExec::flushWindow(){
 
+	int i;
+
   if (!currWindowHeight) { // window has been flushed
     
     if (!currInTup) {
       return NULL; // end of file
     }
 
-    for(int i = 0; i < numAggs; i++){
+    for(i = 0; i < numAggs; i++){
       aggExecs[aggPos[i]]->dequeue(toDeque);  
     }
-    for (int i = 0; i < seqByPosLen; i++){
+    for (i = 0; i < seqByPosLen; i++){
       aggExecs[seqByPos[i]]->dequeue(1);
     }    
 
@@ -476,16 +481,16 @@ const Tuple* MovGroupByExec::flushWindow(){
     return retTuple; 
   }
 
-  for(int i = 0; i < numAggs; i++){
+  for(i = 0; i < numAggs; i++){
     aggExecs[aggPos[i]]->dequeue(toDeque);  
   }
-  for (int i = 0; i < seqByPosLen; i++){
+  for (i = 0; i < seqByPosLen; i++){
     aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
   }    
 
   nextDrop = (nextDrop+1) % fullWindowHeight;
   
-  for(int i = 0; i < numFlds; i++){ 
+  for(i = 0; i < numFlds; i++){ 
     retTuple[i] = aggExecs[i]->getValue();
   }
 

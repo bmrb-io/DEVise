@@ -60,7 +60,7 @@ IntervalYM IntervalYM::operator +(const IntervalYM& arg) {
 	t_val1 *= (t_val1 >=0 ? 1 : -1) ;
 	r_y = int(t_val1/12) ;
 	r_m = t_val1 % 12 ;
-	IntervalYM ret_IYM(r_y,r_m,bool(r_p)) ;
+	IntervalYM ret_IYM(r_y,r_m,(r_p ? true : false)) ;
 	return ret_IYM ;
 }
 

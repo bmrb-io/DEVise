@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/11/05 00:19:45  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.17  1997/09/29 02:51:56  donjerko
   Eliminated class GlobalSelect.
 
@@ -252,7 +255,7 @@ bool evaluateList(
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right){
 
 	for(int i = 0; i < list->length; i++){
-		bool value = (*list)[i]->evaluate(left, right);
+		bool value = ((*list)[i]->evaluate(left, right) ? true : false);
 		if(value == false){
 			return false;
 		}

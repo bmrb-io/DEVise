@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/12 23:17:34  donjerko
+  Improved error checking.
+
   Revision 1.18  1997/11/05 00:19:41  donjerko
   Separated typechecking from optimization.
 
@@ -146,7 +149,7 @@ void NCDCRead::open(istream* in){	// Throws exception
           if(!tmp){
                string msg = "Unexpected response from the NCDC server:\n" +
                     response;
-			THROW(new Exception(msg), );
+               THROW(new Exception(msg), NVOID);
 			// throw Exception(msg);
           }
      }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/11/12 23:17:30  donjerko
+  Improved error checking.
+
   Revision 1.42  1997/11/08 21:02:27  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -343,7 +346,7 @@ Site* QueryTree::createSite(){
      LOG(logFile << "\n   where ";)
      LOG(displayList(logFile, predicateList, ", "));
 	LOG(logFile << endl;)
-	string* types;
+//	string* types;
 	string option = "execute";
 	TRY(typifyList(sites, option), 0);
 	sites->rewind();

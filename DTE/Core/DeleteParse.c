@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/11/12 23:17:19  donjerko
+  Improved error checking.
+
   Revision 1.14  1997/11/05 00:19:35  donjerko
   Separated typechecking from optimization.
 
@@ -125,7 +128,7 @@ Site* DeleteParse::createSite(){
 	TupleLoader tupleLoader;
 	TRY(tupleLoader.open(inputNumFlds, types), NULL);
 	while((tmpTuple = iter->getNext())){
-		cond = execPred->evaluate(tmpTuple, NULL);
+		cond = (execPred->evaluate(tmpTuple, NULL) ? true : false);
 		if(!cond){
 			Tuple* copy = tupleLoader.insert(tmpTuple);
 			tupleList.append(copy);

@@ -40,7 +40,7 @@ BaseSelection* TypeCheck::resolve(BaseSelection* curr){
 void TypeCheck::resolve(vector<BaseSelection*>& list){
 	vector<BaseSelection*>::iterator it;
 	for(it = list.begin(); it != list.end(); ++it){
-		TRY(*it = resolve(*it), );
+		TRY(*it = resolve(*it), NVOID);
 	}
 }
 
@@ -50,8 +50,8 @@ void TypeCheck::initialize(List<TableAlias*>* tableList){
 		TableAlias* current = tableList->get();
 		TableName* tableName = current->getTable();
 		TableName* tableNameCopy = new TableName(*tableName);
-		TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy), );
-		TRY(const ISchema* schema = interf->getISchema(tableNameCopy), );
+		TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy), NVOID);
+		TRY(const ISchema* schema = interf->getISchema(tableNameCopy), NVOID);
 		int numFlds = schema->getNumFlds();
 		const string* attrs = schema->getAttributeNames();
 		const TypeID* types = schema->getTypeIDs();

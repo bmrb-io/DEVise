@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/11/05 00:19:48  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.27  1997/10/02 02:27:33  donjerko
   Implementing moving aggregates.
 
@@ -228,7 +231,7 @@ ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const {
 }
 
 BaseSelection* ConstantSelection::duplicate() {
-	size_t objSz;
+//	size_t objSz;
 	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
 	return new ConstantSelection(typeID, newvalue);
 }
