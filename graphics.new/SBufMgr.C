@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/12/04 04:06:12  donjerko
+  *** empty log message ***
+
   Revision 1.17  1997/11/24 23:15:16  weaver
   Changes for the new ColorManager.
 
@@ -895,7 +898,10 @@ CacheMgr::~CacheMgr()
     _DeallocMemory();
 
 #ifdef SBM_SHARED_MEMORY
-    delete _frmShm;
+    if (_frmShm) {
+      _frmShm->destroy();
+      delete _frmShm;
+    }
 #else
     delete [] _frames;
 #endif

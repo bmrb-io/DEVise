@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/02/03 19:45:19  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.14  1996/12/31 18:39:23  jussi
   Allocated resources are destroyed when process creation fails
   in InitializeProc().
@@ -90,6 +96,7 @@
 #include <unistd.h>
 
 #include "DataSource.h"
+#include "Init.h"
 #include "Util.h"
 #include "DevError.h"
 #include "tapedrive.h"
@@ -335,7 +342,7 @@ int DataSource::InitializeProc()
         return 0;
     }
 
-    if (SemaphoreV::numAvailable() < 4) {
+    if (!Init::UseSharedMem() || SemaphoreV::numAvailable() < 4) {
         // One semaphore needed for DataSource, and 3 more for DataPipe.
         return -1;
     }

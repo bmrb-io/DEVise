@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.77  1997/02/03 19:45:36  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.76  1997/01/27 20:15:14  wenger
   Workaround to bug 137: disables Stack Control dialog buttons while drawing.
 
@@ -355,7 +361,6 @@ TkControlPanel::TkControlPanel()
 #endif
 
   if (!Init::UseSharedMem()) {
-    SemaphoreV::setEnabled(0);
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/31 18:45:54  jussi
+  Improve error handling in case shared memory is not available.
+
   Revision 1.5  1996/12/20 16:30:01  jussi
   Removed call to SemaphoreV::destroy().
 
@@ -35,6 +38,7 @@
 #include <memory.h>
 
 #include "MemMgr.h"
+#include "Init.h"
 #include "Exit.h"
 
 #define DEBUGLVL 0
@@ -58,6 +62,9 @@ MemMgr::MemMgr(int numPages, int pageSize, int &status) :
 
 int MemMgr::SetupSharedMemory()
 {
+    if (!Init::UseSharedMem()) {
+      return -1;
+    }
     if (SemaphoreV::numAvailable() < 2) {
         fprintf(stderr,
                 "Unable to use shared memory. Using local memory instead.\n");

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/12/01 21:21:36  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+  into the trunk.
+
   Revision 1.30  1997/11/19 17:02:11  wenger
   Fixed error in OpenDataChannel().
 
@@ -210,7 +214,6 @@ ServerAPI::ServerAPI()
   }
 
   if (!Init::UseSharedMem()) {
-    SemaphoreV::setEnabled(0);
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
 

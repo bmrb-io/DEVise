@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/01/14 20:05:47  wenger
+  Fixed some compile warnings; fixed relative positions of OK/Cancel
+  buttons in link GUI; removed some debug code I accidentally left
+  in place.
+
   Revision 1.10  1996/12/20 16:25:44  jussi
   Improved support for multiple semaphore vectors.
 
@@ -238,8 +243,6 @@ public:
   }
 
   static int numAvailable() {           // number of available semaphores
-    if (!_enabled)
-      return 0;
     if (!_sem) {
       if (create() < 0)
         return 0;
@@ -247,14 +250,9 @@ public:
     return _semUnused;
   }
 
-  static void setEnabled(int enabled) {
-    _enabled = enabled;
-  }
-
 protected:
   static int create();                  // create real semaphore vectors
 
-  static int _enabled;                  // non-zero if enabled
   static Semaphore **_sem;              // real semaphore vectors
   static int _semVectors;               // # vectors allocated
   static int _semsPerVector;            // # semaphores per vector

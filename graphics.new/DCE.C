@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/11/05 00:23:18  donjerko
+  Made changes for RTree.
+
   Revision 1.11  1996/12/31 17:57:29  jussi
   Corrected if condition to handle failing semget().
 
@@ -237,7 +240,6 @@ key_t Semaphore::newKey()
 }
 #endif
 
-int SemaphoreV::_enabled = 1;
 Semaphore **SemaphoreV::_sem = NULL;
 int SemaphoreV::_semVectors = 0;
 int SemaphoreV::_semsPerVector = 16;
@@ -250,9 +252,6 @@ SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 
   _nsem = 0;
   status = -1;
-
-  if (!_enabled)
-    return;
 
   if (!_sem) {
     if (create() < 0)
@@ -303,9 +302,6 @@ SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 
 SemaphoreV::~SemaphoreV()
 {
-  if (!_enabled)
-    return;
-
   for(int s = 0; s < _nsem; s++)
     _semUsed[_semvec[s]][_semnum[s]] = 0;
 
