@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/06/27 23:17:29  donjerko
+  Changed date structure from time_t and tm to EncodedDTF
+
   Revision 1.15  1997/06/16 16:05:11  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -277,47 +280,64 @@ Boolean TDataDQL::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataDQL::InitGetRecs(RecId lowId, RecId highId,
-                                      Boolean asyncAllowed,
-                                      ReleaseMemoryCallback *callback)
+TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed = false,
+                                 ReleaseMemoryCallback *callback,
+                                 char *AttrName = "recId")
 {
+	
+  if (!strcmp(AttrName,"recId")) { // recId stuff
+	//cout << "*********** double is functioning in TDataDQL. **********\n";
+  RecId lowId = (RecId)lowVal;
+  RecId highId = (RecId)highVal;
+
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
   TDataRequest *req = new TDataRequest;
   DOASSERT(req, "Out of memory");
 
-  req->nextId = lowId;
-  req->endId = highId;
+  req->nextVal = lowId;
+  req->endVal = highId;
   req->relcb = callback;
+  req->AttrName = "recId";
 
 #ifdef DEBUG
   cout << "TDataDQL::InitGetRecs(" << lowId << ", " << highId << ")\n";
 #endif
 
   return req;
+  } // end of recId stuff
+  
+  else
+  {
+                cout << "Only recId is implemented right now.";
+                exit (1);
+   }
 }
 
 Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize, 
-                          RecId &startRid, int &numRecs, int &dataSize)
+			  double &startVal, int &numRecs, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
+
+	if (!strcmp(req->AttrName, "recId")) { // recId stuff
 
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
 
-  if (req->nextId > req->endId)
+  if (req->nextVal > req->endVal)
     return false;
   
-  int num = req->endId - req->nextId + 1;
+  int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
   if (num < numRecs)
     numRecs = num;
   
-  ReadRec(req->nextId, numRecs, buf);
+  ReadRec((RecId)(req->nextVal), numRecs, buf);
   
-  startRid = req->nextId;
+  startVal = req->nextVal;
   dataSize = numRecs * _recSize;
-  req->nextId += numRecs;
+  req->nextVal += numRecs;
   
   _bytesFetched += dataSize;
 
@@ -333,6 +353,13 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
 
   
   return true;
+	} // end of recId stuff
+
+	else
+	{
+		cout << "TDataDQL: GetRecs deals with recId only right now.\n";
+		exit(1);
+	}
 }
 
 void TDataDQL::DoneGetRecs(TDHandle req)

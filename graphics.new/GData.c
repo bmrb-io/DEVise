@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/03 20:37:20  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.13  1996/11/23 21:17:55  jussi
   Removed failing support for variable-sized records.
 
@@ -59,6 +62,8 @@
   Revision 1.2  1995/09/05 22:14:46  jussi
   Added CVS header.
 */
+
+#include <iostream.h>
 
 #include "Exit.h"
 #include "TDataAttr.h"
@@ -163,10 +168,16 @@ char *GData::GetName()
 Init getting records.
 ***************************************************************/
 
-TData::TDHandle GData::InitGetRecs(RecId lowId, RecId highId,
-                                   Boolean asyncAllowed,
-                                   ReleaseMemoryCallback *callback)
+TData::TDHandle GData::InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed ,
+                                 ReleaseMemoryCallback *callback ,
+                                 char *AttrName = "recId")
 {
+
+	if (!strcmp(AttrName,"recId")) { // recId stuff
+	RecId lowId = (RecId)lowVal;
+  	RecId highId = (RecId)highVal;
+
 #ifdef DEBUG
   printf("GData::InitGetRecs(%ld,%ld)\n", lowId, highId);
 #endif
@@ -174,26 +185,39 @@ TData::TDHandle GData::InitGetRecs(RecId lowId, RecId highId,
   GDataRequest *req = new GDataRequest;
   DOASSERT(req, "Out of memory");
 
-  req->nextId = lowId;
-  req->endId = highId;
+  req->nextVal = lowId;
+  req->endVal = highId;
   req->relcb = callback;
+  req->AttrName = "recId";
 
   req->numRecs = highId - lowId + 1;
-  req->rec = _rangeMap->FindMaxLower(req->nextId);
+  req->rec = _rangeMap->FindMaxLower((RecId)(req->nextVal));
   DOASSERT(req->rec, "Invalid record range");
 
   return req;
+  } // end of recId stuff
+	else
+	{
+		cout << "GData: Only recId is implemented right now.";
+                exit (1);
+   }
+
 }
 
 Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
-                       RecId &startRid, int &numFetched, int &dataFetched)
+                       double &startVal, int &numFetched, int &dataFetched)
 {
   DOASSERT(treq, "Invalid request handle");
+
+	if (!strcmp(treq->AttrName, "recId")) { // recId stuff
+	
+	// cout << " ****** Double is now functioning in GData. ******\n";
+
   GDataRequest *req = (GDataRequest *)treq;
 
 #ifdef DEBUG
   printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n", 
-	 bufSize, _numRecs, req->nextId);
+	 bufSize, _numRecs, req->nextVal);
 #endif
   DOASSERT(_recFile != NULL, "No file for GData");
 
@@ -210,7 +234,7 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
   char *bufAddr = (char *)buf;
   
   /* Set return param and update internal vars */
-  startRid = req->nextId;
+  startVal = req->nextVal;
   numFetched = num;
   req->numRecs -= num;
   dataFetched = numFetched *_recSize;
@@ -221,7 +245,7 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
 #endif
 
   while (num > 0) {
-    if (req->nextId > req->rec->tHigh) {
+    if (req->nextVal > req->rec->tHigh) {
       /* finished this range. try next range */
       req->rec = _rangeMap->NextRangeRec(req->rec);
       DOASSERT(req->rec, "Invalid record range");
@@ -229,13 +253,13 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
     }
     
     /* Get data in this range */
-    if (req->nextId < req->rec->tLow || req->nextId > req->rec->tHigh)
+    if (req->nextVal < req->rec->tLow || req->nextVal > req->rec->tHigh)
       DOASSERT(0, "Invalid record range");
     
-    int numToReturn = req->rec->tHigh - req->nextId + 1;
+    int numToReturn = req->rec->tHigh - (int)(req->nextVal) + 1;
     if (numToReturn > num)
       numToReturn = num;
-    RecId gId = req->rec->gLow + (req->nextId - req->rec->tLow);
+    RecId gId = req->rec->gLow + ((int)(req->nextVal) - req->rec->tLow);
 
 #ifdef DEBUG
     printf("getting gId %ld, num %d\n", gId, numToReturn);
@@ -245,10 +269,16 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
     
     bufAddr += numToReturn * _recSize;
     num -= numToReturn;
-    req->nextId += numToReturn;
+    req->nextVal += numToReturn;
   }
   
   return true;
+	}
+	else
+        {
+                cout << "GData: GetRecs deals with recId only right now.\n";
+                exit(1);
+        }
 }
 
 void GData::DoneGetRecs(TDHandle req)

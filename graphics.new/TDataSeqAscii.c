@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/23 22:57:28  wenger
+  Minor improvements to attrproj code.
+
   Revision 1.4  1996/12/03 20:31:34  jussi
   Updated to reflect new TData interface.
 
@@ -165,10 +168,15 @@ Boolean TDataSeqAscii::LastID(RecId &recId)
   return false;
 }
 
-TData::TDHandle TDataSeqAscii::InitGetRecs(RecId lowId, RecId highId,
+TData::TDHandle TDataSeqAscii::InitGetRecs(double lowVal, double highVal,
                                            Boolean asyncAllowed,
-                                           ReleaseMemoryCallback *callback)
+                                           ReleaseMemoryCallback *callback,
+					   char *AttrName = "recId")
 {
+	if (!strcmp(AttrName, "recId")){ //recId supported
+                RecId lowId = (RecId)lowVal;
+                RecId highId = (RecId)highVal;
+
 #if defined(DEBUG)
   cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
        << order << endl;
@@ -177,17 +185,25 @@ TData::TDHandle TDataSeqAscii::InitGetRecs(RecId lowId, RecId highId,
   TDataRequest *req = new TDataRequest;
   DOASSERT(req, "Out of memory");
 
-  req->nextId = lowId;
-  req->endId = highId;
+  req->nextVal = lowId;
+  req->endVal = highId;
   req->relcb = callback;
+  req->AttrName = "recId";
 
-  return req;
+  return req;}
+	else 
+	{
+		cout << "TDataSeqAscii supports recId only.\n";
+		exit (1);
+	}
 }
 
 Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
-                               RecId &startRid, int &numRecs, int &dataSize)
+                               double &startVal, int &numRecs, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
+	
+	if (!strcmp(req->AttrName, "recId")) { // recId stuff
 
 #ifdef DEBUG
   printf("TDataSeqAscii::GetRecs buf = 0x%p\n", buf);
@@ -196,24 +212,29 @@ Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
 
-  if (req->nextId > req->endId)
+  if (req->nextVal > req->endVal)
     return false;
   
-  int num = req->endId - req->nextId + 1;
+  int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
   if (num < numRecs)
     numRecs = num;
   
-  TD_Status status = ReadRec(req->nextId, numRecs, buf);
+  TD_Status status = ReadRec((RecId)(req->nextVal), numRecs, buf);
   if (status != TD_OK)
     return false;
  
-  startRid = req->nextId;
+  startVal = req->nextVal;
   dataSize = numRecs * _recSize;
-  req->nextId += numRecs;
+  req->nextVal += numRecs;
   
   _bytesFetched += dataSize;
   
-  return true;
+  return true;}
+	else
+        {
+                cout << "TDataSeqAscii: GetRecs deals with recId only.\n";
+                exit(1);
+        }
 }
 
 void TDataSeqAscii::DoneGetRecs(TDHandle req)

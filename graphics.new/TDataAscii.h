@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/01/11 20:56:05  jussi
+  Removed references to _currPos.
+
   Revision 1.22  1997/01/09 18:48:27  jussi
   Added controlling of live data update frequency.
 
@@ -159,9 +162,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
-                                     Boolean asyncAllowed,
-                                     ReleaseMemoryCallback *callback);
+	virtual TDHandle InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed,
+                                 ReleaseMemoryCallback *callback,
+                                 char *AttrName = "recId") ;
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -176,7 +180,7 @@ public:
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                                RecId &startRid, int &numRecs, int &dataSize);
+                            double &startVal, int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs(TDHandle handle);
 

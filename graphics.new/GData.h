@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/03 20:37:21  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.6  1996/11/23 21:17:56  jussi
   Removed failing support for variable-sized records.
 
@@ -103,9 +106,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
-                                     Boolean asyncAllowed,
-                                     ReleaseMemoryCallback *callback);
+	virtual TDHandle InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed,
+                                 ReleaseMemoryCallback *callback,
+                                 char *AttrName = "recId") ;
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -120,7 +124,7 @@ public:
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                                RecId &startRid, int &numRecs, int &dataSize);
+                            double &startVal, int &numRecs, int &dataSize) ;
 
 	virtual void DoneGetRecs(TDHandle handle);
 

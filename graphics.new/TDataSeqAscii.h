@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/03 20:31:35  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.3  1996/11/25 18:15:15  wenger
   Changes to non-indexed attrproj to match other changes to TData;
   changes to compile non-index attrproj and to get the rest of Devise
@@ -83,9 +86,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+	virtual TDHandle InitGetRecs(double lowVal, double highVal,
                                      Boolean asyncAllowed,
-                                     ReleaseMemoryCallback *callback);
+                                     ReleaseMemoryCallback *callback,
+				     char *AttrName = "recId");
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -99,7 +103,7 @@ public:
 		dataSize: # of bytes taken up by data.
 	**************************************************************/
 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                                RecId &startRid, int &numRecs, int &dataSize);
+                                double &startVal, int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs(TDHandle handle);
 

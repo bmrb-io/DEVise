@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.15  1997/04/21 22:57:18  guangshu
+   Added function GetTableName.
+
    Revision 1.14  1997/01/11 20:56:20  jussi
    Added nextChunk to TData request structure.
 
@@ -101,7 +104,7 @@ class ReleaseMemoryCallback {
 class TDataRequest {
   public:
     TDataRequest() {
-        nextId = endId = 0;
+        nextVal = endVal = 0;
         relcb = NULL;
         iohandle = lastChunkBytes = 0;
         pipeFlushed = true;
@@ -111,8 +114,8 @@ class TDataRequest {
     Boolean IsDirectIO() { return (iohandle == 0); }
     Boolean IsActiveIO() { return IsDirectIO() || !pipeFlushed; }
 
-    RecId nextId;                       // next record to return in GetRecs()
-    RecId endId;                        // where current GetRecs() should end
+    double nextVal;                       // next record to return in GetRecs()
+    double endVal;                        // where current GetRecs() should end
     ReleaseMemoryCallback *relcb;       // callback to release pipe memory
     int iohandle;                       // handle for data source I/O
     Boolean pipeFlushed;                // true if pipe flushed of data
@@ -121,6 +124,8 @@ class TDataRequest {
     char *lastChunk;                    // beginning of unused pipe data chunk
     char *lastOrigChunk;                // beginning of pipe data chunk
     int lastChunkBytes;                 // size of pipe data chunk
+
+    char *AttrName;			// on which column is the request
 };
 
 class TData {
@@ -200,9 +205,10 @@ class TData {
     /**************************************************************
       Init getting records.
     ***************************************************************/
-    virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+    virtual TDHandle InitGetRecs(double lowVal, double highVal,
                                  Boolean asyncAllowed = false,
-                                 ReleaseMemoryCallback *callback = NULL) = 0;
+                                 ReleaseMemoryCallback *callback = NULL,
+				 char *AttrName = "recId") = 0;
 
     /**************************************************************
       Get next batch of records, as much as fits into buffer. 
@@ -216,7 +222,7 @@ class TData {
       dataSize: # of bytes taken up by data.
       **************************************************************/
     virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            RecId &startRid, int &numRecs, int &dataSize) = 0;
+                            double &startVal, int &numRecs, int &dataSize) = 0;
 
     virtual void DoneGetRecs(TDHandle handle) = 0;
 

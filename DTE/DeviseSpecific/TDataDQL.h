@@ -79,9 +79,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
-                                     Boolean asyncAllowed,
-                                     ReleaseMemoryCallback *callback);
+	virtual TDHandle InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed,
+                                 ReleaseMemoryCallback *callback,
+                                 char *AttrName = "recId");
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -95,8 +96,8 @@ public:
 		dataSize: # of bytes taken up by data.
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
-	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                                RecId &startRid, int &numRecs, int &dataSize);
+ 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                            double &startVal, int &numRecs, int &dataSize) ;
 
 	virtual void DoneGetRecs(TDHandle handle);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/01/11 20:56:05  jussi
+  Removed references to _currPos.
+
   Revision 1.30  1997/01/09 18:51:59  jussi
   Added controlling of live data update frequency.
 
@@ -327,10 +330,16 @@ Boolean TDataBinary::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
+TData::TDHandle TDataBinary::InitGetRecs(double lowVal, double highVal,
                                          Boolean asyncAllowed,
-                                         ReleaseMemoryCallback *callback)
+                                         ReleaseMemoryCallback *callback,
+				 	 char *AttrName = "recId")
 {
+
+	if (!strcmp(AttrName, "recId")){ //recId supported
+                RecId lowId = (RecId)lowVal;
+                RecId highId = (RecId)highVal;
+
 #if DEBUGLVL >= 3
   cout << "TDataBinary::InitGetRecs [" << lowId << "," << highId << "]"
        << endl;
@@ -342,16 +351,17 @@ TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
   TDataRequest *req = new TDataRequest;
   DOASSERT(req, "Out of memory");
 
-  req->nextId = lowId;
-  req->endId = highId;
+  req->nextVal = lowId;
+  req->endVal = highId;
   req->relcb = callback;
+  req->AttrName = "recId";
 
   /* Compute location and number of bytes to retrieve */
-  streampos_t offset = _indexP->Get(req->nextId);
-  iosize_t bytes = _indexP->Get(req->endId) + 1024 - offset;
-  if ((long)req->endId < _totalRecs - 1) {
+  streampos_t offset = _indexP->Get((RecId)(req->nextVal));
+  iosize_t bytes = _indexP->Get((RecId)(req->endVal)) + 1024 - offset;
+  if ((long)req->endVal < _totalRecs - 1) {
       /* Read up to the beginning of next record */
-      bytes = _indexP->Get(req->endId + 1) - offset;
+      bytes = _indexP->Get((RecId)(req->endVal) + 1) - offset;
   }
 
   /*
@@ -382,13 +392,22 @@ TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
   req->lastChunkBytes = 0;
   req->nextChunk = offset;
 
-  return req;
+  return req;}
+
+        else
+        {
+                cout << "Only recId is supported by TDataBinary.\n";
+                exit(1);
+        }
+
 }
 
 Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
-                             RecId &startRid, int &numRecs, int &dataSize)
+                             double &startVal, int &numRecs, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
+
+	if (!strcmp(req->AttrName, "recId")) { // RecId stuff
 
 #if DEBUGLVL >= 3
   printf("TDataBinary::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
@@ -397,28 +416,35 @@ Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs > 0, "Not enough record buffer space");
 
-  if (req->nextId > req->endId)
+  if (req->nextVal > req->endVal)
     return false;
   
-  int num = req->endId - req->nextId + 1;
+  int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
   if (num < numRecs)
     numRecs = num;
   
   if (req->iohandle == 0)
-    ReadRec(req->nextId, numRecs, buf);
+    ReadRec((RecId)(req->nextVal), numRecs, buf);
   else
-    ReadRecAsync(req, req->nextId, numRecs, buf);
+    ReadRecAsync(req, (RecId)(req->nextVal), numRecs, buf);
   
-  startRid = req->nextId;
+  startVal = req->nextVal;
   dataSize = numRecs * _recSize;
-  req->nextId += numRecs;
+  req->nextVal += numRecs;
   
   _bytesFetched += dataSize;
   
-  if (req->iohandle > 0 && req->nextId > req->endId)
+  if (req->iohandle > 0 && req->nextVal > req->endVal)
     FlushDataPipe(req);
 
-  return true;
+  return true;}
+
+        else
+        {
+                cout << "TDataBinary: GetRecs deals with recId only.\n";
+                exit(1);
+        }
+
 }
 
 void TDataBinary::DoneGetRecs(TDHandle req)

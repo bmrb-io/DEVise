@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/03/19 21:34:18  wenger
+  Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
+  the data file name instead of the schema file name.
+
   Revision 1.16  1996/12/03 20:26:03  jussi
   Updated to reflect new TData interfaces.
 
@@ -293,14 +297,18 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	int			numRecs;
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId);
-
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
+	double tmpdouble;
+	tmpdouble = recId;
+	_tDataP->InitGetRecs(tmpdouble, tmpdouble);
+	
+	if (!_tDataP->GetRecs(_recBuf, _recBufSize, tmpdouble, numRecs, dataSize))
 	{
+		recId = (RecId)(tmpdouble);
 		result = StatusFailed;
 	}
 	else
 	{
+		recId = (RecId)(tmpdouble);
 		AttrList *	attrListP = _tDataP->GetAttrList();
 		int		projNum = 0;
 		Projection * projP = _projList.GetFirstProj();
@@ -337,17 +345,21 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId);
+	double tmpdouble;
+	tmpdouble = recId;
+	_tDataP->InitGetRecs(tmpdouble, tmpdouble);
 
 	int			dataSize;
 	int			numRecs;
-
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
+	
+	if (!_tDataP->GetRecs(_recBuf, _recBufSize, tmpdouble, numRecs, dataSize))
 	{
+		recId = (RecId)(tmpdouble);
 		result = StatusFailed;
 	}
 	else
 	{
+		recId = (RecId)tmpdouble;
 		AttrList *	attrListP = _tDataP->GetAttrList();
 		int			attrNum = 0;
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/01/23 17:39:44  jussi
+  Added another check for query termination.
+
   Revision 1.20  1997/01/14 15:48:21  wenger
   Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
   flexibility in overriding startup script default; fixed bug 116
@@ -532,9 +535,11 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     RangeInfo *range = AllocRange(BufSize(req->bytesLeft));
 
     int dataSize;
+    double startVal;
     Boolean status = tdata->GetRecs(req->tdhandle, range->buf,
-                                    range->bufSize, startRid,
+                                    range->bufSize, startVal,
                                     numRecs, dataSize);
+	startRid = (RecId)startVal;
     DOASSERT(status && dataSize > 0, "Cannot get TData");
 
 #if DEBUGLVL >= 3

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/05/28 15:39:30  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.56.4.3  1997/05/27 18:02:55  wenger
   Minor bug fixes and cleanup to Shilpa's layout manager code and associated
   code.
@@ -450,10 +453,16 @@ Boolean TDataAscii::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
-                                        Boolean asyncAllowed,
-                                        ReleaseMemoryCallback *callback)
+TData::TDHandle TDataAscii::InitGetRecs(double lowVal, double highVal,
+                                 Boolean asyncAllowed,
+                                 ReleaseMemoryCallback *callback,
+                                 char *AttrName = "recId")
 {
+
+	if (!strcmp(AttrName, "recId")){ //recId supported
+		RecId lowId = (RecId)lowVal;
+  		RecId highId = (RecId)highVal;
+
 #if DEBUGLVL >= 3
   printf("TDataAscii::InitGetRecs [%ld,%ld]\n", lowId, highId);
 #endif
@@ -466,16 +475,17 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
   TDataRequest *req = new TDataRequest;
   DOASSERT(req, "Out of memory");
 
-  req->nextId = lowId;
-  req->endId = highId;
+  req->nextVal = lowId;
+  req->endVal = highId;
   req->relcb = callback;
+  req->AttrName = "recId";
 
   /* Compute location and number of bytes to retrieve */
-  streampos_t offset = _indexP->Get(req->nextId);
-  iosize_t bytes = _indexP->Get(req->endId) + 1024 - offset;
-  if ((long)req->endId < _totalRecs - 1) {
+  streampos_t offset = _indexP->Get((RecId)(req->nextVal));
+  iosize_t bytes = _indexP->Get((RecId)(req->endVal)) + 1024 - offset;
+  if ((long)req->endVal < _totalRecs - 1) {
       /* Read up to the beginning of next record */
-      bytes = _indexP->Get(req->endId + 1) - offset;
+      bytes = _indexP->Get((RecId)(req->endVal) + 1) - offset;
   }
 
   /*
@@ -508,14 +518,23 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
 
   return req;
 }
+	else
+	{
+		cout << "Only recId is supported by TDataAscii.\n";
+		exit(1);
+	}
+}
 
 Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
-                            RecId &startRid, int &numRecs, int &dataSize)
+                            double &startVal, int &numRecs, int &dataSize)
 {
   if (!req) {
     return false;
   }
   //DOASSERT(req, "Invalid request handle");
+	
+	
+	if (!strcmp(req->AttrName, "recId")) { // recId stuff
 
 #if DEBUGLVL >= 3
   printf("TDataAscii::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
@@ -524,28 +543,34 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs > 0, "Not enough record buffer space");
 
-  if (req->nextId > req->endId)
+  if (req->nextVal > req->endVal)
     return false;
   
-  int num = req->endId - req->nextId + 1;
+  int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
   if (num < numRecs)
     numRecs = num;
   
   if (req->iohandle == 0)
-    ReadRec(req->nextId, numRecs, buf);
+    ReadRec((RecId)(req->nextVal), numRecs, buf);
   else
-    ReadRecAsync(req, req->nextId, numRecs, buf);
+    ReadRecAsync(req, (RecId)(req->nextVal), numRecs, buf);
   
-  startRid = req->nextId;
+  startVal = req->nextVal;
   dataSize = numRecs * _recSize;
-  req->nextId += numRecs;
+  req->nextVal += numRecs;
   
   _bytesFetched += dataSize;
   
-  if (req->iohandle > 0 && req->nextId > req->endId)
+  if (req->iohandle > 0 && req->nextVal > req->endVal)
     FlushDataPipe(req);
 
   return true;
+	}
+	else
+	{
+		cout << "TDataAscii: GetRecs deals with RecId only right now.\n";
+                exit(1);
+        }
 }
 
 void TDataAscii::DoneGetRecs(TDHandle req)
