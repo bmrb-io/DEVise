@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/09/05 22:36:29  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.32  1997/07/03 01:53:47  liping
   changed query interface to TData from RecId to double
 
@@ -335,15 +339,15 @@ Boolean TDataBinary::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataBinary::InitGetRecs(double lowVal, double highVal,
+TData::TDHandle TDataBinary::InitGetRecs(Range *range,
                                          Boolean asyncAllowed,
-                                         ReleaseMemoryCallback *callback,
-				 	 char *AttrName = "recId")
+                                         ReleaseMemoryCallback *callback)
+				
 {
 
-	if (!strcmp(AttrName, "recId")){ //recId supported
-                RecId lowId = (RecId)lowVal;
-                RecId highId = (RecId)highVal;
+	if (!strcmp(range->AttrName, "recId")){ //recId supported
+                RecId lowId = (RecId)(range->Low);
+                RecId highId = (RecId)(range->High);
 
 #if DEBUGLVL >= 3
   cout << "TDataBinary::InitGetRecs [" << lowId << "," << highId << "]"
@@ -359,7 +363,8 @@ TData::TDHandle TDataBinary::InitGetRecs(double lowVal, double highVal,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = "recId";
+  req->AttrName = range->AttrName;
+  req->granularity = range->Granularity;
 
   /* Compute location and number of bytes to retrieve */
   streampos_t offset = _indexP->Get((RecId)(req->nextVal));
@@ -408,7 +413,7 @@ TData::TDHandle TDataBinary::InitGetRecs(double lowVal, double highVal,
 }
 
 Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
-                             double &startVal, int &numRecs, int &dataSize)
+                             Range *range, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
 
@@ -418,24 +423,24 @@ Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataBinary::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
 #endif
 
-  numRecs = bufSize / _recSize;
-  DOASSERT(numRecs > 0, "Not enough record buffer space");
+  range->NumRecs = bufSize / _recSize;
+  DOASSERT(range->NumRecs > 0, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < numRecs)
-    numRecs = num;
+  if (num < range->NumRecs)
+    range->NumRecs = num;
   
   if (req->iohandle == 0)
-    ReadRec((RecId)(req->nextVal), numRecs, buf);
+    ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
   else
-    ReadRecAsync(req, (RecId)(req->nextVal), numRecs, buf);
+    ReadRecAsync(req, (RecId)(req->nextVal), range->NumRecs, buf);
   
-  startVal = req->nextVal;
-  dataSize = numRecs * _recSize;
-  req->nextVal += numRecs;
+  range->Low = req->nextVal;
+  dataSize = range->NumRecs * _recSize;
+  req->nextVal += range->NumRecs;
   
   _bytesFetched += dataSize;
   

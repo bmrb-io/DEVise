@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1997/10/07 17:06:04  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.66  1997/09/05 22:36:23  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -1001,12 +1004,15 @@ Boolean QueryProcFull::InitQueries()
     if (query->state == QPFull_ScanState) {
         Boolean tdataOnly = UseTDataQuery(query->tdata, query->filter);
 
-	// temporarily used for RecId to Coord changes
-	Coord TEMPlow, TEMPhigh;
-	TEMPlow = query->low;
-	TEMPhigh = query->high;
+	// use Range;
+	Range range;
+	range.Low = query->low;
+	range.High = query->high;
+	range.AttrName = "recId";
+	range.Granularity = 0; // not used for now
+
         query->handle = _mgr->InitGetRecs(query->tdata, query->gdata,
-                                          TEMPlow, TEMPhigh,
+					  &range,
                                           tdataOnly, false,
                                           query->isRandom, true);
 #if DEBUGLVL >= 3
@@ -1063,12 +1069,12 @@ void QueryProcFull::ProcessScan(QPFullData *query)
         char *buf;
         Boolean isTData;
 
-	// temp change for RecId to Coord changes
-	Coord	startVal;
+	Range range;
         
         Boolean gotData = _mgr->GetRecs(query->handle, isTData,
-                                        startVal, numRecs, buf);
-	startRid = (RecId)startVal;
+                                        &range, buf);
+	startRid = (RecId)(range.Low);
+	numRecs = range.NumRecs;
 
         /* Query is finished when buffer manager finds no more data */
         if (!gotData) {
@@ -1863,12 +1869,14 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
          convert them.
       */
 	
-	// temporarily used for RecId to Coord changes
-        Coord TEMPlow, TEMPhigh;
-        TEMPlow = uLow;
-        TEMPhigh = uHigh;
+	// use Range;
+        Range range;
+        range.Low = uLow;
+        range.High = uHigh;
+        range.AttrName = "recId";
+        range.Granularity = 0; // not used for now
 
-      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, TEMPlow, TEMPhigh,
+      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, &range,
                                                   true, true);
 
       QPRange *processed = _mgr->GetProcessedRange(handle);
@@ -1879,12 +1887,12 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
           char *buf;
           Boolean isTData;
 
-	// temp change for RecId to Coord changes
-        Coord  startVal;
+	Range range;
 
-          Boolean gotit = _mgr->GetRecs(handle, isTData, startVal,
-                                        numRecs, buf);
-	startRid = (RecId)startVal;
+        Boolean gotit = _mgr->GetRecs(handle, isTData, &range,
+                                        buf);
+	startRid = (RecId)(range.Low);
+	numRecs = range.NumRecs;
 
           if (!gotit)
               break;
@@ -2028,15 +2036,21 @@ void QueryProcFull::DoGDataConvert()
   
   /* Convert [low, low + recsLeft - 1] */
 
-  TData::TDHandle handle = tdata->InitGetRecs(low, high);
+  Range range;
+  range.Low = low;
+  range.High = high;
+  range.AttrName = "recId";
+  range.Granularity = 0; // not used
+  TData::TDHandle handle = tdata->InitGetRecs(&range);
   RecId startRid;
   int numRetrieved;
   int dataSize;
-  double tmpStartRid;
   Boolean status = tdata->GetRecs(handle, _tdataBuf, TDATA_BUF_SIZE,
-                                  tmpStartRid, numRetrieved, dataSize);
+                                  &range, dataSize);
+  
   DOASSERT(status, "Cannot get TData");
-  startRid = (RecId) tmpStartRid;
+  startRid = (RecId) range.Low;
+  numRetrieved = range.NumRecs;
   tdata->DoneGetRecs(handle);
   
   /* Convert [startRid, startRid + numRetrieved - 1] */
@@ -2165,15 +2179,15 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   }
 
   /* Initialize buffer manager scan */
+	
+	// use Range;
+        Range range;
+        range.Low = _tdataQuery->low;
+        range.High = _tdataQuery->high;
+        range.AttrName = "recId";
+        range.Granularity = 0; // not used for now
 
-	// temporarily used for RecId to Coord changes
-        Coord TEMPlow, TEMPhigh;
-        TEMPlow = _tdataQuery->low;
-        TEMPhigh = _tdataQuery->high;
-
-  _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(),
-                                          TEMPlow,
-                                          TEMPhigh,
+  _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(), &range,
                                           true);
 
   _tdataQuery->processed = _mgr->GetProcessedRange(_tdataQuery->handle);
@@ -2199,7 +2213,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     TData *tdata = _tdataQuery->tdata;
     TDataMap *map = _tdataQuery->map;
     Boolean isTData;
-    Coord startVal;
+    Range range;
     Boolean result;
 
     GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
@@ -2207,9 +2221,10 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     while (1) {
         if (!_hasTqueryRecs) {
             /* go to buffer manager to get more records */
-	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, startVal,
-                               _tqueryNumRecs, _tqueryBuf); 
-		_tqueryNumRecs= (RecId)startVal;
+	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, &range,
+                               _tqueryBuf); 
+		_tqueryNumRecs= (RecId)(range.Low);
+		_tqueryNumRecs= range.NumRecs;
 
           	if (!result)
                 {
@@ -2359,25 +2374,26 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
       x = query->map->GetDefaultX();
       return;
   }
+	// use Range;
+        Range range;
+        range.Low = id;
+        range.High = id;
+        range.AttrName = "recId";
+        range.Granularity = 0; // not used for now
 
-	// temporarily used for RecId to Coord changes
-        Coord TEMPlow, TEMPhigh;
-        TEMPlow = id;
-        TEMPhigh = id;
   BufMgr::BMHandle handle = _mgr->InitGetRecs(query->tdata,
                                               query->map->GetGData(),
-                                              TEMPlow, TEMPhigh, false, false,
+                                              &range, false, false,
                                               true, true);
   RecId startRid;
   int numRecs;
   char *buf;
   Boolean isTData;
+  Range second_range;
 
-	// temp purpose for RecId to Coord change
-	Coord	startVal;
-
-  Boolean gotit = _mgr->GetRecs(handle, isTData, startVal, numRecs, buf);
-	startRid = (RecId)startVal;
+  Boolean gotit = _mgr->GetRecs(handle, isTData, &second_range, buf);
+	startRid = (RecId)(second_range.Low);
+	numRecs = second_range.NumRecs;
 
   DOASSERT(gotit, "Did not get data");
   DOASSERT(numRecs == 1, "Did not get one record");

@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.16  1997/07/03 01:53:45  liping
+   changed query interface to TData from RecId to double
+
    Revision 1.15  1997/04/21 22:57:18  guangshu
    Added function GetTableName.
 
@@ -114,8 +117,9 @@ class TDataRequest {
     Boolean IsDirectIO() { return (iohandle == 0); }
     Boolean IsActiveIO() { return IsDirectIO() || !pipeFlushed; }
 
-    double nextVal;                       // next record to return in GetRecs()
-    double endVal;                        // where current GetRecs() should end
+    Coord nextVal;                       // next record to return in GetRecs()
+    Coord endVal;                        // where current GetRecs() should end
+    Coord granularity;			// requested granularity
     ReleaseMemoryCallback *relcb;       // callback to release pipe memory
     int iohandle;                       // handle for data source I/O
     Boolean pipeFlushed;                // true if pipe flushed of data
@@ -205,10 +209,11 @@ class TData {
     /**************************************************************
       Init getting records.
     ***************************************************************/
-    virtual TDHandle InitGetRecs(double lowVal, double highVal,
+    virtual TDHandle InitGetRecs(// double lowVal, double highVal,
+				 Range *range,
                                  Boolean asyncAllowed = false,
-                                 ReleaseMemoryCallback *callback = NULL,
-				 char *AttrName = "recId") = 0;
+                                 ReleaseMemoryCallback *callback = NULL
+				 ) = 0;
 
     /**************************************************************
       Get next batch of records, as much as fits into buffer. 
@@ -220,9 +225,11 @@ class TData {
       startRid : starting record ID of this batch 
       numRecs: number of records.
       dataSize: # of bytes taken up by data.
-      **************************************************************/
+      **************************************************************
+	startRid and numRecs are now recorded in range
+      *************************************************************/
     virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            double &startVal, int &numRecs, int &dataSize) = 0;
+                            Range *range, /*double &startVal, int &numRecs,*/ int &dataSize) = 0;
 
     virtual void DoneGetRecs(TDHandle handle) = 0;
 

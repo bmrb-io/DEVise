@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/07/03 01:53:49  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.4  1996/12/03 20:31:35  jussi
   Updated to reflect new TData interface.
 
@@ -86,10 +89,9 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(double lowVal, double highVal,
+	virtual TDHandle InitGetRecs(Range *range,
                                      Boolean asyncAllowed,
-                                     ReleaseMemoryCallback *callback,
-				     char *AttrName = "recId");
+                                     ReleaseMemoryCallback *callback);
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -101,9 +103,11 @@ public:
 		startRid : starting record ID of this batch 
 		numRecs: number of records.
 		dataSize: # of bytes taken up by data.
-	**************************************************************/
+	**************************************************************
+        startRid and numRecs are now recorded in range
+      *************************************************************/
 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                                double &startVal, int &numRecs, int &dataSize);
+                                Range *range, int &dataSize);
 
 	virtual void DoneGetRecs(TDHandle handle);
 

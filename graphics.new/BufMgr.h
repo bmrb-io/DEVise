@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/10/07 17:05:56  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.7  1997/01/11 20:59:31  jussi
   Fix for bug #106. Simplified processing of record links.
 
@@ -77,6 +80,7 @@ public:
         QPRange processed;                /* list of processed ranges */
         Coord low;                        /* start of requested record range */
         Coord high;                       /* end of requested record range */
+	Coord granularity;		  /* requested granularity */
         Boolean asyncAllowed;             /* asynchronous I/O allowed */
         Boolean inMemoryOnly;             /* return in-memory data only */
         Boolean randomized;               /* return records in random order */
@@ -104,7 +108,7 @@ public:
        If asyncAllowed is true, asynchronous I/O can be used.
     */
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-                                 Coord lowId, Coord highId,
+				 Range *range,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -123,7 +127,8 @@ public:
        The record range is indicated by startRecId and numRecs.
     */
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-                            Coord &startRecId, int &numRecs,
+			    Range *range,
+                            // Coord &startRecId, int &numRecs,
                             char *&buf) = 0;
     
     /*

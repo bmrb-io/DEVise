@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/10/07 17:05:57  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.23  1997/08/07 16:42:15  wenger
   Merged through improve_stop_branch_1.
 
@@ -376,6 +379,7 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
 #endif
     
     Coord rangeLow, rangeHigh;
+    Range rid_range;
 
     while (1) {
 
@@ -446,7 +450,11 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
         rangeHigh = req->high;
         
     req->bytesLeft = ((RecId)rangeHigh - (RecId)rangeLow + 1) * req->gdata->RecSize();
-    req->tdhandle = req->gdata->InitGetRecs(rangeLow, rangeHigh,
+    rid_range.Low = rangeLow;
+    rid_range.High = rangeHigh;
+    rid_range.AttrName = "recId";
+    rid_range.Granularity = 0; // not used
+    req->tdhandle = req->gdata->InitGetRecs(&rid_range,
                                             req->asyncAllowed, this);
 #if DEBUGLVL >= 3
     printf("Submitted I/O request 0x%p for GData 0x%p [%ld,%ld]\n",
@@ -477,6 +485,7 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
 #endif    
 
     Coord rangeLow, rangeHigh;
+    Range rid_range;
 
     Boolean noHighId = req->processed.NextUnprocessed(req->currentRec,
                                                       rangeLow, rangeHigh);
@@ -513,7 +522,11 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
         req->currentRec = req->low;
 
     req->bytesLeft = ((RecId)rangeHigh - (RecId)rangeLow + 1) * req->tdata->RecSize();
-    req->tdhandle = req->tdata->InitGetRecs(rangeLow, rangeHigh,
+    rid_range.Low = rangeLow;
+    rid_range.High = rangeHigh;
+    rid_range.AttrName = "recId";
+    rid_range.Granularity = 0; // not used
+    req->tdhandle = req->tdata->InitGetRecs(&rid_range,
                                             req->asyncAllowed, this);
 #if DEBUGLVL >= 3
     printf("Submitted I/O request 0x%p for TData 0x%p [%ld,%ld]\n",
@@ -558,9 +571,12 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, Coord &startRid,
     RangeInfo *range = AllocRange(BufSize(req->bytesLeft));
 
     int dataSize;
+    Range rid_range;
     Boolean status = tdata->GetRecs(req->tdhandle, range->buf,
-                                    range->bufSize, startRid,
-                                    numRecs, dataSize);
+                                    range->bufSize, &rid_range,
+                                    dataSize);
+    numRecs = rid_range.NumRecs;
+    startRid = rid_range.Low;
     DOASSERT(status && dataSize > 0, "Cannot get TData");
 
 #if DEBUGLVL >= 3
@@ -653,7 +669,7 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, Coord &startRid,
 */
 
 BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
-                                         Coord lowId, Coord highId,
+					 Range *range,
                                          Boolean tdataOnly,
                                          Boolean inMemoryOnly,
                                          Boolean randomized,
@@ -661,7 +677,7 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 {
 #if DEBUGLVL >= 3
     printf("BufMgrFull::InitGetRecs [%ld,%ld] with tdata 0x%p, gdata 0x%p\n",
-           lowId, highId, tdata, (tdataOnly ? 0 : gdata));
+           range->Low, range->High, tdata, (tdataOnly ? 0 : gdata));
 #endif
 
     DOASSERT(tdata->RecSize() >= 0, "Cannot handle variable records");
@@ -671,16 +687,17 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     RecId TMPFIRST, TMPLAST;
     Boolean hasFirst = tdata->HeadID(TMPFIRST);
     Boolean hasLast = tdata->LastID(TMPLAST); firstId = TMPFIRST; lastId = TMPLAST;
-    DOASSERT(hasFirst && hasLast && lowId >= firstId && highId <= lastId,
+    DOASSERT(hasFirst && hasLast && range->Low >= firstId && range->High <= lastId,
              "Invalid record IDs");
 
     BufMgrRequest *req = new BufMgrRequest;
     DOASSERT(req, "Out of memory");
 
+    req->granularity = range->Granularity;
     req->tdata = tdata;
     req->gdata = (GData *) (tdataOnly ? NULL : gdata);
-    req->low = lowId;
-    req->high = highId;
+    req->low = range->Low;
+    req->high = range->High;
     req->asyncAllowed = asyncAllowed;
     req->inMemoryOnly = inMemoryOnly;
     req->randomized = randomized;
@@ -797,7 +814,7 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
 */
 
 Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
-                            Coord &startRid, int &numRecs, char *&buf)
+                            Range *range, char *&buf)
 {
 #if DEBUGLVL >= 3
     printf("BufMgrFull::GetRecs(handle 0x%p)\n", req);
@@ -830,7 +847,7 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             req->inMemoryCur->SetUse();
             req->getRange = true;
         }
-        if (GetDataInMem(req, startRid, numRecs, buf)) {
+        if (GetDataInMem(req, range->Low, range->NumRecs, buf)) {
             isTData = false;
 
 	    // Reset the info about where we are in the in-memory data,
@@ -876,7 +893,7 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             req->inMemoryCur->SetUse();
             req->getRange = true;
         }
-        if (GetDataInMem(req, startRid, numRecs, buf)) {
+        if (GetDataInMem(req, range->Low, range->NumRecs, buf)) {
             isTData = true;
 
 	    // Reset the info about where we are in the in-memory data,
@@ -909,7 +926,7 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             req->needScanInit = false;
         }
         while (req->haveIO) {
-            if (ScanDiskData(req, startRid, numRecs, buf)) {
+            if (ScanDiskData(req, range->Low, range->NumRecs, buf)) {
                 isTData = false;
                 return true;
             }
@@ -931,7 +948,7 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             req->needScanInit = false;
         }
         while (req->haveIO) {
-            if (ScanDiskData(req, startRid, numRecs, buf)) {
+            if (ScanDiskData(req, range->Low, range->NumRecs, buf)) {
                 isTData = true;
                 return true;
             }

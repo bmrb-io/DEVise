@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/10/07 17:05:58  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.7  1996/12/18 15:35:12  jussi
   Merged GetGDataInMem() and GetTDataInMem().
 
@@ -64,7 +67,7 @@ class BufMgrFull: public BufMgr {
     void ClearData(TData *data);
 
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-                                 Coord lowId, Coord highId,
+				 Range *range,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -73,7 +76,8 @@ class BufMgrFull: public BufMgr {
     virtual BMHandle SelectReady();
 
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-                            Coord &startRecId, int &numRecs, char *&buf);
+			    Range *range,
+                            char *&buf);
 	
     virtual void DoneGetRecs(BMHandle handle);
 

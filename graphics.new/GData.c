@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/10/07 17:06:00  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.15  1997/07/03 01:53:34  liping
   changed query interface to TData from RecId to double
 
@@ -171,15 +174,15 @@ char *GData::GetName()
 Init getting records.
 ***************************************************************/
 
-TData::TDHandle GData::InitGetRecs(double lowVal, double highVal,
+TData::TDHandle GData::InitGetRecs(Range *range,
                                  Boolean asyncAllowed ,
-                                 ReleaseMemoryCallback *callback ,
-                                 char *AttrName = "recId")
+                                 ReleaseMemoryCallback *callback
+                                 )
 {
 
-	if (!strcmp(AttrName,"recId")) { // recId stuff
-	RecId lowId = (RecId)lowVal;
-  	RecId highId = (RecId)highVal;
+	if (!strcmp(range->AttrName,"recId")) { // recId stuff
+	RecId lowId = (RecId)(range->Low);
+  	RecId highId = (RecId)(range->High);
 
 #ifdef DEBUG
   printf("GData::InitGetRecs(%ld,%ld)\n", lowId, highId);
@@ -191,7 +194,8 @@ TData::TDHandle GData::InitGetRecs(double lowVal, double highVal,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = "recId";
+  req->AttrName = range->AttrName;
+  req->granularity = range->Granularity;
 
   req->numRecs = highId - lowId + 1;
   req->rec = _rangeMap->FindMaxLower((RecId)(req->nextVal));
@@ -208,14 +212,12 @@ TData::TDHandle GData::InitGetRecs(double lowVal, double highVal,
 }
 
 Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
-                       double &startVal, int &numFetched, int &dataFetched)
+                       Range *range, int &dataFetched)
 {
   DOASSERT(treq, "Invalid request handle");
 
 	if (!strcmp(treq->AttrName, "recId")) { // recId stuff
 	
-	// cout << " ****** Double is now functioning in GData. ******\n";
-
   GDataRequest *req = (GDataRequest *)treq;
 
 #ifdef DEBUG
@@ -237,14 +239,14 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
   char *bufAddr = (char *)buf;
   
   /* Set return param and update internal vars */
-  startVal = req->nextVal;
-  numFetched = num;
+  range->Low = req->nextVal;
+  range->NumRecs = num;
   req->numRecs -= num;
-  dataFetched = numFetched *_recSize;
+  dataFetched = (range->NumRecs) *_recSize;
   
 #ifdef DEBUG
   printf("%d fetched, %d bytes returned, %ld left\n",
-	 numFetched, dataFetched, req->numRecs);
+	 range->NumRecs, dataFetched, req->numRecs);
 #endif
 
   while (num > 0) {

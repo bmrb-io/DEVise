@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/07/03 01:53:48  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.19  1997/01/11 20:56:06  jussi
   Removed references to _currPos.
 
@@ -167,10 +170,9 @@ public:
   /**************************************************************
     Init getting records.
   ***************************************************************/
-  virtual TDHandle InitGetRecs(double lowVal, double highVal,
+  virtual TDHandle InitGetRecs(Range *range,
                                Boolean asyncAllowed,
-                               ReleaseMemoryCallback *callback,
-			       char *AttrName = "recId");
+                               ReleaseMemoryCallback *callback);
 
   /**************************************************************
     Get next batch of records, as much as fits into buffer. 
@@ -182,9 +184,11 @@ public:
       startRid : starting record ID of this batch 
       numRecs: number of records.
       dataSize: # of bytes taken up by data.
-    **************************************************************/
+    **************************************************************
+        startRid and numRecs are now recorded in range
+    *************************************************************/
   virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                          double &startVal, int &numRecs, int &dataSize);
+                          Range *range, int &dataSize);
 
   virtual void DoneGetRecs(TDHandle handle);
 

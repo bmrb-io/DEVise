@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/07/03 01:53:49  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.5  1996/12/23 22:57:28  wenger
   Minor improvements to attrproj code.
 
@@ -168,14 +171,13 @@ Boolean TDataSeqAscii::LastID(RecId &recId)
   return false;
 }
 
-TData::TDHandle TDataSeqAscii::InitGetRecs(double lowVal, double highVal,
+TData::TDHandle TDataSeqAscii::InitGetRecs(Range *range,
                                            Boolean asyncAllowed,
-                                           ReleaseMemoryCallback *callback,
-					   char *AttrName = "recId")
+                                           ReleaseMemoryCallback *callback)
 {
-	if (!strcmp(AttrName, "recId")){ //recId supported
-                RecId lowId = (RecId)lowVal;
-                RecId highId = (RecId)highVal;
+	if (!strcmp(range->AttrName, "recId")){ //recId supported
+                RecId lowId = (RecId)(range->Low);
+                RecId highId = (RecId)(range->High);
 
 #if defined(DEBUG)
   cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
@@ -188,7 +190,8 @@ TData::TDHandle TDataSeqAscii::InitGetRecs(double lowVal, double highVal,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = "recId";
+  req->AttrName = range->AttrName;
+  req->granularity = range->Granularity;
 
   return req;}
 	else 
@@ -199,7 +202,7 @@ TData::TDHandle TDataSeqAscii::InitGetRecs(double lowVal, double highVal,
 }
 
 Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
-                               double &startVal, int &numRecs, int &dataSize)
+                               Range *range, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
 	
@@ -209,23 +212,23 @@ Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataSeqAscii::GetRecs buf = 0x%p\n", buf);
 #endif
 
-  numRecs = bufSize / _recSize;
-  DOASSERT(numRecs, "Not enough record buffer space");
+  range->NumRecs = bufSize / _recSize;
+  DOASSERT(range->NumRecs, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < numRecs)
-    numRecs = num;
+  if (num < range->NumRecs)
+    range->NumRecs = num;
   
-  TD_Status status = ReadRec((RecId)(req->nextVal), numRecs, buf);
+  TD_Status status = ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
   if (status != TD_OK)
     return false;
  
-  startVal = req->nextVal;
-  dataSize = numRecs * _recSize;
-  req->nextVal += numRecs;
+  range->Low = req->nextVal;
+  dataSize = range->NumRecs * _recSize;
+  req->nextVal += range->NumRecs;
   
   _bytesFetched += dataSize;
   
