@@ -23,7 +23,7 @@ Parser/SQLParser.java: Parser/SQLParser.jj
 	cd Parser; javacc SQLParser.jj; cd ..
 
 all:
-	javac FileScanIteratorTest.java -d $(CLASSES)
+	javac ExprTest.java -d $(CLASSES)
 
 doc:
 	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/
