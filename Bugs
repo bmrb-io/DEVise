@@ -81,6 +81,13 @@ Num Date        Status  Description
 027 08/09/96	FIXED	Load demo/colors.tk, scroll; load demo/3d_test.tk,
 			scroll -> core dump (only on SPARC/Solaris?). (rkw)
 
+028 08/12/96	OPEN	Overlays don't work (see LandsEnd/a2.tk). (ml/rkw)
+
+029 08/13/96	OPEN	Splitting and re-merging views corrupts data. (rkw)
+
+030 08/13/96	OPEN	A view continuously redraws itself while it's
+			iconified. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
