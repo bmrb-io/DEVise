@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.28  1996/01/11 21:01:44  jussi
+#	Data stream is cached before schema is read; this is because
+#	for SEQ the schema is produced as part of the caching step.
+#
 #	Revision 1.27  1996/01/10 18:48:46  jussi
 #	Attribute hi/lo values now take their values from either the
 #	schema or the .rc file (schema has precedence). For bar charts,
@@ -652,6 +656,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     global schemas maps mappings views links windows modified none
     global viewDefault
 
+    set window [UniqueName $window]
+
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
@@ -1176,6 +1182,41 @@ proc MacroDefLinks {m default} {
 
 ############################################################
 
+proc OpenDataSource {dispname} {
+    global sourceList
+
+    # see if data source (still) defined (may be out-of-date in
+    # a session file)
+    set err [catch {set exists $sourceList($dispname)}]
+    if {$err} {
+	set but [dialog .sourceNotExists "Undefined Data Stream" \
+		"Data stream \"$dispname\" does not exist." \
+		"" 0 OK "Select Another"]
+	if {!$but} { return "" }
+	set dispname [selectStream]
+	if {$dispname == ""} { return "" }
+    }
+
+    # cache data to disk right now
+    if {[isCached $dispname -1 -1] == ""} {
+	set but [dialog .cacheData "Caching Data" \
+		"Cache \"$dispname\" to disk now?" \
+		"" 1 Yes No]
+	if {$but == 1} {
+	    dialog .notCached "Must Cache Data Stream" \
+		    "Cannot visualize data without caching it to disk first." \
+		    "" 0 OK
+	    return ""
+	}
+    }
+
+    set source [cacheData $dispname -1 -1]
+
+    return [list $dispname $source]
+}
+
+############################################################
+
 proc DefSource {} {
     global sourceList tdatas schemas maps sname
 
@@ -1196,22 +1237,12 @@ proc DefSource {} {
 	}
     }
 
-    # cache data to disk right now
-    if {[isCached $sname -1 -1] == ""} {
-	set but [dialog .cacheData "Caching Data" \
-		"Cache \"$sname\" to disk now?" \
-		"" 1 Yes No]
-	if {$but == 1} {
-	    dialog .notCached "Must Cache Data Stream" \
-		    "Cannot visualize data without caching it to disk first." \
-		    "" 0 OK
-	    return ""
-	}
-    }
-
-    set source [cacheData $sname -1 -1]
+    # data file must be opened before schema file is accessed;
+    # for SEQ, downloading the data from the server also causes
+    # a new schema to be created
+    set source [lindex [OpenDataSource $sname] 1]
     if {$source == ""} {
-	return
+	return ""
     }
 
     set schema [lindex $sourceList($sname) 2]
@@ -1246,8 +1277,6 @@ proc DefSource {} {
 	    "Creating an index on \"$sname\".\n\n\This may take a while."
 
     # ask DEVise to create tdata
-    puts "Adding source \"$sname\","
-    puts "  file $source, schema $schema"
     set result [DEVise create tdata $schema $source $sname]
     catch {destroy .info}
     if {$result == ""} {
