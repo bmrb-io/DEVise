@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/23 20:53:45  jussi
+  Added isAscii parameter to Gen().
+
   Revision 1.6  1995/12/28 22:02:16  jussi
   Small fix to remove compiler warning.
 
@@ -38,10 +41,11 @@
   Added CVS header.
 */
 
-#include <sys/types.h>
-#include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "Display.h"
@@ -64,7 +68,6 @@
 #include "TDataMap.h"
 #include "TData.h"
 #include "CursorClassInfo.h"
-#include "TDataTapeInterp.h"
 #include "ParseCat.h"
 
 int debug = 0;
@@ -147,30 +150,6 @@ private:
   Boolean   _init;                /* true when instance initialized */
 };
 
-class ISSMGenClass: public GenClassInfo  {
-public:
-  virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
-			 AttrList *attrList, int recSize, char *separators,
-			 int numSeparators, Boolean isSeparator,
-			 char *commentString) {
-    if (!strcmp(source, "tape")) {
-      if (isAscii) {
-	return new TDataTapeInterpClassInfo(className, attrList,
-					    recSize, separators, numSeparators,
-					    isSeparator, commentString);
-      } else {
-	fprintf(stderr,"Binary tape source not implemented yet.\n");
-      }
-    }
-
-    fprintf(stderr, "Schema source %s not found.\n", source);
-    Exit::DoExit(1);
-
-    // keep compiler happy
-    return 0;
-  }
-};
-
 QueryProc *genQueryProcTape()
 {
   return new QueryProcTape;
@@ -183,9 +162,6 @@ main(int argc, char **argv)
   /* Register composite parser */
   CompositeParser::Register("ISSM-Trade", new ISSMComposite);
   CompositeParser::Register("ISSM-Quote", new ISSMComposite);
-
-  /* Register parser for tape */
-  RegisterGenClassInfo("tape", new ISSMGenClass());
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
