@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/06/21 17:21:22  wenger
+  Drill-down now works on all views in a pile.
+
   Revision 1.41  1999/06/04 16:32:29  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -203,6 +206,7 @@
 #include "DeviseKey.h"
 #include "DepMgr.h"
 #include "PileStack.h"
+#include "Session.h"
 
 //#define DEBUG
 
@@ -285,7 +289,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     } // end switch
 }
 
-static const int MAX_MSGS = 50;
+static const int MAX_MSGS = 128;
 static const int MSG_BUF_SIZE = 4096;
 static char msgBuf[MSG_BUF_SIZE]; // this does need to be static.  RKW 1998-12-14.
 static int msgIndex;
@@ -294,9 +298,11 @@ static int numMsgs;
 
 static Boolean CheckParams()
 {
-    if (numMsgs >= MAX_MSGS || msgIndex >= MSG_BUF_SIZE)
+    if (numMsgs >= MAX_MSGS || msgIndex >= MSG_BUF_SIZE) {
       return false;
-    return true;
+    } else {
+      return true;
+    }
 }
 
 static Boolean PutMessage(char *msg)
@@ -410,6 +416,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
     }
 
     if (!printedRecords) {
+        InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
         PutMessage("");
         PutMessage(errorMsg);
     }
@@ -429,8 +436,9 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
 
     static RecInterp *recInterp = NULL;
     
-    if (!recInterp)
+    if (!recInterp) {
       recInterp = new RecInterp;
+    }
     
     /* get mapping */
     TDataMap *map = view->GetFirstMap();
@@ -439,9 +447,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
         return false;
     }
 
-    RecId startRid;
-    int numRecs = 0;
-    char *buf;
+    int numRecs;
     QueryProc *qp = QueryProc::Instance();
 
 #if defined(DEBUG)
@@ -495,49 +501,8 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
            approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
 #endif
 
-    Boolean tooMuch = false;
     qp->InitTDataQuery(map, filter, approxFlag);
-
-    int linesDisplayed = 0;
-
-    while (qp->GetTData(startRid, numRecs, buf)) {
-        char *ptr = buf;
-        for(int i = 0; i< numRecs; i++) {
-            recInterp->SetBuf(ptr);
-            ptr += tdata->RecSize();
-            
-            if (tooMuch)
-              puts("");
-            else
-              PutMessage("");
-
-            /* set up for display inside the window */
-
-            for(int j = 0; j < attrs->NumAttrs(); j++) {
-                char buf[128];
-                recInterp->PrintAttr(buf, j, true);
-                if (!tooMuch) {
-                    if (!PutMessage(buf)) {
-                        PrintMsgBuf();
-                        errorMsg = "see text window";
-                        tooMuch = true;
-                    }
-                } else {
-                    puts(buf);
-                }
-                ++linesDisplayed;
-            }
-
-            if (linesDisplayed > 500) {
-                printf("\nToo many records to display\n");
-                break;
-            }
-        }
-        
-        if (linesDisplayed > 500)
-          break;
-    }
-
+    Boolean tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
     qp->DoneTDataQuery();
 
     if (approxFlag || numRecs) {
@@ -548,14 +513,15 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     printf("Didn't get any records on the first try.\n");
 #endif
 
+//~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-      // Try it again, this time trying to take the size
-      // of the structures being viewed into account.
+    // Try it again, this time trying to take the size
+    // of the structures being viewed into account.
 
-      // for scatter plot, we filter using Y coordinates as well;
-      // allow user inaccuracy that is five times larger than for
-      // sortedX views (where approximation is used anyway), that is,
-      // roughly five pixels in each direction
+    // for scatter plot, we filter using Y coordinates as well;
+    // allow user inaccuracy that is five times larger than for
+    // sortedX views (where approximation is used anyway), that is,
+    // roughly five pixels in each direction
     filter.flag = VISUAL_X | VISUAL_Y;
 
     Coord height, width, depth;
@@ -578,50 +544,57 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
            approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
 #endif
 
-    tooMuch = false;
     qp->InitTDataQuery(map, filter, approxFlag);
+    tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
+    qp->DoneTDataQuery();
 
-    linesDisplayed = 0;
+    return(!tooMuch);
+}
 
-    while (qp->GetTData(startRid, numRecs, buf)) {
-        char *ptr = buf;
+Boolean
+ActionDefault::GetRecords(QueryProc *qp, RecInterp *recInterp, TData *tdata,
+    char *&errorMsg, int &numRecs)
+{
+    numRecs = 0;
+
+    Boolean tooMuch = false;
+    RecId startRid;
+    char *tdBuf;
+    AttrList *attrs = tdata->GetAttrList();
+
+    while (qp->GetTData(startRid, numRecs, tdBuf)) {
+        char *ptr = tdBuf;
         for(int i = 0; i < numRecs; i++) {
             recInterp->SetBuf(ptr);
             ptr += tdata->RecSize();
             
-            if (tooMuch)
-              puts("");
-            else
+            if (!tooMuch) {
               PutMessage("");
+            } else if (Session::GetIsJsSession()) {
+              puts("");
+	    }
 
             // set up for display inside the window
 
             for(int j = 0; j < attrs->NumAttrs(); j++) {
-                char buf[128];
-                recInterp->PrintAttr(buf, j, true);
+                char attrBuf[128];
+                recInterp->PrintAttr(attrBuf, j, true);
                 if (!tooMuch) {
-                    if (!PutMessage(buf)) {
-                        PrintMsgBuf();
-                        errorMsg = "see text window";
+                    if (!PutMessage(attrBuf)) {
+			if (Session::GetIsJsSession()) {
+                          errorMsg = "Too much data to show.";
+			} else {
+                          errorMsg = "See text window.";
+                          PrintMsgBuf();
+			}
                         tooMuch = true;
                     }
-                } else {
-                    puts(buf);
+                } else if (!Session::GetIsJsSession()) {
+                    puts(attrBuf);
                 }
-                ++linesDisplayed;
-            }
-
-            if (linesDisplayed > 500) {
-                puts("\nToo many records to display");
-                break;
             }
         }
-        
-        if (linesDisplayed > 500)
-          break;
     }
 
-    qp->DoneTDataQuery();
-
-    return(!tooMuch);
+    return tooMuch;
 }
