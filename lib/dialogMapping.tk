@@ -15,6 +15,11 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.27  1997/04/25 16:54:16  wenger
+#       Text labels are now sized in the same way as Rects; fixed font bug in
+#       middle button query popup; removed the dialog that warns you about your
+#       table name getting changed when you open an old data source.
+#
 #       Revision 1.26  1997/04/21 23:03:54  guangshu
 #       Changes to deal with more statistics cases.
 #
@@ -602,6 +607,7 @@ set DEViseShapeAttrNames { \
 	{"Polyline File" Filename Format "" "" "Line Width"} \
 	{"Text Label" "Label Text" "Format" "Width" "Height" "Outline"} \
 	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
+	{"Fixed Text Label" "Label Text" "Format" "" "" ""} \
 }
 
 # Adjusts the labels of the five ShapeAttr menu labels to descriptive terms

@@ -33,6 +33,9 @@ graphics/PostScript.doc.)  (ml/rkw 11/12/96)
 
 HIGH PRIORITY
 -------------
+Be able to store some kind of comment or explanation in a session file.
+(rkw 12/12/96)
+
 GUI for printing needs improvement. (ml/rkw 2/19/97)
 
 Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
@@ -280,9 +283,6 @@ view is open).  (ds/rkw 12/09/96).
 
 Put info about batch and client/server modes in the user documentation.
 (rkw 12/09/96)
-
-Be able to store some kind of comment or explanation in a session file.
-(rkw 12/12/96)
 
 Perhaps allow colors for data to be specified by RGB value (have RGB
 value in a data attribute). (jpm/rkw 12/12/96)

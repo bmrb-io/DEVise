@@ -84,13 +84,22 @@ file)
         1) format (currently an unmodifiable single format)
         4) line width
 
-TEXT LABEL - a string (text characters)
+TEXT LABEL - a string (text characters) with font size fitted to
+the specified rectangle
     Attrs:
         0) string
-        1) format string (for numerical attributes only) (not required)
+        1) format string (for numerical attributes only) (not
+           required)
         2) width
         3) height
         4) whether to outline the rectangle
+
+FIXED TEXT LABEL - a string (text characters) with a fixed
+font size
+    Attrs:
+        0) string
+        1) format string (for numerical attributes only) (not
+           required)
 
 TCL/TK WINDOW - rectangular region containing a Tcl/Tk
 window

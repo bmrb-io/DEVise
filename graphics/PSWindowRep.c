@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/04/11 18:48:52  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.26  1997/03/25 17:58:55  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -1619,7 +1625,6 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
 {
 #if USE_PS_PROCEDURES
   fprintf(printFile, "%f %f %f %f DevRect\n", x1, y1, x2, y2);
-  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);
@@ -1628,8 +1633,15 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
   fprintf(printFile, "%f %f lineto\n", x2, y1);
   fprintf(printFile, "%f %f lineto\n", x1, y1);
   fprintf(printFile, "closepath\n");
-  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #endif
+
+  /* This is kind of a kludge so that the outlining of the text shapes works
+   * correctly. */
+  if ((_pattern == Pattern1) || (_pattern == (Pattern) -1)) {
+    fprintf(printFile, "%s\n", "stroke");
+  } else {
+    fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
+  }
 
   return;
 }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/04/25 22:48:58  ssl
+  Fixed bug in TData flush. MappingInterp doesn't store attr info anymore
+  as DTE can change it.
+  (Doesnt seem like a very severe performance penalty and is needed for
+  correctness).
+
   Revision 1.29  1997/04/21 22:54:53  guangshu
   Added function MapTAttr2GAttr.
 
@@ -191,9 +197,9 @@ struct MappingSimpleCmd {
 class Shape;
 class AttrList;
 #ifdef VIEW_SHAPE 
-const int MaxInterpShapes = 17;
+const int MaxInterpShapes = 18;
 #else 
-const int MaxInterpShapes = 16;
+const int MaxInterpShapes = 17;
 #endif
 
 
@@ -291,7 +297,7 @@ private:
   FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
 		unsigned long int flag, unsigned long int attrFlag);
   
-  Boolean IsConstCmd(char *cmd, Coord &val);
+  Boolean IsConstCmd(char *cmd, Coord &val, AttrType &attrType);
   
   /* command for the mapping and the associated flags */
   MappingInterpCmd *_cmd;

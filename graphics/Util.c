@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/12/03 20:24:22  jussi
+  Added readn() and writen().
+
   Revision 1.19  1996/12/02 18:44:35  wenger
   Fixed problems dealing with DST in dates (including all date composite
   parsers); added more error checking to date composite parsers.
@@ -302,7 +305,9 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
 #endif
     ) != 0)
   {
+#if defined(DEBUG)
     reportErrSys("Can't get status of file system");
+#endif
   }
   else
   {

@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/04/25 16:54:09  wenger
+  Text labels are now sized in the same way as Rects; fixed font bug in
+  middle button query popup; removed the dialog that warns you about your
+  table name getting changed when you open an old data source.
+
   Revision 1.37  1997/04/16 18:53:35  wenger
   Text labels can now show non-string attributes; fixed a bug in constant
   strings in mapping (non-terminated string); added constant attributes to
@@ -1816,6 +1821,152 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	}
     win->ScaledText(label, x - width / 2, y - height / 2, width, height,
       WindowRep::AlignCenter, true);
+
+    if (color == XorColor)
+      win->SetCopyMode();
+  }
+}
+
+
+// -----------------------------------------------------------------
+
+
+int FullMapping_FixedTextLabelShape::NumShapeAttrs()
+{
+	return 2;
+}
+
+
+void FullMapping_FixedTextLabelShape::MaxSymSize(TDataMap *map, void *gdata, 
+						int numSyms,
+						Coord &width, Coord &height)
+{
+	width = 0;
+	height = 0;
+}
+
+
+void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
+						void **gdataArray,
+						int numSyms, TDataMap *map,
+						ViewGraph *view, int pixelSize)
+{
+#if defined(DEBUG)
+	printf("%s\n", __PRETTY_FUNCTION__);
+#endif
+
+  if (view->GetNumDimensions() == 3) {
+    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+    return;
+  }
+
+  /* Figure out the type of the label and label format attribute. */
+  AttrList *attrList = map->GDataAttrList();
+
+  Boolean labelAttrValid;
+  AttrType labelAttrType = IntAttr;
+  AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
+  if (attrInfo == NULL) {
+    labelAttrValid = false;
+#if defined(DEBUG)
+    reportErrNosys("Can't find AttrInfo for shapeAttr_0");
+#endif
+  } else {
+    labelAttrValid = true;
+    labelAttrType = attrInfo->type;
+  }
+
+  Boolean labelFormatValid;
+  AttrType labelFormatType = IntAttr;
+  attrInfo = attrList->Find("shapeAttr_1");
+  if (attrInfo == NULL) {
+    labelFormatValid = false;
+#if defined(DEBUG)
+    reportErrNosys("Can't find AttrInfo for shapeAttr_1");
+#endif
+  } else {
+    labelFormatValid = true;
+    labelFormatType = attrInfo->type;
+  }
+
+
+  VisualFilter filter;
+  view->GetVisualFilter(filter);
+  Coord filterWidth = filter.xHigh - filter.xLow;
+  Coord filterHeight = filter.yHigh - filter.yLow;
+
+  GDataAttrOffset *offset = map->GetGDataOffset();
+
+  Coord oldPointSize = -9999.9;
+
+  for(int i = 0; i < numSyms; i++) {
+    char *gdata = (char *)gdataArray[i];
+    Coord x = GetX(gdata, map, offset);
+    Coord y = GetY(gdata, map, offset);
+    Coord pointSize = GetSize(gdata, map, offset);
+    if (pointSize <= 1.0)
+      pointSize = 12.0;
+    GlobalColor color = GetColor(view, gdata, map, offset);
+
+    /* Find or generate the label string. */
+    char *label;
+    if (!labelAttrValid) {
+      label = "X";
+    } else if (labelAttrType == StringAttr) {
+      /* Label attribute is a string.  Get the string value from the
+       * StringStorage class. */
+      int key = (int) GetShapeAttr0(gdata, map, offset);
+      int code = StringStorage::Lookup(key, label);
+      if( code < 0 ) {        // key not found
+        label = "X";
+#if defined(DEBUG)
+        printf("Using default label \"%s\"\n", label);
+#endif
+      } else {
+#if defined(DEBUG)
+        printf("Key %d returns \"%s\", code %d\n", key, label, code);
+#endif
+      }
+    } else if (labelAttrType == DateAttr) {
+      /* Label attribute is a date.  Convert the UNIX date (stored as a
+       * double in the GData) to a date string. */
+      label = DateString((time_t) GetShapeAttr0(gdata, map, offset));
+    } else {
+      /* Label attribute is a numerical value (stored as a double in the
+       * GData).  Print it with the appropriate format string. */
+      char *labelFormat = NULL;
+      if (labelFormatValid && (labelFormatType == StringAttr)) {
+        int labelKey = (int) GetShapeAttr1(gdata, map, offset);
+        int labelCode = StringStorage::Lookup(labelKey, labelFormat);
+        if (labelCode < 0) {	// key not found
+          labelFormat = NULL;
+        }
+      }
+
+      char labelBuf[128];
+      if (labelFormat == NULL) labelFormat = "%g";
+      sprintf(labelBuf, labelFormat, GetShapeAttr0(gdata, map, offset));
+      label = labelBuf;
+    }
+
+    if (color == XorColor) {
+      win->SetXorMode();
+    } else {
+      win->SetFgColor(color);
+    }
+    win->SetPattern(GetPattern(gdata, map, offset));
+    if (pointSize != oldPointSize) {
+      win->SetFont("Helvetica", "Bold", "r", "Normal", pointSize);
+      oldPointSize = pointSize;
+    }
+
+    // Pretend that there's a large box in which the text has to
+    // be drawn; this is done because we don't know the size of the
+    // the label in pixels, and if we pass a width or height that
+    // is too tight, AbsoluteText() will try to scale the text.
+    win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
+    filterWidth, filterHeight,
+    WindowRep::AlignCenter, true);
 
     if (color == XorColor)
       win->SetCopyMode();

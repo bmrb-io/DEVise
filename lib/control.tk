@@ -15,6 +15,13 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.127  1997/04/29 14:34:46  wenger
+#	User interface improvments: Quit and Close don't ask for confirmation
+#	if there is no session open; the file selection box gives better info
+#	as to what you are doing; Save and Save as aren't allowed if there is
+#	no session open; changed default print filename from
+#	/u/g/u/guangshu/public/html/pictures/map/ back to /tmp/devise again.
+#
 #	Revision 1.126  1997/03/21 20:21:15  donjerko
 #	Fixed the problem with visualizing UNIXFILE
 #
@@ -558,11 +565,14 @@ set DEViseOldColors \
 	{33 red1} {34 red2} {35 DarkSeaGreen} {36 green2} {37 blue1} \
 	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
+# Note: this shape-value mapping must correspond to that of the _shapes[] array
+# in graphics.new/MappingInterp.c.  RKW 4/29/97.
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {13 Line} {14 {Line Shade}} \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
         {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
-	{11 {Polyline File}} {12 {Text Label}} {15 {Tcl/Tk Window}}}
+	{11 {Polyline File}} {12 {Text Label}} {16 {Fixed Text Label}} \
+	{15 {Tcl/Tk Window}}}
 
 # global variables:
 # restoring: true if restoring session or template

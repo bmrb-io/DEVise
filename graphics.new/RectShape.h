@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/30 23:57:36  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.13  1996/07/19 03:23:04  jussi
   Removed LineShadeShape, which is now derived from LineShape.
 
@@ -140,9 +145,15 @@ class ETkWindowShape : public Shape {};
 
 class PolylineFileShape : public Shape {};
 
-/* TextLabel: draws a text label given by shape attribute 0 at (X,Y). */
+/* TextLabel: draws a text label given by shape attribute 0 at (X,Y),
+ * with the font sized to the given rectangle. */
 
 class TextLabelShape : public Shape {};
+
+/* FixedTextLabel: draws a text label given by shape attribute 0 at (X,Y),
+ * with a fixed font. */
+
+class FixedTextLabelShape : public Shape {};
 
 /* Line: connects adjacent data points, forming a line. */
 
