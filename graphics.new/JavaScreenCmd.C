@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/21 18:18:49  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.5  1998/05/14 18:21:43  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -63,7 +68,7 @@
 #include "Timer.h"
 #include "QueryProc.h"
 
-//#define DEBUG
+#define DEBUG//TEMP
 
 off_t getFileSize(const char* filename);
 
@@ -809,12 +814,7 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 	nargv[argc-1]= buf;
 
 	// send the command out
-	// TEMP There's a problem here -- if we don't add braces, things fail
-	// if a window name, view name, etc., contains spaces.  On the other
-	// hand, if we do add braces, the JavaScreen sometimes seems to get
-	// mixed up and not know when it has finished reading stuff from the
-	// server.
-	_control->ReturnVal(API_JAVACMD, argc, nargv, false/*TEMP*/);
+	_control->ReturnVal(API_JAVACMD, argc, nargv, true);
 	delete []nargv;
 }
 
