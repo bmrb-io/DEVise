@@ -1,0 +1,178 @@
+<HTML>
+
+<HEAD>
+<TITLE>Range Buffer Manager Homepage</TITLE>
+</HEAD>
+
+<BODY background="img/parch.jpg">
+
+<center><H1><i>Range Buffer Manager</i></H1></center>
+
+<img src="http://www.cs.wisc.edu/~raghu/hline.gif">
+<br><br>
+
+<p><center>
+This document specifies the current interfaces and internal data structures of the Range Buffer Manager.
+</center></P>
+<br><br>
+
+<h2><b><u>
+1. API
+</b></u></h2>
+
+<h3><b>1.1 Range Access Method (RAM)</b></h3>
+
+<p>
+Range Access Method is a generic class of access methods. It provides an
+record-oriented iteration interface. User of Range Access Method can open
+a scan with an Range Access Method. After that, user can ask for one more 
+record in each "getNext" call. Finally, user must close the scan. This
+iteration interface will return all records that satisfy a query. It does not,
+however, guarantee any order among the records returned.
+<br><br>
+<i>RangeAccessMethod</i> is an abstract class that implements Range Access
+Method.
+<br><br>
+
+<a href = "header/RangeAccessMethod.h">
+Detailed Interface Specification
+</a>
+
+</p>
+
+
+<h3><b>1.2 Range Buffer Manager Access Method (RBM-AM)</b></h3>
+<p>
+Range Buffer Manager Access Method is a special case (a derived class) of
+Range Access Method. It provides the same iteration interface mentioned above.
+Internally, Range Buffer Manager Access Method keeps track of records cached
+in memory and return them as early as possible whenever there is a query. In
+addition, Range Buffer Manager Access Method has a handle to a low level
+Range Access Method so that if not all the records need are cached in memory,
+it can go to the low level to ask for more records. Once those records are
+returned, Range Buffer Manager Access Method will return them to satisfy the
+query. If it can find space in memory, Range Buffer Manager Access Method will
+also try to cache these additional records.
+<br><br>
+<i>RangeBufferManagerAccessMethod</i> is a class that implements Range Buffer
+Manager Access Method.
+<br><br>
+
+<a href = "header/RangeBufferManagerAccessMethod.h">
+Detailed Interface Specification
+</a>
+
+</p>
+
+
+<h3><b>1.3 Range Buffer Manager (RBM)</b></h3>
+<p>
+Range Buffer Manager is the data structure that actually keeps track of all
+records in memory. The internal structure is specified in section 2. Externally,
+one Range Buffer Manager can have one or more than one Range Buffer Manager
+Access Methods on top of it, each running queries on possibly different
+objects (as shown in the following figure). In a sense, Range Buffer Manager
+Access Methods is like a wrapper around Range Buffer Manager. Range Buffer
+Manager Access Methods uses the data structure in Range Buffer Manager and
+provides the outside world an iteration interface.
+
+<br><br>
+<i>RangeBufferManager</i> is a class that implements Range Buffer Manager.
+<br><br>
+
+<a href = "header/RangeBufferManager.h">
+Detailed Interface Specification
+</a>
+
+<br><br>
+<center><img src = "gif/rbm.gif"></center>
+<br><br>
+
+</p>
+
+<h2><b><u>
+2. Internal Structure
+</b></u></h2>
+
+<h3><b>2.1 Overall Organization (RBM)</b></h3>
+<p>
+Records are associated with objects. So in other words RangeBufferManager
+keeps track of objects. RangeBufferManager has a hash table to keep all
+the object descriptors. Besides an pointer to the object itself, a
+object descriptor keeps the following information:
+
+<li> A pointer to another RAM. This RAM is where you can get more records
+     if not all the records are in memory.
+
+<li> number of bounding box entries and the doubly linked list of
+     the bounding box entries.
+
+<li> A pin count, indicating if the object is in use or not.
+<br>
+<br>
+A bounding box entry keeps track of 0 or more pages which contain the real
+records. For example, if it is a one dimensional bounding box <low, high>,
+all records in the pages associated with this entry will have the value between
+low and high on that certain attribute. Records within a certain page, or
+among pages in the list for this bounding box, however, are not ordered in
+any way.
+</p>
+
+<center><img src = "gif/RBM.gif"></center>
+
+<h3><b>2.2 Object</b></h3>
+<p>
+As mentioned, RBM keeps track of objects. An object is a collection of records
+of the same schema and with the same bounding box attribute. Records can be
+variable length.
+<p>
+</p>
+Any program that uses the Range Buffer Manager (call the managing program)
+is responsible for creating, managing and deleting objects. By creating an 
+object, an integer (typedef int RBMObject) will be generated that uniquely
+identifies this object until it is deleted. This integer will be used    
+throughout the lifetime of this object. Given this integer, the managing  
+program should be able to uniquely identify all highest level information
+ about this object, including the bounding box attribute.
+</p>
+
+<p><h2><b><u>
+3. Technical Details
+</b></u></h2></p>
+
+All Range Buffer Manager related programs have been checked into DEVise CVS
+under src/range-buffer.
+
+<br><br>
+
+<li>Directories: src/ has all the source code. inc/ has a header for common
+definitions. dat/ has data files for the demo. doc/ is the documentation
+directory. obj/ and bin/ are for object files and binary files, respectively.
+
+<br><br>
+
+<li>Compile: go to src/ and type "make demo". This will generate the demo
+executable.
+
+<br><br>
+
+<li>Run: go to bin/ and type "demo < ../test.in". This will generate output that
+shows several different queries answered by the Range Buffer Manager system.
+
+<p><h2><b><u>
+4. Acknowledgement
+</b></u></h2></p>
+<p>
+The part of the management of records within pages and related stuff is
+borrowed from Kevin Beyer's DTE ADT.
+</p>
+
+<br><br>
+<img src="http://www.cs.wisc.edu/~raghu/hline.gif">
+<br><br>
+<i>
+Created by Liping Zhu (<a href="mailto:liping@cs.wisc.edu">liping@cs.wisc.edu</a>) in December 1998.
+</i>
+
+</body>
+</html>
