@@ -1,0 +1,20 @@
+#! /bin/csh -f
+# Run one DEVise client/server pair, connecting to collaborator on
+# specified host.
+
+# $Id$
+
+if ($#argv != 1) then
+  echo "Collaborator hostname missing."
+  echo "Usage: collab_aux <collab host>"
+  exit 1
+else
+  set collab_host = $1
+endif
+
+setenv DEVISE_LIB /p/devise/public/lib
+setenv DEVISE_COLLABORATOR $collab_host
+
+devised -port 6101 -switchname $collab_host -quit 1 &
+sleep 5
+devisec -p 6101 &

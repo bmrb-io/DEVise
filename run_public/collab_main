@@ -1,0 +1,27 @@
+#! /bin/csh -f
+# Run one DEVise client/server pair, and collaborator.
+
+# $Id$
+
+setenv DEVISE_LIB /p/devise/public/lib
+setenv DEVISE_COLLABORATOR `hostname`
+
+\rm -f /tmp/Group.log
+\rm -f /tmp/*master*
+\rm -f /tmp/*server*
+
+collaborator &
+
+sleep 5
+
+devised -port 6101 -quit 1 &
+sleep 5
+devisec -p 6101
+
+# Kill the collaborator.
+(set j=`ps -ax|grep collaborator|grep -v grep|head -1`;kill -1 $j[1]) \
+    >& /dev/null
+
+\rm -f /tmp/Group.log
+\rm -f /tmp/*master*
+\rm -f /tmp/*server*
