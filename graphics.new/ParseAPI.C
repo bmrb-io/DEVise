@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/10/04 17:24:15  wenger
+  Moved handling of indices from TDataAscii and TDataBinary to new
+  FileIndex class.
+
   Revision 1.33  1996/09/27 15:51:51  wenger
   Added "Memory leaks" and "Memory in use" menu selections and associated
   Tcl "DEVise" commands (conditionaled out for commit).
@@ -878,25 +882,26 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
       }
       /* Return allStats */
-      char *buff[5];
+      char *buff[4];
       int i;
-      for(i = 0; i < 5; i++) {
+      for(i = 0; i < 4; i++) {
 	  buff[i] = '\0';
       }
       for (i = 0; i < 4; i++) {
-          buff[i] = new char[16];  /*16 bytes is enough for double type */
+          buff[i] = new char[64];  /*64 bytes is enough for double type */
       }
       BasicStats *allStats = vg->GetStatObj();
       sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
       sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
       sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
       sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
-//      printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
+#if defined(DEBUG) || 0
+      printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
+#endif
       control->ReturnVal(4, buff);
       for (i = 0; i < 4; i++) {
 	  delete buff[i];
       }
-      delete [] buff;
       return 1;
     }    	
     if (!strcmp(argv[0], "getStatBuffer")) {
@@ -1735,7 +1740,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         format = EPS;
       else if (!strcmp(argv[1], "gif"))
         format = GIF;
-      DeviseDisplay::DefaultDisplay()->ExportImageAndMap(format, argv[2], argv[3], argv[4], argv[5]);
+      DeviseDisplay::DefaultDisplay()->ExportImageAndMap(format, argv[2], 
+					argv[3], argv[4], argv[5]);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
