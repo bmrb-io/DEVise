@@ -23,10 +23,16 @@
 // $Id$
 
 // $Log$
-// Revision 1.116  2002/01/24 16:24:27  xuk
-// Fixed bug 739: restore pre-collaboration state, if cancel before completely going into collaboration mode or enter wrong collaboration password.
-// 																				CVS: ----------------------------------------------------------------------
+// Revision 1.117  2002/01/28 23:51:59  wenger
+// Updated the DEVised to support drawing axis labels on the JS side:
+// changed JAVAC_ViewDataArea command; leaves blank areas for axis
+// labels (temporarily disabled until the JS end is done); protocol
+// version is now 10.0 -- JS code accepts but ignores new arguments.
 //
+// Revision 1.116  2002/01/24 16:24:27  xuk
+// Fixed bug 739: restore pre-collaboration state, if cancel before 
+// completely going into collaboration mode or enter wrong collaboration password.
+// 													     
 // Revision 1.115  2001/12/13 21:35:02  wenger
 // Added flexibility to enable/disable mouse location display individually
 // for X and Y axes (needed for peptide-cgi session improvements requested
@@ -63,7 +69,8 @@
 // CGI mode working again.)
 //
 // Revision 1.108  2001/11/06 16:27:19  xuk
-// Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
+// Reset collaboration follower's screen size and resolution to deal with 
+// different screen size from leaders.
 //
 // Revision 1.107  2001/10/30 17:29:35  xuk
 // *** empty log message ***
@@ -75,7 +82,8 @@
 // 	                now JAVAC_Connect command has no collab_passwd argument;
 // 			enable heartbeat in collaboration mode;
 // 3. Modified run(), in collaboration mode, break loop when specialID == 1;
-// 4. Modified sendRcvCommand(), in collaboration mode, when current thread is interrupted, sends JAVAC_CollabExit command to jspop;
+// 4. Modified sendRcvCommand(), in collaboration mode, when current thread is 
+//    interrupted, sends JAVAC_CollabExit command to jspop;
 //
 // Revision 1.105.2.2  2001/11/07 17:22:36  wenger
 // Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
@@ -212,7 +220,8 @@
 // Made the JS can switch between collaboration and socket modes.
 //
 // Revision 1.72  2001/01/31 22:23:55  xuk
-// Modify processReceivedCommand(), for wrong collaboration JS ID. Stop current thread when receives JAVAC_ERROR command from jspop.
+// Modify processReceivedCommand(), for wrong collaboration JS ID. 
+// Stop current thread when receives JAVAC_ERROR command from jspop.
 //
 // Revision 1.71  2001/01/30 03:03:28  xuk
 // Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
@@ -306,7 +315,8 @@
 // Include ID and cgiFlag in every command sent out.
 //
 // Revision 1.65.4.22  2000/11/21 01:51:31  xuk
-// Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
+// Change some non-final static variables to non-static. Add a new class, 
+// DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
 //
 // Revision 1.65.4.21  2000/11/16 15:19:23  wenger
 // Temporarily turned off heartbeat from the JavaScreen because of client
@@ -375,7 +385,8 @@
 // Add wait() in the while loop of run() function. Not occupy CPU.
 //
 // Revision 1.65.4.4  2000/10/10 04:48:19  xuk
-// Fix the bugs of Stop button color and gears in the upper left corner: jsc.animPanel.start() and jsc.stopButton.setBackground(Color.red) in run() function.
+// Fix the bugs of Stop button color and gears in the upper left corner: 
+// jsc.animPanel.start() and jsc.stopButton.setBackground(Color.red) in run() function.
 //
 // Revision 1.65.4.3  2000/10/09 16:29:43  xuk
 // 1. Make the thread running for ever. Add a while(true) loop in run() function.
@@ -1587,6 +1598,9 @@ public class DEViseCmdDispatcher implements Runnable
 
     private void viewDataArea(String command, String[] args) throws YException
     {
+
+	// if (args.length < 5 || args.length > 12) {
+
         if (args.length != 12) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
@@ -1610,8 +1624,21 @@ public class DEViseCmdDispatcher implements Runnable
 		factor = (Float.valueOf(args[6])).floatValue();
 	    }
 
+	    int label = 0;
+	    int type = 0;
+	    int size = 0;
+	    int bold = 0;
+	    int italic = 0;
+	    if (args.length >= 8) {
+		label = (Integer.valueOf(args[7])).intValue();
+		type = (Integer.valueOf(args[8])).intValue();	
+		size = (Integer.valueOf(args[9])).intValue();
+		bold = (Integer.valueOf(args[10])).intValue();
+		italic = (Integer.valueOf(args[11])).intValue();			
+	    }	    
+
             jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max,
-              format, factor);
+              format, factor, label, type, size, bold, italic);
         } catch (NumberFormatException e) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
