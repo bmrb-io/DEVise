@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/18 18:06:08  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.3  1997/02/03 04:11:38  donjerko
   Catalog management moved to DTE
 
@@ -72,7 +75,7 @@ private:
 		char* start = header;
 	     in->getline(start, space);
 		int cnt = in->gcount();
-		while(cnt > 1){
+		while(cnt > 2){
 			space -= cnt;
 			assert(space > 0);
 			start += cnt;

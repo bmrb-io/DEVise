@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/03 04:11:38  donjerko
+  Catalog management moved to DTE
+
   Revision 1.3  1996/12/16 11:13:14  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -37,7 +40,7 @@ ostream& operator<<(ostream& out, URL url){
 }
 
 istream* URL::getInputStream(){
-	istream* retVal;
+	istream* retVal = NULL;
 	if(protocol == "file"){
 		assert(!outputRequested);
 		retVal = new ifstream(file);
