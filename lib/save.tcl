@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1997/01/22 23:24:08  jussi
+#  Fixed computation of total number of TData streams saved in
+#  session.
+#
 #  Revision 1.28  1997/01/06 19:12:05  wenger
 #  Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
 #  windows; view names now start with 'View 1' instead of 'View'; removed
@@ -1060,6 +1064,10 @@ proc SaveOneData { fileId tdata positionOffset lengthOffset } {
 proc SavePixmaps { fileId infile savedCurViewRef } {
     upvar $savedCurViewRef savedCurView
     global curView
+
+    # Work-around for bug #135 (pixmaps not restored properly,
+    # so they are disabled temporarily)
+    return
 
     set bitmapFile $infile.pixmap
     if { [ file exists $bitmapFile ] } {
