@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/07/24 04:38:00  donjerko
+  *** empty log message ***
+
   Revision 1.39  1998/06/28 21:47:46  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -609,7 +612,6 @@ TableAlias::TableAlias(TableName *t, string* a, string *func,
 		shiftVal(optShiftVal), stats(0), schema(0) 
 {
 	TableName* tableNameCopy = new TableName(*table);
-	Interface* interf;
 	const ISchema* s;
 	const Stats* tempStats;
 	CON_TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy));
@@ -623,7 +625,7 @@ TableAlias::TableAlias(TableName *t, string* a, string *func,
 		stats = new Stats(schema->getNumFlds());
 	}
 	accessMethods = interf->createAccessMethods();
-	delete interf;
+	isGestaltM = interf->isGestalt();
 	CON_END:
 	;
 }
@@ -635,6 +637,7 @@ TableAlias::~TableAlias()
 		delete *it;
 	}
 	delete stats;
+	delete interf;
 }
 
 void TableAlias::display(ostream& out, int detail){

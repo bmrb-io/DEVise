@@ -56,6 +56,7 @@ public:
 		return stats;
 	}
 	virtual vector<AccessMethod*> createAccessMethods();
+	virtual bool isGestalt() const {return false;}
 };
 
 class DummyInterface : public Interface {
@@ -155,7 +156,8 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) GestaltInterface(*this);
 	}
-	// virtual vector<AccessMethod*> createAccessMethods();
+	virtual bool isGestalt() const {return true;}
+	vector<string> getMemberNames() const;
 };
  
 class ViewInterface : public Interface {

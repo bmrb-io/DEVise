@@ -3,6 +3,8 @@
 #include "Iterator.h"
 #include "Optimizer.h"
 #include "Stats.h"
+#include "Interface.h"
+#include "ExecOp.h"
 
 #include <math.h>
 
@@ -46,6 +48,16 @@ SPQueryProduced::SPQueryProduced(TableMap tableMap,
 
 SPQueryProduced::~SPQueryProduced(){
 	// do not delete bestAlt, not an owner;
+}
+
+GestaltQueryProduced::GestaltQueryProduced(TableMap tableMap,
+          const SiteDesc* siteDesc)
+		: SPQueryProduced(tableMap, siteDesc) 
+{
+	initialized = false;
+}
+
+GestaltQueryProduced::~GestaltQueryProduced(){
 }
 
 SPJQueryProduced::SPJQueryProduced(TableMap tableMap,
@@ -267,15 +279,66 @@ bool SPQueryProduced::expand(
 	assert(amethods.size() == 1 || !"not implemented");
 	// choose the cheapest access method (depends on predicates available)
 
+	// do projections and selections here
+
 	bestAlt = amethods[0];
 
 	return true;
 }
 
-Iterator* SPQueryProduced::createExec() const {
-	assert(bestAlt);
+bool GestaltQueryProduced::expand(
+	const Query& q, 
+	NodeTable& nodeTab,
+	const LogPropTable& logPropTab)
+{
+	if(!initialized){
+		initialized = true;
 
-	// should do projections and selections here, or in expand??
+		const vector<TableAlias*>& tl = q.getTableList();
+		assert(tl.size() == 1);
+		const TableAlias* ta = tl[0];
+
+		const Interface* interf = ta->getInterface();
+
+		assert(interf->isGestalt());
+		const GestaltInterface* gi = (const GestaltInterface*) interf;
+		vector<string> memNames = gi->getMemberNames();
+		vector<string>::const_iterator it;
+		for(it = memNames.begin(); it != memNames.end(); ++it){
+			string* alias = new string(*q.getTableList().front()->getAlias());
+			vector<TableAlias*> newList;
+			newList.push_back(new TableAlias(new TableName((*it).c_str()), alias));
+			OptNode* node = new SPQueryProduced(tableMap, &THIS_SITE);
+			Query* query = new Query(q.getSelectList(), newList, q.getPredicateList());
+			gestMembers.push_back(NodeQueryPair(node, query));
+		}
+	}
+
+	bool retVal = false;
+
+	vector<NodeQueryPair>::iterator it;
+	for(it = gestMembers.begin(); it != gestMembers.end(); ++it){
+		retVal = retVal || (*it).first->expand(*(*it).second, nodeTab, logPropTab);
+	}
+	return retVal;
+}
+
+Iterator* GestaltQueryProduced::createExec() const 
+{
+	cerr << "Hardwired ...\n";
+	Iterator* it1 = gestMembers.front().first->createExec();
+	Iterator* it2 = gestMembers.front().first->createExec();
+	return new UnionExec(it1, it2);
+}
+
+string GestaltQueryProduced::toString() const
+{
+	return "gestalt";
+}
+
+Iterator* SPQueryProduced::createExec() const 
+{
+	assert(bestAlt);
 
 	return bestAlt->createExec();
 }
@@ -321,8 +384,13 @@ void Optimizer::run(){
 //	for now, test the simple stuff
 
 	TableMap allTables(numComb - 1);
-	if(allTables.isSinglet()){
-		root = new SPQueryProduced(allTables, &THIS_SITE);
+	if(numTables == 1){
+		if(tableList.front()->isGestalt()){
+			root = new GestaltQueryProduced(allTables, &THIS_SITE);
+		}
+		else{
+			root = new SPQueryProduced(allTables, &THIS_SITE);
+		}
 	}
 	else{
 		root = new SPJQueryProduced(allTables, &THIS_SITE);
@@ -602,6 +670,7 @@ void LogPropTable::initialize(const Query& query)
 	for(i = 1; i < numComb; i++){
 
 		logPropTab.push_back(logPropFor(i));
+		cerr << "_________ logProp " << logPropTab.back() << endl;
 
 	}
 

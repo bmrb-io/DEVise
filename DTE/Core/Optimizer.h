@@ -224,6 +224,22 @@ public:
 	virtual int getNumExpandedNodes() const {return 1;};	// for debugging
 };
 
+typedef pair<OptNode*, Query*> NodeQueryPair;
+
+class GestaltQueryProduced : public SPQueryProduced {
+	bool initialized;
+	vector<NodeQueryPair> gestMembers;
+public:
+	GestaltQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
+	GestaltQueryProduced::~GestaltQueryProduced();
+	virtual bool expand(
+		const Query& q, 
+		NodeTable& nodeTab, 
+		const LogPropTable& logPropTab);
+	virtual Iterator* createExec() const;
+	virtual string toString() const;
+};
+
 class Optimizer {
 	Query query;
 	OptNode* root;

@@ -720,3 +720,18 @@ vector<AccessMethod*> Interface::createAccessMethods()
 	vector<AccessMethod*> emptyVec;
 	return emptyVec;
 }
+
+vector<string> GestaltInterface::getMemberNames() const
+{
+	ifstream memStream(urlString.c_str());
+	assert(memStream);
+	vector<string> retVal;
+	while(memStream){
+		string tmp;
+		memStream >> tmp;
+		if(memStream){
+			retVal.push_back(tmp);
+		}
+	}
+	return retVal;
+}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/10/01 21:00:53  yunrui
+  *** empty log message ***
+
   Revision 1.49  1998/07/24 04:37:59  donjerko
   *** empty log message ***
 
@@ -1128,6 +1131,8 @@ protected:
 	Stats* stats;
 	ISchema* schema;
 	vector<AccessMethod*> accessMethods;
+	bool isGestaltM;
+	Interface* interf;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
 			int optShiftVal = 0);
@@ -1140,6 +1145,12 @@ public:
 		stats = 0;
 	}
 */
+	bool isGestalt() const {
+		return isGestaltM;
+	}
+	const Interface* getInterface() const {
+		return interf;
+	}
 	void setSiteDesc(const SiteDesc* sd){
 		this->sd = sd;
 	}
@@ -1147,8 +1158,8 @@ public:
 		relTabName = tn;
 	}
 	virtual ~TableAlias();
-	virtual TableName* getTable(){
-		return table;
+	virtual TableName getTable() const {
+		return TableName(*table);
 	}
 	string* getAlias(){
 		return alias;

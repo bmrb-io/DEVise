@@ -35,7 +35,7 @@ bool MinMax::isApplicable(const vector<BaseSelection*>& selList){
 
 TableAlias* MinMax::createReplacement(TableAlias* table){
 	string* alias = new string(*table->getAlias());
-	string tableName = table->getTable()->toString();
+	string tableName = table->getTable().toString();
 	cerr << "looking for replacement " << tableName << endl;
 	Interface* interf = MINMAX_DIR.createInterface(tableName);
 	CATCH(cerr << "Warning: "; cerr << currExcept->toString() << endl;);

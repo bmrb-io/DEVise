@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/07/24 04:37:53  donjerko
+  *** empty log message ***
+
   Revision 1.52  1998/06/28 21:47:40  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -314,7 +317,7 @@ Iterator* QueryTree::createExec(){
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
 		TableAlias* ta = tableList->get();
-		string fullPathNm = ta->getTable()->toString();
+		string fullPathNm = ta->getTable().toString();
 		Site* site = NULL;
 		TRY(site = ta->createSite(), 0);
 		assert(site);
