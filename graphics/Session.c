@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/10/04 19:36:56  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.63  1999/09/24 22:02:19  wenger
   C++ code no longer allows a session to be opened while one is already
   open.
@@ -340,6 +343,7 @@
 #include "ViewGraph.h"
 #include "Layout.h"
 #include "ElapsedTime.h"
+#include "WinClassInfo.h"
 
 
 //#define DEBUG
@@ -499,6 +503,8 @@ Session::Open(char *filename)
     _openingSession = false;
   }
 
+  status += CheckWindowLocations();
+
 
 #if defined(DEBUG)
   printf("  finished Session::Open(%s)\n", filename);
@@ -545,6 +551,8 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 #endif
 
   DevStatus status = StatusOk;
+
+  status += CheckWindowLocations();
 
   if (asTemplate) {
     reportErrNosys("Save as template not currently implemented");
@@ -2317,6 +2325,46 @@ Session::DeleteDataSources()
     delete [] _catFile;
     _catFile = NULL;
   }
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::CheckWindowLocations
+ * Warn the user if any windows extent off the screen.
+ */
+DevStatus
+Session::CheckWindowLocations()
+{
+#if defined(DEBUG)
+  printf("Session::CheckWindowLocations()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  int winIndex = DevWindow::InitIterator();
+  while (DevWindow::More(winIndex)) {
+    ClassInfo *info = DevWindow::Next(winIndex);
+    ViewWin *window = (ViewWin *)info->GetInstance();
+    if (window) {
+      int argc;
+      char **argv;
+      info->CreateParams(argc, argv);
+      Coord relX = atof(argv[1]);
+      Coord relY = atof(argv[2]);
+      Coord relWidth = atof(argv[3]);
+      Coord relHeight = atof(argv[4]);
+      if (relX < 0.0 || relX + relWidth > 1.0 || relY < 0.0 ||
+          relY + relHeight > 1.0) {
+	    char errBuf[256];
+	    sprintf(errBuf, "Warning: window <%s> extends outside of screen",
+	    window->GetName());
+        reportErrNosys(errBuf);
+		status += StatusWarn;
+      }
+    }
+  }
+  DevWindow::DoneIterator(winIndex);
 
   return status;
 }

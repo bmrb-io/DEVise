@@ -1976,7 +1976,7 @@ Num Date        Status  Description
 507 09/10/99	OPEN	deviseb seems to not handle command arguments of ""
 			or " " correctly. (rkw)
 
-508 09/27/99	OPEN	Opening and saving a session still sometimes causes
+508 09/27/99	FIXED	Opening and saving a session still sometimes causes
 			the windows to move slightly. (rkw)
 
 509 09/27/99	OPEN	Tcl code for generating unique view names comes up

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/09/02 17:25:51  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.22  1999/06/15 18:09:45  wenger
   Added dumping of ViewWin objects to help with pile debugging.
 
@@ -290,14 +295,14 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 
   int x, y;
   unsigned int w, h;
-  _win->RealGeometry(x, y, w, h);
-  _win->AbsoluteOrigin(x, y); /* need to use offset from top-left of screen*/
+  _win->RealGeometry(x, y, w, h); // x, y are always zero
 
-  // need to allow for window manager's borders; the height of the title
-  // bar above the window is around 20 pixels (in fvwm, at least), and
-  // the border width on the left side is about 2 pixels
-  x -= 2;
-  y -= 20;
+  // need to allow for window manager's borders in specifying x and y
+  int topX, topY;
+  unsigned topW, topH;
+  _win->GetWindowRep()->GetRootGeometry(topX, topY, topW, topH);
+  x = topX;
+  y = topY;
 
   Coord dispWidth, dispHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(dispWidth, dispHeight);

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/09/23 15:46:24  wenger
+  Added per-session data source capability:  data sources defined in a
+  session file are added to a separate catalog which is delete when the
+  session is closed; the "regular" and the per-session catalog are treated
+  as a single catalog while the session is open.
+
   Revision 1.15  1999/09/08 20:56:22  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -204,6 +210,8 @@ private:
   static DataCatalog *GetDataCatalog();
   static DevStatus SaveDataSources(FILE *fp);
   static DevStatus DeleteDataSources();
+
+  static DevStatus CheckWindowLocations();
 
   static Boolean _isJsSession;
   static Boolean _openingSession;
