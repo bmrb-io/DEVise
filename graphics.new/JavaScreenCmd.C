@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.117  2001/08/20 18:20:33  wenger
+  Fixes to various font problems: XDisplay calculates point sizes correctly
+  and uses screen resolution in specifying font; JS passes *its* screen
+  resolution to the devised so that fonts show up correctly in the JS
+  (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+
   Revision 1.116  2001/05/18 19:25:35  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -2669,6 +2675,10 @@ JavaScreenCmd::CloseJavaConnection()
 //====================================================================
 void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd::UpdateSessionList(%s)\n", dirName);
+#endif
+
 	const char *basePath = getenv("DEVISE_SESSION");
 
 	//
@@ -2684,27 +2694,14 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
     //
 	// Make sure we're not going up from the base session directory.
 	//
-	char baseBuf[MAXPATHLEN];
-	char newBuf[MAXPATHLEN];
-
-	const char *sessionDir = basePath;
-    if (!realpath(basePath, baseBuf)) {
-	    reportErrSys("Error in realpath()");
-	} else if (!realpath(newPath, newBuf)) {
-	    reportErrSys("Error in realpath()");
-	} else {
-#if defined(DEBUG)
-        printf("baseBuf = <%s>\n", baseBuf);
-        printf("newBuf = <%s>\n", newBuf);
-#endif
-	    int length = strlen(baseBuf);
-		if (strncmp(baseBuf, newBuf, length)) {
-            errmsg = "Illegal session directory (can't go up from base)";
-			reportErrNosys(errmsg);
-		} else {
-		    sessionDir = newBuf;
-		}
+	if (strstr(newPath, "/..") != NULL) {
+        errmsg = "Illegal session directory (can't go up from base)";
+	    reportErrNosys(errmsg);
+		_status = ERROR;
+		return;
 	}
+
+	const char *sessionDir = newPath;
 
 	//
 	// Now open the directory and assemble a list of its files.

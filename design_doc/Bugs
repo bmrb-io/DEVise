@@ -2737,9 +2737,11 @@ Num Date        Status  Description
 687 08/31/01	OPEN	EmbeddedTk doesn't seem to work on Linx/Intel
 			architecture. (rkw)
 
-688 09/10/01	OPEN	JavaScreen: when opening a session file, you cannot
-			successfully follow symbolic links in the session
-			directory. (rkw)
+688 09/10/01	FIXED	JavaScreen: when opening a session file, you cannot
+			successfully follow symbolic links in the session 
+			directory. (rkw)  (At least
+			session.js/bmrb/dynamic_sessions.)
+			(Fixed by rkw, 09/27/01.)
 
 689 09/12/01	FIXED	JavaScreen: shouldn't draw zoom boxes in views in
 			which zooming is disabled. (rkw)

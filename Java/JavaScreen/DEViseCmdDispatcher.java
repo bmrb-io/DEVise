@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.97  2001/09/10 21:15:48  xuk
+// Solve the client disconnection problem.
+// Added reconnect() method to keep trying to reestablish the connection to the JSPoP every 10 seconds.
+// In sockSendCmd() and sendRcvCmd() methods check whether the connection is disabled.
+//
 // Revision 1.96  2001/05/11 20:36:05  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -994,6 +999,7 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
 	    if (jsc.specialID != -1) {
+                //TEMP -- does -1 mean we're a collaborator?
 		jsc.showMsg(response);
 		setOnlineStatus(false);
 		jsc.specialID = -1;

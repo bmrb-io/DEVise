@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.113  2001/09/10 21:20:09  xuk
+// Solve the client disconnection problem.
+// Added disconnectedMode() method to indicate disconnected mode of JavaScreen.
+//
 // Revision 1.112  2001/08/20 18:20:08  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -379,6 +383,7 @@ public class jsdevisec extends Panel
     public boolean isShowProgramInfo = false;
     public String rootDir = "DEViseSession";
     public String currentDir = "DEViseSession";
+    public String previousDir = rootDir;
     public String currentSession = null;
 
     public DEViseJSValues jsValues = null;
@@ -857,6 +862,13 @@ public class jsdevisec extends Panel
             }
         } else {
             showMsg(msg[0]);
+
+			// Set the session directory back to the previous one and
+			// update it on the session dialog.
+			currentDir = previousDir;
+            if (sessiondlg != null) {
+                sessiondlg.setDirectory();
+            }
         }
     }
 
@@ -1346,53 +1358,9 @@ class SessionDlg extends Frame
             {
                 public void mouseClicked(MouseEvent event)
                 {
-		    int idx;
-                    if ((event.getClickCount() > 1) &&
-		      (fileList.getItemCount() > 0) &&
-		      ((idx = fileList.getSelectedIndex()) != -1)) {
-                        sessionName = fileList.getItem(idx);
-                        if (sessionName.startsWith("[")) {
-                            String[] name = DEViseGlobals.parseString(
-			      sessionName, '[', ']');
-                            if (name[0].equals("..")) {
-                                if (jsc.currentDir.equals(jsc.rootDir)) {
-                                    jsc.showMsg("You do not have access to this directory!");
-                                    return;
-                                }
-
-                                int index = jsc.currentDir.lastIndexOf('/');
-                                if (index > 0) {
-                                    jsc.currentDir = jsc.currentDir.substring(0, index);
-                                } else {
-                                    jsc.showMsg("Invalid current directory \"" +
-				      jsc.currentDir + "\"!");
-                                    jsc.currentDir = jsc.rootDir;
-                                    close();
-                                }
-                            } else {
-                                jsc.currentDir = jsc.currentDir + "/" + name[0];
-                            }
-
-                            directory.setText("/" + jsc.currentDir);
-                            validate();
-
-                            //String dir = (jsc.currentDir).substring(14);
-                            jsc.dispatcher.start(
-			      DEViseCommands.GET_SESSION_LIST + " {" +
-			      jsc.currentDir + "}");
-                        } else {
-                            jsc.currentSession = sessionName;
-                            jsc.dispatcher.start(
-			      DEViseCommands.SET_DISPLAY_SIZE + " " +
-			      jsc.jsValues.uiglobals.screenSize.width + " " +
-			      jsc.jsValues.uiglobals.screenSize.height + " " +
-	                      jsc.jsValues.uiglobals.screenRes + " " +
-	                      jsc.jsValues.uiglobals.screenRes + "\n" +
-			      DEViseCommands.OPEN_SESSION + " {" +
-			      jsc.currentDir + "/" + sessionName + "}");
-                            close();
-                        }
-                    }
+		    if (event.getClickCount() > 1) {
+		        dirOrFileSelected();
+		    }
                 }
             });
 
@@ -1400,49 +1368,7 @@ class SessionDlg extends Frame
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    int idx;
-                    if ((fileList.getItemCount() > 0) &&
-		      ((idx = fileList.getSelectedIndex()) != -1)) {
-                        sessionName = fileList.getItem(idx);
-                        if (sessionName.startsWith("[")) {
-                            String[] name = DEViseGlobals.parseString(sessionName, '[', ']');
-                            if (name[0].equals("..")) {
-                                if (jsc.currentDir.equals(jsc.rootDir)) {
-                                    jsc.showMsg("You do not have access to this directory!");
-                                    return;
-                                }
-
-                                int index = jsc.currentDir.lastIndexOf('/');
-                                if (index > 0) {
-                                    jsc.currentDir = jsc.currentDir.substring(0, index);
-                                } else {
-                                    jsc.showMsg("Invalid current directory \"" +
-				      jsc.currentDir + "\"!");
-                                    jsc.currentDir = jsc.rootDir;
-                                    close();
-                                }
-                            } else {
-                                jsc.currentDir = jsc.currentDir + "/" + name[0];
-                            }
-
-                            directory.setText("/" + jsc.currentDir);
-                            validate();
-                            jsc.dispatcher.start(
-			      DEViseCommands.GET_SESSION_LIST + " {" +
-			      jsc.currentDir + "}");
-                        } else {
-                            jsc.currentSession = sessionName;
-                            jsc.dispatcher.start(
-			      DEViseCommands.SET_DISPLAY_SIZE + " " +
-			      jsc.jsValues.uiglobals.screenSize.width + " " +
-			      jsc.jsValues.uiglobals.screenSize.height + " " +
-	                      jsc.jsValues.uiglobals.screenRes + " " +
-	                      jsc.jsValues.uiglobals.screenRes + "\n" +
-			      DEViseCommands.OPEN_SESSION + " {" +
-			      jsc.currentDir + "/" + sessionName + "}");
-                            close();
-                        }
-                    }
+		    dirOrFileSelected();
                 }
             });
 
@@ -1453,6 +1379,58 @@ class SessionDlg extends Frame
                     close();
                 }
             });
+    }
+
+    private void dirOrFileSelected()
+    {
+        int idx;
+        if ((fileList.getItemCount() > 0) &&
+          ((idx = fileList.getSelectedIndex()) != -1)) {
+            sessionName = fileList.getItem(idx);
+
+            if (sessionName.startsWith("[")) { // a directory
+                String[] name = DEViseGlobals.parseString(sessionName,
+		  '[', ']');
+	        if (name[0].equals("..")) { // go up a directory
+                    jsc.previousDir = jsc.currentDir;
+	            if (jsc.currentDir.equals(jsc.rootDir)) {
+	                jsc.showMsg("You do not have access to this directory!");
+		        return;
+                    }
+
+	            // Remove the last element from the currentDir string.
+                    int index = jsc.currentDir.lastIndexOf('/');
+	            if (index > 0) {
+	                jsc.previousDir = jsc.currentDir;
+		        jsc.currentDir = jsc.currentDir.substring(0, index);
+                    } else {
+	                jsc.showMsg("Invalid current directory \"" +
+		          jsc.currentDir + "\"!");
+		        jsc.previousDir = jsc.currentDir;
+		        jsc.currentDir = jsc.rootDir;
+		        close();
+                    }
+                } else {
+	            jsc.previousDir = jsc.currentDir;
+	            jsc.currentDir = jsc.currentDir + "/" + name[0];
+	        }
+
+                directory.setText("/" + jsc.currentDir);
+	        validate();
+	        jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" +
+	          jsc.currentDir + "}");
+            } else { // a file
+                jsc.currentSession = sessionName;
+	        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
+	          jsc.jsValues.uiglobals.screenSize.width + " " +
+	          jsc.jsValues.uiglobals.screenSize.height + " " +
+	          jsc.jsValues.uiglobals.screenRes + " " +
+	          jsc.jsValues.uiglobals.screenRes + "\n" +
+	          DEViseCommands.OPEN_SESSION + " {" +
+	          jsc.currentDir + "/" + sessionName + "}");
+                close();
+            }
+        }
     }
 
     public void setSessionList(String[] data)
@@ -1534,6 +1512,12 @@ class SessionDlg extends Frame
     public synchronized boolean getStatus()
     {
         return status;
+    }
+
+    public void setDirectory()
+    {
+        directory.setText("/" + jsc.currentDir);
+	validate();
     }
 }
 
