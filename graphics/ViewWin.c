@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/11 18:09:19  jussi
+  Added window flush after window has been raised or lowered.
+
   Revision 1.12  1996/04/11 17:56:11  jussi
   Added Raise() and Lower(). Fixed a bug when MapChildren() updates
   the sizes of the children but the View doesn't get notified of
@@ -435,6 +438,15 @@ void ViewWin::Lower()
     _windowRep->Lower();
     _windowRep->Flush();
   }
+}
+
+void ViewWin::SetFgBgColor(Color fg, Color bg)
+{
+  _foreground = fg;
+  _background = bg;
+
+  if (_windowRep)
+    _windowRep->SetWindowBgColor(bg);
 }
 
 #if defined(MARGINS) || defined(TK_WINDOW)

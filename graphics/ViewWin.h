@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/11 17:54:04  jussi
+  Added Raise() and Lower().
+
   Revision 1.7  1996/02/06 19:32:57  jussi
   Added top margin with Devise logo to root windows.
 
@@ -77,7 +80,7 @@ public:
 		Color background = BackgroundColor, int weight = 1,
 		Boolean boundary = true);
 
-	/* iconify window, if top level. Not guaranteed to succeed */
+	/* Iconify window, if top level. Not guaranteed to succeed */
 	void Iconify();
 
 	/* Insert ViewWin into a parent */
@@ -89,7 +92,7 @@ public:
 	/* These are called by parents */
 	virtual void Map(int x, int y, unsigned w, unsigned h);
 	virtual void Unmap();
-	virtual void Iconify(Boolean iconified)=0;
+	virtual void Iconify(Boolean iconified) = 0;
 
 	Boolean Mapped();
 
@@ -145,14 +148,15 @@ public:
 
 	/* Get the children */
 	/* return # of children */
-	int NumChildren() { return _children.Size(); };
+	int NumChildren() { return _children.Size(); }
 
 	/* iterator for children */
-	int InitIterator(Boolean backwards=false)
-		{ return _children.InitIterator(backwards); }
+	int InitIterator(Boolean backwards = false) {
+	  return _children.InitIterator(backwards);
+	}
 	Boolean More(int index) { return _children.More(index); }
-		virtual ViewWin *Next(int index) { return _children.Next(index);}
-	void DoneIterator(int index) { _children.DoneIterator(index);};
+	virtual ViewWin *Next(int index) { return _children.Next(index); }
+	void DoneIterator(int index) { _children.DoneIterator(index); }
 
 	ViewWin *GetParent() { return _parent; }
 
@@ -161,12 +165,12 @@ public:
 
 	Color GetBgColor() { return _background; }
 	Color GetFgColor() { return _foreground; }
+	virtual void SetFgBgColor(Color fg, Color bg);
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
-	virtual void SubClassMapped()=0;
-	virtual void SubClassUnmapped()=0;
-
+	virtual void SubClassMapped() = 0;
+	virtual void SubClassUnmapped() = 0;
 
 	virtual void HandleResize(WindowRep * w, int xlow,
 			int ylow, unsigned width, unsigned height);
@@ -180,15 +184,17 @@ private:
 	Boolean _iconified;
 	Boolean _winBoundary;
 	Boolean _hasGeometry; /* TRUE if we have the geometry */
-	int _x, _y;
-	unsigned int _width, _height; /* current geometry */
+	int _x, _y;           /* current location */
+	unsigned int _width;  /* current width */
+	unsigned int _height; /* current height */
 	ViewWinList _children;
 	ViewWin *_parent;
 	WindowRep *_windowRep;
 	char *_name;
 	int _weight;
-	Boolean _mapped; /* TRUE if this window is mapped */
-	Color _background, _foreground;
+	Boolean _mapped;      /* TRUE if this window is mapped */
+	Color _background;    /* background color */
+	Color _foreground;    /* foreground color */
 
 #ifdef MARGINS
 	void DrawMargins();
@@ -202,8 +208,8 @@ private:
 	void ResizeMargins(unsigned int w, unsigned int h);
 	void ToggleMargins();
 
-	Boolean      _marginsOn;
-	char         _tkPathName[32];
+	Boolean _marginsOn;
+	char    _tkPathName[32];
 #endif
 
 #if defined(MARGINS) || defined(TK_WINDOW)
