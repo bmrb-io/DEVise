@@ -14,8 +14,8 @@ setenv DISPLAY unix:1.0
 # Make sure Xvfb gets going before starting the jss.
 sleep 10
 
-\rm devised.out
-\rm jss.out
+\rm -f devised.out
+\rm -f jss.out
 touch devised.out
 touch jss.out
 
