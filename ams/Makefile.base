@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/05/22 21:16:14  jussi
+#  Changed Devise from using composite .o files to using .a files.
+#  The old approach did not work in AIX whereas the new approach
+#  is more portable. Also, the graphics library is no longer
+#  included in the graphics.new library, which yields some space
+#  savings.
+#
 #  Revision 1.9  1996/05/16 19:27:36  jussi
 #  Added ../graphics.new/monolith.o.
 #
@@ -76,7 +83,8 @@ ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
 all: ams extendAms extend
 
 ams: ams.o MapClassInfo.o $(ALLLIBS)
-	$(CC) -o $@ ams.o MapClassInfo.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
+	$(CC) -o $@ ams.o MapClassInfo.o CompDate.o $(LDFLAGS)
 
 extend: extend.o
 	$(CC) -o $@ $@.o
