@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/03/05 23:27:52  jussi
+  Minor fix.
+
   Revision 1.2  1995/09/05 22:14:47  jussi
   Added CVS header.
 */
@@ -36,7 +39,7 @@ class TData;
 /* Callback for GData conversion*/
 class GDataCallback {
 public:
-	virtual void Converted(RecId low, RecId high) = 0;
+  virtual void Converted(RecId low, RecId high) = 0;
 };
 
 DefinePtrDList(GDataCallbackList, GDataCallback *)
@@ -161,12 +164,6 @@ private:
 	GDataRangeMapRec *_rec;
 
 	GDataCallbackList _callbacks;
-
-
-	/* from DispatcherCallback */
-	/*
-	virtual void Cleanup();
-	*/
 
 	TData *_tdata;
 };

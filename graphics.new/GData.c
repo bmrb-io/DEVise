@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/05 23:27:50  jussi
+  Minor fix.
+
   Revision 1.6  1995/12/28 20:07:39  jussi
   Small fixes to remove compiler warnings.
 
@@ -45,16 +48,12 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
 {
   _tdata = tdata;
 
-#if 0
-  Dispatcher::Current()->Register(this, AllState, true);
-#endif
-
   _recSize = recSize;
-  Boolean trunc = true; /* TRUE if we need to truncate file */
+  Boolean trunc = true;       /* TRUE if we need to truncate file */
   _recFile = UnixRecFile::OpenFile(fname, recSize, trunc);
 
 #if 0
-  if (_recFile != NULL) {
+  if (_recFile) {
     if (_recFile->GetModTime() < Init::ProgModTime() ||
 	_recFile->GetModTime() < tdata->GetModTime()) {
       delete _recFile;
@@ -64,14 +63,11 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
   }
 #endif
 
-  if (_recFile == NULL) {
+  if (!_recFile) {
     trunc = true;
     _recFile = UnixRecFile::CreateFile(fname, recSize);
   }
-  if (_recFile == NULL) {
-    fprintf(stderr, "GData: can't create file %s\n", fname);
-    Exit::DoExit(2);
-  }
+  DOASSERT(_recFile, "Cannot create GData file");
 
   char buf[256];
   sprintf(buf, "%s.Range", fname);
@@ -85,20 +81,12 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
 
 GData::~GData()
 {
-#if 0
-  Dispatcher::Current()->Unregister(this);
-#endif
-
 #ifdef DEBUG
   printf("GData destructor %s, 0x%p \n", GetName(), this);
 #endif
 
-  if (_rangeMap != NULL) {
-    delete _rangeMap;
-  }
-  if (_recFile != NULL) {
-    delete _recFile;
-  }
+  delete _rangeMap;
+  delete _recFile;
 }
 
 int GData::Dimensions(int *sizeDimension)
@@ -110,7 +98,6 @@ int GData::Dimensions(int *sizeDimension)
     sizeDimension[0] = 0;
   return 1;
 }
-
 
 /* Return record size, or -1 if variable record size */
 int GData::RecSize()
@@ -145,17 +132,11 @@ void GData::GetIndex(RecId id, int *&indices)
 
 Boolean GData::HeadID(RecId &recId)
 {
-  /*
-     return _rangeMap->lowID(recId);
-  */
   return _tdata->HeadID(recId);
 }
 
 Boolean GData::LastID(RecId &recId)
 {
-  /*
-     return _rangeMap->highID(recId);
-  */
   return _tdata->LastID(recId);
 }
 
@@ -168,20 +149,20 @@ char *GData::GetName()
 Init getting records.
 ***************************************************************/
 
-void GData::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
+void GData::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
 {
 #ifdef DEBUG
-  printf("GData::InitGetRecs(%ld,%ld)\n",lowId, highId);
+  printf("GData::InitGetRecs(%ld,%ld)\n", lowId, highId);
 #endif
 
   _nextId = lowId;
   _highId = highId;
-  _numRecs = highId-lowId+1;
+  _numRecs = highId - lowId + 1;
   _rec = _rangeMap->FindMaxLower(_nextId);
-  if (_rec == NULL) {
+  if (!_rec) {
     fprintf(stderr, "GData::InitGetRecs(): %ld,%ld out of range\n",
 	    lowId, highId);
-    Exit::DoExit(2);
+    DOASSERT(0, "Invalid record range");
   }
 }
 
@@ -197,11 +178,8 @@ Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
     return false;
 	
   /* Get all the ranges we need to get */
-  int num = bufSize/_recSize;
-  if (num <= 0) {
-    fprintf(stderr, "GData::GetRecs: not enough buffer %d\n", bufSize);
-    Exit::DoExit(2);
-  }
+  int num = bufSize / _recSize;
+  DOASSERT(num > 0, "Invalid buffer size");
   
   if (num > (int)_numRecs)
     num = _numRecs;
@@ -223,18 +201,13 @@ Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
     if (_nextId > _rec->tHigh) {
       /* finished this range. try next range */
       _rec = _rangeMap->NextRangeRec(_rec);
-      if (_rec == NULL) {
-	fprintf(stderr, "GData::GetRecs: reading beyond end of range\n");
-	Exit::DoExit(2);
-      }
+      DOASSERT(_rec, "Invalid record range");
       continue;
     }
     
     /* Get data in this range */
-    if (_nextId < _rec->tLow || _nextId > _rec->tHigh) {
-      fprintf(stderr, "GData::GetRecs: internal error\n");
-      Exit::DoExit(2);
-    }
+    if (_nextId < _rec->tLow || _nextId > _rec->tHigh)
+      DOASSERT(0, "Invalid record range");
     
     int numToReturn = _rec->tHigh - _nextId + 1;
     if (numToReturn > num)
@@ -267,15 +240,16 @@ void GData::WriteRecs(RecId startId, int numRecs, void *buf)
   RecId nextId = startId;
   char *curBuf = (char *)buf;
   while (numRecs > 0) {
-    if (rec == NULL || nextId < rec->tLow || nextId > rec->tHigh) {
-      if (rec != NULL)
+    if (!rec || nextId < rec->tLow || nextId > rec->tHigh) {
+      if (rec)
 	fprintf(stderr,
 		"GData::Write Recs (%ld,%ld) into gap T(%ld,%ld),G(%ld,%ld)\n",
 		startId, startId+numRecs-1,
 		rec->tLow, rec->tHigh, rec->gLow, rec->gHigh);
-      else fprintf(stderr, "GData::Write Recs (%ld,%ld) into gap\n",
-		   startId, startId+numRecs-1);
-      Exit::DoExit(2);
+      else
+	fprintf(stderr, "GData::Write Recs (%ld,%ld) into gap\n",
+		startId, startId+numRecs-1);
+      DOASSERT(0, "Invalid write request");
     }
     
 #ifdef DEBUG
@@ -297,16 +271,14 @@ void GData::WriteRecs(RecId startId, int numRecs, void *buf)
   }
 }
 
-
 /* Update info about which TData records have been converted into GData */
 void GData::UpdateConversionInfo(RecId tLow, RecId tHigh,
 				 void *firstRec, void *lastRec)
 {
-  int numRecs = tHigh-tLow+1;
-  if (_recsLeft > 0 && numRecs > _recsLeft) {
-    fprintf(stderr, "GData::UpdateconversionInfo: too many Recods\n");
-    Exit::DoExit(2);
-  }
+  int numRecs = tHigh - tLow + 1;
+  if (_recsLeft > 0 && numRecs > _recsLeft)
+    DOASSERT(0, "Invalid number of records");
+
   _rangeMap->InsertRange(tLow, tHigh, _totalRecs,
 			 _totalRecs + numRecs - 1,
 			 firstRec, lastRec);
@@ -330,8 +302,7 @@ void GData::UpdateConversionInfo(RecId tLow, RecId tHigh,
 void GData::GetRecPointers(RecId startId, int numRecs, void *buf, 
 			   void **recPtrs)
 {
-  fprintf(stderr, "GData::GetRecPointers: should not be called\n");
-  Exit::DoExit(2);
+  DOASSERT(0, "Invalid call");
 }
 
 void GData::InitConvertedIterator()
@@ -342,13 +313,12 @@ void GData::InitConvertedIterator()
 Boolean GData::NextRange(RecId &lowId, RecId &highId)
 {
   GDataRangeMapRec *rec = _rangeMap->NextRec();
-  if (rec == NULL)
+  if (!rec)
     return false;
-  else {
-    lowId = rec->tLow;
-    highId = rec->tHigh;
-    return true;
-  }
+
+  lowId = rec->tLow;
+  highId = rec->tHigh;
+  return true;
 }
 
 void GData::DoneConvertedIterator()
@@ -357,7 +327,7 @@ void GData::DoneConvertedIterator()
 
 int GData::UserAttr(int attrNum)
 {
-  if(attrNum == GDataAttrNum)
+  if (attrNum == GDataAttrNum)
     return 1;
   
   return TData::UserAttr(attrNum);
@@ -385,14 +355,10 @@ void GData::RegisterCallback(GDataCallback *c)
 void GData::Cleanup()
 {
   printf("GData::Cleanup %s: 0x%p \n", GetName(),this);
-  if (_recFile != NULL) {
-    delete _recFile;
-    _recFile = NULL;
-  }
-  if (_rangeMap != NULL) {
-    delete _rangeMap;
-    _rangeMap = NULL;
-  }
+  delete _recFile;
+  _recFile = 0;
+  delete _rangeMap;
+  _rangeMap = 0;
 }
 #endif
 
@@ -403,6 +369,5 @@ int GData::GetModTime()
 
 AttrList *GData::GetAttrList()
 {
-  return NULL;
+  return 0;
 }
-
