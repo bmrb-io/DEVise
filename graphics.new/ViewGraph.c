@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/18 03:15:15  ravim
+  Data is never refreshed if the only changes are due to draw/undrawing the
+  statistics. XOR logic used to accomplish this optimization.
+
   Revision 1.7  1995/12/14 22:03:49  jussi
   Added a couple of more checks in _DisplayStats handling.
 
@@ -49,7 +53,7 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 		     AxisLabel *xAxis, AxisLabel *yAxis,
 		     Color fg, Color bg,
 		     Action *action) :
-	View(name,action,initFilter, fg, bg, xAxis, yAxis)
+	View(name, action, initFilter, fg, bg, xAxis, yAxis)
 {
   if (action == NULL)
     SetAction(new ActionDefault("default"));
@@ -106,19 +110,6 @@ void ViewGraph::SetDisplayStats(char *stat)
 	    (int)strlen(stat));
     return;
   }
-
-/*
-  if (ToRemoveStats(_DisplayStats, stat) == true)
-  {
-    strncpy(_DisplayStats, stat, STAT_NUM);
-    Refresh();
-  }
-  else 
-  {
-    strncpy(_DisplayStats, stat, STAT_NUM);
-    _stats.Report();
-  }
-*/
 
   // Never redisplay data as long as the visual filter is the same
   // Before drawing the lines, need to figure out which of them to draw
