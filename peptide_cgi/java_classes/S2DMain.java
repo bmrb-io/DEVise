@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2001/10/10 22:37:33  wenger
+// First version of atomic coordinate extraction and visualization (atoms,
+// not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
+// file as other data); fixed various minor problems with peptide-cgi code.
+//
 // Revision 1.22  2001/09/21 15:25:57  wenger
 // Updated session templates to match DEVise font scaling fix; changed
 // peptide-cgi version to 2.13.
@@ -135,7 +140,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.14";
+    public static final String PEP_CGI_VERSION = "2.15";
 
     private int _accessionNum;
     private String _dataDir;

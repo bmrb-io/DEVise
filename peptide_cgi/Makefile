@@ -24,7 +24,7 @@ S2D_PROPS_FILE = cgi-bin/s2d.props
 SELECT_HTML_FILE = bmrb_select.html
 
 .PHONY : setup
-setup: s2d_props bin select_html
+setup: s2d_props bin select_html collab_info
 
 .PHONY : testsetup
 testsetup:
@@ -72,3 +72,6 @@ select_html: $(SELECT_HTML_FILE)
 $(SELECT_HTML_FILE): bmrb_select.tmpl
 	-rm $(SELECT_HTML_FILE)
 	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select.tmpl > $(SELECT_HTML_FILE)
+
+collab_info:
+	cd html; ln -s ../../Java/JavaScreen/collab.html .

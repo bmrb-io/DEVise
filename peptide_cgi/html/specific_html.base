@@ -13,6 +13,15 @@
     }
     // -->
   </script>
+  <script language="JavaScript">
+    <!--
+    function opencollab() {
+    newwin= window.open("collab.html",
+    "per",
+    "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes");
+    }
+    // -->
+  </script>
 </head>
 
 <body bgcolor="white">
@@ -21,6 +30,7 @@
     popupvar2 = 'Keyboard shortcuts';
     popupvar3 = 'Explanations for plots';
     popupvar4 = 'DEVise home page';
+    popupvar5 = 'JavaScreen collaboration';
   </script>
   <div id="popup" style="position:absolute; z-index:1;
     visibility: hidden"></div>
@@ -37,7 +47,12 @@
          onMouseOver="popupon(popupvar2, document.all ||
 	 document.layers?event:null)">
 	 <img border=0 src="keyboard.gif"></a></td>
-	  
+
+       <td><a href="JavaScript:opencollab()" onMouseOut = "popupoff()"
+         onMouseOver="popupon(popupvar5, document.all ||
+	 document.layers?event:null)">
+	 JavaScreen Collaboration</a></td>
+
        <td><a href="help_d.html" onMouseOut = "popupoff()"
           onMouseOver="popupon(popupvar3, document.all ||
 	  document.layers?event:null)">
