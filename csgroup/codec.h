@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/27 20:47:47  wenger
+  More SGI compile fixes.
+
   Revision 1.4  1998/02/26 20:35:11  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -65,17 +68,12 @@
 #ifndef _CODEC_H
 #define _CODEC_H
 
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
 #endif
 #include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
-#include <errno.h>
-
-#include "error.h"
 
 #define MSG_CODE 0
 #define MSG_DECODE 1

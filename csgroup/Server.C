@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/05 17:10:30  taodb
+  Temporarily disabled multiple-client connect, and enabled mutiple pair of
+  C/Ss on the same machine
+
   Revision 1.5  1998/03/04 05:54:27  taodb
   Removed bugs that prevent multiple connection
 
@@ -52,11 +56,15 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <math.h>
 #if defined(SGI)
 #include <stdarg.h>
 #endif
 #if defined(SGI)
 #include <sys/param.h> // for MAXHOSTNAMELEN
+#endif
+#if defined(LINUX)
+#define MAXNAMELEN 1024
 #endif
 
 
@@ -71,6 +79,9 @@
 #include "callBks.h"
 #include "rcvMsg.h"
 #include "CommandObj.h"
+#include "serverInterface.h"
+#include "keys.h"
+#include "Csprotocols.h"
 
 Server* _ThisServer;
 
@@ -948,7 +959,7 @@ ControlChannel::ControlChannel()
 
 	pid = getpid();
 	gethostname(_hostname, MAXNAMELEN);
-	sprintf(buf,"%s%ld",_hostname,pid);
+	sprintf(buf,"%s%ld",_hostname,(long)pid);
 	_key = new CSgroupKey(buf, SERVERTAG);
 	_controlgkp = _key->toGroupKey();
 	

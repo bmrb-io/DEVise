@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 20:35:08  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.3  1998/02/26 18:54:04  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -46,17 +49,19 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h> 
 #else
 #include <stdarg.h> 
 #endif
-#if defined(SGI)
+#if defined(SGI) || defined(LINUX)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif
 
 #include "Client.h"
 #include "ClientAPI.h"
+#include "Csprotocols.h"
+#include "keys.h"
 
 //#define DEBUG
 #undef DEBUG

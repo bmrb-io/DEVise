@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/27 20:47:46  wenger
+  More SGI compile fixes.
+
   Revision 1.1  1998/02/26 20:35:09  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -28,20 +31,19 @@
 #ifndef _CommandObj_h_
 #define _CommandObj_h_
 
-#include "Control.h"
-#include "View.h"
-#include "codec.h"
-#include "Exit.h"
-#include "Server.h"
-#include "DeviseServer.h"
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
 #endif
 
 #define MAX_ARGS 20
+
 class Server;
+class DeviseServer;
+class View;
+class VisualFilter;
+
 class CommandObj
 {
 	private:

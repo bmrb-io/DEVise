@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/07/13 05:01:40  jussi
+#  Updated to compile on Linux.
+#
 #  Revision 1.1  1996/03/27 18:04:24  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -23,7 +26,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX
+include ../Makefile.config
 
 VPATH = ../../util
 include $(VPATH)/Makefile.base

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 20:35:11  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.2  1998/02/12 17:14:40  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -32,11 +35,10 @@
 #define _Server_h_
 
 #include "ClientAPI.h"
-#include "serverInterface.h"
-#include "keys.h"
 #include "types.h"
-#include "Csprotocols.h"
 #include "Dispatcher.h"
+
+class CSgroupKey;
 
 //
 // Each Server can serve multiple clients. Client state is stored

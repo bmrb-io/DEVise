@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 20:35:09  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.3  1998/02/26 18:54:06  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -36,7 +39,7 @@
 #include <stdio.h>
 #include "Csprotocols.h"
 #include "ServerAPI.h"
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/27 20:47:47  wenger
+  More SGI compile fixes.
+
   Revision 1.4  1998/02/26 18:54:10  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -62,7 +65,7 @@
 #ifndef _ERROR_H
 #define _ERROR_H
 
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>

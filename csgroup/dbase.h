@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/12 17:14:50  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.2  1998/02/02 08:23:57  liping
   Added CVS header
 
@@ -58,11 +61,7 @@
 
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
-#include "error.h"
 #include "htable.h"
 #include "queue.h"
 #include "types.h"

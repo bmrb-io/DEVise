@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:02  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:24:06  liping
   Added CVS header
 
@@ -62,6 +65,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/time.h>
 
 #include "rcvMsg.h"
 #include "codec.h"

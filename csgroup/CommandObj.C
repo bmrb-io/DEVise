@@ -1,11 +1,40 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Declaration of CommandObj class.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 #include "CommandObj.h"
-#if !defined(SGI)
+#include "Csprotocols.h"
+#include "codec.h"
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
 #endif
 #include "ServerAPI.h"
 #include <stdio.h>
+
+#include "DeviseServer.h"
+#include "View.h"
 
 CommandObj::CommandObj(Server* server)
 {

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:11  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:14:56  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -60,9 +63,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if defined(SGI)
 #include <stdarg.h>
-#endif
+#include <unistd.h>
 
 #include "colbrLog.h"
 #include "logfns.h"
@@ -127,7 +129,7 @@ LogState(int fd)
 	      gInfo = (GroupInfo *)(entr->getData())->data();
 	      strcpy(GroupName->grpPwd, gInfo->pwd);
 	      master = (DbEntry *)gInfo->leader ? 
-		       (DbEntry *)gInfo->leader->data() : NULL;
+		       (DbEntry *)gInfo->leader->data() : (DbEntry*)NULL;
 	      servers = (Queue *)gInfo->followers;
 	      waiters = (Queue *)gInfo->waitlist;
 	      
@@ -248,7 +250,7 @@ ReconnectAll()
 	      gInfo = (GroupInfo *)(entr->getData())->data();
 	      strcpy(GroupName->grpPwd, gInfo->pwd);
 	      master = (DbEntry *)gInfo->leader ? 
-		       (DbEntry *)gInfo->leader->data() : NULL;
+		       (DbEntry *)gInfo->leader->data() : (DbEntry*)NULL;
 	      servers = (Queue *)gInfo->followers;
 	      waiters = (Queue *)gInfo->waitlist;
 	      if (master != NULL) {

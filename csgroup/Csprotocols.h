@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/27 20:47:46  wenger
+  More SGI compile fixes.
+
   Revision 1.3  1998/02/26 18:54:06  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -38,17 +41,20 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
 #endif
 
+#if !defined(LINUX)
 extern "C" {
 	void bzero(void *s, size_t n);
 	int gethostname(char *name, int namelen);
 	struct hostent *gethostbyname(const char *name);   
 };
+#endif
+
 // Client->Server group control
 #define CS_Creat_Req       "creat_req"  // blocking & timeout to fail
 #define CS_Join_Req        "join_req"   // blocking & timeout to fail

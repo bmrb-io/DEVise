@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:08  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:10  liping
   Added CVS header
 
@@ -61,6 +64,7 @@
 #include "server.h"
 #include "codec.h"
 #include "sndMsg.h"
+#include "ctrlMsg.h"
 #include <stdio.h>
 #include <stdlib.h> /* getenv, exit */
 #include <string.h> /* strcmp */
@@ -71,7 +75,6 @@
 #include <unistd.h> /* setsid */
 #include <sys/types.h>
 #include <memory.h>
-#include <stropts.h>
 #include <sys/resource.h> /* rlimit */
 #include <syslog.h>
 #include <strings.h>

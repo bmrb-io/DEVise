@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 20:35:12  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.2  1998/02/12 17:14:49  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -333,7 +336,8 @@ Dbase::DelLeader(GroupKey *GroupName, DbEntry *Address) {
 	if (!pwdCheck(gInfo->pwd, GroupName->grpPwd)) {
 		return ER_PERMDENIED;
 	}
-	ldr = (gInfo->leader ? (DbEntry *) gInfo->leader->data() : NULL);
+	ldr = (gInfo->leader ? (DbEntry *) gInfo->leader->data() :
+	    (DbEntry *)NULL);
 	if (ldr == NULL) {
 		return ER_NOTLEADER;
 	}
@@ -445,7 +449,8 @@ Dbase::getLeader(GroupKey *GroupName) {
 	}
 
 	gInfo = (GroupInfo *) data->data();
-	return (gInfo->leader ? (DbEntry *)(gInfo->leader->data()) : NULL);
+	return (gInfo->leader ? (DbEntry *)(gInfo->leader->data()) :
+	    (DbEntry *)NULL);
 }
 
 int

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:55  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:01  liping
   Added CVS header
 
@@ -37,10 +40,7 @@
 
 #include <sys/types.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/uio.h>
-#include <unistd.h>
 
 class LogRecord {
 public:

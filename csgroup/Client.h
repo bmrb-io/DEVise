@@ -19,6 +19,9 @@
 /*
   $Id$
   $Log$
+  Revision 1.2  1998/02/12 17:14:32  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.1  1998/01/28 22:42:11  taodb
   Added support for group communicatoin
 
@@ -26,8 +29,8 @@
 
 #ifndef _Client_h_
 #define _Client_h_
-#include "Csprotocols.h"
-#include "keys.h"
+
+class CSgroupKey;
 
 class CompDate {
 public:

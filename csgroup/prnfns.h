@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/27 20:47:48  wenger
+  More SGI compile fixes.
+
   Revision 1.3  1998/02/26 18:54:12  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -62,18 +65,11 @@
 #ifndef _PRNFNS_H
 #define _PRNFNS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
 #endif
-#include <strings.h>
 
 #ifdef __tcltk
 #include "tcl.h"

@@ -15,13 +15,18 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/12/04 23:51:01  wenger
+#  Changed how dependencies work for src/color and src/utils to work
+#  around a bug in makedepend (this is an improvement anyhow).
+#
 #  Revision 1.1  1997/12/03 16:56:12  wenger
 #  Set up src/color and src/utils to compile "normally" for sun, hp, and linux.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX -I/usr/X11R6/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =
 

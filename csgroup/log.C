@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/19 23:24:09  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.2  1998/02/12 17:14:55  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -86,6 +94,9 @@
 
 // Commented this out so we get strdup() definition. RKW Feb. 17, 1998.
 //#define _POSIX_SOURCE
+
+#include <sys/uio.h>
+#include <unistd.h>
 
 #include "log.h"
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:45  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:53  liping
   Added CVS header
 
@@ -74,6 +77,8 @@
 #include "netfns.h"
 #include "serverInterface.h"
 #include "prnfns.h"
+#include "ctrlMsg.h"
+#include "Csprotocols.h"
 
 Dbase GroupDB;
 char GroupLog[PATH_MAX] = "/tmp/Group.log";

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:57  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:02  liping
   Added CVS header
 
@@ -56,15 +59,8 @@
 #ifndef _NETFNS_H
 #define _NETFNS_H
 
-#include <errno.h>
-#include <sys/ioctl.h>
-#include <sys/filio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
-#include <string.h>
 
 #include <unistd.h> /* for close */
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/05/29 15:22:03  wenger
+#  Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+#  compile on linux.
+#
 #  Revision 1.1  1997/05/28 20:48:26  wenger
 #  Added directories and makefiles for layout mananger to compile for hp,
 #  linux, solsparc, and sun.
@@ -22,7 +26,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX -I/usr/include/tcl
+include ../Makefile.config
 
 VPATH = ../../LM
 include $(VPATH)/Makefile.base

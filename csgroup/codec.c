@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 18:54:08  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.3  1998/02/19 23:24:08  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -64,6 +67,9 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
+#include <sys/uio.h>
+#include <unistd.h>
+#include <errno.h>
 #if defined(SGI)
 #include <stdarg.h>
 #endif

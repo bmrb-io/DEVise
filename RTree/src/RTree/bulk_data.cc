@@ -87,9 +87,9 @@ void bulk_data_t::init(int       infile,
   else
     entry_sz=2*dim*sizeof(dbword_t)+data_sz;
   off=offset;
-  file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
+  file_arr = (char *)mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 		  |MAP_NORESERVE
 #endif
 		  , infile, 0);
@@ -197,8 +197,10 @@ void bulk_data_t::sort_and_cut (int         start,
   int beg_entry_num=start;
   while(beg_entry_num < n+start)
     {
+#if !defined(LINUX)
       madvise((char *)key(beg_entry_num), entry_sz* 
 	      minimum(entries_per_bucket, (n+start-beg_entry_num)), MADV_WILLNEED);
+#endif
       for(int i=beg_entry_num; i<beg_entry_num+
 	    minimum(entries_per_bucket, (n+start-beg_entry_num)); i++)
 	{

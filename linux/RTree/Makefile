@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,15 +15,19 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1996/10/18 15:20:41  jussi
-#  Initial revision.
-#
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST = -lsocket -lnsl
+include ../Makefile.config
 
-include Makefile.com
+ARCH_LDFLAGS =
+ARCH_SYSLIBS = -lm
+ARCH_LDPOST  = -lsocket -lnsl
+
+SRC_DIR = ../../RTree
+VPATH = $(SRC_DIR) $(SRC_DIR)/src $(SRC_DIR)/src/Common \
+	$(SRC_DIR)/src/DBJussi $(SRC_DIR)/src/PageClasses \
+	$(SRC_DIR)/src/Progs $(SRC_DIR)/src/RTree $(SRC_DIR)/src/TypeSupport
+
+include $(SRC_DIR)/Makefile.base
+include $(SRC_DIR)/Makefile.linux

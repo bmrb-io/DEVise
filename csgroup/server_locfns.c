@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/03 20:54:05  wenger
+  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
+  (highly-dangerous) ERROR macro.
+
   Revision 1.2  1998/02/12 17:15:06  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -70,9 +74,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <sys/time.h>
-#include <stropts.h>
-#include <sys/conf.h>
-#include <sys/select.h>
 #include <string.h>
 #include <stdlib.h>
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/20 17:02:24  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.4  1997/09/23 20:01:43  wenger
 #  Opening and saving of sessions now working with new scheme of mapping
 #  automatically creating the appropriate TData.
@@ -44,7 +48,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX -I/usr/include/tcl
+include ../Makefile.config
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

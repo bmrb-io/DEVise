@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/03 20:54:04  wenger
+  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
+  (highly-dangerous) ERROR macro.
+
   Revision 1.2  1998/02/12 17:14:57  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -58,6 +62,15 @@
 */ 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#if defined(LINUX)
+#include <sys/ioctl.h>
+#include <asm/ioctls.h>
+#else
+#include <sys/filio.h>
+#endif
+#include <sys/time.h>
 
 #include "netfns.h"
 #include "error.h"

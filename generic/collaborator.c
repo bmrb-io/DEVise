@@ -45,8 +45,6 @@
 #include <unistd.h> /* setsid */
 #include <sys/types.h>
 #include <memory.h>
-#include <stropts.h>
-#include <netconfig.h>
 #include <sys/resource.h> /* rlimit */
 #include <syslog.h>
 
@@ -139,7 +137,11 @@ int
 main(int argc, char *argv[])
 {
 
+#if !defined(LINUX)
 	(void) sigset(SIGPIPE, SIG_IGN); 
+#else
+	(void) signal(SIGPIPE, SIG_IGN); 
+#endif
 	/*
 	 * If stdin looks like a TLI endpoint, we assume
 	 * that we were started by a port monitor. If
@@ -196,7 +198,11 @@ main(int argc, char *argv[])
 		if (Tcl_Init(interp) == TCL_ERROR) {
 			goto error;
 		}
+
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
 		Tk_CreateMainWindow(interp, NULL, "Collaborator", "Collaborator");
+#endif
+
 		if (Tk_Init(interp) == TCL_ERROR) {
 			goto error;
 		}

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:47  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:54  liping
   Added CVS header
 
@@ -55,6 +58,8 @@
 */ 
 #include <stdlib.h>
 #include <iostream.h>
+#include <sys/uio.h>
+#include <unistd.h>
 
 #include "colbr.h"
 #include "colbrLog.h"

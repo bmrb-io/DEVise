@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:11  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:14:59  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -56,11 +59,13 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
+#include <stdlib.h>
 #if defined(SGI)
 #include <stdarg.h>
 #endif
 
 #include "prnfns.h"
+#include "Csprotocols.h"
 
 void
 prnConnectInfo(ConnectInfo *cInfo) {

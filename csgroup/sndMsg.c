@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:12  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:15:09  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -60,7 +63,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#if !defined(SGI)
+#if !defined(SGI) && !defined(LINUX)
 #include <sys/varargs.h>
 #else
 #include <stdarg.h>
@@ -72,6 +75,8 @@
 #include "prnfns.h"
 #include "ClientAPI.h"
 #include "Csprotocols.h"
+#include "ctrlMsg.h"
+#include "error.h"
 
 int
 SendCtrlMsg(DbEntry *Address, int type, ...) {

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:56  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:02  liping
   Added CVS header
 
@@ -58,7 +61,9 @@
 
 #include "log.h"
 
+#ifndef PATH_MAX
 #define PATH_MAX 50
+#endif
 
 #ifdef __cplusplus
 extern "C" {

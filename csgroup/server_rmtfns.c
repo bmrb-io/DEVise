@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:07  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:24:09  liping
   Added CVS header
 
@@ -59,7 +62,6 @@
  * as a guideline for developing your own functions.
  */
 #include <sys/ioctl.h>
-#include <sys/filio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -80,6 +82,7 @@
 #include "prnfns.h"
 #include "Csprotocols.h"
 #include "ClientAPI.h"
+#include "ctrlMsg.h"
 
 int
 register_1_svc(int fd, GroupKey *arg1, ConnectInfo arg2, int arg3)

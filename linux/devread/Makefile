@@ -15,10 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/12/06 19:00:42  wenger
+#  Fixed up linux dirs so latest version compiles for Linux; updated
+#  Linux dependencies.
+#
 
 ############################################################
 
-ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/usr/lib
 ARCH_LDPOST  = 
 

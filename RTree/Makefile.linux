@@ -1,0 +1,53 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+BASE = $(PWD)
+BASE = .
+INCLUDE_DIRS = \
+     . \
+	src \
+     src/DBJussi \
+     src/PageClasses \
+     src/TypeSupport \
+     src/Common \
+     src/RTree \
+     ../graphics \
+     ../graphics.new \
+     ../tape 
+
+FULL_PATH_INCLUDES = \
+	-I/s/gcc/lib/g++-include 
+
+INCLUDE_DIRS1 = $(addprefix -I, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS2 = $(addprefix -I../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS3 = $(addprefix -I../../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+
+
+depend:
+	makedepend -f Makefile.linux $(INCLUDE_DIRS1) *.cc
+	cd src; makedepend -a -f../Makefile.linux $(INCLUDE_DIRS2) *.cc
+	cd src/Common; makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS2) *.cc
+	cd src/DBJussi; \
+		makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS3) *.cc
+	cd src/PageClasses; \
+		makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS3) *.cc
+	cd src/Progs; \
+		makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS3) *.cc
+	cd src/RTree; \
+		makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS3) *.cc
+	cd src/TypeSupport; \
+		makedepend -a -f../../Makefile.linux $(INCLUDE_DIRS3) *.cc
+
+# DO NOT DELETE
+

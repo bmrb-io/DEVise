@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,17 +15,17 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1996/03/27 18:04:17  wenger
-#  Changes to get DEVise to compile and run on Linux.
-#
-#  Revision 1.1  1995/10/15 19:12:20  jussi
-#  Initial revision.
-#
 
 ############################################################
 
 include ../Makefile.config
 
-VPATH = ../../parser
+ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+#ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
+ARCH_SYSLIBS = -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
+ARCH_LDPOST  =
+
+VPATH = ../../csgroup
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.linux

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/11/12 15:48:39  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
 #  Revision 1.7.4.1  1997/10/30 20:17:12  wenger
 #  Got DEVise to compile, link, and run on sun and linux; compiles but
 #  doesn't link on hp (can't find memory mapping functions).  This includes
@@ -50,10 +54,8 @@
 
 ############################################################
 
-PERL_CORE = /usr/lib/perl5/i386-linux/5.00307/CORE
-#PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 #ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 #ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm

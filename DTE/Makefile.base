@@ -42,6 +42,7 @@ DTE_INCLUDES = \
 	-I../../src/color/export \
 	-I../../graphics \
 	-I../../graphics.new \
+	-I../unidata \
 	-I../../unidata \
 	$(PERL_INCL)
 

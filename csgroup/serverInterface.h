@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/12 17:15:05  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.2  1998/02/02 08:24:08  liping
   Added CVS header
 
@@ -59,7 +62,6 @@
 #define SRV_PORT	 	8954
 #define SWT_KEY_NAME 	"SwitchName" 
 #include "colbr.h"
-#include <sys/select.h>
 
 #define CRM_LEADER       0x01
 #define CRM_FOLLOWER     0x02

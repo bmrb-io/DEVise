@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/02/20 17:02:32  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.1  1996/03/27 18:04:07  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -31,7 +35,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX -I/usr/include/tcl
+include ../Makefile.config
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
