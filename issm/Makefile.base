@@ -16,7 +16,7 @@ $(LIBNAME): $(LIBOBJ)
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(RANLIB)
+	-rm $(LIBNAME)
 
 mostlyclean:
 	-rm $(LIBOBJ)
