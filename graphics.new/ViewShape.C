@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/07/13 17:32:44  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.20  1999/06/30 17:38:51  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -253,7 +257,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       view->GetName());
 #endif
 
-#if 1
+#if 0
     // Draw rectangle and view name for debugging.
     {
       PColorID	pcid = view->GetForeground();
