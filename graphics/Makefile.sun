@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.43  1997/04/30 21:57:02  wenger
+# Updated solaris, sun, and hp dependencies.
+#
 # Revision 1.42  1997/03/28 16:09:26  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -35,7 +38,8 @@ AttrList.o: /usr/include/sys/time.h DeviseTypes.h /usr/include/values.h
 AttrList.o: DevStatus.h DList.h Exit.h Init.h BufPolicy.h Util.h
 AttrList.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 AttrList.o: /usr/include/math.h /usr/include/floatingpoint.h
-AttrList.o: /usr/include/sys/ieeefp.h
+AttrList.o: /usr/include/sys/ieeefp.h DevError.h /usr/include/errno.h
+AttrList.o: /usr/include/sys/errno.h
 AxisLabelClassInfo.o: /usr/include/stdio.h AxisLabelClassInfo.h DeviseTypes.h
 AxisLabelClassInfo.o: /usr/include/values.h DevStatus.h
 AxisLabelClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -115,20 +119,21 @@ DList.o: /usr/include/stdio.h DList.h Exit.h
 DaliIfc.o: /usr/include/stdio.h /usr/include/unistd.h
 DaliIfc.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 DaliIfc.o: /usr/include/sys/sysmacros.h /usr/include/errno.h
-DaliIfc.o: /usr/include/sys/errno.h /usr/include/sys/time.h
-DaliIfc.o: /usr/include/sys/time.h ../graphics.new/machdep.h
-DaliIfc.o: /usr/include/limits.h /usr/include/sys/param.h
-DaliIfc.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+DaliIfc.o: /usr/include/sys/errno.h /usr/include/signal.h
 DaliIfc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DaliIfc.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-DaliIfc.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-DaliIfc.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DaliIfc.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-DaliIfc.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-DaliIfc.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-DaliIfc.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-DaliIfc.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DaliIfc.h
-DaliIfc.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+DaliIfc.o: /usr/include/sys/time.h /usr/include/sys/time.h
+DaliIfc.o: ../graphics.new/machdep.h /usr/include/limits.h
+DaliIfc.o: /usr/include/sys/param.h /usr/include/machine/param.h
+DaliIfc.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
+DaliIfc.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+DaliIfc.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+DaliIfc.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+DaliIfc.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+DaliIfc.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+DaliIfc.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+DaliIfc.o: /usr/include/netdb.h /usr/include/sys/socket.h
+DaliIfc.o: /usr/include/netinet/in.h DaliIfc.h Xdef.h
+DaliIfc.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 DaliIfc.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 DaliIfc.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h DeviseTypes.h
 DaliIfc.o: /usr/include/values.h DevStatus.h Dali.h Util.h
@@ -225,8 +230,8 @@ Display.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
 Display.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 Display.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 Display.o: /usr/include/sys/socket.h /usr/include/netinet/in.h XBitmap.h
-Display.o: PSDisplay.h Init.h BufPolicy.h WinClassInfo.h ClassDir.h ViewWin.h
-Display.o: DualWindowRep.h
+Display.o: PSDisplay.h PSWindowRep.h Init.h BufPolicy.h WinClassInfo.h
+Display.o: ClassDir.h ViewWin.h DualWindowRep.h
 DualWindowRep.o: /usr/include/stdio.h DualWindowRep.h
 DualWindowRep.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 DualWindowRep.o: /usr/include/sys/sysmacros.h WindowRep.h
@@ -257,12 +262,12 @@ DualWindowRep.o: Journal.h ColorMgr.h
 ETkClient.o: Dali.h ETk.h
 ETkIfc.o: /usr/include/stdio.h /usr/include/unistd.h /usr/include/sys/types.h
 ETkIfc.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-ETkIfc.o: /usr/include/errno.h /usr/include/sys/errno.h
+ETkIfc.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/signal.h
+ETkIfc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 ETkIfc.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ETkIfc.o: ../graphics.new/machdep.h /usr/include/limits.h
 ETkIfc.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ETkIfc.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-ETkIfc.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+ETkIfc.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
 ETkIfc.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 ETkIfc.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 ETkIfc.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
@@ -465,12 +470,12 @@ View.o: Exit.h DevisePixmap.h Compress.h DevError.h /usr/include/errno.h
 View.o: /usr/include/sys/errno.h FilterQueue.h Control.h ClassDir.h
 View.o: TimeStamp.h Parse.h Map3D.h Display.h Dispatcher.h
 View.o: /usr/include/unistd.h /usr/include/string.h Journal.h ColorMgr.h
-View.o: PSDisplay.h Init.h BufPolicy.h DaliIfc.h Xdef.h
-View.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-View.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h Util.h
-View.o: /usr/include/ctype.h View.h ViewWin.h DualWindowRep.h ViewCallback.h
-View.o: AttrList.h /usr/include/sys/time.h Cursor.h DevFont.h
+View.o: PSDisplay.h PSWindowRep.h Util.h /usr/include/ctype.h Init.h
+View.o: BufPolicy.h DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h
+View.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+View.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+View.o: /s/X11/include/X11/Xutil.h View.h ViewWin.h DualWindowRep.h
+View.o: ViewCallback.h AttrList.h /usr/include/sys/time.h Cursor.h DevFont.h
 ViewWin.o: /usr/include/stdio.h /usr/include/string.h
 ViewWin.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 ViewWin.o: /usr/include/sys/errno.h ViewWin.h DList.h Exit.h DeviseTypes.h
@@ -483,8 +488,8 @@ ViewWin.o: View.h Dispatcher.h /usr/include/unistd.h Journal.h Control.h
 ViewWin.o: ClassDir.h ViewCallback.h AttrList.h /usr/include/sys/time.h
 ViewWin.o: /usr/include/sys/time.h Init.h BufPolicy.h Cursor.h DevFont.h
 ViewWin.o: Display.h ColorMgr.h ../graphics.new/Version.h Util.h
-ViewWin.o: /usr/include/ctype.h PSDisplay.h ETkIfc.h ETk.h Xdef.h
-ViewWin.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ViewWin.o: /usr/include/ctype.h PSDisplay.h PSWindowRep.h ETkIfc.h ETk.h
+ViewWin.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ViewWin.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 ViewWin.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
 WinClassInfo.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h
@@ -608,7 +613,7 @@ testWindowRep.o: Pattern.h Display.h Geom.h /usr/include/math.h
 testWindowRep.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 testWindowRep.o: ColorMgr.h WindowRep.h Transform.h DevisePixmap.h Compress.h
 testWindowRep.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
-testWindowRep.o: Init.h BufPolicy.h Control.h ClassDir.h
+testWindowRep.o: Init.h BufPolicy.h TestControl.h Control.h ClassDir.h
 xv24to8.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xv24to8.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 xv24to8.o: /usr/include/sys/sysmacros.h /usr/include/string.h

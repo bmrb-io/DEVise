@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.36  1997/03/28 16:09:04  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -79,23 +83,19 @@ generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
 generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/time.h
 testWindowSpeed.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
-testWindowSpeed.o: ../graphics.new/TkControl.h ../graphics/Dispatcher.h
-testWindowSpeed.o: /usr/include/stdlib.h /usr/include/unistd.h
+testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h
 testWindowSpeed.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-testWindowSpeed.o: /usr/include/string.h ../graphics/DeviseTypes.h
-testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
-testWindowSpeed.o: ../graphics/Journal.h ../graphics/VisualArg.h
+testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
+testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
 testWindowSpeed.o: ../graphics/Color.h ../graphics/Pattern.h
-testWindowSpeed.o: ../graphics/Control.h ../graphics/ClassDir.h
-testWindowSpeed.o: ../graphics/ViewCallback.h ../graphics.new/GroupDir.h
-testWindowSpeed.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
-testWindowSpeed.o: ../graphics.new/MapInterpClassInfo.h
-testWindowSpeed.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-testWindowSpeed.o: ../graphics.new/ParseAPI.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
 testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
 testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testWindowSpeed.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
-testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
+testWindowSpeed.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+testWindowSpeed.o: /usr/include/unistd.h /usr/include/string.h
+testWindowSpeed.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
+testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
+testWindowSpeed.o: /usr/include/sys/errno.h
