@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/08/24 14:57:40  wenger
+  Added misc. debug output.
+
   Revision 1.34  1998/08/17 17:11:50  wenger
   Devised now responds to KeyAction commands from JavaScreen.
 
@@ -376,16 +379,12 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
       recInterp = new RecInterp;
     
     /* get mapping */
-    int index = view->InitMappingIterator();
-    if (!view->MoreMapping(index)) {
+    TDataMap *map = view->GetFirstMap();
+    if (!map) {
         errorMsg = "No mapping found!";
-        view->DoneMappingIterator(index);
         return false;
     }
 
-    TDataMap *map = view->NextMapping(index)->map;
-    view->DoneMappingIterator(index);
-    
     RecId startRid;
     int numRecs = 0;
     char *buf;
@@ -398,7 +397,11 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     int numDimensions;
     VisualFlag *dimensionInfo;
     numDimensions = map->DimensionInfo(dimensionInfo);
-    Boolean approxFlag = (numDimensions == 1 && dimensionInfo[0] == VISUAL_X);
+
+    // Note: changed approxFlag to always be false here, because having it
+    // be true means that the Y axis attribute will be ignored in the query.
+    // RKW 1998-11-09.
+    Boolean approxFlag = false;
     
     TData *tdata = map->GetPhysTData();
     AttrList *attrs = tdata->GetAttrList();

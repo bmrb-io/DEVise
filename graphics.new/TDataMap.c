@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/11/06 17:59:53  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.28  1998/11/04 20:34:01  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -155,6 +159,12 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
+#if defined(DEBUG)
+  printf("TDataMap::TDataMap(%s)\n", name);
+  printf("  dimensionInfo = %d\n", *dimensionInfo);
+  printf("  numDimensions = %d\n", numDimensions);
+#endif
+
   _gOffset = NULL;
 
   _incarnation++;

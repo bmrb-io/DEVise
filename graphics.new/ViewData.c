@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/10/29 21:46:08  wenger
+  Added "proof-of-concept" code for filter links; added warning when
+  more than one mapping is inserted into a view; updated bug and to-do
+  lists.
+
   Revision 1.11  1998/10/20 19:46:17  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -181,7 +186,8 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								 BooleanArray*& drawnList)
 {
 #if defined(DEBUG)
-	printf("ViewData::ReturnGData(0x%p, %d)\n", gdata, numGData);
+	printf("ViewData(%s)::ReturnGData(%d, 0x%p, %d)\n", GetName(), (int)recId,
+	  gdata, numGData);
 #endif
 
 	DOASSERT(numGData <= WINDOWREP_BATCH_SIZE,

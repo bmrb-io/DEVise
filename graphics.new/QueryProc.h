@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/09/28 20:05:52  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.18  1998/09/22 17:23:57  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -185,6 +191,9 @@ class QueryProc {
     virtual void ProcessQuery() = 0;
     
     /* Interface to query for TData */
+    // Note: if approx is true, the visual filter is IGNORED, unless the X
+    // axis attribute in sorted, in which case that attr is used for a binary
+    // search, and the Y attr is still ignored.
     virtual void InitTDataQuery(TDataMap *map, VisualFilter &filter,
                                 Boolean approximate = false) = 0;
     virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf) = 0;

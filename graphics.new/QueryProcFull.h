@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/09/22 17:23:59  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.25  1998/04/10 18:29:29  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -206,6 +214,9 @@ public:
   virtual void ProcessQuery();
 
   /* Interface to query for TData */
+  // Note: if approx is true, the visual filter is IGNORED, unless the X
+  // axis attribute in sorted, in which case that attr is used for a binary
+  // search, and the Y attr is still ignored.
   virtual void InitTDataQuery(TDataMap *map, VisualFilter &filter,
 			      Boolean approx = false);
   virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf);

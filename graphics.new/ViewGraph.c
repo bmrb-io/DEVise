@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.90  1998/11/06 17:59:54  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.89  1998/11/04 20:34:04  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -1675,6 +1679,8 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
 #if defined(DEBUG)
   printf("ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+  printf("Filter x: (%g, %g)\n", filter.xLow, filter.xHigh);
+  printf("Filter y: (%g, %g)\n", filter.yLow, filter.yHigh);
 #endif
 
   _queryFilter = filter;

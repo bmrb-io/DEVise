@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.87  1998/09/22 17:23:58  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.86  1998/08/17 18:51:52  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -526,6 +534,11 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
+#if (DEBUGLVL >= 3)
+    printf("QueryProcFull::BatchQuery(%s)\n", map->GetName());
+    printf("  filter: x: %g, %g, y: %g, %g\n", filter.xLow, filter.xHigh,
+      filter.yLow, filter.yHigh);
+#endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
@@ -577,12 +590,12 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   if (numDimensions == 0) {
     query->qType = QPFull_Scatter;
 #if DEBUGLVL >= 3
-    printf("Scatter");
+    printf("Scatter\n");
 #endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
     DOASSERT(numTDimensions == 1, "Invalid X query");
 #if DEBUGLVL >= 3
-    printf("SortedX");
+    printf("SortedX\n");
 #endif
     query->qType = QPFull_X;
   } else if (numDimensions == 2 && dimensionInfo[0] == VISUAL_Y &&
@@ -591,7 +604,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 	     sizeTDimensions[1] > 0, "Invalid XY query");
     query->qType = QPFull_YX;
 #if DEBUGLVL >= 3
-    printf("YX");
+    printf("YX\n");
 #endif
   } else {
     printf("\n");
@@ -860,6 +873,9 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
     AdvanceState(query, QPFull_EndState);
     return;
   }
+#if DEBUGLVL >= 5
+  printf("  query->low = %d\n", (int)query->low);
+#endif
 
   /* Set last record of file as the end of search range */
   Boolean gotHigh = query->tdata->LastID(query->high);
@@ -884,6 +900,9 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
       if ((int)query->high - (int)query->low > QPFULL_RANDOM_RECS)
           query->isRandom = Init::Randomize();
   }
+#if DEBUGLVL >= 5
+  printf("  query->high = %d\n", (int)query->high);
+#endif
   query->hintId = (query->high + query->low) / 2;
   _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
   AdvanceState(query, QPFull_ScanState);
@@ -1076,6 +1095,9 @@ Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
 
 Boolean QueryProcFull::InitQueries()
 {
+#if DEBUGLVL >= 3
+  printf("QueryProcFull::InitQueries()\n");
+#endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
@@ -1156,6 +1178,9 @@ Boolean QueryProcFull::InitQueries()
 
 void QueryProcFull::ProcessScan(QPFullData *query)
 {
+#if DEBUGLVL >= 3
+  printf("QueryProcFull::ProcessScan()\n");
+#endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
@@ -1193,6 +1218,10 @@ void QueryProcFull::ProcessScan(QPFullData *query)
                                         &interval, buf);
 	startRid = (RecId)(interval.Low);
 	numRecs = interval.NumRecs;
+#if DEBUGLVL >= 5
+        printf("  got recs %d - %d\n", (int)startRid,
+	  (int)startRid + numRecs - 1);
+#endif
 
         /* Query is finished when buffer manager finds no more data */
         if (!gotData) {
@@ -1882,10 +1911,10 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
                                    RecId startRid, int numRecs, char *buf,
 				   Boolean &drawTimedOut)
 {
-#if DEBUGLVL >= 5
+ #if DEBUGLVL >= 5
     printf("DistributeData map %s, [%ld,%ld]\n", query->map->GetName(),
            startRid, startRid + numRecs - 1);
-#endif
+ #endif
 #if defined(DEBUG_MEM)
     printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
@@ -2254,13 +2283,15 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 				   Boolean approx)
 {
 #if DEBUGLVL >= 5
-  printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
+  printf("InitTDataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
 #endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
+
+  DOASSERT(filter.flag & VISUAL_X, "Invalid TData query filter");
 
   TData *tdata = map->GetPhysTData();
   _tqueryApprox = approx;
@@ -2297,10 +2328,6 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     DOASSERT(0, "Unknown TData query type");
   }
   
-  DOASSERT(filter.flag & VISUAL_X, "Invalid TData query filter");
-
-  _tdataQuery->filter = filter;
-
   /* Initialize scan */
   _tdataQuery->state = QPFull_ScanState;
   switch(_tdataQuery->qType) {
@@ -2430,7 +2457,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                         match = false;
                 }
                 
-                if (_tdataQuery->filter.flag & VISUAL_Y) {
+                if (match && (_tdataQuery->filter.flag & VISUAL_Y)) {
 		    y = ShapeGetY(_gdataBuf, map, gdataOffsets);
                     
                     if (y < _tdataQuery->filter.yLow ||
@@ -2472,7 +2499,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                             match = false;
                     }
                     
-                    if (_tdataQuery->filter.flag & VISUAL_Y) {
+                    if (match && (_tdataQuery->filter.flag & VISUAL_Y)) {
 		        y = ShapeGetY(_gdataBuf, map, gdataOffsets);
                         
                         if (y < _tdataQuery->filter.yLow ||

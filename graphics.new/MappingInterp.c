@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  1998/11/06 17:59:51  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.75  1998/11/04 20:33:58  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -549,8 +553,10 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
-  if ((info != NULL) && (info->isSorted))
+  if ((info != NULL) && (info->isSorted)) {
+    //TEMP -- VisualFlag may be leaked
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  }
 
   _pNativeExpr = NULL;
   if (!_isSimpleCmd) _pNativeExpr = new CGraphicExpr( cmd );
@@ -596,8 +602,10 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
-  if ((info != NULL) && (info->isSorted))
+  if ((info != NULL) && (info->isSorted)) {
+    //TEMP -- VisualFlag may be leaked
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  }
 
   TDataMap::ResetGData(FindGDataSize(cmd, _tdata->GetAttrList(), flag,
 					   attrFlag));

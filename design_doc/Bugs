@@ -1657,12 +1657,14 @@ Num Date        Status  Description
 			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
 			but doesn't crash.)
 
-433 11/06/98	OPEN	Load session Test/tree_w_cursor.ds: drill-down works
+433 11/06/98	FIXED	Load session Test/tree_w_cursor.ds: drill-down works
 			abominably. (rkw)
+			(Fixed by rkw, 11/9/98.)
 
-434 11/06/98	OPEN	Load session Test/tree_w_cursor.ds: DEVise doesn't
+434 11/06/98	NB	Load session Test/tree_w_cursor.ds: DEVise doesn't
 			want to display node8 in the cursor source view
 			for some reason. (rkw)
+			(Caused by unsorted attr being declared sorted.)
 
 435 11/06/98	OPEN	DataReader/DTE combination drops off the last record
 			of data. (rkw/kb)
