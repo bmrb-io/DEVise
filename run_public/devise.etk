@@ -44,4 +44,6 @@ endif
 
 $ETK_EXEC &
 
+$DEVISE_ROOT/run/rmmem
 $DEVISE_EXEC -etk localhost -etkquit $*
+$DEVISE_ROOT/run/rmmem

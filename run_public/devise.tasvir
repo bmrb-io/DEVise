@@ -42,4 +42,6 @@ endif
 
 $TASVIR_EXEC &
 
+$DEVISE_ROOT/run/rmmem
 $DEVISE_EXEC -tasvir localhost -tasvirquit $*
+$DEVISE_ROOT/run/rmmem

@@ -40,4 +40,6 @@ if (! -f $DEVISE_EXEC) then
   exit 1
 endif
 
+$DEVISE_ROOT/run/rmmem
 $DEVISE_EXEC $*
+$DEVISE_ROOT/run/rmmem

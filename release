@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1997/12/01 21:21:01  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+#  into the trunk.
+#
 #  Revision 1.17  1997/11/12 15:42:25  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -226,7 +230,7 @@ set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/multi run_public/devise.etk run_public/devise.demo \
 	run_public/devise1.3.demo run_public/multi.demo \
 	run_public/multi1.3.demo run_public/tk2ds.tcl  run_public/devisec \
-	run_public/devised"
+	run_public/devised RTree/src/Progs/rmmem"
 
 foreach file ($runfiles)
   if ($file == "") then
