@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.24  1995/11/22 00:33:13  jussi
+#	Fixed bug in function that saves session files; spaces embedded
+#	in TData names needed to be protected by braces.
+#
 #	Revision 1.23  1995/11/21 23:36:19  jussi
 #	Made complex mappings editable. Edit Mapping function now allows the
 #	user to edit all parameters of an interpreted mapping. E.g. color can
@@ -171,6 +175,7 @@ source $libdir/help.tk
 source $libdir/macrodef.tk
 source $libdir/sources.tcl
 source $libdir/schema.tk
+source $libdir/mapping.tk
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -304,6 +309,8 @@ menubutton .mbar.window -text Window -underline 0 \
 	-menu .mbar.window.menu -bg LightBlue
 menubutton .mbar.schema -text Schema -underline 0 \
 	-menu .mbar.schema.menu -bg LightBlue
+menubutton .mbar.mapping -text Mapping -underline 0 \
+	-menu .mbar.mapping.menu -bg LightBlue
 
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
@@ -364,8 +371,12 @@ menu .mbar.schema.menu -tearoff 0
 .mbar.schema.menu add command -label "User" -command SchemaUser
 .mbar.schema.menu add command -label "Superuser" -command SchemaSuperuser
 
+menu .mbar.mapping.menu -tearoff 0
+.mbar.mapping.menu add command -label "Define" -command DefineMapping
+.mbar.mapping.menu add command -label "Resolve" -command ResolveMapping
+
 pack .mbar.session .mbar.file .mbar.view .mbar.cursor \
-	.mbar.window .mbar.schema -side left -fill x
+	.mbar.window .mbar.schema .mbar.mapping -side left -fill x
 
 # status widgets
 frame .status  -background LightBlue 
