@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/05/07 20:39:40  wenger
+#  Made improvements to Condor user session scripts as requested by Miron.
+#
 #  Revision 1.1  1999/04/28 18:30:33  wenger
 #  Split up data-splitting and session-creating parts of Condor session
 #  scripts; made a new script to make a session with thumbnails for each
@@ -30,9 +33,10 @@
 
 $debug = 0;
 
-die "usage: split_user_data <data file>\n", if ($#ARGV != 0);
+die "usage: split_user_data <data file> <data directory>\n", if ($#ARGV != 1);
 
 $data_file = shift(@ARGV);
+$data_dir = shift(@ARGV);
 
 open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
 
@@ -44,7 +48,6 @@ GetUsers();
 
 
 # Dump each user into the top-level data file.
-$data_dir = "userdat";
 mkdir $data_dir, 0755;
 
 $top_level_file = "UserList";

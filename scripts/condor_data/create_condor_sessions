@@ -1,9 +1,10 @@
 #! /bin/csh -f
 rm -r userdat
 
+rm UserLastMonth.dat
 /p/condor/home/bin/condor_devise_userdata -lastweek > UserLastMonth.dat
 
-split_user_data UserLastMonth.dat
+split_user_data UserLastMonth.dat userdat
 
 rm UserLastMonth.dat
 
