@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/19 02:42:20  kmurli
+  Changed to include original importFileType parameters..This means that
+  the those using the importFileType with a single parameter cannot use
+  Query interface.
+
   Revision 1.41  1996/11/15 10:06:17  kmurli
   Changed importFile parameters and ParseCat parameters to take in the file type
   and data file name so that a whole query can be formed if necessary for calling
@@ -270,9 +275,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     char *name = classDir->CreateWithParams(argv[1], argv[2],
 					    argc - 3, &argv[3]);
 #ifdef DEBUG
-	printf(" Create - return value = %s \n",name);
+    printf("Create - return value = %s\n", name);
 #endif
-
     control->SetIdle();
     if (!name)
       control->ReturnVal(API_ACK, "");
@@ -399,6 +403,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
   if (argc == 2) {
 
+    if (!strcmp(argv[0], "abortQuery")) {
+      View *view = (View *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      view->AbortQuery();
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "importFileType")) {
       char *name = ParseCat(argv[1]);
       if (!name) {
