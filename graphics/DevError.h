@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:03:08  wenger
+  Added final version of code for reading schemas from session files;
+  added an error-reporting class to improve error info.
+
  */
 
 #ifndef _DevError_h_
@@ -27,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "DeviseTypes.h"
 
 
 const int	devNoSyserr = -9999;
@@ -38,7 +43,15 @@ const int	devNoSyserr = -9999;
 class DevError
 {
 public:
-	static void ReportError(char *message, char *file, int line, int errno);
+    static void ReportError(char *message, char *file, int line, int errno);
+    static Boolean SetEnabled(Boolean enabled) {
+        Boolean old = _enabled;
+        _enabled = enabled;
+        return old;
+    }
+
+protected:
+    static Boolean _enabled;
 };
 
 

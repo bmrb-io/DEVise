@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:03:05  wenger
+  Added final version of code for reading schemas from session files;
+  added an error-reporting class to improve error info.
+
  */
 
 #define _DevError_c_
@@ -36,6 +40,8 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 
 static char *	srcFile = __FILE__;
 
+Boolean DevError::_enabled = true;
+
 /*------------------------------------------------------------------------------
  * function: DevError::ReportError
  * Reports an error.  Right now, just prints info to stderr; we might want
@@ -44,16 +50,19 @@ static char *	srcFile = __FILE__;
 void
 DevError::ReportError(char *message, char *file, int line, int errno)
 {
-	char *	progName = "DEVise";
+    char * progName = "DEVise";
 
-	fprintf(stderr, "\n%s error: %s\n", progName, message);
-	fprintf(stderr, "  at %s: %d\n", file, line);
-	if (errno != devNoSyserr)
-	{
-		fprintf(stderr, "  syserr: %d: ", errno);
-		perror(NULL);
-	}
-	fprintf(stderr, "\n");
+    if (!_enabled)
+        return;
+
+    fprintf(stderr, "\n%s error: %s\n", progName, message);
+    fprintf(stderr, "  at %s: %d\n", file, line);
+    if (errno != devNoSyserr)
+    {
+        fprintf(stderr, "  syserr: %d: ", errno);
+        perror(NULL);
+    }
+    fprintf(stderr, "\n");
 }
 
 /*============================================================================*/
