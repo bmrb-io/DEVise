@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/27 19:06:51  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.5  1996/06/21 19:27:00  jussi
   Moved computation of block vertices and edges to Map3D.C.
   Added support for drawing solid sides for blocks.
@@ -86,11 +92,11 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
   view->GetDataArea(x, y, w, h);
 
   // map blocks to points, segments, and planes
-  Map3D::MapBlockPoints(block_data, numSyms, view->GetCamera(), w, h);
+  Map3D::MapBlockPoints(win, block_data, numSyms, view->GetCamera(), w, h);
 #ifdef WIRE_FRAME
-  Map3D::MapBlockSegments(block_data, numSyms, view->GetCamera(), w, h);
+  Map3D::MapBlockSegments(win, block_data, numSyms, view->GetCamera(), w, h);
 #else
-  Map3D::MapBlockPlanes(block_data, numSyms, view->GetCamera(), w, h);
+  Map3D::MapBlockPlanes(win, block_data, numSyms, view->GetCamera(), w, h);
 #endif
 
   // draw blocks
