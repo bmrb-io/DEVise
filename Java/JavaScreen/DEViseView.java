@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2000/07/20 22:38:26  venkatan
+// Mouse Location Format display:
+// 1. Both X and Y axis formats are recognised.
+// 2. "-" is recognised for "" String.
+// 3. %.0f is now recognised.
+//
 // Revision 1.50  2000/07/20 16:53:54  wenger
 // Fixed bug 602 (problem dragging cursors in non-base piled views).
 //
@@ -483,9 +489,12 @@ public class DEViseView
 
     // Convert mouse X coordinate (in pixels) to a String.
     // x is relative to this view's canvas
+
     public String getX(int x)
     {
-	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX == "-"){
+	System.out.println( "format X" + viewInfoFormatX);
+	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX.equals("-")){
+
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
@@ -528,7 +537,8 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
-	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX == "-"){
+	System.out.println( "format Y" + viewInfoFormatY);
+	if(!isViewInfo || viewDimension == 3 || viewInfoFormatY.equals("-")){
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
