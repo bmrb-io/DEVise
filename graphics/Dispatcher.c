@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/05/07 14:13:42  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.51  1998/11/24 19:31:18  wenger
   Fixed problem with soil science sessions sometimes locking up the
   JavaScreen by disallowing input from file descriptors while waiting for
@@ -663,7 +670,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 
 void Dispatcher::Run1()
 {
-  static waitfor_secs = 0;
+  static int waitfor_secs = 0;
 
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::Run1()\n");

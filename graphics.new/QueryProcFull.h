@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/12/15 14:55:22  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.28  1998/11/20 18:39:03  wenger
   Fixed bug 440 (crash caused by empty mapping command for X in combination
   with other errors).
@@ -388,7 +394,7 @@ protected:
 
 private:
   /* Temp page to hold data for converting tdata into gdata. */
-  const int GDATA_BUF_SIZE = 6400 * sizeof(double);
+  static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
 
   /* Force _gdataBuf to be aligned for doubles. */
   double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];

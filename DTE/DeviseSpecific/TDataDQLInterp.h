@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/01/20 22:46:39  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.12  1997/09/17 02:36:09  donjerko
   *** empty log message ***
 
@@ -83,7 +89,7 @@ public:
   virtual char *CategoryName() { return "tdata"; } 
 
   /* Info for class */
-  virtual char *ClassName();
+  virtual char *ClassName(); // Treat as const char *!
 
   /* Get name of parameters and default/current values */
   virtual void ParamNames(int &argc, char **&argv);
@@ -96,7 +102,7 @@ public:
   /**************************************************
     Instance Info.
   ***************************************************/
-  virtual char *InstanceName();
+  virtual char *InstanceName(); // Treat as const char *!
   virtual void *GetInstance();
   virtual AttrList * GetAttrList();
   /* Get parameters that can be used to re-create this instance */

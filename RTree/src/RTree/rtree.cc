@@ -519,7 +519,6 @@ void rtree_t::reinsert(int_keyed_p_t   *overflowing_p,
   for(i = 0; i < num_to_reins; i++)
     insert_into_tree(reins_ent[i], reins_data[i], entry_level, level_reinserted);
   delete [] reins_ent;
-  delete [] reins_data;
 }
 
 

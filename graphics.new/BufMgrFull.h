@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/12/23 23:35:14  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.9  1997/10/10 21:13:40  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -191,7 +200,7 @@ class BufMgrFull: public BufMgr {
     BufMgrRequest _reqhead;
     
     /* List of "pinned" record ranges. Same as a page descriptor table */
-    const int MaxReturnRanges = 2;
+    static const int MaxReturnRanges = 2;
     RangeInfo *_returnRanges[MaxReturnRanges];
     
     /* Memory manager */

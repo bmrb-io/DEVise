@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/11 03:25:31  jussi
+  Added documentation of the variables read by the calendar program.
+
   Revision 1.1  1995/11/09 15:30:52  ravim
   Initial revision
 */
@@ -52,7 +55,7 @@ public:
     float sprtrn;   // RETURN OF STANDARD AND POORS 500 COMPOSITE INDEX.
   } day_t;
 
-  const int REC_LEN = 130;
+  static const int REC_LEN = 130;
 
   // Variable declarations
   FILE *fp;

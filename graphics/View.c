@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.172  1999/05/17 20:55:12  wenger
+  Partially-kludged fix for bug 488 (problems with cursors in piled views
+  in the JavaScreen).
+
   Revision 1.171  1999/05/14 13:59:53  wenger
   User can now control data font family, weight, and slant, on a per-view
   basis.
@@ -1641,7 +1645,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
-  const tickLength = 3;
+  const int tickLength = 3;
 
   int axisX, axisY, axisWidth, axisHeight, startX;
   GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
@@ -1742,7 +1746,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
-  const tickLength = 4;
+  const int tickLength = 4;
 
   int axisX, axisY, axisWidth, axisHeight;
   GetYAxisArea(axisX, axisY, axisWidth, axisHeight);

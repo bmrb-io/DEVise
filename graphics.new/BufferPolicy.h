@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/10/07 17:05:59  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.3  1996/11/23 21:11:22  jussi
   Pushed all policy-independent code up to BufferPolicy.h. Then moved
   remaining code from .c file to .h. Then removed empty policy .c files.
@@ -37,8 +40,8 @@ class GData;
 class BufferPolicy {
   public:
     /* flags for policy */
-    const int ReportVictim = 1;
-    const int ReportPlacement = 0x2;
+    static const int ReportVictim = 1;
+    static const int ReportPlacement = 0x2;
 
     enum Phase { BinSearchPhase, ScanPhase, MemConvertPhase,
                  DiskConvertPhase, PrefetchPhase};

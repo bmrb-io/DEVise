@@ -43,6 +43,7 @@ void PrintDimHeaders()
 }
 #endif
 
+#if 0 // Not used -- RKW 1999-06-01.
 static void PrintDimValues()
 {
   for(int i = 0 ; i < numDims ; i++) {
@@ -51,6 +52,7 @@ static void PrintDimValues()
     }
   }
 }
+#endif
 
 static int** sortTable = NULL;
 
@@ -99,6 +101,7 @@ static void CountingSort(int** in, int N, int dim, int& buckets, int* counts)
   //    }
 }
 
+#if 0 // Not used -- RKW 1999-06-01.
 static void CountingSort2(int** in, int N, int dim, int& buckets, int* counts)
 {
   int B = buckets;
@@ -142,6 +145,7 @@ static void CountingSort2(int** in, int N, int dim, int& buckets, int* counts)
   //      in.setRec(i, sortTable[i]);
   //    }
 }
+#endif
 
 
 #include "DTE/util/SortAlgo.h"
@@ -163,10 +167,12 @@ struct TypeT
 };
 
 
+#if 0 // Not used -- RKW 1999-06-01.
 static int Cmp(int** a, int** b)
 {
   return (*a)[cmpDim] - (*b)[cmpDim];
 }
+#endif
 
 // #define RC_SORTS
 #if defined(RC_SORTS)
@@ -690,6 +696,7 @@ static void WriteOC(int dim)
 }
 #endif
 
+#if 0 // Not used -- RKW 1999-06-01.
 static void sortTest(int** in, int N)
 {
   int** saveIn = new int*[N];
@@ -730,6 +737,7 @@ static void sortTest(int** in, int N)
   }
   delete [] saveIn;
 }
+#endif
 
 void RadixCubeProc::run()
 {

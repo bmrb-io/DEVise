@@ -123,7 +123,7 @@ Boolean RangeInfo::GetAttrVal(char *record, char *attrName, double &value)
 	// of the AttrList
 	if (!(strcmp(attrName, interval.AttrName)))
 	{
-		value = interval.Low + (record - GetData())/(tdata->RecSize());
+		value = interval.Low + (record - (char *)GetData())/(tdata->RecSize());
 		return true;
 	}
 	else

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/10/14 14:30:15  wenger
+  Configured Jussi's buffer manager to use pthreads on SPARC/Solaris and
+  Intel/Solaris.
+
   Revision 1.19  1997/12/11 04:25:43  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -200,7 +204,7 @@ int IOTask::StartChild(int pipeSize)
 #endif
 
 #ifdef SBM_THREAD
-    if (pthread_create(&_child, 0, DoStream, this)) {
+    if (pthread_create(&_child, 0, &DoStream, this)) {
         perror("IOTask::StartChild: pthread_create");
         return -1;
     }

@@ -64,7 +64,7 @@ TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo()
 
 char *TDataDQLInterpClassInfo::ClassName()
 {
-  return _tableName.c_str();
+  return (char *)_tableName.c_str();
 }
 
 void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
@@ -160,7 +160,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParamsNew(char **argv, char* query
 
 char *TDataDQLInterpClassInfo::InstanceName()
 {
-  return _tableName.c_str();
+  return (char *)_tableName.c_str();
 }
 
 void *TDataDQLInterpClassInfo::GetInstance()

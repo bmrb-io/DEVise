@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/05/02 08:38:52  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.2  1998/01/08 19:44:00  wenger
   Updated copyright to 1998.
 
@@ -125,7 +129,7 @@ CmdDescriptor::getCmdsource()
 string
 CmdDescriptor::Serialize()
 {
-	return composite_serialize(2, cmdSrc.Serialize()+serialize(destAttr));
+	return composite_serialize(2, cmdSrc.Serialize()+serialize((long)destAttr));
 }
 
 void

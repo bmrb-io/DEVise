@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/05/21 14:52:25  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.19  1998/10/13 19:40:44  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -173,9 +177,10 @@ int GData::Dimensions(int *sizeDimension)
   return 1;
 }
 
+//TEMP -- this looks dangerous!  RKW 1999-06-01.
 void GData::GetIndex(RecId id, int *&indices)
 {
-  static indexArray[1];
+  static int indexArray[1];
   indices = indexArray;
   indexArray[0] = id;
 }
