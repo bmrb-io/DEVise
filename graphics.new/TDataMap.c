@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/02 22:47:07  jussi
+  Rewrote interface for setting and querying maximum symbol
+  size (bounding box).
+
   Revision 1.14  1996/06/21 19:33:21  jussi
   Replaced MinMax calls with MIN() and MAX().
 
@@ -102,7 +106,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _gRecSize = gdataRecSize;
   
   _gdataName = gdataName;
-  if (_gdataName == NULL)
+  if (!_gdataName)
     _gdataName = CreateGDataName(_tdata->GetName(), name);
   
   _gdataPath = CreateGDataPath(_gdataName);
@@ -114,6 +118,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 #endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize, 
 		       maxGDataPages * DEVISE_PAGESIZE);
+    DOASSERT(_gdata, "Out of memory");
   }
   
   _x = 0.0;
@@ -126,7 +131,8 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _shapeId = 0;
 
   _numShapeAttr = MAX_GDATA_ATTRS;
-  _shapeAttrs = new Coord[MAX_GDATA_ATTRS];
+  _shapeAttrs = new Coord [MAX_GDATA_ATTRS];
+  DOASSERT(_shapeAttrs, "Out of memory");
   for(unsigned int i = 0; i < MAX_GDATA_ATTRS; i++)
     _shapeAttrs[i] = 0.1;
   
@@ -258,7 +264,7 @@ Strip file name of preceding path name
 static char *StripPath(char *name)
 {
   char *last = strrchr(name,'/');
-  if (last == NULL)
+  if (!last)
     return name;
 
   return last + 1;
@@ -271,7 +277,7 @@ char *TDataMap::CreateGDataName(char *tdataName, char *mappingName)
 {
   char *name;
   char *tname= StripPath(tdataName);
-  name = new char[strlen(tname) + strlen(mappingName) + 20];
+  name = new char [strlen(tname) + strlen(mappingName) + 20];
   sprintf(name,"%s.%d.%s.G", tname, _incarnation, mappingName);
   return name;
 }
@@ -282,7 +288,7 @@ Make a path for storing gdata
 char *TDataMap::CreateGDataPath(char *gdataName)
 {
   char *tmpDir = Init::TmpDir();
-  char *name = new char[strlen(gdataName) + strlen(tmpDir) + 2];
+  char *name = new char [strlen(gdataName) + 1 + strlen(tmpDir) + 1];
   sprintf(name, "%s/%s", tmpDir, gdataName);
   return name;
 }
@@ -327,7 +333,7 @@ void TDataMap::ResetGData(int gRecSize)
   printf("TDataMap::ResetGData with recSize %d\n", gRecSize);
 #endif
 
-  if (_gdata != NULL) {
+  if (_gdata) {
     QueryProc::Instance()->ClearGData(_gdata);
     delete _gdata;
     _gdata = NULL;
@@ -341,6 +347,6 @@ void TDataMap::ResetGData(int gRecSize)
 #endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize,
 		       _maxGDataPages * DEVISE_PAGESIZE);
-    QueryProc::Instance()->ResetGData(_tdata,_gdata);
+    QueryProc::Instance()->ResetGData(_tdata, _gdata);
   }
 }
