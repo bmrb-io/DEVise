@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/16 20:08:30  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.9  1995/12/29 22:42:26  jussi
   Added support for line connectors.
 
@@ -132,11 +135,11 @@ Insert symbol into bin. The bin will push the symbols to Gdata when done
 ****************************************************************************/
 
 void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
-			    int startIndex, int incr)
+			    int startIndex, int incr, Boolean canElimRecords)
 {
 #ifdef DEBUG
-  printf("GDataBin::InsertSymbol(%ld,0x%p,%d,%d,%d)\n",
-	 startRid, recs, numRecs, startIndex, incr);
+  printf("GDataBin::InsertSymbol(%ld,0x%p,%d,%d,%d,%d)\n",
+	 startRid, recs, numRecs, startIndex, incr, canElimRecords);
 #endif
   
   _numSyms += numRecs;
@@ -146,10 +149,10 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
     /* pointer to next record to process */
     char *ptr = (char *)recs + startIndex * _gRecSize; 
   
-    /* amount to increment pointer each iter*/
+    /* amount to increment pointer each iter */
     int ptrIncr = incr * _gRecSize;	
   
-    if (!_elimOverlap) {
+    if (!_elimOverlap || !canElimRecords) {
       /* DO NOT eliminate overlap */
       for(int i = startIndex; i < numRecs; i += incr) {
 	_returnSyms[_returnIndex++] = (GDataBinRec *)ptr;
