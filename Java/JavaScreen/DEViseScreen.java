@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  1999/06/23 20:59:16  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -115,6 +118,7 @@ public class DEViseScreen extends Panel
 
         screenDim.width = width;
         screenDim.height = height;
+        
         screenSize.width = screenDim.width + 2 * DEViseGlobals.screenEdge.width;
         screenSize.height = screenDim.height + 2 * DEViseGlobals.screenEdge.height;
 

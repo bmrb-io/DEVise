@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  1999/06/23 20:59:21  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -41,12 +44,13 @@ public class jsdevisec extends Panel
     private Button closeButton = new Button("Close");
     public  Button stopButton = new Button("Stop");
     private Button restartButton = new Button("Restart");
-    private Button statButton = new Button("Stats");
-    private Button setButton = new Button("Set");
+    //private Button statButton = new Button("Stats");
+    private Button setButton = new Button("Option");
     private Button exitButton = new Button("Exit");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
+    public DEViseTrafficLight light = null;
 
     private YMsgBox msgbox = null;
 
@@ -102,13 +106,29 @@ public class jsdevisec extends Panel
         setLayout(new BorderLayout(2, 2));
 
         // building the components of JavaScreen
-        Panel topPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
-        //Panel topPanel = new Panel(new BorderLayout(2, 2));
+        //Panel topPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
+        Panel topPanel = new Panel(new BorderLayout(2, 2));
+        Panel mainPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
 
         animPanel = new DEViseAnimPanel(this, images, 100);
 
         //topPanel.add(animPanel, BorderLayout.WEST);
-        topPanel.add(animPanel);
+        //topPanel.add(animPanel);
+        mainPanel.add(animPanel);
+
+        if (images != null && images.size() == 11) {
+            try {
+                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
+            } catch (YException e) {
+                light = null;
+            }
+        }
+
+        if (light != null) {
+            //topPanel.add(light);
+            //topPanel.add(light, BorderLayout.CENTER);
+            mainPanel.add(light);
+        }
 
         Component[] button = null;
         if (DEViseGlobals.inBrowser) {
@@ -117,25 +137,28 @@ public class jsdevisec extends Panel
             button[1] = stopButton;
             //button[2] = stopButton;
         } else {
-            button = new Component[7];
+            button = new Component[6];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
-            button[3] = statButton;
-            button[4] = restartButton;
-            button[5] = setButton;
-            button[6] = exitButton;
+            //button[3] = statButton;
+            button[3] = restartButton;
+            button[4] = setButton;
+            button[5] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button, "Horizontal", 5, 1);
 
         //topPanel.add(buttonPanel, BorderLayout.CENTER);
-        topPanel.add(buttonPanel);
+        //topPanel.add(buttonPanel);
+        mainPanel.add(buttonPanel);
 
         viewInfo = new DEViseViewInfo(this, images);
-
-        //topPanel.add(viewInfo, BorderLayout.EAST);
-        topPanel.add(viewInfo);
+        
+        topPanel.add(mainPanel, BorderLayout.WEST);
+        
+        topPanel.add(viewInfo, BorderLayout.EAST);
+        //topPanel.add(viewInfo);
 
         jscreen = new DEViseScreen(this);
 
@@ -181,6 +204,7 @@ public class jsdevisec extends Panel
                         }
                     }
                 });
+        /*        
         statButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -188,6 +212,7 @@ public class jsdevisec extends Panel
                         dispatcher.start("JAVAC_GetServerState");
                     }
                 });
+        */        
         restartButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -787,7 +812,8 @@ class SettingDlg extends Dialog
     jsdevisec jsc = null;
     public TextField screenX = new TextField(4);
     public TextField screenY = new TextField(4);
-    public Button setButton = new Button("Set");
+    public Button setButton = new Button("   Set   ");
+    public Button statButton = new Button("Request");
     private boolean status = false;
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -801,8 +827,6 @@ class SettingDlg extends Dialog
         setFont(DEViseGlobals.font);
 
         setTitle("JavaScreen Setting");
-
-        setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         setButton.setBackground(DEViseGlobals.bg);
         setButton.setForeground(DEViseGlobals.fg);
@@ -819,11 +843,68 @@ class SettingDlg extends Dialog
         screenX.setText("" + jsc.jscreen.getScreenDim().width);
         screenY.setText("" + jsc.jscreen.getScreenDim().height);
 
+        statButton.setBackground(DEViseGlobals.bg);
+        statButton.setForeground(DEViseGlobals.fg);
+        statButton.setFont(DEViseGlobals.font);
+        
+        if (DEViseGlobals.inBrowser) {
+        	screenX.setEditable(false);
+        	screenY.setEditable(false);
+        	setButton.setEnabled(false);
+      	}
+      	
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+        
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        //c.gridheight = 1;
+        c.fill = GridBagConstraints.BOTH;
+        //c.ipadx = 0;
+        //c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label label1 = new Label("JavaScreen Size:");
+        gridbag.setConstraints(label1, c);
+        add(label1);
+        
+        c.insets = new Insets(10, 0, 0, 5);
+        gridbag.setConstraints(screenX, c);
         add(screenX);
+        
+        gridbag.setConstraints(screenY, c);
         add(screenY);
+        
+        c.insets = new Insets(10, 10, 0, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(setButton, c);
         add(setButton);
+        
+        c.insets = new Insets(10, 10, 10, 0);
+        c.gridwidth = 1;
+        Label label2 = new Label("JSPOP Status:");
+        gridbag.setConstraints(label2, c);
+        add(label2);
+        
+        c.insets = new Insets(10, 0, 10, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(statButton, c);
+        add(statButton);
 
         pack();
+
+        //setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        //add(screenX);
+        //add(screenY);
+        //add(setButton);
+        //pack();
 
         // reposition the window
         Point parentLoc = null;
@@ -861,9 +942,11 @@ class SettingDlg extends Dialog
                             if (x < 100 || y < 100 || x > dimx || y > dimy) {
                                 throw new NumberFormatException();
                             } else {
-                                DEViseGlobals.screenSize.width = x + 20;
-                                DEViseGlobals.screenSize.height = y + 80;
-                                jsc.jscreen.resetScreenDim();
+                                //DEViseGlobals.screenSize.width = x + 20;
+                                //DEViseGlobals.screenSize.height = y + 80;
+                                //jsc.jscreen.resetScreenDim();
+                                jsc.jscreen.setScreenDim(x, y);
+                                
                                 close();
                             }
                         } catch (NumberFormatException e) {
@@ -872,6 +955,15 @@ class SettingDlg extends Dialog
                     }
                 });
 
+        statButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        jsc.dispatcher.start("JAVAC_GetServerState");
+                        
+                        close();
+                    }
+                });
     }
 
     protected void processEvent(AWTEvent event)
@@ -977,7 +1069,7 @@ class ServerStateDlg extends Dialog
                 serverList.add(list1[i]);
             }
         }
-        activeClientList = new java.awt.List(4, false);
+        activeClientList = new java.awt.List(6, false);
         activeClientList.setBackground(DEViseGlobals.textBg);
         activeClientList.setForeground(DEViseGlobals.textFg);
         activeClientList.setFont(DEViseGlobals.textFont);
@@ -986,7 +1078,7 @@ class ServerStateDlg extends Dialog
                 activeClientList.add(list2[i]);
             }
         }
-        suspendClientList = new java.awt.List(4, false);
+        suspendClientList = new java.awt.List(6, false);
         suspendClientList.setBackground(DEViseGlobals.textBg);
         suspendClientList.setForeground(DEViseGlobals.textFg);
         suspendClientList.setFont(DEViseGlobals.textFont);

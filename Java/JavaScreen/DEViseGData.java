@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  1999/06/23 20:59:16  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -31,6 +34,10 @@ public class DEViseGData
     public Component symbol = null;
     public boolean isJavaSymbol = false; 
     public int symbolType = 0;
+    
+    public String string = null;
+    public Color color = null;
+    public Font font = null;
     
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
     public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
@@ -51,8 +58,14 @@ public class DEViseGData
             y0 = (Double.valueOf(data[1])).doubleValue();
             y = (int)(y0 * ym + yo);
             size = (Double.valueOf(data[4])).doubleValue();
-            symbolType = Integer.parseInt(data[7]);
-            
+            symbolType = Integer.parseInt(data[7]);            
+        } catch (NumberFormatException e) {
+            throw new YException("Invalid GData!");
+        }
+
+        if (symbolType == 15) { // check symbol type
+            isJavaSymbol = true;
+
             width = (int)(size * xm);
             height = (int)(size * ym);
             if (width < 0)
@@ -64,13 +77,7 @@ public class DEViseGData
             if (x < 0)
                 x = 0;
             if (y < 0)
-                y = 0;
-        } catch (NumberFormatException e) {
-            throw new YException("Invalid GData!");
-        }
-
-        if (symbolType == 15) { // check symbol type
-            isJavaSymbol = true;
+                y = 0;            
             
             Button button = new Button(data[11]);
             button.setActionCommand(data[10]);
@@ -96,8 +103,47 @@ public class DEViseGData
             symbol = button;
         } else if (symbolType == 12 || symbolType == 16) {
             isJavaSymbol = false;
+            
+            string = data[8];
+            
+            double w = (Double.valueOf(data[10])).doubleValue();
+            double h = (Double.valueOf(data[11])).doubleValue();
+            width = (int)(w * xm);
+            height = (int)(h * ym);
+            
+            if (width < 0) 
+            	width = -width;
+            if (height < 0) 
+            	height = -height;
+            
+            x = x - width / 2;
+            y = y - height / 2;
+            if (x < 0) 
+            	x = 0;
+            if (y < 0) 
+            	y = 0;
+            
+            color = DEViseGlobals.convertColor(data[3]);
+            font = DEViseGlobals.getFont(string, width, height);
+            
+            if (color == null || font == null) {
+            	string = null;
+            }	
         } else {
             isJavaSymbol = false;
+
+            width = (int)(size * xm);
+            height = (int)(size * ym);
+            if (width < 0)
+                width = -width;
+            if (height < 0)
+                height = -height;
+            x = x - width / 2;
+            y = y - height / 2;
+            if (x < 0)
+                x = 0;
+            if (y < 0)
+                y = 0;            
         }
     }
 

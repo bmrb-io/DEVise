@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  1999/06/23 20:59:18  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -28,8 +31,8 @@ public class DEViseViewInfo extends Panel
     Vector images = null;
 
     TextField viewName = new TextField(16);
-    TextField mouseX = new TextField(13), mouseY = new TextField(13);
-    DEViseTrafficLight light = null;
+    TextField mouseX = new TextField(12), mouseY = new TextField(12);
+    //DEViseTrafficLight light = null;
 
     public DEViseViewInfo(jsdevisec what, Vector array)
     {
@@ -43,27 +46,30 @@ public class DEViseViewInfo extends Panel
         viewName.setBackground(DEViseGlobals.textBg);
         viewName.setForeground(DEViseGlobals.textFg);
         viewName.setFont(DEViseGlobals.textFont);
+        
         mouseX.setBackground(DEViseGlobals.textBg);
         mouseX.setForeground(DEViseGlobals.textFg);
         mouseX.setFont(DEViseGlobals.textFont);
+        
         mouseY.setBackground(DEViseGlobals.textBg);
         mouseY.setForeground(DEViseGlobals.textFg);
         mouseY.setFont(DEViseGlobals.textFont);
 
-        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        setLayout(new FlowLayout(FlowLayout.LEFT, 2, 12));
 
-        if (images != null && images.size() == 11) {
-            try {
-                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
-            } catch (YException e) {
-                light = null;
-            }
-        }
+        //if (images != null && images.size() == 11) {
+        //    try {
+        //        light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
+        //    } catch (YException e) {
+        //        light = null;
+        //    }
+        //}
 
-        if (light != null)
-            add(light);
+        //if (light != null)
+        //    add(light);
 
-        add(viewName);
+        //add(viewName);
+        
         add(mouseX);
         add(mouseY);
     }
@@ -71,9 +77,15 @@ public class DEViseViewInfo extends Panel
     public void updateInfo(String name, String x, String y)
     {
         if (name == null) {
-            viewName.setText("");
+            //viewName.setText("");
+            if (jsc.parentFrame != null) {
+            	jsc.parentFrame.setTitle("DEVise JavaScreen");
+            }	
         } else {
-            viewName.setText(name);
+        	//viewName.setText(name);
+        	if (jsc.parentFrame != null) {
+            	jsc.parentFrame.setTitle("DEVise JavaScreen     \"" + name + "\"");
+            }	
         }
 
         if (x == null) {
@@ -98,7 +110,11 @@ public class DEViseViewInfo extends Panel
 
     public void updateInfo()
     {
-        viewName.setText("");
+        //viewName.setText("");
+        if (jsc.parentFrame != null) {
+        	jsc.parentFrame.setTitle("DEVise JavaScreen");
+        }	
+        
         mouseX.setText("");
         mouseY.setText("");
 
@@ -107,18 +123,18 @@ public class DEViseViewInfo extends Panel
 
     public void updateImage(int type, int isOn)
     {
-        if (light != null) {
-            light.updateImage(type, isOn);
-            validate();
+        if (jsc.light != null) {
+            jsc.light.updateImage(type, isOn);
+            jsc.validate();
         }
     }
 
     public void updateCount(int number)
     {
-        if (number < 0 || number > 99 || light == null)
+        if (number < 0 || number > 99 || jsc.light == null)
             return;
 
-        light.updateCount("" + number);
-        validate();
+        jsc.light.updateCount("" + number);
+        jsc.validate();
     }
 }

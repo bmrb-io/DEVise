@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  1999/06/23 20:59:16  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -234,6 +237,49 @@ public final class DEViseGlobals
     public static long getCurrentTime()
     {
         return System.currentTimeMillis();
+    } 
+    
+    public static Color convertColor(String str)
+    {
+    	if (str == null || str.length() != 13 || !str.startsWith("#")) {
+    		return null;
+    	}
+    	
+    	String red = str.substring(1, 3), green = str.substring(5, 7), blue = str.substring(9, 11);
+    	try {
+    		int r = (Integer.valueOf(red, 16)).intValue(), g = (Integer.valueOf(green, 16)).intValue(), b = (Integer.valueOf(blue, 16)).intValue();
+    		Color color = new Color(r, g, b);
+    		return color;
+    	} catch (NumberFormatException e) {
+    		return null;
+    	}
     }
+    
+    public static Font getFont(String str, int width, int height)
+    {
+    	if (str == null || str.length() == 0 || width < 1 || height < 1) {
+    		return null;
+    	}
+    	
+    	int minSize = 4, maxSize = 1000;
+    	
+    	Toolkit tk = Toolkit.getDefaultToolkit();
+    	for (int i = minSize; i < maxSize; i++) {
+    		Font font = new Font("Monospaced", Font.PLAIN, i);
+    		FontMetrics fm = tk.getFontMetrics(font);
+    		int w = fm.stringWidth(str);
+    		int h = fm.getHeight();
+    		if (w > width || h > height) {
+    			if (i == minSize) {
+    				return null;
+    			} else {
+    				return new Font("Monospaced", Font.PLAIN, i - 1);
+    			}
+    		}
+    	}
+    	
+    	return new Font("Monospaced", Font.PLAIN, maxSize - 1);    		
+    }
+    		
 }
 

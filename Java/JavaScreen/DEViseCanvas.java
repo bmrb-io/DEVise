@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  1999/06/23 20:59:14  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -204,9 +207,21 @@ public class DEViseCanvas extends Container
             g.fillRect(0, 0, canvasDim.width, canvasDim.height);
         }
 
-        // draw all the cursors, include the cursors for child view and piled view
         Rectangle loc = null;
         
+        // draw all the GDatas, assuming piled view and child view will not have GData
+        if (view.viewGDatas.size() != 0) {
+        	for (int i = 0; i < view.viewGDatas.size(); i++) {
+        		DEViseGData gdata = view.getGData(i);
+        		if ((gdata.symbolType == 12 || gdata.symbolType == 16) && gdata.string != null) {
+        			g.setColor(gdata.color);
+        			g.setFont(gdata.font);
+        			g.drawString(gdata.string, gdata.x, gdata.y);
+        		}
+        	}
+        }
+        		
+        // draw all the cursors, include the cursors for child view and piled view
         if (view.viewCursors.size() != 0) {
             for (int i = 0; i < view.viewCursors.size(); i++) {
                 DEViseCursor cursor = view.getCursor(i);
