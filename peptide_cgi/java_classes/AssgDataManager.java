@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/07/27 16:11:23  wenger
+// Added standard DEVise headers.
+//
 
 // ========================================================================
 
@@ -28,6 +31,8 @@ import java.io.*;
 
 public class AssgDataManager
 {
+    private static final int DEBUG = 0;
+
     private static final int MAX_ENTRIES = 30;
 
     private static String filename;
@@ -46,7 +51,12 @@ public class AssgDataManager
 
     //Reads in the input assignment file and stores in memory data structure
     public AssgDataManager( String filename )
+      throws Exception
     {
+        if (DEBUG >= 1) {
+	    System.out.println("AssgDataManager(" + filename + ")");
+	}
+
 	try
 	{
 	    StreamTokenizer inFile 
@@ -82,10 +92,12 @@ public class AssgDataManager
 	{
 	    System.err.println("File not found: "
 			       + e.getMessage() );
+	    throw new Exception("Unable to read assignment file " + filename);
 	} catch (IOException e)
 	{
 	    System.err.println("IO Exception: "
 			       + e.getMessage() );
+	    throw new Exception("Unable to read assignment file " + filename);
 	}
     }
     
@@ -94,6 +106,10 @@ public class AssgDataManager
     //Hydrogen, Carbon and Nitrogen assignments
     public AssgEntry returnAssg( FileWriter error, String residueLabel) 
     {
+        if (DEBUG >= 1) {
+	    System.out.println("AssgDataManager.returnAssg(" +
+	      residueLabel + ")");
+	}
 	
 	AssgEntry totalAssignments = new AssgEntry();
 	PrintWriter out
@@ -118,7 +134,7 @@ public class AssgDataManager
 	}
 	
 	//Program aborts if not found, because this is an error!
-	if(!found)
+	if (!found)
 	{
 	    out.println("WARNING!!! " + residueLabel
 			+ " entry  not found in assignment "

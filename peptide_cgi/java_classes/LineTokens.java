@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/07/27 16:11:23  wenger
+// Added standard DEVise headers.
+//
 
 // ========================================================================
 
@@ -26,17 +29,29 @@ import java.io.*;
 import java.text.ParseException;
 
 public class LineTokens {
+	private static final int DEBUG = 0;
+
 	public int seqNumber;
 	public int csi;
 	private StreamTokenizer st;
 
 
 	LineTokens (StreamTokenizer st) {
+	    if (DEBUG >= 1) {
+	        System.out.println("LineTokens()");
+	    }
+
 	    this.st = st;
 	}
 
 
-	public int readAndTokenLine() {
+	public int readAndTokenLine()
+	  throws Exception
+	{
+	    if (DEBUG >= 1) {
+	        System.out.println("LineTokens.readAndTokenLine()");
+	    }
+
 	    try {
 		if (st.nextToken() == st.TT_EOF)
 		    return st.TT_EOF;
@@ -78,10 +93,11 @@ public class LineTokens {
 	    } catch (ParseException e) {
 		System.err.println("Parse Exception: "
 				   + e.getMessage() );
-		
+	        throw new Exception("Error reading or tokenizing line");
 	    } catch (IOException e) {
 		System.err.println("IO Exception: "
 				   + e.getMessage() );
+	        throw new Exception("Error reading or tokenizing line");
 	    }
 	    
 	    return st.ttype;

@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2000/07/28 21:04:42  wenger
+// Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
+// cleanup.
+//
 
 // ========================================================================
 
@@ -35,7 +39,7 @@ import ShiftDataManager.Pair;
 
 public class Star2Devise {
 
-    private static final boolean DEBUG = true;
+    private static final int DEBUG = 0;
     private static final String RESIDUE_CODE = "_Residue_seq_code";
 
     private StarNode aStarTree;
@@ -46,38 +50,44 @@ public class Star2Devise {
     //   the first LoopTableNode in value_vector
     private static final int RESIDUE_LOCATION = 2;
 
+    // ----------------------------------------------------------------------
     public static Star2Devise LocalStar2Devise(String file_name)
+      throws Exception
     {
-	Star2Devise s2d = null;
+        Star2Devise s2d = null;
 	try {
             FileInputStream stream = new FileInputStream(file_name);
-	    s2d = new Star2Devise(file_name, stream);
-	} catch (FileNotFoundException ex) {
-	    System.err.println("File not found exception: " + ": " +
-	      ex.getMessage() );
+            s2d = new Star2Devise(file_name, stream);
+	} catch(FileNotFoundException ex) {
+	    System.err.println("Unable to open or read " + ex.getMessage());
+	    throw new Exception("Unable to get data in star file " + file_name);
 	}
 
 	return s2d;
     }
 
+    // ----------------------------------------------------------------------
     public static Star2Devise WebStar2Devise(String file_name)
+      throws Exception
     {
-	Star2Devise s2d = null;
-
+        Star2Devise s2d = null;
 	try {
-	java.net.URL starfile =
-	  new java.net.URL("http://www.bmrb.wisc.edu/data_library/files/" +
-	  file_name);
-
+	    java.net.URL starfile =
+	      new java.net.URL("http://www.bmrb.wisc.edu/data_library/files/" +
+	      file_name);
 	    s2d = new Star2Devise(file_name, starfile.openStream());
-        } catch(Exception ex) {//TEMP
-	    System.err.println("Exception: " + ": " + ex.getMessage() );//TEMP
+	} catch(java.io.IOException ex) {
+	    System.err.println("Unable to open or read " + ex.getMessage());
+	    throw new Exception("Unable to get data in star file " + file_name);
 	}
 
 	return s2d;
     }
     
-    public Star2Devise(String file_name, InputStream stream) {
+    // ----------------------------------------------------------------------
+    public Star2Devise(String file_name, InputStream stream)
+      throws Exception
+    {
 	try {
 	    this.file_name = file_name;
 
@@ -94,15 +104,24 @@ public class Star2Devise {
 	} catch (ParseException e) {
 	    System.err.println("NMR-Star file parse error: " 
 			       + e.getMessage() );
+	    throw new Exception("Unable to parse " + file_name);
 	}
     }
 
 
+    // ----------------------------------------------------------------------
     /* Function outputData
      * Parameters:
      *   outFileName: the name of the output file, as ASCII text for DEVise
+     * Return value: true iff data is successfully output; false otherwise.
      */
-    public boolean outputData (String outFileName) {
+    public boolean outputData (String outFileName)
+      throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.outputData(" + outFileName + ")");
+	}
+
 	if (value_vector.size() == 0) {
 	    System.err.println("Error: No data to output!");
 	    return false;
@@ -161,25 +180,33 @@ public class Star2Devise {
 	    
 	    return true;
 	} catch (IOException e) {
-	    System.err.println("Unable to close file: " 
-			       + e.getMessage() );
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new Exception("Unable to output data for " + file_name);
 	}
-	
-	return false;		// search string not found
-    }	
+    }
 
 
+    // ----------------------------------------------------------------------
     /* Function processStrData
      * Parameters:
      *   saveFrameName: the name of the save frame to output
      *   outFileName: the name of the output file, as ASCII text for DEVise
+     * Return value: true iff data is successfully processed; false otherwise.
      */
-    public boolean processStrData( String saveFrameName, String outFileName ) {
+    public boolean processStrData( String saveFrameName, String outFileName )
+      throws Exception
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.processStrData(" +
+	      saveFrameName + ", " + outFileName + ")");
+	}
+
 	try {
 	    
 	    VectorCheckType saveFrameVec;
 	    saveFrameVec = 
 		aStarTree.searchByName(saveFrameName);
+
 	    // this vector should have size 1 because there should
 	    // only be one SaveFrame with this name
 	    if (saveFrameVec.size() == 1) {
@@ -196,7 +223,7 @@ public class Star2Devise {
 		    lastLoop.searchByName(RESIDUE_CODE);
 // doesn't work for coupling constants
 // 		if (checkForTag.size() != 1)
-// 		    throw new IllegalArgumentException
+// 		    throw new Exception
 // 			("Found "
 // 			 + checkForTag.size()
 // 			 + " " + RESIDUE_CODE + " tags"
@@ -224,32 +251,36 @@ public class Star2Devise {
 		return false;
 
 	    } else {		// multiple search strings found
-		throw new IllegalArgumentException
-		    ("Found " + saveFrameVec.size()
-		     + " save frames,"
-		     + " expect exactly 1.");
+		throw new Exception("Found " +
+		  saveFrameVec.size() + " " + saveFrameName +
+		  " save frames," + " expect exactly 1.");
 	    }
 	    
-	} catch (SecurityException e) {
-	    System.err.println("Unable to open: " 
-			       + e.getMessage() );
 	} catch (IOException e) {
-	    System.err.println("Unable to close file: " 
-			       + e.getMessage() );
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new Exception("Unable to process save frame " +
+	      saveFrameName);
 	}
-	
-	return false;		// search string not found
     } // end function processStrData()
     
 
+    // ----------------------------------------------------------------------
     /* Function findBackbone
      * Parameters:
      *   saveFrameName: the name of the save frame to output
      *   outFileName: the name of the output file, as ASCII text for DEVise
+     * Return value: true iff backbone is found; false otherwise.
      *
      * Pulls just the CA atoms out of a residue's structure
      */
-    public boolean findBackbone (String saveFrameName, String outFileName) {
+    public boolean findBackbone (String saveFrameName, String outFileName)
+      throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.findBackbone(" +
+	      saveFrameName + ")");
+	}
+
 	// ** values?  doesn't work... just find again...
 
 	try {
@@ -257,6 +288,7 @@ public class Star2Devise {
 	    VectorCheckType saveFrameVec;
 	    saveFrameVec = 
 		aStarTree.searchByName(saveFrameName);
+
 	    // this vector should have size 1 because there should
 	    // only be one SaveFrame with this name
 	    if (saveFrameVec.size() == 1) {
@@ -273,7 +305,7 @@ public class Star2Devise {
 		    lastLoop.searchByName(RESIDUE_CODE);
 
 		if (checkForTag.size() != 1)
-		    throw new IllegalArgumentException
+		    throw new Exception
 			("Found "
 			 + checkForTag.size()
 			 + " " + RESIDUE_CODE + " tags"
@@ -397,34 +429,36 @@ public class Star2Devise {
 		return false;
 
 	    } else {		// multiple search strings found
-		throw new IllegalArgumentException
+		throw new Exception
 		    ("Found " + saveFrameVec.size()
 		     + " save frames,"
 		     + " expect exactly 1.");
 	    }
 	    
-	} catch (SecurityException e) {
-	    System.err.println("Unable to open: " 
-			       + e.getMessage() );
 	} catch (IOException e) {
-	    System.err.println("Unable to close file: " 
-			       + e.getMessage() );
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new Exception("Unable to find backbone for save frame " +
+	      saveFrameName);
 	}
-	
-	return false;		// search string not found
     } // end findBackbone
 
 
-
-
+    // ----------------------------------------------------------------------
     /* Function addLogColumn
      * Parameters:
      *   inFileName: the name of the input file, in NMR-Star format
      *   operandName: the name of the field for which you wish to take the log.
      *   outFileName: the name of the output file, as ASCII text for DEVise
+     * Return value: true iff column is added; false otherwise.
      */
-    public boolean addLogColumn(String saveFrameName, String operandName, 
-				String outFileName) {
+    public boolean addLogColumn(String saveFrameName, String operandName,
+      String outFileName) throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.addLogColumn(" +
+	      saveFrameName + ", " + operandName + ", " + outFileName + ")");
+	}
+
 	try {
 
 	    VectorCheckType saveFrameVec;
@@ -446,7 +480,7 @@ public class Star2Devise {
 		VectorCheckType checkForTag =
 		    valuableDataLoop.searchByName(RESIDUE_CODE);
 		if (checkForTag.size() != 1)
-		    throw new IllegalArgumentException
+		    throw new Exception
 			("Found "
 			 + checkForTag.size()
 			 + " " + RESIDUE_CODE + " tags"
@@ -460,7 +494,7 @@ public class Star2Devise {
 		    names.searchByName(operandName);
 
 		if (operands.size() != 1)
-		    throw new IllegalArgumentException
+		    throw new Exception
 			("Found "
 			 + operands.size()
 			 + " " + operandName + " tags"
@@ -474,7 +508,7 @@ public class Star2Devise {
 // 		operands = names.searchByName(operandName + "_error");
 		
 // 		if (operands.size() != 1)
-// 		    throw new IllegalArgumentException
+// 		    throw new Exception
 // 			("Found "
 // 			 + operands.size()
 // 			 + " " + operandName + "_error tags"
@@ -556,29 +590,33 @@ public class Star2Devise {
 		return false;
 	    
 	    else {		// too many found
-		throw new IllegalArgumentException
+		throw new Exception
 		    ("Found " + saveFrameVec.size()
 		     + " save frames,"
 		     + " expect exactly 1.");
 	    }
-	    
-	} catch (SecurityException e) {
-	    System.err.println("Security exception: "
-			       + e.getMessage() );
 	} catch (IOException e) {
-	    System.err.println("IO exception:  "
-			       + e.getMessage() );
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new Exception(
+	      "Unable to find add log column for save frame " +
+	      saveFrameName);
 	}
-    
-	return false;		// search string not found
     } // end function addLogColumn()
 
 
+    // ----------------------------------------------------------------------
     /* Function calcChemShifts
      * takes no parameters; instead, output based on the accession
      * number concatenated with c.dat, d.dat, or p.dat
+     * Return value: true iff chem shifts are calculated; false otherwise.
      */
-    public boolean calcChemShifts (String acc_num) {
+    public boolean calcChemShifts (String acc_num)
+      throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.calcChemShifts(" + acc_num + ")");
+	}
+
 	String CHEMSHIFT_FILE = "chemshift.txt";
 	String CHEMASSG_FILE = "assignments.txt";
 	String ERROR_LOG = "error.log";
@@ -651,7 +689,7 @@ public class Star2Devise {
 		//assert that this list has just 1 item in it!
 		if( loopMatches.size() != 1 )
 		{
-		    throw new IllegalArgumentException
+		    throw new Exception
 			( "Found " + loopMatches.size()
 			  + " _Chem_shift_value tags, only expect 1." );
 		}
@@ -1032,20 +1070,15 @@ public class Star2Devise {
 	    
 	    error.close();
 	    return true;
-	} catch (IOException e)
-	{
-	    System.err.println("IO Exception: "
-                               + e.getMessage() );
-	} catch (ClassNotFoundException e)
-	{
-	    System.err.println("Class not found exception: "
-                               + e.getMessage() );
+	} catch (IOException e) {
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new Exception(
+	      "Unable to find calculate chem shifts " + acc_num);
 	}
-
-	return false;
     }
 
 
+    // ----------------------------------------------------------------------
     /* Function sequence
        Determine the amino acid sequence?
      */
@@ -1054,9 +1087,17 @@ public class Star2Devise {
 // 	return false;
 //     }
 
+    // ----------------------------------------------------------------------
     /* Function summarize
+     * Return value: true iff summary is successful; false otherwise.
      */
-    public boolean summarize( String outFileName ) {
+    public boolean summarize( String outFileName )
+      throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.summarize(" + outFileName + ")");
+	}
+
 	try {
 	    VectorCheckType saveFrameVec =
 		aStarTree.searchByName( "save_entry_information" );
@@ -1064,7 +1105,7 @@ public class Star2Devise {
 	    // this vector should have size 1 because there should
 	    // only be one SaveFrame with this name
 	    if ( saveFrameVec.size() != 1 ) {
-		throw new IllegalArgumentException
+		throw new Exception
 		    ("Found " + saveFrameVec.size()
 		     + " save frames for save_entry_information;"
 		     + " expect exactly 1.");
@@ -1086,7 +1127,7 @@ public class Star2Devise {
 		  "_Saveframe_category_type" );
 
 	    if ( category_vec.size() != 1 ) {
-		throw new IllegalArgumentException
+		throw new Exception
 		    ("Found " + saveFrameVec.size()
 		     + " save frames for _Saveframe_category_type,"
 		     + " expect exactly 1.");
@@ -1278,20 +1319,18 @@ public class Star2Devise {
 	    
 	    return true;
 
-        	} catch (ClassNotFoundException e) {
- 	    System.err.println("Class not found exception:  "
- 			       + e.getMessage() );
-        	} catch (FileNotFoundException e) {
+       	} catch (FileNotFoundException e) {
  	    System.err.println("File not found exception:  "
  			       + e.getMessage() );
-        	} catch (IOException e) {
+	    throw new Exception("Unable to summarize " + file_name);
+       	} catch (IOException e) {
  	    System.err.println("IO exception:  "
  			       + e.getMessage() );
- 	} finally {}
-
- 	return false;
+	    throw new Exception("Unable to summarize " + file_name);
+ 	}
     }
 
+    // ----------------------------------------------------------------------
     /* Function sqaure
      *  takes a Float, and squares the number
      */
@@ -1300,12 +1339,21 @@ public class Star2Devise {
     }
 
 
+    // ----------------------------------------------------------------------
     /* Function countConstraints
      *
      *  Count the number of distance constraints for each residue
+     * Return value: true iff constraints are counted successfully;
+     *   false otherwise.
      */
 
-    public boolean countConstraints(String the_number) {
+    public boolean countConstraints(String the_number)
+      throws Exception
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("Star2Devise.countConstraints(" +
+	      the_number + ")");
+	}
 
 	int[] constraint_count = null;
 	float[] rms;		// for later
@@ -1314,12 +1362,14 @@ public class Star2Devise {
 	VectorCheckType saveFrameVec;
 	saveFrameVec = 
 	    aStarTree.searchByName("save_GMG4");
-	if (saveFrameVec.size() == 0)
+
+	if (saveFrameVec.size() == 0) {
 	    return false;
-	else if (saveFrameVec.size() != 1)
-	    throw new IllegalArgumentException
+	} else if (saveFrameVec.size() != 1) {
+	    throw new Exception
 		("In countConstraints, found " + saveFrameVec.size()
 		 + " save frames, expect exactly 1.");
+        }
 
 	int num_residues =
 	    Integer.parseInt
@@ -1328,8 +1378,9 @@ public class Star2Devise {
 		 .searchByName("_Residue_count") ).firstElement() )
 	      .getValue());
 	
-	if (DEBUG)
+	if (DEBUG >= 2) {
 	    System.out.println(" " + num_residues + " residues.");
+        }
 
 	// count the distance constraints per residue
 	saveFrameVec =
@@ -1339,7 +1390,7 @@ public class Star2Devise {
 	    return false;
 	
 	else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new IllegalArgumentException
+	    throw new Exception
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1407,7 +1458,7 @@ public class Star2Devise {
 	    return false;
 
 	else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new IllegalArgumentException
+	    throw new Exception
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1422,17 +1473,17 @@ public class Star2Devise {
 	      .firstElement() )
 	     .getValue());
 	
-// 	if (DEBUG)
-// 	    System.out.println(" " + num_conformers + " conformers");
+ 	if (DEBUG >= 3) {
+ 	    System.out.println(" " + num_conformers + " conformers");
+	}
 	
 	saveFrameVec =
 	    aStarTree.searchByName("save_GMH4CO_conformer_family");
 	
-	if (saveFrameVec.size() == 0) // none found
+	if (saveFrameVec.size() == 0) { // none found
 	    return false;
-
-	else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new IllegalArgumentException
+	} else if (saveFrameVec.size() != 1) { // search strings found
+	    throw new Exception
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1469,9 +1520,10 @@ public class Star2Devise {
 		} // end if current atom is CA
 
 	    } // end loop through family of coordinates
-	    if (DEBUG)
+	    if (DEBUG >= 2) {
 		System.out.println(" Read " + num_conformers +
 				   " conformers into memory");
+            }
 
 // 		    // update avgs
 // 		    int res_code = 
@@ -1481,6 +1533,7 @@ public class Star2Devise {
 // 			    square(Float.parseFloat(curr_row
 // 						    .elementAt(7 + dir)
 // 						    .getValue()));
+//                  }
 
 	    
 	    // finish calculating averages
@@ -1491,9 +1544,10 @@ public class Star2Devise {
 		for (int dir = 0; dir < 3; dir++) {
 		    avg_coords[rcount][dir] /= (float)num_conformers;
 		    rms[rcount] += square(avg_coords[rcount][dir]);
-// 		    if (DEBUG)
-// 			System.out.println(" avg[" + rcount + "][" + dir +
-// 					   "] = " + avg_coords[rcount][dir]);
+ 		    if (DEBUG >= 3) {
+ 			System.out.println(" avg[" + rcount + "][" + dir +
+ 					   "] = " + avg_coords[rcount][dir]);
+		    }
 		}
 	    }
 
@@ -1501,9 +1555,10 @@ public class Star2Devise {
 	    for (int rcount = 1; rcount < num_residues + 1; rcount++) {
 		rms[rcount] = 
                   	(float)Math.sqrt(rms[rcount]) / num_conformers;
-// 		if (DEBUG)
-// 		    System.out.println(" RMS[" + rcount + "] = " +
-// 				       rms[rcount]);
+ 		if (DEBUG >= 3) {
+ 		    System.out.println(" RMS[" + rcount + "] = " +
+ 				       rms[rcount]);
+	        }
 	    }
 	    
 	} // end if exactly one save frame with this name
@@ -1532,6 +1587,7 @@ public class Star2Devise {
 	return true;
     }
     
+    // ----------------------------------------------------------------------
     protected void finalize() throws Throwable {
 	super.finalize();
     }

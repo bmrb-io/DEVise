@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/07/28 21:04:41  wenger
+// Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
+// cleanup.
+//
 // Revision 1.2  2000/07/27 16:11:23  wenger
 // Added standard DEVise headers.
 //
@@ -31,6 +35,7 @@ public class GetBackbone
 {
 
     /*
+     TEMP -- update this
      * the only parameter is the accession file name, ie bmr4038.str
      * assume each name starts with bmr and ends with .str
      */
@@ -53,8 +58,10 @@ public class GetBackbone
 	    output_file = args[1];
 	}
 
-        Star2Devise starfile = Star2Devise.LocalStar2Devise(file_name);
-        System.out.println(file_name + " parsed successfully.");
+        Star2Devise starfile = null;
+	try {
+            starfile = Star2Devise.LocalStar2Devise(file_name);
+            System.out.println(file_name + " parsed successfully.");
 
 	//TEMP -- remove hard-coded 4096s
 //  	if (starfile.calcChemShifts("4096"))
@@ -72,7 +79,9 @@ public class GetBackbone
 	if (starfile.countConstraints("4096"))
  	    System.out.println
  		("constraints counted successfully.");
+	} catch(Exception ex) {
+            System.err.println(ex.getMessage());
+	}
 	
     } // end main
-
 }

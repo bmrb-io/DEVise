@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/07/28 21:04:42  wenger
+// Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
+// cleanup.
+//
 // Revision 1.2  2000/07/27 16:11:24  wenger
 // Added standard DEVise headers.
 //
@@ -34,17 +38,20 @@ public class Summarize
      */
     public static void main(String [] args)
     {	
-	if (args.length != 1)
-	    {	
-		System.err.println("usage: java Summarize <file name>");
-		System.exit(1);
-	    }
+	if (args.length != 1) {	
+	    System.err.println("usage: java Summarize <file name>");
+	    System.exit(1);
+	}
 
  	String the_number = args[0].substring(3, 7);
 
-        Star2Devise starfile = Star2Devise.WebStar2Devise(args[0]);
-
-	starfile.summarize(the_number);
+	try {
+            Star2Devise starfile = Star2Devise.WebStar2Devise(args[0]);
+	    starfile.summarize(the_number);
+	} catch (Exception ex) {
+	    System.err.println(ex.getMessage());
+	    System.exit(1);
+	}
 	
     } // end main
 }

@@ -50,8 +50,17 @@ chdir ($data_dir)
 # If the summary page for this accession number already exists, assume
 # that we don't have to do anything.
 if (! -e $summary_page) {
-  system ("./summarize $acc_no" ) 
-   and dienice("could not generate data files with java");
+  if (system ("./summarize $acc_no" ) ) {
+    my ($tmpmsg);
+    $tmpmsg = "";
+    if (open(SUMM_OUT, "summarize.out")) {
+      while (<SUMM_OUT>) {
+        $tmpmsg .= $_ . '<p>';
+      }
+      close(SUMM_OUT);
+    }
+    dienice($tmpmsg);
+  }
 
   # Make sure the summary page is world-readable.
   chmod 0644, "$summary_page";
@@ -109,7 +118,7 @@ sub dienice {
   print $query->header;
   print $query->start_html;
   print "<h2>CGI Error</h2>\n";
-  print "Sorry, $errmsg<p>\n";
+  print "$errmsg<p>\n";
   print $query->end_html;
   exit;
 }
