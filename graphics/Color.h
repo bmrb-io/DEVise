@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/20 16:49:03  jussi
+  Replaced green1 with DarkSeaGreen.
+
   Revision 1.6  1996/02/02 21:54:25  jussi
   Removed reference to HightlightColor. All highlighting is
   done with xor'ing so foreground color won't matter.
@@ -83,6 +86,7 @@ const Color BlueColor3		= 39;
 const Color BlueColor4		= 40;
 const Color GoldColor1		= 41;
 const Color GoldColor2		= 42;
+const Color XorColor            = 1000;
 
 const Color ForegroundColor	= BlackColor;
 const Color BackgroundColor	= AntiqueWhiteColor;
