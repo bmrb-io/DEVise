@@ -20,26 +20,33 @@
 
 include ../../Makefile.common
 
-#ARCH_FLAGS = -DSOLARIS
+DTE_DIR = ../../DTE
 
-CFLAGS = -gstabs $(ARCH_FLAGS) -I../../DTE -I../../graphics \
+DTE_INCLUDES =  -I$(DTE_DIR)/Core -I$(DTE_DIR) -I$(DTE_DIR)/StandAlone \
+	-I../../graphics \
 	-I../../graphics.new \
-	-I../../devread -I../../attrproj \
+	-I../../devread -I../../attrproj 
+
+CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused \
 	-DUNIX -DATTRPROJ -DLIBCS \
 	-fexternal-templates \
 
-LIBSRC = resolve.c my.yacc.tab.c lex.yy.c site.c types.c listop.c DevRead.c\
-	catalog.c SockStream.c url.c StandardRead.c Engine.c \
-	TuplePtr.Plex.c TuplePtr.XPlex.c \
-	Dql.c DqlInclude.c \
-	../attrproj/ApParseCat.c
+CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
+	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c 
+
+DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c ../attrproj/ApParseCat.c
+
+STAND_ALONE_SRC = main.c
+
+LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
 LIBOBJ = $(LIBSRC:.c=.o)
+STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME)
+all: $(LIBNAME) dte
 
 $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)
