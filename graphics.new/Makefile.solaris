@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.64  1997/03/28 16:10:14  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -2387,14 +2391,14 @@ testViewRanges.o: ../graphics/Transform.h ../graphics/VisualArg.h
 testViewRanges.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 testViewRanges.o: ../graphics/Compress.h ../graphics/DevError.h
 testViewRanges.o: /usr/include/errno.h /usr/include/sys/errno.h
-testViewRanges.o: ../graphics/DualWindowRep.h /s/tcl/include/tcl.h
-testViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/Dispatcher.h
-testViewRanges.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-testViewRanges.o: /usr/include/string.h ../graphics/Journal.h
-testViewRanges.o: ../graphics/Control.h ../graphics/ClassDir.h
-testViewRanges.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-testViewRanges.o: ../graphics/Init.h ../graphics/BufPolicy.h
-testViewRanges.o: ../graphics/Cursor.h ../graphics/DevFont.h RangeCallback.h
+testViewRanges.o: ../graphics/DualWindowRep.h ViewRanges.h ../graphics/View.h
+testViewRanges.o: ../graphics/Dispatcher.h /usr/include/unistd.h
+testViewRanges.o: /usr/include/sys/unistd.h /usr/include/string.h
+testViewRanges.o: ../graphics/Journal.h ../graphics/Control.h
+testViewRanges.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+testViewRanges.o: ../graphics/AttrList.h ../graphics/Init.h
+testViewRanges.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+testViewRanges.o: ../graphics/DevFont.h RangeCallback.h
 testVoidArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testVoidArray.o: /usr/include/sys/va_list.h /usr/include/stdlib.h VoidArray.h
 testVoidArray.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -2805,12 +2809,11 @@ ParseAPI.o: DataSourceBuf.h UpdateLink.h VisualLink.h ../graphics/AssoArray.h
 ParseAPI.o: Action.h PointStorage.h KGraph.h ../graphics/Util.h ParseCat.h
 ParseAPI.o: TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h
 ParseAPI.o: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: /s/tcl/include/tcl.h RecordLink.h RecFile.h
-ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
-ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
-ParseAPI.o: ViewLens.h QueryProc.h TDataViewX.h GDataBin.h TDataCMap.h
-ParseAPI.o: ConnectorShape.h Connector.h ../graphics/WinClassInfo.h
-ParseAPI.o: ../DTE/DeviseSpecific/CatalogComm.h
+ParseAPI.o: RecordLink.h RecFile.h ../graphics/FilterQueue.h DataSeg.h
+ParseAPI.o: Version.h DevFileHeader.h ../graphics/Display.h
+ParseAPI.o: ../graphics/ColorMgr.h TDataAscii.h ViewLens.h QueryProc.h
+ParseAPI.o: TDataViewX.h GDataBin.h TDataCMap.h ConnectorShape.h Connector.h
+ParseAPI.o: ../graphics/WinClassInfo.h ../DTE/DeviseSpecific/CatalogComm.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h
 PointStorage.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 PointStorage.o: ../graphics/DeviseTypes.h /usr/include/values.h

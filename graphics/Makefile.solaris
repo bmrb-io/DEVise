@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.59  1997/03/28 16:09:24  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -777,7 +781,8 @@ testWindowRep.o: Exit.h Journal.h VisualArg.h Color.h Pattern.h Display.h
 testWindowRep.o: Geom.h /usr/include/math.h /usr/include/floatingpoint.h
 testWindowRep.o: /usr/include/sys/ieeefp.h ColorMgr.h WindowRep.h Transform.h
 testWindowRep.o: DevisePixmap.h Compress.h DevError.h /usr/include/errno.h
-testWindowRep.o: /usr/include/sys/errno.h Init.h BufPolicy.h
+testWindowRep.o: /usr/include/sys/errno.h Init.h BufPolicy.h Control.h
+testWindowRep.o: ClassDir.h
 xv24to8.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xv24to8.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 xv24to8.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -816,43 +821,6 @@ xv24to8.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 xv24to8.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 xv24to8.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 xv24to8.o: /usr/include/sys/byteorder.h
-xvgif.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
-xvgif.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-xvgif.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-xvgif.o: /usr/include/sys/select.h /usr/include/sys/time.h
-xvgif.o: /usr/include/sys/time.h /usr/include/string.h /usr/include/fcntl.h
-xvgif.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
-xvgif.o: /usr/include/sys/unistd.h /usr/include/stdio.h
-xvgif.o: /usr/include/sys/va_list.h /usr/include/math.h
-xvgif.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-xvgif.o: /usr/include/ctype.h /usr/include/errno.h /usr/include/sys/errno.h
-xvgif.o: /usr/include/malloc.h /s/X11/include/X11/Xlib.h
-xvgif.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-xvgif.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-xvgif.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
-xvgif.o: /s/X11/include/X11/keysymdef.h /s/X11/include/X11/Intrinsic.h
-xvgif.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
-xvgif.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-xvgif.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-xvgif.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
-xvgif.o: /usr/include/signal.h /usr/include/sys/signal.h
-xvgif.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-xvgif.o: /usr/include/vm/faultcode.h ../graphics.new/machdep.h
-xvgif.o: /usr/include/limits.h /usr/include/sys/param.h
-xvgif.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-xvgif.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-xvgif.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-xvgif.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-xvgif.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-xvgif.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-xvgif.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-xvgif.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-xvgif.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-xvgif.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-xvgif.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-xvgif.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-xvgif.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-xvgif.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 xvgifwr.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xvgifwr.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 xvgifwr.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
