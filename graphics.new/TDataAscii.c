@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/07/12 18:24:52  wenger
+  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+  to TDataAscii.
+
   Revision 1.31  1996/07/05 15:20:01  jussi
   Data source object is only deleted in the destructor. The dispatcher
   now properly destroys all TData objects when it shuts down.
@@ -152,6 +156,7 @@
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DataSourceBuf.h"
+#include "DerivedDataSource.h"
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
@@ -174,27 +179,10 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
   DO_DEBUG(printf("TDataAscii::TDataAscii(%s, %s, %s, %d)\n",
                   name, type, param, recSize));
 
-  char *dataBuf = NULL;
-
   _name = name;
   _type = type;
   _param = param;
   _recSize = recSize;
-
-  if (!strcmp(_type, "UNIXFILE")) {
-    _file = CopyString(_param);
-  } else if (!strcmp(_type, "BUFFER")) {
-    dataBuf = param;
-    _file = NULL;// So delete doesn't crash in destructor.
-#ifndef ATTRPROJ
-  } else if (!strcmp(_type, "WWW")) {
-    _file = MakeCacheFileName(_name, _type);
-#endif
-  } else {
-    fprintf(stderr, "Invalid TData type: %s\n", _type);
-    DOASSERT(0, "Invalid TData type");
-  }
-
   _data = NULL;
 
   // Find out whether the data occupies an entire file or only
@@ -206,6 +194,13 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
   DataSeg::Get(segLabel, segFile, segOffset, segLength);
 
+  // Check that data segment label matches TData name
+
+  if (strcmp(_name, segLabel))
+  {
+      DOASSERT(false, "Data segment does not match tdata");
+  }
+
   // Now instantiate the appropriate type of object, according to
   // whether this is a tape, disk file, or Web resource, and whether
   // or not the data occupies the entire file.
@@ -213,25 +208,24 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 #ifndef ATTRPROJ
   if (!strcmp(_type, "WWW"))
   {
-    if (strcmp(_name, segLabel))
-    {
-      DOASSERT(false, "Data segment does not match tdata");
-    }
-    if ((segOffset == 0) && (segLength == 0))
-    {
-      _data = new DataSourceWeb(_param, NULL, _file);
-    }
-    else
-    {
-      _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, _file,
-                                                   segOffset, segLength);
-    }
+      char *file = MakeCacheFileName(_name, _type);
+      if ((segOffset == 0) && (segLength == 0))
+      {
+          _data = new DataSourceWeb(_param, NULL, file);
+      }
+      else
+      {
+          _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, file,
+                                                       segOffset, segLength);
+      }
+      delete file;
   }
   else
 #endif
   if (!strcmp(_type, "UNIXFILE"))
   {
-    if (strcmp(_file, segFile) || strcmp(_name, segLabel))
+    char *file = _param;
+    if (strcmp(file, segFile))
     {
       DOASSERT(false, "Data segment does not match tdata");
     }
@@ -241,33 +235,45 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
         || !strncmp(name, "/dev/nrst", 9)) {
       if ((segOffset == 0) && (segLength == 0))
       {
-        _data = new DataSourceTape(_file, NULL);
+        _data = new DataSourceTape(file, NULL);
       }
       else
       {
-        _data = new DataSourceSegment<DataSourceTape>(_file, NULL, NULL,
+        _data = new DataSourceSegment<DataSourceTape>(file, NULL, NULL,
                                                       segOffset, segLength);
       }
     } else {
       if ((segOffset == 0) && (segLength == 0))
       {
-        _data = new DataSourceFileStream(_file, NULL);
+        _data = new DataSourceFileStream(file, NULL);
       }
       else
       {
-        _data = new DataSourceSegment<DataSourceFileStream>(_file, NULL, NULL,
+        _data = new DataSourceSegment<DataSourceFileStream>(file, NULL, NULL,
                                                             segOffset,
                                                             segLength);
       }
     }
   }
-  else
-  /* Buffer */
+  else if (!strcmp(_type, "BUFFER")
+           || DerivedDataSource::IsDerivedDataType(_type))
   {
-    if (strcmp(_name, segLabel))
-    {
-      DOASSERT(false, "Data segment does not match tdata");
+    // For regular BUFFER data sources, _param is a pointer to the buffer
+
+    char *dataBuf = _param;
+
+    // For derived data sources, map the name of the data source
+    // to a pointer to the buffer associated with that source
+
+    if (DerivedDataSource::IsDerivedDataType(_type)) {
+        dataBuf = DerivedDataSource::GetDerivedData(_type, _param);
+        if (!dataBuf)
+            fprintf(stderr, "Cannot get data buffer for %s %s\n",
+                    _type, _param);
     }
+
+    DOASSERT(dataBuf, "Invalid buffer data source");
+
     if ((segOffset == 0) && (segLength == 0))
     {
       _data = new DataSourceBuf(dataBuf, NULL);
@@ -277,6 +283,11 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
       _data = new DataSourceSegment<DataSourceBuf>(dataBuf, NULL, NULL,
                                                    segOffset, segLength);
     }
+  }
+  else
+  {
+      fprintf(stderr, "Invalid TData type: %s\n", _type);
+      DOASSERT(0, "Invalid TData type");
   }
 
   DOASSERT(_data, "Out of memory");
@@ -314,7 +325,6 @@ TDataAscii::~TDataAscii()
 
   delete _data;
   delete _index;
-  delete _file;
   delete _param;
   delete _type;
   delete _name;
