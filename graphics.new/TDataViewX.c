@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/07/20 17:06:35  guangshu
+  Small fixes when wirte to HistBuffer.
+
   Revision 1.30  1996/07/19 18:00:30  guangshu
   Added support for histograms.
 
@@ -193,6 +196,9 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Init(this);
 
+  _gstat.Clear();  /* Clear the hashtable and calculate it again */
+
+
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
@@ -334,6 +340,9 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
 
+      //BasicStats for x
+      BasicStats *bs;
+
       // Line and LineShade records prevent record elimination
       if (shape == 13 || shape == 14)
         canElimRecords = false;
@@ -351,6 +360,25 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	_allStats.Sample(x, y);
 	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
       }
+
+      int X = (int) x;
+      if(_gstat.Lookup(X, bs)) {
+	bs->Sample(x,y);
+      } else {
+	bs = new BasicStats();
+	bs->Init(0);
+	bs->Sample(x, y);
+	_gstat.Insert(X, bs);
+/*	if(_gstat.Lookup(X, bs)){
+	   printf("%d %d %.2f %.2f %.2f %.2f\n",
+                   X, (int)bs->GetStatVal(STAT_COUNT),
+                   bs->GetStatVal(STAT_YSUM),
+                   bs->GetStatVal(STAT_MEAN),
+                   bs->GetStatVal(STAT_MAX),
+                   bs->GetStatVal(STAT_MIN));
+        } else { printf("Whoops! Insert failed\n"); } */
+      } 
+
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
       if (x < _queryFilter.xLow || x > _queryFilter.xHigh

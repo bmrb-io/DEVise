@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.44  1996/07/19 18:29:45  guangshu
+#	Added support for histograms.
+#
 #	Revision 1.43  1996/07/16 19:10:00  jussi
 #	Had to undo previous change.
 #
@@ -567,7 +570,8 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
-    if {$source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM"} {
+    if {$source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM" \
+		|| $source == "GDATASTAT"} {
         return $command
     }
 
@@ -824,7 +828,8 @@ proc uncacheData {dispname reason} {
 proc getCacheName {source key} {
     global cachedir
 
-    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM"} {
+    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT" \
+		|| $source == "HISTOGRAM" || $source == "GDATASTAT"} {
 	return ""
     }
 
@@ -1191,6 +1196,16 @@ proc scanDerivedSources {} {
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
+
+	set sname "Gstat: $view"
+	set source "GDATASTAT"
+	set schematype GDATASTAT
+	set schemafile $schemadir/physical/GDATASTAT
+	set command "Gstat:$view"
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
+
     }
 }
 

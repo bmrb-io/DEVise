@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/19 18:00:28  guangshu
+  Added support for histograms.
+
   Revision 1.11  1996/07/14 04:06:48  jussi
   Added #include of DeviseTypes.h.
 
@@ -87,6 +90,11 @@ class ViewKGraph;
 #define STAT_ZVAL95L 15
 #define STAT_ZVAL95H 16
 
+//The following is used for in GData Stat
+#define STAT_YSUM    17
+#define STAT_XMIN    18
+#define STAT_XMAX    19
+
 // Number of confidence intervals
 #define NUM_Z_VALS 3
 
@@ -99,7 +107,7 @@ public:
   BasicStats();
   ~BasicStats();
 
-  virtual void Init(ViewGraph *vw);
+  virtual void Init(ViewGraph *vw = 0);
   virtual void Sample(double x, double y);
   virtual void Histogram(double y);
   virtual void Done();

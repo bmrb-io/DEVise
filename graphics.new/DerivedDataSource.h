@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/19 18:00:29  guangshu
+  Added support for histograms.
+
   Revision 1.2  1996/07/12 21:53:31  jussi
   Rewrote once more.
 
@@ -33,7 +36,8 @@
 class DerivedDataSource {
   public:
     static Boolean IsDerivedDataType(char *type) {
-        if ((!strcmp(type, "BASICSTAT")) || (!strcmp(type, "HISTOGRAM")))
+        if ((!strcmp(type, "BASICSTAT")) || (!strcmp(type, "HISTOGRAM"))
+	      || (!strcmp(type, "GDATASTAT")))
             return true;
         return false;
     }
@@ -44,6 +48,8 @@ class DerivedDataSource {
   protected:
     virtual char *GetViewStatistics() = 0;
     virtual char *GetViewHistogram() = 0;
+    virtual char *GetGdataStatistics() = 0;
+
 };
 
 #endif

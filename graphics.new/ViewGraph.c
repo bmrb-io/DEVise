@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/20 17:07:57  guangshu
+  Small fixes when wirte to HistBuffer.
+
   Revision 1.25  1996/07/19 18:00:31  guangshu
   Added support for histograms.
 
@@ -105,6 +108,8 @@
   Added CVS header.
 */
 
+#include <assert.h>
+
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
@@ -133,6 +138,7 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     // no statistics yet
     _statBuffer[0] = 0;
     _histBuffer[0] = 0;
+    _gdataStatBuffer[0] = 0;
 
     // auto scaling is in effect by default
     _autoScale = true;
@@ -161,6 +167,8 @@ ViewGraph::~ViewGraph()
         link->DeleteView(this);
     }
     _slaveLink.DoneIterator(index);
+
+    delete &_gstat;
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -481,6 +489,7 @@ void ViewGraph::PrepareStatsBuffer()
     /* initialize statistics buffer */
     _statBuffer[0] = 0;
     _histBuffer[0] = 0;
+    _gdataStatBuffer[0] = 0;
 
     /* find last non-zero count */
     int j;
@@ -528,9 +537,29 @@ void ViewGraph::PrepareStatsBuffer()
 	    strcat(_histBuffer, line);
         }
     }
+
+    BasicStats *bs;
+    //Only put count ysum mean max min into the buffer considering the size of buffer 
+    for(int i = (int)_allStats.GetStatVal(STAT_XMIN); i<=(int)_allStats.GetStatVal(STAT_XMAX); i++) {
+	if(_gstat.Lookup(i, bs)) {
+	   DOASSERT(bs,"HashTable lookup error\n");
+	   sprintf(line, "%d %d %.2f %.2f %.2f %.2f\n",
+		   i, (int)bs->GetStatVal(STAT_COUNT),
+		   bs->GetStatVal(STAT_YSUM),
+		   bs->GetStatVal(STAT_MAX),
+		   bs->GetStatVal(STAT_MEAN),
+		   bs->GetStatVal(STAT_MIN));
+            if(strlen(_gdataStatBuffer) + strlen(line) + 1 > sizeof _gdataStatBuffer) {
+		   fprintf(stderr, "Out of GData Stat Buffer space\n");
+		   break;
+            }
+	strcat(_gdataStatBuffer, line);
+        }
+      }	
 #ifdef DEBUG
     printf("%s\n", _statBuffer);
     printf("%s\n", _histBuffer);
+    printf("%s\n", _gdataStatBuffer);
 #endif
 }
 
@@ -608,3 +637,5 @@ Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
 
     return false;
 }
+
+

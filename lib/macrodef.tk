@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.57  1996/07/20 17:11:57  guangshu
+#	Added support for Histogram and put Max Mean Min stats in the same view
+#
 #	Revision 1.56  1996/07/15 17:20:32  jussi
 #	Fixed minor bug when opening a new non-UNIXFILE, non-WWW
 #	data source.
@@ -1012,7 +1015,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 
         # puts "Mapping will have ylo $ylo and yhi $yhi"
 	
-        if {$subder == "Stat"} {
+        if {$subder == "Stat" || $subder == "Gstat"} {
             if {$name=="Max"} {
                  set shapeAttr0 0.1
             }
@@ -1033,7 +1036,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         set viewbasename "View"
 
 	set mmm_list {Max Mean Min}	
-	if {$subder != "Stat" || !$view_exist || [lsearch $mmm_list $name] < 0} {
+	set stat_list {Stat Gstat}
+	if {[lsearch $stat_list $subder] < 0 || !$view_exist || [lsearch $mmm_list $name] < 0} {
 	    set viewinstance [UniqueName $viewbasename]
 	    if {[lsearch [ViewSet] $viewinstance] >= 0} {
 		dialog .viewError "View Error" \
@@ -1056,7 +1060,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	}
 	     
         # ask DEVise to turn on/off label
-	if {$subder == "Stat"} {
+	if {$subder == "Stat" || $subder == "Gstat"} {
 	    if {$name == "Max" || $name == "Mean" || $name == "Min"} {
 		if {$mmmtext==""} {
 		    set titletext "$name vs. $x"

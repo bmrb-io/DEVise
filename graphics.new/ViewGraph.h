@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/19 18:00:32  guangshu
+  Added support for histograms.
+
   Revision 1.21  1996/07/19 02:55:00  jussi
   Added point storage for storing missing data points.
 
@@ -93,11 +96,13 @@
 #ifndef ViewGraph_h
 #define ViewGraph_h
 
+//#include "HashTable.h"
 #include "View.h"
 #include "DList.h"
 #include "Color.h"
 #include "BasicStats.h"
 #include "DerivedDataSource.h"
+#include "GdataStat.h"
 
 const int MAXCOLOR = 43;
 
@@ -175,6 +180,7 @@ public:
   /* Return pointer to buffer with view statistics */
   virtual char *GetViewStatistics() { return _statBuffer; }
   virtual char *GetViewHistogram()  { return _histBuffer; }
+  virtual char *GetGdataStatistics() { return _gdataStatBuffer; }
 
   /* Set/get action */
   void SetAction(Action *action) { _action = action; }
@@ -187,6 +193,9 @@ public:
   virtual PointStorage *GetPointStorage() { return &_pstorage; }
 
  protected:
+  /* Hash function assuming index now is integer */
+/*  static int HashFun(int &index, int numOfBucks) { return index%numOfBucks; }*/
+
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer();
 
@@ -204,6 +213,11 @@ public:
   char _statBuffer[3072];          /* view statistics */
   char _histBuffer[3072];	   /* histograms */
   Coord yMax, yMin;		   /* the ymax and ymin for _allStats */
+
+  char _gdataStatBuffer[3072];         /* the statistics for each x */
+
+/*  HashTable<int, BasicStats *> _hashTable; */ /* hashTable for gdata stats */
+  GdataStat _gstat;
   
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */

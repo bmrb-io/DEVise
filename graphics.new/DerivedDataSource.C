@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/19 18:00:28  guangshu
+  Added support for histograms.
+
   Revision 1.3  1996/07/12 21:53:30  jussi
   Rewrote once more.
 
@@ -47,7 +50,7 @@ char *DerivedDataSource::GetDerivedData(char *type, char *name)
 
     DerivedDataSource *src = 0;
 
-    if (!strcmp(name, "View") || !strcmp(name, "Hist")) {
+    if (!strcmp(name, "View") || !strcmp(name, "Hist") || !strcmp(name, "Gstat")) {
         ViewGraph *v = (ViewGraph *)ControlPanel::FindInstance(objectName);
         if (!v) {
             fprintf(stderr, "Cannot find view %s\n", objectName);
@@ -76,6 +79,9 @@ char *DerivedDataSource::GetDerivedData(char *type, char *name)
     }
     if (!strcmp(type, "HISTOGRAM")) {
 	dataBuf = src->GetViewHistogram();
+    }
+    if(!strcmp(type, "GDATASTAT")) {
+	dataBuf = src->GetGdataStatistics();
     }
 
     return dataBuf;

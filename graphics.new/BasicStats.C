@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/19 18:00:27  guangshu
+  Added support for histograms.
+
   Revision 1.18  1996/07/14 04:07:03  jussi
   Removed unnecessary #include statements.
 
@@ -104,7 +107,7 @@ void BasicStats::Init(ViewGraph *vw)
 
   nval = 0;
   nsamples = 0;
-  ViewStats::Init(vw);
+  if (vw) ViewStats::Init(vw);
   for(int j=0; j<HIST_NUM; j++){
 	hist[j]=0;
   }
@@ -123,7 +126,6 @@ void BasicStats::Sample(double x, double y)
   }
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
-/*width = (ymax-ymin)/HIST_NUM; */
 
   // Group samples into batches
   // For values within a batch, simply add to total - at the end of the
@@ -177,7 +179,6 @@ void BasicStats::Done()
     if (nsamples >= 1) {
       var = ((float)ysum_sqr) / (nsamples - 1) - avg * avg;
       std = sqrt(var);
-/*      width = (ymax-ymin)/HIST_NUM; */
     } else {
       var = 0;
       std = 0;
@@ -254,6 +255,9 @@ Coord BasicStats::GetStatVal(int statnum)
     case STAT_ZVAL90H: return chigh[1];
     case STAT_ZVAL95L: return clow[2];
     case STAT_ZVAL95H: return chigh[2];
+    case STAT_YSUM:    return ysum;
+    case STAT_XMIN:    return xmin;
+    case STAT_XMAX:    return xmax;
     default:           return 0;
   }
 
@@ -288,6 +292,7 @@ char *BasicStats::GetStatName(int statnum)
     case STAT_ZVAL90H: return "ZVAL90H";
     case STAT_ZVAL95L: return "ZVAL95L";
     case STAT_ZVAL95H: return "ZVAL95H";
+    case STAT_YSUM:    return "YSUM";
     default:           return "NONE";
   }
 }
