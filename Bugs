@@ -545,6 +545,17 @@ Num Date        Status  Description
 			(rkw)
 			Assigned: Jussi
 
+131 01/22/97	FIXED	Clicking on the Mapping button while a mapping
+			editor dialog is already open causes a Tcl error
+			message. (jpm)
+
+132 01/22/97	FIXED	Saving a session as a template and then opening
+			it causes incorrect numbers to be displayed in
+			the TData catalog header ('Select file m of n').
+			(jpm)
+
+133 01/22/97	FIXED	Buttons in the Stack dialog are not aligned. (jpm)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
