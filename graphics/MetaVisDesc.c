@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2000/07/17 16:07:40  wenger
+  Added visual filter info to metavisualization session description.
+
   Revision 1.1  2000/07/12 20:49:19  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -343,25 +346,30 @@ MetaVisDesc::WriteView(FILE *file, View *view, Boolean writeComments)
     //
     // Size and location relative to screen.
     //
-    //TEMP -- location needs changes for batch mode
-    int viewX, viewY;
-    unsigned viewWidth, viewHeight;
-    view->RealGeometry(viewX, viewY, viewWidth, viewHeight);
-    view->AbsoluteOrigin(viewX, viewY);
     char tmpBuf[64];
+    if (view->Mapped()) {
+        //TEMP -- location needs changes for batch mode
+        int viewX, viewY;
+        unsigned viewWidth, viewHeight;
+        view->RealGeometry(viewX, viewY, viewWidth, viewHeight);
+        view->AbsoluteOrigin(viewX, viewY);
 
-    sprintf(tmpBuf, "%d", viewX);
-    fprintf(file, _tableFormat, view->GetName(), _viewXStr, tmpBuf);
+        sprintf(tmpBuf, "%d", viewX);
+        fprintf(file, _tableFormat, view->GetName(), _viewXStr, tmpBuf);
 
-    sprintf(tmpBuf, "%d", viewY);
-    fprintf(file, _tableFormat, view->GetName(), _viewYStr, tmpBuf);
+        sprintf(tmpBuf, "%d", viewY);
+        fprintf(file, _tableFormat, view->GetName(), _viewYStr, tmpBuf);
 
-    sprintf(tmpBuf, "%d", viewWidth);
-    fprintf(file, _tableFormat, view->GetName(), _viewWidthStr, tmpBuf);
+        sprintf(tmpBuf, "%d", viewWidth);
+        fprintf(file, _tableFormat, view->GetName(), _viewWidthStr, tmpBuf);
 
-    sprintf(tmpBuf, "%d", viewHeight);
-    fprintf(file, _tableFormat, view->GetName(), _viewHeightStr, tmpBuf);
+        sprintf(tmpBuf, "%d", viewHeight);
+        fprintf(file, _tableFormat, view->GetName(), _viewHeightStr, tmpBuf);
+    }
 
+    //
+    // Visual filter.
+    //
     const VisualFilter *filter = view->GetVisualFilter();
 
     if (view->GetXAxisAttrType() == DateAttr) {
