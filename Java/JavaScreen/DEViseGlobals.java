@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2001/01/22 17:08:12  wenger
+// Added DEViseCheckPop to actually connect to the jspop when checking
+// with cron; added JAVAC_CheckPop command to make this possible; cleaned
+// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
+// constructor error messages now go to stderr.
+//
 // Revision 1.45  2001/01/08 20:31:51  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -169,7 +175,8 @@ public final class DEViseGlobals
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
                               API_CTL = 3, API_JAVA = 5,
 			      // API_IMAGE = 6, API_DATA = 7,
-			      API_JAVA_WID = 8;
+			      API_JAVA_WID = 8,
+			      API_JAVA_CID = 9;    
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
