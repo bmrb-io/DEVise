@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/03/20 20:42:23  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.18  1997/03/14 18:36:13  donjerko
   Making space for the SQL UNION operator.
 
@@ -521,7 +525,7 @@ public:
 		TRY(genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp), false);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
-		return ((IBool*) genPtr->opPtr(value, arg.value))->getValue();
+		return genPtr->opPtr(value, arg.value);
 	}
 	virtual void display(ostream& out, int detail = 0){
 		displayAs(out, value, typeID);
@@ -568,7 +572,7 @@ public:
 		TRY(genPtr = getOperatorPtr("=", typeID, y->typeID, tmp), false);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
-		if(!((IBool*) genPtr->opPtr(value, y->value))->getValue()){
+		if(!genPtr->opPtr(value, y->value)){
 			return false;
 		}
 		return BaseSelection::match(y, upTo);

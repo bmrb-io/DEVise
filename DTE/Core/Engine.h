@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/20 20:42:19  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.7  1997/03/14 18:36:10  donjerko
   Making space for the SQL UNION operator.
 
@@ -54,6 +58,7 @@ public:
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
 		delete [] writePtrs;
+		delete [] attributeNames;
 	}
 	int optimize();	// throws
      virtual int getNumFlds(){
@@ -77,8 +82,14 @@ public:
 		assert(topNode);
 		return topNode->getOrderingAttrib();
      }
-	void renameAttributes(String* newAttributeNames){
-		attributeNames =  newAttributeNames;
+	void renameAttributes(const String* newAttributeNames){
+		assert(attributeNames == NULL);
+		int nf = topNode->getNumFlds();
+		attributeNames = new String[nf];
+		assert(attributeNames);
+		for(int i = 0; i < nf; i++){
+			attributeNames[i] = newAttributeNames[i];
+		}
 	}
 	Stats* getStats(){
 		return topNode->getStats();

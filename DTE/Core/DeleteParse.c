@@ -53,7 +53,7 @@ Site* DeleteParse::createSite(){
 	TRY(site->enumerate(), NULL);
 	site->initialize();
 	while((tuple = site->getNext())){
-		cond = ((IBool*) predicate->evaluate(tuple, NULL))->getValue();
+		cond = predicate->evaluate(tuple, NULL);
 		if(!cond){
 			tupleList.append(tuple);
 		}

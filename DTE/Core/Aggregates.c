@@ -791,7 +791,7 @@ Type * GenFunction::min()
 	
 	while(next != NULL){
 		
-		if (((IBool * )grtrPtr->opPtr(minimum,next[pos]))->getValue()){
+		if (grtrPtr->opPtr(minimum,next[pos])){
 			minimum = next[pos]; 
 		}
 		next = scanNext(); 
@@ -810,7 +810,7 @@ Type * GenFunction::max()
 
 	while(next != NULL){
 		
-		if (((IBool *)lessPtr->opPtr(maximum ,next[pos]))->getValue())
+		if (lessPtr->opPtr(maximum ,next[pos]))
 			maximum = (Tuple *)next[pos];
 		next = scanNext(); 
 	}
@@ -881,7 +881,7 @@ Tuple * GenFunction::scanNext()
 			selected = true;
 		else 
 			// Evaluate the boolean result..
-		 if (((IBool *)curr[filler->aggregate->withPredicatePos])->getValue())
+		 if (curr[filler->aggregate->withPredicatePos])
 				selected = true;
 		
 		if (currPos <= highPos)
@@ -932,10 +932,9 @@ int Grouping::tupleCompare(int *positions,GeneralPtr **lessPtr,GeneralPtr ** equ
 		if (positions[i] < 0 ){
 			continue;
 		}
-		if (((IBool*)lessPtr[i]->opPtr(left[positions[i]],right[positions[i]]))->getValue())
+		if (lessPtr[i]->opPtr(left[positions[i]],right[positions[i]]))
 			return -1;
-		else if (((IBool*)
-		equalPtr[i]->opPtr(left[positions[i]],right[positions[i]]))->getValue() == false)
+		else if (! equalPtr[i]->opPtr(left[positions[i]],right[positions[i]]))
 			return 1;	
 	}
 	return 0;

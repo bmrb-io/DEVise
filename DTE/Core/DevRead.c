@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.10  1997/03/20 20:42:17  donjerko
+    Removed the List usage from Aggregates and replaced it with Plex, a
+    form of dynamic array.
+
     Revision 1.9  1997/03/19 21:33:46  wenger
     Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
     the data file name instead of the schema file name.
@@ -113,7 +117,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
     DataSeg::Set(dataFile, dataFile, 0, 0);
 
     char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
-    cout << "Name of the tdata is: " << _tDataP->GetName() << endl;
+//    cout << "Name of the tdata is: " << _tDataP->GetName() << endl;
     DOASSERT(schemaName != NULL, "Can't parse schema.");
 
     _recBufSize = _tDataP->RecSize();

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/03/20 20:42:26  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.14  1997/02/25 22:14:55  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -184,7 +188,7 @@ public:
 	}
 	virtual Stats* getStats(){
 		if(!stats){
-			stats = new Stats(10);
+			stats = new Stats(getNumFlds());
 		}
 		return stats;
 	}
@@ -247,6 +251,9 @@ public:
 		assert(stats);
 		mySelect = createSelectList(nm, iterator);
 	}
+	virtual ~DirectSite(){
+		iterator = NULL;	// Local table is the owner of this iterator
+	}
 	virtual void typify(String option){}
 };
 
@@ -278,6 +285,7 @@ public:
 		this->iterator = iterator;
 		numFlds = mySelect->cardinality();
 		directSite = new DirectSite(name, iterator);
+		this->iterator = NULL;
 		fout = NULL;
 		writePtrs = NULL;
 	}
@@ -299,6 +307,7 @@ public:
 	virtual ~LocalTable(){
 		delete fout;
 		delete writePtrs;
+		delete directSite;
 	}
 	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
@@ -340,6 +349,7 @@ public:
 	}
 	virtual List<Site*>* generateAlternatives();
      virtual Offset getOffset(){
+		assert(iterator);
           return iterator->getOffset();
      }
 	virtual void writeOpen(int mode = ios::app);

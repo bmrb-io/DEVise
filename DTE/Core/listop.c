@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/21 22:21:48  donjerko
+  Added hierarchical namespace.
+
   Revision 1.4  1996/12/15 06:41:08  donjerko
   Added support for RTree indexes
 
@@ -205,7 +208,7 @@ bool boolCheckList(List<BaseSelection*>* list){
 bool evaluateList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
 	list->rewind();
 	while(!list->atEnd()){
-		bool value = ((IBool*)list->get()->evaluate(left, right))->getValue();
+		bool value = list->get()->evaluate(left, right);
 		if(value == false){
 			return false;
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/14 18:36:14  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.12  1997/03/06 02:35:32  donjerko
   Undefined DEBUG
 
@@ -335,19 +338,13 @@ public:
 };
 
 class IBool {
-private:
-	bool value;
+
+	// This class is "intupled", meaning that the void* from the tuple
+	// caries the value.
+	// This solution is a bit dirty but the fast execution of
+	// relational operators is critical for reasonable performance
+
 public:
-	IBool(bool value) : value(value){}
-	bool getValue(){
-		return value;
-	}
-	void setValue(bool i){
-		value = i;
-	}
-     ostream& display(ostream& out){
-          return out << value;
-     }
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID arg, TypeID& retType){
 		retType = "bool";

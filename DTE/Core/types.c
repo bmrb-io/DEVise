@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/14 18:36:13  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.11  1997/03/06 02:35:31  donjerko
   Undefined DEBUG
 
@@ -60,19 +63,19 @@
 Type* dateEq(Type* arg1, Type* arg2){
 	time_t val1 = ((IInt*)arg1)->getValue();
 	time_t val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(val1 == val2);
 }
 
 Type* dateLT(Type* arg1, Type* arg2){
 	time_t val1 = ((IInt*)arg1)->getValue();
 	time_t val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(val1 < val2);
 }
 
 Type* dateGT(Type* arg1, Type* arg2){
 	time_t val1 = ((IInt*)arg1)->getValue();
 	time_t val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 > val2);
+     return (Type*)(val1 > val2);
 }
 
 Type* catEntryName(Type* arg1){
@@ -114,31 +117,31 @@ Type* intDoubleSub(Type* arg1, Type* arg2){
 Type* intEq(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(val1 == val2);
 }
 
 Type* intDoubleEq(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(val1 == val2);
 }
 
 Type* intLT(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(val1 < val2);
 }
 
 Type* intDoubleLT(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(val1 < val2);
 }
 
 Type* intGT(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 > val2);
+     return (Type*)(val1 > val2);
 }
 
 Type* intDoubleDiv(Type* arg1, Type* arg2){
@@ -149,7 +152,7 @@ Type* intDoubleDiv(Type* arg1, Type* arg2){
 Type* intDoubleGT(Type* arg1, Type* arg2){
 	int val1 = ((IInt*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 > val2);
+     return (Type*)(val1 > val2);
 }
 
 Type* doubleAdd(Type* arg1, Type* arg2){
@@ -184,82 +187,74 @@ Type* doubleIntSub(Type* arg1, Type* arg2){
 Type* doubleEq(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(val1 == val2);
 }
 
 Type* doubleIntEq(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(val1 == val2);
 }
 
 Type* doubleLT(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(val1 < val2);
 }
 
 Type* doubleIntLT(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(val1 < val2);
 }
 
 Type* doubleGT(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IBool(val1 > val2);
+     return (Type*)(val1 > val2);
 }
 
 Type* doubleIntGT(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
-     return new IBool(val1 > val2);
+     return (Type*)(val1 > val2);
 }
 
 Type* boolEq(Type* arg1, Type* arg2){
-	bool val1 = ((IBool*)arg1)->getValue();
-	bool val2 = ((IBool*)arg2)->getValue();
-     return new IBool(val1 == val2);
+     return (Type*)(arg1 == arg2);
 }
 
 Type* boolOr(Type* arg1, Type* arg2){
-	bool val1 = ((IBool*)arg1)->getValue();
-	bool val2 = ((IBool*)arg2)->getValue();
-     return new IBool(val1 || val2);
+     return (Type*)(arg1 || arg2);
 }
 
 Type* boolAnd(Type* arg1, Type* arg2){
-	bool val1 = ((IBool*)arg1)->getValue();
-	bool val2 = ((IBool*)arg2)->getValue();
-     return new IBool(val1 && val2);
+     return (Type*)(arg1 && arg2);
 }
 
 Type* boolLT(Type* arg1, Type* arg2){
-	bool val1 = ((IBool*)arg1)->getValue();
-	bool val2 = ((IBool*)arg2)->getValue();
-     return new IBool(val1 < val2);
+     return (Type*)(arg1 < arg2);
 }
 
 Type* stringEq(Type* arg1, Type* arg2){
 	char* val1 = ((IString*)arg1)->getValue();
 	char* val2 = ((IString*)arg2)->getValue();
 	int cmp = strcmp(val1, val2);
-	return new IBool(cmp == 0);
+	return (Type*)(cmp == 0);
 }
 
 Type* stringLT(Type* arg1, Type* arg2){
 	char* val1 = ((IString*)arg1)->getValue();
 	char* val2 = ((IString*)arg2)->getValue();
 	int cmp = strcmp(val1, val2);
-	return new IBool(cmp == -1);
+	return (Type*)(cmp == -1);
 }
 
 Type* stringGT(Type* arg1, Type* arg2){
 	char* val1 = ((IString*)arg1)->getValue();
 	char* val2 = ((IString*)arg2)->getValue();
 	int cmp = strcmp(val1, val2);
-	return new IBool(cmp == 1);
+	return (Type*)(cmp == 1);
 }
 
 Type* intRead(istream& in){
@@ -282,7 +277,7 @@ Type* stringRead(istream& in){
 Type* boolRead(istream& in){
 	bool i;
 	in >> i;
-	return new IBool(i);
+	return (Type*)(i);
 }
 
 Type* catEntryRead(istream& in){
@@ -329,7 +324,12 @@ void doubleWrite(ostream& out, Type* adt){
 
 void boolWrite(ostream& out, Type* adt){
 	assert(adt);
-	((IBool*) adt)->display(out);
+	if(adt){
+		out << true;
+	}
+	else{
+		out << false;
+	}
 }
 
 void catEntryWrite(ostream& out, Type* adt){
@@ -382,13 +382,16 @@ void displayAs(ostream& out, void* adt, String type){
 		((IString*) adt)->display(out);
 	}
 	else if(type == "bool"){
-		((IBool*) adt)->display(out);
+		boolWrite(out, adt);
 	}
 	else if(type == "double"){
 		((IDouble*) adt)->display(out);
 	}
 	else if(type == "catentry"){
 		((CatEntry*) adt)->display(out);
+	}
+	else if(type == "date"){
+		((IDate*) adt)->display(out);
 	}
 	else{
 		cout << "Don't know how to display type: " << type << endl;
@@ -616,7 +619,7 @@ Type * getNullValue(TypeID &root){
 		return new IString("");
 	}
 	else if(root == "bool"){
-		return new IBool(false);
+		return (Type*)(false);
 	}
 	else if(root == "double"){
 		return new IDouble(0);
@@ -901,7 +904,7 @@ void intDestroy(Type* adt){
 }
 
 void boolDestroy(Type* adt){
-	delete (IBool*) adt;
+	// do nothing since the type is intupled
 }
 
 void doubleDestroy(Type* adt){
@@ -962,10 +965,10 @@ void updateHighLow(int numFlds, const OperatorPtr* lessPtrs,
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
 	Tuple* highTup, Tuple* lowTup){
 	for (int i = 0; i < numFlds; i++){
-		if(((IBool*) lessPtrs[i](tup[i], lowTup[i]))->getValue()){
+		if(lessPtrs[i](tup[i], lowTup[i])){
 			lowTup[i] = tup[i];
 		}
-		if(((IBool*) greaterPtrs[i](tup[i], highTup[i]))->getValue()){
+		if(greaterPtrs[i](tup[i], highTup[i])){
 			highTup[i] = tup[i];
 		}
 	}

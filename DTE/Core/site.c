@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/03/20 20:42:25  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.9  1997/02/25 22:14:54  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -114,7 +118,7 @@ void LocalTable::typify(String option){	// Throws exception
 	TRY(typifyList(myWhere, tmpL), );
 	TRY(boolCheckList(myWhere), );
 	if(mySelect == NULL){
-		assert(iterator);
+		assert(directSite);
 		mySelect = createSelectList(name, iterator);
 	}
 	else{
@@ -127,6 +131,8 @@ void LocalTable::typify(String option){	// Throws exception
 	if(ta && ta->getFunction()){
 		String* function = ta->getFunction();
 		int shiftVal = ta->getShiftVal();
+		assert(!"Need to convert iterator to site");
+		assert(iterator);
 		iterator = new FunctionRead(iterator, function, shiftVal);
 		assert(iterator);
 		TRY(iterator->initialize(), );
@@ -494,6 +500,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			retVal->append(newAlt);
 		}
 	}
+	delete indexForTable;
 	return retVal;
 }
 

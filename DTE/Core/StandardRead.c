@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/02/18 18:06:02  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.6  1997/02/03 04:11:32  donjerko
   Catalog management moved to DTE
 
@@ -46,6 +49,11 @@ void StandardRead::open(){	// Throws exception
 	if(!in->good()){
 		String msg = "Number of fields expected";
 		THROW(new Exception(msg), );
+	}
+	if(numFlds > 1000){
+		ostrstream tmp;
+		tmp << "Number of fields (" <<  numFlds << ") too big" << ends;
+		THROW(new Exception(tmp.str()), );
 	}
 	typeIDs = new String[numFlds];
 	attributeNames = new String[numFlds];

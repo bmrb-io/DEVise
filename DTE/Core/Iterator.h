@@ -38,7 +38,7 @@ public:
 
 		// default stats
 
-		return new Stats(10);
+		return new Stats(getNumFlds());
 	}
 	virtual void open(){
 		assert(!"open not implemented on some reader");

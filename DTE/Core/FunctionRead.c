@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/02/03 04:11:27  donjerko
+  Catalog management moved to DTE
+
  */
 
 #include <strstream.h>
@@ -436,7 +439,7 @@ Tuple *FunctionRead::neg_pos_offset()
 							nextTup = NULL;
 							break;
 						}
-					 if (((IBool *)comparePtr->opPtr(nextTup[seqAttrPos],tup[seqAttrPos]))->getValue())
+					 if (comparePtr->opPtr(nextTup[seqAttrPos],tup[seqAttrPos]))
 							dupList->append(tup);
 						else{
 							nextTup = tup;
@@ -477,7 +480,7 @@ Tuple *FunctionRead::neg_pos_offset()
 				nextTup = NULL;
 				return NULL;
 			}
-			if (((IBool*)comparePtr->opPtr(tup[seqAttrPos],nextTup[seqAttrPos]))->getValue())
+			if (comparePtr->opPtr(tup[seqAttrPos],nextTup[seqAttrPos]))
 				dupList->append(tup);
 			else{
 				nextTup = tup;
@@ -528,8 +531,8 @@ Tuple * FunctionRead::pos_pos_offset()
 							nextTup = NULL;
 							break;
 						}
-					 if (((IBool *)comparePtr->opPtr(nextTup[seqAttrPos],
-								tup[seqAttrPos]))->getValue())
+					 if (comparePtr->opPtr(nextTup[seqAttrPos],
+								tup[seqAttrPos]))
 							dupList->append(tup);
 						else{
 							nextTup = tup;
@@ -572,7 +575,7 @@ Tuple * FunctionRead::pos_pos_offset()
 				nextTup = NULL;
 				break;
 			}
-			if (((IBool*)comparePtr->opPtr(tup[seqAttrPos],nextTup[seqAttrPos]))->getValue())
+			if (comparePtr->opPtr(tup[seqAttrPos],nextTup[seqAttrPos]))
 				dupList->append(tup);
 			else{
 				nextTup = tup;

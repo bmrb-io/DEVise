@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/20 20:42:21  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.11  1997/03/14 18:36:11  donjerko
   Making space for the SQL UNION operator.
 
@@ -234,7 +238,6 @@ Site* ViewInterface::getSite(){
 		THROW(new Exception(except), NULL);
 	}
 	engine->renameAttributes(attributeNames);
-	attributeNames = NULL;
 	return new LocalTable("", engine); 
 }
 

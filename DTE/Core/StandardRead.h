@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/02/18 18:06:02  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.6  1997/02/03 04:11:32  donjerko
   Catalog management moved to DTE
 
@@ -45,7 +48,6 @@
 class StandardRead : public Iterator {
 protected:
 	istream* in;
-	ostream* out;
 	int numFlds;
 	String* typeIDs;
 	String* attributeNames;
@@ -54,12 +56,11 @@ protected:
 	Stats* stats;
 public:
      StandardRead(istream* in) : 
-		in(in), out(NULL), numFlds(0), typeIDs(NULL), 
+		in(in), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
 		readPtrs(NULL), order(NULL), stats(NULL) {}
 	virtual ~StandardRead(){
 		delete in;
-		delete out;
 		delete [] typeIDs;
 		delete [] attributeNames;
 		delete [] readPtrs;

@@ -98,9 +98,7 @@ class AggWindow
 		assert(equalOpr->opPtr);
 		assert(n);
 		assert(s);
-		IBool* val = (IBool *)(equalOpr->opPtr)(n[position],s[position]);
-		assert(val);
-		return val->getValue();
+		return (equalOpr->opPtr)(n[position],s[position]);
 	}
 	int compareAttr(Tuple *n,Tuple *s){
 		assert(compOpr);

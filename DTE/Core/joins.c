@@ -92,10 +92,7 @@ Tuple * Joins::getNext()
 	
 	while(1){
 			
-		IBool * boolean = (IBool *)(comparePtr->opPtr)
-					(leftTup[leftSeqAttrPos],rightTup[rightSeqAttrPos]);
-			
-			if (boolean->getValue() == true ){
+			if ((comparePtr->opPtr)(leftTup[leftSeqAttrPos],rightTup[rightSeqAttrPos])){
 				if (evaluateList(myWhere,rightTup,leftTup))
 					break;
 			}
@@ -140,8 +137,8 @@ bool Joins::outerFill(){
 			nextOuterTup = NULL;
 			break;
 		}
-		if (((IBool *)leftequalPtr->opPtr(nextOuterTup[leftSeqAttrPos],
-				next[leftSeqAttrPos]))->getValue())
+		if (leftequalPtr->opPtr(nextOuterTup[leftSeqAttrPos],
+				next[leftSeqAttrPos]))
 				outerRel.append(next);	
 		else{
 			nextOuterTup = next;
@@ -169,8 +166,8 @@ bool Joins::innerFill(){
 			nextInnerTup = NULL;
 			break;
 		}
-		if (((IBool *)rightequalPtr->opPtr(nextInnerTup[rightSeqAttrPos],
-				next[rightSeqAttrPos]))->getValue())
+		if (rightequalPtr->opPtr(nextInnerTup[rightSeqAttrPos],
+				next[rightSeqAttrPos]))
 				innerRel.append(next);	
 		else{
 			nextInnerTup = next;
