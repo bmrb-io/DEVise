@@ -276,6 +276,10 @@ Num Date        Status  Description
 080 11/21/96	OPEN	'Working' should be shown while drilling down as
 			the result of a middle button click. (ml/rkw)
 
+081 11/22/96	OPEN	Derived data histograms not always working (see
+			the session test/sales1.tk, must be on tiger to
+			use this). (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
