@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1995/11/19 06:03:24  ravim
+#  Initial version of user/superuser modes and handling of logical/physical
+#  schemas.
+#
 #  Revision 1.5  1995/11/01 01:37:55  ravim
 #  Several minor changes.
 #
@@ -42,7 +46,7 @@
 
 ############################################################
 
-set catalogFile $datadir/schema/catalog.tcl
+set catalogFile $schemadir/schema/catalog.tcl
 if {![file exists $catalogFile]} {
     puts "Cannot read catalog file for physical to logical associations"
     exit 1
@@ -55,7 +59,7 @@ source $catalogFile
 
 # Schema browser for  a normal user - can manipulate only the logical schema
 proc SchemaUser {} {
-    global datadir physchema
+    global schemadir physchema
     # Show a list of currently defined physical schemas and buttons to either
     # create a Open one of these
 
@@ -81,7 +85,7 @@ proc SchemaUser {} {
     pack .psch.mid.list -fill x
 
     # Search for files in the schema/physical directory to populate the list
-    set flist [glob $datadir/schema/physical/*]
+    set flist [glob $schemadir/schema/physical/*]
     foreach fname $flist {
 	.psch.mid.list insert end [file tail $fname]
     }    
@@ -110,7 +114,7 @@ proc SchemaUser {} {
 ########################################################
 # Schema browser for the superuser - can change both physical and logical parts
 proc SchemaSuperuser {} {
-    global datadir
+    global schemadir
     # Show a list of currently defined schemas and buttons to either
     # create a New one or Open an existing one
 
@@ -136,7 +140,7 @@ proc SchemaSuperuser {} {
     pack .psch.mid.list -fill x
 
     # Search for files in the schema/physical directory to populate the list
-    set flist [glob $datadir/schema/physical/*]
+    set flist [glob $schemadir/schema/physical/*]
     foreach fname $flist {
 	.psch.mid.list insert end [file tail $fname]
     }
@@ -418,7 +422,7 @@ proc newschema {} {
 
 #-----------------------------------------------------------
 proc openschema {filename} {
-    global sname ftype comm separ attrlist aname atype asort fsBox datadir \
+    global sname ftype comm separ attrlist aname atype asort fsBox schemadir \
 	    tgrps
 
     # Set some defaults
@@ -465,9 +469,9 @@ proc showmesg {str} {
 
 ################################################################
 proc writelogical {name} {
-    global tgrps datadir physchema
+    global tgrps schemadir physchema
 
-    set f [open $datadir/schema/logical/$name w]
+    set f [open $schemadir/schema/logical/$name w]
     
     # First output the physical schema name
     puts $f "physical $physchema"
@@ -479,9 +483,9 @@ proc writelogical {name} {
 }
 
 proc writephysical {name type comm sep alist} {
-    global datadir
+    global schemadir
 
-    set f [open $datadir/schema/physical/$name w]
+    set f [open $schemadir/schema/physical/$name w]
 
     puts $f "type $name $type" 
     puts $f "comment $comm"
@@ -502,10 +506,10 @@ proc writephysical {name type comm sep alist} {
 
 ##################################################################
 proc readlogical {filename} {
-    global tgrps datadir
+    global tgrps schemadir
 
     # Open file for reading
-    set f [open $datadir/schema/logical/$filename r]
+    set f [open $schemadir/schema/logical/$filename r]
 
     # First line specifies the physical schema
     set line [gets $f]
@@ -523,11 +527,11 @@ proc readlogical {filename} {
 }
 
 proc readphysical {filename} {
-    global sname ftype comm separ attrlist datadir
+    global sname ftype comm separ attrlist schemadir
     set attrlist ""
 
     # Open file for reading
-    set f [open $datadir/schema/physical/$filename r]
+    set f [open $schemadir/schema/physical/$filename r]
 
     # First line is the schema name and type
     set line [gets $f]
@@ -1098,9 +1102,9 @@ proc begpos {gnm ngnm} {
 
 #########################################################################
 proc writecatalog {} {
-    global Logical datadir
+    global Logical schemadir
 
-    set f [open $datadir/schema/catalog.tcl w]
+    set f [open $schemadir/schema/catalog.tcl w]
     puts $f "# Association between physical and logical schemas"
     puts $f ""
 
@@ -1113,7 +1117,7 @@ proc writecatalog {} {
 ##########################################################################
 
 proc displogical {pname} {
-    global datadir tgrps logschema Logical
+    global schemadir tgrps logschema Logical
     
     # Display the logical schema corr. to the passed physical schema
     toplevel .lsch -bg DarkRed
