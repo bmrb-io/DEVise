@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 20:12:46  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.3  1995/09/22 15:43:28  jussi
   Added copyright message.
 
@@ -33,7 +36,7 @@
 #include <iostream.h>
 #include <assert.h>
 
-#define DUMP
+//#define DEBUG
 
 // a generic sorted table with binary search interface
 
@@ -319,8 +322,10 @@ int SortedTable<Index,Value>::findEmpty(Index &index)
   delete [] st;
   st = newTable;
 
+#ifdef DEBUG
   if (tableSize % 10 == 0)
     printf("Table %08x has now %d entries\n", (int)this, tableSize);
+#endif
 
   return spot;
 }
