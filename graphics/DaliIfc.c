@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/08/28 00:19:35  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.1  1996/08/23 16:55:28  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -84,8 +88,18 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking\n",
+  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking",
     filename, (long) win, topLeftX, topLeftY, botRightX, botRightY);
+  if (image != NULL)
+  {
+    char bytesBuf[DALI_MAX_STR_LENGTH];
+    sprintf(bytesBuf, " -bytes %d\n", imageLen);
+    strcat(commandBuf, bytesBuf);
+  }
+  else
+  {
+    strcat(commandBuf, "\n");
+  }
 
   double timeout = (image == NULL) ? 5.0 : 30.0;
   result += SendCommand(daliServer, commandBuf, imageLen, image, replyBuf,

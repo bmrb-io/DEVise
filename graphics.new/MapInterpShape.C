@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/08/28 00:19:51  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.13  1996/08/23 16:56:18  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -68,8 +72,14 @@
 #include "Map3D.h"
 #include "Init.h"
 #include "Util.h"
+#include "DevError.h"
 
 //#define DEBUG
+
+#define IMAGE_TYPE_GIF_LOCAL		(0)
+#define IMAGE_TYPE_DALI_FILE		(1)
+#define IMAGE_TYPE_DALI_FILE_SEND	(2)
+#define IMAGE_TYPE_DALI_IMAGE		(3)
 
 //---------------------------------------------------------------------------
 
@@ -1134,6 +1144,12 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	return;
     }
 
+    // Get default image filename.
+    char defaultFile[MAXPATHLEN];
+    char *directory = getenv("PWD");
+    DOASSERT(directory != NULL, "Can't get current directory");
+    sprintf(defaultFile, "%s/image.gif", directory);
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     // first draw a cross mark at each GIF image location;
@@ -1163,56 +1179,85 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	  win->SetCopyMode();
 
 
-	// Determine the name of the file containing the image to display.
-        char fileBuf[MAXPATHLEN];
-        char *file = fileBuf;
-        if ((Init::DaliServer() != NULL) && !sendImageOnSocket)
-        {
-          char *directory = getenv("PWD");
-          DOASSERT(directory != NULL, "Can't get current directory");
-          sprintf(fileBuf, "%s/image.gif", directory);
-        }
-        else
-        {
-          file = "image.gif";
-        }
-
+	// Get the name of the image file or the image itself.
+	char *shapeAttr0 = NULL;
 	if (offset->shapeAttrOffset[0] >= 0) {
 	    int key = (int)GetShapeAttr0(gdata, map, offset);
-	    int code = StringStorage::Lookup(key, file);
+	    int code = StringStorage::Lookup(key, shapeAttr0);
 #ifdef DEBUG
-	    printf("Key %d returns \"%s\", code %d\n", key, file, code);
+	    printf("Key %d returns \"%s\", code %d\n", key, shapeAttr0, code);
 #endif
 	} else {
 #ifdef DEBUG
-	    printf("Using default file \"%s\"\n", file);
+	    printf("Using default file \"%s\"\n", defaultFile);
 #endif
 	}
 
+
+	// Now decide how to deal with it.
+	char *file;
+	int imageSize;
+	char *image;
+	Boolean dali;
+
+        int imageType = int(GetShapeAttr1(gdata, map, offset) + 0.5);
+	switch (imageType)
+	{
+	case IMAGE_TYPE_GIF_LOCAL:
+#if defined(DEBUG)
+          printf("GIF image local\n");
+#endif
+	  dali = false;
+	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+	  break;
+
+	case IMAGE_TYPE_DALI_FILE:
+#if defined(DEBUG)
+          printf("Dali file, sending filename to Dali\n");
+#endif
+	  dali = true;
+	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+	  imageSize = 0;
+	  image = NULL;
+	  break;
+
+	case IMAGE_TYPE_DALI_FILE_SEND:
+#if defined(DEBUG)
+          printf("Dali file, sending image to Dali\n");
+#endif
+	  dali = true;
+	  file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
+          (void) ReadFile(file, imageSize, image);
+	  file = "-";
+	  break;
+
+	case IMAGE_TYPE_DALI_IMAGE:
+#if defined(DEBUG)
+          printf("Dali image\n");
+#endif
+	  DOASSERT(shapeAttr0 != NULL, "Can't get image");
+	  dali = true;
+	  file = "-";
+	  // Note: I'm not sure that using strlen() here is safe.  RKW
+	  // 8/29/96.
+	  imageSize = strlen(shapeAttr0);
+	  image = shapeAttr0;
+	  break;
+
+	default:
+	  reportError("Illegal image type", devNoSyserr);
+	  return;
+	  break;
+	}
+
 #ifdef DEBUG
-	printf("Drawing GIF image %s at %.2f,%.2f\n", file, tx, ty);
+	printf("Drawing image %s at %.2f,%.2f\n", file, tx, ty);
 #endif
 
-
 	// Display the image.
-	if (Init::DaliServer() != NULL)
+	if (dali)
 	{
-	  if (sendImageOnSocket)
-	  {
-            int size;
-            char *image = NULL;
-            (void) ReadFile(file, size, image);
-
-	    if (image != NULL)
-	    {
-	      win->DaliShowImage(tx, ty, 100.0, 100.0, "-", size, image);
-              delete [] image;
-	    }
-	  }
-	  else
-	  {
-	    win->DaliShowImage(tx, ty, 100.0, 100.0, file, 0, (char *) NULL);
-	  }
+	  win->DaliShowImage(tx, ty, 100.0, 100.0, file, imageSize, image);
 	}
 	else
 	{

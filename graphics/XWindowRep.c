@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  1996/08/28 00:19:39  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.60  1996/08/23 16:56:00  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -237,6 +241,7 @@
 #include "XDisplay.h"
 #include "Compress.h"
 #include "DaliIfc.h"
+#include "DevError.h"
 #ifndef LIBCS
 #include "Init.h"
 #endif
@@ -715,19 +720,27 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   DevStatus result = StatusOk;
 
-  if (filename == NULL) filename = "-";
-
-  int handle;
-  result += DaliIfc::ShowImage(Init::DaliServer(), _win, (int) centerX,
-    (int) centerY, (int) width, (int) height, filename, imageLen, image,
-    handle);
-  if (result.IsComplete())
+  if (Init::DaliServer() == NULL)
   {
+    reportError("No Dali server specified", devNoSyserr);
+    result = StatusFailed;
+  }
+  else
+  {
+    if (filename == NULL) filename = "-";
+
+    int handle;
+    result += DaliIfc::ShowImage(Init::DaliServer(), _win, (int) centerX,
+      (int) centerY, (int) width, (int) height, filename, imageLen, image,
+      handle);
+    if (result.IsComplete())
+    {
 #if defined(DEBUG)
-    printf("Displayed Dali image; handle = %d\n", handle);
+      printf("Displayed Dali image; handle = %d\n", handle);
 #endif
 
-    _daliImages.Insert(handle);
+      _daliImages.Insert(handle);
+    }
   }
 
   return result;

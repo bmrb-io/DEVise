@@ -97,6 +97,9 @@ Num Date        Status  Description
 033 08/23/96	OPEN	Run LandsEnd/test.tk -- one view doesn't draw
 			correctly (because of links). (ssl/rkw)
 
+034 98/28/96	FIXED	Run Dali1.tk without specifying Dali server ->
+			core dump. (kb/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

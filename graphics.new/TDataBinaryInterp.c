@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/01 19:28:10  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.8  1996/06/27 18:12:43  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -60,6 +65,9 @@
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
+#ifndef ATTRPROJ
+#  include "StringStorage.h"
+#endif
 
 #ifndef ATTRPROJ
 TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
@@ -305,6 +313,10 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
   for(int i = 0; i < _numAttrs; i++) {
     AttrInfo *info = _attrList.Get(i);
 
+    char *string = NULL;
+    int code = 0;
+    int key = 0;
+
     char *ptr = (char *)recordBuf + info->offset;
     int intVal;
     float floatVal;
@@ -367,6 +379,16 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case StringAttr:
+#ifndef ATTRPROJ
+      string = CopyString(ptr);
+      code = StringStorage::Insert(string, key);
+#ifdef DEBUG
+      printf("Inserted \"%s\" with key %d, code %d\n", ptr, key, code);
+#endif
+      DOASSERT(code >= 0, "Cannot insert string");
+      if (!code)
+        delete string;
+#endif
       if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
 	return false;
       break;

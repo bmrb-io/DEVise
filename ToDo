@@ -15,9 +15,6 @@ HIGH PRIORITY
 
 Add true PostScript printing capability. (yi/rkw 7/9/96)
 
-Interface to Dali.  Allow images to be shown in Devise views, using Dali
-to draw the images. (ml/rkw 8/6/96)
-
 
 LOW PRIORITY
 ------------
@@ -158,6 +155,8 @@ Make a "slim" version of Devise with some stuff stripped out.
 Make a script to easily do a release of Devise to the outside world.
 (rkw 8/14/96)
 
+Handle images in data better (don't treat them as strings).  (rkw 8/29/96)
+
 
 COMPLETED
 ---------
@@ -165,6 +164,9 @@ Add attrproj member function to read entire record. (tz/rkw 7/31/96)
 
 Set up makefiles to easily be able to compile with debugging or Purify.
 (kb/rkw 7/31/96)
+
+Interface to Dali.  Allow images to be shown in Devise views, using Dali
+to draw the images. (ml/rkw 8/6/96)
 
 
 CANCELLED

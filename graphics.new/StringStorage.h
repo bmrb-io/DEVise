@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/21 02:53:15  jussi
+  The Insert() now returns 1 indicating that a new value was stored,
+  or 0 if value was already in the table. A negative value indicates
+  a failure.
+
   Revision 1.1  1996/07/15 17:00:53  jussi
   Initial revision.
 */
@@ -57,7 +62,7 @@ class StringStorage {
 
   protected:
     static int StringHash(char *&string, int numBuckets) {
-        int sum = 0;
+        unsigned int sum = 0;
         for(int i = 0; i < (int)strlen(string); i++)
             sum += string[i];
         return sum % numBuckets;
