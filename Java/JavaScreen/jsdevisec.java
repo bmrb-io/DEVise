@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2000/06/12 22:14:39  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.63  2000/05/22 17:52:51  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -164,16 +169,22 @@ public class jsdevisec extends Panel
         if (width > 800 ) {
             DEViseUIGlobals.font = DEViseFonts.getFont(12,
 	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.font2 = DEViseFonts.getFont(12,
+	      DEViseFonts.SANS_SERIF, 0, 0);
             DEViseUIGlobals.textFont = DEViseFonts.getFont(12,
 	      DEViseFonts.SERIF, 0, 0);
         } else if (width > 640) {
             DEViseUIGlobals.font = DEViseFonts.getFont(10,
 	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.font2 = DEViseFonts.getFont(10,
+	      DEViseFonts.SANS_SERIF, 0, 0);
             DEViseUIGlobals.textFont = DEViseFonts.getFont(10,
 	      DEViseFonts.SERIF, 0, 0);
         } else {
             DEViseUIGlobals.font = DEViseFonts.getFont(8,
 	      DEViseFonts.SERIF, 0, 0);
+            DEViseUIGlobals.font2 = DEViseFonts.getFont(8,
+	      DEViseFonts.SANS_SERIF, 0, 0);
             DEViseUIGlobals.textFont = DEViseFonts.getFont(8,
 	      DEViseFonts.SERIF, 0, 0);
         }
@@ -594,8 +605,12 @@ class RecordDlg extends Dialog
 
         DEViseComponentPanel panel = new DEViseComponentPanel(label,
 	  DEViseComponentPanel.LAYOUT_VERTICAL, 0);
-        for (int i = 0; i < size; i++)
+        panel.setBackground(DEViseUIGlobals.textBg);
+        for (int i = 0; i < size; i++) {
             label[i].setAlignment(Label.LEFT);
+            label[i].setBackground(DEViseUIGlobals.textBg);
+            label[i].setForeground(DEViseUIGlobals.textFg);
+	}
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();

@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/06/12 22:13:56  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.5  2000/04/24 20:22:00  hongyu
 // remove UI dependency of jspop and js
 //
@@ -90,7 +95,8 @@ public class DEViseComponentPanel extends Panel
             } else {
                 component[i].setBackground(DEViseUIGlobals.bg);
                 component[i].setForeground(DEViseUIGlobals.fg);
-                component[i].setFont(DEViseUIGlobals.font);
+		// font2 for drill-down dialog.  RKW 2000-06-22.
+                component[i].setFont(DEViseUIGlobals.font2);
                 if (component[i] instanceof Label) {
                     ((Label)component[i]).setAlignment(Label.CENTER);
 	        }

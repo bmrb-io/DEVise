@@ -15,6 +15,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/05/24 14:07:10  wenger
+// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
+// DEViseAtomInCrystal, DEVise3DLCS).
+//
 // Revision 1.5  2000/05/22 17:52:50  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -62,7 +66,8 @@ public final class DEViseUIGlobals
     public static Color fg = Color.white;
     public static Color screenBg = new Color(64, 192, 0);
     public static Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
-    public static Color textBg = new Color(160, 160, 160);
+    public static Font font2 = DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 0, 0);
+    public static Color textBg = new Color(255, 240, 230);
     public static Color textFg = Color.black;
     public static final int COLOR_MIN = 0; // min. integer RGB value
     public static final int COLOR_MAX = 255; // max. integer RGB value
