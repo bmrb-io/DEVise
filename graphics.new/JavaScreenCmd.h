@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/06/03 17:09:41  wenger
+  Rubberband line in JavaScreen now sends updates of all changed windows
+  using the "dirty GIF" flag; updated DEVise version to 1.5.3.
+
   Revision 1.6  1998/05/29 19:34:40  wenger
   Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
   size.
@@ -172,5 +176,6 @@ class JavaScreenCmd
 		void FillInt(char** argv, int& pos, int i);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
+		void UpdateSessionList();
 };
 #endif

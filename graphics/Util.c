@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/05/14 18:21:10  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.25  1998/03/09 15:13:58  wenger
   Fixed compile warning.
 
@@ -399,7 +403,7 @@ int writen(int fd, char *buf, int nbytes)
 }
 
 void
-PrintArgs(FILE *fp, int argc, char **argv, Boolean printNewline)
+PrintArgs(FILE *fp, int argc, const char * const *argv, Boolean printNewline)
 {
   int index;
   char *prefix = "";

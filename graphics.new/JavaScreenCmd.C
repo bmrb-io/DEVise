@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/06/03 17:09:40  wenger
+  Rubberband line in JavaScreen now sends updates of all changed windows
+  using the "dirty GIF" flag; updated DEVise version to 1.5.3.
+
   Revision 1.11  1998/05/29 20:50:33  wenger
   Fixed sending of window locations.
 
@@ -72,6 +76,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <dirent.h>
 #include <string>
 #include <vector>
 
@@ -89,8 +94,11 @@
 #include "Timer.h"
 #include "QueryProc.h"
 #include "Display.h"
+#include "ArgList.h"
 
 //#define DEBUG
+
+static char *_sessionDir = NULL;
 
 off_t getFileSize(const char* filename);
 
@@ -133,6 +141,20 @@ PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
 	}
 }
 
+static Boolean IsSessionFile(char *filename)
+{
+	Boolean isSession = false;
+
+	// We assume that a file is a session file if it ends in ".ds" or ".tk".
+	int length = strlen(filename);
+	if (!strcmp(&filename[length-3], ".ds") ||
+	  !strcmp(&filename[length-3], ".tk")) {
+		isSession = true;
+	}
+
+	return isSession;
+}
+
 void
 JavaScreenCmd::GetSessionList()
 {
@@ -143,23 +165,7 @@ JavaScreenCmd::GetSessionList()
 	fflush(stdout);
 #endif
 
-	// ADD---begin
-	char* argv[] =
-	{
-		_controlCmdName[UPDATESESSIONLIST],
-		"/p/devise/session/AAAcolor2.ds",
-		"/p/devise/session/AAAcolor3.ds",
-		"/p/devise/session/JFK2.ds",
-		"/p/devise/session/demo/colors.ds",
-		"/p/devise/session/test/js_test.ds",// no spaces in names
-		"/p/devise/session/test/js_test2.ds",// no spaces in names
-		"dummy_session"
-	};
-
-
-
-	// ADD---end
-	_status = RequestUpdateSessionList(sizeof(argv)/sizeof(argv[0]), argv);	
+	UpdateSessionList();
 }
 
 void
@@ -179,13 +185,31 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	printf("Session:%s requested!\n", _argv[0]);
+	char fullpath[MAXPATHLEN];
+	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
+
+	struct stat buf;
+	stat(fullpath, &buf);
+	if (S_ISDIR(buf.st_mode)) {
+		delete [] _sessionDir;
+		_sessionDir = CopyString(fullpath);
+		UpdateSessionList();
+		return;
+	}
+
+	// Reset the session directory -- this matches the behavior of the
+	// "regular" DEVise, but it would probably make more sense to reset it
+	// when the JavaScreen disconnects.  RKW Jun 17, 1998.
+	delete [] _sessionDir;
+	_sessionDir = NULL;
+
+	printf("Session:%s requested!\n", fullpath);
 
 	// Set batch mode so the server makes pixmaps instead of windows.
 	ControlPanel::Instance()->SetBatchMode(true);
 
 	// Open the session.
-    DevStatus result = Session::Open(_argv[0]);
+    DevStatus result = Session::Open(fullpath);
 	if (!result.IsComplete())
 	{
 		errmsg = "{Error opening session}";
@@ -990,4 +1014,54 @@ JavaScreenCmd::CloseJavaConnection()
 	DeviseServer*	server;
 	server = cmdContainerp->getDeviseServer();
 	server->CloseClient();
+}
+
+void JavaScreenCmd::UpdateSessionList()
+{
+	if (_sessionDir == NULL) {
+		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
+	}
+
+	ArgList args;
+	args.AddArg(_controlCmdName[UPDATESESSIONLIST]);
+
+	DIR *directory = opendir(_sessionDir);
+	if (directory == NULL) {
+		reportErrSys("Can't open session directory");
+	} else {
+		while (true) {
+		    struct dirent *entry = readdir(directory);
+			if (entry == NULL) break;
+			if (strcmp(entry->d_name, ".") &&
+			  (!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
+				char fullpath[MAXNAMELEN];
+				sprintf(fullpath, "%s/%s", _sessionDir, entry->d_name);
+
+				struct stat buf;
+				stat(fullpath, &buf);
+				if (S_ISDIR(buf.st_mode)) {
+#if 0 // JavaScreen can't handle this right now.  RKW Jun 17, 1998.
+					char buf[MAXPATHLEN+100];
+					sprintf(buf, "%s/", entry->d_name);
+					args.AddArg(buf);
+#endif
+				} else if (IsSessionFile(entry->d_name)) {
+					args.AddArg(entry->d_name);
+				}
+			}
+		}
+
+		if (closedir(directory) != 0) {
+			reportErrSys("Error closing directory");
+		}
+
+		(void) args.Sort(1);
+	}
+
+#if defined(DEBUG)
+	PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
+#endif
+
+	_status = RequestUpdateSessionList(args.GetCount(),
+	  (char **)args.GetArgs());	
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/05/14 18:21:10  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.17  1998/05/07 19:11:03  wenger
   Upper-case E now allowed for exponents in doubles and floats.
 
@@ -310,7 +314,8 @@ inline double UtilAtof(char *str)
   return value;
 }
 
-void PrintArgs(FILE *fp, int argc, char **argv, Boolean printNewline = true);
+void PrintArgs(FILE *fp, int argc, const char * const *argv,
+    Boolean printNewline = true);
 void CopyArgs(int argc, const char * const * argvOld, char **&argvNew);
 void FreeArgs(int argc, char **argv);
 
