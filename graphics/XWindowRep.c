@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/28 00:00:43  jussi
+  Added WritePostscript() method.
+
   Revision 1.4  1995/11/25 01:16:18  jussi
   Replaced calls to bcopy() with more portable memcpy()'s.
 
@@ -176,9 +179,10 @@ void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
   sprintf(cmd, "xwd -frame -id %d | xwdtopnm | pnmtops -rle > %s",
 	  _win, filename);
 
-//#ifdef DEBUG
+#ifdef DEBUG
+  printf("WritePostscript: for window id 0x%x:\n", _win);
   printf("WritePostscript: executing %s\n", cmd);
-//#endif
+#endif
 
   if (system(cmd) == 127) {
     fprintf(stderr, "Can't execute command: %s\n", cmd);
