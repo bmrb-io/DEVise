@@ -1,9 +1,9 @@
 #! /bin/csh -f
+# Start devised for JavaScreen.
 
 rmmem
 
 # For Tasvir and EmbeddedTk.
-set path = ( $path /p/qclic/Code/Qclic/bin.common )
 set path = ( $path /p/devise/public/bin )
 
 setenv DEVISE_ROOT		/p/devise/demo
@@ -32,6 +32,6 @@ setenv LM_LIB                   $DEVISE_LIB/LM
 #setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
 setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 
-$DEVISE_EXEC $* >& devised.out
+$DEVISE_EXEC $* >>& devised.out
 
 rmmem
