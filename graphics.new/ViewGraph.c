@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/04/21 23:01:29  guangshu
+  Considered various cases of statistics, esp date type.
+
   Revision 1.52  1997/04/11 18:49:16  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -809,14 +812,16 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     Boolean y_is_date = false;
     if(map) {
         AttrList *gAttrList = map->GDataAttrList();
-        gAttrList->InitIterator();
-        while(gAttrList->More()) {
+	if (gAttrList) {
+          gAttrList->InitIterator();
+          while(gAttrList->More()) {
                 AttrInfo *info = gAttrList->Next();
                 if(!strcmp(info->name, "y") && info->type==DateAttr) {
                         y_is_date = true;
                 }
-        }
-        gAttrList->DoneIterator();
+          }
+          gAttrList->DoneIterator();
+	}
     }
 
     double width = _allStats.GetHistWidth();
@@ -862,14 +867,16 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     Boolean x_is_date = false;
     if(map){
     	AttrList *gAttrList = map->GDataAttrList();
-    	gAttrList->InitIterator();
-    	while(gAttrList->More()) {
+	if (gAttrList) {
+    	  gAttrList->InitIterator();
+    	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
 		if(!strcmp(info->name, "x") && info->type==DateAttr) {
 			x_is_date = true;
 		}
-    	}
-        gAttrList->DoneIterator();
+    	  }
+          gAttrList->DoneIterator();
+	}
     }
 
     int getXRecs = 0;
@@ -1043,11 +1050,14 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 /* Check if the X attr of GData is DateAttr */
 Boolean ViewGraph::IsXDateType(){
 	AttrList *gAttrList = GetFirstMap()->GDataAttrList();
-	gAttrList->InitIterator();
-	while(gAttrList->More()) {
+	if (gAttrList) {
+	  gAttrList->InitIterator();
+	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
 		if(!strcmp(info->name, "x") && info->type==DateAttr) 
 			return true;
+	  }
+	  gAttrList->DoneIterator();
 	}
 	return false;
 }
@@ -1055,11 +1065,14 @@ Boolean ViewGraph::IsXDateType(){
 /* Check if the Y attr of GData is DateAttr */
 Boolean ViewGraph::IsYDateType(){
 	AttrList *gAttrList = GetFirstMap()->GDataAttrList();
-	gAttrList->InitIterator();
-	while(gAttrList->More()) {
+	if (gAttrList) {
+	  gAttrList->InitIterator();
+	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
 		if(!strcmp(info->name, "y") && info->type==DateAttr) 
 			return true;
+	  }
+	  gAttrList->DoneIterator();
 	}
 	return false;
 }

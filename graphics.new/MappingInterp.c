@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/04/29 17:35:12  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.55  1997/04/25 23:15:53  ssl
   turned off debug code.
 
@@ -273,7 +278,7 @@ Tcl_Interp *MappingInterp::_interp       = NULL;
 /* Return true if command is a constant, and return the constant value */
 Boolean MappingInterp::IsConstCmd(char *cmd, Coord &val, AttrType &attrType)
 {
-#if defined(DEBUG) || 0//TEMPTEMP
+#if defined(DEBUG)
   printf("  MappingInterp::IsConstCmd(%s)\n", cmd);
 #endif
 
@@ -292,7 +297,7 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
 				 unsigned long int flag,
 				 unsigned long int attrFlag)
 {
-#if defined(DEBUG) || 0//TEMPTEMP
+#if defined(DEBUG)
   printf("MappingInterp::FindGDataSize()\n");
 #endif
 
@@ -465,7 +470,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 			      VisualFlag *dimensionInfo,
 			      int numDimensions)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
   printf("MappingInterp::ChangeCmd()\n");
 #endif
 
@@ -501,7 +506,7 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 /* Get the AttrInfo for a GData attribute. */
 AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
     printf("MappingInterp::MapGAttr2TAttr()\n");
 #endif
 
@@ -590,7 +595,7 @@ char *MappingInterp::MapTAttr2GAttr(char *tname)
 /* Get the AttrInfo for shape attribute i */
 AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
     printf("MappingInterp::MapShapeAttr2TAttr()\n");
 #endif
 
@@ -940,7 +945,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 AttrList *MappingInterp::InitCmd(char *name)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
   printf("MappingInterp::InitCmd(%s)\n", name);
 #endif
 
@@ -1111,7 +1116,6 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   _maxGDataShapeAttrNum = -1;
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
-//*TEMPTEMP*/printf("%s: %d; ShapeAttr%d\n", __FILE__, __LINE__, j);
     if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
       if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
@@ -1124,7 +1128,6 @@ AttrList *MappingInterp::InitCmd(char *name)
 	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
 	char attrName [80];
 	sprintf(attrName, "shapeAttr_%d", j);
-//*TEMPTEMP*/printf("ShapeAttr%d type = %d\n", j, (int) attrType);
 	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
 			     attrType, false, NULL, false, isSorted);
       } else {
@@ -1161,7 +1164,6 @@ AttrList *MappingInterp::InitCmd(char *name)
 /* Note:  I don't understand why having a single "complex" GData attribute
  * forces all other GData attributes to be converted in the "complex" mode.
  * RKW 4/24/97. */
-//*TEMPTEMP*/printf("\n\ncomplexCmd:---------------------------------\n");
   /* Record ID is always first GData attribute */
   _offsets->recidOffset = 0;
 
@@ -1312,28 +1314,20 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   _maxGDataShapeAttrNum = -1;
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
-//*TEMPTEMP*/printf("%s: %d; ShapeAttr%d\n", __FILE__, __LINE__, j);
     char attrName [80];
     sprintf(attrName, "shapeAttr_%d", j);
     if (_cmdAttrFlag & (1 << j)) {
-//*TEMPTEMP*/printf("  %s: %d\n", __FILE__, __LINE__);
-      //TEMPTEMPattrType = (AttrType) -999;//TEMPTEMP?
       _maxGDataShapeAttrNum = j;
       if (IsConstCmd(_cmd->shapeAttrCmd[j],constVal, attrType)) {
-//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	SetDefaultShapeAttr(j,constVal);
 	_tclCmd->shapeAttrCmd[j] = "";
-//TEMPTEMP -- okay, here's where the problem is...
-//TEMPTEMP -- maybe IsConstCmd() needs to set attrType
 	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
 			     attrType, false, NULL, false, isSorted);
       } else {
-//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	_tclCmd->shapeAttrCmd[j] = 
 	  ConvertCmd(_cmd->shapeAttrCmd[j], attrType, isSorted);
 	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
-//*TEMPTEMP*/printf("ShapeAttr%d type = %d\n", j, (int) attrType);
 	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
 			     attrType, false,  NULL, false, isSorted);
 	offset += sizeof(double);
@@ -1403,7 +1397,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
 					MappingSimpleCmdEntry &entry,
 					AttrType &type, Boolean &isSorted)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
   printf("MappingInterp::ConvertSimpleCmd: '%s'\n",cmd);
 #endif
 
@@ -1472,13 +1466,12 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
       delete str;
       str = NULL;
     }
-#if defined(DEBUG) || 0//TEMPTEMP
+#if defined(DEBUG)
     printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
 #endif
     entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
     entry.cmd.num = strid;
     type = StringAttr;
-//*TEMPTEMP*/printf("  type = %d\n", (int) type);
     isSorted = false;
     return true;
   }
@@ -1497,10 +1490,9 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
 char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 				Boolean &isSorted)
 {
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
   printf("  MappingInterp::ConvertCmd: '%s'\n",cmd);
 #endif
-//TEMPTEMP -- I don't think this deals right with non-constant strings
 
   InitString();
 
@@ -1520,8 +1512,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
       if (ptr == cmd+1) {
 	/* did not get a variable name */
 	InsertChar(*cmd);
-      }
-      else {
+      } else {
 	/* from cmd+1 to ptr-1 is a variable name */
 	char buf[80];
 	int len = ptr - 1 - (cmd + 1) + 1;
@@ -1538,8 +1529,11 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	  /* found the attribute */
 	  if (info->isSorted)
 	    isSorted = true;
-	  if (info->type == DateAttr)
+	  if (info->type == DateAttr) {
 	    attrType = DateAttr;
+	  } else if (info->type == StringAttr) {
+	    attrType = StringAttr;
+	  }
 	  
 	  if (info->attrNum > _maxTDataAttrNum)
 	    _maxTDataAttrNum = info->attrNum;
@@ -1551,7 +1545,6 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	cmd = ptr - 1;
       }
     } else {
-      if (*cmd == '"') attrType = StringAttr;//TEMPTEMP?
       InsertChar(*cmd);
     }
     

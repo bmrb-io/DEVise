@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/04/21 16:39:57  wenger
+  Removed lex.yy.c from CVS to fix compile problems; fixed some compile
+  warnings in the DTE; default is now to compile with neither -O nor
+  -gstabs -- set DEV_DEBUG env. var. to -1 for -O, anything else for
+  -gstabs; bumped version number up to 1.4.3.
+
   Revision 1.29  1997/03/25 17:59:28  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -176,7 +182,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.3";
+static const char *	version = "1.4.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/04/22 15:25:45  wenger
+  Conditionaled out lots of debug code; fixed data source visualization
+  window so the window for the data again defaults to 'New' if there are
+  no windows.
+
   Revision 1.29  1997/04/21 22:58:51  guangshu
   Make statistics to deal with more cases.
 
@@ -461,7 +466,12 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
   int numArgs;
   char **args;
 
-  Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
+  /* Because Parse() returns 1 arg for a totally blank line... */
+  if (IsBlank(line)) {
+    numArgs = 0;
+  } else {
+    Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
+  }
   
   Boolean isBlank = false;
   Boolean isComment = false;

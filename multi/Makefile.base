@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1997/04/04 15:44:58  wenger
+#  Set up makefiles to allow making a 'profile' version of Devise.
+#
 #  Revision 1.19  1996/12/23 17:00:35  donjerko
 #  Moved -ldte behind -lgraphics
 #
@@ -84,10 +87,20 @@ ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../crsp/libcrsp.a ../graphics.new/libmonolith.a
 
 all: disp
+pure: disp.pure
+
+# Note: the line below forces CompDate.c to always be compiled.
+FORCE_DATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
+
+MULTI = $(CC) -o $@ $(ALLOBJ) CompDate.o $(LDFLAGS)
 
 disp: $(ALLOBJ) $(ALLLIBS)
-	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
-	$(CC) -o $@ $(ALLOBJ) CompDate.o $(LDFLAGS)
+	$(FORCE_DATE)
+	$(MULTI)
+
+disp.pure: $(ALLOBJ) $(ALLLIBS)
+	$(FORCE_DATE)
+	$(PURIFY) $(PURE_OPT) $(MULTI)
 
 mapefile.h: map
 	../parser/parser -o $@ < $?

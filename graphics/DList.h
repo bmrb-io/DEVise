@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/26 16:47:42  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.8  1996/08/04 20:58:52  beyer
   Insertion with iterators is now ok.
 
@@ -147,9 +150,9 @@ void listName::InsertOrderly(valType v, int order){\
 	ListElement *node;\
 	new_node->val = v;\
 	if(order == 1) {\
-	    for (node = this->_head->next; v >= node->val && node != this->_head; node = node->next){}\
+	    for (node = this->_head->next; node != this->_head && v >= node->val; node = node->next){}\
    	} else if(order == 0) {\
-	    for (node = this->_head->next; v <= node->val && node != this->_head; node = node->next){}\
+	    for (node = this->_head->next; node != this->_head && v <= node->val; node = node->next){}\
 	} else {\
 	    DOASSERT(0, "Invalid order");\
 	    return;\

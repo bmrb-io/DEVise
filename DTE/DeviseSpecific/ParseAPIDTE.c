@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:07:37  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <string.h>
@@ -115,7 +119,8 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
           return 1;
      }
 	}
-	String tmp = String(argv[0]) + ": no such command";
+	String tmp = String(argv[0]) +
+	  ": no such command or wrong number of args";
 	control->ReturnVal(API_NAK, strdup(tmp.chars()));
 	return -1;
 }

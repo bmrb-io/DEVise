@@ -746,6 +746,10 @@ Num Date        Status  Description
 
 180 04/28/97	OPEN	'~' in print file name doesn't work. (rkw)
 
+181 04/30/97	FIXED	Non-constant strings (e.g., string attributes) in
+			"complex" mappings don't work (they are not recognized
+			as strings, and their type is set to 'double'). (rkw)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

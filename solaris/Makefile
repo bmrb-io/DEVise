@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.17  1997/03/28 16:12:31  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -60,6 +64,9 @@ devread:
 
 pure: libs
 	cd generic; make pure; cd ..
+
+multi.pure: libs
+	cd multi; make pure; cd ..
 	
 static: libs
 	cd generic; make static; cd ..
