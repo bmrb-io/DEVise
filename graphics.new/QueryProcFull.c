@@ -7,7 +7,7 @@
   All Rights Reserved.
   ========================================================================
 
-  Under no circumstances is this software to be copied, distributed,
+  Under no circumstances is this software to be copied, distribute,
   or altered in any way without prior permission from the DEVise
   Development Group.
 */
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/26 16:51:37  ssl
+  Added support for piled viws
+
   Revision 1.41  1996/11/26 09:35:53  beyer
   During a sequential scan, the query processor now only asks for at most
   QPFULL_RECS_PER_BATCH records.  This makes the system much more responsive
@@ -201,136 +204,101 @@
 #include "GData.h"
 #include "Control.h"
 #include "RecordLink.h"
+#include "BufPolicy.h"
 
 #define DEBUGLVL 0
 
-/* temp page to hold data for converting tdata into gdata. */
+/* Temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
 
-// Force _gdataBuf to be aligned for doubles.  RKW 5/31/96.
+/* Force _gdataBuf to be aligned for doubles. */
 static double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];
 static char* _gdataBuf = (char *)_gdataDoubleBuf;
 
 static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
 
-/* max # of bytes to fetch for each iteration of the query processor.
-   After fetching this many bytes, the query processor relinquishes control
-   (coming out for air) to allow the rest of the system to check for user
-   input
+/*
+   Max number of records retrieved from buffer manager before query
+   processor returns to the dispatcher to allow for user interaction.
 */
-static const int QPFULL_MAX_FETCH = 81920;
-
-/* # of records to be returned before randomize is to begin */
-static const int QPFULL_RANDOM_RECS = 10240;
-
-/* max symbols per batch returned */
 static const int QPFULL_RECS_PER_BATCH = 1024;
 
-/* # of skips to make in randomized processing */
-static const int QPFULL_RANDOM_SKIPS = 10;
+/*
+   Number of records to be returned before randomize is to begin.
+*/
+static const int QPFULL_RANDOM_RECS = 10240;
 
-// min # of bytes to skip by doing a seek on tape; if skip distance
-// is less than this number, data is skipped by reading instead.
-
+/*
+   Min number of bytes to skip by doing a seek on tape; if skip distance
+   is less than this number, data is skipped by reading instead.
+*/
 static const int QPFULL_TAPE_MIN_SEEK = 2 * 1048576;
 
-// min # of records to keep as a separation between sorted table entries
-
+/*
+   Min number of records to keep as a separation between sorted table
+   entries.
+*/
 static const int QPFULL_TAPE_MARK_SEPARATION = 2048;
 
-/* Get X associated with a recId */
+/* Get X coordinate associated with a recId */
 
-inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
+static void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
 {
   if (!(map->GetDynamicArgs() & VISUAL_X)) {
-    x = map->GetDefaultX();
-    return;
+      x = map->GetDefaultX();
+      return;
   }
 
   RecId startRid;
   int numRecs;
-  void *buf;
+  char *buf;
   Boolean isTData;
-  
-  mgr->InitGetRecs(tdata, map->GetGData(), id, id, Randomize);
-  if (!mgr->GetRecs(isTData, startRid, numRecs, buf)) {
-    fprintf(stderr,"Getx:can't get record\n");
-    Exit::DoExit(2);
-  }
+
+  BufMgr::BMHandle handle = mgr->InitGetRecs(tdata, map->GetGData(), id, id);
+  Boolean gotit = mgr->GetRecs(handle, isTData, startRid, numRecs, buf);
+  DOASSERT(gotit, "Did not get data");
+  DOASSERT(numRecs == 1, "Did not get one record");
 
   if (isTData) {
-    /* X are assigned dynamically */
-    map->ConvertToGData(id, buf, 1, _gdataBuf);
-    x = ((GDataBinRec *)_gdataBuf)->x;
-  } else
-    x = ((GDataBinRec *)buf)->x;
-
-  mgr->FreeRecs(buf, NoChange);
-  mgr->DoneGetRecs();
-}
-
-inline void GetY(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &y)
-{
-  if (!(map->GetDynamicArgs() & VISUAL_Y)) {
-    y = map->GetDefaultY();
-    return;
-  }
-
-  RecId startRid;
-  int numRecs;
-  void *buf;
-  Boolean isTData;
-  
-  mgr->InitGetRecs(tdata, map->GetGData(), id, id, Randomize);
-  if (!mgr->GetRecs(isTData, startRid, numRecs, buf)) {
-    fprintf(stderr,"Getx:can't get record\n");
-    Exit::DoExit(2);
-  }
-    
-  if (isTData) {
-    /* Y are assigned dynamically */
-    map->ConvertToGData(id, buf, 1, _gdataBuf);
-    y = ((GDataBinRec *)_gdataBuf)->y;
-  } else
-    y = ((GDataBinRec *)buf)->y;
-
-  mgr->FreeRecs(buf,NoChange);
-  mgr->DoneGetRecs();
-}
-
-/********************************************************************
-Get 1st and last X coord of a GData page.
-********************************************************************/
-
-inline void GetGDataFirstLastX(TDataMap *map, void **recs, int numRecs,
-			       Coord &firstX, Coord &lastX)
-{
-  if (map->GetDynamicArgs() & VISUAL_X) {
-    /* X are assigned dynamically */
-    firstX = ((GDataBinRec *)recs[0])->x;
-    lastX = ((GDataBinRec *)recs[numRecs-1])->x;
+      /* Coordinate values are assigned dynamically */
+      map->ConvertToGData(id, buf, 1, _gdataBuf);
+      x = ((GDataBinRec *)_gdataBuf)->x;
   } else {
-    firstX = lastX = map->GetDefaultX();
+      x = ((GDataBinRec *)buf)->x;
   }
+
+  mgr->FreeRecs(buf);
+
+  mgr->DoneGetRecs(handle);
 }
 
 QueryProcFull::QueryProcFull()
 {
-  _queries = new QPFullDataList();
+  _queries = new QPFullDataList;
+  DOASSERT(_queries, "Out of memory");
+
   _numMappings = 0;
   _convertIndex = 0;
 
+  BufPolicy::policy policy;
   int bufSize;
-  Init::BufPolicies(bufSize, _prefetch, _policy, _useExisting);
+  int streamBufSize;
+  Init::BufParams(bufSize, streamBufSize, policy);
 
   _mgr = new BufMgrFull(bufSize * 4096);
-  
+  DOASSERT(_mgr, "Out of memory");
+
+  /* Initialize replacement policy */
+  _mgr->InitPolicy(policy);
+
   _numCoordinateTables = 0;
   _coordinateTables = 0;
 
-  _tqueryQdata = new QPFullData;
-  _tqueryQdata->isRandom = false;
+  _tdataQuery = new QPFullData;
+  DOASSERT(_tdataQuery, "Out of memory");
+
+  _tdataQuery->isRandom = false;
 
   _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
   Dispatcher::Current()->RequestCallback(_dispatcherID);
@@ -358,35 +326,29 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
-#if DEBUGLVL >= 3
-  printf("batch query: map: 0x%p, filter xlow %g, xhigh %g\n",
-	 map, filter.xLow, filter.xHigh);
-#endif
-
   TData *tdata = map->GetTData();
 
-  QPFullData *qdata = new QPFullData;
-  qdata->map = map;
-  qdata->userData = userData;
-  qdata->tdata = tdata;
-  qdata->gdata = map->GetGData();
-  qdata->mgr = _mgr;
-  qdata->bytes = 0;
+  QPFullData *query = new QPFullData;
+  DOASSERT(query, "Out of memory");
 
-  if (qdata->tdata->GetDataSource()->isTape()) {
-      // associate mapping with a coordinate mapping tables
+  query->map = map;
+  query->userData = userData;
+  query->tdata = tdata;
+  query->gdata = map->GetGData();
+  query->bytes = 0;
+
+  /* Find out if this query is a slave of a record link */
+  query->isRecLinkSlave = false;
+  RecordLinkList *recLinkList = callback->GetRecordLinkList();
+  int index = recLinkList->InitIterator();
+  if (recLinkList->More(index))
+    query->isRecLinkSlave = true;
+  recLinkList->DoneIterator(index);
+
+  /* If tape query, associate mapping with a coordinate mapping tables */
+  if (query->tdata->GetDataSource()->isTape()) {
       AssociateMappingWithCoordinateTable(map);
   }
-
-  // get pointer to record link list and initialize list iterator
-  qdata->recLinkList = callback->GetRecordLinkList();
-  qdata->recLinkListIter = qdata->recLinkList->InitIterator();
-  // if list is empty, close iterator
-  if (!qdata->recLinkList->More(qdata->recLinkListIter)) {
-    qdata->recLinkList->DoneIterator(qdata->recLinkListIter);
-    qdata->recLinkListIter = -1;
-  }
-  qdata->recLink = 0;
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -394,63 +356,69 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   numTDimensions = tdata->Dimensions(sizeTDimensions);
   
   if (numDimensions == 0) {
-    qdata->qType = QPFull_Scatter;
+    query->qType = QPFull_Scatter;
 #if DEBUGLVL >= 3
-    printf("scatter plot\n");
+    printf("Scatter");
 #endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
     DOASSERT(numTDimensions == 1, "Invalid X query");
 #if DEBUGLVL >= 3
-    printf("sortedX\n");
+    printf("SortedX");
 #endif
-    qdata->qType = QPFull_X;
+    query->qType = QPFull_X;
   } else if (numDimensions == 2 && dimensionInfo[0] == VISUAL_Y &&
 	     dimensionInfo[1] == VISUAL_X) {
     DOASSERT(numTDimensions == 2 && sizeTDimensions[0] > 0 &&
 	     sizeTDimensions[1] > 0, "Invalid XY query");
-    qdata->qType = QPFull_YX;
+    query->qType = QPFull_YX;
 #if DEBUGLVL >= 3
-    printf("YX query\n");
+    printf("YX");
 #endif
   } else {
+    printf("\n");
     DOASSERT(0, "Unknown query type");
   }
 
+#if DEBUGLVL >= 3
+  printf(" query:\n  map %s, filter xlow %g, xhigh %g\n",
+	 map->GetName(), filter.xLow, filter.xHigh);
+#endif
+
   DOASSERT(filter.flag & VISUAL_X, "Invalid query");
-  qdata->filter = filter;
+  query->filter = filter;
 
-  qdata->isRandom = false;
-  qdata->callback = callback;
-  qdata->priority = priority;
-  qdata->state = QPFull_InitState;
+  query->isRandom = false;
+  query->callback = callback;
+  query->priority = priority;
+  query->state = QPFull_InitState;
 
-  /* insert mapping of query into list of mappings */
+  /* Insert mapping of query into list of mappings */
   InsertMapping(map);
 
-  /* insert query into list of queries */
-  _queries->Append(qdata);
-
-#if 0
-  /* insert query into query list based on priority */
-  int index;
-  for(index = _queries->InitIterator(); _queries->More(index);) {
+#if 1
+  /* Append query into list of queries */
+  _queries->Append(query);
+#else
+  /* Insert query into query list based on priority */
+  index = _queries->InitIterator();
+  while (_queries->More(index)) {
     QPFullData *qd = _queries->Next(index);
-    if (qd->priority > qdata->priority) {
-      _queries->InsertBeforeCurrent(index, qdata);
+    if (qd->priority > query->priority) {
+      _queries->InsertBeforeCurrent(index, query);
       _queries->DoneIterator(index);
       goto done;
     }
   }
   _queries->DoneIterator(index);
-  _queries->Append(qdata);
+  _queries->Append(query);
 #endif
 
-#if DEBUGLVL >= 3
-  printf("queries are: \n");
-  int index;
-  for(index = _queries->InitIterator(); _queries->More(index); ) {
+#if DEBUGLVL >= 5
+  printf("List of queries in the query processor:\n");
+  index = _queries->InitIterator();
+  while (_queries->More(index)) {
     QPFullData *qd = _queries->Next(index);
-    printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
+    printf("  %s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
 	   qd->priority);
   }
   _queries->DoneIterator(index);
@@ -459,42 +427,48 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
-// Associate a mapping with a coordinate table
+/* Associate a mapping with a coordinate table */
+
 void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
 {
-  if (map->GetUserData() != 0)          // already associated?
+  /* Already associated? */
+  if (map->GetUserData() != 0)
     return;
 
-  // find if mapping can be associated with an existing coordinate table
+  /* Find if mapping can be associated with an existing coordinate table */
 
   int i;
   for(i = 0; i < _numCoordinateTables; i++) {
     TDataMap *smap = _coordinateTables[i]->map;
-    // Different TData?
+    /* Different TData? */
     if (smap->GetTData() != map->GetTData())
         continue;
     if (map->IsInterpreted() && smap->IsInterpreted()) {
-        // Two interpreted mappings can use the same coordinate table if
-        // they share the X attribute.
+        /*
+           Two interpreted mappings can use the same coordinate table if
+           they share the X attribute.
+        */
         MappingInterp *imap = (MappingInterp *)map;
         DOASSERT(_coordinateTables[i]->xCmd, "Invalid X command");
         if (strcmp(_coordinateTables[i]->xCmd, imap->GetMappingCmd()->xCmd))
             continue;
     } else if (!map->IsInterpreted && !smap->IsInterpreted) {
-        // Two compiled mappings can use the same coordinate table if
-        // they are the same mapping.
+        /*
+           Two compiled mappings can use the same coordinate table if
+           they are the same mapping.
+        */
         if (map != smap)
             continue;
     }
-#if DEBUGLVL >= 3
-    printf("Associating mapping 0x%p with existing table 0x%p\n",
-           map, &_coordinateTables[i]->_table);
+#if DEBUGLVL >= 5
+    printf("Associating mapping %s with existing table 0x%p\n",
+           map->GetName(), &_coordinateTables[i]->_table);
 #endif
     map->InsertUserData(&_coordinateTables[i]->_table);
     return;
   }
 
-  // need to allocate a new coordinate table
+  /* Need to allocate a new coordinate table */
   coordinateTableEntry **newList = new coordinateTableEntry *
                                    [_numCoordinateTables + 1];
   DOASSERT(newList, "Out of memory");
@@ -511,9 +485,9 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
   newList[_numCoordinateTables] = entry;
   _numCoordinateTables++;
 
-#if DEBUGLVL >= 3
-  printf("Associating mapping 0x%p with new table 0x%p\n",
-	 map, &entry->_table);
+#if DEBUGLVL >= 5
+  printf("Associating mapping %s with new table 0x%p\n",
+	 map->GetName(), &entry->_table);
 #endif
   map->InsertUserData(&entry->_table);
 
@@ -532,12 +506,10 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
-    QPFullData *qData = (QPFullData *)_queries->Next(index);
-    if (qData->map == map && qData->callback == callback) {
-      if (qData->recLinkListIter >= 0)
-	qData->recLinkList->DoneIterator(qData->recLinkListIter);
+    QPFullData *query = (QPFullData *)_queries->Next(index);
+    if (query->map == map && query->callback == callback) {
       _queries->DeleteCurrent(index);
-      delete qData;
+      delete query;
       break;
     }
   }
@@ -555,14 +527,13 @@ void QueryProcFull::ClearQueries()
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
-    if (qd->recLinkListIter >= 0)
-      qd->recLinkList->DoneIterator(qd->recLinkListIter);
     _queries->DeleteCurrent(index);
     delete qd;
   }
   _queries->DoneIterator(index);
   
   ClearMapping();
+
   _mgr->Clear();
 }
 
@@ -570,11 +541,11 @@ void QueryProcFull::ClearQueries()
 
 void QueryProcFull::ClearTData(TData *tdata)
 {
-  /* abort existing queries that use this TData and re-execute them */
+  /* Abort existing queries that use this TData and re-execute them */
 
   RefreshTData(tdata);
 
-  /* clear GData in all mappings that use this tdata */
+  /* Clear GData in all mappings that use this tdata */
 
   for(int i = 0; i < _numMappings; i++) {
     TDataMap *map = _mappings[i];
@@ -582,7 +553,7 @@ void QueryProcFull::ClearTData(TData *tdata)
       _mgr->ClearData(map->GetGData());
   }
 
-  /* clear TData from bufmgr */
+  /* Clear TData from bufmgr */
 
   _mgr->ClearData(tdata);
 }
@@ -614,134 +585,248 @@ void QueryProcFull::ResetGData(TData *tdata, GData *gdata)
 
 /* Initialize queries */
 
-void QueryProcFull::InitQPFullX(QPFullData *qData)
+void QueryProcFull::InitQPFullX(QPFullData *query)
 {
-#if DEBUGLVL >= 3
-  printf("InitQPFullX map 0x%p\n", qData->map);
+#if DEBUGLVL >= 5
+  printf("InitQPFullX map %s\n", query->map->GetName());
 #endif
 
   /* Call initialization of query */
-  qData->callback->QueryInit(qData->userData);
+  query->callback->QueryInit(query->userData);
 
-  /* Init replacement policy */
-  qData->mgr->InitPolicy(_policy);
+  /*
+     If data source is on tape, do a linear search instead of
+     a binary search.
+  */
 
-  // If data source is on tape, do a linear search instead of
-  // a binary search.
-
-  if (qData->tdata->GetDataSource()->isTape()) {
-      // Find first record that matches filter
-      if (!DoLinearSearch(qData->mgr, qData->tdata, qData->map,
-                          qData->filter.xLow, false, qData->low)) {
-          qData->state = QPFull_EndState;
+  if (query->tdata->GetDataSource()->isTape()) {
+      /* Find first record that matches filter */
+      if (!DoLinearSearch(_mgr, query->tdata, query->map,
+                          query->filter.xLow, false, query->low)) {
+          query->state = QPFull_EndState;
           return;
       }
 
-      // Find last record that matches filter
+      /* Find last record that matches filter */
       RecId lastId;
-      (void)qData->tdata->LastID(lastId);
-      if (!DoLinearSearch(qData->mgr, qData->tdata, qData->map,
-                          qData->filter.xHigh, false, qData->high,
-                          true, qData->low, lastId, false)) {
-          qData->high = lastId;
+      (void)query->tdata->LastID(lastId);
+      if (!DoLinearSearch(_mgr, query->tdata, query->map,
+                          query->filter.xHigh, false, query->high,
+                          true, query->low, lastId, false)) {
+          query->high = lastId;
       }
-      
-      qData->mgr->FocusHint(qData->high, qData->tdata, qData->gdata);
-      qData->isRandom = false;
-      qData->state = QPFull_ScanState;
-#if DEBUGLVL >= 3
-      printf("search [%ld,%ld]\n", qData->low, qData->high);
+      query->hintId = (query->high + query->low) / 2;
+      _mgr->FocusHint(query->high, query->tdata, query->gdata);
+      query->isRandom = false;
+      query->state = QPFull_ScanState;
+#if DEBUGLVL >= 5
+      printf("search [%ld,%ld]\n", query->low, query->high);
 #endif
       return;
   }
 
-  // Find first record that matches filter
-  if (!DoBinarySearch(qData->mgr, qData->tdata, qData->map,
-                      qData->filter.xLow, false, qData->low)) {
-      qData->state = QPFull_EndState;
+  /* Find first record that matches filter */
+  if (!DoBinarySearch(_mgr, query->tdata, query->map,
+                      query->filter.xLow, false, query->low)) {
+      query->state = QPFull_EndState;
       return;
   }
 
-  // Find last record that matches filter
+  /* Find last record that matches filter */
   RecId lastId;
-  (void)qData->tdata->LastID(lastId);
-  if (!DoBinarySearch(qData->mgr, qData->tdata, qData->map,
-                      qData->filter.xHigh, false, qData->high, true,
-                      qData->low, lastId, false)) {
-      qData->high = lastId;
+  (void)query->tdata->LastID(lastId);
+  if (!DoBinarySearch(_mgr, query->tdata, query->map,
+                      query->filter.xHigh, false, query->high, true,
+                      query->low, lastId, false)) {
+      query->high = lastId;
   }
-  qData->hintId = (qData->high + qData->low) / 2;
-  qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
-  qData->state = QPFull_ScanState;
-  qData->map->SetFocusId(qData->low);
-  if (qData->high - qData->low > QPFULL_RANDOM_RECS)
-      qData->isRandom = Init::Randomize();
+  query->hintId = (query->high + query->low) / 2;
+  _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
+  query->state = QPFull_ScanState;
+  query->map->SetFocusId(query->low);
+  if (query->high - query->low > QPFULL_RANDOM_RECS)
+      query->isRandom = Init::Randomize();
   else
-      qData->isRandom = false;
-#if DEBUGLVL >= 3
-  printf("search [%ld,%ld]\n", qData->low, qData->high);
+      query->isRandom = false;
+#if DEBUGLVL >= 5
+  printf("search [%ld,%ld]\n", query->low, query->high);
 #endif
 }
 
-void QueryProcFull::InitQPFullYX(QPFullData *qData)
+void QueryProcFull::InitQPFullYX(QPFullData *query)
 {
   DOASSERT(0, "Cannot process XY query yet");
 }
 
-void QueryProcFull::InitQPFullScatter(QPFullData *qData)
+void QueryProcFull::InitQPFullScatter(QPFullData *query)
 {
   /* Call initialization of query */
-  qData->callback->QueryInit(qData->userData);
+  query->callback->QueryInit(query->userData);
 
-  /* Initializ replacement policy */
-  qData->mgr->InitPolicy(_policy);
-
-  TData *tdata = qData->tdata;
-  if (tdata->HeadID(qData->low) && tdata->LastID(qData->high)) {
-    qData->state = QPFull_ScanState;
-    qData->map->SetFocusId(qData->low);
-    qData->isRandom = false;
-#if DEBUGLVL >= 3
-    printf("InitQPFullScatter search [%ld,%ld]\n", qData->low, qData->high);
+  TData *tdata = query->tdata;
+  if (tdata->HeadID(query->low) && tdata->LastID(query->high)) {
+    query->state = QPFull_ScanState;
+    query->map->SetFocusId(query->low);
+    query->isRandom = false;
+#if DEBUGLVL >= 5
+    printf("InitQPFullScatter search [%ld,%ld]\n", query->low, query->high);
 #endif
   } else {
-    qData->state = QPFull_EndState;
-#if DEBUGLVL >= 3
+    query->state = QPFull_EndState;
+#if DEBUGLVL >= 5
     printf("InitQPFullScatter no data, no search\n");
 #endif
   }
 }
 
-/* Initialize one query. Return false if no query is in initial state */
+/*
+   Prepare processed list by excluding ranges that are not listed
+   in a record link (if link exists).
+*/
+
+void QueryProcFull::PrepareProcessedList(QPFullData *query)
+{
+    if (!query->isRecLinkSlave)
+        return;
+
+    /*
+       First insert all record link ranges into a "unprocessed" list.
+       Then insert each unprocessed range of the unprocessed list
+       (i.e. the processed ranges) into the query's processed list.
+       The net effect is that we've marked all those record ranges
+       NOT in the record link as processed. The remaining record
+       ranges (i.e. those in the record link) will be processed normally.
+    */
+
+#if DEBUGLVL >= 3
+    printf("Creating unprocessed list for query 0x%p\n", query);
+#endif
+
+    RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+    QPRange unprocessed;
+
+    int index = recLinkList->InitIterator();
+
+    while (recLinkList->More(index)) {
+	RecordLink *recLink = recLinkList->Next(index);
+#if DEBUGLVL >= 5
+	printf("Processing record link file %s\n", recLink->GetFileName());
+#endif
+        RecId linkRec = 0;
+        while (1) {
+            RecId low;
+            int num;
+            int result = recLink->FetchRecs(linkRec, low, num);
+            if (result < 0) {
+                fprintf(stderr,
+                        "Cannot fetch record %ld from record link file %s\n",
+                        linkRec, recLink->GetFileName());
+            }
+            if (!result)
+                break;
+#if DEBUGLVL >= 5
+            printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
+                   low, low + num - 1, recLink->GetFileName(), linkRec);
+#endif
+            unprocessed.Insert(low, low + num - 1, NULL);
+            linkRec++;
+        }
+#if DEBUGLVL >= 5
+        printf("End of record link file %s (%ld records)\n",
+               recLink->GetFileName(), linkRec);
+#endif
+    }
+
+    recLinkList->DoneIterator(index);
+
+#if DEBUGLVL >= 3
+    printf("Creating processed list for query 0x%p\n", query);
+#endif
+
+    RecId tlow, thigh;
+    if (!query->tdata->HeadID(tlow) || !query->tdata->LastID(thigh)) {
+        fprintf(stderr, "Failed to get TData record boundaries\n");
+        return;
+    }
+    
+    RecId current = tlow;
+
+    while (1) {
+        RecId low, high;
+        Boolean noHigh = unprocessed.NextUnprocessed(current, low, high);
+        if (low > thigh)
+            break;
+        if (noHigh)
+            high = thigh;
+#if DEBUGLVL >= 5
+        printf("Inserting range [%ld,%ld] into processed list\n",
+               low, high);
+#endif
+        query->processed->Insert(low, high, NULL);
+        current = high + 1;
+    }
+
+#if DEBUGLVL >= 5
+    printf("List looks like this after preparation:\n");
+    query->processed->Print();
+#endif
+
+#if DEBUGLVL >= 3
+    printf("Done with PrepareProcessedList\n");
+#endif
+}
+
+/*
+   Initialize one query. Return false if no query is in initial state.
+*/
 
 Boolean QueryProcFull::InitQueries()
 {
-  int index;
-  for(index = _queries->InitIterator(); _queries->More(index);) {
-    QPFullData *qData = (QPFullData *)_queries->Next(index);
-    if (qData->state == QPFull_InitState) {
-      // must terminate iterator because query initialization may
-      // cause query to be aborted
-      _queries->DoneIterator(index);
-      switch(qData->qType) {
+  int index = _queries->InitIterator();
+
+  while (_queries->More(index)) {
+
+    QPFullData *query = (QPFullData *)_queries->Next(index);
+    if (query->state != QPFull_InitState)
+        continue;
+
+    /*
+       Must terminate iterator because query initialization may
+       cause query to be aborted.
+    */
+    _queries->DoneIterator(index);
+
+    switch(query->qType) {
       case QPFull_X:
-	InitQPFullX(qData);
+	InitQPFullX(query);
 	break;
       case QPFull_YX:
-	InitQPFullYX(qData);
+	InitQPFullYX(query);
 	break;
       case QPFull_Scatter:
-	InitQPFullScatter(qData);
+	InitQPFullScatter(query);
 	break;
       default:
 	DOASSERT(0, "Unknown query type");
 	break;
-      }
-
-      qData->current = qData->low;
-
-      return true;
     }
+
+    if (query->state == QPFull_ScanState) {
+        Boolean tdataOnly = UseTDataQuery(query->tdata, query->filter);
+        query->handle = _mgr->InitGetRecs(query->tdata, query->gdata,
+                                          query->low, query->high,
+                                          tdataOnly, false,
+                                          query->isRandom, false);
+#if DEBUGLVL >= 3
+        printf("Buffer manager handle 0x%p for [0x%p,0x%p,%ld,%ld]\n",
+               (void *)query->handle, query->tdata,
+               query->gdata, query->low, query->high);
+#endif
+        query->processed = _mgr->GetProcessedRange(query->handle);
+        PrepareProcessedList(query);
+    }
+
+    return true;
   }
 
   _queries->DoneIterator(index);
@@ -750,190 +835,103 @@ Boolean QueryProcFull::InitQueries()
 }
 
 /*********************************************************
-  Do scan for the range [qData->current, qData->high].
+  Get next unprocessed range from buffer manager.
   Set state == QPFull_EndState if scan is completed.
 **********************************************************/
 
-void QueryProcFull::ProcessScan(QPFullData *qData)
+void QueryProcFull::ProcessScan(QPFullData *query)
 {
-  /* inform buffer manager of focus */
-  qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
+    /* Inform buffer manager of focus */
+    _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
 
-  Boolean isTData = UseTDataQuery(qData->tdata, qData->filter);
-  Boolean noHigh;
-
-  if (qData->recLinkListIter >= 0) {
-    // if no current record link, try to get next from record link list
-    if (!qData->recLink) {
-      qData->recLinkRecId = 0;
-      if (qData->recLinkList->More(qData->recLinkListIter)) {
-	qData->recLink = qData->recLinkList->Next(qData->recLinkListIter);
 #if DEBUGLVL >= 3
-	printf("Beginning of record link file %s\n",
-	       qData->recLink->GetFileName());
+    printf("Requesting more data for TData %s, GData %s\n",
+           query->tdata->GetName(), query->gdata->GetName());
 #endif
-        qData->range.Clear();
-	(void)qData->tdata->HeadID(qData->current);
-        qData->recLinkRecId = 1;
-        qData->nextRecLinkRecId = 0;    // next recLink file lookup starts at 0
-      }
-    }
-    // if still no record link, query is finished
-    if (!qData->recLink) {
-      qData->recLinkList->DoneIterator(qData->recLinkListIter);
-      qData->recLinkListIter = -1;
-      qData->state = QPFull_EndState;
-      return;
-    }
+        
+    /*
+       Scan TData/GData record range. Distribute data to all queries
+       that need it. Return TRUE if have not exceeded amount of memory
+       used for this iteration of the query processor.
+    */
 
-    /* execute a restricted, non-randomized query using the record
-       ranges specified in recLink */
-    RecId low, high;
+    int recsScanned = 0;
 
-    /* fetch next record link record if needed */
-    if (qData->nextRecLinkRecId != qData->recLinkRecId) {
-        qData->recLinkRecId = qData->nextRecLinkRecId;
+    do {
+        RecId startRid;
+        int numRecs;
+        char *buf;
+        Boolean isTData;
+        
+        Boolean gotData = _mgr->GetRecs(query->handle, isTData,
+                                        startRid, numRecs, buf);
+
+        /* Query is finished when buffer manager finds no more data */
+        if (!gotData) {
 #if DEBUGLVL >= 3
-        printf("Fetching record %ld from record link file %s\n",
-               qData->recLinkRecId, qData->recLink->GetFileName());
+            printf("Query finished\n");
 #endif
-        int num;
-        int result = qData->recLink->FetchRecs(qData->recLinkRecId, low, num);
-        if (result < 0) {
-          printf("Cannot fetch record %ld from record link file %s\n",
-                 qData->recLinkRecId, qData->recLink->GetFileName());
-          qData->recLinkList->DoneIterator(qData->recLinkListIter);
-          qData->recLinkListIter = -1;
-          qData->state = QPFull_EndState;
-          return;
+            _mgr->DoneGetRecs(query->handle);
+            query->state = QPFull_EndState;
+            return;
         }
-        if (!result) {
+        
 #if DEBUGLVL >= 3
-	  printf("End of record link file %s (%ld records)\n",
-                 qData->recLink->GetFileName(), qData->recLinkRecId);
-#endif
-          qData->recLink = 0;
-          return;
-        }
-#if DEBUGLVL >= 3
-        printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
-               low, low + num - 1, qData->recLink->GetFileName(),
-               qData->recLinkRecId);
-#endif
-        if (low > qData->high) {
-#if DEBUGLVL >= 3
-          printf("Skipping to next record link record\n");
-#endif
-          qData->nextRecLinkRecId++;
-          return;
-        }
-        high = low + num - 1;
-        qData->recLinkHigh = high;
-        qData->current = low;
-      } else {
-        low = qData->current;
-        high = qData->recLinkHigh;
-#if DEBUGLVL >= 3
-        printf("Restored record range high %ld from previous round\n", high);
-#endif
-      }
-
-      if (high > qData->high)
-        high = qData->high;
-#if DEBUGLVL >= 3
-      printf("Doing scan of [%ld,%ld], current is %ld\n", low, high,
-             qData->current);
-#endif
-      int recsScanned;
-      DoScan(qData, low, high, isTData, recsScanned);
-      qData->current += recsScanned;
-      if (qData->current > high) {
-	/* go to next record range from record link */
-        qData->nextRecLinkRecId++;
-    }
-
-    return;
-  }
-
-  // Process query sequentially or using randomization.
-
-  RecId low, high;
-  noHigh = qData->range.NextUnprocessed(qData->current, low, high);
-  if (low > qData->high) {
-      // If we are past the end of query, wrap around to the beginning
-      // of the query. This is so that unprocessed ranges (which we may
-      // skipped because of randomization or the fact that records were
-      // returned out-of-order by the buffer manager) are properly processed.
-      qData->current = qData->low;
-      noHigh = qData->range.NextUnprocessed(qData->current, low, high);
-  }
-
-  // Query is finished when no unprocessed record ranges can be found.
-
-  if (low > qData->high) {
-#if DEBUGLVL >= 3
-      printf("query finished\n");
-#endif
-      qData->state = QPFull_EndState;
-      return;
-  }
-
-  if (noHigh || high > qData->high)
-      high = qData->high;
-
-#if DEBUGLVL >= 3
-  printf("low %ld, high %ld (%ld:%ld:%ld)\n",
-         low, high, qData->low, qData->high, qData->current);
+        printf("Got records [%ld,%ld] (%d,0x%p)\n", startRid,
+               startRid + numRecs - 1, isTData, buf);
 #endif
 
-  int recsScanned;
-  DoScan(qData, low, high, isTData, recsScanned);
+        DistributeData(query, isTData, startRid, numRecs, buf);
+        
+        _mgr->FreeRecs(buf);
 
-  qData->current += recsScanned;
+        recsScanned += numRecs;
 
-  // In random mode, skip over a large number of records.
+    } while (recsScanned < QPFULL_RECS_PER_BATCH);
 
-  if (qData->isRandom)
-      qData->current += (qData->high - qData->low) / QPFULL_RANDOM_SKIPS;
+#if DEBUGLVL >= 3
+    printf("Done getting records from buffer manager\n");
+#endif
 }
 
-void QueryProcFull::ProcessQPFullX(QPFullData *qData)
+void QueryProcFull::ProcessQPFullX(QPFullData *query)
 {
-  if (qData->state == QPFull_EndState) {
-      EndQPFullX(qData);
+  if (query->state == QPFull_EndState) {
+      EndQPFullX(query);
       return;
   }
 
-  ProcessScan(qData);
-  if (qData->state == QPFull_EndState) {
-      EndQPFullX(qData);
+  ProcessScan(query);
+  if (query->state == QPFull_EndState) {
+      EndQPFullX(query);
   }
 }
 
-void QueryProcFull::ProcessQPFullYX(QPFullData *qData)
+void QueryProcFull::ProcessQPFullYX(QPFullData *query)
 {
   DOASSERT(0, "Cannot process XY query yet");
 }
 
-void QueryProcFull::ProcessQPFullScatter(QPFullData *qData)
+void QueryProcFull::ProcessQPFullScatter(QPFullData *query)
 {
-  if (qData->state == QPFull_EndState) {
-      EndQPFullScatter(qData);
+  if (query->state == QPFull_EndState) {
+      EndQPFullScatter(query);
       return;
   }
 
-  ProcessScan(qData);
-  if (qData->state == QPFull_EndState) {
-      EndQPFullScatter(qData);
+  ProcessScan(query);
+  if (query->state == QPFull_EndState) {
+      EndQPFullScatter(query);
   }
 }
 
 void QueryProcFull::ProcessQuery()
 {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
   printf("QueryProcFull::ProcessQuery()\n");
 #endif
-  if (NoQueries()) {
+
+  if (_queries->Size() == 0) {
     /*
        If all queries have been executed (system is idle) and
        we need to notify control panel that everything is in
@@ -958,55 +956,66 @@ void QueryProcFull::ProcessQuery()
   }
 
   ControlPanel::Instance()->SetSyncAllowed();
-//  ReOrderQueries();
+
   if (InitQueries()) {
     /* Have initialized queries. Return now. */
     return;
   }
 
-  /* Process the first query */
-  QPFullData *first = FirstQuery();
+  /* Find out which query is ready to deliver data */
+  BufMgr::BMHandle handle = _mgr->SelectReady();
+  QPFullData *query = NULL;
+  int index = _queries->InitIterator();
+  while (_queries->More(index)) {
+      query = (QPFullData *)_queries->Next(index);
+      if (query->handle == handle)
+          break;
+  }
+  _queries->DoneIterator(index);
+  
+  DOASSERT(query, "Could not associate query with buffer manager handle");
 
-#if DEBUGLVL >= 3
-  printf("ProcessQuery for %s %s\n", first->tdata->GetName(),
-	 first->map->GetName());
+#if DEBUGLVL >= 5
+  printf("Processing query for tdata %s, map %s\n",
+         query->tdata->GetName(), query->map->GetName());
 #endif
 
-  switch(first->qType) {
+  switch(query->qType) {
   case QPFull_X:
-	ProcessQPFullX(first);
+	ProcessQPFullX(query);
 	break;
   case QPFull_YX:
-	ProcessQPFullYX(first);
+	ProcessQPFullYX(query);
 	break;
   case QPFull_Scatter:
-	ProcessQPFullScatter(first);
+	ProcessQPFullScatter(query);
 	break;
   }
   
-  if (first->state == QPFull_EndState) {
+  if (query->state == QPFull_EndState) {
     /* finished with this query */
-    DeleteQuery(first);
+    _queries->Delete(query);
+    delete query;
   } else {
     /* move query to end of query list */
-    _queries->Delete(first);
-    _queries->Append(first);
+    _queries->Delete(query);
+    _queries->Append(query);
   }
 }
 
-void QueryProcFull::EndQPFullX(QPFullData *qData)
+void QueryProcFull::EndQPFullX(QPFullData *query)
 {
-  qData->callback->QueryDone(qData->bytes, qData->userData);
+  query->callback->QueryDone(query->bytes, query->userData);
   JournalReport();
 }
 
-void QueryProcFull::EndQPFullYX(QPFullData *qData)
+void QueryProcFull::EndQPFullYX(QPFullData *query)
 {
 }
 
-void QueryProcFull::EndQPFullScatter(QPFullData *qData)
+void QueryProcFull::EndQPFullScatter(QPFullData *query)
 {
-  qData->callback->QueryDone(qData->bytes, qData->userData);
+  query->callback->QueryDone(query->bytes, query->userData);
   JournalReport();
 }
 
@@ -1023,8 +1032,8 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 	RecId &id,Boolean bounded, RecId lowBound, RecId highBound,
 	Boolean maxLower)
 {
-#if DEBUGLVL >= 3
-  printf("DobinarySearch xVal = %f, maxLower = %d\n", xVal, maxLower);
+#if DEBUGLVL >= 5
+  printf("DoBinarySearch xVal = %f, maxLower = %d\n", xVal, maxLower);
 #endif
 
   mgr->PhaseHint(BufferPolicy::BinSearchPhase);
@@ -1059,7 +1068,7 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 
   do {
     /* Get the data for mid */
-    GetX(mgr, tdata, map,mid, x);
+    GetX(mgr, tdata, map, mid, x);
     
     /* change high or low for next search */
     if (x < xVal) {
@@ -1072,27 +1081,27 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   
   /* Scan backwards until we found an ID whose x < filter.xLow */
   if (maxLower) {
-    GetX(mgr,tdata,map,mid,x);
-#if DEBUGLVL >= 3
+    GetX(mgr, tdata, map, mid, x);
+#if DEBUGLVL >= 9
     printf("midVal = %.2f\n", x);
 #endif
     while (mid > firstId && x >= xVal) {
       mid--;
       GetX(mgr, tdata, map, mid, x);
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
       printf("midVal = %.2f\n", x);
 #endif
     }
     id = mid;
   } else {
     GetX(mgr, tdata, map, mid, x);
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
     printf("midVal = %.2f\n", x);
 #endif
     while (mid < lastId && x <= xVal) {
       mid++;
       GetX(mgr, tdata, map, mid, x);
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
       printf("midVal = %.2f\n", x);
 #endif
     }
@@ -1118,7 +1127,7 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 				      RecId lowBound, RecId highBound,
 				      Boolean maxLower)
 {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
   printf("DoLinearSearch xVal = %.2f, maxLower = %d\n", xVal, maxLower);
 #endif
 
@@ -1126,9 +1135,9 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
     (SortedTable<Coord, RecId> *)map->GetUserData();
   DOASSERT(table, "Invalid mapping data");
 
-  // See if value is in the coordinate table
+  /* See if value is in the coordinate table */
   if (table->lookup(xVal, id) >= 0) {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 7
     printf("Exact location of %.2f found at %ld\n", xVal, id);
 #endif
     return true;
@@ -1139,60 +1148,64 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   if (!bounded) {
     if (!tdata->HeadID(low) || !tdata->LastID(high)) {
-      // no records
+      /* No records */
       return false;
     }
   }
 
-  // See if we can get low and high bounds from the coordinate table
+  /* See if we can get low and high bounds from the coordinate table */
 
   if (table->lookupLower(xVal, id) >= 0) {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
     printf("X low bound for %.2f found at %ld\n", xVal, id);
 #endif
     if (id > low)
       low = id;
     else {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
       printf("User-provided lower bound is stronger.\n");
 #endif
     }
   }
 
   if (table->lookupHigher(xVal, id) >= 0) {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
     printf("X high bound for %.2f found at %ld\n", xVal, id);
 #endif
     if (id < high)
       high = id;
     else {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
       printf("User-provided high bound is stronger.\n");
 #endif
     }
   }
 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
   printf("Searching for %.2f, low bound %ld, high bound %ld\n",
 	 xVal, low, high);
 #endif
 
-  // handle simple case where the range has just one record
+  /* Handle simple case where the range has just one record */
   if (low == high) {
     id = low;
     return true;
   }
 
-  // switch from jumping to reading when jump distance is less
-  // than 2 megabytes; use factor 2 to multiply jump distance
-  // each time the target record is not found
+  /*
+     Wwitch from jumping to reading when jump distance is less
+     than 2 megabytes; use factor 2 to multiply jump distance
+     each time the target record is not found.
+  */
 
   const int minSkip = QPFULL_TAPE_MIN_SEEK / tdata->RecSize();
   const double skipFactor = 2;
 
-  // set maximum skip size to 1/10th of the range size; use minimum skip
-  // if 1/10th is too small; if whole range is less than minimum skip,
-  // don't bother doing any seeks -- just read the range
+  /*
+     Set maximum skip size to 1/10th of the range size; use minimum skip
+     if 1/10th is too small; if whole range is less than minimum skip,
+     don't bother doing any seeks -- just read the range.
+  */
 
   int maxSkip = (high - low + 1) / 10;
   if (maxSkip < minSkip)
@@ -1204,61 +1217,61 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
   RecId previous = low;
   RecId current = previous + 1;
 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
   printf("starting jump mode, minSkip %d, maxSkip %d\n", minSkip, maxSkip);
 #endif
 
-  // repeat progressive jump loop until we're past the record
+  /* Repeat progressive jump loop until we're past the record */
   if (maxSkip > 0) {
     mgr->PhaseHint(BufferPolicy::BinSearchPhase);
-    while(1) {
-      // Get data for current record
+    while (1) {
+      /* Get data for current record */
       GetX(mgr, tdata, map, current, x);
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
       printf("at %ld, value is %.2f\n", current, x);
 #endif
       AddCoordMapping(map, current, x);
 
-      if (x >= xVal) {                  // past the value we're searching?
+      if (x >= xVal) {                  /* Past the value we're searching? */
 	if ((int)(current - previous) < minSkip)
-	  break;                        // switch to reading mode
-#if DEBUGLVL >= 3
+	  break;                        /* Switch to reading mode */
+#if DEBUGLVL >= 9
 	printf("starting another progressive search\n");
 #endif
-	current = previous + 1;         // start another progressive search
+	current = previous + 1;         /* Start another progressive search */
 	continue;
       }
 
       int skip = (int)((current - previous) * skipFactor);
       previous = current;
-      if (previous == high)             // at end of file or range?
+      if (previous == high)             /* At end of file or range? */
 	break;
-      if (skip > maxSkip)               // skip limit reached?
+      if (skip > maxSkip)               /* Skip limit reached? */
 	skip = maxSkip;
       DOASSERT(skip > 0, "Inconsistent data");
-      current += skip;                  // skip forward
+      current += skip;                  /* Skip forward */
       if (current > high)
 	current = high;
     }
     mgr->PhaseHint(BufferPolicy::ScanPhase);
   }
 
-  if (previous == high) {               // end of file or range?
+  if (previous == high) {               /* End of file or range? */
     DOASSERT(previous == current, "Inconsistent data");
     id = previous;
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
     printf("linear search ended at high %ld\n", id);
 #endif
     return true;
   }
 
-  current = previous + 1;               // back off to previous known location
-#if DEBUGLVL >= 3
+  current = previous + 1;               /* Back off to previous location */
+#if DEBUGLVL >= 9
   printf("switching to read mode\n");
 #endif
 
-  // read until record is found
-  while(current <= high) {
+  /* Read until record is found */
+  while (current <= high) {
     GetX(mgr, tdata, map, current, x);
     if ((maxLower && x < xVal)
 	|| (!maxLower && x <= xVal)) {
@@ -1269,14 +1282,17 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
     }
   }
 
-  id = current - 1;                     // for maxLower, take previous record
-  if (!maxLower)                        // for !maxLower, take current record
+  /* for maxLower, take previous record */
+  id = current - 1;
+
+  /* for !maxLower, take current record */
+  if (!maxLower)
     id++;
 
   if (id > high)
     id = high;
 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
   printf("target was found at %ld\n", id);
 #endif
 
@@ -1299,20 +1315,20 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   int totalGRecSize = 0;
 
   int index = _queries->InitIterator();
-  while(_queries->More(index)) {
-    QPFullData *qData = (QPFullData *)_queries->Next(index);
-    if (qData->tdata == tdata && 
-	!(filter.xLow > qData->filter.xLow ||
-	  filter.xHigh < qData->filter.xHigh)) {
+  while (_queries->More(index)) {
+    QPFullData *query = (QPFullData *)_queries->Next(index);
+    if (query->tdata == tdata && 
+	!(filter.xLow > query->filter.xLow ||
+	  filter.xHigh < query->filter.xHigh)) {
       /* found */
       numMatchingQueries++;
-      totalGRecSize += qData->map->GDataRecordSize();
+      totalGRecSize += query->map->GDataRecordSize();
     }
   }
   _queries->DoneIterator(index);
 
 #if DEBUGLVL >= 3
-  printf("matching queries: %d, gdata recsize: %d, tdata recsize %d\n",
+  printf("Matching queries: %d, gdata recsize: %d, tdata recsize %d: ",
 	 numMatchingQueries, totalGRecSize, tdata->RecSize() );
 #endif      
 
@@ -1329,245 +1345,122 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   return false;
 }
 
-/*
-   Do scan of record ID range. Distribute data to all queries
-   that need it. Return TRUE if have not exceeded
-   amount of memory used for this iteration of the query processor.
-*/
-
-void QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high, 
-                           Boolean tdataOnly, int &recsScanned)
-{
-#if DEBUGLVL >= 3
-  printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
-#endif
-
-  // kb 11/25/96:
-  // hack to keep the system more interactive, otherwise the buffer mgr
-  // often return too many records.  Ideally, the buffer mgr should get
-  // the entire range, and then only return the max number of records in
-  // one chunk (so that we can make full use of the cache), but that is
-  // much more difficult than setting it here!
-  if( high - low >= QPFULL_RECS_PER_BATCH ) {
-    high = low + QPFULL_RECS_PER_BATCH;
-  }
-
-  BufMgr *mgr = qData->mgr;
-  mgr->InitGetRecs(qData->tdata, qData->gdata, low, high, 
-		   Randomize, tdataOnly);
-
-  int tRecSize = qData->tdata->RecSize();
-  int gRecSize = qData->map->GDataRecordSize();
-		
-  recsScanned = 0;
-
-  int numRecs;
-  RecId startRid; 
-  Boolean isTData;
-  void *buf;
-
-  while (mgr->GetRecs(isTData, startRid, numRecs, buf)) {
-    recsScanned += numRecs;
-#if DEBUGLVL >= 3
-    printf("DoScan: Got recs(%d, %ld, %d, 0x%p)\n",
-	   isTData, startRid, numRecs, buf);
-#endif
-    if (isTData) {
-      DistributeTData(qData, startRid, numRecs, buf);
-    } else {
-      DistributeGData(qData, startRid, numRecs, buf);
-    }
-    mgr->FreeRecs(buf, NoChange);
-
-    if (recsScanned >= QPFULL_RECS_PER_BATCH)
-      break;
-  }
-
-  mgr->DoneGetRecs();
-}
-
 void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 {
-#if DEBUGLVL >= 3
-  printf("QPRangeInserted [%ld,%ld]\n", low, high);
+#if DEBUGLVL >= 5
+    printf("QPRangeInserted [%ld,%ld], buf 0x%p, [%ld,%ld], %d\n",
+           low, high, _rangeBuf, _rangeStartId,
+           _rangeStartId + _rangeNumRecs - 1, _rangeTData);
 #endif
 
-  int tRecSize = _rangeQData->tdata->RecSize();
-  int gRecSize = _rangeQData->map->GDataRecordSize();
+    int tRecSize = _rangeQuery->tdata->RecSize();
+    int gRecSize = _rangeQuery->map->GDataRecordSize();
 
-  if (_rangeTData) {
-    /* return TData in batches. The amount of TData returned might
+    if (!_rangeTData) {
+        /* Inserted GData range can be forwarded in one chunk */
+        char *ptr = (char *)_rangeBuf + (low - _rangeStartId) * gRecSize;
+        _rangeQuery->bytes += (high - low + 1) * gRecSize;
+#if DEBUGLVL >= 5
+        printf("Returning GData [%ld,%ld], map 0x%p, buf 0x%p\n",
+               low, high, _rangeQuery->map, _gdataBuf);
+#endif
+        _rangeQuery->callback->ReturnGData(_rangeQuery->map, low,
+                                           ptr, high - low + 1);
+        return;
+    }
+
+    /*
+       Return TData in batches. The amount of TData returned might
        be greater than what we can fit in _gdataBuf after conversion.
        Therefore, we have to convert in batches and send each batch
-       of GData individually. */
-    _rangeQData->bytes += (high-low+1)*tRecSize;
+       of GData individually.
+    */
+
+    _rangeQuery->bytes += (high - low + 1) * tRecSize;
     int numRecsPerBatch = GDATA_BUF_SIZE / gRecSize;
     
-    int numRecs = high-low+1;
-
+    int numRecs = high - low + 1;
+    
     int recsLeft = numRecs;
-    int offset = low-_rangeStartId;
+    int offset = low - _rangeStartId;
     char *dbuf = (char *)_rangeBuf + offset * tRecSize;
     RecId recId = low;
-
+    
     while (recsLeft > 0) {
-      int numToConvert = numRecsPerBatch;
-      if (numToConvert > recsLeft)
-	numToConvert = recsLeft;
-      
-      _rangeQData->map->ConvertToGData(recId, dbuf,
-				       numToConvert, _gdataBuf);
-      
-#if DEBUGLVL >= 3
-      printf("ReturnGData(0x%p,%ld,0x%p,%d)\n", _rangeQData->map, recId,
-	     _gdataBuf, numToConvert);
+        int numToConvert = numRecsPerBatch;
+        if (numToConvert > recsLeft)
+            numToConvert = recsLeft;
+        _rangeQuery->map->ConvertToGData(recId, dbuf, numToConvert, _gdataBuf);
+#if DEBUGLVL >= 5
+        printf("Returning converted GData [%ld,%ld], map 0x%p, buf 0x%p\n",
+               recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
 #endif
-	
-      _rangeQData->callback->ReturnGData(_rangeQData->map, recId,
-					 _gdataBuf, numToConvert);
-
-      recsLeft -= numToConvert;
-      recId += numToConvert;
-      dbuf += (tRecSize*numToConvert);
+        _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
+                                           _gdataBuf, numToConvert);
+        recsLeft -= numToConvert;
+        recId += numToConvert;
+        dbuf += tRecSize * numToConvert;
     }
-  } else {
-    /* return GData */
-    char *ptr = (char *)_rangeBuf + (low - _rangeStartId) * gRecSize;
-    _rangeQData->bytes += (high-low+1)*gRecSize;
-
-#if DEBUGLVL >= 3
-    printf("ReturnGData(0x%p,%ld,0x%p,%ld)\n", _rangeQData->map, low,
-	   _gdataBuf, high - low + 1);
-#endif
-    _rangeQData->callback->ReturnGData(_rangeQData->map, low,
-				       ptr, high - low + 1);
-  }
 }
 
-/* Distribute tdata/gdata to all queries that need it */
+/* Distribute TData/GData to all queries that need it */
 
-void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
-				    int numRecs, void *buf)
+void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
+                                   RecId startRid, int numRecs, char *buf)
 {
-#if DEBUGLVL >= 3
-  printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
-	 startRid, startRid + numRecs - 1);
+#if DEBUGLVL >= 5
+    printf("DistributeData map %s, [%ld,%ld]\n", query->map->GetName(),
+           startRid, startRid + numRecs - 1);
 #endif
   
-  /* init params for QPRangeInserted() */
-  _rangeBuf = buf;
-  _rangeStartId = startRid;
-  _rangeNumRecs = numRecs;
-  _rangeTData = true;
+    /* Set up params for QPRangeInserted() */
+    _rangeBuf = buf;
+    _rangeStartId = startRid;
+    _rangeNumRecs = numRecs;
+    _rangeTData = isTData;
 
-  RecId low = startRid;
-  RecId high = startRid + numRecs - 1;
+    RecId low = startRid;
+    RecId high = startRid + numRecs - 1;
 
-  int index;
-  for(index = _queries->InitIterator(); _queries->More(index);) {
-    QPFullData *qData = _queries->Next(index);
+    int index = _queries->InitIterator();
 
-    // if query is a slave of a record link, do not distribute tdata
-    // to it; the query will be executed when the master of the link
-    // is done
-    if (queryData != qData && qData->recLinkListIter >= 0){
-      // current query  is a reclink slave and another query slave of 
-      // the same reclink go ahead with Distribution else skip.
-	if (! (queryData->recLinkListIter >= 0)  
-	    && (queryData->recLink == qData->recLink))
-	  continue;
+    while (_queries->More(index)) {
+        QPFullData *otherQ = _queries->Next(index);
+        
+        /* Do not distribute data if other query uses different TData */
+        if (isTData) {
+            if (query->tdata != otherQ->tdata)
+                continue;
+        } else {
+            if (query->gdata != otherQ->gdata)
+                continue;
+        }
+
+        /* 
+           If this query is not a slave of a record link but the other
+           query is, do not distribute tdata to it; the query will be
+           executed when the master of the link is done. If neither query
+           is a slave, or both queries are slaves, then do distribute
+           tdata to it.
+        */
+        if (query != otherQ)
+            if (!query->isRecLinkSlave && otherQ->isRecLinkSlave)
+                continue;
+    
+        RecId tempLow = low;
+        RecId tempHigh = high;
+
+        if (tempLow < otherQ->low)
+            tempLow = otherQ->low;
+        if (tempHigh > otherQ->high)
+            tempHigh = otherQ->high;
+        if (tempHigh >= tempLow) {
+            _rangeQuery = otherQ;
+            otherQ->processed->Insert(tempLow, tempHigh, this);
+        }
     }
     
-    RecId tempLow = low;
-    RecId tempHigh = high;
-    if (qData->tdata == queryData->tdata) {
-      if (tempLow < qData->current)
-	tempLow = qData->current;
-      if (tempHigh > qData->high)
-	tempHigh = qData->high;
-      if (tempHigh >= tempLow) {
-	_rangeQData = qData;
-#if DEBUGLVL >= 5
-	printf("before insert range before: ");
-	qData->range.Print();
-#endif
-	qData->range.Insert(tempLow, tempHigh, this);
-#if DEBUGLVL >= 5
-	printf("after insert: ");
-	qData->range.Print();
-#endif
-      }
-    }
-  }
-  _queries->DoneIterator(index);
-}
-
-void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
-				    int numRecs, void *buf)
-{
-#if DEBUGLVL >= 3
-  printf("DistributeGData map 0x%p, [%ld,%ld]\n",
-	 queryData->map, startRid, startRid + numRecs - 1);
-#endif
-
-  /* init params for QPRangeInserted() */
-  _rangeBuf = buf;
-  _rangeStartId = startRid;
-  _rangeNumRecs = numRecs;
-  _rangeTData = false;
-
-  RecId low = startRid;
-  RecId high = startRid + numRecs - 1;
-
-  int index;
-  for(index = _queries->InitIterator(); _queries->More(index);) {
-    QPFullData *qData = _queries->Next(index);
-
-    // if query is a slave of a record link, do not distribute tdata
-    // to it; the query will be executed when the master of the link
-    // is done
-    if (queryData != qData && qData->recLinkListIter >= 0) {
-     // current query  is a reclink slave and another query slave of 
-     // the same reclink go ahead with Distribution else skip.
-       if (! (queryData->recLinkListIter >= 0)  
-	   && (queryData->recLink == qData->recLink))
-	 continue;
-    }
-    
-
-    if (qData->gdata == queryData->gdata) {
-      RecId tempLow = low;
-      RecId tempHigh = high;
-      if (tempLow < qData->current)
-	tempLow = qData->current;
-      if (tempHigh > qData->high)
-	tempHigh = qData->high;
-      if (tempHigh >= tempLow) {
-	_rangeQData = qData;
-#if DEBUGLVL >= 5
-	printf("before insert range before: ");
-	qData->range.Print();
-#endif
-	qData->range.Insert(tempLow, tempHigh, this);
-#if DEBUGLVL >= 5
-	printf("after insert: ");
-	qData->range.Print();
-#endif
-      }
-    }
-  }
-  _queries->DoneIterator(index);
-}
-
-QPFullData *QueryProcFull::FirstQuery()
-{
-  return ((QPFullData *)_queries->GetFirst());
-}
-
-void QueryProcFull::DeleteQuery(QPFullData *qp)
-{
-  _queries->Delete(qp);
-  delete qp;
+    _queries->DoneIterator(index);
 }
 
 /*********************************************************
@@ -1576,128 +1469,151 @@ Keep track of journal report
 
 void QueryProcFull::JournalReport()
 {
-  QPFullData *query = FirstQuery();
+    int numGetPage = 0;
+    int numHits = 0;
+    int numPrefetch = 0;
+    int numPrefetchHits = 0;
 
-  // keep compiler happy
-  query = query;
-
-  int numGetPage=0, numHits=0,numPrefetch=0, numPrefetchHits=0;
-  Journal::EventType lastEvent = Journal::LastEvent();
-  if (lastEvent == Journal::PushSelection ||
-      lastEvent == Journal::PopSelection ||
-      lastEvent == Journal::ChangeSelection)
-    Journal::RecordEvent(Journal::Completion, NULL, NULL, NULL, NULL,
-			 numGetPage, numHits, numPrefetch, numPrefetchHits);
-}
-
-
-Boolean QueryProcFull::NoQueries()
-{
-  return (_queries->Size() == 0);
+    Journal::EventType lastEvent = Journal::LastEvent();
+    if (lastEvent == Journal::PushSelection ||
+        lastEvent == Journal::PopSelection ||
+        lastEvent == Journal::ChangeSelection)
+        Journal::RecordEvent(Journal::Completion, NULL, NULL, NULL, NULL,
+                             numGetPage, numHits, numPrefetch,
+                             numPrefetchHits);
 }
 
 Boolean QueryProcFull::Idle()
 {
-  return (_queries->Size() == 0);
+    return (_queries->Size() == 0);
 }
 
 BufMgr *QueryProcFull::GetMgr()
 {
-  return _mgr;
+    return _mgr;
 }
 
 void QueryProcFull::PrintStat()
 {
-  _mgr->PrintStat();
+    _mgr->PrintStat();
 }
 
 void QueryProcFull::InsertMapping(TDataMap *map)
 {
-#if DEBUGLVL >= 3
-  printf("InsertMapping 0x%p, %s %s\n", map,
-	 map->GetTData()->GetName(), map->GetName());
+#if DEBUGLVL >= 5
+    printf("InsertMapping 0x%p, %s %s\n", map,
+           map->GetTData()->GetName(), map->GetName());
 #endif
 
-  for(int i = 0; i < _numMappings; i++) {
-    if (map == _mappings[i])
-      return;
-  }
+    for(int i = 0; i < _numMappings; i++) {
+        if (map == _mappings[i])
+            return;
+    }
 
-  DOASSERT(_numMappings < QPFULL_MAX_MAPPINGS, "Too many mappings");
+    DOASSERT(_numMappings < QPFULL_MAX_MAPPINGS, "Too many mappings");
 
-  _mappings[_numMappings++] = map;
+    _mappings[_numMappings++] = map;
 }
 
 void QueryProcFull::ClearMapping()
 {
-#if DEBUGLVL >= 3 
-  printf("ClearMapping %d\n", _numMappings);
+#if DEBUGLVL >= 5
+    printf("ClearMapping %d\n", _numMappings);
 #endif
-  _numMappings = 0;
+    _numMappings = 0;
 }
 
-/* Convert what's in memory for tdata. Return false if no more to convert.*/
+/*
+   Convert what's in memory for tdata.
+   Return false if no more records to convert.
+*/
 
 Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 					   TDataMap *map)
 {
-#if DEBUGLVL >= 3
-  printf("In DoInMemGDataConvert\n");
+#if DEBUGLVL >= 5
+  printf("QueryProcFull::DoInMemGDataConvert map %s\n", map->GetName());
 #endif
 
-  _mgr->InitTDataInMem(tdata);
-  RecId inMemLow, inMemHigh;
+  RecId low;
+  RecId high;
+  if (!tdata->HeadID(low) || !tdata->LastID(high))
+      return false;
+
+  BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, low, high,
+                                              true, true);
+
+  QPRange *processed = _mgr->GetProcessedRange(handle);
+
   int gRecSize = gdata->RecSize();
   int tRecSize = tdata->RecSize();
   int maxRecs = GDATA_BUF_SIZE / gRecSize;
-  int numBytes = 0;
-  void *tmpBuf;
-  while(numBytes < QPFULL_MAX_FETCH &&
-	_mgr->GetInMemRecs(tmpBuf, inMemLow, inMemHigh)) {
-    /* need this cast because some C++ compilers will
-       not allow as to pass a (char *) into _mgr->GetInMemRecs() above */
-    char *buf = (char *)tmpBuf;
-    
-    /* For each in-mem range, find all subranges that
-       have not been converted and convert */
-    RecId current = inMemLow;
-    RecId low, high;
-    Boolean noHigh = gdata->NextUnConverted(current, low, high);
-    while (low <= inMemHigh) {
-      if (noHigh)
-	high = inMemHigh;
-      else if (high > inMemHigh)
-	high = inMemHigh;
-      
-      /* convert [low..high] in batches that fit in memory */
-      int numRecs = high-low+1;
-      RecId convertId = low;
-      while (numRecs > 0 ) {
-	int numConvert = numRecs;
-	if (numConvert > maxRecs)
-	  numConvert = maxRecs;
-	
-	char *startBuf = buf + tRecSize * (convertId - inMemLow);
-	char *firstRec = _gdataBuf;
-	char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
-	map->ConvertToGData(convertId, startBuf, numConvert, _gdataBuf);
-	gdata->UpdateConversionInfo(convertId, convertId + numConvert - 1, 
-				    firstRec, lastRec);
-	gdata->WriteRecs(convertId, numConvert, _gdataBuf);
-	numBytes += gRecSize * numConvert;
-	
-	numRecs -= numConvert;
-	convertId += numConvert;
-      }
-      
-      current = high;
-      noHigh = gdata->NextUnConverted(current, low, high);
-    }
-    _mgr->FreeInMemRecs(buf);
-  }
-  _mgr->DoneTDataInMem();
+  int numConverted = 0;
 
-  return (numBytes > 0);
+  while (numConverted < QPFULL_RECS_PER_BATCH) {
+      RecId startRecId;
+      int numRecs;
+      char *buf;
+      Boolean isTData;
+
+      Boolean gotit = _mgr->GetRecs(handle, isTData, startRecId, numRecs, buf);
+      if (!gotit)
+          break;
+      DOASSERT(isTData, "Did not get TData");
+
+      /*
+         For each in-memory range, find all subranges that
+         have not been converted and convert.
+      */
+
+      RecId inMemLow = startRecId;
+      RecId inMemHigh = startRecId + numRecs - 1;
+      processed->Insert(inMemLow, inMemHigh, NULL);
+
+      RecId current = inMemLow;
+
+      while (1) {
+          RecId low, high;
+          Boolean noHigh = gdata->NextUnConverted(current, low, high);
+          if (noHigh || high > inMemHigh)
+              high = inMemHigh;
+#if DEBUGLVL >= 5
+          printf("Next unprocessed range is [%ld,%ld]\n", low, high);
+          gdata->PrintConverted();
+#endif
+
+          if (low > inMemHigh)
+              break;
+
+          /* Convert [low..high] in batches that fit in memory. */
+          while (low <= high) {
+              int numConvert = high - low + 1;
+              if (numConvert > maxRecs)
+                  numConvert = maxRecs;
+              char *startBuf = buf + tRecSize * (low - inMemLow);
+              char *firstRec = _gdataBuf;
+              char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
+              map->ConvertToGData(low, startBuf, numConvert, _gdataBuf);
+              gdata->UpdateConversionInfo(low, low + numConvert - 1, 
+                                          firstRec, lastRec);
+              gdata->WriteRecs(low, numConvert, _gdataBuf);
+              numConverted += numConvert;
+              low += numConvert;
+          }
+
+          current = high + 1;
+      }
+
+      _mgr->FreeRecs(buf);
+  }
+
+  _mgr->DoneGetRecs(handle);
+  
+#if DEBUGLVL >= 5
+  printf("Converted %d records of map %s\n", numConverted, map->GetName());
+#endif
+
+  return (numConverted > 0);
 }
 
 void QueryProcFull::DoGDataConvert()
@@ -1712,21 +1628,14 @@ void QueryProcFull::DoGDataConvert()
   }
 	
   /* Do in-memory conversion, if we can */
-  int index = _convertIndex;
-
   for(int i = 0; i < _numMappings; i++) {
-    if (index < 0 || index >= _numMappings)
-      index = 0;
-    TDataMap *map = _mappings[index];
+    TDataMap *map = _mappings[_convertIndex];
+    _convertIndex = (_convertIndex + 1) % _numMappings;
     GData *gdata = map->GetGData();
     TData *tdata = map->GetTData();
-#if DEBUGLVL >= 3 
-	printf("DoGDataConvert in memory map[%d] 0x%p gdata 0x%p tdata 0x%p\n", index, map, gdata, tdata);
-#endif
-
     if (gdata && DoInMemGDataConvert(tdata, gdata, map)) {
-      /* done converting one segment for in mem conversion */
-#if DEBUGLVL >= 3
+      /* Done converting one segment of in-memory TData */
+#if DEBUGLVL >= 5
       printf("Done with in-memory GData conversion\n");
 #endif
       return;
@@ -1734,6 +1643,9 @@ void QueryProcFull::DoGDataConvert()
   }
   
   /* If we get here, nothing can be converted from memory */
+#if DEBUGLVL >= 3
+  printf("No in-memory GData conversion necessary\n");
+#endif
 
   /* Find first gdata that needs disk conversion */
 
@@ -1750,24 +1662,15 @@ void QueryProcFull::DoGDataConvert()
 
   for(mapidx = 0; mapidx < _numMappings; mapidx++) {
     map = _mappings[_convertIndex];
-#if DEBUGLVL >= 3 
-    printf("DoGDataConvert map 0x%p\n", map);
-#endif
-
+    _convertIndex = (_convertIndex + 1) % _numMappings;
     gdata = map->GetGData();
     tdata = map->GetTData();
-
-#if DEBUGLVL >= 3 
-    printf("Map[%d] has GData 0x%p tdata 0x%p\n", _convertIndex, gdata, tdata);
-#endif
-
-    _convertIndex = (_convertIndex + 1) % _numMappings;
 
     if (!gdata)
       continue;
 
     recsLeft = gdata->RecsLeftToConvert();
-#if DEBUGLVL >= 3 
+#if DEBUGLVL >= 5
     printf("GData %s has %d recs left\n", gdata->GetName(), recsLeft);
 #endif
     if (!recsLeft)
@@ -1780,11 +1683,11 @@ void QueryProcFull::DoGDataConvert()
   
     noHigh = gdata->NextUnConverted(startId, low, high);
     if (low > lastId) {
-      /* check from beginning */
+      /* Find first unconverted range from beginning of file */
       startId = firstId;
       noHigh = gdata->NextUnConverted(startId, low, high);
       if (low > lastId) {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
 	printf("GData %s has nothing more to convert\n", gdata->GetName());
 #endif
 	continue;
@@ -1795,7 +1698,7 @@ void QueryProcFull::DoGDataConvert()
   }
   
   if (mapidx >= _numMappings) {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
     printf("Could not find any GData that needs disk conversion\n");
 #endif
     Dispatcher::Current()->CancelCallback(_dispatcherID);
@@ -1813,16 +1716,18 @@ void QueryProcFull::DoGDataConvert()
   if (recsLeft > 0 && numRecs > recsLeft)
     numRecs = recsLeft;
   
-  /* convert [low..low+recsLeft-1] */
-  tdata->InitGetRecs(low, high, RecIdOrder);
+  /* Convert [low, low + recsLeft - 1] */
+
+  TData::TDHandle handle = tdata->InitGetRecs(low, high);
   RecId startRid;
   int numRetrieved;
   int dataSize;
-  (void)tdata->GetRecs(_tdataBuf, TDATA_BUF_SIZE,startRid,
-		       numRetrieved, dataSize);
-  tdata->DoneGetRecs();
+  Boolean status = tdata->GetRecs(handle, _tdataBuf, TDATA_BUF_SIZE,
+                                  startRid, numRetrieved, dataSize);
+  DOASSERT(status, "Cannot get TData");
+  tdata->DoneGetRecs(handle);
   
-  /* convert [startRid..startRid+numRetrieved-1] */
+  /* Convert [startRid, startRid + numRetrieved - 1] */
   map->ConvertToGData(startRid, _tdataBuf, numRetrieved, _gdataBuf);
   char *firstRec = _gdataBuf;
   char *lastRec = _gdataBuf + gRecSize * (numRetrieved - 1);
@@ -1833,8 +1738,10 @@ void QueryProcFull::DoGDataConvert()
   AddCoordMapping(map, startRid, ((GDataBinRec *)_gdataBuf)->x);
 }
 
-// Add X to RecId mapping information to coordinate table if distance
-// from neighboring recorded locations is suffifiently large
+/*
+   Add X to RecId mapping information to coordinate table if distance
+   from neighboring recorded locations is suffifiently large.
+*/
 
 void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 {
@@ -1847,7 +1754,7 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
   int lowExists = table->lookupLower(coord, lower);
   int highExists = table->lookupHigher(coord, higher);
 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
   printf("Current %ld, lower %ld, higher %ld\n", id, lower, higher);
 #endif
 
@@ -1859,7 +1766,7 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 				   Boolean approx)
 {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 5
   printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
@@ -1867,11 +1774,10 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 
   TData *tdata = map->GetTData();
   _tqueryApprox = approx;
-  _tqueryQdata->map = map;
-  _tqueryQdata->tdata = tdata;
-  _tqueryQdata->gdata = map->GetGData();
-  _tqueryQdata->mgr = _mgr;
-  _tqueryQdata->filter = filter;
+  _tdataQuery->map = map;
+  _tdataQuery->tdata = tdata;
+  _tdataQuery->gdata = map->GetGData();
+  _tdataQuery->filter = filter;
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -1879,13 +1785,13 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   numTDimensions = tdata->Dimensions(sizeTDimensions);
 
   if (numDimensions == 0) {
-    _tqueryQdata->qType = QPFull_Scatter;
+    _tdataQuery->qType = QPFull_Scatter;
 #if DEBUGLVL >= 3
     printf("Scatter query\n");
 #endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
     DOASSERT(numTDimensions == 1, "Invalid TData X query");
-    _tqueryQdata->qType = QPFull_X;
+    _tdataQuery->qType = QPFull_X;
 #if DEBUGLVL >= 3
     printf("X query\n");
 #endif
@@ -1893,7 +1799,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 	   dimensionInfo[1] == VISUAL_X) {
     DOASSERT(numTDimensions == 2 && sizeTDimensions[0] > 0 &&
 	     sizeTDimensions[1] > 0, "Invalid TData XY query");
-    _tqueryQdata->qType = QPFull_YX;
+    _tdataQuery->qType = QPFull_YX;
 #if DEBUGLVL >= 3
     printf("YX query\n");
 #endif
@@ -1903,41 +1809,41 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   
   DOASSERT(filter.flag & VISUAL_X, "Invalid TData query filter");
 
-  _tqueryQdata->filter = filter;
+  _tdataQuery->filter = filter;
 
-  /* initialize scan */
-  _tqueryQdata->state = QPFull_ScanState;
-  switch(_tqueryQdata->qType) {
+  /* Initialize scan */
+  _tdataQuery->state = QPFull_ScanState;
+  switch(_tdataQuery->qType) {
 
   case QPFull_Scatter:
-    if (tdata->HeadID(_tqueryQdata->current)) {
-      (void)tdata->LastID(_tqueryQdata->high);
-    } else
-      _tqueryQdata->state = QPFull_EndState;
+    if (tdata->HeadID(_tdataQuery->low))
+        (void)tdata->LastID(_tdataQuery->high);
+    else
+        _tdataQuery->state = QPFull_EndState;
     break;
     
   case QPFull_X:
-    if (DoBinarySearch(_mgr, tdata, map, _tqueryQdata->filter.xLow,
-		       false, _tqueryQdata->current)) {
+    if (DoBinarySearch(_mgr, tdata, map, _tdataQuery->filter.xLow,
+		       false, _tdataQuery->low)) {
 #if DEBUGLVL >= 3
-      printf("binary search startId %ld\n", _tqueryQdata->current);
+      printf("binary search startId %ld\n", _tdataQuery->low);
 #endif
       /* Find where we have to stop */
       RecId lastId;
-      (void)_tqueryQdata->tdata->LastID(lastId);
+      (void)_tdataQuery->tdata->LastID(lastId);
       if (!DoBinarySearch(_mgr, tdata, map, filter.xHigh, false,
-			  _tqueryQdata->high, true,
-			  _tqueryQdata->current, lastId, false)) {
-	_tqueryQdata->high = lastId;
+			  _tdataQuery->high, true,
+			  _tdataQuery->low, lastId, false)) {
+	_tdataQuery->high = lastId;
       }
 #if DEBUGLVL >= 3
-      printf("binary search endId %ld\n", _tqueryQdata->high);
+      printf("Binary search endId %ld\n", _tdataQuery->high);
 #endif
     } else {
 #if DEBUGLVL >= 3
-      printf("TDataquery: binary search failed\n");
+      printf("Binary search failed\n");
 #endif
-      _tqueryQdata->state = QPFull_EndState;
+      _tdataQuery->state = QPFull_EndState;
     }
     break;
 
@@ -1946,9 +1852,14 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     break;
   }
 
-  /* init buffer manager scan */
-  _mgr->InitGetRecs(tdata, map->GetGData(), _tqueryQdata->current,
-		    _tqueryQdata->high, RecIdOrder, true);
+  /* Initialize buffer manager scan */
+  _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(),
+                                          _tdataQuery->low,
+                                          _tdataQuery->high,
+                                          true);
+
+  _tdataQuery->processed = _mgr->GetProcessedRange(_tdataQuery->handle);
+
   _hasTqueryRecs = false;
 }
 
@@ -1964,31 +1875,26 @@ algorithm:
 Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                                 char *&retBuf)
 {
-#if DEBUGLVL >= 3
-    printf("GetTdata\n");
-#endif
-
-    TData *tdata = _tqueryQdata->tdata;
-    TDataMap *map = _tqueryQdata->map;
+    TData *tdata = _tdataQuery->tdata;
+    TDataMap *map = _tdataQuery->map;
     Boolean isTData;
 
-    for (; ; ) {
+    while (1) {
         if (!_hasTqueryRecs) {
-            /* go to buffer manger to get more records */
-            if (!_mgr->GetRecs(isTData,_tqueryStartRid,
+            /* go to buffer manager to get more records */
+            if (!_mgr->GetRecs(_tdataQuery->handle, isTData, _tqueryStartRid,
                                _tqueryNumRecs, _tqueryBuf)) {
-                /* done */
-                /*
-                   printf("Done with BufMgr\n");
-                   */
-                _mgr->DoneGetRecs();
-                _tqueryQdata->state = QPFull_EndState;
+                _mgr->DoneGetRecs(_tdataQuery->handle);
+                _tdataQuery->state = QPFull_EndState;
                 return false;
             }
+            DOASSERT(isTData, "Did not get tdata");
 #if DEBUGLVL >= 3
             printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
 #endif
-            DOASSERT(isTData, "Did not get tdata");
+          _tdataQuery->processed->Insert(_tqueryStartRid,
+                                         _tqueryStartRid + _tqueryNumRecs - 1,
+                                         NULL);
             _tqueryBeginIndex = 0; /* index of record to start searching */
             _hasTqueryRecs = true;
         }
@@ -2001,36 +1907,36 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
         RecId recId = _tqueryStartRid + _tqueryBeginIndex;
         int beginIndex = _tqueryBeginIndex;
 #if DEBUGLVL >= 3
-        printf("start beginINdex %d\n", beginIndex);
+        printf("start beginIndex %d\n", beginIndex);
 #endif
         if (!_tqueryApprox) {
             /* Find exact match */
             for (; beginIndex < _tqueryNumRecs; beginIndex++) {
                 map->ConvertToGData(recId,tptr,1,_gdataBuf);
                 Boolean match = true;
-                if ( _tqueryQdata->filter.flag & VISUAL_X) {
+                if ( _tdataQuery->filter.flag & VISUAL_X) {
                     if (map->GetDynamicArgs() & VISUAL_X)
                         x = ((GDataBinRec *)_gdataBuf)->x;
                     else
                         x = map->GetDefaultX();
                     
-                    if (x < _tqueryQdata->filter.xLow ||
-                        x > _tqueryQdata->filter.xHigh)
+                    if (x < _tdataQuery->filter.xLow ||
+                        x > _tdataQuery->filter.xHigh)
                         match = false;
                 }
                 
-                if (_tqueryQdata->filter.flag & VISUAL_Y) {
+                if (_tdataQuery->filter.flag & VISUAL_Y) {
                     if (map->GetDynamicArgs() & VISUAL_Y) 
                         y = ((GDataBinRec *)_gdataBuf)->y;
                     else
                         y = map->GetDefaultY();
                     
-                    if (y < _tqueryQdata->filter.yLow ||
-                        y > _tqueryQdata->filter.yHigh)
+                    if (y < _tdataQuery->filter.yLow ||
+                        y > _tdataQuery->filter.yHigh)
                         match = false;
                 }
                 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 7
                 printf("TData query id %ld, x = %f, y = %f\n", recId, x, y);
 #endif
                 
@@ -2056,25 +1962,25 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                     endIndex++) {
                     map->ConvertToGData(recId, tptr, 1, _gdataBuf);
                     Boolean match = true;
-                    if ( _tqueryQdata->filter.flag & VISUAL_X) {
+                    if ( _tdataQuery->filter.flag & VISUAL_X) {
                         if (map->GetDynamicArgs() & VISUAL_X)
                             x = ((GDataBinRec *)_gdataBuf)->x;
                         else
                             x = map->GetDefaultX();
                         
-                        if (x < _tqueryQdata->filter.xLow ||
-                            x > _tqueryQdata->filter.xHigh)
+                        if (x < _tdataQuery->filter.xLow ||
+                            x > _tdataQuery->filter.xHigh)
                             match = false;
                     }
                     
-                    if (_tqueryQdata->filter.flag & VISUAL_Y) {
+                    if (_tdataQuery->filter.flag & VISUAL_Y) {
                         if (map->GetDynamicArgs() & VISUAL_Y) 
                             y = ((GDataBinRec *)_gdataBuf)->y;
                         else
                             y = map->GetDefaultY();
                         
-                        if (y < _tqueryQdata->filter.yLow ||
-                            y > _tqueryQdata->filter.yHigh)
+                        if (y < _tdataQuery->filter.yLow ||
+                            y > _tdataQuery->filter.yHigh)
                             match = false;
                     }
                     
@@ -2089,13 +1995,12 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
             }
 
             _tqueryBeginIndex = endIndex;
-            /* everything from [beginIndex..endIndex-1] fits */
-            /* first, free buffer if we have to */
             /*
-               printf("endIndex = %d\n", endIndex);
-               */
+               Everything from [beginIndex..endIndex-1] fits
+               first, free buffer if we have to
+            */
             if (endIndex >= _tqueryNumRecs) {
-                _mgr->FreeRecs(_tqueryBuf, NoChange);
+                _mgr->FreeRecs(_tqueryBuf);
                 _hasTqueryRecs = false;
             }
             retStartRid = _tqueryStartRid + beginIndex;
@@ -2103,16 +2008,14 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
             retBuf = (char *)_tqueryBuf + beginIndex * tRecSize;
             return true;
         }
-        else {
-            /* didn't find any record. Get ready for next iteration
-               to fetch more records */
+
+        /*
+           Didn't find any record. Get ready for next iteration
+           to fetch more records
+        */
             
-            /*
-               printf("no match\n");
-               */
-            _mgr->FreeRecs(_tqueryBuf, NoChange);
-            _hasTqueryRecs = false;
-        }
+        _mgr->FreeRecs(_tqueryBuf);
+        _hasTqueryRecs = false;
     }
 }
 
@@ -2122,10 +2025,10 @@ void QueryProcFull::DoneTDataQuery()
   printf("DoneTDataQuery\n");
 #endif
 
-  if (_tqueryQdata->state != QPFull_EndState) {
+  if (_tdataQuery->state != QPFull_EndState) {
     if (_hasTqueryRecs)
-      _mgr->FreeRecs(_tqueryBuf, NoChange);
-    _mgr->DoneGetRecs();
+      _mgr->FreeRecs(_tqueryBuf);
+    _mgr->DoneGetRecs(_tdataQuery->handle);
   }
 }
 
@@ -2133,7 +2036,7 @@ void QueryProcFull::DoneTDataQuery()
 
 Boolean QueryProcFull::GetMinX(TDataMap *map, Coord &minX)
 {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
   printf("QueryProcFull::GetMinX\n");
 #endif
 
@@ -2149,13 +2052,13 @@ Boolean QueryProcFull::GetMinX(TDataMap *map, Coord &minX)
   if (hasFirst && numDimensions == 1 && dimensionInfo[0] == VISUAL_X &&
       numTDimensions == 1) {
     GetX(_mgr, tdata, map, firstId, minX);
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
     printf("minX = %.2f\n", minX);
 #endif
     return true;
   }
 
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 9
   printf("no minX\n");
 #endif
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/26 16:51:37  ssl
+  Added support for piled viws
+
   Revision 1.13  1996/11/23 21:13:38  jussi
   Merged DispQueryProcFull functionality into QueryProcFull.
   Merged QueryProcTape functionality into QueryProcFull.
@@ -72,17 +75,14 @@
 #include "QueryProc.h"
 #include "QPRange.h"
 #include "DList.h"
-#include "BufPolicy.h"
 #include "Dispatcher.h"
 #include "SortedTable.h"
 #include "Timer.h"
+#include "BufMgr.h"
 
-class BufMgr;
 class TData;
 class TDataMap;
 class GData;
-class DictGroup;
-class RecFile;
 
 enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter };
 enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState };
@@ -92,36 +92,27 @@ const int QPFULL_MAX_MAPPINGS = 1024;
 const int QP_TIMER_INTERVAL = 1000;
 
 struct QPFullData {
-  QPFullData *next;                     /* for linked list on free list */
   int priority;
-  BufMgr *mgr;
   TData *tdata;
   GData *gdata;
   TDataMap *map;
   VisualFilter filter;
   QueryCallback *callback;
-  QPFullType qType;
-  QPFullState state;
+  QPFullType qType;                     /* sortedX, scatter, or YX query */
+  QPFullState state;                    /* Init, Scan, or End */
+
+  BufMgr::BMHandle handle;              /* buffer manager handle */
 
   RecId low;                            /* first record in query scope */
   RecId high;                           /* last record in query scope */
-  RecId current;                        /* current record in query scope */
 
   Boolean isRandom;                     /* true if doing random display */
-
-  QPRange range;	                /* data range that has been returned */
-  
+  Boolean isRecLinkSlave;               /* true if query is reclink slave */
+  QPRange *processed;	                /* ranges that have been returned */
   int bytes;                            /* # of bytes processed in query */
   
-  RecordLinkList *recLinkList;          /* record link list */
-  int            recLinkListIter;       /* record link list iterator */
-  RecordLink     *recLink;              /* current record link */
-  RecId          recLinkRecId;          /* current record link record */
-  RecId          nextRecLinkRecId;      /* next record link record */
-  RecId          recLinkHigh;           /* high recId of current reclink rec */
-
-  RecId hintId;                         /* ID for hint */
-  void *userData;
+  RecId hintId;                         /* record ID for hint */
+  void *userData;                       /* user data */
 };
 
 DefinePtrDList(QPFullDataList, QPFullData *)
@@ -179,19 +170,15 @@ public:
 
   void ReOrderQueries();
   void PrintQueryData(QPFullData *qdata);
-  
 
 protected:
-
-  BufPolicy::policy _policy;
-
-  Boolean _prefetch, _useExisting;
+  Boolean _prefetch;
+  Boolean _useExisting;
   BufMgr *_mgr;
 
   QPFullDataList *_queries;
   
-  /* Initialize all queries. Return false if no query
-     is in initial state */
+  /* Initialize all queries. Return false if no query is in initial state. */
   Boolean InitQueries();
 
   /* Init for individual query types */
@@ -199,10 +186,12 @@ protected:
   void InitQPFullYX(QPFullData *qData);
   void InitQPFullScatter(QPFullData *qData);
   
-  /* Process scan for 1 iteration for the range [qData->current, qData->high].
+  /*
+     Process scan for 1 iteration for the range [qData->current,qData->high].
      Set state == QPFull_EndState if finished with scan.
      One iteration is defined as:
-     either QPFULL_MAX_FETCH bytes fetched, or end of query is reached */
+     either QPFULL_MAX_FETCH bytes fetched, or end of query is reached.
+  */
   void ProcessScan(QPFullData *qData); 
 
   /* Process query for each query type */
@@ -246,29 +235,12 @@ protected:
   */
   Boolean UseTDataQuery(TData *tdata, VisualFilter &filter);
 
-  /*
-     Do scan of record ID range. Distribute data to all queries
-     that need it. Return TRUE if have not exceeded amount of memory
-     used for this iteration of the query processor. Also return
-     actual number of records processed.
-  */
-  void DoScan(QPFullData *qData, RecId low, RecId high,
-              Boolean tdataOnly, int &recsScanned);
-
-  /* Distribute tdata/gdata to all queries that need it */
-  void DistributeTData(QPFullData *qData, RecId startRid,
-		       int numRecs, void *buf);
-  void DistributeGData(QPFullData *qData, RecId startRid,
-		       int numRecs, void *buf);
+  /* Distribute TData/GData to all queries that need it */
+  void DistributeData(QPFullData *qData, Boolean isTData,
+                      RecId startRid, int numRecs, char *buf);
   
-  /* Return first query in query list */
-  QPFullData *FirstQuery();
-
-  /* Delete a query from query list */
-  void DeleteQuery(QPFullData *qp);
-
-  /* Return true if range is empty */
-  Boolean NoQueries();
+  /* Prepare processed list */
+  void PrepareProcessedList(QPFullData *query);
 
   /* Convert in mem gdata into gdata. Return true if conversion
      took place */
@@ -281,7 +253,7 @@ protected:
   void JournalReport();
 
   /* callback from QPRange */
-  QPFullData *_rangeQData;              /* query we are currently processing */
+  QPFullData *_rangeQuery;
   void *_rangeBuf;
   RecId _rangeStartId;
   int _rangeNumRecs;
@@ -301,9 +273,9 @@ protected:
   /* for TData Query */
   RecId _tqueryStartRid;           /* starting record id of tdata buffer */
   int _tqueryNumRecs;              /* # of tdata records in buffer */
-  QPFullData *_tqueryQdata;        /* info about tdata query */
+  QPFullData *_tdataQuery;         /* TData query */
   Boolean _hasTqueryRecs;          /* true if we have unexamined tdata data */
-  void *_tqueryBuf;                /* buffer to tdata records */
+  char *_tqueryBuf;                /* buffer to tdata records */
   int _tqueryBeginIndex;           /* index of next record to examine */
   Boolean _tqueryApprox;           /* true for approximate match */
 
