@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.88  1999/06/04 20:52:52  wenger
+  Improved error message.
+
   Revision 1.87  1999/05/28 16:32:44  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -1105,7 +1108,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
 
   SetBBOffsets(attrList, attrNum, offset);
 
-  gRecSize = offset;
+  gRecSize = WordBoundary(offset, sizeof(double));
 
   return true;
 }
@@ -1275,8 +1278,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
 
   SetBBOffsets(attrList, attrNum, offset);
 
-  gRecSize = offset;
-
+  gRecSize = WordBoundary(offset, sizeof(double));
 }
 
 //--------------------------------------------------------------------------
@@ -1668,7 +1670,7 @@ double MappingInterp::ConvertOneAttr(char *from, MappingSimpleCmdEntry *entry,
 				 double defaultVal, StringStorage *stringTable)
 {
 #if defined(DEBUG)
-  printf("MappingInterp::ConvertOneAttr(%s)\n", from);
+  printf("MappingInterp::ConvertOneAttr(0x%p)\n", from);
 #endif
 
   AttrInfo *info;
@@ -1773,6 +1775,8 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   StringStorage *genStringTable = GetStringTable(TableGen);
 
   for(int i = 0; i < numRecs; i++) {
+    DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
+
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
     
@@ -1863,6 +1867,7 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
   StringStorage *genStringTable = GetStringTable(TableGen);
 
   for(int i = 0; i < numRecs; i++) {
+    DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
 
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
