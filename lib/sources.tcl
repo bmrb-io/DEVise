@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.43  1996/07/16 19:10:00  jussi
+#	Had to undo previous change.
+#
 #	Revision 1.42  1996/07/16 19:05:57  jussi
 #	Changed source type of BASICSTAT sources to DERIVED.
 #
@@ -564,7 +567,7 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
-    if {$source == "WWW" || $source == "BASICSTAT"} {
+    if {$source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM"} {
         return $command
     }
 
@@ -821,7 +824,7 @@ proc uncacheData {dispname reason} {
 proc getCacheName {source key} {
     global cachedir
 
-    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT"} {
+    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM"} {
 	return ""
     }
 
@@ -1178,10 +1181,21 @@ proc scanDerivedSources {} {
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
+
+	set sname "Hist: $view"
+	set source "HISTOGRAM"
+	set schematype HISTOGRAM
+	set schemafile $schemadir/physical/HISTOGRAM
+	set command "Hist:$view"
+
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
     }
 }
 
 ############################################################
+
 
 proc updateDerivedSources {} {
     global derivedSourceList
