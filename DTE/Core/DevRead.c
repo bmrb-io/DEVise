@@ -19,6 +19,12 @@
 /*
     $Id$
     $Log$
+    Revision 1.12  1997/04/04 23:10:21  donjerko
+    Changed the getNext interface:
+    	from: Tuple* getNext()
+    	to:   bool getNext(Tuple*)
+    This will make the code more efficient in memory allocation.
+
     Revision 1.11  1997/03/23 23:45:18  donjerko
     Made boolean vars to be in the tuple.
 
@@ -336,8 +342,7 @@ bool DevRead::getNext(Tuple* next){
 		 result = true;
             AttrList *attrListP = _tDataP->GetAttrList();
 
-            int tmp = _nxtRecId;			// add RecId at the first place 
-	       next[0] = (Type*) new IInt(tmp);
+		  next[0] = (Type*) _nxtRecId; // add RecId at the first place
             int       attrNum = 1;
 
             attrListP->InitIterator();
@@ -351,7 +356,7 @@ bool DevRead::getNext(Tuple* next){
                 case IntAttr: {
                         int tmp;
                         memcpy(&tmp, attrVal, sizeof(int));
-                        next[attrNum] = (Type*) new IInt(tmp);
+                        next[attrNum] = (Type*) tmp;
                         break;
                     }
 

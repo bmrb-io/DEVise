@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/04/04 23:10:22  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.3  1997/03/23 23:45:19  donjerko
   Made boolean vars to be in the tuple.
 
@@ -97,7 +103,7 @@ Tuple * FunctionRead::next()
 		if (!moreTup && TupleList->atEnd()) 
 			return NULL;
 		if (moreTup){
-			nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+			nextTupVal = int(nextTup[seqAttrPos]);
 			presentTupVal = nextTupVal - 1;
 			currentTupVal = presentTupVal;
 		}
@@ -122,11 +128,11 @@ Tuple * FunctionRead::next()
 				nextTupVal = currentTupVal + 1;
 				break;
 			}
-			if (((IInt *)tup[seqAttrPos])->getValue() == currentTupVal)
+			if (int(tup[seqAttrPos]) == currentTupVal)
 				TupleList->append(tup);
 			else{
 				nextTup = tup;
-				nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+				nextTupVal = int(tup[seqAttrPos]); 
 				break;
 			}
 		}
@@ -134,7 +140,7 @@ Tuple * FunctionRead::next()
 	}
 	Tuple * temp = TupleList->get();
 	TupleList->step();
-	((IInt *)temp[seqAttrPos])->setValue(presentTupVal);
+	temp[seqAttrPos] = (Type*) presentTupVal;
 	
 	if (TupleList->atEnd()){
 		TupleList->rewind();
@@ -157,7 +163,7 @@ Tuple *FunctionRead::previous()
 
 		if (moreTup){
 			
-			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue() -1;
+			currentTupVal = int(nextTup[seqAttrPos]) -1;
 			nextTupVal    = currentTupVal + 1;
 			presentTupVal = currentTupVal +2;
 		}
@@ -182,11 +188,11 @@ Tuple *FunctionRead::previous()
 				nextTupVal = currentTupVal + 1;
 				break;
 			}
-			if (((IInt *)tup[seqAttrPos])->getValue() == currentTupVal)
+			if (int(tup[seqAttrPos]) == currentTupVal)
 				TupleList->append(tup);
 			else{
 				nextTup = tup;
-				nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+				nextTupVal = int(tup[seqAttrPos]); 
 				break;
 			}
 		}
@@ -194,7 +200,7 @@ Tuple *FunctionRead::previous()
 	}
 	Tuple * temp = TupleList->get();
 	TupleList->step();
-	((IInt *)temp[seqAttrPos])->setValue(presentTupVal);
+	temp[seqAttrPos] = (Type*) presentTupVal;
 	
 	if (TupleList->atEnd()){
 		TupleList->rewind();
@@ -221,7 +227,7 @@ Tuple * FunctionRead::neg_value_offset()
 				dupList->append(nextTup);
 
 				if (moreTup){
-					currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+					currentTupVal = int(nextTup[seqAttrPos]);
 				}
 				if (moreTup){
 				
@@ -236,11 +242,11 @@ Tuple * FunctionRead::neg_value_offset()
 							nextTupVal = currentTupVal + 1;
 							break;
 						}
-					   if (((IInt *)tup[seqAttrPos])->getValue()==currentTupVal)
+					   if (int(tup[seqAttrPos]) ==currentTupVal)
 							dupList->append(tup);
 						else{
 							nextTup = tup;
-							nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+							nextTupVal = int(tup[seqAttrPos]); 
 							break;
 						}
 					}
@@ -254,10 +260,10 @@ Tuple * FunctionRead::neg_value_offset()
 				}
 			}
 			if (moreTup)
-				currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+				currentTupVal = int(nextTup[seqAttrPos]);
 			nextTupVal    = currentTupVal ;
 			if (dupList){
-				int temp =((IInt *)(dupList->get())[seqAttrPos])->getValue();
+				int temp =int((dupList->get())[seqAttrPos]);
 				presentTupVal = temp +1 ; 
 			}
 		}
@@ -274,7 +280,7 @@ Tuple * FunctionRead::neg_value_offset()
 		List<Tuple*>* dupList = new List<Tuple*>;
 		dupList->append(nextTup);
 		if (moreTup)
-			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+			currentTupVal = int(nextTup[seqAttrPos]);
 		while(1){
 			
 			bool more;
@@ -286,11 +292,11 @@ Tuple * FunctionRead::neg_value_offset()
 				nextTupVal = currentTupVal + 1;
 				break;
 			}
-			if (((IInt *)tup[seqAttrPos])->getValue() == currentTupVal)
+			if (int(tup[seqAttrPos]) == currentTupVal)
 				dupList->append(tup);
 			else{
 				nextTup = tup;
-				nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+				nextTupVal = int(tup[seqAttrPos]); 
 				break;
 			}
 		}
@@ -300,7 +306,7 @@ Tuple * FunctionRead::neg_value_offset()
 	}
 	List<Tuple*>* temp = TupleListList->get();
 	Tuple * tup = temp->get();
-	((IInt *)tup[seqAttrPos])->setValue(presentTupVal);
+	tup[seqAttrPos] = (Type*) (presentTupVal);
 	temp->step();	
 	
 	if (temp->atEnd()){
@@ -324,7 +330,7 @@ Tuple * FunctionRead::pos_value_offset()
 			return NULL;
 
 		if (moreTup)
-			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+			currentTupVal = int(nextTup[seqAttrPos]);
 
 		if (moreTup){
 		
@@ -334,7 +340,7 @@ Tuple * FunctionRead::pos_value_offset()
 				dupList->append(nextTup);
 				
 				if (moreTup)
-					nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
+					nextTupVal = int(nextTup[seqAttrPos]); 
 			
 				if (moreTup){
 				
@@ -349,11 +355,11 @@ Tuple * FunctionRead::pos_value_offset()
 							nextTupVal = currentTupVal + 1;
 							break;
 						}
-					   if (((IInt *)tup[seqAttrPos])->getValue()==nextTupVal)
+					   if (int(tup[seqAttrPos]) ==nextTupVal)
 							dupList->append(tup);
 						else{
 							nextTup = tup;
-							nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+							nextTupVal = int(tup[seqAttrPos]); 
 							break;
 						}
 					}
@@ -367,7 +373,7 @@ Tuple * FunctionRead::pos_value_offset()
 				}
 			}
 			if (moreTup)
-				nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
+				nextTupVal = int(nextTup[seqAttrPos]); 
 			presentTupVal = currentTupVal -1; 
 		}
 	}
@@ -383,16 +389,16 @@ Tuple * FunctionRead::pos_value_offset()
 		if (!TupleListList->atEnd()){
 			List<Tuple *>* temp = TupleListList->get();
 			temp->rewind();
-			currentTupVal = ((IInt *)(temp->get())[seqAttrPos])->getValue();
+			currentTupVal = int((temp->get())[seqAttrPos]);
 		}
 		else if (moreTup)
-			 currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
+			 currentTupVal = int(nextTup[seqAttrPos]);
 
 		List<Tuple*>* dupList = new List<Tuple*>;
 		dupList->append(nextTup);
 		
 		if (moreTup)
-			nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
+			nextTupVal = int(nextTup[seqAttrPos]); 
 		
 		while(1){
 			
@@ -405,11 +411,11 @@ Tuple * FunctionRead::pos_value_offset()
 				nextTupVal = currentTupVal + 1;
 				break;
 			}
-			if (((IInt *)tup[seqAttrPos])->getValue() == nextTupVal)
+			if (int(tup[seqAttrPos]) == nextTupVal)
 				dupList->append(tup);
 			else{
 				nextTup = tup;
-				nextTupVal = ((IInt *)tup[seqAttrPos])->getValue(); 
+				nextTupVal = int(tup[seqAttrPos]); 
 				break;
 			}
 		}
@@ -429,7 +435,7 @@ Tuple * FunctionRead::pos_value_offset()
 		for(int i = 0;  i< numFlds;i++){
 			temp[i] = tup[i];
 		}
-		temp[seqAttrPos] = new IInt(presentTupVal);
+		temp[seqAttrPos] = (Type*) (presentTupVal);
 	}
 	if (tempend->atEnd()){
 		tempend->rewind();

@@ -178,9 +178,9 @@ void Aggregates::typify(Site* inputIterator){
 								String msg = " sequenceby clause missing ";
 								THROW(new Exception(msg),);
 						}
-						arg1=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
+						arg1= int(args->get()->evaluate(NULL,NULL));
 						args->step();
-			       		arg2=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
+			       		arg2= int(args->get()->evaluate(NULL,NULL));
 					
 						if (arg1 > arg2){
 							THROW(new Exception("Window hi lo values reversed"),);
@@ -827,7 +827,7 @@ Type * GenFunction::count()
 		count++;
 		next = scanNext(); 
 	}
-	return new IInt(count);
+	return (Type*) count;
 }
 
 Type * GenFunction::sum()

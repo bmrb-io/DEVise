@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/04 23:10:27  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.13  1997/03/23 23:45:22  donjerko
   Made boolean vars to be in the tuple.
 
@@ -135,8 +141,8 @@ Site* StandardInterface::getSite(){ // Throws a exception
 
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	Iterator* unmarshal = new StandardRead(in);
-	TRY(unmarshal->open(), NULL);
+	Iterator* unmarshal = new StandardRead();
+	TRY(unmarshal->open(in), NULL);
 
 	delete url;
      return new LocalTable("", unmarshal, urlString);	
@@ -148,8 +154,8 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
 
 	LOG(logFile << "Inserting into " << urlString << endl);
 
-	Inserter* inserter = new Inserter(urlString);
-	TRY(inserter->open(), NULL);
+	Inserter* inserter = new Inserter();
+	TRY(inserter->open(urlString), NULL);
 
      return inserter;
 }
@@ -161,8 +167,8 @@ Schema* StandardInterface::getSchema(TableName* table){
 	String* attributeNames;
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	Iterator* iterator = new StandardRead(in);
-	TRY(iterator->open(), NULL);
+	Iterator* iterator = new StandardRead();
+	TRY(iterator->open(in), NULL);
 	numFlds = iterator->getNumFlds();
 	attributeNames = iterator->getAttributeNames();
 	delete iterator;
@@ -262,8 +268,8 @@ Schema* QueryInterface::getSchema(TableName* table){	// throws exception
 	TRY(in = contactURL(urlString, options, values, count), NULL);
 	delete [] options;
 	delete [] values;
-	Iterator* iterator = new StandardRead(in);
-	TRY(iterator->open(), NULL);
+	Iterator* iterator = new StandardRead();
+	TRY(iterator->open(in), NULL);
 	int numFlds = iterator->getNumFlds();
 	assert(numFlds == 1);
 	TypeID* types = iterator->getTypeIDs();
@@ -289,8 +295,8 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 		return new StandardInterface(fileName);
 	}
 	ifstream* in = new ifstream(fileName);
-	StandardRead* fileRead = new StandardRead(in);	
-	TRY(fileRead->open(), NULL);
+	StandardRead* fileRead = new StandardRead();	
+	TRY(fileRead->open(in), NULL);
 	fileRead->initialize();
 
 	String firstPathNm = *path->getFirst();

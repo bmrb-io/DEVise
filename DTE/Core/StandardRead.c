@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/23 23:45:21  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.7  1997/02/18 18:06:02  donjerko
   Added skeleton files for sorting.
 
@@ -44,7 +47,8 @@
 #include "assert.h"
 #include "url.h"
 
-void StandardRead::open(){	// Throws exception
+void StandardRead::open(istream* in){	// Throws exception
+	this->in = in;
 	(*in) >> numFlds;
 	if(!in->good()){
 		String msg = "Number of fields expected";
@@ -93,7 +97,17 @@ void StandardRead::open(){	// Throws exception
 	}
 }
 
-void NCDCRead::open(){	// Throws exception
+void StandardRead::open(istream* in, int numFlds, TypeID* typeIDs){
+	this->in = in;
+	this->numFlds = numFlds;
+	readPtrs = new ReadPtr[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		TRY(readPtrs[i] = getReadPtr(typeIDs[i]), );
+	}
+}
+
+void NCDCRead::open(istream* in){	// Throws exception
+	this->in = in;
      char buff[100];
      ostrstream err;
      while(in->good()){

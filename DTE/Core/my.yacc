@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/04/08 01:47:35  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.19  1997/03/20 20:42:22  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -208,7 +211,7 @@ constant :
 		$$ = new ConstantSelection("string", new IString($1));
 	}
 	| INT {
-		$$ = new ConstantSelection("int", new IInt($1));
+		$$ = new ConstantSelection("int", (Type*) $1);
 	}
 	| DOUBLE {
 		$$ = new ConstantSelection("double", new IDouble($1));

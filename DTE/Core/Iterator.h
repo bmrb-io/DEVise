@@ -40,7 +40,7 @@ public:
 
 		return new Stats(getNumFlds());
 	}
-	virtual void open(){
+	virtual void open(istream* in){
 		assert(!"open not implemented on some reader");
 	}
 	virtual ostream& display(ostream& out){

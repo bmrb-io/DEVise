@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/25 17:57:41  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.12  1997/03/20 20:42:24  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -434,4 +437,54 @@ bool PrimeSelection::match(BaseSelection* x, Path*& upTo){
 		return false;
 	}
 	return BaseSelection::match(y, upTo);
+}
+
+TypeID Operator::typify(List<Site*>* sites){
+	TRY(left->typify(sites), "");
+	TRY(right->typify(sites), "");
+	TypeID root = left->getTypeID();
+	TypeID arg = right->getTypeID();
+	if(root != arg){
+
+		// need to typecast
+
+		TRY(int typeComp = typeCompare(root, arg), "");
+		if(typeComp > 0){
+
+			// typecast arg to root
+
+			TRY(PromotePtr cast = getPromotePtr(arg, root), "");
+			right = new TypeCast(root, right, cast);
+			arg = root;
+		}
+		else{
+
+			// typecast root to arg
+
+			TRY(PromotePtr cast = getPromotePtr(root, arg), "");
+			left = new TypeCast(arg, left, cast);
+			root = arg;
+		}
+	}
+	assert(root == arg);
+	GeneralPtr* genPtr;
+	TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
+	if(!genPtr){
+		String msg = "No operator " + name + "(" + root + ", " +
+			arg + ") defined";
+		THROW(new Exception(msg), "Unknown");
+	}
+	opPtr = genPtr->opPtr;
+	avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
+	if(typeID == "bool"){
+		SelectyPtr selectyPtr = genPtr->selectyPtr;
+		if(!selectyPtr){
+			String msg = "Undefined selectiviy for operator " + name;
+			THROW(new Exception(msg), "Unknown");
+		}
+		else{
+			selectivity = selectyPtr(left, right);
+		}
+	}
+	return typeID;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/23 23:45:25  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.12  1997/03/14 18:36:13  donjerko
   Making space for the SQL UNION operator.
 
@@ -61,20 +64,20 @@
 #include <String.h>
 
 Type* dateEq(Type* arg1, Type* arg2){
-	time_t val1 = ((IInt*)arg1)->getValue();
-	time_t val2 = ((IInt*)arg2)->getValue();
+	time_t val1 = ((IDate*)arg1)->getValue();
+	time_t val2 = ((IDate*)arg2)->getValue();
      return (Type*)(val1 == val2);
 }
 
 Type* dateLT(Type* arg1, Type* arg2){
-	time_t val1 = ((IInt*)arg1)->getValue();
-	time_t val2 = ((IInt*)arg2)->getValue();
+	time_t val1 = ((IDate*)arg1)->getValue();
+	time_t val2 = ((IDate*)arg2)->getValue();
      return (Type*)(val1 < val2);
 }
 
 Type* dateGT(Type* arg1, Type* arg2){
-	time_t val1 = ((IInt*)arg1)->getValue();
-	time_t val2 = ((IInt*)arg2)->getValue();
+	time_t val1 = ((IDate*)arg1)->getValue();
+	time_t val2 = ((IDate*)arg2)->getValue();
      return (Type*)(val1 > val2);
 }
 
@@ -91,79 +94,52 @@ Type* catEntryType(Type* arg1){
 }
 
 Type* intAdd(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return new IInt(val1 + val2);
-}
-
-Type* intDoubleAdd(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 + val2);
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     return (Type*) (val1 + val2);
 }
 
 Type* intSub(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return new IInt(val1 - val2);
-}
-
-Type* intDoubleSub(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 - val2);
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     return (Type*) (val1 - val2);
 }
 
 Type* intEq(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return (Type*)(val1 == val2);
-}
-
-Type* intDoubleEq(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 == val2);
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     return (Type*) (val1 == val2);
 }
 
 Type* intLT(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return (Type*)(val1 < val2);
-}
-
-Type* intDoubleLT(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
+	int val1 = int(arg1);
+	int val2 = int(arg2);
      return (Type*)(val1 < val2);
 }
 
 Type* intGT(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
+	int val1 = int(arg1);
+	int val2 = int(arg2);
      return (Type*)(val1 > val2);
 }
 
-Type* intDoubleDiv(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 / val2);
-}
-Type* intDoubleGT(Type* arg1, Type* arg2){
-	int val1 = ((IInt*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 > val2);
+Type* intComp(Type* arg1, Type* arg2){
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+	if(val1 > val2){
+		return (Type*) 1;
+	}
+	else if(val1 == val2){
+		return (Type*)(0);
+	}
+	else{
+		return (Type*)(-1);
+	}
 }
 
 Type* doubleAdd(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 + val2);
-}
-
-Type* doubleIntAdd(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
      return new IDouble(val1 + val2);
 }
 
@@ -178,21 +154,10 @@ Type* doubleDiv(Type* arg1, Type* arg2){
 	double val2 = ((IDouble*)arg2)->getValue();
      return new IDouble(val1/val2);
 }
-Type* doubleIntSub(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return new IDouble(val1 - val2);
-}
 
 Type* doubleEq(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 == val2);
-}
-
-Type* doubleIntEq(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
      return (Type*)(val1 == val2);
 }
 
@@ -202,21 +167,9 @@ Type* doubleLT(Type* arg1, Type* arg2){
      return (Type*)(val1 < val2);
 }
 
-Type* doubleIntLT(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
-     return (Type*)(val1 < val2);
-}
-
 Type* doubleGT(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 > val2);
-}
-
-Type* doubleIntGT(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	int val2 = ((IInt*)arg2)->getValue();
      return (Type*)(val1 > val2);
 }
 
@@ -257,59 +210,52 @@ Type* stringGT(Type* arg1, Type* arg2){
 	return (Type*)(cmp == 1);
 }
 
-Type* intRead(istream& in){
-	int i;
-	in >> i;
-	return new IInt(i);
+
+void intRead(istream& in, Type*& adt){
+	int tmp;
+	in >> tmp;
+	adt = (Type*) tmp;
 }
 
-Type* doubleRead(istream& in){
+void doubleRead(istream& in, Type*& adt){
 	double i;
 	in >> i;
-	return new IDouble(i);
+	adt = new IDouble(i);
 }
 
-Type* stringRead(istream& in){
+void stringRead(istream& in, Type*& adt){
 	String tmp = stripQuotes(in);
-	return new IString(tmp.chars());
+	adt = new IString(tmp.chars());
 }
 
-Type* boolRead(istream& in){
-	bool i;
-	in >> i;
-	return (Type*)(i);
+void boolRead(istream& in, Type*& adt){
+	bool tmp;
+	in >> tmp;
+	adt = (Type*) tmp;
 }
 
-Type* catEntryRead(istream& in){
+void catEntryRead(istream& in, Type*& adt){
 	String nameStr;
-	TRY(nameStr = stripQuotes(in), NULL);
+	TRY(nameStr = stripQuotes(in), );
 	if(!in){
-		return NULL;
+		return;
 	}
-	CatEntry* retVal = new CatEntry(nameStr);
-	retVal->read(in);
-	return retVal;
+	adt = new CatEntry(nameStr);
+	((CatEntry*) adt)->read(in);
 }
 
-Type* schemaRead(istream& in){
-	Schema* retVal = new Schema();
-	TRY(retVal->read(in), NULL);
-     if(!in){
-          delete retVal;
-          return NULL;
-     }
-	return retVal;
+void schemaRead(istream& in, Type*& adt){
+	adt = new Schema();
+	TRY(((Schema*) adt)->read(in), );
 }
 
-Type* indexDescRead(istream& in){
-	IndexDesc* retVal = new IndexDesc();
-	TRY(retVal->read(in), NULL);
-	return retVal;
+void indexDescRead(istream& in, Type*& adt){
+	adt = new IndexDesc();
+	TRY(((IndexDesc*) adt)->read(in), );
 }
 
 void intWrite(ostream& out, Type* adt){
-	assert(adt);
-	((IInt*) adt)->display(out);
+	out << int(adt);
 }
 
 void stringWrite(ostream& out, Type* adt){
@@ -376,7 +322,7 @@ double oneOver100(BaseSelection* left, BaseSelection* right){
 
 void displayAs(ostream& out, void* adt, String type){
 	if(type == "int"){
-		((IInt*) adt)->display(out);
+		out << int(adt);
 	}
 	else if(type.through(5).contains("string")){
 		((IString*) adt)->display(out);
@@ -401,7 +347,7 @@ void displayAs(ostream& out, void* adt, String type){
 
 int packSize(void* adt, String type){
 	if(type == "int"){
-		return ((IInt*) adt)->packSize();
+		return sizeof(int);
 	}
 	else if(type == "string"){
 		return ((IString*) adt)->packSize();
@@ -421,7 +367,7 @@ int packSize(void* adt, String type){
 
 int packSize(String type){	// throws exception
 	if(type == "int"){
-		return sizeof(IInt);
+		return sizeof(int);
 	}
 	else if(type == "string"){
 		THROW(new Exception("Type \"string\" is of variable size"), 0);
@@ -444,7 +390,7 @@ int packSize(String type){	// throws exception
 
 void marshal(Type* adt, char* to, String type){
 	if(type == "int"){
-		((IInt*) adt)->marshal(to);
+		memcpy(to, adt, sizeof(int));
 	}
 	else if(type == "string"){
 		((IString*) adt)->marshal(to);
@@ -467,9 +413,9 @@ void marshal(Type* adt, char* to, String type){
 
 Type* unmarshal(char* from, String type){
 	if(type == "int"){
-		IInt* adt = new IInt;
-		adt->unmarshal(from);
-		return adt;
+		int tmp;
+		memcpy(&tmp, from, sizeof(int));
+		return (Type*) tmp;
 	}
 	else if(type == "string"){
 		IString* adt = new IString;
@@ -613,7 +559,7 @@ AttrType getDeviseType(String type){
 
 Type * getNullValue(TypeID &root){
 	if(root == "int"){
-		return new IInt(0);
+		return (Type*)(0);
 	}
 	else if(root.through(5).contains("string")){
 		return new IString("");
@@ -676,7 +622,7 @@ void marshal(Tuple* tup, char* to, TypeID* types, int numFlds){
 
 Type* createNegInf(TypeID type){
 	if(type == "int"){
-		return new IInt(INT_MIN);
+		return (Type*)(INT_MIN);
 	}
 	else if(type == "double"){
 		return new IDouble(-DBL_MAX);
@@ -689,7 +635,7 @@ Type* createNegInf(TypeID type){
 
 Type* createPosInf(TypeID type){
 	if(type == "int"){
-		return new IInt(INT_MAX);
+		return (Type*)(INT_MAX);
 	}
 	else if(type == "double"){
 		return new IDouble(DBL_MAX);
@@ -900,7 +846,7 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 }
 
 void intDestroy(Type* adt){
-	delete (IInt*) adt;
+	// do nothing since the type is intupled
 }
 
 void boolDestroy(Type* adt){
@@ -920,7 +866,7 @@ void catEntryDestroy(Type* adt){
 }
 
 Type* intToDouble(const Type* intarg){
-	return new IDouble(((IInt*) intarg)->getValue());
+	return new IDouble(int(intarg));
 }
 
 PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
@@ -934,7 +880,7 @@ PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 }
 
 Type* intCopy(const Type* arg){
-	return new IInt(*((IInt*) arg));
+	return (Type*) arg;
 }
 
 Type* doubleCopy(const Type* arg){
@@ -973,3 +919,39 @@ void updateHighLow(int numFlds, const OperatorPtr* lessPtrs,
 		}
 	}
 }
+
+int domain(TypeID adt){	// throws exception
+	if(adt.through(5).contains("string")){
+		return 0;
+	}
+	else if(adt == "date"){
+		return 1;
+	}
+	else if(adt == "bool"){
+		return 2;
+	}
+	else if(adt == "int"){
+		return 3;
+	}
+	else if(adt == "float"){
+		return 4;
+	}
+	else if(adt == "double"){
+		return 5;
+	}
+	else{
+		String msg = String("Type \"") + adt + 
+			"\" is not listed in fn domain";
+		THROW(new Exception(msg), 0);
+	}
+}
+
+int typeCompare(TypeID arg1, TypeID arg2){	// throws
+	if(arg1 == arg2){
+		return 0;
+	}
+	TRY(int d1 = domain(arg1), 0);
+	TRY(int d2 = domain(arg2), 0);
+	return (d1 > d2) ? 1 : -1;
+}
+

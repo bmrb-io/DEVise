@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/03/25 17:57:41  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.20  1997/03/23 23:45:23  donjerko
   Made boolean vars to be in the tuple.
 
@@ -89,7 +92,7 @@
 
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	EXEC_ID,
+	EXEC_ID, CAST_ID
 };
 
 class Path {
@@ -629,6 +632,95 @@ public:
 	}
 };
 
+class TypeCast : public BaseSelection {
+	TypeID typeID;
+	BaseSelection* input;
+	PromotePtr promotePtr;
+public:
+	TypeCast(TypeID& typeID, BaseSelection* input) : 
+		BaseSelection(NULL), typeID(typeID), input(input), promotePtr(NULL) {
+	}
+	TypeCast(TypeID& typeID, BaseSelection* input, PromotePtr promotePtr) : 
+		BaseSelection(NULL), typeID(typeID), input(input), 
+		promotePtr(promotePtr) {
+	}
+	virtual ~TypeCast(){
+	}
+	virtual void display(ostream& out, int detail = 0){
+		out << typeID << "(";
+		input->display(out, detail);
+		out << ")";
+		BaseSelection::display(out, detail);
+	}
+	virtual BaseSelection* filter(Site* site){
+		if(input->exclusive(site)){
+			assert(!nextPath);	// not implemented
+			return new GlobalSelect(site, this, NULL);
+		}
+		else{
+			BaseSelection* newInp = input->filter(site);
+			assert(!newInp);
+			return NULL;
+		}
+	}
+	virtual bool exclusive(Site* site){
+		return input->exclusive(site);
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		return input->exclusive(attributeNames, numFlds);
+	}
+	virtual BaseSelection* duplicate(){
+		return new TypeCast(typeID, input->duplicate(), promotePtr);
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+		if(nextPath){
+			nextPath->collect(s, to);
+		}
+	}
+     virtual SelectID selectID(){
+          return CAST_ID;
+     }
+	virtual bool match(BaseSelection* x, Path*& upTo){ // throws exception
+          if(!(selectID() == x->selectID())){
+               return false;
+          }
+		TypeCast* y = (TypeCast*) x;
+		if(typeID != y->typeID){
+			return false;
+		}
+		if(!input->match(y->input, upTo)){
+			return false;
+		}
+		return BaseSelection::match(y, upTo);
+	}
+     virtual BaseSelection* enumerate(
+          String site1, List<BaseSelection*>* list1,
+          String site2, List<BaseSelection*>* list2){
+		BaseSelection* execInp;
+		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
+          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
+		return new TypeCast(typeID, execInp, promotePtr);
+     }
+     virtual TypeID typify(List<Site*>* sites){
+		assert(!promotePtr);	// already typified when consturcted 
+		TRY(TypeID inpType = input->typify(sites), "");
+		TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
+		return typeID;
+	}
+     virtual TypeID getTypeID(){
+          return typeID;
+     }
+	virtual Type* evaluate(Tuple* left, Tuple* right){
+		return promotePtr(input->evaluate(left, right));
+	}
+	virtual int getSize(){
+		return packSize(typeID);
+	}
+	virtual bool checkOrphan(){
+		return input->checkOrphan();
+	}
+};
+
 class Operator : public BaseSelection {
 friend BaseSelection* distrib(BaseSelection* l, BaseSelection* r);
 protected:
@@ -787,32 +879,7 @@ public:
 		}
 		return BaseSelection::match(y, upTo);
 	}
-	virtual TypeID typify(List<Site*>* sites){
-          TRY(left->typify(sites), "");
-          TRY(right->typify(sites), "");
-          TypeID root = left->getTypeID();
-          TypeID arg = right->getTypeID();
-		GeneralPtr* genPtr;
-          TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
-          if(!genPtr){
-			String msg = "No operator " + name + "(" + root + ", " +
-				arg + ") defined";
-			THROW(new Exception(msg), "Unknown");
-          }
-		opPtr = genPtr->opPtr;
-		avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
-		if(typeID == "bool"){
-			SelectyPtr selectyPtr = genPtr->selectyPtr;
-			if(!selectyPtr){
-				String msg = "Undefined selectiviy for operator " + name;
-				THROW(new Exception(msg), "Unknown");
-			}
-			else{
-				selectivity = selectyPtr(left, right);
-			}
-		}
-		return typeID;
-	}
+	virtual TypeID typify(List<Site*>* sites);	// throws
      virtual TypeID getTypeID(){
           return typeID;
      }

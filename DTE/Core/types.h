@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/03/23 23:45:25  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.13  1997/03/14 18:36:14  donjerko
   Making space for the SQL UNION operator.
 
@@ -125,7 +128,7 @@ typedef Type* (*OperatorPtr)(Type*, Type*);
 typedef Type* (*PromotePtr)(const Type*);
 typedef Type* (*ADTCopyPtr)(const Type*);
 typedef Type* (*MemberPtr)(Type*);
-typedef Type* (*ReadPtr)(istream&);
+typedef void (*ReadPtr)(istream&, Type*&);
 typedef void (*DestroyPtr)(Type*);
 typedef void (*WritePtr)(ostream&, Type*);
 typedef int (*SizePtr)(int, int);
@@ -133,6 +136,10 @@ typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
  
 void insert(String tableStr, Tuple* tuple);	// throws exception
+
+int domain(const TypeID adt);	// throws exception
+
+int typeCompare(TypeID arg1, TypeID arg2);	// throws
 
 Type* intCopy(const Type* arg);
 Type* doubleCopy(const Type* arg);
@@ -191,27 +198,14 @@ Type* dateEq(Type* arg1, Type* arg2);
 Type* dateLT(Type* arg1, Type* arg2);
 Type* dateGT(Type* arg1, Type* arg2);
 
-Type* intDoubleAdd(Type* arg1, Type* arg2);
-Type* intDoubleSub(Type* arg1, Type* arg2);
-Type* intDoubleEq(Type* arg1, Type* arg2);
-Type* intDoubleLT(Type* arg1, Type* arg2);
-Type* intDoubleGT(Type* arg1, Type* arg2);
-Type* intDoubleDiv(Type *arg1,Type* arg2);
-
 Type* intToDouble(const Type* intarg);
 
 Type* doubleAdd(Type* arg1, Type* arg2);
-Type* doubleIntAdd(Type* arg1, Type* arg2);
 Type* doubleSub(Type* arg1, Type* arg2);
 Type* doubleDiv(Type* arg1, Type* arg2);
-Type* doubleIntSub(Type* arg1, Type* arg2);
 Type* doubleEq(Type* arg1, Type* arg2);
-Type* doubleIntEq(Type* arg1, Type* arg2);
 Type* doubleLT(Type* arg1, Type* arg2);
-Type* doubleIntLT(Type* arg1, Type* arg2);
 Type* doubleGT(Type* arg1, Type* arg2);
-
-Type* doubleIntGT(Type* arg1, Type* arg2);
 
 Type* stringEq(Type* arg1, Type* arg2);
 Type* stringLT(Type* arg1, Type* arg2);
@@ -221,13 +215,13 @@ Type* boolAnd(Type* arg1, Type* arg2);
 Type* boolEq(Type* arg1, Type* arg2);
 Type* boolLT(Type* arg1, Type* arg2);
 
-Type* intRead(istream&);
-Type* stringRead(istream&);
-Type* doubleRead(istream&);
-Type* boolRead(istream&);
-Type* catEntryRead(istream&);
-Type* schemaRead(istream&);
-Type* indexDescRead(istream&);
+void intRead(istream&, Type*&);
+void stringRead(istream&, Type*&);
+void doubleRead(istream&, Type*&);
+void boolRead(istream&, Type*&);
+void catEntryRead(istream&, Type*&);
+void schemaRead(istream&, Type*&);
+void indexDescRead(istream&, Type*&);
 
 void intWrite(ostream&, Type*);
 void stringWrite(ostream&, Type*);
@@ -238,98 +232,41 @@ void schemaWrite(ostream&, Type*);
 void indexDescWrite(ostream&, Type*);
 
 class IInt {
-     int value;
+
+	// This class is "intupled", meaning that the void* from the tuple
+	// caries the value.
+	// This solution is a bit dirty but the fast execution of
+	// relational operators is critical for reasonable performance
+
 public:
-     IInt() {}
-	IInt(const IInt& arg){
-		value = arg.value;
-	}
-     IInt(int i) : value(i) {}
-	int getValue(){
-		return value;
-	}
-	void setValue(int i){
-		value = i;
-	}
-	void display(ostream& out){
-		out << value;
-	}
-	int packSize(){
-		return sizeof(int);
-	}
-	void marshal(char* to){
-
-		// int tmp = htonl(value);
-		// memcpy(to, &tmp, sizeof(int));
-
-		memcpy(to, &value, sizeof(int));
-	}
-	void unmarshal(const char* from){
-		// int tmp;
-		// memcpy(&tmp, from, sizeof(int));
-		// value = ntohl(tmp);
-
-		memcpy(&value, from, sizeof(int));
-	}
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID arg, TypeID& retType){
-		if(arg == "int"){
-			if(name == "+"){
-				retType = "int";
-				return new GeneralPtr(intAdd, sameSize);
-			}
-			else if(name == "-"){
-				retType = "int";
-				return new GeneralPtr(intSub, sameSize);
-			}
-			else if(name == "="){
-				retType = "bool";
-				return new GeneralPtr(intEq, boolSize, oneOver10);
-			}
-			else if(name == "<"){
-				retType = "bool";
-				return new GeneralPtr(intLT, boolSize, oneOver3);
-			}
-			else if(name == ">"){
-				retType = "bool";
-				return new GeneralPtr(intGT, boolSize, oneOver3);
-			}
-			else if(name == "compReturnInt"){
-				retType = "int";
-				return new GeneralPtr(intSub, sameSize );
-			}
-			else{
-				return NULL;
-			}
+		if(arg != "int"){
+			return NULL;
 		}
-		else if(arg == "double"){
-			if(name == "+"){
-				retType = "double";
-				return new GeneralPtr(intDoubleAdd, sameSize);
-			}
-			else if(name == "-"){
-				retType = "double";
-				return new GeneralPtr(intDoubleSub, sameSize);
-			}
-			else if(name == "="){
-				retType = "bool";
-				return new GeneralPtr(intDoubleEq, boolSize, oneOver10);
-			}
-			else if(name == "<"){
-				retType = "bool";
-				return new GeneralPtr(intDoubleLT, boolSize, oneOver3);
-			}
-			else if(name == ">"){
-				retType = "bool";
-				return new GeneralPtr(intDoubleGT, boolSize, oneOver3);
-			}
-			else if(name == "/"){
-				retType = "double";
-				return new GeneralPtr(intDoubleDiv, sameSize );
-			}
-			else{
-				return NULL;
-			}
+		if(name == "+"){
+			retType = "int";
+			return new GeneralPtr(intAdd, sameSize);
+		}
+		else if(name == "-"){
+			retType = "int";
+			return new GeneralPtr(intSub, sameSize);
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(intEq, boolSize, oneOver10);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(intLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(intGT, boolSize, oneOver3);
+		}
+		else if(name == "compReturnInt"){
+			retType = "int";
+			return new GeneralPtr(intSub, sameSize );
 		}
 		else{
 			return NULL;
@@ -425,31 +362,6 @@ public:
 			else if(name == "/"){
 				retType = "double";
 				return new GeneralPtr(doubleDiv, sameSize);
-			}
-			else{
-				return NULL;
-			}
-		}
-		else if(arg == "int"){
-			if(name == "+"){
-				retType = "double";
-				return new GeneralPtr(doubleIntAdd, sameSize);
-			}
-			else if(name == "-"){
-				retType = "double";
-				return new GeneralPtr(doubleIntSub, sameSize);
-			}
-			else if(name == "="){
-				retType = "bool";
-				return new GeneralPtr(doubleIntEq, boolSize, oneOver100);
-			}
-			else if(name == "<"){
-				retType = "bool";
-				return new GeneralPtr(doubleIntLT, boolSize, oneOver3);
-			}
-			else if(name == ">"){
-				retType = "bool";
-				return new GeneralPtr(doubleIntGT, boolSize, oneOver3);
 			}
 			else{
 				return NULL;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:07:26  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef RTREE_READ_H
@@ -154,15 +158,15 @@ struct RTreePred {
 class RTreeIndex : public StandardRead {
 
 public:
-	RTreeIndex() : StandardRead(NULL) {
+	RTreeIndex() : StandardRead() {
 		assert(!"not linked to the right thing");
 	}
 	RTreeIndex(int numFlds, TypeID* types, String* attNms, int pageId) :
-		StandardRead(NULL) {
+		StandardRead() {
 		assert(!"not linked to the right thing");
 	}
 	RTreeIndex(IndexDesc* indexDesc) :
-		StandardRead(NULL) {
+		StandardRead() {
 		assert(!"not linked to the right thing");
 	}
 	virtual ~RTreeIndex(){

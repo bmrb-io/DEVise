@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:24  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef INSERTER_H
@@ -30,23 +34,33 @@ class Inserter {
 	int numFlds;
 	WritePtr* writePtrs;
 public:
-	Inserter(String urlString) : urlString(urlString) {
+	Inserter(){
 		out = NULL;
+		writePtrs = NULL;
 	}
 	~Inserter(){
 		delete [] writePtrs;
 		delete out;
 	}
-	void open(){ // throws
+	void open(String urlString){ // throws
+		this->urlString = urlString;
 		TRY(URL* url = new URL(urlString), );
 		TRY(istream* in = url->getInputStream(), );
-		Iterator* iterator = new StandardRead(in);
-		TRY(iterator->open(), );
+		Iterator* iterator = new StandardRead();
+		TRY(iterator->open(in), );
 		numFlds = iterator->getNumFlds();
 		TRY(writePtrs = iterator->getWritePtrs(), );
 		delete in;
 		TRY(out = url->getOutputStream(ios::app), );
 		delete url;
+	}
+	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
+		this->out = out;
+		this->numFlds = numFlds;
+		writePtrs = new WritePtr[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			TRY(writePtrs[i] = getWritePtr(typeIDs[i]), );
+		}
 	}
 	void insert(Tuple* tuple){ // throws
 		assert(out);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/04/04 23:10:30  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.11  1997/03/23 23:45:24  donjerko
   Made boolean vars to be in the tuple.
 
@@ -234,8 +240,8 @@ void Site::typify(String option){	// Throws a exception
 	TRY(in = contactURL(name, options, values, count), );
 	delete [] options;
 	delete [] values;
-	iterator = new StandardRead(in);	
-	TRY(iterator->open(), );
+	iterator = new StandardRead();	
+	TRY(iterator->open(in), );
 	LOG(logFile << "Header: ");
 	LOG(iterator->display(logFile));
 	stats = iterator->getStats();
@@ -323,9 +329,9 @@ void CGISite::typify(String option){	// Throws a exception
 	delete url;
 	assert(in);
 	assert(in->good());
-	iterator = new NCDCRead(in);
+	iterator = new NCDCRead();
 	assert(iterator);
-	TRY(iterator->open(), );
+	TRY(iterator->open(in), );
 
 	TRY(LocalTable::typify(option), );
 

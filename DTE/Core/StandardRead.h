@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/04/04 23:10:26  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.8  1997/03/23 23:45:21  donjerko
   Made boolean vars to be in the tuple.
 
@@ -58,10 +64,11 @@ protected:
 	String* order;
 	Stats* stats;
 public:
-     StandardRead(istream* in) : 
-		in(in), numFlds(0), typeIDs(NULL), 
+     StandardRead() : 
+		in(NULL), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
 		readPtrs(NULL), order(NULL), stats(NULL) {}
+
 	virtual ~StandardRead(){
 		delete in;
 		delete [] typeIDs;
@@ -69,15 +76,20 @@ public:
 		delete [] readPtrs;
 		delete [] stats;
 	}
-	void open();	// Throws exception
+	virtual void open(istream* in);	// Throws exception
+	void open(istream* in, int numFlds, TypeID* typeIDs); // throws
+		// used for tmp tables
+
 	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){
 		return numFlds;
 	}
 	virtual String *getTypeIDs(){
+		assert(typeIDs);
 		return typeIDs;
 	}
 	virtual String* getAttributeNames(){
+		assert(attributeNames);
 		String* retVal = new String[numFlds];
 		for(int i = 0; i < numFlds; i++){
 			retVal[i] = attributeNames[i];
@@ -102,7 +114,7 @@ public:
 	virtual bool getNext(Tuple* tuple){
 		assert(in);
           for(int i = 0; i < numFlds; i++){
-			TRY(tuple[i] = (readPtrs[i])(*in), false);
+			TRY((readPtrs[i])(*in, tuple[i]), false);
 		}
 		return in->good();
 	}
@@ -136,8 +148,8 @@ public:
 
 class NCDCRead : public StandardRead {
 public:
-     NCDCRead(istream* in) : StandardRead(in) {}
-	void open();	// Throws exception
+     NCDCRead() : StandardRead() {}
+	virtual void open(istream* in);	// Throws exception
 };
 
 #endif

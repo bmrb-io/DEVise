@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/04 23:10:20  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.13  1997/03/28 16:07:22  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -126,7 +132,7 @@ class AggWindow
 	}
 	int compareAttr(Tuple *n,Tuple *s){
 		assert(compOpr);
-		return ((IInt *)(compOpr->opPtr)(n[position],s[position]))->getValue();
+		return int(compOpr->opPtr(n[position],s[position]));
 	}
 	~AggWindow(){
 		
