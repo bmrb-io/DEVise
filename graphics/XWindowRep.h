@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/28 00:01:15  jussi
+  Added WritePostscript() method.
+
   Revision 1.2  1995/09/05 21:13:42  jussi
   Added/updated CVS header.
 */
@@ -48,6 +51,18 @@ class XWindowRep: public WindowRep {
 public:
 	/* From class WindowRep */
 
+#ifdef TK_WINDOW_old
+	/* Decorate window */
+	virtual void Decorate(WindowRep *parent, char *name,
+			      unsigned int min_width,
+			      unsigned int min_height);
+
+	/* Undecorate window */
+	virtual void Undecorate();
+#endif
+
+	virtual void Reparent(Boolean child, void *other, int x, int y);
+
 	/* Flush windowRep's content to display */
 	virtual void Flush();
 
@@ -56,7 +71,6 @@ public:
 
 	/* Iconify window. Not guaranteed to succeed.  */
 	virtual void Iconify();
-
 
 	virtual void PushClip(Coord x,Coord y,Coord w,Coord h);
 
@@ -136,18 +150,46 @@ public:
 	/* Free pixmap from memory */
 	virtual void FreePixmap(DevisePixmap *pixmap);
 
+#ifdef TK_WINDOW_old
+	/* Tk window size changed -- update size of this window */
+	virtual void TkWindowSizeChanged();
+#endif
+
 protected:
 	/* called by the XDisplay to create a new XWindowRep, and
 	handle X events. */
 	friend class XDisplay;
+
 	XWindowRep(Display *display,Window window, XDisplay * DVDisp, 
-			Color fgndColor, Color bgndColor, Boolean backingStore=false); 
-		
-	
+		   Color fgndColor, Color bgndColor,
+		   Boolean backingStore = false); 
+
 	/* destructor */
 	~XWindowRep();
 
 	void HandleEvent(XEvent &event);
+
+#ifdef TK_WINDOW_old
+	/* Assign window to a new parent. */
+	virtual void Reparent(Window newParent, int x, int y);
+
+	/* Build Tk window around this window */
+	virtual void EmbedInTkWindow(XWindowRep *parent,
+				     char *name,
+				     unsigned int min_width,
+				     unsigned int min_height);
+
+	/* Detach window from Tk window */
+	virtual void DetachFromTkWindow();
+
+	/* Return true if window is inside a Tk window */
+	Boolean isInTkWindow() {
+	  return (strlen(_tkPathName) > 0 ? true : false);
+	}
+
+	char      _tkPathName[32];
+	Tk_Window _tkWindow;
+#endif
 
 	Window GetWin() { return _win; }
 
@@ -183,7 +225,8 @@ private:
 	void CopyBitmap(int width,int height,int dstWidth,int dstHeight);
 
 	/* current dimensions of window */
-	int _x, _y; unsigned int _width, _height;
+	int _x, _y;
+	unsigned int _width, _height;
 
 	Display *_display;
 	Window _win ;
