@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1999/04/20 13:46:10  wenger
+#  Updated Condor user script as per Miron's changes to the session.
+#
 #  Revision 1.5  1999/04/16 20:59:30  wenger
 #  Fixed various bugs related to view symbols, including memory problem
 #  with MappingInterp dimensionInfo; updated create_condor_session script
@@ -223,10 +226,11 @@ sub DefineData {
 sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} UserList_view 0 1 0 1 36 9\n";
-  print SES_OUT "DEVise viewSetHome {UserList_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9\n";
+  print SES_OUT "DEVise viewSetHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "DEVise viewSetAlign UserList_view 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 2\n";
@@ -303,8 +307,8 @@ sub CreateMappings {
       "AllUser#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} ",
       "1 1 {} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "UserList#$mappingClass {} {0} {\$X} {} 37 0.015 0 0 16 {\$UserName} ",
-      "{} {} {} {} {} {} {} {} {}\n";
+      "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
+      "{} {-2} {1} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "Select1#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
@@ -405,7 +409,7 @@ sub CreateWindows {
       "0.25 0.60 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} Total 0.02 0.80 0.96 ",
+  print SES_OUT "DEVise create {window} {TileLayout} Total 0.35 0.80 0.63 ",
       "0.14 0 0\n";
   #TEMP -- maybe we should use a view symbol here
   print SES_OUT "DEVise insertWindow {Total_viewsym} {Total}\n";
