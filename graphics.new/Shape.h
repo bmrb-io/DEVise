@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/09 22:53:55  jussi
+  Added View parameter to DrawGDataArray().
+
   Revision 1.10  1996/01/13 23:10:13  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -94,6 +97,13 @@ inline Color GetColor(View *view, char *ptr, TDataMap *map,
   if (offset->colorOffset < 0)
     return map->GetDefaultColor();
   return GetAttr(ptr, colorOffset, Color , offset);
+}
+
+inline ShapeID GetShape(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->shapeOffset < 0)
+    return map->GetDefaultShape();
+  return GetAttr(ptr, shapeOffset, ShapeID, offset);
 }
 
 inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
