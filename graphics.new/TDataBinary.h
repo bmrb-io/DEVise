@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/18 15:30:45  jussi
+  Added support for concurrent I/O.
+
   Revision 1.15  1996/12/03 20:31:36  jussi
   Updated to reflect new TData interface.
 
@@ -227,6 +230,7 @@ private:
   TD_Status ReadRec(RecId id, int numRecs, void *buf);
   TD_Status ReadRecAsync(TDataRequest *req, RecId id,
                          int numRecs, void *buf);
+  void FlushDataPipe(TDataRequest *req);
 
   /* Print indices */
   void PrintIndices();

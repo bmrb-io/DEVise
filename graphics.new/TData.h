@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.12  1996/12/18 15:29:45  jussi
+   Added TDataRequest constructor. Added two methods.
+
    Revision 1.11  1996/12/03 20:32:09  jussi
    Improved Init/Get/Done interface.
 
@@ -100,7 +103,6 @@ class TDataRequest {
     }
 
     Boolean IsDirectIO() { return (iohandle == 0); }
-    Boolean IsActiveIO() { return (iohandle >= 0); }
 
     RecId nextId;                       // next record to return in GetRecs()
     RecId endId;                        // where current GetRecs() should end

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1996/12/18 15:30:29  jussi
+  Added flushing of pipes when I/Os are prematurely terminated.
+
   Revision 1.50  1996/12/03 20:32:58  jussi
   Updated to reflect new TData interface. Added support for concurrent I/O.
 
@@ -477,8 +480,6 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataAscii::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
 #endif
 
-  DOASSERT(req->iohandle >= 0, "I/O request not initialized properly");
-
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs > 0, "Not enough record buffer space");
 
@@ -500,8 +501,8 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   
   _bytesFetched += dataSize;
   
-  if (req->nextId > req->endId)
-    req->iohandle = -1;
+  if (req->iohandle > 0 && req->nextId > req->endId)
+    FlushDataPipe(req);
 
   return true;
 }
@@ -516,30 +517,38 @@ void TDataAscii::DoneGetRecs(TDHandle req)
   if (req->relcb && req->lastOrigChunk)
       req->relcb->ReleaseMemory(MemMgr::Buffer, req->lastOrigChunk, 1);
 
-  if (!req->pipeFlushed) {
-    /*
-       Flush data from pipe. We would also like to tell the DataSource
-       (which is at the other end of the pipe) to stop, but we can't
-       do that yet.
-    */
-    while (1) {
-      char *chunk;
-      streampos_t offset;
-      iosize_t bytes;
-      int status = _data->Consume(chunk, offset, bytes);
-      DOASSERT(status >= 0, "Cannot consume data");
-      if (bytes <= 0)
-        break;
-      /*
-         Release chunk so buffer manager (or whoever gets the following
-         call) can make use of it.
-      */
-      if (req->relcb)
-        req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
-    }
-  }
+  FlushDataPipe(req);
 
   delete req;
+}
+
+void TDataAscii::FlushDataPipe(TDataRequest *req)
+{
+  if (req->pipeFlushed)
+    return;
+
+  /*
+     Flush data from pipe. We would also like to tell the DataSource
+     (which is at the other end of the pipe) to stop, but we can't
+     do that yet.
+  */
+  while (1) {
+    char *chunk;
+    streampos_t offset;
+    iosize_t bytes;
+    int status = _data->Consume(chunk, offset, bytes);
+    DOASSERT(status >= 0, "Cannot consume data");
+    if (bytes <= 0)
+      break;
+    /*
+       Release chunk so buffer manager (or whoever gets the following
+       call) can make use of it.
+    */
+    if (req->relcb)
+      req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
+  }
+
+  req->pipeFlushed = true;
 }
 
 void TDataAscii::GetIndex(RecId id, int *&indices)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/12/03 20:32:58  jussi
+  Updated to reflect new TData interface. Added support for concurrent I/O.
+
   Revision 1.19  1996/11/23 21:14:23  jussi
   Removed failing support for variable-sized records.
 
@@ -227,6 +230,7 @@ private:
 	TD_Status ReadRec(RecId id, int numRecs, void *buf);
 	TD_Status ReadRecAsync(TDataRequest *req, RecId id,
                                int numRecs, void *buf);
+        void FlushDataPipe(TDataRequest *req);
 
 	/* Print indices */
 	void PrintIndices();

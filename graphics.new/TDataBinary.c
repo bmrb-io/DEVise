@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/12/18 15:30:43  jussi
+  Added support for concurrent I/O.
+
   Revision 1.26  1996/12/03 20:31:35  jussi
   Updated to reflect new TData interface.
 
@@ -124,8 +127,6 @@
   Initial revision.
 */
 
-//#define DEBUG
-
 #include <iostream.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -155,6 +156,8 @@
 #endif
 
 #define CONCURRENT_IO
+
+#define DEBUGLVL 0
 
 /* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
    The next time we start up, this cache is compared with what's in
@@ -207,7 +210,7 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   float estNumRecs = _data->DataSize() / _physRecSize;
   _indexP = new FileIndex((unsigned long)estNumRecs);
 
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
   printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
 #endif
 
@@ -216,7 +219,7 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
 
 TDataBinary::~TDataBinary()
 {
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
   printf("TDataBinary destructor\n");
 #endif
 
@@ -318,7 +321,8 @@ TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
                                          ReleaseMemoryCallback *callback)
 {
 #if DEBUGLVL >= 3
-  cout << " RecID lowID  = " << lowId << " highId " << highId << endl;
+  cout << "TDataBinary::InitGetRecs [" << lowId << "," << highId << "]"
+       << endl;
 #endif
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
@@ -379,8 +383,6 @@ Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataBinary::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
 #endif
 
-  DOASSERT(req->iohandle >= 0, "I/O request not initialized properly");
-
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs > 0, "Not enough record buffer space");
 
@@ -402,14 +404,18 @@ Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
   
   _bytesFetched += dataSize;
   
-  if (req->nextId > req->endId)
-    req->iohandle = -1;
+  if (req->iohandle > 0 && req->nextId > req->endId)
+    FlushDataPipe(req);
 
   return true;
 }
 
 void TDataBinary::DoneGetRecs(TDHandle req)
 {
+#if DEBUGLVL >= 3
+  printf("TDataBinary::DoneGetRecs handle 0x%p\n", req);
+#endif
+
   DOASSERT(req, "Invalid request handle");
 
   /*
@@ -418,87 +424,39 @@ void TDataBinary::DoneGetRecs(TDHandle req)
   if (req->relcb && req->lastOrigChunk)
       req->relcb->ReleaseMemory(MemMgr::Buffer, req->lastOrigChunk, 1);
 
-  if (!req->pipeFlushed) {
+  FlushDataPipe(req);
+
+  delete req;
+}
+
+void TDataBinary::FlushDataPipe(TDataRequest *req)
+{
+  if (req->pipeFlushed)
+    return;
+
+  /*
+     Flush data from pipe. We would also like to tell the DataSource
+     (which is at the other end of the pipe) to stop, but we can't
+     do that yet.
+  */
+  while (1) {
+    char *chunk;
+    streampos_t offset;
+    iosize_t bytes;
+    int status = _data->Consume(chunk, offset, bytes);
+    DOASSERT(status >= 0, "Cannot consume data");
+    if (bytes <= 0)
+      break;
     /*
-       Flush data from pipe. We would also like to tell the DataSource
-       (which is at the other end of the pipe) to stop, but we can't
-       do that yet.
+       Release chunk so buffer manager (or whoever gets the following
+       call) can make use of it.
     */
-    while (1) {
-      char *chunk;
-      streampos_t offset;
-      iosize_t bytes;
-      int status = _data->Consume(chunk, offset, bytes);
-      DOASSERT(status >= 0, "Cannot consume data");
-      if (bytes <= 0)
-        break;
-      /*
-         Release chunk so buffer manager (or whoever gets the following
-         call) can make use of it.
-      */
-      if (req->relcb)
-        req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
-    }
+    if (req->relcb)
+      req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
   }
 
-  delete req;
+  req->pipeFlushed = true;
 }
-
-#if 0
-TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
-                                         Boolean asyncAllowed,
-                                         ReleaseMemoryCallback *callback)
-{
-  DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
-	   && highId >= lowId, "Invalid record parameters");
-
-  TDataRequest *req = new TDataRequest;
-  DOASSERT(req, "Out of memory");
-
-  req->nextId = lowId;
-  req->endId = highId;
-  req->relcb = callback;
-
-  return req;
-}
-
-Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
-                             RecId &startRid, int &numRecs, int &dataSize)
-{
-  DOASSERT(req, "Invalid request handle");
-
-#if defined(DEBUG)
-  printf("TDataBinary::GetRecs buf = 0x%p\n", buf);
-#endif
-
-  numRecs = bufSize / _recSize;
-  DOASSERT(numRecs > 0, "Not enough record buffer space");
-
-  if (req->nextId > req->endId)
-    return false;
-  
-  int num = req->endId - req->nextId + 1;
-  if (num < numRecs)
-    numRecs = num;
-  
-  ReadRec(req->nextId, numRecs, buf);
-  
-  startRid = req->nextId;
-  dataSize = numRecs * _recSize;
-  req->nextId += numRecs;
-  
-  _bytesFetched += dataSize;
-  
-  return true;
-}
-
-void TDataBinary::DoneGetRecs(TDHandle req)
-{
-  DOASSERT(req, "Invalid request handle");
-
-  delete req;
-}
-#endif
 
 void TDataBinary::GetIndex(RecId id, int *&indices)
 {
@@ -548,7 +506,7 @@ void TDataBinary::Initialize()
 
  error:
   /* recover from error by building index from scratch  */
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
   printf("Rebuilding index...\n");
 #endif
   RebuildIndex();
@@ -626,13 +584,13 @@ void TDataBinary::BuildIndex()
       if (Decode(recBuf, _currPos / _physRecSize, physRec)) {
 	_indexP->Set(_totalRecs++, _currPos);
       } else {
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
 	printf("Ignoring invalid or non-matching record\n");
 #endif
       }
       _lastIncompleteLen = 0;
     } else {
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
       printf("Ignoring incomplete record (%d bytes)\n", len);
 #endif
       _lastIncompleteLen = len;
@@ -677,7 +635,7 @@ void TDataBinary::RebuildIndex()
 
 TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 {
-#if defined(DEBUG)
+#if DEBUGLVL >= 3
   printf("TDataBinary::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
@@ -734,6 +692,9 @@ TD_Status TDataBinary::ReadRecAsync(TDataRequest *req, RecId id,
         DOASSERT((off_t)offset == _currPos, "Invalid data chunk consumed");
         _currPos += bytes;
         origChunk = chunk;
+#if DEBUGLVL >= 3
+        printf("Consumed %ld bytes from data source\n", bytes);
+#endif
     } else {
         req->lastChunk = req->lastOrigChunk = NULL;
         req->lastChunkBytes = 0;
@@ -763,8 +724,12 @@ TD_Status TDataBinary::ReadRecAsync(TDataRequest *req, RecId id,
          outer loop if there is a fragment of it left.
       */
 
+      long realCurrPos = _currPos - bytes;
       if (partialRecSize > 0) {
           memcpy(&ptr[partialRecSize], chunk, _physRecSize - partialRecSize);
+          chunk += _physRecSize - partialRecSize;
+          bytes -= _physRecSize - partialRecSize;
+          realCurrPos -= partialRecSize;
 #if DEBUGLVL >= 5
           printf("Got %d-byte record (%d partial)\n", _physRecSize,
                  partialRecSize);
@@ -772,19 +737,18 @@ TD_Status TDataBinary::ReadRecAsync(TDataRequest *req, RecId id,
           partialRecSize = 0;
       } else {
           memcpy(ptr, chunk, _physRecSize);
+          chunk += _physRecSize;
+          bytes -= _physRecSize;
 #if DEBUGLVL >= 5
           printf("Got %d-byte full record\n", _physRecSize);
 #endif
       }
 
-      Boolean valid = Decode(ptr, _currPos, ptr);
+      Boolean valid = Decode(ptr, realCurrPos / _physRecSize, ptr);
       if (valid) {
         ptr += _recSize;
         recs++;
       }
-
-      chunk += _physRecSize;
-      bytes -= _physRecSize;
     }
 
     if (recs == numRecs && bytes > 0) {
