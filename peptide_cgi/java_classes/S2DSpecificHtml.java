@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/04/17 17:09:10  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.4  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -145,9 +148,9 @@ TEMP*/
 	    reader.close();
 	    writer.close();
         } catch(IOException ex) {
-	    System.err.println("IOException writing specific html file: " +
-	      ex.getMessage());
-	    throw new S2DError("Can't write specific html file" +
+	    System.err.println("IOException: " +
+	      ex.getMessage() + " writing specific html file");
+	    throw new S2DError("Can't write specific html file: " +
 	      outFileName);
 	}
     }

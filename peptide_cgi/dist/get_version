@@ -1,0 +1,3 @@
+cd peptide-cgi/java_classes
+java S2DMain -version
+cd ../..

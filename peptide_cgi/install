@@ -153,7 +153,7 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 cp -p html/* $targetdir
-chmod a+r $targetdir/*
+find $targetdir -name \* -type f -exec chmod a+r {} \;
 
 
 # Create the link that we use to have the browser find the summary page.

@@ -29,7 +29,7 @@ clean:
 
 .PHONY : dist
 dist: peptide-cgi
-	tar cvfzh peptide-cgi.tgz peptide-cgi
+	tar cvfzh peptide-cgi_`get_version`.tgz peptide-cgi
 
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:

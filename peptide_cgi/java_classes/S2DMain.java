@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2001/05/21 18:57:04  wenger
+// Updated peptide-cgi code to match JavaScreen with package.
+//
 // Revision 1.17  2001/05/14 19:36:50  wenger
 // We now still generate chemical shift visualizations if we can't get
 // residue counts.
@@ -114,7 +117,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.11";
+    public static final String PEP_CGI_VERSION = "2.12";
 
     private int _accessionNum;
     private String _dataDir;
@@ -173,7 +176,14 @@ public class S2DMain {
     {
 	String usage = "Usage: java S2DMain [-force] " +
 	  "<accession number> <data directory> <session directory>";
-        if (args.length < 3 || args.length > 4) {
+
+	if (args.length == 1 && args[0].equals("-usage")) {
+	    System.out.println(usage);
+	    System.exit(0);
+	} else if (args.length == 1 && args[0].equals("-version")) {
+	    System.out.println(PEP_CGI_VERSION);
+	    System.exit(0);
+	} else if (args.length < 3 || args.length > 4) {
 	    System.out.println(usage);
 	    throw new S2DError("Illegal arguments");
 	} else {
