@@ -11,8 +11,8 @@ x- Binary TData: Kent
 - Buffer manager: Jussi
 x- Client/server Devise: Kent
 x- Client/server library: Kent
-- Composite parsers: Kent
-- Display (Display, WindowRep, Transform, 3D stuff): Kent
+x- Composite parsers: Kent
+x- Display (Display, WindowRep, Transform, 3D stuff): Kent
 - DTE: Donko
 - Links (record links, regular links): Kevin
 x- Histograms: Guangshun
@@ -22,7 +22,7 @@ x- Histograms: Guangshun
 x- Printing: Kent
 a- Purify Devise: Guangshun
 x- Stat (incl. statistical part of KGraph stuff): Guangshun
-- TData (incl. schema parsing code): Kent
+x- TData (incl. schema parsing code and web sources): Kent
 x- Tk windows: Kent
 - Views (incl. stacks and piles): Shilpa
 
