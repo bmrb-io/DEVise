@@ -2,6 +2,9 @@
    $Id$
 
    $Log$
+ * Revision 1.3  1995/09/11  15:23:42  jussi
+ * Removed .bak files.
+ *
    Revision 1.2  1995/09/06 17:23:57  jussi
    Updated names of linked variables.
 
@@ -25,9 +28,9 @@ extern "C" {
 #include <tk.h>
 }
 
-Tcl_Interp *interp = 0;
+Tcl_Interp *globalInterp = 0;
 
-#define UPDATE_TCL { (void)Tcl_Eval(interp, "update"); }
+#define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
 static char *tradePath = 0;
 static char *quotePath = 0;
@@ -693,6 +696,10 @@ static int extract(RecTape &tape, char *stock, long offset)
 
 int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
+  // Allow other functions to UPDATE_TCL
+
+  globalInterp = interp;
+
   // Get parameter values from TCL script
 
   char *tapeDrive = Tcl_GetVar(interp, "issm_tapeDrive", TCL_GLOBAL_ONLY);
@@ -707,6 +714,9 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
     return TCL_ERROR;
   }
 
+  cout << "Reading from " << tapeDrive << ":" << tapeFile
+       << " to " << tradePath << endl;
+
   RecTape tape(tapeDrive, "r", atoi(tapeFile));
   if (!tape) {
     cerr << "Cannot open " << tapeDrive << " for reading." << endl;
@@ -720,7 +730,7 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
     ostrstream note;
     note << "Extracting " << stock << " from tape..." << ends;
     char *notestr = note.str();
-    Tcl_SetVar(interp, "status", notestr, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "issm_status", notestr, TCL_GLOBAL_ONLY);
     delete notestr;
     UPDATE_TCL;
 
@@ -729,7 +739,7 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
       return TCL_ERROR;
 
     ostrstream note2;
-    note2 << "tapeToDisk " << stock << ends;
+    note2 << "issm_tapeToDisk " << stock << ends;
     notestr = note2.str();
     status = Tcl_Eval(interp, notestr);
     if (status != TCL_OK)
