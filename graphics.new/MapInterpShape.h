@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/28 00:24:01  jussi
+  Moved a couple of #include statements to Shape.h.
+
   Revision 1.7  1995/11/28 00:04:33  jussi
   Added polygon and oval shape. The former is drawn as a small number of
   segments, the latter as a perfect, round shape.
@@ -45,14 +48,14 @@
 #include "Geom.h"
 #include "RectShape.h"
 
+//#define DEBUG
+
 class FullMapping_RectShape: public RectShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -60,17 +63,30 @@ public:
     Coord pixelWidth = 1 / fabs(x1 - x0);
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
-    // pixelWidth is how many X units one pixel corresponds to
-    // pixelHeight is how many Y units one pixel corresponds to
-    // maxWidth is the maximum width of rectangles, measured in X units
-    // maxHeight is the maximum width of rectangles, measured in Y units
-    //
-    // see if one pixel is enough to cover the area whose width is
-    // pixelWidth and height is pixelHeight
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
-    if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-      DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
-      return;
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+      // pixelWidth is how many X units one pixel corresponds to
+      // pixelHeight is how many Y units one pixel corresponds to
+      // maxWidth is the maximum width of rectangles, measured in X units
+      // maxHeight is the maximum width of rectangles, measured in Y units
+      //
+      // see if one pixel is enough to cover the area whose width is
+      // pixelWidth and height is pixelHeight
+
+#ifdef DEBUG
+      printf("RectShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
     }
 
     int i = 0;
@@ -112,20 +128,31 @@ public:
 			      TDataMap *map, int pixelSize) {
 
     GDataAttrOffset *offset = map->GetGDataOffset();
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
 
-    Coord x0, y0, x1, y1;
-    win->Transform(0, 0, x0, y0);
-    win->Transform(1, 1, x1, y1);
-    Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
-    if (maxWidth <= pixelWidth) {
-      DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
-      return;
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+      Coord x0, y0, x1, y1;
+      win->Transform(0, 0, x0, y0);
+      win->Transform(1, 1, x1, y1);
+      Coord pixelWidth = 1 / fabs(x1 - x0);
+      Coord pixelHeight = 1 / fabs(y1 - y0);
+
+#ifdef DEBUG
+      printf("RectXShape: maxW %.2f, pixelW %.2f\n", maxWidth, pixelWidth);
+#endif
+
+      if (maxWidth <= pixelWidth) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
     }
 
+    Coord x0, y0, x1, y1;
     win->Transform(0.0, 0.0, x0, y0);
     
     for(int i = 0; i < numSyms; i++) {
@@ -181,6 +208,10 @@ public:
     Coord pixelWidth = 1 / fabs(x1 - x0);
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
+#ifdef DEBUG
+    printf("BarShape: pixelW %.2f, pixelH %.2f\n", pixelWidth, pixelHeight);
+#endif
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
@@ -208,18 +239,29 @@ public:
 			      TDataMap *map, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
 
-    Coord x0, y0, x1, y1;
-    win->Transform(0, 0, x0, y0);
-    win->Transform(1, 1, x1, y1);
-    Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
-    if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-      DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
-      return;
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+      Coord x0, y0, x1, y1;
+      win->Transform(0, 0, x0, y0);
+      win->Transform(1, 1, x1, y1);
+      Coord pixelWidth = 1 / fabs(x1 - x0);
+      Coord pixelHeight = 1 / fabs(y1 - y0);
+
+#ifdef DEBUG
+      printf("PolygonShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
     }
 
     for(int i = 0; i < numSyms; i++) {
@@ -252,18 +294,29 @@ public:
 			      TDataMap *map, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
 
-    Coord x0, y0, x1, y1;
-    win->Transform(0, 0, x0, y0);
-    win->Transform(1, 1, x1, y1);
-    Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
-    if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-      DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
-      return;
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+      Coord x0, y0, x1, y1;
+      win->Transform(0, 0, x0, y0);
+      win->Transform(1, 1, x1, y1);
+      Coord pixelWidth = 1 / fabs(x1 - x0);
+      Coord pixelHeight = 1 / fabs(y1 - y0);
+
+#ifdef DEBUG
+      printf("OvalShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
     }
 
     for(int i = 0; i < numSyms; i++) {
