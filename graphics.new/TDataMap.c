@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  2001/04/12 20:15:13  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.39  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -653,7 +659,7 @@ TDataMap::GetShapeAttrAsStr(const char *gdataRecP, int attrNum,
     format ? format : "null");
 #endif
 
-  const char *result = defaultVal;
+  char *result = (char *)defaultVal;
 
   const int tmpBufLen = 64;
   static char tmpBuf[tmpBufLen];
@@ -692,7 +698,7 @@ TDataMap::GetShapeAttrAsStr(const char *gdataRecP, int attrNum,
     {
       int key = (int)GetShapeAttr(gdataRecP, attrNum);
       //TEMP -- get rid of typecast on result if possible
-      int code = stringTable->Lookup(key, (char *)result);
+      int code = stringTable->Lookup(key, result);
       if (code < 0) {
         // No entry for the given key.
 #if defined(DEBUG)
