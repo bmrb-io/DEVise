@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/01/07 19:28:24  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
+  Revision 1.20.2.2  1998/01/09 16:33:48  wenger
+  Updated copyright date and version number; minor mods to compile for
+  hp and sun; fixed problem with _batchMode flag getting improperly
+  reset in the ControlPanel class (prevented using pixmaps instead of
+  X windows).
+
   Revision 1.20.2.1  1998/01/07 15:59:20  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -298,10 +309,10 @@ protected:
   Boolean DoInit() { return false; }
 
   ControlPanel();
-  static Mode _mode;                    // layout or display mode
-  static Boolean _batchMode;            // true if we're in batch mode
-  static Boolean _syncNotify;           // true if sync notify needed
-  static Boolean _syncAllowed;          // true when qp allowed to synchronize
+  Mode _mode;                    // layout or display mode
+  Boolean _batchMode;            // true if we're in batch mode
+  Boolean _syncNotify;           // true if sync notify needed
+  Boolean _syncAllowed;          // true when qp allowed to synchronize
 
 private:
   void UpdateNewDispatcher() {}

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.150  1998/01/07 19:30:38  wenger
+#	Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#	server library into Devise); updated solaris, sun, linux, and hp
+#	dependencies.
+#
 #	Revision 1.149  1997/12/19 00:06:11  donjerko
 #	*** empty log message ***
 #
@@ -1387,7 +1392,6 @@ menu .mbar.window.menu -tearoff 0
 #	{ SendCommandToLM "LM printWindow Display" }
 #.mbar.window.menu add command -label "Layout Manager" -command \
 #	{ LayoutManager } 
-=======
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
 

@@ -1,0 +1,136 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1998
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.1.2.1  1998/01/09 16:33:11  wenger
+#  Updated copyright date and version number; minor mods to compile for
+#  hp and sun; fixed problem with _batchMode flag getting improperly
+#  reset in the ControlPanel class (prevented using pixmaps instead of
+#  X windows).
+#
+
+############################################################
+
+set files = "solaris/generic/generic solsparc/generic/generic \
+	hp/generic/generic.static sun/generic/generic.static \
+        solaris/multi/disp solsparc/multi/disp \
+	sun/multi/disp hp/multi/disp \
+	lib/control.tk \
+	hp/generic/devise hp/generic/deviseb hp/generic/devised \
+	solaris/generic/devise solaris/generic/deviseb solaris/generic/devised \
+	solsparc/generic/devise solsparc/generic/deviseb \
+	solsparc/generic/devised \
+	sun/generic/devise sun/generic/deviseb sun/generic/devised"
+
+set target = /p/devise/ext16/devise1.4.7
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+foreach file ($files)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  endif
+end
+
+echo You are about to release YOUR copy of Devise to the
+echo general public. The target directory is $target.
+echo ""
+echo The release includes Solaris/Sun/HP executables,
+echo and Tcl/Tk code.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+echo ""
+echo Executing release procedures...
+sleep 1
+
+
+echo ""
+echo Releasing new copy of generic Devise executables...
+
+ls -l solaris/generic/generic $target/bin.arch/sunx86_54/devise
+cp -p solaris/generic/generic $target/bin.arch/sunx86_54/devise
+
+ls -l solsparc/generic/generic $target/bin.arch/sun4m_54/devise
+cp -p solsparc/generic/generic $target/bin.arch/sun4m_54/devise
+
+ls -l sun/generic/generic.static $target/bin.arch/sun4m_412/devise
+cp -p sun/generic/generic.static $target/bin.arch/sun4m_412/devise
+
+ls -l hp/generic/generic.static $target/bin.arch/hp700_ux90/devise
+cp -p hp/generic/generic.static $target/bin.arch/hp700_ux90/devise
+
+
+echo ""
+echo Releasing new copy of PVM Devise executables...
+
+ls -l solaris/multi/disp $target/bin.arch/sunx86_54/multi
+cp -p solaris/multi/disp $target/bin.arch/sunx86_54/multi
+
+ls -l solsparc/multi/disp $target/bin.arch/sun4m_54/multi
+cp -p solsparc/multi/disp $target/bin.arch/sun4m_54/multi
+
+ls -l sun/multi/disp $target/bin.arch/sun4m_412/multi
+cp -p sun/multi/disp $target/bin.arch/sun4m_412/multi
+
+ls -l hp/multi/disp $target/bin.arch/hp700_ux90/multi
+cp -p hp/multi/disp $target/bin.arch/hp700_ux90/multi
+
+
+echo ""
+echo Releasing new Tcl/Tk code...
+cp -p lib/[a-z]* $target/lib
+cp -p lib/[A-Z]*.* $target/lib
+
+cp -p lib/LM/*.tk $target/lib/LM
+
+
+echo ""
+echo Releasing new copy of client/server and batch Devise executables...
+
+cp -p solaris/generic/devise $target/bin.arch/sunx86_54/devisec
+cp -p solaris/generic/deviseb $target/bin.arch/sunx86_54/deviseb
+cp -p solaris/generic/devised $target/bin.arch/sunx86_54/devised
+
+cp -p solsparc/generic/devise $target/bin.arch/sun4m_54/devisec
+cp -p solsparc/generic/deviseb $target/bin.arch/sun4m_54/deviseb
+cp -p solsparc/generic/devised $target/bin.arch/sun4m_54/devised
+
+cp -p sun/generic/devise $target/bin.arch/sun4m_412/devisec
+cp -p sun/generic/deviseb $target/bin.arch/sun4m_412/deviseb
+cp -p sun/generic/devised $target/bin.arch/sun4m_412/devised
+
+cp -p hp/generic/devise $target/bin.arch/hp700_ux90/devisec
+cp -p hp/generic/deviseb $target/bin.arch/hp700_ux90/deviseb
+cp -p hp/generic/devised $target/bin.arch/hp700_ux90/devised
+
+
+echo ""
+echo Done!

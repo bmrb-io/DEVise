@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.15.16.1  1998/01/09 16:33:47  wenger
+  Updated copyright date and version number; minor mods to compile for
+  hp and sun; fixed problem with _batchMode flag getting improperly
+  reset in the ControlPanel class (prevented using pixmaps instead of
+  X windows).
+
+  Revision 1.15  1997/01/28 16:50:36  wenger
+  Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
+  doesn't draw over them); Devise now returns a status of 0 when exiting
+  normally; cleaned up some of the exit code.
+
   Revision 1.14  1997/01/18 18:34:29  jussi
   Removed inclusion of XawControl.h.
 
@@ -71,10 +82,6 @@
 
 ControlPanel *ControlPanel::_controlPanel = 0;
 ClassDir *ControlPanel::_classDir = 0;
-ControlPanel::Mode ControlPanel::_mode = ControlPanel::DisplayMode;
-Boolean ControlPanel::_batchMode = false;
-Boolean ControlPanel::_syncNotify = false;
-Boolean ControlPanel::_syncAllowed = false;
 
 ClassDir *ControlPanel::GetClassDir()
 {
@@ -120,7 +127,10 @@ void ControlPanel::RegisterClass(ClassInfo *cInfo, Boolean transient)
 ControlPanel::ControlPanel()
 {
   _callbacks = new ControlPanelCallbackList();
+  _mode = ControlPanel::DisplayMode;
   _batchMode = false;
+  _syncNotify = false;
+  _syncAllowed = false;
 }
 
 /***************************************************************/

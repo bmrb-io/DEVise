@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,8 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/12/02 19:35:14  wenger
+  Changed DEVise version to 1.5.0.
+
   Revision 1.37  1997/11/06 20:30:29  wenger
   Changed version to 1.4.8.
+
+  Revision 1.36.2.1  1998/01/09 16:34:03  wenger
+  Updated copyright date and version number; minor mods to compile for
+  hp and sun; fixed problem with _batchMode flag getting improperly
+  reset in the ControlPanel class (prevented using pixmaps instead of
+  X windows).
 
   Revision 1.36  1997/10/03 16:01:37  wenger
   Enabled session opening and saving from back end; incremented version; a
@@ -219,7 +228,7 @@
 static const char *	version = "1.5.0";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-1997";
+static const char *	copyright = "Copyright (c) 1992-1998";
 
 // Trademark logo for each DEVise window.
 static const char *	winLogo = "Visualization by DEVise (tm) 1997";

@@ -20,9 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/07 19:27:54  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.2  1997/12/08 18:17:58  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
   into the trunk (split of libcs into libdevcs and libdevwin).
+
+  Revision 1.1.2.5  1998/01/09 16:33:38  wenger
+  Updated copyright date and version number; minor mods to compile for
+  hp and sun; fixed problem with _batchMode flag getting improperly
+  reset in the ControlPanel class (prevented using pixmaps instead of
+  X windows).
 
   Revision 1.1.2.4  1998/01/07 15:59:00  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -49,6 +60,7 @@
 #include <sys/param.h>
 
 #include "WinServer.h"
+#include "machdep.h"
 
 #if defined(LINUX)
 #include <sys/time.h>
@@ -102,7 +114,13 @@ void WinServer::SingleStep()
     //
     // select()
     //
-    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+    numFds = select(maxFdCheck + 1,
+#if defined(HPUX)
+        (int *) &fdset, (int *) 0, (int *) 0,
+#else
+        &fdset, 0, 0,
+#endif
+        0);
     if (numFds < 0)
     {
         char errBuf[MAXPATHLEN + 256];

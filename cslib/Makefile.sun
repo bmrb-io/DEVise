@@ -15,9 +15,20 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1998/01/07 19:27:50  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.9  1997/11/12 15:44:34  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
+#
+# Revision 1.8.2.2  1998/01/09 16:33:37  wenger
+# Updated copyright date and version number; minor mods to compile for
+# hp and sun; fixed problem with _batchMode flag getting improperly
+# reset in the ControlPanel class (prevented using pixmaps instead of
+# X windows).
 #
 # Revision 1.8.2.1  1997/10/30 20:15:05  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
@@ -61,7 +72,10 @@ Server.o: /usr/include/stdio.h /usr/include/stdlib.h
 Server.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 Server.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/unistd.h
 Server.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-Server.o: /usr/include/sys/socket.h /usr/include/netinet/in.h Server.h
+Server.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Server.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Server.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Server.o: /usr/include/vm/faultcode.h Server.h
 TclClient.o: /usr/include/stdio.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 TclClient.o: /usr/include/sys/sysmacros.h TclClient.h /s/tcl/include/tcl.h

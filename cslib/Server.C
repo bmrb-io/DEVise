@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:27:51  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
+  Revision 1.1.2.5  1998/01/09 16:33:37  wenger
+  Updated copyright date and version number; minor mods to compile for
+  hp and sun; fixed problem with _batchMode flag getting improperly
+  reset in the ControlPanel class (prevented using pixmaps instead of
+  X windows).
+
   Revision 1.1.2.4  1998/01/07 15:58:58  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -47,6 +58,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/param.h> // For MAXPATHLEN.
 
 #if defined(LINUX)
 #include <sys/time.h>
@@ -54,6 +66,7 @@
 
 #include "ClientAPI.h"
 #include "Server.h"
+#include "machdep.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
@@ -273,7 +286,13 @@ void Server::ReadCmd()
     //
     // select()
     //
-    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+    numFds = select(maxFdCheck + 1,
+#if defined(HPUX)
+	(int *) &fdset, (int *) 0, (int *) 0,
+#else
+	&fdset, 0, 0,
+#endif
+	0);
     if (numFds < 0)
     {
 	char errBuf[MAXPATHLEN + 256];
