@@ -1,0 +1,31 @@
+#! /bin/csh -f
+
+############################################################
+
+# This file is just to get the path, etc., set up right to run
+# create_condor_sessions from cron, and mail the output to the
+# user who ran it (compensating for cron bug).
+
+# $Id$
+
+############################################################
+
+/usr/ucb/touch /tmp/ran_condor_update1
+
+set path = ( /usr/ucb /bin /p/devise/run $path )
+
+set outfile = /tmp/condor_update.out
+
+if (-e $outfile) then
+    rm $outfile
+endif
+
+/s/std/bin/runauth ./create_condor_sessions >& $outfile
+
+# All this garbage because Sun's current crond on Intel/Solaris won't
+# send mail correctly.
+if (-e $outfile && ! -z $outfile) then
+    cat $outfile | /usr/ucb/mail -s "Error message from create_condor_sessions" `whoami`
+endif
+
+/usr/ucb/touch /tmp/ran_condor_update2

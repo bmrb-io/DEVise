@@ -1,1 +1,1 @@
-37 01 * * * cd /p/devise/demo/CondorData; create_condor_sessions
+37 01 * * * cd /p/devise/demo/CondorData; run_condor_update
