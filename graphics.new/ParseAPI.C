@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/11/26 16:51:35  ssl
+  Added support for piled viws
+
   Revision 1.44  1996/11/20 20:35:20  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -199,6 +202,7 @@
 #include <assert.h>
 
 #include "ParseAPI.h"
+#include "TDataDQLInterp.h"
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
@@ -418,7 +422,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
-
+	if (!strcmp(argv[0],"createIndex")){
+		dqlCreateIndex(argv[1]);
+		return 1;
+	}	
     if (!strcmp(argv[0], "abortQuery")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {

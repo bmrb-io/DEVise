@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1996/12/13 21:33:42  jussi
+  Updated to use SemaphoreV::maxNumSemaphores().
+
   Revision 1.70  1996/12/12 22:03:32  jussi
   Removed calls to semaphore and shared memory DestroyAll().
 
@@ -300,8 +303,10 @@ extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+/*
 extern int dql_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+*/
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
@@ -402,8 +407,9 @@ void TkControlPanel::StartSession()
   /* Create a new tcl command for SEQ data */
   Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
   
-  /* Create a new tcl command for DQL data */
+  /* Create a new tcl command for DQL data 
   Tcl_CreateCommand(_interp, "dql_extract", dql_extract, 0, 0);
+  */
 
   char *controlFile = "control.tk";
   if (Init::BatchFile()) {
