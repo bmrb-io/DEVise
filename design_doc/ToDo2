@@ -60,6 +60,9 @@ JavaScreen: Allow multiple levels of child views.
 
 Change the JSPoP so that collaboration clients have a DEViseClient object.
 
+JavaScreen: initiate collaboration with explicit commands, not reconnection
+with "magic" flag values.
+
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
 
