@@ -2,6 +2,7 @@ CC = g++
 
 OPTFLAG = -O
 #OPTFLAG = -g
+#OPTFLAG = -gstabs
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../generic -Wall \
 	-Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS -fexternal-templates
