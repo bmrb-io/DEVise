@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:15  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:47  jussi
   Added CVS header.
 */
@@ -36,7 +39,9 @@
 #include "Util.h"
 #include "Init.h"
 
+#ifndef HPUX
 extern "C" int bcmp(char *b1, char *b2, int length);
+#endif
 
 static char fileContent[TAPE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[TAPE_CONTENT_COMPARE_BYTES];
