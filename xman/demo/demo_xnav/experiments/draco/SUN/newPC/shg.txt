@@ -1,0 +1,457 @@
+
+# 0 Performance Consultant Search History Graph
+*** search history node ***
+0  #nodeID
+topLevelHypothesis::/Code,/Machine,/Process,/SyncObject
+0  # experiment defined?
+*** search history node ***
+1  #nodeID
+ExcessiveSyncWaitingTime::/Code,/Machine,/Process,/SyncObject
+1  # experiment defined?
+70.4 707.2 0.000935414 0.2 # experiment start end value threshold
+
+*** search history node ***
+2  #nodeID
+ExcessiveIOBlockingTime::/Code,/Machine,/Process,/SyncObject
+1  # experiment defined?
+70.4 707.2 0.000923691 0.2 # experiment start end value threshold
+
+*** search history node ***
+3  #nodeID
+CPUbound::/Code,/Machine,/Process,/SyncObject
+1  # experiment defined?
+70.4 707.2 0.473697 0.05 # experiment start end value threshold
+
+*** search history node ***
+4  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main,/Machine,/Process,/SyncObject
+1  # experiment defined?
+99.2 707.2 0.472848 0.05 # experiment start end value threshold
+
+*** search history node ***
+6  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/MAIN_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+512 707.2 0.47425 0.05 # experiment start end value threshold
+
+*** search history node ***
+8  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_drive_routine_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+540.8 707.2 0.494182 0.05 # experiment start end value threshold
+
+*** search history node ***
+10  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_output_control_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 611.2 2.66794e-06 0.05 # experiment start end value threshold
+
+*** search history node ***
+11  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_termination_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 611.2 0 0.05 # experiment start end value threshold
+
+*** search history node ***
+12  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lagrangian_control_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 707.2 0.54229 0.05 # experiment start end value threshold
+
+*** search history node ***
+30  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtsize_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 707.2 0.125181 0.05 # experiment start end value threshold
+
+*** search history node ***
+42  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtvolu_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.00400569 0.05 # experiment start end value threshold
+
+*** search history node ***
+43  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldttemp_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.00402871 0.05 # experiment start end value threshold
+
+*** search history node ***
+44  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lcfls2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.034069 0.05 # experiment start end value threshold
+
+*** search history node ***
+45  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lcros2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.0906976 0.05 # experiment start end value threshold
+
+*** search history node ***
+68  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx12d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+694.4 707.2 0.025916 0.05 # experiment start end value threshold
+
+*** search history node ***
+69  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx22d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+694.4 707.2 0.0264371 0.05 # experiment start end value threshold
+
+*** search history node ***
+70  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx32d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+694.4 707.2 0.0258412 0.05 # experiment start end value threshold
+
+*** search history node ***
+71  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx42d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+694.4 707.2 0.0256347 0.05 # experiment start end value threshold
+
+*** search history node ***
+46  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtsize_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.151814 0.05 # experiment start end value threshold
+
+*** search history node ***
+64  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtvolu_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 704 0.00720405 0.05 # experiment start end value threshold
+
+*** search history node ***
+65  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldttemp_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 704 0.0073083 0.05 # experiment start end value threshold
+
+*** search history node ***
+66  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lcfls2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 707.2 0.0559778 0.05 # experiment start end value threshold
+
+*** search history node ***
+67  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lcros2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 707.2 0.114573 0.05 # experiment start end value threshold
+
+*** search history node ***
+72  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx12d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+-1 0 0 0 # experiment start end value threshold
+
+*** search history node ***
+73  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx22d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+-1 0 0 0 # experiment start end value threshold
+
+*** search history node ***
+74  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx32d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+-1 0 0 0 # experiment start end value threshold
+
+*** search history node ***
+75  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/ldtx42d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+-1 0 0 0 # experiment start end value threshold
+
+*** search history node ***
+31  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lengsum_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.00879603 0.05 # experiment start end value threshold
+
+*** search history node ***
+32  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lbcsu2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.000271271 0.05 # experiment start end value threshold
+
+*** search history node ***
+33  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lnmas2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0156157 0.05 # experiment start end value threshold
+
+*** search history node ***
+34  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lnacc2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 707.2 0.525481 0.05 # experiment start end value threshold
+
+*** search history node ***
+41  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lnacc2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.799797 0.05 # experiment start end value threshold
+
+*** search history node ***
+35  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lbcac2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 3.06328e-05 0.05 # experiment start end value threshold
+
+*** search history node ***
+36  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lmove2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.00743554 0.05 # experiment start end value threshold
+
+*** search history node ***
+37  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/geometry_volume_2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0444257 0.05 # experiment start end value threshold
+
+*** search history node ***
+38  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/gpare2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0195783 0.05 # experiment start end value threshold
+
+*** search history node ***
+39  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/gzcen2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.00471098 0.05 # experiment start end value threshold
+
+*** search history node ***
+40  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lartv2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.018306 0.05 # experiment start end value threshold
+
+*** search history node ***
+13  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/thermal_transport_hydro_only_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 611.2 0.00737553 0.05 # experiment start end value threshold
+
+*** search history node ***
+14  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/eos_control_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 611.2 0.0437611 0.05 # experiment start end value threshold
+
+*** search history node ***
+15  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rezone_control_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 707.2 0.219746 0.05 # experiment start end value threshold
+
+*** search history node ***
+25  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rgrid2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0275807 0.05 # experiment start end value threshold
+
+*** search history node ***
+26  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rdvol2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0174883 0.05 # experiment start end value threshold
+
+*** search history node ***
+27  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rflux2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0423965 0.05 # experiment start end value threshold
+
+*** search history node ***
+28  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rnvem2d_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0508045 0.05 # experiment start end value threshold
+
+*** search history node ***
+29  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rwrapup_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0177486 0.05 # experiment start end value threshold
+
+*** search history node ***
+16  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_interactive_control_,/Machine,/Process,/SyncObject
+1  # experiment defined?
+588.8 611.2 5.2723e-05 0.05 # experiment start end value threshold
+
+*** search history node ***
+17  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_drive_routine_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+588.8 707.2 0.596089 0.05 # experiment start end value threshold
+
+*** search history node ***
+18  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_output_control_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 2.67098e-06 0.05 # experiment start end value threshold
+
+*** search history node ***
+19  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_termination_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0 0.05 # experiment start end value threshold
+
+*** search history node ***
+20  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lagrangian_control_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 707.2 0.66026 0.05 # experiment start end value threshold
+
+*** search history node ***
+52  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lengsum_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0102921 0.05 # experiment start end value threshold
+
+*** search history node ***
+53  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lbcsu2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.000313132 0.05 # experiment start end value threshold
+
+*** search history node ***
+54  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lnmas2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0178212 0.05 # experiment start end value threshold
+
+*** search history node ***
+55  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lbcac2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 3.74786e-05 0.05 # experiment start end value threshold
+
+*** search history node ***
+56  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lmove2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.00883704 0.05 # experiment start end value threshold
+
+*** search history node ***
+57  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/geometry_volume_2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.0699349 0.05 # experiment start end value threshold
+
+*** search history node ***
+58  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/gpare2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0226748 0.05 # experiment start end value threshold
+
+*** search history node ***
+59  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/gzcen2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.00546846 0.05 # experiment start end value threshold
+
+*** search history node ***
+60  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/lartv2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0212345 0.05 # experiment start end value threshold
+
+*** search history node ***
+21  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/thermal_transport_hydro_only_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.00793852 0.05 # experiment start end value threshold
+
+*** search history node ***
+22  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/eos_control_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 0.0436416 0.05 # experiment start end value threshold
+
+*** search history node ***
+23  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rezone_control_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 707.2 0.243308 0.05 # experiment start end value threshold
+
+*** search history node ***
+47  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rgrid2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0320559 0.05 # experiment start end value threshold
+
+*** search history node ***
+48  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rdvol2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0214409 0.05 # experiment start end value threshold
+
+*** search history node ***
+49  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rflux2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.0734676 0.05 # experiment start end value threshold
+
+*** search history node ***
+63  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/find_t_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 704 0.0256678 0.05 # experiment start end value threshold
+
+*** search history node ***
+50  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rnvem2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 707.2 0.0859225 0.05 # experiment start end value threshold
+
+*** search history node ***
+61  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rnmas2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 704 0.0155024 0.05 # experiment start end value threshold
+
+*** search history node ***
+62  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rbcve2d_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+681.6 704 5.99141e-05 0.05 # experiment start end value threshold
+
+*** search history node ***
+51  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/rwrapup_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+652.8 675.2 0.0228409 0.05 # experiment start end value threshold
+
+*** search history node ***
+24  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main_interactive_control_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+620.8 643.2 4.73264e-05 0.05 # experiment start end value threshold
+
+*** search history node ***
+9  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/MAIN_,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+563.2 707.2 0.569926 0.05 # experiment start end value threshold
+
+*** search history node ***
+7  #nodeID
+CPUbound::/Code/DEFAULT_MODULE/main,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+512 707.2 0.474347 0.05 # experiment start end value threshold
+
+*** search history node ***
+5  #nodeID
+CPUbound::/Code,/Machine/chocolate.cs.wisc.edu,/Process,/SyncObject
+1  # experiment defined?
+99.2 707.2 0.473092 0.05 # experiment start end value threshold
+
+

@@ -1,0 +1,7 @@
+SPARC Solaris Draco (debug version)
+
+most    - pre-instrumentation of most interesting functions (3/4-run)
+half    - pre-instrumentation of most interesting functions (half-run)
+partial - incremental on-the-fly instrumentation until a crash
+
+newPC   - new Performance Consultant search
