@@ -2,6 +2,7 @@
 #include "Interface.h"
 #include "site.h"
 #include "DevRead.h"
+#include "DataRead.h"
 #include "StandardRead.h"
 #include "Inserter.h"
 #include "Engine.h"
@@ -129,6 +130,18 @@ Site* MaterViewInterface::getSite(){ // Throws a exception
 }
 
 Site* DeviseInterface::getSite(){
+//	cerr << schemaNm.substr(schemaNm.size() - 3) << endl;
+	if(schemaNm.substr(schemaNm.size() - 3) == "ddr"){
+
+		// Devise Data Reader
+
+		TRY(DataRead* reader = new DataRead(schemaNm, dataNm), 0);
+		return new LocalTable("", reader);
+
+	}
+
+	// Unidata Reader
+
 	char* schemaFile = strdup(schemaNm.c_str());
 	char* data = strdup(dataNm.c_str());
 	DevRead* unmarshal = new DevRead();
@@ -173,13 +186,32 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 	string* attributeNames;
 	TypeID* typeIDs;
 	if(viewNm.empty()){
-		char* schemaFile = strdup(schemaNm.c_str());
-		char* data = strdup(dataNm.c_str());
-		DevRead tmp;
-		TRY(tmp.Open(schemaFile, data), NULL);
-		numFlds = tmp.getNumFlds();
-		attributeNames = tmp.stealAttributeNames();
-		typeIDs = tmp.stealTypeIDs();
+		if(schemaNm.substr(schemaNm.size() - 3) == "ddr"){
+
+			// Devise Data Reader
+
+			TRY(DataRead* reader = new DataRead(schemaNm, dataNm), 0);
+			assert(reader);
+			numFlds = reader->getNumFlds();
+			attributeNames = reader->stealAttributeNames();
+			typeIDs = reader->stealTypeIDs();
+			delete reader;
+		}
+		else{
+
+			// Unidata Reader
+
+			DevRead* reader = 0;
+			char* schemaFile = strdup(schemaNm.c_str());
+			char* data = strdup(dataNm.c_str());
+			reader = new DevRead();
+			TRY(reader->Open(schemaFile, data), NULL);
+			assert(reader);
+			numFlds = reader->getNumFlds();
+			attributeNames = reader->stealAttributeNames();
+			typeIDs = reader->stealTypeIDs();
+			delete reader;
+		}
 	}
 	else {
 		assert(!"single table views not implemented");

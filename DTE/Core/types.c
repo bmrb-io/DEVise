@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/04/16 22:58:17  donjerko
+  *** empty log message ***
+
   Revision 1.53  1998/03/17 17:19:10  donjerko
   Added new namespace management through relation ids.
 
@@ -556,6 +559,7 @@ void stringComp(const Type *arg1,const Type *arg2, Type*& result, size_t& rsz){
 void intRead(istream& in, Type*& adt){
 	int tmp;
 	in >> tmp;
+//	in.read(&tmp, sizeof(tmp));
 	adt = (Type*) tmp;
 }
 

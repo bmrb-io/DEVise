@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/06/03 21:16:05  wenger
+  Temporarily backed out DataReader code in DTE so DEVise will link.
+
   Revision 1.26  1998/03/17 17:18:52  donjerko
   Added new namespace management through relation ids.
 
@@ -91,7 +94,7 @@ TypeID translateUDType(Attr* at){
 void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	ud = new UniData(dataFile, schemaFile);
 	if(!ud || !ud->isOk()){
-		string msg = string("Cannot create table(") +
+		string msg = string("Cannot create Unidata table(") +
 			dataFile + ", " + schemaFile + ")";
 		THROW(new Exception(msg), );
 		// throw Exception(msg);

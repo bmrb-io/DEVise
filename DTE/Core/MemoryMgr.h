@@ -39,10 +39,10 @@ public:
 	void deallocate(size_t space);
 	void* allocate(size_t spaceNeed);
 	virtual void reset(){
-		deque<void*>::iterator it;
-		for(it = pagePtrs.begin(); it != pagePtrs.end(); ++it){
+		while(!pagePtrs.empty()){
+			void* curr = pagePtrs.front();
+			freePagePtrs.push_back(curr);
 			pagePtrs.pop_front();
-			freePagePtrs.push_back(*it);
 		}
 	}
 	virtual Type* load(const Type*){assert(0); return NULL;}

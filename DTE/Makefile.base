@@ -44,9 +44,7 @@ DTE_INCLUDES = \
 	-I../../src/color/export \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I../unidata \
 	-I../../unidata \
-    -I../DataReader \
 	-I../../DataReader \
 	$(PERL_INCL)
 
@@ -79,7 +77,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
-	RelationId.c
+	RelationId.c DataRead.c
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
@@ -93,7 +91,7 @@ ifdef NO_UNIDATA
 	CORE_SRC += DevRead.dummy.c
 else
 	CORE_SRC += DevRead.c
-	STAND_ALONE_LIBS += -L../unidata -lunidata -L$(PERL_CORE) -lperl
+	STAND_ALONE_LIBS += -L../unidata -lunidata -L../DataReader -ldatareader -L$(PERL_CORE) -lperl
 endif
 
 # Set up for profiling.
@@ -167,18 +165,19 @@ dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 	purify $(CC) -o dte.pure $< $(STAND_ALONE_OBJ) \
 	$(CORE_OBJ) $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-quant: $(STAND_ALONE_OBJ) unidata
-	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+dte.quant: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
+	quantify $(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) \
+	$(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 script: $(SCRIPT_OBJ) unidata
 	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) \

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/03/17 17:18:55  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.9  1997/09/05 22:20:05  donjerko
   Made changes for port to NT.
 
@@ -81,7 +84,7 @@ public:
 			writePtrs[i](*out, tuple[i]);
 			*out << " ";
 		}
-		*out << endl;
+		*out << "\n";
 	}
 	virtual void close(){
 		delete out;

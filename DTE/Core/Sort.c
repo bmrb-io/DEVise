@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/04/09 20:26:20  donjerko
+  *** empty log message ***
+
   Revision 1.18  1998/03/17 17:19:01  donjerko
   Added new namespace management through relation ids.
 
@@ -173,7 +176,7 @@ void SortExec::generate_runs()
      table[count] = tupleLoader->insert(currTup);
      count++;
 
-     if (count >= MAX_MEM/(int)sizeof(Tuple)) //Num of tuples exceeds memory
+     if (count >= MAX_MEM) //Num of tuples exceeds memory
        {
          sort_and_write_run(table, count);
          count = 0;

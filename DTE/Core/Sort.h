@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/04/09 20:26:21  donjerko
+  *** empty log message ***
+
   Revision 1.18  1998/03/17 17:19:02  donjerko
   Added new namespace management through relation ids.
 
@@ -81,7 +84,7 @@
 using namespace std;
 #endif
 
-#define MAX_MEM         800000
+#define MAX_MEM         100000		// number of tuples in each run
 #define NUM_RUNS       	1000
 
 class Inserter;

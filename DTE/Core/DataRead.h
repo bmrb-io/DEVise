@@ -29,13 +29,11 @@
 using namespace std;
 #endif
 
-const int BUFSZE = 2048;
-
 class Attr;
 class DataReader;
 typedef long off_t;
 
-class DevReadExec : public Iterator {
+class DataReadExec : public Iterator {
 	char* buff;	// this has to be aligned!
 	int buffSize;
 	DataReader* ud;
@@ -47,11 +45,11 @@ class DevReadExec : public Iterator {
 	int numFlds;
 	int recId;
 public:
-	DevReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
+	DataReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
 		DestroyPtr* destroyPtrs,
 		Type** tuple, int* offsets, int numFlds);
 
-	virtual ~DevReadExec();
+	virtual ~DataReadExec();
 
 	virtual const Tuple* getNext(streampos& pos){
 		assert(! "not implemented");
@@ -67,7 +65,7 @@ public:
      }
 };
 
-class DevRead : public PlanOp {
+class DataRead : public PlanOp {
 	DataReader* ud;
 	int numFlds;
 protected:
@@ -75,21 +73,15 @@ protected:
 	string* attributeNames;
 	string* order;
 public:
-     DevRead() : 
-		ud(NULL), numFlds(0), typeIDs(NULL), 
-		attributeNames(NULL),
-		order(NULL){
+     DataRead(const string& schemaFile, const string& dataFile); // throws
 
-	}
-
-	virtual ~DevRead() { Close(); }
+	virtual ~DataRead() { Close(); }
 
 	virtual void open(istream* in){	// Throws exception
 		assert(0);
 	}
 
 	void translateUDInfo();
-	void Open(char* schemaFile, char* dataFile); // throws
 
 	void Close();
 
