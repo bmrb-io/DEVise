@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/09/07 00:03:16  jussi
+  Fixed problem in UnPinPage. Pages that were still pinned (pinCnt > 0)
+  were being released to the memory pool.
+
   Revision 1.1  1996/08/01 22:45:27  jussi
   Initial revision.
 */
@@ -356,7 +360,9 @@ void *UnixIOTask::ProcessReq()
                 printf("Task 0x%p reducing buffer size from %d to %d\n",
                        this, _buffer.Size(), newBuffSize);
 #endif
+#ifdef BUFFER
                 (void)BufferFlush(_buffer.Size() - newBuffSize);
+#endif
             }
             status = writen(_replyFd[1], (char *)&req, sizeof req);
             if (status < (int)sizeof req) {
@@ -719,21 +725,6 @@ int UnixIOTask::BufferCheck(Request &req, Request &reply)
     return 1;
 }
 
-int UnixIOTask::BufferDealloc(ExtMemPool::PageType type, char *page)
-{
-#if DEBUGLVL >= 5
-    printf("Task 0x%p deallocating page 0x%p\n", this, page);
-#endif
-
-    int status = ExtMemPool::Instance()->DeallocateP(type, page);
-    if (status < 0) {
-        fprintf(stderr, "Failed to communicate with buffer pool\n");
-        return -1;
-    }
-
-    return 0;
-}
-
 int UnixIOTask::BufferConvert(char *page, ExtMemPool::PageType oldType,
                                 ExtMemPool::PageType &newType)
 {
@@ -750,6 +741,21 @@ int UnixIOTask::BufferConvert(char *page, ExtMemPool::PageType oldType,
     return 0;
 }
 #endif
+
+int UnixIOTask::BufferDealloc(ExtMemPool::PageType type, char *page)
+{
+#if DEBUGLVL >= 5
+    printf("Task 0x%p deallocating page 0x%p\n", this, page);
+#endif
+
+    int status = ExtMemPool::Instance()->DeallocateP(type, page);
+    if (status < 0) {
+        fprintf(stderr, "Failed to communicate with buffer pool\n");
+        return -1;
+    }
+
+    return 0;
+}
 
 UnixFdIOTask::UnixFdIOTask(int fd) : _fd(fd)
 {

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/08/01 22:45:27  jussi
+  Initial revision.
+*/
 
 #ifndef ExtBufMgr_h
 #define ExtBufMgr_h
@@ -321,11 +324,12 @@ class UnixIOTask : public IOTask {
     int Buffer();
     int BufferFlush(int num);
     int BufferCheck(Request &req, Request &reply);
-    int BufferDealloc(ExtMemPool::PageType type, char *page);
     int BufferConvert(char *page,
                       ExtMemPool::PageType oldType,
                       ExtMemPool::PageType &newType);
 #endif
+
+    int BufferDealloc(ExtMemPool::PageType type, char *page);
 
 #ifdef SHARED_MEMORY
     // Attach and detach to/from shared memory segment
