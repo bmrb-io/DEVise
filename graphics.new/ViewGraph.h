@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/27 15:46:12  jussi
+  Moved key '5' functionality to ViewGraph::UpdateAutoScale().
+
   Revision 1.17  1996/06/20 17:10:26  guangshu
   Added support for color statistics.
 
@@ -136,6 +139,11 @@ public:
 
   void DoneMappingIterator(int index) {
     _mappings.DoneIterator(index);
+  }
+
+  /* Return true if restoring pixmaps is allowed */
+  virtual Boolean PixmapEnabled() {
+    return (_masterLink.Size() > 0 || _slaveLink.Size() > 0 ? false : true);
   }
 
   /* Draw legend */

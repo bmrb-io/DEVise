@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/02 22:44:16  jussi
+  Removed unnecessary code.
+
   Revision 1.27  1996/06/27 19:04:50  jussi
   The user can now switch between 2D and 3D display, the
   data is refreshed and displayed accordingly.
@@ -291,6 +294,7 @@ public:
 	filter.  Restore the pixmap, and return a new visual filter. */
 	enum PixmapStat { PixmapTotal , PixmapPartial, PixmapNone };
 	PixmapStat RestorePixmap(VisualFilter filter, VisualFilter &newFilter);
+        virtual Boolean PixmapEnabled() { return true; }
 
 	/* Append pixmaps in pixmap buffer into file.*/
 	void SavePixmaps(FILE *file);
