@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/17 04:07:20  ravim
+  New form of index file.
+
   Revision 1.6  1995/11/02 16:57:16  jussi
   Updated copyright message.
 
@@ -43,21 +46,40 @@
 main(int argc, char **argv)
 {
   FILE *outfile;
+  int fileno = -1;
+  long unsigned int offset = 0;
+  char *colon = 0;
 
   if (argc != 3)
   {
-    printf("Usage: %s <input data file> <output index file>\n", argv[0]);
+    printf("Usage: %s <input tape device>[:fileno[:fileoffset]] <output index file>\n", argv[0]);
     exit(0);
   }
 
+  colon = strchr(argv[1], ':');
+  if (colon) {
+    char *colon2 = strchr(colon + 1, ':');
+    if (colon2) {
+      offset = atol(colon2 + 1);
+      *colon2 = 0;
+    }
+    fileno = atoi(colon + 1);
+    *colon = 0;
+  }
+
   /* Get the input file pointer */
-  TapeDrive tape(argv[1], "r", -1, 32768);
+  TapeDrive tape(argv[1], "r", fileno, 32768);
   if (!tape)
   {
     fprintf(stderr, "Error: could not open tape device %s\n", argv[1]);
     exit(0);
   }
-  tape.readTarHeader();
+
+  if (tape.seek(offset) != offset) {
+    fprintf(stderr, "Cannot seek to offset %lu\n", offset);
+    perror("seek");
+    exit(0);
+  }
 
   /* Get the output file pointer */
   /* Create a new output file for writing index */
@@ -75,6 +97,17 @@ main(int argc, char **argv)
     perror("fclose");
 }
 
+/*
+   This function trims a string by removing trailing whitespace.
+*/
+
+static void trim_string(char *str)
+{
+  for(int i = strlen(str) - 1; i >= 0; i--)
+    if (!isspace(str[i]))
+      break;
+  str[i + 1] = 0;
+}
 
 /* 
    This function scans through the entire compustat database once and
@@ -83,17 +116,18 @@ main(int argc, char **argv)
    starting offset
    industry classification code
    ...
-
 */
+
 void create_index(TapeDrive &tape, FILE *outfile)
 {
   char comp_rec[COMP_REC_LENGTH];	/* buffer to hold a record */
-  unsigned long int offset = tape.tell(); /* Offset of first company is 0 */
+  unsigned long int offset = tape.tell(); /* Beginning of database */
+  unsigned long int tapepos = offset;     /* Offset of first company */
 
   for(;;) {
-    if (tape.seek(offset) != offset)
+    if (tape.seek(tapepos) != tapepos)
     {
-      printf("Cannot seek to offset %lu\n", offset);
+      printf("Cannot seek to offset %lu\n", tapepos);
       break;
     }
     int bytes = tape.read((void *)comp_rec, (size_t)COMP_REC_LENGTH);
@@ -106,13 +140,13 @@ void create_index(TapeDrive &tape, FILE *outfile)
     }
 
     /* Output the first field (offset) in the output record */
-    fprintf(outfile,"%lu",offset);
+    fprintf(outfile, "%lu", tapepos - offset);
 
     /* Extract fields from first record */
     extract_fields(COMP_NUM_FIELDS_1, comp_idx_1, comp_rec, outfile);
 
     /* Seek to the fifth record of company */
-    if (tape.seek(offset + 3*COMP_REC_LENGTH) != offset + 3*COMP_REC_LENGTH)
+    if (tape.seek(tapepos + 3*COMP_REC_LENGTH) != tapepos + 3*COMP_REC_LENGTH)
     {
       printf("Error: could not access the fifth record\n");
       break;
@@ -130,7 +164,7 @@ void create_index(TapeDrive &tape, FILE *outfile)
     extract_fields(COMP_NUM_FIELDS_2, comp_idx_2, comp_rec, outfile);
 
     /* Update offset */
-    offset += COMP_REC_PER_COMP * COMP_REC_LENGTH;
+    tapepos += COMP_REC_PER_COMP * COMP_REC_LENGTH;
     
     /* Put new line to denote end of one record */
     fprintf(outfile, "\n");
@@ -164,6 +198,7 @@ void extract_fields(int num_fields, int field_arr[], char recbuf[],
 	   len);
 
     tmpbuf[len] = '\0';
+    trim_string(tmpbuf);
 
     /* A hack to ensure that the name appears in quotes */
     if ((field_arr == comp_idx_1) && 
