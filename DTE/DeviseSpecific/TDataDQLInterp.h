@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/02 00:03:12  donjerko
+  Moved the query execution into TDataDQLInterp::CreateWithParameters.
+  It used to be done in TDataDQLInterp constructor.
+
   Revision 1.5  1997/02/18 18:06:38  donjerko
   Added Drop Index command
 
@@ -75,7 +79,11 @@ public:
   ***************************************************/
   virtual char *InstanceName();
   virtual void *GetInstance();
-  virtual AttrList * GetAttrList() { return & _attrs;}	
+  virtual AttrList * GetAttrList() {
+  	assert(_tdata);
+	return _tdata->GetAttrList();
+//	return & _attrs;
+  }	
   /* Get parameters that can be used to re-create this instance */
   virtual void CreateParams(int &argc, char **&argv);
 
@@ -99,9 +107,11 @@ public:
   TDataDQLInterp(AttrList attrs,char *name,char *type,
 	int numFlds, String* types, int recSize, TuplePtrXPlex& result,
 	int* sizes);
+  TDataDQLInterp(char* tableName, List<char*>* attrList, char* query);
   virtual ~TDataDQLInterp();
 
-  AttrList *GetAttrList(){ return &_attrList; }
+//  AttrList *GetAttrList(){ return &_attrList; }
+// Should call TDataDQL::GetAttrList
 
 protected:
   /* Decode a record and put data into buffer. Return false if
@@ -113,7 +123,7 @@ protected:
   virtual Boolean ReadIndex(int fd);
 
 private:
-  AttrList  _attrList;             /* list of attributes */
+//  AttrList  _attrList;             /* list of attributes */
 
 };
 

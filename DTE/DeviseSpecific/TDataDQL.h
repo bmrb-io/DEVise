@@ -39,6 +39,7 @@ public:
 	int numFlds, String* types, int recSize, TuplePtrXPlex& result, 
 	int* sizes);
 
+	TDataDQL(char* tableName, List<char*>* attrList, char* query);
 	virtual ~TDataDQL();
 
 	/**** MetaData about TDataDQL ****/
@@ -134,6 +135,7 @@ protected:
 	static char *MakeIndexFileName(char *name, char *type);
 
 private:
+	void runQuery();
 	/* From DispatcherCallback */
 	char *DispatchedName() { return "TDataDQL"; }
         virtual void Run();
@@ -157,11 +159,14 @@ private:
 	int _initLastPos;               // initial last position in file
 
 	int _bytesFetched;              // total # of bytes fetched
-	AttrList _attrList;
+	AttrList _attrs;
 	int _numFlds;
 	String* _types;
 	TuplePtrXPlex _result;
 	int* _sizes;
+	char* _query;
+	List<char*>* attrList;
+	char* _tableName;
 };
 
 #endif
