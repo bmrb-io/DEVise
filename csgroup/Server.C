@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  2000/03/23 19:58:39  wenger
+  Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+  g++ 2.95.2).
+
   Revision 1.28  2000/03/14 17:04:49  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -412,6 +416,10 @@ void Server::DoAbort(char *reason)
 
 void Server::MainLoop()
 {
+#if defined(DEBUG)
+    printf("Server::MainLoop()\n");
+#endif
+
     while (1) {
         WaitForConnection();
         while (_numClients > 0)
@@ -489,6 +497,10 @@ int Server::FindIdleClientSlot()
 
 void Server::WaitForConnection()
 {
+#if defined(DEBUG)
+    printf("Server::WaitForConnection()\n");
+#endif
+
     int clientfd;
     if (_listenFd < 0)
     {
@@ -779,6 +791,10 @@ int Server::CloseClientGroup(ClientID clientID)
 //
 void Server::ReadCmd()
 {
+#if defined(DEBUG)
+    printf("Server::ReadCmd()\n");
+#endif
+
     fd_set fdset;
     int maxFdCheck;
     int numFds;
