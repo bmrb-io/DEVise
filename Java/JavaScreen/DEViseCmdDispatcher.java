@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.105  2001/10/25 21:35:41  wenger
+// Added heartbeat count to heartbeat command (for debugging); other minor
+// cleanup and debug code additions.
+//
 // Revision 1.104  2001/10/22 18:38:23  wenger
 // A few more cleanups to the previous fix.
 //
@@ -559,7 +563,7 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
         }
-
+	
         setStatus(1);
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
@@ -612,16 +616,11 @@ public class DEViseCmdDispatcher implements Runnable
 	// command to whatever was passed in.
 
 	if (!_connectedAlready) {
-            String temp_cmd = DEViseCommands.CONNECT + " {" +
-	      jsc.jsValues.connection.username + "} {" +
-	      jsc.jsValues.connection.password + "} {" +
-	      DEViseGlobals.PROTOCOL_VERSION + "}";
-	    if (jsc.specialID > 0) {
-		cmd = temp_cmd + " {" + jsc.collabPass + "}\n" + cmd;
-	    } else {
-		cmd = temp_cmd + " {" + DEViseGlobals.DEFAULTPASS +
-		  "}\n" + cmd;
-	    }
+	    cmd = DEViseCommands.CONNECT + " {" +
+		jsc.jsValues.connection.username + "} {" +
+		jsc.jsValues.connection.password + "} {" +
+		DEViseGlobals.PROTOCOL_VERSION + "}\n" + cmd; 
+	    
 	    _connectedAlready = true;
 
 	    // for JS switched back from collaboration
@@ -632,9 +631,9 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
 
 	    // Start the heartbeat thread.
-	    if (jsc.specialID == -1) {
-		_heartbeat = new DEViseHeartbeat(this);
-	    }
+	    // if (jsc.specialID == -1) {
+	    _heartbeat = new DEViseHeartbeat(this);
+	    // }
         }
 
 	commands = DEViseGlobals.parseStr(cmd);
@@ -718,6 +717,18 @@ public class DEViseCmdDispatcher implements Runnable
             _heartbeat = null;
 	}
 
+	// send a Java_Collab_Exit if we are collaborating.
+	if (jsc.specialID != -1) {
+	    try {
+                jsc.pn("Sending: \"" + DEViseCommands.COLLAB_EXIT +"\"");
+		commSocket.sendCmd(DEViseCommands.COLLAB_EXIT, 
+				   DEViseGlobals.API_JAVA, 
+				   jsc.jsValues.connection.connectionID);
+            } catch (YException e) {
+                jsc.showMsg(e.getMsg());
+            }
+	}
+
 	//
 	// Send a JAVAC_Exit command if we're connected.
 	//
@@ -735,20 +746,10 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
-	
-	if (jsc.specialID != -1) {
-	    try {
-                jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-                sockSendCmd(DEViseCommands.EXIT);
-            } catch (YException e) {
-                jsc.showMsg(e.getMsg());
-            }
-	}
-	
 	//
 	// Kill the dispatcher thread and disconnect.
 	//
-        if (getStatus() != 0 && dispatcherThread != null) {
+	if (getStatus() != 0 && dispatcherThread != null) {
 	    dispatcherThread.stop();
 	    dispatcherThread = null;
 	}
@@ -935,20 +936,18 @@ public class DEViseCmdDispatcher implements Runnable
       else {
 	    try {
 		processCmd(commands[0]); // for the connect command
-		if (jsc.specialID != 0) { // not the first connect command
-		    while (true) {
-			processCmd(null);
-	            }
-	        }
+		while (jsc.specialID != -1) {
+		    processCmd(null);
+		}
 	    }
 	    catch (YException e) {
 	    }
       }
 
-        if (_debug) {
-            System.out.println("  Done with DEViseCmdDispatcher.run(" +
-	      commands[0] + ")");
-        }
+      if (_debug) {
+	  System.out.println("  Done with DEViseCmdDispatcher.run(" +
+			     commands[0] + ")");
+      }
     }
 
     // Send a command to the server, wait for the replies, and process
@@ -1033,26 +1032,17 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
+	    
 	    if (jsc.specialID != -1) {
-                //TEMP -- does -1 mean we're a collaborator?
+                // a collaborator
 		jsc.showMsg(response);
-		setOnlineStatus(false);
 		jsc.specialID = -1;
-
-		disconnect();
-
+		jsc.socketMode();
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 		jsc.jscreen.updateScreen(false);
-
-		if (getStatus() != 0) {
-		    setAbortStatus(true);
-		}
+		dispatcherThread.interrupt();
 		setStatus(0);
-
-		dispatcherThread.stop();
-		dispatcherThread = null;
-
 	    } else {
 		if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
 		    jsc.showMsg(response);
@@ -1736,16 +1726,28 @@ public class DEViseCmdDispatcher implements Runnable
 
                     isFinish = true;
                 } catch (InterruptedIOException e) {
+		    if (jsc.collabinterrupted) {
+			jsc.collabinterrupted = false;
+			commSocket.sendCmd(DEViseCommands.COLLAB_EXIT, 
+					   DEViseGlobals.API_JAVA, 
+					   jsc.jsValues.connection.connectionID);
+			jsc.pn("Sent out Collab_Exit command after interrupt.");
+			return null;
+		    }
                     if (getAbortStatus()) {
-	                //TEMP -- what about message type????
-                        if (jsc.jsValues.connection.cgi) {
+			// switch out of collaboration mode
+			//if (jsc.specialID != -1) {
+			//  commSocket.sendCmd(DEViseCommands.COLLAB_EXIT);
+			//} 
+			//else 
+			if (jsc.jsValues.connection.cgi) {
                             sendRcvCmd(DEViseCommands.ABORT);
                         } else {
                             commSocket.sendCmd(DEViseCommands.ABORT);
                         }
                         setAbortStatus(false);
                     }
-                }
+		}
             }
 
             if (response == null || response.length() == 0) {
@@ -1849,17 +1851,8 @@ public class DEViseCmdDispatcher implements Runnable
 	}
 
 	// send the command
-	if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID == -1) {
-            commSocket.sendCmd(command, DEViseGlobals.API_JAVA_WID,
-	      jsc.jsValues.connection.connectionID);
-        } else {
-	    if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID != -1) {
-		commSocket.sendCmd(command, DEViseGlobals.API_JAVA_CID, jsc.specialID);
-	    } else {
-		commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
-				   jsc.jsValues.connection.connectionID);
-	    }
-	}
+	commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
+			   jsc.jsValues.connection.connectionID);
 
 	if (!commSocket.isOpen()) {
 	    commSocket = null;
