@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/11/10 22:00:44  jussi
+#	Minor fix.
+#
 #	Revision 1.1  1995/11/10 21:45:07  jussi
 #	Initial revision.
 
