@@ -1835,6 +1835,20 @@ Num Date        Status  Description
 476 03/24/99	OPEN	'5'/'home' on any visually-linked view should work
 			the way it does on piles. (rkw)
 
+477 03/31/99	OPEN	After viewing a "large" number of Tasvir images in the 
+			JavaScreen, something goes wrong and Tasvir images
+			no longer get displayed. (rkw)
+
+478 04/01/99	OPEN	Open Demo/colors.ds, do '9', then <backspace>:
+			visual filter doesn't go back to where it was. (rkw)
+
+479 04/01/99	OPEN	Protocol for sending GData to the JavaScreen can't
+			handle arguments with spaces (separator characters)
+			in them. (rkw)
+
+480 04/01/99	OPEN	Setting title and axis fonts does not work right in
+			piled views. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
