@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/09/19 16:08:32  jussi
+  Changed comp_extract from C linkage to C++ linkage.
+
   Revision 1.6  1995/09/19 15:30:22  jussi
   Added creation of cstat_extract command for Compustat data.
 
@@ -49,8 +52,9 @@ extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = NULL;
 
-ControlPanel *GetTkControl() {
-	return new TkControlPanel();
+ControlPanel *GetTkControl()
+{
+  return new TkControlPanel();
 }
 
 /* bitmap for control panel */
@@ -59,142 +63,150 @@ ControlPanel *GetTkControl() {
 #define idle_height 16
 static char idle_bits[] = {
    0xff, 0x01, 0xff, 0x01, 0x1f, 0x00, 0x3f, 0x00, 0x7f, 0x00, 0xfb, 0x00,
-  0xf3, 0x01, 0xe3, 0x03, 0xc3, 0x07, 0x80, 0x0f, 0x00, 0x1f, 0x00, 0x3e,
-	 0x00, 0x7c, 0x00, 0xf8, 0x00, 0xf0, 0x00, 0xe0};
+   0xf3, 0x01, 0xe3, 0x03, 0xc3, 0x07, 0x80, 0x0f, 0x00, 0x1f, 0x00, 0x3e,
+   0x00, 0x7c, 0x00, 0xf8, 0x00, 0xf0, 0x00, 0xe0};
 */
 
-TkControlPanel::TkControlPanel(){
+TkControlPanel::TkControlPanel()
+{
+  _interpProto = new MapInterpClassInfo();
+  
+  View::InsertViewCallback(this);
 
-	_interpProto = new MapInterpClassInfo();
+  _busy = false;
+  _restoring = false;
+  _template = false;
 
-	View::InsertViewCallback(this);
+  _fileName = (char *)malloc(1);
+  _fileName[0] = '\0';
+  _fileAlias = (char *)malloc(1);
+  _fileAlias[0] = '\0';
 
-	_busy = false;
-	_restoring = false;
-	_template = false;
+  _winName = (char *)malloc(1);
+  _winName[0] = '\0';
+  _gdataName = (char *)malloc(1);
+  _gdataName[0] = '\0';
+  _viewName = (char *)malloc(1);
+  _viewName[0] = '\0';
+  _sessionName = CopyString(Init::SessionName());
+  _argv0 = CopyString(Init::ProgName());
 
-	_fileName = (char *)malloc(1);
-	_fileName[0] = '\0';
-	_fileAlias = (char *)malloc(1);
-	_fileAlias[0] = '\0';
+  /* register with dispatcher to be always informed of when to run */
+  Dispatcher::Current()->Register(this, AllState, true);
 
-	_winName = (char *)malloc(1);
-	_winName[0] = '\0';
-	_gdataName = (char *)malloc(1);
-	_gdataName[0] = '\0';
-	_viewName = (char *)malloc(1);
-	_viewName[0] = '\0';
-	_sessionName = CopyString(Init::SessionName());
-	_argv0 = CopyString(Init::ProgName());
+  /* Create a new interpreter */
+  _interp = Tcl_CreateInterp();
+  _mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
+  if (_mainWindow == NULL) {
+    fprintf(stderr, "%s\n", _interp->result);
+    exit(1);
+  }
+  Tk_MoveWindow(_mainWindow, 0,0);
+  Tk_GeometryRequest(_mainWindow, 100, 200);
 
-    /* register with dispatcher to be always informed of when to run */
-	Dispatcher::Current()->Register(this, AllState, true);
+  /* Init tcl and tk */
+  if (Tcl_Init(_interp) == TCL_ERROR) {
+    fprintf(stderr,"can't init tcl in TkControl.c\n");
+    Exit::DoExit(1);
+  }
+  if (Tk_Init(_interp) == TCL_ERROR) {
+    fprintf(stderr,"can't init tk in TkControl.c\n");
+    Exit::DoExit(1);
+  }
 
-	/* Create a new interpreter */
-	_interp = Tcl_CreateInterp();
-	_mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
-	if (_mainWindow == NULL) {
-			fprintf(stderr, "%s\n", _interp->result);
-			exit(1);
-	}
-	Tk_MoveWindow(_mainWindow, 0,0);
-	Tk_GeometryRequest(_mainWindow, 100, 200);
-
-	/* Init tcl and tk */
-	if (Tcl_Init(_interp) == TCL_ERROR) {
-		fprintf(stderr,"can't init tcl in TkControl.c\n");
-		Exit::DoExit(1);
-	}
-	if (Tk_Init(_interp) == TCL_ERROR) {
-		fprintf(stderr,"can't init tk in TkControl.c\n");
-		Exit::DoExit(1);
-	}
-
-	/*
-	if (Tk_DefineBitmap(_interp,
-		Tk_GetUid("idle"), idle_bits, idle_width,idle_height)
-		== TCL_ERROR){
-		fprintf(stderr,"TkControlPanel::can't init bitmap\n");
-		Exit::DoExit(1);
-	}
-	*/
+  /*
+     if (Tk_DefineBitmap(_interp,
+     Tk_GetUid("idle"), idle_bits, idle_width,idle_height)
+     == TCL_ERROR){
+     fprintf(stderr,"TkControlPanel::can't init bitmap\n");
+     Exit::DoExit(1);
+     }
+     */
 }
 
 /* start session */
-void TkControlPanel::StartSession(){
+void TkControlPanel::StartSession()
+{
+  printf("DEVise Data Visualization Software\n");
+  printf("(c) Copyright 1992-1995\n");
+  printf("By the DEVise Development Group\n");
+  printf("All Rights Reserved.\n");
+  printf("\n");
 
-	Tcl_LinkVar(_interp,"fileName", (char *)&_fileName, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"fileAlias", (char *)&_fileAlias, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"gdataName", (char *)&_gdataName, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"windowName",(char *) &_winName, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"viewName",(char *) &_viewName, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"sessionName",(char *)&_sessionName, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"argv0",(char *)&_argv0, TCL_LINK_STRING);
-	Tcl_LinkVar(_interp,"restoring",(char *)&_restoring, TCL_LINK_INT);
-	Tcl_LinkVar(_interp,"template",(char *)&_template, TCL_LINK_INT);
+  Tcl_LinkVar(_interp,"fileName", (char *)&_fileName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"fileAlias", (char *)&_fileAlias, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"gdataName", (char *)&_gdataName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"windowName",(char *) &_winName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"viewName",(char *) &_viewName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"sessionName",(char *)&_sessionName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"argv0",(char *)&_argv0, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp,"restoring",(char *)&_restoring, TCL_LINK_INT);
+  Tcl_LinkVar(_interp,"template",(char *)&_template, TCL_LINK_INT);
 
-	/* Create a new tcl command for control panel */
-	Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
+  /* Create a new tcl command for control panel */
+  Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
 
-	/* Create a new tcl command for ISSM stock data */
-	Tcl_CreateCommand(_interp, "issm_extractStocks", extractStocksCmd,
-			  0, 0);
+  /* Create a new tcl command for ISSM stock data */
+  Tcl_CreateCommand(_interp, "issm_extractStocks", extractStocksCmd, 0, 0);
 
-	/* Create a new tcl command for Compustat data */
-	Tcl_CreateCommand(_interp, "cstat_extract", comp_extract, 0, 0);
+  /* Create a new tcl command for Compustat data */
+  Tcl_CreateCommand(_interp, "cstat_extract", comp_extract, 0, 0);
 
-	char *envPath = getenv("DEVISE_LIB");
-	char *control;
-	char buf[256];
-	if (envPath != NULL){
-		sprintf(buf,"%s/control.tk",envPath);
-		control = buf;
-	}
-	else control = "control.tk";
+  char *envPath = getenv("DEVISE_LIB");
+  char *control;
+  char buf[256];
+  if (envPath != NULL) {
+    sprintf(buf,"%s/control.tk",envPath);
+    control = buf;
+  } else
+    control = "control.tk";
 
-	printf("control panel file is: %s\n", control);
+  printf("Control panel file is: %s\n", control);
 
-	int code = Tcl_EvalFile(_interp,control);
-	if (code != TCL_OK){
-		fprintf(stderr,"%s\n", _interp->result);
-		Exit::DoExit(1);
-	}
+  int code = Tcl_EvalFile(_interp,control);
+  if (code != TCL_OK) {
+    fprintf(stderr,"%s\n", _interp->result);
+    Exit::DoExit(1);
+  }
 
-	if (Init::Restore()){
-		/* restore session */
-		_restoring = true;
-		int code = Tcl_EvalFile(_interp,_sessionName);
-		_restoring = false;
-		if (code != TCL_OK){
-			fprintf(stderr,"Can't restore session file %s\n",_sessionName);
-			fprintf(stderr,"%s\n", _interp->result);
-			Exit::DoExit(1);
-		}
-	}
+  if (Init::Restore()) {
+    /* restore session */
+    _restoring = true;
+    int code = Tcl_EvalFile(_interp,_sessionName);
+    _restoring = false;
+    if (code != TCL_OK){
+      fprintf(stderr,"Can't restore session file %s\n",_sessionName);
+      fprintf(stderr,"%s\n", _interp->result);
+      Exit::DoExit(1);
+    }
+  }
 }
 
-char * TkControlPanel::SessionName() {
-	return _sessionName;
+char * TkControlPanel::SessionName()
+{
+  return _sessionName;
 }
-void TkControlPanel::SetSessionName(char *name) {
-	/*XXX: This is a memory leak */
-	_sessionName = CopyString(name);
-}
-
-
-inline void MakeReturnVals(Tcl_Interp *interp, int numArgs, char **args){
-	for (int i=0; i < numArgs; i++){
-		Tcl_AppendElement(interp,args[i]);
-	}
+void TkControlPanel::SetSessionName(char *name)
+{
+  /*XXX: This is a memory leak */
+  _sessionName = CopyString(name);
 }
 
-ControlPanel::Mode TkControlPanel::GetMode() {
-	return _mode;
+inline void MakeReturnVals(Tcl_Interp *interp, int numArgs, char **args)
+{
+  for (int i=0; i < numArgs; i++){
+    Tcl_AppendElement(interp,args[i]);
+  }
 }
 
+ControlPanel::Mode TkControlPanel::GetMode()
+{
+  return _mode;
+}
 
-Boolean TkControlPanel::Restoring() {
-	return _restoring;
+Boolean TkControlPanel::Restoring()
+{
+  return _restoring;
 }
 
 /********************************************************************
