@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2001/02/20 20:02:21  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.77  2001/02/19 20:33:44  xuk
 // Added command(s) and GUI so that a collaboration leader can find out who is
 // collaborating with it.
@@ -495,17 +499,16 @@ public class DEViseCmdDispatcher implements Runnable
 	      jsc.jsValues.connection.username + "} {" +
 	      jsc.jsValues.connection.password + "} {" +
 	      DEViseGlobals.PROTOCOL_VERSION + "}";
-	    if (jsc.isAbleCollab) {
-		cmd = temp_cmd + " {" + DEViseGlobals.ENABLECOLLAB +
-		  "}\n" + cmd;
+	    if (jsc.specialID > 0) {
+		cmd = temp_cmd + " {" + jsc.collabPass + "}\n" + cmd;
 	    } else {
-		cmd = temp_cmd + " {" + DEViseGlobals.DISABLECOLLAB +
+		cmd = temp_cmd + " {" + DEViseGlobals.DEFAULTPASS +
 		  "}\n" + cmd;
 	    }
 	    _connectedAlready = true;
 
 	    // Start the heartbeat thread.
-	    _heartbeat = new DEViseHeartbeat(this);
+	    //_heartbeat = new DEViseHeartbeat(this);
         }
 
 	commands = DEViseGlobals.parseStr(cmd);
