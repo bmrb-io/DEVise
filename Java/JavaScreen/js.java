@@ -1,5 +1,22 @@
+// ========================================================================
+// DEVise Data Visualization Software
+// (c) Copyright 1999
+// By the DEVise Development Group
+// Madison, Wisconsin
+// All Rights Reserved.
+// ========================================================================
+
+// Under no circumstances is this software to be copied, distributed,
+// or altered in any way without prior permission from the DEVise
+// Development Group.
+
+// $Id$
+
+// $Log$
+
+// ========================================================================
+
 // js.java
-// last updated on 04/11/99
 
 import java.awt.*;
 import java.awt.event.*;
