@@ -179,7 +179,7 @@ const Tuple* StandGroupByExec::getNext(){
     while((currt = inputIter->getNext())){
       bool isdiff = false;
       for (int i = 0; i < grpByPosLen && !isdiff; i++){
-	isdiff = isdiff || grpByExecs[brpByPos[i]]->isdifferent(currt[grpByPos[i]]);
+	isdiff = isdiff || grpByExecs[grpByPos[i]]->isdifferent(currt[grpByPos[i]]);
       }
       if (isdiff) // new group is encountered
 	break;
@@ -208,7 +208,7 @@ const Tuple* StandGroupByExec::getNext(){
   // Check if the new tuple differs from the first tuple of group
   bool isdiff = false;
   for (int i = 0; i < grpByPosLen && !isdiff; i++){
-    isdiff = isdiff || grpByExecs[grpBysPos[i]]->isdifferent(currt[grpByPos[i]]);
+    isdiff = isdiff || grpByExecs[grpByPos[i]]->isdifferent(currt[grpByPos[i]]);
   }
 
   if (isdiff){ // Prev tuple forms a group of its own
@@ -228,7 +228,7 @@ const Tuple* StandGroupByExec::getNext(){
   while((currt = inputIter->getNext())){
     bool isdiff = false;
     for (int i = 0; i < grpByPosLen && !isdiff; i++){
-      isdiff = isdiff || grpByExecs[grpBysPos[i]]->isdifferent(currt[grpByPos[i]]);
+      isdiff = isdiff || grpByExecs[grpByPos[i]]->isdifferent(currt[grpByPos[i]]);
     } 
     if (isdiff) // new group is encountered
       break;
@@ -244,7 +244,7 @@ const Tuple* StandGroupByExec::getNext(){
       aggExecs[i]->initialize(currt[i]);
     
     for (int i = 0; i < grpByPosLen; i++)
-      grpByExecs[grpBysPos[i]]->initialize(currt[grpByPos[i]]);
+      grpByExecs[grpByPos[i]]->initialize(currt[grpByPos[i]]);
   }
     
   for(int i = 0; i < numFlds; i++)
