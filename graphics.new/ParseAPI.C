@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/31 15:38:26  jussi
+  Added setLinkMaster, resetLinkMaster, and getLinkMaster commands.
+
   Revision 1.7  1996/05/15 16:36:20  jussi
   Added sync command.
 
@@ -130,7 +133,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     ViewGraph **vlist = new (ViewGraph *) [nview];
     assert(vlist);
     for(int i = 0; i < nview; i++) {
-      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[5 + i]);
+      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[4 + i]);
       if (!vlist[i]) {
 	control->ReturnVal(API_NAK, "Cannot find view");
 	delete vlist;
