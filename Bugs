@@ -699,6 +699,19 @@ Num Date        Status  Description
                         rather than having the statistical data source
                         automatically regenerated. (rkw)
 
+169 03/05/97	OPEN	It's easy to select 'Open' when you want 'Save' and
+			vice-versa.  Then, you can't tell from the file
+			select box which one you selected. (rkw)
+
+170 03/06/97	OPEN	In the physical schema editor, you can only add
+			new attributes at the end. (ma/rkw)
+
+171 03/06/97	OPEN	Visualize a data source via the 'Visualize/Import'
+			menu selection, then do the same again with another
+			data source, but don't select any Y attribute ->
+			you don't get the warning about selecting a Y
+			attribute. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
