@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/22 17:52:16  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.6  1996/05/07 16:44:19  jussi
   Cache file name now based on file alias (TData name). Added recPos
   parameter to Decode() function call. Added support for a simple
@@ -57,8 +62,10 @@
 #include "Util.h"
 #include "Init.h"
 #include "DataSourceFileStream.h"
+#include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DevError.h"
+#include "DataSeg.h"
 
 //#define DEBUG
 
@@ -75,11 +82,47 @@ TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
 
   _data = NULL;
 
+  // Find out whether the data occupies an entire file or only
+  // a segment of a file.
+  char *	segLabel;
+  char *	segFile;
+  long		segOffset;
+  long		segLength;
+
+  DataSeg::Get(segLabel, segFile, segOffset, segLength);
+
+  if (strcmp(name, segFile) || strcmp(alias, segLabel))
+  {
+    DOASSERT(false, "data segment does not match tdata");
+  }
+
+  DataSeg::Set(NULL, NULL, 0, 0);
+
+  // Now instantiate the appropriate type of object, according to
+  // whether this is a tape or disk file, and whether or not the
+  // data occupies the entire file.
   if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
-      || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+     || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+
+     if ((segOffset == 0) && (segLength == 0))
+     {
 	_data = new DataSourceTape(name, NULL);
+     }
+     else
+     {
+	_data = new DataSourceSegment<DataSourceTape>(name, NULL,
+	  segOffset, segLength);
+     }
   } else {
+     if ((segOffset == 0) && (segLength == 0))
+     {
 	_data = new DataSourceFileStream(name, NULL);
+     }
+     else
+     {
+	_data = new DataSourceSegment<DataSourceFileStream>(name, NULL,
+	  segOffset, segLength);
+     }
   }
 
   if (_data == NULL)

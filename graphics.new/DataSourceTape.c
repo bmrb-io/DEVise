@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/22 17:52:06  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
  */
 
 #define _DataSourceTape_c_
@@ -189,7 +194,7 @@ DataSourceTape::Tell()
 int
 DataSourceTape::gotoEnd()
 {
-	DO_DEBUG(printf("DataSourceTape::gotoEnd()\n"));
+	//DO_DEBUG(printf("DataSourceTape::gotoEnd()\n"));
 	int		result = 0;
 
 	long end = 1024 * 1024 * 1024;

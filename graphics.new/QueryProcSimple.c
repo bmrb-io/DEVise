@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/31 21:35:36  wenger
+  Fixed core dump in SPARC/Solaris version caused by GData buffer
+  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+  version to link correctly and eliminate special Makefile.base.aix.
+
   Revision 1.9  1996/05/15 16:44:52  jussi
   Added support for the new server synchronization mechanism.
 
@@ -120,6 +125,8 @@ rids in gdata a superset of rids in in tdata, and vice versa.
 #include "GDataBin.h"
 #include "PageSize.h"
 #include "Display.h"
+
+//#define DEBUG
 
 /* temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
@@ -680,8 +687,7 @@ Boolean QueryProcSimple::DoYXBinarySearch(BufMgr *mgr,
 	TData *tdata, TDataMap *map, Coord yval, Boolean isPrefetch,
 	int width, int height, int &row){
 #ifdef DEBUG
-printf("QueryProcSimple::DoYXBinarySearch: filter %f,%f,%f,%f\n",
-	filter.xLow, filter.yLow,filter.xHigh,filter.yHigh);
+printf("QueryProcSimple::DoYXBinarySearch\n");
 #endif
 	mgr->PhaseHint(BufferPolicy::BinSearchPhase);
 
@@ -920,7 +926,7 @@ Boolean QueryProcSimple::InMemConvert(){
 		return false;
 	}
 #ifdef DEBUG
-	printf("QueryProcSimple:: got TData %d,%d, buffer = 0x%p\n", low, high, tbuf);
+	printf("QueryProcSimple:: got TData %ld,%ld, buffer = 0x%p\n", low, high, tbuf);
 #endif
 
 	/* Process this range */
@@ -929,8 +935,8 @@ Boolean QueryProcSimple::InMemConvert(){
 	while (convertLow <= high){
 #ifdef DEBUG
 		if (noHigh)
-			printf("QueryProcSimple::unconverted [%d,]\n", convertLow);
-		else printf("QueryProcSimple::unconverted[%d,%d]\n", convertLow, convertHigh);
+			printf("QueryProcSimple::unconverted [%ld,]\n", convertLow);
+		else printf("QueryProcSimple::unconverted[%ld,%ld]\n", convertLow, convertHigh);
 #endif
 		if (noHigh || convertHigh > high)
 			convertHigh = high;
@@ -938,7 +944,7 @@ Boolean QueryProcSimple::InMemConvert(){
 		/* When we get here:[convertLow, convertHigh] are
 		within [low,high] and should be converted*/
 #ifdef DEBUG
-		printf("QueryProcSimple::converting [%d,%d]\n", convertLow, convertHigh);
+		printf("QueryProcSimple::converting [%ld,%ld]\n", convertLow, convertHigh);
 #endif
 
 		int bufLeft = _inMemGData->RecsLeftToConvert(); /* buffer left */

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/04 14:21:41  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
  */
 
 #define _DataSourceSegment_c_
@@ -137,7 +143,7 @@ template<class TYPE>
 int
 DataSourceSegment<TYPE>::gotoEnd()
 {
-	DO_DEBUG(printf("DataSourceSegment::gotoEnd()\n"));
+	//DO_DEBUG(printf("DataSourceSegment::gotoEnd()\n"));
 
 	int		result = 0;
 

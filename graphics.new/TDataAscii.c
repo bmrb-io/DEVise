@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/04 14:21:39  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
   Revision 1.21  1996/05/31 15:02:25  jussi
   Replaced a couple of occurrences of _data->isTape with _data->isTape().
 
@@ -127,6 +133,8 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 
   _data = NULL;
 
+  // Find out whether the data occupies an entire file or only
+  // a segment of a file.
   char *	segLabel;
   char *	segFile;
   long		segOffset;
@@ -136,15 +144,14 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 
   if (strcmp(name, segFile) || strcmp(alias, segLabel))
   {
-/*TEMPTEMP*/printf("name = %s\n", name);
-/*TEMPTEMP*/printf("segFile = %s\n", segFile);
-/*TEMPTEMP*/printf("alias = %s\n", alias);
-/*TEMPTEMP*/printf("segLabel = %s\n", segLabel);
     DOASSERT(false, "data segment does not match tdata");
   }
 
   DataSeg::Set(NULL, NULL, 0, 0);
 
+  // Now instantiate the appropriate type of object, according to
+  // whether this is a tape or disk file, and whether or not the
+  // data occupies the entire file.
   if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
      || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
 

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/04 14:20:23  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
   Revision 1.1  1996/05/22 17:52:03  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -54,8 +60,8 @@ static char *	srcFile = __FILE__;
  */
 DataSourceFileStream::DataSourceFileStream(char *filename, char *label) : DataSource(label)
 {
-	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n", filename,
-		label));
+	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n",
+		filename, (label != NULL) ? label : "null"));
 
 	_filename = strdup(filename);
 	_file = NULL;
@@ -221,7 +227,7 @@ DataSourceFileStream::Tell()
 int
 DataSourceFileStream::gotoEnd()
 {
-	DO_DEBUG(printf("DataSourceFileStream::gotoEnd()\n"));
+	//DO_DEBUG(printf("DataSourceFileStream::gotoEnd()\n"));
 
 	int		result = 0;
 
