@@ -2,6 +2,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/12 16:06:15  jussi
+  Modified SelectView() and other view-related TCL calls which
+  did not work if view name had spaces in it.
+
   Revision 1.3  1995/09/06 15:30:29  jussi
   Added creation of extractStocksCmd command for ISSM data
 
@@ -1235,27 +1239,27 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
 		sprintf(yHighBuf,"%.2f",filter.yHigh);
 	}
 
-	sprintf(cmd,"ProcessViewFilterChange %s %d {%s} {%s} {%s} {%s} 0",
+	sprintf(cmd,"ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
 		view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf,
-			yHighBuf);
+		yHighBuf);
 	(void)Tcl_Eval(_interp,cmd);
 }
 
 void TkControlPanel::ViewCreated(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewCreated \"%s\"", view->GetName());
+	sprintf(cmd,"ProcessViewCreated {%s}", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 void TkControlPanel::ViewDestroyed(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewDestroyed \"%s\"", view->GetName());
+	sprintf(cmd,"ProcessViewDestroyed {%s}", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 
 /* Make view the current view int he control panel */
 void TkControlPanel::SelectView(View *view){
 	char cmd[256];
-	sprintf(cmd,"ProcessViewSelected \"%s\"", view->GetName());
+	sprintf(cmd,"ProcessViewSelected {%s}", view->GetName());
 	(void)Tcl_Eval(_interp,cmd);
 }
 
