@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.61  2000/08/30 20:09:05  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.60  2000/08/16 14:14:44  wenger
   Removed _args and _numArgs (used automatic variables instead).
 
@@ -1998,6 +2004,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setCursorConstraints) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCursorFlag) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCursorFlag) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.108  2000/08/30 20:09:04  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.107  2000/08/16 14:14:33  wenger
   Removed _args and _numArgs (used automatic variables instead).
 
@@ -3120,8 +3126,6 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
         ReturnVal(API_NAK, "Wrong # of arguments");
         return -1;
     }
-
-
 }
 
 IMPLEMENT_COMMAND_BEGIN(writeDesc)
@@ -6702,5 +6706,56 @@ IMPLEMENT_COMMAND_BEGIN(setCursorConstraints)
 	}
 IMPLEMENT_COMMAND_END
 
+IMPLEMENT_COMMAND_BEGIN(getCursorFlag)
+    // Arguments: <cursor name>
+    // Returns: <cursor flag> (1 = X, 2 = Y, 3 = XY)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		char buf[128];
+		sprintf(buf, "%d", cursor->GetFlag());
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getCursorFlag\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCursorFlag)
+    // Arguments: <cursor name> <cursor flag> (1 = X, 2 = Y, 3 = XY)
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		VisualFlag flag = atoi(argv[2]);
+		cursor->SetFlag(flag);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setCursorFlag\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
 
 /*============================================================================*/

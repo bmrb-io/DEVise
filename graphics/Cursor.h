@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/09/11 19:24:44  wenger
+  Fixed bug 617 and some other problems with the cursor constraints code.
+
   Revision 1.27  2000/08/30 20:08:56  wenger
   Added the option of forcing a cursor to be entirely within its destination
   view; added control for whether a cursor must be at least partially within
@@ -185,6 +188,7 @@ class DeviseCursor : private ViewCallback
   Boolean GetVisualFilter(const VisualFilter *&filter);
 
   VisualFlag GetFlag() { return _visFlag; }
+  void SetFlag(VisualFlag flag);
 
   /* Move the X and Y coords of source; X and Y are the center of the cursor */
   void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0,

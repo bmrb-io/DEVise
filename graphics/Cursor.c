@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  2000/09/11 19:24:43  wenger
+  Fixed bug 617 and some other problems with the cursor constraints code.
+
   Revision 1.38  2000/08/30 20:08:46  wenger
   Added the option of forcing a cursor to be entirely within its destination
   view; added control for whether a cursor must be at least partially within
@@ -325,6 +328,22 @@ void DeviseCursor::SetDst(View *view)
     if (redrawCursors) {
       (void)_dst->DrawCursors();          // redraw cursors at new destination
     }
+  }
+}
+
+void
+DeviseCursor::SetFlag(VisualFlag flag)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor::SetFlag(%d)\n", flag);
+#endif
+
+  _visFlag = flag;
+
+  // Force cursor to be redrawn in destination view.
+  if (_dst) {
+    (void)_dst->HideCursors();
+    (void)_dst->DrawCursors();
   }
 }
 

@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.218  2000/08/30 20:09:11  wenger
+#	Added the option of forcing a cursor to be entirely within its destination
+#	view; added control for whether a cursor must be at least partially within
+#	its destination view; generally improved implementation of cursor
+#	constraints.
+#	
 #	Revision 1.217  2000/07/12 20:49:34  wenger
 #	Added first version of metavisualization session description; changed
 #	DEVise version to 1.7.1.
@@ -1098,6 +1104,7 @@ source $libdir/action_disable.tcl
 source $libdir/view_help.tcl
 source $libdir/show_mouse.tcl
 source $libdir/cursor_constraints.tcl
+source $libdir/cursor_type.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1643,6 +1650,7 @@ menu .mbar.view.menu -tearoff 0
 menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add command -label "Create Link..." \
 	-command { CreateAndLinkLink }
+#TEMP .mbar.view.menu.linkMenu add command -label "Edit Link..."
 .mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Link..." -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink..." -command DoViewUnlink
@@ -1673,6 +1681,7 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 
 menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu.cursorMenu add command -label "Create..." -command DoCursorCreate
+.mbar.view.menu.cursorMenu add command -label "Edit..." -command EditCursorType
 .mbar.view.menu.cursorMenu add command -label "Delete..." -command DoCursorDelete
 .mbar.view.menu.cursorMenu add separator
 .mbar.view.menu.cursorMenu add command -label "Set Source..." \

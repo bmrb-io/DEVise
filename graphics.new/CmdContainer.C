@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.66  2000/08/30 20:09:04  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.65  2000/07/12 20:49:26  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -648,6 +654,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(writeMetaVisDesc)
 	REGISTER_COMMAND(getCursorConstraints)
 	REGISTER_COMMAND(setCursorConstraints)
+	REGISTER_COMMAND(getCursorFlag)
+	REGISTER_COMMAND(setCursorFlag)
 }
 
 CmdContainer::~CmdContainer()
