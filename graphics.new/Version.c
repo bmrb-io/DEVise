@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/11/26 15:44:21  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.16  1996/11/20 20:35:22  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -112,7 +118,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.1";
+static const char *	version = "1.2.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
