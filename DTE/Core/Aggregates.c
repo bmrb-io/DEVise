@@ -8,10 +8,10 @@ bool Aggregates::isApplicable(){
 void Aggregates::typeCheck(TypeCheck& typeCheck){
 	
 	// Are there any aggregates in the selectClause?
-	
-
+  
+	assert(selList);
 	assert(!filteredSelList);
-
+	
 	isApplicableValue = false;
 
 	vector<BaseSelection*>::iterator it;
@@ -30,15 +30,16 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 	numAggs = numFlds - numGrpByFlds - numSeqByFlds;
 	assert (numAggs >= 0);
 	aggPos = new int[numAggs];
-
+	
 	bool hasMoving = false; //to check moving and normal aggs are not mixed
+	isCumulative = false;
 	int i = 0;
 	numGrpByFlds = numSeqByFlds = numAggs = 0; // use them as counters
 	for(it = selList.begin(); it != selList.end(); ++it){
 		
 		BaseSelection* curr = *it;
 		bool resolved = false;
-
+		
 		if(curr->selectID() == CONSTRUCTOR_ID){
 			Constructor* function = (Constructor*) curr;
 			List<BaseSelection*>* args = function->getArgs();
@@ -46,86 +47,124 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 			const string* name = function->getName();
 			args->rewind();
 			if (numArgs == 1){
-			  // simple aggregation
-			  assert(!hasMoving);
-			  isApplicableValue = true;
-			  curr = args->get();
-			  curr = typeCheck.resolve(curr);
-			  args->replace(curr);
-			  if (*name == "min"){
-			    aggFuncs[i] = new MinAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "max"){
-			    aggFuncs[i] = new MaxAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "avg"){
-			    aggFuncs[i] = new AvgAggregate();
-			    function->setTypeID(DOUBLE_TP);
-			    resolved = true;
-			  }
-			  else if (*name == "sum"){
-			    aggFuncs[i] = new SumAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "count"){
-			    aggFuncs[i] = new CountAggregate();
-			    function->setTypeID(INT_TP);
-			    resolved = true;
-			  }
+				// simple aggregation
+				assert(!hasMoving);
+				isApplicableValue = true;
+				curr = args->get();
+				curr = typeCheck.resolve(curr);
+				args->replace(curr);
+				// cannot have cume and non-cume aggs together
+				// need to check
+				if (*name == "min" || *name == "minCume"){
+					aggFuncs[i] = new MinAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+					isCumulative = (*name == "minCume");
+				}
+				else if (*name == "max" || *name == "maxCume"){
+					aggFuncs[i] = new MaxAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+					isCumulative = (*name == "maxCume");
+				}
+				else if (*name == "avg" || *name == "avgCume"){
+					aggFuncs[i] = new AvgAggregate();
+					function->setTypeID(DOUBLE_TP);
+					resolved = true;
+					isCumulative = (*name == "avgCume");
+				}
+				else if (*name == "sum" || *name == "sumCume"){
+					aggFuncs[i] = new SumAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+					isCumulative = (*name == "sumCume");
+				}
+				else if (*name == "count"){
+					aggFuncs[i] = new CountAggregate();
+					function->setTypeID(INT_TP);
+					resolved = true;
+				}
 			}
 			else if (numArgs == 3) {
-			  // moving aggregates
-			  isApplicableValue = true;
-			  hasMoving = true;			  
-			  ConstantSelection *windowArg;
-
-			  curr = args->get();
-			  curr = typeCheck.resolve(curr);
-			  args->replace(curr);
-			  args->step();
-			  windowArg = (ConstantSelection *)args->get();
-			  windowLow = (int) windowArg->getValue();
-
-			  args->step();
-			  windowArg = (ConstantSelection *)args->get();
-			  windowHigh = (int)windowArg->getValue();
-
-			  assert(windowHigh > windowLow);
-
-			  if (*name == "min"){
-			    aggFuncs[i] = new MovMinAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "max"){
-			    aggFuncs[i] = new MovMaxAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "avg"){
-			    aggFuncs[i] = new MovAvgAggregate();
-			    function->setTypeID(DOUBLE_TP);
-			    resolved = true;
-			  }
-			  else if (*name == "sum"){
-			    aggFuncs[i] = new MovSumAggregate();
-			    function->setTypeID(curr->getTypeID());
-			    resolved = true;
-			  }
-			  else if (*name == "count"){
-			    aggFuncs[i] = new MovCountAggregate();
-			    function->setTypeID(INT_TP);
-			    resolved = true;
-			  }
+				// moving aggregates
+				isApplicableValue = true;
+				hasMoving = true;			  
+				ConstantSelection *windowArg;
+				
+				curr = args->get();
+				curr = typeCheck.resolve(curr);
+				args->replace(curr);
+				args->step();
+				windowArg = (ConstantSelection *)args->get();
+				windowLow = (int) windowArg->getValue();
+				
+				args->step();
+				windowArg = (ConstantSelection *)args->get();
+				windowHigh = (int)windowArg->getValue();
+				
+				assert(windowHigh > windowLow);
+				
+				if (*name == "min"){
+					aggFuncs[i] = new MovMinAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+				}
+				else if (*name == "max"){
+					aggFuncs[i] = new MovMaxAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+				}
+				else if (*name == "avg"){
+					aggFuncs[i] = new MovAvgAggregate();
+					function->setTypeID(DOUBLE_TP);
+					resolved = true;
+				}
+				else if (*name == "sum"){
+					aggFuncs[i] = new MovSumAggregate();
+					function->setTypeID(curr->getTypeID());
+					resolved = true;
+				}
+				else if (*name == "count"){
+					aggFuncs[i] = new MovCountAggregate();
+					function->setTypeID(INT_TP);
+					resolved = true;
+				}
 			}
 			aggPos[numAggs++] = i;
 		}
+		else if (hasGroupBy || hasSequenceBy) {
+			
+			if(hasGroupBy){
+				groupBy->rewind();
+				while(!groupBy->atEnd()) {
+					if (curr->match(groupBy->get())){
+						isApplicableValue = true;
+						assert(numGrpByFlds < groupBy->cardinality());
+						grpByPos[numGrpByFlds++] = i;
+						aggFuncs[i] = new GroupAttribute();
+						break;
+					}
+					groupBy->step();
+				}
+			}
+			
+			if (hasSequenceBy) { 
+				sequenceBy->rewind();
+				while (!sequenceBy->atEnd()) {
+					if (curr->match(sequenceBy->get())){
+						isApplicableValue = true;
+						assert(numSeqByFlds < sequenceBy->cardinality());
+						seqByPos[numSeqByFlds++] = i;
+						aggFuncs[i] = new SequenceAttribute();  
+						break;
+					}
+					sequenceBy->step();
+				}
+			}
+		}
 		else { 
+		  // a non-aggregate field 
+		  // there must be a cumulative agg in the select clause
 		  // must be a group by or sequence by
 
 		  if(!groupBy.empty()){
@@ -162,9 +201,11 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 		i++;
 	}
 
-	if (isApplicableValue) {
+	/*
+	  if (isApplicableValue) {
 	  assert( numAggs + numSeqByFlds + numGrpByFlds == numFlds);
-	}
+	  }
+	*/
 }
 
 void Aggregates::typify(const string&, Site* inputPlanOp){
@@ -188,25 +229,27 @@ Iterator* Aggregates::createExec(){
 
 	if(numGrpByFlds > 0){
 	  if (numSeqByFlds > 0) {
-	    // group by and seq by
-		return new MovGroupByExec(inputIter, aggExecs, numFlds,
-			seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
-					  aggPos, numAggs,windowLow, windowHigh);
+		  // group by and seq by
+		  return new MovGroupByExec(inputIter, aggExecs, numFlds, seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, aggPos, numAggs,windowLow, windowHigh);
 	  }
 	  else {
-	    // just group by
-		return new StandGroupByExec(inputIter, aggExecs, numFlds,
-			grpByPos, numGrpByFlds, aggPos, numAggs);
+		  // just group by
+		  return new StandGroupByExec(inputIter, aggExecs, numFlds, grpByPos, numGrpByFlds, aggPos, numAggs);
 	  }
 	}
 	if(numSeqByFlds > 0){
 	  // just seq by
 		return new MovAggsExec(inputIter, aggExecs, numFlds, seqByPos,
-			numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
+				       numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
 	}
 	else {
 		// No sequence by or group by 
-		return new StandAggsExec(inputIter, aggExecs, numFlds);
+		if (isCumulative){			
+			return new CumeAggsExec(inputIter, aggExecs, numFlds);
+		}
+		else {
+			return new StandAggsExec(inputIter, aggExecs, numFlds);
+		}
 	}
 }
 
@@ -221,12 +264,39 @@ const Tuple* StandAggsExec::getNext(){
 	if(!currt){
 		return NULL;
 	}
+
 	for(i = 0; i < numFlds; i++){
 		aggExecs[i]->initialize(currt[i]);
 	}
+
 	while((currt = inputIter->getNext())){
 		for(i = 0; i < numFlds; i++){
 			aggExecs[i]->update(currt[i]);
+		}
+	}
+
+	for(i = 0; i < numFlds; i++){
+		retTuple[i] = aggExecs[i]->getValue();
+	}
+	return retTuple;
+}
+
+const Tuple* CumeAggsExec::getNext(){
+	int i;
+	const Tuple* currInTup = inputIter->getNext();
+	if (!currInTup) {
+		return NULL;
+	}
+
+	if (firstTime) {
+		for(i = 0; i < numFlds; i++) {
+			aggExecs[i]->initialize(currInTup[i]);
+		}	
+		firstTime = false;
+	}
+	else {
+		for(i = 0; i < numFlds; i++){
+			aggExecs[i]->update(currInTup[i]);
 		}
 	}
 
@@ -267,149 +337,153 @@ const Tuple* StandGroupByExec::getNext(){
 
 
 void MovAggsExec::initialize(){
-  assert(inputIter);
-  inputIter->initialize();
-  currInTup = inputIter->getNext();
-  
-  if(!currInTup){
-    return;
-  }
-  setupFirst();
+	assert(inputIter);
+	inputIter->initialize();
+	currInTup = inputIter->getNext();
+	
+	if(!currInTup){
+		return;
+	}
+	setupFirst();
 }	
 
 void MovAggsExec::setupFirst() {
-  int i;
 
-  for(i = 0; i < numFlds; i++){
-    aggExecs[i]->initialize(currInTup[i]);
-  }
+	for(int i = 0; i < numFlds; i++){
+		aggExecs[i]->initialize(currInTup[i]);
+	}
   
-  currWindowHeight = 1;
-  fullWindowHeight = windowHigh - windowLow;
-  nextDrop = 0;
-  numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
-  
-  for (i = 1; i < fullWindowHeight; i++){
-    numTuplesToBeDropped[i] = 0;   
-  }
+	currWindowHeight = 1;
+	fullWindowHeight = windowHigh - windowLow;
+	nextDrop = 0;
+	numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
+	
+	for (int i = 1; i < fullWindowHeight; i++){
+		numTuplesToBeDropped[i] = 0;   
+	}
+	
+	currInTup = inputIter->getNext();
+	endOfGroup = true;
+	while(currInTupIsValid()) { 
+		
+		if (isNewSeqVal(currInTup)) {
+			nextDrop = (nextDrop+1) % fullWindowHeight; 
+			
+			if (currWindowHeight == fullWindowHeight) {
+				endOfGroup = false;
+				break; // end of window
+			}
+			
+			// Add the currInTuple to end of the seq by queue
+			for (int i = 0; i < seqByPosLen; i++){
+				aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
+			}    
+			currWindowHeight++;
+		}
+		
+		for(int i = 0; i < numAggs; i++){
+		  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+		}
+		
+		currInTup = inputIter->getNext();
+		numTuplesToBeDropped[nextDrop]++;
+	}
 
-  currInTup = inputIter->getNext();
-  endOfGroup = true;
-  while(currInTupIsValid()) { 
-    
-    if (isNewSeqVal(currInTup)) {
-      nextDrop = (nextDrop+1) % fullWindowHeight; 
-      
-      if (currWindowHeight == fullWindowHeight) {
-	endOfGroup = false;
-	break; // end of window
-      }
-      
-      // Add the currInTuple to end of the seq by queue
-      for (i = 0; i < seqByPosLen; i++){
-	aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
-      }    
-      currWindowHeight++;
-    }
-    
-    for(i = 0; i < numAggs; i++){
-      aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-    }
-    
-    currInTup = inputIter->getNext();
-    numTuplesToBeDropped[nextDrop]++;
-  }
-
-  for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
-  }
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}
   
-  // if window is greater than num of tuples, 
-  // set window height to number of tuples
-  
-  if (fullWindowHeight > currWindowHeight) {
-    fullWindowHeight = currWindowHeight;
-    nextDrop = 0;
-  }
-  
-  firstTime = true;
-  assert (currWindowHeight == fullWindowHeight); 
+	// if window is greater than num of tuples, 
+	// set window height to number of tuples
+	
+	if (fullWindowHeight > currWindowHeight) {
+		fullWindowHeight = currWindowHeight;
+		nextDrop = 0;
+	}
+	
+	firstTime = true;
+	assert (currWindowHeight == fullWindowHeight); 
 }
 
 const Tuple* MovAggsExec::flushWindow(){
-  int i;
 
-  if (!currWindowHeight)
-    return NULL;
-  
-  for(i = 0; i < numAggs; i++){
-    aggExecs[aggPos[i]]->dequeue(toDeque);  
-  }
-  
-  for (i = 0; i < seqByPosLen; i++){
-    aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
-  }    
-  
-  nextDrop = (nextDrop+1) % fullWindowHeight;
-  
-  for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
-  }
-  
-  return retTuple;
+	if (!currWindowHeight) {
+		return NULL;
+	}
+	for(int i = 0; i < numAggs; i++){
+		aggExecs[aggPos[i]]->dequeue(toDeque);  
+	}
+	
+	for (int i = 0; i < seqByPosLen; i++){
+		aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q unique
+	}    
+	
+	nextDrop = (nextDrop+1) % fullWindowHeight;
+	
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}
+	
+	return retTuple;
 }
 
 const Tuple* MovAggsExec::getNext(){
-	int i;
 
 	// the first window has been calculated before a call to this function
 
 	if (firstTime) {
-	  firstTime = false;
-	  return retTuple;
+		firstTime = false;
+		return retTuple;
 	}
   
 	toDeque = numTuplesToBeDropped[nextDrop];
-
+	
 	// flushes the rest of the window if no more tuples left in the input
 	if (endOfGroup) {
-	  currWindowHeight--;
-	  return flushWindow(); 
+		currWindowHeight--;
+		return flushWindow(); 
 	}
 
-	// else update aggs with currInTup and read in tuples till next value
-	for(i = 0; i < numAggs; i++){
-	  aggExecs[aggPos[i]]->dequeue(toDeque);  
+	// else update aggs with currInTup
+	for(int i = 0; i < numAggs; i++){
+		aggExecs[aggPos[i]]->dequeue(toDeque);  
+	}
+	
+	for(int i = 0; i < numAggs; i++){
 	  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 	}
-
-	for (i = 0; i < seqByPosLen; i++){
-	  aggExecs[seqByPos[i]]->dequeue(1);
-	  aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
+	
+	for (int i = 0; i < seqByPosLen; i++){
+		aggExecs[seqByPos[i]]->dequeue(1);
+		aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
 	}    
-
+	
+	// continue to read in (duplicate) tuples till next sequence value
+	
 	numTuplesToBeDropped[nextDrop] = 1; // for currInTup
 	currInTup = inputIter->getNext();
 	endOfGroup = true;
-
+	
 	while(currInTupIsValid()) {
-	  if (isNewSeqVal(currInTup)) {
-	    endOfGroup = false;
-	    break;
-	  } 
-	  for(i = 0; i < numAggs; i++){
-	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-	  }
-	  currInTup = inputIter->getNext();
-	  numTuplesToBeDropped[nextDrop]++; 
+		if (isNewSeqVal(currInTup)) {
+			endOfGroup = false;
+			break;
+		} 
+
+		for(int i = 0; i < numAggs; i++){
+		  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+		}
+
+		currInTup = inputIter->getNext();
+		numTuplesToBeDropped[nextDrop]++; 
 	}
-
+	
 	nextDrop = (nextDrop+1) % fullWindowHeight;
-
-	for(i = 0; i < numFlds; i++){ 
+	
+	for (int i = 0; i < numFlds; i++){ 
 		retTuple[i] = aggExecs[i]->getValue();
 	}
-
+	
 	return retTuple;
 }
 
@@ -457,38 +531,44 @@ void ExecMovAverage::dequeue(int n){
 
 const Tuple* MovGroupByExec::flushWindow(){
 
-	int i;
+	if (!currWindowHeight) { // window has been flushed
+		if (!currInTup) {
+			return NULL; // end of file
+		}
+	  
+		for(int i = 0; i < numAggs; i++){
+			aggExecs[aggPos[i]]->dequeue(toDeque);  
+		}
+		for (int i = 0; i < seqByPosLen; i++){
+			aggExecs[seqByPos[i]]->dequeue(1);
+		}    
+	  
+		setupFirst();
+		firstTime = false;
+		return retTuple; 
+	}
 
-  if (!currWindowHeight) { // window has been flushed
-    
-    if (!currInTup) {
-      return NULL; // end of file
-    }
-
-    for(i = 0; i < numAggs; i++){
-      aggExecs[aggPos[i]]->dequeue(toDeque);  
-    }
-    for (i = 0; i < seqByPosLen; i++){
-      aggExecs[seqByPos[i]]->dequeue(1);
-    }    
-
-    setupFirst();
-    firstTime = false;
-    return retTuple; 
-  }
-
-  for(i = 0; i < numAggs; i++){
-    aggExecs[aggPos[i]]->dequeue(toDeque);  
-  }
-  for (i = 0; i < seqByPosLen; i++){
-    aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
-  }    
-
-  nextDrop = (nextDrop+1) % fullWindowHeight;
-  
-  for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
-  }
-
-  return retTuple;
+	for(int i = 0; i < numAggs; i++){
+		aggExecs[aggPos[i]]->dequeue(toDeque);  
+	}
+	for (int i = 0; i < seqByPosLen; i++){
+		aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q unique
+	}    
+	
+	nextDrop = (nextDrop+1) % fullWindowHeight;
+	
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}
+	
+	return retTuple;
 }
+
+
+
+
+
+
+
+
+
