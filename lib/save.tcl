@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1999/04/20 14:13:12  wenger
+#  Added Refresh command (closes and re-opens current session).
+#
 #  Revision 1.44  1998/10/21 17:17:03  wenger
 #  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
 #  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -193,6 +196,7 @@
 
 proc DoActualOpen { sessionFile {asTemplate 0} } {
     global restoring template sessionName errorInfo
+    global sessiondir
 
     set sessionName "session.tk"
     ClearDescription
@@ -212,6 +216,10 @@ proc DoActualOpen { sessionFile {asTemplate 0} } {
 
     if {!$err} {
 	set sessionName $sessionFile
+
+	# "Remember" session directory.
+        set tmpIndex [string last "/" $sessionName]
+	set sessiondir [string range $sessionName 0 [expr $tmpIndex-1]]
     } else {
 	puts "Could not restore session"
         puts $errorInfo
@@ -287,6 +295,7 @@ proc DoSave {} {
 
 proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     global sessionName fsBox sessiondir templateMode
+    global sessiondir
 
     if {![SessionIsOpen]} {
       puts "No session open -- save not allowed"
@@ -327,6 +336,10 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     DoActualSave $file $asTemplate $asExport $withData $asBatchScript
     if {!$asTemplate} {
 	set sessionName $file
+
+	# "Remember" session directory.
+        set tmpIndex [string last "/" $sessionName]
+	set sessiondir [string range $sessionName 0 [expr $tmpIndex-1]]
     }
 }
 

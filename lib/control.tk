@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.191  1999/05/14 17:42:53  wenger
+#	Minor menu improvements, including making data font accessible from window
+#	menu.
+#	
 #	Revision 1.190  1999/05/14 16:46:58  wenger
 #	View vertical scroll can now be configured by the user.
 #	
@@ -2082,6 +2086,10 @@ proc DoUpdate {} {
 
     if {!$err} {
 	set sessionName $file
+
+	# "Remember" session directory.
+        set tmpIndex [string last "/" $sessionName]
+	set sessiondir [string range $sessionName 0 [expr $tmpIndex-1]]
     } else {
 	puts "Could not restore session"
         puts $errorInfo
