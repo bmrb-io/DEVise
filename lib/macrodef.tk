@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.55  1996/07/15 17:00:26  jussi
+#	String attributes can now be "visualized" i.e. used as labels.
+#
 #	Revision 1.54  1996/07/13 17:30:45  jussi
 #	Removed obsolete code (a lot was carried along for potential
 #	future usage not none of the code was actually used). If a
@@ -318,7 +321,12 @@ proc OpenDataSource {sname} {
     # Tell the C++ code whether this data is only a portion of a file.
     set fileSeg [lindex $sourceList($sname) 8]
     DEVise dataSegment $sname $fname [lindex $fileSeg 0] [lindex $fileSeg 1]
+
     set stype [lindex $sourceList($sname) 0]
+    if {$stype != "WWW" && $stype != "UNIXFILE"} {
+        set stype "UNIXFILE"
+    }
+
     return [list $sname $fname $stype]
 }
 
