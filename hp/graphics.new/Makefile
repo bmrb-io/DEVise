@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/03/26 15:35:09  wenger
+#  Fixed various compile warnings and errors; added 'clean' and
+#  'mostlyclean' targets to makefiles; changed makefiles so that
+#  object lists are derived from source lists.
+#
 #  Revision 1.3  1996/01/12 18:00:09  jussi
 #  Switched to newer compiler version with all necessary header files.
 #
@@ -33,4 +38,4 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.hp
+include Makefile.depend

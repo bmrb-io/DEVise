@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/03/27 18:04:07  wenger
+#  Changes to get DEVise to compile and run on Linux.
+#
 #  Revision 1.3  1996/01/12 18:00:09  jussi
 #  Switched to newer compiler version with all necessary header files.
 #
@@ -32,4 +35,4 @@ ARCH_FLAGS = -DLINUX -I/usr/include/tcl
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.linux
+include Makefile.depend

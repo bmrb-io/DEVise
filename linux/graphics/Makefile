@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1997/09/23 20:01:43  wenger
+#  Opening and saving of sessions now working with new scheme of mapping
+#  automatically creating the appropriate TData.
+#
 #  Revision 1.3  1997/04/03 21:31:27  wenger
 #  Eliminated unnecessary tcl dependencies in graphics directory.
 #
@@ -44,4 +48,4 @@ ARCH_FLAGS = -DLINUX -I/usr/include/tcl
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.linux
+include Makefile.depend

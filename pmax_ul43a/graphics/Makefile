@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/04/03 21:31:34  wenger
+#  Eliminated unnecessary tcl dependencies in graphics directory.
+#
 #  Revision 1.1  1996/07/17 00:27:41  jussi
 #  Initial revision.
 #
@@ -26,4 +29,4 @@ ARCH_LDFLAGS =
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.pmax_ul43a
+include Makefile.depend

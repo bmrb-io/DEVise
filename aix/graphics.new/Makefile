@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/22 21:00:37  jussi
+#  Merged Makefile.base.aix with Makefile.base.
+#
 #  Revision 1.1  1996/05/16 19:34:48  jussi
 #  Initial revision.
 #
@@ -26,4 +29,4 @@ ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.aix
+include Makefile.depend

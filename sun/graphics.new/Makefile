@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/03/26 15:35:39  wenger
+#  Fixed various compile warnings and errors; added 'clean' and
+#  'mostlyclean' targets to makefiles; changed makefiles so that
+#  object lists are derived from source lists.
+#
 #  Revision 1.6  1995/09/28 15:10:02  jussi
 #  Added copyright and CVS log messages.
 #
@@ -26,4 +31,4 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sun
+include Makefile.depend

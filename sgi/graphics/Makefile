@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1995/12/29 18:54:38  jussi
+#  Removed -fno-for-scope compiler flag.
+#
 #  Revision 1.3  1995/12/28 21:53:43  jussi
 #  Added -I/usr/include compiler flag.
 #
@@ -32,4 +35,4 @@ ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+include Makefile.depend

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/14 20:34:40  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -24,4 +27,4 @@ ARCH_LDPOST  =
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.alpha_osf20
+include Makefile.depend

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/17 00:27:42  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -23,4 +26,4 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.pmax_ul43a
+include Makefile.depend

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/23 20:56:20  jussi
+#  Removed -lpthread.
+#
 #  Revision 1.3  1996/09/26 18:53:46  jussi
 #  Added -lpthread to get thread support.
 #
@@ -32,5 +35,4 @@ ARCH_LDFLAGS =
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
-
+include Makefile.depend
