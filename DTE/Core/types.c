@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/11/24 06:01:28  donjerko
+  Added more odbc files.
+
   Revision 1.42  1997/11/24 05:25:37  okan
   *** empty log message ***
 
@@ -498,8 +501,12 @@ void interfaceRead(istream& in, Type*& adt){
 	string typeNm;
 	in >> typeNm;
 	if(!in){
-		string msg = "Interface name must be specified";
-		THROW(new Exception(msg), NVOID );
+		return;
+
+// the following does not work over the socket
+//		string msg = "Interface name must be specified";
+//		THROW(new Exception(msg), NVOID );
+
 	}
 	((Interface*) adt)->~Interface();	// calls the right destructor
 	Interface* interf;
@@ -559,7 +566,8 @@ void interfaceRead(istream& in, Type*& adt){
 	in >> indexStr;
 	while(in && indexStr != ";"){
 		string msg = 
-			"Invalid catalog format: \"index\" or \";\" expected";
+			"Invalid catalog format: \";\" expected instead of \"" +
+			indexStr + "\"";
 		THROW(new Exception(msg), NVOID );
 	}
 	if(!in){

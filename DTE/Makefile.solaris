@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.65  1997/11/24 06:30:40  donjerko
+# *** empty log message ***
+#
 # Revision 1.64  1997/11/24 05:58:56  donjerko
 # *** empty log message ***
 #
@@ -1554,6 +1557,32 @@ ODBCIterator.o: /s/gcc/lib/g++-include/std/sinst.h
 ODBCIterator.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
 ODBCIterator.o: exception.h ../../unidata/sysdep.h /usr/include/varargs.h
 ODBCIterator.o: /usr/include/sys/va_list.h Utility.h queue.h Array.h
+ODBCSite.o: ODBCSite.h site.h queue.h /usr/include/assert.h
+ODBCSite.o: ../../unidata/sysdep.h /usr/include/varargs.h
+ODBCSite.o: /usr/include/sys/va_list.h types.h /s/gcc/lib/g++-include/string
+ODBCSite.o: /s/gcc/lib/g++-include/std/string.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/bastring.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/stddef.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/straits.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+ODBCSite.o: /usr/include/sys/feature_tests.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+ODBCSite.o: /s/gcc/lib/g++-include/cassert
+ODBCSite.o: /s/gcc/lib/g++-include/std/cassert.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
+ODBCSite.o: /s/gcc/lib/g++-include/std/new.h exception.h Utility.h Array.h
+ODBCSite.o: myopt.h /s/gcc/lib/g++-include/vector
+ODBCSite.o: /s/gcc/lib/g++-include/vector.h /s/gcc/lib/g++-include/function.h
+ODBCSite.o: /s/gcc/lib/g++-include/bool.h /s/gcc/lib/g++-include/algobase.h
+ODBCSite.o: /s/gcc/lib/g++-include/pair.h /s/gcc/lib/g++-include/iterator.h
+ODBCSite.o: /s/gcc/lib/g++-include/iostream.h
+ODBCSite.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
+ODBCSite.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+ODBCSite.o: /usr/include/limits.h /usr/include/sys/isa_defs.h url.h
+ODBCSite.o: SockStream.h listop.h Iterator.h /s/gcc/lib/g++-include/set
+ODBCSite.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
+ODBCSite.o: /s/gcc/lib/g++-include/projectn.h ODBCIterator.h
 
 SBMInit.o: SBMInit.h ../../graphics.new/SBufMgr.h /usr/include/sys/types.h
 SBMInit.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h

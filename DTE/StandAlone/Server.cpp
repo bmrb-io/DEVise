@@ -29,6 +29,7 @@ int main(int argc, char** argv){
 		Cor_sockbuf* sockBuf = listener.AcceptConnection(); 
 		iostream str(sockBuf);
 		processQuery(str, str);
+		delete sockBuf;
 	}
 
      shutdown_system();

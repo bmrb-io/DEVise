@@ -512,6 +512,7 @@ istream& DBServerInterface::read(istream& in){
 void DBServerInterface::write(ostream& out) const {
 	out << typeName << " ";
 	out << host << " " << port;
+	Interface::write(out);
 }
 
 const ISchema* DBServerInterface::getISchema(TableName* table){
@@ -544,6 +545,8 @@ istream& ODBCInterface::read(istream& in){
 }
 
 void ODBCInterface::write(ostream& out) const {
-	out << typeName << "  ";
-	out << dataSourceName << "   " << userName << "  " << passwd << "  " << tableName;
+	out << typeName << " ";
+	out << dataSourceName << " " << userName << " " << passwd 
+		<< " " << tableName;
+	Interface::write(out);
 }
