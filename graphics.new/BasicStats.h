@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/06 05:41:29  ravim
+  New function which returns specific stat values.
+
   Revision 1.2  1995/11/30 02:47:01  ravim
   X and Y values are tracked. Max and Min computed too.
 
@@ -29,10 +32,13 @@
 #include "ViewStats.h"
 
 // List of stats collected here
-#define STAT_NONE 0
-#define STAT_MEAN 1
-#define STAT_MAX 2
-#define STAT_MIN 3
+#define STAT_MEAN 0
+#define STAT_MAX 1
+#define STAT_MIN 2
+#define STAT_NONE 3
+
+// Total number of stats
+#define STAT_NUM 3
 
 // The generic stats collection and reporting class
 // For now, computes some simple stats - can be extended later 
