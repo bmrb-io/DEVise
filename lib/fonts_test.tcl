@@ -21,6 +21,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1996/12/15 20:23:53  wenger
+# Added view name to mapping editor window; added first version of font
+# selection GUI (currently disabled).
+#
 
 ############################################################
 
@@ -30,9 +34,13 @@ source fonts.tcl
 set curView "View 1"
 global curView
 
+set "testFonts(title)" {0 12 0 0}
+set "testFonts(x axis)" {0 12 0 0}
+set "testFonts(y axis)" {0 12 0 0}
+global testFonts
+
 wm geometry . 200x50
 
-#TEMPTEMP set color
 set backGround DarkOliveGreen
 set foreGround white
 
@@ -63,5 +71,36 @@ menu .mbar.view.menu.fontsmenu -tearoff false
     -command { GetFont "y axis" }
 # TEMPTEMP? use this to bring up mapping window
 .mbar.view.menu.fontsmenu add  command -label "Data Labels"
+
+##########################################################################
+
+proc DEVise { command args } {
+  global testFonts
+
+  puts -nonewline "DEVise $command"
+  foreach arg $args {
+    puts -nonewline " $arg"
+  }
+  puts ""
+
+  if { $command == "setFont" } {
+    set view [lindex $args 0]
+    set which [lindex $args 1]
+
+    set family [lindex $args 2]
+    set size [lindex $args 3]
+    set bold [lindex $args 4]
+    set italic [lindex $args 5]
+
+    set "testFonts($which)" [list $family $size $bold $italic]
+  }
+
+  if { $command == "getFont" } {
+    set view [lindex $args 0]
+    set which [lindex $args 1]
+
+    return $testFonts($which)
+  }
+}
 
 #============================================================================

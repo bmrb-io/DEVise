@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/12/15 06:48:52  donjerko
+  Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
+
   Revision 1.45  1996/11/26 16:51:35  ssl
   Added support for piled viws
 
@@ -1616,6 +1619,23 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "getFont")) {
+      View *view = View::FindViewByName(argv[1]);
+      if (view == NULL) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+      }
+
+      int family;
+      float pointSize;
+      Boolean bold;
+      Boolean italic;
+      view->GetFont(argv[2], family, pointSize, bold, italic);
+      sprintf(result, "%d %d %d %d", family, (int) pointSize, bold, italic);
+
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
   }
 
   if (argc == 4) {
@@ -1861,6 +1881,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+
     if(!strcmp(argv[0], "saveDisplayImageAndMap")) {
       DisplayExportFormat format = POSTSCRIPT;
       if (!strcmp(argv[1], "eps"))
@@ -1889,6 +1910,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       (void)ParseFloatDate(argv[5],filter.yHigh);
       filter.marked = atoi(argv[6]);
       view->InsertHistory(filter);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "setFont")) {
+      View *view = View::FindViewByName(argv[1]);
+      if (view == NULL) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+      }
+
+      view->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
+	atoi(argv[6]));
+
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

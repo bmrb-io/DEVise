@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.92  1996/12/04 22:38:53  wenger
+  Fixed bug 087 (view removal crash); noted several other fixed bugs
+  in the bug list.
+
   Revision 1.91  1996/12/03 17:01:10  jussi
   Adjusted location of axis labels.
 
@@ -1048,6 +1052,7 @@ void View::DrawLabel()
   win->MakeIdentity();
   
   win->SetNormalFont();
+  _titleFont.SetWinFont(win);
 
   if (_label.occupyTop) {
     /* draw label */
@@ -1103,6 +1108,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
   win->SetNormalFont();
+  _xAxisFont.SetWinFont(win);
 
   /* draw a line from startX to the end of the view */
   win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
@@ -1214,6 +1220,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
   win->SetNormalFont();
+  _yAxisFont.SetWinFont(win);
 
   /* draw a line from startY to the bottom of the view */
   win->Line(axisMaxX, startY, axisMaxX, axisMaxY + 1, 1.0);
@@ -3024,4 +3031,45 @@ View::PrintPSDone()
   _printing = false;
 
   return result;
+}
+
+void
+View::SetFont(char *which, int family, float pointSize,
+	      Boolean bold, Boolean italic)
+{
+#if defined(DEBUG)
+  printf("View::SetFont(%s, %d, %f, %d, %d)\n", which, family, pointSize,
+    bold, italic);
+#endif
+
+  if (!strcmp(which, "title")) {
+    _titleFont.Set(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "x axis")) {
+    _xAxisFont.Set(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "y axis")) {
+    _yAxisFont.Set(family, pointSize, bold, italic);
+  } else {
+    reportErrNosys("Illegal font selection");
+  }
+
+  Refresh();
+}
+
+void
+View::GetFont(char *which, int &family, float &pointSize,
+	      Boolean &bold, Boolean &italic)
+{
+#if defined(DEBUG)
+  printf("View::GetFont()\n");
+#endif
+
+  if (!strcmp(which, "title")) {
+    _titleFont.Get(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "x axis")) {
+    _xAxisFont.Get(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "y axis")) {
+    _yAxisFont.Get(family, pointSize, bold, italic);
+  } else {
+    reportErrNosys("Illegal font selection");
+  }
 }

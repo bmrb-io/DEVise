@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1996/11/20 16:48:22  jussi
+#  Display/layout mode no longer saved in the session. When session
+#  is restored, the user's currently selected mode is in control.
+#
 #  Revision 1.25  1996/07/23 17:26:44  jussi
 #  Added saving of pileMode, overrideColor, and displayDataValues flags.
 #
@@ -833,6 +837,13 @@ proc SaveViews { fileId viewDictRef asBatchScript } {
 	    puts $fileId "DEVise setViewPileMode $viewName $viewPileMode"
 	    set viewOverride [DEVise getViewOverrideColor $inst]
 	    puts $fileId "DEVise setViewOverrideColor $viewName $viewOverride"
+
+	    set font [DEVise getFont $inst title]
+	    puts $fileId "DEVise setFont $viewName title $font"
+	    set font [DEVise getFont $inst "x axis"]
+	    puts $fileId "DEVise setFont $viewName {x axis} $font"
+	    set font [DEVise getFont $inst "y axis"]
+	    puts $fileId "DEVise setFont $viewName {y axis} $font"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    incr viewNum

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/11/26 16:47:46  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.45  1996/11/20 16:49:57  jussi
   Added AbortQuery() and removed AbortAndReexecute().
 
@@ -204,6 +207,7 @@
 #include "Color.h"
 #include "AttrList.h"
 #include "Cursor.h"
+#include "DevFont.h"
 
 class View;
 DefinePtrDList(ViewList, View *)
@@ -466,6 +470,11 @@ class View
 	// Print this view (and any child views) to PostScript.
 	virtual DevStatus PrintPS();
 
+	virtual void SetFont(char *which, int family, float pointSize,
+	  Boolean bold, Boolean italic);
+	virtual void GetFont(char *which, int &family, float &pointSize,
+	  Boolean &bold, Boolean &italic);
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -653,14 +662,10 @@ protected:
 				 * state of the view 
                                  */
 	virtual DevStatus PrintPSDone();
+
+	DevFont _titleFont;
+	DevFont _xAxisFont;
+	DevFont _yAxisFont;
 };
 
 #endif
-
-
-
-
-
-
-
-
