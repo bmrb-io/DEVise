@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.19  1996/01/13 03:18:31  jussi
+#	Refined the support for WWW. Cache files are invalidated when
+#	query (URL) is updated.
+#
 #	Revision 1.18  1996/01/12 16:20:26  jussi
 #	Old command value was extracted incorrectly -- fixed.
 #
@@ -107,6 +111,8 @@ source $libdir/issm.tk
 source $libdir/cstat.tk
 source $libdir/crsp.tcl
 
+set cacheSize [expr 100 * 1024 * 1024]
+
 ############################################################
 
 # format of items in sourceList: 
@@ -178,11 +184,12 @@ proc updateStreamDef {} {
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
     if {$source == "SEQ" || $source == "WWW"} {
-	set oldCommand [lindex $sourceList($dispname) 7]
+	set oldCommand [lindex $sourceList($oldDispName) 7]
 	if {$oldCommand != $command} {
 	    uncacheData $oldDispName "Query changed."
 	}
-    } else {
+    }
+    if {$source != "SEQ"} {
 	set newschematype [scanSchema $schemafile]
 	if {$newschematype == ""} { return }
 	set schematype $newschematype
@@ -192,7 +199,7 @@ proc updateStreamDef {} {
 	    $cachefile $evaluation $priority $command]
 	
     set conflict [getSourceByCache $cachefile]
-    if {!$editonly && $source != "UNIXFILE" && $conflict != ""} {
+    if {!$editonly && $conflict != ""} {
 	dialog .existsAlready "Data Stream Exists" \
 		"This definition conflicts\n\
 		with \"$conflict\"." "" 0 OK
@@ -200,7 +207,7 @@ proc updateStreamDef {} {
     }
 
     if {$editonly} {
-	set oldCachefile $sourceList($dispname)
+	set oldCachefile $sourceList($oldDispName)
 	if {[file exists $oldCachefile] \
 		&& $cachefile != $oldCachefile} {
 	    uncacheData $oldDispName "Source and/or key changed."
@@ -211,7 +218,7 @@ proc updateStreamDef {} {
     set err [catch {set exists $sourceList($dispname)}]
     if {$err == 0} {
 	dialog .sourceExists "Data Stream Exists" \
-		"Data Stream \"$dispname\" exists already." \
+		"Data stream \"$dispname\" exists already." \
 		"" 0 OK
 	return
     }
@@ -424,12 +431,18 @@ proc getSEQSchema {command schemafile schematype} {
 
 proc getSourceByCache {cachefile} {
     global sourceList
+
+    if {$cachefile == ""} {
+	return ""
+    }
+
     foreach dispName [lsort [array names sourceList]] {
 	set cachefile2 [lindex $sourceList($dispName) 4]
 	if {$cachefile == $cachefile2} {
 	    return $dispName
 	}
     }
+
     return ""
 }
 
@@ -497,8 +510,7 @@ proc cacheData {dispname startrec endrec} {
     if {$source == "COMMAND"} {
 	set cmd "exec $command > $cachefile"
     } elseif {$source == "WWW"} {
-	set prog [lindex $sourceConfig($source) 0]
-	set cmd "exec $prog $command > $cachefile"
+	set cmd "www_extract $command $cachefile $schemafile $schematype"
     } elseif {$source == "SEQ"} {
 	set host [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
@@ -540,26 +552,98 @@ proc cacheData {dispname startrec endrec} {
 		"No extraction command defined for this data source." \
 		"" 0 OK
 	return ""
-    } else {
-	statusWindow .info "Status" \
-		"Extracting \"$dispname\".\n\n\This may take a while."
-	update
-	if {[catch { eval $cmd }] > 0} {
-	    catch { destroy .info }
-	    puts "Cannot execute command:"
-	    puts "  $cmd"
-	    dialog .error "Error Occurred" \
-		    "An error occurred while extracting data\n\
-		    from the data source. See text window for\n\
-		    the error message." \
-		    "" 0 OK
-	    uncacheData $dispname ""
-	    return ""
-	}
-	catch { destroy .info }
     }
 
+    statusWindow .info "Status" \
+	    "Extracting \"$dispname\".\n\n\This may take a while."
+    update
+
+    if {[catch { eval $cmd }] > 0} {
+	catch { destroy .info }
+	puts "Cannot execute command:"
+	puts "  $cmd"
+	dialog .error "Error Occurred" \
+		"An error occurred while extracting data\n\
+		from the data source. See text window for\n\
+		the error message." \
+		"" 0 OK
+	uncacheData $dispname ""
+	return ""
+    }
+
+    catch { destroy .info }
+
+    cachePrune [list $dispname]
+
     return $cachefile
+}
+
+############################################################
+
+proc cachePrune {avoid} {
+    global sourceList cacheSize cachedir
+
+    # see if we're out of cache space
+
+    set total 0
+    foreach cachefile [glob -nocomplain [format "%s/*" $cachedir]] {
+	incr total [file size $cachefile]
+    }
+
+    if {$total < $cacheSize} {
+	return
+    }
+
+    # build up an array of data sources with existing cache files,
+    # indexed by the cache priority; cachep(priority) contains a list
+    # of data sources with cache files having that priority
+
+    foreach dispname [array names sourceList] {
+	set cachefile [lindex $sourceList($dispname) 4]
+	if {![file exists $cachefile] || [lsearch $avoid $dispname] >= 0} {
+	    continue
+	}
+	set priority [lindex $sourceList($dispname) 6]
+	set priority [format "%03d" $priority]
+	set err [catch {set exists $cachep($priority)}]
+	if {$err} {
+	    set cachep($priority) ""
+	}
+	lappend cachep($priority) $dispname
+    }
+
+    # remove cache files, starting from the lowest-priority
+    # cache files
+
+    puts "Pruning cache, total size $total, limit $cacheSize"
+
+    foreach p [lsort [array names cachep]] {
+	puts "$p: $cachep($p)"
+	foreach dispname $cachep($p) {
+	    set cachefile [lindex $sourceList($dispname) 4]
+	    set size [file size $cachefile]
+	    puts "$dispname, size $size, total $total"
+	    if {[uncacheData $dispname "Cache full."]} {
+		incr total [expr -$size]
+	    }
+	    if {$total <= $cacheSize} { break }
+	}
+	if {$total <= $cacheSize} { break }
+    }
+
+    updateSources
+
+    set fillfactor [expr 1.0 * $total / $cacheSize]
+    if {$fillfactor <= 0.8} { return }
+
+    set percentage [format "%.2f%%" [expr $fillfactor * 100]]
+    if {$fillfactor <= 1.0} {
+	dialog .cacheFilling "Cache Nearly Full" \
+		"Disk cache is $percentage full." "" 0 OK
+    } else {
+	dialog .cacheFull "Cache Full" \
+		"Disk cache is $percentage full." "" 0 OK
+    }
 }
 
 ############################################################
@@ -567,24 +651,30 @@ proc cacheData {dispname startrec endrec} {
 proc uncacheData {dispname reason} {
     global sourceList sourceConfig
 
+    set sourcedef $sourceList($dispname)
+    set cachefile [lindex $sourcedef 4]
+
+    if {$cachefile == ""} {
+	return 0
+    }
+
     if {$reason != ""} {
 	set but [dialog .uncacheOkay "Remove Cache File" \
 		"$reason\n\
 		Okay to remove cache file?" \
-		"" 1 OK Cancel]
+		"" 1 Yes No]
 	if {$but > 0} {
-	    return
+	    return 0
 	}
     }
-
-    set sourcedef $sourceList($dispname)
-    set cachefile [lindex $sourcedef 4]
 
     set pattern [format "%s*" $cachefile]
     foreach cachefile [glob -nocomplain $pattern] {
 	puts "Removing cache file $cachefile"
 	exec rm $cachefile
     }
+
+    return 1
 }
 
 ############################################################
@@ -593,25 +683,21 @@ proc getCacheName {source key} {
     global cachedir
 
     if {$source == "UNIXFILE"} {
-	return /dev/null
+	return ""
     }
-    if {$source == "COMMAND" || $source == "SEQ" || $source == "SQL" \
-	|| $source == "CRSP" || $source == "WWW"} {
-	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
-		[string trim $key]]
-    }
+
     if {$source == "COMPUSTAT"} {
 	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
 		[cstat_unique_name $key]]
     }
+
     if {$source == "ISSM"} {
 	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
 		[issm_unique_name $key]]
     }
 
-    dialog .error "Incorrect Data Source" \
-	    "An invalid data source has been selected." \
-	    "" 0 OK
+    return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
+	    [string trim $key]]
 }
 
 ############################################################
@@ -751,6 +837,7 @@ proc selectStream {} {
 	if {$but > 0} {
 	    return
 	}
+	uncacheData $dispname ""
 	if {[catch {unset "sourceList($dispname)"}] == 0} {
 	    saveSources
 	    updateSources
@@ -807,13 +894,6 @@ proc selectStream {} {
     button .srcsel.bot.but.uncache -text Uncache -width 10 -command {
 	set uncacheDisp [getSelectedSource]
 	if {$uncacheDisp == ""} { return }
-	set src [lindex $sourceList($uncacheDisp) 0]
-	if {$src == "UNIXFILE"} {
-	    set but [dialog .cannotUncache "Cannot Uncache" \
-		    "Unix files cannot be uncached." \
-		    "" 0 OK]
-	    return
-	}
 	uncacheData $uncacheDisp "Uncache requested."
 	updateSources
     }
