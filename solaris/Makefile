@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.22  1997/11/05 00:24:09  donjerko
+# *** empty log message ***
+#
 # Revision 1.21  1997/06/16 16:06:10  donjerko
 # New memory management in exec phase. Unidata included.
 #
@@ -78,7 +81,7 @@ devise: libs
 	cd generic; make all; cd ..
 
 multi: libs
-	cd multi; make all; cd ..
+	cd multi; make disp; cd ..
 
 attrproj:
 	cd attrproj; make all; cd ..
