@@ -1,8 +1,8 @@
 LD = ld
 CC = g++
 
-#OPTFLAG = -O
-OPTFLAG = -g
+OPTFLAG = -O
+#OPTFLAG = -g
 
 CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused $(OPTFLAG) -DUNIX -I../../graphics \
 	-I../../graphics.new -I../../tape -I../../generic -fexternal-templates
