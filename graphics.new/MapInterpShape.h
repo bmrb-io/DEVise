@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/24 20:07:32  jussi
+  Fixed calculation of X and Y starting position for cases where
+  pixel width (or height) is at most 1. In such cases one should not
+  adjust X/Y coordinates by one half of the width/height.
+
   Revision 1.3  1995/11/21 23:32:07  jussi
   Added copyright notice and cleaned up the code significantly.
 
@@ -330,6 +335,7 @@ public:
 	  win->FillRect(GetX(gdata, map, offset) - width / 2.0, y, width, -y);
 	else
 	  win->FillRect(GetX(gdata, map, offset), y, width, -y);
+      }
     }
   }
 };
