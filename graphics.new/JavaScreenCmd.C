@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/08/11 13:43:23  wenger
+  Server responds to KeyAction commands from JavaScreen (still needs event
+  coordinates); did some cleanup of the ActionDefault class.
+
   Revision 1.16  1998/08/03 18:38:39  wenger
   Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
   implemented several other new commands for the JavaScreen.
@@ -151,7 +155,7 @@ PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
 	}
 }
 
-static Boolean IsSessionFile(char *filename)
+static Boolean IsSessionFile(const char *filename)
 {
 	Boolean isSession = false;
 
@@ -1168,40 +1172,45 @@ void JavaScreenCmd::UpdateSessionList()
 		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
 	}
 
-	ArgList args;
-	args.AddArg(_controlCmdName[UPDATESESSIONLIST]);
+	ArgList files;
 
 	DIR *directory = opendir(_sessionDir);
 	if (directory == NULL) {
 		reportErrSys("Can't open session directory");
+		errmsg = "{Can't open session directory}";
+		_status = ERROR;
+		return;
 	} else {
 		while (true) {
 		    struct dirent *entry = readdir(directory);
 			if (entry == NULL) break;
 			if (strcmp(entry->d_name, ".") &&
 			  (!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
-				char fullpath[MAXPATHLEN];
-				sprintf(fullpath, "%s/%s", _sessionDir, entry->d_name);
-
-				struct stat buf;
-				stat(fullpath, &buf);
-				if (S_ISDIR(buf.st_mode)) {
-#if 0 // JavaScreen can't handle this right now.  RKW Jun 17, 1998.
-					char buf[MAXPATHLEN+100];
-					sprintf(buf, "%s/", entry->d_name);
-					args.AddArg(buf);
-#endif
-				} else if (IsSessionFile(entry->d_name)) {
-					args.AddArg(entry->d_name);
-				}
+				files.AddArg(entry->d_name);
 			}
 		}
+		files.Sort();
+    }
 
-		if (closedir(directory) != 0) {
-			reportErrSys("Error closing directory");
+	ArgList args(files.GetCount() * 3 + 1);
+	args.AddArg(_controlCmdName[UPDATESESSIONLIST]);
+
+	for (int index = 0; index < files.GetCount(); index++) {
+		const char *file = files.GetArgs()[index];
+		char fullpath[MAXPATHLEN];
+		sprintf(fullpath, "%s/%s", _sessionDir, file);
+
+		struct stat buf;
+		stat(fullpath, &buf);
+		if (S_ISDIR(buf.st_mode)) {
+		    args.AddArg(file);
+			args.AddArg("1"); // is a directory
+		    args.AddArg("0"); // priority
+		} else if (IsSessionFile(file)) {
+		    args.AddArg(file);
+			args.AddArg("0"); // is not a directory
+		    args.AddArg("0"); // priority
 		}
-
-		(void) args.Sort(1);
 	}
 
 #if defined(DEBUG)

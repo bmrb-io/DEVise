@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/08/11 13:42:03  wenger
+  Implemented new JavaScreen startup protocol (currently runs old one until
+  Hongyu commits new JavaScreen code).
+
   Revision 1.15  1998/07/29 14:19:41  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -138,7 +142,7 @@
 #include "Util.h"
 #include "Init.h"
 
-#define USE_JS_PROTOCOL // Whether to use protocol as defined by API.txt.
+//#define USE_JS_PROTOCOL // Whether to use protocol as defined by API.txt.
 
 Server* _ThisServer;
 
