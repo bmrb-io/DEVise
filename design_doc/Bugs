@@ -2450,6 +2450,10 @@ Num Date        Status  Description
 620 9/20/00	OPEN	Jspop doesn't detect if JS crashes (still keeps it
 			in client list). (rkw)
 
+621 9/22/00	OPEN	JavaScreen: if help is shown in a view, using the
+			F1 key to hide it also brings up the help dialog.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
