@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/01/19 18:33:57  jussi
+#  Several minor fixes.
+#
 #  Revision 1.14  1996/01/17 18:05:01  jussi
 #  Default UserMode value is now set in control.tk.
 #
@@ -577,12 +580,13 @@ proc writelogical {name} {
 
     set f [open $schemadir/logical/$name w]
     
-    # First output the physical schema name
     puts $f "physical $schemadir/physical/$physchema"
 
     foreach nm $tgrps {
+	puts $f ""
 	goutput $f $nm
     }
+
     close $f
 }
 
