@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/12 19:40:13  jussi
+  View statistics are now printed into a memory buffer.
+
   Revision 1.19  1996/07/08 20:30:49  jussi
   Added PixmapEnabled() method.
 
@@ -97,6 +100,7 @@ const int MAXCOLOR = 43;
 
 #include "Action.h"
 #include "RecId.h"
+#include "PointStorage.h"
 
 class TDataMap;
 class RecordLink;
@@ -175,6 +179,9 @@ public:
   /* Return true if view is a scatter plot */
   Boolean IsScatterPlot();
       
+  /* Return address of point storage */
+  virtual PointStorage *GetPointStorage() { return &_pstorage; }
+
  protected:
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer();
@@ -197,6 +204,8 @@ public:
   RecordLinkList _slaveLink;       /* slave record link list */
 
   Boolean _autoScale;              /* true if auto scaling in effect */
+
+  PointStorage _pstorage;          /* storage for missing data points */
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
