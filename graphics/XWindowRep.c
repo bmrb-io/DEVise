@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/02/26 16:42:54  jussi
+  Makes 10 attempts to export an image.
+
   Revision 1.22  1996/02/06 19:24:25  jussi
   Restore line attributes (line width and join style).
 
@@ -1307,6 +1310,12 @@ void XWindowRep::SetSmallFont()
   ((XDisplay *)GetDisplay())->SetSmallFont();
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
+}
+
+int XWindowRep::GetSmallFontHeight()
+{
+  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetSmallFontStruct();
+  return fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
 }
 
 /**********************************************************************

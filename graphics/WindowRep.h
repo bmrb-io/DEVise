@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/02/05 23:55:15  jussi
+  Added support for small fonts.
+
   Revision 1.10  1996/01/30 00:04:58  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -237,6 +240,7 @@ public:
   /* Set normal or small font */
   virtual void SetNormalFont() = 0;
   virtual void SetSmallFont() = 0;
+  virtual int  GetSmallFontHeight() = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;
@@ -249,7 +253,7 @@ public:
   virtual void AbsoluteOrigin(int &x,int &y) = 0;
   
   /* get display of this Window Rep */
-  DeviseDisplay *GetDisplay(){ return _display; };
+  DeviseDisplay *GetDisplay() { return _display; };
   
   /* Transformation matrix operations */
   

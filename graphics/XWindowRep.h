@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/02/05 23:55:22  jussi
+  Added support for small fonts.
+
   Revision 1.8  1996/01/17 20:54:06  jussi
   Added support for additional image export formats.
 
@@ -152,6 +155,7 @@ public:
 	/* Set normal or small font */
 	virtual void SetNormalFont();
 	virtual void SetSmallFont();
+	virtual int  GetSmallFontHeight();
 
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height );
