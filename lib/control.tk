@@ -1,6 +1,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.12  1995/09/19 16:56:18  jussi
+#	Added interfacing to Compustat. Fixed bug in GetClass.
+#
 #	Revision 1.11  1995/09/13 14:24:56  jussi
 #	Extracted macro definition code and moved it to macrodef.tk.
 #	Added interfacing to SEQ and SQL queries.
@@ -92,6 +95,7 @@ source $libdir/issm.tk
 source $libdir/seq.tk
 source $libdir/sql.tk
 source $libdir/cstat.tk
+source $libdir/import.tk
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -238,10 +242,15 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.import.menu -tearoff 0
+.mbar.import.menu add command -label "Unix File" -command importUnixFile
+.mbar.import.menu add separator
 .mbar.import.menu add command -label "Stock Data" -command issmMain
 .mbar.import.menu add command -label "Compustat Data" -command cstatMain
 .mbar.import.menu add command -label "SEQ Data" -command seqMain
 .mbar.import.menu add command -label "SQL Query" -command sqlMain
+.mbar.import.menu add separator
+.mbar.import.menu add command -label "Network Socket" -command importSocket
+.mbar.import.menu add command -label "Awk Output" -command importAwkOutput
 
 menu .mbar.file.menu -tearoff 0
 .mbar.file.menu add command -label "File" -command DoVisualizeFile
