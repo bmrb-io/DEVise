@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1999/11/16 17:01:35  wenger
+#  Removed all DTE-related conditional compiles; changed version number to
+#  1.7.0 because of removing DTE; removed DTE-related schema editing and
+#  data source creation GUI.
+#
 #  Revision 1.36  1999/11/10 20:23:53  wenger
 #  NO DTE!!
 #
@@ -157,8 +162,12 @@
 LD = ld
 
 CC = g++
+# For Purify.
+#CC = /s/egcs/bin/g++
 
 C  = gcc
+# For Purify.
+#C  = /s/egcs/bin/gcc
 
 # Allow architecture-specific makefiles to specify commands for AR if necessary.
 ifeq ($(AR),)
