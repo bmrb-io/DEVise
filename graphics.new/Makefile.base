@@ -55,7 +55,7 @@ QPSrc= CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c TkControl.c QPRange.c \
-	ViewClassInfo.c BasicStats.c
+	ViewClassInfo.c BasicStats.c KGraph.c ViewKGraph.c
 
 QPObj=  CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
 	Bitmap.o DispQueryProc.o ParseCat.o Group.o GroupDir.o ItemList.o\
@@ -65,7 +65,7 @@ QPObj=  CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
 	TDataRec.o TData2DRec.o PageRange.o  RecFile.o UnixRecFile.o \
 	GDataRangeMap.o GData.o Temp.o TData.o TDataViewX.o ViewScatter.o \
 	ViewRanges.o ViewGraph.o TkControl.o QPRange.o \
-	ViewClassInfo.o BasicStats.o
+	ViewClassInfo.o BasicStats.o KGraph.o ViewKGraph.o
 
 # View
 
