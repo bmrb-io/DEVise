@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/26 16:31:45  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.5.4.1  1997/02/12 15:43:42  jussi
   Added re-initialization of _stringNum in Clear().
 
@@ -46,6 +49,9 @@
 #define StringStorage_h
 
 #include "HashTable.h"
+#include "Util.h"
+
+//#define DEBUG_STRINGS
 
 class StringStorage {
   public:
@@ -55,9 +61,17 @@ class StringStorage {
             return 0;
         }
         key = _stringNum++;
-        int code = _strings.insert(string, key);
-        if (code < 0) return code;
-        code = _keys.insert(key, string);
+	char *tmpString = CopyString(string);
+        int code = _strings.insert(tmpString, key);
+#if defined(DEBUG_STRINGS)
+        printf("Inserting <%s> into hash table\n", string);
+        printf("  %d entries in hash table\n", _strings.num());
+#endif
+        if (code < 0) {
+	  delete [] tmpString;
+	  return code;
+	}
+        code = _keys.insert(key, tmpString);
         if (code >= 0)
           return 1;
         return code;
@@ -72,6 +86,22 @@ class StringStorage {
     }
 
     static int Clear() {
+#if defined(DEBUG_STRINGS)
+        printf("StringStorage::Clear()\n");
+#endif
+
+	// Delete the strings themselves.
+        _strings.InitRetrieveIndex();
+	void *current = NULL;
+	char **string;
+	int key;
+	while (_strings.RetrieveIndex(current, string, key) == 0) {
+#if defined(DEBUG_STRINGS)
+        printf("  deleting <%s>\n", *string);
+#endif
+	  delete [] *string;
+	}
+
         int code = _strings.clear();
         if (code >= 0) {
             code = _keys.clear();

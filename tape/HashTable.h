@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/20 22:39:48  guangshu
+  Added function RetrieveIndex.
+
   Revision 1.7  1996/08/01 23:20:03  jussi
   Added num() method.
 
@@ -288,6 +291,10 @@ int HashTable<Index,Value>::clear()
       delete tmpBuf;
     }
   }
+
+#ifdef MODIFIED
+  _num = 0;
+#endif
 
   return 0;
 }

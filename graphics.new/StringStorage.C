@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/01/30 19:47:13  jussi
+  Added PopulateFromInitFile() method.
+
   Revision 1.1  1996/07/15 17:00:53  jussi
   Initial revision.
 */
@@ -48,14 +51,11 @@ int StringStorage::PopulateFromInitFile()
     while (fgets(buf, sizeof buf, fp)) {
         if (buf[strlen(buf) - 1] == '\n')
             buf[strlen(buf) - 1] = 0;
-        char *string = CopyString(buf);
         int key;
-        int code = Insert(string, key);
+        int code = Insert(buf, key);
 #ifdef DEBUG
         printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
 #endif
-        if (code != 1)
-            delete string;
     }
 
     fclose(fp);

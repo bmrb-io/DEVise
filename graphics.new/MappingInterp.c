@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1997/07/15 14:29:57  wenger
+  Moved hashing of strings from TData*Interp classes to MappingInterp
+  class; cleaned up a few extra includes of StringStorage.h.
+
   Revision 1.59  1997/05/08 00:18:56  wenger
   'Can't find attribute in mapping' warning not printed for recId's.
 
@@ -801,7 +805,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case StringAttr:
 	  string = tPtr + attrInfo->offset;
-          code = StringStorage::Insert(string, key);
+	  code = StringStorage::Insert(string, key);
           DOASSERT(code >= 0, "Cannot insert string");
 	  _tclAttrs[j] = (double)key;
 #if defined(DEBUG)
@@ -1473,14 +1477,9 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     strncpy(str, cmd+1, len);
     str[len] = '\0'; // Terminate the string!
     int strid;
-    if( StringStorage::Lookup(str, strid) < 0 ) {
-      // string not found, so insert it
-      assert( StringStorage::Insert(str, strid) );
-    } else {
-      // string already in table, so delete this copy
-      delete str;
-      str = NULL;
-    }
+    int code = StringStorage::Insert(str, strid);
+    DOASSERT(code >= 0, "Cannot insert string");
+    delete [] str;
 #if defined(DEBUG)
     printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
 #endif
