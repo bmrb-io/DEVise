@@ -89,11 +89,19 @@ operator <<(ostream& os, const DeviseCommand& cmd)
 {
 	return os;
 }
-ControlPanel* DeviseCommand::control;
+ControlPanel* DeviseCommand::defaultControl;
 void
-DeviseCommand::setControl(ControlPanel* cntl)
+DeviseCommand::setDefaultControl(ControlPanel* defaultCntl)
 {
+	defaultControl = defaultCntl;
+}
+
+int 
+DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
+{
+	// reset the control each time you run a command
 	control = cntl;
+	return Run(argc, argv);
 }
 
 int 

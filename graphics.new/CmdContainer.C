@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/26 20:48:32  taodb
+  Replaced ParseAPI() with Command Object Interface
+
 */
 
 #include <stdio.h>
@@ -79,10 +82,9 @@ int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 int		ParseAPIDTE(int argc, char** argv, ControlPanel* control);
 int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
-CmdContainer::CmdContainer(ControlPanel* control, CmdContainer::Make make)
+CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make)
 {
-	DeviseCommand::setControl(control);
-	this->control = control;
+	DeviseCommand::setDefaultControl(defaultControl);
 	this->make = make;
 	cmdContainerp = this;
 
@@ -281,7 +283,7 @@ CmdContainer::~CmdContainer()
 }
 
 int
-CmdContainer::Run(int argc, char** argv)
+CmdContainer::Run(int argc, char** argv, ControlPanel* control)
 {
 	DeviseCommand*	cmd;
 	int	retval;
@@ -302,7 +304,7 @@ CmdContainer::Run(int argc, char** argv)
 		retval = -1;
 	}
 	else
-		retval = cmd->Run(argc, argv);
+		retval = cmd->Run(argc, argv,control);
 	return retval;
 }
 

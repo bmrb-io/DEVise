@@ -28,14 +28,13 @@ class CmdContainer
 		typedef enum {MONOLITHIC=0,CSGROUP} Make;
 		CmdContainer(ControlPanel* control, Make make );
 		~CmdContainer();
-		int	Run(int argc, char** argv);
+		int	Run(int argc, char** argv, ControlPanel* control);
 		void insertCmd(char*, DeviseCommand *,int cmdsize);		
 		DeviseCommand* lookupCmd(char*);
 		void deleteCmd(char* cmdName);
 		Make	getMake(){return make;}
 	private:
 		Make	make;
-		ControlPanel*	control;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
 extern CmdContainer*	cmdContainerp;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.82  1998/02/26 20:49:05  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.81  1998/02/12 17:17:09  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -560,7 +563,7 @@ int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // don't pass DEVise command verb (argv[0])
-  if (cmdContainerp->Run(argc - 1, &argv[1]) < 0)
+  if (cmdContainerp->Run(argc - 1, &argv[1],(ControlPanel *)clientData) < 0)
     return TCL_ERROR;
 
   return TCL_OK;

@@ -5,6 +5,7 @@
 #include "ClassDir.h"
 #include "Control.h"
 #define PURIFY 0
+
 #define DECLARE_CLASS_DeviseCommand_(command_name)\
 class DeviseCommand_##command_name: public DeviseCommand\
 {\
@@ -12,8 +13,8 @@ class DeviseCommand_##command_name: public DeviseCommand\
     DeviseCommand_##command_name(DeviseCommandOption& cmdOption):\
         DeviseCommand(cmdOption){}\
     ~DeviseCommand_##command_name(){}\
+	private: /* only base class can Run(), we need to initialize control */\
     int Run(int argc, char** argv);
-
 #define DECLARE_CLASS_END };
 
 class DeviseCommand
@@ -22,11 +23,12 @@ class DeviseCommand
 	friend ostream& operator <<(ostream&, DeviseCommand&);
 	private:
 		DeviseCommandOption	_cmdOption;
-		static	ControlPanel* control;
-		static void setControl(ControlPanel* cntl);
-	// only friend class can initialize DeviseCommand and its derived
-	// objects
+		static	ControlPanel* defaultControl;
+		static void setDefaultControl(ControlPanel* defaultControl);
+
 	protected:
+		// only friend class can construct this class
+		ControlPanel* control;
 		DeviseCommand(DeviseCommandOption& cmdOption)
 		{
 			_cmdOption = cmdOption;
@@ -38,8 +40,8 @@ class DeviseCommand
 		ClassDir	*classDir;
 		int			numArgs;
 		char**		args;
-
 	public:
+		virtual int Run(int argc, char** argv, ControlPanel* cntl);
 		DeviseCommandOption& 
 		getOption() 
 		{

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/26 20:48:39  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.5  1998/02/12 17:16:12  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -271,7 +274,7 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
   printf("  Before cmdContainer call: _currentClient = %d\n", _currentClient);
 #endif
 
-    if (cmdContainerp->Run(argc, argv) < 0) {
+    if (cmdContainerp->Run(argc, argv,_control) < 0) {
       	char errBuf[1024];
       	sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
       	reportErrNosys(errBuf);
