@@ -42,7 +42,7 @@ int main(int argc, char** argv){
 	TRY(engine.optimize(), 0);
 	int numFlds = engine.getNumFlds();
 	if(numFlds > 0){
-		WritePtr* writePtrs = engine.getWritePtrs();
+		TRY(WritePtr* writePtrs = engine.getWritePtrs(), 0);
 		String* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";

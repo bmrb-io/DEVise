@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.60  1997/03/06 02:37:45  donjerko
+#	Added window to create StandardTable
+#
 #	Revision 1.59  1997/02/25 22:16:56  donjerko
 #	Fixed some bugs in tcl - dte communication
 #
@@ -1009,8 +1012,9 @@ proc defineSQLView {content} {
 	set retVal [qbrowse 0 $viewName "" $from $select $as $where]
 	if {$retVal != ""} {
 		puts "^^^^^^^^^^ as = $as"
-		regsub "," $as " " spaceAs
+#		regsub "," $as " " spaceAs
 		set as [split $as ,]
+		set spaceAs [join $as " "]
 		puts "^^^^^^^^^^ spaceAs = $spaceAs"
 		set attrCnt [llength $as]
 		if {$where == ""} {
