@@ -15,6 +15,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "rotated.h"
 
@@ -115,6 +116,7 @@ XFontStruct *LoadFont(fontname)
 /*  Main routine                                                          */
 /**************************************************************************/
 
+int
 main()
 {
     XEvent ev;
@@ -161,7 +163,7 @@ main()
     XMapWindow(dpy, window);
     
     /* create a GC */
-    gc=XCreateGC(dpy, window, NULL, 0);
+    gc=XCreateGC(dpy, window, 0, NULL);
 
     /* simple event loop */
     for(;;) {
@@ -613,7 +615,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI";
     
     /* create a stipple and depth one GC */
     stipple=XCreatePixmap(dpy, window, size, size, 1);
-    gc1=XCreateGC(dpy, stipple, NULL, 0);
+    gc1=XCreateGC(dpy, stipple, 0, NULL);
 
     /* clear the stipple */
     XSetForeground(dpy, gc1, 0);
@@ -697,7 +699,7 @@ void DrawStipple2()
 
     /* create a stipple and depth one GC */
     stipple=XCreatePixmap(dpy, window, 600, 600, 1);
-    gc1=XCreateGC(dpy, stipple, NULL, 0);
+    gc1=XCreateGC(dpy, stipple, 0, NULL);
 
     /* clear the stipple */
     XSetForeground(dpy, gc1, 0);

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  1997/05/28 15:40:44  wenger
+# Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 # Revision 1.18.4.1  1997/05/20 16:11:40  ssl
 # Added layout manager to DEVise
 #
@@ -38,7 +41,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	attrproj devread DTE LM
+	attrproj devread DTE LM xvertext
 
 MODULES = $(LIBMODULES) parser generic multi
 

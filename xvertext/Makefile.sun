@@ -1,0 +1,39 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+############################################################
+
+depend:
+	makedepend -fMakefile.sun -I../graphics.new \
+		-I/s/X11/include *.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+example.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+example.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+example.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+example.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+example.o: /s/X11/include/X11/Xutil.h /usr/include/stdio.h
+example.o: /usr/include/stdlib.h /usr/include/math.h
+example.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h rotated.h
+rotated.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+rotated.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+rotated.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+rotated.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+rotated.o: /s/X11/include/X11/Xutil.h /s/X11/include/X11/Xatom.h
+rotated.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/string.h
+rotated.o: /usr/include/math.h /usr/include/floatingpoint.h
+rotated.o: /usr/include/sys/ieeefp.h rotated.h
