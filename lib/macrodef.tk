@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.23  1995/12/13 02:06:06  ravim
+#	Changed criterion for not reloading the schema.
+#
 #	Revision 1.22  1995/12/04 18:28:15  jussi
 #	Changed size of automatically created windows to depend on view
 #	layout selected. For horizontal layout, the window is wide, for
@@ -414,7 +417,7 @@ proc MacroDefHelp {} {
 proc MacroDefAuto {tdata} {
     global schemas modified x xtype sortedx yvar selgrp schemaname schema
     global viewsel viewselname macroSelectColor macroMenuSelectColor
-    global layoutsel layoutselname linksel winnamesel titlesel
+    global layoutsel linksel winnamesel titlesel
     global xaxissel yaxissel sourceList
 
     # see if .auto window already exists; if so, just return
@@ -536,21 +539,18 @@ proc MacroDefAuto {tdata} {
 
     label .auto.layoutsel.label -text "Layout:"
     menubutton .auto.layoutsel.layout -relief raised \
-	    -textvariable layoutselname -menu .auto.layoutsel.layout.menu \
+	    -textvariable layoutsel -menu .auto.layoutsel.layout.menu \
 	    -width 15
     pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 3m
 
     menu .auto.layoutsel.layout.menu -tearoff 0
+    .auto.layoutsel.layout.menu add radiobutton -label Tiled \
+	    -variable layoutsel -value Tiled
     .auto.layoutsel.layout.menu add radiobutton -label Vertical \
-	    -variable layoutselname -value Vertical -command {
-	set layoutsel WinVertical
-    }
+	    -variable layoutsel -value Vertical
     .auto.layoutsel.layout.menu add radiobutton -label Horizontal \
-	    -variable layoutselname -value Horizontal -command {
-	set layoutsel WinHorizontal
-    }
-    set layoutselname Vertical
-    set layoutsel WinVertical
+	    -variable layoutsel -value Horizontal
+    set layoutsel Vertical
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
@@ -719,19 +719,25 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
-	if {$layout == "WinVertical" } {
-	    set winparam "0.3 0.15 0.5 0.7"
-	    set result [DEVise create window $layout $window 0.3 0.15 0.5 0.7]
+	if {$layout == "Tiled"} {
+	    set winparam "0.3 0.3 0.4 0.4"
+	    set layoutparam "-1 -1"
+	} elseif {$layout == "Vertical" } {
+	    set winparam "0.3 0.15 0.4 0.7"
+	    set layoutparam "-1 1"
 	} else {
-	    set winparam "0.15 0.3 0.7 0.5"
-	    set result [DEVise create window $layout $window 0.15 0.3 0.7 0.5]
+	    set winparam "0.15 0.3 0.7 0.4"
+	    set layoutparam "1 -1"
 	}
+	set cmd "DEVise create window TileLayout \{$window\} $winparam"
+	set result [eval $cmd]
 	if {$result == ""} {
 	    dialog .windowError "Window Error" \
 		    "Error creating window $window" "" 0 OK
 	    return
 	}
 	set windows($window) $winparam
+	eval "DEVise setWindowLayout \{$window\} $layoutparam"
     }
     
     if {$sortedx > 0} {
@@ -1366,7 +1372,7 @@ proc DefWindow {} {
 
     if {$winname != ""} {
 	# ask DEVise to create window
-	set winType WinVertical
+	set winType TileLayout
 	set result [DEVise create window $winType $winname $x $y $w $h]
 	if {$result == ""} {
 	    dialog .windowError "Window Error" \
