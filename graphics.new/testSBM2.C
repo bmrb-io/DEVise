@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/11/01 20:12:22  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +30,7 @@
 
 #define CALL(c) { int res = c; if (res < 0) goto error; }
 
-#define READONLY
+static int pageSize = 32 * 1024;
 
 // ===================================================================
 
@@ -55,15 +58,28 @@ void sleepms(int ms)
 void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
     for(int i = 0; i < fileSize; i++) {
-        char *page;
-        if (bufMgr->AllocPage(task, i, page) < 0) {
-            perror("Writer pin");
-            exit(1);
-        }
-        sprintf(page, "test.%d Page %d %7.1f", i, i, (float)i);
-        if (bufMgr->UnPinPage(task, i, true) < 0) {
-            perror("Writer unpin");
-            exit(1);
+        char *page = 0;
+        if (!bufMgr) {
+            if (MemPool::Instance()->Allocate(MemPool::Cache, page) < 0) {
+                perror("Writer alloc");
+                exit(1);
+            }
+            assert(page);
+            if (task->Write(i * pageSize, pageSize, page) < 0) {
+                perror("Writer write");
+                exit(1);
+            }
+            assert(!page);
+        } else {
+            if (bufMgr->AllocPage(task, i, page) < 0) {
+                perror("Writer pin");
+                exit(1);
+            }
+            sprintf(page, "test.%d Page %d %7.1f", i, i, (float)i);
+            if (bufMgr->UnPinPage(task, i, true) < 0) {
+                perror("Writer unpin");
+                exit(1);
+            }
         }
     }
 }
@@ -82,15 +98,28 @@ void *Writer(void *arg)
 
 void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
-    for(int i = 2; i < fileSize; i++) {
-        char *page;
-        if (bufMgr->PinPage(task, i, page) < 0) {
-            perror("Reader pin");
-            exit(1);
-        }
-        if (bufMgr->UnPinPage(task, i, false) < 0) {
-            perror("Reader unpin");
-            exit(1);
+    for(int i = 0; i < fileSize; i++) {
+        char *page = 0;
+        if (!bufMgr) {
+            if (task->Read(i * pageSize, pageSize, page) < 0) {
+                perror("Reader read");
+                exit(1);
+            }
+            assert(page);
+            if (MemPool::Instance()->Release(MemPool::Cache, page) < 0) {
+                perror("Reader dealloc");
+                exit(1);
+            }
+            assert(!page);
+        } else {
+            if (bufMgr->PinPage(task, i, page) < 0) {
+                perror("Reader pin");
+                exit(1);
+            }
+            if (bufMgr->UnPinPage(task, i, false) < 0) {
+                perror("Reader unpin");
+                exit(1);
+            }
         }
     }
 }
@@ -114,6 +143,8 @@ int main(int argc, char **argv)
     int poolSize = 64;
     int fileSize = 512;
     int buffSize = 0;
+    int readOnly = 0;
+    int iotaskDirect = 0;
 
     int i,f;
 
@@ -132,6 +163,10 @@ int main(int argc, char **argv)
             }
             poolSize = atoi(argv[i + 1]);
             i++;
+        } else if (!strcmp(argv[i], "-r")) {
+            readOnly = 1;
+        } else if (!strcmp(argv[i], "-d")) {
+            iotaskDirect = 1;
         } else if (!strcmp(argv[i], "-f")) {
             if (i + 1 >= argc) {
                 fprintf(stderr, "No file size specified with -p option.\n");
@@ -153,7 +188,6 @@ int main(int argc, char **argv)
     }
 
     int bufPages = poolSize - buffSize * numFiles;
-    int pageSize = 32 * 1024;
 
     if (bufPages < numFiles) {
         // Allocate one page per file for caching, remaining pages for
@@ -165,6 +199,8 @@ int main(int argc, char **argv)
 
     fprintf(stderr, "Buffer size %d, pool size %d, %d files, file size %d\n",
             buffSize, poolSize, numFiles, fileSize);
+    fprintf(stderr, "I/O Task direct: %s, Read-only: %s\n",
+            (iotaskDirect ? "YES" : "NO"), (readOnly ? "YES" : "NO"));
 
     struct timeval start;
     struct timeval stop;
@@ -189,8 +225,11 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    SBufMgr *bufMgr = new SBufMgrLRU(*memPool, bufPages);
-    assert(bufMgr);
+    SBufMgr *bufMgr = 0;
+    if (!iotaskDirect) {
+        bufMgr = new SBufMgrLRU(*memPool, bufPages);
+        assert(bufMgr);
+    }
 
     // test buffer manager
 
@@ -208,11 +247,10 @@ int main(int argc, char **argv)
 #endif
 
     for(i = 0; i < numFiles; i++) {
-#ifdef READONLY
-        fp[i] = fopen(files[i], "r");
-#else
-        fp[i] = fopen(files[i], "w+");
-#endif
+        if (readOnly)
+            fp[i] = fopen(files[i], "r");
+        else
+            fp[i] = fopen(files[i], "w+");
         if (!fp[i]) {
             fprintf(stderr, "Could not create %s\n", files[i]);
             exit(1);
@@ -227,72 +265,65 @@ int main(int argc, char **argv)
         task[i]->SetBuffering(true, true, buffSize * pageSize);
     }
         
-#ifndef READONLY
-    printf("\nAllocating pages...\n");
+    if (!readOnly) {
+        printf("\nAllocating pages...\n");
 
-    gettimeofday(&start, 0);
+        gettimeofday(&start, 0);
 
-    for(f = 0; f < numFiles; f++) {
+        for(f = 0; f < numFiles; f++) {
 #ifdef PROCESS_TASK
-        pid_t child = fork();
-        if (child < 0) {
-            perror("fork");
-            exit(1);
-        }
-        if (!child) {
-            printf("Child %d started...\n", f);
-            WriterP(bufMgr, task[f], fileSize);
-            exit(1);
-        }
-#endif
-#ifdef THREAD_TASK
-        FileReq *req = new FileReq;
-        req->bufMgr = bufMgr;
-        req->task = task[f];
-        req->fileSize = fileSize;
-        if (pthread_create(&child[f], 0, Writer, req)) {
-            perror("pthread_create");
-            return -1;
-        }
-#endif
-    }
-
-    for(f = 0; f < numFiles; f++) {
-#ifdef PROCESS_TASK
-        int status;
-        pid_t child = wait(&status);
-        if (child < 0) {
-            if (errno == EINTR)
-                continue;
-            if (errno != ECHILD) {
-                perror("wait");
+            pid_t child = fork();
+            if (child < 0) {
+                perror("fork");
                 exit(1);
             }
-        } else {
-            printf("Child completed...\n");
+            if (!child) {
+                printf("Child %d started...\n", f);
+                WriterP(bufMgr, task[f], fileSize);
+                exit(1);
+            }
+#endif
+#ifdef THREAD_TASK
+            FileReq *req = new FileReq;
+            req->bufMgr = bufMgr;
+            req->task = task[f];
+            req->fileSize = fileSize;
+            if (pthread_create(&child[f], 0, Writer, req)) {
+                perror("pthread_create");
+                return -1;
+            }
+#endif
         }
+
+        for(f = 0; f < numFiles; f++) {
+#ifdef PROCESS_TASK
+            int status;
+            pid_t child = wait(&status);
+            if (child < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno != ECHILD) {
+                    perror("wait");
+                    exit(1);
+                }
+            } else {
+                printf("Child completed...\n");
+            }
 #endif
 #ifdef THREAD_TASK
         (void)pthread_join(child[f], 0);
-        printf("Child completed...\n");
+            printf("Child completed...\n");
 #endif
-    }
-
-    gettimeofday(&stop, 0);
-    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
-    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
-           (numFiles * fileSize * pageSize) / 1048576.0 / secs);
-#endif
-    
-    printf("\nReading pages back...\n");
-
-    for(f = 0; f < numFiles; f++) {
-        for(i = 0; i < 2; i++) {
-            char *page;
-            CALL(bufMgr->PinPage(task[f], i, page));
-            CALL(bufMgr->UnPinPage(task[f], i, false));
         }
+        
+        gettimeofday(&stop, 0);
+        secs = stop.tv_sec - start.tv_sec
+               + (stop.tv_usec - start.tv_usec) / 1e6;
+        printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+               (numFiles * fileSize * pageSize) / 1048576.0 / secs);
     }
+
+    printf("\nReading pages back...\n");
 
     gettimeofday(&start, 0);
 
@@ -350,9 +381,8 @@ int main(int argc, char **argv)
     for(i = 0; i < numFiles; i++) {
         delete task[i];
         fclose(fp[i]);
-#ifndef READONLY
-        (void)unlink(files[i]);
-#endif
+        if (!readOnly)
+            (void)unlink(files[i]);
     }
 
     delete bufMgr;
@@ -361,16 +391,4 @@ int main(int argc, char **argv)
     printf("\nPassed all tests.\n");
 
     return 1;
-
-  error:
-
-    printf("\nThe program failed.\n");
-
-    for(i = 0; i < numFiles; i++) {
-        delete task[i];
-        fclose(fp[i]);
-        (void)unlink(files[i]);
-    }
-
-    return 0;
 }
