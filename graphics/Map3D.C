@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/27 22:54:41  jussi
+  Added support for XOR color value.
+
   Revision 1.3  1996/06/23 18:35:24  jussi
   Block height is now mapped to the Y axis and block depth to
   the Z axis. Y and Z were reversed.
@@ -32,9 +35,6 @@
 #include "Temp.h"
 
 //#define DEBUG
-
-Transform3D Map3D::_transform[1];
-int Map3D::_current = 0;
 
 // This sort function is used by qsort(); the metric is the distance
 // from a point to the camera; however, the objects are sorted in reverse
@@ -147,7 +147,8 @@ void Map3D::AssignBlockSides(BLOCK &block)
 // map vertices of blocks to 2D data points
 // ---------------------------------------------------------- 
 
-void Map3D::MapBlockPoints(BLOCK *block_data, int numSyms,
+void Map3D::MapBlockPoints(WindowRep *win,
+                           BLOCK *block_data, int numSyms,
 			   Camera camera, int H, int V)
 {
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
@@ -193,26 +194,23 @@ void Map3D::MapBlockPoints(BLOCK *block_data, int numSyms,
       continue;
     }
 
-    POINT3D tmppt = CompLocationOnViewingSpace(block_data[i].pt);
-    Point pt = CompProjectionOnViewingPlane(tmppt, camera);
-    if (fabs(pt.x) > (H * 1.2) || fabs(pt.y) > (V * 1.2)) {
+    // If any of the vertices of the block appear on screen,
+    // the block is not clipped, otherwise it is clipped
+    block_data[i].clipout = true;
+    for(int j = 0; j < BLOCK_VERTEX; j++) {
+      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
+      Point pt = CompProjectionOnViewingPlane(tmppt, camera);
+      if (fabs(pt.x) <= H && fabs(pt.y) <= V) {
+        block_data[i].clipout = false;
+        break;
+      }
+    }
+          
+    if (block_data[i].clipout) {
 #ifdef DEBUG
       printf("Block %d clipped because it's outside of screen\n", i);
 #endif
-      block_data[i].clipout = true;
-      continue;
     }
-
-#ifdef DEBUG
-    printf("\tcamera:x = %f  y = %f  z = %f\n",
-	   camera.x_, camera.y_, camera.z_);
-    printf("\tblk.pt:x = %f  y = %f  z = %f\n",
-	   block_data[i].pt.x_, block_data[i].pt.y_, block_data[i].pt.z_);
-    printf("\ttmppt: x = %f  y = %f  z = %f\n",
-	   tmppt.x_, tmppt.y_, tmppt.z_);
-    printf("\tpt:    x = %f  y = %f\n", pt.x, pt.y);
-    printf("\t       H = %d  V = %d\n", H, V);
-#endif
   }
 }
 
@@ -220,7 +218,8 @@ void Map3D::MapBlockPoints(BLOCK *block_data, int numSyms,
 // map edges of blocks to segments
 // ---------------------------------------------------------- 
 
-void Map3D::MapBlockSegments(BLOCK *block_data, int numSyms,
+void Map3D::MapBlockSegments(WindowRep *win,
+                             BLOCK *block_data, int numSyms,
 			     Camera camera, int H, int V)
 {
   _numSegments = 0;
@@ -233,7 +232,7 @@ void Map3D::MapBlockSegments(BLOCK *block_data, int numSyms,
 
     int j;
     for(j = 0; j < BLOCK_VERTEX; j++) {
-      POINT3D tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
+      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
@@ -251,7 +250,8 @@ void Map3D::MapBlockSegments(BLOCK *block_data, int numSyms,
 // map sides of blocks to triangular planes
 // ---------------------------------------------------------- 
 
-void Map3D::MapBlockPlanes(BLOCK *block_data, int numSyms,
+void Map3D::MapBlockPlanes(WindowRep *win,
+                           BLOCK *block_data, int numSyms,
 			   Camera camera, int H, int V)
 {
   POINT3D cameraPoint;
@@ -273,7 +273,7 @@ void Map3D::MapBlockPlanes(BLOCK *block_data, int numSyms,
 
     int j;
     for(j = 0; j < BLOCK_VERTEX; j++) {
-      POINT3D tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
+      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
@@ -314,13 +314,13 @@ void Map3D::MapBlockPlanes(BLOCK *block_data, int numSyms,
 
 // ----------------------------------------------------------
 
-POINT3D Map3D::CompLocationOnViewingSpace(POINT3D &pt)
+POINT3D Map3D::CompLocationOnViewingSpace(WindowRep *win, POINT3D &pt)
 {
   Transform3D tmpVec, tmpTransf;
   POINT3D NewPt;
 
   tmpVec.SetVector(pt);
-  tmpTransf.Copy(*Map3D::TopTransform());
+  tmpTransf.Copy(*win->TopTransform3());
   tmpTransf.PreMultiply(&tmpVec);
   tmpTransf.GetVector(NewPt);
   return NewPt;
@@ -333,27 +333,20 @@ Point Map3D::CompProjectionOnViewingPlane(POINT3D &viewPt, Camera camera)
   Point screenPt;
   double z_over_dvs = viewPt.z_ / camera._dvs;
 
-#ifdef DEBUG
-  printf ("CPOVP (2)-> vpt x = %f y = %f z = %f\n",
-	  viewPt.x_,viewPt.y_,viewPt.z_);
-#endif
-  if (camera._perspective == 1) {
-    screenPt.x = (fabs(viewPt.z_) == 0 ? viewPt.x_ :
-		  viewPt.x_ / z_over_dvs);
-    screenPt.y = (fabs(viewPt.z_) == 0 ? viewPt.y_ :
-		  viewPt.y_ / z_over_dvs);
+  if (camera._perspective) {
+    screenPt.x = (z_over_dvs == 0 ? viewPt.x_ : viewPt.x_ / z_over_dvs);
+    screenPt.y = (z_over_dvs == 0 ? viewPt.y_ : viewPt.y_ / z_over_dvs);
   } else {
     screenPt.x = viewPt.x_;
     screenPt.y = viewPt.y_;
   }
 
-  // upper left-hand corner of the physical screen is the
-  // default origin (0, 0) in the Xlib coordinate system
-  // the following code will move the focus point to whereever
-  // we don't it to be
+  // Upper left-hand corner of the physical screen is the
+  // default origin (0, 0) in the Xlib coordinate system.
+  // The following code will move the focus point to whereever
+  // we want it to be.
   screenPt.x += camera.H;
-  screenPt.y = (screenPt.y < 0 ?
-		camera.V + fabs(screenPt.y) : camera.V - screenPt.y);
+  screenPt.y = camera.V - screenPt.y;
 
   return screenPt;
 }
@@ -404,12 +397,18 @@ void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
   EDGE axis[3];      // 0 == x, 1 == y, 2 = z
 
   // draw the reference axis
-  axisPt[1].x_ = axisPt[3].z_ = 1.5;
-  axisPt[2].y_ = axisPt[1].x_ * 1.5;
-  axisPt[1].y_ = axisPt[1].z_ = 0.0;
-  axisPt[2].x_ = axisPt[2].z_ = 0.0;
-  axisPt[3].x_ = axisPt[3].y_ = 0.0;
-  axisPt[0].x_ = axisPt[0].y_ = axisPt[0].z_ = 0.0;
+  axisPt[0].x_ = 0.0;
+  axisPt[0].y_ = 0.0;
+  axisPt[0].z_ = 0.0;
+  axisPt[1].x_ = axisPt[0].x_ + 1.0;
+  axisPt[1].y_ = axisPt[0].y_;
+  axisPt[1].z_ = axisPt[0].z_;
+  axisPt[2].x_ = axisPt[0].x_;
+  axisPt[2].y_ = axisPt[0].y_ + 1.0;
+  axisPt[2].z_ = axisPt[0].z_;
+  axisPt[3].x_ = axisPt[0].x_;
+  axisPt[3].y_ = axisPt[0].y_;
+  axisPt[3].z_ = axisPt[0].z_ + 1.0;
   axis[0].p = 0;  axis[0].q = 1;  // x axis
   axis[1].p = 0;  axis[1].q = 2;  // y axis
   axis[2].p = 0;  axis[2].q = 3;  // z axis
@@ -440,12 +439,12 @@ void Map3D::DrawAxis(WindowRep *win, POINT3D axisPt[4],
 		     EDGE axis[3], Camera camera)
 {
 #ifdef DEBUG
-  printf ("\t\t---------- Begin DrawAxis ---- \n");
+  printf("Begin DrawAxis\n");
 #endif
 
   Point pt[4];
   for(int j = 0; j < 4; j++) {
-    POINT3D sa_pts = CompLocationOnViewingSpace(axisPt[j]);
+    POINT3D sa_pts = CompLocationOnViewingSpace(win, axisPt[j]);
     pt[j] = CompProjectionOnViewingPlane(sa_pts, camera);
   }
 
@@ -464,6 +463,6 @@ void Map3D::DrawAxis(WindowRep *win, POINT3D axisPt[4],
   }
 
 #ifdef DEBUG
-  printf ("\t\t---------- End DrawAxis ---- \n");
+  printf("End DrawAxis\n");
 #endif
 }

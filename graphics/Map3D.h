@@ -15,13 +15,15 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/06/21 19:25:23  jussi
+  Initial revision.
+*/
 
 #ifndef Map3D_h
 #define Map3D_h
 
 #include "DeviseTypes.h"
-#include "Transform.h"
 #include "Geom.h"
 #include "VisualArg.h"
 
@@ -68,16 +70,19 @@ public:
   static void AssignBlockVertices(BLOCK &block);
   static void AssignBlockEdges(BLOCK &block);
   static void AssignBlockSides(BLOCK &block);
-  static void MapBlockPoints(BLOCK *block_data, int numSyms, 
+  static void MapBlockPoints(WindowRep *win,
+                             BLOCK *block_data, int numSyms, 
 			     Camera camera, int H, int V);
-  static void MapBlockSegments(BLOCK *block_data, int numSyms,
+  static void MapBlockSegments(WindowRep *win,
+                               BLOCK *block_data, int numSyms,
 			       Camera camera, int H, int V);
-  static void MapBlockPlanes(BLOCK *block_data, int numSyms,
+  static void MapBlockPlanes(WindowRep *win,
+                             BLOCK *block_data, int numSyms,
 			     Camera camera, int H, int V);
 
   // compute the location of a "user" point to the viewing
   // space's coordinates
-  static POINT3D CompLocationOnViewingSpace(POINT3D &pt);
+  static POINT3D CompLocationOnViewingSpace(WindowRep *win, POINT3D &pt);
 
   // now the point in the viewing space coordinates, "flatten"
   // the 3D POINT3D into a 2D Point
@@ -88,44 +93,6 @@ public:
   static void DrawRefAxis(WindowRep *win, Camera camera);
 
   // ---------------------------------------------------------- 
-
-  static void MakeIdentity() {
-    _transform[_current].MakeIdentity();
-  }
-
-  /* return the transform on top of the stack. */
-  static Transform3D *TopTransform() {
-    return &_transform[_current];
-  }
-
-  static void PostMultiply(Transform3D *t) {
-    _transform[_current].PostMultiply(t);
-  }
-
-  static void Transform(Coord x, Coord y, Coord z, Coord &newX, 
-			Coord &newY, Coord &newZ) {
-    _transform[_current].Transform(x, y, z, newX, newY, newZ);
-  }
-
-  static void PrintTransform() {
-    _transform[_current].Print();
-  }
-
-  // compute the viewing transformation matrix
-  static void CompViewingTransf(Camera camera) {
-    _transform[_current].SetViewMatrix(camera);
-#ifdef DEBUG
-    printf("WinR.h: Camera x = %.2f y = %.2f z = %.2f ", 
-	   camera.x_, camera.y_, camera.z_);
-    printf("fx = %.2f fy = %.2f fz = %.2f\n", camera.fx,
-	   camera.fy, camera.fz);
-    _transform[_current].Print();
-    printf("_______ WindowRep.h: CompViewingTransf, _current =%d\n",
-	   _current);
-#endif
-  }
-
-  // ----------------------------------------------------------
 
   /* return distance between two points, squared */
   static Coord DistSq(const POINT3D &p1, const POINT3D &p2) {
@@ -145,12 +112,8 @@ public:
   }
 
 protected:
-  /* draw a 3D axis */
   static void DrawAxis(WindowRep *win, POINT3D axisPt[4],
 		       EDGE axis[3], Camera camera);
-
-  static Transform3D _transform[1];
-  static int _current;
 };
 
 #endif

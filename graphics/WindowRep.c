@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/06/21 19:31:25  jussi
+  Moved all 3D-related code to Map3D.C and Map3D.h.
+
   Revision 1.10  1996/06/15 14:14:04  jussi
   Added yuc's 3D functions.
 
@@ -58,7 +61,8 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
 		     Pattern p)
 {
   _callbackList = new WindowRepCallbackList;
-  _current = 0;   /* top of transform stack is identity matrix */
+  _current = 0;
+  _current3 = 0;
   _clipCurrent = -1;
   _fgndColor = fgndColor;
   _bgndColor = bgndColor;

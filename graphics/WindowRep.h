@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/10 16:21:15  jussi
+  Improvements and simplifications to the code.
+
   Revision 1.20  1996/06/21 19:28:02  jussi
   Moved all 3D-related code to Map3D.C and Map3D.h.
 
@@ -126,8 +129,8 @@ class WindowRep;
 class WindowRepCallback {
 public:
   /* draw in the exposed area */
-  virtual void HandleExpose(WindowRep * /*w*/, int /*x*/, int /*y*/, 
-			    unsigned /*width*/, unsigned /*height*/) {}
+  virtual void HandleExpose(WindowRep *w, int x, int y, 
+			    unsigned width, unsigned height) {}
 
 #ifdef RAWMOUSEEVENTS
   /* Handle button event */
@@ -135,30 +138,30 @@ public:
 			    int button, int state, int type) {}
 #else
   /* Handle button press event */
-  virtual void HandlePress(WindowRep * /*w*/, int /*xlow*/, 
-			   int /*ylow*/, int /*xhigh*/, int  /*yhigh*/,
-			   int /*button*/) {}
+  virtual void HandlePress(WindowRep *w, int xlow, int ylow,
+                           int xhigh, int yhigh, int button) {}
 #endif
 
   /* Handle resize */
-  virtual void HandleResize(WindowRep * /*w*/, int /*xlow*/, 
-			    int /*ylow*/, unsigned /*width*/,
-			    unsigned /* height*/) {}
+  virtual void HandleResize(WindowRep *w, int xlow, int ylow,
+                            unsigned width, unsigned height) {}
   
   /* Handle key press */
-  virtual void HandleKey(WindowRep * ,char /*key*/, int /*x*/, int /*y*/) {}
+  virtual void HandleKey(WindowRep * win, char key, int x, int y) {}
   
 #ifndef RAWMOUSEEVENTS
   /* handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
-			      char **&msgs, int &numMsgs) { return 0; }
+			      char **&msgs, int &numMsgs) {
+      return 0;
+  }
 #endif
 	
   /* Handle map/unmap info.
      mapped : means window has been mapped.
      unmapped: means window has been unmapped. (This can also mean
      that window has been iconified) */
-  virtual void HandleWindowMappedInfo(WindowRep *, Boolean /* mapped*/){};
+  virtual void HandleWindowMappedInfo(WindowRep * win, Boolean mapped) {}
 };
 
 const int WindowRepTransformDepth = 10;	/* max # of transforms in the stack */
@@ -166,7 +169,7 @@ const int WindowRepClipDepth = 10;	/* max # of clippings */
 
 /* clipping rectangle */
 struct ClipRect {
-  Coord x,y,width,height;
+  Coord x, y, width, height;
 };
 
 DefinePtrDList(WindowRepCallbackList, WindowRepCallback *);
@@ -315,7 +318,9 @@ public:
   /* get display of this Window Rep */
   DeviseDisplay *GetDisplay() { return _display; };
   
-  /* Transformation matrix operations */
+  // ---------------------------------------------------------- 
+
+  /* 2D transformation matrix operations */
   
   /* Push a copy of the top of stack onto the stack */
   void PushTop() {
@@ -336,12 +341,6 @@ public:
     _current--;
   }
 
-  /* push clipping onto stack. The coords are defined with respect to the
-     current trnasformation matrix. */
-  virtual void PushClip(Coord x,Coord y,Coord w,Coord h) = 0;
-  /* pop the clip region. */
-  virtual void PopClip() = 0;
-  
   /* operations on current transformation matrix */
   void Scale(Coord sx, Coord sy){
     _transforms[_current].Scale(sx,sy);
@@ -381,6 +380,73 @@ public:
 
   // ---------------------------------------------------------- 
 
+  /* 3D transformation matrix operations */
+  
+  /* Push a copy of the top of stack onto the stack */
+  void PushTop3() {
+    if (_current3 >= WindowRepTransformDepth-1 ){
+      fprintf(stderr,"WindowRep::PushTop: overflow\n");
+      Exit::DoExit(1);
+    };
+    _transforms3[_current3+1].Copy(_transforms3[_current3]);
+    _current3++;
+  }
+  
+  /* pop transformation matrix */
+  void PopTransform3(){
+    if (_current3 <= 0){
+      fprintf(stderr,"WindowRep::PopTransform: underflow\n");
+      Exit::DoExit(1);
+    }
+    _current3--;
+  }
+
+  /* operations on current transformation matrix */
+  void Scale3(Coord sx, Coord sy, Coord sz) {
+    _transforms3[_current3].Scale(sx,sy,sz);
+  }
+
+  void Translate3(Coord dx, Coord dy, Coord dz) {
+    _transforms3[_current3].Translate(dx,dy,dz);
+  }
+
+  void MakeIdentity3() {
+    _transforms3[_current3].MakeIdentity();
+  }
+
+  /* return the transform on top of the stack. */
+  Transform3D *TopTransform3() {
+    return &_transforms3[_current3];
+  }
+
+  void PostMultiply3(Transform3D *t) {
+    _transforms3[_current3].PostMultiply(t);
+  }
+
+  void Transform3(Coord x, Coord y, Coord z,
+                  Coord &newX, Coord &newY, Coord &newZ) {
+    _transforms3[_current3].Transform(x,y,z,newX,newY,newZ);
+  }
+
+  void PrintTransform3() {
+    _transforms3[_current3].Print();
+  }
+
+  /* Clear the transformation stack and put an identity 
+     matrix as top of the stack */
+  void ClearTransformStack3() {
+    _current3 = 0;
+    MakeIdentity3();
+  }
+
+  // ---------------------------------------------------------- 
+
+  /* push clipping onto stack. The coords are defined with respect to the
+     current trnasformation matrix. */
+  virtual void PushClip(Coord x,Coord y,Coord w,Coord h) = 0;
+  /* pop the clip region. */
+  virtual void PopClip() = 0;
+  
   /* called by derived class to get current clip region */
 
   Boolean ClipTop(Coord &x, Coord &y, Coord &w, Coord &h){
@@ -471,20 +537,23 @@ protected:
 	    Color bgndColor=BackgroundColor, Pattern p = Pattern0);
   
 private:
-  /* DList<WindowRepCallback *> *_callbackList;*/
   WindowRepCallbackList  *_callbackList;
+
   Transform2D _transforms[WindowRepTransformDepth];
+  int _current;         /* current index in the stack */
   ClipRect _clippings[WindowRepClipDepth];
-  /* DList<ClipRect *> _damageRects; */
-  ClipRectList  _damageRects; /* damaged areas*/
   int _clipCurrent;	/* index of top of stack for _clippings*/
-  int _current; /* current index in the stack */
-  Boolean _damaged ;
+
+  Transform3D _transforms3[WindowRepTransformDepth];
+  int _current3;        /* current index in the stack */
+
+  ClipRectList  _damageRects; /* damaged areas*/
+  Boolean _damaged;
+
   Coord _x, _y, _width, _height; /* location and dimensions of window */
   Color _fgndColor, _bgndColor;
   Pattern _pattern;
   DeviseDisplay *_display;
-
 };
 
 #endif
