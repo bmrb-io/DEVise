@@ -1,5 +1,5 @@
 #! /bin/csh -f
-#rm *.class
+rm *.class
 javac DEViseJSBLoader.java
 javac jsb.java
 # splitting the jar files into two.
@@ -9,7 +9,3 @@ rm DEViseJSBLoader.class jsb.class
 
 # jsb2.jar 
 jar cf jsb2.jar *.class  *.gif
-#rm /var/home/www/public/jsb.jar
-#mv jsb.jar /var/home/www/public
-#chmod 755 /var/home/www/public/jsb.jar
-rm *.class
