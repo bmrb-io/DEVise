@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/05/21 22:09:50  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.4  1997/05/05 16:53:43  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -256,7 +265,7 @@ ETkIfc::SendCommand(const char *etkServer, const char *command,
 	sprintf(commandBuf, "%s", command);
     
     DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
-					      argc, argv, replyBuf, 0.0);
+					      argc, argv, replyBuf, 1.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
@@ -291,7 +300,7 @@ ETkIfc::MoveWindow(const char *etkServer, int handle,
     sprintf(commandBuf, "move %d %d %d", handle, centerX, centerY);
     
     DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
-					      0, NULL, replyBuf, 0.0);
+					      0, NULL, replyBuf, 1.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
@@ -327,7 +336,7 @@ ETkIfc::ResizeWindow(const char *etkServer, int handle,
     sprintf(commandBuf, "resize %d %d %d", handle, width, height);
     
     DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
-					      0, NULL, replyBuf, 0.0);
+					      0, NULL, replyBuf, 1.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
@@ -364,7 +373,7 @@ ETkIfc::MoveResizeWindow(const char *etkServer, int handle,
 	    xcenter, ycenter, width, height);
     
     DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
-					      0, NULL, replyBuf, 0.0);
+					      0, NULL, replyBuf, 1.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
@@ -646,8 +655,9 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
     }
     else
     {
-	double timeLimit = (double) time.tv_sec +
-	    ((double) time.tv_usec) * 1.0e-6 + timeout;
+        double startTime = (double) time.tv_sec +
+            ((double) time.tv_usec) * 1.0e-6;
+	double timeLimit = startTime + timeout;
 	
 	Boolean done = false;
 	while (!done)
@@ -667,6 +677,7 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
 	    {
 		currentTime = (double) time.tv_sec +
 		    ((double) time.tv_usec) * 1.0e-6;
+                // printf("KSB: [%s] to=%f st=%f cur=%f lim=%f\n", buf, timeout, startTime, currentTime, timeLimit);
 		if (currentTime > timeLimit)
 		{
 		    reportError("Timed out waiting for ETk server's reply",
