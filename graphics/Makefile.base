@@ -23,7 +23,7 @@ LIBSRC = Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C VisualLink.c \
 	VisualLinkClassInfo.c XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	TileLayout.C
+	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c
 
 SRC1 = $(filter %.c,$(LIBSRC))
 SRC2 = $(filter %.C,$(LIBSRC))
@@ -55,6 +55,15 @@ install: $(LIBNAME)
 lib: $(LIBOBJ) 
 	ar ru $(LIBNAME) $(LIBOBJ)
 	ranlib $(LIBNAME)
+
+xvgifwr.o:	xvgifwr.c
+	gcc -c $(CFLAGS) $<
+
+xv24to8.o:	xv24to8.c
+	gcc -c $(CFLAGS) $<
+
+xvgrab.o:	xvgrab.c
+	gcc -c $(CFLAGS) $<
 
 jstat: jstat.o $(LIBOBJ)
 	$(CC) -o jstat jstat.o $(LIBOBJ) -lXaw -lXmu -lXt -lXext -lX11 -lm
