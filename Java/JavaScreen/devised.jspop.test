@@ -31,7 +31,7 @@ setenv LM_TMP			/tmp/LM/dat
 
 setenv DEVISE_LIB               ../../lib
 setenv LM_LIB                   $DEVISE_LIB/LM 
-setenv DEVISE_EXEC              ../../solaris/generic/devised.hongyu
+setenv DEVISE_EXEC              ../../solaris/generic/devised
 
 \rm devised.out
 $DEVISE_EXEC -quit 1 -clientTimeout 10 $* >& devised.out
