@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-1996
+   (c) Copyright 1992-2000
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -16,6 +16,10 @@
    $Id$
 
    $Log$
+   Revision 1.21  1998/10/13 19:40:45  wenger
+   Added SetAttrs() function to TData and its subclasses to allow Liping to
+   push projection down to the DTE.
+
    Revision 1.20  1998/05/06 22:04:58  wenger
    Single-attribute set links are now working except where the slave of
    one is the master of another.
@@ -111,6 +115,7 @@
 #include "DeviseTypes.h"
 #include "RecId.h"
 #include "DataSource.h"
+#include "Dispatcher.h"
 
 // A simple Status for TData
 enum TD_Status {
@@ -155,7 +160,9 @@ class TDataRequest {
     char *AttrName;			// on which column is the request
 };
 
-class TData {
+class FileIndex;
+
+class TData : protected DispatcherCallback {
   public:
 
     // creates a new data source based upon the parameters
@@ -165,6 +172,8 @@ class TData {
     TData(DataSource* data_source = NULL);
 
     virtual ~TData();
+
+    virtual Boolean CheckFileStatus();
 
     /**** MetaData about TData ****/
     /* Return attribute info */
@@ -177,7 +186,7 @@ class TData {
 
     /* Return # of dimensions and the size of each dimension,
        or -1 if unknown */
-    virtual int Dimensions(int *sizeDimension) = 0;
+    virtual int Dimensions(int *sizeDimension);
 
     /* Return record size, or -1 if variable record size */
     virtual int RecSize() { return _recSize; }
@@ -219,19 +228,17 @@ class TData {
     virtual char *GetName() { return _name; }
     virtual char *GetTableName() { return _name; }
 
-    /* convert RecId into index */
-    virtual void GetIndex(RecId id, int *&indices) = 0;
-
-    virtual Boolean WriteIndex(int fd) { return false; }
-    virtual Boolean ReadIndex(int fd) { return false; }
+    virtual void InvalidateIndex();
+    virtual Boolean WriteIndex(int fd);
+    virtual Boolean ReadIndex(int fd);
 
     /**** Getting record Id's ****/
 
     /* Get RecId of 1st available record, return true if available */
-    virtual Boolean HeadID(RecId &recId) = 0;
+    virtual Boolean HeadID(RecId &recId);
 
     /* Get RecId of last record, return true if available */
-    virtual Boolean LastID(RecId &recId) = 0;
+    virtual Boolean LastID(RecId &recId);
 
     /**** Getting Records ****/
 
@@ -248,7 +255,7 @@ class TData {
 				 int &bytesleft,
                                  Boolean asyncAllowed = false,
                                  ReleaseMemoryCallback *callback = NULL
-				 ) = 0;
+				 );
 
     /**************************************************************
       Get next batch of records, as much as fits into buffer. 
@@ -264,19 +271,19 @@ class TData {
 	startRid and numRecs are now recorded in range
       *************************************************************/
     virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            Interval *interval, int &dataSize) = 0;
+                            Interval *interval, int &dataSize);
 
-    virtual void DoneGetRecs(TDHandle handle) = 0;
+    virtual void DoneGetRecs(TDHandle handle);
 
     /* For writing records. Default: not implemented. */
     virtual void WriteRecs(RecId startId, int numRecs, void *buf);
 
     /* get the time file is modified. We only require that
        files modified later has time > files modified earlier. */
-    virtual int GetModTime() = 0;
+    virtual int GetModTime();
 
     /* Do a checkpoint */
-    virtual void Checkpoint() = 0;
+    virtual void Checkpoint();
 
     /* Save the TData to a TData file. */
     DevStatus Save(char *filename);
@@ -295,9 +302,39 @@ class TData {
     DataSource* _data;                  // data source
     int _version;                       // last _data->Version()
 
+    Boolean _fileOpen;			// true if file is open
+
+    char *_indexFileName;		// name of index file
+    FileIndex *_indexP;
+
+    long _totalRecs;                    // total number of records
+    long _lastPos;                      // position of last record in file
+    long _lastIncompleteLen;            // length of last incomplete record
+
+    long _initTotalRecs;                // initial # of records in cache
+    int _initLastPos;                   // initial last position in file
+
+    time_t _lastFileUpdate;             // timestamp of last file update
+    int _bytesFetched;                  // total # of bytes fetched
+
     Boolean _goHomeOnInvalidate;
 
-    char* MakeCacheFileName(char *name, char *type);
+    static char* MakeCacheFileName(char *name, char *type);
+
+    virtual void Cleanup();
+    virtual void PrintIndices();
+
+    void FlushDataPipe(TDataRequest *req);
+
+    static char *MakeIndexFileName(char *name, char *type);
+
+    virtual void Initialize();
+    virtual void BuildIndex() {}
+    virtual void RebuildIndex();
+
+    virtual TD_Status ReadRec(RecId id, int numRecs, void *buf) { return TD_FAIL; }
+    virtual TD_Status ReadRecAsync(TDataRequest *req, RecId id,
+                           int numRecs, void *buf) { return TD_FAIL; }
     
   private:
 
@@ -305,7 +342,6 @@ class TData {
     DevStatus WriteLogSchema(int fd);
     DevStatus WritePhysSchema(int fd);
     DevStatus WriteData(int fd);
-
 };
 
 #endif

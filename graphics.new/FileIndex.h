@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/18 22:51:05  jussi
+  Improved the way the index array is allocated and reallocated.
+
   Revision 1.2  1996/10/05 16:24:46  wenger
   Fixed up includes (didn't work on HP).
 
@@ -73,6 +76,9 @@ private:
   int _indexSize;
   int _highestValidIndex;
   OffsetType *_indexArray;
+
+  char *_indexFileName;
+  Boolean _changedSinceCheckpoint;
 };
 
 

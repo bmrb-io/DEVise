@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/11/30 22:28:29  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.37  1998/12/15 14:55:24  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -193,6 +200,8 @@
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
+#include "FileIndex.h"
+#include "DebugLog.h"
 
 #ifdef ATTRPROJ
 #   include "ApInit.h"
@@ -272,377 +281,6 @@ TDataBinary::~TDataBinary()
   delete _indexFileName;
 }
 
-Boolean TDataBinary::CheckFileStatus()
-{
-  // see if file is (still) okay
-  if (!_data->IsOk()) {
-    // if file used to be okay, close it
-    if (_fileOpen) {
-      if (_data->SupportsAsyncIO() &&_data->TerminateProc() < 0)
-          fprintf(stderr, "Could not terminate data source process\n");
-      Dispatcher::Current()->Unregister(this);
-      printf("Data stream %s is no longer available\n", _name);
-      _data->Close();
-#ifndef ATTRPROJ
-      QueryProc::Instance()->ClearTData(this);
-#endif
-      _fileOpen = false;
-    }
-    if (!(_data->Open("r") == StatusOk)) {
-      // file access failure, get rid of index
-      _indexP->Clear();
-      _initTotalRecs = _totalRecs = 0;
-      _initLastPos = _lastPos = 0;
-      _lastIncompleteLen = 0;
-      return false;
-    }
-    printf("Data stream %s has become available\n", _name);
-    _fileOpen = true;
-#ifdef CONCURRENT_IO
-    (void)_data->InitializeProc();
-#endif
-    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
-  }
-
-  return true;
-}
-
-int TDataBinary::Dimensions(int *sizeDimension)
-{
-  sizeDimension[0] = _totalRecs;
-  return 1;
-}
-
-Boolean TDataBinary::HeadID(RecId &recId)
-{
-  recId = 0;
-  return (_totalRecs > 0);
-}
-
-Boolean TDataBinary::LastID(RecId &recId)
-{
-  if (!CheckFileStatus()) {
-    recId = _totalRecs - 1;
-    return false;
-  }
-
-  if (!_data->isTape()) {
-    /* See if file has shrunk or grown */
-    long currPos = _data->gotoEnd();
-#if DEBUGLVL >= 5
-    printf("TDataBinary::LastID: currpos: %ld, lastpos: %ld\n", 
-	   currPos, _lastPos);
-#endif
-    if (currPos < _lastPos) {
-      /* File has shrunk, rebuild index from scratch */
-      InvalidateTData();
-    } else if (currPos > _lastPos) {
-      /* Don't update view more frequently than at 1-second intervals */
-      time_t now = time(NULL);
-      if (now != _lastFileUpdate) {
-        _lastFileUpdate = now;
-        /* File has grown, build index for new records */
-#if DEBUGLVL >= 3
-        printf("Extending index...\n");
-#endif
-        BuildIndex();
-#ifndef ATTRPROJ
-	DepMgr::Current()->RegisterEvent(this, DepMgr::EventTdataCh);
-        QueryProc::Instance()->RefreshTData(this);
-#endif
-      }
-    }
-  }
-  
-  recId = _totalRecs - 1;
-  return (_totalRecs > 0);
-}
-
-TData::TDHandle TDataBinary::InitGetRecs(Interval *interval, int &bytesleft,
-                                         Boolean asyncAllowed,
-                                         ReleaseMemoryCallback *callback
-					 )
-				
-{
-
-	if (!strcmp(interval->AttrName, "recId")){ //recId supported
-                RecId lowId = (RecId)(interval->Low);
-                RecId highId = (RecId)(interval->High);
-
-#if DEBUGLVL >= 3
-  cout << "TDataBinary::InitGetRecs [" << lowId << "," << highId << "]"
-       << endl;
-#endif
-
-  DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
-	   && highId >= lowId, "Invalid record parameters");
-
-  TDataRequest *req = new TDataRequest;
-  DOASSERT(req, "Out of memory");
-
-  req->nextVal = lowId;
-  req->endVal = highId;
-  req->relcb = callback;
-  req->AttrName = interval->AttrName;
-  req->granularity = interval->Granularity;
-
-  // Do things similar to LimitRecords
-  if (interval->NumRecs < (int)(highId - lowId +1))
-  {
-        req->endVal = lowId + (interval->NumRecs) - 1;
-  }
-
-  /* Compute location and number of bytes to retrieve */
-  streampos_t offset = _indexP->Get((RecId)(req->nextVal));
-  iosize_t bytes = _indexP->Get((RecId)(req->endVal)) + 1024 - offset;
-  if ((long)req->endVal < _totalRecs - 1) {
-      /* Read up to the beginning of next record */
-      bytes = _indexP->Get((RecId)(req->endVal) + 1) - offset;
-  }
-
-  /*
-     Don't use asynchronous I/O is caller prohibits it, or if
-     data source doesn't support it, or if some other caller is
-     already using it.
-  */
-  if (!asyncAllowed || !_data->SupportsAsyncIO()
-      || _data->NumPipeData() > 0 || _data->IsBusy()) {
-#if DEBUGLVL >= 3
-      printf("Retrieving %llu:%lu bytes from TData 0x%p with direct I/O\n",
-             offset, bytes, this);
-#endif
-      /* Zero handle indicates direct I/O */
-      req->iohandle = 0;
-  } else {
-      /* Submit I/O request to the data source process */
-      req->iohandle = _data->ReadProc(offset, bytes);
-      DOASSERT(req->iohandle >= 0, "Cannot submit I/O request");
-#if DEBUGLVL >= 3
-      printf("Retrieving %llu:%lu bytes from TData 0x%p with I/O handle %d\n",
-             offset, bytes, this, req->iohandle);
-#endif
-      req->pipeFlushed = false;
-  }
-
-  req->lastChunk = req->lastOrigChunk = NULL;
-  req->lastChunkBytes = 0;
-  req->nextChunk = offset;
-
-  bytesleft = (int)((req->endVal - req->nextVal + 1) * RecSize());
-
-  return req;}
-
-        else
-        {
-                cout << "Only recId is supported by TDataBinary.\n";
-                reportErrNosys("Fatal error");//TEMP -- replace with better message
-                exit(1);
-        }
-
-}
-
-Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
-                             Interval *interval, int &dataSize)
-{
-  DOASSERT(req, "Invalid request handle");
-
-	if (!strcmp(req->AttrName, "recId")) { // RecId stuff
-
-#if DEBUGLVL >= 3
-  printf("TDataBinary::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
-#endif
-
-  interval->NumRecs = bufSize / _recSize;
-  DOASSERT(interval->NumRecs > 0, "Not enough record buffer space");
-
-  if (req->nextVal > req->endVal)
-    return false;
-  
-  int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < interval->NumRecs)
-    interval->NumRecs = num;
-  
-  if (req->iohandle == 0)
-    ReadRec((RecId)(req->nextVal), interval->NumRecs, buf);
-  else
-    ReadRecAsync(req, (RecId)(req->nextVal), interval->NumRecs, buf);
-  
-  interval->Low = req->nextVal;
-  dataSize = interval->NumRecs * _recSize;
-  req->nextVal += interval->NumRecs;
-  
-  _bytesFetched += dataSize;
-
-  interval->High = interval->Low + interval->NumRecs - 1;
-  interval->AttrName = req->AttrName;
-  interval->Granularity = req->granularity;
-
-  RecId HIGHId, LOWId;
-  DOASSERT(HeadID(LOWId), "can not find HeadID");
-  DOASSERT(LastID(HIGHId), "can not find LastID");
-  if (LOWId < req->nextVal)
-  {
-        interval->has_left = true;
-        interval->left_adjacent = interval->Low - 1;
-  }
-  else
-        interval->has_left = false;
-
-  if (HIGHId > interval->High)
-  {
-        interval->has_right = true;
-        interval->right_adjacent = interval->High + 1;
-  }
-  else
-        interval->has_right = false;
-
-  
-  if (req->iohandle > 0 && req->nextVal > req->endVal)
-    FlushDataPipe(req);
-
-  return true;}
-
-        else
-        {
-                cout << "TDataBinary: GetRecs deals with recId only.\n";
-                reportErrNosys("Fatal error");//TEMP -- replace with better message
-                exit(1);
-        }
-
-}
-
-void TDataBinary::DoneGetRecs(TDHandle req)
-{
-#if DEBUGLVL >= 3
-  printf("TDataBinary::DoneGetRecs handle 0x%p\n", req);
-#endif
-
-  DOASSERT(req, "Invalid request handle");
-
-  /*
-     Release chunk of memory cached from pipe.
-  */
-  if (req->relcb && req->lastOrigChunk)
-      req->relcb->ReleaseMemory(MemMgr::Buffer, req->lastOrigChunk, 1);
-
-  FlushDataPipe(req);
-
-  delete req;
-}
-
-void TDataBinary::FlushDataPipe(TDataRequest *req)
-{
-  if (req->pipeFlushed)
-    return;
-
-  /*
-     Flush data from pipe. We would also like to tell the DataSource
-     (which is at the other end of the pipe) to stop, but we can't
-     do that yet.
-  */
-  while (1) {
-    char *chunk;
-    streampos_t offset;
-    iosize_t bytes;
-    int status = _data->Consume(chunk, offset, bytes);
-    DOASSERT(status >= 0, "Cannot consume data");
-    if (bytes <= 0)
-      break;
-    /*
-       Release chunk so buffer manager (or whoever gets the following
-       call) can make use of it.
-    */
-    if (req->relcb)
-      req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
-  }
-
-  req->pipeFlushed = true;
-}
-
-void TDataBinary::GetIndex(RecId id, int *&indices)
-{
-  static int index[1];
-  index[0] = id;
-  indices = index;
-}
-
-int TDataBinary::GetModTime()
-{
-  if (!CheckFileStatus())
-    return -1;
-
-  return _data->GetModTime();
-}
-
-char *TDataBinary::MakeIndexFileName(char *name, char *type)
-{
-  char *fname = StripPath(name);
-  int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
-  char *fn = new char[nameLen];
-  sprintf(fn, "%s/%s", Init::WorkDir(), fname);
-  return fn;
-}
-
-void TDataBinary::Initialize()
-{
-  _indexFileName = MakeIndexFileName(_name, _type);
-
-  if (!CheckFileStatus())
-    return;
-
-  if (_data->isBuf()) {
-    BuildIndex();
-    return;
-  }
-
-  if (!_indexP->Initialize(_indexFileName, _data, this, _lastPos,
-    _totalRecs).IsComplete()) goto error;
-
-  _initTotalRecs = _totalRecs;
-  _initLastPos  = _lastPos;
-
-  /* continue to build index */
-  BuildIndex();
-  return;
-
- error:
-  /* recover from error by building index from scratch  */
-#if DEBUGLVL >= 3
-  printf("Rebuilding index...\n");
-#endif
-  RebuildIndex();
-}
-
-void TDataBinary::Checkpoint()
-{
-  if (!CheckFileStatus()) {
-    printf("Cannot checkpoint %s\n", _name);
-    return;
-  }
-
-  if (_data->isBuf()) {
-    BuildIndex();
-    return;
-  }
-
-  printf("Checkpointing %s: %ld total records, %ld new\n", _name,
-	 _totalRecs, _totalRecs - _initTotalRecs);
-  
-  if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
-      /* no need to checkpoint */
-      return;
-
-  if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
-                           _totalRecs).IsComplete())
-      return;
-
-  /*
-     This seems unnecessary but it is here to
-     improve tape performance.
-  */
-  _data->Seek(0, SEEK_SET);
-}
-
 /* Build index for the file. This code should work when file size
    is extended dynamically. Before calling this function, position
    should be at the last place where file was scanned. */
@@ -704,10 +342,19 @@ void TDataBinary::BuildIndex()
   _lastPos = _data->Tell();
   DOASSERT(_lastPos >= currPos, "Incorrect file position");
 
-#ifdef    DEBUG
-  printf("Index for %s: %ld total records, %ld new\n", _name,
-	 _totalRecs, _totalRecs - oldTotal);
+  char logBuf[1024];
+  sprintf(logBuf, "Index for %s: %ld total records, %ld new", _name,
+          _totalRecs, _totalRecs - oldTotal);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#if (DEBUGLVL >= 3)
+  printf("%s\n", logBuf);
 #endif
+
+  // If things got changed, checkpoint the new index.  (Doing this immediately
+  // instead of only when saving sessions.  RKW 2000-01-11.)
+  if (_totalRecs - oldTotal > 0) {
+    Checkpoint();
+  }
 
   if (_totalRecs <= 0)
       fprintf(stderr, "No valid records for data stream %s\n"
@@ -718,20 +365,6 @@ void TDataBinary::BuildIndex()
      improve tape performance.
   */
   _data->Seek(0, SEEK_SET);
-}
-
-/* Rebuild index */
-
-void TDataBinary::RebuildIndex()
-{
-  InvalidateIndex();
-
-  _indexP->Clear();
-  _initTotalRecs = _totalRecs = 0;
-  _initLastPos = _lastPos = 0;
-  _lastIncompleteLen = 0;
-
-  BuildIndex();
 }
 
 TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
@@ -900,25 +533,4 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 void TDataBinary::WriteLine(void *rec)
 {
   WriteRecs(0, 1, rec);
-}
-
-void TDataBinary::Cleanup()
-{
-  Checkpoint();
-
-  if (_data->isTape())
-    _data->printStats();
-}
-
-void TDataBinary::PrintIndices()
-{
-  int cnt = 0;
-  for(long i = 0; i < _totalRecs; i++) {
-    printf("%ld ", _indexP->Get(i));
-    if (cnt++ == 10) {
-      printf("\n");
-      cnt = 0;
-    }
-  }
-  printf("\n");
 }

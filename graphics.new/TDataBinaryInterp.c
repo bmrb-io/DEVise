@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/07/15 14:29:59  wenger
+  Moved hashing of strings from TData*Interp classes to MappingInterp
+  class; cleaned up a few extra includes of StringStorage.h.
+
   Revision 1.11  1996/10/02 15:23:52  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -222,89 +226,6 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, char *type,
 
 TDataBinaryInterp::~TDataBinaryInterp()
 {
-}
-
-void TDataBinaryInterp::InvalidateIndex()
-{
-  for(int i = 0; i < _attrList.NumAttrs(); i++) {
-      AttrInfo *info = _attrList.Get(i);
-      info->hasHiVal = false;
-      info->hasLoVal = false;
-  }
-}
-
-Boolean TDataBinaryInterp::WriteIndex(int fd)
-{
-  int numAttrs = _attrList.NumAttrs();
-  if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    reportErrSys("write");
-    return false;
-  }
-
-  for(int i = 0; i < _attrList.NumAttrs(); i++) {
-    AttrInfo *info = _attrList.Get(i);
-    if (info->type == StringAttr)
-      continue;
-    if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
-	!= sizeof info->hasHiVal) {
-      reportErrSys("write");
-      return false;
-    }
-    if (write(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      reportErrSys("write");
-      return false;
-    }
-    if (write(fd, &info->hasLoVal, sizeof info->hasLoVal)
-	!= sizeof info->hasLoVal) {
-      reportErrSys("write");
-      return false;
-    }
-    if (write(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      reportErrSys("write");
-      return false;
-    }
-  }
-
-  return true;
-}
-
-Boolean TDataBinaryInterp::ReadIndex(int fd)
-{
-  int numAttrs;
-  if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    reportErrSys("read");
-    return false;
-  }
-  if (numAttrs != _attrList.NumAttrs()) {
-    printf("Index has inconsistent schema; rebuilding\n");
-    return false;
-  }
-
-  for(int i = 0; i < _attrList.NumAttrs(); i++) {
-    AttrInfo *info = _attrList.Get(i);
-    if (info->type == StringAttr)
-      continue;
-    if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
-	!= sizeof info->hasHiVal) {
-      reportErrSys("read");
-      return false;
-    }
-    if (read(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      reportErrSys("read");
-      return false;
-    }
-    if (read(fd, &info->hasLoVal, sizeof info->hasLoVal)
-	!= sizeof info->hasLoVal) {
-      reportErrSys("read");
-      return false;
-    }
-    if (read(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      reportErrSys("read");
-      return false;
-    }
-  }
-
-  return true;
 }
 
 Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)

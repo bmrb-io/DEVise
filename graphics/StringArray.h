@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/11/30 22:28:05  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.4  1997/01/18 18:34:02  jussi
   Added missing stdio.h to inclusion list.
 
@@ -31,6 +38,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "DevError.h"
 
 unsigned const int StringArrayIncrement = 20;
 

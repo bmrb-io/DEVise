@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/10/13 19:40:46  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.22  1997/12/23 23:35:40  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -128,17 +132,11 @@
 #include <stdio.h>
 
 #include "DeviseTypes.h"
-#ifdef ATTRPROJ
-#   include "ApDispatcher.h"
-#else
-#   include "Dispatcher.h"
-#endif
 #include "TData.h"
 #include "RecId.h"
 #include "DataSource.h"
-#include "FileIndex.h"
 
-class TDataBinary: public TData, private DispatcherCallback {
+class TDataBinary: public TData {
 public:
   TDataBinary(char *name, char *type, char *param,
               int recSize, int physRecSize);
@@ -149,10 +147,6 @@ public:
   virtual AttrList *GetAttrList(){ return NULL;}
 
   virtual Boolean SetAttrs(const AttrList &attrs) { return false; }
-
-  /* Return # of dimensions and the size of each dimension,
-     or -1 if unknown */
-  virtual int Dimensions(int *sizeDimension);
 
   // Return record size, or -1 if variable record size
   virtual int RecSize() { return _recSize; }
@@ -172,51 +166,6 @@ public:
   // A -1 is returned for none-existing attrNum
   virtual int UserAttr(int attrNum) { return -1; }
 
-  // Get name
-  virtual char *GetName() { return _name; }
-
-  /* convert RecId into index */
-  virtual void GetIndex(RecId id, int *&indices);
-
-  /* Get RecId of 1st available record, return true if available */
-  virtual Boolean HeadID(RecId &recId);
-
-  /* Get RecId of last record, return true if available */
-  virtual Boolean LastID(RecId &recId);
-
-  /**************************************************************
-    Init getting records.
-  ***************************************************************/
-  virtual TDHandle InitGetRecs(Interval *interval, int &bytesleft,
-                               Boolean asyncAllowed,
-                               ReleaseMemoryCallback *callback
-				);
-
-  /**************************************************************
-    Get next batch of records, as much as fits into buffer. 
-    Return false if no more.
-    input:
-      buf: where to start putting records.
-      bufSize: size of buffer being supplied.
-    output:
-      startRid : starting record ID of this batch 
-      numRecs: number of records.
-      dataSize: # of bytes taken up by data.
-    **************************************************************
-        startRid and numRecs are now recorded in range
-    *************************************************************/
-  virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                          Interval *interval, int &dataSize);
-
-  virtual void DoneGetRecs(TDHandle handle);
-
-  /* get the time file is modified. We only require that
-     files modified later has time > files modified earlier. */
-  virtual int GetModTime();
-
-  /* Do a checkpoint */
-  virtual void Checkpoint();
-
   /* writing a record. For TDataBinary, the new record
      is appended to the file (startRid not examined), numRecs ==1, 
      and buf points to a string to be written to disk. */
@@ -226,64 +175,22 @@ public:
   void WriteLine(void *line);
 
 protected:
-  /* For derived class */
-  /* should be called by the constructors of derived classes */
-  void Initialize();
-
   /* Copy record into buffer. Return false if invalid record. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
-
-  /* Read/Write specific to each subclass cache. The cached information
-     is to be read during file start up, and written when file closes,
-     so as to get the TData back to the state at the last
-     file close. Return false and the index will be rebuilt
-     from scratch every time. Return true and the base class
-     will reuse the index it has cached. */
-  virtual Boolean WriteIndex(int fd) { return false; }
-  virtual Boolean ReadIndex(int fd) { return false; }
-
-  /* This function is called by this class to ask the derived
-     class to invalidate all cached information */
-  virtual void InvalidateIndex() {}
-
-  static char *MakeIndexFileName(char *name, char *type);
 
 private:
   /* From DispatcherCallback */
   char *DispatchedName() { return "TDataBinary"; }
-  virtual void Cleanup();
 
-  Boolean CheckFileStatus();
-
-  /* Build or rebuild index */
-  void BuildIndex();
-  void RebuildIndex();
+  /* Build index */
+  virtual void BuildIndex();
 
   TD_Status ReadRec(RecId id, int numRecs, void *buf);
   TD_Status ReadRecAsync(TDataRequest *req, RecId id,
                          int numRecs, void *buf);
-  void FlushDataPipe(TDataRequest *req);
 
-  /* Print indices */
-  void PrintIndices();
-
-  long _totalRecs;                // total number of records
   char *_file;                    // name of (cache) file
-  char *_indexFileName;           // name of index file
   int _physRecSize;               // physical record size
-
-  FileIndex *_indexP;
-
-  long _lastPos;                  // position of last record in file
-  long _lastIncompleteLen;        // length of last incomplete record
-
-  Boolean _fileOpen;              // true if file is okay
-
-  long _initTotalRecs;            // initial # of records in cache
-  int _initLastPos;               // initial last position in file
-
-  time_t _lastFileUpdate;         // timestamp of last file update
-  int _bytesFetched;              // total # of bytes fetched
 };
 
 #endif

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/10/13 19:40:47  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.6  1996/07/01 19:28:11  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -112,10 +116,6 @@ protected:
   /* Copy record to buffer. Return false if invalid record. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
-  virtual void InvalidateIndex();
-  virtual Boolean WriteIndex(int fd);
-  virtual Boolean ReadIndex(int fd);
-
 private:
   AttrList _attrList;  /* list of attributes */
   Boolean hasComposite;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/11/30 22:28:22  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.21  1999/06/01 17:37:40  wenger
   Fixed various compiler warnings.
 
@@ -178,14 +185,6 @@ int GData::Dimensions(int *sizeDimension)
   else
     sizeDimension[0] = 0;
   return 1;
-}
-
-//TEMP -- this looks dangerous!  RKW 1999-06-01.
-void GData::GetIndex(RecId id, int *&indices)
-{
-  static int indexArray[1];
-  indices = indexArray;
-  indexArray[0] = id;
 }
 
 Boolean GData::HeadID(RecId &recId)

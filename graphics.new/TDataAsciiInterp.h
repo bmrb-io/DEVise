@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/10/13 19:40:46  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.14  1998/01/07 19:29:57  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -154,10 +158,6 @@ protected:
      this line is not valid. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
-  virtual void InvalidateIndex();
-  virtual Boolean WriteIndex(int fd);
-  virtual Boolean ReadIndex(int fd);
-
 private:
   static void PrintRec(int numArgs, char **args) {
     printf(" ");

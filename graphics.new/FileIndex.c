@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/05/28 15:39:15  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.6.4.2  1997/05/27 18:02:54  wenger
   Minor bug fixes and cleanup to Shilpa's layout manager code and associated
   code.
@@ -63,7 +66,7 @@
 
 #define _FileIndex_c_
 
-//#define DEBUG
+#define DEBUGLVL 0
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -77,6 +80,8 @@
 #include "Exit.h"
 #include "DevError.h"
 
+// Note: neither indexMagicNumber nor fileCompareBytes can be changed
+// without goofing up existing index files.
 static const unsigned long indexMagicNumber = 0xdeadbeef;
 static const int fileCompareBytes = 4096;
 
@@ -92,11 +97,16 @@ static char *	srcFile = __FILE__;
  */
 FileIndex::FileIndex(int initSize)
 {
-  DO_DEBUG(printf("FileIndex::FileIndex()\n"));
+#if (DEBUGLVL >= 1)
+  printf("FileIndex::FileIndex()\n");
+#endif
 
   _indexSize = 0;
   _indexArray = NULL;
   _highestValidIndex = -1;
+
+  _indexFileName = NULL;
+  _changedSinceCheckpoint = false;
 
   ExpandArray(initSize);
 }
@@ -107,10 +117,17 @@ FileIndex::FileIndex(int initSize)
  */
 FileIndex::~FileIndex()
 {
-  DO_DEBUG(printf("FileIndex::~FileIndex()\n"));
+#if (DEBUGLVL >= 1)
+  printf("FileIndex::~FileIndex()\n");
+#endif
 
   delete [] _indexArray;
   _indexArray = NULL;
+
+  if (_indexFileName) {
+    free(_indexFileName);
+    _indexFileName = NULL;
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -120,7 +137,9 @@ FileIndex::~FileIndex()
 OffsetType
 FileIndex::Get(RecId recId)
 {
-  DO_DEBUG(printf("FileIndex::Get(%ld)\n", recId));
+#if (DEBUGLVL >= 5)
+  printf("FileIndex::Get(%ld)\n", recId);
+#endif
   
   //printf("_highestValidIndex %d\n", _highestValidIndex);
   DOASSERT((int) recId <= _highestValidIndex, "Illegal record ID");
@@ -135,7 +154,11 @@ FileIndex::Get(RecId recId)
 void
 FileIndex::Set(RecId recId, OffsetType offset)
 {
-  DO_DEBUG(printf("FileIndex::Set(%d, %d)\n", (int) recId, (int) offset));
+#if (DEBUGLVL >= 5)
+  printf("FileIndex::Set(%d, %d)\n", (int) recId, (int) offset);
+#endif
+
+  _changedSinceCheckpoint = true;
 
   if ((int) recId >= _indexSize)
   {
@@ -155,9 +178,14 @@ FileIndex::Set(RecId recId, OffsetType offset)
 void
 FileIndex::Clear()
 {
-  DO_DEBUG(printf("FileIndex::Clear()\n"));
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::Clear()\n");
+#endif
+
+  _changedSinceCheckpoint = false; // false because we unlink the index file
 
   _highestValidIndex = -1;
+  if (_indexFileName) (void) unlink(_indexFileName);
 }
 
 
@@ -169,15 +197,25 @@ DevStatus
 FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
                       long& lastPos, long& totalRecs)
 {
-  DO_DEBUG(printf("FileIndex::Initialize(%s)\n", indexFileName));
+#if (DEBUGLVL >= 1)
+  printf("FileIndex::Initialize(%s)\n", indexFileName);
+#endif
 
   DevStatus result(StatusOk);
   int indexFd = -1;
 
+  if (_indexFileName) free(_indexFileName);
+  _indexFileName = CopyString(indexFileName);
+
   indexFd = open(indexFileName, O_RDONLY, 0);
   if (indexFd < 0)
   {
-    // Don't report an error, because we can recover from this.
+    // Don't report an error, because we can recover from this.  (This is
+    // not necessarily an error -- we may just not have an index for this
+    // data yet.)
+#if defined(DEBUG)
+    reportErrSys("Can't open index file");
+#endif
     result += StatusFailed;
   }
 
@@ -321,6 +359,10 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     (void) unlink(indexFileName);
   }
 
+  if (result.IsComplete()) {
+    _changedSinceCheckpoint = false;
+  }
+
   return result;
 }
 
@@ -332,9 +374,25 @@ DevStatus
 FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
     long lastPos, long totalRecs)
 {
-  DO_DEBUG(printf("FileIndex::Checkpoint()\n"));
+#if (DEBUGLVL >= 1)
+  printf("FileIndex::Checkpoint()\n");
+#endif
 
   DevStatus result(StatusOk);
+
+  if (_indexFileName && !strcmp(_indexFileName, indexFileName) &&
+      !_changedSinceCheckpoint) {
+    // We don't need to do anything.
+#if (DEBUGLVL >= 1)
+    printf("Index unchanged since last checkpoint\n");
+#endif
+    return result;
+  }
+
+  if (_indexFileName && strcmp(_indexFileName, indexFileName)) {
+    free(_indexFileName);
+    _indexFileName = CopyString(indexFileName);
+  }
 
   int indexFd = -1;
   indexFd = open(indexFileName, O_CREAT| O_RDWR,
@@ -454,6 +512,10 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
     (void) unlink(indexFileName);
   }
 
+  if (result.IsComplete()) {
+    _changedSinceCheckpoint = false;
+  }
+
   return result;
 }
 
@@ -464,7 +526,9 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
 DevStatus
 FileIndex::Read(int fd, long recordCount)
 {
-  DO_DEBUG(printf("FileIndex::Read(%ld)\n", recordCount));
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::Read(%ld)\n", recordCount);
+#endif
 
   DevStatus result(StatusOk);
 
@@ -496,7 +560,9 @@ FileIndex::Read(int fd, long recordCount)
 DevStatus
 FileIndex::Write(int fd, long recordCount)
 {
-  DO_DEBUG(printf("FileIndex::Write(%ld)\n", recordCount));
+#if (DEBUGLVL >= 3)
+  printf("FileIndex::Write(%ld)\n", recordCount);
+#endif
 
   DevStatus result(StatusOk);
 
@@ -517,7 +583,9 @@ FileIndex::Write(int fd, long recordCount)
 void
 FileIndex::ExpandArray(RecId recId)
 {
-  DO_DEBUG(printf("FileIndex::ExpandArray(%d)\n", (int) recId));
+#if (DEBUGLVL >= 7)
+  printf("FileIndex::ExpandArray(%d)\n", (int) recId);
+#endif
 
   int newIndexSize = _indexSize + MAX(10000, _indexSize);
   if (recId + 1 > (unsigned) newIndexSize) newIndexSize = recId + 1;

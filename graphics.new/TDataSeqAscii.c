@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/11/30 22:28:30  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.9  1997/12/23 23:35:42  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -302,30 +309,6 @@ void TDataSeqAscii::DoneGetRecs(TDHandle req)
   delete req;
 }
 
-void TDataSeqAscii::GetIndex(RecId id, int *&indices)
-{
-  static int index[1];
-  index[0] = id;
-  indices = index;
-}
-
-int TDataSeqAscii::GetModTime()
-{
-  if (!CheckFileStatus())
-    return -1;
-
-  return _data->GetModTime();
-}
-
-char *TDataSeqAscii::MakeIndexFileName(char *name, char *type)
-{
-  char *fname = StripPath(name);
-  int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
-  char *fn = new char [nameLen];
-  sprintf(fn, "%s/%s", Init::WorkDir(), fname);
-  return fn;
-}
-
 void TDataSeqAscii::Initialize()
 {
   return;
@@ -336,13 +319,6 @@ void TDataSeqAscii::Checkpoint()
     printf("Cannot checkpoint %s\n", _name);
     return;
 }
-
-
-void TDataSeqAscii::InvalidateTData()
-{
-    TData::InvalidateTData();
-}
-
 
 /* Build index for the file. This code should work when file size
    is extended dynamically. Before calling this function, position

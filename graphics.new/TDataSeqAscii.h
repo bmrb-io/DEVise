@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/13 19:40:47  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.7  1997/12/23 23:35:42  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -70,7 +74,7 @@
 #include "DataSource.h"
 #include "FileIndex.h"
 
-class TDataSeqAscii: public TData, private DispatcherCallback {
+class TDataSeqAscii: public TData {
 public:
 	TDataSeqAscii(char *name, char *type, char *param, int recSize);
 
@@ -89,9 +93,6 @@ public:
 
 	// Return true if TDataTape appends records
 	virtual Boolean HasAppend() { return true; }
-
-	/* Convert RecId into index */
-	virtual void GetIndex(RecId id, int *&indices);
 
 	/**** Getting record Id's ****/
 
@@ -129,15 +130,8 @@ public:
 
 	virtual void DoneGetRecs(TDHandle handle);
 
-	/* get the time file is modified. We only require that
-	files modified later has time > files modified earlier. */
-	virtual int GetModTime();
-
 	/* Do a checkpoint */
 	virtual void Checkpoint();
-
-	// rebuild index, et. al
-	virtual void InvalidateTData();
 
 	/* writing a record. For TDataSeqAscii, the new record
 	is appended to the file (startRid not examined), numRecs ==1, 
@@ -170,23 +164,21 @@ protected:
            class to invalidate all indexed information */
         virtual void InvalidateIndex() {}
 
-	static char *MakeIndexFileName(char *name, char *type);
-
 private:
 	/* From DispatcherCallback */
 	char *DispatchedName() { return "TDataSeqAscii"; }
 	virtual void Cleanup();
 
-	Boolean CheckFileStatus();
+	virtual Boolean CheckFileStatus();
 
 	/* Build or rebuild index */
-	void BuildIndex();
-	void RebuildIndex();
+	virtual void BuildIndex();
+	virtual void RebuildIndex();
 
-	TD_Status ReadRec(RecId id, int numRecs, void *buf);
+	virtual TD_Status ReadRec(RecId id, int numRecs, void *buf);
 
 	/* Print indices */
-	void PrintIndices();
+	virtual void PrintIndices();
 
 	long _totalRecs;                // total number of records
 	long _lastPos;                  // position of last record in file

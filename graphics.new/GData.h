@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/10/13 19:40:44  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.10  1997/12/23 23:35:17  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -104,9 +108,6 @@ public:
 	virtual Boolean HasDeletion() { return false; }
 
 	virtual Boolean HasAppend() { return true; }
-
-	/* convert RecId into index */
-	virtual void GetIndex(RecId id, int *&indices);
 
 	virtual char *GetName();
 
