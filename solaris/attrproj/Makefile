@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/06/27 18:13:16  wenger
+#  Re-integrated most of the attribute projection code (most importantly,
+#  all of the TData code) into the main code base (reduced the number of
+#  modules used only in attribute projection).
+#
 #  Revision 1.3  1996/06/07 19:41:19  wenger
 #  Integrated some of the special attribute projection sources back
 #  into the regular Devise sources.
@@ -25,14 +30,12 @@
 #  Revision 1.1  1996/04/22 18:05:34  wenger
 #  First version of "attribute projection" code.  The parser (with
 #  the exception of instantiating any TData) compiles and runs.
-#
-#
 
 ############################################################
 
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

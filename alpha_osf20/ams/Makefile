@@ -15,12 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/14 20:34:37  jussi
+#  Initial revision.
 
 ############################################################
 
 ARCH_FLAGS   = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
-ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -L /s/gcc/lib
-ARCH_LDPOST  = -static
+ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -L/s/gcc/lib
+ARCH_LDPOST  =
 
 VPATH = ../../ams
 include $(VPATH)/Makefile.base
