@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/08/04 21:59:58  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.1  1996/05/31 15:37:41  jussi
   Moved to the graphics.new directory.
 
@@ -29,6 +36,12 @@
 
 #include "VisualLink.h"
 #include "ViewGraph.h"
+
+// hp's stdio.h has _flag #define'd
+#ifdef _flag
+#undef _flag
+#endif
+
 
 VisualLink::VisualLink(char *name, VisualFlag linkFlag)
 {
