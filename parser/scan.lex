@@ -16,7 +16,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.6  1995/11/25 19:35:37  jussi
+  Added copyright notice and CVS header. Cleaned up the code a bit.
+*/
 
 #include "tokens.h"
 %}
@@ -113,6 +116,7 @@ char *GetTokenText()
   return text;
 }
 
-yywrap()
+int yywrap()
 {
+  return 0;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 15:43:50  jussi
+  Replaced WinVertical and WinHorizontal with TileLayout.
+
   Revision 1.3  1995/12/02 21:38:31  jussi
   Added horizontal view layout.
 
@@ -187,6 +190,9 @@ main(int argc, char **argv)
      Otherwise, we'll get an error */
   DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
   
+  // keep compiler happy
+  disp = disp;
+
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();
 

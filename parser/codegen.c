@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/11/27 15:40:41  jussi
+  Substituted g++ for /usr/lib/cpp as the preprocessor. Changed type
+  of 'color' from unsigned int to double. Changed type of shapeAttrs
+  from float to double.
+
   Revision 1.8  1995/11/25 19:24:42  jussi
   Updated copyright notice and cleaned up the code. Removed references
   to xPerPixel and yPerPixel as per changes made in Devise in how
@@ -89,10 +94,9 @@ void GenCppDefs(MappingRec *rec, char *string)
 Generate shape definitions
 **************************************************************/
 
-GenShapeDefs(MappingRec *rec, FILE *mapFile)
+void GenShapeDefs(MappingRec *rec, FILE *mapFile)
 {
   FILE *tmp;
-  char *name;
   char tempName[1024];
   char string[4096];
   char temp[1024];
@@ -343,7 +347,7 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
     fprintf(mapFile, "\t\twhile (i < numSyms) {\n");
     fprintf(mapFile, "\t\t\t%s_GData *sym = (%s_GData *)syms[i];\n", rec->name, rec->name);
     fprintf(mapFile, "\t\t\tfor(int symIndex = i+incr; symIndex < numSyms; symIndex += incr) {\n");
-    fprintf(mapFile, "\t\t\t\tif(syms[symIndex]->shapeID != sym->shapeID)\n",rec->name);
+    fprintf(mapFile, "\t\t\t\tif(syms[symIndex]->shapeID != sym->shapeID)\n");
     fprintf(mapFile, "\t\t\t\t\tbreak;\n");
 fprintf(mapFile, "\t\t\t}\n");
     

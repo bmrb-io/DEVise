@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 15:42:46  jussi
+  Replaced WinVertical and WinHorizontal with TileLayout.
+
   Revision 1.5  1995/12/02 21:38:56  jussi
   Added horizontal view layout.
 
@@ -429,6 +432,9 @@ main(int argc, char **argv){
 	/* This is a hack to create a display before running Dispatcher.
 	Otherwise, we'll get an error */
 	DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
+
+	/* keep compiler happy */
+	disp = disp;
 
 	/* Start session (possibly restoring an old one */
 	ctrl->StartSession();
