@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/08/14 20:01:08  flisakow
+#      Need a devread directory for each m/c arch.
+#
 #  Revision 1.1  1996/08/14 19:04:53  flisakow
 #    Checkin of DevRead class, a near duplicate of the AttrProj class,
 #    it is an interface to reading data from Devise files.
@@ -33,7 +36,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  =
+ARCH_LDPOST  = -lpthread
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
