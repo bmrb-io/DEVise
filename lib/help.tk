@@ -1,3 +1,7 @@
+#	$Id$
+
+#	$Log$
+
 # Do the help command
 # erase the next line when not debugging
 # set libdir ./

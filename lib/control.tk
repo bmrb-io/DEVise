@@ -1,4 +1,5 @@
-# control.tk
+#	$Id$	
+
 # The following are linked to global C variables: fileName, fileAlias,
 # gdataName, windowName, sessionName, argv0,  template
 
