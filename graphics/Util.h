@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  2001/05/18 19:25:25  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
   Revision 1.29  2001/04/12 20:14:59  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -412,6 +416,17 @@ void FreeArgs(int argc, char **argv);
 
 Boolean dequal(double d1, double d2, double zeroTol = 1.0e-5,
     double relTol = 1.0e-5);
+
+
+// This function is intended for use after snprintf().  It make sure
+// that the buffer is terminated, even if the buffer is not long enough
+// to hold the entire string that is generated, and logs an error
+// message if that's the case.  formatted is the return value from
+// snprintf();
+#define checkAndTermBuf(buf, bufSize, formatted) CheckAndTermBuf((buf), \
+  (bufSize), (formatted), __FILE__, __LINE__)
+DevStatus CheckAndTermBuf(char buf[], int bufSize, int formatted,
+  const char *file, int line);
 
 #ifdef DEBUG
 #define DO_DEBUG(stuff) stuff

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  2001/05/18 19:25:22  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
   Revision 1.41  2001/04/12 20:14:59  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -702,6 +706,40 @@ dequal(double d1, double d2, double zeroTol, double relTol)
 	    if (relDiff < relTol) {
 	        result = true;
 	    }
+	}
+    }
+
+    return result;
+}
+
+DevStatus
+CheckAndTermBuf(char buf[], int bufSize, int formatted, const char *file,
+  int line)
+{
+#if defined(DEBUG)
+    printf("CheckAndTermBuf(0x%p, %d, %d)\n", buf, bufSize, formatted);
+#endif
+
+    DevStatus result(StatusOk);
+
+    if (formatted >= bufSize) {
+	DevError::ReportError("Warning: buffer is too short", file, line,
+	  devNoSyserr);
+
+	result += StatusWarn;
+
+	if (bufSize > 0) {
+
+	    // Put overflow indicator string at end of buffer.
+	    const char *termStr = "*...";
+	    const int termLen = strlen(termStr);
+	    int startIndex = bufSize - termLen - 1;
+	    if (startIndex >= 0) {
+	        strncpy(&buf[startIndex], termStr, termLen + 1);
+	    }
+
+	    // Be absolutely sure the buffer is correctly terminated.
+	    buf[bufSize - 1] = '\0';
 	}
     }
 

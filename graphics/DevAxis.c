@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  2001/05/03 19:39:02  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.6  2001/04/23 18:58:24  wenger
   Added negative axis label option (no GUI yet) to allow us to display
   chemical shifts the way the BMRB people want.
@@ -419,7 +425,8 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
 	  Coord labelValue = tickMark;
 	  labelValue = _multFactor * tickMark;
 	  if (labelValue == -0.0) labelValue = 0.0;
-      snprintf(buf, bufSize, _floatFormat, labelValue);
+      int formatted = snprintf(buf, bufSize, _floatFormat, labelValue);
+	  checkAndTermBuf(buf, bufSize, formatted);
 	}
 
 	*info._labelPixVar = *info._tickPixVar - _labelWidth / 2;

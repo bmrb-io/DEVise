@@ -24,6 +24,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.2  2001/05/18 21:14:58  wenger
   Fixed bug 671 (potential GData buffer overflow).
 
@@ -273,11 +277,18 @@ DrillDown3D::PrintTData(Coord gdX, Coord gdY, Coord gdZ, char *tData)
 
     const int bufSize = 128;
     char attrBuf[bufSize];
-    snprintf(attrBuf, bufSize, "x: %g", gdX);
+    int formatted;
+
+    formatted = snprintf(attrBuf, bufSize, "x: %g", gdX);
+    checkAndTermBuf(attrBuf, bufSize, formatted);
     _results.AddArg(attrBuf);
-    snprintf(attrBuf, bufSize, "y: %g", gdY);
+
+    formatted = snprintf(attrBuf, bufSize, "y: %g", gdY);
+    checkAndTermBuf(attrBuf, bufSize, formatted);
     _results.AddArg(attrBuf);
-    snprintf(attrBuf, bufSize, "z: %g", gdZ);
+
+    formatted = snprintf(attrBuf, bufSize, "z: %g", gdZ);
+    checkAndTermBuf(attrBuf, bufSize, formatted);
     _results.AddArg(attrBuf);
 
     for (int index = 0; index < _attrs->NumAttrs(); index++) {

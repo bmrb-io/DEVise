@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  2001/04/12 20:15:29  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.5  2000/03/14 17:05:46  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -158,9 +164,8 @@ ArgList::AddArg(const char *arg)
         reportErrNosys("Fatal error: out of memory");
 	    Exit::DoExit(2);
 	  }
-	  if (snprintf(buf, bufLen, "%c%s%c", _quote, arg, _quote) >= bufLen) {
-	    reportErrNosys("String to long!");
-	  }
+	  int formatted = snprintf(buf, bufLen, "%c%s%c", _quote, arg, _quote);
+	  checkAndTermBuf(buf, bufLen, formatted);
       _argv[_argc++] = buf;
 	} else {
       _argv[_argc++] = CopyString(arg);

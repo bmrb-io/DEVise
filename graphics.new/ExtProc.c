@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  2001/04/27 17:09:43  wenger
+  Made various cleanups to external process dynamic data generation and
+  added most GUI (still need special GUI for creating the data source);
+  cleanups included finding and fixing bug 668.
+
   Revision 1.1  2001/04/12 20:16:30  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -134,8 +139,9 @@ ExtProc::Run(TDataMap *map, const char *gdataRecP)
       if (snprintf(buf, bufLen, "%s/%s", Init::TmpDir(), outFile) >= bufLen) {
         reportErrNosys("Output file name is too long!");
 	result += StatusFailed;
+      } else {
+        args.AddArg(buf);
       }
-      args.AddArg(buf);
 
       // Get the other arguments.
       for (index = firstArgIndex + 2; index < firstArgIndex + attrCount;

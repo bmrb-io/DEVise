@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/09/08 20:56:21  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.6  1999/03/24 17:26:03  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -69,7 +73,7 @@ const int	devNoSyserr = -9999;
 class DevError
 {
 public:
-    static void ReportError(const char *message, char *file, int line,
+    static void ReportError(const char *message, const char *file, int line,
       int errnum);
     static Boolean SetEnabled(Boolean enabled) {
         Boolean old = _enabled;

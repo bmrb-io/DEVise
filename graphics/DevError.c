@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/10/05 17:55:36  wenger
+  Added debug log level.
+
   Revision 1.8  1999/09/08 20:56:21  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -90,7 +93,8 @@ char DevError::_errBuf[MAXPATHLEN * 2];
  * to do something more sophisticated eventually.
  */
 void
-DevError::ReportError(const char *message, char *file, int line, int errnum)
+DevError::ReportError(const char *message, const char *file, int line,
+  int errnum)
 {
     char * progName = "DEVise";
 

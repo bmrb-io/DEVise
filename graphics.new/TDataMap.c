@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  2001/05/18 21:15:00  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.41  2001/05/09 18:08:55  wenger
   Needed slight changes to get this to work on aden (typecast seemed to
   goof up compiler).
@@ -621,25 +624,25 @@ TDataMap::GetShapeAttrAsStr(const char *gdataRecP, int attrNum,
 
   switch (type) {
   case IntAttr:
+  {
     if (format == NULL) format = "%d";
-    if (snprintf(buf, bufLen, format,
-        (int)GetShapeAttr(gdataRecP, attrNum)) >= bufLen) {
-      reportErrNosys("Warning: string too long for buffer");
-    }
-    buf[bufLen-1] = '\0';
+    int formatted = snprintf(buf, bufLen, format,
+        (int)GetShapeAttr(gdataRecP, attrNum));
+    checkAndTermBuf(buf, bufLen, formatted);
     result = buf;
     break;
+  }
 
   case FloatAttr:
   case DoubleAttr:
+  {
     if (format == NULL) format = "%g";
-    if (snprintf(buf, bufLen, format,
-        GetShapeAttr(gdataRecP, attrNum)) >= bufLen) {
-      reportErrNosys("Warning: string too long for buffer");
-    }
-    buf[bufLen-1] = '\0';
+    int formatted = snprintf(buf, bufLen, format,
+        GetShapeAttr(gdataRecP, attrNum));
+    checkAndTermBuf(buf, bufLen, formatted);
     result = buf;
     break;
+  }
 
   case StringAttr:
     {

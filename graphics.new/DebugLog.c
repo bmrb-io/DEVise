@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  2000/03/14 17:05:28  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.13  2000/02/23 23:32:53  wenger
   Fixed bug 567 (problem with JAVAC_ResetFilters command; added LogFileLine()
   macro to DebugLog.
@@ -193,8 +197,11 @@ DebugLog::Message(Level level, const char *msg1, const char *msg2 = NULL,
     const char *msg3 = NULL)
 {
   if (_fd != -1 && ((int)level <= (int)_logLevel)) {
-    char logBuf[1024];
-    sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
+    const int bufSize = 1024;
+    char logBuf[bufSize];
+    int formatted = snprintf(logBuf, bufSize, "\n%d (%s): ", _logNum++,
+        GetTimeString());
+    checkAndTermBuf(logBuf, bufSize, formatted);
     write(_fd, logBuf, strlen(logBuf));
     write(_fd, msg1, strlen(msg1));
     if (msg2) {
@@ -217,15 +224,19 @@ DebugLog::Message(Level level, const char *msg1, int argc,
     const char * const *argv, const char *msg2)
 {
   if (_fd != -1 && ((int)level <= (int)_logLevel)) {
-    char logBuf[MAXPATHLEN * 2];
-    sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
+    const int bufSize = MAXPATHLEN * 2;
+    char logBuf[bufSize];
+    int formatted = snprintf(logBuf, bufSize, "\n%d (%s): ", _logNum++,
+        GetTimeString());
+    checkAndTermBuf(logBuf, bufSize, formatted);
     write(_fd, logBuf, strlen(logBuf));
     write(_fd, msg1, strlen(msg1));
 
     int index;
     char *prefix = "";
     for (index = 0; index < argc; index++) {
-      sprintf(logBuf, "%s<%s>", prefix, argv[index]);
+      formatted = snprintf(logBuf, bufSize, "%s<%s>", prefix, argv[index]);
+      checkAndTermBuf(logBuf, bufSize, formatted);
       write(_fd, logBuf, strlen(logBuf));
       prefix = ", ";
     }
