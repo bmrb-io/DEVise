@@ -147,6 +147,16 @@ int main()
         goto error;
     }
 
+    printf("\nTesting multiple pinnings...\n");
+    CALL(bufMgr->PinPage(task[0], 0, page));
+    for(i = 0; i < 100; i++) {
+        char *page2;
+        CALL(bufMgr->PinPage(task[0], 0, page2));
+        assert(page == page2);
+    }
+    for(i = 0; i < 101; i++)
+        CALL(bufMgr->UnPinPage(task[0], 0, false));
+
     for(f = 0; f < numFiles; f++)
         CALL(bufMgr->UnPin(task[f], false));
     
