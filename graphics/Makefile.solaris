@@ -110,7 +110,10 @@ Display.o: WindowRep.h Transform.h Pattern.h DevisePixmap.h Compress.h
 Display.o: XBitmap.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Exit.o: /usr/include/stdlib.h Exit.h Init.h DeviseTypes.h BufPolicy.h
-Exit.o: Control.h VisualArg.h Color.h DList.h ClassDir.h
+Exit.o: Control.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+Exit.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Exit.o: /usr/include/sys/time.h /usr/include/sys/time.h VisualArg.h Color.h
+Exit.o: DList.h ClassDir.h
 ExitClean.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ExitClean.o: /usr/include/stdlib.h Exit.h
 FilterQueue.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h Exit.h

@@ -5,11 +5,11 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 Action.o: Action.h /usr/include/stdio.h ../graphics/DeviseTypes.h
-Action.o: ../graphics/Control.h ../graphics/VisualArg.h ../graphics/Color.h
-Action.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/ClassDir.h
-Action.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
-Action.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-Action.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+Action.o: ../graphics/Control.h /usr/include/sys/types.h
+Action.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+Action.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+Action.o: ../graphics/Exit.h ../graphics/ClassDir.h ViewGraph.h
+Action.o: ../graphics/View.h ../graphics/Dispatcher.h /usr/include/stdlib.h
 Action.o: ../graphics/Journal.h ../graphics/ViewWin.h ../graphics/WindowRep.h
 Action.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
 Action.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
@@ -128,7 +128,7 @@ ClientAPI.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 ClientAPI.o: /usr/include/sys/time.h /usr/include/sys/time.h
 ClientAPI.o: /usr/include/sys/socket.h /usr/include/netdb.h
 ClientAPI.o: /usr/include/errno.h /usr/include/sys/errno.h
-ClientAPI.o: /usr/include/unistd.h ClientAPI.h
+ClientAPI.o: /usr/include/unistd.h ClientAPI.h ParseAPI.h
 Command.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Command.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 Command.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/string.h
@@ -253,7 +253,9 @@ GDataSnap.o: ../graphics/ColorMgr.h ../graphics/Selection.h
 GDataSnap.o: ../graphics/Init.h ../graphics/BufPolicy.h GDataSnap.h
 GDataSnap.o: GDataVar.h
 MapInterpClassInfo.o: /usr/include/ctype.h ../graphics/DeviseTypes.h
-MapInterpClassInfo.o: ../graphics/Control.h ../graphics/VisualArg.h
+MapInterpClassInfo.o: ../graphics/Control.h /usr/include/sys/types.h
+MapInterpClassInfo.o: /usr/include/sys/stdtypes.h
+MapInterpClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/VisualArg.h
 MapInterpClassInfo.o: ../graphics/Color.h ../graphics/DList.h
 MapInterpClassInfo.o: ../graphics/Exit.h ../graphics/ClassDir.h
 MapInterpClassInfo.o: MappingInterp.h /s/tcl/include/tcl.h
@@ -261,18 +263,17 @@ MapInterpClassInfo.o: /usr/include/stdio.h TDataMapDispatch.h TDataMap.h
 MapInterpClassInfo.o: ../graphics/Pattern.h ShapeID.h Bitmap.h RecId.h
 MapInterpClassInfo.o: GDataRec.h ViewGraph.h ../graphics/View.h
 MapInterpClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-MapInterpClassInfo.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
-MapInterpClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/Journal.h
-MapInterpClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapInterpClassInfo.o: ../graphics/Geom.h /usr/include/math.h
-MapInterpClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-MapInterpClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MapInterpClassInfo.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
-MapInterpClassInfo.o: /usr/include/sys/time.h ../graphics/Config.h
-MapInterpClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-MapInterpClassInfo.o: TData.h RecOrder.h MapInterpClassInfo.h
-MapInterpClassInfo.o: ../graphics/Util.h /usr/include/string.h
+MapInterpClassInfo.o: ../graphics/Journal.h ../graphics/ViewWin.h
+MapInterpClassInfo.o: ../graphics/WindowRep.h ../graphics/Geom.h
+MapInterpClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
+MapInterpClassInfo.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
+MapInterpClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapInterpClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapInterpClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
+MapInterpClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
+MapInterpClassInfo.o: ViewStats.h Action.h TData.h RecOrder.h
+MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/Util.h
+MapInterpClassInfo.o: /usr/include/string.h
 MappingInterp.o: /usr/include/stdio.h /s/tcl/include/tcl.h
 MappingInterp.o: ../graphics/DeviseTypes.h Bitmap.h ../graphics/AttrList.h
 MappingInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -417,15 +418,11 @@ ServerAPI.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 ServerAPI.o: /usr/include/sys/sysmacros.h /usr/include/stdlib.h
 ServerAPI.o: /usr/include/string.h /usr/include/errno.h
 ServerAPI.o: /usr/include/sys/errno.h /usr/include/unistd.h ServerAPI.h
-ServerAPI.o: /s/tcl/include/tk.h /s/tcl/include/tcl.h
-ServerAPI.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-ServerAPI.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-ServerAPI.o: /usr/include/stddef.h /usr/include/sys/socket.h
-ServerAPI.o: /usr/include/netdb.h /usr/include/netinet/in.h
-ServerAPI.o: /usr/include/arpa/inet.h ../graphics/Dispatcher.h
-ServerAPI.o: ../graphics/DeviseTypes.h ../graphics/DList.h ../graphics/Exit.h
-ServerAPI.o: ../graphics/VisualArg.h ../graphics/Color.h
-ServerAPI.o: ../graphics/Journal.h ../graphics/Control.h
+ServerAPI.o: /usr/include/sys/socket.h /usr/include/netdb.h
+ServerAPI.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+ServerAPI.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+ServerAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+ServerAPI.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Control.h
 ServerAPI.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h GroupDir.h
 ServerAPI.o: ItemList.h Group.h ViewGraph.h ../graphics/View.h
 ServerAPI.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
@@ -625,7 +622,7 @@ TkControl.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 TkControl.o: ViewStats.h Action.h TData.h RecId.h RecOrder.h TDataMap.h
 TkControl.o: ShapeID.h Bitmap.h GDataRec.h ../graphics/Init.h
 TkControl.o: ../graphics/BufPolicy.h ../graphics/Util.h /usr/include/string.h
-TkControl.o: /usr/include/ctype.h MapInterpClassInfo.h ParseAPI.h QueryProc.h
+TkControl.o: /usr/include/ctype.h MapInterpClassInfo.h QueryProc.h ParseAPI.h
 TkControl.o: ParseCat.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/stdlib.h
 UnixDiskFile.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
@@ -1007,19 +1004,20 @@ MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
 MapInterpShape.o: Temp.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/ctype.h ParseAPI.h
 ParseAPI.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
-ParseAPI.o: ../graphics/Control.h ../graphics/VisualArg.h ../graphics/Color.h
-ParseAPI.o: ../graphics/DList.h ../graphics/Exit.h ViewKGraph.h ViewGraph.h
-ParseAPI.o: ../graphics/View.h ../graphics/Dispatcher.h /usr/include/stdlib.h
-ParseAPI.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
-ParseAPI.o: /usr/include/sys/sysmacros.h ../graphics/Journal.h
-ParseAPI.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-ParseAPI.o: /usr/include/math.h /usr/include/floatingpoint.h
-ParseAPI.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
-ParseAPI.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-ParseAPI.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-ParseAPI.o: ../graphics/AttrList.h /usr/include/sys/time.h
-ParseAPI.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
-ParseAPI.o: BasicStats.h ViewStats.h Action.h KGraph.h ../graphics/Display.h
+ParseAPI.o: ../graphics/Control.h /usr/include/sys/types.h
+ParseAPI.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+ParseAPI.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+ParseAPI.o: ../graphics/Exit.h ViewKGraph.h ViewGraph.h ../graphics/View.h
+ParseAPI.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+ParseAPI.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ParseAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ParseAPI.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ParseAPI.o: ../graphics/Transform.h ../graphics/Pattern.h
+ParseAPI.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ParseAPI.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ParseAPI.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ParseAPI.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
+ParseAPI.o: ViewStats.h Action.h KGraph.h ../graphics/Display.h
 ParseAPI.o: ../graphics/ColorMgr.h ../graphics/Util.h /usr/include/string.h
 ParseAPI.o: ParseCat.h TData.h RecId.h RecOrder.h TDataMap.h ShapeID.h
 ParseAPI.o: Bitmap.h GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h

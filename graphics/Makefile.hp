@@ -28,18 +28,18 @@ ColorMgr.o: DList.h Exit.h VisualArg.h Journal.h
 Compress.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Compress.h Exit.h
 Control.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 Control.o: /usr/include/sys/stdsyms.h Init.h DeviseTypes.h BufPolicy.h
-Control.o: Control.h VisualArg.h Color.h DList.h Exit.h ClassDir.h
-Control.o: XawControl.h Dispatcher.h /usr/include/stdio.h
-Control.o: /usr/include/stdlib.h /usr/include/sys/types.h Journal.h
-Control.o: XawWidget.h /s/X11/include/X11/Intrinsic.h
-Control.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-Control.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-Control.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-Control.o: /s/X11/include/X11/Xresource.h /usr/include/string.h
-Control.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
-Control.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
-Control.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/StringDefs.h
-Control.o: /s/X11/include/X11/Xaw/Label.h /s/X11/include/X11/Xaw/Simple.h
+Control.o: Control.h /usr/include/sys/types.h VisualArg.h Color.h DList.h
+Control.o: Exit.h ClassDir.h XawControl.h Dispatcher.h /usr/include/stdio.h
+Control.o: /usr/include/stdlib.h Journal.h XawWidget.h
+Control.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xlib.h
+Control.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+Control.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+Control.o: /s/X11/include/X11/Xutil.h /s/X11/include/X11/Xresource.h
+Control.o: /usr/include/string.h /s/X11/include/X11/Core.h
+Control.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
+Control.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
+Control.o: /s/X11/include/X11/StringDefs.h /s/X11/include/X11/Xaw/Label.h
+Control.o: /s/X11/include/X11/Xaw/Simple.h
 Control.o: /s/X11/include/X11/Xmu/Converters.h
 Control.o: /s/X11/include/X11/Xaw/Command.h /s/X11/include/X11/Xaw/Form.h
 Control.o: /s/X11/include/X11/Xaw/Toggle.h /s/X11/include/X11/Xaw/List.h
@@ -89,8 +89,8 @@ Display.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h XWindowRep.h
 Display.o: /usr/include/string.h WindowRep.h Transform.h Pattern.h
 Display.o: DevisePixmap.h Compress.h XBitmap.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
-Exit.o: Exit.h Init.h DeviseTypes.h BufPolicy.h Control.h VisualArg.h Color.h
-Exit.o: DList.h ClassDir.h
+Exit.o: Exit.h Init.h DeviseTypes.h BufPolicy.h Control.h
+Exit.o: /usr/include/sys/types.h VisualArg.h Color.h DList.h ClassDir.h
 ExitClean.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ExitClean.o: /usr/include/stdlib.h Exit.h
 FilterQueue.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Exit.h
@@ -234,8 +234,8 @@ XWindowRep.o: /usr/include/signal.h /usr/include/sys/signal.h
 XawControl.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 XawControl.o: /usr/include/stdlib.h /usr/include/sys/time.h
 XawControl.o: /usr/include/sys/resource.h XawControl.h Control.h
-XawControl.o: DeviseTypes.h VisualArg.h Color.h DList.h Exit.h ClassDir.h
-XawControl.o: Dispatcher.h /usr/include/sys/types.h Journal.h XawWidget.h
+XawControl.o: /usr/include/sys/types.h DeviseTypes.h VisualArg.h Color.h
+XawControl.o: DList.h Exit.h ClassDir.h Dispatcher.h Journal.h XawWidget.h
 XawControl.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xlib.h
 XawControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 XawControl.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
