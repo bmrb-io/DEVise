@@ -75,7 +75,7 @@ bool Aggregates::isApplicable(){
 	}
 
 	if(!groupBy || groupBy->isEmpty()){
-		return isApplicable;
+		return isApplicableValue;
 	}
 
 	assert(numGrpByFlds > 0);

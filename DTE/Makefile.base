@@ -55,7 +55,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c \
 	Engine.c Aggregates.c joins.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
-	PQueue.c Sort.c UnionParse.c \
+	PQueue.c Sort.c UnionParse.c MinMax.c \
 	ExecOp.c Inserter.c TypeCheck.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c

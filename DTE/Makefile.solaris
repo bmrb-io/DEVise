@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.48  1997/08/10 20:33:03  donjerko
+# *** empty log message ***
+#
 # Revision 1.47  1997/08/09 00:52:54  donjerko
 # *** empty log message ***
 #
@@ -1061,6 +1064,43 @@ Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 Inserter.o: Utility.h queue.h ../../graphics.new/RecId.h StandardRead.h
 Inserter.o: Iterator.h
+MinMax.o: MinMax.h myopt.h /usr/include/assert.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/String.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/strfile.h queue.h /usr/include/stdio.h
+MinMax.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h types.h
+MinMax.o: /usr/include/string.h /usr/include/sys/types.h
+MinMax.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+MinMax.o: /usr/include/sys/select.h /usr/include/sys/time.h
+MinMax.o: /usr/include/time.h /usr/include/netinet/in.h
+MinMax.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+MinMax.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+MinMax.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+MinMax.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+MinMax.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+MinMax.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+MinMax.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+MinMax.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+MinMax.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+MinMax.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+MinMax.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+MinMax.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+MinMax.o: ../../graphics.new/machdep.h /usr/include/limits.h
+MinMax.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+MinMax.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+MinMax.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+MinMax.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+MinMax.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+MinMax.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
+MinMax.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h SockStream.h
+MinMax.o: listop.h Array.h StandardRead.h Iterator.h
 PQueue.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h PQueue.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -1132,9 +1172,9 @@ QueryTree.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
 QueryTree.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h
 QueryTree.o: SockStream.h listop.h Array.h site.h Iterator.h catalog.h
 QueryTree.o: DevRead.h Aggregates.h ParseTree.h joins.h Sort.h StandardRead.h
-QueryTree.o: PQueue.h TypeCheck.h /usr/include/memory.h /usr/include/math.h
-QueryTree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-QueryTree.o: /usr/include/stdlib.h
+QueryTree.o: PQueue.h TypeCheck.h MinMax.h /usr/include/memory.h
+QueryTree.o: /usr/include/math.h /usr/include/floatingpoint.h
+QueryTree.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h
 RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h

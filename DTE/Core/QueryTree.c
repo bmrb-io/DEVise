@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/08/10 18:09:15  donjerko
+  Fixed the group by clause
+
   Revision 1.27  1997/07/30 21:39:18  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -66,6 +69,7 @@
 #include "joins.h"
 #include "Sort.h"
 #include "TypeCheck.h"
+#include "MinMax.h"
 
 #include<iostream.h>
 #include<memory.h>
@@ -149,6 +153,26 @@ Site* QueryTree::createSite(){
 	typeCheck.load(groupBy);
 	typeCheck.load(orderBy);
 
+	// check if this is the min-max query
+	// if so, lookup a min-max table to see if there exists an entry
+	// if entry for this table found, switch the table name
+
+	assert(predicateList && groupBy && orderBy);
+	bool minMaxCond = tableList->cardinality() == 1 &&
+				predicateList->isEmpty() &&
+				groupBy->isEmpty() &&
+				orderBy->isEmpty();
+
+	if(minMaxCond && MinMax::isApplicable(selectList)){
+		tableList->rewind();
+		TableAlias* table = tableList->get();
+		TableAlias* replacement = MinMax::createReplacement(table);
+		if(replacement){
+			tableList->replace(replacement);
+			delete table;
+		}
+	}
+
 	tableList->rewind();
 	int numSites = 0;
 	Catalog* catalog = getRootCatalog();
@@ -182,6 +206,7 @@ Site* QueryTree::createSite(){
 		}
 		tableList->step();
 	}
+
 	delete catalog;
 	// For the sequenceby clause;
 	// find the sequecing attribute..(Only table name is known initially)
