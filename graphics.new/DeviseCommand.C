@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/04/22 19:29:51  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.58  1999/04/21 20:35:35  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -5323,12 +5329,9 @@ IMPLEMENT_COMMAND_BEGIN(setPileStackState)
 #endif
 
     if (argc == 3) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5352,12 +5355,9 @@ IMPLEMENT_COMMAND_BEGIN(getPileStackState)
 #endif
 
     if (argc == 2) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5382,12 +5382,9 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
 #endif
 
     if (argc == 2) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5687,6 +5684,55 @@ IMPLEMENT_COMMAND_BEGIN(switchTData)
 		}
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in switchTData\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getCursorFixedSize)
+    // Arguments: <cursor name>
+    // Returns: <fixed size (Boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+		if (cursor == NULL) {
+          ReturnVal(API_NAK, "Cannot find cursor");
+    	  return -1;
+		}
+
+		char buf[32];
+		sprintf(buf, "%d", cursor->GetFixedSize());
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getCursorFixedSize\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCursorFixedSize)
+    // Arguments: <cursor name> <fixed size (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+		if (cursor == NULL) {
+          ReturnVal(API_NAK, "Cannot find cursor");
+    	  return -1;
+		}
+
+		cursor->SetFixedSize(atoi(argv[2]));
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setCursorFixedSize\n",
+		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

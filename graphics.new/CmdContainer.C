@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/04/22 19:29:50  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.35  1999/04/14 15:30:16  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -492,6 +498,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getNiceAxes)
 	REGISTER_COMMAND(setNiceAxes)
 	REGISTER_COMMAND(switchTData)
+	REGISTER_COMMAND(getCursorFixedSize)
+	REGISTER_COMMAND(setCursorFixedSize)
 }
 
 CmdContainer::~CmdContainer()

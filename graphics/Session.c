@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/04/26 20:25:02  wenger
+  Fixed bug 486.
+
   Revision 1.48  1999/04/22 19:29:09  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -1268,6 +1271,9 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
 
     free((char *) argvOut);
   }
+
+  status += SaveParams(saveData, "getCursorFixedSize", "setCursorFixedSize",
+      instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

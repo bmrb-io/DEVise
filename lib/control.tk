@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.185  1999/04/21 20:35:48  wenger
+#	Improved interface for changing fonts, titles, etc.:
+#	* Fonts can now be set on a window-wide basis.
+#	* Setting fonts, title, or axis date format in a piled view automatically
+#	changes all views in the pile accordingly.
+#	
 #	Revision 1.184  1999/04/20 14:13:11  wenger
 #	Added Refresh command (closes and re-opens current session).
 #	
@@ -940,6 +946,7 @@ source $libdir/viewgeom.tcl
 source $libdir/auto_filter.tcl
 source $libdir/dup_elim.tcl
 source $libdir/nice_axes.tcl
+source $libdir/fixed_cursor.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1512,6 +1519,8 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu.cursorMenu add separator
 .mbar.view.menu.cursorMenu add command -label "Set Grid" \
 	-command DoSetCursorGrid
+.mbar.view.menu.cursorMenu add command -label "Set Fixed Size" \
+        -command EditFixedCursor
 #.mbar.view.menu.cursorMenu add separator
 #.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
 #	-command DoSetRecordCursor

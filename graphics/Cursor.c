@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/02/09 22:30:52  wenger
+  Fixed bug in MoveSource() (wrong filter flag value).
+
   Revision 1.23  1999/02/08 20:06:24  wenger
   If a view is a dest. view of a cursor, and the view's visual filter
   gets changed such that the cursor is entirely outside the view, the
@@ -171,6 +174,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _gridX = gridX;
   _gridY = gridY;
   _cursorColor = GetPColorID(whiteColor);
+  _fixedSize = false;
 
   View::InsertViewCallback(this);
 }

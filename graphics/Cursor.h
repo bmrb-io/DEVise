@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/01/29 21:09:42  wenger
+  Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
+
   Revision 1.18  1998/06/12 19:55:15  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -172,6 +175,12 @@ class DeviseCursor : private ViewCallback
 
   const char *GetName() { return _name; }
 
+  // Get or set "fixed size".  This doesn't do anything, except get passed
+  // to the JavaScreen to tell it to not allow the user to change the size
+  // of the cursor.
+  Boolean GetFixedSize() { return _fixedSize; }
+  void SetFixedSize(Boolean fixed) { _fixedSize = fixed; }
+
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
@@ -186,6 +195,7 @@ private:
   Coord _gridY;
   CursorStore _cursor_store[12];
   PColorID _cursorColor;
+  Boolean _fixedSize;
 };
 
 //******************************************************************************
