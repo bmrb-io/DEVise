@@ -24,7 +24,7 @@
 #undef    assert        // defined by perl includes
 #include  <assert.h>
 
-// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o 
 
 static int lineno, colno;
 

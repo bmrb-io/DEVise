@@ -1325,7 +1325,7 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
     int n, tmpn, has_qte, temp_ws;
     char *str = &(dst[ud->dst_off]);
 
-    n = ud->sze()-1;
+    n = tmpn = ud->sze()-1;  // if whitespace is null, tmpn must have a value.
 
     if (ud->attr->whitespace()) {
     		temp_ws = strspn(src, ud->attr->whitespace());
@@ -1340,14 +1340,18 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
       n = (tmpn < n) ? tmpn : n;
     } else if (ud->attr->whitespace()) {
       tmpn = strcspn(src, ud->attr->whitespace());
-      n = (tmpn < n) ? tmpn : n;
+      if (tmpn > n) {
+          strncpy(str,src,tmpn) ;
+          str[tmpn]='\0';
+          cerr << "Length of attribute : "<< ud->attr->flat_name() << " is larger than maxlen for \"" << str << "\"" << endl ; 
+      } else
+          n = tmpn ;
     } 
-
     strncpy(str,src,n);
     str[n] = '\0';
 
     if (ud->use_slide)
-        _slbuf->set_init(src + n + has_qte);
+        _slbuf->set_init(src + tmpn + has_qte);
 
     return 1;
 }

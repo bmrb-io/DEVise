@@ -132,7 +132,7 @@ int main(int ac, char **av)
 
         rsze = ud->schema()->recSze();
 
-        while (ud->isOk() && (cnt < 5)) {
+        while (ud->isOk()) {
 
             stat = ud->getRec(buff,&off);
         

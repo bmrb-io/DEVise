@@ -161,7 +161,7 @@ size_t  Attr::determ_size()
         break;
 
       case String_Attr:
-        _size = (size_t) _maxlen;
+        _size = (size_t)(_maxlen+1);
         break;
 
       case UnixTime_Attr:
