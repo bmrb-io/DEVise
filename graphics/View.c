@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.227  2000/07/12 20:49:15  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.226  2000/06/20 22:16:55  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -4698,7 +4702,11 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 	if (GetXAxisAttrType() == DateAttr) {
 	  strcpy(xBuf, DateString((time_t)dataX, GetXAxisDateFormat()));
 	} else {
-      sprintf(xBuf, GetXAxisFloatFormat(), dataX);
+	  if (!strcmp(GetXAxisFloatFormat(), DevAxis::_blankFloatFormat)) {
+        sprintf(xBuf, "%*s", mouseFieldWidth, "");
+	  } else {
+        sprintf(xBuf, GetXAxisFloatFormat(), dataX);
+	  }
 	}
   } else {
     sprintf(xBuf, "%*s", mouseFieldWidth, "");
@@ -4708,7 +4716,11 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 	if (GetYAxisAttrType() == DateAttr) {
 	  strcpy(yBuf, DateString((time_t)dataY, GetYAxisDateFormat()));
 	} else {
-      sprintf(yBuf, GetYAxisFloatFormat(), dataY);
+	  if (!strcmp(GetYAxisFloatFormat(), DevAxis::_blankFloatFormat)) {
+        sprintf(yBuf, "%*s", mouseFieldWidth, "");
+	  } else {
+        sprintf(yBuf, GetYAxisFloatFormat(), dataY);
+	  }
 	}
   } else {
     sprintf(yBuf, "%*s", mouseFieldWidth, "");

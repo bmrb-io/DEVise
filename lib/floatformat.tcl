@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  2000/06/20 22:17:14  wenger
+# Added floating-point format for axes and mouse location display.
+#
 
 ############################################################
 
@@ -69,6 +72,8 @@ proc EditFloatFormat { which } {
       -command { set floatFormat "%.0f" }
     .editFloatFormat.option.menu add command -label "%.6g (high-precision)" \
       -command { set floatFormat "%.6g" }
+    .editFloatFormat.option.menu add command -label "- (blank)" \
+      -command { set floatFormat "-" }
 
     button .editFloatFormat.ok -text "OK" -width 10 \
       -command "SetFloatFormat {$which}; destroy .editFloatFormat"

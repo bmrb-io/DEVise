@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/06/20 22:16:53  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.3  2000/03/14 17:05:05  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -44,6 +47,8 @@
 #include "Session.h"
 
 //#define DEBUG
+
+const char *DevAxis::_blankFloatFormat = "-";
 
 //-----------------------------------------------------------------------------
 // Constructor.
@@ -398,7 +403,11 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
     win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX, info._tickY + _tickdrawY, 1);
 
     char buf[32];
-    sprintf(buf, _floatFormat, tickMark);
+	if (!strcmp(_floatFormat, _blankFloatFormat)) {
+      strcpy(buf, "");
+	} else {
+      sprintf(buf, _floatFormat, tickMark);
+	}
 
 	*info._labelPixVar = *info._tickPixVar - _labelWidth / 2;
 

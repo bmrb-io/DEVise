@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/06/20 22:16:54  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.2  1999/08/30 19:34:24  wenger
   Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
   date format didn't force redraw).
@@ -70,6 +73,7 @@ public:
   const char *GetDateFormat() { return _dateFormat; }
   void SetDateFormat(const char *format);
 
+  static const char *_blankFloatFormat;
   const char *GetFloatFormat() { return _floatFormat; }
   void SetFloatFormat(const char *format);
 
