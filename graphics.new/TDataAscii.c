@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/07/12 19:36:08  jussi
+  Modified code to handle derived data sources whose data is
+  in a buffer but whose 'type' is one of many possible derived
+  data types.
+
   Revision 1.32  1996/07/12 18:24:52  wenger
   Fixed bugs with handling file headers in schemas; added DataSourceBuf
   to TDataAscii.
@@ -503,6 +508,9 @@ void TDataAscii::Initialize()
   if (!CheckFileStatus())
     return;
 
+  if (_data->isBuf())
+      return;
+
   Boolean fileOpened = false;
 
   int indexFd;
@@ -612,6 +620,9 @@ void TDataAscii::Checkpoint()
     printf("Cannot checkpoint %s\n", _name);
     return;
   }
+
+  if (_data->isBuf())
+      return;
 
   printf("Checkpointing %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - _initTotalRecs);
