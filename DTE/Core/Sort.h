@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/05/30 15:44:36  arvind
+  External Sorting code using Qsort for in-memory sorting and priority queues
+  for merging.
+
   Revision 1.5  1997/04/08 01:47:34  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -57,7 +61,7 @@ private:
   ifstream  *temp_files;    // Temporary files that hold the runs
   Inserter  *output_buf;    // Output buffer in which current run is placed
   ofstream  *out_temp_file; // File connected with output_buf
-  char      *temp_filename; // Name of temporary file
+  char      *temp_filename; // Name of temporary file to hold a run
     
   int       Nruns;          // Number of runs
   TypeID    *attrTypes;     // Attribute types of the tuple fields
@@ -94,10 +98,10 @@ public:
          if (attrTypes) delete attrTypes;
          if (comparePtrs) delete comparePtrs;
 
-         char *filename;
-         for (int i =0; i < Nruns; i++)
+         char filename[20];
+	 for (int i =0; i < Nruns; i++)
 	   {
-            filename= strdup(temp_filename);
+            strcpy(filename,temp_filename);
             char run_num[5];
             sprintf(run_num, "%d", i+1);
             strcat(filename, run_num);

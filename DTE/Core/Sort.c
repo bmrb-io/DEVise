@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/05/30 15:44:35  arvind
+  External Sorting code using Qsort for in-memory sorting and priority queues
+  for merging.
+
   Revision 1.6  1997/04/08 01:47:33  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -65,17 +69,16 @@ void Sort::initialize()
    input_buf = new StandardRead[Nruns];
    temp_files = new ifstream[Nruns];
 
-   char *filename;
+   char filename[20];
    char run_num[5];
    for (int i = 0; i < Nruns; i++)  // Enqueue first element of the Nruns
     {
       // open each temp file
-      filename = strdup(temp_filename); 
+      strcpy(filename, temp_filename); 
       sprintf(run_num, "%d", i+1);
       strcat(filename, run_num);
       temp_files[i].open(filename);
       input_buf[i].open(&temp_files[i], numFlds, attrTypes);
-      delete filename;
 
       // Read the next tuple
       Tuple *next_tuple = tuple_area + tuple_size*i;
@@ -122,7 +125,7 @@ bool Sort::getNext(Tuple* tuple)
       Q->enq(new_node);
    }
 
-  delete new_tuple;
+  delete [] new_tuple;
   return true;
 }
 
@@ -168,13 +171,14 @@ void Sort::sort_and_write_run(Tuple **table, int length)
      qsort(table,0,length-1); 
      insert_sort(table,length);
 		   
-     out_temp_file = new ofstream;   
-     char *filename = strdup(temp_filename);
+     char filename[20];
+     strcpy(filename, temp_filename);
      char run_num[5];
      sprintf(run_num, "%d", Nruns);
      strcat(filename, run_num);
      unlink(filename);
      
+     out_temp_file = new ofstream;   
      out_temp_file->open(filename);
      output_buf->open(out_temp_file, numFlds, attrTypes);
 
