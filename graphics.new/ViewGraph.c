@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.69  1998/02/20 06:17:15  beyer
+  resurected histograms
+
   Revision 1.68  1998/02/13 15:51:38  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -420,7 +423,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
     _histBuffer = new DataSourceFixedBuf(HIST_BUF_SIZE, "histBuffer");
     _histBuffer->AddRef();
     _histBuffer->SetControllingView(this);
-    _histBuffer->Write("0 0\n", 4); // ksb: kludge! doesn't work w/o some data
+    _histBuffer->Write("0 0\n", 4); // ksb: kludge! doesn't work w/o some data BUG 303
 
     _gdataStatBufferX = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferX");
     _gdataStatBufferY = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferY");
@@ -602,19 +605,21 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     int index = InitMappingIterator();
     if (!MoreMapping(index)) {
       // this is the first mapping
-      // update the histogram bucket sizes
-      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
-      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
-	// y min & max known for the file, so use those to define buckets
-	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-	_allStats.SetHistogram(lo, hi, GetHistogramBuckets());
-      } else {
-	// global min & max are not known, so use filter hi & lo
-        VisualFilter filter;
-        GetVisualFilter(filter);
-	_allStats.SetHistogram(filter.yLow, filter.yHigh, 
-                               GetHistogramBuckets());
+      if( GetHistogramBuckets() == 0 ) {
+        // create default histogram
+        AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+        if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
+          // y min & max known for the file, so use those to define buckets
+          double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+          double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+          _allStats.SetHistogram(lo, hi, DEFAULT_HISTOGRAM_BUCKETS);
+        } else {
+          // global min & max are not known, so use filter hi & lo
+          VisualFilter filter;
+          GetVisualFilter(filter);
+          _allStats.SetHistogram(filter.yLow, filter.yHigh,
+                                 DEFAULT_HISTOGRAM_BUCKETS);
+        }
       }
     }
     DoneMappingIterator(index);

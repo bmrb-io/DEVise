@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/02/20 08:45:57  beyer
+  resurected histograms
+
   Revision 1.31  1998/02/20 06:16:55  beyer
   resurected histograms
 
@@ -138,9 +141,8 @@ BasicStats::BasicStats()
 #endif
 
   _vw = 0;
-  hist_min = hist_max = width = 100;
-  numBuckets = DEFAULT_HISTOGRAM_BUCKETS;
-  hist = new int[numBuckets];
+  hist = NULL;
+  SetHistogram(0, 100, 0);
   Init(_vw);
 }
 
@@ -207,16 +209,16 @@ void BasicStats::Sample(double x, double y)
 
 void BasicStats::Histogram(double y)
 {
-    if( y >= hist_min && y <= hist_max && width > 0 ) {
-       int index = (int) ((y - hist_min)/width);
+  if( y >= hist_min && y <= hist_max && width > 0 ) {
+    int index = (int) ((y - hist_min)/width);
 #if defined(DEBUG) || 0 
     printf("y:%g index:%d min:%g max:%g width:%g\n",
-	      y, index, hist_min, hist_max, width);
+           y, index, hist_min, hist_max, width);
 #endif
-       if(index>=numBuckets) index = numBuckets-1;
-       DOASSERT(index >= 0 && index < numBuckets, "Invalid histogram index!");
-       hist[index]++;
-     }
+    if( index >= numBuckets) index = numBuckets - 1;
+    DOASSERT(index >= 0 && index < numBuckets, "Invalid histogram index!");
+    hist[index]++;
+  }
 }
 
 void BasicStats::Done()
@@ -380,11 +382,14 @@ Coord BasicStats::GetHistMax()
 
 void BasicStats::SetHistogram(Coord min, Coord max, int buckets)
 {
-  DOASSERT(numBuckets > 0, "numBuckets less than 1");
+  if (hist) delete [] hist;
+  hist = NULL;
+  if( buckets < 1 ) {           // disable histogram
+    numBuckets = 0;
+    width = 0;
+    return;
+  }
   numBuckets = buckets;
-#if defined(DEBUG)
-  printf("set width: min:%g max:%g\n", min, max);
-#endif
   if( min == max ) {
     min -= 0.5;
     max += 0.5;
@@ -397,7 +402,6 @@ void BasicStats::SetHistogram(Coord min, Coord max, int buckets)
   printf("width: %g\n", width);
 #endif
 
-  if (hist) delete [] hist;
   hist = new int[numBuckets];
   for(int i = 0; i < numBuckets; i++) {
     hist[i] = 0;

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/12/23 23:35:13  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.26  1997/12/19 00:05:52  donjerko
   Changes made be Kevin to get DTE to compile.
 
@@ -716,8 +725,13 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     RecId TMPFIRST, TMPLAST;
     Boolean hasFirst = tdata->HeadID(TMPFIRST);
     Boolean hasLast = tdata->LastID(TMPLAST); firstId = TMPFIRST; lastId = TMPLAST;
-    DOASSERT(hasFirst && hasLast && interval->Low >= firstId && interval->High <= lastId,
-             "Invalid record IDs");
+#if 0
+    printf("first = %d %d, last = %d %d\n", hasFirst, firstId, hasLast, lastId);
+#endif
+//    DOASSERT(hasFirst && hasLast && interval->Low >= firstId && interval->High <= lastId,
+//             "Invalid record IDs");
+    DOASSERT(!hasFirst || interval->Low >= firstId, "Invalid record IDs");
+    DOASSERT(!hasLast  || interval->High <= lastId, "Invalid record IDs");
 
     BufMgrRequest *req = new BufMgrRequest;
     DOASSERT(req, "Out of memory");
