@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/01/20 22:47:12  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.47  1998/11/16 18:58:47  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -1183,7 +1189,7 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
   FILE *fp = fopen(catFile, "r");
   if (!fp)
   {
-    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    fprintf(stderr,"ParseCat: can't open file <%s>\n", catFile);
   }
   else
   {
@@ -1226,7 +1232,7 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
 
 	  	if (!fp)
 	  	{
-			fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+			fprintf(stderr,"ParseCat: can't open file <%s>\n", catFile);
 	  	}
 	  	else
 	  	{
@@ -1307,7 +1313,7 @@ ParseCat(char *catFile)
   FILE *fp = fopen(catFile, "r");
   if (!fp)
   {
-    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    fprintf(stderr,"ParseCat: can't open file <%s>\n", catFile);
   }
   else
   {
@@ -1403,7 +1409,7 @@ ParseCatDQL(char *catFile, string& phySchemaFile, string& list)
   FILE *fp = fopen(catFile, "r");
   if (!fp)
   {
-    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    fprintf(stderr,"ParseCat: can't open file <%s>\n", catFile);
   }
   else
   {
