@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/20 07:03:27  ravim
+  High and low values of attrs can be specified.
+
   Revision 1.8  1995/12/14 17:44:02  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -205,8 +208,7 @@ char *ParseCat(char *catFile)
     return NULL;
   }
 
-  fscanf(fp, "%s", buf);
-  if (strcmp(buf, "physical"))
+  if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
   {
     fclose(fp);
     return ParseCatOriginal(catFile);
@@ -215,9 +217,13 @@ char *ParseCat(char *catFile)
   // Read in the file name 
   fscanf(fp, "%s", buf);
   fclose(fp);
+
   char *sname;
   if ((sname = ParseCatPhysical(buf)) == NULL)
     return NULL;
+
+  InsertCatFile(CopyString(catFile));
+
   return ParseCatLogical(catFile, sname);
 }
 
@@ -994,10 +1000,9 @@ char *ParseCatPhysical(char *catFile){
 
 	fclose(file);
 
-	InsertCatFile(CopyString(catFile));
-
 	if (Init::PrintTDataAttr())
 		attrs->Print();
+
 	return fileType;
 
 error:
@@ -1021,10 +1026,10 @@ char *ParseCatLogical(char *catFile, char *sname)
   char **args;
 
   file = fopen(catFile, "r");
-  if (file == NULL){
-      fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
-      goto error;
-    }
+  if (file == NULL) {
+    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    goto error;
+  }
   _line = 0;
   
   /* read the first line first */
@@ -1037,6 +1042,7 @@ char *ParseCatLogical(char *catFile, char *sname)
      physical schema */
   /* First check if the schema is already loaded, in
      which case we do nothing more */
+
   if (gdir->find_entry(getTail(catFile)))
     GLoad = false;
   else
@@ -1101,18 +1107,15 @@ char *ParseCatLogical(char *catFile, char *sname)
       else {
 	  fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
 	  goto error;
-	}
-      
+      }
+  }
 
-    }
-
-  int i;
   /* If no group has been defined, create a default group */
   if (GLoad && (gdir->num_topgrp(getTail(catFile)) == 0))
   {
     Group *newgrp = new Group("__default", NULL, TOPGRP);
     gdir->add_topgrp(getTail(catFile), newgrp);
-    for (i=0; i < numAttrs; i++)
+    for(int i = 0; i < numAttrs; i++)
     {
       AttrInfo *iInfo = attrs->Get(i);
       newgrp->insert_item(iInfo->name);
@@ -1120,16 +1123,14 @@ char *ParseCatLogical(char *catFile, char *sname)
   }
 
   return sname;
+
 error:
-	if (file != NULL)
-		fclose(file);
-
-	fprintf(stderr,"error at line %d\n", _line);
-	return NULL;
-
-
+  if (file != NULL)
+    fclose(file);
+  
+  fprintf(stderr,"error at line %d\n", _line);
+  return NULL;
 }
-
 
 char *getTail(char *fname)
 {
@@ -1146,7 +1147,6 @@ char *getTail(char *fname)
 
   return ret;
 }
-
 
 void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
 {
