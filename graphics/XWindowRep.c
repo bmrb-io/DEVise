@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/06/21 21:33:43  jussi
+  Changed xpr parameters so that a grayscale Postscript image is
+  produced instead of black and white.
+
   Revision 1.42  1996/06/21 19:31:07  jussi
   Moved all 3D-related code to Map3D.C and Map3D.h.
   Replaced MinMax calls with calls to MIN() and MAX().
@@ -243,10 +247,6 @@ void XWindowRep::Init()
   _rectGc = XCreateGC(_display, DRAWABLE, 0, NULL);
   XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
   
-  /* init temp storage for storing points */
-  _xpoints = new XPoint[20];
-  _num_points = 20;
-  
   /* set default pattern to pattern 0: no stipple */
   WindowRep::SetPattern(Pattern0);
   XSetFillStyle(_display, _gc, FillSolid);
@@ -282,7 +282,6 @@ XWindowRep::~XWindowRep()
   
   FreeBitmap(_srcBitmap);
   FreeBitmap(_dstBitmap);
-  delete _xpoints;
   
   /* _win or _pixmap is destroyed by XDisplay */
 
@@ -738,7 +737,6 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 #endif
 
-  int index = 0;
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
     Coord txlow, tylow, txmax, tymax;
@@ -749,34 +747,21 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
     tylow = MIN(y1, y2);
     tymax = MAX(y1, y2);
     
-    /* make it fit inside real window boundaries.
-       We assume window resolution can't be 10000x10000 */
-    if (txmax < 0.0 || txlow >= 10000.0 ||
-	tymax < 0.0 || tylow >= 10000.0)
-      continue;
-    
-    txlow = MAX(txlow, -10000.0);
-    txmax = MIN(txmax, 10000.0);
-    tylow = MAX(tylow, -10000.0);
-    tymax = MIN(tymax, 10000.0);
-    
     unsigned pixelWidth = (unsigned)(txmax - txlow + 1);
     if (pixelWidth == 0) pixelWidth = 1;
     unsigned pixelHeight = unsigned(tymax - tylow + 1);
     if (pixelHeight == 0) pixelHeight = 1;
     
-    rectAngles[index].x = ROUND(short, txlow);
-    rectAngles[index].y = ROUND(short, tylow);
-    rectAngles[index].width = ROUND(unsigned short, pixelWidth);
-    rectAngles[index].height = ROUND(unsigned short, pixelHeight);
-    
-    index++;
+    rectAngles[i].x = ROUND(short, txlow);
+    rectAngles[i].y = ROUND(short, tylow);
+    rectAngles[i].width = ROUND(unsigned short, pixelWidth);
+    rectAngles[i].height = ROUND(unsigned short, pixelHeight);
   }
 
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
   printf("\nAfter transformation:\n\n");
-  for(k = 0; k < (index > MAXPIXELDUMP ? MAXPIXELDUMP : index); k++) {
+  for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
     if ((k + 1) % 6 == 0)
       printf("\n");
     printf("(%d,%d,%d,%d)", rectAngles[k].x, rectAngles[k].y,
@@ -787,8 +772,8 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
 #ifdef GRAPHICS
-  if (_dispGraphics && index > 0)
-    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, index);
+  if (_dispGraphics)
+    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, num);
 #endif
 }
 
@@ -798,8 +783,8 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 			       Coord height, int num)
 {
 #ifdef DEBUG
-  printf("XWindowRep::FillRectArray: %d points, width %.2f, height %.2f\n", num,
-	 width, height);
+  printf("XWindowRep::FillRectArray: %d points, width %.2f, height %.2f\n",
+         num, width, height);
 
 #if MAXPIXELDUMP > 0
   printf("\nBefore transformation:\n\n");
@@ -856,8 +841,8 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 			  Coord height)
 {
 #ifdef DEBUG
-  printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", xlow, ylow,
-	 width, height);
+  printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
+         xlow, ylow, width, height);
 #endif
 
   /* XXX: need to clip rect against window dimensions */
@@ -900,8 +885,8 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 			       Coord minWidth, Coord minHeight)
 {
 #ifdef DEBUG
-  printf("XWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n", x, y,
-	 width, height);
+  printf("XWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
+         x, y, width, height);
 #endif
 
   int pixelX, pixelY;
@@ -911,7 +896,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   pixelY = ROUND(int, y - pixelHeight / 2);
 
 #ifdef DEBUG
-  printf("XWindowRep::After transformation: x %d, y %d, width %d, height %d\n",
+  printf("After transformation: x %d, y %d, width %d, height %d\n",
 	 pixelX, pixelY, pixelWidth, pixelHeight);
 #endif
 
@@ -927,7 +912,7 @@ XXX: need to clip polygon against the window because a large polygon
 can overlow the window's integer coordinate system.
 *************************************************************************/
 
-void XWindowRep::FillPoly(Point *points, int n)
+void XWindowRep::FillPoly(Point *pts, int n)
 {
 #ifdef DEBUG
   printf("XwindowRep::FillPoly: %d points\n", n);
@@ -937,7 +922,7 @@ void XWindowRep::FillPoly(Point *points, int n)
   for(int k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
-    printf("(%.2f,%.2f)", points[k].x, points[k].y);
+    printf("(%.2f,%.2f)", pts[k].x, pts[k].y);
   }
   printf("\n");
 #endif
@@ -945,17 +930,17 @@ void XWindowRep::FillPoly(Point *points, int n)
 
   if (n <= 0)
     return;
-  if (_num_points < n) {
-    delete _xpoints;
-    _xpoints = new XPoint[n];
-    _num_points = n;
+
+  if (n > WINDOWREP_BATCH_SIZE) {
+    printf("Point array too large: %d > %d\n", n, WINDOWREP_BATCH_SIZE);
+    n = WINDOWREP_BATCH_SIZE;
   }
 
   for(int i = 0; i < n; i++) {
     Coord tx, ty;
-    Transform(points[i].x, points[i].y, tx, ty);
-    _xpoints[i].x = ROUND(short, tx);
-    _xpoints[i].y = ROUND(short, ty);
+    Transform(pts[i].x, pts[i].y, tx, ty);
+    points[i].x = ROUND(short, tx);
+    points[i].y = ROUND(short, ty);
   }
   
 #ifdef DEBUG
@@ -964,7 +949,7 @@ void XWindowRep::FillPoly(Point *points, int n)
   for(k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
-    printf("(%d,%d)", _xpoints[k].x, _xpoints[k].y);
+    printf("(%d,%d)", points[k].x, points[k].y);
   }
   printf("\n");
 #endif
@@ -972,7 +957,8 @@ void XWindowRep::FillPoly(Point *points, int n)
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillPolygon(_display, DRAWABLE, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
+    XFillPolygon(_display, DRAWABLE, _gc, points, n,
+                 Nonconvex, CoordModeOrigin);
 #endif
 }
 
@@ -981,7 +967,7 @@ Draw polygon, given PIXEL coordinates of the corners of the polygon.
 No transformation of the coordinates is done.
 *************************************************************************/
 
-void XWindowRep::FillPixelPoly(Point *points, int n)
+void XWindowRep::FillPixelPoly(Point *pts, int n)
 {
 #ifdef DEBUG
   printf("XwindowRep::FillPixelPoly: %d points\n",n);
@@ -990,7 +976,7 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
   for(int j = 0; j < (n < MAXPIXELDUMP ? MAXPIXELDUMP : n); j++) {
     if ((j + 1) % 10 == 0)
       printf("\n");
-    printf("(%.2f,%.2f)", points[j].x, points[j].y);
+    printf("(%.2f,%.2f)", pts[j].x, pts[j].y);
   }
   printf("\n");
 #endif
@@ -998,20 +984,21 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
 
   if (n <= 0)
     return;
-  if (_num_points < n) {
-    delete _xpoints;
-    _xpoints = new XPoint[n];
-    _num_points = n;
+
+  if (n > WINDOWREP_BATCH_SIZE) {
+    printf("Point array too large: %d > %d\n", n, WINDOWREP_BATCH_SIZE);
+    n = WINDOWREP_BATCH_SIZE;
   }
 
-  for(int i=0;  i < n; i++ ) {
-    _xpoints[i].x = ROUND(short, points[i].x);
-    _xpoints[i].y = ROUND(short, points[i].y);
+  for(int i = 0;  i < n; i++ ) {
+    points[i].x = ROUND(short, pts[i].x);
+    points[i].y = ROUND(short, pts[i].y);
   }
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillPolygon(_display, DRAWABLE, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
+    XFillPolygon(_display, DRAWABLE, _gc, points, n,
+                 Nonconvex, CoordModeOrigin);
 #endif
 }
 
@@ -1442,6 +1429,12 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
   winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
 
+  if (skipLeadingSpace) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+  
   int textLength = strlen(text);
   if (textLength == 0) return;
 
@@ -1460,15 +1453,6 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   double xscale = (double)winWidth / (double)textWidth;
   double yscale = (double)winHeight / (double)textHeight;
   double scale = MIN(xscale, yscale);
-  
-  if (skipLeadingSpace) {
-    /* skip leading spaces before drawing text */
-    while (*text == ' ') { 
-      text++; textLength--; 
-    }
-    if (*text== '\0') return;
-    textWidth = XTextWidth(fontStruct, text, textLength);
-  }
   
 #ifdef DEBUG
   printf("transformed to x=%d,y=%d,w=%d,h=%d\n", winX, winY,

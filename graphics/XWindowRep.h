@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/21 19:30:36  jussi
+  Moved all 3D-related code to Map3D.C and Map3D.h.
+
   Revision 1.18  1996/06/15 13:48:47  jussi
   Added SetWindowBgColor() which allows Devise to change
   the view background color at runtime.
@@ -329,10 +332,6 @@ private:
 
 	/* GC for rubber-banding */
 	GC _rectGc;
-
-	/* temp variables to hold points */
-	XPoint *_xpoints;
-	int _num_points;
 
 	/* bitmaps for drawing/scaling text*/
 	XBitmapInfo _srcBitmap, _dstBitmap;

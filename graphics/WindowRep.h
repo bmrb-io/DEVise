@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/21 19:28:02  jussi
+  Moved all 3D-related code to Map3D.C and Map3D.h.
+
   Revision 1.19  1996/06/15 14:13:02  jussi
   Added yuc's 3D functions.
 
@@ -257,12 +260,12 @@ public:
   virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width, 
 			     Coord height, int num) = 0;
 
-  virtual void DrawPixel(Coord x, Coord y)= 0;
-  virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width)= 0;
+  virtual void DrawPixel(Coord x, Coord y) = 0;
+  virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width) = 0;
   /* fill rectangle. All coordinates are in pixels. x and y are
      at the center of the rectangle */
   virtual void FillPixelRect(Coord x, Coord y, Coord width, Coord height,
-			     Coord minWidth = 1.0, Coord minHeight = 1.0)= 0;
+			     Coord minWidth = 1.0, Coord minHeight = 1.0) = 0;
   virtual void FillPoly(Point *, int n) = 0;
   virtual void FillPixelPoly(Point *, int n) = 0;
   virtual void Arc(Coord x, Coord y, Coord w, Coord h,
@@ -299,11 +302,8 @@ public:
   virtual void SetSmallFont() = 0;
   virtual int  GetSmallFontHeight() = 0;
 
-  /* Draw rubberbanding rectangle */
-  virtual void DrawRubberband(int x1, int y1, int x2, int y2) = 0;
-
   /* Get window rep dimensions */
-  virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;
+  virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;
   
   /* get window rep origin from parent */
   virtual void Origin(int &x, int &y) = 0;
