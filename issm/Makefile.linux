@@ -1,6 +1,6 @@
 depend:
 	makedepend -fMakefile.linux -I../issm -I../graphics.new -I../tape \
-		-I/s/X11/include -I/s/tcl/include *.C
+		-I/usr/X11/include -I/usr/include/tcl *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -14,12 +14,15 @@ extract.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 extract.o: /usr/include/string.h /usr/include/features.h
 extract.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
 extract.o: /usr/include/errno.h /usr/include/linux/errno.h
-extract.o: /usr/include/asm/errno.h /usr/include/alloca.h rectape.h
-extract.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
-extract.o: /usr/include/limits.h /usr/include/posix1_lim.h
-extract.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-extract.o: /usr/include/sys/types.h /usr/include/linux/types.h
-extract.o: /usr/include/asm/types.h /usr/include/sys/param.h
+extract.o: /usr/include/asm/errno.h /usr/include/alloca.h
+extract.o: /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
+extract.o: /usr/X11/include/X11/Xlib.h /usr/include/sys/types.h
+extract.o: /usr/include/linux/types.h /usr/include/asm/types.h
+extract.o: /usr/X11/include/X11/X.h /usr/X11/include/X11/Xfuncproto.h
+extract.o: /usr/X11/include/X11/Xosdefs.h rectape.h ../tape/tapedrive.h
+extract.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+extract.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+extract.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
 extract.o: /usr/include/linux/param.h /usr/include/asm/param.h
 extract.o: /usr/include/sys/time.h /usr/include/linux/time.h
 extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h

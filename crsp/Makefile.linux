@@ -1,6 +1,6 @@
 depend:
 	makedepend -fMakefile.linux -I../crsp -I../graphics.new -I../tape \
-		-I/s/X11/include -I/s/tcl/include *.C
+		-I/usr/X11/include -I/usr/include/tcl *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -11,13 +11,17 @@ cal.o: /usr/include/asm/errno.h /usr/include/alloca.h cal.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/features.h
 crsp_extract.o: /usr/include/sys/cdefs.h /usr/include/errno.h
 crsp_extract.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-crsp_extract.o: /usr/include/alloca.h /usr/include/string.h sec.h
-crsp_extract.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/libio.h
-crsp_extract.o: /usr/include/_G_config.h /usr/include/tar.h
-crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
-crsp_extract.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-crsp_extract.o: /usr/include/posix2_lim.h /usr/include/sys/types.h
-crsp_extract.o: /usr/include/linux/types.h /usr/include/asm/types.h
+crsp_extract.o: /usr/include/alloca.h /usr/include/string.h
+crsp_extract.o: /usr/include/tcl/tcl.h /usr/include/stdio.h
+crsp_extract.o: /usr/include/libio.h /usr/include/_G_config.h
+crsp_extract.o: /usr/include/tcl/tk.h /usr/X11/include/X11/Xlib.h
+crsp_extract.o: /usr/include/sys/types.h /usr/include/linux/types.h
+crsp_extract.o: /usr/include/asm/types.h /usr/X11/include/X11/X.h
+crsp_extract.o: /usr/X11/include/X11/Xfuncproto.h
+crsp_extract.o: /usr/X11/include/X11/Xosdefs.h sec.h ../tape/tapedrive.h
+crsp_extract.o: /usr/include/tar.h ../graphics.new/machdep.h
+crsp_extract.o: /usr/include/limits.h /usr/include/posix1_lim.h
+crsp_extract.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 crsp_extract.o: /usr/include/sys/param.h /usr/include/linux/param.h
 crsp_extract.o: /usr/include/asm/param.h /usr/include/sys/time.h
 crsp_extract.o: /usr/include/linux/time.h /usr/include/sys/time.h
