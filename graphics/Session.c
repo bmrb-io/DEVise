@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/03/12 20:44:57  wenger
+  Partial fix for bug 320.
+
   Revision 1.17  1998/03/02 22:04:06  taodb
   Added control parameter to Run invocations
 
@@ -329,9 +332,6 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     fprintf(saveData.fp, "\n# Put action into view\n");
     status += ForEachInstance("view", SaveViewActions, &saveData);
 
-    fprintf(saveData.fp, "\n# Link views\n");
-    status += ForEachInstance("link", SaveViewLinks, &saveData);
-
     fprintf(saveData.fp, "\n# Put views in cursors\n");
     status += ForEachInstance("cursor", SaveCursor, &saveData);
 
@@ -340,6 +340,9 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 
     fprintf(saveData.fp, "\n# Insert mappings into views\n");
     status += ForEachInstance("view", SaveViewMappings, &saveData);
+
+    fprintf(saveData.fp, "\n# Link views\n");
+    status += ForEachInstance("link", SaveViewLinks, &saveData);
 
     fprintf(saveData.fp, "\n# Insert views into windows\n");
     status += ForEachInstance("window", SaveWindowViews, &saveData);

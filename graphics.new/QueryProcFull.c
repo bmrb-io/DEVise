@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.77  1998/03/02 22:30:23  wenger
+  Got DEVise to link on SGI (haha) -- had to change things so that all
+  templates are implicit (they are still not implicit on other
+  architectures, to save space), had to use GNU's ar instead of SGI's,
+  various other kludges.
+
   Revision 1.76  1998/02/26 17:19:29  wenger
   Fixed problems with yesterday's commit.
 
@@ -491,7 +497,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 
   /* Find out if this query is a slave of a record link */
   query->isRecLinkSlave = false;
-  RecordLinkList *recLinkList = callback->GetRecordLinkList();
+  MSLinkList *recLinkList = callback->GetRecordLinkList();
   if ( recLinkList) { 
      int index = recLinkList->InitIterator();
      if (recLinkList->More(index))
@@ -893,7 +899,7 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
 #endif
   
   DOASSERT(query->callback, "No callback");
-  RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+  MSLinkList *recLinkList = query->callback->GetRecordLinkList();
   
   RecId tlow, thigh;
   if (!query->tdata->HeadID(tlow) || !query->tdata->LastID(thigh)) {
@@ -905,68 +911,70 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
   
   while (recLinkList->More(index)) {
     QPRange unprocessed;
-    RecordLink *recLink = recLinkList->Next(index);
-    RecordLinkType linkType = recLink->GetLinkType();
+    MasterSlaveLink *msLink = recLinkList->Next(index);
+    if (msLink->GetFlag() & VISUAL_RECORD) {
 #if DEBUG_NEG_LINKS 
-    printf("Creating processed list from reclink 0x%p for query 0x%p\n",
-	   recLink, query);
-    printf("Link type = %d", linkType);
+      printf("Creating processed list from reclink 0x%p for query 0x%p\n",
+	     msLink, query);
+      printf("Link type = %d", linkType);
 #endif
+      RecordLinkType linkType = msLink->GetLinkType();
     
 #if DEBUG_NEG_LINKS 
-    printf("Processing record link file %s\n", recLink->GetFileName());
+      printf("Processing record link file %s\n", msLink->GetFileName());
 #endif
-    RecId linkRec = 0;
-    while (1) {
-      RecId low;
-      int num;
-      int result = recLink->FetchRecs(linkRec, low, num);
-      if (result < 0) {
-	fprintf(stderr,
-		"Cannot fetch record %ld from record link file %s\n",
-		linkRec, recLink->GetFileName());
-      }
-      if (!result)
-	break;
-#if DEBUG_NEG_LINKS 
-//      printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
-//	     low, low + num - 1, recLink->GetFileName(), linkRec);
-#endif
-      if (linkType == Positive) {
-	unprocessed.Insert(low, low + num - 1, NULL);
-      } else {  /* negative record link - put the same range into
-		 * query''s  processed list
-		 */
-#if DEBUG_NEG_LINKS 
-//	printf("Inserting range [%ld,%ld] into processed list\n",
-//	       low, low + num - 1);
-#endif
-	query->processed->Insert(low, low + num - 1, NULL);
-      }
-      linkRec++;
-    }
-#if DEBUG_NEG_LINKS 
-    printf("End of record link file %s (%ld records)\n",
-	   recLink->GetFileName(), linkRec);
-#endif
-    
-    if (linkType == Positive) {
-      RecId current = tlow;
+      RecId linkRec = 0;
       while (1) {
-	RecId low, high;
-	Coord LOW, HIGH;
-	Boolean noHigh = unprocessed.NextUnprocessed(current, LOW, HIGH);
-	low = (RecId)LOW; high = (RecId)HIGH;
-	if (low > thigh)
+        RecId low;
+        int num;
+        int result = msLink->FetchRecs(linkRec, low, num);
+        if (result < 0) {
+	  fprintf(stderr,
+		  "Cannot fetch record %ld from record link file %s\n",
+		  linkRec, msLink->GetFileName());
+        }
+        if (!result)
 	  break;
-	if (noHigh)
-	  high = thigh;
 #if DEBUG_NEG_LINKS 
-//	printf("Inserting range [%ld,%ld] into processed list\n",
-//	       low, high);
+        printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
+	       low, low + num - 1, msLink->GetFileName(), linkRec);
 #endif
-	query->processed->Insert(low, high, NULL);
-	current = high + 1;
+        if (linkType == Positive) {
+	  unprocessed.Insert(low, low + num - 1, NULL);
+        } else {  /* negative record link - put the same range into
+		   * query''s  processed list
+		   */
+#if DEBUG_NEG_LINKS 
+	  printf("Inserting range [%ld,%ld] into processed list\n",
+	         low, low + num - 1);
+#endif
+	  query->processed->Insert(low, low + num - 1, NULL);
+        }
+        linkRec++;
+      }
+#if DEBUG_NEG_LINKS 
+      printf("End of record link file %s (%ld records)\n",
+	     msLink->GetFileName(), linkRec);
+#endif
+    
+      if (linkType == Positive) {
+        RecId current = tlow;
+        while (1) {
+	  RecId low, high;
+	  Coord LOW, HIGH;
+	  Boolean noHigh = unprocessed.NextUnprocessed(current, LOW, HIGH);
+	  low = (RecId)LOW; high = (RecId)HIGH;
+	  if (low > thigh)
+	    break;
+	  if (noHigh)
+	    high = thigh;
+#if DEBUG_NEG_LINKS 
+	  printf("Inserting range [%ld,%ld] into processed list\n",
+	         low, high);
+#endif
+	  query->processed->Insert(low, high, NULL);
+	  current = high + 1;
+        }
       }
     }
   }
@@ -987,11 +995,11 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
 Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
 {
   // check if master view is in the currently executing list
-  RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+  MSLinkList *recLinkList = query->callback->GetRecordLinkList();
 
   int rindex = recLinkList->InitIterator();  
   while(recLinkList->More(rindex)) {
-    RecordLink *recLink = recLinkList->Next(rindex);
+    MasterSlaveLink *recLink = recLinkList->Next(rindex);
     ViewGraph *masterView = recLink->GetMasterView();
     int qindex = _queries->InitIterator();
     while(_queries->More(qindex)) {
@@ -1700,7 +1708,7 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 				    int &recordsProcessed)
 {
 #if DEBUGLVL >= 5
-    printf("QPRangeInserted [%ld,%ld], buf 0x%p, [%ld,%ld], %d\n",
+    printf("QPRangeInserted [%f,%f], buf 0x%p, [%ld,%ld], %d\n",
            low, high, _rangeBuf, _rangeStartId,
            _rangeStartId + _rangeNumRecs - 1, _rangeTData);
 #endif
@@ -1718,7 +1726,7 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
         char *ptr = (char *)_rangeBuf + ((RecId)low - _rangeStartId) * gRecSize;
         _rangeQuery->bytes += ((RecId)high - (RecId)low + 1) * gRecSize;
 #if DEBUGLVL >= 5
-        printf("Returning GData [%ld,%ld], map 0x%p, buf 0x%p\n",
+        printf("Returning GData [%f,%f], map 0x%p, buf 0x%p\n",
                low, high, _rangeQuery->map, _gdataBuf);
 #endif
 	int recordsDrawn;
@@ -1726,14 +1734,14 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
                                            ptr, (int)(high - low + 1),
 					   recordsProcessed,
-					   false, recordsDrawn, drawnList);
+					   false, recordsDrawn,
+					   drawnList);
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) low,
 	  (int) low + recordsProcessed - 1, (int) low, (int) high);
 	printf("%d records drawn\n", recordsDrawn);
 	if (drawnList != NULL) drawnList->Print();
 #endif
-        delete drawnList;
         return;
     }
 
@@ -1764,17 +1772,23 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 #endif
 	int tmpRecs;
 	int recordsDrawn;
+	Boolean hasTAttrLink = _rangeQuery->callback->HasTAttrLink();
 	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
                                            _gdataBuf, numToConvert,
 					   tmpRecs,
-					   false, recordsDrawn, drawnList);
+					   hasTAttrLink, recordsDrawn,
+					   drawnList);
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) recId,
 	  (int) recId + tmpRecs - 1, (int) recId, (int) low + numToConvert - 1);
 	printf("%d records drawn\n", recordsDrawn);
 	if (drawnList != NULL) drawnList->Print();
 #endif
+	if (hasTAttrLink) {
+	  TAttrLinkInsert(_rangeQuery->tdata, dbuf, recordsDrawn, drawnList,
+	      _rangeQuery->callback);
+	}
         delete drawnList;
 	recordsProcessed += tmpRecs;
 	if (tmpRecs < numToConvert) break;
@@ -2499,11 +2513,11 @@ void DumpFilter(QPFullData *query)
 	  query->filter.xLow, query->filter.xHigh, 
 	  query->filter.yLow, query->filter.yHigh);
   
-  RecordLinkList *recLinkList = query->callback->GetMasterLinkList();
+  MSLinkList *recLinkList = query->callback->GetMasterLinkList();
   if (!recLinkList) return;
   int index = recLinkList->InitIterator();
   while(recLinkList->More(index)) {
-    RecordLink *link = recLinkList->Next(index);
+    MasterSlaveLink *link = recLinkList->Next(index);
     printf("link = %s\n, linkfilename = %s\n", link->GetName(),
 	   link->GetFileName());
     FILE *fp = fopen(link->GetFileName(), "w");
@@ -2516,3 +2530,51 @@ void DumpFilter(QPFullData *query)
 }
 #endif
 
+void
+QueryProcFull::TAttrLinkInsert(TData *tdata, char *tdataBuf, int recordsDrawn,
+    const BooleanArray *drawnList, QueryCallback *callback)
+{
+#if DEBUGLVL >= 3
+  printf("QueryProcFull::TAttrLinkInsert(0x%p, %d)\n", tdataBuf,
+      recordsDrawn);
+#endif
+
+  //
+  // Find the TData record size and make sure it's something we can
+  // deal with.
+  //
+  int recordSize = tdata->RecSize();
+  if (recordSize < 0) {
+    reportErrNosys("Can't deal with variable-size TData records");
+    return;
+  } else if (recordSize == 0) {
+    reportErrNosys("TData record size is zero");
+    return;
+  }
+
+  //
+  // Assemble a list of only the records that were actually drawn.
+  //
+  void **tdataRecs = new void *[recordsDrawn];
+  if (drawnList != NULL) {
+    int inRec = 0;
+    int outRec = 0;
+    while (outRec < recordsDrawn) {
+      if (drawnList->Get(inRec)) {
+        tdataRecs[outRec] = tdataBuf + inRec * recordSize;
+	outRec++;
+      }
+      inRec++;
+    }
+  } else {
+    for (int recNum = 0; recNum < recordsDrawn; recNum++) {
+      tdataRecs[recNum] = tdataBuf + recNum * recordSize;
+    }
+  }
+
+  callback->InsertValues(tdata, recordsDrawn, tdataRecs);
+
+  delete [] tdataRecs;
+
+  return;
+}

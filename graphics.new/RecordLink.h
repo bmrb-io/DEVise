@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/27 15:08:59  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.8  1998/03/08 00:01:12  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -60,7 +65,7 @@
 
 #include "RecId.h"
 #include "RecFile.h"
-#include "DeviseLink.h"
+#include "MasterSlaveLink.h"
 
 struct RecordRange {
   RecId start;
@@ -69,33 +74,27 @@ struct RecordRange {
 
 DefinePtrDList(RecordRangeList, RecordRange *)
 
-class RecordLink : public DeviseLink {
+class RecordLink : public MasterSlaveLink {
  public:
   RecordLink(char *name, RecordLinkType type = Positive);
   virtual ~RecordLink();
 
   virtual void SetFlag(VisualFlag flag);
 
-  char *GetFileName() { return (_file ? _file->GetName() : "none"); }
+  virtual char *GetFileName() { return (_file ? _file->GetName() : "none"); }
 
-  virtual void SetMasterView(ViewGraph *view);
-  virtual ViewGraph *GetMasterView() { return _masterView; }
-
-  virtual void InsertView(ViewGraph *view);
-  virtual bool DeleteView(ViewGraph *view);
-
-  void Initialize();
-  void InsertRecs(RecId recid, int num);
-  int  FetchRecs(RecId recid, RecId &rec, int &num);
-  void Done();
-  void Abort();
-  void Print();
+  virtual void Initialize();
+  virtual void InsertRecs(RecId recid, int num);
+  virtual int  FetchRecs(RecId recid, RecId &rec, int &num);
+  virtual void Done();
+  virtual void Abort();
+  virtual void Print();
   virtual RecordLinkType GetLinkType () { return _linkType; }
   virtual void SetLinkType(RecordLinkType type) { _linkType = type; }
   Boolean CheckTData(ViewGraph *view, Boolean isMaster);
 
-  static void EnableUpdates() { _disableUpdates = false; }
-  static void DisableUpdates() { _disableUpdates = true; }
+  virtual DevStatus InsertValues(TData *tdata, int recCount, void **tdataRecs)
+  { return StatusFailed; }
 
  protected:
   void FlushToDisk();                   // write array contents to disk
@@ -107,10 +106,7 @@ class RecordLink : public DeviseLink {
   RecordRange *_array;                  // array of record id ranges
   int         _num;                     // number of entries in array
 
-  ViewGraph   *_masterView;             // master of record link
   RecordLinkType _linkType;            // positive or negative
-
-  static Boolean _disableUpdates;	// disable all record links
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/08 00:01:17  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.2  1997/07/22 15:36:38  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -32,6 +36,7 @@
 #include "VisualLinkClassInfo.h"
 #include "VisualLink.h"
 #include "RecordLink.h"
+#include "TAttrLink.h"
 #include "ViewGraph.h"
 #include "Util.h"
 #include "Exit.h"
@@ -114,16 +119,20 @@ char *VisualLinkClassInfo::ClassName()
   return "Visual_Link";
 }
 
-static char *args[2];
+static char *args[4];
 static char buf1[80];
+static char buf2[80];
+static char buf3[80];
 
 void VisualLinkClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 4;
   argv = args;
 
   args[0] = "Name link";
   args[1] = "flags 2";
+  args[2] = "master TData attribute name (TData attribute link only)";
+  args[3] = "slave TData attribute name (TData attribute link only)";
   return;
 }
 
@@ -133,12 +142,26 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc, char **argv)
   printf("VisualLinkClassInfo(%p)::CreateWithParams(%s)\n", this, argv[0]);
 #endif
 
-  DOASSERT(argc == 2, "Invalid arguments");
+  DOASSERT(argc == 2 || argc == 4, "Invalid arguments");
   char *name = CopyString(argv[0]);
   int flag = atoi(argv[1]);
 
   if (flag & VISUAL_RECORD) {
+    if (flag & ~VISUAL_RECORD) {
+      reportErrNosys("Warning: record link also has other link attributes "
+	  "-- they will be ignored");
+    }
     RecordLink *link = new RecordLink(name);
+    return new VisualLinkClassInfo(name, flag, link);
+  }
+
+  if (flag & VISUAL_TATTR) {
+    DOASSERT(argc == 4, "Invalid arguments");
+    if (flag & ~VISUAL_TATTR) {
+      reportErrNosys("Warning: TData attribute link also has other link "
+	  "attributes -- they will be ignored");
+    }
+    TAttrLink *link = new TAttrLink(name, argv[2], argv[3]);
     return new VisualLinkClassInfo(name, flag, link);
   }
 
@@ -171,10 +194,17 @@ void *VisualLinkClassInfo::GetInstance()
 void VisualLinkClassInfo::CreateParams(int &argc, char **&argv)
 {
   argc = 2;
-  argv= args;
+  argv = args;
   args[0] = _name;
   sprintf(buf1, "%d", _flag);
   args[1] = buf1;
+  if (_flag & VISUAL_TATTR) {
+    argc = 4;
+    sprintf(buf2, "%s", ((TAttrLink *)_link)->GetMasterAttrName());
+    args[2] = buf2;
+    sprintf(buf3, "%s", ((TAttrLink *)_link)->GetSlaveAttrName());
+    args[3] = buf3;
+  }
 }
 
 void

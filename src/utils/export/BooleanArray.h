@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/20 20:44:26  wenger
+  Changed color and utils libraries to new export directory scheme for
+  dealing with include files (email with complete explanation forthcoming).
+
   Revision 1.2  1998/02/13 15:52:02  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -48,7 +52,7 @@ public:
   void Clear();
 
   void Set(int index, Boolean value);
-  Boolean Get(int index);
+  Boolean Get(int index) const;
 
   void Print();
 

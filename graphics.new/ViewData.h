@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/13 15:51:37  wenger
+  Changed ViewData to be based on old ViewScatter class instead of
+  TDataViewX; ViewData now returns a list of the records drawn to
+  the query processor; removed unused GDataBinX class.
+
 */
 
 //******************************************************************************
@@ -62,13 +67,15 @@ class ViewData : public ViewGraph
 
 		// Callback methods (QueryCallback)
 		virtual void*	GetObj(void) { return this; }
-		virtual RecordLinkList*	GetMasterLinkList(void) { return &_masterLink; }
-		virtual RecordLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
+		virtual MSLinkList*	GetMasterLinkList(void) { return &_masterLink; }
+		virtual MSLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
 									int& recordsProcessed,
 									Boolean needDrawnList, int& recordsDrawn,
 									BooleanArray*& drawnList);
+        virtual Boolean HasTAttrLink();
+		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs);
 };
 
 //******************************************************************************

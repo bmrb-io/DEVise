@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.75  1998/04/01 17:11:34  wenger
+  4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
+  now get sent to slaves during collaboration.
+
   Revision 1.74  1998/03/18 08:20:17  zhenhai
   Added visual links between 3D graphics.
 
@@ -332,6 +336,7 @@
 #include "TDataMap.h"
 #include "ActionDefault.h"
 #include "Init.h"
+#include "MasterSlaveLink.h"
 #include "RecordLink.h"
 #include "TData.h"
 #include "Util.h"
@@ -351,6 +356,7 @@ ImplementDList(BStatList, BasicStats *)
 // class ViewGraph_QueryCallback
 //******************************************************************************
 
+//TEMP -- why isn't ViewGraph just derived from QueryCallback?
 class ViewGraph_QueryCallback : public QueryCallback
 {
 	private:
@@ -378,12 +384,12 @@ class ViewGraph_QueryCallback : public QueryCallback
 			return _parent->GetObj();
 		}
 
-		virtual RecordLinkList*		GetMasterLinkList()
+		virtual MSLinkList*		GetMasterLinkList()
 		{
 			return _parent->GetMasterLinkList();
 		}
 
-		virtual RecordLinkList*		GetRecordLinkList()
+		virtual MSLinkList*		GetRecordLinkList()
 		{
 			return _parent->GetRecordLinkList();
 		}
@@ -402,6 +408,16 @@ class ViewGraph_QueryCallback : public QueryCallback
 		virtual void	PrintLinkInfo(void)
 		{
 			_parent->PrintLinkInfo();
+		}
+
+		virtual Boolean HasTAttrLink()
+		{
+			return _parent->HasTAttrLink();
+		}
+
+		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs)
+		{
+			_parent->InsertValues(tdata, recCount, tdataRecs);
 		}
 };
 
@@ -566,7 +582,7 @@ double	ViewGraph::CalcDataColorEntropy(void)
 
 //******************************************************************************
 
-void ViewGraph::AddAsMasterView(RecordLink *link)
+void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
 {
     // remove this view from the slave view list of the link; then add
     // the link as one of the links whose master this view is
@@ -584,7 +600,7 @@ void ViewGraph::AddAsMasterView(RecordLink *link)
     Refresh();
 }
 
-void ViewGraph::DropAsMasterView(RecordLink *link)
+void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
 {
     if (_masterLink.Find(link)) {
         _masterLink.Delete(link);
@@ -595,8 +611,7 @@ void ViewGraph::DropAsMasterView(RecordLink *link)
     }
 }
 
-
-void ViewGraph::AddAsSlaveView(RecordLink *link)
+void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
 {
     // view cannot be a master
     DropAsMasterView(link);
@@ -611,7 +626,7 @@ void ViewGraph::AddAsSlaveView(RecordLink *link)
     Refresh();
 }
 
-void ViewGraph::DropAsSlaveView(RecordLink *link)
+void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
 {
     if (_slaveLink.Find(link)) {
         _slaveLink.Delete(link);
@@ -984,7 +999,7 @@ void ViewGraph::WriteMasterLink(RecId start, int num)
     // Insert records into record links whose master this view is
     int index = _masterLink.InitIterator();
     while(_masterLink.More(index)) {
-        RecordLink *link = _masterLink.Next(index);
+        MasterSlaveLink *link = _masterLink.Next(index);
 #if defined(DEBUG)
 	printf("*********inserting recs (%ld, %ld) into %s\n", 
 	       start, start + num - 1, link->GetName());
@@ -1512,7 +1527,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   // Initialize record links whose master this view is
   index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
+    MasterSlaveLink *link = _masterLink.Next(index);
     link->Initialize();
   }
   _masterLink.DoneIterator(index);
@@ -1571,7 +1586,7 @@ void ViewGraph::DerivedAbortQuery()
   // Abort record links whose master this view is
   int index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
+    MasterSlaveLink *link = _masterLink.Next(index);
     link->Abort();
   }
   _masterLink.DoneIterator(index);

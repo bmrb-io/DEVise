@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/03/08 00:01:15  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.9  1998/02/10 21:13:20  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved
@@ -213,7 +217,7 @@ protected:
 		virtual void	QueryDone(int bytes, void* userData,
 								  TDataMap* map = NULL);
 		virtual void*	GetObj(void) { return this; }
-		virtual RecordLinkList*		GetRecordLinkList(void);
+		virtual MSLinkList*		GetRecordLinkList(void);
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
 									int& recordsProcessed,

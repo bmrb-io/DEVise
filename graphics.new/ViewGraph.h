@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/03/05 08:10:57  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.46  1998/02/26 22:59:58  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -260,7 +265,7 @@ DefineDList(GStatList, double)
 DefineDList(BStatList, BasicStats *)
 
 class TDataMap;
-class RecordLink;
+class MasterSlaveLink;
 class CountMapping;
 
 struct MappingInfo {
@@ -302,7 +307,7 @@ struct ViewPanInfo {
 };
 
 DefinePtrDList(MappingInfoList, MappingInfo *);
-DefinePtrDList(RecordLinkList, RecordLink *);
+DefinePtrDList(MSLinkList, MasterSlaveLink *);
 
 class GDataBin;
 
@@ -331,15 +336,15 @@ class ViewGraph : public View
 		double	CalcDataColorEntropy(void);
 
   /* Make view a master/slave of a link */
-  virtual void AddAsMasterView(RecordLink *link);
-  virtual void DropAsMasterView(RecordLink *link);
-  virtual void AddAsSlaveView(RecordLink *link);
-  virtual void DropAsSlaveView(RecordLink *link);
+  virtual void AddAsMasterView(MasterSlaveLink *link);
+  virtual void DropAsMasterView(MasterSlaveLink *link);
+  virtual void AddAsSlaveView(MasterSlaveLink *link);
+  virtual void DropAsSlaveView(MasterSlaveLink *link);
 
   // Stats update link access
   UpdateLink& GetUpdateLink() { return _updateLink; }
   // Record link list
-  RecordLinkList *SlaveLinkList() { return &_slaveLink;}
+  MSLinkList *SlaveLinkList() { return &_slaveLink;}
 
   /* Insert/remove mappings from view */
   virtual void InsertMapping(TDataMap *map, char *label = "");
@@ -495,8 +500,8 @@ class ViewGraph : public View
 
   Action *_action;                 /* action in this view */
   Boolean _deleteAction;           /* delete _action when this is destroyed? */
-  RecordLinkList _masterLink;      /* links whose master this view is */
-  RecordLinkList _slaveLink;       /* slave record link list */
+  MSLinkList _masterLink;      /* links whose master this view is */
+  MSLinkList _slaveLink;       /* slave record link list */
 
   UpdateLink _updateLink;	// link to view that want to know when
 				// this view has changed
@@ -535,9 +540,9 @@ class ViewGraph : public View
 		virtual void	QueryDone(int bytes, void* userData,
 								  TDataMap* map = NULL);
 		virtual void*	GetObj(void) { return this; }
-		virtual RecordLinkList*		GetMasterLinkList()
+		virtual MSLinkList*		GetMasterLinkList()
 		{ DOASSERT(false, "Call in derived class only"); return NULL; }
-		virtual RecordLinkList*		GetRecordLinkList()
+		virtual MSLinkList*		GetRecordLinkList()
 		{ DOASSERT(false, "Call in derived class only"); return NULL; }
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
@@ -547,6 +552,10 @@ class ViewGraph : public View
 									BooleanArray*& drawnList)
 		{ DOASSERT(false, "Call in derived class only"); }
 		virtual void	PrintLinkInfo(void);
+		virtual Boolean HasTAttrLink()
+		{ DOASSERT(false, "Call in derived class only"); return false; }
+		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs)
+		{ DOASSERT(false, "Call in derived class only"); }
 
 		// Callback methods (WindowRepCallback)
 		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,

@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/02/19 23:25:21  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.12  1998/02/13 15:51:39  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -89,7 +97,7 @@
 #include "TDataMap.h"
 #include "Shape.h"
 #include "Util.h"
-#include "RecordLink.h"
+#include "MasterSlaveLink.h"
 #include "DrawTimer.h"
 #include "Scheduler.h"
 #include "XColor.h"
@@ -531,9 +539,9 @@ void	ViewLens::QueryDone(int bytes, void* userData, TDataMap* map = NULL)
 	ViewGraph::QueryDone(bytes, userData, map);
 }
 
-RecordLinkList*		ViewLens::GetRecordLinkList()
+MSLinkList*		ViewLens::GetRecordLinkList()
 {
-	return (_curView ? _curView->SlaveLinkList() : (RecordLinkList*)NULL);
+	return (_curView ? _curView->SlaveLinkList() : (MSLinkList*)NULL);
 }
 
 void	ViewLens::ReturnGData(TDataMap* mapping, RecId recId,

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/26 22:59:56  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.4  1998/02/20 06:17:14  beyer
   resurected histograms
 
@@ -328,6 +333,53 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	}
 
 	delete [] symArray;
+}
+
+//******************************************************************************
+Boolean
+ViewData::HasTAttrLink()
+{
+#if defined(DEBUG)
+	printf("ViewData::HasTAttrLink()\n");
+#endif
+
+	Boolean result = false;
+
+	int index = _masterLink.InitIterator();
+	while (_masterLink.More(index)) {
+	  DeviseLink *link = _masterLink.Next(index);
+	  if (link->GetFlag() & VISUAL_TATTR) {
+		result = true;
+		break;
+	  }
+	}
+	_masterLink.DoneIterator(index);
+
+	return result;
+}
+
+//******************************************************************************
+void
+ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
+{
+#if defined(DEBUG)
+	printf("ViewData::InsertValues()\n");
+#endif
+
+	int index = _masterLink.InitIterator();
+	while (_masterLink.More(index)) {
+	  MasterSlaveLink *link = _masterLink.Next(index);
+	  if (link->GetFlag() & VISUAL_TATTR) {
+		if (!link->InsertValues(tdata, recCount,
+		    tdataRecs).IsComplete()) {
+		  char errBuf[256];
+		  sprintf(errBuf, "Error inserting values into link %s",
+			  link->GetName());
+		  reportErrNosys(errBuf);
+		}
+	  }
+	}
+	_masterLink.DoneIterator(index);
 }
 
 //******************************************************************************

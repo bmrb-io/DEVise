@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/03/08 00:01:11  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.13  1997/09/05 22:36:26  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -84,8 +88,6 @@
 
 //#define DEBUG
 
-Boolean RecordLink::_disableUpdates = false;
-
 static const int RecordChunkSize = 1024;
 
 static char *MakeFileName(char *linkname)
@@ -109,7 +111,7 @@ static int RecordRangeCompare(const void *r1, const void *r2)
 }
 
 RecordLink::RecordLink(char *name, RecordLinkType type) :
-	DeviseLink(name, VISUAL_RECORD)
+	MasterSlaveLink(name, VISUAL_RECORD)
 {
 #if defined(DEBUG)
   printf("RecordLink::RecordLink(%s)\n", name);
@@ -132,33 +134,11 @@ RecordLink::~RecordLink()
 #if defined(DEBUG)
   printf("RecordLink(%s)::~RecordLink()\n", _name);
 #endif
-  if (_masterView)
-    _masterView->DropAsMasterView(this);
-
-  int index = InitIterator();
-  while(More(index)) {
-    ViewGraph *view = Next(index);
-    view->DropAsSlaveView(this);
-  }
-  DoneIterator(index);
 
   delete _file;
   delete _array;
 }
 
-void RecordLink::SetMasterView(ViewGraph *view)
-{
-#if defined(DEBUG)
-  printf("RecordLink(%s)::SetMasterView()\n", _name);
-#endif
-  if (_masterView)
-    _masterView->DropAsMasterView(this);
-
-  _masterView = view;
-
-  if (_masterView)
-    _masterView->AddAsMasterView(this);
-}
 Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster) 
 {
 #if defined(DEBUG)
@@ -212,7 +192,7 @@ void RecordLink::Initialize()
 
   if (_disableUpdates) {
 #if defined(DEBUG)
-  printf("  record link updates disabled -- returning\n");
+    printf("  record link updates disabled -- returning\n");
 #endif
     return;
   }
@@ -262,7 +242,7 @@ void RecordLink::InsertRecs(RecId recid, int num)
 
   if (_disableUpdates) {
 #if defined(DEBUG)
-  printf("  record link updates disabled -- returning\n");
+    printf("  record link updates disabled -- returning\n");
 #endif
     return;
   }
@@ -335,68 +315,11 @@ void RecordLink::Done()
 
   _prevLastRec = _lastRec;
 
-  /* Refresh the views of this link. */
-  int index = InitIterator();
-  while(More(index)) {
-    ViewGraph *view = Next(index);
-
-    if (view->IsInPileMode()) {
-      /* Refresh the whole pile of a piled view. */
-
-      /* This code sometimes causes "unnecessary" redraws of a view if a view
-       * below it in a pile has its record link updated (for example, if no
-       * symbols were actually drawn in the lower view, we don't really have
-       * to redraw the upper view).  However, it seems like an awful lot of
-       * work to keep track of whether we really have to redraw the upper
-       * view(s), so for now we refresh the top view in the pile, which
-       * refreshes the whole pile. RKW 1/9/97. */
-      View *slave = View::FindViewByName(view->GetFirstSibling()->GetName());
-#ifdef DEBUG
-      printf("Refreshing piled view %s\n", slave->GetName());
-#endif
-      slave->Refresh();
-    } else {
-#ifdef DEBUG
-      printf("Refreshing slave view %s\n", view->GetName());
-#endif
-      view->Refresh();
-    }
-  }
-  DoneIterator(index);
+  MasterSlaveLink::Done();
 }
 
 void RecordLink::Abort()
 {
-}
-
-/* insert slave view into record link */
-
-void RecordLink::InsertView(ViewGraph *view)
-{
-#if defined(DEBUG)
-  printf("RecordLink(%s)::InsertView()\n", _name);
-#endif
-  DeviseLink::InsertView(view);
-  view->AddAsSlaveView(this);
-}
-
-/* delete slave or master view from visual link */
-
-bool RecordLink::DeleteView(ViewGraph *view)
-{
-#if defined(DEBUG) 
-  printf("RecordLink(%s)::DeleteView(0x%p, 0x%p)\n", _name, this, view);
-#endif
-  if( view == _masterView ) {
-      view->DropAsMasterView(this);
-      _masterView = NULL;
-  } else if( DeviseLink::DeleteView(view) ) {
-      view->DropAsSlaveView(this);
-  } else {
-      // view was not part of this link
-      return false;
-  }
-  return true;
 }
 
 void RecordLink::FlushToDisk()

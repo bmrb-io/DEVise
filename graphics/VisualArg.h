@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/03/18 08:19:44  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.9  1998/03/08 00:00:54  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -80,6 +83,7 @@ const unsigned VISUAL_SHAPE_INDEX = 6;
 const unsigned VISUAL_RECORD_INDEX = 7;
 const unsigned VISUAL_CAMERA_INDEX = 8;
 const unsigned VISUAL_ANTICAMERA_INDEX = 9;
+const unsigned VISUAL_TATTR_INDEX = 10;
 
 /*
    A VisualFlag is the union of visual attributes.
@@ -97,7 +101,11 @@ const unsigned VISUAL_SIZE        = (1 << VISUAL_SIZE_INDEX);
 const unsigned VISUAL_PATTERN     = (1 << VISUAL_PATTERN_INDEX);
 const unsigned VISUAL_ORIENTATION = (1 << VISUAL_ORIENTATION_INDEX);
 const unsigned VISUAL_SHAPE       = (1 << VISUAL_SHAPE_INDEX);
+
 const unsigned VISUAL_RECORD      = (1 << VISUAL_RECORD_INDEX);
+const unsigned VISUAL_TATTR       = (1 << VISUAL_TATTR_INDEX);
+
+// Note that this doesn't include RECORD or TATTR bits.
 const unsigned VISUAL_ALLBITS     = (VISUAL_X | VISUAL_Y | VISUAL_LOC |
 				     VISUAL_COLOR | VISUAL_SIZE |
 				     VISUAL_PATTERN | VISUAL_ORIENTATION

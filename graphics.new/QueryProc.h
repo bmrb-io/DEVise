@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/02/10 21:13:09  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.14  1997/11/24 23:15:15  weaver
   Changes for the new ColorManager.
 
@@ -84,7 +89,7 @@ class TDataMap;
 class Selection;
 class GData;
 class RecordLink;
-class RecordLinkList;
+class MSLinkList;
 class BooleanArray;
 
 /* Used to return query results */
@@ -102,10 +107,10 @@ class QueryCallback
 		// Return this QueryCallback
 		virtual void*	GetObj(void) = 0;
 
-		virtual RecordLinkList*		GetMasterLinkList() { return 0; }
+		virtual MSLinkList*		GetMasterLinkList() { return 0; }
 
 		// Return list of record links whose slave is the view
-		virtual RecordLinkList*		GetRecordLinkList() { return 0; }
+		virtual MSLinkList*		GetRecordLinkList() { return 0; }
 
 		// Return a batch of records
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
@@ -115,6 +120,10 @@ class QueryCallback
 									BooleanArray*& drawnList) = 0;
 
 		virtual void	PrintLinkInfo(void) {}
+
+		virtual Boolean HasTAttrLink() { return false; }
+		virtual void InsertValues(TData *tdata, int recCount,
+			void **tdataRecs) {}
 };
 
 class QueryProc {

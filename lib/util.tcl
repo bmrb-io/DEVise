@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.56  1998/03/27 15:09:18  wenger
+#  Added dumping of logical session description, added GUI for dumping
+#  logical or physical description; cleaned up some of the command code
+#  a little.
+#
 #  Revision 1.55  1998/02/26 20:50:40  taodb
 #  Removed redundancy between groupcontrol.tk and control.tk
 #
@@ -526,14 +531,13 @@ proc LinkSet {} {
 }
 
 ############################################################
-#list of all record links
+#list of all record and TData attribute links
 proc RecordLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set recLinkSet {}
     foreach link $linkSet {
         set flag [DEVise getLinkFlag $link]
-        if { [expr $flag & 128] } {
-#TEMPTEMP -- test this
+        if { [expr $flag & 128] || [expr $flag & 1024] } {
             lappend recLinkSet $link
         }
     }

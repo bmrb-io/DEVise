@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.3  1997/02/26 16:32:04  wenger
+#	Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #	Revision 1.2  1997/02/14 16:48:02  wenger
 #	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -97,22 +100,25 @@ proc dialogInfo { w title text bitmap default args items labels buttons {sort 1 
     $w.list selection set 0
     
     #########################Create labels and buttons as requested 
+    set widgetNum 0
     foreach label $labels {
 	# format of label is { text , width, value }
 	set text [lindex $label 0]
 	set width [lindex $label 1]
 	set value [lindex $label 2]
-	frame $w.info.p$label 
-	label $w.info.p$label.l -text $text -width $width -bd 1 \
+	frame $w.info.p$widgetNum 
+	label $w.info.p$widgetNum.l -text $text -width $width -bd 1 \
 		-relief  raised
-	label $w.info.p$label.e -text $value -fg white \
+	label $w.info.p$widgetNum.e -text $value -fg white \
 		-relief sunken -bd 1
-	pack $w.info.p$label.l  -side left -in $w.info.p$label 
-	pack $w.info.p$label.e $w.info.p$label.e -side left  \
-		-in $w.info.p$label \
+	pack $w.info.p$widgetNum.l  -side left -in $w.info.p$widgetNum 
+	pack $w.info.p$widgetNum.e $w.info.p$widgetNum.e -side left  \
+		-in $w.info.p$widgetNum \
 		-expand 1 -fill x
-	pack $w.info.p$label -side top -in $w.info -fill x
-#	puts "created $label"
+	pack $w.info.p$widgetNum -side top -in $w.info -fill x
+#	puts "created $widgetNum"
+
+	set widgetNum [expr $widgetNum + 1]
     }
     if { $buttons != {} } {
 	set flag [lindex $buttons 0]

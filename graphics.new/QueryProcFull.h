@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/10/07 17:06:05  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.23  1997/09/05 22:36:25  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -132,6 +135,7 @@
 class TData;
 class TDataMap;
 class GData;
+class BooleanArray;
 
 enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter };
 enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState };
@@ -347,7 +351,10 @@ protected:
   char *DispatchedName() { return "QueryProcFull"; }
   void Run() { ProcessQuery(); }
   void Cleanup();
+  void TAttrLinkInsert(TData *tdata, char *tdataBuf, int recordsDrawn,
+      const BooleanArray *drawnList, QueryCallback *callback);
   
+protected:
   DispatcherID _dispatcherID;      /* dispatcher ID */
 };
 

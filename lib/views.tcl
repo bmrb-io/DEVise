@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1998/02/26 19:05:33  beyer
+#  updated histogram dialog
+#
 #  Revision 1.46  1998/02/20 06:17:23  beyer
 #  resurected histograms
 #
@@ -776,7 +779,7 @@ proc DoLinkCreate { isRec } {
 	set but [dialogCkBut .createLink "Create Link" \
 		"Enter parameters for creating a new link" "" \
 		0 { OK Info Cancel } name \
-		{x y color size pattern orientation shape record} $flag]
+		{x y record {tdata attribute}} $flag]
 	
 	if { $but == 2 } {
 	    return ""
@@ -784,6 +787,15 @@ proc DoLinkCreate { isRec } {
 	    DoDisplayLinkInfo
 	} else {
 	    set flag $dialogCkButVar(selected)
+
+	    # Convert flag values from what graphics understands to what
+	    # C++ code understands.
+	    if { $flag == 4 } {
+		set flag 128
+	    } elseif { $flag == 8 } {
+		set flag 1024
+	    }
+
 	    set name $dialogCkButVar(entry)
 	    if {$name == ""} {
 		set but [dialog .noName "No Link Name" \
@@ -802,20 +814,17 @@ proc DoLinkCreate { isRec } {
 		continue
 	    }
 	    
-            set type -1
             if {[ expr ($flag & 128) ] }  {
-	        set type 0
-	        puts " link type + " 
-	        set flag 128
-            } elseif { [ expr ($flag & 256) ] } {
-	        set type 1
-	        puts " link type - " 
-	        set flag 128
+              puts " link type + " 
             }
-	    set result [DEVise create link Visual_Link $name $flag]
-       	    if { $flag == 128  } {
-	        DEVise setLinkType $name $type
-            }
+            if {[ expr ($flag & 1024) ] }  {
+	      # TData attribute link -- needs attribute name.
+	      set attrName [GetTAttrName]
+	      set result [DEVise create link Visual_Link $name $flag \
+		$attrName $attrName]
+	    } else {
+	      set result [DEVise create link Visual_Link $name $flag]
+	    }
 	    if {$result == ""} {
 		set but [ dialog .linkError "Link Error" \
 			"Cannot create link $name" "" 0 OK]
@@ -859,7 +868,18 @@ proc DisplayLinkInfo { link } {
     set views [DEVise getLinkViews $link]
     set flag [DEVise getLinkFlag $link]
     if { $flag == 128 } {
+	# Convert flag value from C++ enum to graphics bitmap.
+	set flag 4
+
 	set type "Record"
+	set master [DEVise getLinkMaster $link]
+	set labels [list  [list Type 10 "$type Link" ] \
+		          [list Master 10 $master] ]
+    } elseif { $flag == 1024 } {
+	# Convert flag value from C++ enum to graphics bitmap.
+	set flag 8
+
+	set type "TData Attribute"
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
 		          [list Master 10 $master] ]
@@ -869,8 +889,7 @@ proc DisplayLinkInfo { link } {
     }
     dialogInfo .linkInfo "Link Info" "Views linked by $link" "" \
     	    0 OK $views  $labels  \
-	    [list $flag 20 2 4 col x y color size pattern \
-	    orientation shape record ]
+	    [list $flag 40 2 2 col x y record {tdata attr} ]
     # quick hash - actually should write general purpose widgets to do  
     # selections with multiple kinds of widgets in one window
 }
@@ -1059,6 +1078,7 @@ proc DeleteLink { link } {
 
 # Set current view as master
 proc DoSetLinkMaster {} {
+puts "DIAG DoSetLinkMaster"
     global curView dialogListVar
 
     if {![CurrentView]} {
@@ -1069,7 +1089,7 @@ proc DoSetLinkMaster {} {
     if { [llength $linkSet] == 0 } {
 	set link [DoLinkCreate 1]
 	if {$link == ""} {
-	    puts "nnnnnnnn"
+#	    puts "nnnnnnnn"
 	    return
 	}
     }
@@ -2286,3 +2306,38 @@ proc CurrentView {} {
     return 0
 }
 
+# This is a temporary quick-and-dirty interface.  We need to change it
+# to give the use a menu of the available attributes.  RKW 4/7/1998.
+proc GetTAttrName {} {
+    toplevel .getAttr
+    wm title .getAttr "Set TData Attribute"
+
+    frame .getAttr.row1
+    frame .getAttr.row2
+
+    # Create the various widgets.
+    button .getAttr.ok -text "OK" -width 10 \
+      -command {destroy .getAttr}
+    button .getAttr.cancel -text "Cancel" -width 10 \
+      -command {set tAttrName ""; destroy .getAttr}
+
+    label .getAttr.attrLab -text "TData attribute:"
+    global tAttrName
+    set tAttrName ""
+    entry .getAttr.attrEnt -width 20 -relief sunken -textvariable tAttrName
+
+    # Pack widgets into frames.
+    pack .getAttr.row1 -side bottom -pady 4m
+    pack .getAttr.row2 -side top -pady 4m
+
+    pack .getAttr.ok .getAttr.cancel -in .getAttr.row1 \
+      -side left -padx 3m
+    pack .getAttr.attrLab .getAttr.attrEnt -in .getAttr.row2 \
+      -side left -padx 3m
+
+    tkwait visibility .getAttr
+    grab set .getAttr
+    tkwait window .getAttr
+
+    return $tAttrName
+}
