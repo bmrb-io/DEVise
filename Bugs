@@ -1006,7 +1006,7 @@ Num Date        Status  Description
 256 12/15/97	OPEN	Drill-down on compiled mappings (multi) causes
 			crash. (rr/rkw)
 
-257 12/15/97	OPEN	GData attributes with recId get goofed up in mappings
+257 12/15/97	FIXED	GData attributes with recId get goofed up in mappings
 			that have any expresssions in them. (ssl/rkw)
 
 258 12/15/97	OPEN	Linux versions of Devise core dump on search engine
