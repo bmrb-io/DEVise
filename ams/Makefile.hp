@@ -13,21 +13,22 @@ MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
 MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
-MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics.new/TDataMap.h /usr/include/assert.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
+MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
 MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MapClassInfo.o: ../graphics.new/Temp.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/Control.h ../graphics/ViewCallback.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
+MapClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/Temp.h
 MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Action.h
-MapClassInfo.o: ../graphics/Util.h /usr/include/assert.h
-MapClassInfo.o: /usr/include/string.h /usr/include/ctype.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics/View.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
-MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-MapClassInfo.o: ../graphics/Cursor.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
+MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
 MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
 MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
@@ -35,11 +36,9 @@ MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
 MapClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
 MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-MapClassInfo.o: ../graphics.new/ViewStats.h MapClassInfo.h
-MapClassInfo.o: ../graphics/ClassDir.h Soil.h AmsMap.h
-ams.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-ams.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/stdio.h
+MapClassInfo.o: MapClassInfo.h ../graphics/ClassDir.h Soil.h AmsMap.h
+ams.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/sys/stdsyms.h
+ams.o: /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 ams.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
 ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
@@ -63,38 +62,25 @@ ams.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
 ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
-ams.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-ams.o: ../graphics.new/machdep.h /usr/include/limits.h
-ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-ams.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
-ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ams.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h
+ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
 ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/stdsyms.h /usr/include/sys/fcntl.h
-amsStat.o: /usr/include/limits.h /usr/include/sys/param.h
-amsStat.o: /usr/include/sys/types.h /usr/include/machine/param.h
-amsStat.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-amsStat.o: /usr/include/machine/spl.h /usr/include/unistd.h
+amsStat.o: /usr/include/limits.h /usr/include/unistd.h
 amsStat.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
-amsStat.o: /usr/include/sys/stat.h ../graphics.new/TDataAppend.h
-amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-amsStat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-amsStat.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
-amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+amsStat.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
+amsStat.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat.o: /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/stdsyms.h /usr/include/sys/fcntl.h
-extendAms.o: /usr/include/limits.h /usr/include/sys/param.h
-extendAms.o: /usr/include/sys/types.h /usr/include/machine/param.h
-extendAms.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-extendAms.o: /usr/include/machine/spl.h /usr/include/unistd.h
+extendAms.o: /usr/include/limits.h /usr/include/unistd.h
 extendAms.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
-extendAms.o: /usr/include/sys/stat.h ../graphics.new/ams.h
-extendAms.o: /usr/include/math.h
+extendAms.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+extendAms.o: ../graphics.new/ams.h /usr/include/math.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/types.h
 testdir.o: /usr/include/sys/stdsyms.h /usr/include/sys/dir.h

@@ -4,7 +4,7 @@ depend:
 # DO NOT DELETE
 
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/time.h /usr/include/sys/time.h
+generic.o: /usr/include/time.h /usr/include/string.h /usr/include/sys/time.h
 generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
@@ -24,58 +24,13 @@ generic.o: ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+generic.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+generic.o: ../tape/SortedTable.h /usr/include/assert.h
+generic.o: ../graphics.new/GData.h ../graphics.new/TData.h
+generic.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+generic.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
 generic.o: ../graphics.new/ViewStats.h ../graphics.new/TDataMap.h
 generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
-generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
-generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
 generic.o: ../graphics.new/ParseCat.h
-issm.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-issm.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-issm.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-issm.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
-issm.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
-issm.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-issm.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
-issm.o: /usr/include/math.h /usr/include/floatingpoint.h
-issm.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h
-issm.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
-issm.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
-issm.o: ../graphics.new/MapInterpClassInfo.h
-issm.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
-issm.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
-issm.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-issm.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-issm.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-issm.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-issm.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-issm.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-issm.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-issm.o: ../tape/SortedTable.h /usr/include/assert.h ../graphics.new/GData.h
-issm.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-issm.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-issm.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
-issm.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
-issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
-issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../graphics.new/machdep.h /usr/include/limits.h
-issm.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-issm.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-issm.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-issm.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-issm.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-issm.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-issm.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-issm.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-issm.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-issm.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-issm.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-issm.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-issm.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-issm.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-issm.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-issm.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-issm.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h
