@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/06/04 15:50:22  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.15  1997/05/30 20:40:32  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -176,7 +180,7 @@ get local color given global color.
 
 LocalColor DeviseDisplay::GetLocalColor(GlobalColor globalColor)
 {
-  if (globalColor >= _numColors)
+  if ((globalColor < 0) || (globalColor >= _numColors))
       return _colorMap[BlackColor];
   return _colorMap[globalColor];
 }

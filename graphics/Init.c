@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/05/05 16:53:44  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.36  1997/03/25 17:58:51  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -280,7 +284,6 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-batch <file>: batch file to execute\n");
   fprintf(stderr, "\t-version: print version number and compile date\n");
   fprintf(stderr, "\t-usage: print this message\n");
-  fprintf(stderr, "\t-queryProc <name>: name of query procedure\n");
   fprintf(stderr, "\t-session <file>: name of session file to open\n");
   fprintf(stderr, "\t-pagesize <size>: size of page to use (must be a\n");
   fprintf(stderr, "\t                  multiple of 4096)\n");

@@ -736,7 +736,7 @@ Num Date        Status  Description
 			parser will only be set for the first data source.
 			(rkw)
 
-177 04/21/97	OPEN	Negative color value (at least for data) causes
+177 04/21/97	FIXED	Negative color value (at least for data) causes
 			core dump. (rkw)
 
 178 04/24/97	OPEN	Devise can't run if it can't find the 5x7 font
@@ -779,6 +779,17 @@ Num Date        Status  Description
 
 188 06/10/97	OPEN	You can't select old visual filters from the history
 			window. (rkw/lz)
+
+189 06/17/97	OPEN	In the BankFace.tk demo session, the face images
+			aren't redrawn correctly as you scroll (sometimes
+			they are drawn as gray rectangles). (rkw)
+
+190 06/17/97	OPEN	Point queries on piled views don't shown data from
+			the (visually) top view. (rkw)
+
+191 06/17/97	OPEN	Attempting to do a group-by on a UNIXFILE should
+			result in an error message as opposed to a crash.
+			(rkw)
 
 
 OPEN = problem/bug exists and needs to be addressed.

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1997/05/28 15:39:56  wenger
+#  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #  Revision 1.29  1997/05/08 00:14:38  wenger
 #  Removed layout manager GUI.
 #
@@ -149,6 +152,8 @@
 #
 
 ############################################################
+
+set stackEnabled 1
 
 proc RemoveWindow {win} {
     global dialogListVar
@@ -798,6 +803,11 @@ proc DoWindowStackControl {} {
 ############################################################
 
 proc EnableStackControl {} {
+    global stackEnabled
+    set stackEnabled 1
+
+    EnableMappingFlip
+
     if {![WindowExists .stack]} {
 	return
     }
@@ -812,6 +822,11 @@ proc EnableStackControl {} {
 ############################################################
 
 proc DisableStackControl {} {
+    global stackEnabled
+    set stackEnabled 0
+
+    DisableMappingFlip
+
     if {![WindowExists .stack]} {
 	return
     }
@@ -826,9 +841,14 @@ proc DisableStackControl {} {
 ############################################################
 
 proc RotateMergedView {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
+	return
+    }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
 	return
     }
 
@@ -859,9 +879,14 @@ proc EditMergedView {} {
 ############################################################
 
 proc FlipStackedView {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
+	return
+    }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
 	return
     }
 
@@ -894,9 +919,14 @@ proc FlipStackedView {} {
 ############################################################
 
 proc DoWindowPile {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
+	return
+    }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
 	return
     }
 
@@ -947,11 +977,17 @@ proc DoWindowPile {} {
 ############################################################
 
 proc DoWindowUnpile {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
 	return
     }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
+	return
+    }
+
     .stack.title.text configure -text "Current View: $curView"
     # no need to unpile if there are no views other than curView
     if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
@@ -1002,9 +1038,14 @@ proc DoWindowUnpile {} {
 ############################################################
 
 proc DoWindowStack {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
+	return
+    }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
 	return
     }
 
@@ -1020,9 +1061,14 @@ proc DoWindowStack {} {
 ############################################################
 
 proc DoWindowUnstack {} {
-    global curView
+    global curView stackEnabled
 
     if {![CurrentView]} {
+	return
+    }
+
+    if {!$stackEnabled} {
+	puts "Stack control currently disabled"
 	return
     }
 

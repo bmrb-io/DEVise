@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/04/30 21:45:39  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.30  1997/04/21 16:39:57  wenger
   Removed lex.yy.c from CVS to fix compile problems; fixed some compile
   warnings in the DTE; default is now to compile with neither -O nor
@@ -182,7 +190,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.4";
+static const char *	version = "1.4.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/05/30 21:24:38  wenger
+  Fixed record link bug by re-enabling PrepareProcessedList().
+
   Revision 1.61  1997/05/28 16:56:52  wenger
   Changed back to the query processor version that sometimes returns
   too many records to hopefully avoid returning too few; other minor
@@ -1541,9 +1544,6 @@ Boolean QueryProcFull::DoLinearSearch(QPFullData *query,
 
   return true;
 }
-
-#undef DEBUGLVL
-#define DEBUGLVL 0
 
 /*
    Return true if sum of GData record sizes exceeds the size of 

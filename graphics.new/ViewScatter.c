@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/05/28 15:39:32  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.33.4.1  1997/05/20 16:11:17  ssl
   Added layout manager to DEVise
 
@@ -360,7 +363,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     if (!MoreMapping(_index) &&
 	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
 	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
-      if (color < MAXCOLOR) _stats[color].Sample(x, y);
+      if ((color >= 0) && (color < MAXCOLOR)) _stats[color].Sample(x, y);
       _allStats.Sample(x, y);
 
       _allStats.Histogram(y);
@@ -457,7 +460,6 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     }
   }
 
-  
   if (!Iconified() && recIndex > 0) {
     mapping->DrawGDataArray(this, win, _recs, recIndex);
   }
