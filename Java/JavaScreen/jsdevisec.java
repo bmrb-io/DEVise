@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2001/02/08 17:45:02  xuk
+// Added collaboration mode indicator.  collabMode()
+//
 // Revision 1.76  2001/01/30 03:08:34  xuk
 // Fix bugs for collaboration.
 //
@@ -201,7 +204,7 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    private Button collabButton = new Button("Collaborate");
+    //private Button collabButton = new Button("Collaborate");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -331,7 +334,7 @@ public class jsdevisec extends Panel
             button[2] = modeButton;
             button[3] = helpButton;
         } else {
-            button = new Component[10];
+            button = new Component[9];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
@@ -339,9 +342,9 @@ public class jsdevisec extends Panel
             button[4] = setButton;
             button[5] = filterButton;
             button[6] = modeButton;
-	    button[7] = collabButton;
-            button[8] = helpButton;
-            button[9] = exitButton;
+	    //button[7] = collabButton;
+            button[7] = helpButton;
+            button[8] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
@@ -502,18 +505,18 @@ public class jsdevisec extends Panel
                     }
                 });
 
-        collabButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (isSessionOpened) {
-                            showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
-                        }
-
-                        showCollab();
-                    }
-                });
+        //collabButton.addActionListener(new ActionListener()
+	//      {
+	//          public void actionPerformed(ActionEvent event)
+	//          {
+	//              if (isSessionOpened) {
+	//                  showMsg("You already have a session opened!\nPlease close current session first!");
+	//                  return;
+	//              }
+	//
+	//              showCollab();
+	//          }
+	//      });
 
         filterButton.addActionListener(new ActionListener()
                 {
@@ -1799,8 +1802,9 @@ class SetCgiUrlDlg extends Dialog
 class SetModeDlg extends Dialog
 {
     jsdevisec jsc = null;
-    public Button socketButton = new Button(" Socket ");
-    public Button cgiButton = new Button("   CGI  ");
+    public Button socketButton = new Button("Socket");
+    public Button cgiButton = new Button("CGI");
+    public Button collabButton = new Button("Collaboration");
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -1815,7 +1819,7 @@ class SetModeDlg extends Dialog
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
-        setTitle("Setting Socket/CGI Mode");
+        setTitle("Setting JavaScreen Mode");
 
         socketButton.setBackground(jsc.jsValues.uiglobals.bg);
         socketButton.setForeground(jsc.jsValues.uiglobals.fg);
@@ -1824,6 +1828,10 @@ class SetModeDlg extends Dialog
         cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
         cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
         cgiButton.setFont(jsc.jsValues.uiglobals.font);
+
+        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        collabButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -1845,6 +1853,8 @@ class SetModeDlg extends Dialog
         add(socketButton);
         gridbag.setConstraints(cgiButton, c);
         add(cgiButton);
+        gridbag.setConstraints(collabButton, c);
+        add(collabButton);
 
         pack();
 
@@ -1888,6 +1898,19 @@ class SetModeDlg extends Dialog
 			jsc.jsValues.connection.cgi = false;
 			jsc.socketMode();
                         close();
+                    }
+                });
+
+        collabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (jsc.isSessionOpened) {
+                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
+                            return;
+                        }
+			close();
+                        jsc.showCollab();
                     }
                 });
 
