@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/05/11 20:36:05  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.12  2001/04/12 15:54:06  wenger
 // Made some minor improvements to the hang checking.
 //
@@ -156,8 +159,20 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
                 server = pop.getNextAvailableServer();
                 if (server != null) {
                     server.setCurrentClient(client);
-                }
-
+                } else {
+		    // No available DEViseServer, or
+		    // No devised server
+		    try {
+			client.sendCmd( DEViseCommands.ERROR +
+					" {No available devised server.}");
+			client.close();
+		    } catch (YException e) {
+			String errMsg = e.getMessage();
+			pop.pn("Error in DEViseClientDispatcher: " +
+				       errMsg);
+		    }			
+		}
+		
 		// Try to avoid any delay in garbage collection of clients.
 		client = null;
             }
