@@ -12,21 +12,23 @@
 ############################################################
 
 # Check the arguments.
-if ($#argv == 2 || $#argv > 3) then
-  echo "Usage: check_jsall [id_string [jss_host jss_path]]"
+if ($#argv == 1 || $#argv == 3 || $#argv > 4) then
+  echo "Usage: check_jsall [id_string server_count [jss_host jss_path]]"
   exit
 endif
 
 set idStr = "regular"
+set serverCount = 1
 if ($#argv >= 1) then
   set idStr = $argv[1]
+  set serverCount = $argv[2]
 endif
 
 set jssHost = ""
 set jssPath = ""
 if ($#argv >= 3) then
-  set jssHost = $argv[2]
-  set jssPath = $argv[3]
+  set jssHost = $argv[3]
+  set jssPath = $argv[4]
 endif
 
 
@@ -48,5 +50,5 @@ if ($jssCheck != "OK") then
 endif
 
 if ($popCheck != "OK" || $jssCheck != "OK") then
-  restart_jspop $idStr $jssHost $jssPath
+  restart_jspop $idStr $serverCount $jssHost $jssPath
 endif

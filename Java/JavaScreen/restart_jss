@@ -12,19 +12,21 @@
 ############################################################
 
 # Check the arguments.
-if ($#argv > 2) then
-  echo "Usage: restart_jss [id_string [jspop_host]]"
+if ($#argv == 1 || $#argv > 3) then
+  echo "Usage: restart_jss [id_string server_count [jspop_host]]"
   exit
 endif
 
 set idStr = "regular"
+set serverCount = 1
 if ($#argv >= 1) then
   set idStr = $argv[1]
+  set serverCount = $argv[2]
 endif
 
 set jspopHost = ""
-if ($#argv >= 2) then
-  set jspopHost = $argv[2]
+if ($#argv >= 3) then
+  set jspopHost = $argv[3]
 endif
 
 
@@ -65,4 +67,4 @@ set scriptArg = ""
 if ($idStr == "soil") then
   set scriptArg = "-devisescriptDEVise.jspop_soil"
 endif
-jss -id$idStr $hostArg -jssport$jssPort -jspopport$popPort $scriptArg
+jss -id$idStr -server$serverCount $hostArg -jssport$jssPort -jspopport$popPort $scriptArg

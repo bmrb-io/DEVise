@@ -12,7 +12,7 @@
 
 ############################################################
 
-set path = ( . /usr/ucb /bin /p/devise/run /s/std/bin $path )
+set path = ( /s/std/bin /usr/ucb /bin /p/devise/run $path )
 
 set outfile = /tmp/run_check.out
 

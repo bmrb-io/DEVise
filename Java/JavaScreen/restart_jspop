@@ -12,21 +12,23 @@
 ############################################################
 
 # Check the arguments.
-if ($#argv == 2 || $#argv > 3) then
-  echo "Usage: check_jsall [id_string [jss_host jss_path]]"
+if ($#argv == 1 || $#argv == 3 || $#argv > 4) then
+  echo "Usage: check_jsall [id_string server_count [jss_host jss_path]]"
   exit
 endif
 
 set idStr = "regular"
+set serverCount = 1
 if ($#argv >= 1) then
   set idStr = $argv[1]
+  set serverCount = $argv[2]
 endif
 
 set jssHost = ""
 set jssPath = ""
 if ($#argv >= 3) then
-  set jssHost = $argv[2]
-  set jssPath = $argv[3]
+  set jssHost = $argv[3]
+  set jssPath = $argv[4]
 endif
 
 
@@ -59,9 +61,9 @@ jspop -id$idStr -cmdport$cmdPort -imgport$imgPort -jspopport$popPort
 
 # Restart the jss.
 if ($jssHost == "") then
-  restart_jss $idStr
+  restart_jss $idStr $serverCount
 else
   # Note: background the whole rsh command because rsh won't return until
   # the jss started by this command dies(!).  RKW 2000-12-08.
-  rsh $jssHost "cd $jssPath; restart_jss $idStr `hostname`" &
+  rsh $jssHost "cd $jssPath; restart_jss $idStr $serverCount `hostname`" &
 endif
