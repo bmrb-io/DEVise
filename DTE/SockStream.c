@@ -9,8 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-#include "machdep.h"
+#ifdef StandAlone
+	#include <netdb.h>
+#else
+	#include "machdep.h"
+#endif
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/socket.h>
@@ -105,6 +108,7 @@ int Cor_sockbuf::connect(char* _host, unsigned short _port)
 
     /* Return type of inet_addr is unsigned long, but man page says it
      * returns -1 for error.  Hmm...  RKW 11/21/96. */
+
     serv_addr.sin_addr.s_addr = inet_addr(_host); // try dotted decimal
     if( serv_addr.sin_addr.s_addr == (unsigned long) -1 ) {
 	// not dotted decimal
