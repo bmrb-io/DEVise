@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/08/03 19:11:52  wenger
+// Added S2DException class; better tolerance for certain missing data.
+//
 // Revision 1.2  2000/08/02 17:47:45  wenger
 // Greatly improved error handling.
 //
@@ -649,7 +652,7 @@ public class Star2Devise {
 	String the_number = null;
 
 	if (acc_num == null) {
-	    the_number = file_name.substring( 3, 7);
+	    the_number = S2DUtils.starName2Num(file_name);
 	} else {
 	    the_number = acc_num;
 	}
@@ -694,7 +697,7 @@ public class Star2Devise {
 			= ((SaveFrameNode)currSaveFrame).getLabel();
 		    
 		    //Strip the save_
-		    saveFrameName = saveFrameName.substring(5);
+		    saveFrameName = saveFrameName.substring("save_".length());
 		} 
 		else 
 		{
@@ -1188,7 +1191,7 @@ public class Star2Devise {
 	    // generate a web page here
 	    String the_number = null;
 	    if (outFileName == null) {
-	        the_number = file_name.substring(3, 7);
+	        the_number = S2DUtils.starName2Num(file_name);
 	    } else {
 	        the_number = outFileName;
 	    }
@@ -1205,9 +1208,8 @@ public class Star2Devise {
 	    summary_writer.println("Title: <tt>" + title + "</tt>");
 	    
 	    // new display- pages generated my make_view
-	    StringBuffer display_link =
-		new StringBuffer
-		("<br><br><a href=\"" + the_number + "c.html");
+	    String display_link_base = "<br><br><a href=\"" + the_number;
+	    String display_link = display_link_base + "c.html";
 	    
 	    // DataLoopNode contains DataLoopNameListNode, and LoopTableNode
 	    for ( int i = 0; i < category_vals.size(); i++) {
@@ -1226,12 +1228,12 @@ public class Star2Devise {
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Chemical Shift Index</a>");
 
-		    display_link.setCharAt(21, 'd');
+	            display_link = display_link_base + "d.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print
 			("\">Chemical Shift Delta</a>");
 
-		    display_link.setCharAt(21, 'p');
+	            display_link = display_link_base + "p.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print
 			("\">Percent Assigned Atoms</a>");
@@ -1293,19 +1295,19 @@ public class Star2Devise {
 					   "save frame not found.");
 
 		    // and create the links
-		    display_link.setCharAt(21, 'h');
+	            display_link = display_link_base + "h.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">H-Exchange Rates</a>");
 
-		    display_link.setCharAt(21, 'o');
+	            display_link = display_link_base + "o.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Order Parameters</a>");
 
-		    display_link.setCharAt(21, 'r');
+	            display_link = display_link_base + "r.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Relaxation Parameters</a>");
 
-		    display_link.setCharAt(21, 'g');
+	            display_link = display_link_base + "g.html";
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Coupling Constants</a>");
 		}

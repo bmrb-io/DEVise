@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/08/02 17:47:45  wenger
+// Greatly improved error handling.
+//
 // Revision 1.3  2000/07/28 21:04:42  wenger
 // Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
 // cleanup.
@@ -43,9 +46,8 @@ public class Summarize
 	    System.exit(1);
 	}
 
- 	String the_number = args[0].substring(3, 7);
-
 	try {
+ 	    String the_number = S2DUtils.starName2Num(args[0]);
             Star2Devise starfile = Star2Devise.WebStar2Devise(args[0]);
 	    starfile.summarize(the_number);
 	} catch (Exception ex) {
