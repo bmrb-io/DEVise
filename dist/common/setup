@@ -1,0 +1,33 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Run this script to set up the distribution area.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+ln -s ../dist_sw/public/dat .
+ln -s ../dist_sw/public/doc .
+ln -s ../dist_sw/public/lib .
+ln -s ../dist_sw/public/palette .
+ln -s ../dist_sw/public/schema .
+ln -s ../dist_sw/public/session .
+
+ln -s /s/tcl7.4/lib/tcl7.4 .
+ln -s /s/tcl7.4/lib/tk4.0 .
+
+ln -s ../../dist_sw/run/devise.rc run

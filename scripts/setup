@@ -1,4 +1,5 @@
 #! /bin/csh -f
+#TEMPTEMP -- link dev, devcs, devise_ext_script where appropriate
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -17,6 +18,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/03/01 20:34:17  wenger
+#  Updated for possibly not having all directories.
+#
 #  Revision 1.1  1998/06/03 21:12:37  wenger
 #  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
 #  'ToDo' into 'design_doc' to clean up the top-level directory; changed
