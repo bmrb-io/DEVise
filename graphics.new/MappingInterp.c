@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/21 23:30:58  jussi
+  Added copyright notice and cleaned up the code. Fixed bug in
+  ChangeCmd where attrList gets passed to FindGDataSize which
+  in turn resets _attrList to be the list of GData attributes
+  instead of TData attributes.
+
   Revision 1.4  1995/09/27 16:57:26  jussi
   Minor fixes.
 
@@ -237,8 +243,7 @@ void MappingInterp::UpdateBoundingBox(int pageNum,
 }
 #endif
 
-void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num,
-				   Coord xPerPixel, Coord yPerPixel)
+void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
 {
   SetGDataOffset(_offsets);
 
@@ -246,7 +251,7 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num,
     /* constant shape */
     ShapeID shape = GetDefaultShape();
     _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
-				   xPerPixel, yPerPixel, GetPixelWidth());
+				   GetPixelWidth());
   } else {
     /* dynamic shape */
     int i = 0;
@@ -263,7 +268,7 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num,
 	 printf("draw shape %d\n", shape);
       */
       _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
-				     xPerPixel, yPerPixel, GetPixelWidth());
+				     GetPixelWidth());
       i = j;
     }
   }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/24 20:13:40  jussi
+  Added missing closing brace.
+
   Revision 1.4  1995/11/24 20:07:32  jussi
   Fixed calculation of X and Y starting position for cases where
   pixel width (or height) is at most 1. In such cases one should not
@@ -114,22 +117,27 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, Coord xPerPixel, Coord yPerPixel,
-			      int pixelWidth) {
+			      TDataMap *map, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
 
-    // xPerPixel is how many X units one pixel corresponds to
-    // yPerPixel is how many Y units one pixel corresponds to
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    // pixelWidth is how many X units one pixel corresponds to
+    // pixelHeight is how many Y units one pixel corresponds to
     // maxWidth is the maximum width of rectangles, measured in X units
     // maxHeight is the maximum width of rectangles, measured in Y units
     //
     // see if one pixel is enough to cover the area whose width is
-    // xPerPixel and height is yPerPixel
+    // pixelWidth and height is pixelHeight
 
-    if (maxWidth <= xPerPixel && maxHeight <= yPerPixel) {
+    if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 			 
       int i = 0;
       while (i < numSyms) {
@@ -149,7 +157,7 @@ public:
 	}
 	
 	win->SetFgColor(lastColor);
-	win->DrawPixelArray(_x, _y, count, pixelWidth);
+	win->DrawPixelArray(_x, _y, count, pixelSize);
 	
 	lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
 	i = colorIndex;
@@ -222,27 +230,27 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, Coord xPerPixel, Coord yPerPixel,
-			      int pixelWidth) {
-    /*
-       printf("RectX draw %d syms\n", numSyms);
-    */
+			      TDataMap *map, int pixelSize) {
+
     GDataAttrOffset *offset = map->GetGDataOffset();
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
 
-    /*
-       printf("RectX draw maxWidth %f xPerPixel %f\n",maxWidth, xPerPixel);
-    */
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
 
-    // xPerPixel is how many X units one pixel corresponds to
+    // pixelWidth is how many X units one pixel corresponds to
     // maxWidth is the maximum width of rectangles, measured in X units
     //
-    // see if one pixel is enough to cover the area whose width is xPerPixel
+    // see if one pixel is enough to cover the area whose width is pixelWidth
 
-    if (maxWidth <= xPerPixel) {
+    if (maxWidth <= pixelWidth) {
+
       int i = 0;
-      while (i < numSyms){
+      while (i < numSyms) {
 
 	char *gdata = (char *)gdataArray[i];
 	int count = 1;
@@ -259,7 +267,7 @@ public:
 	}
 	
 	win->SetFgColor(lastColor);
-	win->DrawPixelArray(_x, _y, count, pixelWidth);
+	win->DrawPixelArray(_x, _y, count, pixelSize);
 	
 	lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
 	i = colorIndex;
@@ -286,10 +294,10 @@ public:
 	
 	win->SetFgColor(GetColor(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
-	if (width < pixelWidth)
-	  width = pixelWidth;
-	if (height < pixelWidth)
-	  height = pixelWidth;
+	if (width < pixelSize)
+	  width = pixelSize;
+	if (height < pixelSize)
+	  height = pixelSize;
 	win->FillPixelRect(tx, ty, width, height);
       }
     }
@@ -298,7 +306,7 @@ public:
  
 class FullMapping_BarShape: public BarShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray,int numSyms,
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
 				Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
@@ -316,9 +324,10 @@ public:
   }
   
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, Coord xPerPixel, Coord yPerPixel,
-			      int pixelWidth){
+			      TDataMap *map,  int pixelSize) {
+
     GDataAttrOffset *offset = map->GetGDataOffset();
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       win->SetFgColor(GetColor(gdata, map, offset));

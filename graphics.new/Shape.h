@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 23:23:38  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.2  1995/09/05 22:15:35  jussi
   Added CVS header.
 */
@@ -40,8 +43,7 @@ class Shape {
      gdata is smaller than 1 pixel. Used to enhance the drawing
      if the density of points is small.*/
   virtual void DrawGDataArray(WindowRep *, void **, int, TDataMap *,
-			      Coord xPerPixel, Coord yPerPixel, int width) {
-  }
+			      int width) {}
 
   /* Find bounding box for gdata. By default, set both to 0.0  */
   virtual void BoundingBoxGData(TDataMap *, void **, int, Coord &width,

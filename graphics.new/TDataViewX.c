@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/24 21:24:39  jussi
+  Fixed inconsistencies in computing xPerPixel vs. scaling done by
+  View.
+
   Revision 1.3  1995/11/24 16:10:40  jussi
   Added copyright notice and cleaned up the code.
 
@@ -76,17 +80,6 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   
   _queryFilter = filter;
   
-  /* find amount of X and Y per pixel */
-
-  VisualFilter filter;
-  GetVisualFilter(filter);
-
-  int scrnX, scrnY;
-  int scrnWidth, scrnHeight;
-  GetDataArea(scrnX, scrnY, scrnWidth, scrnHeight);
-  _xPerPixel = (filter.xHigh - filter.xLow) / scrnWidth;
-  _yPerPixel= (filter.yHigh - filter.yLow) / scrnHeight;
-  
   _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
 }
 
@@ -100,11 +93,8 @@ void TDataViewX::DerivedAbortQuery()
 
 void TDataViewX::QueryInit(void *userData)
 {
-  _dataBin->Init(_map, _queryFilter.yLow, _queryFilter.yHigh, 
-		 _queryFilter.xLow, _queryFilter.xHigh,
-		 _yPerPixel, _xPerPixel,
-		 (_cMap != NULL? true : false),
-		 _cMap, this);
+  _dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
+		 (_cMap != NULL? true : false), _cMap, this);
 }
 
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
@@ -115,6 +105,9 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   
   if (_batchRecs) {
     _dataBin->InsertSymbol(recId, gdata, numGData);
+#ifdef DEBUG
+    _dataBin->PrintStat();
+#endif
   } else {
     int gRecSize = mapping->GDataRecordSize();
     char *ptr = (char *)gdata;
@@ -140,7 +133,7 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
   printf("TDataViewX %d recs buf start 0x%x\n", numRecs, recs);
 #endif
 
-  map->DrawGDataArray(GetWindowRep(), recs, numRecs, _xPerPixel, _yPerPixel);
+  map->DrawGDataArray(GetWindowRep(), recs, numRecs);
 }
 
 void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,

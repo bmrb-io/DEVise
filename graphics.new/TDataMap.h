@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 23:20:03  jussi
+  Added copyright notice and cleaned up code. Added SetDefaultX
+  and SetDefaultY methods, removed SetDefaultLocation.
+
   Revision 1.2  1995/09/05 22:15:55  jussi
   Added CVS header.
 */
@@ -167,8 +171,7 @@ public:
      void **gdataArray, int numRecs)= 0;
   */
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num,
-			      Coord xPerPixel, Coord yPerPixel)=0;
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num) = 0;
   
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);

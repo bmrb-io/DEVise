@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/22 00:34:38  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.3  1995/09/26 23:07:51  jussi
   Added attrList parameter to FindGDataSize so that attribute-valued
   color/size/shape/pattern/orientation would work.
@@ -90,8 +93,7 @@ public:
      void **gdataArray, int numRecs);
   */
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num,
-			      Coord xPerPixel, Coord yPerPixel);
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num);
 
 protected:	
   /* convert from Tdata to Gdata. buf contains

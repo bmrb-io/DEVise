@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/24 21:27:45  jussi
+  Fixed inconsistency in computing xPerPixel vs. matrix transformations
+  done by View.
+
   Revision 1.3  1995/11/21 16:40:59  jussi
   Added copyright notice and cleaned up a bit.
 
@@ -54,17 +58,6 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
   _queryFilter = filter;
 
-  /* find amount of X and Y per pixel */
-
-  VisualFilter filter;
-  GetVisualFilter(filter);
-
-  int scrnX, scrnY;
-  int scrnWidth, scrnHeight;
-  GetDataArea(scrnX, scrnY, scrnWidth, scrnHeight);
-  _xPerPixel = (filter.xHigh - filter.xLow) / scrnWidth;
-  _yPerPixel= (filter.yHigh - filter.yLow) / scrnHeight;
-  
   _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
 }
 
@@ -110,16 +103,14 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     
     _recs[recIndex++] = ptr;
     if (recIndex == WINDOWREP_BATCH_SIZE) {
-      mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex,
-			      _xPerPixel, _yPerPixel);
+      mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex);
       recIndex = 0;
     }
     ptr += gRecSize;
   }
 
   if (recIndex > 0)
-    mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex,
-			    _xPerPixel, _yPerPixel);
+    mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex);
 }
 
 /* Done with query */

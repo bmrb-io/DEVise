@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 21:33:54  jussi
+  Added copyright notice and cleaned up the code. Made _pixelX an
+  int instead of Coord.
+
   Revision 1.2  1995/09/05 22:14:49  jussi
   Added CVS header.
 */
@@ -24,8 +28,13 @@
 
 #ifndef GDataBin_h
 #define GDataBin_h
+
 #include "DeviseTypes.h"
+#include "VisualArg.h"
+#include "Transform.h"
 #include "RecId.h"
+
+//#define CALCULATE_DIRECTLY
 
 class QueryCallback;
 class TData;
@@ -55,10 +64,9 @@ public:
   GDataBin();
 
   /* Init before any data is returned from query processor */
-  void Init(TDataMap *map, Coord yLow, Coord yHigh, 
-	    Coord xLow, Coord xHigh, 
-	    Coord yPerPixel, Coord xPerPixel, Boolean dispConnector, 
-	    TDataCMap *cMap, GDataBinCallback *callback);
+  void Init(TDataMap *map, VisualFilter *filter, Transform2D *transform,
+	    Boolean dispConnector, TDataCMap *cMap,
+	    GDataBinCallback *callback);
 
   /* finalize */
   void Final(){ ReturnSymbols();}
@@ -77,9 +85,10 @@ private:
   void ReturnSymbols();
 
   int _gRecSize;	/* size of GData record */
-  /* Free Symbols */
-  Coord _yLow, _yHigh, _xLow, _xHigh;
-  int _numPixels;
+
+  Transform2D *_transform;
+  int _maxYPixels;
+
   int _timestamp[GDATA_BIN_MAX_PIXELS];
   GDataBinRec *_returnSyms[GDATA_BIN_MAX_PIXELS];
   int _iteration;
@@ -93,10 +102,13 @@ private:
   
   Boolean _needX; /* TRUE if we need to get X value for the bin */
   int _pixelX;	/* get the X value for the bin */
-  Coord _yPerPixel; 
-  Coord _xPerPixel;
   GDataBinCallback *_callBack;
   TDataMap *_mapping;
+
+#ifdef CALCULATE_DIRECTLY
+  Coord _xLow, _yLow;
+  Coord _xPerPixel, _yPerPixel;
+#endif
 
   /* statistics */
   int _numSyms;			/* # of symbols encountered */
