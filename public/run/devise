@@ -1,0 +1,24 @@
+#! /bin/csh -f
+############################################################
+
+# Run the standard DEVise with the user's own data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+# Edit and uncomment the following line to be able to run DEVise from
+# any directory.
+#cd .../devise/run
+
+limit coredumpsize 0
+limit descriptors 256
+
+#TEMP -- get rid of hard-coded path eventually
+set devise_run = /p/devise/release/run
+
+source $devise_run/dev_prog.std
+setenv DEVISE_VIS ..
+source $devise_run/dev_vis.gen
+
+source $devise_run/start_mono
