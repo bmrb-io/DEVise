@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/08/20 22:11:12  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.18.8.1  1997/08/07 16:56:45  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -101,14 +105,12 @@
 #ifndef TDataViewX_h
 #define TDataViewX_h
 
-#include "QueryProc.h"
 #include "ViewGraph.h"
-#include "GDataBin.h"
 #include "TDataCMap.h"
 #include "Color.h"
 #include "DList.h"
 
-class TDataViewX: public ViewGraph, private QueryCallback,
+class TDataViewX: public ViewGraph,
 	private GDataBinCallback {
 public:
 
@@ -126,7 +128,6 @@ public:
 
 protected:
   /* from View */
-  virtual void DerivedStartQuery(VisualFilter &filter, int timestamp);
   virtual void DerivedAbortQuery();
   
   /* Get record link */
@@ -157,12 +158,6 @@ private:
   /* Done with query */
   virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
   
-  VisualFilter _queryFilter;
-  int          _timestamp;
-  QueryProc    *_queryProc;
-  TDataMap     *_map;
-  GDataBin     *_dataBin;
-  int          _index;
   int          _totalGData;
   int          _numBatches;
   Boolean      _batchRecs;
@@ -170,8 +165,6 @@ private:
   Boolean      _dispSymbols;
   Boolean      _dispConnectors;
   TDataCMap    *_cMap;
-
-  BStatList    _blist;	// Keep a list of BasicStats so we can delete them.
 };
 
 #endif

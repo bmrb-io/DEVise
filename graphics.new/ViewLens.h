@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/08/20 22:11:15  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.4.8.1  1997/08/07 16:56:46  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -42,10 +46,7 @@
 #ifndef ViewLens_h
 #define ViewLens_h
 
-#include "QueryProc.h"
 #include "ViewGraph.h"
-#include "TDataViewX.h"
-#include "GDataBin.h"
 #include "WindowRep.h"
 #include "DList.h"
 #include "ViewCallback.h"
@@ -69,7 +70,6 @@ static char _pixmapbuf[MAX_PIXMAP_BUF_SIZE];
 
 class ViewLens 
 : public ViewGraph,
-  public QueryCallback,  // for query processing
   public ViewCallback  // for informing that all child views are done
 {
   public :
@@ -162,10 +162,8 @@ protected:
   virtual void ViewDestroyed(View *view);
   virtual void ViewCreated(View *view);
   virtual void ViewRecomputed(View *view);
-  /* from querycallback */ 
-  /* Query data ready to be returned. Do initialization here.*/
-  virtual void QueryInit(void *userData);
 
+  /* from querycallback */ 
   virtual void ReturnGData(TDataMap *mapping, RecId id,
 			   void *gdata, int numGData,
 			   int &recordsProcessed);
@@ -186,11 +184,6 @@ private:
   VisualLink *_lensLink;  /* the visual link to all views in the lens */
   ViewLensMode _mode;
   ViewLensDim _dimension;
-  VisualFilter _queryFilter;
-  int          _timestamp;
-  QueryProc    *_queryProc;
-  TDataMap     *_map;
-  int          _index;
   ViewGraph    *_curView;
   void         *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
 };

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/08/20 22:11:14  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.58.2.1  1997/08/15 23:06:33  wenger
   Interruptible drawing now pretty much working for TDataViewX class,
   too (connector drawing may need work, needs a little more testing).
@@ -272,7 +276,7 @@
 
 ImplementDList(GStatList, double)
 
-ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
+ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
 		     AxisLabel *xAxis, AxisLabel *yAxis,
 		     GlobalColor fg, GlobalColor bg,
 		     Action *action)
@@ -328,6 +332,11 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     _horPanInfo.mode = PanModeRelative;
     _horPanInfo.relPan = 0.5;
     _horPanInfo.absPan = 1.0;
+
+  _queryProc = qp;
+  _map = 0;
+  _index = -1;
+  _queryFilter = initFilter;
 }
 
 ViewGraph::~ViewGraph()
@@ -359,8 +368,21 @@ ViewGraph::~ViewGraph()
 
     if (_deleteAction) delete _action;
 
-    //TEMPTEMP -- right now the subclasses clear out the _gstat and _glist
-    // stuff -- I think that should be moved to here.
+    // SubClassUnmapped aborts any current query; this _must_ be done
+    // before this destructor exits, or members needed to do the abort
+    // will no longer be defined.
+    SubClassUnmapped();
+
+    int index = _blist.InitIterator();
+    while (_blist.More(index)) {
+      delete _blist.Next(index);
+    }
+    _blist.DoneIterator(index);
+    _blist.DeleteAll();
+    _gstatX.Clear();
+    _gstatY.Clear();
+    _glistX.DeleteAll();
+    _glistY.DeleteAll();
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -1343,3 +1365,122 @@ void ViewGraph::PrintLinkInfo()
   _updateLink.Print();
 }
 
+void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+#endif
+
+  _queryFilter = filter;
+  _timestamp = timestamp;
+
+  // Initialize statistics collection
+  _allStats.Init(this);
+
+  for(int i = 0; i < MAXCOLOR; i++)
+    _stats[i].Init(this);
+
+  int index = _blist.InitIterator();
+  while (_blist.More(index)) {
+    delete _blist.Next(index);
+  }
+  _blist.DoneIterator(index);
+  _blist.DeleteAll();
+  _gstatX.Clear();     /* Clear the hashtable and calculate it again */
+  _gstatY.Clear();     /* Clear the hashtable and calculate it again */
+  _glistX.DeleteAll(); /* Clear the gdata list */
+  _glistY.DeleteAll(); /* Clear the gdata list */
+
+  // Initialize record links whose master this view is
+  index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Initialize();
+  }
+  _masterLink.DoneIterator(index);
+
+  _index = InitMappingIterator(true);   // open iterator backwards
+  if (MoreMapping(_index)) {
+    _map = NextMapping(_index)->map;
+#ifdef DEBUG
+    printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
+#endif
+    _pstorage.Clear();
+    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+  } else {
+#ifdef DEBUG
+    printf("View has no mappings; reporting query as done\n");
+#endif
+    ReportQueryDone(0);
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+  }
+}
+
+void ViewGraph::DerivedAbortQuery()
+{
+#if defined(DEBUG)
+    printf("ViewGraph::DerivedAbortQuery(), index = %d\n", _index);
+#endif
+
+  if (_map) {
+    _queryProc->AbortQuery(_map, this);
+    DOASSERT(_index >= 0, "Invalid iterator index");
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+  }
+
+  // Abort record links whose master this view is
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *link = _masterLink.Next(index);
+    link->Abort();
+  }
+  _masterLink.DoneIterator(index);
+}
+
+void ViewGraph::QueryDone(int bytes, void *userData, TDataMap *map)
+{
+#if defined(DEBUG)
+  printf("ViewGraph::QueryDone(), index = %d, bytes = %d\n", _index, bytes);
+#endif
+
+  _pstorage.Clear();
+
+  if( _index >= 0 ) {
+    if (MoreMapping(_index)) {
+#ifdef DEBUG
+      printf("Submitting next query 0x%p\n", _map);
+#endif
+      _map = NextMapping(_index)->map;
+      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+      return;
+    }
+
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+
+    _allStats.Done();
+    _allStats.Report();
+
+    for(int i = 0; i < MAXCOLOR; i++)
+      _stats[i].Done();
+
+    PrepareStatsBuffer(map);
+
+    DrawLegend();
+
+    // Finish record links whose master this view is
+    int index = _masterLink.InitIterator();
+    while(_masterLink.More(index)) {
+      RecordLink *link = _masterLink.Next(index);
+      link->Done();
+    }
+    _masterLink.DoneIterator(index);
+
+    ReportQueryDone(bytes);
+  }
+}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/06/05 21:08:42  wenger
+  User-configurability of '4', '5', and '6' keys is now completed.
+
   Revision 1.36  1997/05/30 15:41:21  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -172,6 +175,7 @@
 #include "DataSourceFixedBuf.h"
 #include "UpdateLink.h"
 #include "AssoArray.h"
+#include "QueryProc.h"
 
 const int MAXCOLOR = 43;
 
@@ -240,11 +244,13 @@ struct ViewPanInfo {
 DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(RecordLinkList, RecordLink *);
 
+class GDataBin;
+
 class ViewGraph
-: public View
+: public View, QueryCallback
 {
 public:
-  ViewGraph(char *name, VisualFilter &initFilter, 
+  ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
 	    AxisLabel *xAxis, AxisLabel *yAxis,
 	    GlobalColor fg, GlobalColor bg, Action *action = 0);
 
@@ -370,6 +376,19 @@ public:
   void setHistViewname(char *name) { histViewName = name; }
   char *getHistViewname() { return histViewName; }
 
+  /* From QueryCallback. */
+  /* Query data ready to be returned. Do initialization here.*/
+  virtual void QueryInit(void *userData) {}
+
+  virtual void ReturnGData(TDataMap *mapping, RecId id,
+                           void *gdata, int numGData,
+                           int &recordsProcessed)
+  { DOASSERT(false, "Can only call this function in derived class"); }
+
+  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
+
+  virtual void *GetObj() { return this; }
+
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
@@ -378,6 +397,10 @@ public:
 
   /* List of mappings displayed in this view */
   MappingInfoList _mappings;
+
+  virtual void DerivedStartQuery(VisualFilter &filter,
+                                 int timestamp);
+  virtual void DerivedAbortQuery();
 
   /* True if statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
@@ -409,6 +432,16 @@ public:
   Boolean _autoScale;              /* true if auto scaling in effect */
 
   PointStorage _pstorage;          /* storage for missing data points */
+
+  //TEMPTEMP -- why do we have _queryFilter here, when View already has one?
+  VisualFilter _queryFilter;
+  int          _timestamp;
+  QueryProc    *_queryProc;
+  TDataMap     *_map;
+  GDataBin     *_dataBin;
+  int          _index;
+
+  BStatList    _blist;  // Keep a list of BasicStats so we can delete them.
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);

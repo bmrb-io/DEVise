@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/20 22:11:15  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.6.8.2  1997/08/15 23:06:35  wenger
   Interruptible drawing now pretty much working for TDataViewX class,
   too (connector drawing may need work, needs a little more testing).
@@ -69,7 +73,7 @@ ViewLens::ViewLens(char *name, VisualFilter &initFilter,
 		   GlobalColor foreground, GlobalColor background,
 		   AxisLabel *xAxis, AxisLabel *yAxis,
 		   Action *action, ViewLensMode mode, ViewLensDim dimension)
-: ViewGraph(name, initFilter, xAxis, yAxis, foreground, background,action)
+: ViewGraph(name, initFilter, qp, xAxis, yAxis, foreground, background,action)
 {
 #ifdef DEBUG
   printf("View::ViewLens(%s, this = %p)\n", name, this);
@@ -77,8 +81,6 @@ ViewLens::ViewLens(char *name, VisualFilter &initFilter,
   _mode = mode;
   _dimension = dimension;
   _lensList = NULL;	// list of views in lens
-  _queryProc = qp;
-  _queryFilter = initFilter;
   _lensLink = NULL;
   View::InsertViewCallback(this);
   /************TEMP HACK **************/
@@ -359,17 +361,7 @@ void ViewLens::DerivedStartQuery(VisualFilter &filter,
     _curView = v;
   }
   v->GetVisualFilter(_queryFilter);
-  int mindex = v->InitMappingIterator(true);
-  if (v->MoreMapping(mindex)) {
-      _map = v->NextMapping(mindex)->map;
-      _pstorage.Clear();
-      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-  } else {
-#ifdef DEBUG
-      printf("View has no mappings; reporting query as done\n");
-#endif
-  }
-  v->DoneMappingIterator(mindex);
+  ViewGraph::DerivedStartQuery(_queryFilter, timestamp);
 }
 
 void ViewLens::DerivedAbortQuery()
@@ -379,6 +371,7 @@ void ViewLens::DerivedAbortQuery()
 #endif
   DoneViewLensIterator(_index);
   /* Do stuff here */
+  ViewGraph::DerivedAbortQuery();
 }
 
 
@@ -527,11 +520,6 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
   return basepixmap;
 }
 
-void ViewLens::QueryInit(void *userData)
-{
-   printf("ViewLens: %s : QueryInit\n", GetName());
-}
-
 void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
                            void *gdata, int numGData,
 			   int &recordsProcessed)
@@ -631,14 +619,5 @@ void ViewLens::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
       return;
   }
   v->GetVisualFilter(_queryFilter);
-  int mindex = v->InitMappingIterator(true);
-  if (v->MoreMapping(mindex)) {
-      _map = v->NextMapping(mindex)->map;
-      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-   } else {
-#ifdef DEBUG
-      printf("View has no mappings; reporting query as done\n");
-#endif
-   }
-   v->DoneMappingIterator(mindex);
+  ViewGraph::QueryDone(bytes, userData, map);
 }

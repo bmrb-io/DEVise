@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/08/20 22:11:11  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.54.8.3  1997/08/20 18:36:27  wenger
   QueryProcFull and QPRange now deal correctly with interrupted draws.
   (Some debug output still turned on.)
@@ -261,17 +265,13 @@ ImplementDList(BStatList, BasicStats *)
 TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
 		       GlobalColor fg, GlobalColor bg, AxisLabel *xAxis,
 		       AxisLabel *yAxis, Action *action) :
-	ViewGraph(name, initFilter, xAxis, yAxis, fg, bg, action)
+	ViewGraph(name, initFilter, qp, xAxis, yAxis, fg, bg, action)
 {
   _dataBin = new GDataBin();
   DOASSERT(_dataBin, "Out of memory");
 
-  _map = 0;
-  _index = -1;
-  _queryProc = qp;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
-  _queryFilter = initFilter;
 
   _dispSymbols = true;
   _dispConnectors = false;
@@ -280,23 +280,7 @@ TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp,
 
 TDataViewX::~TDataViewX()
 {
-  // SubClassUnmapped aborts any current query; this _must_ be done
-  // before this destructor exits, or members needed to do the abort
-  // will no longer be defined.
-  SubClassUnmapped();
-
   delete _dataBin;
-
-  int index = _blist.InitIterator();
-  while (_blist.More(index)) {
-    delete _blist.Next(index);
-  }
-  _blist.DoneIterator(index);
-  _blist.DeleteAll();
-  _gstatX.Clear();
-  _gstatY.Clear();
-  _glistX.DeleteAll();
-  _glistY.DeleteAll();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
@@ -305,80 +289,13 @@ void TDataViewX::InsertMapping(TDataMap *map)
   Refresh();
 }
 
-void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
-{
-#ifdef DEBUG
-  printf("start query\n");
-#endif
-
-  _queryFilter = filter;
-  _timestamp = timestamp;
-
-  // Initialize statistics collection
-  _allStats.Init(this);
-
-  for(int i = 0; i < MAXCOLOR; i++)
-    _stats[i].Init(this);
-
-  int index = _blist.InitIterator();
-  while (_blist.More(index)) {
-    delete _blist.Next(index);
-  }
-  _blist.DoneIterator(index);
-  _blist.DeleteAll();
-  _gstatX.Clear();     /* Clear the hashtable and calculate it again */
-  _gstatY.Clear();     /* Clear the hashtable and calculate it again */
-  _glistX.DeleteAll(); /* Clear the gdata list */
-  _glistY.DeleteAll(); /* Clear the gdata list */
-
-  // Initialize record links whose master this view is
-  index = _masterLink.InitIterator();
-  while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
-    link->Initialize();
-  }
-  _masterLink.DoneIterator(index);
-
-  _index = InitMappingIterator(true);   // open iterator backwards
-  if (MoreMapping(_index)) {
-    _map = NextMapping(_index)->map;
-#ifdef DEBUG
-    printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
-#endif
-    _pstorage.Clear();
-    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-  } else {
-#ifdef DEBUG
-    printf("View has no mappings; reporting query as done\n");
-#endif
-    ReportQueryDone(0);
-    DoneMappingIterator(_index);
-    _map = 0;
-    _index = -1;
-  }
-}
-
 void TDataViewX::DerivedAbortQuery()
 {
 #ifdef DEBUG
     printf("TDataViewX::Abort query, index = %d\n", _index);
 #endif
 
-  if (_map) {
-    _queryProc->AbortQuery(_map, this);
-    DOASSERT(_index >= 0, "Invalid iterator index");
-    DoneMappingIterator(_index);
-    _map = 0;
-    _index = -1;
-  }
-
-  // Abort record links whose master this view is
-  int index = _masterLink.InitIterator();
-  while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
-    link->Abort();
-  }
-  _masterLink.DoneIterator(index);
+  ViewGraph::DerivedAbortQuery();
 
   // I think recordsProcessed is pretty meaningless at this point.
   // RKW Aug. 15, 1997.
@@ -629,48 +546,12 @@ void TDataViewX::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
   printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
 
-  if( _index >= 0 ) {
+  ViewGraph::QueryDone(bytes, userData, map);
 
-    _pstorage.Clear();
-
-    if (MoreMapping(_index)) {
-      _map = NextMapping(_index)->map;
-#ifdef DEBUG
-      printf("Submitting next query 0x%p\n", _map);
-#endif
-      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-      return;
-    }
-
-    DoneMappingIterator(_index);
-    _map = 0;
-    _index = -1;
-
-    _allStats.Done();
-    _allStats.Report();
-
-    for(int i = 0; i < MAXCOLOR; i++)
-      _stats[i].Done();
-
-    PrepareStatsBuffer(map);
-
-    // I think recordsProcessed is pretty meaningless at this point.
-    // RKW Aug. 15, 1997.
-    int recordsProcessed;
-    _dataBin->Final(recordsProcessed);
-
-    DrawLegend();
-
-    // Finish record links whose master this view is
-    int index = _masterLink.InitIterator();
-    while(_masterLink.More(index)) {
-      RecordLink *link = _masterLink.Next(index);
-      link->Done();
-    }
-    _masterLink.DoneIterator(index);
-
-    ReportQueryDone(bytes);
-  }
+  // I think recordsProcessed is pretty meaningless at this point.
+  // RKW Aug. 15, 1997.
+  int recordsProcessed;
+  _dataBin->Final(recordsProcessed);
 }
 
 void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,

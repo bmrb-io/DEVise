@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/20 22:11:16  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.15.2.1  1997/08/07 16:56:48  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -94,14 +98,11 @@
 #ifndef ViewScatter_h
 #define ViewScatter_h
 
-#include "QueryProc.h"
 #include "ViewGraph.h"
-#include "GDataBin.h"
-#include "WindowRep.h"
 #include "Color.h"
 
 
-class ViewScatter: public ViewGraph, private QueryCallback {
+class ViewScatter: public ViewGraph {
 public:
 
   ViewScatter(char *name, VisualFilter &initFilter,
@@ -116,10 +117,6 @@ public:
   virtual void *GetObj() { return this; }
 
 protected:
-  /* from View */
-  virtual void DerivedStartQuery(VisualFilter &filter, int timestamp);
-  virtual void DerivedAbortQuery();
-
   /* Get record link */
   virtual RecordLinkList *GetRecordLinkList() { return &_slaveLink; }
   virtual RecordLinkList *GetMasterLinkList() { return &_masterLink; }
@@ -127,23 +124,9 @@ protected:
 private:
 
   /* from QueryCallback */
-  /* Query data ready to be returned. Do initialization here.*/
-  virtual void QueryInit(void *userData);
-
   virtual void ReturnGData(TDataMap *mapping, RecId id,
 			   void *gdata, int numGData,
 			   int &recordsProcessed);
-  
-  /* Done with query */
-  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
-  
-  VisualFilter _queryFilter;
-  int          _timestamp;
-  QueryProc    *_queryProc;
-  TDataMap     *_map;
-  int          _index;
-
-  BStatList    _blist;  // Keep a list of BasicStats so we can delete them
 };
 
 #endif
