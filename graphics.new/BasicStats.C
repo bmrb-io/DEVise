@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/22 02:35:48  ravim
+  Vertical lines for maximum and minimum.
+
   Revision 1.10  1995/12/18 03:11:56  ravim
   Confidence intervals displayed.
 
@@ -26,7 +29,8 @@
   Callbacks added.
 
   Revision 1.7  1995/12/07 02:19:42  ravim
-  Stats graphically displayed based on the stat specification string in ViewGraph class.
+  Stats graphically displayed based on the stat specification string
+  in ViewGraph class.
 
   Revision 1.6  1995/12/06 05:41:04  ravim
   Changes in color and added function to return specific stat values.
@@ -56,13 +60,10 @@
 
 BasicStats::BasicStats()
 {
-
 }
 
 BasicStats::~BasicStats()
 {
-
-
 }
 
 void BasicStats::Init(ViewGraph *vw)
@@ -78,7 +79,6 @@ void BasicStats::Init(ViewGraph *vw)
   nval = 0;
   nsamples = 0;
   ViewStats::Init(vw);
-
 }
 
 void BasicStats::Sample(double x, double y)
@@ -142,21 +142,20 @@ void BasicStats::Done()
       chigh[i] = avg + (float)(zval[i]*std)/(float)(sqrt(nsamples)); 
     }
   }
-
-  printf("***********Statistics Report***********\n");
-  printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
-  printf("Std.deviation: %f\n", std);
-  printf("Confidence intervals\n");
-  printf("\t 85\%: (%f , %f)\n", clow[0], chigh[0]);
-  printf("\t 90\%: (%f , %f)\n", clow[1], chigh[1]);
-  printf("\t 95\%: (%f , %f)\n", clow[2], chigh[2]);
-
 }
 
 void BasicStats::Report()
 {
   if (!_vw || (atoi(_vw->GetDisplayStats()) == 0))
     return;
+
+  printf("***********Statistics Report***********\n");
+  printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
+  printf("Std.deviation: %f\n", std);
+  printf("Confidence intervals\n");
+  printf("\t85%%: (%.2f, %.2f)\n", clow[0], chigh[0]);
+  printf("\t90%%: (%.2f, %.2f)\n", clow[1], chigh[1]);
+  printf("\t95%%: (%.2f, %.2f)\n", clow[2], chigh[2]);
 
   // Draw a line across the window to depict the min, max and average
   // Get the window
@@ -167,36 +166,35 @@ void BasicStats::Report()
   // Draw line
   Color prev = win->GetFgColor();
   win->SetFgColor(BlackColor);
-  
+  win->SetXorMode();
+
   // Draw stats depending on the binary string representing the stats to 
   // be displayed
   char *statstr = _vw->GetDisplayStats();
-  if (statstr[STAT_MAX] == '1')
-  {
-    win->InvertLine(filter->xLow, ymax, filter->xHigh, ymax, 2);
-    win->InvertLine(xatymax, 0, xatymax, filter->yHigh, 1);
+  if (statstr[STAT_MAX] == '1') {
+    win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
+    win->Line(xatymax, 0, xatymax, filter->yHigh, 1);
   }
-  if (statstr[STAT_MIN] == '1')
-  {
-    win->InvertLine(filter->xLow, ymin, filter->xHigh, ymin, 2);
-    win->InvertLine(xatymin, 0, xatymin, filter->yHigh, 1);
+  if (statstr[STAT_MIN] == '1') {
+    win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
+    win->Line(xatymin, 0, xatymin, filter->yHigh, 1);
   }
   if (statstr[STAT_MEAN] == '1')
-    win->InvertLine(filter->xLow, avg, filter->xHigh, avg, 2);
+    win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
 
   // Display conf. interval
   if (statstr[ZVAL85] == '1')
-    win->InvertFillRect(filter->xLow, clow[0], filter->xHigh - filter->xLow, 
-			chigh[0] - clow[0]);
+    win->FillRect(filter->xLow, clow[0], filter->xHigh - filter->xLow, 
+		  chigh[0] - clow[0]);
   if (statstr[ZVAL90] == '1')
-    win->InvertFillRect(filter->xLow, clow[1], filter->xHigh - filter->xLow, 
-			chigh[1] - clow[1]);
+    win->FillRect(filter->xLow, clow[1], filter->xHigh - filter->xLow, 
+		  chigh[1] - clow[1]);
   if (statstr[ZVAL95] == '1')
-    win->InvertFillRect(filter->xLow, clow[2], filter->xHigh - filter->xLow, 
-			chigh[2] - clow[2]);
+    win->FillRect(filter->xLow, clow[2], filter->xHigh - filter->xLow, 
+		  chigh[2] - clow[2]);
 
+  win->SetCopyMode();
   win->SetFgColor(prev);
-
 }
 
 Coord BasicStats::GetStatVal(int statnum)
