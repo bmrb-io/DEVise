@@ -2175,7 +2175,7 @@ Num Date        Status  Description
 			a TData without having to first successfully display
 			that TData. (rkw) (See also bug 554.)
 
-556 01/12/00	OPEN	Open Test/bug556.ds, destroy or remove View 6 -> DEVise
+556 01/12/00	FIXED?	Open Test/bug556.ds, destroy or remove View 6 -> DEVise
 			crashes. (rkw)
 
 557 01/21/00	OPEN	'5' (home) on a view containing view symbols doesn't
@@ -2247,6 +2247,13 @@ Num Date        Status  Description
 574 03/15/00	FIXED	Open SoilSci/Asos.ds, close it -> failed assertion
 			in View::SetPileMode(). (rkw)
 			(Fixed by rkw, 3/15/00.)
+
+575 03/23/00	OPEN	Either pixmaps or the code that gets the images
+			from them does not work with the latest version
+			of XFree86. (rkw)
+
+576 03/28/00	OPEN	Various columns in link/cursor info dialog can
+			be scrolled separately (with arrow keys). (oz/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
