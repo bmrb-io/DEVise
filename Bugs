@@ -876,7 +876,7 @@ Num Date        Status  Description
 216 09/04/97	FIXED	Trying to set attribute type in original schema
 			editor causes error. (rkw/dj)
 
-217 09/04/97	OPEN	UniData schema gets 'separator' specified even when
+217 09/04/97	FIXED	UniData schema gets 'separator' specified even when
 			editor GUI says 'whitespace' -- causes UniData to
 			not work. (rkw/dj)
 
