@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1999/03/12 18:46:03  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.28  1999/03/10 19:11:07  wenger
   Implemented DataReader schema GUI; made other improvements to schema
   editing GUI, such as sorting the schema lists.
@@ -1619,6 +1622,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setDupElim) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(niceifyAxes) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getNiceAxes) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setNiceAxes) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/07/14 15:39:36  wenger
+  Committed Matt's fix for egcs.
+
   Revision 1.4  1996/10/02 15:23:35  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -42,6 +45,8 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <sys/param.h>
+
 #include "DeviseTypes.h"
 
 
@@ -65,8 +70,12 @@ public:
         return old;
     }
 
+    static void ResetError() { _errBuf[0] = '\0'; }
+    static const char *GetLatestError() { return _errBuf; }
+
 protected:
     static Boolean _enabled;
+    static char _errBuf[MAXPATHLEN * 2];
 };
 
 

@@ -1822,6 +1822,13 @@ Num Date        Status  Description
 			colors, new views should be created with those
 			colors. (rkw)
 
+473 03/19/99	OPEN	'5' (home) doesn't work right on views that have
+			HighLow symbols, because Y isn't the top of the
+			symbol. (rkw)
+
+474 03/23/99	FIXED	Margins on view home auto mode don't work. (rkw)
+			(Fixed by rkw, 3/23/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

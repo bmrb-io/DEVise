@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/07/14 15:39:20  wenger
+  Committed Matt's fix for egcs.
+
   Revision 1.3  1996/09/09 14:31:39  jussi
   Added #ifdef LIBCS statements to make code compile in the
   ClientServer library target.
@@ -50,6 +53,7 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 static char *	srcFile = __FILE__;
 
 Boolean DevError::_enabled = true;
+char DevError::_errBuf[MAXPATHLEN * 2];
 
 /*------------------------------------------------------------------------------
  * function: DevError::ReportError
@@ -72,6 +76,12 @@ DevError::ReportError(char *message, char *file, int line, int errnum)
         perror(NULL);
     }
     fprintf(stderr, "\n");
+
+    if (strlen(progName) + strlen(message) + strlen(file) <
+      MAXPATHLEN * 2 - 100) {
+        sprintf(_errBuf, "%s error: %s (%d)\n  at %s: %d\n", progName, message,
+          errnum, file, line);
+    }
 }
 
 /*============================================================================*/

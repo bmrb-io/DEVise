@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/03/12 18:45:39  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.45  1999/03/04 15:10:47  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -1030,6 +1033,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "getDupElim", "setDupElim",
       instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getNiceAxes", "setNiceAxes",
+      instance, NULL, NULL, false);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

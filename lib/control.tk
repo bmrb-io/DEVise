@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.181  1999/03/12 18:46:13  wenger
+#	Implemented duplicate symbol elimination.
+#	
 #	Revision 1.180  1999/03/10 19:11:14  wenger
 #	Implemented DataReader schema GUI; made other improvements to schema
 #	editing GUI, such as sorting the schema lists.
@@ -921,6 +924,7 @@ source $libdir/dateformat.tcl
 source $libdir/viewgeom.tcl
 source $libdir/auto_filter.tcl
 source $libdir/dup_elim.tcl
+source $libdir/nice_axes.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1436,6 +1440,8 @@ menu .mbar.view.menu -tearoff 0
 	-command { DoToggleAxis X }
 .mbar.view.menu add command -label "Toggle Y Axis" \
 	-command { DoToggleAxis Y }
+.mbar.view.menu add cascade -label "Nice Axes" \
+    -menu .mbar.view.menu.niceaxismenu
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Title" -command DoSetTitle
@@ -1568,6 +1574,16 @@ menu .mbar.view.menu.fontsmenu -tearoff false
     -command { GetFont "y axis" }
 # TEMPTEMP? use this to bring up mapping window
 #.mbar.view.menu.fontsmenu add  command -label "Data Labels"
+
+menu .mbar.view.menu.niceaxismenu -tearoff false
+.mbar.view.menu.niceaxismenu add command -label "X Axis" \
+    -command { DEVise niceifyAxes $curView 1 0 }
+.mbar.view.menu.niceaxismenu add command -label "Y Axis" \
+    -command { DEVise niceifyAxes $curView 0 1 }
+.mbar.view.menu.niceaxismenu add command -label "X and Y Axes" \
+    -command { DEVise niceifyAxes $curView 1 1 }
+.mbar.view.menu.niceaxismenu add command -label "Automatic" \
+    -command EditNiceAxes
 
 menu .mbar.view.menu.dateformatmenu -tearoff false
 .mbar.view.menu.dateformatmenu add command -label "X Axis" \

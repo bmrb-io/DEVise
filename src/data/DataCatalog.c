@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/03/03 18:23:25  wenger
+  Added some debug code.
+
   Revision 1.2  1998/11/20 21:39:10  wenger
   Made non-DTE catalog code work for entries that span multiple lines.
 
@@ -453,11 +456,11 @@ DataCatalog::AddEntry(char *catName, char *entry)
   // the given name doesn't already exist, even though the GUI seems to
   // check for this
 
+  const int bufSize = 1024;
+  char nameBuf[bufSize];
   {
-    const int bufSize = 1024;
-    char nameBuf[bufSize], typeBuf[bufSize];
-    (void) ParseQuotedString(entry, nameBuf, bufSize);
-    (void) ParseCatEntry(entry, nameBuf, bufSize, typeBuf, bufSize, NULL, 0);
+    char typeBuf[bufSize];
+    ParseCatEntry(entry, nameBuf, bufSize, typeBuf, bufSize, NULL, 0);
 
     //
     // Check for illegal characters in entry name.
@@ -495,6 +498,23 @@ DataCatalog::AddEntry(char *catName, char *entry)
     const int catBufSize = MAXPATHLEN;
     char catBuf[catBufSize];
     char *catFile = FindCatFile(catName, catBuf, catBufSize);
+
+    char *tmpEntry = FindEntry(nameBuf, catFile);
+    if (tmpEntry != NULL) {
+      char errBuf[1024];
+
+      // Using strncmp() because entry from catalog has trailing " ;".
+      if (strncmp(tmpEntry, entry, strlen(entry))) {
+	sprintf(errBuf, "Data source name %s already used", nameBuf);
+	reportErrNosys(errBuf);
+        result = -1;
+      } else {
+	sprintf(errBuf, "Data source %s already exists", nameBuf);
+	reportErrNosys(errBuf);
+      }
+      delete [] tmpEntry;
+      return result;
+    }
 
     FILE *fp = fopen(catFile, "a");
     if (fp == NULL) {

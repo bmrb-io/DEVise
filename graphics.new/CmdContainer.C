@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/03/12 18:46:01  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.32  1999/03/10 19:11:04  wenger
   Implemented DataReader schema GUI; made other improvements to schema
   editing GUI, such as sorting the schema lists.
@@ -472,6 +475,9 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(parseDRSchema)
 	REGISTER_COMMAND(getDupElim)
 	REGISTER_COMMAND(setDupElim)
+	REGISTER_COMMAND(niceifyAxes)
+	REGISTER_COMMAND(getNiceAxes)
+	REGISTER_COMMAND(setNiceAxes)
 }
 
 CmdContainer::~CmdContainer()

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.98  1999/03/16 21:47:58  wenger
+  '5' (home) key now works properly on linked piles -- does home on the
+  entire pile as a unit.
+
   Revision 1.97  1999/03/16 17:10:17  wenger
   Improved 'view home' configuration: user can select whether home changes
   X, Y, or both parts of visual filter; added explicit option to force Y
@@ -613,6 +617,9 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _stringGenTableName = NULL;
 
   _dataRangesValid = false;
+
+  _niceXAxis = false;
+  _niceYAxis = false;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -995,11 +1002,11 @@ ViewGraph::GetHome2D(VisualFilter &filter)
             // Check data ranges first (fixes bug 469).
             if (_dataRangesValid) {
                 if (!setXLow) {
-                    filter.xLow = _dataXMin;
+                    filter.xLow = _dataXMin - _homeInfo.autoXMargin;
                     setXLow = true;
                 }
                 if (!setXHigh) {
-                    filter.xHigh = _dataXMax;
+                    filter.xHigh = _dataXMax + _homeInfo.autoXMargin;
                     setXHigh = true;
                 }
             }
@@ -1046,11 +1053,11 @@ ViewGraph::GetHome2D(VisualFilter &filter)
             // Check data ranges first (fixes bug 469).
             if (_dataRangesValid) {
                 if (!setYLow) {
-                    filter.yLow = _dataYMin;
+                    filter.yLow = _dataYMin - _homeInfo.autoYMargin;
                     setYLow = true;
                 }
                 if (!setYHigh) {
-                    filter.yHigh = _dataYMax;
+                    filter.yHigh = _dataYMax + _homeInfo.autoYMargin;
                     setYHigh = true;
                 }
             }
@@ -1092,6 +1099,8 @@ ViewGraph::GetHome2D(VisualFilter &filter)
                 filter.yLow = MIN(filter.yLow, 0.0);
             }
         }
+        if (_niceXAxis) NiceAxisRange(filter.xLow, filter.xHigh);
+        if (_niceYAxis) NiceAxisRange(filter.yLow, filter.yHigh);
         break;
     }
 
@@ -2366,6 +2375,83 @@ ViewGraph::SetDupElim(Boolean enable)
       Refresh();
     }
   }
+}
+
+void
+ViewGraph::GetNiceAxes(Boolean &niceX, Boolean &niceY)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::GetNiceAxes()\n", GetName());
+#endif
+
+  niceX = _niceXAxis;
+  niceY = _niceYAxis;
+}
+
+void
+ViewGraph::SetNiceAxes(Boolean niceX, Boolean niceY)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SetNiceAxes(%d, %d)\n", GetName(), niceX, niceY);
+#endif
+
+  _niceXAxis = niceX;
+  _niceYAxis = niceY;
+}
+
+void
+ViewGraph::NiceifyAxes(Boolean xAxis, Boolean yAxis)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::NiceifyAxes(%d, %d)\n", GetName(), xAxis, yAxis);
+#endif
+
+  VisualFilter filter;
+  GetVisualFilter(filter);
+
+  if (xAxis) NiceAxisRange(filter.xLow, filter.xHigh);
+  if (yAxis) NiceAxisRange(filter.yLow, filter.yHigh);
+
+  if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
+    CommandObj *    cmdObj = GetCommandObj();
+    cmdObj->SetVisualFilter(this, &filter);
+  } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
+    SetVisualFilter(filter);
+  }
+}
+
+void
+ViewGraph::NiceAxisRange(Coord &low, Coord &high)
+{
+#if defined(DEBUG)
+  printf("ViewGraph::NiceAxisRange(%g, %g)\n", low, high);
+#endif
+
+  Coord diff = high - low;
+
+  if (diff > 0.0) {
+    // This constant determines the "threshold" for going up or down by a
+    // factor of 10 on the multiple.
+    const double multFudge = 0.2;
+
+    double logval = floor(log10(diff) - multFudge);
+    double multiple = pow(10.0, logval);
+
+#if defined(DEBUG)
+    printf("multiple = %g\n", multiple);
+#endif
+
+    // This constant should be just less than one so we don't go up to
+    // a higher value if the given value is already exactly a multiple
+    // of multiple.
+    const double roundFudge = 0.99;
+    high = floor(high/multiple + roundFudge) * multiple;
+    low = floor(low/multiple) * multiple;
+  }
+  
+#if defined(DEBUG)
+  printf("  resulting range: (%g, %g)\n", low, high);
+#endif
 }
 
 //******************************************************************************

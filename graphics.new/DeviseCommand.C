@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/03/18 17:30:40  wenger
+  Implemented two-color option in HighLow symbols; compensated for
+  XFillRectangle() not working the way O'Reilly says it does (subtracted
+  one from width and height); test command for Condor User data visualization.
+
   Revision 1.51  1999/03/16 17:10:03  wenger
   Improved 'view home' configuration: user can select whether home changes
   X, Y, or both parts of visual filter; added explicit option to force Y
@@ -370,9 +375,11 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	fflush(stdout);
 #endif
 
-	// reset the control each time you run a command
 	int	retval;
 
+	DevError::ResetError();
+
+	// reset the control each time you run a command
 	control = cntl;
 	pushControl(cntl);
 
@@ -551,7 +558,7 @@ IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
 			 char *name = NULL;
 #endif
     		 if (!name){
-    		ReturnVal(API_NAK, "");
+    		ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     		return -1;
     		 }
     		 ReturnVal(API_ACK, name);
@@ -617,7 +624,7 @@ TAG*/
           ReturnVal(API_ACK, "");
     	  return 1;
 		} else {
-          ReturnVal(API_NAK, "");
+          ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     	  return -1;
 		}
 #endif
@@ -739,7 +746,7 @@ TAG*/
 	  delete [] catListing;
       return 1;
 	} else {
-      ReturnVal(API_NAK, "");
+      ReturnVal(API_NAK, (char *)DevError::GetLatestError());
       return -1;
 	}
 #endif
@@ -878,6 +885,7 @@ TAG*/
   fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
 #endif
 #if !defined(NO_DTE)
+		//TEMP -- should check for existing entry with given name
         return ParseAPIDTE(argc, argv, control);
 #else
 		int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
@@ -885,7 +893,7 @@ TAG*/
           ReturnVal(API_ACK, "");
     	  return 1;
 		} else {
-          ReturnVal(API_NAK, "");
+          ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     	  return -1;
 		}
 #endif
@@ -4625,26 +4633,11 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-        View *view = (View *)classDir->FindInstance("GlewRunning");
+        ViewGraph *view = (ViewGraph *)View::FindSelectedView();
 		if (view != NULL) {
-		  view->SetPileMode(true);
+		  view->NiceifyAxes(true, true);
 		}
 
-        view = (View *)classDir->FindInstance("GlewTotal");
-		if (view != NULL) {
-		  view->SetPileMode(true);
-		}
-
-        view = (View *)classDir->FindInstance("YetkinRunning");
-		if (view != NULL) {
-		  view->SetPileMode(true);
-		}
-
-        view = (View *)classDir->FindInstance("YetkinTotal");
-		if (view != NULL) {
-		  view->SetPileMode(true);
-		}
-		
        	ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
@@ -5515,6 +5508,83 @@ IMPLEMENT_COMMAND_BEGIN(setDupElim)
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setDupElim\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(niceifyAxes)
+    // Arguments: <view name> <niceify X> <niceify Y>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		Boolean doX = atoi(argv[2]);
+		Boolean doY = atoi(argv[3]);
+		view->NiceifyAxes(doX, doY);
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in niceifyAxes\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getNiceAxes)
+    // Arguments: <view name>
+    // Returns: <nice X> <nice Y>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		Boolean niceX, niceY;
+		view->GetNiceAxes(niceX, niceY);
+
+		char buf[128];
+		sprintf(buf, "%d %d", niceX, niceY);
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getNiceAxes\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setNiceAxes)
+    // Arguments: <view name> <nice x> <nice y>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		Boolean niceX = atoi(argv[2]);
+		Boolean niceY = atoi(argv[3]);
+		view->SetNiceAxes(niceX, niceY);
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setNiceAxes\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

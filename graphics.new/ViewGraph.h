@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/03/16 21:47:59  wenger
+  '5' (home) key now works properly on linked piles -- does home on the
+  entire pile as a unit.
+
   Revision 1.62  1999/03/16 17:10:18  wenger
   Improved 'view home' configuration: user can select whether home changes
   X, Y, or both parts of visual filter; added explicit option to force Y
@@ -606,6 +610,15 @@ public:
 
   void UpdateAxisTypes();
 
+  // Get/set whether the axes will be set to "nice" values when 'home' is done
+  // on this view.
+  void GetNiceAxes(Boolean &niceX, Boolean &niceY);
+  void SetNiceAxes(Boolean niceX, Boolean niceY);
+
+  // Force the specified axis/axes to "nice" values from their current
+  // values.
+  void NiceifyAxes(Boolean xAxis, Boolean yAxis);
+
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
@@ -694,6 +707,9 @@ public:
 
   struct timeval _queryStartTime;
 
+  Boolean _niceXAxis;
+  Boolean _niceYAxis;
+
 	protected:
 
 		// Callback methods (QueryCallback)
@@ -725,6 +741,7 @@ public:
 		virtual void	HandleKey(WindowRep* w ,int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
 									char**& msgs, int& numMsgs);
+        static void NiceAxisRange(Coord &low, Coord &high);
 };
 
 //******************************************************************************
