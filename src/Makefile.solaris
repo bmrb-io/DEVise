@@ -1,0 +1,294 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+BASE = $(PWD)
+BASE = .
+INCLUDE_DIRS = \
+     . \
+	src \
+     src/DBJussi \
+     src/PageClasses \
+     src/TypeSupport \
+     src/Common \
+     src/RTree \
+     ../graphics \
+     ../graphics.new \
+     ../tape 
+
+FULL_PATH_INCLUDES = \
+	-I/s/gcc/lib/g++-include 
+
+INCLUDE_DIRS1 = $(addprefix -I, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS2 = $(addprefix -I../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS3 = $(addprefix -I../../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+
+
+depend:
+	makedepend -f Makefile.solaris $(INCLUDE_DIRS1) *.cc
+	cd src; makedepend -a -f../Makefile.solaris $(INCLUDE_DIRS2) *.cc
+	cd src/Common; makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS2) *.cc
+	cd src/DBJussi; \
+		makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS3) *.cc
+	cd src/PageClasses; \
+		makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS3) *.cc
+	cd src/Progs; \
+		makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS3) *.cc
+	cd src/RTree; \
+		makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS3) *.cc
+	cd src/TypeSupport; \
+		makedepend -a -f../../Makefile.solaris $(INCLUDE_DIRS3) *.cc
+
+# DO NOT DELETE
+
+setup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+setup.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+setup.o: /usr/include/varargs.h /usr/include/unistd.h
+setup.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+setup.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+setup.o: /usr/include/sys/time.h /usr/include/time.h
+setup.o: /usr/include/sys/unistd.h /usr/include/errno.h
+setup.o: /usr/include/sys/errno.h
+
+correct_math.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+correct_math.o: /usr/include/sys/va_list.h /usr/include/math.h
+correct_math.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h heap.h
+heap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+heap.o: /usr/include/sys/va_list.h heap.h
+int_key.o: int_key.h .././setup.h /usr/include/assert.h /usr/include/stdio.h
+int_key.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+int_key.o: /usr/include/math.h /usr/include/floatingpoint.h
+int_key.o: /usr/include/sys/ieeefp.h bit_vec.h /usr/include/stdlib.h
+int_key.o: /usr/include/strings.h /usr/include/string.h
+
+dbJussi.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+dbJussi.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+dbJussi.o: /usr/include/sys/select.h /usr/include/sys/time.h
+dbJussi.o: /usr/include/time.h /usr/include/unistd.h
+dbJussi.o: /usr/include/sys/unistd.h /usr/include/stdlib.h
+dbJussi.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+dbJussi.o: /usr/include/sys/fcntl.h dbJussi.h ../../src/setup.h
+dbJussi.o: /usr/include/assert.h ../../src/dbinterface.h
+dbJussi.o: /usr/include/stddef.h ../../../graphics.new/SBufMgr.h
+dbJussi.o: /usr/include/sys/uio.h ../../../graphics/DeviseTypes.h
+dbJussi.o: /usr/include/values.h ../../../graphics/DevStatus.h
+dbJussi.o: ../../../graphics.new/MemMgr.h ../../../graphics.new/DCE.h
+dbJussi.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+dbJussi.o: /usr/include/sys/shm.h /usr/include/errno.h
+dbJussi.o: /usr/include/sys/errno.h /usr/include/stdio.h
+dbJussi.o: /usr/include/sys/va_list.h /usr/include/limits.h
+dbJussi.o: ../../../graphics.new/machdep.h /usr/include/sys/param.h
+dbJussi.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+dbJussi.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+dbJussi.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+dbJussi.o: /usr/include/netdb.h /usr/include/sys/socket.h
+dbJussi.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+dbJussi.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+dbJussi.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+dbJussi.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+dbJussi.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+dbJussi.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+dbJussi.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+dbJussi.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+dbJussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+dbJussi.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+dbJussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+dbJussi.o: /s/gcc/lib/g++-include/iostream.h
+dbJussi.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
+
+alignedsortedpage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+alignedsortedpage.o: /usr/include/sys/va_list.h /usr/include/string.h
+alignedsortedpage.o: ../../src/setup.h /usr/include/assert.h
+alignedsortedpage.o: ../../src/dbinterface.h /usr/include/stddef.h
+alignedsortedpage.o: alignedsortedpage.h
+fixed_entrysz_p.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+fixed_entrysz_p.o: fixed_entrysz_p.h stackpage.h ../../src/dbinterface.h
+fixed_entrysz_p.o: /usr/include/stddef.h ../../src/setup.h
+fixed_entrysz_p.o: /usr/include/assert.h ../../src/Common/bit_vec.h
+fixed_entrysz_p.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+int_keyed_p.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+int_keyed_p.o: int_keyed_p.h fixed_entrysz_p.h stackpage.h
+int_keyed_p.o: ../../src/dbinterface.h /usr/include/stddef.h
+int_keyed_p.o: ../../src/setup.h /usr/include/assert.h
+int_keyed_p.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+int_keyed_p.o: /usr/include/sys/va_list.h ../../src/Common/int_key.h
+int_keyed_p.o: /usr/include/math.h /usr/include/floatingpoint.h
+int_keyed_p.o: /usr/include/sys/ieeefp.h
+stackpage.o: /usr/include/stddef.h /usr/include/stdio.h
+stackpage.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+stackpage.o: /usr/include/assert.h ../../src/dbinterface.h ../../src/setup.h
+stackpage.o: stackpage.h
+
+make_test_bulk_file.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+make_test_bulk_file.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+make_test_bulk_file.o: /usr/include/strings.h /usr/include/string.h
+make_test_bulk_file.o: ../setup.h /usr/include/assert.h
+test_aspage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+test_aspage.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+test_aspage.o: ../../src/setup.h /usr/include/assert.h
+test_aspage.o: ../../src/dbinterface.h /usr/include/stddef.h
+test_aspage.o: ../../src/PageClasses/alignedsortedpage.h
+test_bit_vec.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+test_bit_vec.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+test_bit_vec.o: ../../src/Common/bit_vec.h ../../src/setup.h
+test_bit_vec.o: /usr/include/assert.h
+test_btree.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+test_btree.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+test_btree.o: ../../src/setup.h /usr/include/assert.h ../../src/dbinterface.h
+test_btree.o: /usr/include/stddef.h ../../src/PageClasses/alignedsortedpage.h
+test_ikp.o: ../../src/PageClasses/int_keyed_p.h
+test_ikp.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_ikp.o: ../../src/PageClasses/stackpage.h ../../src/dbinterface.h
+test_ikp.o: /usr/include/stddef.h ../../src/setup.h /usr/include/assert.h
+test_ikp.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+test_ikp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+test_ikp.o: ../../src/Common/int_key.h /usr/include/math.h
+test_ikp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+test_rtree1.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+test_rtree1.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+test_rtree1.o: /usr/include/sys/select.h /usr/include/sys/time.h
+test_rtree1.o: /usr/include/time.h /usr/include/sys/stat.h
+test_rtree1.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+test_rtree1.o: ../../src/RTree/rtree.h ../../src/index.h
+test_rtree1.o: ../../src/dbinterface.h /usr/include/stddef.h
+test_rtree1.o: ../../src/setup.h /usr/include/assert.h
+test_rtree1.o: ../../src/Common/int_key.h /usr/include/stdio.h
+test_rtree1.o: /usr/include/sys/va_list.h /usr/include/math.h
+test_rtree1.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+test_rtree1.o: ../../src/Common/bit_vec.h ../../src/PageClasses/int_keyed_p.h
+test_rtree1.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree1.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_rtree1.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h
+test_rtree1.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+test_rtree_jussi.o: ../../src/DBJussi/dbJussi.h ../../src/setup.h
+test_rtree_jussi.o: /usr/include/assert.h ../../src/dbinterface.h
+test_rtree_jussi.o: /usr/include/stddef.h ../../../graphics.new/SBufMgr.h
+test_rtree_jussi.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+test_rtree_jussi.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+test_rtree_jussi.o: /usr/include/sys/select.h /usr/include/sys/time.h
+test_rtree_jussi.o: /usr/include/time.h /usr/include/sys/uio.h
+test_rtree_jussi.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+test_rtree_jussi.o: ../../../graphics/DeviseTypes.h /usr/include/values.h
+test_rtree_jussi.o: ../../../graphics/DevStatus.h
+test_rtree_jussi.o: ../../../graphics.new/MemMgr.h
+test_rtree_jussi.o: ../../../graphics.new/DCE.h /usr/include/sys/ipc.h
+test_rtree_jussi.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+test_rtree_jussi.o: /usr/include/errno.h /usr/include/sys/errno.h
+test_rtree_jussi.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+test_rtree_jussi.o: /usr/include/limits.h /usr/include/sys/stat.h
+test_rtree_jussi.o: ../../../graphics.new/machdep.h /usr/include/sys/param.h
+test_rtree_jussi.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+test_rtree_jussi.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+test_rtree_jussi.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+test_rtree_jussi.o: /usr/include/netdb.h /usr/include/sys/socket.h
+test_rtree_jussi.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+test_rtree_jussi.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+test_rtree_jussi.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+test_rtree_jussi.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+test_rtree_jussi.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+test_rtree_jussi.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+test_rtree_jussi.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+test_rtree_jussi.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+test_rtree_jussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+test_rtree_jussi.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+test_rtree_jussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+test_rtree_jussi.o: /s/gcc/lib/g++-include/iostream.h
+test_rtree_jussi.o: /s/gcc/lib/g++-include/streambuf.h
+test_rtree_jussi.o: /s/gcc/lib/g++-include/libio.h /usr/include/fcntl.h
+test_rtree_jussi.o: /usr/include/sys/fcntl.h ../../src/RTree/rtree.h
+test_rtree_jussi.o: ../../src/index.h ../../src/Common/int_key.h
+test_rtree_jussi.o: /usr/include/math.h /usr/include/floatingpoint.h
+test_rtree_jussi.o: /usr/include/sys/ieeefp.h ../../src/Common/bit_vec.h
+test_rtree_jussi.o: ../../src/PageClasses/int_keyed_p.h
+test_rtree_jussi.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree_jussi.o: ../../src/PageClasses/stackpage.h
+test_rtree_jussi.o: ../../src/Common/stack_t.h ../../src/RTree/bulk_data.h
+test_rtree_jussi.o: /usr/include/stdlib.h
+test_types.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+test_types.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+test_types.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+test_types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+test_types.o: /usr/include/sys/time.h /usr/include/time.h
+test_types.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+test_types.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
+test_types.o: /usr/include/sys/unistd.h ../../src/TypeSupport/typed_key.h
+test_types.o: /usr/include/strings.h /usr/include/string.h
+test_types.o: ../../src/Common/int_key.h ../../src/setup.h
+test_types.o: /usr/include/assert.h /usr/include/math.h
+test_types.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+test_types.o: ../../src/Common/bit_vec.h ../../src/TypeSupport/typed_rtree.h
+test_types.o: ../../src/RTree/rtree.h ../../src/index.h
+test_types.o: ../../src/dbinterface.h /usr/include/stddef.h
+test_types.o: ../../src/PageClasses/int_keyed_p.h
+test_types.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_types.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_types.o: ../../src/RTree/bulk_data.h
+
+bulk_data.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+bulk_data.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+bulk_data.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+bulk_data.o: /usr/include/sys/time.h /usr/include/time.h
+bulk_data.o: /usr/include/sys/mman.h /usr/include/errno.h
+bulk_data.o: /usr/include/sys/errno.h /usr/include/stdio.h
+bulk_data.o: /usr/include/sys/va_list.h /usr/include/unistd.h
+bulk_data.o: /usr/include/sys/unistd.h ../../src/setup.h
+bulk_data.o: /usr/include/assert.h bulk_data.h ../../src/Common/int_key.h
+bulk_data.o: /usr/include/math.h /usr/include/floatingpoint.h
+bulk_data.o: /usr/include/sys/ieeefp.h ../../src/Common/bit_vec.h
+rtree.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+rtree.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+rtree.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+rtree.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/stat.h
+rtree.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/unistd.h
+rtree.o: /usr/include/sys/unistd.h /usr/include/string.h rtree.h
+rtree.o: ../../src/index.h ../../src/dbinterface.h /usr/include/stddef.h
+rtree.o: ../../src/setup.h /usr/include/assert.h ../../src/Common/int_key.h
+rtree.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
+rtree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+rtree.o: ../../src/Common/bit_vec.h ../../src/PageClasses/int_keyed_p.h
+rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+rtree.o: bulk_data.h
+
+convert_bulk.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+convert_bulk.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+convert_bulk.o: /usr/include/strings.h /usr/include/string.h
+convert_bulk.o: ../../src/Common/correct_math.h
+generate_testfile.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+generate_testfile.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+interp_file.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+interp_file.o: /usr/include/stdio.h /usr/include/sys/va_list.h typed_key.h
+interp_file.o: /usr/include/strings.h /usr/include/string.h
+interp_file.o: ../../src/Common/int_key.h ../../src/setup.h
+interp_file.o: /usr/include/assert.h /usr/include/math.h
+interp_file.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+interp_file.o: ../../src/Common/bit_vec.h
+typed_key.o: typed_key.h /usr/include/strings.h
+typed_key.o: /usr/include/sys/feature_tests.h /usr/include/string.h
+typed_key.o: ../../src/Common/int_key.h ../../src/setup.h
+typed_key.o: /usr/include/assert.h /usr/include/stdio.h
+typed_key.o: /usr/include/sys/va_list.h /usr/include/math.h
+typed_key.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+typed_key.o: ../../src/Common/bit_vec.h ../../src/Common/correct_math.h
+typed_rtree.o: typed_rtree.h ../../src/RTree/rtree.h ../../src/index.h
+typed_rtree.o: ../../src/dbinterface.h /usr/include/stddef.h
+typed_rtree.o: ../../src/setup.h /usr/include/assert.h
+typed_rtree.o: ../../src/Common/int_key.h /usr/include/stdio.h
+typed_rtree.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+typed_rtree.o: /usr/include/math.h /usr/include/floatingpoint.h
+typed_rtree.o: /usr/include/sys/ieeefp.h ../../src/Common/bit_vec.h
+typed_rtree.o: ../../src/PageClasses/int_keyed_p.h
+typed_rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+typed_rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+typed_rtree.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h typed_key.h
+typed_rtree.o: /usr/include/strings.h /usr/include/string.h
