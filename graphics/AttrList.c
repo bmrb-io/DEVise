@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/25 23:15:48  ssl
+  turned off debug code.
+
   Revision 1.12  1997/03/11 22:49:46  donjerko
   *** empty log message ***
 
@@ -56,6 +59,7 @@
 
 #include "AttrList.h"
 #include "Util.h"
+#include "DevError.h"
 
 static char *GetTypeString(AttrType type);
 static void WriteVal(int fd, AttrVal *aval, AttrType atype);
@@ -196,13 +200,22 @@ int AttrList::GetAttrNum(char *name)
 
 AttrInfo *AttrList::Get(int n)
 {
-  if (n > 0  && n <= _size) {
-#ifdef DEBUG
-    printf("AttrList::Get : attr does not exist");
-#endif
+  if (n >= 0  && n < _size) {
     return _attrs[n];
-  } 
-  return _attrs[n];
+  } else {
+    /* Note: -1 is used to mean recId. */
+    if (n != -1
+#if defined(DEBUG)
+      || true
+#endif
+    )
+    {
+      char errBuf[256];
+      sprintf(errBuf, "Attribute %d does not exist", n);
+      reportErrNosys(errBuf);
+    }
+    return NULL;
+  }
 }
 
 

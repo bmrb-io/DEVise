@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/03 04:12:18  donjerko
+  Catalog management moved to DTE
+
   Revision 1.9  1996/10/07 22:54:01  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -70,7 +73,7 @@ UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 {
   /* Open file */
   int fd;
-  cout << "UnixRecFile::CreateFile(" << name << ", " << recSize << ")" << endl;
+  //cout << "UnixRecFile::CreateFile(" << name << ", " << recSize << ")" << endl;
   if ((fd = open(name, O_RDWR, 0)) >= 0) {
     /* File already exists */
     close(fd);
