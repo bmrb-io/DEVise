@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/09/23 19:57:26  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.4  1997/09/19 21:29:54  wenger
   Did various cleanups that didn't affect functionality.
 
@@ -62,7 +66,6 @@ private:
     ControlPanelSimple *control;
     FILE *fp;
   };
-  static DevStatus SaveSchemas(SaveData *saveData);
 
   static DevStatus SaveCategory(SaveData *saveData, char *category);
   static DevStatus SaveClass(SaveData *saveData, char *category,
@@ -76,8 +79,6 @@ private:
       SaveData *saveData);
 
   static DevStatus SaveView(char *category, char *devClass, char *instance,
-      SaveData *saveData);
-  static DevStatus SaveTData(char *category, char *devClass, char *instance,
       SaveData *saveData);
   static DevStatus SaveInterpMapping(char *category, char *devClass,
       char *instance, SaveData *saveData);

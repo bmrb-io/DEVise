@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1997/07/25 15:37:51  wenger
+#  Added demo startup scripts to repository and release script.
+#
 #  Revision 1.14  1997/06/05 21:18:39  wenger
 #  Added layout manager Tcl/Tk code to release procedure.
 #
@@ -208,7 +211,7 @@ set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
 	run_public/multi run_public/devise.etk run_public/devise.demo \
 	run_public/devise1.3.demo run_public/multi.demo \
-	run_public/multi1.3.demo"
+	run_public/multi1.3.demo run_public/tk2ds.tcl"
 
 foreach file ($runfiles)
   if ($file == "") then
@@ -273,6 +276,8 @@ endif
 tar cv --exclude=CVS public | tar xv --directory=$target/..
 
 cp run_public/devise $target/devisepub
+
+cp public/transcat.tcl $target
 
 
 echo ""

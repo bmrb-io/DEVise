@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/09/23 19:57:25  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.4  1997/09/19 21:29:54  wenger
   Did various cleanups that didn't affect functionality.
 
@@ -58,9 +62,14 @@
 // What we really need here is an _object_ that inherits all of the methods
 // except ReturnVal() from the ControlPanel::Instance() object and also has
 // its own interpreter...
+// Anyhow, the important thing is that all methods of the ControlPanel class
+// that are called from ParseAPI() are implemented here (unless they're
+// static).
+// RKW Oct. 2, 1997.
+
 class ControlPanelSimple : public ControlPanel {
 public:
-  // Member functions we need.
+  // These member functions are unique to this class.
   ControlPanelSimple(DevStatus &status) {
     _interp = Tcl_CreateInterp();
     if (_interp == NULL) {
@@ -83,34 +92,47 @@ public:
     return 1;
   }
 
-  virtual void SelectView(View *view) {
-    ControlPanel::Instance()->SelectView(view);
-  }
+  // These member functions are called in ParseAPI(), and therefore need
+  // to call the appropriate function in the "real" ControlPanel object.
   virtual Mode GetMode() { return ControlPanel::Instance()->GetMode(); }
   virtual void SetMode(Mode mode) { ControlPanel::Instance()->SetMode(mode); }
+
   virtual void SetBusy() { ControlPanel::Instance()->SetBusy(); }
   virtual void SetIdle() { ControlPanel::Instance()->SetIdle(); }
-  virtual Boolean IsBusy() { return ControlPanel::Instance()->IsBusy(); }
-  virtual void StartSession() { ControlPanel::Instance()->StartSession(); }
-  virtual void DestroySessionData() { ControlPanel::Instance()->DestroySessionData(); }
-  virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
-  virtual Boolean GetBatchMode() { return ControlPanel::Instance()->GetBatchMode(); }
-  virtual void SetBatchMode(Boolean mode) { ControlPanel::Instance()->SetBatchMode(mode); }
-  virtual void SetSyncNotify() { ControlPanel::Instance()->SetSyncNotify(); }
-  virtual void ClearSyncNotify() { ControlPanel::Instance()->ClearSyncNotify(); }
-  virtual Boolean GetSyncNotify() { return ControlPanel::Instance()->GetSyncNotify(); }
-  virtual void SyncNotify() { ControlPanel::Instance()->SyncNotify(); }
-//TEMPTEMP -- need more here
-  virtual GroupDir *GetGroupDir() { return ControlPanel::Instance()->GetGroupDir(); }
-  virtual MapInterpClassInfo *GetInterpProto() { return ControlPanel::Instance()->GetInterpProto(); }
-  virtual int AddReplica(char *hostName, int port) { return ControlPanel::Instance()->AddReplica(hostName, port); }
-  virtual int RemoveReplica(char *hostName, int port) { return ControlPanel::Instance()->RemoveReplica(hostName, port); }
-  virtual void OpenDataChannel(int port) { ControlPanel::Instance()->OpenDataChannel(port); }
-  virtual int getFd() { return ControlPanel::Instance()->getFd(); }
-  virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
-      Coord w, Coord h) { ControlPanel::Instance()->SubclassInsertDisplay(disp, x, y, w, h); }
-  virtual void SubclassDoInit() { ControlPanel::Instance()->SubclassDoInit(); }
 
+  virtual void DestroySessionData() {
+      ControlPanel::Instance()-> DestroySessionData(); }
+  virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
+
+  virtual void SetBatchMode(Boolean mode) {
+      ControlPanel::Instance()-> SetBatchMode(mode); }
+
+  virtual void SetSyncNotify() { ControlPanel::Instance()->SetSyncNotify(); }
+
+  virtual GroupDir *GetGroupDir() {
+      return ControlPanel::Instance()-> GetGroupDir(); }
+
+  virtual MapInterpClassInfo *GetInterpProto() {
+      return ControlPanel::Instance()->GetInterpProto(); }
+
+  virtual int AddReplica(char *hostName, int port) {
+      return ControlPanel::Instance()->AddReplica(hostName, port); }
+  virtual int RemoveReplica(char *hostName, int port) {
+      return ControlPanel::Instance()->RemoveReplica(hostName, port); }
+
+  virtual void OpenDataChannel(int port) {
+      ControlPanel::Instance()->OpenDataChannel(port); }
+  virtual int getFd() { return ControlPanel::Instance()->getFd(); }
+
+  // The following member functions are needed just because they are pure
+  // virtual in the base class.
+  virtual void SelectView(View *view) {}
+  virtual Boolean IsBusy() { return false; }
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
+      Coord w, Coord h) {}
+  virtual void SubclassDoInit() {}
+
+  // This is the interpreter used for opening a session.
   Tcl_Interp *_interp;
 };
 
@@ -202,18 +224,8 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     fprintf(saveData.fp, "%s", header);
     fprintf(saveData.fp, "# Saved by C++ code\n");//TEMPTEMP
 
-#if 0 // No longer needed because of new createTData command.
-    status += SaveSchemas(&saveData);
-#endif
-
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
-
-#if 0 // No longer needed because create mapping automatically creates
-      // the TData.
-    fprintf(saveData.fp, "\n# Create TDatas\n");
-    status += ForEachInstance("tdata", SaveTData, &saveData);
-#endif
 
     fprintf(saveData.fp, "\n# Create interpreted mapping classes\n");
     status += ForEachInstance("mapping", SaveInterpMapping, &saveData);
@@ -462,46 +474,6 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 }
 
 /*------------------------------------------------------------------------------
- * function: Session::SaveSchemas
- * Save the schema information.
- */
-DevStatus
-Session::SaveSchemas(SaveData *saveData)
-{
-#if defined(DEBUG)
-  printf("Session::SaveSchemas()\n");
-#endif
-
-  DevStatus status = StatusOk;
-
-  fprintf(saveData->fp, "\n# Import schemas\n");
-
-  char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
-      "catFiles");
-  if (status.IsComplete()) {
-    int index;
-    for (index = 0; index < argcOut; index++) {
-      char *schemaName = argvOut[index];
-      // This is a horrible hack to guess whether the DTE knows about this
-      // schema or not.  RKW Sep. 19, 1997.
-      if ((schemaName[0] == '.') && (schemaName[1] != '/') &&
-	  (schemaName[1] != '.')) {
-        fprintf(saveData->fp, "DEVise dteImportFileType %s\n", schemaName);
-      } else {
-        fprintf(saveData->fp, "DEVise importFileType %s\n", schemaName);
-      }
-    }
-    free((char *) argvOut);
-  }
-
-  if (status.IsError()) reportErrNosys("Error or warning");
-  return status;
-}
-
-/*------------------------------------------------------------------------------
  * function: Session::SaveView
  * Save information about the given view.
  */
@@ -551,52 +523,6 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
 
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
-
-  if (status.IsError()) reportErrNosys("Error or warning");
-  return status;
-}
-
-/*------------------------------------------------------------------------------
- * function: Session::SaveTData
- * Save information about the given TData.
- */
-DevStatus
-Session::SaveTData(char *category, char *devClass, char *instance,
-    SaveData *saveData)
-{
-#if defined(DEBUG)
-  printf("Session::SaveTData({%s} {%s} {%s})\n", category, devClass, instance);
-#endif
-
-  DevStatus status = StatusOk;
-
-#if 1 //TEMPTEMP
-  fprintf(saveData->fp, "DEVise createTData {%s}\n", instance);
-#else
-  char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
-      "getCreateParam", category, devClass, instance);
-  if (status.IsComplete()) {
-#if 1 //TEMPTEMP
-    fprintf(saveData->fp, "DEVise createTData {%s}", instance);
-    if (argcOut == 2) {
-      // This is a DTE (non-UNIXFILE) data source.
-      fprintf(saveData->fp, " {%s}", argvOut[1]);
-    }
-    fprintf(saveData->fp, "\n");
-#else
-    char *argv1 = (argcOut > 1) ? argvOut[1] : "";
-    char *argv2 = (argcOut > 2) ? argvOut[2] : "";
-    fprintf(saveData->fp, "DEVise dataSegment {%s} {%s} 0 0\n", argvOut[0],
-        argv2);
-    fprintf(saveData->fp, "DEVise create tdata {%s} {%s} {%s} {%s}\n",
-        devClass, argvOut[0], argv1, argv2);
-#endif
-    free((char *) argvOut);
-  }
-#endif
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

@@ -13,9 +13,18 @@
 */
 
 /*
+   IMPORTANT!!  All member functions of the ControlPanel class that are
+   called here must be implemented in the ControlPanelSimple class in
+   Session.c.  RKW Oct. 2, 1997.
+ */
+
+/*
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/21 21:04:51  donjerko
+  Implemented view materialization
+
   Revision 1.5  1997/04/30 21:45:07  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile

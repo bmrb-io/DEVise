@@ -13,9 +13,19 @@
 */
 
 /*
+   IMPORTANT!!  All member functions of the ControlPanel class that are
+   called here must be implemented in the ControlPanelSimple class in 
+   Session.c.  RKW Oct. 2, 1997.
+ */
+
+/*
   $Id$
 
   $Log$
+  Revision 1.75  1997/09/23 19:57:38  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.74  1997/09/05 22:36:21  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -389,7 +399,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   
   result[0] = '\0';
 
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
   printf("ParseAPI[%ld]: ", (long) getpid());
   for (int i = 0; i < argc; i++)
   {
@@ -444,7 +454,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	!strcmp(argv[2], "WinHorizontal")){
       argv[2] = "TileLayout";
 	}
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
     for(int i=0; i<argc; i++) {
     	printf("ParseAPI: argv[%d]=%s \n", i, argv[i]);
     }
@@ -1759,7 +1769,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
     if (!strcmp(argv[0], "openSession")) {
       // Argument: <file name>
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
       printf("openSession <%s>\n", argv[1]);
 #endif
       if (!Session::Open(argv[1]).IsComplete()) {
@@ -1772,7 +1782,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
     if (!strcmp(argv[0], "createTData")) {
       // Argument: <data source name>
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
       printf("createTData <%s>\n", argv[1]);
 #endif
       if (!Session::CreateTData(argv[1], control).IsComplete()) {
@@ -2561,7 +2571,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
     if (!strcmp(argv[0], "saveSession")) {
       // Arguments: <file name> <as template> <as export> <with data>
-#if defined(DEBUG) || 0 //TEMPTEMP
+#if defined(DEBUG)
       printf("saveSession <%s> <%s> <%s> <%s>\n", argv[1], argv[2], argv[3],
 	argv[4]);
 #endif
