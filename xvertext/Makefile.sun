@@ -23,17 +23,21 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 example.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
-example.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-example.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-example.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-example.o: /s/X11/include/X11/Xutil.h /usr/include/stdio.h
+example.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+example.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+example.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
+example.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+example.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+example.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 example.o: /usr/include/stdlib.h /usr/include/math.h
 example.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h rotated.h
 rotated.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
-rotated.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-rotated.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-rotated.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-rotated.o: /s/X11/include/X11/Xutil.h /s/X11/include/X11/Xatom.h
-rotated.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/string.h
-rotated.o: /usr/include/math.h /usr/include/floatingpoint.h
-rotated.o: /usr/include/sys/ieeefp.h rotated.h
+rotated.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+rotated.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+rotated.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
+rotated.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+rotated.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+rotated.o: /s/X11/include/X11/Xatom.h /usr/include/stdio.h
+rotated.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+rotated.o: /usr/include/string.h /usr/include/math.h
+rotated.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h rotated.h
