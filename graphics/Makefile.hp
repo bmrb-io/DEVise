@@ -168,7 +168,7 @@ View.o: FilterQueue.h TimeStamp.h Parse.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ViewWin.o: /usr/include/string.h ViewWin.h DList.h Exit.h DeviseTypes.h
 ViewWin.o: WindowRep.h /usr/include/stdlib.h Geom.h /usr/include/math.h
-ViewWin.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
+ViewWin.o: Transform.h VisualArg.h Color.h Pattern.h DevisePixmap.h
 ViewWin.o: Compress.h Display.h Dispatcher.h /usr/include/sys/types.h
 ViewWin.o: Journal.h ColorMgr.h Init.h BufPolicy.h
 WinClassInfo.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
@@ -181,8 +181,8 @@ WinClassInfo.o: /usr/include/time.h /usr/include/sys/time.h
 WinClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 WindowRep.o: WindowRep.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 WindowRep.o: /usr/include/stdlib.h Geom.h /usr/include/math.h DeviseTypes.h
-WindowRep.o: Transform.h DList.h Exit.h Color.h Pattern.h DevisePixmap.h
-WindowRep.o: VisualArg.h Compress.h Display.h Dispatcher.h
+WindowRep.o: Transform.h VisualArg.h Color.h Pattern.h DList.h Exit.h
+WindowRep.o: DevisePixmap.h Compress.h Display.h Dispatcher.h
 WindowRep.o: /usr/include/sys/types.h Journal.h ColorMgr.h
 XBitmap.o: XBitmap.h
 XDisplay.o: /usr/include/math.h XDisplay.h Display.h DeviseTypes.h Geom.h
@@ -198,14 +198,14 @@ XWindowRep.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 XWindowRep.o: /usr/include/sys/stdsyms.h /usr/include/errno.h
 XWindowRep.o: /usr/include/sys/errno.h XWindowRep.h /usr/include/string.h
 XWindowRep.o: /usr/include/math.h WindowRep.h /usr/include/stdio.h
-XWindowRep.o: /usr/include/stdlib.h Geom.h DeviseTypes.h Transform.h DList.h
-XWindowRep.o: Exit.h Color.h Pattern.h DevisePixmap.h VisualArg.h Compress.h
-XWindowRep.o: Xdef.h /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
-XWindowRep.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-XWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-XWindowRep.o: /s/X11/include/X11/Xutil.h XDisplay.h Display.h Dispatcher.h
-XWindowRep.o: Journal.h ColorMgr.h XBitmap.h Init.h BufPolicy.h xv.h
-XWindowRep.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
+XWindowRep.o: /usr/include/stdlib.h Geom.h DeviseTypes.h Transform.h
+XWindowRep.o: VisualArg.h Color.h Pattern.h DList.h Exit.h DevisePixmap.h
+XWindowRep.o: Compress.h Xdef.h /s/X11/include/X11/Xlib.h
+XWindowRep.o: /usr/include/sys/types.h /s/X11/include/X11/X.h
+XWindowRep.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+XWindowRep.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h XDisplay.h
+XWindowRep.o: Display.h Dispatcher.h Journal.h ColorMgr.h XBitmap.h Init.h
+XWindowRep.o: BufPolicy.h xv.h /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 XWindowRep.o: /usr/include/sys/fcntl.h /usr/include/sys/time.h
 XWindowRep.o: /usr/include/ctype.h /usr/include/malloc.h
 XWindowRep.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
@@ -349,11 +349,11 @@ xvgrab.o: /usr/include/signal.h /usr/include/sys/signal.h
 TileLayout.o: /usr/include/math.h TileLayout.h ViewLayout.h ViewWin.h DList.h
 TileLayout.o: Exit.h DeviseTypes.h WindowRep.h /usr/include/stdio.h
 TileLayout.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h Geom.h
-TileLayout.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
+TileLayout.o: Transform.h VisualArg.h Color.h Pattern.h DevisePixmap.h
 TileLayout.o: Compress.h Display.h Dispatcher.h /usr/include/sys/types.h
 TileLayout.o: Journal.h ColorMgr.h
 ViewLayout.o: /usr/include/math.h ViewLayout.h ViewWin.h DList.h Exit.h
 ViewLayout.o: DeviseTypes.h WindowRep.h /usr/include/stdio.h
 ViewLayout.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h Geom.h
-ViewLayout.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
+ViewLayout.o: Transform.h VisualArg.h Color.h Pattern.h DevisePixmap.h
 ViewLayout.o: Compress.h

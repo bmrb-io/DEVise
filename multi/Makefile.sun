@@ -395,7 +395,7 @@ TDataCycle.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataCycle.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h CycleRec.h
 TDataCycle.o: ../graphics/Parse.h /usr/include/sys/time.h
 TDataCycle.o: ../graphics/Control.h ../graphics/Util.h /usr/include/string.h
-TDataCycle.o: /usr/include/ctype.h
+TDataCycle.o: /usr/include/ctype.h ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataHost.o: /usr/include/sys/stdtypes.h TDataHost.h
 TDataHost.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
@@ -407,7 +407,7 @@ TDataHost.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataHost.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h HostRec.h
 TDataHost.o: ../graphics/Parse.h /usr/include/sys/time.h
 TDataHost.o: ../graphics/Control.h ../graphics/Util.h /usr/include/string.h
-TDataHost.o: /usr/include/ctype.h
+TDataHost.o: /usr/include/ctype.h ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataMulti.o: /usr/include/sys/stdtypes.h TDataMulti.h
 TDataMulti.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
@@ -419,7 +419,7 @@ TDataMulti.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataMulti.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h MultiRec.h
 TDataMulti.o: ../graphics/Parse.h /usr/include/sys/time.h
 TDataMulti.o: ../graphics/Control.h ../graphics/Util.h /usr/include/string.h
-TDataMulti.o: /usr/include/ctype.h
+TDataMulti.o: /usr/include/ctype.h ../graphics.new/DataSeg.h
 ViewClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 ViewClassInfo.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/time.h /usr/include/stdio.h
@@ -453,8 +453,8 @@ ViewClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
 ViewClassInfo.o: ../graphics.new/GDataRec.h
 disp.o: /usr/include/math.h /usr/include/floatingpoint.h
 disp.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
-disp.o: /usr/include/sys/time.h /s/tcl/include/tcl.h /usr/include/stdio.h
-disp.o: ../graphics/DeviseTypes.h ../graphics/Display.h ../graphics/Geom.h
+disp.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+disp.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/stdio.h
 disp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 disp.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 disp.o: /usr/include/sys/sysmacros.h ../graphics/DList.h ../graphics/Exit.h
