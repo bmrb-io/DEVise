@@ -90,25 +90,23 @@ Dispatcher.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 Dispatcher.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 Dispatcher.o: /usr/include/sys/sysmacros.h ../graphics.new/machdep.h
 Dispatcher.o: /usr/include/limits.h /usr/include/sys/param.h
-Dispatcher.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-Dispatcher.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
-Dispatcher.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Dispatcher.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Dispatcher.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Dispatcher.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-Dispatcher.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-Dispatcher.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-Dispatcher.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-Dispatcher.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-Dispatcher.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Dispatcher.o: /usr/include/netinet/in.h Dispatcher.h /usr/include/stdio.h
-Dispatcher.o: /usr/include/stdlib.h /usr/include/unistd.h DeviseTypes.h
-Dispatcher.o: DList.h Exit.h Journal.h VisualArg.h Color.h Pattern.h
-Dispatcher.o: Control.h ClassDir.h Init.h BufPolicy.h Selection.h View.h
-Dispatcher.o: ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-Dispatcher.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-Dispatcher.o: Transform.h DevisePixmap.h Compress.h ViewCallback.h AttrList.h
-Dispatcher.o: Config.h Cursor.h Time.h
+Dispatcher.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+Dispatcher.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Dispatcher.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Dispatcher.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Dispatcher.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dispatcher.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Dispatcher.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Dispatcher.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Dispatcher.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Dispatcher.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Dispatcher.o: Dispatcher.h /usr/include/stdio.h /usr/include/stdlib.h
+Dispatcher.o: /usr/include/unistd.h DeviseTypes.h DList.h Exit.h Journal.h
+Dispatcher.o: VisualArg.h Color.h Pattern.h Control.h ClassDir.h Init.h
+Dispatcher.o: BufPolicy.h Selection.h View.h ViewWin.h WindowRep.h Geom.h
+Dispatcher.o: /usr/include/math.h /usr/include/floatingpoint.h
+Dispatcher.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
+Dispatcher.o: ViewCallback.h AttrList.h Config.h Cursor.h Time.h
 Display.o: XDisplay.h Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
 Display.o: /usr/include/math.h /usr/include/floatingpoint.h
 Display.o: /usr/include/sys/ieeefp.h Color.h Dispatcher.h
@@ -210,12 +208,10 @@ Time.o: /usr/include/sys/time.h ../graphics.new/machdep.h
 Time.o: /usr/include/limits.h /usr/include/sys/types.h
 Time.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 Time.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Time.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Time.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-Time.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Time.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Time.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Time.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Time.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Time.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Time.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Time.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 Time.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 Time.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 Time.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
@@ -230,17 +226,15 @@ Timer.o: /usr/include/sys/time.h /usr/include/sys/time.h
 Timer.o: ../graphics.new/machdep.h /usr/include/limits.h
 Timer.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 Timer.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Timer.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Timer.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Timer.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-Timer.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-Timer.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Timer.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Timer.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Timer.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Timer.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Timer.o: /usr/include/sys/socket.h /usr/include/netinet/in.h Timer.h
-Timer.o: DeviseTypes.h
+Timer.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
+Timer.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Timer.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+Timer.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Timer.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Timer.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Timer.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Timer.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Timer.o: /usr/include/netinet/in.h Timer.h DeviseTypes.h
 Util.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Util.o: /usr/include/sys/sysmacros.h /usr/include/stdio.h
 Util.o: /usr/include/sys/stat.h /usr/include/sys/dir.h /usr/include/unistd.h
