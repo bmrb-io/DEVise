@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/06/17 17:20:42  wenger
+  Devised now sends "real" session file list to JavaScreen.
+
   Revision 1.12  1998/06/03 17:09:40  wenger
   Rubberband line in JavaScreen now sends updates of all changed windows
   using the "dirty GIF" flag; updated DEVise version to 1.5.3.
@@ -1034,7 +1037,7 @@ void JavaScreenCmd::UpdateSessionList()
 			if (entry == NULL) break;
 			if (strcmp(entry->d_name, ".") &&
 			  (!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
-				char fullpath[MAXNAMELEN];
+				char fullpath[MAXPATHLEN];
 				sprintf(fullpath, "%s/%s", _sessionDir, entry->d_name);
 
 				struct stat buf;
