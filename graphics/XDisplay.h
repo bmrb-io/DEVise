@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:39  jussi
+  Added/update CVS header.
+*/
 
 #ifndef XDisplay_h
 #define XDisplay_h
@@ -11,13 +14,23 @@
 #include "XBitmap.h"
 #include "Pattern.h"
 
+#ifdef TK_WINDOW_EV2
+#include <tcl.h>
+#include <tk.h>
+#endif
+
 class XWindowRep;
 
 DefinePtrDList(XWindowRepList, XWindowRep *);
 
 class XDisplay: public DeviseDisplay {
 public:
-	XDisplay(char *name=NULL);
+    XDisplay(char *name=NULL);
+
+#ifdef TK_WINDOW_EV2
+    virtual ~XDisplay();
+    virtual int HandleXEvent(XEvent &event);
+#endif
 
     virtual int NumPlanes(){
 		return DisplayPlanes(_display,DefaultScreen(_display));

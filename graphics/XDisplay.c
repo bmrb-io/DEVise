@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/29 15:30:09  jussi
+  Disabled a debugging message.
+
   Revision 1.3  1995/11/29 15:12:07  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -32,6 +35,13 @@
 
 //#define DEBUG
 
+#ifdef TK_WINDOW_EV2
+static int HandleTkEvent(ClientData data, XEvent *event)
+{
+  return ((XDisplay *)data)->HandleXEvent(*event);
+}
+#endif
+
 /*******************************************************************
 Open a new X display
 ********************************************************************/
@@ -47,8 +57,8 @@ XDisplay::XDisplay(char *name)
   DeviseDisplay::InitializeColors();
   
   /* get font */
-  if (!(_fontStruct = XLoadQueryFont(_display,"8x16"))) {
-    fprintf(stderr,"XDisplay: can not load font\n");
+  if (!(_fontStruct = XLoadQueryFont(_display, "7x13"))) {
+    fprintf(stderr, "XDisplay: can not load font\n");
     Exit::DoExit(1);
   }
   
@@ -68,7 +78,20 @@ XDisplay::XDisplay(char *name)
   }
 
   XDestroyWindow(_display, win);
+
+#ifdef TK_WINDOW_EV2
+  /* tell Tk to pass all X events to us */
+  Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
+#endif
 }
+
+#ifdef TK_WINDOW_EV2
+XDisplay::~XDisplay()
+{
+  /* tell Tk to pass all X events to us */
+  Tk_DeleteGenericHandler(HandleTkEvent, (ClientData)this);
+}
+#endif
 
 /*******************************************************************
 Alloc color by name
@@ -235,7 +258,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 
 #ifdef DEBUG
-  printf("XDisplay: Creating X window 0x%x to parent 0x%x at %u,%u,\n",
+  printf("XDisplay: Created X window 0x%x to parent 0x%x at %u,%u,\n",
 	 w, parent, (unsigned)realX, (unsigned)realY);
   printf("          size %u,%u, borderwidth %d\n", (unsigned)realWidth,
 	 (unsigned)realHeight, border_width);
@@ -299,6 +322,11 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     Exit::DoExit(1);
   }
 
+#ifdef DEBUG
+  printf("XDisplay::DestroyWindowRep 0x%x, X Window 0x%x\n",
+	 xwin, xwin->GetWin());
+#endif
+
   XDestroyWindow(_display, xwin->GetWin());
 
   delete xwin;
@@ -312,6 +340,11 @@ Internal non-blocking event processing .
 
 void XDisplay::InternalProcessing()
 {
+#ifdef TK_WINDOW_EV2
+  // X events handled in HandleTkEvent
+  return;
+#endif
+
 #if 0
   static first = true;
   if (first) {
@@ -320,15 +353,15 @@ void XDisplay::InternalProcessing()
   }
 #endif
 
-  while (XPending(_display)> 0) {
+  while (XPending(_display) > 0) {
     /* There are events on the queue */
     XEvent event;
-    XNextEvent(_display,&event);
+    XNextEvent(_display, &event);
 
     /* dispatch event to appropriate window.*/
     Boolean found = false;
     for(int index = _winList.InitIterator(); _winList.More(index);) {
-      XWindowRep *win= _winList.Next(index);
+      XWindowRep *win = _winList.Next(index);
       if (win->_win == event.xany.window) {
 	/* Note: got to be careful here. We need to
 	   call DoneIterator() before informing the WindowRep
@@ -337,22 +370,57 @@ void XDisplay::InternalProcessing()
 	   when the iterator is active. */
 	_winList.DoneIterator(index);
 	found = true;
+#ifdef DEBUG
+	printf("XDisplay::Dispatching event %d to XWindowRep 0x%x\n",
+	       event.type, win);
+#endif
 	win->HandleEvent(event);
 	break;
       }
     }
-    if (!found){
+    if (!found) {
       _winList.DoneIterator(index);
+#ifdef DEBUG
+      printf("XDisplay::InternalProcessing: window for event %d not found\n",
+	     event.type);
+#endif
     }
   }
-  
-#if 0
-  /* draw in all windows */
-
-  for(index = _winList.InitIterator(); _winList.More(index);) {
-    XWindowRep *win= _winList.Next(index);
-    win->Draw();
-  }
-  _winList.DoneIterator(index);
-#endif
 }
+
+#ifdef TK_WINDOW_EV2
+int XDisplay::HandleXEvent(XEvent &event)
+{
+#ifdef DEBUG
+  printf("XDisplay received X event %d from Tk\n", event.type);
+#endif
+
+  /* dispatch event to appropriate window.*/
+  Boolean found = false;
+  for(int index = _winList.InitIterator(); _winList.More(index);) {
+    XWindowRep *win = _winList.Next(index);
+    if (win->_win == event.xany.window) {
+      /* Note: got to be careful here. We need to
+	 call DoneIterator() before informing the WindowRep
+	 because it might trigger a call to DestroyWindowRep() to
+	 delete the window. Delete() can't be called
+	 when the iterator is active. */
+      _winList.DoneIterator(index);
+      found = true;
+      win->HandleEvent(event);
+      break;
+    }
+  }
+
+  if (!found) {
+    _winList.DoneIterator(index);
+#ifdef DEBUG
+    printf("XDisplay::InternalProcessing: window for event %d not found\n",
+	   event.type);
+#endif
+    return 0;
+  }
+
+  return 1;
+}
+#endif
