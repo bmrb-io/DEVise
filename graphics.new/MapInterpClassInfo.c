@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/07/13 17:32:42  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.25  1999/06/22 18:30:55  wenger
   Visual filter values for view symbols can now be specified in the parent
   view's mapping.
@@ -220,6 +224,12 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
 					char *&tdataAlias, TData *&tdata,
 					char *&name)
 {
+#if defined(DEBUG)
+  printf("MapInterpClassInfo::ExtractCommand(");
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
+
   // we need to support both the old and the new style until
   // sufficient time has passed to make the old style really
   // obsolete; new style created January 13th, 1996
@@ -506,6 +516,12 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   // the new form uses just the class name parameter when a new class
   // is to be created, or a full list of parameters when an instance
   // is to be created
+
+#if defined(DEBUG)
+  printf("MapInterpClassInfo::CreateWithParams(");
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
 
   if (argc == 1) {
 #ifdef DEBUG

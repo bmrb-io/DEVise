@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/07/13 18:22:39  wenger
+  Conditionaled out drawing of rectangle and view name to reduce flashing.
+
   Revision 1.21  1999/07/13 17:32:44  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -301,6 +304,10 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // the parent view's mapping.
     SetFilter(map, attrList, stringTable, gdata, viewsym);
 
+    // Set the view symbol's title if a title value is specified in the
+    // parent view's mapping.
+    SetTitle(map, attrList, stringTable, gdata, viewsym);
+
     // Set the view symbol's background color to the color specified in
     // the parent view's mapping.
     if (map->GDataAttrList()->Find(gdataColorName)) {
@@ -486,6 +493,32 @@ FullMapping_ViewShape::ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
   }
 
   return gotValue;
+}
+
+void
+FullMapping_ViewShape::SetTitle(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::SetTitle(%s)\n", viewsym->GetName());
+#endif
+
+  AttrInfo *info = attrList->Find(gdataShapeAttr10Name);
+  if (info && info->type == StringAttr) {
+    int key = (int)map->GetShapeAttr(gdata, 10);
+
+    char *title = NULL;
+    int code = stringTable->Lookup(key, title);
+    if (code < 0) {
+      reportErrNosys("Can't find view title in string table");
+    } else {
+      Boolean occupyTop;
+      int extent;
+      char *string;
+      viewsym->GetLabelParam(occupyTop, extent, string);
+      viewsym->SetLabelParam(occupyTop, extent, title);
+    }
+  }
 }
  
 void

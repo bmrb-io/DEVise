@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/07/13 17:32:44  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.9  1999/06/22 18:30:56  wenger
   Visual filter values for view symbols can now be specified in the parent
   view's mapping.
@@ -97,6 +101,9 @@ private:
   static Boolean ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
       StringStorage *stringTable, char *gdata, int attrNum, Boolean isDate,
       Coord &value);
+
+  static void SetTitle(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata, ViewGraph *viewsym);
 
   static void CheckPile(ViewGraph *viewsym, PileStack *&ps, int pixX, int pixY,
       unsigned pixWd, unsigned pixHt);

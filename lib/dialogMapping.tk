@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.53  1999/07/21 18:51:26  wenger
+#       Moved alignment and data font information from view into mapping.
+#
 #       Revision 1.52  1999/07/13 17:32:55  wenger
 #       Parent view can now control attribute(s) in child view's mapping;
 #       cleaned up some of the mapping-related code; better command logging.
@@ -301,6 +304,7 @@ proc BringUpMappingDialog { w curview } {
 	    [list "ShapeAttr7" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr8" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr9" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr10" {0 0.1 0.5 1 2}] \
 	    ]
 
     set xname  [lindex [lindex $mappings 0] 0]
@@ -442,7 +446,8 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	} else {
 		set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
-			"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9"
+			"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9" \
+			"ShapeAttr10"
     	]
 
 		foreach item $mappings  {
@@ -532,6 +537,7 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	set shapeAttr7 [lindex [lindex $params 18] 1]
 	set shapeAttr8 [lindex [lindex $params 19] 1]
 	set shapeAttr9 [lindex [lindex $params 20] 1]
+	set shapeAttr10 [lindex [lindex $params 21] 1]
 
 	set mappings [list \
 			[list X $xParm] \
@@ -552,6 +558,7 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 			[list "ShapeAttr7" $shapeAttr7] \
 			[list "ShapeAttr8" $shapeAttr8] \
 			[list "ShapeAttr9" $shapeAttr9] \
+			[list "ShapeAttr10" $shapeAttr10] \
 			]
      
 	#    set topgrp [SelectTopGroup $schemaname]
@@ -601,7 +608,8 @@ proc ClearMappingDialog { w } {
 
 	set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 		"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
-		"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9"
+		"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9" \
+		"ShapeAttr10"
     ]
 
 	foreach item $mappings  {
@@ -710,6 +718,7 @@ proc ChangeParams { map oldparams newmap } {
 			[lindex $newmap 15] \
 			[lindex $newmap 16] \
 			[lindex $newmap 17] \
+			[lindex $newmap 18] \
 			]
     
     # Change parameter
@@ -816,6 +825,10 @@ proc UpdateShapeAttrs { w shape } {
 		$w.mapping.label.pShapeAttr9 config -text "Child Value"
 		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+
+		$w.mapping.label.pShapeAttr10 config -text "Title"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	} elseif {$shape == "Text Label"} {
 		$w.mapping.label.pShapeAttr5 config -text "Alignment"
 		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
@@ -835,6 +848,9 @@ proc UpdateShapeAttrs { w shape } {
 
 	    pack forget $w.mapping.label.pShapeAttr9
 	    pack forget $w.mapping.value.pShapeAttr9
+
+	    pack forget $w.mapping.label.pShapeAttr10
+	    pack forget $w.mapping.value.pShapeAttr10
 	} elseif {$shape == "Fixed Text Label"} {
 		$w.mapping.label.pShapeAttr5 config -text "Italic"
 		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
@@ -851,6 +867,9 @@ proc UpdateShapeAttrs { w shape } {
 
 	    pack forget $w.mapping.label.pShapeAttr9
 	    pack forget $w.mapping.value.pShapeAttr9
+
+	    pack forget $w.mapping.label.pShapeAttr10
+	    pack forget $w.mapping.value.pShapeAttr10
 	} else {
 	    pack forget $w.mapping.label.pShapeAttr5
 	    pack forget $w.mapping.value.pShapeAttr5
@@ -866,6 +885,9 @@ proc UpdateShapeAttrs { w shape } {
 
 	    pack forget $w.mapping.label.pShapeAttr9
 	    pack forget $w.mapping.value.pShapeAttr9
+
+	    pack forget $w.mapping.label.pShapeAttr10
+	    pack forget $w.mapping.value.pShapeAttr10
 	}
 
 	set i 0
@@ -916,7 +938,7 @@ proc UpdateDefaultShapeAttrs { w } {
 
     foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
 	  "ShapeAttr4" "ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" \
-	  "ShapeAttr9"} {
+	  "ShapeAttr9" "ShapeAttr10" } {
 		$w.mapping.label.p$item config -text $item
 		$w.mapping.value.p$item config -state normal
 	}

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/07/13 17:32:42  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.11  1999/06/30 17:38:47  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -79,7 +83,7 @@
 
 #include "Color.h"
 
-const int MAX_SHAPE_ATTRS = 10;
+const int MAX_SHAPE_ATTRS = 15;
 
 // Note that GData in memory is *not* an array of GDataRecs; MappingInterp.c
 // uses a dynamic structure which stores and caches only those fields that
@@ -149,5 +153,6 @@ static const char *gdataShapeAttr1Name = "shapeAttr_1";
 static const char *gdataShapeAttr3Name = "shapeAttr_3";
 static const char *gdataShapeAttr4Name = "shapeAttr_4";
 static const char *gdataShapeAttr9Name = "shapeAttr_9";
+static const char *gdataShapeAttr10Name = "shapeAttr_10";
 
 #endif
