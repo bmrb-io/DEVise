@@ -12,7 +12,8 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class maintains the state of a given DEVise cursor in the
+// JavaScreen.
 
 // There is one instance of this class for each cursor in the
 // session.
@@ -22,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2000/05/12 20:43:56  wenger
+// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
+// classes and cleaned up the code; commented out unused code; added
+// named constants for location of mouse pointer on a DEVise cursor.
+//
 // Revision 1.18  2000/04/07 22:43:13  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -69,24 +75,29 @@ public class DEViseCursor
 {
     private jsdevisec jsc = null;
 
-    public int x, y, width, height;
-    public Rectangle cursorLoc = null;
+    // x, y, width, height and cursorLoc seem to have pretty much the
+    // same meaning.  RKW 2000-06-27.
+    public int x, y, width, height; // relative to view
+    private Rectangle cursorLoc = null; // relative to view?
     public Rectangle cursorLocInCanvas = null;
 
     public boolean isXMovable, isYMovable, isXResizable, isYResizable;
-    public float gridxx, gridyy;
-    public int gridx, gridy;
+
+    private float gridXData, gridYData; // grid in data units
 
     public String name = null, viewname = null;
     public DEViseView parentView = null;
 
     public Image image = null;
     public Color color = null;
-    public int cursorType = 0;
-    public int gridType = 0;
+    public int cursorType = 0; // this is not really used yet -- RKW 2000-06-27
 
-    public static final int sideNone = -1; // not on a cursor, or cannot
-    					   // be moved or resized
+    public static final int GRID_TYPE_CENTER = 0;
+    public static final int GRID_TYPE_EDGE = 1;
+    private int gridType = 0;
+
+    public static final int sideNone = -1; // not on a cursor, or cursor
+                                           // cannot be moved or resized
     public static final int sideMiddle = 0;
     public static final int sideLeft = 1;
     public static final int sideRight = 2;
@@ -98,7 +109,7 @@ public class DEViseCursor
     public static final int sideBottomRight = 8;
 
     public DEViseCursor(jsdevisec panel, String cn, String vn,
-      Rectangle rect, String move, String resize, float gx, float gy,
+      Rectangle rect, String move, String fixedSize, float gx, float gy,
       int gtype, int ctype, Color c) throws YException
     {
         if (cn == null) {
@@ -115,8 +126,8 @@ public class DEViseCursor
             throw new YException("Invalid parent view for cursor");
         }
 
-        gridxx = gx;
-        gridyy = gy;
+        gridXData = gx;
+        gridYData = gy;
 
         cursorType = ctype;
         gridType = gtype;
@@ -134,562 +145,309 @@ public class DEViseCursor
 
         cursorLocInCanvas = getLocInCanvas();
 
-        if (parentView.dataXStep != 0.0f) {
-            gridx = (int)(gridxx / parentView.dataXStep);
-        } else {
-            gridx = 0;
-        }
-
-        if (parentView.dataYStep != 0.0f) {
-            gridy = (int)(gridyy / parentView.dataYStep);
-        } else {
-            gridy = 0;
-        }
-
         if (move == null) {
             isXMovable = false;
             isYMovable = false;
         } else {
-            if (move.equals("X")) {
-                isXMovable = true;
-                isYMovable = false;
-            } else if (move.equals("Y")) {
-                isXMovable = false;
-                isYMovable = true;
-            } else if (move.equals("XY")) {
-                isXMovable = true;
-                isYMovable = true;
-            } else {
-                isXMovable = false;
-                isYMovable = false;
-            }
-        }
+            isXMovable = (move.indexOf("X") != -1);
+            isYMovable = (move.indexOf("Y") != -1);
+	}
 
-        if (resize == null) {
+        if (fixedSize == null) {
             isXResizable = false;
             isYResizable = false;
         } else {
-            if (resize.equals("X")) {
-                isXResizable = false;
-                isYResizable = true;
-            } else if (resize.equals("Y")) {
-                isXResizable = true;
-                isYResizable = false;
-            } else if (resize.equals("XY")) {
-                isXResizable = false;
-                isYResizable = false;
-            } else if (resize.equals("none")) {
-                isXResizable = true;
-                isYResizable = true;
-            } else {
-                isXResizable = false;
-                isYResizable = false;
-            }
-        }
+            isXResizable = (fixedSize.indexOf("X") == -1);
+            isYResizable = (fixedSize.indexOf("Y") == -1);
+	}
     }
 
     public synchronized Rectangle getLocInCanvas()
     {
-        return new Rectangle (parentView.viewLocInCanvas.x + x, parentView.viewLocInCanvas.y + y, width, height);
+        return new Rectangle (parentView.viewLocInCanvas.x + x,
+	  parentView.viewLocInCanvas.y + y, width, height);
     }
 
+
+    // --------------------------------------------------------------------
     // position p is relative to the canvas of this cursor
     // see side* for return values
     public int inCursor(Point p)
     {
+	int result = sideNone;
+
+	boolean onCursor = false;
+	boolean topEdge = false;
+	boolean bottomEdge = false;
+	boolean leftEdge = false;
+	boolean rightEdge = false;
+
         Rectangle loc = cursorLocInCanvas;
 
-        if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 || p.y > loc.y + loc.height - 1) {
-            return sideNone;
+        if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 ||
+	  p.y > loc.y + loc.height - 1) {
+
+	    // p is outside of the cursor.
+	    onCursor = false;
+
         } else {
-            int xedge = (int)(loc.width / 4 + 0.4f), yedge = (int)(loc.height / 4 + 0.4f);
-            if (xedge < 1) {
-                xedge = 1;
-            } else if (xedge > 10) {
-                xedge = 10;
-            }
 
-            if (yedge < 1) {
-                yedge = 1;
-            } else if (yedge > 10) {
-                yedge = 10;
-            }
+	    onCursor = true;
 
-            if (p.x >= loc.x && p.x < loc.x + xedge) {
-                if (p.y >= loc.y && p.y < loc.y + yedge) { // left-top corner
-                    if (isXResizable && isYResizable) {
-                        return sideTopLeft;
-                    } else {
-                        if (isXResizable) { // left side
-                            return sideLeft;
-                        } else if (isYResizable) { // top side
-                            return sideTop;
-                        }
-                    }
-                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // left-bottom corner
-                    if (isXResizable && isYResizable) {
-                        return sideBottomLeft;
-                    } else {
-                        if (isXResizable) { // left side
-                            return sideLeft;
-                        } else if (isYResizable) { // bottom side
-                            return sideBottom;
-                        }
-                    }
-                } else { // left side
-                    if (isXResizable) {
-                        return sideLeft;
-                    }
-                }
-            } else if (p.x <= loc.x + loc.width && p.x > loc.x + loc.width - xedge) {
-                if (p.y >= loc.y && p.y < loc.y + yedge) { // right-top corner
-                    if (isXResizable && isYResizable) {
-                        return sideTopRight;
-                    } else {
-                        if (isXResizable) { // right side
-                            return sideRight;
-                        } else if (isYResizable) { // top side
-                            return sideTop;
-                        }
-                    }
-                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // right-bottom corner
-                    if (isXResizable && isYResizable) {
-                        return sideBottomRight;
-                    } else {
-                        if (isXResizable) { // right side
-                            return sideRight;
-                        } else if (isYResizable) { // bottom side
-                            return sideBottom;
-                        }
-                    }
-                } else { // right side
-                    if (isXResizable) {
-                        return sideRight;
-                    }
-                }
-            } else {
-                if (p.y >= loc.y && p.y < loc.y + yedge) { // top side
-                    if (isYResizable) {
-                        return sideTop;
-                    }
-                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // bottom side
-                    if (isYResizable) {
-                        return sideBottom;
-                    }
-                }
-            }
+	    // Figure out how close to the edge to have to be to be on
+	    // the edge rather than the middle (depends on the size of
+	    // the cursor).
+            int xEdgeTol = (int)(loc.width / 4 + 0.4f);
+	    xEdgeTol = Math.min(Math.max(xEdgeTol, 1), 10);
 
-            if (isXMovable || isYMovable) {
-                return sideMiddle;
-            } else {
-                return sideNone;
-            }
+	    int yEdgeTol = (int)(loc.height / 4 + 0.4f);
+	    yEdgeTol = Math.min(Math.max(yEdgeTol, 1), 10);
+
+	    //
+	    // Figure out which edges of the cursor, if any, we're on
+	    // (taking into account whether is moveable and resizeable
+	    // in the appropriate directions).
+	    //
+	    if (isXMovable && isXResizable) {
+	        if (p.x < loc.x + xEdgeTol) {
+	            leftEdge = true;
+	        } else if (p.x > loc.x + loc.width - xEdgeTol - 1) {
+	            rightEdge = true;
+	        }
+	    }
+
+	    if (isYMovable && isYResizable) {
+	        if (p.y < loc.y + yEdgeTol) {
+	            topEdge = true;
+	        } else if (p.y > loc.y + loc.height - yEdgeTol - 1) {
+	            bottomEdge = true;
+	        }
+	    }
         }
+
+	//
+	// Okay, now put everything together.
+	//
+	if (onCursor) {
+	    if (topEdge) {
+	        if (leftEdge) {
+		    result = sideTopLeft;
+		} else if (rightEdge) {
+		    result = sideTopRight;
+		} else {
+		    result = sideTop;
+		}
+	    } else if (bottomEdge) {
+	        if (leftEdge) {
+		    result = sideBottomLeft;
+		} else if (rightEdge) {
+		    result = sideBottomRight;
+		} else {
+		    result = sideBottom;
+		}
+	    } else if (leftEdge) {
+	        result = sideLeft;
+	    } else if (rightEdge) {
+	        result = sideRight;
+	    } else {
+	        result = sideMiddle;
+	    }
+	} else {
+	    result = sideNone;
+	}
+
+        return result;
     }
 
 
-    // Adjust the postion and size of the cursor that is being resizing
-    // or moving.
-    // state = 1 means move cursor; state = 2 means resize cursor.
-    // return value is side*
-    public synchronized int updateCursorLoc(int dx, int dy, int state,
+    // --------------------------------------------------------------------
+    // Adjust the postion and size of the cursor that is being resized
+    // or moved.
+    public synchronized void updateCursorLoc(int dx, int dy,
       int whichSide, boolean isLast)
     {
+	Rectangle oldLoc = cursorLoc;
+
         x = cursorLoc.x;
         y = cursorLoc.y;
         width = cursorLoc.width;
         height = cursorLoc.height;
 
-        if (state == 1) { // move cursor
-            if (isXMovable) {
-                x = adjustToParentDataAreaX(x + dx, width);
-            }
+	switch (whichSide) {
+	case sideNone:
+	case sideMiddle:
+	    x += dx;
+	    y += dy;
+	    break;
 
-            if (isYMovable) {
-                y = adjustToParentDataAreaY(y + dy, height);
-            }
-        } else if (state == 2) { // resize cursor
-            int tmpx, tmpy, tx, ty, cx, cy;
-            boolean isXChange = false, isYChange = false;
+        case sideTopLeft:
+	    x += dx;
+	    width -= dx;
+	    y += dy;
+	    height -= dy;
+	    break;
 
-            switch (whichSide) {
-	    case sideNone:
-		throw new YError("Shouldn't get here with sideNone");
+        case sideTop:
+	    y += dy;
+	    height -= dy;
+	    break;
 
-	    case sideMiddle:
-		throw new YError("Shouldn't get here with sideMiddle");
+        case sideTopRight:
+	    width += dx;
+	    y += dy;
+	    height -= dy;
+	    break;
 
-            case sideLeft: // left side
-                tmpx = x + width;
-                cx = adjustToParentDataAreaX(x + dx);
-                if (cx >= tmpx) {
-                    x = tmpx;
-                    width = cx - tmpx;
+        case sideLeft:
+	    x += dx;
+	    width -= dx;
+	    break;
 
-                    if (width == 0) {
-                        width = 1;
-                    }
+        case sideRight:
+	    width += dx;
+	    break;
 
-                    if (isLast) {
-                        whichSide = sideRight;
-                    }
-                } else {
-                    x = cx;
-                    width = tmpx - cx;
-                }
+        case sideBottomLeft:
+	    x += dx;
+	    width -= dx;
+	    height += dy;
+	    break;
 
-                break;
+        case sideBottom:
+	    height += dy;
+	    break;
 
-            case sideRight: // right side
-                tmpx = x + width;
-                cx = adjustToParentDataAreaX(dx + tmpx);
+        case sideBottomRight:
+	    width += dx;
+	    height += dy;
+	    break;
 
-                tx = x;
-                if (tx >= cx) {
-                    x = cx;
-                    width = tx - cx;
-                    if (width == 0) {
-                        width = 1;
-                    }
+	default:
+	    throw new YError("Illegal whichSide value: " + whichSide);
+	}
 
-                    if (isLast) {
-                        whichSide = sideLeft;
-                    }
-                } else {
-                    width = cx - tx;
-                }
+	if (!isXMovable) {
+	    x = oldLoc.x;
+	    width = oldLoc.width;
+	}
 
-                break;
+	if (!isYMovable) {
+	    y = oldLoc.y;
+	    height = oldLoc.height;
+	}
 
-            case sideTop: // top side
-                tmpy = y + height;
-                cy = adjustToParentDataAreaY(dy + y);
-
-                if (cy >= tmpy) {
-                    y = tmpy;
-                    height = cy - tmpy;
-                    if (height == 0) {
-                        height = 1;
-                    }
-
-                    if (isLast) {
-                        whichSide = sideBottom;
-                    }
-                } else {
-                    y = cy;
-                    height = tmpy - cy;
-                }
-
-                break;
-
-            case sideBottom: // bottom side
-                tmpy = y + height;
-                cy = adjustToParentDataAreaY(dy + tmpy);
-
-                ty = y;
-                if (ty >= cy) {
-                    y = cy;
-                    height = ty - cy;
-                    if (height == 0) {
-                        height = 1;
-                    }
-
-                    if (isLast) {
-                        whichSide = sideTop;
-                    }
-                } else {
-                    height = cy - ty;
-                }
-
-                break;
-
-            case sideTopLeft: // left top corner
-                isXChange = false;
-                isYChange = false;
-
-                if (isXResizable) {
-                    tmpx = x + width;
-                    cx = adjustToParentDataAreaX(dx + x);
-
-                    if (cx >= tmpx) {
-                        x = tmpx;
-                        width = cx - tmpx;
-                        if (width == 0) {
-                            width = 1;
-                        }
-
-                        isXChange = true;
-                    } else {
-                        x = cx;
-                        width = tmpx - cx;
-                    }
-                }
-
-                if (isYResizable) {
-                    tmpy = y + height;
-                    cy = adjustToParentDataAreaY(dy + y);
-
-                    if (cy >= tmpy) {
-                        y = tmpy;
-                        height = cy - tmpy;
-                        if (height == 0) {
-                            height = 1;
-                        }
-
-                        isYChange = true;
-                    } else {
-                        y = cy;
-                        height = tmpy - cy;
-                    }
-                }
-
-                if (isXChange || isYChange) {
-                    if (isXChange) {
-                        if (isYChange) {
-                            if (isLast) {
-                                whichSide = sideBottomRight;
-                            }
-                        } else {
-                            if (isLast) {
-                                whichSide = sideTopRight;
-                            }
-                        }
-                    } else {
-                        if (isLast) {
-                            whichSide = sideBottomLeft;
-                        }
-                    }
-                }
-
-                break;
-
-            case sideBottomLeft: // left bottom corner
-                isXChange = false;
-                isYChange = false;
-
-                if (isXResizable) {
-                    tmpx = x + width;
-                    cx = adjustToParentDataAreaX(dx + x);
-
-                    if (cx >= tmpx) {
-                        x = tmpx;
-                        width = cx - tmpx;
-                        if (width == 0) {
-                            width = 1;
-                        }
-
-                        isXChange = true;
-                    } else {
-                        x = cx;
-                        width = tmpx - cx;
-                    }
-                }
-
-                if (isYResizable) {
-                    tmpy = y + height;
-                    cy = adjustToParentDataAreaY(dy + tmpy);
-
-                    ty = y;
-                    if (ty >= cy) {
-                        y = cy;
-                        height = ty - cy;
-                        if (height == 0) {
-                            height = 1;
-                        }
-
-                        isYChange = true;
-                    } else {
-                        height = cy - ty;
-                    }
-                }
-
-                if (isXChange || isYChange) {
-                    if (isXChange) {
-                        if (isYChange) {
-                            if (isLast) {
-                                whichSide = sideTopRight;
-                            }
-                        } else {
-                            if (isLast) {
-                                whichSide = sideBottomRight;
-                            }
-                        }
-                    } else {
-                        if (isLast) {
-                            whichSide = sideTopLeft;
-                        }
-                    }
-                }
-
-                break;
-
-            case sideTopRight: // right top corner
-                isXChange = false;
-                isYChange = false;
-
-                if (isXResizable) {
-                    tmpx = x + width;
-                    cx = adjustToParentDataAreaX(dx + tmpx);
-
-                    tx = x;
-                    if (tx >= cx) {
-                        x = cx;
-                        width = tx - cx;
-                        if (width == 0) {
-                            width = 1;
-                        }
-
-                        isXChange = true;
-                    } else {
-                        width = cx - tx;
-                    }
-                }
-
-                if (isYResizable) {
-                    tmpy = y + height;
-                    cy = adjustToParentDataAreaY(dy + y);
-
-                    if (cy >= tmpy) {
-                        y = tmpy;
-                        height = cy - tmpy;
-                        if (height == 0) {
-                            height = 1;
-                        }
-
-                        isYChange = true;
-                    } else {
-                        y = cy;
-                        height = tmpy - cy;
-                    }
-                }
-
-                if (isXChange || isYChange) {
-                    if (isXChange) {
-                        if (isYChange) {
-                            if (isLast) {
-                                whichSide = sideBottomLeft;
-                            }
-                        } else {
-                            if (isLast) {
-                                whichSide = sideTopLeft;
-                            }
-                        }
-                    } else {
-                        if (isLast) {
-                            whichSide = sideBottomRight;
-                        }
-                    }
-                }
-
-                break;
-
-            case sideBottomRight: // right bottom corner
-                isXChange = false;
-                isYChange = false;
-
-                if (isXResizable) {
-                    tmpx = x + width;
-                    cx = adjustToParentDataAreaX(dx + tmpx);
-
-                    tx = x;
-                    if (tx >= cx) {
-                        x = cx;
-                        width = tx - cx;
-                        if (width == 0) {
-                            width = 1;
-                        }
-
-                        isXChange = true;
-                    } else {
-                        width = cx - tx;
-                    }
-                }
-
-                if (isYResizable) {
-                    tmpy = y + height;
-                    cy = adjustToParentDataAreaY(dy + tmpy);
-
-                    ty = y;
-                    if (ty >= cy) {
-                        y = cy;
-                        height = ty - cy;
-                        if (height == 0) {
-                            height = 1;
-                        }
-
-                        isYChange = true;
-                    } else {
-                        height = cy - ty;
-                    }
-                }
-
-                if (isXChange || isYChange) {
-                    if (isXChange) {
-                        if (isYChange) {
-                            if (isLast) {
-                                whichSide = sideTopLeft;
-                            }
-                        } else {
-                            if (isLast) {
-                                whichSide = sideBottomLeft;
-                            }
-                        }
-                    } else {
-                        if (isLast) {
-                            whichSide = sideTopRight;
-                        }
-                    }
-                }
-
-                break;
-
-	    default:
-		throw new YError("Illegal whichSide value: " + whichSide);
-            }
-        }
+	matchGrid();
 
         if (isLast) {
             cursorLoc = new Rectangle(x, y, width, height);
             cursorLocInCanvas = getLocInCanvas();
         }
 
-        return whichSide;
     }
 
-    public int adjustToParentDataAreaX(int x)
+
+    // --------------------------------------------------------------------
+    // Move the cursor to a location that matches the cursor grid, if any.
+    // Note: this code is based on the DeviseCursor::MatchGrid() method
+    // of DEVise itself.  RKW 2000-06-27.
+    public void matchGrid()
+    {
+
+        double dataX0 = parentView.pixel2DataX(x);
+	double dataY0 = parentView.pixel2DataY(y);
+	double dataX1 = parentView.pixel2DataX(x + width - 1);
+	double dataY1 = parentView.pixel2DataY(y + height - 1);
+
+	if (isXMovable) {
+	    if (gridXData > 0.0f) {
+	        if (gridType == GRID_TYPE_CENTER) {
+		    double dataXC = (dataX0 + dataX1) / 2.0;
+		    double dataHt = dataX0 - dataX1;
+
+		    int tmp = (int)Math.round(dataXC / gridXData);
+		    dataXC = tmp * gridXData;
+
+		    dataX0 = dataXC + (dataHt / 2.0);
+		    dataX1 = dataXC - (dataHt / 2.0);
+		} else if (gridType == GRID_TYPE_EDGE) {
+		    int tmp = (int)Math.round(dataX0 / gridXData - 0.5);
+		    dataX0 = (tmp + 0.5) * gridXData;
+		    tmp = (int)Math.round(dataX1 / gridXData + 0.5);
+		    dataX1 = (tmp - 0.5) * gridXData;
+		} else {
+		    throw new YError("Illegal grid type: " + gridType);
+		}
+	    }
+	}
+
+	if (isYMovable) {
+	    if (gridYData > 0.0f) {
+	        if (gridType == GRID_TYPE_CENTER) {
+		    double dataYC = (dataY0 + dataY1) / 2.0;
+		    double dataHt = dataY0 - dataY1;
+
+		    int tmp = (int)Math.round(dataYC / gridYData);
+		    dataYC = tmp * gridYData;
+
+		    dataY0 = dataYC + (dataHt / 2.0);
+		    dataY1 = dataYC - (dataHt / 2.0);
+		} else if (gridType == GRID_TYPE_EDGE) {
+		    int tmp = (int)Math.round(dataY0 / gridYData + 0.5);
+		    dataY0 = (tmp - 0.5) * gridYData;
+		    tmp = (int)Math.round(dataY1 / gridYData - 0.5);
+		    dataY1 = (tmp + 0.5) * gridYData;
+		} else {
+		    throw new YError("Illegal grid type: " + gridType);
+		}
+	    }
+	}
+
+	x = parentView.data2PixelX(dataX0);
+	y = parentView.data2PixelY(dataY0);
+	width = Math.abs(parentView.data2PixelX(dataX1) -
+	  parentView.data2PixelX(dataX0)) + 1;
+	height = Math.abs(parentView.data2PixelY(dataY1) -
+	  parentView.data2PixelY(dataY0)) + 1;
+    }
+
+    private int adjustToParentDataAreaX(int x)
     {
         return adjustToParentDataAreaX(x, 0);
     }
 
-    public int adjustToParentDataAreaX(int x, int w)
+    private int adjustToParentDataAreaX(int x, int w)
     {
+	int result = x;
+
         Rectangle loc = parentView.viewDataLoc;
 
         if (x < loc.x) {
-            x = loc.x;
+            result = loc.x;
         } else if (x + w > loc.x + loc.width) {
-            x = loc.x + loc.width - w;
+            result = loc.x + loc.width - w;
         }
 
-        return x;
+        return result;
     }
 
-    public int adjustToParentDataAreaY(int y)
+    private int adjustToParentDataAreaY(int y)
     {
         return adjustToParentDataAreaY(y, 0);
     }
 
-    public int adjustToParentDataAreaY(int y, int h)
+    private int adjustToParentDataAreaY(int y, int h)
     {
+	int result = y;
+
         Rectangle loc = parentView.viewDataLoc;
 
         if (y < loc.y) {
-            y = loc.y;
+            result = loc.y;
         } else if (y + h > loc.y + loc.height) {
-            y = loc.y + loc.height - h;
+            result = loc.y + loc.height - h;
         }
 
-        return y;
+        return result;
     }
 
     public boolean isSame(DEViseCursor cursor)

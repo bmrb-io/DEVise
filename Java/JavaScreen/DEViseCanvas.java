@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2000/06/21 18:37:29  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.50  2000/06/21 18:10:14  wenger
 // Changes to 3D requested by BMRB: removed axes; up/down mouse movement
 // does zooming; molecule doesn't move when changing atoms; 'r' resets
@@ -111,6 +114,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.51  2000/06/21 18:37:29  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.50  2000/06/21 18:10:14  wenger
 // Changes to 3D requested by BMRB: removed axes; up/down mouse movement
 // does zooming; molecule doesn't move when changing atoms; 'r' resets
@@ -978,25 +984,7 @@ public class DEViseCanvas extends Container
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
                     DEViseCursor cursor = selectedCursor;
 
-                        if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx *
-			      activeView.dataXStep) / cursor.gridxx) *
-			      cursor.gridxx / activeView.dataXStep);
-                        }
-
-                        if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy *
-			      activeView.dataYStep) / cursor.gridyy) *
-			      cursor.gridyy / activeView.dataYStep);
-                        }
-                    if (whichCursorSide == DEViseCursor.sideMiddle) {
-		        // move cursor
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
-			  1, whichCursorSide, true);
-                    } else {
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
-			  2, whichCursorSide, true);
-                    }
+                    cursor.updateCursorLoc(dx, dy, whichCursorSide, true);
 
                     cursor.image = null;
 
@@ -1092,19 +1080,7 @@ public class DEViseCanvas extends Container
                         int dx = p.x - loc.x - loc.width / 2;
                         int dy = p.y - loc.y - loc.height / 2;
 
-                        if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx *
-			      activeView.dataXStep) / cursor.gridxx) *
-			      cursor.gridxx / activeView.dataXStep);
-                        }
-
-                        if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy *
-			      activeView.dataYStep) / cursor.gridyy) *
-			      cursor.gridyy / activeView.dataYStep);
-                        }
-
-                        cursor.updateCursorLoc(dx, dy, 1, whichCursorSide,
+                        cursor.updateCursorLoc(dx, dy, whichCursorSide,
 			  true);
 
                         cmd = DEViseCommands.CURSOR_CHANGED + " " +
@@ -1184,26 +1160,7 @@ public class DEViseCanvas extends Container
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
 
-			//TEMP -- make a method to do this?
-                        if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx *
-			      activeView.dataXStep) / cursor.gridxx) *
-			      cursor.gridxx / activeView.dataXStep);
-                        }
-
-                        if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy *
-			      activeView.dataYStep) / cursor.gridyy) *
-			      cursor.gridyy / activeView.dataYStep);
-                        }
-                    if (whichCursorSide == DEViseCursor.sideMiddle) {
-		        // move cursor
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
-			  1, whichCursorSide, false);
-                    } else {
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
-			  2, whichCursorSide, false);
-                    }
+                    cursor.updateCursorLoc(dx, dy, whichCursorSide, false);
                 }
 
                 DEViseCanvas.isInterative = true;

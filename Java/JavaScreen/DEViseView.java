@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2000/06/21 18:37:30  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.46  2000/06/12 22:11:31  wenger
 // Commented out unused gridx and gridy.
 //
@@ -108,8 +111,8 @@ public class DEViseView
 
     // viewDataLoc is the location relative to this view
     public Rectangle viewDataLoc = null;
-    public float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
-    public float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
+    private float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
+    private float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
 
@@ -129,7 +132,10 @@ public class DEViseView
     public Vector viewCursors = new Vector();
 
     public boolean isRubberBand, isCursorMove, isDrillDown, isKey;
+
+    // data units per pixel in the X and Y dimensions
     public float dataXStep, dataYStep;
+
     //public float gridx, gridy; // mouse movement grid -- not used
 
     public boolean isFirstTime = true;
@@ -525,6 +531,28 @@ public class DEViseView
 
             return ("" + y0);
         }
+    }
+
+    public double pixel2DataX(int pixelX)
+    {
+        return (pixelX - viewDataLoc.x) * dataXStep + viewDataXMin;
+    }
+
+    public double pixel2DataY(int pixelY)
+    {
+        return viewDataYMax - (pixelY - viewDataLoc.y) * dataYStep;
+    }
+
+    public int data2PixelX(double dataX)
+    {
+        return (int)Math.round((dataX - viewDataXMin) /
+	  dataXStep + viewDataLoc.x);
+    }
+
+    public int data2PixelY(double dataY)
+    {
+        return (int)Math.round((viewDataYMax - dataY) /
+	  dataYStep + viewDataLoc.y);
     }
 
     // check whether or not the point (relative to this view's canvas) is within the view area
