@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/04/09 22:52:25  jussi
+  Added getViewOverrideColor and setViewOverrideColor.
+
   Revision 1.37  1996/03/26 19:09:17  jussi
   Disabled debugging.
 
@@ -1314,6 +1317,19 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			view->DeleteFromParent();
 			view->AppendToParent(win);
+		}
+		else if (strcmp(argv[1],"removeMapping") == 0) {
+			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+			if (!view) {
+			  interp->result = "Cannot find view";
+			  goto error;
+			}
+			TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
+			if (!map) {
+			  interp->result = "Cannot find mapping";
+			  goto error;
+			}
+			view->RemoveMapping(map);
 		}
 		else {
 			interp->result = "wrong args";
