@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/12/28 16:12:01  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I../../parser
+ARCH_FLAGS = -DSGI -I../../parser -fno-for-scope
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

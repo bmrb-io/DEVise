@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/12/28 16:11:58  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I/usr/X11R6/include -I/s/tcl/include
+ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include -fno-for-scope
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
