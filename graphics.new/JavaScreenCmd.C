@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/08/17 17:12:02  wenger
+  Devised now responds to KeyAction commands from JavaScreen.
+
   Revision 1.19  1998/08/13 18:14:45  wenger
   More updates to JavaScreen support.
 
@@ -362,12 +365,6 @@ JavaScreenCmd::MouseAction_Click()
 		return;
 	}
 
-	// ADD---begin
-	TDataVal	tdval = 3.1415926;
-
-
-	// ADD---end
-	_status = RequestUpdateRecordValue(tdval);
 }
 
 void
@@ -380,6 +377,7 @@ JavaScreenCmd::MouseAction_DoubleClick()
 	fflush(stdout);
 #endif
 
+	// Note: x and y are relative to window origin, not view origin.
 	if (_argc != 3)
 	{
 		errmsg = "{Usage: MouseAction_DoubleClick <view name> <x> <y>}";
@@ -387,16 +385,35 @@ JavaScreenCmd::MouseAction_DoubleClick()
 		return;
 	}
 
-	// ADD---begin
-	GDataVal	gval;
+	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "{Can't find specified view}";
+		_status = ERROR;
+		return;
+	}
 
+    ViewWin *window = view->GetParent();
+	if (window == NULL) {
+		errmsg = "{Can't find specified window}";
+		_status = ERROR;
+		return;
+	}
 
+    int xPix = atoi(_argv[1]);
+    int yPix = atoi(_argv[2]);
 
+	// Convert x and y from window to view location.
+	int viewX, viewY;
+	view->GetWindowRep()->Origin(viewX, viewY);
+    xPix -= viewX;
+	yPix -= viewY;
 
+	char **msgs;
+	int msgCount;
 
+    view->HandlePopUp(NULL, xPix, yPix, 2, msgs, msgCount);
 
-	// ADD---end
-	_status = RequestUpdateGData(gval);
+	_status = RequestUpdateRecordValue(msgCount, msgs);
 }
 
 void
@@ -692,25 +709,23 @@ JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 }
 
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::RequestUpdateRecordValue(TDataVal tval)
+JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::RequestUpdateRecordValue()\n");
 	fflush(stdout);
 #endif
 
-	// Add--begin
-	char buf[128];
-	sprintf(buf, "%f", tval);
-	char* argv[2] = {
-		_controlCmdName[UPDATERECORDVALUE],
-		buf
-	};
-	ReturnVal(2, argv);
+    char **args = new char *[argc+1];
+	args[0] = _controlCmdName[UPDATERECORDVALUE];
+	for (int index = 0; index < argc; index++) {
+		args[index+1] = argv[index];
+	}
+	ReturnVal(argc+1, args);
 
-	// Add---end
 	return DONE;
 }
+
 //====================================================================
 off_t
 getFileSize(const char* filename)
@@ -1155,6 +1170,12 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd::ReturnVal(");
+	PrintArgs(stdout, argc, argv, false);
+	printf(")\n");
+#endif
+
 	static	char* buf = NULL;
 	static	int bufsize = 0;
 	int		eleSize = 0;
@@ -1244,10 +1265,6 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		    args.AddArg("0"); // priority
 		}
 	}
-
-#if defined(DEBUG)
-	PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
-#endif
 
 	_status = RequestUpdateSessionList(args.GetCount(),
 	  (char **)args.GetArgs());	
