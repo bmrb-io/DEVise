@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2001/10/10 22:37:33  wenger
+// First version of atomic coordinate extraction and visualization (atoms,
+// not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
+// file as other data); fixed various minor problems with peptide-cgi code.
+//
 // Revision 1.11  2001/07/25 19:56:23  wenger
 // Started adding configuration setup stuff; s2d gets URLs from properties
 // file.
@@ -156,6 +161,7 @@ public class S2DNames
     public static final String ATOM_HA2 = "HA2";
     public static final String ATOM_HA3 = "HA3";
     public static final String ATOM_N = "N";
+    public static final String ATOM_O = "O";
 
     //
     // Residue labels (amino acids).

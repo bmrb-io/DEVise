@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/12/12 19:56:36  wenger
+// Got 4038/4096 star file combination working; fixed maximum bond length.
+//
 // Revision 1.2  2001/12/11 20:23:34  wenger
 // First version of bond-visualization generation; added RCS Id string to
 // schema files; manually added environment variables to data source
@@ -279,18 +282,44 @@ public class S2DAtomicCoords {
 	        midY -= atom1._coordY;
 	        midZ -= atom1._coordZ;
 
+		//
+		// Decide on the structure type (backbone, side chain,
+		// or hydrogen.
+		//
+		String structType = "backbone";
+		if (atom1._atomType.equals(S2DNames.ATOM_H) ||
+		  atom2._atomType.equals(S2DNames.ATOM_H)) {
+		    structType = "all_hydrogens";
+		} else if (!isBackbone(atom1) || !isBackbone(atom2)) {
+		    structType = "side_chains";
+		}
+
 	        coordWriter.write(residue._resSeqCode + " " +
 	          residue._resLabel + " " + atom1._atomName + " " +
 	          atom1._atomType + " " + coordFmt.format(atom1._coordX) +
 		  " " + coordFmt.format(atom1._coordY) + " " +
 	          coordFmt.format(atom1._coordZ) + " " +
 	          coordFmt.format(midX) + " " + coordFmt.format(midY) +
-		  " " + coordFmt.format(midZ) + "\n");
+		  " " + coordFmt.format(midZ) + " " + structType + "\n");
 	    }
         } else {
 	    System.out.println("Missing atom(s) in residue " +
 	      residue._resSeqCode);
         }
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether the given atom is a backbone atom.
+    private static boolean isBackbone(Atom atom)
+    {
+        if (atom._atomName.equals(S2DNames.ATOM_C) ||
+	  atom._atomName.equals(S2DNames.ATOM_CA) ||
+	  atom._atomName.equals(S2DNames.ATOM_N) ||
+	  atom._atomName.equals(S2DNames.ATOM_O)) {
+	    return true;
+	} else {
+	    return false;
+	}
     }
 }
 

@@ -21,3 +21,6 @@ attr Atom_coord_z float
 attr Bond_rel_x float
 attr Bond_rel_y float
 attr Bond_rel_z float
+
+# Structure type (backbone, side_chains, all_hydrogens.
+attr Struct_type string 14
