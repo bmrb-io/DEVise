@@ -11,6 +11,20 @@ Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
 
 HIGH PRIORITY
 -------------
+Make mapping dialog work like the query dialog in that you can select
+different views and the mapping dialog switches to the current
+mapping, and then there should be an 'apply' button to accept changes
+without closing the dialog.  (kb 8/2/96)
+
+Be able to use the mapping dialog to change some values for all views in
+a window (for example, change the symbol for all views from bars to lines).
+There should be a "keep the same" selection for attributes where you
+don't want to change the values.
+(ml/rkw 12/16/96)
+
+Improve sizing of Tasvir images so that they work like other symbols.
+(rkw 9/12/96)
+
 Update examples on Devise web page. (ml/rkw 9/6/96)
 
 
@@ -106,11 +120,6 @@ is the standard zoom that we all know and love.  The second type of zoom
 doesn't affect the cursor, but rather, it performs a zoom in or out on
 the other (source) view.  (kb 8/2/96)
 
-Make mapping dialog work like the query dialog in that you can select
-different views and the mapping dialog switches to the current
-mapping, and then there should be an 'apply' button to accept changes
-without closing the dialog.  (kb 8/2/96)
-
 Make the open-file dialog box remember its last directory for each
 type of file.  Eg, there could be an SelectSession proc and an
 SelectDataSource proc that set the current directory to whatever
@@ -176,9 +185,6 @@ Put 3-D borders around views. (ml/rkw/9/6/96)
 
 Allow active Devise windows in other documents (specify a window that
 becomes the parent of all Devise windows). (rr/rkw 9/12/96)
-
-Improve sizing of Tasvir images so that they work like other symbols.
-(rkw 9/12/96)
 
 Change name of 'Shape' in GData mapping GUI. (rr/rkw/ 9/12/96)
 
@@ -287,6 +293,11 @@ a data attribute). (jpm/rkw 12/12/96)
 
 Allow data from stdin to be used (maybe stick it into a buffer DataSource).
 (ml/jpm/rkw 12/12/96)
+
+Possibly allow the aspect ratio of a RectX to be fixed. (jpm/ml 12/16/96)
+
+Be able to remove data streams from the 'Define Data Stream' window. (ml/
+rkw 12/16/96)
 
 
 COMPLETED

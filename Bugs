@@ -322,8 +322,34 @@ Num Date        Status  Description
                         to the current qdata (which was deleted by the cancel)
                         and tries to continue processing the query.
 
-094 12/06/96	OPEN	Linux version won't run because of an error in the
+094 12/06/96	FIXED	Linux version won't run because of an error in the
 			shared memory code. (rkw)
+
+095 12/16/96	OPEN	'OK' button in mapping editor doesn't work. (rkw)
+
+096 12/16/96	OPEN	Can't display histograms at all -- you get 'invalid
+			command name "findNumericCaseValue"' from Tcl/Tk.
+			(rkw)
+
+097 12/16/96	OPEN	'Duplicate window' should make an entirely separate
+			copy of the window -- changing mappings, etc., in
+			one window should not affect the other one. (ml/rkw)
+
+098 12/16/96	OPEN	Load session test/molbio_demo.tk -> clip mask doesn't
+			work on two of three piled views. (rkw)
+			(This is a specific instance of bug 071.)
+
+099 12/16/96	OPEN	Load session test/molbio_demo.tk -> zooming doesn't
+			work correctly (sometimes zooms in X and Y when it
+			should zoom only in X). (rkw)
+
+100 12/16/96	OPEN	If you import data into several windows and specify
+			that there should be an X link, _all_ views are
+			linked to a single link; it would probably be better
+			to have each window have its own X link. (ml/rkw)
+
+101 12/16/96	OPEN	'5' key sometimes doesn't work correctly (for example,
+			load the session test/bad5key.tk). (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
