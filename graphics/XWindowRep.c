@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1996/07/15 21:02:19  jussi
+  Fixed Arc() computation.
+
   Revision 1.47  1996/07/15 00:30:21  jussi
   Added handling of ButtonRelease events when not in RAWMOUSEEVENTS
   mode.
@@ -206,14 +209,16 @@ Initializer
 ***********************************************************************/
 
 XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
-			Color fgndColor, Color bgndColor,
+			XWindowRep *parent, Color fgndColor, Color bgndColor,
 			Boolean backingStore) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
   _display = display;
   _win = window;
   _pixmap = 0;
-  _parent = 0;
+  _parent = parent;
+  if (_parent)
+    _parent->_children.Append(this);
   _backingStore = false;
 
   Init();
@@ -460,18 +465,21 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 
   DOASSERT(_win, "Exporting a pixmap not supported yet");
 
+  Window win = FindTopWindow(_win);
+  XRaiseWindow(_display, win);
+
   char cmd[256];
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd,
        "xwd -frame -id %ld | xpr -device ps -portrait -compact -gray 4 > %s",
-	    _win, filename);
+	    win, filename);
   } else {
     printf("Requested export format not supported yet.\n");
     return;
   }
 
 #ifdef DEBUG
-  printf("ExportImage: for window id 0x%lx:\n", _win);
+  printf("ExportImage: for window id 0x%lx:\n", win);
   printf("ExportImage: executing %s\n", cmd);
 #endif
 
@@ -503,78 +511,90 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   }
 }
 
+/* get geometry of root window enclosing this window */
+
+void XWindowRep::GetRootGeometry(int &x, int &y,
+                                 unsigned int &w, unsigned int &h)
+{
+  if (_pixmap) {
+    Origin(x, y);
+    Dimensions(w, h);
+    return;
+  }
+
+  Window root = FindTopWindow(_win);
+  Window dummy;
+  unsigned int border_width, depth;
+  XGetGeometry(_display, root, &dummy, &x, &y, &w, &h, &border_width,
+               &depth);
+#ifdef DEBUG
+  printf("Geometry of root 0x%lx of XWin 0x%p is %d,%d,%u,%u\n",
+         root, this, x, y, w, h);
+#endif
+}
+
+/* find top window */
+
+Window XWindowRep::FindTopWindow(Window win)
+{
+  Window parent, root;
+  Window *children;
+  unsigned int nchildren;
+  if (!XQueryTree(_display, win, &root, &parent,
+                  &children, &nchildren)) {
+    DOASSERT(0, "XQueryTree failed");
+  }
+  if (children)
+    XFree(children);
+
+  /* if the root window (display) is the parent of the current 
+     window, we've found the top enclosing window enclosing */
+
+  if (parent == root)
+    return win;
+
+  return FindTopWindow(parent);
+}
+
 /* export image as GIF */
 
 void XWindowRep::ExportGIF(char *filename)
 {
-  XWindowAttributes xwa;
-
   if (_win) {
-    if (!XGetWindowAttributes(_display, _win, &xwa)) {
+    Window win = FindTopWindow(_win);
+    XWindowAttributes xwa;
+    if (!XGetWindowAttributes(_display, win, &xwa)) {
       fprintf(stderr, "Cannot get window attributes\n");
       return;
     }
-  } else {
-    // Cannot get attributes of pixmap using XGetWindowAttributes
-    // so let's get the attributes from the root window and then
-    // patch xwa with the pixmap's information
-    if (!XGetWindowAttributes(_display, DefaultRootWindow(_display), &xwa)) {
-      fprintf(stderr, "Cannot get window attributes\n");
-      return;
-    }
-    xwa.x = _x;
-    xwa.y = _y;
-    xwa.width = _width;
-    xwa.height = _height;
-
-    // now we must copy all child windows to this window because they
-    // are stored in separate (non-overlapping) pixmaps; we want the
-    // dump to look the same as on screen where the windows would
-    // overlap
-
-    CoalescePixmaps(this);
-  }
-
-  XImage *image = XGetImage(_display, DRAWABLE, 0, 0, xwa.width, xwa.height,
-			    AllPlanes, ZPixmap);
-  if (!image || !image->data) {
-    fprintf(stderr, "Cannot get image of window or pixmap\n");
+    XRaiseWindow(_display, win);
+    ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(win, xwa, filename);
     return;
   }
 
-  XColor *colors = 0;
-  int ncolors = getxcolors(&xwa, &colors, _display);
-  int code = convertImage(image, colors, ncolors, &xwa);
+  // Cannot get attributes of pixmap using XGetWindowAttributes
+  // so let's get the attributes from the root window and then
+  // patch xwa with the pixmap's information.
 
-  XDestroyImage(image);
-  if (colors)
-    free(colors);
-
-  if (code != 1 || !grabPic) {
-    fprintf(stderr, "Cannot convert image\n");
+  XWindowAttributes xwa;
+  if (!XGetWindowAttributes(_display, DefaultRootWindow(_display), &xwa)) {
+    fprintf(stderr, "Cannot get window attributes\n");
     return;
   }
 
-  int ptype = (gbits == 24 ? PIC24 : PIC8);
-  int colorstyle = -1;                  // use 1 for grayscale
-  char *comment = "Visualization by DEVise (c) 1996";
+  xwa.x = _x;
+  xwa.y = _y;
+  xwa.width = _width;
+  xwa.height = _height;
 
-  FILE *fp = fopen(filename, "wb");
-  if (!fp) {
-    fprintf(stderr, "Cannot open file %s for writing\n", filename);
-    return;
-  }
+  // Wow we must copy all child windows to this window because they
+  // are stored in separate (non-overlapping) pixmaps; we want the
+  // dump to look the same as on screen where the windows would
+  // overlap.
 
-  int status = WriteGIF(fp, grabPic, ptype, gWIDE, gHIGH,
-			grabmapR, grabmapG, grabmapB, ncolors,
-			colorstyle, comment);
-  if (status)
-    fprintf(stderr, "Cannot write GIF image\n");
+  CoalescePixmaps(this);
 
-  fclose(fp);
-
-  free(grabPic);
-  grabPic = 0;
+  ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(_pixmap, xwa, filename);
 }
 
 void XWindowRep::CoalescePixmaps(XWindowRep *root)
@@ -2032,15 +2052,15 @@ void XWindowRep::Raise()
 
   if (_win)
     XRaiseWindow(_display, _win);
-  else {
-    if (!_parent)
-      return;
-    if (!_parent->_children.Delete(this)) {
-      fprintf(stderr, "Cannot remove child from parent\n");
-      return;
-    }
-    _parent->_children.Append(this);
+
+  if (!_parent)
+    return;
+
+  if (!_parent->_children.Delete(this)) {
+    fprintf(stderr, "Cannot remove child from parent\n");
+    return;
   }
+  _parent->_children.Append(this);
 }
 
 /* Lower window to bottom of stacking order */
@@ -2053,15 +2073,15 @@ void XWindowRep::Lower()
 
   if (_win)
     XLowerWindow(_display, _win);
-  else {
-    if (!_parent)
-      return;
-    if (!_parent->_children.Delete(this)) {
-      fprintf(stderr, "Cannot remove child from parent\n");
-      return;
-    }
-    _parent->_children.Insert(this);
+
+  if (!_parent)
+    return;
+
+  if (!_parent->_children.Delete(this)) {
+    fprintf(stderr, "Cannot remove child from parent\n");
+    return;
   }
+  _parent->_children.Insert(this);
 }
 
 /* Flush windowRep's content to display */
