@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/28  00:00:08  jussi
+  Added WritePostscript() method.
+
   Revision 1.3  1995/11/24 21:26:21  jussi
   Added copyright notice and cleaned up code. Added PrintTransform
   method to help debugging.
@@ -104,6 +107,19 @@ public:
     delete _callbackList;
   }
   
+#ifdef TK_WINDOW_old
+  /* Decorate window */
+  virtual void Decorate(WindowRep *parent, char *name,
+			unsigned int min_width,
+			unsigned int min_height) = 0;
+
+  /* Undecorate window */
+  virtual void Undecorate() = 0;
+#endif
+
+  /* Reparent this window to 'other' or vice versa. */
+  virtual void Reparent(Boolean child, void *other, int x, int y) = 0;
+
   /* Flush windowRep's content to display */
   virtual void Flush() = 0;
 
