@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.49  1996/11/15 10:06:26  kmurli
+#	Changed importFile parameters and ParseCat parameters to take in the file type
+#	and data file name so that a whole query can be formed if necessary for calling
+#	DQL type. (In case of a query schema)
+#
 #	Revision 1.48  1996/11/03 02:41:53  kmurli
 #	Modified to include the query schema level. Also modified to include DQL
 #	processing
@@ -362,6 +367,121 @@ proc updateStreamDef {} {
 }
 
 ############################################################
+proc indexUpdate {} {
+	
+	# Create the new index window and update the indices..
+    global schemafile tgrps glist attrlist logicalAttrlist dispname
+	
+	set logicalAttrlist ""    
+    toplevel .gbrowse
+    wm title .gbrowse "$schemafile View"
+    wm geometry .gbrowse +50+50
+    wm iconname .gbrowse "Groups"
+
+    # Toplevel rows
+    frame .gbrowse.attrs -relief raised
+    frame .gbrowse.list -relief raised
+    frame .gbrowse.ops -relief raised
+    pack .gbrowse.attrs .gbrowse.list .gbrowse.ops \
+	    -side top -fill x -padx 3m -pady 1m
+
+    #----------------------------------------------------------
+    # Create a listbox with all the attrs in the logical schema
+	# This reads the attributes (items) in the logical schema 
+	# and puts it in the logicalAttrlist list..
+	
+	set dirname [file dirname $schemafile]
+	set dirname [file tail dirname]
+	set newschemafile [file tail $schemafile]
+
+	#if { $dirname == "physical" } {
+		set attrlist ""
+	
+		#readQuerylogical $newschemafile
+		readphysical $newschemafile	
+		foreach attr $attrlist {
+			set logicalAttrlist [linsert $logicalAttrlist 0 [lindex $attr 4]]
+		}
+#	} else {	
+#		
+#		readQuerylogical $newschemafile
+#	}
+    label .gbrowse.attrs.label -text "List of View Attributes"
+    pack .gbrowse.attrs.label -side top -fill x
+    listbox .gbrowse.attrs.list -relief raised -bd 1 \
+	    -yscrollcommand ".gbrowse.attrs.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview"
+    pack .gbrowse.attrs.scroll -side right -fill y
+    pack .gbrowse.attrs.list -fill x
+
+    # Populate the list with all the attrs 
+    foreach attr $logicalAttrlist {
+	  .gbrowse.attrs.list insert end $attr 
+    }
+
+    # Bind the mouse click on this list
+    bind .gbrowse.attrs.list <Double-1> {
+	  if {$query == ""} {
+	  	set query  "$query [.gbrowse.attrs.list get active] "
+	} else {
+	  	set query  "$query, [.gbrowse.attrs.list get active] "
+	}
+    }
+
+    #-----------------------------------------------------------
+    # Create a listbox displaying list of groups
+    #    CreateTextBitmap .gbrowse.list.label group.gif Groups
+    #label .gbrowse.list.label -text "Index attributes "
+    #pack .gbrowse.list.label -side top -fill x
+	
+	#### Gotta put the entry box here..
+    # Panel for group name and panels for operators  
+    set indexName "" 
+
+    frame .gbrowse.ops.name -relief raised -bd 1
+    frame .gbrowse.ops.index -relief raised
+    frame .gbrowse.ops.op -relief raised
+    pack .gbrowse.ops.name .gbrowse.ops.index .gbrowse.ops.op -side top -fill x \
+	    -padx 3m -pady 1m
+    
+    label .gbrowse.ops.name.label -text "Index attributes "
+    entry .gbrowse.ops.name.entry -width 100 -relief sunken -bd 2 \
+	    -textvariable query 
+    
+    pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
+	   -fill x -padx 1m -pady 1m -expand 1
+
+    label .gbrowse.ops.index.indexLabel -text "Index Name "
+    entry .gbrowse.ops.index.indexName -width 100 -relief sunken -bd 2 \
+	    -textvariable indexName 
+
+    pack .gbrowse.ops.index.indexLabel .gbrowse.ops.index.indexName -side left \
+	   -fill x -padx 1m -pady 1m -expand 1
+    
+	#pack .gbrowse.ops.name.entry -side left \
+	#    -fill x -padx 1m -pady 1m -expand 1
+	
+	#pack .gbrowse.ops.name.indexName -side left \
+	#    -fill x -padx 1m -pady 1m -expand 1
+
+    button .gbrowse.ops.op.create -text "Create Index" -command {
+	    set query "create index $indexName on $dispname ($query );" 
+	    puts " THE QUERY FOR DEVISE WAS "
+	    puts $query
+	    DEVise createIndex $query
+    }
+    
+	button .gbrowse.ops.op.quit -text "Quit" -command {
+	  destroy .gbrowse
+    }
+    
+    pack .gbrowse.ops.op.create .gbrowse.ops.op.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+	
+	updateStreamDef
+
+}
 
 proc defineStream {base edit} {
     global sourceList sourceTypes editonly oldDispName 
@@ -494,10 +614,11 @@ proc defineStream {base edit} {
     pack .srcdef.top.row5.l1 .srcdef.top.row5.e1 -side left -padx 3m \
 	    -fill x -expand 1
 
+    button .srcdef.but.index -text Index -width 10 -command indexUpdate 
     button .srcdef.but.ok -text OK -width 10 -command updateStreamDef
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
-    pack .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
+    pack .srcdef.but.index .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
 	    -side left -padx 7m
 
     tkwait visibility .srcdef

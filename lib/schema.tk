@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1996/11/18 18:13:32  donjerko
+#  Added final touches for DTE
+#
 #  Revision 1.22  1996/11/03 02:41:52  kmurli
 #  Modified to include the query schema level. Also modified to include DQL
 #  processing
@@ -1018,7 +1021,7 @@ proc readphysical {filename} {
 	set attr [list $attrtype $sorted $hival $loval $attrname $acomp \
 		$astrlen]
 
-	# puts "ATTR LIST Inserting .. $attr"
+	puts "ATTR LIST Inserting .. $attr"
 
 	set attrlist [linsert $attrlist $num $attr]
 	set len [readSchemaLine $f line]
