@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/02/20 19:23:07  wenger
+#  Updated client/server and window library distribution for version 1.5.
+#
 #  Revision 1.1  1996/12/06 17:16:52  wenger
 #  First version of automatic libcs release.
 #

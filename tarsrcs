@@ -1,8 +1,0 @@
-#! /bin/csh -f
-tar cvfXz sources.tar.gz src_exclude DTE LM Makefile.common aix ams attrproj \
-    compustat cslib \
-    crsp devread doc generic graphics graphics.new hp issm lib linux makedep \
-    multi parser public release release.sgi run run_public setup sgi \
-    solaris solsparc src_exclude sun tape tarcslib tarsrcs util release.linux \
-    release.bash xvertext EmbeddedTk QCIMS unidata RTree src csgroup CVS \
-    CVSROOT

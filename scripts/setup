@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1998/05/19 14:35:02  wenger
+#  Added Inquery code (including related code written by Sanjay) to the
+#  repository.
+#
 #  Revision 1.10  1997/08/26 19:49:26  wenger
 #  Added 'dev' script and changes to setup to allow developers to easily
 #  run their own versions of DEVise and Multi.

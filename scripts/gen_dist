@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/07/15 14:37:42  wenger
+#  Added quick intro tar file to distribution.
+#
 #  Revision 1.1  1996/10/17 23:30:01  wenger
 #  Added sample data, session, and schema files to sources; modified
 #  the release script so that these files get installed into the target

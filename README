@@ -7,7 +7,7 @@ You should have gotten this file by doing a 'cvs checkout world', or some
 variation on that, with your CVSROOT environment variable set to
 /p/devise/cvs.
 
-Immediately after doing the checkout, run the command 'setup' in the
+Immediately after doing the checkout, run the command 'scripts/setup' in the
 same directory in which you did the checkout.  Setup makes some symbolic
 links in the source tree that you will need for compiling on most
 architectures.

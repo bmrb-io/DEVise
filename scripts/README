@@ -1,0 +1,7 @@
+		DEVise Scripts README File
+		$Date$
+
+Scripts in this directory should be run from the directory _above_ this
+one; for example:
+
+    > scripts/release

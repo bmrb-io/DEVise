@@ -15,6 +15,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.41  1998/03/12 02:09:31  wenger
+# Fixed dynamic memory errors in collaboration code that caused core dump
+# on Linux; collaboration code now tolerates interruption of accept() and
+# select() in some cases; fixed excessive CPU usage by collaborator
+# (select timeout now non-zero); fixed some other collaboration bugs.
+#
 # Revision 1.40  1998/03/05 20:36:39  wenger
 # Fixed bugs 304 and 309 (problems with view colors); fixed a few other
 # problems related to *ClassInfo classes.
@@ -137,7 +143,7 @@ LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
 #devread is obsolete
 #attrproj is broken
 
-MODULES = $(LIBMODULES) parser cslib generic
+MODULES = $(LIBMODULES) cslib generic
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
 	csgroup

@@ -39,4 +39,11 @@ rcsinfo		-i /s/cvs/bin/mkmodules CVSROOT rcsinfo
 
 # Add more modules here 
 #
-dte		-a DTE unidata graphics graphics.new Makefile.common setup \				 solaris solsparc
+dte		-a DTE DataReader unidata graphics graphics.new \
+			Makefile.common setup solaris solsparc
+devise		-a DTE DataReader LM Makefile.common README RTree \
+			aix alpha_osf20 compustat crsp csgroup cslib \
+			design_doc doc generic graphics graphics.new hp \
+			issm lib linux public releases run run_public \
+			scripts sgi solaris solsparc src sun tape test \
+			unidata util winnt xvertext

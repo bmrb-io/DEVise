@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1998/02/26 22:58:46  wenger
+#  Added one omitted include file.
+#
 #  Revision 1.9  1998/02/20 18:06:51  wenger
 #  Updated client/server and window library distribution for version 1.5.
 #
