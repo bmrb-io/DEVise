@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/01/17 22:18:32  jussi
+  Refined image export support.
+
   Revision 1.15  1996/01/17 21:05:14  jussi
   Minor fix for SGI EPS output.
 
@@ -251,7 +254,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 
 #if defined(SUN) || defined(HPUX)
   if (format == POSTSCRIPT || format == EPS) {
-    sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact > %s",
+    sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
 	    _win, filename);
   } else if (format == GIF) {
     sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | ppmtogif > %s",
