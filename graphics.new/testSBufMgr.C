@@ -13,7 +13,7 @@ int main()
     const int poolSize = 64;
     const int pageSize = 32 * 1024;
     const int numFiles = 2;
-    const int fileSize = 1024;
+    const int fileSize = 512;
     const float buffRatio = 0.3;
     const int buffSize = (int)(buffRatio * poolSize / numFiles);
     const int bufPages = poolSize - buffSize * numFiles;
@@ -58,10 +58,10 @@ int main()
 
     IOTask *task[numFiles];
 
-    printf("\nTesting Web data access...\n");
+    printf("\nTesting Web read data access...\n");
 
     char *url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
-    task[0] = new UnixWebIOTask(url);
+    task[0] = new UnixWebIOTask(url, true);
     assert(task[0]);
     status = task[0]->Initialize();
     if (status < 0) {
@@ -73,10 +73,69 @@ int main()
     gettimeofday(&start, 0);
     unsigned long int len = 0;
 
-    for(int pageNum = 0;; pageNum++) {
+    int pageNum;
+    for(pageNum = 0;; pageNum++) {
         char *addr;
         int bytes = bufMgr->PinPage(task[0], pageNum, addr);
         CALL(bytes);
+        CALL(bufMgr->UnPinPage(task[0], pageNum, false));
+        len += bytes;
+        if (bytes < pageSize)
+            break;
+    }
+
+    printf("Read %lu bytes from %s\n", len, url);
+
+    gettimeofday(&stop, 0);
+    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
+    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+           len / 1048576.0 / secs);
+
+    delete task[0];
+
+    printf("\nTesting Web write data access...\n");
+
+    url = "http://cgi.cs.wisc.edu/scripts/donjerko/test";
+    task[0] = new UnixWebIOTask(url, false);
+    assert(task[0]);
+    status = task[0]->Initialize();
+    if (status < 0) {
+        fprintf(stderr, "Cannot open URL %s\n", url);
+        exit(1);
+    }
+    task[0]->SetBuffering(false, false, 0);
+        
+    gettimeofday(&start, 0);
+
+    j = 4;
+    for(pageNum = 0; pageNum < j; pageNum++) {
+        char *addr;
+        CALL(bufMgr->AllocPage(task[0], pageNum, addr));
+        sprintf(addr, "Page %d\n", pageNum);
+        CALL(bufMgr->UnPinPage(task[0], pageNum, true, pageSize, true));
+    }
+
+    status = task[0]->WriteEOF();
+
+    len = j * pageSize;
+    printf("Wrote %lu bytes to %s\n", len, url);
+
+    gettimeofday(&stop, 0);
+    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
+    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+           len / 1048576.0 / secs);
+
+    len = 0;
+
+    for(pageNum = 0;; pageNum++) {
+        char *addr;
+        int bytes = bufMgr->PinPage(task[0], pageNum, addr);
+        CALL(bytes);
+#if 0
+        printf("Page %d (%d bytes): \"%s\"\n", pageNum, bytes, addr);
+        sprintf(cmp, "test.%d Page %d %7.1f", f, i, (float)i);
+        assert(strcmp(addr, cmp) == 0);
+#endif
         CALL(bufMgr->UnPinPage(task[0], pageNum, false));
         len += bytes;
         if (bytes < pageSize)

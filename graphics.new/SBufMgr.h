@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/09/26 20:29:07  jussi
+  Made code compile in Linux without threads.
+
   Revision 1.1  1996/09/26 19:02:33  jussi
   Renamed file from ExtBufMgr -> SBufMgr. Added Web I/O task and
   changed buffer manager to allow more concurrency between I/Os.
@@ -93,9 +96,15 @@
 #include "DCE.h"
 #include "DList.h"
 
-// Memory pool
+struct PageRange {
+    int start;
+    int end;
+};
 
+DefineDList(PageRangeList, PageRange);
 DefinePtrDList(PageList, char *)
+
+// Memory pool
 
 class MemPool {
   public:
@@ -268,7 +277,8 @@ class MemPool {
 class IOTask {
   public:
     IOTask(int blockSize = -1) : _blockSize(blockSize) {}
-    virtual int Initialize() = 0;
+    virtual int Initialize() { return 0; }
+    virtual int WriteEOF() { return 0; }
     virtual ~IOTask() {}
 
     // Read specified byte range
@@ -446,12 +456,18 @@ class UnixFdIOTask : public UnixIOTask {
 class UnixWebIOTask : public UnixFdIOTask {
   public:
     // Create Unix Web I/O task
-    UnixWebIOTask(char *url, int blockSize = -1);
+    UnixWebIOTask(char *url, Boolean isInput, int blockSize = -1);
     virtual ~UnixWebIOTask();
+
+    // Finish writing to HTTP
+    virtual int WriteEOF();
 
   protected:
     // Open connection to Web resource
-    int OpenURL(char *url);
+    int OpenURL(char *url, Boolean isInput);
+
+    // Write cached HTTP file to Web site
+    void WriteHTTP();
 
     // Make unique cache file name for URL
     char *MakeCacheName(char *url);
@@ -461,6 +477,7 @@ class UnixWebIOTask : public UnixFdIOTask {
 
     int _webfd;                         // file descriptor for Web connection
     char *_url;                         // URL of Web resource
+    Boolean _isInput;                   // true if input Web resource
     FILE *_cache;                       // cache file pointer
     char *_cacheName;                   // name of cache file
     unsigned long int _cacheSize;       // current size of cache file
@@ -542,7 +559,7 @@ class PageFrame {
   }
 };
 
-// Extensible buffer manager
+// Streaming buffer manager
 
 class SBufMgr {
   public:
@@ -557,6 +574,9 @@ class SBufMgr {
     int UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
                   int size = -1, Boolean force = false);
     int UnPin(IOTask *stream, Boolean dirty);
+
+    int InMemory(IOTask *stream, int pageStart, int pageEnd,
+                 PageRangeList *&inMemory);
 
  protected:
     // Acquire and release mutex

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/02 15:23:49  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.1  1996/09/26 19:02:32  jussi
   Renamed file from ExtBufMgr -> SBufMgr. Added Web I/O task and
   changed buffer manager to allow more concurrency between I/Os.
@@ -906,13 +910,17 @@ UnixTapeIOTask::UnixTapeIOTask(TapeDrive &tape) :
     _offset = _tape.tell();
 }
 
-UnixWebIOTask::UnixWebIOTask(char *url, int blockSize) :
-	UnixFdIOTask(OpenURL(url), blockSize)
+UnixWebIOTask::UnixWebIOTask(char *url, Boolean isInput, int blockSize) :
+	UnixFdIOTask(OpenURL(url, isInput), blockSize)
 {
 }
 
 UnixWebIOTask::~UnixWebIOTask()
 {
+    // Write cached HTTP file to Web site
+    if (!_isInput && _url && !strncmp(_url, "http://", 7))
+        WriteHTTP();
+
     if (_cache) {
 #if DEBUGLVL >= 3
         printf("Closing cache file %s\n", _cacheName);
@@ -937,8 +945,38 @@ UnixWebIOTask::~UnixWebIOTask()
     delete _cacheName;
 }
 
-int UnixWebIOTask::OpenURL(char *url)
+int UnixWebIOTask::WriteEOF()
 {
+    if (_isInput || !_url || strncmp(_url, "http://", 7))
+        return 0;
+
+    DOASSERT(_webfd < 0 && _cache >= 0, "Invalid parameters");
+
+    // Write cached HTTP file to Web site, then reverse direction
+    // of data flow
+    WriteHTTP();
+
+    if (_webfd < 0)
+        return -1;
+
+    _isInput = true;
+    _cacheSize = 0;
+
+    _cache = freopen(_cacheName, "w+", _cache);
+    if (!_cache) {
+        fprintf(stderr, "Could not truncate cache file %s\n", _cacheName);
+        perror("freopen");
+        close(_webfd);
+        _webfd = -1;
+        return -1;
+    }
+
+    return 0;
+}
+
+int UnixWebIOTask::OpenURL(char *url, Boolean isInput)
+{
+    _isInput = isInput;
     _webfd = -1;
     _url = 0;
     _cache = 0;
@@ -949,27 +987,45 @@ int UnixWebIOTask::OpenURL(char *url)
     if (!_url)
         return -1;
 
+    // Writing to an FTP site?
+    if (!isInput && !strncmp(_url, "ftp://", 6)) {
+        _webfd = open_ftp(_url, isInput);
+        if (_webfd < 0) {
+            fprintf(stderr, "Cannot write to %s\n", _url);
+            perror("connect");
+        }
+        return _webfd;
+    }
+
     _cacheName = MakeCacheName(_url);
     if (!_cacheName)
         return -1;
 
-    _cache = fopen(_cacheName, "r");
-    if (_cache) {
-        // Cache file exists -- assume that we don't need to fetch
-        // more data from the URL
-        printf("Using existing cache file %s\n", _cacheName);
-        return fileno(_cache);
-    }
+    // Reading from FTP or HTTP?
+    if (isInput) {
+        _cache = fopen(_cacheName, "r");
+        if (_cache) {
+            // Cache file exists -- assume that we don't need to fetch
+            // more data from the URL
+            printf("Using existing cache file %s\n", _cacheName);
+            return fileno(_cache);
+        }
 
-    size_t totlen = 0;
-    if (!strncmp(_url, "ftp://", 6))
-        _webfd = open_ftp(_url);
-    else
-        _webfd = open_http(_url, &totlen);
+        size_t totlen = 0;
+        if (!strncmp(_url, "ftp://", 6))
+            _webfd = open_ftp(_url, isInput);
+        else
+            _webfd = open_http(_url, isInput, &totlen);
+        if (_webfd < 0) {
+            fprintf(stderr, "Cannot read from %s\n", _url);
+            perror("connect");
+            return -1;
+        }
+    }
 
     _cache = fopen(_cacheName, "w+");
     if (!_cache) {
-        printf("Could not create cache file %s\n", _cacheName);
+        fprintf(stderr, "Could not create cache file %s\n", _cacheName);
         perror("fopen");
         close(_webfd);
         _webfd = -1;
@@ -997,6 +1053,64 @@ char *UnixWebIOTask::MakeCacheName(char *url)
     return name;
 }
 
+void UnixWebIOTask::WriteHTTP()
+{
+#if DEBUGLVL >= 3
+    printf("Writing cached HTTP file (%ld bytes) to %s\n",
+           _cacheSize, _url);
+#endif
+
+    DOASSERT(!_isInput && _webfd < 0 && _cache > 0, "Invalid parameters");
+
+    size_t totlen = _cacheSize;
+    _webfd = open_http(_url, _isInput, &totlen);
+    if (_webfd < 0) {
+        fprintf(stderr, "Cannot write to %s\n", _url);
+        perror("connect");
+        return;
+    }
+
+    unsigned long int sent = 0;
+
+    while (sent < _cacheSize) {
+        if (_offset != sent) {
+#if DEBUGLVL >= 9
+            printf("Seeking to offset %lu in cache file\n", sent);
+#endif
+            if (fseek(_cache, sent, SEEK_SET) < 0) {
+                fprintf(stderr, "Cannot seek to end of cache file\n");
+                perror("fseek");
+                break;
+            }
+            _offset = sent;
+        }
+        char buffer[2048];
+        int len = fread(buffer, 1, sizeof buffer, _cache);
+#if DEBUGLVL >= 9
+        printf("Read %d/%ld bytes from cache file\n", len,
+               _cacheSize - sent);
+#endif
+        if (len == 0 && feof(_cache)) {
+#if DEBUGLVL >= 3
+            printf("Web transfer to %s complete\n", _url);
+#endif
+            break;
+        }
+        if (len == 0) {
+            fprintf(stderr, "Cannot read from cache file\n");
+            perror("read");
+            break;
+        }
+        if (write(_webfd, buffer, len) != len) {
+            fprintf(stderr, "Cannot write to Web\n");
+            perror("fwrite");
+            break;
+        }
+        _offset += len;
+        sent += len;
+    }
+}
+
 void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
 {
 #if DEBUGLVL >= 3
@@ -1005,7 +1119,17 @@ void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
            req.offset, req.bytes);
 #endif
 
-    DOASSERT(req.type == ReadReq, "Writing to Web not supported");
+    // Writing to an FTP or HTTP site?
+    if (req.type == WriteReq) {
+        DOASSERT(!_isInput, "Inconsistent I/O request");
+        // Write to FTP site or HTTP file cache
+        UnixFdIOTask::DeviceIO(req, reply);
+        if (reply.bytes > 0)
+            _cacheSize += reply.bytes;
+        return;
+    }
+
+    DOASSERT(_isInput, "Inconsistent I/O request");
 
     // If Web connection still open...
     if (_webfd >= 0) {
@@ -1547,8 +1671,13 @@ int SBufMgr::PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 }
 
 int SBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
-                         int size, Boolean force)
+                       int size, Boolean force)
 {
+    if (!stream) {
+        printf("No stream\n");
+        return -1;
+    }
+
     AcquireMutex();
 
     int index;
@@ -1677,6 +1806,34 @@ int SBufMgr::UnPin(IOTask *stream, Boolean dirty)
                 _pool.Release(MemPool::Cache, frame.page);
             frame.Clear();
         }
+    }
+
+    ReleaseMutex();
+
+    return 0;
+}
+
+int SBufMgr::InMemory(IOTask *stream, int pageStart, int pageEnd,
+                      PageRangeList *&inMemory)
+{
+    if (!stream) {
+        printf("No stream\n");
+        return -1;
+    }
+
+    inMemory = 0;
+    pageStart = pageEnd;
+
+    AcquireMutex();
+
+    for(int i = 0; i < _numFrames; i++) {
+        PageFrame &frame = _frames[i];
+        if (!frame.valid || frame.addr.stream != stream)
+            continue;
+#if DEBUGLVL >= 5
+        printf("Adding frame %d, page %d to page list\n",
+               i, frame.addr.pageNo);
+#endif
     }
 
     ReleaseMutex();
