@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/15 17:02:06  jussi
+  Added support for string attributes in GData.
+
   Revision 1.19  1996/07/01 19:28:07  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -407,12 +410,14 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
       strncpy(ptr, args[i], info->length);
       ptr[info->length - 1] = '\0';
 #ifndef ATTRPROJ
-      string = strdup(ptr);
+      string = CopyString(ptr);
       code = StringStorage::Insert(string, key);
 #ifdef DEBUG
       printf("Inserted \"%s\" with key %d, code %d\n", ptr, key, code);
 #endif
       DOASSERT(code >= 0, "Cannot insert string");
+      if (!code)
+        delete string;
 #endif
       break;
 
