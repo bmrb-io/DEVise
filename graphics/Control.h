@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/08/04 20:57:22  beyer
+  Added Raise() method to bring the control panel to the top of the stacking
+  order.
+
   Revision 1.13  1996/07/18 01:19:02  jussi
   DestroySessionData() now resets the _batchMode flag.
 
@@ -116,7 +120,9 @@ public:
 
   /* Start/restart session */
   virtual void StartSession() {}
-  virtual void DestroySessionData() { _batchMode = false; }
+  virtual void DestroySessionData() { _batchMode = false;
+                                      _syncNotify = false;
+                                      _syncAllowed = false; }
   virtual void RestartSession() {}
 
   /* Get/set batch mode */
@@ -129,7 +135,13 @@ public:
   virtual Boolean GetSyncNotify() { return _syncNotify; }
   virtual void SyncNotify() {}
 
-  /* raise the control panel */
+  /* Set/clear/get sync allowed status */
+
+  virtual void SetSyncAllowed() { _syncAllowed = true; }
+  virtual void ClearSyncAllowed() { _syncAllowed = false; }
+  virtual Boolean GetSyncAllowed() { return _syncAllowed; }
+
+  /* Raise the control panel */
   virtual void Raise() {}
 
   /* Instantiate control panel into display */
@@ -250,6 +262,7 @@ protected:
   static Mode _mode;                    // layout or display mode
   static Boolean _batchMode;            // true if we're in batch mode
   static Boolean _syncNotify;           // true if sync notify needed
+  static Boolean _syncAllowed;          // true when qp allowed to synchronize
 
 private:
   void UpdateNewDispatcher() {}

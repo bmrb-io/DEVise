@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/22 21:03:54  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.9  1996/05/15 16:43:55  jussi
   Added support for the new server synchronization mechanism.
 
@@ -58,6 +61,7 @@ ClassDir *ControlPanel::_classDir = 0;
 ControlPanel::Mode ControlPanel::_mode = ControlPanel::DisplayMode;
 Boolean ControlPanel::_batchMode = false;
 Boolean ControlPanel::_syncNotify = false;
+Boolean ControlPanel::_syncAllowed = false;
 
 ClassDir *ControlPanel::GetClassDir()
 {
