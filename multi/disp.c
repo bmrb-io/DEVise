@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/05 15:22:54  jussi
+  This executable can now handle SortedX views.
+
   Revision 1.8  1996/06/13 18:17:22  jussi
   Minor improvements.
 
@@ -67,6 +70,7 @@
 #include "TDataMap.h"
 #include "ActionClassInfo.h"
 #include "AxisLabelClassInfo.h"
+#include "CursorClassInfo.h"
 
 const int MAX_COLORS = 32;
 
@@ -147,6 +151,7 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new CycleOccMappingInfo);
   ControlPanel::RegisterClass(new CycleEffMappingInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo);
+  ControlPanel::RegisterClass(new CursorClassInfo());
   ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
   ControlPanel::RegisterClass(new HostClassInfo);
@@ -197,10 +202,16 @@ main(int argc, char **argv)
   Color colorArray0[MAX_COLORS];
   Color colorArray1[MAX_COLORS];
   Color colorArray2[MAX_COLORS];
-  Color *colorArrays[3];
+  Color colorArray3[MAX_COLORS];
+  Color colorArray4[MAX_COLORS];
+  Color colorArray5[MAX_COLORS];
+  Color *colorArrays[6];
   colorArrays[0] = colorArray0;
   colorArrays[1] = colorArray1;
   colorArrays[2] = colorArray2;
+  colorArrays[3] = colorArray3;
+  colorArrays[4] = colorArray4;
+  colorArrays[5] = colorArray5;
   mapInfo->colorArrays = colorArrays;
   
   /* create control panel */
@@ -222,6 +233,9 @@ main(int argc, char **argv)
       colorArray0[i] = ColorMgr::AllocColor(1.0, colorVal, colorVal);
       colorArray1[i] = ColorMgr::AllocColor(colorVal, 1.0, colorVal);
       colorArray2[i] = ColorMgr::AllocColor(colorVal,  colorVal, 1.0);
+      colorArray3[i] = ColorMgr::AllocColor(1.0, colorVal, colorVal);
+      colorArray4[i] = ColorMgr::AllocColor(colorVal, 1.0, colorVal);
+      colorArray5[i] = ColorMgr::AllocColor(colorVal,  colorVal, 1.0);
       colorVal += colorIncr;
     }
   } else {
@@ -229,14 +243,23 @@ main(int argc, char **argv)
     printf("using grays\n");
     abortColor = ColorMgr::AllocColor("black");
     suspendColor = abortColor;
-    Color color0  = ColorMgr::AllocColor(.9,.9,.9);
+    all_busyColor = ColorMgr::AllocColor(.7,.7,.7);
+    some_idleColor = ColorMgr::AllocColor(.4,.4,.4);
+
+    Color color0  = ColorMgr::AllocColor(.97,.97,.97);
     Color color1  = ColorMgr::AllocColor(.7,.7,.7);
     Color color2  = ColorMgr::AllocColor(.5,.5,.5);
+    Color color3  = ColorMgr::AllocColor(.4,.4,.4);
+    Color color4  = ColorMgr::AllocColor(.3,.3,.3);
+    Color color5  = ColorMgr::AllocColor(.2,.2,.2);
 
     for(int i = 0; i < MAX_COLORS; i++) {
       colorArray0[i] = color0;
       colorArray1[i] = color1;
       colorArray2[i] = color2;
+      colorArray3[i] = color3;
+      colorArray4[i] = color4;
+      colorArray5[i] = color5;
     }
   }
 
