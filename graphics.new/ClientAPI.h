@@ -42,5 +42,7 @@ extern int NetworkSend(int fd, u_short flag, u_short bracket,
 extern int NetworkClose(int fd);
 
 const int DefaultNetworkPort = 6100;
+const int DefaultDataPort = 6200;
+const int BUF_SIZE = 1024;
 
 #endif
