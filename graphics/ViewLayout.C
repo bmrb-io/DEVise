@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 15:31:26  jussi
+  Moved Replace and SwapChildren to this base class from derived class
+  (used to be WinVertical and WinHorizontal, now TileLayout).
+
   Revision 1.2  1995/12/02 21:15:35  jussi
   Commented out DEBUG statement.
 
@@ -114,7 +118,14 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 #endif
   child1->GetWindowRep()->Origin(x1, y1);
   child2->GetWindowRep()->Origin(x2, y2);
+
+  // a window containing two views would give an unequal amount of space
+  // for the two views if the height (or width) of the window is odd;
+  // I've disabled the assertion below for this reason
+#if 0
   assert(w1 == w2 && h1 == h2);
+#endif
+
   child1->MoveResize(x2, y2, w2, h2);
   child2->MoveResize(x1, y1, w1, h1);
 }
