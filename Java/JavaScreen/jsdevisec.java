@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.104  2001/04/20 19:57:54  xuk
+// Added JavaScreen version in "Option" dialog.
+//
 // Revision 1.103  2001/04/18 16:04:53  wenger
 // Changed the JSA version of the JavaScreen to have two rows of buttons
 // because we're running out of space; changed JS version to 4.1.
@@ -2480,26 +2483,7 @@ class CollabDlg extends Frame
                             }
                         } else { // no available collaboration leader
 			    // go back to normal mode
-			    if (jsc.dispatcher.dispatcherThread != null) {
-				jsc.dispatcher.dispatcherThread.stop();
-				jsc.dispatcher.dispatcherThread = null;
-			    }
-			    
-			    if (jsc.dispatcher.commSocket != null) {
-				jsc.dispatcher.commSocket.closeSocket();
-				jsc.dispatcher.commSocket = null;
-			    }
-			    jsc.dispatcher._connectedAlready = false;
-			    jsc.dispatcher.isOnline = false;
-			    
-			    jsc.animPanel.stop();
-			    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			    jsc.jscreen.updateScreen(false);
-			    
-	      		    jsc.dispatcher.setAbortStatus(false);
-			    jsc.dispatcher.setStatus(0);
-			    jsc.specialID = -1;
-			    jsc.socketMode();
+			    jsc.collabQuit();
 			    close(); 
 			}
                     }
@@ -2509,26 +2493,7 @@ class CollabDlg extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			if (jsc.dispatcher.dispatcherThread != null) {
-			    jsc.dispatcher.dispatcherThread.stop();
-			    jsc.dispatcher.dispatcherThread = null;
-			}
-
-			if (jsc.dispatcher.commSocket != null) {
-			    jsc.dispatcher.commSocket.closeSocket();
-			    jsc.dispatcher.commSocket = null;
-			}
-			jsc.dispatcher._connectedAlready = false;
-			jsc.dispatcher.isOnline = false;
-
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-
-			jsc.dispatcher.setAbortStatus(false);
-			jsc.dispatcher.setStatus(0);
-			jsc.specialID = -1;
-			jsc.socketMode();
+			jsc.collabQuit();
                         close();
                     }
                 });
@@ -2548,10 +2513,13 @@ class CollabDlg extends Frame
 	    clientList.add(list);
 	}
 
-        validate();
-
-	if (clientList.getItemCount() <= 0) 
+	if (clientList.getItemCount() <= 0) {
 	  jsc.showMsg("No available JavaScreen for collaboration.");
+	  
+	  jsc.collabQuit();
+	  close();
+	} else 
+	    validate();
     }
 
     protected void processEvent(AWTEvent event)
