@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/20 16:51:18  jussi
+  Replaced AbortAndReexecute() with AbortQuery() and Refresh().
+
   Revision 1.7  1996/07/02 22:46:23  jussi
   Added debugging statement.
 
@@ -44,7 +47,7 @@
 */
 
 #include "QueryProc.h"
-#include "DispQueryProc.h"
+#include "QueryProcFull.h"
 #include "Control.h"
 #include "ClassDir.h"
 #include "ViewGraph.h"
@@ -54,40 +57,13 @@
 #include "Exit.h"
 
 QueryProc *QueryProc::_queryProc = 0;
-int QueryProc::_numQueryProcs = 0;      /* number of query processors */
-QPRec QueryProc::_qpArray[MAX_QUERYPROCS];
-
-void QueryProc::Register(char *name, QueryProcGen *gen)
-{
-  DOASSERT(_numQueryProcs < MAX_QUERYPROCS - 1, "Too many query processors");
-
-  _qpArray[_numQueryProcs].name = name;
-  _qpArray[_numQueryProcs++].gen = gen;
-}
 
 QueryProc *QueryProc::Instance()
 {
-  if (!_queryProc) {
-    char *qpName = Init::QueryProc();
-    if (!strcmp(qpName, "default")) {
-      _queryProc = new DispQueryProcFull();
-    } else {
-      Boolean found = false;
-      for(int i = 0; i < _numQueryProcs; i++) {
-	if (!strcmp(_qpArray[i].name,qpName)) {
-	  _queryProc = (*_qpArray[i].gen)();
-	  found = true;
-	  break;
-	}
-      }
-      if (!found){
-	fprintf(stderr, "Cannot find query processor %s\n", qpName);
-	DOASSERT(0, "Program terminates");
-      }
-    }
-  }
-
-  return _queryProc;
+    if (!_queryProc)
+        _queryProc = new QueryProcFull();
+    
+    return _queryProc;
 }
 
 /* Abort existing queries that use given TData and re-execute the queries */
@@ -95,7 +71,7 @@ QueryProc *QueryProc::Instance()
 void QueryProc::RefreshTData(TData *tdata)
 {
     ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-
+    
     int index = View::InitViewIterator();
     while(View::MoreView(index)) {
         View *v = View::NextView(index);
