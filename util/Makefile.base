@@ -6,16 +6,19 @@ LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 .C.o:
 	$(CC) -c $(CFLAGS) $<
 
-SRC = http_url.c atof.C
+SRC = http_url.c atof.C mkbinfile.C
 
-OBJ = http_url.o atof.o
+OBJ = http_url.o atof.o mkbinfile.o
 
-all: http_url atof
+all: http_url atof mkbinfile
 
 http_url: http_url.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 atof: atof.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
+
+mkbinfile: mkbinfile.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
