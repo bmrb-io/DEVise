@@ -1,0 +1,106 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+include ../../Makefile.common
+
+RTREE_INCLUDES = \
+	-I../../RTree \
+	-I../../RTree/src/ \
+	-I../../RTree/src/DBJussi \
+	-I../../RTree/src/PageClasses \
+	-I../../RTree/src/TypeSupport \
+	-I../../RTree/src/Common \
+	-I../../RTree/src/RTree \
+	-I../../graphics \
+	-I../../graphics.new \
+	-I../../tape
+
+CFLAGS = $(ARCH_ENDIAN) $(RTREE_INCLUDES) $(ARCH_FLAGS) \
+	$(OPTFLAG) \
+	-DUNIX -DLIBCS -D_DEBUG
+#	-fexternal-templates \
+#	-Wall
+
+ifdef RTREE_DEBUG
+	CFLAGS += -g -fno-inline
+endif
+
+RTREE_SRC = \
+     setup.cc dbJussi.cc fixed_entrysz_p.cc stackpage.cc int_keyed_p.cc \
+	heap.cc correct_math.cc int_key.cc rtree.cc bulk_data.cc \
+	typed_key.cc typed_rtree.cc
+
+RTREE_OBJ = $(RTREE_SRC:.cc=.o)
+
+# Set up for profiling.
+ifneq ($(DEV_PROFILE),)
+	ARCH_LDPOST  += -ldl
+endif
+
+RTREETEST_SRC = rtreetest.cc
+RTREETEST_OBJ = $(RTREETEST_SRC:.cc=.o)
+
+STREAM_BUF_MGR_OBJ = \
+	../graphics.new/DCE.o \
+	../graphics/DevError.o \
+	../graphics.new/MemMgr.o \
+	../graphics.new/SBufMgr.o \
+	../graphics/Util.o \
+	../RTree/SBMExit.o \
+	../graphics.new/Web.o \
+	../tape/tapedrive.o
+
+LIBOBJ = $(RTREE_OBJ)
+
+SBMLIBOBJ = $(STREAM_BUF_MGR_OBJ)
+
+LIBNAME = librtree.a
+SBMLIBNAME = libsbm.a
+RTREETEST = rtreetest
+
+all: librarysbm $(LIBNAME) $(RTREETEST) convert_bulk
+lib: $(LIBNAME)
+
+$(RTREETEST): librarysbm $(LIBNAME) $(RTREETEST_OBJ)
+	$(CC) -o $@ $(RTREETEST_OBJ) -L . -lrtree -lsbm $(ARCH_LDFLAGS) \
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
+	$(RANLIB) $@
+
+#this is a phony target, it has to be remade every time
+
+librarysbm:
+	$(foreach item, $(STREAM_BUF_MGR_OBJ), \
+	cd $(dir $(item)) && make $(notdir $(item)) &&) echo
+	ar cr $(SBMLIBNAME) $(SBMLIBOBJ)
+	$(RANLIB) $(SBMLIBNAME)
+
+CONVERT_OBJ = convert_bulk.o correct_math.o heap.o
+
+convert_bulk: $(CONVERT_OBJ)
+	$(CC) $(ARCH_ENDIAN) -o convert_bulk $(CONVERT_OBJ)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm $(LIBNAME) testSBufMgr
+
+mostlyclean:
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ)

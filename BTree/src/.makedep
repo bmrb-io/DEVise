@@ -1,0 +1,360 @@
+int_key.o: Common/int_key.cc Common/int_key.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/strings.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h
+heap.o: Common/heap.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ Common/heap.h
+correct_math.o: Common/correct_math.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/heap.h
+dbunix.o: DBUnix/dbunix.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/mman.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/errno.h \
+ /usr/include/sys/errno.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/memory.h \
+ DBUnix/dbunix.h setup.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h
+fixed_entrysz_p.o: PageClasses/fixed_entrysz_p.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h PageClasses/fixed_entrysz_p.h \
+ PageClasses/stackpage.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ Common/bit_vec.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h
+int_keyed_p.o: PageClasses/int_keyed_p.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h PageClasses/int_keyed_p.h \
+ PageClasses/fixed_entrysz_p.h PageClasses/stackpage.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ Common/bit_vec.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h
+stackpage.o: PageClasses/stackpage.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h setup.h PageClasses/stackpage.h
+alignedsortedpage.o: PageClasses/alignedsortedpage.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ PageClasses/alignedsortedpage.h
+test_ikp.o: Progs/test_ikp.cc DBUnix/dbunix.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ PageClasses/int_keyed_p.h PageClasses/fixed_entrysz_p.h \
+ PageClasses/stackpage.h Common/bit_vec.h Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h
+test_bit_vec.o: Progs/test_bit_vec.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h Common/bit_vec.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h
+test_rtree1.o: Progs/test_rtree1.cc DBUnix/dbunix.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/stat.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h RTree/rtree.h index.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h PageClasses/int_keyed_p.h \
+ PageClasses/fixed_entrysz_p.h PageClasses/stackpage.h \
+ Common/stack_t.h RTree/bulk_data.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /usr/include/sys/unistd.h
+test_aspage.o: Progs/test_aspage.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ PageClasses/alignedsortedpage.h
+test_btree.o: Progs/test_btree.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ PageClasses/alignedsortedpage.h BTree/btree.h index.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h BTree/btreeutils.h DBUnix/dbunix.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+test_types.o: Progs/test_types.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/stat.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /usr/include/sys/unistd.h TypeSupport/typed_key.h \
+ /usr/include/strings.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h \
+ Common/int_key.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h TypeSupport/typed_rtree.h RTree/rtree.h index.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ PageClasses/int_keyed_p.h PageClasses/fixed_entrysz_p.h \
+ PageClasses/stackpage.h Common/stack_t.h RTree/bulk_data.h \
+ DBUnix/dbunix.h
+test_rtree_jussi.o: Progs/test_rtree_jussi.cc DBJussi/dbJussi.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ ../JussiBuf/src/SBufMgr.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/sys/uio.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /usr/include/sys/unistd.h ../JussiBuf/src/DeviseTypes.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/values.h \
+ ../JussiBuf/src/DevStatus.h ../JussiBuf/src/MemMgr.h \
+ ../JussiBuf/src/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h \
+ /usr/include/sys/shm.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/errno.h \
+ /usr/include/sys/errno.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/limits.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/syslimits.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/stat.h \
+ ../JussiBuf/src/machdep.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/param.h \
+ /usr/include/sys/wait.h /usr/include/sys/procset.h \
+ /usr/include/sys/ioctl.h /usr/include/sys/mtio.h /usr/include/netdb.h \
+ /usr/include/sys/socket.h /usr/include/sys/netconfig.h \
+ /usr/include/netinet/in.h /usr/include/sys/stream.h \
+ /usr/include/sys/vnode.h /usr/include/sys/t_lock.h \
+ /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h \
+ /usr/include/sys/dl.h /usr/include/sys/sleepq.h \
+ /usr/include/sys/turnstile.h /usr/include/sys/pirec.h \
+ /usr/include/sys/mutex.h /usr/include/sys/rwlock.h \
+ /usr/include/sys/semaphore.h /usr/include/sys/condvar.h \
+ /usr/include/sys/cred.h /usr/include/vm/seg_enum.h \
+ /usr/include/sys/poll.h /usr/include/sys/strmdep.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/byteorder.h \
+ /usr/include/arpa/inet.h ../JussiBuf/src/tapedrive.h \
+ /usr/include/tar.h /usr/include/pthread.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/signal.h \
+ /usr/include/sched.h ../JussiBuf/src/HashTable.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/g++-include/iostream.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/g++-include/streambuf.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/g++-include/libio.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/_G_config.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h RTree/rtree.h index.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h PageClasses/int_keyed_p.h \
+ PageClasses/fixed_entrysz_p.h PageClasses/stackpage.h \
+ Common/stack_t.h RTree/bulk_data.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h
+rtree.o: RTree/rtree.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/stat.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h \
+ RTree/rtree.h index.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h PageClasses/int_keyed_p.h \
+ PageClasses/fixed_entrysz_p.h PageClasses/stackpage.h \
+ Common/stack_t.h RTree/bulk_data.h
+bulk_data.o: RTree/bulk_data.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/mman.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/errno.h \
+ /usr/include/sys/errno.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /usr/include/sys/unistd.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ RTree/bulk_data.h Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h
+setup.o: setup.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdarg.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/va-sparc.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/types.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/errno.h \
+ /usr/include/sys/errno.h
+btreeutils.o: BTree/btreeutils.cc \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ BTree/btreeutils.h PageClasses/alignedsortedpage.h Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h
+btree.o: BTree/btree.cc BTree/btree.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ index.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h PageClasses/alignedsortedpage.h BTree/btreeutils.h
+typed_key.o: TypeSupport/typed_key.cc TypeSupport/typed_key.h \
+ /usr/include/strings.h /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h \
+ Common/int_key.h setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h Common/correct_math.h
+typed_rtree.o: TypeSupport/typed_rtree.cc TypeSupport/typed_rtree.h \
+ RTree/rtree.h index.h dbinterface.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stddef.h \
+ setup.h \
+ /s/gcc-2.7.2.1/sun4x_55/sparc-sun-solaris2.5.1/include/assert.h \
+ Common/int_key.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdio.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/math.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
+ Common/bit_vec.h PageClasses/int_keyed_p.h \
+ PageClasses/fixed_entrysz_p.h PageClasses/stackpage.h \
+ Common/stack_t.h RTree/bulk_data.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ TypeSupport/typed_key.h /usr/include/strings.h \
+ /s/gcc-2.7.2.1/sun4x_55/lib/gcc-lib/sparc-sun-solaris2.5.1/2.7.2.1/include/string.h
