@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/06 22:05:01  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.8  1998/04/30 14:24:22  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -157,6 +161,9 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	printf("ViewData::ReturnGData(0x%p, %d)\n", gdata, numGData);
 #endif
 
+	DOASSERT(numGData <= WINDOWREP_BATCH_SIZE,
+	  "Too many records in one batch");
+
 	// If window is iconified, say that we "processed" all records, even if
 	// they didn't actually get drawn.
 	recordsProcessed = numGData;
@@ -202,7 +209,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
     // Get info from GData records, figure out whether symbols are within
 	// visual filter.
 	char *dataP = (char *) gdata;
-	SymbolInfo *symArray = new SymbolInfo[numGData];
+	SymbolInfo symArray[WINDOWREP_BATCH_SIZE];
 	for (int recNum = 0; recNum < numGData; recNum++) {
       if (_countMapping) {
 	    DevStatus result = _countMapping->ProcessRecord(dataP);
@@ -412,8 +419,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 		ptr += gRecSize;
 	}
-
-	delete [] symArray;
 }
 
 //******************************************************************************

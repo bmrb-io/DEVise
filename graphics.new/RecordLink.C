@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/04/28 18:03:11  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.15  1998/04/10 18:29:30  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -141,7 +146,9 @@ RecordLink::~RecordLink()
 #endif
 
   delete _file;
-  delete _array;
+  _file = NULL;
+  delete [] _array;
+  _array = NULL;
 }
 
 Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster) 
@@ -207,6 +214,7 @@ void RecordLink::Initialize()
     printf("Closing record link file %s from last query\n", _file->GetName());
 #endif
     delete _file;
+    _file = NULL;
   }
 
   char *fname = MakeFileName(GetName());
@@ -219,7 +227,8 @@ void RecordLink::Initialize()
     _file = RecFile::CreateFile(fname, sizeof(RecordRange));
   DOASSERT(_file, "Cannot create record link file");
 
-  delete fname;
+  delete [] fname;
+  fname = NULL;
 
   _num = 0;
   _lastRec = 0;
@@ -232,8 +241,6 @@ void RecordLink::Initialize()
 #ifdef DEBUG
     printf("Refreshing slave view %s\n", view->GetName());
 #endif
-    // TEMPTEMP It doesn't seem necessary to do this refresh, since we refresh
-    // again when the query is done
     view->Refresh();
   }
   DoneIterator(index);
@@ -258,7 +265,7 @@ void RecordLink::InsertRecs(RecId recid, int num)
 #endif
 
   // check if range can be merged with any previous range
-  for(int i = 0; i < _num - 1; i++) {
+  for(int i = 0; i < _num; i++) {
     if (_array[i].start + _array[i].num == recid) {
 #ifdef DEBUG
       printf("Record range was merged with range %d: [%ld,%ld]\n",

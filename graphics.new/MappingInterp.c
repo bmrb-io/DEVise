@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1998/04/16 21:51:40  wenger
+  Committed Sanjay's text code.
+
   Revision 1.70  1998/02/26 22:59:50  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -1075,6 +1078,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	*((double *)(gPtr + _offsets->shapeAttrOffset[j]))= _exprResult;
       }
     }
+    InitAttrList();
 
     tPtr += tRecSize;
     gPtr += gRecSize;
