@@ -3040,9 +3040,10 @@ Num Date        Status  Description
 			fill the main window when you select only a subset
 			of the available views. (rkw)
 
-754 2/8/02	OPEN	Create a session by displaying a data source
+754 2/8/02	FIXED	Create a session by displaying a data source
 			and try to save it -> DEVise crashes. Opening an
 			existing session and re-saving it works okay. (rkw)
+			(Fixed by rkw, 2/9/02.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.102  2002/01/15 21:49:40  wenger
+  Added session postscript capability needed for the latest peptide-cgi
+  improvements.
+
   Revision 1.101  2001/12/12 21:05:05  wenger
   Fixed bug 740 (DEVise now inserts appropriate environment variables when
   saving per-session data source definitions).
@@ -844,7 +848,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     }
 
     fprintf(saveData.fp, "\n# Session postscript\n");
-	_postscript->Print(saveData.fp);
+	if (_postscript != NULL) {
+	  _postscript->Print(saveData.fp);
+	}
   }
 
   if (saveData.fp != NULL) {
