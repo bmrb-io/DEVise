@@ -19,6 +19,9 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.48  2000/03/23 16:26:14  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.47  2000/02/23 21:12:13  hongyu
 // *** empty log message ***
 //
@@ -456,7 +459,7 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public synchronized void updateGData(String name, Vector vect)
+    public synchronized void updateGData(String name, Vector gdList)
     {
         DEViseView view = getView(name);
 
@@ -464,10 +467,10 @@ public class DEViseScreen extends Panel
             return;
         }
 
-        Vector vector = view.viewGDatas;
-        if (vector.size() > 0) {
-            for (int i = 0; i < vector.size(); i++) {
-                DEViseGData data = (DEViseGData)vector.elementAt(i);
+        Vector viewGD = view.viewGDatas;
+        if (viewGD.size() > 0) {
+            for (int i = 0; i < viewGD.size(); i++) {
+                DEViseGData data = (DEViseGData)viewGD.elementAt(i);
                 if (data.isJavaSymbol) {
                     javaGDatas.removeElement(data);
                     obsoleteGData.addElement(data);
@@ -477,9 +480,9 @@ public class DEViseScreen extends Panel
             view.removeAllGData();
         }
 
-        if (vect != null && vect.size() > 0) {
-            for (int i = 0; i < vect.size(); i++) {
-                DEViseGData g = (DEViseGData)vect.elementAt(i);
+        if (gdList != null && gdList.size() > 0) {
+            for (int i = 0; i < gdList.size(); i++) {
+                DEViseGData g = (DEViseGData)gdList.elementAt(i);
                 if (g.isJavaSymbol) {
                     javaGDatas.addElement(g);
                     newGData.addElement(g);
@@ -565,15 +568,30 @@ public class DEViseScreen extends Panel
         if (flag) {
             jsc.isSessionOpened = true;
         } else {
+	    // Note: this section of code does the work of cleaning
+	    // up when we close a session.  RKW 2000-03-31.
+
+	    // Remove the view's references to all of its GData records,
+	    // so they hopefully get garbage collected. RKW 2000-03-31.
+            for (int viewNum = 0; viewNum < allViews.size(); viewNum++) {
+	        DEViseView tmpView = (DEViseView)allViews.elementAt(viewNum);
+	        tmpView.removeAllGData();
+	    }
+
             removeAll();
 
             allCanvas.removeAllElements();
             allViews.removeAllElements();
+	    viewTable.clear();
+
             javaGDatas.removeAllElements();
+            obsoleteGData.removeAllElements();
+            newGData.removeAllElements();
 
             newCanvas.removeAllElements();
             obsoleteCanvas.removeAllElements();
 
+	    viewTable = null;
             viewTable = new Hashtable();
 
             currentView = null;
@@ -590,6 +608,9 @@ public class DEViseScreen extends Panel
 
             offScrImg = null;
 
+	    // We've just set a whole bunch of references to null, so
+	    // this should be a good time to garbage collect.
+	    System.gc();
             repaint();
         }
     }

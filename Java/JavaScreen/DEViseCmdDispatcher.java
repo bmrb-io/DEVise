@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2000/03/23 16:26:13  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.45  2000/02/23 21:12:12  hongyu
 // *** empty log message ***
 //
@@ -552,17 +555,21 @@ public class DEViseCmdDispatcher implements Runnable
                 if (gdataStr.equals("\u0004")) {
                     jsc.jscreen.updateGData(viewname, null);
                 } else {
+		    // ADD COMMENT -- what is this doing?  Just stripping
+		    // off the control-D??
                     String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004", false);
                     if (GData == null) {
                         throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }
 
-                    Vector rect = new Vector();
+                    Vector gdList = new Vector();
                     for (int j = 0; j < GData.length; j++) {
                         if (GData[j] == null) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
 
+			// ADD COMMENT -- this is splitting the GData into
+			// records, right?
                         String[] results = DEViseGlobals.parseStr(GData[j]);
                         if (results == null || results.length == 0) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -580,10 +587,10 @@ public class DEViseCmdDispatcher implements Runnable
                                 throw new YException(e1.getMsg(), 2);
                             }
 
-                            rect.addElement(data);
+                            gdList.addElement(data);
                         }
 
-                        jsc.jscreen.updateGData(viewname, rect);
+                        jsc.jscreen.updateGData(viewname, gdList);
                     }
                 }
             } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {

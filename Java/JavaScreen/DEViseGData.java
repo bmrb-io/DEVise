@@ -19,6 +19,9 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.26  2000/03/23 16:26:14  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.25  2000/01/12 14:37:48  hongyu
 // *** empty log message ***
 //
@@ -97,11 +100,24 @@ public class DEViseGData
     public Font font = null;
     public int outline = 0;
 
-    // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 14>
-    public DEViseGData(jsdevisec panel, String name, String gdata, double xm, double xo, double ym, double yo) throws YException
+    private static int _gdCount = 0;
+    private static boolean _debug = false;
+
+    // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
+    // <symbol type> <shape attr 0> ... <shape attr 14>
+    public DEViseGData(jsdevisec panel, String vname, String gdata, double xm,
+      double xo, double ym, double yo) throws YException
     {
+	_gdCount++;
+	if (_debug) {
+            System.out.println("DEViseGData constructor " + _gdCount);
+            System.out.println("Free memory: " +
+	      Runtime.getRuntime().freeMemory() + "/" +
+	      Runtime.getRuntime().totalMemory());
+	}
+
         jsc = panel;
-        viewname = name;
+        viewname = vname;
 
         parentView = jsc.jscreen.getView(viewname);
         if (parentView == null) {
@@ -152,6 +168,16 @@ public class DEViseGData
 
         GDataLoc = new Rectangle(x, y, width, height);
         GDataLocInScreen = getLocInScreen();
+    }
+
+    protected void finalize() {
+	_gdCount--;
+	if (_debug) {
+            System.out.println("DEViseGData.finalize() " + _gdCount);
+            System.out.println("Free memory: " +
+	      Runtime.getRuntime().freeMemory() + "/" +
+	      Runtime.getRuntime().totalMemory());
+        }
     }
 
     public Rectangle getLocInScreen()

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/03/23 16:26:15  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.38  2000/02/14 10:45:23  hongyu
 // *** empty log message ***
 //
@@ -94,6 +97,8 @@ public class DEViseView
 
     public boolean isFirstTime = true;
 
+    private static boolean _debug = false;
+
     public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
     {
         jsc = panel;
@@ -145,6 +150,13 @@ public class DEViseView
         }
 
         curlyName = "{" + viewName + "}";
+    }
+
+    protected void finalize() {
+    	if (_debug) {
+            System.out.println("DEViseView(" + viewName + ").finalize()");
+        }
+	removeAllGData();
     }
 
     public String getCurlyName()
@@ -282,6 +294,10 @@ public class DEViseView
 
     public void removeAllGData()
     {
+        if (_debug) {
+            System.out.println("DEViseView(" + viewName +
+	      ").removeAllGData()");
+        }
         viewGDatas.removeAllElements();
     }
 
