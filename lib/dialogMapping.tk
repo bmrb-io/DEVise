@@ -15,6 +15,11 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.56  2001/04/27 17:09:56  wenger
+#       Made various cleanups to external process dynamic data generation and
+#       added most GUI (still need special GUI for creating the data source);
+#       cleanups included finding and fixing bug 668.
+#
 #       Revision 1.55  1999/12/03 22:16:26  wenger
 #       Reduced the number of commands required to update the mapping dialog.
 #
@@ -778,7 +783,7 @@ set DEViseShapeAttrNames { \
 	{Rect Width Height "Cloud Width" "Cloud Height" "Line Width"} \
 	{RectX "Relative Width" "Relative Height" "" "" "Line Width"} \
 	{Bar Width Error "" "" "Line Width"} \
-	{Line "" "" "" "" "Line Width"} \
+	{Line "" "" "" "X Offset" "Line Width"} \
 	{"Line Shade" "" "" "" "" ""} \
 	{"Regular Polygon" Width Height Segments "" "Line Width"} \
 	{Oval Width Height "" "" "Line Width"} \

@@ -2713,6 +2713,12 @@ Num Date        Status  Description
 681 07/13/01	OPEN	JavaScreen: titles in child views don't seem to
 			work. (rkw)
 
+682 07/17/01	OPEN	Changing the mapping of a child view doesn't always
+			cause it to redraw. (rkw)
+
+683 07/19/01	OPEN	X offset for line shape doesn't work for variables.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

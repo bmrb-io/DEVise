@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/08/23 21:23:31  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.48  1999/07/21 18:51:13  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -573,6 +576,9 @@ class FullMapping_LineShape
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
+      if (offsets->_shapeAttrOffset[3] >= 0) {
+        result = true;
+      }
       return result;
     }
 

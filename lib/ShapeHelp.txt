@@ -26,6 +26,7 @@ BAR - vertical bar (as in a bar graph)
 
 LINE - line (straight, infinite length)
     Attrs:
+        3) x offset
         4) line width
 
 LINESHADE - line (as LINE, but shaded (filled to 0 Y value))

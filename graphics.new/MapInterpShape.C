@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.76  2001/04/12 20:15:13  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.75  2001/04/03 19:57:39  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -1722,7 +1728,9 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	// if this isn't a string attribute.)
     if (map->HasShapeAttr(0)) {
 #if defined(DEBUG)
-      reportErrNosys("Can't find AttrInfo for " gdataShapeAttr0Name);
+	  char errBuf[1024];
+      sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+      reportErrNosys(errBuf);
 #endif
     } else {
 	  if (map->GetShapeAttrType(0) != StringAttr) {
@@ -2002,7 +2010,9 @@ GetTextAttrInfo(AttrList *attrList,
   if (attrInfo == NULL) {
     labelAttrValid = false;
 #if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for " gdataShapeAttr0Name);
+    char errBuf[1024];
+    sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    reportErrNosys(errBuf);
 #endif
   } else {
     labelAttrValid = true;
@@ -2014,7 +2024,9 @@ GetTextAttrInfo(AttrList *attrList,
   if (attrInfo == NULL) {
     labelFormatValid = false;
 #if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for " gdataShapeAttr1Name);
+    char errBuf[1024];
+    sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    reportErrNosys(errBuf);
 #endif
   } else {
     labelFormatValid = true;
@@ -2782,7 +2794,11 @@ FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
   for (int recNum = 0; recNum < numRecs; recNum++) {
-    tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0);
+	Coord x = 0.0;
+	if (tdMap->HasShapeAttr(3)) {
+		x = tdMap->GetShapeAttr(dataP, 3);
+	}
+    tdMap->SetBoundingBox(dataP, x, 0.0, x, 0.0);
     dataP += recSize;
   }
 
@@ -2819,6 +2835,9 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord		x0 = map->GetX(gdata);
 	Coord		y0 = map->GetY(gdata);
 	PColorID	c0 = map->GetColor(gdata);
+	if (map->HasShapeAttr(3)) {
+		x0 += map->GetShapeAttr(gdata, 3);
+	}
 
 	// How should line width be handled for line types?
 	int width = map->GetLineWidth(gdata);
@@ -2851,6 +2870,9 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		Coord		x = map->GetX(gdata);
 		Coord		y = map->GetY(gdata);
 		PColorID	color = map->GetColor(gdata);
+	    if (map->HasShapeAttr(3)) {
+		    x += map->GetShapeAttr(gdata, 3);
+	    }
 
 		width = map->GetLineWidth(gdata);
 		DrawConnectingLine(win, view,
