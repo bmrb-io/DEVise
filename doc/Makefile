@@ -4,7 +4,7 @@
 	latex $*
 	dvips $*
 
-OUTPUT_FILES = api.tex sysman.ps userman.ps
+OUTPUT_FILES = api.ps sysman.ps userman.ps
 
 all: $(OUTPUT_FILES)
 
