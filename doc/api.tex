@@ -15,6 +15,10 @@
 %  $Id$
 
 %  $Log$
+%  Revision 1.10  1996/07/17 00:16:10  jussi
+%  Fixed description of new TData constructor. Added description
+%  of the dataSegment command.
+%
 %  Revision 1.9  1996/07/01 19:39:15  jussi
 %  Added description of the new TData constructor interface.
 %
@@ -797,6 +801,32 @@ Command name & {\tt setViewDimensions} \\
 Description  & Sets the dimensions for the view \\
 Input \#     & 2 \\
 Input Types  & View name (string), dimensions (integer) \\
+Output       & {\tt done} \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewSolid3D} \\
+Description  & Returns flag indicating wireframe or solid 3D objects \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & 1 (solid) or 0 (wireframe) (integer) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setViewSolid3D} \\
+Description  & Sets 3D objects to wireframe or solid display mode \\
+Input \#     & 2 \\
+Input Types  & View name (string), 1 (solid) or 0 (wireframe) (integer) \\
 Output       & {\tt done} \\
 \hline
 \end{tabular}
