@@ -2555,7 +2555,8 @@ Num Date        Status  Description
 			definitions?).  (rkw)
 			(Fixed by rkw, 3/13/01.)
 
-645 03/13/01	OPEN	Duplicating a window doesn't copy fonts. (rkw)
+645 03/13/01	FIXED	Duplicating a window doesn't copy fonts. (rkw)
+			(Fixed by rkw, 3/15/01.)
 
 646 03/13/01	OPEN	JavaScreen: Lucida font family doesn't work for
 			view titles. (rkw)
@@ -2563,6 +2564,9 @@ Num Date        Status  Description
 647 03/13/01	OPEN	In JS demo session waveletidr/.Bugs/1d_example1a.ds,
 			the window DEViseWn2 *refuses* to display the X
 			axis. (rkw)
+
+648 03/15/01	OPEN	Duplicating a window doesn't work right if the
+			window has views containing view symbols. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.62  2001/01/08 20:33:04  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.60.2.1  2000/10/18 20:35:23  wenger
 #  Merged changes from fixed_bug_616 through link_gui_improvements onto
 #  the branch.
@@ -593,6 +597,11 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setYAxisDateFormat {$newView} \
       {[DEVise getYAxisDateFormat $view]}
 
+    eval DEVise setXAxisFloatFormat {$newView} \
+      {[DEVise getXAxisFloatFormat $view]}
+    eval DEVise setYAxisFloatFormat {$newView} \
+      {[DEVise getYAxisFloatFormat $view]}
+
     eval DEVise setViewAutoFilter {$newView} [DEVise getViewAutoFilter $view]
 
     eval DEVise setDupElim {$newView} [DEVise getDupElim $view]
@@ -611,7 +620,20 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     set stat [DEVise getAxisTicks $view Y]
     eval DEVise setAxisTicks {$newView} Y $stat
 
-    # TEMP -- should links be copied?? RKW 1999-11-17.
+    eval DEVise viewSetDisabledActions {$newView} \
+      [DEVise viewGetDisabledActions $view]
+    # Note: braces are in case help is blank.
+    eval DEVise setViewHelp {$newView} {[DEVise getViewHelp $view]}
+    eval DEVise setShowMouseLocation {$newView} \
+      [DEVise getShowMouseLocation $view]
+
+
+    # insert links of $view into $newView
+    foreach link [LinkSet] {
+        if {[DEVise viewInLink $link $view]} {
+	    DEVise insertLink $link $newView
+	}
+    }
 
     DEVise insertWindow $newView $window
     DEVise insertMapping $newView $newGdata

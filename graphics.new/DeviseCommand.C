@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  2001/02/20 20:02:52  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.111.2.2  2001/02/16 21:37:58  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -4059,6 +4063,9 @@ DeviseCommand_getDisplayImageAndSize::Run(int argc, char** argv)
 int
 DeviseCommand_getFont::Run(int argc, char** argv)
 {
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
     {
         {
           View *view = View::FindViewByName(argv[1]);
@@ -4641,23 +4648,28 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
 int
 DeviseCommand_setFont::Run(int argc, char** argv)
 {
-    {
-        {
-          ViewWin *viewWin = (ViewWin *)_classDir->FindInstance(argv[1]);
-          if (viewWin == NULL) {
-            ReturnVal(API_NAK, "Cannot find view or window");
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 7) {
+        ViewWin *viewWin = (ViewWin *)_classDir->FindInstance(argv[1]);
+	if (viewWin == NULL) {
+	    ReturnVal(API_NAK, "Cannot find view or window");
             return -1;
-          }
-    
-          viewWin->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
-    	atoi(argv[6]));
-    
-          ReturnVal(API_ACK, "done");
-          return 1;
         }
+    
+        viewWin->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
+    	  atoi(argv[6]));
+    
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in setFont\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
     }
-    return true;
 }
+
 int
 DeviseCommand_set3DLocation::Run(int argc, char** argv)
 {

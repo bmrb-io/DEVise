@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1999/07/14 18:43:05  wenger
+#  Added the capability to have axes without ticks and tick labels.
+#
 #  Revision 1.35  1999/02/11 19:55:06  wenger
 #  Merged newpile_br through newpile_br_1 (new PileStack class controls
 #  pile and stacks, allows non-linked piles; various other improvements
@@ -383,69 +386,27 @@ proc DupWindow {} {
     
     # Create mappings for views
     foreach view $views {
-	# Crete a new view
-	set class [GetClass view $view]
-	set params [DEVise getCreateParam view $class $view]
-	set viewName [lindex $params 0]
-	set newView [UniqueName $viewName]
-
-	# replace name of view by name of new view
-	set newParam [linsert [lrange $params 1 end] 0 $newView]
-	eval DEVise create view $class $newParam
-
-	# insert links of $view into $newView
-	foreach link [LinkSet] {
-	    if {[DEVise viewInLink $link $view]} {
-		DEVise insertLink $link $newView
-	    }
-	}
-
-        # set view statistics and axes
-	set viewLabelParams [DEVise getLabel $view]
-	eval DEVise setLabel {$newView} $viewLabelParams
-	set viewStatParams [DEVise getViewStatistics $view]
-	eval DEVise setViewStatistics {$newView} $viewStatParams
-	set stat [DEVise getAxisDisplay $view X]
-	eval DEVise setAxisDisplay {$newView} X $stat
-	set stat [DEVise getAxisDisplay $view Y]
-	eval DEVise setAxisDisplay {$newView} Y $stat
-	
-        # set 2D/3D and camera location
-        set numDim [DEVise getViewDimensions $view]
-        eval DEVise setViewDimensions {$newView} $numDim
-	set camera [DEVise get3DLocation $view]
-        eval DEVise set3DLocation {$newView} [lrange $camera 1 6]
-
-	DEVise insertWindow $newView $newWin
-
-	set maps [DEVise getViewMappings $view]
-	foreach map $maps {
-            # Get the parameters for the existing mapping.
-	    set mapClass [GetClass mapping $map]
-            set params [DEVise getCreateParam mapping $mapClass $map]
-
-	    # Create a new (unique) name for the new mapping.
-	    set oldMapName [lindex $params 1]
-	    set newMapName [UniqueName $oldMapName]
-
-	    # Create a new mapping with the same parameters (except the
-	    # name) as the old one.
-	    set params [lreplace $params 1 1 $newMapName]
-            set cmd "DEVise create mapping $mapClass $params"
-	    set result [eval $cmd]
-	    if {$result == ""} {
-	        dialog .copyError "Mapping Error" \
-		    "Cannot create mapping." "" 0 OK
-		return
-	    }
-
-	    # Insert the new mapping into the new window.
-            set legend [DEVise getMappingLegend $view $map]
-	    DEVise insertMapping $newView $newMapName $legend
-	}
+        DupView $view $newWin
     }
 
     DEVise setPileStackState $newWin [DEVise getPileStackState $win]
+}
+
+############################################################
+
+# Duplicate a view.  view is the name of the view; window is the
+# name of the window to put it in.
+proc DupView {view window} {
+
+    set gdata [lindex [DEVise getViewMappings $view] 0]
+    set gdataClass [GetClass mapping $gdata]
+    set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
+    set tdata [lindex [DEVise getCreateParam mapping $gdataClass $gdata] 0]
+
+    set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
+    set newGdata [UniqueName "$tdata#$gdataClass"]
+
+    DoActualViewCopy $view $tdata $gdata $newGdata $window
 }
 
 ############################################################
