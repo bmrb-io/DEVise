@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.29  1996/02/25 23:03:21  jussi
+#	When data stream is uncache, index files and gdata files are
+#	removed as well.
+#
 #	Revision 1.28  1996/02/05 19:55:40  jussi
 #	Location of dialog boxes changed a little.
 #
@@ -267,9 +271,9 @@ proc defineStream {base edit} {
     global sourceList sourceTypes editonly oldDispName
     global dispname source key schemafile evaluation priority command
 
-    # see if .srcdef window already exists; if so, just return
-    set err [catch {wm state .srcdef}]
-    if {!$err} { wm deiconify .srcdef; return }
+    if {[WindowVisible .srcdef]} {
+	return
+    }
 
     toplevel .srcdef
     if {$edit} {
@@ -833,9 +837,9 @@ proc selectUnixFile {} {
 proc selectStream {{title ""}} {
     global streamSelected sourceTypes MapTable
 
-    # see if .srcsel window already exists; if so, just return
-    set err [catch {wm state .srcsel}]
-    if {!$err} { wm deiconify .srcsel; return }
+    if {[WindowVisible .srcsel]} {
+	return
+    }
 
     toplevel .srcsel
     wm title .srcsel "Data Streams"

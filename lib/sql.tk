@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/22 17:33:50  jussi
+#	Added copyright message.
+#
 #	Revision 1.3  1995/09/21 15:36:02  jussi
 #	Minor changes.
 #
@@ -40,9 +43,9 @@ if {[info exists env(SQL_DISKPATH)]} {
 proc sqlMain {} {
     global sql_host sql_port sql_path sql_query
 
-    # see if .sql window already exists; if so, just return
-    set err [catch {set exists [wm state .sql]}]
-    if {!$err} { wm deiconify .sql; return }
+    if {[WindowVisible .sql]} {
+	return
+    }
 
     toplevel .sql
     wm maxsize .sql 1000 1000
