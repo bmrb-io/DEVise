@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2000/08/29 15:21:20  wenger
+// Added 'No DEVise plots available' message to summary page code.
+//
 // Revision 1.9  2000/08/29 14:55:52  wenger
 // Star2Devise can now extract relaxation parameters, H exchange rates, etc.
 // from all appropriate NMR-STAR files, not just bmr4096.str (the sessions
@@ -1078,6 +1081,13 @@ public class Star2Devise {
 	    
 	    // new display- pages generated my make_view
 	    String display_link_base = "<br><br><a href=\"" + the_number;
+
+	    boolean doChemShifts = true;
+	    if (!isAProtein()) {
+	        summary_writer.println("<p>Entry is not a protein -- no " +
+		  "chemical shift data available.");
+	        doChemShifts = false;
+	    }
 	    
 
             //
@@ -1098,7 +1108,9 @@ public class Star2Devise {
 		}
 
 		if (current_tag.equals(S2DNames.ASSIGNED_CHEM_SHIFTS)) {
-		    savedChemShifts = calcChemShifts(null);
+		    if (doChemShifts) {
+		        savedChemShifts = calcChemShifts(null);
+		    }
 		    
 		} else if (current_tag.equals(S2DNames.T1_RELAX)) {
 		    try {
@@ -1246,7 +1258,7 @@ public class Star2Devise {
 
 	    if (!plotsAvailable) {
 	        summary_writer.print("<p>No DEVise plots currently" +
-		  " available for this data\n");
+		  " available for this entry.\n");
 	    }
 
 	    summary_writer.print("</body>\n</html>\n");
@@ -1765,5 +1777,28 @@ public class Star2Devise {
 		    // now replace the old value with the new one
 		    values.setElementAt(row_copy, outer);
 		}
+    }
+
+    // ----------------------------------------------------------------------
+    private boolean isAProtein()
+    {
+	boolean result = false;
+
+	try {
+	    // _Mol_polymer_class tells us whether this is a protein.
+	    VectorCheckType list = aStarTree.searchForTypeByName(
+	      Class.forName(StarValidity.pkgName() + ".DataItemNode"),
+	      "_Mol_polymer_class");
+
+            for (int index = 0; index < list.size(); index++) {
+		DataItemNode node = (DataItemNode)list.elementAt(index);
+	        if (node.getValue().equals("protein")) result = true;
+	    }
+
+	} catch (Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage());
+	}
+
+        return result;
     }
 }
