@@ -147,7 +147,7 @@ public class DEViseServer implements Runnable
 
     private void stopDEVise()
     {
-        if (isDEViseAlive()) {
+        if (!isDEViseAlive()) {
             return;
         } else {
             proc.destroy();

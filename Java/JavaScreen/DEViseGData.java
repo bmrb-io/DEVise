@@ -60,6 +60,15 @@ public class DEViseGData
         return new Rectangle(x, y, width, height);
     } 
     
+    public Rectangle getBounds(DEViseWindow win)
+    {
+        if (win != null) {
+            return new Rectangle(x + win.windowLoc.x, y + win.windowLoc.y, width, height);
+        } else {
+            return new Rectangle(x, y, width, height);
+        }
+    }
+    
     public String getLabel()
     {
         if (label == null) {

@@ -45,12 +45,11 @@ public class DEViseScreen extends Panel
     public boolean isUpdate = false;
     public boolean isGrid = false;
     Vector allWindows = new Vector();
+    Vector allGDataItems = new Vector();
     DEViseWindow currentWindow = null;
     DEViseWindow clickWindow = null;
     Rectangle newWinLoc = new Rectangle(0, 0, 0, 0);
     boolean isDrawPos = false;  
-    Label buttonLabel = null;  
-    Rectangle buttonLabelLoc = null;
 
     public DEViseScreen(jsdevisec what)
     {
@@ -203,11 +202,46 @@ public class DEViseScreen extends Panel
             }
             return;
         }
-
-        view.setGData(rect);
-        win.updateGData();
-    }
         
+        view.updateGData(rect);
+    }
+    
+    public void addGDataItem(Button c)
+    {
+        if (c == null) 
+            return;
+        
+        allGDataItems.addElement(c);
+        
+        if (getComponentCount() != 0) {
+            add(c);
+        }
+    }
+    
+    public void removeGDataItem(Button c) 
+    {
+        if (c == null)
+            return;
+        
+        remove(c);
+        allGDataItems.removeElement(c);
+    }
+    
+    private void addAll()
+    {    
+        if (allWindows != null) {
+            int number = allWindows.size();
+            for (int i = 0; i < number; i++)
+                add((DEViseWindow)allWindows.elementAt(i));
+        }
+        
+        if (allGDataItems != null) {
+            int number = allGDataItems.size();
+            for (int i = 0; i < number; i++)
+                add((Button)allGDataItems.elementAt(i));
+        }                        
+    }
+         
     public void updateCursor(String name, DEViseCursor rect)
     {           
         DEViseView view = getView(name);
@@ -236,7 +270,7 @@ public class DEViseScreen extends Panel
         if (win == null) {
             return;
         } else {
-            remove(currentWindow);
+            //remove(currentWindow);
             add(currentWindow, 0);
             currentWindow.setCurrent(true);
         }
@@ -304,10 +338,8 @@ public class DEViseScreen extends Panel
         removeAll();
 
         if (flag) {
-            int number = allWindows.size();
-            for (int i = 0; i < number; i++)
-                add((DEViseWindow)allWindows.elementAt(i));
-
+            addAll();
+            
             isUpdate = true;
             jsc.isSessionOpened = true;
             jsc.viewInfo.updateInfo(); 
@@ -316,6 +348,8 @@ public class DEViseScreen extends Panel
             repaint();
         } else {
             allWindows.removeAllElements();
+            allGDataItems.removeAllElements();
+            
             currentWindow = null;
             jsc.isSessionOpened = false;
             jsc.viewInfo.updateInfo();
@@ -343,44 +377,18 @@ public class DEViseScreen extends Panel
             win.windowLoc = new Rectangle(newWinLoc.x, newWinLoc.y, newWinLoc.width, newWinLoc.height);
             win.setBounds(newWinLoc);
             offScrImg = null;
+            Vector views = win.getAllViews();
+            if (views != null) {
+                for (int i = 0; i < views.size(); i++) {
+                    DEViseView view = (DEViseView)views.elementAt(i);
+                    view.updateGData();
+                }
+            }
+            
             repaint();
         }           
     }
-    
-    public synchronized void drawButtonLabel(boolean isDraw, Component c, Point pt)
-    {           
-        if (buttonLabel != null) {
-            remove(buttonLabel);
-            buttonLabel = null;
-            repaint();
-        }
-        
-        if (isDraw) {
-            if (c != null && pt != null) {
-                DEViseWindow win = getCurrentWindow();
-                if (win == null)
-                    return;
-                    
-                Button button = (Button)c;
-                Point p = button.getLocation();
-                //Dimension dim = button.getMinimumSize();
-                Rectangle loc = win.getLoc();
-                int x = p.x + pt.x + loc.x;
-                int y = p.y + pt.y + loc.y;
-                buttonLabel = new Label(button.getLabel());
-                buttonLabel.setFont(new Font("Serif", Font.PLAIN, 10));
-                buttonLabel.setBackground(Color.yellow);
-                buttonLabel.setForeground(Color.black);
-                add(buttonLabel, 0);                
-                buttonLabelLoc = new Rectangle(new Point(x, y), new Dimension(buttonLabel.getPreferredSize())); 
-                //buttonLabel.setLocation(x, y); 
-                repaint(); 
-            } else { 
-                return;
-            }
-        }
-    }
-                        
+                            
     // Enable double-buffering
     public void update(Graphics g)
     {
@@ -433,11 +441,11 @@ public class DEViseScreen extends Panel
             g.setColor(oldColor);
             isDrawPos = false;
         }
-        
+        /*
         if (buttonLabel != null && buttonLabelLoc != null) {
             buttonLabel.setBounds(buttonLabelLoc);
         }
-        
+        */
         Color oldColor = g.getColor();
         g.setColor(Color.white);
         for (int i = 0; i < screenEdge.width; i++) {

@@ -54,12 +54,8 @@ public class DEViseWindow extends Container
     int userAction = 0;
     Point sp = new Point(), ep = new Point();
 
-    DEViseGData[] viewGData = null;
     DEViseCursor[] viewCursor = null;
-    int GDataType = 1; // 0: drawing     1: javabutton
-    Button[] GDataButton = null;
-    Image[] GDataImage = null, cursorImage = null;
-    Component labeledButton = null;
+    Image[] cursorImage = null;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
     {
@@ -70,7 +66,14 @@ public class DEViseWindow extends Container
         windowLoc = loc;
         winImage = img;
         allViews = views;
-
+        
+        if (allViews != null) {
+            for (int i = 0; i < allViews.size(); i++) {
+                DEViseView view = (DEViseView)allViews.elementAt(i);
+                view.setWindow(this);
+            }
+        }
+        
         int imageWidth = winImage.getWidth(this);
         int imageHeight = winImage.getHeight(this);
         windowDim = new Dimension(imageWidth, imageHeight);
@@ -250,134 +253,6 @@ public class DEViseWindow extends Container
         }
     }
     
-    public void updateGData()
-    {
-        viewGData = null;
-        if (GDataType == 0) { 
-            GDataImage = null;
-        } else if (GDataType == 1) {
-            removeAll();
-            GDataButton = null;
-        }            
-        
-        Vector tmp = new Vector();
-        for (int i = 0; i < allViews.size(); i++) {
-            DEViseView view = (DEViseView)allViews.elementAt(i);
-            DEViseGData[] data = view.getGData();            
-            if (data != null) {
-                for (int j = 0; j < data.length; j++) {
-                    tmp.addElement(data[j]);
-                }
-            }
-        }
-        
-        if (tmp.size() != 0) {        
-            viewGData = new DEViseGData[tmp.size()];
-            
-            for (int i = 0; i < viewGData.length; i++)
-                viewGData[i] = (DEViseGData)tmp.elementAt(i);
-        }
-        
-        repaint(); 
-    }
-
-    public void buildGDataImage()
-    {
-        if (viewGData == null || viewGData.length == 0) {
-            GDataImage = null;
-            return;
-        }
-        
-        GDataImage = new Image[viewGData.length];
-        for (int i = 0; i < GDataImage.length; i++) {                            
-            GDataImage[i] = createImage(viewGData[i].width, viewGData[i].height);
-            
-            if (GDataImage[i] == null) {
-                YGlobals.Ydebugpn("Can not create image for GData!");
-                GDataImage = null;
-                break;
-            }
-            
-            Graphics tg = GDataImage[i].getGraphics();
-            tg.setColor(Color.yellow);
-            tg.fillRect(0, 0, viewGData[i].width, viewGData[i].height);
-            tg.dispose();
-        }
-    }
-    
-    public void buildGDataButton()
-    {
-        if (viewGData == null || viewGData.length == 0) {
-            removeAll();
-            GDataButton = null;
-            return;
-        }
-        
-        GDataButton = new Button[viewGData.length];
-        for (int i = 0; i < viewGData.length; i++) {             
-            GDataButton[i] = new Button(viewGData[i].getLabel());
-            GDataButton[i].setBounds(viewGData[i].getBounds());
-            GDataButton[i].setActionCommand(viewGData[i].getLabel());
-            GDataButton[i].setFont(new Font("Monospaced", Font.PLAIN, 12));            
-            //GDataButton[i].setBackground();
-            //GDataButton[i].setForeground();            
-            GDataButton[i].addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (YGlobals.YISAPPLET) {
-                            if (DEViseGlobals.browser != null) {
-                                try {
-                                    URL url = new URL(event.getActionCommand());
-                                    DEViseGlobals.browser.showDocument(url, "_blank");
-                                } catch (MalformedURLException e) {
-                                }
-                            }
-                        }
-                    }
-                });
-                
-            GDataButton[i].addMouseListener(new MouseAdapter() 
-                {              
-                    public void mouseEntered(MouseEvent event)
-                    {                           
-                        //YGlobals.Ydebugpn("Mouse entered!");                                               
-                        Component c = event.getComponent(); 
-                        if (c != labeledButton) {
-                            labeledButton = (Button)c;
-                            Point p = event.getPoint();         
-                            jscreen.drawButtonLabel(true, c, p);                        
-                        }
-                    }
-                });
-            /*
-            GDataButton[i].addFocusListener(new FocusAdapter()
-                {
-                    boolean isFocus = false;
-                    
-                    public void focusGained(FocusEvent event)
-                    {
-                        if (!isFocus) {
-                            isFocus = true;
-                            Component c = event.getComponent();
-                            jscreen.drawButtonLabel(true, c, new Point(0, 0));
-                        }                        
-                    }
-                    
-                    public void focusLost(FocusEvent event)
-                    { 
-                        if (true) {
-                            isFocus = false;
-                            jscreen.drawButtonLabel(false, null, null);
-                        }                        
-                    }
-                });
-            */        
-            add(GDataButton[i]);
-        }   
-    }
-    
-    
     // Enable reliable light weight component paint
     public void repaint()
     {
@@ -405,24 +280,6 @@ public class DEViseWindow extends Container
     {
         if (winImage != null) {
             g.drawImage(winImage, 0, 0, this);
-
-            if (viewGData != null) {
-                if (GDataType == 0) {
-                    if (GDataImage == null) {
-                        buildGDataImage();
-                    }
-
-                    if (GDataImage != null) {
-                        for (int i = 0; i < GDataImage.length; i++) {
-                            g.drawImage(GDataImage[i], viewGData[i].x, viewGData[i].y, this);
-                        }                        
-                    }
-                } else if (GDataType == 1) {
-                    if (GDataButton == null) {
-                        buildGDataButton();
-                    }
-                }
-            }
             
             if (viewCursor != null) {
                 if (cursorImage == null) {
@@ -774,12 +631,7 @@ public class DEViseWindow extends Container
                 jscreen.setCurrentWindow(DEViseWindow.this); 
                 jscreen.setFocusToCurrentWindow();
             }
-            
-            if (labeledButton != null) {
-                labeledButton = null;
-                jscreen.drawButtonLabel(false, null, null);
-            }
-            
+
             if (currentView != null && currentView.isCurrent(p)) {
                 //isViewFirstTime = false;
                 jsc.viewInfo.updateInfo(p.x, p.y);
