@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1998/02/04 20:22:05  zhenhai
+  Fixed bugs of displaying date and customized text at axis.
+
   Revision 1.61  1998/01/23 20:37:54  zhenhai
   Fixed a bug on transformation which was caused by inconsistency between origins
   or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
@@ -910,8 +913,10 @@ protected:
       reportErrNosys("WindowRep::PushClip: overflow");
       Exit::DoExit(1);
     };
+#if 0
     cout << "Clip current " << _clipCurrent << " to "
 	 << _clipCurrent+1 << endl;
+#endif
     ClipRect *rect = &_clippings[++_clipCurrent];
     rect->x = x; rect->y = y; rect->width = w; rect->height = h;
   }
@@ -922,8 +927,10 @@ protected:
       reportErrNosys("WindowRep::PopClip: underflow");
       Exit::DoExit(1);
     }
+#if 0
     cout << "Clip current " << _clipCurrent << " to "
 	 << _clipCurrent-1 << endl;
+#endif
     _clipCurrent--;
   }
 
