@@ -36,7 +36,7 @@ LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
 	WindowRep.o WinClassInfo.o XBitmap.o XDisplay.o XWindowRep.o \
 	TileLayout.o
 
-OTHERSRC= testWindowRep.c testViewWin.c testView.c jstat.c
+OTHERSRC= testWindowRep.c jstat.c
 
 allobj.o: $(LIBOBJ)
 	$(LD) -r -o $@ $(LIBOBJ)
@@ -58,14 +58,6 @@ lib: $(LIBOBJ)
 jstat: jstat.o $(LIBOBJ)
 	$(CC) -o jstat jstat.o $(LIBOBJ) -lXaw -lXmu -lXt -lXext -lX11 -lm
 
-testView: allobj.o testView.o
-	$(CC) -o testView testView.o allobj.o -lXaw -lXmu -lXt -lXext \
-		-lX11 -lm -l44bsd
-
-testViewWin: allobj.o testViewWin.o
-	$(CC) -o testViewWin testViewWin.o allobj.o -lXaw -lXmu -lXt -lXext \
-		-lX11 -lm -l44bsd
-	
 testWindowRep: testWindowRep.o allobj.o
 	$(CC) -o testWindowRep testWindowRep.o allobj.o -lXaw -lXmu -lXt \
 		-lXext -lX11 -lm -l44bsd
