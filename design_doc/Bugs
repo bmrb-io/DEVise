@@ -2396,10 +2396,12 @@ Num Date        Status  Description
 			never gets the key release event (unless you wait
 			until it has finished receiving all commands from
 			the devised).
+			(Workaround by rkw, 8/7/00.)
 
-608 8/7/00	OPEN	JavaScreen: load Misc/FamMed_pre_post_natal.ds; you
+608 8/7/00	FIXED	JavaScreen: load Misc/FamMed_pre_post_natal.ds; you
 			get NullPointerExceptions every time you move the mouse
 			in a view. (rkw)
+			(Fixed by rkw, 8/7/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

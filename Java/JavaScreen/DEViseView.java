@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2000/08/07 04:45:25  venkatan
+// YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
+//
 // Revision 1.53  2000/07/21 16:26:19  venkatan
 // *** empty log message ***
 //
@@ -498,8 +501,8 @@ public class DEViseView
 
     public String getX(int x)
     {
-	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX.equals("-")){
-
+	if(!isViewInfo || viewDimension == 3 ||
+	  (viewInfoFormatX != null && viewInfoFormatX.equals("-"))){
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
@@ -542,7 +545,8 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
-	if(!isViewInfo || viewDimension == 3 || viewInfoFormatY.equals("-")){
+	if(!isViewInfo || viewDimension == 3 ||
+	  (viewInfoFormatY != null && viewInfoFormatY.equals("-"))){
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
