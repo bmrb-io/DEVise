@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/23 19:50:43  jussi
+  Enabled queries of scatter plot data. Limited text window dump
+  size to 500 lines.
+
   Revision 1.11  1996/04/22 21:38:04  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -294,7 +298,21 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   filter.flag = VISUAL_X;
   filter.xLow = x;
   filter.xHigh = xHigh;
-  
+
+  if (!approxFlag) {
+    // for scatter plot, we filter using Y coordinates as well;
+    // allow user inaccuracy that is five times larger than for
+    // sortedX views (where approximation is used anyway), that is,
+    // roughly five pixels in each direction
+    filter.flag = VISUAL_X | VISUAL_Y;
+    float xDiff = 10 * fabs(xHigh - x);
+    float yDiff = 10 * fabs(yHigh - y);
+    filter.xLow  = x - xDiff / 2;
+    filter.xHigh = x + xDiff / 2;
+    filter.yLow  = y - yDiff / 2;
+    filter.yHigh = y + yDiff / 2;
+  }
+
   Boolean tooMuch = false;
   qp->InitTDataQuery(map, filter, approxFlag);
 
