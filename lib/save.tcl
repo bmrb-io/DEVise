@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1997/04/14 20:46:03  donjerko
+#  DTE files are recognized as one begining with "." but not with "./".
+#
 #  Revision 1.32  1997/03/20 20:46:08  donjerko
 #  DTE Tdata generates unique names by appending sequential numbers to the
 #  end of the table name. This way, same table can be opened multiple times.
@@ -731,6 +734,7 @@ proc SaveDataSources { fileId asExport asTemplate withData
 
 # Save the commands to create the TDatas to the given file.
 proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
+    global derivedSourceList schemadir
     upvar $fileDictRef fileDict
 
     set totalTData 0
@@ -782,9 +786,24 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
 			puts $fileId "\t\treturn 0"
 			puts $fileId "\t\}"
 			puts $fileId "\tset sname \[lindex \$source 0\]"
-			puts $fileId "\tset param \[lindex \$source 1\]"
+			set pos [string first : $sname]
+			set catName ""
+			if {$pos > 0} {
+				set catName [string range $sname 0 [expr $pos - 1]]
+			}
+			if { $catName == "GstatXDTE" } {
+				set command [lindex $derivedSourceList($sname) 7]
+				puts $fileId "\tset param \"$command\""
+			} else {
+				puts $fileId "\tset param \[lindex \$source 1\]"
+			}
 			puts $fileId "\tset stype \[lindex \$source 2\]"
 			puts $fileId "\tDEVise create tdata \{$class\} \$sname \$stype \$param"
+			if { $catName == "GstatXDTE" } {
+				puts $fileId "\tset sourcedef \[list \"GDATASTAT_X_DTE\" \"\" \"GDATASTAT\" $schemadir/physical/GDATASTAT \"\" \"\" \"\" \$param\]"
+				puts $fileId "\tset \"derivedSourceList\(\$sname\)\" \$sourcedef"
+		        }
+
 			puts $fileId "\tif \{\$sname != \$$tdataVar\} \{"
 			puts $fileId "\t\tset loadPixmap 0"
 			puts $fileId "\t\tset $tdataVar \$sname"
