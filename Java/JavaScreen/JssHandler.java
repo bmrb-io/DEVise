@@ -24,7 +24,7 @@ public class JssHandler implements Runnable
 
         pop = j;
 
-        System.out.println("\nTry to start jss server socket at port " + DEViseGlobals.JSPOPPORT + " ...\n");
+        System.out.println("\nTry to start jss server socket at port " + jspopPort + " ...\n");
         try {
             jssServerSocket = new ServerSocket(jspopPort);
         } catch (IOException e) {

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2000/02/14 09:26:32  hongyu
+// *** empty log message ***
+//
 // Revision 1.19  2000/01/19 20:41:13  hongyu
 // *** empty log message ***
 //
@@ -597,7 +600,7 @@ public class jspop implements Runnable
             } else if (args[i].startsWith("-jspopport")) {
                 if (!args[i].substring(10).equals("")) {
                     try {
-                        int jspopPort = Integer.parseInt(args[i].substring(10));
+                        jspopPort = Integer.parseInt(args[i].substring(10));
                         if (jspopPort < 1024 || jspopPort > 65535) {
                             throw new NumberFormatException();
                         }

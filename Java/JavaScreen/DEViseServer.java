@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2000/02/14 09:26:24  hongyu
+// *** empty log message ***
+//
 // Revision 1.27  2000/01/19 20:41:03  hongyu
 // *** empty log message ***
 //
@@ -865,7 +868,7 @@ public class DEViseServer implements Runnable
         while (!isEnd) {
             try {
                 data = socket.receiveData(size);
-                pop.pn("Successfully received data from devised(" + hostname + ") of size " + size);
+                pop.pn("Successfully received data from devised(" + hostname + "at " + cmdPort + ") of size " + size);
                 isEnd = true;
             } catch (InterruptedIOException e) {
                 time += socketTimeout;
@@ -892,7 +895,7 @@ public class DEViseServer implements Runnable
 
         Vector rspbuf = new Vector();
 
-        pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + " ) :  \"" + clientCmd + "\"");
+        pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + ") :  \"" + clientCmd + "\"");
         socket.sendCmd(clientCmd);
 
         isEnd = false;
@@ -903,7 +906,7 @@ public class DEViseServer implements Runnable
             while (!isFinish) {
                 try {
                     response = socket.receiveCmd();
-                    pop.pn("Receive response from devised(" + hostname + ") :  \"" + response + "\"");
+                    pop.pn("Receive response from devised(" + hostname + " at " + cmdPort + ") :  \"" + response + "\"");
                     isFinish = true;
                 } catch (InterruptedIOException e) {
                     time += socketTimeout;

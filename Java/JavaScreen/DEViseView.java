@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  1999/12/07 23:18:21  hongyu
+// *** empty log message ***
+//
 // Revision 1.36  1999/10/10 08:49:53  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -176,12 +179,12 @@ public class DEViseView
         if (view != null) {
             for (int i = 0; i < viewPiledViews.size(); i++) {
                 DEViseView v = (DEViseView)viewPiledViews.elementAt(i);
-                if (view.viewZ > v.viewZ) {
+                if (view.viewZ < v.viewZ) {
                     viewPiledViews.insertElementAt(view, i);
                     return;
                 }
             }
-                
+
             viewPiledViews.addElement(view);
         }
     }
