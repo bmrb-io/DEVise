@@ -74,11 +74,11 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Engine.c Aggregates.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
-	ExecOp.c Inserter.c TypeCheck.c \
+	ExecOp.c ExecExpr.c Inserter.c TypeCheck.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
-	RelationId.c DataRead.c ExecExpr.c
+	RelationId.c DataRead.c ODBCParse.c ODBCInfo.c ODBCList.dummy.c
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
@@ -234,4 +234,4 @@ clean: mostlyclean
 	-rm $(LIBNAME) dte gui core script server $(YACC_SRC)
 
 mostlyclean:
-	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o Server.o
