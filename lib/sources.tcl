@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.64  1997/03/23 23:46:28  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.63  1997/03/20 22:37:42  guangshu
 #	Added GDATASTAT_X AND GDATASTAT_Y.
 #
@@ -1438,9 +1441,13 @@ proc isCached {dispname startrec endrec} {
     set key [lindex $sourcedef 1]
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
+
+    puts "isCached dispname=$dispname, command=$command"
     
     if {$source == "DQL" || $source == "WWW" || $source == "BASICSTAT" \
-	||$source=="HISTOGRAM"||$source=="GDATASTAT_X"||$source =="GDATASTAT_Y"} {
+	||$source=="HISTOGRAM"||$source=="GDATASTAT_X"||$source=="GDATASTAT_X_DATE" \
+	|| $source=="HISTOGRAM_DATE"||$source =="GDATASTAT_Y" \
+	||$source =="GDATASTAT_Y_DATE" ||$source =="GDATASTAT_X_DTE" } {
         return $command
     }
 
@@ -1698,8 +1705,9 @@ proc getCacheName {source key} {
     global cachedir
 
     if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT" \
-		|| $source == "HISTOGRAM" || $source == "GDATASTAT_X \
-		|| $source == "GDATASTAT_Y"} {
+		|| $source == "HISTOGRAM" || || $source == "HISTOGRAM_DATE" \
+		|| $source == "GDATASTAT_X" || $source == "GDATASTAT_X_DATE" \
+		|| $source == "GDATASTAT_Y" || $source == "GDATASTAT_Y_DATE"} {
 	return ""
     }
 
@@ -2120,7 +2128,7 @@ proc updateSources {} {
 proc scanDerivedSources {} {
     global derivedSourceList schemadir
 
-    catch { unset derivedSourceList }
+#    catch { unset derivedSourceList }
 
     foreach view [ViewSet] {
 	set sname "Stat: $view"
@@ -2141,7 +2149,17 @@ proc scanDerivedSources {} {
 	set source "HISTOGRAM"
 	set schematype HISTOGRAM
 	set schemafile $schemadir/physical/HISTOGRAM
-	set command "Hist:$view"
+	set command "Hist: $view"
+
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
+
+	set sname "HistDate: $view"
+	set source "HISTOGRAM_DATE"
+	set schematype HISTOGRAM_DATE
+	set schemafile $schemadir/physical/HISTOGRAM_DATE
+	set command "HistDate: $view"
 
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
@@ -2156,11 +2174,41 @@ proc scanDerivedSources {} {
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
 
+	set sname "GstatXDTE: $view"
+	set source "GDATASTAT_X_DTE"
+	set schematype GDATASTAT_X_DTE
+	set schemafile $schemadir/physical/GDATASTAT_X_DTE
+	set command "GstatXDTE: $view"
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set err [catch {set exists $derivedSourceList($sname)}]
+	if { $err } {
+	        set "derivedSourceList($sname)" $sourcedef
+	}
+
+	set sname "GstatXDate: $view"
+	set source "GDATASTAT_X_DATE"
+	set schematype GDATASTAT_X_DATE
+	set schemafile $schemadir/physical/GDATASTAT_X_DATE
+	set command "GstatXDate: $view"
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
+
 	set sname "GstatY: $view"
 	set source "GDATASTAT_Y"
 	set schematype GDATASTAT
 	set schemafile $schemadir/physical/GDATASTAT
 	set command "GstatY: $view"
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
+
+	set sname "GstatYDate: $view"
+	set source "GDATASTAT_Y_DATE"
+	set schematype GDATASTAT_Y_DATE
+	set schemafile $schemadir/physical/GDATASTAT_Y_DATE
+	set command "GstatYDate: $view"
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
