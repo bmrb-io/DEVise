@@ -24,8 +24,10 @@ generic.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-generic.o: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
-generic.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
 generic.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h

@@ -4,10 +4,12 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-AttrList.o: /usr/include/stdio.h AttrList.h /usr/include/sys/time.h
+AttrList.o: /usr/include/stdio.h /usr/include/unistd.h
+AttrList.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+AttrList.o: /usr/include/sys/sysmacros.h AttrList.h /usr/include/sys/time.h
 AttrList.o: /usr/include/sys/time.h DeviseTypes.h Config.h DList.h Exit.h
-AttrList.o: Util.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-AttrList.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+AttrList.o: Util.h /usr/include/stdlib.h /usr/include/string.h
+AttrList.o: /usr/include/ctype.h /usr/include/math.h
 AttrList.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 AxisLabelClassInfo.o: /usr/include/stdio.h AxisLabelClassInfo.h DeviseTypes.h
 AxisLabelClassInfo.o: ClassDir.h View.h Dispatcher.h /usr/include/stdlib.h
@@ -86,7 +88,20 @@ Dispatcher.o: /usr/include/memory.h /usr/include/sys/time.h
 Dispatcher.o: /usr/include/sys/time.h /usr/include/fcntl.h
 Dispatcher.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 Dispatcher.o: /usr/include/sys/stat.h /usr/include/sys/types.h
-Dispatcher.o: /usr/include/sys/sysmacros.h Dispatcher.h /usr/include/stdio.h
+Dispatcher.o: /usr/include/sys/sysmacros.h ../graphics.new/machdep.h
+Dispatcher.o: /usr/include/limits.h /usr/include/sys/param.h
+Dispatcher.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+Dispatcher.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+Dispatcher.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Dispatcher.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Dispatcher.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Dispatcher.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Dispatcher.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Dispatcher.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Dispatcher.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Dispatcher.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Dispatcher.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Dispatcher.o: /usr/include/netinet/in.h Dispatcher.h /usr/include/stdio.h
 Dispatcher.o: /usr/include/stdlib.h /usr/include/unistd.h DeviseTypes.h
 Dispatcher.o: DList.h Exit.h Journal.h VisualArg.h Color.h Pattern.h
 Dispatcher.o: Control.h ClassDir.h Init.h BufPolicy.h Selection.h View.h
@@ -296,7 +311,9 @@ XDisplay.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
 XDisplay.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 XWindowRep.o: /usr/include/unistd.h /usr/include/sys/types.h
 XWindowRep.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-XWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h XWindowRep.h
+XWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h
+XWindowRep.o: /usr/include/ctype.h /s/X11/include/X11/keysym.h
+XWindowRep.o: /s/X11/include/X11/keysymdef.h XWindowRep.h
 XWindowRep.o: /usr/include/string.h /usr/include/math.h
 XWindowRep.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 XWindowRep.o: WindowRep.h /usr/include/stdio.h /usr/include/stdlib.h Geom.h
@@ -309,15 +326,14 @@ XWindowRep.o: Display.h Dispatcher.h Journal.h ColorMgr.h XBitmap.h Init.h
 XWindowRep.o: BufPolicy.h xv.h /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 XWindowRep.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
 XWindowRep.o: /usr/include/sys/time.h /usr/include/sys/time.h
-XWindowRep.o: /usr/include/ctype.h /usr/include/malloc.h
-XWindowRep.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
-XWindowRep.o: /s/X11/include/X11/keysymdef.h /s/X11/include/X11/Intrinsic.h
-XWindowRep.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
-XWindowRep.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-XWindowRep.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-XWindowRep.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
-XWindowRep.o: /usr/include/signal.h /usr/include/sys/signal.h
-XWindowRep.o: /usr/include/vm/faultcode.h
+XWindowRep.o: /usr/include/malloc.h /s/X11/include/X11/cursorfont.h
+XWindowRep.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xresource.h
+XWindowRep.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
+XWindowRep.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
+XWindowRep.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/Xatom.h
+XWindowRep.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
+XWindowRep.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+XWindowRep.o: ../graphics.new/MapIntToInt.h ../graphics.new/DeviseKey.h
 XawControl.o: /usr/include/stdio.h /usr/include/stdlib.h
 XawControl.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
 XawControl.o: /usr/include/sys/time.h /usr/include/sys/resource.h

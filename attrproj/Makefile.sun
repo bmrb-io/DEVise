@@ -18,21 +18,20 @@ ApInit.o: /usr/include/ctype.h /usr/include/math.h
 ApInit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ApParseCat.o: /usr/include/stdio.h ApParseCat.h ../graphics/DeviseTypes.h
 ApParseCat.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-ApParseCat.o: ../graphics.new/RecOrder.h ../graphics/AttrList.h
-ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-ApParseCat.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat.o: /usr/include/sys/stdtypes.h
-ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
-ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
-ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics/Dispatcher.h
-ApParseCat.o: /usr/include/unistd.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/DataSource.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics/Exit.h
+ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
+ApParseCat.o: ../graphics/DList.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat.o: ApInit.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
+ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -40,10 +39,12 @@ AttrProj.o: /usr/include/stdio.h /usr/include/string.h
 AttrProj.o: /usr/include/sys/stdtypes.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj.o: ../graphics.new/DataSource.h /usr/include/sys/types.h
+AttrProj.o: /usr/include/sys/sysmacros.h ../graphics/Exit.h
 AttrProj.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
 AttrProj.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-AttrProj.o: ../graphics/Exit.h ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
 AttrProj.o: ../graphics/Config.h ../graphics/DList.h
 AttrProj.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h ProjectionList.h
