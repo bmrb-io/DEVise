@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/08/11 18:06:36  wenger
+  Switched over to simplified JavaScreen startup protocol; added isDir
+  and priority args to session list.
+
   Revision 1.17  1998/08/11 13:43:23  wenger
   Server responds to KeyAction commands from JavaScreen (still needs event
   coordinates); did some cleanup of the ActionDefault class.
@@ -179,7 +183,18 @@ JavaScreenCmd::GetSessionList()
 	fflush(stdout);
 #endif
 
-	UpdateSessionList();
+	if (_argc == 0) {
+		// No directory name specified.
+	    UpdateSessionList(NULL);
+	} else if (_argc == 1) {
+		// Directory name specified.
+		UpdateSessionList(_argv[0]);
+	} else {
+		// Wrong number of arguments.
+		errmsg = "{Usage: GetSessionList [directory name]}";
+		_status = ERROR;
+	}
+	return;
 }
 
 void
@@ -205,9 +220,7 @@ JavaScreenCmd::OpenSession()
 	struct stat buf;
 	stat(fullpath, &buf);
 	if (S_ISDIR(buf.st_mode)) {
-		delete [] _sessionDir;
-		_sessionDir = CopyString(fullpath);
-		UpdateSessionList();
+		UpdateSessionList(_argv[0]);
 		return;
 	}
 
@@ -1166,10 +1179,17 @@ JavaScreenCmd::CloseJavaConnection()
 	server->CloseClient();
 }
 
-void JavaScreenCmd::UpdateSessionList()
+void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
 	if (_sessionDir == NULL) {
 		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
+	}
+
+	if (dirName != NULL) {
+	    char fullpath[MAXPATHLEN];
+	    sprintf(fullpath, "%s/%s", _sessionDir, dirName);
+		delete [] _sessionDir;
+		_sessionDir = CopyString(fullpath);
 	}
 
 	ArgList files;

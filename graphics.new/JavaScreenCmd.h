@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/08/03 18:38:40  wenger
+  Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
+  implemented several other new commands for the JavaScreen.
+
   Revision 1.8  1998/06/17 17:20:42  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -191,6 +195,6 @@ class JavaScreenCmd
 		void FillInt(char** argv, int& pos, int i);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
-		void UpdateSessionList();
+		void UpdateSessionList(char *dirName);
 };
 #endif

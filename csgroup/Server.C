@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/08/11 18:06:29  wenger
+  Switched over to simplified JavaScreen startup protocol; added isDir
+  and priority args to session list.
+
   Revision 1.16  1998/08/11 13:42:03  wenger
   Implemented new JavaScreen startup protocol (currently runs old one until
   Hongyu commits new JavaScreen code).
@@ -143,6 +147,10 @@
 #include "Init.h"
 
 //#define USE_JS_PROTOCOL // Whether to use protocol as defined by API.txt.
+
+#if !defined(USE_JS_PROTOCOL)
+int _clientSlot = CLIENT_INVALID;
+#endif
 
 Server* _ThisServer;
 
@@ -477,6 +485,8 @@ void Server::WaitForConnection()
 	// echo back the "slot" number as a handle for the client
 	// a JAVA client will later use this handle to identify a connection
 	int nbytes = writeInteger(clientfd, slot);
+#else
+	_clientSlot = slot;
 #endif
     if (slot < 0)
     {
@@ -547,6 +557,7 @@ Server::CloseImageConnection(ClientID cid)
 	if (_clients[cid].imagefd >0)
 	{
 		close(_clients[cid].imagefd);
+		_clients[cid].imagefd = -1;
 	}
 	else
 	{
@@ -557,6 +568,10 @@ Server::CloseImageConnection(ClientID cid)
 void 
 Server::WaitForImageportConnection()
 {
+#if defined(DEBUG)
+    printf("Server::WaitForImageportConnection()\n");
+#endif
+
 	int		imagefd;
     struct 	sockaddr_in tempaddr;
     int 	len = sizeof(tempaddr);
@@ -591,6 +606,10 @@ Server::WaitForImageportConnection()
 	}
 	else
 	{
+#else
+        slotno = _clientSlot;
+		_clientSlot = CLIENT_INVALID;
+#endif // USE_JS_PROTOCOL
 		if ((slotno <0)||(slotno >= _maxClients))
 		{
 			fprintf(stderr, "Invalid slot no\n");
@@ -611,6 +630,7 @@ Server::WaitForImageportConnection()
 			char*	retval=
 				JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::DONE);
 
+#if defined(USE_JS_PROTOCOL)
 			// send confirmation to client's image port
 			writeInteger(imagefd, slotno);
 
@@ -619,9 +639,11 @@ Server::WaitForImageportConnection()
 			char* argv[1]={buf};
 			sprintf(buf, "%s", retval);
 			ReturnVal(slotno, API_JAVACMD, 1, &argv[0], false);
+#endif // USE_JS_PROTOCOL
 		}
+#if defined(USE_JS_PROTOCOL)
 	}
-#endif
+#endif // USE_JS_PROTOCOL
 }
 
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)

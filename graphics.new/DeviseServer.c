@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/02 09:00:43  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.7  1998/03/02 22:03:41  taodb
   Add control parameter to Run() invocations
 
@@ -283,6 +286,11 @@ DeviseServer::EndConnection(ClientID clientID)
 int 
 DeviseServer::WriteImagePort(const void* buf, int nsize)
 {
+#if defined(DEBUG)
+    printf("DeviseServer::WriteImagePort(%d)\n", nsize);
+	printf("  _currentClient = %d\n", _currentClient);
+#endif
+
 	if (_currentClient == CLIENT_INVALID)
 	{
 		fprintf(stderr, "No client was specified\n");
