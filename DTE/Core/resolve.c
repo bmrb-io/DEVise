@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/11/23 02:00:44  donjerko
+  Restructered DTE directory
+
   Revision 1.3  1996/11/21 16:21:26  wenger
   Updated dependencies; fixed some compile errors and warnings.
 
@@ -31,7 +34,7 @@
 BaseSelection* PrimeSelection::filter(Site* site){
 	Path* endPath = NULL;
 	Path* nextGlobal = NULL;
-	if(!site->have(alias)){
+	if(*alias != "" && !site->have(alias)){
 		if(nextPath){
 			nextPath->propagate(site);
 		}
@@ -43,8 +46,14 @@ BaseSelection* PrimeSelection::filter(Site* site){
 	if(endPath){
 		nextGlobal = endPath->nextPath;
 		endPath->nextPath = NULL;
+		return new GlobalSelect(site, this, nextGlobal);
 	}
-	return new GlobalSelect(site, this, nextGlobal);
+	else if(*alias == ""){
+		return NULL;	// This global function cannot be done on this site
+	}
+	else{
+		return new GlobalSelect(site, this, nextGlobal);
+	}
 }
 
 bool PrimeSelection::exclusive(Site* site){
@@ -211,17 +220,24 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
      Site* current = sites->get();
 	List<BaseSelection*>* selList = current->getSelectList();
 	selList->rewind();
+	int i = 0;
+	assert(alias);
+	if(*alias == ""){
+		assert(!"Typifying functions not implemented");
+	}
 	while(!selList->atEnd()){
 		Path* upTo = NULL;
 		if(match(selList->get(), upTo)){
 			if(upTo){
-				assert(!"not implemented");
+				assert(!"Typifying functions not implemented");
 			}
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
+			position = i;
 			return typeID;
 		}
 		selList->step();
+		i++;
 	}
 	ostrstream tmp;
 	displayList(tmp, selList);

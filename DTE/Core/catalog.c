@@ -3,7 +3,6 @@
 #include "GeneralRead.h"
 #include "DevRead.h"
 #include "StandardRead.h"
-#include "ApInit.h" /* for DoInit */
 #include "string.h"
 #include "url.h"
 #include <iostream.h>
@@ -11,9 +10,6 @@
 Site* Catalog::DeviseInterface::getSite(){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
-#ifdef StandAlone
-	Init::DoInit();
-#endif
 	GeneralRead* unmarshal = new DevRead(schema, data);
      return new LocalTable("", unmarshal);	
 }

@@ -111,6 +111,15 @@ public:
 		assert(nextPath == NULL);
 		nextPath = np;
 	}
+	String* getPathName(){
+		return path;
+	}
+	virtual bool isFunction(){
+		return false;
+	}
+	virtual List<BaseSelection*>* getArgs(){
+		return NULL;	// implemented for functions only;
+	}
 };
 
 class BaseSelection{
@@ -236,6 +245,12 @@ public:
 			// nextPath->distributeWrapper(site);
 		}
 		return NULL;
+	}
+	virtual bool isGlobal(){
+		return false;
+	}
+	Path* getPath(){
+		return nextPath;
 	}
 };
 
@@ -682,7 +697,7 @@ public:
 class Method : public Path {
 	List<BaseSelection*>* args; 
 public:
-	Method(String* p, List<BaseSelection*>* a = NULL, Path* n = NULL)
+	Method(String* p, List<BaseSelection*>* a, Path* n = NULL)
 		: Path(p, n), args(a) {}
 	virtual void display(ostream& out, int detail = 0){
 		assert(path);
@@ -753,6 +768,12 @@ public:
 		assert(!"Method execution not supported yet");
 		return false;
      }
+	virtual bool isFunction(){
+		return true;
+	}
+	virtual List<BaseSelection*>* getArgs(){
+		return args;
+	}
 };
 
 class ArithmeticOp : public Operator {
@@ -835,13 +856,15 @@ class PrimeSelection : public BaseSelection{
 	String* alias;
 	TypeID typeID;
 	int avgSize;	// to estimate result sizes
+	int position;  // position of this selection in a tuple
 public:
 	PrimeSelection(String* a, Path* n = NULL, TypeID typeID = "Unknown",
 		int avgSize = 0) : 
           BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize) {}
      virtual void display(ostream& out, int detail = 0){
-		assert(alias);
-		out << *alias;
+		if(alias){
+			out << *alias;
+		}
 		BaseSelection::display(out, detail);
 		if(detail){
                out << "% size = " << avgSize;
@@ -851,12 +874,12 @@ public:
 	virtual BaseSelection* filter(Site* site);
 	virtual bool exclusive(Site* site);
 	virtual BaseSelection* duplicate(){
+		String* dupAlias = (alias ? new String(*alias) : (String*) NULL);
 		if(nextPath){
-			return new PrimeSelection(
-				new String(*alias), nextPath->duplicate());
+			return new PrimeSelection(dupAlias, nextPath->duplicate());
 		}
 		else{
-			return new PrimeSelection(new String(*alias));
+			return new PrimeSelection(dupAlias);
 		}
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
@@ -877,6 +900,7 @@ public:
                Path* upTo = NULL;
 			if(match(selList->get(), upTo)){
 				BaseSelection* retVal;
+				assert(i == position);
                     retVal = new ExecSelect(leftRight, i, upTo);
 				TRY(BaseSelection::enumerate(site1, list1, site2, list2),
 					NULL);
@@ -898,6 +922,8 @@ public:
                return false;
           }
 		PrimeSelection* y = (PrimeSelection*) x;
+		assert(y->alias);
+		assert(alias);
 		if(*alias != *y->alias){
 			return false;
 		}
@@ -916,11 +942,15 @@ public:
 		return avgSize;
 	}
 	virtual bool checkOrphan(){
+		assert(alias);
 		String msg = "Table " + *alias + " is not listed in FROM clause";
 		THROW(new Exception(msg), false);
 	}
 	virtual BaseSelection* distributeWrapper(Site* site){
 		return new GlobalSelect(site, this, NULL); 
+	}
+	virtual bool isGlobal(){
+		return *alias == "";
 	}
 };
 

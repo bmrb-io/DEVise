@@ -9,11 +9,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#ifdef StandAlone
-	#include <netdb.h>
-#else
-	#include "machdep.h"
-#endif
+// #include <netdb.h>
+#include "machdep.h"	// Could be removed in standalone case
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/socket.h>
@@ -29,10 +26,6 @@
 
 #ifdef ASYN_SOCK_REL
 #include <sys/time.h>
-#endif
-
-#ifndef StandAlone
-#include "Timer.h"
 #endif
 
 extern int errno;
@@ -265,20 +258,10 @@ int Cor_sockbuf::underflow()
                     // before we wait for input
     cp = eback();
 
-#ifdef StandAlone
-    int n = recv(_socketfd, cp, get_buffer_size, 0);
-#else
-    //Timer::StopTimer();
     int n;
     do {
-    		// n = recv(_socketfd, cp, get_buffer_size, 0);
     		n = read(_socketfd, cp, get_buffer_size);
-		// cerr << "read:" << _socketfd << n << ' ' << errno << ' ' << EINTR << endl;
 	} while(n == -1 && errno == EINTR);
-    //Timer::StartTimer();
-#endif
-
-    // int n = read(_socketfd, cp, get_buffer_size);
 
     if(n == 0){
 	   return(EOF);

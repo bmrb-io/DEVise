@@ -18,6 +18,7 @@
 #include "DevRead.h"
 #include "Engine.h"
 #include "listop.h"
+#include "Aggregates.h"
 
 const int DETAIL = 1;
 
@@ -95,11 +96,7 @@ int Engine::optimize(){
 	int numSites = 0;
 	Catalog catalog;
 	String catalogName;
-	#ifdef StandAlone
-		catalogName += getenv("PWD");
-	#else
-		catalogName += getenv("DEVISE_SCHEMA");
-	#endif
+	catalogName += getenv("DEVISE_SCHEMA");
 	catalogName += "/catalog.dte";
 	TRY(catalog.read(catalogName), 0);
      List<Site*>* sites = new List<Site*>;
@@ -120,6 +117,11 @@ int Engine::optimize(){
 			numSites++;
 		}
 		tableList->step();
+	}
+	Aggregates aggregates(selectList);
+	if(aggregates.isApplicable()){
+		cout << "Aggregates not implemented\n";
+		exit(1);
 	}
 	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
      sites->rewind();

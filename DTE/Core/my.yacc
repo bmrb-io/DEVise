@@ -114,6 +114,10 @@ selection :
 		namesToResolve->append(dummy); 
 		$$ = new PrimeSelection(dummy, new Path($1, NULL));
 	}
+	| STRING '(' listOfSelections ')' {
+		String* dummy = new String;
+		$$ = new PrimeSelection(dummy, new Method($1, $3, NULL));
+	}
 	| STRING_CONST {
 		$$ = new StringConstant($1);
 	}

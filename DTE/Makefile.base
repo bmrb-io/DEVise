@@ -33,7 +33,8 @@ CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-fexternal-templates \
 
 CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
-	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c
+	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c \
+	Aggregates.c
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
 	../attrproj/ApParseCat.c Dql.c DqlInclude.c

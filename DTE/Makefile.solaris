@@ -128,6 +128,36 @@ TuplePtr.XPlex.o: /usr/include/values.h ../graphics/DevStatus.h
 TuplePtr.XPlex.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Init.h
 TuplePtr.XPlex.o: ../graphics/BufPolicy.h /usr/include/stddef.h
 
+Aggregates.o: Aggregates.h types.h /usr/include/assert.h
+Aggregates.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+Aggregates.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+Aggregates.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Aggregates.o: /usr/include/sys/time.h /usr/include/netinet/in.h
+Aggregates.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Aggregates.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Aggregates.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+Aggregates.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+Aggregates.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+Aggregates.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+Aggregates.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Aggregates.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Aggregates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Aggregates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Aggregates.o: /usr/include/sys/byteorder.h exception.h
+Aggregates.o: ../../graphics.new/machdep.h /usr/include/limits.h
+Aggregates.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+Aggregates.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+Aggregates.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Aggregates.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+Aggregates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Aggregates.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Aggregates.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+Aggregates.o: /usr/include/values.h ../../graphics/DevStatus.h
+Aggregates.o: ../../graphics/DList.h ../../graphics/Exit.h
+Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h myopt.h
+Aggregates.o: queue.h url.h /usr/include/string.h /usr/include/stdio.h
+Aggregates.o: /usr/include/unistd.h SockStream.h listop.h site.h
+Aggregates.o: GeneralRead.h StandardRead.h
 DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevRead.o: /usr/include/string.h ../../graphics.new/machdep.h
 DevRead.o: /usr/include/limits.h /usr/include/sys/types.h
@@ -191,7 +221,7 @@ Engine.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 Engine.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 Engine.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
 Engine.o: StandardRead.h catalog.h DevRead.h ../../graphics.new/RecId.h
-Engine.o: Engine.h
+Engine.o: Engine.h Aggregates.h
 StandardRead.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 StandardRead.o: StandardRead.h GeneralRead.h types.h /usr/include/assert.h
 StandardRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
