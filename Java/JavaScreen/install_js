@@ -156,7 +156,7 @@ chmod 644 $servdir/JavaScreen/*.class
 cp -p *.java $servdir
 chmod 644 $servdir/*.java
 
-set files = "check_jss restart_jss jss DEVise.kill jss.kill ports+files DEVise.jspop DEVise.jspop_soil Tasvir get_timestamp"
+set files = "check_jss restart_jss jss DEVise.kill jss.kill ports+files DEVise.jspop DEVise.jspop_soil Tasvir get_timestamp jss_savepid DEVise_savepid"
 foreach file ($files)
   cp -p $file $servdir
   chmod 755 $servdir/$file
@@ -190,7 +190,7 @@ if (! -f $popdir/users.cfg) then
 endif
 
 # Keep run_check last because of cron job.
-set files = "check_connect check_jsall check_jspop jspop js js_cgi restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp run_top run_check"
+set files = "check_connect check_jsall check_jspop jspop js js_cgi restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp run_top run_check jspop_savepid"
 foreach file ($files)
   cp -p $file $popdir
   chmod 755 $popdir/$file
