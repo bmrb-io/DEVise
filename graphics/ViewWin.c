@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/11 17:56:11  jussi
+  Added Raise() and Lower(). Fixed a bug when MapChildren() updates
+  the sizes of the children but the View doesn't get notified of
+  the size change because the windowing system hasn't yet reported
+  it to the View.
+
   Revision 1.11  1996/04/09 20:34:32  jussi
   Minor fixes.
 
@@ -415,16 +421,20 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 
 void ViewWin::Raise()
 {
-  if (_windowRep)
+  if (_windowRep) {
     _windowRep->Raise();
+    _windowRep->Flush();
+  }
 }
 
 /* Lower window to bottom of stacking order */
 
 void ViewWin::Lower()
 {
-  if (_windowRep)
+  if (_windowRep) {
     _windowRep->Lower();
+    _windowRep->Flush();
+  }
 }
 
 #if defined(MARGINS) || defined(TK_WINDOW)
