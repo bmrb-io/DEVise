@@ -1,6 +1,23 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/19 15:57:45  jussi
+#	Minor changes in appearance of listbox contents.
+#
 #	Revision 1.1  1995/09/19 15:42:04  jussi
 #	Initial revision of archive.
 #
@@ -304,6 +321,10 @@ proc cstat_okOrCancel {msg} {
 ############################################################
 
 proc cstat_helpWindow {} {
+    # see if .help window already exists; if so, just return
+    set err [catch {set exists [wm state .help]}]
+    if {!$err} { wm deiconify .help; return }
+
     toplevel .help
     wm title .help "Help"
     wm geometry .help +100+300
@@ -321,8 +342,6 @@ proc cstat_helpWindow {} {
     pack .help.msg .help.ok -side top -padx 5m -pady 3m
 
     tkwait visibility .help
-    grab set .help
-    tkwait window .help
 }
 
 ############################################################
