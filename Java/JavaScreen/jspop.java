@@ -37,8 +37,8 @@ public class jspop implements Runnable
     public Vector servers = new Vector();
     public int maxServer = 1;
 
-    public int serverStartTimeout = 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
-    public int serverWaitTimeout = 60 * 1000; // wait for DEVise server response for 1 minutes before abort
+    public int serverStartTimeout = 5 * 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
+    public int serverWaitTimeout = 5 * 60 * 1000; // wait for DEVise server response for 1 minutes before abort
     public int jspopWaitTimeout = 5 * 1000; // wait client connection for 5 seconds before disconnect
     public int dispatcherTimestep = 1 * 1000; // do scheduling every 1 seconds
     public int cmdSocketTimeout = 1 * 1000; // interrupt cmdSocket every 1 seconds

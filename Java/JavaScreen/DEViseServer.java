@@ -8,11 +8,11 @@ public class DEViseServer implements Runnable
     private static String DEViseExec = new String("DEVise.jspop");
 
     private jspop pop = null;
-    private int serverStartTimeout = 10 * 1000;
-    private int serverStartTimestep = 2 * 1000;
-    private int serverWaitTimeout = 30 * 1000;
-    private int cmdSocketTimeout = 500;
-    private int imgSocketTimeout = 500;
+    private int serverStartTimeout = 60 * 1000;
+    private int serverStartTimestep = 5 * 1000;
+    private int serverWaitTimeout = 60 * 1000;
+    private int cmdSocketTimeout = 1000;
+    private int imgSocketTimeout = 1000;
     // when is current client been serviced
     private long clientStartTime = 0;
 
