@@ -409,6 +409,7 @@
 #include "DebugLog.h"
 #include "ElapsedTime.h"
 
+//#define DEBUG
 #define DEBUG_LOG
 #define JS_TIMER 1
 #define MONOLITHIC_TEST 0
@@ -1033,7 +1034,6 @@ JavaScreenCmd::GetSessionList()
 void
 JavaScreenCmd::OpenSession()
 {
-//TEMPTEMP -- changes here?
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message("JavaScreenCmd::OpenSession(", _argc,
 	  _argv, ")\n");
@@ -2191,6 +2191,11 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
     sprintf(logBuf, "JavaScreenCmd(0x%p)::ReturnVal(", this);
     DebugLog::DefaultLog()->Message(logBuf, argc, argv, ")\n");
 #endif
+#if defined(DEBUG)
+    printf("JavaScreenCmd::ReturnVal(");
+    PrintArgs(stdout, argc, argv, false);
+    printf(")\n");
+#endif
 
 #if 0 // I don't understand what the heck all of this junk is for, and taking
 	  // it out doesn't seem to change how anything works.  RKW 1998-08-28.
@@ -2239,7 +2244,6 @@ JavaScreenCmd::CloseJavaConnection()
 //====================================================================
 void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
-//TEMPTEMP -- changes here
 	const char *basePath = getenv("DEVISE_SESSION");
 
 	//
