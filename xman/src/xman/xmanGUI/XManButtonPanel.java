@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.Font;
 import java.awt.FlowLayout.*;
+import xman.xnav.*;
 //----------------------------------------------------------------------
 // Private imports
 //----------------------------------------------------------------------
