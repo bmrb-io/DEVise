@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/08/05 14:18:55  wenger
+  Moved disabling of stdout buffer to the very beginning to diagnostic
+  messages printed during startup are not lost when stdout is redirected
+  to a file.
+
   Revision 1.56  1998/07/29 14:20:12  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -1666,6 +1671,7 @@ int main(int argc, char **argv)
 #if 0
 extern "C" {
   void dlopen() {}
+  void dlclose() {}
   void dlsym() {}
   void dlerror() {}
 }

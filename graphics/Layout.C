@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/26 00:18:57  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.4  1997/11/24 23:14:22  weaver
   Changes for the new ColorManager.
 
@@ -166,7 +169,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
   if (_mode == STACKED) {
     // in a stacked view, all children get the total screen space;
     // only the top view is visible, and it's up to someone else
-    // to decide which view is on top
+    // to decide which view is on top
 #if defined(DEBUG)
     printf("Layout::MapChildren: stacking views\n");
 #endif
