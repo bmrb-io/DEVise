@@ -2435,6 +2435,10 @@ Num Date        Status  Description
 			devised starts to gobble up CPU. (rkw)
 			(Fixed by rkw, 9/1/00.)
 
+617 9/8/00	OPEN	Attempting to open bmrb/4096_side3h.ds results in
+			the following error: DList::InitIterator(): no more
+			space for iterators. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
