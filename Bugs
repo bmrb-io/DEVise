@@ -168,6 +168,9 @@ Num Date        Status  Description
 			mapping recId to X) xlow sometimes comes up
 			greater than xhigh. (rkw)
 
+053 10/21/96	OPEN	You run out of available file descriptors if you
+			have too many GDatas. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
