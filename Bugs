@@ -48,6 +48,9 @@ Num Date        Status  Description
 014 07/11/96	OPEN	Schema editor doesn't allow entry of string lengths
 			(always forces them to 10). (rkw)
 
+015 07/11/96	OPEN	HP version of Devise can't open the condorview1.tk
+			session. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

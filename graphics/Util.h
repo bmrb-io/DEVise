@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/19 19:56:26  wenger
+  Improved UtilAtof() to increase speed; updated code for testing it.
+
   Revision 1.7  1996/04/30 15:30:36  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -52,6 +55,7 @@
 #include <iostream.h>
 #include <math.h>
 
+#include "DeviseTypes.h"
 #include "Exit.h"
 
 /* get the name file was last modified */
@@ -77,6 +81,19 @@ inline void StripTrailingNewline(char *string)
   int len = strlen(string);
   if (len > 0 && string[len - 1] == '\n')
     string[len - 1] = '\0';
+}
+
+/* Determine whether a string is blank (consists only of whitespace
+ * characters). */
+inline Boolean IsBlank(char *string)
+{
+    while (*string != '\0')
+    {
+	if (!isspace(*string)) return false;
+	string++;
+    }
+
+    return true;
 }
 
 /* convert double to string */

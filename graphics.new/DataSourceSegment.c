@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/11 23:48:43  jussi
+  Had to undo previous "bug fix" -- it was not a bug after all,
+  I just had messed with the template file so the data segment
+  offset was incorrect.
+
   Revision 1.6  1996/07/11 23:36:43  jussi
   Fixed off-by-one error in gotoEnd().
 
@@ -66,6 +71,7 @@
 
 #include "DataSourceFileStream.h"
 #include "DataSourceTape.h"
+#include "DataSourceBuf.h"
 #include "DataSourceSegment.h"
 #include "Util.h"
 #include "DevError.h"
@@ -82,6 +88,7 @@ static char *	srcFile = __FILE__;
 
 template class DataSourceSegment<DataSourceFileStream>;
 template class DataSourceSegment<DataSourceTape>;
+template class DataSourceSegment<DataSourceBuf>;
 #ifndef ATTRPROJ
 template class DataSourceSegment<DataSourceWeb>;
 #endif

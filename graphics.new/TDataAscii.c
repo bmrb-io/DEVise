@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/07/05 15:20:01  jussi
+  Data source object is only deleted in the destructor. The dispatcher
+  now properly destroys all TData objects when it shuts down.
+
   Revision 1.30  1996/07/03 23:13:55  jussi
   Added call to _data->Close() in destructor. Renamed
   _fileOkay to _fileOpen which is more accurate.
@@ -147,6 +151,7 @@
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
+#include "DataSourceBuf.h"
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
@@ -169,6 +174,8 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
   DO_DEBUG(printf("TDataAscii::TDataAscii(%s, %s, %s, %d)\n",
                   name, type, param, recSize));
 
+  char *dataBuf = NULL;
+
   _name = name;
   _type = type;
   _param = param;
@@ -176,6 +183,9 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
   if (!strcmp(_type, "UNIXFILE")) {
     _file = CopyString(_param);
+  } else if (!strcmp(_type, "BUFFER")) {
+    dataBuf = param;
+    _file = NULL;// So delete doesn't crash in destructor.
 #ifndef ATTRPROJ
   } else if (!strcmp(_type, "WWW")) {
     _file = MakeCacheFileName(_name, _type);
@@ -219,6 +229,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
   }
   else
 #endif
+  if (!strcmp(_type, "UNIXFILE"))
   {
     if (strcmp(_file, segFile) || strcmp(_name, segLabel))
     {
@@ -248,6 +259,23 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
                                                             segOffset,
                                                             segLength);
       }
+    }
+  }
+  else
+  /* Buffer */
+  {
+    if (strcmp(_name, segLabel))
+    {
+      DOASSERT(false, "Data segment does not match tdata");
+    }
+    if ((segOffset == 0) && (segLength == 0))
+    {
+      _data = new DataSourceBuf(dataBuf, NULL);
+    }
+    else
+    {
+      _data = new DataSourceSegment<DataSourceBuf>(dataBuf, NULL, NULL,
+                                                   segOffset, segLength);
     }
   }
 

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/01 19:31:32  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.1  1996/05/22 17:52:00  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -56,7 +62,8 @@ static char *	srcFile = __FILE__;
 DataSourceBuf::DataSourceBuf(char *buffer, char *label, char *param) :
      DataSource(label)
 {
-	DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n", label));
+	DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n",
+		(label != NULL) ? label : "<null>"));
 
 	_sourceBuf = buffer;
 	_currentLoc = NULL;
@@ -158,15 +165,81 @@ DataSourceBuf::Fgets(char *buffer, int bufSize)
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::Fread
  * Simulate fread() on the buffer associated with this object.
+ * Note: no checking for going past end of buffer.
  */
 size_t
 DataSourceBuf::Fread(char *buf, size_t size, size_t itemCount)
 {
 	DO_DEBUG(printf("DataSourceBuf::Fread()\n"));
 
-	DOASSERT(0, "DataSourceBuf::Fread not yet implemented");
+	return Read(buf, size * itemCount) / size;
+}
 
-	return 0;
+/*------------------------------------------------------------------------------
+ * function: DataSourceBuf::Read
+ * Simulate read() on the buffer associated with this object.
+ * Note: no checking for going past end of buffer.
+ */
+size_t
+DataSourceBuf::Read(char *buf, int byteCount)
+{
+	DO_DEBUG(printf("DataSourceBuf::Read()\n"));
+
+	int		result = 0;
+
+	if (_currentLoc == NULL)
+	{
+		reportError("DataSourceBuf: not open", devNoSyserr);
+		result = -1;
+	}
+	else
+	{
+		memcpy(buf, _currentLoc, byteCount);
+		_currentLoc += byteCount;
+		result = byteCount;
+	}
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceBuf::Fwrite
+ * Simulate fwrite() on the buffer associated with this object.
+ * Note: no checking for going past end of buffer.
+ */
+size_t
+DataSourceBuf::Fwrite(const char *buf, size_t size, size_t itemCount)
+{
+	DO_DEBUG(printf("DataSourceBuf::Fwrite()\n"));
+
+	return Write(buf, size * itemCount) / size;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceBuf::Write
+ * Simulate write() on the buffer associated with this object.
+ * Note: no checking for going past end of buffer.
+ */
+size_t
+DataSourceBuf::Write(const char *buf, size_t byteCount)
+{
+	DO_DEBUG(printf("DataSourceBuf::Write()\n"));
+
+	int		result = 0;
+
+	if (_currentLoc == NULL)
+	{
+		reportError("DataSourceBuf: not open", devNoSyserr);
+		result = -1;
+	}
+	else
+	{
+		memcpy(_currentLoc, _currentLoc, byteCount);
+		_currentLoc += byteCount;
+		result = byteCount;
+	}
+
+	return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -193,6 +266,7 @@ DataSourceBuf::Seek(long offset, int from)
 
 	case SEEK_END:
 		(void) gotoEnd();
+		_currentLoc += offset;
 		break;
 
 	default:

@@ -43,6 +43,7 @@ LIBOBJ = \
 	../graphics.new/DataSource.o \
 	../graphics.new/DataSourceFileStream.o \
 	../graphics.new/DataSourceTape.o \
+	../graphics.new/DataSourceBuf.o \
 	../tape/tapedrive.o \
 	$(LOCALOBJ)
 

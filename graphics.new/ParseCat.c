@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/05/22 17:52:10  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.24  1996/05/07 22:28:37  jussi
   Moved the call to InsertCatFile() from ParseCatPhysical to
   ParseCat.
@@ -751,6 +756,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 		}
 		else
 		{
+		fprintf(stderr, "Error at %s: %d\n", __FILE__, __LINE__);
 	    	fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
 	    	goto error;
 		}
@@ -905,8 +911,14 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
   }
   _line = 0;
   
-  /* read the first line first */
-  schemaSource->Fgets(buf, LINESIZE);
+  /* Skip past any leading comment or blank lines, and past the line
+   * specifying the physical schema.  Note that the line specifying the
+   * physical schema MUST be the first nonblank, non-comment line. */
+  buf[0] = '\0';
+  while (IsBlank(buf) || (buf[0] == '#'))
+  {
+    schemaSource->Fgets(buf, LINESIZE);
+  }
   
   /* Let's add the group name to the directory now */
   /* The groups for a particular logical schema are identified by the 
@@ -977,6 +989,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
 	  }
       }
       else {
+	fprintf(stderr, "Error at %s: %d\n", __FILE__, __LINE__);
 	  fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
 	  goto error;
       }
@@ -1026,22 +1039,35 @@ ParseCat(char *catFile)
   }
   else
   {
-    char buf[100];
-    if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
+    char buf[LINESIZE];
+	// Find the first nonblank, non-comment line.
+    buf[0] = '\0';
+	while (IsBlank(buf) || (buf[0] == '#'))
 	{
-      fclose(fp);
+		fgets(buf, LINESIZE, fp);
+		StripTrailingNewline(buf);
+	}
+
+	fclose(fp);
+
+	// Look for the keyword 'physical' to determine whether this is a
+	// logical schema file.
+        // Note: we could parse the header here to look for logical schema file
+        // type, too.
+	char token1[LINESIZE];
+	char token2[LINESIZE];
+	sscanf(buf, "%s %s", token1, token2);
+
+    if (strcmp(token1, "physical"))
+	{
       DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
       result = ParseCatPhysical(&schemaSource, true);
       InsertCatFile(CopyString(catFile));
     }
     else
-      {
-      // Read in the file name
-      fscanf(fp, "%s", buf);
-      fclose(fp);
-
+    {
       char *sname;
-      DataSourceFileStream	schemaSource(buf, StripPath(buf));
+      DataSourceFileStream	schemaSource(token2, StripPath(token2));
       if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
 
       InsertCatFile(CopyString(catFile));

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1996/07/12 00:26:19  jussi
+#  Added protective braces around TData names in addDataSource calls.
+#  Fixed source definitions of non-UNIXFILE data sources in exported
+#  templates.
+#
 #  Revision 1.19  1996/07/11 17:26:08  wenger
 #  Devise now writes headers to some of the files it writes;
 #  DataSourceSegment class allows non-fixed data length with non-zero
@@ -498,21 +503,28 @@ proc SaveAllSchemas { fileId asExport } {
 # Save one schema to the given file.
 proc SaveOneSchema { fileId asExport schemaFile } {
     if {$asExport} {
-	# read contents of schema
+	# Read the first nonblank, non-comment line of this schema to
+	# determine whether it's a physical or logical schema.
 	set fileP [open $schemaFile r]
-	gets $fileP schemaTest
+	readSchemaLine $fileP schemaTest
+	close $fileP
+
 	if {[lindex $schemaTest 0] == "physical"} {
-	    set lschema $schemaTest
-	    set lschema [concat $lschema [read $fileP]]
-	    close $fileP
-	    set fileP [open [lindex $schemaTest end] "r"]
+	    # schemaFile is a logical schema -- read in the logical schema and
+	    # set the physical schema name.
+            set lschema ""
+	    ReadSchemaFile $schemaFile lschema
+	    set pschemaFile [lindex $schemaTest end]
 	} else {
-	    close $fileP	
-	    set fileP [open $schemaFile "r"]
+	    # schemaFile is a physical schema.
+	    set pschemaFile $schemaFile
 	    set lschema ""
 	}
-	set pschema [read $fileP]
-	close $fileP
+
+	# Now read the physical schema.
+	set pschema ""
+	ReadSchemaFile $pschemaFile pschema
+
 	set sname [file tail $schemaFile]
 	puts $fileId "set physSchema($sname) \"$pschema\""
 	puts $fileId "set logSchema($sname) \"$lschema\""
@@ -520,6 +532,25 @@ proc SaveOneSchema { fileId asExport schemaFile } {
     } else {
 	puts $fileId "DEVise importFileType $schemaFile"
     }
+}
+
+############################################################
+
+# Read the contents of a schema file into the given variable, stripping
+# out all blank and comment lines.
+proc ReadSchemaFile { schemaFile schemaRef } {
+    upvar $schemaRef schema
+
+    set fileP [open $schemaFile r]
+
+    set line ""
+    set len [readSchemaLine $fileP line]
+    while {$len >= 0} {
+        set schema "$schema$line\n"
+        set len [readSchemaLine $fileP line]
+    }
+
+    close $fileP
 }
 
 ############################################################
