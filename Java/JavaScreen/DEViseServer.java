@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2001/04/12 18:18:17  wenger
+// Added more diagnostic code to the JSPoP.
+//
 // Revision 1.62  2001/04/12 17:35:43  wenger
 // Workaround in place for the collaboration hanging bug (caused by more
 // than one server being connected to the same client).
@@ -671,7 +674,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 } catch (YException e) {
                     pop.pn("Client communication error3: " + e.getMsg());
                     removeCurrentClient();
-                }
+		}
             }
         }
 
