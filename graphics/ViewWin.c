@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/09/30 17:44:34  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.48  1998/09/22 17:23:42  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -463,8 +467,8 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   _hasGeometry = false;
 
   Boolean relativeMinSize = false;
-  Coord min_width = 170;
-  Coord min_height = 100;
+  Coord min_width = 1;
+  Coord min_height = 1;
 
   WindowRep *parentWinRep;
 	PColorID	fgid, bgid;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/11/16 18:58:59  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.48  1998/07/31 19:47:20  wenger
   Fixed bug in setting clientTimeout value.
 
@@ -283,7 +287,7 @@ Boolean Init::_randomize = true;
 
 char *Init::_progName = 0;
 long Init::_progModTime;
-Boolean Init::_dispLogo = true;
+Boolean Init::_dispLogo = false;
 Boolean Init::_abort = false;
 
 char *Init::_workDir = 0;
@@ -372,7 +376,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t              session or not\n");
   fprintf(stderr, "\t-printTDataAttr 0|1: print TData attribute list or not\n");
   fprintf(stderr, "\t-simpleInterpreter 0|1: use simple interpreter or not\n");
-  fprintf(stderr, "\t-nologo: don't display logo\n");
+  fprintf(stderr, "\t-logo 0|1: display logo or not\n");
   fprintf(stderr, "\t-abort: abort instead of exit when program quits\n");
   fprintf(stderr, "\t-savePopup: save popup window and wait for button event\n");
   fprintf(stderr, "\t-tasvir <name>: specify name of tasvir server\n");
@@ -657,9 +661,13 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
-      else if (strcmp(&argv[i][1], "nologo") == 0) {
-	_dispLogo = false;
-	MoveArg(argc,argv,i,1);
+      else if (strcmp(&argv[i][1], "logo") == 0) {
+	if (i >= argc - 1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_dispLogo = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "abort") == 0) {
