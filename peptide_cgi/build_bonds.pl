@@ -170,7 +170,6 @@ sub OutputBonds {
 }
 
 sub ConnectAtoms {
-#TEMPTEMP -- need to deal with structure type better
   @info0 = split(" +", $atom0line);
   $x0 = $info0[6];
   $y0 = $info0[7];
@@ -189,7 +188,18 @@ sub ConnectAtoms {
   if ($totaldiff > 5.0) {
     print STDERR "Bond it too long ($totaldiff) at $info0[4],$info1[4] in res $lastresnum\n";
   } else {
-    #print OUT "@info0[0 .. 8] $xdiff $ydiff $zdiff\n";
-    print OUT "$atom0line	$xdiff	$ydiff	$zdiff\n";
+    # This is so both halves of a given bond have the same structure
+    # type.
+    $struct_type = "backbone";
+    if ($info0[16] eq "side_proton" or $info1[16] eq "side_proton") {
+      $struct_type = "side_proton";
+    } elsif ($info0[16] eq "side_heavy" or $info1[16] eq "side_heavy") {
+      $struct_type = "side_heavy";
+    }
+
+    for ($index = 0; $index < 16; $index++) {
+      print OUT "$info0[$index]	";
+    }
+    print OUT "$struct_type	$xdiff  $ydiff  $zdiff\n";
   }
 }
