@@ -26,7 +26,6 @@
 mkdir test_data
 cd test_data
 ln -s ../html/* .
-ln -s ../java_classes .
 cd ..
 
 mkdir test_session
@@ -37,4 +36,5 @@ cd ..
 cd cgi-bin
 ln -s ../test_data data_dir
 ln -s ../test_session session_dir
+ln -s ../java_classes .
 cd ..
