@@ -9,11 +9,15 @@ LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 .C.o:
 	$(CPP) -c $(CFLAGS) $<
 
-SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c tardump.c
+SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
+	tardump.c lc.c
+
 SRC1 = $(filter %.c,$(SRC))
 SRC2 = $(filter %.C,$(SRC))
+
 OBJ = $(SRC1:.c=.o)
 OBJ += $(SRC2:.C=.o)
+
 TARGET = $(OBJ:.o=)
 
 all: $(TARGET)
@@ -37,6 +41,9 @@ issm2bin: issm2bin.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 tardump: tardump.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
+
+lc: lc.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
