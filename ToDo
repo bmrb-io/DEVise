@@ -148,7 +148,7 @@ receives some events - and even then there is about a 3 second delay.
 It might just be a tk/fvwm problem - maybe a later version of tk will
 fix it. (kb 8/4/96)
 
-Make a "slim" version of Devise with some stuff stripped out.
+Make a "slim" or "light" version of Devise with some stuff stripped out.
 
 Make a script to easily do a release of Devise to the outside world.
 (rkw 8/14/96)
@@ -177,6 +177,14 @@ Support for custom colors and/or user defined color palette (kb 9/5/96)
 
 Put 3-D borders around views. (ml/rkw/9/6/96)
 
+Allow active Devise windows in other documents (specify a window that
+becomes the parent of all Devise windows). (rr/rkw 9/12/96)
+
+Improve sizing of Dali images so that they work like other symbols.
+(rkw 9/12/96)
+
+Change name of 'Shape' in GData mapping GUI. (rr/rkw/ 9/12/96)
+
 
 COMPLETED
 ---------
@@ -198,6 +206,8 @@ Make a script that automatically starts up Dali along with Devise.
 
 Put the /p/devise/run files into CVS and install them with the release
 script.  (rkw 9/4/96)
+
+New composite parser for Soil Science (deal with YYDDD HHMM dates). (rkw)
 
 
 CANCELLED
