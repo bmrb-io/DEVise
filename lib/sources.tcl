@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/11/14 22:51:11  jussi
+#	Interfaced stream selection dialog into DefSource of macrodef.tk.
+#	Minor other changes.
+#
 #	Revision 1.2  1995/11/10 22:02:14  jussi
 #	Minor change.
 #
@@ -116,10 +120,10 @@ proc defineStream {base edit} {
 
     # setup default values; use definition given as parameter if possible
     set dispname ""
-    set source ""
+    set source "UNIXFILE"
     set key ""
-    set schematype ""
-    set schemafile ""
+    set schematype "n/a"
+    set schemafile [lindex $sourceTypes($source) 1]
     set cachefile ""
     set evaluation 100
     set priority 50
@@ -212,6 +216,12 @@ proc defineStream {base edit} {
 	    -fill x -expand 1
 
     button .srcdef.but.ok -text OK -width 10 -command {
+	if {$dispname == ""} {
+	    dialog .noName "Missing Information" \
+		    "Please enter all requested information." \
+		    "" 0 OK
+	    return
+	}
 	set cachefile [getCacheName $source $key]
 	set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 	#set newschematype [readSchema $schemafile]
@@ -244,12 +254,6 @@ proc defineStream {base edit} {
 	    unset sourceList($oldDispName)
 	}
 	set err [catch {set exists $sourceList($dispname)}]
-	if {$dispname == ""} {
-	    dialog .noName "Missing Information" \
-		    "Please enter all requested information." \
-		    "" 0 OK
-	    return
-	}
 	if {$err == 0} {
 	    dialog .sourceExists "Data Stream Exists" \
 		    "Data Stream \"$dispname\" exists already." \
