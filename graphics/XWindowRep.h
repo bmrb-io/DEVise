@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/02/26 23:45:16  jussi
+  Added GetSmallFontHeight().
+
   Revision 1.9  1996/02/05 23:55:22  jussi
   Added support for small fonts.
 
@@ -167,6 +170,20 @@ public:
 	of the screen */
 	virtual void AbsoluteOrigin(int &x,int &y);
 
+	// ---------------------------------------------------------- 
+	// 3D
+
+	XPoint CompProjectionOnViewingPlane(POINT);
+
+	virtual POINT CompLocationOnViewingSpace(POINT);
+
+	virtual void MapAllPoints(BLOCK *block_data, int numSyms);
+	virtual void MapAllSegments(BLOCK *block_data, int numSyms);
+	virtual void DrawXSegments();
+	virtual void DrawRefAxis();
+
+	// ---------------------------------------------------------- 
+
     /******* Pixmap ***************/
 	/* Generate pixmap for current window, or NULL if insufficient memory  */
 	virtual DevisePixmap *GetPixmap();
@@ -195,6 +212,11 @@ protected:
 	~XWindowRep();
 
 	void HandleEvent(XEvent &event);
+
+	// ---------------------------------------------------------- 
+	// 3D
+	XSegment _xsegs[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
+
 
 #ifdef TK_WINDOW_old
 	/* Assign window to a new parent. */
@@ -279,3 +301,4 @@ private:
 };
 
 #endif
+
