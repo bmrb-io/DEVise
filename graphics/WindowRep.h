@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  1998/02/26 00:19:07  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.64  1998/02/16 15:41:27  wenger
   Fixed (I believe) bug 287.
 
@@ -700,6 +703,7 @@ public:
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width) = 0;
   virtual void Line3D(Coord x1, Coord y1, Coord z1,
 		      Coord x2, Coord y2, Coord z2, Coord width) {};
+  virtual void Text3D(Coord x, Coord y, Coord z, char* text) {};
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
 
   /* draw and scaled text to fit inside box, according to alignment.
@@ -788,6 +792,16 @@ public:
     }
     DEBUGE(_current--);
   }
+
+  virtual void ViewNegX(){}
+  virtual void ViewPosX(){}
+  virtual void ViewNegY(){}
+  virtual void ViewPosY(){}
+  virtual void ViewNegZ(){}
+  virtual void ViewPosZ(){}
+
+  virtual void PanRightAmount(Coord dx) {}
+  virtual void PanUpAmount(Coord dy) {}
 
   /* operations on current transformation matrix */
   virtual void Scale(Coord sx, Coord sy) {

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/02/26 22:59:58  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.45  1998/02/20 06:17:16  beyer
   resurected histograms
 
@@ -266,7 +271,9 @@ struct MappingInfo {
 enum PanDirection {
   PanDirInvalid = 0,
   PanDirLeft,
-  PanDirRight
+  PanDirRight,
+  PanDirUp,
+  PanDirDown
 };
 
 enum ViewHomeMode {
@@ -390,6 +397,7 @@ class ViewGraph : public View
   /* Update visual filter in various ways. */
   virtual void GoHome();
   virtual void PanLeftOrRight(PanDirection direction);
+  virtual void PanUpOrDown(PanDirection direction);
 
   /* Get and set the home and panning info. */
   virtual void GetHomeInfo(ViewHomeInfo &info) { info = _homeInfo; }

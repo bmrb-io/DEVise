@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.71  1998/02/26 22:59:57  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.70  1998/02/24 22:55:26  beyer
   Fixed histogram session restore bug.
 
@@ -322,7 +327,7 @@
 
 #include "MappingInterp.h"
 #include "CountMapping.h"
-
+#include "DepMgr.h"
 #define STEP_SIZE 20
 
 ImplementDList(GStatList, double)
@@ -912,6 +917,7 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
       filter.xHigh = filter.xLow + width;
       SetVisualFilter(filter);
     } else { 
+#if 0
       Camera camera = GetCamera();
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
@@ -927,9 +933,33 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
 	camera._theta += panFactor * incr_;
       }
       SetCamera(camera);
+#endif
+      PanRightAmount(0.10*panFactor);
     }
 
     return;
+}
+
+void ViewGraph::PanUpOrDown(PanDirection direction)
+{
+    int panFactor;
+
+    switch(direction) {
+    case PanDirUp:
+      panFactor = 1;
+      break;
+
+    case PanDirDown:
+      panFactor = -1;
+      break;
+
+    default:
+      DOASSERT(false, "Illegal pan direction");
+      return;
+      break;
+    }
+    if (GetNumDimensions() == 3)
+      PanUpAmount(0.10*panFactor);
 }
 
 void ViewGraph::WriteMasterLink(RecId start, int num)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/11/24 23:14:47  weaver
+  Changes for the new ColorManager.
+
   Revision 1.29  1997/09/05 22:36:13  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -221,6 +224,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  view->GoHome();
 	  break;
       }
+      
       default: {
 	  Action::KeySelected(view, key, x, y);
       }

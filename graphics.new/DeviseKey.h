@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:09:42  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef _DEVISEKEY_H_
@@ -123,6 +127,12 @@ class DeviseKey
 	KP_7,
 	KP_8,
 	KP_9,
+	KP_x,
+	KP_y,
+	KP_z,
+	KP_X,
+	KP_Y,
+	KP_Z,
 
 	// function keys
 	FUNCTION_KEY = 0x50000,

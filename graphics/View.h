@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1998/02/26 00:19:05  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.59  1998/02/05 23:45:55  wenger
   Added view-level specification of symbol alignment, API commands, simple
   GUI for Sanjay.
@@ -548,6 +551,17 @@ class View : public ViewWin
         void Draw3DAxis();
 	Camera GetCamera() { return _camera; }
 	void SetCamera(Camera new_camera);
+	void ViewNegX();
+	void ViewPosX();
+	void ViewNegY();
+	void ViewPosY();
+	void ViewNegZ();
+	void ViewPosZ();
+	void PanRightAmount(Coord dx);
+	void PanUpAmount(Coord dy);
+
+
+
 	void SetViewDir(int H, int V);
 	void CompRhoPhiTheta();
 

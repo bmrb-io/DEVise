@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/02/26 20:48:30  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.23  1998/01/27 23:04:29  wenger
   Broke the server's view selection dependency on the client (except when
   running in collaboration mode).
@@ -201,6 +204,24 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   Boolean zoomOutY = false;
 
   switch( key ) {
+  case 'X':
+    view->ViewPosX();
+    break;
+  case 'x':
+    view->ViewNegX();
+    break;
+  case 'Y':
+    view->ViewPosY();
+    break;
+  case 'y':
+    view->ViewNegY();
+    break;
+  case 'Z':
+    view->ViewPosZ();
+    break;
+  case 'z':
+    view->ViewNegZ();
+    break;
   case '>':
   case '.':
   case '4':
@@ -242,6 +263,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
@@ -256,6 +278,8 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	camera._phi += incr_;
       }
       view->SetCamera(camera);
+#endif
+      view->PanUpOrDown(PanDirDown);
     }
     break;
   }
@@ -280,6 +304,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
@@ -294,6 +319,8 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	camera._phi -= incr_;
       }
       view->SetCamera(camera);
+#endif
+      view->PanUpOrDown(PanDirUp);
     }
     break;
   }
@@ -342,12 +369,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     view->SetDisplayDataValues(!disp);
     break;
   }
+#if 0
+  /* Seems _xyZoom is not used by view anywhere in View.c. Zhenhai*/
   case 'z':
   case 'Z': {
     Boolean xyZoom = view->IsXYZoom();
     view->SetXYZoom(!xyZoom);
     break;
   }
+#endif
   case 'c':
   case 'C': {
 #if USE_CONNECTORS

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/02/26 00:18:58  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.12  1997/12/16 17:53:48  zhenhai
   Added OpenGL features to graphics.
 
@@ -805,21 +808,22 @@ void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
   axisPt[0].x_ = 0.0;
   axisPt[0].y_ = 0.0;
   axisPt[0].z_ = 0.0;
-  axisPt[1].x_ = axisPt[0].x_ + 3.0;
+  axisPt[1].x_ = axisPt[0].x_ + 2.0;
   axisPt[1].y_ = axisPt[0].y_;
   axisPt[1].z_ = axisPt[0].z_;
   axisPt[2].x_ = axisPt[0].x_;
-  axisPt[2].y_ = axisPt[0].y_ + 3.0;
+  axisPt[2].y_ = axisPt[0].y_ + 2.0;
   axisPt[2].z_ = axisPt[0].z_;
   axisPt[3].x_ = axisPt[0].x_;
   axisPt[3].y_ = axisPt[0].y_;
-  axisPt[3].z_ = axisPt[0].z_ + 3.0;
+  axisPt[3].z_ = axisPt[0].z_ + 2.0;
   axis[0].p = 0;  axis[0].q = 1;  // x axis
   axis[1].p = 0;  axis[1].q = 2;  // y axis
   axis[2].p = 0;  axis[2].q = 3;  // z axis
   DrawAxis(win, axisPt, axis, camera);
 
   // draw the camera axis
+#if 0
   axisPt[0].x_ = camera.fx;
   axisPt[0].y_ = camera.fy;
   axisPt[0].z_ = camera.fz;
@@ -836,6 +840,7 @@ void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
   axis[1].p = 0;  axis[1].q = 2;  // y axis
   axis[2].p = 0;  axis[2].q = 3;  // z axis
   DrawAxis(win, axisPt, axis, camera);
+#endif
 }
 
 // ---------------------------------------------------------- 
@@ -873,6 +878,30 @@ void Map3D::DrawAxis(WindowRep *win, Point3D axisPt[4],
 		axisPt[axis[i].q].x_, axisPt[axis[i].q].y_,
 		axisPt[axis[i].q].z_,
 		1.0);
+  for (int i=0; i<3; i++)
+    win->Line3D(-axisPt[axis[i].p].x_, -axisPt[axis[i].p].y_,
+		-axisPt[axis[i].p].z_,
+		-axisPt[axis[i].q].x_, -axisPt[axis[i].q].y_,
+		-axisPt[axis[i].q].z_, 1.0);
+  
+  win->Text3D(axisPt[axis[0].q].x_,
+	      axisPt[axis[0].q].y_,
+	      axisPt[axis[0].q].z_, "X");
+  win->Text3D(axisPt[axis[1].q].x_,
+	      axisPt[axis[1].q].y_,
+	      axisPt[axis[1].q].z_, "Y");
+  win->Text3D(axisPt[axis[2].q].x_,
+	      axisPt[axis[2].q].y_,
+	      axisPt[axis[2].q].z_, "Z");
+  win->Text3D(-axisPt[axis[0].q].x_,
+	      axisPt[axis[0].q].y_,
+	      axisPt[axis[0].q].z_, "-X");
+  win->Text3D(axisPt[axis[1].q].x_,
+	      -axisPt[axis[1].q].y_,
+	      axisPt[axis[1].q].z_, "-Y");
+  win->Text3D(axisPt[axis[2].q].x_,
+	      axisPt[axis[2].q].y_,
+	      -axisPt[axis[2].q].z_, "-Z");
 
 #ifdef DEBUG
   printf("End DrawAxis\n");

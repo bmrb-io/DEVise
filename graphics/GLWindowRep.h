@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/26 17:19:15  wenger
+  Fixed problems with yesterday's commit.
+
 */
 
 #ifndef GLWindowRep_h
@@ -221,6 +224,17 @@ public:
 
   virtual void SetNumDim(int numDim);
 
+  virtual void ViewNegX();
+  virtual void ViewPosX();
+  virtual void ViewNegY();
+  virtual void ViewPosY();
+  virtual void ViewNegZ();
+  virtual void ViewPosZ();
+
+  virtual void PanRightAmount(Coord dx);
+  virtual void PanUpAmount(Coord dy);
+
+
   virtual void Scale(Coord sx, Coord sy);
   virtual void Translate(Coord dx, Coord dy);
   virtual void MakeIdentity();
@@ -283,6 +297,7 @@ public:
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
   virtual void Line3D(Coord x1, Coord y1, Coord z1,
                       Coord x2, Coord y2, Coord y3, Coord width);
+  virtual void Text3D(Coord x, Coord y, Coord z, char* text);
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
   virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
@@ -491,6 +506,8 @@ private:
   XFontStruct *_currentfontstruct;
   GLuint _currentfont;
   XColorID _xbgid;
+
+  enum Dir {PosX, NegX, PosY, NegY, PosZ, NegZ} _viewdir;
   friend class RubberbandBuffer {
   public:
     RubberbandBuffer(int xx1, int yy1, int xx2, int yy2);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.127  1998/03/04 19:11:13  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.126  1998/02/26 00:19:04  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -2202,6 +2205,8 @@ void View::Highlight(Boolean flag)
   printf("Highlight view %s %d\n", GetName(), flag);
 #endif
 
+  if (_numDimensions == 3)
+    return;
   if (_highlight == flag)
     return;
 
@@ -3944,6 +3949,70 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
 									 DepMgr::EventViewResize);
 	Scheduler::Current()->RequestCallback(_dispatcherID);
+}
+
+void View::ViewNegX()
+{
+  GetWindowRep()->ViewNegX();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::ViewPosX()
+{
+  GetWindowRep()->ViewPosX();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::ViewNegY()
+{
+  GetWindowRep()->ViewNegY();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::ViewPosY()
+{
+  GetWindowRep()->ViewPosY();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::ViewNegZ()
+{
+  GetWindowRep()->ViewNegZ();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::ViewPosZ()
+{
+  GetWindowRep()->ViewPosZ();
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::PanRightAmount(Coord dx)
+{
+  GetWindowRep()->PanRightAmount(dx);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
+}
+
+void View::PanUpAmount(Coord dy)
+{
+  GetWindowRep()->PanUpAmount(dy);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+				   DepMgr::EventViewCameraCh);
+  Refresh();
 }
 
 //******************************************************************************

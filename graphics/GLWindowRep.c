@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/02/26 17:19:15  wenger
+  Fixed problems with yesterday's commit.
+
 */
 
 #include <unistd.h>
@@ -76,7 +79,7 @@ extern "C" {
 //ImplementDList(DaliImageList, int);
 #endif
 static const int AltMask = Mod1Mask | Mod2Mask | Mod3Mask | Mod5Mask;
-static MapIntToInt devise_keymap(103);
+static MapIntToInt devise_keymap(137);
 
 class GLWindowRepInit
 {
@@ -186,15 +189,23 @@ GLWindowRepInit::GLWindowRepInit()
         { XK_KP_Begin,    DeviseKey::KP_BEGIN },
         { XK_KP_Insert,   DeviseKey::KP_INSERT },
         { XK_KP_Delete,   DeviseKey::KP_DELETE },
+	/*	{ XK_x,           DeviseKey::KP_x},
+	{ XK_y,           DeviseKey::KP_y},
+	{ XK_z,           DeviseKey::KP_z},
+	{ XK_X,           DeviseKey::KP_X},
+	{ XK_Y,           DeviseKey::KP_Y},
+	{ XK_Z,           DeviseKey::KP_Z},*/
+	
 #endif
 
 
         { 0, 0 }                // must be last entry!
     };
 
+    int d_key;
     for(int i = 0 ; xlate[i].xkey != 0 ; i++) {
-        DOASSERT(devise_keymap.insert(xlate[i].xkey, xlate[i].dkey) == 0,
-                 "couldn't insert devise_keymap entry");
+      DOASSERT(devise_keymap.insert(xlate[i].xkey, xlate[i].dkey) == 0,
+	       "couldn't insert devise_keymap entry");
     }
 }
 
@@ -1429,10 +1440,12 @@ void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
   glPushMatrix();
   glTranslatef(x, y, z);
 
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
   GLUquadricObj* qObj;
   qObj=gluNewQuadric();
-  gluQuadricDrawStyle(qObj, GLU_FILL);
-  gluQuadricNormals(qObj, GLU_SMOOTH);
+  gluQuadricDrawStyle(qObj, (GLenum)GLU_FILL);
+  gluQuadricNormals(qObj, (GLenum)GLU_SMOOTH);
   gluSphere(qObj, r, 36, 36);
 
   glPopMatrix();
@@ -1498,6 +1511,14 @@ void GLWindowRep::Line3D(Coord x1, Coord y1, Coord z1,
   glVertex3d(x2,y2,z2);
   GLEND();
 }
+
+void GLWindowRep::Text3D(Coord x, Coord y, Coord z, char* text)
+{
+  MAKECURRENT();
+  glRasterPos3d(x,y,z);
+  glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);
+}
+
 
 void GLWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
@@ -1750,7 +1771,8 @@ GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
 			 GLWindowRep *parent, Boolean backingStore = false):
   WindowRep(DVDisp),_display(0),_win(0),_gc(0),
   _specialfontstruct(0),_specialfont(0),
-  _normalfontstruct(0),_normalfont(0),_currentfont(0)
+  _normalfontstruct(0),_normalfont(0),_currentfont(0),
+  _viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p,
@@ -1772,7 +1794,7 @@ GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
 /* called by GLDisplay to create new X pixmap */
 GLWindowRep::GLWindowRep(Display *display, Pixmap pixmap, GLDisplay *DVDisp, 
 			 GLWindowRep *parent, int x, int y):
-  WindowRep(DVDisp),_display(0),_win(0),_gc(0)
+  WindowRep(DVDisp),_display(0),_win(0),_gc(0),_viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p, "
@@ -1984,6 +2006,7 @@ void GLWindowRep::HandleEvent(XEvent &event)
 
     ks = int(keysym);
     d_key = 0;
+
     if( devise_keymap.lookup(ks, d_key) ) {
 	// not found in xkey->devise_key translation map
 	if( count == 1 ) {		// regular key
@@ -2444,6 +2467,7 @@ void GLWindowRep::SetNumDim(int numDim) {
       glOrtho(-2.5, 2.5, -2.5*h/w, 2.5*h/w, -10.0, 10.0);
     else
       glOrtho(-2.5*w/h, 2.5*w/h, -2.5, 2.5, -10.0, 10.0);
+    glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
   }    
@@ -3106,6 +3130,20 @@ void GLWindowRep::PrintTransform()
     printf("\n");
   }
   GLCHECKERROR();
+
+  GLMATRIXMODE(GL_PROJECTION);
+  glGetIntegerv(GL_PROJECTION_STACK_DEPTH, &depth);
+  printf("Projection stack depth=%d\n", depth);
+  GLCHECKERROR();
+  glGetFloatv(GL_PROJECTION_MATRIX, a);
+  printf("Projection matrix for 0x%p\n", this);
+  for (int i=0; i<4; i++) {
+    for (int j=0; j<4; j++)
+      printf("%.2f\t", a[i+j*4]);
+    printf("\n");
+  }
+  GLCHECKERROR();
+
   GLfloat width;
   glGetFloatv(GL_LINE_WIDTH, &width);
   printf("Line width = %.2f\tRecord width = %d\n", width, GetLineWidth());
@@ -3128,4 +3166,115 @@ void GLWindowRep::ClearTransformStack() {
   }
   glLoadIdentity();
   GLCHECKERROR();
+}
+
+void GLWindowRep::ViewNegX()
+{
+  MAKECURRENT();
+  GLMATRIXMODE(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(-90.0, 0.0, 1.0, 0.0);
+  _viewdir = NegX;
+}
+
+void GLWindowRep::ViewPosX()
+{
+  MAKECURRENT();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(90.0, 0.0, 1.0, 0.0);
+  _viewdir = PosX;
+}
+
+void GLWindowRep::ViewNegY()
+{
+  MAKECURRENT();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(90.0, 1.0, 0.0, 0.0);
+  _viewdir = NegY;
+}
+
+void GLWindowRep::ViewPosY()
+{
+  MAKECURRENT();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(-90, 1.0, 0.0, 0.0);
+  _viewdir = PosY;
+}
+
+void GLWindowRep::ViewNegZ()
+{
+  MAKECURRENT();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  _viewdir = NegZ;
+}
+
+void GLWindowRep::ViewPosZ()
+{
+  MAKECURRENT();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(180.0, 1.0, 0.0, 0.0);
+  _viewdir = PosZ;
+}
+
+void GLWindowRep::PanRightAmount(Coord dx)
+{
+  MAKECURRENT();
+  GLMATRIXMODE(GL_PROJECTION);
+  switch (_viewdir) {
+  case PosX:
+    glTranslatef(0.0, 0.0, dx);
+    break;
+  case NegX:
+    glTranslatef(0.0, 0.0, -dx);
+    break;
+  case PosY:
+    glTranslatef(dx, 0.0, 0.0);
+    break;
+  case NegY:
+    glTranslatef(dx, 0.0, 0.0);
+    break;
+  case PosZ:
+    glTranslatef(dx, 0.0, 0.0);
+		break;
+  case NegZ:
+    glTranslatef(dx, 0.0, 0.0);
+    break;
+  }
+}
+
+void GLWindowRep::PanUpAmount(Coord dy)
+{
+  MAKECURRENT();
+  GLMATRIXMODE(GL_PROJECTION);
+  switch (_viewdir) {
+  case PosX:
+    glTranslatef(0.0, dy, 0.0);
+    break;
+  case NegX:
+    glTranslatef(0.0, dy, 0.0);
+    break;
+  case PosY:
+    glTranslatef(0.0, 0.0, dy);
+    break;
+  case NegY:
+    glTranslatef(0.0, 0.0, -dy);
+    break;
+  case PosZ:
+    glTranslatef(0.0, -dy, 0.0);
+    break;
+  case NegZ:
+    glTranslatef(0.0, dy, 0.0);
+    break;
+  }
 }
