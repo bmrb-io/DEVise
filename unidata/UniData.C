@@ -541,11 +541,6 @@ int UniData::build_params(Attr *attr, ParamStk *params, int& fl_indx)
                   prm->attrfunc = TxtCopy_UnixTime;
                   break;
 
-              case Date_Attr:
-                  // NYI - don't know yet.
-                  prm->attrfunc = NullCopy;
-                  break;
-
               case DateTime_Attr:
                   prm->attrfunc = TxtCopy_DateTime;
                   break;
@@ -1151,14 +1146,20 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 {
-    int n, tmpn;
+    int n, tmpn, has_qte;
     char *str = &(dst[ud->dst_off]);
     char *delim;
 
     n = ud->sze()-1;
 
-    if (ud->attr->whitespace()) {
+    if (ud->attr->whitespace())
       src += strspn(src, ud->attr->whitespace());
+
+    if ((has_qte = (*src == *(ud->attr->quote())) && (*src) )) {
+      src++;
+      tmpn = strcspn(src,ud->attr->quote());
+      n = (tmpn < n) ? tmpn : n;
+    } else if (ud->attr->whitespace()) {
       tmpn = strcspn(src, ud->attr->whitespace());
       n = (tmpn < n) ? tmpn : n;
     }
@@ -1172,7 +1173,7 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 
     strncpy(str,src,n);
     str[n] = '\0';
-    _slbuf->set_init(src + n);
+    _slbuf->set_init(src + n + has_qte);
 
     return 1;
 }

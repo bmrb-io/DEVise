@@ -50,6 +50,8 @@ Attr::Attr(char *name)
     _min = _max = NULL;
 
     _maxlen = 0;
+    _qte_chr[0] = '"';    // Default quote char
+    _qte_chr[1] = '\0';
     _date_frmt = NULL;
 
     _have_lpos = _have_rpos = 0;
@@ -143,11 +145,6 @@ size_t  Attr::determ_size()
 
       case UnixTime_Attr:
         _size = sizeof(time_t);
-        break;
-
-      case Date_Attr:
-        // NYI: Don't know about these yet!!
-        _size = (size_t) 0;
         break;
 
       case DateTime_Attr:
@@ -260,10 +257,6 @@ void Attr::set_var(char *field)
             sv_setpv(_perl_var, tmpdte);
         }
         break;
-
-      case Date_Attr:
-        // NYI
-        break;
     }
 }
 
@@ -310,10 +303,6 @@ void Attr::grab_var(char *field)
             struct tm *dte = (struct tm*) field;
             getftime(SvPV(_perl_var,na), ISO_TIME, dte);
         }
-        break;
-
-      case Date_Attr:
-        // NYI
         break;
     }
 }
@@ -586,10 +575,6 @@ ostream& operator<< (ostream& out, const Attr& attr)
 
         case UnixTime_Attr:
             out << "UnixTime\n";
-            break;
-
-        case Date_Attr:
-            out << "Date\n";
             break;
 
         case DateTime_Attr:

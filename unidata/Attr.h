@@ -54,8 +54,7 @@ enum attr_t {
     Double_Attr,
     String_Attr,
 
-    UnixTime_Attr,       // We need to figure these out yet.
-    Date_Attr,
+    UnixTime_Attr,
     DateTime_Attr,
 
     UserDefined_Attr     // This should be last, so we can use
@@ -91,6 +90,8 @@ class Attr {
     char     *_max;        // Maximum valid value
 
     int       _maxlen;     // Max length (for strings)
+    char      _qte_chr[2]; // quoting char, (for strings), plus '\0';
+
     char     *_date_frmt;  // for DateTime values.
 
     char      _have_lpos;  // _lpos is valid
@@ -135,6 +136,10 @@ class Attr {
 
     void set_type(attr_t t) { _type = t; }
     void set_maxlen(int len) { _maxlen = len; }
+    void set_quote(char *str) {
+                                  _qte_chr[0] = *str;
+                                  _qte_chr[1] = '\0';
+                              }
     void set_func_of(FuncOf *f) { _func_of = f; }
 
       // min/max values, NULL means we don't have any.
@@ -151,6 +156,7 @@ class Attr {
     int  lpos() { return _lpos; }
     int  rpos() { return _rpos; }
 
+    char *quote() { return(_qte_chr); }
     char *delimiter() { return(_delimit); }
     char *seperator() { return (_seper != NULL ? _seper : ""); }
     char *whitespace() { return (_white != NULL ? _white : ""); }

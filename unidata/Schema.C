@@ -605,12 +605,6 @@ int Schema::subParse(Attr *attr)
                     attr->set_seper(NULL);
                     break;
 
-                  case KY_DATE:
-                    NOT_TOP_LEVEL("date");
-                    attr->set_type(Date_Attr);
-                    attr->set_seper(NULL);
-                    break;
-
                   case KY_DATETIME:
                     NOT_TOP_LEVEL("datetime");
                     attr->set_type(DateTime_Attr);
@@ -947,6 +941,22 @@ int Schema::subParse(Attr *attr)
                         *perr << filename << ":" << lineno
                               << ": maxlen only valid for String type.\n";
                         dispose_token(tok,&ult);
+                        return(0);
+                }
+                MATCH(KY_SEMICOLON, &ult);
+                break;
+    
+            case KY_QUOTE:
+                NOT_TOP_LEVEL("quote");
+                MATCH(KY_EQ, &ult);
+                MATCH(STRING, &ult);
+                attr->set_quote(ult.Str);
+                dispose_token(STRING,&ult);
+
+                if ((attr->type() != String_Attr)
+                    && (attr->type() != Invalid_Attr)) {
+                        *perr << filename << ":" << lineno
+                              << ": quote only valid for String type.\n";
                         return(0);
                 }
                 MATCH(KY_SEMICOLON, &ult);

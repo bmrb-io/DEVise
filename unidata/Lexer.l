@@ -200,6 +200,7 @@ wsn             [ \t\f\v\n]
 <INITIAL>"min"      { return(KY_MIN); }
 <INITIAL>"max"      { return(KY_MAX); }
 <INITIAL>"maxlen"   { return(KY_MAXLEN); }
+<INITIAL>"quote"    { return(KY_QUOTE); }
 <INITIAL>"position" { return(KY_POSITION); }
 <INITIAL>"length"   { return(KY_LENGTH); }
 <INITIAL>"function_of"  { return(KY_FUNC_OF); }
@@ -221,7 +222,6 @@ wsn             [ \t\f\v\n]
 <INITIAL>"float"   { return(KY_FLOAT); }
 <INITIAL>"double"  { return(KY_DOUBLE); }
 <INITIAL>"string"  { return(KY_STRING); }
-<INITIAL>"date"    { return(KY_DATE); }
 <INITIAL>"datetime"  { return(KY_DATETIME); }
 <INITIAL>"unixtime"  { return(KY_UNIXTIME); }
 

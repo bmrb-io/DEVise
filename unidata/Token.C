@@ -18,7 +18,6 @@
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 void show_token(FILE *fp, int tok, UniLexType *ult)
 {
-
     switch(tok) {
 
     case INUM:
@@ -154,6 +153,10 @@ void show_token(FILE *fp, int tok, UniLexType *ult)
         fputs("maxlen ",fp);
         break;
 
+    case KY_QUOTE: 
+        fputs("quote ",fp);
+        break;
+
     case KY_POSITION:
         fputs("position ",fp);
         break;
@@ -273,10 +276,6 @@ void show_token(FILE *fp, int tok, UniLexType *ult)
 
     case KY_STRING: 
         fputs("string ",fp);
-        break;
-
-    case KY_DATE: 
-        fputs("date ",fp);
         break;
 
     case KY_DATETIME:
@@ -428,6 +427,10 @@ void show_token(ostream *os, int tok, UniLexType *ult)
         *os << "maxlen ";
         break;
 
+    case KY_QUOTE: 
+        *os << "quote ";
+        break;
+
     case KY_POSITION:
         *os << "position ";
         break;
@@ -543,10 +546,6 @@ void show_token(ostream *os, int tok, UniLexType *ult)
 
     case KY_STRING: 
         *os << "string ";
-        break;
-
-    case KY_DATE: 
-        *os << "date ";
         break;
 
     case KY_DATETIME:

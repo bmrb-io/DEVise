@@ -47,11 +47,12 @@
 #define KY_MIN        325
 #define KY_MAX        326
 #define KY_MAXLEN     327
-#define KY_POSITION   328
-#define KY_LENGTH     329
-#define KY_FUNC_OF    330
-#define KY_VALUE      331
-#define KY_DATE_FRMT  332
+#define KY_QUOTE      328
+#define KY_POSITION   329
+#define KY_LENGTH     330
+#define KY_FUNC_OF    331
+#define KY_VALUE      332
+#define KY_DATE_FRMT  333
 
  /* Symbols */
 #define KY_EQ         350    /*  = */
@@ -84,8 +85,7 @@
 #define KY_FLOAT      501
 #define KY_DOUBLE     502
 #define KY_STRING     503
-#define KY_DATE       504
-#define KY_DATETIME   505
-#define KY_UNIXTIME   506
+#define KY_DATETIME   504
+#define KY_UNIXTIME   505
 
 #endif // _TOKEN_H

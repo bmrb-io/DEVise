@@ -74,7 +74,6 @@ void showRec(char *buf, UniData *ud, UD_Status stat)
             cout << tmebuf;
             break;
 
-          case Date_Attr:
           case Invalid_Attr:
           case UserDefined_Attr:
             cout << "This type isn't handled yet: " << at->type() << endl;
