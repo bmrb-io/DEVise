@@ -186,6 +186,9 @@ Num Date        Status  Description
 057 10/24/96	OPEN	When you switch the layout of a window (e.g., vertical
 			to horizontal) the window often is not redrawn. (rkw)
 
+058 10/29/96	OPEN	Changing line width doesn't work in direct PostScript.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
