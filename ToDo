@@ -366,6 +366,9 @@ in addition to strings. (ml/rkw 3/18/97)
 Improve user interface for selecting font properties for text labels.
 (ml/rkw 3/18/97)
 
+Devise should automatically launch a Tasvir server if one is needed.
+(ml/rkw 3/31/97)
+
 
 COMPLETED
 ---------

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/04 21:07:47  beyer
+  changed key handling
+
   Revision 1.4  1996/03/29 18:14:08  wenger
   Got testWindowRep to compile and run, added drawing in
   windows; fixed a few more compile warnings, etc.
@@ -32,6 +35,7 @@
 #include "Display.h"
 #include "WindowRep.h"
 #include "Init.h"
+#include "Control.h"
 
 class MyWinCallback: public WindowRepCallback{
 public:
@@ -82,6 +86,7 @@ char *msgBuf[2];
 
 main(int argc, char **argv){
 	Init::DoInit(argc,argv);
+	ControlPanel::_controlPanel = GetNewControl();
 	WindowRepCallback *callBack = new MyWinCallback();
 	WindowRep *win = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
 		"test",0.0, 0.0, .5, .5);
@@ -90,4 +95,48 @@ main(int argc, char **argv){
 		"sub",0.0, 0.0, .5, .5, WhiteColor, BlackColor, win);
 	subwin->RegisterCallback(callBack);
 	Dispatcher::RunNoReturn();
+}
+
+/* The following are dummies just to catch the references. */
+
+int RTreeFile;
+
+void initialize_system(const char FileName[],
+                 int  &RTreeFile,
+                 int  VolumeSize)
+{
+}
+
+void shutdown_system(const char FileName[],
+               int  RTreeFile,
+               int  VolumeSize)
+{
+}
+
+class ControlPanelDum : public ControlPanel {
+public:
+  virtual void SelectView(View *view) {}
+  virtual void SetBusy() {}
+  virtual void SetIdle() {}
+  virtual Boolean IsBusy() { return false; }
+  virtual int ReturnVal(u_short flag, char *result) { return 0; }
+  virtual int ReturnVal(int argc, char **argv) { return 0; }
+  virtual GroupDir *GetGroupDir() { return NULL; }
+  virtual MapInterpClassInfo *GetInterpProto() { return NULL; }
+  virtual int AddReplica(char *hostName, int port) { return 0; }
+  virtual int RemoveReplica(char *hostName, int port) { return 0; }
+  virtual void OpenDataChannel(int port) {}
+  virtual int getFd() { return 0; }
+
+protected:
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp,
+                                     Coord x, Coord y,
+                                     Coord w, Coord h) {}
+  virtual void SubclassDoInit() {}
+};
+
+ControlPanel *
+GetNewControl()
+{
+  return new ControlPanelDum;
 }
