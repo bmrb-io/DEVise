@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/02/22 17:09:35  xuk
+// Added JAVAC_CollabExit command for closing collaboration JSs.
+//
 // Revision 1.7  2001/02/21 17:45:34  xuk
 // Added JAVAC_SetCollabPass command for setting collaboration passwd.
 //
@@ -153,6 +156,8 @@ public final class DEViseCommands
     public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
     public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
 
+    public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
+    public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
     // -------------------------------------------------------------------
     // JSS commands.
 
