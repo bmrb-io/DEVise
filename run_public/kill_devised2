@@ -21,16 +21,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/11/03 17:42:49  wenger
+#  New script for jspop to use to kill devised.
+#
 
 ############################################################
 
 if ($#ARGV >= 0) {
     $pattern = "devised -port $ARGV[0]";
+    # ww option forces extra-wide output
+    open PS, "ps -axww >& 1 |" or die "can't fork: $!";
 } else {
     $pattern = "devised";
+    # c option prevents path from being shown as part of command name
+    open PS, "ps -axc >& 1 |" or die "can't fork: $!";
 }
 
-open PS, "ps -ax >& 1 |" or die "can't fork: $!";
 while (<PS>) {
 #    print "line: ";
 #    print;
