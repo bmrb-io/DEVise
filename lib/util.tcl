@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1996/07/18 02:20:31  jussi
+#  Added Print Display option.
+#
 #  Revision 1.25  1996/07/13 17:31:17  jussi
 #  Moved statusWindow procedure from macrodef.tk to util.tcl.
 #
@@ -365,7 +368,6 @@ proc GetSchemaName {name} {
 
 proc PrintCategory { category } {
     set classes [ DEVise get $category ]
-    puts "classes $classes"
     foreach c  $classes {
 	set instances [ DEVise get $category $c]
 	foreach i $instances {
@@ -566,7 +568,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
             return
         }
 	set file "$filename$suffix"
-	puts "Saving entire display to file $file"
+	Puts "Saving entire display to file $file"
 	set err [ catch { DEVise saveDisplayImage $format $file } ]
 	if {$err > 0} {
 	    dialog .printError "Display Image Save Error" \
@@ -604,20 +606,30 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
     set i 0
     foreach win $windowlist {
 	set file [format $template $i]
-	puts "Saving window $win to file $file"
-	set err [ catch { DEVise saveWindowImage $format $win $file } ]
-	if {$err > 0} {
-	    dialog .printError "Window Image Save Error" \
-		    "An error occurred while saving window images to files." \
-		    "" 0 OK
-	    return
-	}
-	if {$toprinter} {
-	    puts "Printing file $file to printer"
-            set pcmd [ lindex $printcmd 0 ]
-            set parg [ lrange $printcmd 1 end ]
-	    eval [ exec $pcmd $parg $file ]
-	}
+	if {$filename == "stderr" || $filename == "stdout"} {
+	     set err [ catch { DEVGetImage $format $win $filename } ]
+	     if {$err > 0} {
+		 dialog .printError "Window Image transfer Error" \
+			 "An error occurred while saving window images to files." \
+			 "" 0 OK
+		return
+	     }
+	} else {
+	     Puts "Saving window $win to file $file"
+	     set err [ catch { DEVise saveWindowImage $format $win $file } ]
+	     if {$err > 0} {
+	         dialog .printError "Window Image Save Error" \
+		         "An error occurred while saving window images to files." \
+		         "" 0 OK
+	         return
+	     }
+	     if {$toprinter} {
+	         Puts "Printing file $file to printer"
+                 set pcmd [ lindex $printcmd 0 ]
+                 set parg [ lrange $printcmd 1 end ]
+	         eval [ exec $pcmd $parg $file ]
+	     }
+        }
 	incr i
     }
 }
