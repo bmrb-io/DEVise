@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/09 22:42:35  jussi
+  Converted to use tape drive instead of regular file. Added assertions
+  just after each 'new' call. Modified get_field; dynamic memory allocation
+  caused core dumps in Solaris/Pentium. The real cause may be somewhere
+  else however.
+
   Revision 1.1  1995/11/09 15:30:56  ravim
   Initial revision
 */
@@ -70,9 +76,49 @@ Security::~Security()
   delete [] yrval;
 }
 
-void Security::print_security()
+void Security::print_security(ostream& out)
 {
-  cout << "******HEADER***********" <<endl;
+  // Currently will print out only the fields of the DDATA array of crsp
+  // The fields in each record are :
+  // Date - in some form
+  // bidlo at that date
+  // askhi
+  // prc
+  // vol
+  // ret
+
+  int sdate = header.begdat;
+  while (sdate < header.enddat)
+  {
+    // DATE
+    out << sdate;
+    // BIDLO and ASKHI
+    if ((header.begsp == 0) || 
+	(sdate < header.begsp) || (sdate > header.endsp))
+      out << 0 << 0;
+    else
+      out << bidlo[sdate - header.begsp] << askhi[sdate - header.begsp];
+    // PRC
+    if ((header.begprc == 0) || 
+	(sdate < header.begprc) || (sdate > header.endprc))
+      out << 0;
+    else
+      out << prc[sdate - header.begprc];
+    // VOL
+    if ((header.begvol == 0) || 
+	(sdate < header.begvol) || (sdate > header.endvol))
+      out << 0;
+    else
+      out << vol[sdate - header.begvol];
+    // RET
+    if ((header.begret == 0) || 
+	(sdate < header.begret) || (sdate > header.endret))
+      out << 0;
+    else
+      out << ret[sdate - header.begret];
+    
+    sdate++;
+  }
 }
 
 
