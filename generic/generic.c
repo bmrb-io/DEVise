@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/05/11 03:28:20  jussi
+  Added association of YyMmDd composite parser with the CRSP schema.
+
   Revision 1.21  1996/05/07 16:48:59  jussi
   Computation of attribute hi/lo values now done in the TData interpreter
   *after* the composite attribute values are computed.
@@ -57,7 +60,8 @@
   Replaced assert() calls with DOASSERT macro.
 
   Revision 1.12  1996/04/04 05:16:19  kmurli
-  No apparent modification done to generic.c. Only added printf commands to test and later removed them.
+  No apparent modification done to generic.c. Only added printf commands
+  to test and later removed them.
 
   Revision 1.11  1996/03/27 15:27:27  jussi
   Added initialization of dateAttr.
@@ -689,7 +693,7 @@ QueryProc *genQueryProcTape()
   return new QueryProcTape;
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
 
@@ -721,7 +725,7 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new CursorClassInfo());
 
   /* hack to start control panel so that it'll read the RC files */
-
+  ControlPanel::_controlPanel = GetNewControl();
   ControlPanel *ctrl = ControlPanel::Instance();
 
   /* This is a hack to create a display before running Dispatcher.
@@ -736,4 +740,6 @@ main(int argc, char **argv)
   ctrl->StartSession();
 
   Dispatcher::RunNoReturn();
+
+  return 1;
 }

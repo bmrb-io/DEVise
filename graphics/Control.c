@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/15 16:43:55  jussi
+  Added support for the new server synchronization mechanism.
+
   Revision 1.8  1996/05/13 21:57:43  jussi
   Moved initialization of _mode to Control.c from ServerAPI.c
   and TkControl.c.
@@ -40,6 +43,7 @@
 */
 
 #include <unistd.h>
+#include <assert.h>
 
 #include "Init.h"
 #include "Control.h"
@@ -49,7 +53,7 @@
 #include "Journal.h"
 #include "Util.h"
 
-ControlPanel *ControlPanel::_controlPanel; 
+ControlPanel *ControlPanel::_controlPanel = 0;
 ClassDir *ControlPanel::_classDir = 0;
 ControlPanel::Mode ControlPanel::_mode = ControlPanel::DisplayMode;
 Boolean ControlPanel::_batchMode = false;
@@ -89,18 +93,11 @@ ControlPanel::ControlPanel()
   _batchMode = false;
 }
 
-extern ControlPanel *GetTkControl();
-
 /***************************************************************/
 
 ControlPanel *ControlPanel::Instance()
 {
-  if (!_controlPanel)
-#if 0
-    _controlPanel = new XawControlPanel();
-#endif
-    _controlPanel = GetTkControl();
-  
+  assert(_controlPanel);
   return _controlPanel;
 }
 

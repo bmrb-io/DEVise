@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/05/15 16:43:44  jussi
+  Added support for the new server synchronization mechanism.
+
   Revision 1.10  1996/05/13 21:58:18  jussi
   Moved initialization of _mode to Control.c. Added support
   for changing _batchMode and querying it.
@@ -166,6 +169,9 @@ public:
   /* Remove replica server */
   virtual int RemoveReplica(char *hostName, int port) = 0;
 
+  /* Control panel instance */
+  static ControlPanel *_controlPanel;
+
 protected:
   friend class Dispatcher;
 
@@ -232,7 +238,6 @@ protected:
   Boolean DoInit() { return false; }
 
   ControlPanel();
-  static ControlPanel *_controlPanel;
   static Mode _mode;                    // layout or display mode
   static Boolean _batchMode;            // true if we're in batch mode
   static Boolean _syncNotify;           // true if sync notify needed
@@ -249,5 +254,7 @@ class ControlPanelCallback {
 public:
   virtual void ModeChange(ControlPanel::Mode mode) = 0;
 };
+
+extern ControlPanel *GetNewControl();
 
 #endif

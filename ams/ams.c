@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/03/27 15:27:01  jussi
+  Added computation of min/max values for composite date.
+
   Revision 1.11  1996/03/26 21:29:40  jussi
   Removed references to TDataTape.
 
@@ -86,19 +89,19 @@ char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL",
 int GetMonth(char *month)
 {
   static int monthHint = -1;
-  if (monthHint >= 0 && strcmp(monthNames[monthHint],month) == 0){
+
+  if (monthHint >= 0 && !strcmp(monthNames[monthHint], month))
     return monthHint;
-  }
 
   for(int i = 0; i < 12; i++) {
-    if (strcmp(monthNames[i],month) == 0) {
+    if (!strcmp(monthNames[i],month)) {
       monthHint = i;
       return i;
     }
   }
 
   /* not found */
-  fprintf(stderr,"unknown month %s\n", month);
+  fprintf(stderr, "unknown month %s\n", month);
   Exit::DoExit(2);
 
   /* keep compiler happy */
@@ -423,7 +426,7 @@ QueryProc *genQueryProcTape()
   return new QueryProcTape;
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   Init::DoInit(argc, argv);
    
@@ -447,8 +450,9 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new MapInfo(MapInfo::TempType));
   
   /* hack to start control panel so that it'll read the RC files */
+  ControlPanel::_controlPanel = GetNewControl();
   ControlPanel *ctrl = ControlPanel::Instance();
-  
+
   /* This is a hack to create a display before running Dispatcher.
      Otherwise, we'll get an error */
   DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
@@ -464,4 +468,6 @@ main(int argc, char **argv)
   cmd = cmd;
   
   Dispatcher::RunNoReturn();
+
+  return 1;
 }

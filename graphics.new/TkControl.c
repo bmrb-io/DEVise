@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1996/05/15 16:41:42  jussi
+  TkControl now uses the new server synchronization mechanism.
+
   Revision 1.52  1996/05/13 21:56:16  jussi
   Moved initialization of _mode to Control.c. Changed code to
   reflect new interface with batch files and XDisplay.
@@ -228,9 +231,9 @@ extern int www_extract(ClientData clientData, Tcl_Interp *interp,
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
-ControlPanel *GetTkControl()
+ControlPanel *GetNewControl()
 {
-  return new TkControlPanel();
+  return new TkControlPanel;
 }
 
 TkControlPanel::TkControlPanel()

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/07 21:11:29  jussi
+  Cleaned up the code a little bit.
+
   Revision 1.5  1995/12/14 19:16:25  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -195,6 +198,7 @@ main(int argc, char **argv)
   mapInfo->colorArrays = colorArrays;
   
   /* create control panel */
+  ControlPanel::_controlPanel = GetNewControl();
   ControlPanel *ctrl = ControlPanel::Instance();
   
   int depth = DeviseDisplay::DefaultDisplay()->NumPlanes();

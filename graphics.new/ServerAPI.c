@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/05/20 18:42:28  jussi
+  Merged with ClientServer library code.
+
   Revision 1.12  1996/05/15 19:00:15  jussi
   Return value of recv() on a socket in non-blocking mode is
   EWOULDBLOCK when there is no data, although on Intel/Solaris
@@ -97,7 +100,7 @@
 
 MapInterpClassInfo *ServerAPI::_interpProto = 0;
 
-ControlPanel *GetTkControl()
+ControlPanel *GetNewControl()
 {
   return new ServerAPI();
 }
