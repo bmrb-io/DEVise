@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1996/01/23 20:52:07  jussi
+#  Minor improvement.
+#
 #  Revision 1.15  1996/01/19 18:33:57  jussi
 #  Several minor fixes.
 #
@@ -90,12 +93,7 @@ source $catalogFile
 # to execute based on the user mode specified in the .rc file
 proc SchemaBrowse {} {
     global UserMode
-
-    if {$UserMode == 0} {
-	SchemaSuperuser
-    } else {
-	SchemaUser
-    }
+    SchemaEdit $UserMode
 }
 
 proc SchemaEdit {mode} {
@@ -248,8 +246,8 @@ proc SchemaSuperuser {} {
 # This procedure creates a window depicting all the fields for the schema
 # and their values if any.
 proc newschemawin {} {
-    global sname ftype comm separ attrlist aname atype asort attrnum \
-	    tgrps glist Logical
+    global sname ftype comm issepar issepartext separ attrlist aname acomp
+    global atype astrlen asort attrnum tgrps glist Logical
 
     # Count number of attributes
     set attrnum 0
@@ -296,16 +294,32 @@ proc newschemawin {} {
     pack .newschema.separ -side right  -in .newschema.commseprow \
 	    -padx 3m -pady 1m
     
-    label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red4
+    label .newschema.comm.label -text "Comment characters" \
+	    -bg honeydew2 -fg red4
     entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
 	    -textvariable comm -bg bisque
     pack .newschema.comm.label .newschema.comm.entry -side left \
 	    -padx 1m -pady 1m
     
-    label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red4
-    entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
+    menubutton .newschema.separ.button -relief raised \
+	    -textvariable issepartext -menu .newschema.separ.button.menu \
+	    -width 12 -bg honeydew2 -fg red4
+    menu .newschema.separ.button.menu -tearoff 0
+    .newschema.separ.button.menu add radiobutton -label "Separator" \
+	    -variable issepar -value 1 -command {
+	set issepartext "Separator"
+    }
+    .newschema.separ.button.menu add radiobutton -label "Whitespace" \
+	    -variable issepar -value 0 -command {
+	set issepartext "Whitespace"
+    }
+    set issepartext "Separator"
+    if {!$issepar} {
+	set issepartext "Whitespace"
+    }
+    entry .newschema.separ.entry -width 15 -relief sunken -bd 2 \
 	    -textvariable separ -bg bisque
-    pack .newschema.separ.label .newschema.separ.entry -side left \
+    pack .newschema.separ.button .newschema.separ.entry -side left \
 	    -padx 1m -pady 1m 
     
     #-----------------------------------------------------------
@@ -317,8 +331,11 @@ proc newschemawin {} {
     pack .newschema.attradd -in .newschema.attr \
 	    -side bottom -padx 3m -pady 1m -fill x
     
-    label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red4
-    label .newschema.attrlist.spec -text "Type      Order     Hi     Lo     Name" -bg honeydew2 -fg red4 -font 9x15
+    label .newschema.attrlist.label -text "List of Attributes" \
+	    -bg honeydew2 -fg red4
+    label .newschema.attrlist.spec \
+	    -text "Comp Sort Type   Hi    Lo    Name" \
+	    -bg honeydew2 -fg red4 -font 9x15
     pack .newschema.attrlist.label -side top -fill x
     pack .newschema.attrlist.spec -side top -anchor nw
     listbox .newschema.attrlist.list -relief raised -bd 1 \
@@ -341,7 +358,10 @@ proc newschemawin {} {
 	set thival [lindex $attr 2]
 	set tloval [lindex $attr 3]
 	set tname [lindex $attr 4]
-	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $ttype $tsort $thival $tloval $tname]
+	set tcomp [lindex $attr 5]
+	set tstrlen [lindex $attr 6]
+	set fstr [format "%-3.3s  %-3.3s  %-6.6s %-5s %-5s %s" \
+		$tcomp $tsort $ttype $thival $tloval $tname]
 	.newschema.attrlist.list insert end $fstr
 	set attrnum [expr $attrnum+1]
     }
@@ -360,24 +380,26 @@ proc newschemawin {} {
 	    .newschema.ahival .newschema.aloval \
 	    -in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
     
-    label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red4
+    label .newschema.attrname.label -text "Attribute Name " \
+	    -bg honeydew2 -fg red4
     entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable aname -bg bisque
-    pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
-	    -pady 1m
+    pack .newschema.attrname.label .newschema.attrname.entry -side left \
+	    -padx 3m -pady 1m
     
-    label .newschema.ahival.label -text "Attribute High Value " -bg honeydew2 -fg red4
+    label .newschema.ahival.label -text "Attribute High Value " \
+	    -bg honeydew2 -fg red4
     entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable ahival -bg bisque
-    pack .newschema.ahival.label .newschema.ahival.entry -side left -padx 3m \
-	    -pady 1m
+    pack .newschema.ahival.label .newschema.ahival.entry -side left \
+	    -padx 3m -pady 1m
     
-    label .newschema.aloval.label -text "Attribute Low Value  " -bg honeydew2 -fg red4
+    label .newschema.aloval.label -text "Attribute Low Value  " \
+	    -bg honeydew2 -fg red4
     entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable aloval -bg bisque
-    pack .newschema.aloval.label .newschema.aloval.entry -side left -padx 3m \
-	    -pady 1m
-    
+    pack .newschema.aloval.label .newschema.aloval.entry -side left \
+	    -padx 3m -pady 1m
     
     label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red4
     radiobutton .newschema.atype.double -text double -variable atype \
@@ -393,15 +415,25 @@ proc newschemawin {} {
     pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
 	    .newschema.atype.string .newschema.atype.float \
 	    .newschema.atype.date  -side left -fill x -padx 1m 
+
     label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red4
     radiobutton .newschema.asort.yes -text Yes -variable asort \
-	    -value "sorted" -anchor nw -bg honeydew2
+	    -value Yes -anchor nw -bg honeydew2
     radiobutton .newschema.asort.no -text No -variable asort \
-	    -value "unsorted" -anchor nw -bg honeydew2
+	    -value No -anchor nw -bg honeydew2
     pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
-	    -side left -fill x -padx 1m
+	 -side left -fill x -padx 1m
     
-    button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command {
+    label .newschema.asort.label2 -text "Composite " -bg honeydew2 -fg red4
+    radiobutton .newschema.asort.yes2 -text Yes -variable acomp \
+	    -value Yes -anchor nw -bg honeydew2
+    radiobutton .newschema.asort.no2 -text No -variable acomp \
+	    -value No -anchor nw -bg honeydew2
+    pack .newschema.asort.no2 .newschema.asort.yes2 .newschema.asort.label2 \
+	 -side right -fill x -padx 1m
+
+    button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 \
+	    -command {
 	if {$ahival == ""} {
 	    set ahival "none"
 	}
@@ -416,16 +448,19 @@ proc newschemawin {} {
 	# Increment count
 	set attrnum [expr $attrnum+1]
 	# Insert into list and clear selection
-	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
+	set fstr [format "%-3.3s  %-3.3s  %-6.6s %-5s %-5s %s" \
+		$acomp $asort $atype $ahival $aloval $aname]
 	.newschema.attrlist.list insert end $fstr
 	set aname ""
+	set acomp No
 	set atype "double"
-	set asort "unsorted"
+	set astrlen 10
+	set asort No
 	set ahival ""
 	set aloval ""
     }
-    button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
-	    -command {
+    button .newschema.attrop.delete -text "Delete item" \
+	    -bg gray75 -fg IndianRed4 -command {
 	.newschema.attrlist.list delete active
 	# Decrement count
 	set attrnum [expr $attrnum-1]
@@ -433,11 +468,12 @@ proc newschemawin {} {
     # Set up key binding for modify list
     bind .newschema.attrlist.list <Double-1> {
 	set attrl [.newschema.attrlist.list get active] 
-	set atype [lindex $attrl 0]
+	set acomp [lindex $attrl 0]
 	set asort [lindex $attrl 1] 
-	set ahival [lindex $attrl 2]
-	set aloval [lindex $attrl 3]
-	set aname [lindex $attrl 4]
+	set atype [lindex $attrl 2]
+	set ahival [lindex $attrl 3]
+	set aloval [lindex $attrl 4]
+	set aname [lindex $attrl 5]
     }
     
     button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
@@ -453,13 +489,15 @@ proc newschemawin {} {
 	if {$aloval == ""} {
 	    set aloval "none"
 	}
-	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
+	set fstr [format "%-3.3s  %-3.3s  %-6.6s %-5s %-5s %s" \
+		$acomp $asort $atype $ahival $aloval $aname]
 	.newschema.attrlist.list insert active $fstr
 	.newschema.attrlist.list delete active
 	# Clear selection
 	set aname ""
+	set acomp No
 	set atype "double"
-	set asort "unsorted"
+	set asort No
 	set ahival ""
 	set aloval ""
     }
@@ -482,7 +520,7 @@ proc newschemawin {} {
 	    }
 	    
 	    # Write into a file 
-	    writephysical $sname $ftype $comm $separ $attrlist
+	    writephysical $sname $ftype $comm $issepar $separ $attrlist
 	    # Update catalog with this new physical schema (if new).
 	    if {[info exists Logical($sname)] == 0} {
 		# Since this is the initial version of the physical schema
@@ -507,16 +545,21 @@ proc newschemawin {} {
 
 #-----------------------------------------------------------
 proc newschema {} {
-    global sname ftype comm separ attrlist aname atype asort tgrps ahival aloval
+    global sname ftype comm issepar separ attrlist aname acomp
+    global atype astrlen asort tgrps ahival aloval
+
     # First set up some global variables
     set sname ""
     set ftype ascii
     set comm "//"
-    set separ " "
+    set issepar 1
+    set separ "' '"
     set attrlist ""
     set aname ""
+    set acomp No
     set atype "double"
-    set asort "unsorted"
+    set astrlen 10
+    set asort No
     set tgrps ""
     set ahival ""
     set aloval ""
@@ -527,18 +570,21 @@ proc newschema {} {
 
 #-----------------------------------------------------------
 proc openschema {filename} {
-    global sname ftype comm separ attrlist aname atype asort fsBox schemadir \
-	    tgrps ahival aloval
+    global sname ftype comm issepar separ attrlist aname acomp
+    global atype asort tgrps ahival aloval fsBox schemadir
 
     # Set some defaults
     set sname ""
     set ftype ascii
     set comm "//"
-    set separ " "
+    set issepar 1
+    set separ "' '"
     set attrlist ""
     set aname ""
-    set atype double
-    set asort unsorted
+    set acomp No
+    set atype "double"
+    set astrlen 10
+    set asort No
     set tgrps ""
     set ahival ""
     set aloval ""
@@ -549,7 +595,6 @@ proc openschema {filename} {
     # Call function to display the schema
     newschemawin
 }
-
 
 #-----------------------------------------------------------
 # General function to display a message
@@ -594,32 +639,52 @@ proc writeDefaultLogical {sname} {
     global schemadir
 
     set f [open $schemadir/logical/$sname w]
-    
+
     # Only one line in this default logical file
     puts $f "physical $schemadir/physical/$sname"
     close $f
 }
 
-proc writephysical {name type comm sep alist} {
+proc writephysical {name type comm issep sep alist} {
     global schemadir
 
     set f [open $schemadir/physical/$name w]
 
+    if {$comm == ""} {
+	set comm "//"
+    }
+    if {$sep == ""} {
+	set sep "' '"
+    }
+
     puts $f "type $name $type" 
     puts $f "comment $comm"
-    puts $f "separator '$sep'"
-    
+    if {$issep} {
+	puts $f "separator $sep"
+    } else {
+	puts $f "whitespace $sep"
+    }
     foreach attr $alist {
-	set atype [lindex $attr 0]
+	set acomp [lindex $attr 0]
 	set asort [lindex $attr 1]
-	set ahival [lindex $attr 2]
-	set aloval [lindex $attr 3]
-	set aname [lindex $attr 4]
-	
-	if {$asort != "unsorted"} {
+	set atype [lindex $attr 2]
+	set ahival [lindex $attr 3]
+	set aloval [lindex $attr 4]
+	set aname [lindex $attr 5]
+	set astrlen 10
+
+	if {$asort == "Yes"} {
 	    puts -nonewline $f "sorted "
 	}
-	puts -nonewline $f "attr $aname $atype"
+	if {$acomp == "Yes"} {
+	    puts -nonewline $f "compattr "
+	} else {
+	    puts -nonewline $f "attr "
+	}
+	puts -nonewline $f "$aname $atype"
+	if {$atype == "string"} {
+	    puts -nonewline $f " $astrlen"
+	}
 	if {$ahival != "none"} {
 	    puts -nonewline $f " hi $ahival"
 	}
@@ -659,7 +724,7 @@ proc readlogical {filename} {
 }
 
 proc readphysical {filename} {
-    global sname ftype comm separ attrlist schemadir
+    global sname ftype comm issepar separ attrlist schemadir
     set attrlist ""
 
     # Open file for reading
@@ -673,53 +738,63 @@ proc readphysical {filename} {
     set line [gets $f]
     scan $line "comment %s" comm
 
-    # Third line is separator
+    # Third line is separator or whitespace
     set line [gets $f]
+    set issepar 1
+    if {[lindex $line 0] == "whitespace"} {
+	set issepar 0
+    }
     # everything between the 's is the separator
     set lstart [string first "'" $line]
     set lend [string last "'" $line]
-    set lstart [expr $lstart+1]
-    set lend [expr $lend-1]
     set separ [string range $line $lstart $lend]
 
     # Following are all attr declarations
     set len [gets $f line]
     set num 0
     while {$len != -1} {
-	set first [lindex $line 0]
-	if {$first != "sorted"} {
-	    set scanstr "attr %s %s"
-	    set sorted unsorted
-	} else {
-	    set scanstr "sorted attr %s %s"
-	    set sorted sorted
+
+	set sorted No
+	if {[lindex $line 0] == "sorted"} {
+	    set sorted Yes
+	    set line [lrange $line 1 end]
 	}
+
+	set acomp No
+	if {[lindex $line 0] == "compattr"} {
+	    set acomp Yes
+	}
+	set line [lrange $line 1 end]
+
+	set scanstr "%s %s"
 	set argstr "attrname attrtype"
 
+	set strpos [lsearch $line "string"]
+	if {$strpos != -1} {
+	    set scanstr "$scanstr  %d"
+	    set argstr "$argstr astrlen"
+	}
 	set hipos [lsearch $line "hi"]
 	if {$hipos != -1} {
-	    set histr " hi %s"
-	    set scanstr $scanstr$histr
-	    set histr " hival"
-	    set argstr $argstr$histr
+	    set scanstr "$scanstr hi %s"
+	    set argstr "$argstr hival"
 	}
-
 	set lopos [lsearch $line "lo"]
 	if {$lopos != -1} {
-	    set lostr " lo %s"
-	    set scanstr $scanstr$lostr
-	    set lostr " loval"
-	    set argstr $argstr$lostr
+	    set scanstr "$scanstr lo %s"
+	    set argstr "$argstr loval"
 	}
 
+	set astrlen 0
 	set hival "none"
 	set loval "none"
 
 	set cmd "scan \$line \"$scanstr\" $argstr"
 	eval $cmd
 	
-	set attr [list $attrtype $sorted $hival $loval $attrname]
-#	puts "Inserting .. $attr"
+	set attr [list $attrtype $sorted $hival $loval $attrname $acomp \
+		$astrlen]
+	#	puts "Inserting .. $attr"
 	set attrlist [linsert $attrlist $num $attr]
 	set len [gets $f line]
 	set num [expr $num+1]
