@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  2001/09/18 21:54:51  wenger
+#  Added 'strict'; other improvements.
+#
 #  Revision 1.19  2000/03/15 20:35:47  wenger
 #  Fixed problems with email in cron jobs; safer 'or' in Perl scripts.
 #
@@ -377,8 +380,8 @@ sub CreateViews {
 
     print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsymA {%b %d %H:%M}\n";
 
-    print SES_OUT "DEVise setFont ${user}_viewsymA {x axis} 2 8 0 0\n";
-    print SES_OUT "DEVise setFont ${user}_viewsymA {y axis} 2 8 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymA {x axis} 2 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymA {y axis} 2 10 0 0\n";
 
     print SES_OUT "\n";
 
@@ -403,8 +406,8 @@ sub CreateViews {
 
     print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsymB {%b %d %H:%M}\n";
 
-    print SES_OUT "DEVise setFont ${user}_viewsymB {x axis} 2 8 0 0\n";
-    print SES_OUT "DEVise setFont ${user}_viewsymB {y axis} 2 8 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymB {x axis} 2 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymB {y axis} 2 10 0 0\n";
 
     print SES_OUT "\n";
   }
