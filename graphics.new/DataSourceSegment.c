@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/11 17:25:30  wenger
+  Devise now writes headers to some of the files it writes;
+  DataSourceSegment class allows non-fixed data length with non-zero
+  offset; GUI for editing schema files can deal with comment lines;
+  added targets to top-level makefiles to allow more flexibility.
+
   Revision 1.4  1996/07/01 20:23:13  jussi
   Added #ifdef conditionals to exclude the Web data source from
   being compiled into the Attribute Projection executable.
@@ -140,6 +146,12 @@ DataSourceSegment<TYPE>::Seek(long offset, int from)
 {
 	DO_DEBUG(printf("DataSourceSegment::Seek()\n"));
 
+        /*
+         * The return value from Seek() should not be offset by substracting
+         * _dataOffset from it because Seek() returns zero (not file offset)
+         * on successful return, -1 otherwise.
+         */
+
 	return TYPE::Seek(offset + _dataOffset, from);
 }
 
@@ -164,7 +176,7 @@ template<class TYPE>
 int
 DataSourceSegment<TYPE>::gotoEnd()
 {
-	//DO_DEBUG(printf("DataSourceSegment::gotoEnd()\n"));
+	DO_DEBUG(printf("DataSourceSegment::gotoEnd()\n"));
 
 	int		result = 0;
 
@@ -177,7 +189,7 @@ DataSourceSegment<TYPE>::gotoEnd()
 	}
 	else
 	{
-		if (TYPE::Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
+		if (TYPE::Seek(_dataOffset + _dataLength - 1, SEEK_SET) < 0)
 		{
 			reportError("Cannot seek to end of file", devNoSyserr);
 			result = -1;
