@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.176  1999/06/11 20:46:47  wenger
+  Fixed bug that caused DEVise to crash when closing the
+  SoilSci/TwoStations.ds demo session.
+
   Revision 1.175  1999/06/11 14:46:53  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -1145,7 +1149,12 @@ void View::SubClassMapped()
 	
 void View::SubClassUnmapped()
 {
+#if defined(DEBUG)
+  printf("View(%s)::SubClassUnmapped()\n", GetName());
+#endif
+
   AbortQuery();
+  CleanUpViewSyms();
 }
 
 void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)

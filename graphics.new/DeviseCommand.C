@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/06/16 18:28:31  wenger
+  Fixed bug 499 (problem with 'Next in Pile' not working for piled view
+  symbols).
+
   Revision 1.67  1999/06/16 17:08:45  wenger
   Added raiseAllWindows command and corresponding GUI.
 
@@ -5985,7 +5989,6 @@ IMPLEMENT_COMMAND_BEGIN(raiseAllWindows)
 	}
 IMPLEMENT_COMMAND_END
 
-//TEMPTEMP -- option for reverse??
 IMPLEMENT_COMMAND_BEGIN(nextViewInPile)
 	// Given a view name, returns the name of the next view in the given
 	// view's pile.  If the given view is not piled, return the given view
