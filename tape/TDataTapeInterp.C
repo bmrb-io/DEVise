@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:16  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:48  jussi
   Added CVS header.
 */
@@ -208,6 +211,14 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case FloatAttr:
+      float floatVal = UtilAtof(args[i]);
+      if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
+	return false;
+      *(float *)ptr = floatVal;
+      // printf("float %f\n", floatVal);
+      break;
+
+    case DoubleAttr:
       double doubleVal = UtilAtof(args[i]);
       if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
 	return false;
