@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/30 02:17:00  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.2  1998/01/07 19:28:57  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -72,6 +75,8 @@ public:
 
   virtual int CurrentClientFd() { return _currentClient != CLIENT_INVALID ?
       _clients[_currentClient].fd : CLIENT_INVALID; }
+
+  virtual int NumClients() { return _numClients; }
 
 protected:
   virtual void BeginConnection(ClientID clientID);

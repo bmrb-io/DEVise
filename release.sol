@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/01/14 22:23:44  wenger
+#  Removed some obsolete files.
+#
 #  Revision 1.1  1997/03/19 18:44:06  wenger
 #  Disabled RTree indices in DTE, got that to compile; fixed some compile
 #  warnings; undid accidental(?) changes to devise run script; devise.etk
@@ -134,7 +137,7 @@ end
 
 set runfiles = "run_public/devise \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi"
+	run_public/multi run_public/kill_devised"
 
 foreach file ($runfiles)
   if ($file == "") then

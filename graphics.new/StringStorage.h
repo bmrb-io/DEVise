@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/07/17 18:44:01  wenger
+  Added menu selections to report number of strings and save string space.
+
   Revision 1.7  1997/07/16 15:49:18  wenger
   Moved string allocation/deallocation within StringStorage class, fixed
   memory leak of strings.
@@ -69,11 +72,16 @@ class StringStorage {
     static int GetCount() { return _strings.num(); }
 
     // Return 0 if OK, -1 otherwise.
-    static int Save(char *filename);
+    static int Save(const char *filename);
+
+    // Return 0 if OK, -1 otherwise.
+    static int Load(const char *filename);
 
     static int Clear();
 
     static int PopulateFromInitFile();
+
+    static const char *GetFile() { return _stringFile; }
 
   protected:
     static int StringHash(char *&string, int numBuckets);
@@ -89,6 +97,8 @@ class StringStorage {
     static int _stringNum;                   // sequence number for string
     static HashTable<char *, int> _strings;  // hash table of strings
     static HashTable<int, char *> _keys;     // hash table of keys
+
+    static char* _stringFile;
 };
 
 #endif

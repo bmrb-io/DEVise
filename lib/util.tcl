@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.52  1997/11/24 23:15:48  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.51  1997/11/12 15:47:48  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -1006,13 +1009,28 @@ proc GetStringCount {} {
 }
 
 ############################################################
+# Load the DEVise string space from a file.
+
+proc LoadStringSpace {} {
+  global fsBox sessiondir
+
+  set fsBox(path) $sessiondir
+  set fsBox(pattern) *.str
+  set filename [ FSBox "Select file for loading strings" ]
+
+  if {$filename != ""} {
+    DEVise loadStringSpace $filename
+  }
+}
+
+############################################################
 # Save the DEVise string space to a file.
 
 proc SaveStringSpace {} {
-  global fsBox
+  global fsBox sessiondir
 
-  set fsBox(path) [CWD]
-  set fsBox(pattern) *
+  set fsBox(path) $sessiondir
+  set fsBox(pattern) *.str
   set filename [ FSBox "Select file for saving strings" ]
 
   if {$filename != ""} {

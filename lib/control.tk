@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.152  1998/01/14 22:24:45  wenger
+#	Changed 'Bring View Back' to 'Restore View'.
+#
 #	Revision 1.151  1998/01/09 20:46:06  wenger
 #	Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
 #	previous merge.
@@ -905,6 +908,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command PrintWithMap
 
 .mbar.session.menu add separator
+.mbar.session.menu add command -label "Load String Space" \
+	-command { LoadStringSpace }
 .mbar.session.menu add command -label "Get String Count" \
 	-command { GetStringCount }
 .mbar.session.menu add command -label "Save String Space" \

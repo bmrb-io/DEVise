@@ -986,7 +986,7 @@ Num Date        Status  Description
                         the virtual desktop -- we should exclude any such
                         windows from printing. (ad/rkw)
 
-249 12/12/97	OPEN	Changing color palette doesn't force a redraw. (rkw)
+249 12/12/97	FIXED	Changing color palette doesn't force a redraw. (rkw)
 
 250 12/12/97	FIXED	colors.tk session doesn't work right with new color
 			manager (most symbols don't show up, two rects are
@@ -1086,6 +1086,9 @@ Num Date        Status  Description
 
 279 01/31/98	FIXED	Devised doesn't kill off EmbeddedTk server when it
 			gets <ctl-C><ctl-C> and quits. (rkw)
+
+280 01/31/98	OPEN	Closing a session while a view is drawing may cause
+			a clip mask stack or transform stack underflow. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

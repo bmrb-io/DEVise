@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/11/24 23:15:17  weaver
+  Changes for the new ColorManager.
+
   Revision 1.4  1997/07/17 18:44:00  wenger
   Added menu selections to report number of strings and save string space.
 
@@ -50,6 +53,9 @@
 int StringStorage::_stringNum = 0;
 HashTable<char *, int> StringStorage::_strings(100, StringHash, StringComp);
 HashTable<int, char *> StringStorage::_keys(100, KeyHash, 0);
+char *StringStorage::_stringFile = NULL;
+
+static const char *defaultFile = "devise.strings";
 
 int
 StringStorage::Insert(char *string, int &key)
@@ -103,6 +109,10 @@ StringStorage::Clear()
        return 0;
     }
   }
+
+  delete [] _stringFile;
+  _stringFile = NULL;
+
   return code;
 }
 
@@ -118,32 +128,11 @@ StringStorage::StringHash(char *&string, int numBuckets)
 int
 StringStorage::PopulateFromInitFile()
 {
-    char *fname = "devise.strings";
-
-    FILE *fp = fopen(fname, "r");
-    if (!fp)
-        return 0;
-
-    printf("Initializing string table from %s\n", fname);
-
-    char buf[256];
-    while (fgets(buf, sizeof buf, fp)) {
-        if (buf[strlen(buf) - 1] == '\n')
-            buf[strlen(buf) - 1] = 0;
-        int key;
-        int code = Insert(buf, key);
-#ifdef DEBUG
-        printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
-#endif
-    }
-
-    fclose(fp);
-
-    return 0;
+  return Load(defaultFile);
 }
 
 int
-StringStorage::Save(char *filename)
+StringStorage::Save(const char *filename)
 {
   int result = 0;
 
@@ -167,4 +156,39 @@ StringStorage::Save(char *filename)
   }
 
   return result;
+}
+
+int
+StringStorage::Load(const char *filename)
+{
+  FILE *fp = fopen(filename, "r");
+  if (!fp) {
+    if (strcmp(filename, defaultFile)) {
+      reportErrSys("can't open strings file");
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
+  printf("Initializing string table from %s\n", filename);
+
+  char buf[256];
+  while (fgets(buf, sizeof buf, fp)) {
+    if (buf[strlen(buf) - 1] == '\n')
+        buf[strlen(buf) - 1] = 0;
+    int key;
+    int code = Insert(buf, key);
+#ifdef DEBUG
+    printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
+#endif
+  }
+
+  if (fclose(fp) != 0) {
+    reportErrSys("error closing strings file");
+  }
+
+  _stringFile = CopyString(filename);
+
+  return 0;
 }

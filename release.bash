@@ -13,6 +13,7 @@ cp run_public/dumpgif.script /p/devise/run
 cp run_public/multi /p/devise/run
 cp run_public/devise.etk /p/devise/run
 cp run_public/tk2ds.tcl /p/devise/run
+cp run_public/kill_devised /p/devise/run
 
 tar cv --exclude=CVS public | tar xv --directory=/p/devise
 

@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.87  1998/01/30 02:17:03  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.86  1998/01/07 19:29:52  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -869,6 +872,27 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       } while (!qp->Idle());
       control->ReturnVal(API_ACK, "done");
       return 1;
+    }
+
+    if (!strcmp(argv[0], "serverExit")) {
+      // Arguments: none
+      // Returns: "done"
+#if defined(DEBUG)
+      printf("serverExit\n");
+#endif
+	  // Only allow this if the client that requested the server to exit
+	  // is the only client.
+	  if (control->NumClients() == 1) {
+        control->ReturnVal(API_ACK, "done");
+        printf("Server exiting on command from client\n");
+        ControlPanel::Instance()->DoQuit();
+		return 1; // We never get to here.
+      } else {
+		char *result = "Server won't exit with more than one client connected.";
+		printf("%s\n", result);
+        control->ReturnVal(API_NAK, result);
+		return -1;
+	  }
     }
   }
 
@@ -1743,6 +1767,24 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
         control->ReturnVal(API_NAK, "can't save string space");
         return -1;
       }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "loadStringSpace")) {
+      // Argument: <file name>
+#if defined(DEBUG)
+      printf("loadStringSpace <%s>\n", argv[1]);
+#endif
+      if (StringStorage::Clear() != 0) {
+        control->ReturnVal(API_NAK, "can't clear string space");
+        return -1;
+      }
+      if (StringStorage::Load(argv[1]) != 0) {
+        control->ReturnVal(API_NAK, "can't save string space");
+        return -1;
+      }
+      View::RefreshAll();
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
@@ -2797,9 +2839,15 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     }
   }
   
-  fprintf(stderr, "Unrecognized command or wrong number of args: '%s'\n",
-    argv[0]);
-  fprintf(stderr, "argc = %d\n", argc);
+  fprintf(stderr, "Unrecognized command or wrong number of args.\n");
+  fprintf(stderr, "Command is: ");
+  int index;
+  char *prefix = "";
+  for (index = 0; index < argc; index++) {
+    fprintf(stderr, "%s{%s}", prefix, argv[index]);
+    prefix = " ";
+  }
+  fprintf(stderr, "\n");
   control->ReturnVal(API_NAK, "Unrecognized command");
   return -1;
 }
@@ -2807,6 +2855,10 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 int
 GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
 {
+#if defined(DEBUG)
+  printf("GetDisplayImageAndSize()\n");
+#endif
+
   if (strcmp(imageType, "gif")) {
     control->ReturnVal(API_NAK, "Can only support GIF now.");
     return -1;
@@ -2901,6 +2953,10 @@ GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 int
 WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
 {
+#if defined(DEBUG)
+  printf("WriteFileToDataSock()\n");
+#endif
+
   int tmpfd = open(tmpFile, O_RDONLY, 0644);
 
   // Find out out big the temp file is.
@@ -3270,11 +3326,11 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		Trace("    Command: color SetCurrentPalette");
 
 		PaletteID	pid = (PaletteID)atoi(argv[2]);
+		PaletteID	oldPid = PM_GetCurrentPalette();
 
 		PM_SetCurrentPalette(pid);
 
-		if (pid != PM_GetCurrentPalette())
-			View::RefreshAll();
+		if (pid != oldPid) View::RefreshAll();
 
 		sprintf(result, "%d", (int)PM_GetCurrentPalette());
 		control->ReturnVal(API_ACK, result);

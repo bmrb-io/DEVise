@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/01/09 20:45:21  wenger
+  Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+  previous merge.
+
   Revision 1.21  1998/01/07 19:28:24  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -241,6 +245,8 @@ public:
 
   /* Control panel instance */
   static ControlPanel *_controlPanel;
+
+  virtual int NumClients() { return 1; }
 
 protected:
   friend class Dispatcher;

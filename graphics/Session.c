@@ -18,9 +18,13 @@
 
 /*
   $Id$
-  $Id$
 
   $Log$
+  Revision 1.13  1998/01/07 19:28:44  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.12  1997/12/19 21:44:51  wenger
   Removed (now obsolete) view override color reference so saving
   sessions works.
@@ -91,6 +95,7 @@
 #include "Util.h"
 #include "../../DTE/DeviseSpecific/CatalogComm.h"
 #include "ParseCat.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 
@@ -260,6 +265,12 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
   if (status.IsComplete()) {
     char *header = DevFileHeader::Get(FILE_TYPE_SESSION);
     fprintf(saveData.fp, "%s", header);
+
+    const char *stringFile = StringStorage::GetFile();
+    if (stringFile != NULL) {
+      fprintf(saveData.fp, "\n# Load strings table\n");
+      fprintf(saveData.fp, "DEVise loadStringSpace %s\n", stringFile);
+    }
 
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
