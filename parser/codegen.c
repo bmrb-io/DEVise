@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/10 00:07:44  jussi
+  Replaced TDataMapDispatch with TDataMap.
+
   Revision 1.13  1996/07/03 22:14:33  jussi
   Updated code to reflect new interface between mapping objects and
   shape objects.
@@ -404,7 +407,7 @@ fprintf(mapFile, "\t\t\t}\n");
   fprintf(mapFile, "\t}\n");
 #endif
 
-  fprintf(mapFile, "\tvirtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {\n");
+  fprintf(mapFile, "\tvirtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {\n");
   if (rec->dynamicFields & BIT_SHAPE) {
     fprintf(mapFile, "\t\tint i = 0;\n");
     fprintf(mapFile, "\t\twhile (i < numSyms) {\n");

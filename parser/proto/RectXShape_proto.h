@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/03 22:54:13  jussi
+  Updated to reflect new Shape interface.
+
   Revision 1.4  1996/04/12 23:35:02  jussi
   Added View * parameter to DrawGDataArray(), corresponding to changes
   made to graphics.new/MapInterpShape.h and MappingInterp.c.
@@ -92,8 +95,9 @@ public:
 #endif
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		
     if (view->GetNumDimensions() == 3)
       return;
