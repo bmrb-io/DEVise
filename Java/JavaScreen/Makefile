@@ -67,7 +67,7 @@ appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java
 
 loader: *.java
-	$(JAVAC) DEViseJSLoader.java
+	$(JAVAC) jsb.java DEViseJSLoader.java
 
 jar:
 	make jara jarb
