@@ -12,13 +12,19 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class keeps track of user information (the JS supplies a username
+// when it connects to the jspop).  Right now the only thing we are doing
+// with this is allowing different usernames to have different priorities
+// for getting connected to a devised.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/03/23 16:26:15  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.5  1999/06/23 20:59:17  wenger
 // Added standard DEVise header.
 //
@@ -34,9 +40,6 @@ public class DEViseUser
     private String username = null;
     private String password = null;
     private int priority;
-    private int maxLogin;
-
-    private Hashtable currentClients = new Hashtable();
 
     public DEViseUser(String[] data) throws YException
     {
@@ -44,7 +47,7 @@ public class DEViseUser
             throw new YException("Invalid user data: \"NULL\"");
         }
 
-        if (data.length != 4) {
+        if (data.length != 3) {
             throw new YException("Incorrect number of items in user data");
         }
 
@@ -52,9 +55,9 @@ public class DEViseUser
             username = data[0];
             password = data[1];
             priority = Integer.parseInt(data[2]);
-            maxLogin = Integer.parseInt(data[3]);
-            if (priority < 1 || maxLogin < 1 || username == null || password == null)
-                throw new NumberFormatException();
+            if (priority < 1 || username == null || password == null) {
+                throw new YException("Illegal value in user data");
+	    }
         } catch (NumberFormatException e) {
             throw new YException("Incorrect data format in user data");
         }
@@ -75,78 +78,17 @@ public class DEViseUser
         return priority;
     }
 
-    public int getMaxLogin()
+    public boolean equals(DEViseUser user)
     {
-        return maxLogin;
-    }
+        if (user == null) {
+            return false;
+	}
 
-    public synchronized int getCurrentLogin()
-    {
-        return currentClients.size();
-    }
-
-    public synchronized boolean addClient(DEViseClient client)
-    {
-        if (client == null)
-            return true;
-
-        if (currentClients.contains(client)) {
-            return true;
-        }
-
-        if (currentClients.size() < maxLogin) {
-            currentClients.put(client.getConnectionID(), client);
+        if (username.equals(user.getName()) &&
+	  password.equals(user.getPassword())) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public synchronized void removeClient(DEViseClient client)
-    {
-        if (client == null)
-            return;
-
-        currentClients.remove(client.getConnectionID());
-    }
-
-    public synchronized void removeClient(Integer id)
-    {
-        if (id == null)
-            return;
-
-        currentClients.remove(id);
-    }
-
-    public synchronized boolean containsClient(DEViseClient client)
-    {
-        if (client == null)
-            return false;
-
-        return currentClients.contains(client);
-    }
-
-    public synchronized boolean containsClient(Integer id)
-    {
-        if (id == null)
-            return false;
-
-        return currentClients.containsKey(id);
-    }
-
-    public synchronized Hashtable getAllClients()
-    {
-        return currentClients;
-    }
-
-    public boolean equals(DEViseUser user)
-    {
-        if (user == null)
-            return false;
-
-        if (username.equals(user.getName()) && password.equals(user.getPassword()))
-            return true;
-        else
-            return false;
     }
 }

@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2000/07/19 20:11:36  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.17  2000/06/26 16:46:59  wenger
 // Minor cleanups.
 //
@@ -366,7 +371,6 @@ public class DEViseClient
         cmdBuffer = new Vector();
 
         if (user != null) {
-            user.removeClient(this);
             user = null;
         }
 

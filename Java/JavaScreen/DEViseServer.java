@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2000/07/19 20:11:36  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.41  2000/06/21 18:37:30  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -511,20 +516,10 @@ public class DEViseServer implements Runnable
       throws YException
     {
         if (sendCmd(clientCmd)) {
-            if (client.user.addClient(client)) {
-                serverCmds = new String[2];
-                serverCmds[0] = DEViseCommands.USER + " " +
-                client.ID.intValue();
-                serverCmds[1] = DEViseCommands.DONE;
-            } else {
-                serverCmds = new String[1];
-                serverCmds[0] = DEViseCommands.ERROR +
-                  " {Maximum logins for this user has been reached}";
-                //throw new YException(
-                  //"No more login is allowed for user \"" +
-                  //client.user.getName() + "\"");
-                isRemoveClient = true;
-            }
+            serverCmds = new String[2];
+            serverCmds[0] = DEViseCommands.USER + " " +
+            client.ID.intValue();
+            serverCmds[1] = DEViseCommands.DONE;
         } else {
             isRemoveClient = true;
         }
