@@ -2851,9 +2851,10 @@ Num Date        Status  Description
 			collaborating clients have different screen sizes.
 			(rkw)
 
-714 10/16/01	OPEN	JavaScreen: collaboration follower cannot switch
+714 10/16/01	FIXED	JavaScreen: collaboration follower cannot switch
 			out of collaboration mode (in Netscape, but not
 			as an application). (rkw)
+                        (Fixed by xuk, 10/18/01.)
 
 715 10/16/01	OPEN	JavaScreen: in command playback mode, 3D configuration
 			commands are not always properly syncronized with
