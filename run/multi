@@ -1,0 +1,11 @@
+#! /bin/csh -f
+
+setenv DEVISE_DAT /p/devise/multidat
+setenv DEVISE_CACHE /p/devise/cache
+setenv DEVISE_SCHEMA /p/devise/schema/schema
+setenv DEVISE_SESSION /p/devise/multidat
+setenv DEVISE_LIB /p/devise/$USER/lib
+setenv DEVISE_TMP /tmp/$USER-devise-tmp
+setenv DEVISE_WORK /tmp/$USER-devise-work
+
+bin/multi/disp $*
