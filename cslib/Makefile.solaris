@@ -72,4 +72,5 @@ server.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
 server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
 server.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h
+server.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+server.o: ../graphics/PSDisplay.h

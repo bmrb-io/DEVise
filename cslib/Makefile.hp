@@ -51,3 +51,4 @@ server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 server.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 server.o: ../graphics/WindowRep.h ../graphics/Transform.h
 server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DualWindowRep.h ../graphics/PSDisplay.h

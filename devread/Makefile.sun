@@ -15,8 +15,8 @@ DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 DevRead.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DevRead.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics/AttrList.h
-DevRead.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/DList.h
-DevRead.o: ../graphics.new/DataSeg.h
+DevRead.o: /usr/include/sys/time.h ../graphics/DList.h ../graphics/Init.h
+DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/types.h
 drtest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h DevRead.h
 drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h

@@ -13,8 +13,8 @@ DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
 DevRead.o: /usr/include/sys/time.h /usr/include/ctype.h /usr/include/math.h
 DevRead.o: ../graphics/Exit.h ../graphics.new/TData.h
 DevRead.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-DevRead.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
-DevRead.o: ../graphics.new/DataSeg.h
+DevRead.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 drtest.o: /usr/include/sys/types.h DevRead.h ../graphics/DeviseTypes.h
 drtest.o: /usr/include/values.h ../graphics/DevStatus.h
