@@ -1,20 +1,18 @@
+#  This file contributed by the Internet community and modified
+#  locally.
+
+############################################################
+
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/09/21 15:35:53  jussi
+#	Minor changes.
+#
 #	Revision 1.2  1995/09/05 22:47:53  jussi
 #	Added/updated CVS header.
 
-# Program: template
-# Description: file selector box
-# Author: $__author$
-# Source: $__self$
-# Version: $__version$
-# Date: $__ctime$
-# State: $__state$
-#
-# $__Log$
-#
-# $__Header$
+############################################################
 
 global fsBox
 set fsBox(activeBackground) ""
@@ -120,7 +118,7 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
     -borderwidth 0
   catch ".fsBox config $tmpFrameOpt"
   wm geometry .fsBox +100+100
-  wm geometry .fsBox 350x300 
+  wm geometry .fsBox 350x450 
   wm title .fsBox {File select box}
   wm maxsize .fsBox 1000 1000
   wm minsize .fsBox 100 100

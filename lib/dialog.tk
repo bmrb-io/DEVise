@@ -1,8 +1,18 @@
+#  This file based on John Ousterhout's Tcl/Tk book and modified
+#  locally.
+
+############################################################
+
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/09/21 15:35:56  jussi
+#	Minor changes.
+#
 #	Revision 1.2  1995/09/05 22:47:56  jussi
 #	Added/updated CVS header.
+
+############################################################
 
 proc dialog {w title text bitmap default args} {
 	global button
