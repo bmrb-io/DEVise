@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 21:13:08  jussi
   Added/update CVS header.
 */
@@ -27,6 +31,6 @@ class TimeStamp {
 public:
 	static int NextTimeStamp() { return _timeStamp++; }
 private:
-	static _timeStamp;
+	static int _timeStamp;
 };
 #endif
