@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/14 18:40:27  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.6  1995/11/25 19:35:37  jussi
   Added copyright notice and CVS header. Cleaned up the code a bit.
 */
@@ -118,5 +121,5 @@ char *GetTokenText()
 
 int yywrap()
 {
-  return 0;
+  return 1;
 }
