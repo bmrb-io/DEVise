@@ -1286,6 +1286,21 @@ Num Date        Status  Description
 			have pointers to them, resulting in member functions
 			of destroyed objects being called. (rkw)
 
+338 05/07/98	OPEN	Set link bug: if you have three views linked as so:
+			V1->V2->V3 with set links, and you unlink V2,
+			DEVise crashes. (rkw)
+
+339 05/07/98	OPEN	Duplicate elimination in UniqueInserter doesn't work
+			for strings. (rkw)
+
+340 05/07/98	OPEN	RELATION_MNGR.deleteRelation() doesn't do anything.
+			(rkw)
+
+341 05/07/98	OPEN	When running without OpenGL on the SGI, DEVise seems
+			to think its windows have backing store when they
+			really don't (damaged windows don't get redrawn
+			properly). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
