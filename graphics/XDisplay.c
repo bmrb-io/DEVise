@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/20 19:52:24  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.17  1996/04/18 18:16:22  jussi
   This class now creates both X windows and X pixmaps, depending
   on whether the system is in interactive mode or batch mode.
@@ -78,9 +85,6 @@
   Added/updated CVS header.
 */
 
-#define XLIB_ILLEGAL_ACCESS
-
-#include <X11/Intrinsic.h>
 #include <math.h>
 
 #include "XDisplay.h"
@@ -168,18 +172,14 @@ XDisplay::XDisplay(char *name)
 
 void XDisplay::Register()
 {
+  int fd = ConnectionNumber(_display);
+
 #ifdef DEBUG
-  printf("About to be registered... %d\n",_display->fd);
+  printf("About to be registered... %d\n", fd);
 #endif
 
-#if 1
   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
-						10, AllState, true,
-						_display->fd);
-#else
-  (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
-						10, AllState, true, -1);
-#endif
+						10, AllState, true, fd);
 }
 
 void XDisplay::Flush()
