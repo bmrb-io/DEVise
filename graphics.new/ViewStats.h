@@ -15,16 +15,20 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/28  05:24:51  ravim
+  Support for statistics.
+*/
 
 #ifndef ViewStats_h
 #define ViewStats_h
 
-#include "ViewGraph.h"
+class ViewGraph;
 
 // Abstract Base Class for the statistics collection and display of the
 // data shown in a view.
-class ViewStats 
+
+class ViewStats
 {
 public:
   ViewStats() {};
