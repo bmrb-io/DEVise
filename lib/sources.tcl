@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.23  1996/01/17 18:04:41  jussi
+#	In administrator mode (UserMode == 0), physical schemas are
+#	displayed by default.
+#
 #	Revision 1.22  1996/01/15 18:06:42  jussi
 #	Minor fix.
 #
@@ -667,7 +671,7 @@ proc uncacheData {dispname reason} {
     set sourcedef $sourceList($dispname)
     set cachefile [lindex $sourcedef 4]
 
-    if {$cachefile == ""} {
+    if {$cachefile == "" || $cachefile == "/dev/null"} {
 	return 0
     }
 
