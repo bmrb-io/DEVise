@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.92  1997/05/05 16:53:51  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.91  1997/04/25 16:54:02  wenger
   Text labels are now sized in the same way as Rects; fixed font bug in
   middle button query popup; removed the dialog that warns you about your
@@ -38,15 +42,6 @@
   flag. Added an ETk_Cleanup() procedure that gets called inside
   View::ReportQueryDone and destroys all ETk windows that are not marked
   as in_use.
-
-  Revision 1.87.4.2  1997/03/07 20:03:59  wenger
-  Tasvir images now work in PostScript output; Tasvir images now freed
-  on a per-window basis; Tasvir timeout factor can be set on the command
-  line; shared memory usage enabled by default.
-
-  Revision 1.87.4.1  1997/02/27 22:46:07  wenger
-  Most of the way to having Tasvir images work in PostScript output;
-  various WindowRep-related fixes; version now 1.3.4.
 
   Revision 1.87  1997/01/28 19:46:35  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
@@ -399,18 +394,15 @@
 #include "XDisplay.h"
 #include "Compress.h"
 #include "DevError.h"
-
-#ifndef LIBCS
 #include "ETkIfc.h"
-#endif
-
-#ifndef LIBCS
 #include "DaliIfc.h"
+
+#if !defined(LIBCS)
 #include "Init.h"
 #endif
 
 extern "C" {
-#include "xv.h"
+ #include "xv.h"
 }
 // xv.h has a #define DELETE that conflicts with DeviseKey::DELETE
 // that is not used in this module, so undef it before including
@@ -434,14 +426,7 @@ extern "C" {
 #define ROUND(type, value) ((type)(value + 0.5))
 #define DRAWABLE           (_win ? _win : _pixmap)
 
-#ifndef LIBCS
 ImplementDList(DaliImageList, int);
-#endif
-
-#ifndef LIBCS
-// List of embedded Tk window handles
-//ImplementDList(ETkWinList, int);
-#endif
 
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
@@ -589,14 +574,8 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   if (_parent)
     _parent->_children.Append(this);
   _backingStore = false;
-  _lineStyle = LineSolid;
-#ifndef LIBCS
   _daliServer = NULL;
-#endif
-#ifndef LIBCS
   _etkServer = NULL;
-#endif
-  
   Init();
 }
 
@@ -630,7 +609,7 @@ XWindowRep::XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
 
 void XWindowRep::Init()
 {
-#ifdef LIBCS
+#if defined(LIBCS)
   _dispGraphics = true;
 #else
   _dispGraphics = Init::DispGraphics();
@@ -688,18 +667,14 @@ XWindowRep::~XWindowRep()
   /* _win or _pixmap is destroyed by XDisplay */
   DOASSERT(_win == 0 && _pixmap == 0, "X window or pixmap not freed");
 
-#ifndef LIBCS
   // This should have already been done by XDisplay::DestroyWindowRep(),
   // but do it again here just in case...  If it's already been done,
   // this won't actually do anything.
   (void) DaliFreeImages();
   delete [] _daliServer;
-#endif
 
-#ifndef LIBCS
   (void) ETk_FreeWindows();
   delete [] _etkServer;
-#endif
   
   if (_parent) {
     if (!_parent->_children.Delete(this))
@@ -874,8 +849,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   }
 }
 
-#ifndef LIBCS
-/*------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * function: XWindowRep::DaliShowImage
  * Show a Dali image in this window.
  */
@@ -899,9 +873,11 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     if (tmpResult.IsComplete()) {
       GetDisplay()->SetTasvirServer(serverName);
       DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
+#if !defined(LIBCS)
       Init::SetDaliServer(serverName);
       Init::SetDaliQuit(true);
-    }
+#endif
+  }
   }
 
   if (_daliServer == NULL)
@@ -930,7 +906,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
   return result;
 }
 
-/*------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * function: XWindowRep::DaliFreeImages
  * Free the Dali images associated with this window.
  */
@@ -943,12 +919,6 @@ XWindowRep::DaliFreeImages()
 
   DevStatus result = StatusOk;
 
-#if 1
-  if (_daliImages.Size() > 0) {
-    result += DaliIfc::FreeWindowImages(_daliServer, _win);
-    _daliImages.DeleteAll();
-  }
-#else
   int index = _daliImages.InitIterator(false);
   while (_daliImages.More(index))
   {
@@ -957,17 +927,41 @@ XWindowRep::DaliFreeImages()
     result += DaliIfc::FreeImage(_daliServer, handle);
   }
   _daliImages.DoneIterator(index);
-#endif
 
   return result;
 }
-#endif // #ifndef LIBCS
 
-
-#ifndef LIBCS
 //------------------------------------------------------------------------
 // BEGIN ETk interface
 //
+
+//
+// Utility function for searching the ETk window list. Given an ETk
+// handle, returns a pointer to the ETkInfo struct for that window,
+// or NULL if no window exists with that handle.
+//
+static ETkInfo *
+_etkSearch(ETkWinList *list, int handle)
+{
+    ETkInfo *current, *result;
+    int i;
+    result = NULL;
+    i = list->InitIterator(false);
+    while (list->More(i))
+    {
+	current = list->Next(i);
+	if (current == NULL)
+	{
+	    continue;
+	}
+	if (current->handle == handle)
+	{
+	    result = current;
+	}
+    }
+    list->DoneIterator(i);
+    return result;
+}
 
 //------------------------------------------------------------------------
 //
@@ -977,10 +971,10 @@ XWindowRep::DaliFreeImages()
 // name of a Tcl/Tk script to be executed. argc and argv carry the
 // command-line arguments that will be passed to the Tcl/Tk script.
 //
-//
 DevStatus
-XWindowRep::ETk_CreateWindow(Coord centerX, Coord centerY,
+XWindowRep::ETk_CreateWindow(Coord x, Coord y,
 			     Coord width, Coord height,
+			     ETkIfc::Anchor anchor,
 			     char *filename, int argc, char **argv,
 			     int &handle)
 {
@@ -1011,10 +1005,15 @@ XWindowRep::ETk_CreateWindow(Coord centerX, Coord centerY,
     {
 	if (filename == NULL)
 	    filename = "-";
-	
+
+	int wx = int(x);
+	int wy = int(y);
+	int wwidth = int(width);
+	int wheight = int(height);
 	result += ETkIfc::CreateWindow(_etkServer, _win,
-				       (int) centerX, (int) centerY,
-				       (int) width, (int) height,
+				       wx, wy,
+				       wwidth, wheight,
+				       anchor,
 				       filename,
 				       argc, (const char **) argv,
 				       handle);
@@ -1025,14 +1024,13 @@ XWindowRep::ETk_CreateWindow(Coord centerX, Coord centerY,
 	    printf("Displayed ETk window. handle = %d\n", handle);
 #endif
 
-#if 0
-	    _etkWindows.Insert(handle);
-#endif
 	    ETkInfo *info = new ETkInfo;
 	    DOASSERT(info, "Cannot create ETkInfo object");
 	    info->handle = handle;
-	    info->x = centerX;
-	    info->y = centerY;
+	    info->x = wx;
+	    info->y = wy;
+	    info->width = wwidth;
+	    info->height = wheight;
 	    info->in_use = true;
 	    strncpy(info->script, filename, FILENAME_MAX);
 	    info->script[FILENAME_MAX] = '\0';
@@ -1092,7 +1090,6 @@ XWindowRep::ETk_FindWindow(Coord centerX, Coord centerY, char *script)
 //
 // Free all embedded Tk windows associated with this window.
 //
-//
 DevStatus
 XWindowRep::ETk_FreeWindows()
 {
@@ -1101,17 +1098,6 @@ XWindowRep::ETk_FreeWindows()
 #endif
     DevStatus result = StatusOk;
     int iter, handle;
-    
-#if 0
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
-    {
-	handle = _etkWindows.Next(iter);
-	_etkWindows.DeleteCurrent(iter);
-	result += ETkIfc::SendSimpleCommand(_etkServer, "free", handle);
-    }
-    _etkWindows.DoneIterator(iter);
-#endif
     
     ETkInfo *info;
     iter = _etkWindows.InitIterator(false);
@@ -1126,8 +1112,8 @@ XWindowRep::ETk_FreeWindows()
 	    break;
 	}
 	_etkWindows.DeleteCurrent(iter);
-	result += ETkIfc::SendSimpleCommand(_etkServer, "free",
-					    info->handle);
+	result += ETkIfc::SendCommand(_etkServer, "free",
+				      0, NULL, info->handle);
 	delete info;
     }
     _etkWindows.DoneIterator(iter);
@@ -1140,7 +1126,6 @@ XWindowRep::ETk_FreeWindows()
 // XWindowRep::ETk_Cleanup()
 //
 // Free all embedded Tk windows that have in_use == false
-//
 //
 DevStatus
 XWindowRep::ETk_Cleanup()
@@ -1166,8 +1151,8 @@ XWindowRep::ETk_Cleanup()
 	if (info->in_use == false)
 	{
 	    _etkWindows.DeleteCurrent(iter);
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "free",
-						info->handle);
+	    result += ETkIfc::SendCommand(_etkServer, "free",
+					  0, NULL, info->handle);
 	    delete info;
 	}
     }
@@ -1181,7 +1166,6 @@ XWindowRep::ETk_Cleanup()
 // XWindowRep::ETk_MarkAll()
 //
 // Set the in_use flag for all embedded Tk windows
-//
 //
 DevStatus
 XWindowRep::ETk_MarkAll(bool in_use)
@@ -1220,37 +1204,17 @@ XWindowRep::ETk_MarkAll(bool in_use)
 DevStatus
 XWindowRep::ETk_Mark(int handle, bool in_use)
 {
+    ETkInfo *info;
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_Mark()\n");
 #endif
-    DevStatus result = StatusOk;
-    int iter;
-    
-    ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    reportError("NULL ETkInfo pointer found in ETkWindowList",
-			devNoSyserr);
-	    continue;
-	}
-	if (info->handle == handle)
-	{
-	    info->in_use = in_use;
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	reportError("Attempt to mark an invalid ETk window", devNoSyserr);
+	return StatusFailed;
     }
-    _etkWindows.DoneIterator(iter);
-    
-    reportError("Attempt to mark an invalid ETk window", devNoSyserr);
-    result = StatusFailed;
-    
-    return result;
-
+    info->in_use = in_use;
+    return StatusOk;
 }
 
 //------------------------------------------------------------------------
@@ -1266,26 +1230,10 @@ XWindowRep::ETk_FreeWindow(int handle)
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_FreeWindow(%d)\n", handle);
 #endif
-    DevStatus result = StatusOk;
-    int iter, current;
-    
-#if 0
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
-    {
-	current = _etkWindows.Next(iter);
-	if (current == handle)
-	{
-	    _etkWindows.DeleteCurrent(iter);
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "free", handle);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
-    }
-    _etkWindows.DoneIterator(iter);
-#endif
     
     ETkInfo *info;
+    DevStatus result = StatusOk;
+    int iter, current;
     iter = _etkWindows.InitIterator(false);
     while (_etkWindows.More(iter))
     {
@@ -1299,14 +1247,46 @@ XWindowRep::ETk_FreeWindow(int handle)
 	    _etkWindows.DeleteCurrent(iter);
 	    delete info;
 	    _etkWindows.DoneIterator(iter);
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "free", handle);
+	    result += ETkIfc::SendCommand(_etkServer, "free",
+					  0, NULL, handle);
 	    return result;
 	}
     }
     _etkWindows.DoneIterator(iter);
-    
     reportError("Attempt to delete an invalid ETk window", devNoSyserr);
     result = StatusFailed;
+    return result;
+    
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_EvalCmd()
+//
+// Sends a command to the ETk window for evaluation inside the Tcl
+// interpreter. If successful, result is stored in static area pointed
+// to by returnValue.
+//
+DevStatus
+XWindowRep::ETk_EvalCmd(int handle, int argc, char **argv,
+			char *&returnValue)
+{
+#if defined(DEBUG) || defined(DEBUG_ETK)
+    printf("XWindowRep::ETk_EvalCmd(%d)\n", handle);
+#endif
+
+    DevStatus result = StatusOk;
+    ETkInfo *info;
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
+    {
+	reportError("Attempt to operate on an invalid ETk window",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+
+    result += ETkIfc::EvalCommand(_etkServer, handle,
+				  argc, (const char **) argv,
+				  returnValue);
     
     return result;
 
@@ -1318,7 +1298,6 @@ XWindowRep::ETk_FreeWindow(int handle)
 //
 // Maps a previously created embedded Tk window
 //
-//
 DevStatus
 XWindowRep::ETk_MapWindow(int handle)
 {
@@ -1326,46 +1305,15 @@ XWindowRep::ETk_MapWindow(int handle)
     printf("XWindowRep::ETk_MapWindow(%d)\n", handle);
 #endif
     DevStatus result = StatusOk;
-    int iter, current;
-    
-#if 0
-    iter = _etkWindows.InitIterator(false);
-     while (_etkWindows.More(iter))
-    {
-	current = _etkWindows.Next(iter);
-	if (current == handle)
-	{
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "map", handle);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
-    }
-    _etkWindows.DoneIterator(iter);
-#endif
-    
     ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    break;
-	}
-	if (info->handle == handle)
-	{
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "map", handle);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	reportError("Attempt to map an invalid ETk window", devNoSyserr);
+	return StatusFailed;
     }
-    _etkWindows.DoneIterator(iter);
-    
-    reportError("Attempt to map an invalid ETk window", devNoSyserr);
-    result = StatusFailed;
-    
+    result += ETkIfc::SendCommand(_etkServer, "map",
+				  0, NULL, handle);
     return result;
-
 }
 
 //------------------------------------------------------------------------
@@ -1374,7 +1322,6 @@ XWindowRep::ETk_MapWindow(int handle)
 //
 // Unmaps a previously created embedded Tk window
 //
-//
 DevStatus
 XWindowRep::ETk_UnmapWindow(int handle)
 {
@@ -1382,46 +1329,15 @@ XWindowRep::ETk_UnmapWindow(int handle)
     printf("XWindowRep::ETk_UnmapWindow(%d)\n", handle);
 #endif
     DevStatus result = StatusOk;
-    int iter, current;
-    
-#if 0
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
-    {
-	current = _etkWindows.Next(iter);
-	if (current == handle)
-	{
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "unmap", handle);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
-    }
-    _etkWindows.DoneIterator(iter);
-#endif
-    
     ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    break;
-	}
-	if (info->handle == handle)
-	{
-	    result += ETkIfc::SendSimpleCommand(_etkServer, "unmap", handle);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	reportError("Attempt to unmap an invalid ETk window", devNoSyserr);
+	return StatusFailed;
     }
-    _etkWindows.DoneIterator(iter);
-    
-    reportError("Attempt to unmap an invalid ETk window", devNoSyserr);
-    result = StatusFailed;
-    
+    result += ETkIfc::SendCommand(_etkServer, "unmap",
+				  0, NULL, handle);
     return result;
-
 }
 
 //------------------------------------------------------------------------
@@ -1430,44 +1346,28 @@ XWindowRep::ETk_UnmapWindow(int handle)
 //
 // Moves an embedded Tk window
 //
-//
 DevStatus
 XWindowRep::ETk_MoveWindow(int handle, Coord centerX, Coord centerY)
 {
     DevStatus result = StatusOk;
-
+    ETkInfo *info;
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_MoveWindow(%d,%d,%d)\n", handle,
 	   (int) centerX, (int) centerY);
 #endif
-    
-#if 0
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
+    {
+	reportError("Attempt to move an invalid ETk window", devNoSyserr);
+	return StatusFailed;
+    }
     result += ETkIfc::MoveWindow(_etkServer, handle,
 				 (int) centerX, (int) centerY);
-#endif
-    
-    int iter;
-    ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if (result.IsComplete())
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    break;
-	}
-	if (info->handle == handle)
-	{
-	    result += ETkIfc::MoveWindow(_etkServer, handle,
-					 (int) centerX, (int) centerY);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	info->x = centerX;
+	info->y = centerY;
     }
-    _etkWindows.DoneIterator(iter);
-    
     return result;
-
 }
 
 //------------------------------------------------------------------------
@@ -1476,39 +1376,56 @@ XWindowRep::ETk_MoveWindow(int handle, Coord centerX, Coord centerY)
 //
 // Resizes an embedded Tk window
 //
-//
 DevStatus
 XWindowRep::ETk_ResizeWindow(int handle, Coord width, Coord height)
 {
     DevStatus result = StatusOk;
-
+    ETkInfo *info;
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_ResizeWindow(%d,%d,%d)\n", handle,
 	   (int) width, (int) height);
 #endif
-    
-    int iter;
-    ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    break;
-	}
-	if (info->handle == handle)
-	{
-	    result += ETkIfc::ResizeWindow(_etkServer, handle,
-					   (int) width, (int) height);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	reportError("Attempt to resize an invalid ETk window", devNoSyserr);
+	return StatusFailed;
     }
-    _etkWindows.DoneIterator(iter);
-    
+    result += ETkIfc::ResizeWindow(_etkServer, handle,
+				   (int) width, (int) height);
+    if (result.IsComplete())
+    {
+	info->width = width;
+	info->height = height;
+    }
     return result;
+}
 
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_NotifyResize()
+//
+// Allows ETk clients to notify DEVise when window size changes
+//
+DevStatus
+XWindowRep::ETk_NotifyResize(int handle, Coord xcenter, Coord ycenter,
+			     Coord width, Coord height)
+{
+    DevStatus result = StatusOk;
+    ETkInfo *info;
+#if defined(DEBUG) || defined(DEBUG_ETK)
+    printf("XWindowRep::ETk_NotifyResize(%d,%d,%d)\n", handle,
+	   (int) width, (int) height);
+#endif
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
+    {
+	reportError("Attempt to resize an invalid ETk window", devNoSyserr);
+	return StatusFailed;
+    }
+    info->x = xcenter;
+    info->y = ycenter;
+    info->width = width;
+    info->height = height;
+    return result;
 }
 
 //------------------------------------------------------------------------
@@ -1517,41 +1434,58 @@ XWindowRep::ETk_ResizeWindow(int handle, Coord width, Coord height)
 //
 // Moves and resizes an embedded Tk window
 //
-//
 DevStatus
 XWindowRep::ETk_MoveResizeWindow(int handle,
 				 Coord xcenter, Coord ycenter,
 				 Coord width, Coord height)
 {
     DevStatus result = StatusOk;
-
+    ETkInfo *info;
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_MoveResizeWindow(%d,%d,%d,%d,%d)\n",
 	   handle, (int) xcenter, (int) ycenter,
 	   (int) width, (int) height);
 #endif
-    
-    int iter;
-    ETkInfo *info;
-    iter = _etkWindows.InitIterator(false);
-    while (_etkWindows.More(iter))
+    if ((info = _etkSearch(&_etkWindows, handle)) == NULL)
     {
-	info = _etkWindows.Next(iter);
-	if (info == NULL)
-	{
-	    break;
-	}
-	if (info->handle == handle)
-	{
-	    result += ETkIfc::MoveResizeWindow(_etkServer, handle,
-					       (int) xcenter, (int) ycenter,
-					       (int) width, (int) height);
-	    _etkWindows.DoneIterator(iter);
-	    return result;
-	}
+	reportError("Attempt to resize an invalid ETk window", devNoSyserr);
+	return StatusFailed;
     }
-    _etkWindows.DoneIterator(iter);
+    result += ETkIfc::MoveResizeWindow(_etkServer, handle,
+				       (int) xcenter, (int) ycenter,
+				       (int) width, (int) height);
+    if (result.IsComplete())
+    {
+	info->x = xcenter;
+	info->y = ycenter;
+	info->width = width;
+	info->height = height;
+    }
+    return result;
+}
+
+//------------------------------------------------------------------------
+//
+// XWindowRep::ETk_GetInfo()
+//
+// Get info (coordinates, name of Tcl script) about an embedded Tk window
+//
+DevStatus
+XWindowRep::ETk_GetInfo(int handle, ETkInfo &info)
+{
+#if defined(DEBUG) || defined(DEBUG_ETK)
+    printf("XWindowRep::ETk_GetInfo(%d)\n", handle);
+#endif
     
+    DevStatus result = StatusOk;
+    ETkInfo *pInfo;
+    if ((pInfo = _etkSearch(&_etkWindows, handle)) == NULL)
+    {
+	reportError("Attempt to retrieve info for an invalid ETk window",
+		    devNoSyserr);
+	return StatusFailed;
+    }
+    info = *pInfo;
     return result;
 
 }
@@ -1559,7 +1493,7 @@ XWindowRep::ETk_MoveResizeWindow(int handle,
 //
 // END ETk interface
 // -----------------------------------------------------------------------
-#endif
+
 
 /* get geometry of root window enclosing this window */
 
@@ -1686,7 +1620,7 @@ void XWindowRep::SetFgColor(GlobalColor fg)
 #endif
 
   WindowRep::SetFgColor(fg);
-#ifdef LIBCS
+#if defined(LIBCS)
   _rgbForeground = WindowRep::GetLocalColor(fg);
 #endif
 #ifdef GRAPHICS
@@ -1702,7 +1636,7 @@ void XWindowRep::SetBgColor(GlobalColor bg)
 #endif
 
   WindowRep::SetBgColor(bg);
-#ifdef LIBCS
+#if defined(LIBCS)
   _rgbBackground = WindowRep::GetLocalColor(bg);
 #endif
 #ifdef GRAPHICS
@@ -1723,7 +1657,7 @@ void XWindowRep::SetWindowBgColor(GlobalColor bg)
 #endif
 }
 
-#ifdef LIBCS
+#if defined(LIBCS)
 /* color selection interface using local colors */
 
 void XWindowRep::SetFgRGB(float r, float g, float b)
@@ -2313,7 +2247,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   WindowRep::Transform(x2, y2, tx2, ty2);
 #if defined(GRAPHICS)
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, ROUND(int, tx1), ROUND(int, ty1),
 	      ROUND(int, tx2), ROUND(int, ty2));
@@ -2330,7 +2264,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 #ifdef GRAPHICS
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, x1, y1, x2, y2);
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
@@ -3055,48 +2989,6 @@ void XWindowRep::SetLineWidth(int w)
     }
 }
 
-#ifdef LIBCS
-/***************************************************************
-Set line dash pattern.
-****************************************************************/
-
-void XWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
-{
-#if defined(DEBUG)
-  printf("XWindowRep::SetDashes(%d, ...)\n", dashCount);
-#endif
-
-  char errBuf[256];
-
-  const int maxChar = (1 << 7) - 1;
-
-  if (dashCount > 0) {
-    _lineStyle = LineOnOffDash;
-    char *dashList = new char[dashCount];
-    int dashNum;
-    for (dashNum = 0; dashNum < dashCount; dashNum++) {
-      int dash = dashes[dashNum];
-      if (dash <= 0) {
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
-	reportErrNosys(errBuf);
-        dashList[dashNum] = 1;
-      } else if (dash > maxChar) {
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
-	reportErrNosys(errBuf);
-        dashList[dashNum] = maxChar;
-      } else {
-        dashList[dashNum] = (char) dash;
-      }
-    }
-    XSetDashes(_display, _gc, startOffset, dashList, dashCount);
-    delete [] dashList;
-  } else {
-    _lineStyle = LineSolid;
-  }
-}
-#endif
-
 /***********************************************************************/
 
 void XWindowRep::AllocBitmap(XBitmapInfo &info, int width, int height)
@@ -3324,7 +3216,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
      XSetState(_display, popUpGc, fgnd, bgnd, GXcopy,AllPlanes);
   */
   
-#ifdef LIBCS
+#if defined(LIBCS)
   Boolean savePopup = false;
 #else
   Boolean savePopup = Init::SavePopup();

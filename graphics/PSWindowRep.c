@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/04/29 17:35:00  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.27  1997/04/11 18:48:52  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -171,9 +176,9 @@
 #include "PSWindowRep.h"
 #include "PSDisplay.h"
 #include "DevError.h"
-
-#ifndef LIBCS
 #include "DaliIfc.h"
+
+#if !defined(LIBCS)
 #include "Init.h"
 #endif
 
@@ -188,9 +193,23 @@
 
 #define USE_PS_PROCEDURES 1
 
+/*
+   These are being multiply defined. Another declaration in
+   /s/X11/include/X11/Xlib.h
+
+typedef struct {
+    short x, y;
+} XPoint;
+    
+typedef struct {
+    short x, y;
+    unsigned short width, height;
+} XRectangle;
+
+*/
 
 /**********************************************************************
-Constructor.
+ Constructor.
 ***********************************************************************/
 
 PSWindowRep::PSWindowRep(DeviseDisplay *display,
@@ -217,9 +236,7 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   _dashedLine = false;
 #endif
 
-#ifndef LIBCS
   _daliServer = NULL;
-#endif
 
 #ifdef LIBCS
   ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
@@ -264,13 +281,9 @@ PSWindowRep::~PSWindowRep()
     if (!_parent->_children.Delete(this))
       fprintf(stderr, "Cannot remove child from parent window\n");
   }
-
   if (_children.Size() > 0)
     reportErrNosys("Child windows should have been destroyed first");
-
-#ifndef LIBCS
   delete [] _daliServer;
-#endif
 }
 
 
@@ -417,9 +430,7 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 }
 
 
-
-#ifndef LIBCS
-/*------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------
  * function: PSWindowRep::DaliShowImage
  * Show a Dali image in this window.
  */
@@ -488,12 +499,10 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
   /* Clean up after the EPS file. */
   fprintf(printFile, "\nEndEPSF\n\n");
 
-#endif
+#endif // #ifdef GRAPHICS
 
   return result;
 }
-#endif // #ifndef LIBCS
-
 
 
 /*---------------------------------------------------------------------------*/

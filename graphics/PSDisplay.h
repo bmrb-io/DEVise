@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/05/05 16:53:45  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.11  1997/03/25 17:58:54  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -158,9 +162,7 @@ public:
     }
 #endif
 
-#ifndef LIBCS
     virtual void SetTasvirServer(const char *server);
-#endif
 
 protected:
 #ifndef LIBCS

@@ -14,8 +14,12 @@
 
 /*
   $Id$
-
   $Log$
+
+  Revision 1.43  1997/05/05 16:53:53  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.42  1997/04/11 18:48:59  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -197,28 +201,12 @@
 #include "Xdef.h"
 #include "DList.h"
 #include "Util.h"
-#include "machdep.h"
 
 class XWindowRep;
 
 DefinePtrDList(XWindowRepList, XWindowRep *);
-
-#ifndef LIBCS
 DefineDList(DaliImageList, int);
-#endif
-
-#ifndef LIBCS
-struct ETkInfo
-{
-    int handle;
-    Coord x;
-    Coord y;
-    char script[FILENAME_MAX + 1];
-    bool in_use;
-};
-// List of embedded Tk window handles
 DefinePtrDList(ETkWinList, ETkInfo *);
-#endif
 
 /* Bitmap info */
 struct XBitmapInfo {
@@ -273,27 +261,30 @@ public:
 	/* export window image to other graphics formats */
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
-#ifndef LIBCS
 	/* import graphics via Dali */
-	virtual void SetDaliServer(const char *serverName) { _daliServer =
-	  CopyString(serverName); }
+	virtual void SetDaliServer(const char *serverName)
+	{
+	    _daliServer = CopyString((char *)serverName);
+	}
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                         Coord width, Coord height,
                                         char *filename, int imageLen,
                                         char *image, float timeoutFactor = 1.0,
 					Boolean maintainAspect = true);
 	virtual DevStatus DaliFreeImages();
-	virtual int DaliImageCount() { return _daliImages.Size(); };
-#endif
+	virtual int DaliImageCount()
+	{
+	    return _daliImages.Size();
+	}
 
-#ifndef LIBCS
 	/* Display embedded Tk windows */
 	virtual void SetETkServer(const char *serverName)
 	{
-	    _etkServer = CopyString(serverName);
+	    _etkServer = CopyString((char *)serverName);
 	}
-  	virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
+  	virtual DevStatus ETk_CreateWindow(Coord x, Coord y,
 					   Coord width, Coord height,
+					   ETkIfc::Anchor anchor,
 					   char *filename,
 					   int argc, char **argv,
 					   int &handle);
@@ -303,12 +294,18 @@ public:
 					 Coord centerX, Coord centerY);
 	virtual DevStatus ETk_ResizeWindow(int handle,
 					   Coord width, Coord height);
+	virtual DevStatus ETk_NotifyResize(int handle,
+					   Coord centerX, Coord centerY,
+					   Coord width, Coord height);
 	virtual DevStatus ETk_MoveResizeWindow(int handle,
 					       Coord centerX, Coord centerY,
-					       Coord centerX, Coord centerY);
+					       Coord width, Coord height);
 	virtual DevStatus ETk_FreeWindow(int handle);
 	virtual DevStatus ETk_MapWindow(int handle);
 	virtual DevStatus ETk_UnmapWindow(int handle);
+	virtual DevStatus ETk_EvalCmd(int handle,
+				      int argc, char **argv,
+				      char *&returnValue);
 	virtual DevStatus ETk_FreeWindows();
 	virtual DevStatus ETk_Mark(int handle, bool in_use);
 	virtual DevStatus ETk_MarkAll(bool in_use);
@@ -317,7 +314,24 @@ public:
 	{
 	    return _etkWindows.Size();
 	}
-#endif
+	virtual DevStatus ETk_GetInfo(int handle, ETkInfo &info);
+	/* Iterate through the ETk windows */
+	virtual int ETk_InitIterator()
+	{
+	    return _etkWindows.InitIterator();
+	}
+	virtual Boolean ETk_More(int index)
+	{
+	    return _etkWindows.More(index);
+	}
+	virtual ETkInfo *ETk_Next(int index)
+	{
+	    return _etkWindows.Next(index);
+	}
+	virtual void ETk_DoneIterator(int index)
+	{
+	    _etkWindows.DoneIterator(index);
+	}
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -336,7 +350,7 @@ public:
 	virtual void SetBgColor(GlobalColor bg);
 	virtual void SetWindowBgColor(GlobalColor bg);
 
-#ifdef LIBCS
+#if defined(LIBCS)
         /* Color selection interface using specific colors */
         virtual void SetFgRGB(float r, float g, float b);
         virtual void SetBgRGB(float r, float g, float b);
@@ -348,9 +362,6 @@ public:
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);
-#ifdef LIBCS
-	virtual void SetDashes(int dashCount, int dashes[], int startOffset);
-#endif
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			      Coord height);
@@ -528,7 +539,7 @@ private:
 	Window _win;
 	GC _gc;
 
-#ifdef LIBCS
+#if defined(LIBCS)
         /* current foreground/background color pixel values */
         LocalColor _rgbForeground;
         LocalColor _rgbBackground;
@@ -561,20 +572,12 @@ private:
 	/* True if display graphics */
 	Boolean _dispGraphics;
 
-	int _lineStyle;
-
-#ifndef LIBCS
-	DaliImageList _daliImages;
-	char *_daliServer;
-#endif
-
-#ifndef LIBCS
-	// List of embedded Tk windows
-	//ETkWinList _etkWindows;
-	ETkWinList _etkWindows;
-	// Machine on which embedded Tk server is running
-	char *_etkServer;
-#endif
+//#if !defined(LIBCS) || defined(NEW_LIBCS)
+	DaliImageList _daliImages;    // List of Tasvir images
+	char *_daliServer;            // Machine where Tasvir is running
+	ETkWinList _etkWindows;       // List of embedded Tk windows
+	char *_etkServer;             // Machine where ETk server is running
+//#endif
 	
 };
 

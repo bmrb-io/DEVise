@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/28 16:09:43  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <sys/param.h>
@@ -279,38 +283,11 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	}
 	
 	//
-	// Is there already a window at these x,y coords?
+	// Create a new window
 	//
+	win->ETk_CreateWindow(tx, ty, width, height, ETkIfc::Center,
+			      script, argc, (char **) argv2, handle);
 	
-	//
-	// This feature not supported yet. Andy will replace the "if (0)"
-	// with the following two lines once the window searches work
-	// correctly.
-	//
-	// handle = win->ETk_FindWindow(x, y, script);
-	// if (handle >= 0)
-	//
-	if (0)
-	{
-	    //
-	    // Update the window
-	    //
-	    reportError("Window updates not implemented yet", devNoSyserr);
-	    //
-	    // Mark the window as "in_use"
-	    //
-	    win->ETk_Mark(handle, true);
-	}
-	
-	else
-	{
-	    //
-	    // Create a new window
-	    //
-	    win->ETk_CreateWindow(tx, ty, width, height,
-				  script, argc, (char **) argv2, handle);
-	}
-
     }
     
     END_ETK_TRACE(__FUNCTION__);

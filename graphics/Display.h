@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/05/05 16:53:42  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.22  1997/03/25 17:58:50  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -222,10 +226,7 @@ public:
   virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) = 0;
 #endif
 
-#ifndef LIBCS
-    virtual void SetTasvirServer(const char *server) = 0;
-#endif
-
+  virtual void SetTasvirServer(const char *server) = 0;
 
 #ifndef LIBCS
   /* Get/set desired screen size */

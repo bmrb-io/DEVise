@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.109  1997/04/03 16:37:24  wenger
+  Reduced memory and CPU usage in statistics; fixed a memory leak in the
+  statistics code; switched devised back to listening on port 6100
+  (changed accidentally?); turned off a bunch of debug output.
+
   Revision 1.108  1997/03/25 17:58:57  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -2004,7 +2009,6 @@ void View::Run()
 	}
 	if (winRep->ETk_WindowCount() > 0)
 	{
-	    //(void) winRep->ETk_FreeWindows();
 	    winRep->ETk_MarkAll(false);
 	}
 #if !FILL_WHOLE_BACKGROUND

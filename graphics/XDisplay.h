@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/05/05 16:53:49  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.27  1997/01/24 21:18:55  wenger
   Fixed memory leak in X font handling code; noted other minor leaks.
 
@@ -184,20 +188,18 @@ public:
     void ExportView(DisplayExportFormat format, char *filename);
     virtual void ExportGIF(FILE *fp, int isView = 0);
 
-#ifdef LIBCS
+#if defined(LIBCS)
     /* Translate RGB colors to pixel values and back */
     virtual LocalColor FindLocalColor(float r, float g, float b);
     virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b);
 #endif
     virtual void FindLocalColor(LocalColor c, float &r, float &g, float &b);
 
-#ifndef LIBCS
     virtual void SetTasvirServer(const char *server);
     virtual void SetETkServer(const char *server);
-#endif
 
 protected:
-#ifndef LIBCS
+#if !defined(LIBCS)
     /* Register display with the dispatcher */
     virtual void Register();
 #endif

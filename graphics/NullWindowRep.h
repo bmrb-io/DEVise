@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/19 19:41:05  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.7  1997/01/17 20:31:42  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -92,68 +101,6 @@ public:
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
-#ifndef LIBCS
-    /* Display embedded Tk (ETk) windows */
-    virtual void SetETkServer(char *serverName) {
-	reportError("Can't do SetETkServer() on this WindowRep object",
-		    devNoSyserr);
-    }
-    virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
-				       Coord width, Coord height,
-				       char *filename,
-				       int argc, char **argv,
-				       int &handle) {
-	reportError("Can't do ETk_CreateWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MoveWindow(int handle,
-				     Coord centerX, Coord centerY) {
-	reportError("Can't do ETk_MoveWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_ResizeWindow(int handle,
-				       Coord width, Coord height) {
-	reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MoveResizeWindow(int handle,
-					   Coord centerX, Coord centerY,
-					   Coord centerX, Coord centerY) {
-	reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_FreeWindow(int handle)
-    {
-	reportError("Can't do ETk_FreeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MapWindow(int handle)
-    {
-	reportError("Can't do ETk_MapWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_UnmapWindow(int handle)
-    {
-	reportError("Can't do ETk_UnmapWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_FreeWindows() {
-	reportError("Can't do ETk_FreeWindows() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual int ETk_WindowCount() {
-	return 0;
-    }
-#endif
-    
     /* drawing primitives */
     /* Return TRUE if window is scrollable */
     virtual Boolean Scrollable() { return false; }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/05/05 16:53:47  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.47  1997/04/21 15:02:02  wenger
   Added DrawRubberband() virtual function to WindowRep class, so that it
   doesn't have to be called directly through the XWindowRep class;
@@ -249,6 +253,7 @@
 #include "DevisePixmap.h"
 #include "VisualArg.h"
 #include "DevError.h"
+#include "ETkIfc.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
@@ -311,8 +316,21 @@ DefinePtrDList(WindowRepCallbackList, WindowRepCallback *);
 DefinePtrDList(ClipRectList, ClipRect *);
 
 /* # of symbols that can be sent at once in a batched call */
-
 const int WINDOWREP_BATCH_SIZE = 1024;
+
+//
+// Struct to maintain info about a single embedded Tk window
+//
+struct ETkInfo
+{
+    int handle;
+    Coord x;
+    Coord y;
+    Coord width;
+    Coord height;
+    char script[FILENAME_MAX + 1];
+    bool in_use;
+};
 
 class WindowRep {
 public:
@@ -382,89 +400,119 @@ public:
       return StatusFailed; }
   virtual int DaliImageCount() { return 0; }
 
-#ifndef LIBCS
   /* Display embedded Tk (ETk) windows */
-  virtual void SetETkServer(const char *serverName) {
-      reportError("Can't do SetETkServer() on this WindowRep object",
-		  devNoSyserr);
+  virtual void SetETkServer(const char *serverName)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
   }
-  virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
+  virtual DevStatus ETk_CreateWindow(Coord x, Coord y,
 				     Coord width, Coord height,
+				     ETkIfc::Anchor anchor,
 				     char *filename,
 				     int argc, char **argv,
-				     int &handle) {
-      reportError("Can't do ETk_CreateWindow() on this WindowRep object",
-		  devNoSyserr);
+				     int &handle)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual int ETk_FindWindow(Coord centerX, Coord centerY,
-			     char *script)
+  virtual int ETk_FindWindow(Coord centerX, Coord centerY, char *script)
   {
-      reportError("Can't do ETk_FindWindow() on this WindowRep object",
-		  devNoSyserr);
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return -1;
   }
-  virtual DevStatus ETk_MoveWindow(int handle,
-				   Coord centerX, Coord centerY) {
-      reportError("Can't do ETk_MoveWindow() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_MoveWindow(int handle, Coord centerX, Coord centerY)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual DevStatus ETk_ResizeWindow(int handle,
-				     Coord width, Coord height) {
-      reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_ResizeWindow(int handle, Coord width, Coord height)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return StatusFailed;
+  }
+  virtual DevStatus ETk_NotifyResize(int handle, Coord x, Coord y,
+				     Coord width, Coord height)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
   virtual DevStatus ETk_MoveResizeWindow(int handle,
 					 Coord centerX, Coord centerY,
-					 Coord centerX, Coord centerY) {
-      reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
-		  devNoSyserr);
+					 Coord centerX, Coord centerY)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
   virtual DevStatus ETk_FreeWindow(int handle)
   {
-      reportError("Can't do ETk_FreeWindow() on this WindowRep object",
-		  devNoSyserr);
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
   virtual DevStatus ETk_MapWindow(int handle)
   {
-      reportError("Can't do ETk_MapWindow() on this WindowRep object",
-		  devNoSyserr);
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
   virtual DevStatus ETk_UnmapWindow(int handle)
   {
-      reportError("Can't do ETk_UnmapWindow() on this WindowRep object",
-		  devNoSyserr);
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual DevStatus ETk_FreeWindows() {
-      reportError("Can't do ETk_FreeWindows() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_EvalCmd(int handle, int argc, char **argv,
+				char *&returnValue)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual DevStatus ETk_Cleanup() {
-      reportError("Can't do ETk_Cleanup() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_FreeWindows()
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual DevStatus ETk_Mark(int handle, bool in_use) {
-      reportError("Can't do ETk_Mark() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_Cleanup()
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual DevStatus ETk_MarkAll(bool in_use) {
-      reportError("Can't do ETk_MarkAll() on this WindowRep object",
-		  devNoSyserr);
+  virtual DevStatus ETk_Mark(int handle, bool in_use)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual int ETk_WindowCount() {
+  virtual DevStatus ETk_MarkAll(bool in_use)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return StatusFailed;
+  }
+  virtual int ETk_WindowCount()
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
       return 0;
   }
-#endif
+  virtual DevStatus ETk_GetInfo(int handle, ETkInfo &info)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return StatusFailed;
+  }
+  virtual int ETk_InitIterator()
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return -1;
+  }
+  virtual Boolean ETk_More(int index)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return false;
+  }
+  virtual ETkInfo *ETk_Next(int index)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+      return NULL;
+  }
+  virtual void ETk_DoneIterator(int index)
+  {
+      reportErrNosys("This object does not support EmbeddedTk operations");
+  }
   
   /* drawing primitives */
 

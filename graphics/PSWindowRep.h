@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/05/05 16:53:46  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.22  1997/04/11 18:48:52  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -187,7 +191,6 @@ public:
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
-#ifndef LIBCS
     /* import graphics via Dali */
     virtual void SetDaliServer(const char *serverName) { _daliServer =
       CopyString(serverName); }
@@ -198,69 +201,6 @@ public:
 				    Boolean maintainAspect = true);
     virtual DevStatus DaliFreeImages() { return StatusOk; }
     virtual int DaliImageCount() { return 0; }
-#endif
-
-#ifndef LIBCS
-    /* Display embedded Tk (ETk) windows */
-    virtual void SetETkServer(const char *serverName) {
-	reportError("Can't do SetETkServer() on this WindowRep object",
-		    devNoSyserr);
-    }
-    virtual DevStatus ETk_CreateWindow(Coord centerX, Coord centerY,
-				       Coord width, Coord height,
-				       char *filename,
-				       int argc, char **argv,
-				       int &handle) {
-	reportError("Can't do ETk_CreateWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MoveWindow(int handle,
-				     Coord centerX, Coord centerY) {
-	reportError("Can't do ETk_MoveWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_ResizeWindow(int handle,
-				       Coord width, Coord height) {
-	reportError("Can't do ETk_ResizeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MoveResizeWindow(int handle,
-					   Coord centerX, Coord centerY,
-					   Coord centerX, Coord centerY) {
-	reportError("Can't do ETk_MoveResizeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_FreeWindow(int handle)
-    {
-	reportError("Can't do ETk_FreeWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_MapWindow(int handle)
-    {
-	reportError("Can't do ETk_MapWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_UnmapWindow(int handle)
-    {
-	reportError("Can't do ETk_UnmapWindow() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual DevStatus ETk_FreeWindows() {
-	reportError("Can't do ETk_FreeWindows() on this WindowRep object",
-		    devNoSyserr);
-	return StatusFailed;
-    }
-    virtual int ETk_WindowCount() {
-	return 0;
-    }
-#endif
     
     /* drawing primitives */
     /* Return TRUE if window is scrollable */
@@ -278,7 +218,7 @@ public:
     virtual void SetBgColor(GlobalColor bg);
     virtual void SetWindowBgColor(GlobalColor bg);
 
-#ifdef LIBCS
+#if defined(LIBCS)
     /* Color selection interface using specific colors */
     virtual void SetFgRGB(float r, float g, float b);
     virtual void SetBgRGB(float r, float g, float b);
@@ -288,7 +228,7 @@ public:
 #endif
 
     virtual void SetLineWidth(int w);
-#ifdef LIBCS
+#if defined(LIBCS)
     virtual void SetDashes(int dashCount, int dashes[], int startOffset);
 #endif
 
@@ -442,20 +382,18 @@ private:
 
     Boolean _xorMode;
 
-#ifdef LIBCS
+#if defined(LIBCS)
     Boolean _dashedLine;
     const int _dashListSize = 1024;
     char _dashList[_dashListSize];
 #endif
 
-#ifdef LIBCS
+#if defined(LIBCS)
     RgbVals _foreground;
     RgbVals _background;
 #endif
 
-#ifndef LIBCS
     char *_daliServer;
-#endif
 };
 
 #endif

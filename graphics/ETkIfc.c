@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/05/05 16:53:43  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.3  1997/03/28 16:09:12  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -44,9 +48,13 @@ Boolean ETkIfc::_etkQuit = false;
 
 static int MyWrite(int fd, unsigned char *buff, int num);
 static int newlinefd(char *s, int fd, int maxc);
-static DevStatus SendCommand(const char *etkServer, char *commandBuf,
-			     int argc, const char **argv,
-			     char *replyBuf, double timeout);
+static DevStatus SendETkCommand(int fd, char *commandBuf,
+				int argc, const char **argv,
+				char *replyBuf, double timeout);
+static DevStatus ConnectAndSendETkCommand(const char *etkServer,
+					  char *commandBuf,
+					  int argc, const char **argv,
+					  char *replyBuf, double timeout);
 static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
 
 //
@@ -56,21 +64,23 @@ static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 static char *	srcFile = __FILE__;
-static int launchCount = 0;
 
+static int launchCount = 0;
 
 //
 // ETkIfc::CreateWindow()
 //
 // Show an embedded Tk window. filename is the name of a Tcl/Tk script
 // to be executed in the new window. argc and argv carry the command-line
-// arguments that will be passed to the Tcl/Tk script.
-//
+// arguments that will be passed to the Tcl/Tk script. If width or height
+// is 0, that indicates that the new window should be sized by Tk. The
+// actual width and height will be returned in reference parameters.
 //
 DevStatus
 ETkIfc::CreateWindow(const char *etkServer, Window win,
-		     int centerX, int centerY,
-		     int width, int height,
+		     int &x, int &y,
+		     int &width, int &height,
+		     Anchor anchor,
 		     const char *filename,
 		     int argc, const char **argv,
 		     int &handle)
@@ -86,7 +96,7 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
 #if defined(DEBUG)
     printf("%s\n", __PRETTY_FUNCTION__);
     printf("    Center (%d,%d), width %d, height %d\n",
-	   centerX, centerY, width, height);
+	   x, y, width, height);
     printf("    Script %s\n", filename);
     printf("    argc: %d\n", argc);
     for (i = 0; i < argc; i++)
@@ -95,33 +105,30 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
     
     DevStatus result = StatusOk;
     
-    int topLeftX = centerX - (width / 2);
-    int topLeftY = centerY - (height / 2);
-    int botRightX = centerX + (width / 2) - 1;
-    int botRightY = centerY + (height / 2) - 1;
-    
-    sprintf(command, "show %s 0x%lx %d %d %d %d %d",
+    sprintf(command, "show %s 0x%lx %d %d %d %d %s %d",
 	    filename, (long) win,
-	    topLeftX, topLeftY, botRightX, botRightY, argc);
+	    x, y, width, height,
+	    AnchorToString(anchor), argc);
     
     double timeout = 5.0;
     
     //
-    // SendCommand() will connect to server, send command, send args,
-    // wait for reply, and close connection
+    // ConnectAndSendETkCommand() will connect to server, send
+    // command, send args, wait for reply, and close connection
     //
-    DevStatus temp = SendCommand(etkServer, command,
-				 argc, argv, reply, timeout);
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, command,
+					      argc, argv, reply, timeout);
     result += temp;
 
     if (result.IsComplete())
     {
-	sscanf(reply, "%*s %d", &handle);
+	sscanf(reply, "%*s %d %d %d %d %d",
+	       &handle, &x, &y, &width, &height);
     }
     
 #if PRINT_ETK_STATUS
-    SendCommand(etkServer, "status", 0, NULL, reply, 5.0);
-    printf("ETk status: %s\n", reply);
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, reply, 5.0);
+    printf("ETk status: %s\n", replyBuf);
 #endif
     
     END_ETK_TRACE(__FUNCTION__);
@@ -130,15 +137,105 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
 }
 
 //
-// ETkIfc::SendSimpleCommand()
+// Function to convert ETk anchor positions to strings
+//
+char *
+ETkIfc::AnchorToString(Anchor anchor)
+{
+    switch (anchor)
+    {
+      case NorthWest:
+	return "nw";
+	break;
+      case Center:
+	return "c";
+	break;
+    }
+    return "";
+}
+
+//
+// ETkIfc::EvalCommand()
+//
+// Sends a command to a Tcl interpreter inside the EmbeddedTk server.
+// If successful, result stored in static memory that will be overwritten
+// on next call. returnValue will point to the result
+//
+DevStatus
+ETkIfc::EvalCommand(const char *etkServer, int handle,
+		    int argc, const char **argv,
+		    char *&returnValue)
+{
+    BEGIN_ETK_TRACE(__FUNCTION__);
+    
+    int i;
+    char command[ETK_MAX_STR_LENGTH];
+    static char reply[ETK_MAX_STR_LENGTH];
+
+    DOASSERT(etkServer != NULL, "No ETk server specified");
+    
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("    handle: %d\n", handle);
+    printf("    argc: %d\n", argc);
+    for (i = 0; i < argc; i++)
+    {
+	printf("    arg: %s\n", argv[i] ? argv[i] : "(NULL)");
+    }
+#endif
+    
+    DevStatus result = StatusOk;
+    double timeout = 5.0;
+    sprintf(command, "eval %d %d", handle, argc);
+    
+    //
+    // ConnectAndSendETkCommand() will connect to server, send
+    // command, send args, wait for reply, and close connection
+    //
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, command,
+					      argc, argv, reply, timeout);
+    result += temp;
+    if (result.IsComplete())
+    {
+	if (!strncmp(reply, "OK", 2))
+	{
+	    returnValue = &reply[2];
+	}
+	else if (!strncmp(reply, "ERROR", 5))
+	{
+	    returnValue = &reply[5];
+	}
+	else
+	{
+	    returnValue = reply;
+	}
+	while (isspace(*returnValue))
+	{
+	    returnValue++;
+	}
+    }
+    
+#if PRINT_ETK_STATUS
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, reply, 5.0);
+    printf("ETk status: %s\n", replyBuf);
+#endif
+    
+    END_ETK_TRACE(__FUNCTION__);
+    return result;
+
+}
+
+//
+// ETkIfc::SendCommand()
 //
 // Sends a command to the EmbeddedTk server. The handle will be appended 
 // to the command if handle != ETK_INVALID_HANDLE.
 //
 //
 DevStatus
-ETkIfc::SendSimpleCommand(const char *etkServer, const char *command,
-			  int handle)
+ETkIfc::SendCommand(const char *etkServer, const char *command,
+		    int argc, const char **argv,
+		    int handle)
 {
     BEGIN_ETK_TRACE(__FUNCTION__);
 
@@ -158,12 +255,12 @@ ETkIfc::SendSimpleCommand(const char *etkServer, const char *command,
     else
 	sprintf(commandBuf, "%s", command);
     
-    DevStatus temp = SendCommand(etkServer, commandBuf,
-				 0, NULL, replyBuf, 0.0);
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
+					      argc, argv, replyBuf, 0.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
-    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
     printf("ETk status: %s\n", replyBuf);
 #endif
     
@@ -175,7 +272,6 @@ ETkIfc::SendSimpleCommand(const char *etkServer, const char *command,
 // ETkIfc::MoveWindow()
 //
 // Moves an embedded Tk window
-//
 //
 DevStatus
 ETkIfc::MoveWindow(const char *etkServer, int handle,
@@ -194,12 +290,12 @@ ETkIfc::MoveWindow(const char *etkServer, int handle,
     
     sprintf(commandBuf, "move %d %d %d", handle, centerX, centerY);
     
-    DevStatus temp = SendCommand(etkServer, commandBuf,
-				 0, NULL, replyBuf, 0.0);
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
+					      0, NULL, replyBuf, 0.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
-    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
     printf("ETk status: %s\n", replyBuf);
 #endif
     
@@ -230,12 +326,12 @@ ETkIfc::ResizeWindow(const char *etkServer, int handle,
     
     sprintf(commandBuf, "resize %d %d %d", handle, width, height);
     
-    DevStatus temp = SendCommand(etkServer, commandBuf,
-				 0, NULL, replyBuf, 0.0);
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
+					      0, NULL, replyBuf, 0.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
-    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
     printf("ETk status: %s\n", replyBuf);
 #endif
     
@@ -267,12 +363,12 @@ ETkIfc::MoveResizeWindow(const char *etkServer, int handle,
     sprintf(commandBuf, "moveresize %d %d %d %d %d", handle,
 	    xcenter, ycenter, width, height);
     
-    DevStatus temp = SendCommand(etkServer, commandBuf,
-				 0, NULL, replyBuf, 0.0);
+    DevStatus temp = ConnectAndSendETkCommand(etkServer, commandBuf,
+					      0, NULL, replyBuf, 0.0);
     result += temp;
     
 #if PRINT_ETK_STATUS
-    SendCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
+    ConnectAndSendETkCommand(etkServer, "status", 0, NULL, replyBuf, 5.0);
     printf("ETk status: %s\n", replyBuf);
 #endif
     
@@ -327,12 +423,10 @@ ETkIfc::LaunchServer(char *&serverName)
       const int maxConnectTries = 10;
       while (count < maxConnectTries && !done) {
         sleep(2);
-        DevStatus tmpResult = SendCommand(serverName, "status", 0, NULL,
-          replyBuf, 2.0);
+        DevStatus tmpResult = ConnectAndSendETkCommand(serverName,
+						       "status", 0, NULL,
+						       replyBuf, 2.0);
         if (tmpResult.IsComplete()) {
-	  done = true;
-	} else if (!strcmp(replyBuf, "ERROR Unknown command")) {
-	  /* Embedded Tk server doesn't have 'status' command yet. */
 	  done = true;
 	}
         count++;
@@ -350,32 +444,26 @@ ETkIfc::LaunchServer(char *&serverName)
   return result;
 }
 
-
-
-
 //
-// static function: SendCommand()
+// static function: SendETkCommand()
 //
-// Send a command to the ETk server.
+// Send a command to an ETk server.
 //
-// - Connects to server
 // - Sends: commandBuf newline
 //          argv[0] newline
 //          argv[1] newline
 //          ...
 //          argv[argc-1] newline
 // - Waits for a reply
-// - Closes the connection
 //
 // IMPORTANT: The command and arg strings should NOT already have
 // newlines embedded in them. This function takes care of sending
 // the trailing newline after each string.
 //
-//
 static DevStatus
-SendCommand(const char *etkServer, char *commandBuf,
-	    int argc, const char **argv,
-	    char *replyBuf, double timeout)
+SendETkCommand(int fd, char *commandBuf,
+	       int argc, const char **argv,
+	       char *replyBuf, double timeout)
 {
     BEGIN_ETK_TRACE(__FUNCTION__);
     
@@ -403,32 +491,18 @@ SendCommand(const char *etkServer, char *commandBuf,
 #endif
     
     //
-    // Establish connection with ETk server.
-    //
-    char errBuf[ETK_MAX_STR_LENGTH];
-    int fd = ETkClient(etkServer, errBuf);
-    if (fd < 0)
-    {
-	reportError(errBuf, errno);
-	result = StatusFailed;
-    }
-    
-    //
     // Send the command.
     //
-    if (result.IsComplete())
+    length = strlen(commandBuf);
+    if (MyWrite(fd, (unsigned char *) commandBuf, length) != length)
     {
-	length = strlen(commandBuf);
-	if (MyWrite(fd, (unsigned char *) commandBuf, length) != length)
-	{
-	    reportError("Unable to send command to ETk server", errno);
-	    result = StatusFailed;
-	}
-	if (MyWrite(fd, (unsigned char *) "\n", 1) != 1)
-	{
-	    reportError("Unable to send command to ETk server", errno);
-	    result = StatusFailed;
-	}
+	reportError("Unable to send command to ETk server", errno);
+	result = StatusFailed;
+    }
+    if (MyWrite(fd, (unsigned char *) "\n", 1) != 1)
+    {
+	reportError("Unable to send command to ETk server", errno);
+	result = StatusFailed;
     }
     
     //
@@ -470,7 +544,7 @@ SendCommand(const char *etkServer, char *commandBuf,
 	char errBuf[ETK_MAX_STR_LENGTH+100];
 	if (!strncmp(replyBuf, okStr, strlen(okStr)))
 	{
-	    // Do nothing...
+	    // All is well. Do nothing.
 	}
 	else if (!strncmp(replyBuf, errStr, strlen(errStr)))
 	{
@@ -488,6 +562,50 @@ SendCommand(const char *etkServer, char *commandBuf,
 	}
     }
     
+    END_ETK_TRACE(__FUNCTION__);
+    return result;
+
+}
+
+//
+// static function: ConnectAndSendETkCommand()
+//
+// - Connects to an ETk server
+// - Sends a command
+// - Closes the connection
+//
+static DevStatus
+ConnectAndSendETkCommand(const char *etkServer, char *commandBuf,
+			 int argc, const char **argv,
+			 char *replyBuf, double timeout)
+{
+    BEGIN_ETK_TRACE(__FUNCTION__);
+    
+    DevStatus result = StatusOk;
+    
+    //
+    // Establish connection with ETk server.
+    //
+    char errBuf[ETK_MAX_STR_LENGTH];
+    int fd = ETkClient(etkServer, errBuf);
+    if (fd < 0)
+    {
+	reportError(errBuf, errno);
+	result = StatusFailed;
+    }
+    
+    //
+    // Send the command.
+    //
+    if (result.IsComplete())
+    {
+	result = SendETkCommand(fd, commandBuf, argc, argv,
+				replyBuf, timeout);
+    }
+
+    //
+    // Close the connection
+    //
     if (fd >= 0)
     {
 	if (close(fd) < 0)
@@ -507,7 +625,6 @@ SendCommand(const char *etkServer, char *commandBuf,
 //
 // Wait for a reply from the ETk server, and store the reply in buf.
 // Returns an error if no reply is received in timeout seconds.
-//
 //
 static DevStatus
 WaitForReply(char *buf, int fd, int bufSize, double timeout)
@@ -572,7 +689,6 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
 // \n by \0. do not read more than maxc-1 characters.
 // Returns the number of characters read (excluding \n). 
 //
-//
 static int
 newlinefd(char *s, int fd, int maxc)
 {
@@ -596,7 +712,6 @@ newlinefd(char *s, int fd, int maxc)
 // Write num bytes into fd from buff. Return the number of bytes
 // actually written, which may be less than num only when
 // write(fd,..,..) returns <=0 at some point.
-//
 //
 static int
 MyWrite(int fd, unsigned char *buff, int num)

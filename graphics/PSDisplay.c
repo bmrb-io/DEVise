@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/05/05 19:40:37  wenger
+  Oops!  Forgot to remove PSWindowReps from _winList when they're destroyed!
+
   Revision 1.16  1997/05/05 16:53:45  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -449,11 +452,9 @@ void PSDisplay::GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
   yMargin = _outputYMargin * pointsPerInch;
 }
 
-#ifndef LIBCS
 /**************************************************************
 Set the hostname of the Tasvir server.
 **************************************************************/
-
 void PSDisplay::SetTasvirServer(const char *server)
 {
   int index = _winList.InitIterator();
@@ -463,4 +464,4 @@ void PSDisplay::SetTasvirServer(const char *server)
   }
   _winList.DoneIterator(index);
 }
-#endif
+

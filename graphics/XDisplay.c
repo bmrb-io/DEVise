@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/05/08 00:18:07  wenger
+  Kludge fix for bug 182 (crash when closing multi1.tk session).
+
   Revision 1.54  1997/05/05 16:53:48  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -256,7 +259,7 @@
 
 #include "XDisplay.h"
 #include "XWindowRep.h"
-#ifndef LIBCS
+#if !defined(LIBCS)
 #include "Control.h"
 #include "Journal.h"
 #include "Init.h"
@@ -1031,7 +1034,6 @@ void XDisplay::FindLocalColor(LocalColor c, float &r, float &g, float &b)
   b = color.blue / (double) MaxColorIntensity;
 }
 
-#ifndef LIBCS
 void XDisplay::SetTasvirServer(const char *server) {
   int index = _winList.InitIterator();
   while(_winList.More(index)) {
@@ -1049,7 +1051,6 @@ void XDisplay::SetETkServer(const char *server) {
   }
   _winList.DoneIterator(index);
 }
-#endif
 
 void XDisplay::Dimensions(Coord &width, Coord &height)
 {
@@ -1306,14 +1307,14 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     sleep(1);
   }
 
-#ifndef LIBCS
+//#if !defined(LIBCS) || defined(NEW_LIBCS)
   // Free embedded Tk windows and sleep before destroying the X window
   if (xwin->ETk_WindowCount() > 0)
   {
     (void) xwin->ETk_FreeWindows();
     sleep(1);
   }
-#endif
+//#endif
 
   if (xwin->GetWinId()) {
 #ifdef DEBUG

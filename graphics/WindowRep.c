@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/01/17 20:31:48  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.23  1996/12/30 23:51:12  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -139,10 +146,6 @@ WindowRep::~WindowRep()
   delete _callbackList;
   if (DaliImageCount() > 0)
       DaliFreeImages();
-#ifndef LIBCS
-  if (ETk_WindowCount() > 0)
-      ETk_FreeWindows();
-#endif
 }
 
 /* called by derived class to when window is resized or moved */
