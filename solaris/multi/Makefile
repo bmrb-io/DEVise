@@ -15,14 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/01/09 16:47:46  jussi
+#  Added -lnsl for network support.
+#
 #  Revision 1.6  1995/09/28 15:12:04  jussi
 #  Added copyright and CVS log messages.
 #
 
 ############################################################
 
-ARCH_FLAGS   = -DPENTIUM -I/usr/X11R6/include -I/s/tcl/include
-ARCH_LDFLAGS = -L /usr/X11R6/lib -L /s/tcl/lib -R /usr/X11R6/lib 
+ARCH_FLAGS   = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../multi
