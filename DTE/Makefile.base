@@ -46,6 +46,8 @@ DTE_INCLUDES = \
 	-I../../graphics.new \
 	-I../unidata \
 	-I../../unidata \
+    -I../DataReader \
+	-I../../DataReader \
 	$(PERL_INCL)
 
 #no-comment is for the perl files
@@ -137,7 +139,7 @@ STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) unidata dte server
+all: $(LIBNAME) unidata dte server datareader
 lib: $(LIBNAME)
 
 .PHONY: unidata 
@@ -145,6 +147,9 @@ lib: $(LIBNAME)
 unidata:
 	cd ../unidata/ && make libunidata.a && cd ../DTE
 
+datareader:
+	cd ../DataReader/ && make libdatareader.a && cd ../DTE
+	
 rtree:
 	cd ../RTree/ && make lib && make librarysbm && cd ../DTE
 
@@ -158,7 +163,7 @@ TableCreate.pure: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  unidata rtree
 	purify $(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
