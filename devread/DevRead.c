@@ -19,6 +19,11 @@
 /*
     $Id$
     $Log$
+    Revision 1.3  1996/08/15 19:55:01  wenger
+    Added 'pure' targets for attrproj and devread; fixed some dynamic
+    memory problems.  Found some bugs while demo'ing for soils science
+    people.
+
     Revision 1.2  1996/08/14 20:00:47  flisakow
         Need a devread directory for each m/c arch.
 
@@ -70,7 +75,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
 
     DataSeg::Set(schemaFile, dataFile, 0, 0);
 
-    char *schemaName = ParseCat(schemaFile, dataFile, _tDataP);
+    char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
     DOASSERT(schemaName != NULL, "Can't parse schema.");
 
     _recBufSize = _tDataP->RecSize();

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/08/27 19:06:58  flisakow
+  Added ifdef's around some information printf's.
+
   Revision 1.8  1996/08/15 19:54:46  wenger
   Added 'pure' targets for attrproj and devread; fixed some dynamic
   memory problems.  Found some bugs while demo'ing for soils science
@@ -69,7 +72,7 @@
 
 //#define DEBUG
 
-GroupDir *gdir = new GroupDir();
+static GroupDir *gdir = new GroupDir();
 
 #define LINESIZE 512
 
@@ -123,7 +126,7 @@ static struct {
 } _genClasses[MAX_GENCLASSINFO];
 
 /*------------------------------------------------------------------------------
- * function: RegisterGenClassInfo
+ * function: ApRegisterGenClassInfo
  * Register the TData class generator for a given source.
  */
 void
@@ -899,11 +902,11 @@ ParseCatLogical(char *catFile, char *sname)
 }
 
 /*------------------------------------------------------------------------------
- * function: ParseCat
+ * function: ApParseCat
  * Read and parse a schema file.
  */
 char *
-ParseCat(char *catFile, char *dataFile, TData *&tDataP) 
+ApParseCat(char *catFile, char *dataFile, TData *&tDataP) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(abc, false) and then ParseCatLogical(catFile)
@@ -944,11 +947,11 @@ ParseCat(char *catFile, char *dataFile, TData *&tDataP)
 }
 
 /*------------------------------------------------------------------------------
- * function: ParseSchema
+ * function: ApParseSchema
  * Parse a schema from buffer(s).
  */
 char *
-ParseSchema(char *schemaName, char *physSchema, char *logSchema)
+ApParseSchema(char *schemaName, char *physSchema, char *logSchema)
 {
 	char *		result = NULL;
 

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/08/23 16:54:59  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.11  1996/08/15 19:54:48  wenger
   Added 'pure' targets for attrproj and devread; fixed some dynamic
   memory problems.  Found some bugs while demo'ing for soils science
@@ -114,7 +119,7 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 
 	DataSeg::Set(schemaFile, dataFile, 0, 0);
 
-	char *schemaName = ParseCat(schemaFile, dataFile, _tDataP);
+	char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
 	DOASSERT(schemaName != NULL, "Can' parse schema");
 
 	DevStatus ppRes = ParseProjection(attrProjFile);

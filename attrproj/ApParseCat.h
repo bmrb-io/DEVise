@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/30 15:31:39  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.2  1996/04/25 19:25:12  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -40,12 +44,12 @@
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
-extern char *ParseCat(char *catFile, char *dataFile, TData *&tDataP);
+extern char *ApParseCat(char *catFile, char *dataFile, TData *&tDataP);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,
    otherwise return NULL. */
-extern char *ParseSchema(char *schemaName, char *physSchema, char *logSchema);
+extern char *ApParseSchema(char *schemaName, char *physSchema, char *logSchema);
 
 #ifndef NO_GEN_CLASS_INFO
 /* Register a new constructor for class. The
@@ -63,13 +67,7 @@ public:
 			 char *commentString) = 0;
 };
 
-extern void RegisterGenClassInfo(char *source, GenClassInfo *gen);
+extern void ApRegisterGenClassInfo(char *source, GenClassInfo *gen);
 #endif
-
-/* Return a list of catalog files */
-extern void CatFiles(int &numFiles, char **&fileNames);
-
-/* Delete all catalog files */
-extern void ClearCats();
 
 #endif
