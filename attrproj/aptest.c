@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/14 15:34:58  wenger
+  Added GetDataSize method to AttrProj class; removed vector.o from
+  AttrProjLib.o; various cleanups.
+
   Revision 1.5  1996/05/01 16:19:38  wenger
   Initial version of code to project attributes now working.
 
@@ -78,7 +82,7 @@ main(
 	}
 
 	/* Initialize Devise stuff for command-line arguments. */
-	Init::DoInit(argc, argv);
+	Init::DoInit();
 
 	AttrProj *		apP = new AttrProj(schemaFile, projectionFile, dataFile);
 	RecId			firstId;

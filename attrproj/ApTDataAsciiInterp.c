@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/30 15:31:44  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.1  1996/04/25 19:25:15  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -258,6 +262,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
   if (numArgs < _numAttrs || 
       (_commentString != NULL &&
        strncmp(args[0], _commentString, _commentStringLength) == 0)) {
+//TEMPTEMP -- probably should print this if not a comment
 #ifdef DEBUG
     printf("Too few arguments (%d < %d) or commented line\n",
 	   numArgs, _numAttrs);

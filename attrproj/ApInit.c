@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:43  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
 #include <stdio.h>
@@ -140,24 +144,28 @@ static void CatchInt(int)
 #endif
 }
 
-void Init::DoInit(int &argc, char **argv)
+void Init::DoInit()
 {
+#if 0
   /* set up interrupt handling for INTR */
   (void)signal(SIGINT, CatchInt);
+#endif
 
+#if 1
   /* Create work directory, if needed */
-  char *workDir = getenv("DEVISE_WORK");
-  if (!workDir)
-    workDir = "work";
-  CheckAndMakeDirectory(workDir);
+  char *workDir = ".";
   _workDir = CopyString(workDir);
+#endif
 
+#if 0
   char *journalName = NULL;
 #define MAXARGS 512
   char *args[512];
 
   DOASSERT(argc <= MAXARGS, "Too many arguments");
+#endif
 
+#if 0
   for(int j = 0; j < argc; j++)
     args[j] = argv[j];
   
@@ -410,9 +418,12 @@ void Init::DoInit(int &argc, char **argv)
     }
     else i++;
   }
+#endif
 
+#if 0
   if (!journalName)
     journalName = CreateUniqueFileName(argv[0]);
+#endif
 
 #if 0
   Journal::Init(journalName, argc, args);

@@ -16,13 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:40  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
+
+//#define DEBUG
 
 #include <stdio.h>
 #include <string.h>
 #include <iostream.h>
 
 #include "ApGroupDir.h"
+#include "Util.h"
 
 GroupDir::GroupDir()
 {
@@ -43,6 +50,7 @@ GroupDir::~GroupDir()
 
 void GroupDir::add_entry(char *schema)
 {
+  DO_DEBUG(printf("GroupDir::add_entry(%s)\n", schema));
   SchemaList *elem = new SchemaList;
   elem->sname = new char[strlen(schema) + 1];
   strcpy(elem->sname, schema);
@@ -56,6 +64,7 @@ void GroupDir::add_entry(char *schema)
 
 int GroupDir::find_entry(char *schema)
 {
+  DO_DEBUG(printf("GroupDir::find_entry(%s)\n", schema));
   SchemaList *curr = list;
 
   while (curr && (strcmp(curr->sname, schema)))

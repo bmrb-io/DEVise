@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/25 19:25:07  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
   Revision 1.1  1996/04/22 18:01:44  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -30,7 +34,7 @@
 
 class Init {
 public:
-  static void DoInit(int &argc, char **argv);
+  static void DoInit();
   static Boolean DoPlayback() { return _doPlayback; }
   static char *PlaybackFileName(){ return _playbackFile; }
   
