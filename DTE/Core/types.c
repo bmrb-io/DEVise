@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1998/11/23 19:18:58  donjerko
+  Added support for gestalts
+
   Revision 1.62  1998/11/06 17:25:09  beyer
   Added a few helper functions
 
@@ -458,10 +461,26 @@ void intMin(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
      result = (Type*)(val1 > val2);
 }
 
+void intMult(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+  int val1 = int(arg1);
+  int val2 = int(arg2);
+  result = (Type*)(val1 * val2);
+}
+
 void intDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
-	int val1 = int(arg1);
-	int val2 = int(arg2);
-     result = (Type*)(val1 / val2);
+  int val1 = int(arg1);
+  int val2 = int(arg2);
+  int r = 0;
+  if( val2 != 0 ) r = val1 / val2;
+  result = (Type*)r;
+}
+
+void intMod(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+  int val1 = int(arg1);
+  int val2 = int(arg2);
+  int r = 0;
+  if( val2 != 0 ) r = val1 % val2;
+  result = (Type*)r;
 }
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -474,6 +493,12 @@ void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
 	*((double*) result) = val1 - val2;
+}
+
+void doubleMult(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	double val1 = ((IDouble*)arg1)->getValue();
+	double val2 = ((IDouble*)arg2)->getValue();
+	*((double*) result) = val1 * val2;
 }
 
 void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -1996,6 +2021,10 @@ GeneralPtr* IDouble::getOperatorPtr(
 		else if(name == "<="){
 			retType = "bool";
 			return new GeneralPtr(doubleLE, boolSize, oneOver3);
+		}
+		else if(name == "*"){
+			retType = "double";
+			return new GeneralPtr(doubleMult, sameSize);
 		}
 		else if(name == "/"){
 			retType = "double";

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1998/11/23 19:19:00  donjerko
+  Added support for gestalts
+
   Revision 1.57  1998/11/06 17:25:10  beyer
   Added a few helper functions
 
@@ -415,7 +418,9 @@ void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz)
 void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
 void intMin(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
+void intMult(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void intDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intMod(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -443,6 +448,7 @@ void seqSubTup(const Type* arg1, const Type* arg2, Type*& result,
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleMult(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -572,9 +578,17 @@ public:
 			retType = "int";
 			return new GeneralPtr(intMin, sameSize);
 		}
+		else if(name == "*"){
+			retType = "int";
+			return new GeneralPtr(intMult, sameSize);
+		}
 		else if(name == "/"){
 			retType = "int";
 			return new GeneralPtr(intDiv, sameSize);
+		}
+		else if(name == "%"){
+			retType = "int";
+			return new GeneralPtr(intMod, sameSize);
 		}
 		else{
 			return NULL;
