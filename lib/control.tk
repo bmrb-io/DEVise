@@ -1,6 +1,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.9  1995/09/11 22:27:07  jussi
+#	Further integration of the new user interface and DEVise.
+#	User can now select 1 to n attributes in the automatic
+#	map generator.
+#
 #	Revision 1.8  1995/09/08 22:17:57  jussi
 #	Integrated creation of TData source, windows, and links in DEVise.
 #
@@ -226,10 +231,7 @@ menu .mbar.file.menu
 .mbar.file.menu add command -label "TData" -command DoVisualizeTData
 .mbar.file.menu add command -label "GData" -command DoVisualizeGData
 .mbar.file.menu add separator
-.mbar.file.menu add cascade -label "Experimental" -menu .mbar.file.menu.exp
-
-menu .mbar.file.menu.exp
-.mbar.file.menu.exp add command -label "Definitions" -command TestMacroDef
+.mbar.file.menu add command -label "Definitions" -command MacroDefStart
 
 menu .mbar.view.menu
 .mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
@@ -261,7 +263,7 @@ menu .mbar.cursor.menu
 .mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
 # menu .mbar.edit.menu
-# .mbar.edit.menu add command -label "GData Mapping" -command { DoEditMapping}
+# .mbar.edit.menu add command -label "GData Mapping" -command DoEditMapping
 
 # menu .mbar.window.menu
 # .mbar.window.menu add command -label "Create" -command {}
@@ -269,9 +271,9 @@ menu .mbar.cursor.menu
 # .mbar.window.menu add command -label "Modify" -command {}
 
 menu .mbar.window.menu
-.mbar.window.menu add command -label "Help" -command { DoHelp}
-.mbar.window.menu add command -label "History" -command { OpenHistory}
-.mbar.window.menu add command -label "Duplicate" -command { DupWindow}
+.mbar.window.menu add command -label "Help" -command DoHelp
+.mbar.window.menu add command -label "History" -command OpenHistory
+.mbar.window.menu add command -label "Duplicate" -command DupWindow
 
 pack .mbar.session .mbar.import .mbar.file .mbar.view .mbar.cursor \
 	.mbar.window -side left -fill x
@@ -386,11 +388,9 @@ button .history.history -text "history" -bg $green -relief raised \
 pack .history.button .history.undo .history.back .history.history \
 	-in .history.buttonFrame -side left -expand 1 -fill x
 
-
 pack .history.buttonFrame -side bottom -expand 1 -fill x
 pack .history.heading1 .history.entry1 .history.heading2 \
 	.history.entry2 -side left -expand 1 -fill x
-
 
 pack .mbar .status .viewFrame .topFrame -side top -fill x -expand 1
 pack .control .history -side left -fill x -expand 1
@@ -583,7 +583,7 @@ proc ElimStringAttr { attrs } {
     set newAttrs ""
     foreach attr $attrs {
 	set attrType [lindex $attr 1]
-	if { [string compare $attrType "string"] != 0 } {
+	if {$attrType != "string"} {
 	    lappend newAttrs $attr
 	}
     }
@@ -1215,7 +1215,7 @@ proc SaveAllWindowViews { f viewDict} {
 	    set views [DEVise getWinViews $win ]
 	    foreach v $views {
 		set viewVar [DictLookup $viewDict $v]
-		puts $f "DEVise insertWindow \$$viewVar $win"
+		puts $f "DEVise insertWindow \$$viewVar \{$win\}"
 	    }
 	}
     }
@@ -1228,7 +1228,7 @@ proc SaveLinkViews { file dict} {
 	set views [DEVise getLinkViews $link]
 	foreach view $views {
 	    set viewVar [DictLookup $dict $view]
-	    puts $file "DEVise insertLink $link \$$viewVar"
+	    puts $file "DEVise insertLink \{$link\} \$$viewVar"
 	}
     }
 }
@@ -1314,8 +1314,8 @@ proc DoActualSave { infile } {
 	    puts $f "\t\treturn 0"
 	    puts $f "\t\}"
 	    puts $f "\} else \{"
-	    puts $f "\tset $tdataVar $fileAlias"
-	    puts $f "\tDEVise create tdata $class $filePath $fileAlias"
+	    puts $f "\tset $tdataVar \{$fileAlias\}"
+	    puts $f "\tDEVise create tdata $class $filePath \$$tdataVar"
 	    puts $f "\}"
 	    set fileNum [expr $fileNum+1]
 	}
@@ -1345,9 +1345,9 @@ proc DoActualSave { infile } {
 	    set gdataName [lindex $params 1]
 	    regsub $fileAlias $gdataName \%s gdataExpr
 	    puts $f "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
-	    puts $f "DEVise create mapping $mapClass \$$fileVar \$map_$mapNum [lrange $params 2 end]"
+	    puts $f "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
 	    set mapDict [DictInsert $mapDict $inst map_$mapNum]
-	    set mapNum [expr $mapNum+1]
+	    incr mapNum
 	}
     }
     puts $f ""
@@ -1600,13 +1600,14 @@ proc ProcessViewDestroyed { view } {
 # Process view selected 
 proc ProcessViewSelected { view } {
     global curView lastView historyWinOpened
-    if { [string compare $view $curView] == 0 } {
+
+    if {$view == $curView} {
 	return
     } else {
 	set lastView $curView
     }
 
-    if { [string compare $curView ""] != 0 } {
+    if {$curView != ""} {
 	# unhighlight old view
 	DEVise highlightView $curView 0
     }
@@ -1616,7 +1617,7 @@ proc ProcessViewSelected { view } {
 
     ClearHistory
 
-    if { [string compare $curView ""] == 0 } {
+    if {$curView == ""} {
 	return
     }
 
@@ -1627,7 +1628,7 @@ proc ProcessViewSelected { view } {
     # puts "setting filter $curView $filters"
     foreach filter $filters { 
 	ProcessViewFilterChange $curView -1 \
-		[lindex $filter 0 ] [lindex $filter 1] \
+		[lindex $filter 0] [lindex $filter 1] \
 		[lindex $filter 2]  [lindex $filter 3] [lindex $filter 4]
     }
 }
@@ -1637,7 +1638,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
     # puts "ProcessViewFilterChange { $view $flushed $xLow \
 	    $yLow $xHigh $yHigh $marked}" 
     global curView historyWinOpened
-    if { [string compare $view $curView] != 0 } {
+    if {$view != $curView} {
 	return
     }
 
@@ -1651,7 +1652,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
     .history.yhigh insert 0 $yHigh
 
     if { $historyWinOpened } {
-	if { $flushed >= 0} {
+	if {$flushed >= 0} {
 	    # Remove last in the list 
 	    foreach i { listMark listXlow listXhigh listYlow listYhigh } {
 		set size [.historyWin.$i size]
@@ -1939,7 +1940,7 @@ proc ProcessYOutButton { } {
 # Do editing for mapping
 proc DoEditMapping { } {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
-    if { [string compare $curView ""] == 0 } {
+    if {$curView == ""} {
 	dialog .editMapping "Edit Mapping" \
 		"Please select a view by clicking in it first." "" 0 { OK } 
 	return
@@ -1950,7 +1951,7 @@ proc DoEditMapping { } {
     
     # Find all interpreted mapping
     set maps [InterpretedGData ]
-    if { [string compare $maps "" ] == 0 } {
+    if {$maps == ""} {
 	dialog .editError "EditMappingError" \
 		"No Interpreted Mapping" "" 0 {ok} 
 	return
@@ -1959,28 +1960,18 @@ proc DoEditMapping { } {
     # See if map is interpreted
     set found 0
     foreach m $maps {
-	if { [string compare $m $map] == 0 } {
+	if {$m == $map} {
 	    set found 1
 	    break
 	}
     }
-    if { !$found } {
+    if {!$found} {
 	dialog .editError "EditMappingError" \
 		"Selected view does not contain interpreted mapping" \
 		"" 0 {Continue} 
 	return
     }
     
-
-    # set button [ dialogList .editMapping "SelectMapping" \
-	    #	"Selected mapping to edit"  "" 1  \
-	    #	{ Cancel OK } $maps ]
-    # set map $dialogListVar(selected)
-    # if { $button  == 0 || \
-	    # [ string compare $dialogListVar(selected) ""] == 0 } {
-	# return
-    # }
-
     # Get parameters for the mapping
     set params [DEVise getInstParam $map]
     if { [string compare $params "" ] == 0 } {
@@ -2004,7 +1995,7 @@ proc DoEditMapping { } {
 	    ] 0 ]
     
     # puts "dialogMapping returns $parm"
-    if { [string compare $parm ""] ==  0 } {
+    if {$parm == ""} {
 	return
     }
 
@@ -2020,9 +2011,8 @@ proc DoEditMapping { } {
 	    [lindex [lindex $params 10] 1] \
 	    [lindex [lindex $params 11] 1] ]
 
-    
     # Change parameter
-    set cmd "DEVise changeParam $map $params"
+    set cmd "DEVise changeParam \{$map\} $params"
     # puts "ChangeParam $map $params"
     set result [eval $cmd]
     
@@ -2032,12 +2022,12 @@ proc DoEditMapping { } {
 	set mappings [DEVise getViewMappings $view]
 	set contains 0
 	foreach m $mappings {
-	    if { [string compare $m $map] == 0 } {
+	    if {$m == $map} {
 		set contains 1
 		break
 	    }
 	}
-	if { $contains > 0 } {
+	if {$contains > 0} {
 	    # puts "refreshView $view"
 	    DEVise invalidatePixmap $view
 	    DEVise refreshView $view
@@ -3070,13 +3060,39 @@ proc NotImplemented {} {
 	    "" 0 OK
 }
 
-proc TestMacroDef {} {
+proc MacroDefInit {} {
+    MacroDefClear
+}
+
+proc MacroDefStart {} {
     global tdatas schemas maps mappings views links windows session modified
 
-    MacroDefClear
+    # see if .map window already exists; if so, just return
+    set err [catch {set exists [wm state .map]}]
+    if {!$err} { return }
+
+    # clear tdatas, schemas, windows, and links because they can be
+    # reconstructed from DEVise data structures; maps, mappings,
+    # and views cannot be safely reconstructed
+    
+    set tdatas ""
+    catch {unset schemas}
+    catch {unset links}
+    catch {unset windows}
+
+    # the following are required for the old Tcl to work properly;
+    # these define arrays with zero elements
+
+    set schemas(a) a
+    unset schemas(a)
+    set links(a) a
+    unset links(a)
+    set windows(a) a
+    unset windows(a)
 
     foreach schema [DEVise get tdata] {
-	set maps($schema) ""
+	set err [catch {set exists $maps($schema)}]
+	if {$err > 0} { set maps($schema) "" }
 	foreach tdata [DEVise get tdata $schema] {
 	    set params [DEVise getCreateParam tdata $schema $tdata]
 	    set filePath [lindex $params 0]
@@ -3134,24 +3150,16 @@ proc TestMacroDef {} {
 	foreach view [lsort [DEVise get "view" $class]] {
 	    set params [DEVise getCreateParam "view" $class $view]
 	    set name [lindex $params 0]
+	    set firsthash [string first \# $name]
+	    if {$firsthash < 0} { continue }
+	    incr firsthash
+	    set name [string range $name $firsthash end]
+	    set secondhash [string first \# $name]
+	    if {$secondhash >= 0} {
+		incr secondhash -1
+		set name [string range $name 0 $secondhash]
+	    }
 	    set views($name) [lrange $params 1 end]
-	}
-    }
-
-    foreach view [array names views] {
-	set firsthash [string first \# $view]
-	if {$firsthash < 0} { continue }
-	incr firsthash
-	set name [string range $view $firsthash end]
-	set lasthash [string last \# $name]
-	if {$lasthash >= 0} {
-	    incr lasthash -1
-	    set name [string range $name 0 $lasthash]
-	}
-	set err [catch {set exists $views($name)}]
-	if {$err > 0} {
-	    set views($name) $views($view)
-	    unset views($view)
 	}
     }
 
@@ -3170,10 +3178,8 @@ proc MacroDef {} {
     set none "-- None --"
 
     toplevel .map
-    wm minsize .map 500 350
-    wm maxsize .map 500 350
     MacroDefTitle .map
-    wm geometry .map =500x350+50+50
+    wm geometry .map =600x350+50+50
     selection clear .map
 
     frame .map.top
@@ -3183,38 +3189,38 @@ proc MacroDef {} {
 
     frame .map.but.row1
     frame .map.but.row2
-    pack .map.but.row1 .map.but.row2 -side top -pady 3m -fill both -expand 1
+    pack .map.but.row1 .map.but.row2 -side top -pady 3m -padx 10m \
+	    -fill both -expand 1
 
-    button .map.but.save -text Save -width 10 -command {
+    button .map.but.save -text Save -width 12 -command {
 	if {$session == ""} {
 	    .map.but.saveas invoke
 	} else {
 	    MacroDefSave $session.tk
 	}
     }
-    button .map.but.saveas -text "Save as..." -width 10 -command {
+    button .map.but.saveas -text "Save as..." -width 12 -command {
 	if {[MacroDefSession "Save Session"] > 0} {
 	    MacroDefTitle .map
 	    MacroDefSave $session.tk
 	}
     }
-    button .map.but.load -text "Load..." -width 10 -command MacroDefLoad
-    button .map.but.auto -text "Auto..." -width 10 -state disabled -command {
+    button .map.but.load -text "Load..." -width 12 -command MacroDefLoad
+    button .map.but.auto -text "Auto..." -width 12 -command {
 	MacroDefAuto $tdata
-	destroy .map
     }
     pack .map.but.save .map.but.saveas .map.but.load .map.but.auto \
 	    -in .map.but.row1 -side left -padx 5m
 
-    button .map.but.ok -text OK -width 10 -command {
+    button .map.but.ok -text OK -width 12 -command {
 	MacroDefNewMapping
 	destroy .map
     }
-    button .map.but.apply -text Apply -width 10 -command {
+    button .map.but.apply -text Apply -width 12 -command {
 	MacroDefNewMapping
     }
-    button .map.but.cancel -text Cancel -width 10 -command "destroy .map"
-    button .map.but.help -text Help -width 10 -command MacroDefHelp
+    button .map.but.cancel -text Cancel -width 12 -command "destroy .map"
+    button .map.but.help -text Help -width 12 -command MacroDefHelp
     pack .map.but.ok .map.but.apply .map.but.cancel .map.but.help \
 	    -in .map.but.row2 -side left -padx 5m
 
@@ -3240,17 +3246,17 @@ proc MacroDef {} {
     MacroDefLinks .map.link "$none"
 
     tkwait visibility .map
-    grab set .map
-    tkwait window .map
+#    grab set .map
+#    tkwait window .map
 }
 
 proc MacroDefTitle {m} {
     global session
 
     if {$session == ""} {
-	wm title $m "Define Session"
+	wm title $m "Define Visualization"
     } else {
-	wm title $m "Define Session - $session"
+	wm title $m "Define Visualization - $session"
     }
 }
 
@@ -3261,11 +3267,21 @@ proc MacroDefNewMapping {} {
     if {$tdata == $none || $window == $none} { return }
     if {$gdata == $none || $view == $none} { return }
 
+    set x [lindex $mappings($gdata) 0]
+    set y [lindex $mappings($gdata) 1]
+    set color [lindex $mappings($gdata) 2]
+    set shape [lindex $mappings($gdata) 3]
+
     # ask DEVise to create view instance
     set sorted SortedX
-    set viewname $tdata#$view
-    set cmd [concat DEVise create view $sorted $viewname $views($view)]
-    puts "cmd = $cmd"
+    set viewname $tdata#$view#$x#$y
+    if {[lsearch [ViewSet] $viewname] >= 0} {
+	dialog .viewError "View Error" \
+		"View $viewname exists already." "" 0 OK
+	return
+    }
+    set cmd [concat DEVise create view $sorted \{$viewname\} $views($view)]
+    # puts "cmd = $cmd"
     set result [eval $cmd]
     if {$result == ""} {
 	dialog .viewError "View Error" \
@@ -3273,33 +3289,22 @@ proc MacroDefNewMapping {} {
 	return
     }
 
-    set x [lindex $mappings($gdata) 0]
-    set y [lindex $mappings($gdata) 1]
-    set color [lindex $mappings($gdata) 2]
-    set shape [lindex $mappings($gdata) 3]
-
-    # ask DEVise to create interpreted mapping
-    # parameter format: x y color size pattern orientation shape
-    set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
+    if {[lsearch [DEVise get mapping] $gdata] < 0} {
+	# ask DEVise to create interpreted mapping
+	# parameter format: x y color size pattern orientation shape
+	set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
 		$color "" "" "" $shape "" ""]
-    if {$result == ""} {
-	dialog .mapError "Mapping Error" \
-		"Error creating interpreted mapping gdata" "" 0 OK
-	return
     }
 
-    # ask DEVise to create an instance of mapping
-    set mapinstance "$tdata#$gdata"
-    set result [DEVise create mapping $gdata $tdata $mapinstance \
-	    "" \$$x \$$y $color "" "" "" $shape "" ""]
-    DEVise setPixelWidth $mapinstance 1
-    if {$result == ""} {
-	dialog .mapError "Mapping Error" \
-		"Error creating mapping instance $mapinstance" "" 0 OK
-	return
+    set mapinstance "$tdata#$gdata" 
+    if {[lsearch [GdataSet] $mapinstance] < 0} {
+	# ask DEVise to create an instance of mapping
+	set result [DEVise create mapping $gdata $tdata $mapinstance \
+		"" \$$x \$$y $color "" "" "" $shape "" ""]
+	DEVise setPixelWidth $mapinstance 1
     }
 
-    # ask DEVise to insert $mapinstance into $viewinstance
+    # ask DEVise to insert $viewname into $mapinstance
     set result [DEVise insertMapping $viewname $mapinstance]
     # seems that there's no error code returned
 
@@ -3313,9 +3318,10 @@ proc MacroDefNewMapping {} {
 	# seems that there's no error code returned
     }
 
-    DEVise refreshView $viewname
     ProcessViewSelected $viewname
-    update
+
+    # DoToggleAxis X
+    DoToggleAxis Y
 }
 
 proc MacroDefSession {title} {
@@ -3326,15 +3332,14 @@ proc MacroDefSession {title} {
     if {!$err} { return 0 }
 
     toplevel .session
-    wm minsize .session 300 100
-    wm maxsize .session 300 100
     wm title .session $title
-    wm geometry .session =300x100+100+100
+    wm geometry .session +100+100
     selection clear .session
 
     frame .session.entry
     frame .session.but
-    pack .session.entry .session.but -side top -pady 3m -fill both -expand 1
+    pack .session.entry .session.but -side top -pady 3m -padx 3m \
+	    -fill both -expand 1
 
     set newsession $session
     label .session.label -text "Enter session name:"
@@ -3496,17 +3501,15 @@ proc MacroDefHelp {} {
 }
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x sortedx yvar
+    global schemas modified x xtype sortedx yvar completed
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
     if {!$err} { return }
 
     toplevel .auto
-    wm minsize .auto 250 150
-    wm maxsize .auto 750 500
     wm title .auto "Automatic Views"
-    wm geometry .auto =750x300+100+100
+    wm geometry .auto +100+100
     selection clear .auto
 
     label .auto.label -text "Select Auto Parameters"
@@ -3529,13 +3532,14 @@ proc MacroDefAuto {tdata} {
 
     menu .auto.xsel.attr.menu
     set sname [lindex $schemas($tdata) 0]
-    set schema [lindex $schemas($tdata) 1]
+    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
     set x ""
+    set xtype ""
     set sortedx 0
 
     set row -1
     set col -1
-    set maxcol 5
+    set maxcol 4
     set varcnt 0
 
     foreach attr $schema {
@@ -3546,6 +3550,7 @@ proc MacroDefAuto {tdata} {
 		-variable x -value $name
 	if {$sorted > 0 && $name != "recId" && $x == ""} {
 	    set x $name
+	    set xtype $type
 	    set sortedx $sorted
 	}
 	if {$col < 0} {
@@ -3565,6 +3570,7 @@ proc MacroDefAuto {tdata} {
     }
     if {$x == ""} {
 	set x [lindex [lindex $schema 0] 0]
+	set xtype [lindex [lindex $schema 0] 1]
 	set sortedx [lindex [lindex $schema 0] 2]
     }
 
@@ -3577,21 +3583,35 @@ proc MacroDefAuto {tdata} {
 		lappend ylist $yname
 	    }
 	}
-	MacroDefAutoActual $tdata $x $sortedx $ylist
+	if {$ylist == ""} {
+	    dialog .autoError "Note" \
+		    "Please select one or more\n\
+		    Y attributes for automatic\n\
+		    mapping." "" 0 OK
+	} else {
+	    MacroDefAutoActual $tdata $x $xtype $sortedx $ylist
+	    set completed 1
+	    destroy .auto
+	}
+    }
+    button .auto.but.cancel -text Cancel -width 20 -command {
+	set completed 0
 	destroy .auto
     }
-    button .auto.but.cancel -text Cancel -width 20 -command { destroy .auto }
     pack .auto.but.ok .auto.but.cancel -side left -expand 1
 
     tkwait visibility .auto
     grab set .auto
     tkwait window .auto
+
+    return $completed
 }
 
-proc MacroDefAutoActual {tdata x sortedx ylist} {
+proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
     global schemas maps mappings views links windows modified none
+    global viewDefault
 
-    set window [format "%s_Auto" $tdata]
+    set window [format "%s (Auto)" $tdata]
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
@@ -3615,11 +3635,10 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 
     set xlo 0.0
     set xhi 1000.0
-    set ylo 0.0
-    set yhi 100.0
     set bgColor white
 
-    set viewParams [DEVise getparam view $sortedx]
+    set viewParams ""
+    catch { set viewParams $viewDefault($xtype) }
     foreach param $viewParams {
 	set pname [lindex $param 0]
 	set value [lindex $param 1]
@@ -3629,16 +3648,10 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 	if {$pname == "xhigh"} {
 	    set xhi $value
 	}
-	if {$pname == "ylow"} {
-	    set ylo $value
-	}
-	if {$pname == "yhigh"} {
-	    set yhi $value
-	}
     }
-    puts "Auto mappings will have xlo $xlo and xhi $xhi"
+    # puts "Auto mappings will have xlo $xlo and xhi $xhi"
 
-    set linkname [format "%s_Link" $x]
+    set linkname [format "%s Link" $x]
     set err [catch {set exists $links($linkname)}]
     if {$err > 0} {
 	# ask DEVise to create link
@@ -3653,8 +3666,8 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
     }
 
     set sname [lindex $schemas($tdata) 0]
-    set schema [lindex $schemas($tdata) 1]
-    set color 1
+    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
+    set color 2
     set shape 2
     set size 1
     set pattern 0
@@ -3672,12 +3685,27 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 	    set defn [list $x $name $color $shape $size $pattern $orient]
 	    set mappings($mapname) $defn
 	    lappend maps($sname) $mapname
-	    incr color
 	}
 
 	# should scan y in file and compute ylo and yhi for each view
 
-	set viewname [format "%s" $name]
+	set ylo 0.0
+	set yhi 100.0
+
+	set viewParams ""
+	catch {	set viewParams $viewDefault($type) }
+	foreach param $viewParams {
+	    set pname [lindex $param 0]
+	    set value [lindex $param 1]
+	    if {$pname == "ylow"} {
+		set ylo $value
+	    }
+	    if {$pname == "yhigh"} {
+		set yhi $value
+	    }
+	}
+
+	set viewname [format "%s View" $name]
 	set err [catch {set exists $views($viewname)}]
 	if {$err > 0} {
 	    set defn [list $xlo $xhi $ylo $yhi $bgColor]
@@ -3686,7 +3714,12 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 
 	# ask DEVise to create view instance
 	set sorted $sortedx
-	set viewinstance "$tdata#$viewname"
+	set viewinstance "$tdata#$viewname#$x#$name"
+	if {[lsearch [ViewSet] $viewinstance] >= 0} {
+	    dialog .viewError "View Error" \
+		    "View $viewinstance exists already." "" 0 OK
+	    return
+	}
 	set result [DEVise create view $sorted $viewinstance \
 		$xlo $xhi $ylo $yhi $bgColor]
 	if {$result == ""} {
@@ -3695,28 +3728,24 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 	    return
 	}
 	
-	# ask DEVise to create interpreted mapping
-	# parameter format: x y color size pattern orientation shape
-	set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		$color "" "" "" $shape "" ""]
-	if {$result == ""} {
-	    dialog .mapError "Mapping Error" \
-		    "Error creating interpreted mapping $mapname" "" 0 OK
-	    return
+	if {[lsearch [DEVise get mapping] $mapname] < 0} {
+	    # ask DEVise to create interpreted mapping
+	    # parameter format: x y color size pattern orientation shape
+	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
+		    $color "" "" "" $shape "" ""]
 	}
 
-	# ask DEVise to create an instance of mapping
 	set mapinstance "$tdata#$mapname"
-	set result [DEVise create mapping $mapname $tdata $mapinstance \
-		"" \$$x \$$name $color "" "" "" $shape "" ""]
-	DEVise setPixelWidth $mapinstance 1
-	if {$result == ""} {
-	    dialog .mapError "Mapping Error" \
-		    "Error creating mapping instance $mapinstance" "" 0 OK
-	    return
+	if {[lsearch [GdataSet] $mapinstance] < 0} {
+	    # ask DEVise to create an instance of mapping
+	    set result [DEVise create mapping $mapname $tdata $mapinstance \
+		    "" \$$x \$$name $color "" "" "" $shape "" ""]
+	    DEVise setPixelWidth $mapinstance 1
+	} else {
+	    puts "$mapinstance exists already -- not creating"
 	}
 
-	# ask DEVise to insert $mapinstance into $viewinstance
+	# ask DEVise to insert $viewinstance into $mapinstance
 	set result [DEVise insertMapping $viewinstance $mapinstance]
 	# seems that there's no error code returned
 
@@ -3731,12 +3760,12 @@ proc MacroDefAutoActual {tdata x sortedx ylist} {
 	DEVise clearViewHistory $viewinstance
 	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 
-	DEVise refreshView $viewinstance
 	ProcessViewSelected $viewinstance
-    }
+	# DoToggleAxis X
+	DoToggleAxis Y
 
-    # DoToggleAxisAllViews X
-    DoToggleAxisAllViews Y
+	incr color
+    }
 
     MacroDefWindows .map.window $none
     MacroDefMaps .map.gdata $none
@@ -3756,7 +3785,7 @@ proc MacroDefTdata {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable tdata \
-	    -menu $m.mbar.menu -width 15
+	    -menu $m.mbar.menu -width 20
     label $m.label -text "Source:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
@@ -3780,6 +3809,8 @@ proc MacroDefTdata {m default} {
     if {$tdata != $none} {
 	# fix: .map.but.auto s.b. a parameter
 	.map.but.auto configure -state normal
+    } else {
+	.map.but.auto configure -state disabled
     }
 
     $m.mbar.menu add command -label "Open..." \
@@ -3805,7 +3836,7 @@ proc MacroDefWindows {m default} {
     set defExists 0
 
     menubutton .map.window.mbar -relief raised -textvariable window \
-	    -menu .map.window.mbar.menu -width 15
+	    -menu .map.window.mbar.menu -width 20
     label .map.window.label -text "Window:" -width 8
     pack .map.window.label .map.window.mbar -side left -padx 2m
     menu .map.window.mbar.menu
@@ -3846,7 +3877,12 @@ proc MacroDefMaps {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable gdata \
-	    -menu $m.mbar.menu -width 15
+	    -menu $m.mbar.menu -width 20
+    if {$tdata != $none} {
+	$m.mbar configure -state normal
+    } else {
+	$m.mbar configure -state disabled
+    }
     label $m.label -text "Mapping:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
@@ -3895,7 +3931,7 @@ proc MacroDefViews {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable view \
-	    -menu $m.mbar.menu -width 15
+	    -menu $m.mbar.menu -width 20
     label $m.label -text "View:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
@@ -3936,7 +3972,7 @@ proc MacroDefLinks {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable link \
-	    -menu $m.mbar.menu -width 15
+	    -menu $m.mbar.menu -width 20
     label $m.label -text "Link:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu
@@ -3955,6 +3991,8 @@ proc MacroDefLinks {m default} {
 	set link $default
     }
 
+    $m.mbar.menu add command -label $none \
+	    -command "set link \"$none\""
     $m.mbar.menu add command -label "New..." \
 	    -command {
 	set linkname [DefLink]
@@ -4017,17 +4055,15 @@ proc DefSource {} {
     }
 
     toplevel .source
-    wm minsize .source 400 200
-    wm maxsize .source 1000 200
     wm title .source "Define Source"
-    wm geometry .source =400x200+100+100
+    wm geometry .source +100+100
     selection clear .source
 
     label .source.label -text "Enter name of data source"
     frame .source.mid -relief groove -borderwidth 2
     frame .source.but
     pack .source.label .source.mid .source.but -side top -pady 3m \
-	    -fill both -expand 1
+	    -padx 3m -fill both -expand 1
 
     frame .source.left
     frame .source.right
@@ -4072,7 +4108,7 @@ proc DefSource {} {
 	destroy .source
     }
     pack .source.but.ok .source.but.clear .source.but.cancel -side left \
-	    -expand 1
+	    -padx 3m -expand 1
 
     tkwait visibility .source
     grab set .source
@@ -4116,10 +4152,8 @@ proc DefWindow {} {
     if {!$err} { return }
 
     toplevel .def
-    wm minsize .def 200 200
-    wm maxsize .def 500 500
     wm title .def "Define Window"
-    wm geometry .def =200x200+100+100
+    wm geometry .def +100+100
     selection clear .def
 
     set winname "Default"
@@ -4132,8 +4166,8 @@ proc DefWindow {} {
     frame .def.win
     frame .def.but
     pack .def.label -side top -pady 3m
-    pack .def.win -side top -fill both -expand 1
-    pack .def.but -side top -fill x -expand 1
+    pack .def.win -side top -padx 3m -fill both -expand 1
+    pack .def.but -side top -pady 3m -padx 3m -fill x -expand 1
 
     frame .def.win.left
     frame .def.win.right
@@ -4180,7 +4214,7 @@ proc DefWindow {} {
 	set winname ""
 	destroy .def
     }
-    pack .def.but.ok .def.but.cancel -side left -expand 1
+    pack .def.but.ok .def.but.cancel -padx 3m -side left -expand 1
 
     tkwait visibility .def
     grab set .def
@@ -4212,10 +4246,8 @@ proc DefMapping {tdata schema} {
     if {!$err} { return }
 
     toplevel .def
-    wm minsize .def 250 280
-    wm maxsize .def 250 280
     wm title .def "Define Mapping"
-    wm geometry .def =250x280+100+100
+    wm geometry .def +100+100
     selection clear .def
 
     set mapname "Default"
@@ -4224,8 +4256,8 @@ proc DefMapping {tdata schema} {
     frame .def.map
     frame .def.but
     pack .def.label -side top -pady 3m
-    pack .def.map -side top -fill both -expand 1
-    pack .def.but -side top -fill x -expand 1
+    pack .def.map -side top -padx 3m -fill both -expand 1
+    pack .def.but -side top -pady 3m -padx 3m -fill x -expand 1
 
     frame .def.map.left
     frame .def.map.right
@@ -4352,7 +4384,7 @@ proc DefMapping {tdata schema} {
 	set mapname ""
 	destroy .def
     }
-    pack .def.but.ok .def.but.cancel -side left -expand 1
+    pack .def.but.ok .def.but.cancel -side left -padx 3m -expand 1
 
     tkwait visibility .def
     grab set .def
@@ -4379,10 +4411,8 @@ proc DefView {} {
     if {!$err} { return }
 
     toplevel .def
-    wm minsize .def 200 200
-    wm maxsize .def 200 200
     wm title .def "Define View"
-    wm geometry .def =200x200+100+100
+    wm geometry .def +100+100
     selection clear .def
 
     set viewname "Default"
@@ -4390,13 +4420,30 @@ proc DefView {} {
     set xhi "100.0"
     set ylo "0.0"
     set yhi "100.0"
+    set viewParams [DEVise getparam view SortedX]
+    foreach param $viewParams {
+	set pname [lindex $param 0]
+	set value [lindex $param 1]
+	if {$pname == "xlow"} {
+	    set xlo $value
+	}
+	if {$pname == "xhigh"} {
+	    set xhi $value
+	}
+	if {$pname == "ylow"} {
+	    set ylo $value
+	}
+	if {$pname == "yhigh"} {
+	    set yhi $value
+	}
+    }
 
     label .def.label -text "Enter view parameters"
     frame .def.view
     frame .def.but
     pack .def.label -side top -pady 3m
-    pack .def.view -side top -fill both -expand 1
-    pack .def.but -side top -fill x -expand 1
+    pack .def.view -side top -padx 3m -fill both -expand 1
+    pack .def.but -side top -pady 3m -padx 3m -fill x -expand 1
 
     frame .def.view.left
     frame .def.view.right
@@ -4412,11 +4459,11 @@ proc DefView {} {
 	    .def.view.left.ylo .def.view.left.yhi -side top
     pack .def.view.left.name -side top -pady 3m
 
-    entry .def.view.right.xlo -relief sunken -width 15 -textvariable xlo
-    entry .def.view.right.xhi -relief sunken -width 15 -textvariable xhi
-    entry .def.view.right.ylo -relief sunken -width 15 -textvariable ylo
-    entry .def.view.right.yhi -relief sunken -width 15 -textvariable yhi
-    entry .def.view.right.name -relief sunken -width 15 -textvariable viewname
+    entry .def.view.right.xlo -relief sunken -width 25 -textvariable xlo
+    entry .def.view.right.xhi -relief sunken -width 25 -textvariable xhi
+    entry .def.view.right.ylo -relief sunken -width 25 -textvariable ylo
+    entry .def.view.right.yhi -relief sunken -width 25 -textvariable yhi
+    entry .def.view.right.name -relief sunken -width 25 -textvariable viewname
     pack .def.view.right.xlo .def.view.right.xhi \
 	    .def.view.right.ylo .def.view.right.yhi -side top -pady 0.5m
     pack .def.view.right.name -side top -pady 3m
@@ -4443,7 +4490,7 @@ proc DefView {} {
 	set viewname ""
 	destroy .def
     }
-    pack .def.but.ok .def.but.cancel -side left -expand 1
+    pack .def.but.ok .def.but.cancel -padx 3m -side left -expand 1
 
     tkwait visibility .def
     grab set .def
@@ -4465,10 +4512,8 @@ proc DefLink {} {
     if {!$err} { return }
 
     toplevel .def
-    wm minsize .def 200 300
-    wm maxsize .def 200 300
     wm title .def "Define Link"
-    wm geometry .def =200x300+100+100
+    wm geometry .def +100+100
     selection clear .def
 
     set linkname "Default"
@@ -4485,9 +4530,9 @@ proc DefLink {} {
     frame .def.name
     frame .def.but
     pack .def.label -side top -pady 3m
-    pack .def.link -side top -fill both -expand 1
-    pack .def.name -side top -fill x -expand 1
-    pack .def.but -side top -fill x -expand 1
+    pack .def.link -side top -padx 3m -fill both -expand 1
+    pack .def.name -side top -padx 3m -fill x -expand 1
+    pack .def.but -side top -pady 3m -padx 3m -fill x -expand 1
 
     checkbutton .def.link.x -text X -variable x -anchor w
     checkbutton .def.link.y -text Y -variable y -anchor w
@@ -4528,7 +4573,7 @@ proc DefLink {} {
 	set linkname ""
 	destroy .def
     }
-    pack .def.but.ok .def.but.cancel -side left -expand 1
+    pack .def.but.ok .def.but.cancel -side left -padx 3m -expand 1
 
     tkwait visibility .def
     grab set .def
@@ -4549,3 +4594,6 @@ proc DefLink {} {
 
     return $linkname
 }
+
+# initialize macro definition utility
+MacroDefInit
