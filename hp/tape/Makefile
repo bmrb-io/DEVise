@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/10/15 19:12:21  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX -I/s/tcl/include
+ARCH_FLAGS = -DHPUX -I/s/tcl/include -I/s/gcc/sun4m_412/lib/g++-include
 
 VPATH = ../../tape
 include $(VPATH)/Makefile.base
