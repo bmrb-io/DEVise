@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.32  1995/12/04 18:04:45  jussi
+#	User can now specify a view title which appears at the top of the view.
+#	Changed statistics toggling to use getViewStatistics and setViewStatistics
+#	so that a single view or all views can be toggled, based on the
+#	status of the currently selected view.
+#
 #	Revision 1.31  1995/12/02 21:45:17  jussi
 #	Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding each
 #	view and window.
@@ -381,6 +387,8 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.yaxismenu
 .mbar.view.menu add cascade -label "Toggle Statistics" \
 	-menu .mbar.view.menu.statmenu
+.mbar.view.menu add command -label "Show KGraph" \
+	-command ShowKGraph
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 
@@ -3486,4 +3494,25 @@ proc UpdateTkControlMargins {name type w h} {
 		    $width $height $x $y]
 	}
     }
+}
+
+proc ShowKGraph {} {
+    global curView
+
+    if {$curView == ""} {
+	dialog .showKGraph "Show KGraph" \
+		"Select a view by clicking in it first." "" 0 { OK }
+	return
+    }
+
+    # Form graph out of all the views in the current window for now - to be changed later
+    # Also, display the mean as the only stat - to be changed later
+    
+    set win [ DEVise getViewWin $curView]
+    set vlist [DEVise getWinViews $win]
+
+    # Pass list of view names and also stat number
+    set cmd "DEVise showkgraph 1 $vlist"
+
+    eval $cmd
 }
