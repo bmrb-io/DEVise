@@ -517,7 +517,7 @@ const ISchema* ODBCInterface::getISchema(TableName* table){
 
 	// if something is wrong, create msg and do:
 	string msg = "something wrong with ODBC driver";
-	THROW(new Exception(msg), NULL);
+//	THROW(new Exception(msg), NULL);
 
 	return &tmp;
 }

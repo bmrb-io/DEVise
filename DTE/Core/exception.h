@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/11/12 23:17:39  donjerko
+  Improved error checking.
+
   Revision 1.11  1997/11/05 00:19:44  donjerko
   Separated typechecking from optimization.
 
@@ -87,8 +90,8 @@ class DefaultExceptHndl{
 public:
 	~DefaultExceptHndl(){
 		if(currExcept){
-			cout << currExcept->toString();
-			cout << endl;
+			cerr << currExcept->toString();
+			cerr << endl;
 		}
 	}
 };
@@ -146,5 +149,6 @@ extern ITimer iTimer;
 #define TRY(A,B) A; if(currExcept){return B;}
 #define CHECK(A,B,C) A; if(currExcept){currExcept->append(B); return C;}
 #define CATCH(A) if(currExcept){A; delete currExcept; currExcept = NULL;}
+#define EXIT(A) A; if(currExcept){cerr << currExcept->toString() << endl; exit(1);}
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/11/12 15:42:52  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.8.4.1  1997/10/30 20:13:38  wenger
   Got DEVise to compile, link, and run on sun and linux; compiles but
   doesn't link on hp (can't find memory mapping functions).  This includes
@@ -53,6 +57,7 @@
 //#include <stdlib.h>   erased for sysdep.h
 //#include <unistd.h>   erased for sysdep.h
 #include "sysdep.h"
+#include <iostream.h>
 #include <string>
 // #include <netdb.h>
 //#include "machdep.h"	// Could be removed in standalone case
@@ -132,7 +137,7 @@ Cor_sockbuf::Cor_sockbuf(unsigned short _port)
     srv_addr.sin_port = htons(port);
 
     if( bind(_socketfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) {
-        cerr << "bind error\n";
+//        cerr << "bind error\n";
 	   perror("SockStream bind failed");
 	   assert(0);
         ::close(_socketfd);
@@ -231,7 +236,7 @@ Cor_sockbuf *Cor_sockbuf::AcceptConnection()
     if (sd < 0) {
 	   perror("SockStream accept failed");
 	   assert(0);
-        cerr << "Cor_sockbuf: Could not accept().\n";
+//        cerr << "Cor_sockbuf: Could not accept().\n";
         return(NULL);
     }
 
@@ -297,7 +302,7 @@ int Cor_sockbuf::overflow(int c)
 	   do {
             n = write(_socketfd, cp, len);
 #ifdef DEBUG_SOCK_REL
-		  cerr << "write:" << _socketfd << ' ' << n << ' ' << errno << endl;
+//		  cerr << "write:" << _socketfd << ' ' << n << ' ' << errno << endl;
 #endif
 	   } while( n == -1 && errno == EINTR );
         if ( n < 0 ) {

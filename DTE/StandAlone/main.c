@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/05 00:20:54  donjerko
+  Initial version.
+
   Revision 1.16  1997/09/05 22:20:39  donjerko
   Made changes for port to NT.
 
@@ -83,11 +86,11 @@ int main(int argc, char** argv){
      initialize_system();
 
 	Engine engine(query);
-	TRY(engine.optimize(), 0);
+	EXIT(engine.optimize());
 	int numFlds = engine.getNumFlds();
 	if(numFlds > 0){
 		const TypeID* typeIDs = engine.getTypeIDs();
-		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), 0);
+		EXIT(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds));
 		const string* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";
@@ -95,7 +98,7 @@ int main(int argc, char** argv){
 		cout << endl << "---------------------------------" << endl;
 		const Tuple* tup;
 
-		TRY(engine.initialize(), 0);
+		EXIT(engine.initialize());
 		while((tup = engine.getNext())){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/11/19 00:19:18  donjerko
+  Added ODBC skeleton.
+
   Revision 1.32  1997/11/12 23:17:38  donjerko
   Improved error checking.
 
@@ -166,7 +169,7 @@ Interface* Directory::createInterface(const string& entry) const
 			break;
 		}
 		const char* tableNm = IString::getCStr(tuple[0]);
-		if(entry == tableNm){
+		if(entry == string(tableNm)){
 			const Interface* tmp = InterfWrapper::getInterface(tuple[1]);
 			Interface* retVal = tmp->duplicate();
 			delete iterator;
