@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/13 23:09:56  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.2  1995/09/05 22:15:00  jussi
   Added CVS header.
 */
@@ -25,8 +28,6 @@
 
 #include "ClassDir.h"
 #include "VisualArg.h"
-
-const int MAX_INTERPRETED_MAPPING_CLASS = 512;
 
 class MappingInterp;
 class TData;
@@ -42,11 +43,8 @@ public:
 	mapping */
 	void *UserInfo() { return &_isInterp; }
 
-	/* constructor for new interpreted mapping class 
-	created by prototype */
-	MapInterpClassInfo( char *className, char *fileAlias,
-		VisualFlag *dimensionInfo,
-		int numDimensions, MappingInterpCmd *cmd,int cmdFlag, int attrFlag);
+	/* constructor for new interpreted mapping class */
+	MapInterpClassInfo(char *className);
 
 	/* constructor for interpreted mapping instance */
 	MapInterpClassInfo(char *className,
@@ -88,17 +86,6 @@ public:
 	/* Get parameters that can be used to re-create this instance */
 	virtual void CreateParams(int &argc, char **&argv);
 
-	/* Get list of interpreted mapping classes */
-	void MapClasses(int &num, MapInterpClassInfo **&classes) {
-		num = _numMapClasses;
-		classes = _mapClasses;
-	}
-
-	/* Clear list of mapping classes, for closing a session */ 
-	void ClearMapClasses(){
-		_numMapClasses = 0;
-	}
-
 private:
 	void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
 			    int &cmdFlag, int &attrFlag,
@@ -117,11 +104,6 @@ private:
 	int _numDimensions;
 
 	int _isInterp; /* always set to true */
-
-	/* list of interpreted mapping classes. Used only by the prototype
-	mapping classinfo generator */
-	static int _numMapClasses;
-	static MapInterpClassInfo *_mapClasses[MAX_INTERPRETED_MAPPING_CLASS];
 };
 
 #endif
