@@ -1206,7 +1206,7 @@ Num Date        Status  Description
 319 03/11/98	OPEN	It is possible to create data sources with duplicate
 			names. (rkw)
 
-320 03/11/98	OPEN	SQLViews don't work. (rkw)
+320 03/11/98	FIXED (donko)	SQLViews don't work. (rkw)
 
 321 03/11/98	FIXED	Rubberband line on Linux client/server form causes
 			crash. (rkw)
