@@ -1,0 +1,794 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../graphics -I../graphics.new \
+		-I/usr/X11R6/include -I../../solaris/tcl/include *.c
+# DO NOT DELETE
+
+ActionDefault.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ActionDefault.o: /usr/include/time.h ActionDefault.h ../graphics/Action.h
+ActionDefault.o: ../graphics/DeviseTypes.h ../graphics/Util.h
+ActionDefault.o: /usr/include/assert.h /usr/include/stdlib.h
+ActionDefault.o: /usr/include/ctype.h TDataMap.h ../graphics/Exit.h
+ActionDefault.o: ../graphics/DList.h ../graphics/Color.h
+ActionDefault.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
+ActionDefault.o: Bitmap.h RecId.h GDataRec.h ../graphics/Selection.h
+ActionDefault.o: ../graphics/View.h ../graphics/Dispatcher.h
+ActionDefault.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ActionDefault.o: ../graphics/WindowRep.h ../graphics/Geom.h
+ActionDefault.o: /usr/include/math.h ../graphics/Transform.h
+ActionDefault.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ActionDefault.o: ../graphics/Control.h ../graphics/ViewCallback.h
+ActionDefault.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ActionDefault.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ActionDefault.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ActionDefault.o: ../graphics/Config.h ../graphics/Cursor.h ViewGraph.h
+ActionDefault.o: RecInterp.h QueryProc.h TData.h RecOrder.h
+AmsDiskFile.o: AmsDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
+AmsDiskFile.o: TDataAppend.h TData.h RecId.h RecOrder.h
+AmsDiskFile.o: ../graphics/VisualArg.h ../graphics/Color.h
+AmsDiskFile.o: ../graphics/DList.h ../graphics/Exit.h ams.h
+AmsDiskFile.o: /usr/include/math.h
+Bitmap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+Bitmap.o: ../graphics/Exit.h Bitmap.h ../graphics/DeviseTypes.h
+BufHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufHash.o: ../graphics/Exit.h BufHash.h ../graphics/DeviseTypes.h BufMgr.h
+BufHash.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+BufHash.o: RecOrder.h ../graphics/DList.h
+BufMech.o: BufMech.h ../graphics/DeviseTypes.h RecId.h RangeInfo.h
+BufMech.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufMech.o: RangeInfoArray.h RangeHash.h BufferPolicy.h TData.h RecOrder.h
+BufMech.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+BufMech.o: ../graphics/Exit.h
+BufMgr.o: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
+BufMgr.o: BufHint.h RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
+BufMgr.o: ../graphics/Exit.h
+BufMgrFull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufMgrFull.o: ../graphics/Config.h ../graphics/Exit.h BufMgrFull.h BufMgr.h
+BufMgrFull.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
+BufMgrFull.o: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
+BufMgrFull.o: RangeInfo.h TDataRangeList.h RangeInfoArray.h RangeList.h
+BufMgrFull.o: RecRange.h TDataAttr.h TData.h ../graphics/VisualArg.h
+BufMgrFull.o: ../graphics/Color.h GData.h ../graphics/Init.h BufferFifo.h
+BufMgrFull.o: BufferFocal.h BufferLifo.h BufferRnd.h
+BufMgrNull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufMgrNull.o: ../graphics/Exit.h TData.h ../graphics/DeviseTypes.h RecId.h
+BufMgrNull.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+BufMgrNull.o: ../graphics/DList.h BufMgrNull.h BufMgr.h
+BufMgrNull.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+BufMgrNull.o: ../graphics/Init.h
+BufPage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h BufPage.h
+BufPage.o: ../graphics/DeviseTypes.h PageSize.h ../graphics/Exit.h
+BufPageList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufPageList.o: BufPageList.h ../graphics/DeviseTypes.h BufMgr.h
+BufPageList.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+BufPageList.o: RecOrder.h ../graphics/DList.h ../graphics/Exit.h
+BufferFifo.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferFifo.h
+BufferFifo.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
+BufferFifo.o: /usr/include/sys/feature_tests.h TDataAttr.h TData.h RecOrder.h
+BufferFifo.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+BufferFifo.o: ../graphics/Exit.h
+BufferFocal.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferFocal.h
+BufferFocal.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
+BufferFocal.o: /usr/include/sys/feature_tests.h TDataAttr.h TData.h
+BufferFocal.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+BufferFocal.o: ../graphics/DList.h ../graphics/Exit.h GData.h
+BufferLifo.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferLifo.h
+BufferLifo.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
+BufferLifo.o: /usr/include/sys/feature_tests.h TDataAttr.h TData.h RecOrder.h
+BufferLifo.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+BufferLifo.o: ../graphics/Exit.h
+BufferLru.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferLru.h
+BufferLru.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
+BufferLru.o: /usr/include/sys/feature_tests.h TDataAttr.h TData.h RecOrder.h
+BufferLru.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+BufferLru.o: ../graphics/Exit.h
+BufferRnd.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+BufferRnd.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferRnd.h
+BufferRnd.o: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h
+BufferRnd.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+BufferRnd.o: ../graphics/DList.h ../graphics/Exit.h
+Command.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+Command.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+Command.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Command.o: /usr/include/time.h /usr/include/stdio.h /usr/include/string.h
+Command.o: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
+Command.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+Command.o: ../graphics/Color.h ../graphics/View.h ../graphics/Dispatcher.h
+Command.o: ../graphics/DList.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+Command.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+Command.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+Command.o: ../graphics/Compress.h ../graphics/Control.h
+Command.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+Command.o: ../graphics/Config.h ../graphics/Cursor.h Command.h
+Command.o: ../graphics/Timer.h ../graphics/Parse.h BufMgr.h
+Command.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+Command.o: RecOrder.h QueryProc.h TData.h ../graphics/Init.h
+CompositeParser.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+CompositeParser.o: RecInterp.h /usr/include/sys/types.h
+CompositeParser.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+CompositeParser.o: /usr/include/sys/select.h /usr/include/sys/time.h
+CompositeParser.o: /usr/include/time.h ../graphics/DeviseTypes.h
+CompositeParser.o: CompositeParser.h ../graphics/Exit.h
+ConnectorShape.o: LineConnector.h ConnectorShape.h ../graphics/DeviseTypes.h
+ConnectorShape.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ConnectorShape.o: Connector.h ../graphics/Color.h ShapeID.h
+ConnectorShape.o: ../graphics/Pattern.h ../graphics/WindowRep.h
+ConnectorShape.o: ../graphics/Geom.h /usr/include/math.h
+ConnectorShape.o: ../graphics/Transform.h ../graphics/DList.h
+ConnectorShape.o: ../graphics/Exit.h ../graphics/DevisePixmap.h
+ConnectorShape.o: ../graphics/VisualArg.h ../graphics/Compress.h
+DictGroup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DictGroup.o: DictGroup.h ../graphics/DeviseTypes.h ../graphics/DList.h
+DictGroup.o: ../graphics/Exit.h
+DiskFile.o: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
+DiskFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+DispQueryProc.o: DispQueryProc.h ../graphics/Dispatcher.h
+DispQueryProc.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DispQueryProc.o: ../graphics/DeviseTypes.h ../graphics/DList.h
+DispQueryProc.o: ../graphics/Exit.h ../graphics/VisualArg.h
+DispQueryProc.o: ../graphics/Color.h ../graphics/Journal.h QueryProcSimple.h
+DispQueryProc.o: ../graphics/Config.h QueryProc.h RecId.h ../graphics/Init.h
+DispQueryProc.o: ../graphics/BufPolicy.h BufHint.h QueryProcFull.h QPRange.h
+GData.o: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
+GData.o: RecId.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+GData.o: ../graphics/DList.h GData.h GDataRangeMap.h /usr/include/stdio.h
+GData.o: /usr/include/sys/feature_tests.h GDataRec.h ../graphics/Pattern.h
+GData.o: ShapeID.h UnixRecFile.h RecFile.h /usr/include/errno.h
+GData.o: /usr/include/sys/errno.h ../graphics/Init.h ../graphics/BufPolicy.h
+GDataBin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+GDataBin.o: /usr/include/math.h ../graphics/Exit.h GDataBin.h
+GDataBin.o: ../graphics/DeviseTypes.h RecId.h Connector.h ../graphics/Color.h
+GDataBin.o: ShapeID.h ../graphics/Pattern.h ConnectorShape.h TDataMap.h
+GDataBin.o: ../graphics/DList.h ../graphics/VisualArg.h Bitmap.h GDataRec.h
+GDataBin.o: TDataCMap.h ../graphics/Init.h ../graphics/BufPolicy.h
+GDataBinX.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+GDataBinX.o: /usr/include/math.h ../graphics/Exit.h QueryProc.h
+GDataBinX.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+GDataBinX.o: ../graphics/Color.h RecId.h GDataBinX.h SymbolBin.h Connector.h
+GDataBinX.o: ShapeID.h ../graphics/Pattern.h ConnectorShape.h TDataMap.h
+GDataBinX.o: ../graphics/DList.h Bitmap.h GDataRec.h TDataCMap.h GDataBin.h
+GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+GDataRangeMap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+GDataRangeMap.o: /usr/include/sys/select.h /usr/include/sys/time.h
+GDataRangeMap.o: /usr/include/time.h /usr/include/sys/stat.h
+GDataRangeMap.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+GDataRangeMap.o: /usr/include/limits.h /usr/include/unistd.h
+GDataRangeMap.o: /usr/include/sys/unistd.h /usr/include/errno.h
+GDataRangeMap.o: /usr/include/sys/errno.h ../graphics/Exit.h GDataRangeMap.h
+GDataRangeMap.o: /usr/include/stdio.h ../graphics/DeviseTypes.h RecId.h
+GDataRangeMap.o: GDataRec.h ../graphics/Color.h ../graphics/Pattern.h
+GDataRangeMap.o: ShapeID.h FileMacro.h TData.h RecOrder.h
+GDataRangeMap.o: ../graphics/VisualArg.h ../graphics/DList.h
+GDataRangeSource.o: GDataRangeSource.h RangeCallback.h
+GDataRangeSource.o: ../graphics/DeviseTypes.h ../graphics/DList.h
+GDataRangeSource.o: ../graphics/Exit.h GData.h TData.h RecId.h RecOrder.h
+GDataRangeSource.o: ../graphics/VisualArg.h ../graphics/Color.h
+GDataSnap.o: ../graphics/DeviseTypes.h RectShape.h ../graphics/Transform.h
+GDataSnap.o: /usr/include/math.h ../graphics/Geom.h ../graphics/WindowRep.h
+GDataSnap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+GDataSnap.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Color.h
+GDataSnap.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+GDataSnap.o: ../graphics/VisualArg.h ../graphics/Compress.h Shape.h
+GDataSnap.o: ../graphics/ColorMgr.h ../graphics/Selection.h
+GDataSnap.o: ../graphics/View.h ../graphics/Dispatcher.h
+GDataSnap.o: ../graphics/Journal.h ../graphics/ViewWin.h
+GDataSnap.o: ../graphics/Control.h ../graphics/ViewCallback.h
+GDataSnap.o: ../graphics/AttrList.h /usr/include/sys/time.h
+GDataSnap.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+GDataSnap.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+GDataSnap.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
+GDataSnap.o: ../graphics/Init.h ../graphics/BufPolicy.h GDataSnap.h
+GDataSnap.o: GDataVar.h
+MapInterpClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Control.h
+MapInterpClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
+MapInterpClassInfo.o: ../graphics/DList.h ../graphics/Exit.h MappingInterp.h
+MapInterpClassInfo.o: ../../solaris/tcl/include/tcl.h /usr/include/stdio.h
+MapInterpClassInfo.o: /usr/include/sys/feature_tests.h TDataMapDispatch.h
+MapInterpClassInfo.o: TDataMap.h ../graphics/Pattern.h ShapeID.h Bitmap.h
+MapInterpClassInfo.o: RecId.h GDataRec.h ../graphics/Dispatcher.h
+MapInterpClassInfo.o: ../graphics/Journal.h TData.h RecOrder.h
+MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
+MapInterpClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+MapInterpClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+MapInterpClassInfo.o: /usr/include/time.h ../graphics/Config.h
+MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/ClassDir.h
+MapInterpClassInfo.o: ../graphics/Util.h /usr/include/assert.h
+MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
+MappingInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+MappingInterp.o: ../../solaris/tcl/include/tcl.h ../graphics/DeviseTypes.h
+MappingInterp.o: Bitmap.h ../graphics/AttrList.h /usr/include/sys/time.h
+MappingInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+MappingInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+MappingInterp.o: /usr/include/time.h ../graphics/Config.h ../graphics/DList.h
+MappingInterp.o: ../graphics/Exit.h TData.h RecId.h RecOrder.h
+MappingInterp.o: ../graphics/VisualArg.h ../graphics/Color.h Shape.h
+MappingInterp.o: ../graphics/Pattern.h ../graphics/WindowRep.h
+MappingInterp.o: ../graphics/Geom.h /usr/include/math.h
+MappingInterp.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MappingInterp.o: ../graphics/Compress.h RectShape.h Temp.h MappingInterp.h
+MappingInterp.o: TDataMapDispatch.h TDataMap.h ShapeID.h GDataRec.h
+MappingInterp.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+MappingInterp.o: MapInterpShape.h ../graphics/Util.h /usr/include/assert.h
+MappingInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
+MappingInterp.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MultiArray.o: MultiArray.h ../graphics/DeviseTypes.h /usr/include/stdio.h
+MultiArray.o: /usr/include/sys/feature_tests.h VoidArray.h ../graphics/Exit.h
+PageFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+PageFile.o: ../graphics/Exit.h BufMgr.h ../graphics/DeviseTypes.h
+PageFile.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+PageFile.o: RecOrder.h ../graphics/DList.h DiskFile.h PageFile.h PageRange.h
+PageRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+PageRange.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+PageRange.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+PageRange.o: /usr/include/sys/time.h /usr/include/time.h
+PageRange.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+PageRange.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+PageRange.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+PageRange.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Exit.h
+PageRange.o: FileMacro.h PageRange.h ../graphics/DeviseTypes.h
+ParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h ParseCat.h
+ParseCat.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
+ParseCat.o: TDataAsciiInterp.h TDataAscii.h ../graphics/Dispatcher.h
+ParseCat.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+ParseCat.o: ../graphics/Color.h ../graphics/Journal.h TData.h RecId.h
+ParseCat.o: RecOrder.h ../graphics/AttrList.h /usr/include/sys/time.h
+ParseCat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ParseCat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ParseCat.o: /usr/include/time.h ../graphics/Config.h ../graphics/Parse.h
+ParseCat.o: ../graphics/Control.h ../graphics/Util.h /usr/include/assert.h
+ParseCat.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/Init.h
+ParseCat.o: ../graphics/BufPolicy.h
+QPRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+QPRange.o: ../graphics/Exit.h QPRange.h ../graphics/DeviseTypes.h RecId.h
+QueryProc.o: QueryProc.h ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+QueryProc.o: ../graphics/Color.h RecId.h DispQueryProc.h
+QueryProc.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+QueryProc.o: /usr/include/sys/feature_tests.h ../graphics/DList.h
+QueryProc.o: ../graphics/Exit.h ../graphics/Journal.h QueryProcSimple.h
+QueryProc.o: ../graphics/Config.h ../graphics/Init.h ../graphics/BufPolicy.h
+QueryProc.o: BufHint.h QueryProcFull.h QPRange.h
+QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
+QueryProcFull.o: ../graphics/VisualArg.h ../graphics/Color.h RecId.h
+QueryProcFull.o: QPRange.h ../graphics/DList.h ../graphics/Exit.h
+QueryProcFull.o: ../graphics/BufPolicy.h ../graphics/Init.h
+QueryProcFull.o: ../graphics/Journal.h BufMgrFull.h BufMgr.h BufHint.h
+QueryProcFull.o: BufferPolicy.h RecOrder.h RangeInfo.h /usr/include/stdio.h
+QueryProcFull.o: /usr/include/sys/feature_tests.h BufMgrNull.h TDataMap.h
+QueryProcFull.o: ../graphics/Pattern.h ShapeID.h Bitmap.h GDataRec.h
+QueryProcFull.o: GDataBin.h TData.h GData.h
+QueryProcSimple.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+QueryProcSimple.o: /usr/include/stdlib.h ../graphics/Exit.h
+QueryProcSimple.o: ../graphics/Init.h ../graphics/DeviseTypes.h
+QueryProcSimple.o: ../graphics/BufPolicy.h QueryProcSimple.h
+QueryProcSimple.o: ../graphics/Config.h QueryProc.h ../graphics/VisualArg.h
+QueryProcSimple.o: ../graphics/Color.h RecId.h BufHint.h TDataMap.h
+QueryProcSimple.o: ../graphics/DList.h ../graphics/Pattern.h ShapeID.h
+QueryProcSimple.o: Bitmap.h GDataRec.h BufMgrNull.h BufMgr.h BufferPolicy.h
+QueryProcSimple.o: RecOrder.h BufMgrFull.h RangeInfo.h ../graphics/Journal.h
+QueryProcSimple.o: /usr/include/math.h GData.h TData.h GDataBin.h PageSize.h
+RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
+RangeCallback.o: ../graphics/DList.h ../graphics/Exit.h
+RangeHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RangeHash.o: ../graphics/Exit.h RangeHash.h ../graphics/DeviseTypes.h
+RangeHash.o: RangeInfo.h RecId.h
+RangeInfo.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RangeInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+RangeInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+RangeInfo.o: /usr/include/sys/time.h /usr/include/time.h RangeInfo.h
+RangeInfo.o: ../graphics/DeviseTypes.h RecId.h ../graphics/Exit.h
+RangeInfoArray.o: RangeInfoArray.h ../graphics/DeviseTypes.h MultiArray.h
+RangeInfoArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RangeInfoArray.o: VoidArray.h ../graphics/Exit.h RangeInfo.h RecId.h
+RangeList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RangeList.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Exit.h
+RangeList.o: RangeList.h ../graphics/DeviseTypes.h RecId.h RangeInfo.h
+RecFile.o: UnixRecFile.h RecFile.h ../graphics/DeviseTypes.h
+RecFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+RecInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RecInterp.o: /usr/include/time.h ../graphics/AttrList.h
+RecInterp.o: /usr/include/sys/time.h /usr/include/sys/types.h
+RecInterp.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+RecInterp.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
+RecInterp.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+RecInterp.o: RecInterp.h ../graphics/Util.h /usr/include/assert.h
+RecInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
+RecRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RecRange.o: ../graphics/Exit.h RecRange.h ../graphics/DeviseTypes.h RecId.h
+Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h
+Snapshot.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+Snapshot.o: ../graphics/Exit.h ../graphics/DList.h ../graphics/Color.h
+Snapshot.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h Bitmap.h
+Snapshot.o: RecId.h GDataRec.h TData.h RecOrder.h TDataRangeSource.h
+Snapshot.o: RangeCallback.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
+Snapshot.o: BufferPolicy.h GDataRangeSource.h GData.h ViewRanges.h
+Snapshot.o: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/Journal.h
+Snapshot.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+Snapshot.o: /usr/include/math.h ../graphics/Transform.h
+Snapshot.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+Snapshot.o: ../graphics/Control.h ../graphics/ViewCallback.h
+Snapshot.o: ../graphics/AttrList.h /usr/include/sys/time.h
+Snapshot.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+Snapshot.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Snapshot.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
+Snapshot.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
+Snapshot.o: /usr/include/ctype.h
+StringHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+StringHash.o: StringHash.h
+SymbolBin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+SymbolBin.o: /usr/include/math.h ../graphics/Exit.h QueryProc.h
+SymbolBin.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+SymbolBin.o: ../graphics/Color.h RecId.h SymbolBin.h ams.h TDataMap.h
+SymbolBin.o: ../graphics/DList.h ../graphics/Pattern.h ShapeID.h Bitmap.h
+SymbolBin.o: GDataRec.h
+TData.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h TData.h
+TData.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h ../graphics/VisualArg.h
+TData.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+TData2DRec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TData2DRec.o: TData2DRec.h TDataRec.h TData.h ../graphics/DeviseTypes.h
+TData2DRec.o: RecId.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+TData2DRec.o: ../graphics/DList.h ../graphics/Exit.h
+TDataAppend.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TDataAppend.o: ../graphics/Exit.h TDataAppend.h TData.h
+TDataAppend.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h
+TDataAppend.o: ../graphics/VisualArg.h ../graphics/Color.h
+TDataAppend.o: ../graphics/DList.h DiskFile.h BufMgr.h
+TDataAppend.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h PageFile.h
+TDataAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TDataAscii.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+TDataAscii.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+TDataAscii.o: /usr/include/sys/time.h /usr/include/time.h
+TDataAscii.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+TDataAscii.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+TDataAscii.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+TDataAscii.o: /usr/include/assert.h ../graphics/Parse.h TDataAscii.h
+TDataAscii.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+TDataAscii.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+TDataAscii.o: ../graphics/Color.h ../graphics/Journal.h TData.h RecId.h
+TDataAscii.o: RecOrder.h ../graphics/Util.h /usr/include/stdlib.h
+TDataAscii.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
+TDataAsciiInterp.o: ../graphics/ClassDir.h TDataAscii.h /usr/include/stdio.h
+TDataAsciiInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataAsciiInterp.o: ../graphics/Exit.h ../graphics/VisualArg.h
+TDataAsciiInterp.o: ../graphics/Color.h ../graphics/Journal.h TData.h RecId.h
+TDataAsciiInterp.o: RecOrder.h ../graphics/AttrList.h /usr/include/sys/time.h
+TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+TDataAsciiInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+TDataAsciiInterp.o: /usr/include/time.h ../graphics/Config.h RecInterp.h
+TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
+TDataAsciiInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataAsciiInterp.o: /usr/include/assert.h /usr/include/stdlib.h
+TDataAsciiInterp.o: /usr/include/ctype.h
+TDataMap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TDataMap.o: ../graphics/Config.h ../graphics/Init.h ../graphics/DeviseTypes.h
+TDataMap.o: ../graphics/BufPolicy.h TDataMap.h ../graphics/Exit.h
+TDataMap.o: ../graphics/DList.h ../graphics/Color.h ../graphics/Pattern.h
+TDataMap.o: ShapeID.h ../graphics/VisualArg.h Bitmap.h RecId.h GDataRec.h
+TDataMap.o: GData.h TData.h RecOrder.h GDataBin.h QueryProc.h
+TDataMapDispatch.o: TDataMapDispatch.h TDataMap.h /usr/include/stdio.h
+TDataMapDispatch.o: /usr/include/sys/feature_tests.h
+TDataMapDispatch.o: ../graphics/DeviseTypes.h ../graphics/Exit.h
+TDataMapDispatch.o: ../graphics/DList.h ../graphics/Color.h
+TDataMapDispatch.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
+TDataMapDispatch.o: Bitmap.h RecId.h GDataRec.h ../graphics/Dispatcher.h
+TDataMapDispatch.o: ../graphics/Journal.h TData.h RecOrder.h GData.h
+TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+TDataMmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+TDataMmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
+TDataMmap.o: /usr/include/time.h /usr/include/sys/stat.h /usr/include/fcntl.h
+TDataMmap.o: /usr/include/sys/fcntl.h /usr/include/limits.h TDataMmap.h
+TDataMmap.o: TDataAppend.h TData.h ../graphics/DeviseTypes.h RecId.h
+TDataMmap.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+TDataMmap.o: ../graphics/DList.h ../graphics/Exit.h DiskFile.h
+TDataRangeList.o: TDataRangeList.h RangeList.h ../graphics/DeviseTypes.h
+TDataRangeList.o: RecId.h RangeInfo.h /usr/include/stdio.h
+TDataRangeList.o: /usr/include/sys/feature_tests.h
+TDataRangeSource.o: TDataRangeSource.h RangeCallback.h
+TDataRangeSource.o: ../graphics/DeviseTypes.h ../graphics/DList.h
+TDataRangeSource.o: ../graphics/Exit.h BufMgr.h ../graphics/BufPolicy.h
+TDataRangeSource.o: BufHint.h RecId.h BufferPolicy.h RecOrder.h TData.h
+TDataRangeSource.o: ../graphics/VisualArg.h ../graphics/Color.h
+TDataRec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TDataRec.o: ../graphics/Config.h ../graphics/Exit.h TDataRec.h TData.h
+TDataRec.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h
+TDataRec.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+TDataRec.o: RecFile.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataViewX.o: ../graphics/Init.h ../graphics/DeviseTypes.h
+TDataViewX.o: ../graphics/BufPolicy.h TDataViewX.h QueryProc.h
+TDataViewX.o: ../graphics/VisualArg.h ../graphics/Color.h RecId.h ViewGraph.h
+TDataViewX.o: ../graphics/View.h ../graphics/Dispatcher.h
+TDataViewX.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TDataViewX.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+TDataViewX.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+TDataViewX.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+TDataViewX.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+TDataViewX.o: ../graphics/Compress.h ../graphics/Control.h
+TDataViewX.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+TDataViewX.o: /usr/include/sys/time.h /usr/include/sys/types.h
+TDataViewX.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+TDataViewX.o: /usr/include/sys/select.h /usr/include/time.h
+TDataViewX.o: ../graphics/Config.h ../graphics/Cursor.h GDataBin.h
+TDataViewX.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h TDataMap.h
+TDataViewX.o: Bitmap.h GDataRec.h
+Temp.o: Temp.h ../graphics/DeviseTypes.h ../graphics/WindowRep.h
+Temp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+Temp.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+Temp.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Color.h
+Temp.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+Temp.o: ../graphics/VisualArg.h ../graphics/Compress.h
+TkControl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+TkControl.o: TkControl.h ../../solaris/tcl/include/tcl.h
+TkControl.o: ../../solaris/tcl/include/tk.h /usr/X11R6/include/X11/Xlib.h
+TkControl.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+TkControl.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+TkControl.o: /usr/include/sys/time.h /usr/include/time.h
+TkControl.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+TkControl.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
+TkControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+TkControl.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+TkControl.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Control.h
+TkControl.o: ../graphics/ViewCallback.h ../graphics/ClassDir.h ViewGraph.h
+TkControl.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+TkControl.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+TkControl.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+TkControl.o: ../graphics/Compress.h ../graphics/AttrList.h
+TkControl.o: ../graphics/Config.h ../graphics/Cursor.h TData.h RecId.h
+TkControl.o: RecOrder.h TDataMap.h ShapeID.h Bitmap.h GDataRec.h
+TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+TkControl.o: /usr/include/assert.h /usr/include/stdlib.h /usr/include/ctype.h
+TkControl.o: ../graphics/VisualLink.h ../graphics/FilterQueue.h ParseCat.h
+TkControl.o: ../graphics/Action.h MapInterpClassInfo.h ../graphics/Parse.h
+TkControl.o: QueryProc.h
+UnixDiskFile.o: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
+UnixDiskFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+UnixDiskFile.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+UnixDiskFile.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+UnixDiskFile.o: /usr/include/sys/time.h /usr/include/time.h
+UnixDiskFile.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+UnixDiskFile.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+UnixDiskFile.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+UnixDiskFile.o: ../graphics/Exit.h PageSize.h
+UnixRecFile.o: UnixRecFile.h RecFile.h ../graphics/DeviseTypes.h
+UnixRecFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+UnixRecFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+UnixRecFile.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+UnixRecFile.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+UnixRecFile.o: /usr/include/sys/time.h /usr/include/time.h
+UnixRecFile.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+UnixRecFile.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+UnixRecFile.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+UnixRecFile.o: ../graphics/Exit.h
+ViewClassInfo.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+ViewClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ViewClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ViewClassInfo.o: /usr/include/time.h /usr/include/stdio.h
+ViewClassInfo.o: ../graphics/VisualArg.h ../graphics/DeviseTypes.h
+ViewClassInfo.o: ../graphics/Color.h TDataViewX.h QueryProc.h RecId.h
+ViewClassInfo.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+ViewClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ViewClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ViewClassInfo.o: ../graphics/Geom.h /usr/include/math.h
+ViewClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
+ViewClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ViewClassInfo.o: ../graphics/Control.h ../graphics/ViewCallback.h
+ViewClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
+ViewClassInfo.o: ../graphics/Cursor.h GDataBin.h TDataCMap.h ConnectorShape.h
+ViewClassInfo.o: Connector.h ShapeID.h ViewScatter.h ViewClassInfo.h
+ViewClassInfo.o: ../graphics/ClassDir.h ../graphics/Selection.h
+ViewClassInfo.o: ../graphics/Util.h /usr/include/assert.h
+ViewClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h ActionDefault.h
+ViewClassInfo.o: ../graphics/Action.h ../graphics/VisualLink.h
+ViewClassInfo.o: ../graphics/ColorMgr.h ../graphics/Parse.h
+ViewGraph.o: ViewGraph.h ../graphics/View.h ../graphics/DeviseTypes.h
+ViewGraph.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+ViewGraph.o: /usr/include/sys/feature_tests.h ../graphics/DList.h
+ViewGraph.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+ViewGraph.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ViewGraph.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ViewGraph.o: ../graphics/Transform.h ../graphics/Pattern.h
+ViewGraph.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ViewGraph.o: ../graphics/Control.h ../graphics/ViewCallback.h
+ViewGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ViewGraph.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ViewGraph.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ViewGraph.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
+ViewGraph.o: TDataMap.h ShapeID.h Bitmap.h RecId.h GDataRec.h ActionDefault.h
+ViewGraph.o: ../graphics/Action.h ../graphics/Util.h /usr/include/assert.h
+ViewGraph.o: /usr/include/stdlib.h /usr/include/ctype.h
+ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
+ViewRanges.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+ViewRanges.o: /usr/include/sys/feature_tests.h ../graphics/DList.h
+ViewRanges.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+ViewRanges.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ViewRanges.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ViewRanges.o: ../graphics/Transform.h ../graphics/Pattern.h
+ViewRanges.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ViewRanges.o: ../graphics/Control.h ../graphics/ViewCallback.h
+ViewRanges.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ViewRanges.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ViewRanges.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ViewRanges.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
+ViewRanges.o: RangeCallback.h
+ViewScatter.o: ViewScatter.h QueryProc.h ../graphics/DeviseTypes.h
+ViewScatter.o: ../graphics/VisualArg.h ../graphics/Color.h RecId.h
+ViewScatter.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+ViewScatter.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ViewScatter.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ViewScatter.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ViewScatter.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+ViewScatter.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ViewScatter.o: ../graphics/Compress.h ../graphics/Control.h
+ViewScatter.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+ViewScatter.o: /usr/include/sys/time.h /usr/include/sys/types.h
+ViewScatter.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ViewScatter.o: /usr/include/sys/select.h /usr/include/time.h
+ViewScatter.o: ../graphics/Config.h ../graphics/Cursor.h GDataBin.h
+ViewScatter.o: TDataMap.h ShapeID.h Bitmap.h GDataRec.h
+VoidArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+VoidArray.o: VoidArray.h ../graphics/DeviseTypes.h ../graphics/Exit.h
+VoidHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+VoidHash.o: ../graphics/Exit.h VoidHash.h ../graphics/DeviseTypes.h
+genAms.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+genAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+genAms.o: /usr/include/sys/select.h /usr/include/sys/time.h
+genAms.o: /usr/include/time.h /usr/include/sys/stat.h /usr/include/fcntl.h
+genAms.o: /usr/include/sys/fcntl.h ams.h /usr/include/math.h
+genStrData.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+genStrData.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+genStrData.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+genStrData.o: /usr/include/sys/time.h /usr/include/time.h
+genStrData.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+genStrData.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+genStrData.o: /usr/include/unistd.h /usr/include/sys/unistd.h StrData.h
+makeBackTest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+makeGData.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+makeGData.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+makeGData.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+makeGData.o: /usr/include/sys/time.h /usr/include/time.h
+makeGData.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+makeGData.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+makeGData.o: /usr/include/sys/uio.h /usr/include/unistd.h
+makeGData.o: /usr/include/sys/unistd.h BufMgr.h ../graphics/DeviseTypes.h
+makeGData.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+makeGData.o: RecOrder.h ../graphics/DList.h ../graphics/Exit.h TDataAppend.h
+makeGData.o: TData.h ../graphics/VisualArg.h ../graphics/Color.h DiskFile.h
+makeGData.o: GData.h ams.h /usr/include/math.h
+makeTest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+rstat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+rstat.o: /usr/include/math.h ../graphics/Parse.h
+test.o: ../graphics/Parse.h
+test1.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+test2d.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+test2d.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+test2d.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+test2d.o: /usr/include/time.h ../graphics/DeviseTypes.h
+test2d.o: ../graphics/XDisplay.h ../graphics/Display.h ../graphics/Geom.h
+test2d.o: /usr/include/math.h ../graphics/Dispatcher.h /usr/include/stdio.h
+test2d.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+test2d.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/ColorMgr.h
+test2d.o: ../graphics/Xdef.h /usr/X11R6/include/X11/Xlib.h
+test2d.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+test2d.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
+test2d.o: /usr/X11R6/include/X11/Xutil.h ../graphics/XBitmap.h
+test2d.o: ../graphics/Pattern.h RectShape.h ../graphics/Transform.h
+test2d.o: ../graphics/WindowRep.h ../graphics/DevisePixmap.h
+test2d.o: ../graphics/Compress.h Shape.h ../graphics/Control.h
+test2d.o: TDataMapDispatch.h TDataMap.h ShapeID.h Bitmap.h RecId.h GDataRec.h
+test2d.o: Connector.h ConnectorShape.h ../graphics/Action.h
+test2d.o: ../graphics/Selection.h ../graphics/View.h ../graphics/ViewWin.h
+test2d.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+test2d.o: ../graphics/Config.h ../graphics/Cursor.h ../graphics/Init.h
+test2d.o: ../graphics/BufPolicy.h DispQueryProc.h QueryProcSimple.h
+test2d.o: QueryProc.h BufHint.h QueryProcFull.h QPRange.h TDataRec.h TData.h
+test2d.o: RecOrder.h Command.h ../graphics/Timer.h TData2DRec.h Temp.h
+test2d.o: map2dfile.h
+testAms1.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+testAms1.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testAms1.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testAms1.o: /usr/include/time.h ../graphics/DeviseTypes.h
+testAms1.o: ../graphics/Dispatcher.h /usr/include/stdio.h ../graphics/DList.h
+testAms1.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+testAms1.o: ../graphics/Journal.h RectShape.h ../graphics/Transform.h
+testAms1.o: /usr/include/math.h ../graphics/Geom.h ../graphics/WindowRep.h
+testAms1.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+testAms1.o: ../graphics/Compress.h Shape.h ../graphics/ColorMgr.h
+testAms1.o: ../graphics/Control.h TDataCMap.h ConnectorShape.h Connector.h
+testAms1.o: ShapeID.h GDataBin.h RecId.h ActionDefault.h ../graphics/Action.h
+testAms1.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
+testAms1.o: /usr/include/ctype.h ../graphics/Selection.h ../graphics/View.h
+testAms1.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
+testAms1.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+testAms1.o: ../graphics/Init.h ../graphics/BufPolicy.h TDataMapDispatch.h
+testAms1.o: TDataMap.h Bitmap.h GDataRec.h DispQueryProc.h QueryProcSimple.h
+testAms1.o: QueryProc.h BufHint.h QueryProcFull.h QPRange.h BufMgr.h
+testAms1.o: BufferPolicy.h RecOrder.h TDataRec.h TData.h TDataViewX.h
+testAms1.o: ViewGraph.h Command.h ../graphics/Timer.h ams.h Temp.h
+testAms1.o: ../graphics/ViewWinVer.h ../graphics/ViewWinHor.h Snapshot.h
+testAms1.o: mapfile.h
+testBufMgrFull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testBufMgrFull.o: ../graphics/DeviseTypes.h ../graphics/Exit.h
+testBufMgrFull.o: ../graphics/Parse.h TData.h RecId.h RecOrder.h
+testBufMgrFull.o: ../graphics/VisualArg.h ../graphics/Color.h
+testBufMgrFull.o: ../graphics/DList.h RangeInfo.h RangeInfoArray.h
+testBufMgrFull.o: BufferPolicy.h BufMgrFull.h BufMgr.h
+testBufMgrFull.o: ../graphics/BufPolicy.h BufHint.h
+testBufMgrNull.o: TDataRec.h TData.h ../graphics/DeviseTypes.h RecId.h
+testBufMgrNull.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+testBufMgrNull.o: ../graphics/DList.h ../graphics/Exit.h BufMgrNull.h
+testBufMgrNull.o: BufMgr.h ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testBufMgrNull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testBufMgrNull.o: TestData.h
+testBufPage.o: BufPage.h /usr/include/stdio.h
+testBufPage.o: /usr/include/sys/feature_tests.h ../graphics/DeviseTypes.h
+testBufPage.o: PageSize.h
+testDictGroup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testDictGroup.o: DictGroup.h ../graphics/DeviseTypes.h ../graphics/DList.h
+testDictGroup.o: ../graphics/Exit.h
+testGData.o: TDataAppend.h TData.h ../graphics/DeviseTypes.h RecId.h
+testGData.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+testGData.o: ../graphics/DList.h ../graphics/Exit.h DiskFile.h GData.h
+testGData.o: TDataMap.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testGData.o: ../graphics/Pattern.h ShapeID.h Bitmap.h GDataRec.h PageRange.h
+testGData.o: BufMgr.h ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testGDataRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testGDataRange.o: /usr/include/stdlib.h GDataRangeMap.h
+testGDataRange.o: ../graphics/DeviseTypes.h RecId.h GDataRec.h
+testGDataRange.o: ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
+testGDataRange.o: ../graphics/Parse.h
+testGDataVar.o: TDataAppend.h TData.h ../graphics/DeviseTypes.h RecId.h
+testGDataVar.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+testGDataVar.o: ../graphics/DList.h ../graphics/Exit.h DiskFile.h GDataVar.h
+testGDataVar.o: TDataMap.h /usr/include/stdio.h
+testGDataVar.o: /usr/include/sys/feature_tests.h ../graphics/Pattern.h
+testGDataVar.o: ShapeID.h Bitmap.h GDataRec.h PageRange.h BufMgr.h
+testGDataVar.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testMmap.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+testMmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+testMmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
+testMmap.o: /usr/include/time.h /usr/include/sys/mman.h
+testMmap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+testMmap.o: /usr/include/sys/fcntl.h /usr/include/limits.h
+testPageRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testPageRange.o: PageRange.h ../graphics/DeviseTypes.h
+testPageRangeFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testPageRangeFile.o: PageRange.h ../graphics/DeviseTypes.h
+testQPRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testQPRange.o: ../graphics/Parse.h QPRange.h ../graphics/DeviseTypes.h
+testQPRange.o: RecId.h
+testQueryProc.o: BufMgr.h ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
+testQueryProc.o: BufHint.h RecId.h BufferPolicy.h RecOrder.h
+testQueryProc.o: ../graphics/DList.h ../graphics/Exit.h TDataAppend.h TData.h
+testQueryProc.o: ../graphics/VisualArg.h ../graphics/Color.h DiskFile.h
+testQueryProc.o: TDataMap.h /usr/include/stdio.h
+testQueryProc.o: /usr/include/sys/feature_tests.h ../graphics/Pattern.h
+testQueryProc.o: ShapeID.h Bitmap.h GDataRec.h QueryProc.h
+testRangeList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testRangeList.o: /usr/include/stdlib.h RangeList.h ../graphics/DeviseTypes.h
+testRangeList.o: RecId.h RangeInfo.h ../graphics/Parse.h
+testRecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/stdio.h
+testRecFile.o: /usr/include/sys/feature_tests.h TestData.h
+testRecRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testRecRange.o: /usr/include/stdlib.h RecRange.h ../graphics/DeviseTypes.h
+testRecRange.o: RecId.h ../graphics/Parse.h
+testStr.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+testStr.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testStr.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testStr.o: /usr/include/time.h ../graphics/DeviseTypes.h
+testStr.o: ../graphics/Dispatcher.h /usr/include/stdio.h ../graphics/DList.h
+testStr.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+testStr.o: ../graphics/Journal.h RectShape.h ../graphics/Transform.h
+testStr.o: /usr/include/math.h ../graphics/Geom.h ../graphics/WindowRep.h
+testStr.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+testStr.o: ../graphics/Compress.h Shape.h ../graphics/ColorMgr.h
+testStr.o: ../graphics/Control.h TDataCMap.h ConnectorShape.h Connector.h
+testStr.o: ShapeID.h GDataBin.h RecId.h ActionDefault.h ../graphics/Action.h
+testStr.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
+testStr.o: /usr/include/ctype.h ../graphics/Selection.h ../graphics/View.h
+testStr.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
+testStr.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+testStr.o: ../graphics/Init.h ../graphics/BufPolicy.h TDataMapDispatch.h
+testStr.o: TDataMap.h Bitmap.h GDataRec.h DispQueryProc.h QueryProcSimple.h
+testStr.o: QueryProc.h BufHint.h QueryProcFull.h QPRange.h BufMgr.h
+testStr.o: BufferPolicy.h RecOrder.h TDataRec.h TData.h ViewScatter.h
+testStr.o: ViewGraph.h Command.h ../graphics/Timer.h StrData.h Temp.h
+testStr.o: ../graphics/ViewWinVer.h StringHash.h Snapshot.h StrMapFile.h
+testStringHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testStringHash.o: StringHash.h
+testTDataRec.o: TDataRec.h TData.h ../graphics/DeviseTypes.h RecId.h
+testTDataRec.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+testTDataRec.o: ../graphics/DList.h ../graphics/Exit.h /usr/include/stdio.h
+testTDataRec.o: /usr/include/sys/feature_tests.h TestData.h
+testTcl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testTcl.o: /usr/include/stdlib.h ../../solaris/tcl/include/tcl.h
+testTdata.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h BufMgr.h
+testTdata.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
+testTdata.o: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
+testTdata.o: ../graphics/Exit.h TDataAppend.h TData.h ../graphics/VisualArg.h
+testTdata.o: ../graphics/Color.h DiskFile.h
+testViewRanges.o: ../graphics/ViewWinVer.h ../graphics/ViewWin.h
+testViewRanges.o: ../graphics/DList.h ../graphics/Exit.h
+testViewRanges.o: ../graphics/DeviseTypes.h ../graphics/WindowRep.h
+testViewRanges.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testViewRanges.o: ../graphics/Geom.h /usr/include/math.h
+testViewRanges.o: ../graphics/Transform.h ../graphics/Color.h
+testViewRanges.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+testViewRanges.o: ../graphics/VisualArg.h ../graphics/Compress.h ViewRanges.h
+testViewRanges.o: ../graphics/View.h ../graphics/Dispatcher.h
+testViewRanges.o: ../graphics/Journal.h ../graphics/Control.h
+testViewRanges.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+testViewRanges.o: /usr/include/sys/time.h /usr/include/sys/types.h
+testViewRanges.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+testViewRanges.o: /usr/include/sys/select.h /usr/include/time.h
+testViewRanges.o: ../graphics/Config.h ../graphics/Cursor.h RangeCallback.h
+testVoidArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testVoidArray.o: /usr/include/stdlib.h VoidArray.h ../graphics/DeviseTypes.h
+testVoidArray.o: ../graphics/Parse.h
+testXY.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+testXY.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testXY.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testXY.o: /usr/include/time.h ../graphics/DeviseTypes.h
+testXY.o: ../graphics/Dispatcher.h /usr/include/stdio.h ../graphics/DList.h
+testXY.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+testXY.o: ../graphics/Journal.h RectShape.h ../graphics/Transform.h
+testXY.o: /usr/include/math.h ../graphics/Geom.h ../graphics/WindowRep.h
+testXY.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+testXY.o: ../graphics/Compress.h Shape.h ../graphics/ColorMgr.h
+testXY.o: ../graphics/Control.h TDataCMap.h ConnectorShape.h Connector.h
+testXY.o: ShapeID.h GDataBin.h RecId.h ActionDefault.h ../graphics/Action.h
+testXY.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
+testXY.o: /usr/include/ctype.h ../graphics/Selection.h ../graphics/View.h
+testXY.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
+testXY.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+testXY.o: ../graphics/Init.h ../graphics/BufPolicy.h TDataMapDispatch.h
+testXY.o: TDataMap.h Bitmap.h GDataRec.h DispQueryProc.h QueryProcSimple.h
+testXY.o: QueryProc.h BufHint.h QueryProcFull.h QPRange.h BufMgr.h
+testXY.o: BufferPolicy.h RecOrder.h TDataRec.h TData.h TDataViewX.h
+testXY.o: ViewGraph.h Command.h ../graphics/Timer.h Temp.h
+testXY.o: ../graphics/ViewWinVer.h ../graphics/ViewWinHor.h Snapshot.h
+testXY.o: XYmapfile.h
+testbit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h Bitmap.h
+testbit.o: ../graphics/DeviseTypes.h
+testbuf.o: ../graphics/BufPolicy.h BufMgr.h ../graphics/DeviseTypes.h
+testbuf.o: BufHint.h RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
+testbuf.o: ../graphics/Exit.h UnixDiskFile.h DiskFile.h /usr/include/errno.h
+testbuf.o: /usr/include/sys/errno.h /usr/include/stdio.h
+testbuf.o: /usr/include/sys/feature_tests.h
+testhole.o: UnixDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
+testhole.o: /usr/include/errno.h /usr/include/sys/errno.h
+testhole.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testpage.o: DiskFile.h ../graphics/DeviseTypes.h /usr/include/stdio.h
+testpage.o: /usr/include/sys/feature_tests.h
+testpfile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h PageFile.h
+testpfile.o: BufHint.h BufMgr.h ../graphics/DeviseTypes.h
+testpfile.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RecOrder.h
+testpfile.o: ../graphics/DList.h ../graphics/Exit.h
+testpfileGap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+testpfileGap.o: ../graphics/DeviseTypes.h PageFile.h BufHint.h BufMgr.h
+testpfileGap.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RecOrder.h
+testpfileGap.o: ../graphics/DList.h ../graphics/Exit.h PageRange.h
+testraw.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+testraw.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testraw.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testraw.o: /usr/include/time.h ../graphics/DeviseTypes.h
+testraw.o: ../graphics/XDisplay.h ../graphics/Display.h ../graphics/Geom.h
+testraw.o: /usr/include/math.h ../graphics/Dispatcher.h /usr/include/stdio.h
+testraw.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+testraw.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/ColorMgr.h
+testraw.o: ../graphics/Xdef.h /usr/X11R6/include/X11/Xlib.h
+testraw.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+testraw.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
+testraw.o: /usr/X11R6/include/X11/Xutil.h ../graphics/XBitmap.h
+testraw.o: ../graphics/Pattern.h RectShape.h ../graphics/Transform.h
+testraw.o: ../graphics/WindowRep.h ../graphics/DevisePixmap.h
+testraw.o: ../graphics/Compress.h Shape.h ../graphics/Control.h
+testraw.o: TDataMapDispatch.h TDataMap.h ShapeID.h Bitmap.h RecId.h
+testraw.o: GDataRec.h Connector.h ConnectorShape.h ../graphics/Action.h
+testraw.o: ../graphics/Selection.h ../graphics/View.h ../graphics/ViewWin.h
+testraw.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+testraw.o: ../graphics/Config.h ../graphics/Cursor.h ../graphics/Init.h
+testraw.o: ../graphics/BufPolicy.h DispQueryProc.h QueryProcSimple.h
+testraw.o: QueryProc.h BufHint.h QueryProcFull.h QPRange.h TDataRec.h TData.h
+testraw.o: RecOrder.h Command.h ../graphics/Timer.h TData2DRec.h Temp.h
+testraw.o: maprawfile.h

@@ -1,0 +1,4 @@
+depend:
+	makedepend -fMakefile.sun \
+		-I../issm -I../tape -I/usr/sup/tcl/include \
+		*.C

@@ -1,0 +1,41 @@
+depend:
+	makedepend -fMakefile.sun \
+		-I../issm -I../tape -I/usr/sup/tcl/include \
+		*.C
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+binconv.o: /usr/include/math.h /usr/include/floatingpoint.h
+binconv.o: /usr/include/sys/ieeefp.h /usr/include/assert.h binconv.h
+binconv.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+extract.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
+extract.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+extract.o: /usr/sup/tcl/include/tcl.h /usr/sup/tcl/include/tk.h
+extract.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+extract.o: /usr/include/sys/sysmacros.h /usr/include/X11/X.h
+extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
+extract.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
+extract.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+extract.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+extract.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+extract.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+extract.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+extract.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+extract.o: /usr/include/sys/sem.h binconv.h issmdata.h
+rectape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h rectape.h
+rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
+rectape.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/types.h
+rectape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+rectape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+rectape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+rectape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+rectape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+rectape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+rectape.o: /usr/include/sys/sem.h binconv.h /usr/include/string.h

@@ -1,0 +1,36 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../issm -I../tape -I/usr/X11R6/include \
+		-I../../solaris/tcl/include *.C
+# DO NOT DELETE
+
+binconv.o: /usr/include/math.h /usr/include/assert.h binconv.h
+binconv.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
+extract.o: ../../solaris/tcl/include/tcl.h ../../solaris/tcl/include/tk.h
+extract.o: /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h
+extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
+extract.o: /usr/include/sys/time.h /usr/X11R6/include/X11/X.h
+extract.o: /usr/X11R6/include/X11/Xfuncproto.h
+extract.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
+extract.o: ../tape/tapedrive.h ../tape/machdep.h /usr/include/limits.h
+extract.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+extract.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+extract.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+extract.o: /usr/include/sys/sem.h binconv.h issmdata.h
+rectape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h rectape.h
+rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
+rectape.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/types.h
+rectape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+rectape.o: /usr/include/sys/select.h /usr/include/sys/time.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/param.h
+rectape.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+rectape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+rectape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h
+rectape.o: /usr/include/string.h

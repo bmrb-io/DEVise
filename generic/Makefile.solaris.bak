@@ -1,0 +1,4 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../graphics -I../graphics.new -I../tape \
+		*.c

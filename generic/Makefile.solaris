@@ -1,0 +1,65 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../graphics -I../graphics.new -I../tape \
+		*.c
+# DO NOT DELETE
+
+generic.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+generic.o: /usr/include/sys/select.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/time.h /usr/include/stdio.h
+generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+generic.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
+generic.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ColorMgr.h
+generic.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/Pattern.h
+generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+generic.o: ../graphics/Config.h ../graphics/Cursor.h
+generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+generic.o: ../graphics.new/ViewGraph.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics/ParseCat.h
+issm.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+issm.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+issm.o: /usr/include/sys/select.h /usr/include/sys/time.h
+issm.o: /usr/include/sys/time.h /usr/include/stdio.h
+issm.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+issm.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+issm.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
+issm.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ColorMgr.h
+issm.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
+issm.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
+issm.o: ../graphics.new/MapInterpClassInfo.h
+issm.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+issm.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+issm.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+issm.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+issm.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+issm.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+issm.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+issm.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+issm.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+issm.o: ../tape/SortedTable.h /usr/include/assert.h ../graphics.new/GData.h
+issm.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+issm.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+issm.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
+issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
+issm.o: ../tape/TDataTape.h ../tape/tapedrive.h ../tape/machdep.h
+issm.o: /usr/include/limits.h /usr/include/sys/param.h
+issm.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+issm.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+issm.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+issm.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h ../graphics/ParseCat.h

@@ -1,0 +1,4 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../issm -I../tape -I/usr/X11R6/include \
+		-I../../solaris/tcl/include *.C
