@@ -1,0 +1,85 @@
+			Things to test in GUI
+				$Revision$
+
+- Session menu:
+    - Open a session
+    - Save a session
+	- Open the saved session
+    - Open a session as a template
+    - Save a session as a template
+	- Open the saved session
+    - Save a session as a batch script
+	- Run the batch script
+    - Export a template (with and without data)
+	- Open the exported templates
+    - Merge a template
+    - Print GIF and PostScript
+
+- Tables menu:
+    - Create a new data source
+    - Import a data source
+    - Browse schemas
+    - Define/edit a physical schema
+    - View logical schemas
+    - View query schemas
+    - View list of active tables
+    - Show derived data as text (quick test)
+    - Show derived data as view (quick test)
+
+- Graph data menu:
+    - Copy/edit
+    - Switch TData
+
+- View menu:
+    - Toggle X and Y axes
+    - Make a regular link and a record link
+    - Make a cursor
+    - Destroy a view
+    - View statistics
+    - View color statistics
+    - Make Kiviat graph
+    - Change foreground and background colors
+    - Change fonts
+    - Change between 2D and 3D
+    - Change title
+    - Color override
+    - 3D query
+
+- Window menu:
+    - Change window layout
+    - Remove window
+    - Duplicate window
+    - Stack control:
+	- Merge views
+	- Pile views
+	    - Flip
+	    - Unpile
+	- Stack views
+	    - Flip
+	    - Unstack
+    - Swap views
+    - Move view
+    - Remove view
+    - Bring view back
+    - View list
+
+- Help menu:
+    - Help demo
+    - Help help
+    - Help history
+
+- Main window buttons:
+    - Query window
+    - Mapping window
+    - Display/layout modes
+    - About window (click on 'DEVise')
+
+- Data windows:
+    - Key functions (this list is incomplete):
+	- 1-9
+	- +/-
+	- escape
+    - X only zoom (left mouse button)
+    - Drill down (middle mouse button)
+    - XY zoom (right mouse button)
+    - Change cursor location
