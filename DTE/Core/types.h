@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/03/13 04:02:20  donjerko
+  *** empty log message ***
+
   Revision 1.45  1998/03/12 18:23:37  donjerko
   *** empty log message ***
 
@@ -205,24 +208,24 @@ const string SCHEMA_TP = "schema";
 const string RID_STRING = "recId";
 const string SCHEMA_STR("schema");
 
+const int DTE_SERVER_ID = 1;
+
 class DteEnvVars {
 public:
-	string materViewDirN;
+	string materViewDir;
 	string minmaxDirN;
 	string rootCatalogN;
 	string indexTableN;
 	string minmaxCatalogN;
-	string definitionFileN;
-	string idFileN;
+	string definitionFile;
+	string idFile;
 	string convert_bulk;
+	string tempFileDir;
 
-	string materViewDir;
 	string minmaxDir;
 	string rootCatalog;
 	string indexTable;
 	string minmaxCatalog;
-	string definitionFile;
-	string idFile;
 public:
 	DteEnvVars();
 	string valueOf(const string& envVar) const;
@@ -299,7 +302,7 @@ inline ostream& operator<<(ostream& out, Offset off){
 
 typedef void Type;
 typedef string TypeID;
-typedef Type* Tuple;
+typedef const Type* Tuple;
 typedef const Type* ConstTuple;
 typedef void (*OperatorPtr)(const Type*, const Type*, Type*&, size_t& = dummySz);
 typedef void (*PromotePtr)(const Type*, Type*&, size_t& = dummySz);
@@ -574,6 +577,9 @@ public:
 	}
 	static const int getInt(const Type* object){
 		return (int) object;
+	}
+	static const Type* getTypePtr(const int* i){
+		return (const Type*) *i;
 	}
 };
 
@@ -1089,9 +1095,12 @@ Type* createNegInf(TypeID typeID);
 
 Type* createPosInf(TypeID typeID);
 
-void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers); // throws
+void destroyTuple(Type** tuple, int numFlds, DestroyPtr* destroyers); // throws
 
-void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types); // throws
+void copyTuple(
+	const Tuple* orig, Type** dest, int numFlds, ADTCopyPtr* copyPtrs); 
+
+void destroyTuple(Type** tuple, int numFlds, const TypeID* types); // throws
 
 int tupleCompare(int *compare_flds, int num_compare_flds, 
        GeneralPtr **comparePtrs, const Tuple *left, const Tuple *right); 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/03/12 18:23:22  donjerko
+  *** empty log message ***
+
   Revision 1.26  1998/02/09 21:12:15  donjerko
   Added Bin by clause and implementation.
 
@@ -137,7 +140,7 @@ private:
 public:	
 	QueryTree(
 		vector<BaseSelection*>* selectList,
-		vector<TableAlias*>* tableList,
+		vector<TableAlias*>* tableVec,
 		BaseSelection* predicates,
 		vector<BaseSelection *>*groupBy,
 		vector<BaseSelection *>* binBy,
@@ -146,7 +149,7 @@ public:
 		BaseSelection* withPredicate,
 		vector<BaseSelection*>* orderBy,
 		string* sortOrdering, bool isSelectStar) :
-		selectVec(*selectList), tableVec(*tableList), 
+		selectVec(*selectList), tableVec(*tableVec), 
 		predicates(predicates), groupByVec(*groupBy), 
 		binByVec(*binBy),
 		havingPredicate(havingPredicate),

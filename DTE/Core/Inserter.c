@@ -2,6 +2,7 @@
 #include "Inserter.h"
 #include "StandardRead.h"
 #include "MemoryMgr.h"
+#include "Sort.h"
 
 void Inserter::open(const ISchema& schema, string urlString, int mode)
 { // throws
@@ -71,4 +72,46 @@ void Modifier::replace
 		Tuple* tuple = tupleList.get();
 		newFile.insert(tuple);
 	}
+}
+
+UniqueInserter::UniqueInserter(const ISchema& schema, const string& urlstring, 
+          int mode = ios::app)
+	: finalFile(urlstring), schema(schema), mode(mode)
+{
+	tmpFile = tmpnam(NULL);
+	open(schema, tmpFile, ios::out);	
+}
+
+void UniqueInserter::close()
+{
+	Inserter::close();
+
+	// do duplicate elimination here
+
+	cerr << tmpFile << endl;
+
+	int numFlds = schema.getNumFlds();
+	const TypeID* types = schema.getTypeIDs();
+	ifstream* istr = new ifstream(tmpFile.c_str());
+	assert(*istr);
+
+	int numSortFlds = numFlds;
+	int* sortFlds = new int[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		sortFlds[i] = i;
+	}
+
+	StandReadExec* inp = new StandReadExec(numFlds, types, istr);
+	open(schema, finalFile, mode);
+	TRY(UniqueSortExec* inp2 = new UniqueSortExec(
+		inp, types, Ascending, sortFlds,
+		numSortFlds, numFlds), NVOID);
+	const Tuple* tup;
+	for(tup = inp2->getFirst(); tup; tup = inp2->getNext()){
+		insert(tup);
+	}
+
+	// do not delete istr
+
+	remove(tmpFile.c_str());
 }

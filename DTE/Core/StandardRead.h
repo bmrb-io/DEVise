@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/11/12 23:17:35  donjerko
+  Improved error checking.
+
   Revision 1.22  1997/11/05 00:19:42  donjerko
   Separated typechecking from optimization.
 
@@ -96,7 +99,7 @@ class StandReadExec : public Iterator {
 	istream* in;
 	ReadPtr* readPtrs;
 	DestroyPtr* destroyPtrs;
-	Tuple* tuple;
+	Type** tuple;
 	size_t* currentSz;
 	int numFlds;
 	int currentLine;

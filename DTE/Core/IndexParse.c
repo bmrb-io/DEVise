@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/03/13 04:02:16  donjerko
+  *** empty log message ***
+
   Revision 1.23  1997/12/04 04:05:10  donjerko
   *** empty log message ***
 
@@ -249,7 +252,7 @@ Iterator* IndexParse::createExec(){
           }
 
 		char flatTup[fixedSize];
-		Type* indexTup[numFlds];
+		const Type* indexTup[numFlds];
 		for(int i = 0; i < numFlds; i++){
 			indexTup[i] = tup[indirect[i]];
 		}

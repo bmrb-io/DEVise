@@ -1,6 +1,8 @@
 #ifndef DTE_INTERFACE_H
 #define DTE_INTERFACE_H
 
+#include <new.h>
+
 #include <string>
 //#include <iostream.h>   erased for sysdep.h
 #include "sysdep.h"
@@ -9,6 +11,8 @@
 //	#include "SQL.H"
 //	#include <sqlext.h>
 //#endif
+
+#include "types.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -76,14 +80,7 @@ public:
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
-	virtual void write(ostream& out) const {
-		out << typeName;
-		out << " " << key << " " << schemaType << " " << schemaFile; 
-		out << " " << addQuotes(cacheFile) << " " << evaluation;
-		out << " " << priority << " " << addQuotes(command);
-		out << " " << addQuotes(segment);
-		Interface::write(out);
-	}
+	virtual void write(ostream& out) const;
 	virtual const ISchema* getISchema(TableName* table);
 	virtual Interface* copyTo(void* space){
 		return new (space) DummyInterface(*this);
@@ -237,13 +234,7 @@ public:
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
-	virtual void write(ostream& out) const{
-		out << typeName;
-		out << " " << schemaNm;
-		out << " " << dataNm;
-		out << " " << addQuotes(viewNm);
-		Interface::write(out);
-	}
+	virtual void write(ostream& out) const;
 	virtual const ISchema* getISchema(TableName* table);
 	virtual Interface* copyTo(void* space){
 		return new (space) DeviseInterface(*this);

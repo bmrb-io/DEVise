@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/03/12 18:23:29  donjerko
+  *** empty log message ***
+
   Revision 1.27  1998/02/17 23:09:13  donjerko
   *** empty log message ***
 
@@ -164,7 +167,7 @@ LessGreat    ">="|">"|"<="|"<"
 
 {String}     {yylval.stringLit = new string(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INTY;}
-{DecLit}     {yylval.real = atof(yytext); return DOUBLEY;}
+{DecLit}     {yylval.stringLit = new string(yytext); return DOUBLEY;}
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INTY;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \'([^']|\'\')*\' {

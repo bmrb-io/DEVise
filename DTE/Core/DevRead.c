@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/01/07 19:25:56  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.22.2.2  1997/12/29 22:12:13  wenger
   Got DEVise 1.4.7 to compile, link, and run on SGI.
 
@@ -105,7 +110,7 @@ Iterator* DevRead::createExec(){
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
 	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 	size_t* currentSz = new size_t[numFlds];
-	Tuple* tuple = new Tuple[numFlds];
+	Type** tuple = new Type*[numFlds];
 	int* offsets = new int[numFlds];
 	AttrStk *stk = ud->schema()->GetFlatAttrs();
 	for(int i = 1; i < numFlds; i++){
@@ -126,7 +131,7 @@ Iterator* DevRead::createExec(){
 
 DevReadExec::DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
 	DestroyPtr* destroyPtrs,
-	Tuple* tuple, int* offsets, int numFlds) :
+	Type** tuple, int* offsets, int numFlds) :
 	ud(ud), unmarshalPtrs(unmarshalPtrs),
 	destroyPtrs(destroyPtrs), tuple(tuple),
 	offsets(offsets), numFlds(numFlds) {

@@ -71,26 +71,26 @@ const Tuple* NLJoinExec::getNext(){
 		if(firstPass){
 			if((innerTup = right->getNext())){
 				const Tuple* tmp = tupleLoader->insert(innerTup);
-				innerRel.append(tmp);
+				innerRel.push_back(tmp);
 			}
 			else{
 				firstPass = false;
-				innerRel.rewind();
-				if(innerRel.atEnd()){
+				innerIter = innerRel.begin();
+				if(innerIter == innerRel.end()){
 					return NULL;
 				}
-				innerTup = innerRel.get();
-				innerRel.step();
+				innerTup = *innerIter;
+				++innerIter;
 				outerTup = left->getNext();
 			}
 		}
 		else{
-			if(innerRel.atEnd()){
-				innerRel.rewind();
+			if(innerIter == innerRel.end()){
+				innerIter = innerRel.begin();
 				outerTup = left->getNext();
 			}
-			innerTup = innerRel.get();
-			innerRel.step();
+			innerTup = *innerIter;
+			++innerIter;
 		}
 		assert(innerTup);
 		if(!outerTup){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/09/05 22:20:15  donjerko
+  Made changes for port to NT.
+
   Revision 1.23  1997/08/25 15:28:13  donjerko
   Added minmax table
 
@@ -114,5 +117,6 @@ public:
 };
 
 extern const Catalog ROOT_CATALOG;
+extern const Directory MINMAX_DIR;
 
 #endif

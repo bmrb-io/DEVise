@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/12/04 04:05:18  donjerko
+  *** empty log message ***
+
   Revision 1.15  1997/11/24 12:45:06  okan
   Added record operationts to ODBC
 
@@ -152,7 +155,16 @@ extern ITimer iTimer;
 	}\
 	assert(!currExcept); currExcept = A; return B 
 
+#define CON_THROW(A)\
+	if(currExcept){\
+		cout << "\nUncaught exception found:\n";\
+		cout << currExcept->toString();\
+		cout << endl;\
+	}\
+	assert(!currExcept); currExcept = A; goto CON_END;
+
 #define TRY(A,B) A; if(currExcept){return B;}
+#define CON_TRY(A) A; if(currExcept){goto CON_END;}
 #define CHECK(A,B,C) A; if(currExcept){currExcept->append(B); return C;}
 #define CATCH(A) if(currExcept){A; delete currExcept; currExcept = NULL;}
 #define EXIT(A) A; if(currExcept){cerr << currExcept->toString() << endl; currExcept = 0; exit(1);}

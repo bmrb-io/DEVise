@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/11/12 23:17:31  donjerko
+  Improved error checking.
+
   Revision 1.15  1997/11/05 00:19:41  donjerko
   Separated typechecking from optimization.
 
@@ -133,7 +136,7 @@ class RTreeReadExec : public Iterator {
 	int dataSize;
 	int numKeyFlds;
 	int numAddFlds;
-     Tuple* tuple;
+     Type** tuple;
      UnmarshalPtr* unmarshalPtrs;
      int* rtreeFldLens;
 
@@ -146,7 +149,7 @@ class RTreeReadExec : public Iterator {
 	db_mgr_jussi* db_mgr;
 public:
 	RTreeReadExec(const IndexDesc& indexDesc,
-		int dataSize, Tuple* tuple,
+		int dataSize, Type** tuple,
 		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
 		typed_key_t* queryBox);
 

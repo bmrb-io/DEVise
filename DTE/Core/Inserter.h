@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/09/05 22:20:05  donjerko
+  Made changes for port to NT.
+
   Revision 1.8  1997/08/21 21:04:21  donjerko
   Implemented view materialization
 
@@ -60,7 +63,7 @@ public:
 		out = NULL;
 		writePtrs = NULL;
 	}
-	~Inserter(){
+	virtual ~Inserter(){
 		delete [] writePtrs;
 		delete out;
 	}
@@ -80,6 +83,21 @@ public:
 		}
 		*out << endl;
 	}
+	virtual void close(){
+		delete out;
+		out = NULL;
+	}
+};
+
+class UniqueInserter : public Inserter {
+	string finalFile;
+	string tmpFile;
+	ISchema schema;
+	int mode;
+public:
+	UniqueInserter(const ISchema& schema, const string& urlstring, 
+		int mode = ios::app);
+	virtual void close();
 };
 
 class Modifier {

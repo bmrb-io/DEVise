@@ -10,6 +10,7 @@
 #include "ParseTree.h"
 #include <string>
 #include "sysdep.h"
+#include "Utility.h"
 
 string ViewInterface::typeName = "SQLView";
 string MaterViewInterface::typeName = "MaterView";
@@ -578,3 +579,19 @@ void ODBCInterface::write(ostream& out) const {
 	Interface::write(out);
 }
 
+void DummyInterface::write(ostream& out) const {
+	out << typeName;
+	out << " " << key << " " << schemaType << " " << schemaFile; 
+	out << " " << addQuotes(cacheFile) << " " << evaluation;
+	out << " " << priority << " " << addQuotes(command);
+	out << " " << addQuotes(segment);
+	Interface::write(out);
+}
+
+void DeviseInterface::write(ostream& out) const{
+	out << typeName;
+	out << " " << schemaNm;
+	out << " " << dataNm;
+	out << " " << addQuotes(viewNm);
+	Interface::write(out);
+}

@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "queue.h"
 #include "Array.h"
 #include "ExecExpr.h"
 #include "Iterator.h"	 // for Iterator
@@ -79,7 +78,8 @@ class NLJoinExec : public Iterator {
 	Array<ExecExpr*>* mySelect;
 	Array<ExecExpr*>* myWhere;
 	Tuple* next;
-     List<const Tuple*> innerRel;
+     vector<const Tuple*> innerRel;
+	vector<const Tuple*>::const_iterator innerIter;
      bool firstEntry;
      bool firstPass;
      const Tuple* outerTup;
@@ -176,14 +176,14 @@ public:
 class SingleAnswerIt : public Iterator {
 	bool done;
 	DestroyPtr destroyPtr;
-	Tuple retVal[1];
+	Type* retVal;
 public:
 	SingleAnswerIt(Type* arg, DestroyPtr dp) 
 		: done(false), destroyPtr(dp) {
-		retVal[0] = arg;
+		retVal = arg;
 	}
 	virtual ~SingleAnswerIt(){
-		destroyPtr(retVal[0]);
+		destroyPtr(retVal);
 	}
 	virtual void initialize(){}
 	virtual const Tuple* getNext(){
@@ -191,7 +191,7 @@ public:
 			return NULL;
 		}
 		done = true;
-		return retVal;
+		return (const Tuple*) &retVal;
 	}
 };
 

@@ -1,7 +1,14 @@
 #include <string>
 
+#include <stdlib.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+
 #include "ParseTree.h"
 #include "ExecOp.h"
+#include "Utility.h"
+#include "Interface.h"
+#include "RelationManager.h"
 
 CreateTableParse::CreateTableParse(vector<IdentType*>* identTypePairs)
 	: identTypePairs(identTypePairs) {}
@@ -24,30 +31,33 @@ const ISchema* CreateTableParse::getISchema()
 
 Iterator* CreateTableParse::createExec()
 {
-	// does everything here
-	
-	string idFile = DTE_ENV_VARS.idFile;
-	if(idFile.empty()){
+	// Create a schema of this file that should be written to the catalog
+
+	int numFlds = identTypePairs->size();
+	TypeID* const types = new TypeID[numFlds];
+	string* const attrs = new string[numFlds];
+	vector<IdentType*>::const_iterator it;
+	int i = 0;
+	for(it = identTypePairs->begin(); i < numFlds; i++, ++it){
+		attrs[i] = *((*it)->first);
+		types[i] = *((*it)->second);
+	}
+	ISchema schema(numFlds, types, attrs);
+	delete [] types;
+	delete [] attrs;
+
+	string dirPath = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.tempFileDir);
+	if(dirPath.empty()){
 		string err = "Please set up the environment variable \'" +
-			DTE_ENV_VARS.idFileN + 
-			"\' to point to an empty file" +
-			" or a file that contains table id entries.";
+			DTE_ENV_VARS.tempFileDir + "\' to point to a directory";
 		THROW(new Exception(err), 0);
 	}
-	string definitionFile = DTE_ENV_VARS.definitionFile;
-	if(definitionFile.empty()){
-		string err = "Please set up the environment variable \'" +
-			DTE_ENV_VARS.definitionFileN + 
-			"\' to point to an empty file" +
-			" or a file that contains table definition entries.";
-		THROW(new Exception(err), 0);
-	}
-	ifstream idStream(idFile.c_str());
-	if(!idStream){
-		string err = "Could not open file: " + idFile + " pointed by " +
-			" env var " + DTE_ENV_VARS.idFileN;
-		THROW(new Exception(err), 0);
-	}
-	char* answer = strdup("1.2");
-	return new SingleAnswerIt(answer, stringDestroy);
+	string filePath = dirPath + "/junk";
+
+	StandardInterface stdInt(schema, filePath);
+
+	RelationId relId;
+	TRY(relId = RELATION_MNGR.registerNewRelation(stdInt), NULL);
+	char* ans = strdup(relId.toString().c_str());
+	return new SingleAnswerIt(ans, stringDestroy);
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/02/17 23:09:12  donjerko
+  *** empty log message ***
+
   Revision 1.13  1997/12/04 04:05:17  donjerko
   *** empty log message ***
 
@@ -230,4 +233,10 @@ string addSQLQuotes(const char* inp, char quote){
 	}
 	retVal += quote;
 	return retVal;
+}
+
+bool fileExists(const string& fileNm)
+{
+	ifstream tmp(fileNm.c_str());
+	return (bool) tmp;
 }

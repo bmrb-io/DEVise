@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/08 21:02:27  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.16  1997/10/02 02:27:28  donjerko
   Implementing moving aggregates.
 
@@ -352,15 +355,80 @@ Iterator* Sort::createExec(){
 	cerr << endl;
 #endif
 
-	GeneralPtr** comparePtrs  = new GeneralPtr*[numFlds];
+	TRY(Iterator* retVal = new SortExec(
+		inpIter, attrTypes, order, 
+		sortFlds, numSortFlds, numFlds), 0);
+
+	return retVal;
+}
+
+SortExec::SortExec(Iterator* inpIter, const TypeID* types, SortOrder order,
+	int* sortFlds, int numSortFlds, int numFlds)
+	: inpIter(inpIter), order(order), Nruns(0), Q(NULL),
+	sortFlds(sortFlds),
+	numSortFlds(numSortFlds), numFlds(numFlds),
+	node_ptr(NULL)
+{
+	comparePtrs  = new GeneralPtr*[numFlds];
+	typeIDs = new TypeID[numFlds];
 	TypeID retVal;  // is a dummy	       
 	for (int i=0; i < numFlds; i++){
-		TypeID tp = attrTypes[i];
-		TRY(comparePtrs[i] = getOperatorPtr("comp", tp, tp, retVal), NULL); 
+		typeIDs[i] = types[i];
+		TypeID tp = typeIDs[i];
+		CON_TRY(comparePtrs[i] = getOperatorPtr("comp", tp, tp, retVal)); 
 	}
-	TupleLoader* tupleLoader = new TupleLoader;
-	TRY(tupleLoader->open(numFlds, attrTypes), NULL);
+	tupleLoader = new TupleLoader;
+	CON_TRY(tupleLoader->open(numFlds, typeIDs));
+	CON_END:;
+}
 
-	return new SortExec(inpIter, tupleLoader, attrTypes, order, 
-		sortFlds, numSortFlds, comparePtrs, numFlds);
+UniqueSortExec::UniqueSortExec(
+	Iterator* inpIter, const TypeID* types, SortOrder order,
+     int* sortFlds, int numSortFlds, int numFlds)
+	: SortExec(inpIter, types, order, sortFlds, numSortFlds, numFlds)
+{
+	CON_TRY(;);	// Base class may have thrown exception
+
+     copyPtrs = new ADTCopyPtr[numFlds];
+     destroyPtrs = new DestroyPtr[numFlds];
+     tuple = new Type*[numFlds];
+     for(int i = 0; i < numFlds; i++){
+          CON_TRY(copyPtrs[i] = getADTCopyPtr(types[i]));
+          CON_TRY(destroyPtrs[i] = getDestroyPtr(types[i]));
+          tuple[i] = allocateSpace(types[i]);
+     }
+
+	CON_END:;
+}
+
+UniqueSortExec::~UniqueSortExec()
+{
+	destroyTuple(tuple, numFlds, destroyPtrs);
+}
+
+const Tuple* UniqueSortExec::getFirst()
+{
+	const Tuple* input = SortExec::getFirst();
+	if(input){
+		copyTuple(input, tuple, numFlds, copyPtrs);
+	}
+	return input;
+}
+
+const Tuple* UniqueSortExec::getNext()
+{
+	const Tuple* input = SortExec::getNext();
+	while(input){
+		bool diffTuple = tupleCompare(sortFlds, numSortFlds, 
+			comparePtrs, input, tuple);
+		if(diffTuple){
+
+			// different tuple, copy it over
+			
+			copyTuple(input, tuple, numFlds, copyPtrs);
+			break;
+		}
+		input = SortExec::getNext();
+	}
+	return input;
 }

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/03/13 04:02:19  donjerko
+  *** empty log message ***
+
   Revision 1.51  1998/03/12 18:23:36  donjerko
   *** empty log message ***
 
@@ -166,16 +169,6 @@
 #  define DBL_MAX MAXDOUBLE
 #endif
 
-const DteEnvVars DTE_ENV_VARS;
-
-const ISchema STRING_SCHEMA("1 string name");
-
-const NewStat DEFAULT_STAT = NewStat();
-
-extern const Catalog ROOT_CATALOG(DTE_ENV_VARS.rootCatalog);
-
-extern const Directory MINMAX_DIR(DTE_ENV_VARS.minmaxCatalog);
-
 string DteEnvVars::getDirectory(const string& envVar) const {
 	const char* dmd = NULL;
 	if((dmd = getenv(envVar.c_str()))){
@@ -203,27 +196,28 @@ string DteEnvVars::getFile(const string& env, const string& def) const {
 }
 
 DteEnvVars::DteEnvVars(){
-	materViewDirN = "DEVISE_MATER_DIR";
+	materViewDir = "DEVISE_MATER_DIR";
 	minmaxDirN = "DEVISE_MINMAX_DIR";
 	rootCatalogN = "DEVISE_HOME_TABLE";
 	indexTableN = "DEVISE_INDEX_TABLE";
 	minmaxCatalogN = "DEVISE_MINMAX_TABLE";
-	definitionFileN = "DEVISE_DEF_FILE";
-	idFileN = "DEVISE_ID_FILE";
+	definitionFile = "DEVISE_DEF_FILE";
+	idFile = "DEVISE_ID_FILE";
 	convert_bulk = "DEVISE_CONVERT_BULK";
+	tempFileDir = "DEVISE_TEMP_FILE_DIR";
 
-	materViewDir = getDirectory(materViewDirN);
 	minmaxDir = getDirectory(minmaxDirN);
 	rootCatalog = getFile(rootCatalogN, "./catalog.dte");
 	indexTable = getFile(indexTableN, "./sysind.dte");
 	minmaxCatalog = getFile(minmaxCatalogN, "./minmax.dte");
-	definitionFile = getFile(definitionFileN);
-	idFile = getFile(idFileN);
 }
 
 string DteEnvVars::valueOf(const string& envVar) const {
 	if(envVar == convert_bulk){
 		return getFile(envVar, "./RTree/convert_bulk");
+	}
+	else if(envVar == definitionFile){
+		return getFile(envVar);
 	}
 	else{
 		return getFile(envVar);
@@ -1341,7 +1335,7 @@ ISchema::ISchema(const ISchema& x){
 	}
 }
 
-void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
+void destroyTuple(Type** tuple, int numFlds, DestroyPtr* destroyers){ // throws
 	assert(destroyers);
 	for(int i = 0; i < numFlds; i++){
 		destroyers[i](tuple[i]);
@@ -1349,7 +1343,16 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 	delete [] tuple;
 }
 
-void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types){ // throws
+void copyTuple(
+	const Tuple* orig, Type** dest, int numFlds, ADTCopyPtr* copyPtrs)
+{
+	assert(copyPtrs);
+	for(int i = 0; i < numFlds; i++){
+		copyPtrs[i](orig[i], dest[i]);
+	}
+}
+
+void destroyTuple(Type** tuple, int numFlds, const TypeID* types){ // throws
 	for(int i = 0; i < numFlds; i++){
 		TRY(DestroyPtr destroyer = getDestroyPtr(types[i]), NVOID );
 		destroyer(tuple[i]);

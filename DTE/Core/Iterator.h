@@ -28,7 +28,11 @@ using namespace std;
 
 class Iterator {
 public:
-     virtual void initialize(){}
+     virtual void initialize(){}	// obsolete, use getFirst instead
+	virtual const Tuple* getFirst(){
+		initialize();
+		return getNext();
+	}
      virtual const Tuple* getNext() = 0;
      virtual const Tuple* getThis(Offset offset, RecId recId){
 		assert(!"getThis not supported for this iterator");

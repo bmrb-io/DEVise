@@ -60,6 +60,11 @@ template class vector<AltEntry>;
 
 template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::push_back(pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *const &);
 
+template class vector<void const *const *>;
+template vector<void const *const *>::push_back(void const *const *const &);
+template vector<void const *const *>::vector(void);
+template vector<void const *const *>::~vector(void);
+
 template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::vector(void);
 
 template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::~vector(void);

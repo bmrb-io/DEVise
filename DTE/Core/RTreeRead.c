@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/11/12 23:17:31  donjerko
+  Improved error checking.
+
   Revision 1.17  1997/11/07 16:51:53  donjerko
   *** empty log message ***
 
@@ -62,7 +65,7 @@
 
 RTreeReadExec::RTreeReadExec(
 	const IndexDesc& indexDesc, int dataSize,
-	Tuple* tuple,
+	Type** tuple,
 	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
 	typed_key_t* queryBox) :
 	rtree(NULL), cursor(NULL), dataSize(dataSize),
@@ -150,7 +153,7 @@ Iterator* RTreeIndex::createExec(){
 	display(cout);
 #endif
 
-	Tuple* tuple = new Tuple[numFlds];
+	Type** tuple = new Type*[numFlds];
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
 	int* rtreeFldLens = new int[numFlds];
 	for(int i = 0; i < numFlds; i++){

@@ -54,7 +54,12 @@ Iterator* MaterializeParse::createExec(){
 	int numFlds = engine.getNumFlds();
 	const TypeID* typeIDs = engine.getTypeIDs();
 
-	string materFile = DTE_ENV_VARS.materViewDir; 
+	string materFile = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.materViewDir); 
+	if(materFile.empty()){
+		string err = "Please set the env var '" 
+			+ DTE_ENV_VARS.materViewDir + "' to point to a directory";
+		THROW(new Exception(err), NULL);
+	}
 	materFile += "/" + nameStr;
 	cerr << "Materializing view: " << nameStr << " into " << materFile << endl;
 	ofstream* outf = new ofstream(materFile.c_str());

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/02/17 23:09:13  donjerko
+  *** empty log message ***
+
   Revision 1.10  1997/12/04 04:05:17  donjerko
   *** empty log message ***
 
@@ -78,4 +81,5 @@ string addSQLQuotes(const char* inp, char quote);
 
 string* dupStrArr(const string* inp, int numFlds);
 
+bool fileExists(const string& fileNm);
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/11/13 22:19:24  okan
+  Changes about compilation on NT
+
   Revision 1.19  1997/11/12 23:17:34  donjerko
   Improved error checking.
 
@@ -89,7 +92,7 @@ StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
 	readPtrs = new ReadPtr[numFlds];
 	destroyPtrs = new DestroyPtr[numFlds];
 	currentSz = new size_t[numFlds];
-	tuple = new Tuple[numFlds];
+	tuple = new Type*[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		readPtrs[i] = getReadPtr(typeIDs[i]);
 		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);

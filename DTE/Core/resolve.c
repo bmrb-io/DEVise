@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/03/12 18:23:33  donjerko
+  *** empty log message ***
+
   Revision 1.32  1997/12/10 00:00:37  okan
   ODBC Interface Changes ...
 
@@ -136,6 +139,7 @@
 #include "catalog.h" 	// for root catalog
 #include "Interface.h"
 #include "listop.h"
+#include "RelationManager.h"
 
 bool PrimeSelection::exclusive(Site* site){
 	assert(alias);
@@ -401,30 +405,6 @@ string TableName::fileName(){
 	}
 }
 
-Site* TableAlias::createSite(){
-	TRY(return ROOT_CATALOG.find(table), NULL);
-}
-
-Site* QuoteAlias::createSite(){
-	assert(interf || !"not implemented");
-	return interf->getSite();
-}
-
-QuoteAlias::~QuoteAlias(){
-	delete quote;
-	delete interf;
-}
-
-Site* NamedTableAlias::createSite(){
-	assert(!"not implemented");
-	return NULL;
-}
-
-NamedTableAlias::~NamedTableAlias(){
-	delete name;
-	delete interf;
-}
-
 Constructor::Constructor(string* name, vector<BaseSelection*>* argVec)
 	: name(name), consPtr(NULL)
 {
@@ -589,3 +569,97 @@ TableMap PrimeSelection::getTableMap(const vector<TableAlias*>& x) const {
 TableMap Operator::getTableMap(const vector<TableAlias*>& x) const {
 	return left->getTableMap(x) | right->getTableMap(x);
 }
+
+void TableAlias::display(ostream& out, int detail = 0){
+	assert(table);
+	if (function ){
+		out << *function << " (" ;
+		table->display(out) ;
+		cout << ") " ;
+	}
+	else{
+		table->display(out);
+	}
+	if(alias){
+		out << " as " << *alias;
+	}
+}
+
+void NumberAlias::display(ostream& out, int detail = 0){
+	out << relId;
+	if(alias){
+		out << " as " << *alias;
+	}
+}
+
+Site* NumberAlias::createSite()
+{
+	Interface* interf = 0;
+	TRY(interf = RELATION_MNGR.createInterface(relId), 0);
+
+	// because the empty table name is passed in, this will not work
+	// for remote server
+
+	TRY(Site* retVal = interf->getSite(), 0);
+	delete interf;
+	return retVal;
+}
+
+NumberAlias::~NumberAlias(){
+}
+
+TableName* NumberAlias::getTable(){
+
+	// There is no table name for quoted tables, but 
+	// the optimizer needs to know table name to find indexes
+
+	return new TableName();
+}
+
+ISchema NumberAlias::getISchema() const
+{
+	Interface* interf;
+	TRY(interf = RELATION_MNGR.createInterface(relId), ISchema());
+	const ISchema* schema;
+
+	// because the empty table name is passed in, this will not work
+	// for remote server
+
+	TRY(schema = interf->getISchema(new TableName()), ISchema());
+	assert(schema);
+	ISchema retVal(*schema);
+	delete interf;
+	return retVal;
+}
+
+Site* TableAlias::createSite(){
+	TRY(return ROOT_CATALOG.find(table), NULL);
+}
+
+ISchema TableAlias::getISchema() const
+{
+	TableName* tableNameCopy = new TableName(*table);
+	Interface* interf;
+	TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy), ISchema());
+	const ISchema* schema;
+	TRY(schema = interf->getISchema(tableNameCopy), ISchema());
+	assert(schema);
+	return *schema;
+}
+
+ISchema QuoteAlias::getISchema() const
+{
+	assert(!"not implemented");
+	return ISchema();
+}
+
+Site* QuoteAlias::createSite(){
+	assert(interf || !"not implemented");
+	return interf->getSite();
+}
+
+QuoteAlias::~QuoteAlias(){
+	delete quote;
+	delete interf;
+}
+

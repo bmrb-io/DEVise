@@ -76,7 +76,8 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	ExecOp.c Inserter.c TypeCheck.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
-	CreateTableParse.c
+	CreateTableParse.c RelationManager.c GlobalConstructors.c \
+	RelationId.c
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
@@ -148,6 +149,10 @@ rtree:
 	cd ../RTree/ && make lib && make librarysbm && cd ../DTE
 
 CorePartOfLib: $(LIBNAME)($(CORE_OBJ))
+
+TableCreate: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)
+	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/03/12 18:23:32  donjerko
+  *** empty log message ***
+
   Revision 1.44  1998/02/09 21:12:23  donjerko
   Added Bin by clause and implementation.
 
@@ -162,6 +165,7 @@
 #include "exception.h"
 #include "TableUtils.h"
 #include "url.h"
+#include "RelationId.h"
 #include "listop.h"
 #include "sysdep.h"
 
@@ -1131,21 +1135,9 @@ public:
 	int getShiftVal(){
 		return shiftVal;
 	}
-	virtual void display(ostream& out, int detail = 0){
-		assert(table);
-		if (function ){
-			out << *function << " (" ;
-			table->display(out) ;
-			cout << ") " ;
-		}
-		else{
-			table->display(out);
-		}
-		if(alias){
-			out << " as " << *alias;
-		}
-	}
+	virtual void display(ostream& out, int detail = 0);
 	virtual Site* createSite();
+	virtual ISchema getISchema() const;
 };
 
 class QuoteAlias : public TableAlias {
@@ -1173,31 +1165,20 @@ public:
 		return new TableName();
 	}
 	virtual Site* createSite();
+	virtual ISchema getISchema() const;
 };
 
-class NamedTableAlias : public TableAlias {
-	string* name;
-	Interface* interf;
+class NumberAlias : public TableAlias {
+	RelationId relId;
+	string* alias;
 public:
-	NamedTableAlias(string* name, string* alias = NULL) :
-		TableAlias(new TableName(), alias), name(name), interf(NULL) {}
-	virtual ~NamedTableAlias();
-	virtual void display(ostream& out, int detail = 0){
-		if(name){
-			out << *name;
-		}
-		if(alias){
-			out << " " << *alias;
-		}
-	}
-	virtual TableName* getTable(){
-
-		// There is no table name for quoted tables, but 
-		// the optimizer needs to know table name to find indexes
-
-		return new TableName();
-	}
+	NumberAlias(int serverId, int localId, string* alias = NULL) :
+		TableAlias(new TableName(), alias), relId(serverId, localId) {}
+	virtual ~NumberAlias();
+	virtual void display(ostream& out, int detail = 0);
+	virtual TableName* getTable();
 	virtual Site* createSite();
+	virtual ISchema getISchema() const;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/24 06:01:25  donjerko
+  Added more odbc files.
+
   Revision 1.16  1997/11/08 21:02:28  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -94,10 +97,12 @@ class SortExec : public Iterator {
 	ofstream  *out_temp_file; // File connected with output_buf
 	char      temp_filename[20]; // Name of temporary file to hold a run
 
+protected:
 	int       *sortFlds;     // Index of fields to be sorted on 
 	int numSortFlds;    // Number of fields on which tuple is to be sorted
 	int numFlds;
 	GeneralPtr **comparePtrs; // Comparison operators
+private:
 	Node* node_ptr;
 
 	void generate_runs();
@@ -107,18 +112,27 @@ class SortExec : public Iterator {
 	void insert_sort(Tuple **, int);
 	void sort_and_write_run(Tuple **, int);
 public:
-	SortExec(Iterator* inpIter, TupleLoader* tupleLoader, TypeID* typeIDs,
+	SortExec(Iterator* inpIter, const TypeID* typeIDs,
 		SortOrder order,
-		int* sortFlds, int numSortFlds, GeneralPtr **comparePtrs,
-		int numFlds)
-		: inpIter(inpIter), tupleLoader(tupleLoader), typeIDs(typeIDs),
-		order(order), Nruns(0), Q(NULL),
-		sortFlds(sortFlds), 
-		numSortFlds(numSortFlds), numFlds(numFlds), 
-		comparePtrs(comparePtrs), node_ptr(NULL) {}
+		int* sortFlds, int numSortFlds,
+		int numFlds);
 
 	virtual ~SortExec();
      virtual void initialize();         // To be called once at the start
+     virtual const Tuple* getNext(); // returns NULL when no more tuples
+};
+
+class UniqueSortExec : public SortExec {
+	Type** tuple;
+	DestroyPtr* destroyPtrs;
+	ADTCopyPtr* copyPtrs;
+public:
+	UniqueSortExec(Iterator* inpIter, const TypeID* typeIDs,
+		SortOrder order,
+		int* sortFlds, int numSortFlds,
+		int numFlds);
+	virtual ~UniqueSortExec();
+     virtual const Tuple* getFirst(); // returns NULL when no more tuples
      virtual const Tuple* getNext(); // returns NULL when no more tuples
 };
 

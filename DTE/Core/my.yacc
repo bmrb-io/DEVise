@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/03/12 18:23:29  donjerko
+  *** empty log message ***
+
   Revision 1.38  1998/02/09 21:12:21  donjerko
   Added Bin by clause and implementation.
 
@@ -118,6 +121,7 @@
 #include "ParseTree.h"
 //#include <iostream.h>    erased for sysdep
 #include <assert.h>
+#include <stdlib.h>
 
 #include "sysdep.h"
 
@@ -138,7 +142,6 @@ string* sortOrdering;
 %union{
      string* stringLit;
 	int integer;
-	double real;
 	BaseSelection* sel;
 	ConstantSelection* constantSel;
 	vector<BaseSelection*>* selList;
@@ -151,7 +154,7 @@ string* sortOrdering;
 	IdentType* ident_type;
 }
 %token <integer> INTY
-%token <real> DOUBLEY
+%token <stringLit> DOUBLEY
 %token SELECT
 %token FROM
 %token AS
@@ -296,7 +299,8 @@ constant :
 		$$ = new ConstantSelection("int", (Type*) $1);
 	}
 	| DOUBLEY {
-		$$ = new ConstantSelection("double", new IDouble($1));
+		IDouble* idouble = new IDouble(atof($1->c_str()));
+		$$ = new ConstantSelection("double", idouble);
 	}
 	;
 index_name : STRING
@@ -545,6 +549,12 @@ tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
 	}
 	| STRING_CONST AS STRING {
 		$$ = new QuoteAlias($1, $3);
+	}
+	| DOUBLEY AS STRING {	// this maches int.int
+		int dotPos = $1->find('.');
+		int serv = atoi($1->substr(0, dotPos).c_str());
+		int loc = atoi($1->substr(dotPos + 1).c_str());
+		$$ = new NumberAlias(serv, loc, $3);
 	}
 	;
 optShiftVal: ',' INTY {

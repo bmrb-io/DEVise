@@ -43,7 +43,7 @@ class DevReadExec : public Iterator {
 	UniData* ud;
 	UnmarshalPtr* unmarshalPtrs;
 	DestroyPtr* destroyPtrs;
-	Tuple* tuple;
+	Type** tuple;
 	off_t off;
 	int* offsets;
 	int numFlds;
@@ -51,7 +51,7 @@ class DevReadExec : public Iterator {
 public:
 	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
 		DestroyPtr* destroyPtrs,
-		Tuple* tuple, int* offsets, int numFlds);
+		Type** tuple, int* offsets, int numFlds);
 
 	virtual ~DevReadExec();
 
