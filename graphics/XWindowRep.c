@@ -16,11 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.99  1997/12/20 00:01:42  wenger
+  Fixed bug 262 (text not drawn), found some others.
+
   Revision 1.98  1997/12/16 17:53:57  zhenhai
   Added OpenGL features to graphics.
 
   Revision 1.97  1997/11/24 23:14:42  weaver
   Changes for the new ColorManager.
+
+  Revision 1.96.6.1  1998/01/13 18:27:47  wenger
+  Printing display now works in batch mode (pixmaps);  cleaned up
+  WindowRep classes slightly; interrupted system calls in server code
+  don't cause server to exit.
 
   Revision 1.96  1997/07/18 20:25:08  wenger
   Orientation now works on Rect and RectX symbols; code also includes
@@ -3077,7 +3085,14 @@ void XWindowRep::Origin(int &x, int &y)
 
 void XWindowRep::AbsoluteOrigin(int &x, int &y)
 {
-  DOASSERT(_win, "Cannot get screen position of pixmap");
+  if (!_win) {
+    // We have a pixmap.  Location of pixmap can't have been changed
+    // since it was created, so just return location params from
+    // constructor.
+    x = _x;
+    y = _y;
+    return;
+  }
 
   /* Find the offset from root window */
   x = 0;

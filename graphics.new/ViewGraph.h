@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/12/12 05:50:46  weaver
+  *** empty log message ***
+
   Revision 1.41  1997/11/24 23:15:24  weaver
   Changes for the new ColorManager.
 
@@ -27,6 +30,9 @@
   Revision 1.39  1997/11/18 23:27:06  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
+
+  Revision 1.38.4.1  1998/01/12 20:34:10  wenger
+  Fixed duplicate frees in multi that caused core dump on Linux.
 
   Revision 1.38  1997/08/28 18:21:14  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
@@ -403,7 +409,7 @@ class ViewGraph : public View
   void SetHistogramWidthToFilter();
 
   /* Set/get action */
-  void SetAction(Action *action) { _action = action; }
+  void SetAction(Action *action);
   Action *GetAction() { return _action; }
 	
   /* Return true if view is a scatter plot */

@@ -20,8 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/11/24 23:15:13  weaver
+  Changes for the new ColorManager.
+
   Revision 1.41.6.1  1997/05/21 20:40:42  weaver
   Changes for new ColorManager
+
+  Revision 1.41.12.1  1998/01/12 20:43:02  wenger
+  Fixed some other dynamic memory errors.
 
   Revision 1.41  1997/03/25 17:59:27  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
@@ -640,7 +646,7 @@ ParseAttr(
 	numAttrs++;
 	recSize += attrLength;
 
-	delete attrName;
+	delete [] attrName;
 
 	return result;
 }

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.16.1  1998/01/12 20:38:11  wenger
+  Fixed some other dynamic memory errors.
+
+  Revision 1.9  1996/12/03 20:36:07  jussi
+  Added support for concurrent I/O.
+
   Revision 1.8  1996/11/18 22:29:01  jussi
   Added DataSize() method.
 
@@ -109,7 +115,7 @@ DataSourceFileStream::~DataSourceFileStream()
 {
 	DO_DEBUG(printf("DataSourceFileStream::~DataSourceFileStream()\n"));
 
-	delete [] _filename;
+	delete _filename;
 	if (_file != NULL) fclose(_file);
 }
 

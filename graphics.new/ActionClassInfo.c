@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.12.1  1998/01/12 20:34:11  wenger
+  Fixed duplicate frees in multi that caused core dump on Linux.
+
+  Revision 1.2  1997/03/28 16:09:39  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.1  1996/05/07 16:35:15  jussi
   Moved files from graphics directory.
 
@@ -41,14 +48,14 @@ ActionClassInfo::ActionClassInfo(char *className, GenAction *gen){
 
 ActionClassInfo::ActionClassInfo(char *className, char *instName, 
 	Action *action) {
+	_gen = NULL;
 	_className = className;
 	_instName = instName;
 	_action = action;
 }
 
 ActionClassInfo::~ActionClassInfo(){
-	if (_action != NULL)
-		delete _action;
+	delete _action;
 }
 
 char *ActionClassInfo::ClassName(){

@@ -14,9 +14,18 @@
 
 /*
   $Id$
+
   $Log$
+  Revision 1.48  1997/12/16 17:53:59  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.47  1997/11/24 23:14:43  weaver
   Changes for the new ColorManager.
+
+  Revision 1.46.6.1  1998/01/13 18:27:51  wenger
+  Printing display now works in batch mode (pixmaps);  cleaned up
+  WindowRep classes slightly; interrupted system calls in server code
+  don't cause server to exit.
 
   Revision 1.46  1997/07/18 20:25:09  wenger
   Orientation now works on Rect and RectX symbols; code also includes
@@ -647,12 +656,10 @@ private:
 
 	int _lineStyle;
 
-//#if !defined(LIBCS) || defined(NEW_LIBCS)
 	DaliImageList _daliImages;    // List of Tasvir images
 	char *_daliServer;            // Machine where Tasvir is running
 	ETkWinList _etkWindows;       // List of embedded Tk windows
 	char *_etkServer;             // Machine where ETk server is running
-//#endif
 };
 
 //******************************************************************************

@@ -20,11 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/01/09 20:45:39  wenger
+  Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+  previous merge.
+
   Revision 1.38  1997/12/02 19:35:14  wenger
   Changed DEVise version to 1.5.0.
 
   Revision 1.37  1997/11/06 20:30:29  wenger
   Changed version to 1.4.8.
+
+  Revision 1.36.2.2  1998/01/12 20:35:59  wenger
+  Incremented version to 1.4.7.2.
 
   Revision 1.36.2.1  1998/01/09 16:34:03  wenger
   Updated copyright date and version number; minor mods to compile for

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/12/18 18:40:18  wenger
+  Turned off debug output, cleaned things up a little bit in OpenGL code.
+
   Revision 1.58  1997/12/16 17:53:54  zhenhai
   Added OpenGL features to graphics.
 
@@ -25,6 +28,11 @@
   Revision 1.56  1997/11/12 15:45:26  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.55.4.2  1998/01/13 18:27:45  wenger
+  Printing display now works in batch mode (pixmaps);  cleaned up
+  WindowRep classes slightly; interrupted system calls in server code
+  don't cause server to exit.
 
   Revision 1.55.4.1  1997/11/11 19:13:46  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
@@ -960,9 +968,6 @@ protected:
   ClipRectList  _damageRects;     /* damaged areas */
   Boolean _damaged;
 
-#if 0 // Not used anywhere.  RKW 10/11/96.
-  Coord _x, _y, _width, _height;  /* location and dimensions of window */
-#endif
   Pattern _pattern;               /* current pattern */
   int _line_width;		  /* current border line width */
 

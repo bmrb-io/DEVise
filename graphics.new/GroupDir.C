@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.16.1  1998/01/12 20:38:12  wenger
+  Fixed some other dynamic memory errors.
+
+  Revision 1.6  1996/05/11 17:29:44  jussi
+  Removed subitems() function that used Tcl_Interp arguments.
+
   Revision 1.5  1996/05/09 18:14:32  kmurli
   Modified Group.C and GroupDir.C to include an oiverloaded functions for
   get_items, subitems to take in a char * instead of Tcp_interp *. This
@@ -50,7 +56,7 @@ GroupDir::~GroupDir()
   SchemaList *next;
   while (list) {
     next = list->next;
-    delete list->sname;
+    delete [] list->sname;
     delete list->topgrps;
     delete list;
     list = next;

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/12/11 04:25:42  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
+  Revision 1.15.12.1  1998/01/12 20:38:11  wenger
+  Fixed some other dynamic memory errors.
+
   Revision 1.15  1997/02/03 19:45:19  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -141,7 +148,7 @@ DataSource::~DataSource()
 	     "Deleting datasource with dangling references");
     
     if (_label != NULL) {
-	delete [] _label;
+	delete _label;
     }
 }
 

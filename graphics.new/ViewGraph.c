@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1997/12/12 05:50:45  weaver
+  *** empty log message ***
+
   Revision 1.63  1997/11/24 23:15:23  weaver
   Changes for the new ColorManager.
 
@@ -27,6 +30,9 @@
   Revision 1.61  1997/11/18 23:27:05  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
+
+  Revision 1.60.4.1  1998/01/12 20:34:01  wenger
+  Fixed duplicate frees in multi that caused core dump on Linux.
 
   Revision 1.60  1997/08/28 18:21:13  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
@@ -1299,6 +1305,13 @@ Boolean ViewGraph::IsYDateType(){
 	  gAttrList->DoneIterator();
 	}
 	return false;
+}
+
+void ViewGraph::SetAction(Action *action)
+{
+  if (_deleteAction) delete _action;
+  _action = action;
+  _deleteAction = false;
 }
 
 void ViewGraph::SetHistogramWidthToFilter()

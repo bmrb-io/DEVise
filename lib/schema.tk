@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.40  1998/01/07 19:30:41  wenger
+#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#  server library into Devise); updated solaris, sun, linux, and hp
+#  dependencies.
+#
 #  Revision 1.39  1997/12/04 04:06:51  donjerko
 #  New View interface.
 #
@@ -27,6 +32,9 @@
 #
 #  Revision 1.36  1997/11/05 00:23:59  donjerko
 #  Added some error checking for DTE calls.
+#
+#  Revision 1.35.2.4  1998/01/13 22:13:58  wenger
+#  Fixed some problems in schema editing GUI.
 #
 #  Revision 1.35.2.3  1998/01/06 17:06:33  wenger
 #  Improved 'Cannot read catalog file' error message.
@@ -637,7 +645,7 @@ proc newschemawin {} {
 	    .newschema.atype.string .newschema.atype.float \
 	    .newschema.atype.date  -side left -fill x -padx 1m 
 
-    label .newschema.astrlen.label -text "Size   " # -fg gray
+    label .newschema.astrlen.label -text "Max string length" # -fg gray
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""
@@ -871,11 +879,10 @@ proc unidata_newschemawin {} {
 	    -textvariable issepartext -menu .newschema.separ.button.menu \
 	    -width 12
     menu .newschema.separ.button.menu -tearoff 0
-# uncomment the following lines to get the separator button (DD)
-#    .newschema.separ.button.menu add radiobutton -label "Separator" \
-#	    -variable issepar -value 1 -command {
-#	set issepartext "Separator"
-#   }
+    .newschema.separ.button.menu add radiobutton -label "Separator" \
+	    -variable issepar -value 1 -command {
+	set issepartext "Separator"
+    }
     .newschema.separ.button.menu add radiobutton -label "Whitespace" \
 	    -variable issepar -value 0 -command {
 	set issepartext "Whitespace"
@@ -1046,7 +1053,7 @@ proc unidata_newschemawin {} {
     pack .newschema.attrnametype.typelabel .newschema.attrnametype.typebut \
     	    -side left -padx 3m -pady 1m
 
-    label .newschema.astrlen.label -text "Size   " # -fg gray
+    label .newschema.astrlen.label -text "Max string length" # -fg gray
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""
@@ -1165,6 +1172,8 @@ proc unidata_newschemawin {} {
     button .newschema.opt.save -text Save -command {
 	if {$sname == ""} {
 	    showmesg "No schema name specified."
+	} elseif {[string match {*[. ]*} $sname]} {
+	    showmesg "Schema source name cannot contain <dot> or <space>."
 	} else {
 	    set attrlist {}
 	    while {$attrnum > 0} {
@@ -1259,7 +1268,7 @@ proc newschema {} {
     set sname ""
     set ftype ascii
     set comm "//"
-    set issepar 1
+    set issepar 0
     set separ "' '"
     set attrlist ""
     set aname ""
@@ -1283,9 +1292,7 @@ proc unidata_newschema {} {
     set sname ""
     set ftype text
     set comm "//"
-#   set issepar 1
     set issepar 0
-#   set separ "' '"
     set separ "' \t'"
     set attrlist ""
     set aname ""
@@ -1310,7 +1317,7 @@ proc openschema {filename} {
     set sname ""
     set ftype ascii
     set comm "//"
-    set issepar 1
+    set issepar 0
     set separ "' '"
     set attrlist ""
     set aname ""
@@ -1336,8 +1343,8 @@ proc unidata_openschema {filename} {
     set sname ""
     set ftype ascii
     set comm "//"
-    set issepar 1
-    set separ "' '"
+    set issepar 0
+    set separ "' \t'"
     set attrlist ""
     set aname ""
     set acomp No
@@ -1654,6 +1661,7 @@ proc readphysical {filename} {
     set line ""
     readSchemaLine $f line
     scan $line "type %s %s" sname ftype
+puts "ftype = $ftype"
 
     # Second line is comment
     readSchemaLine $f line
@@ -1761,8 +1769,15 @@ proc unidata_readphysical {filename} {
     # Third line is separator or whitespace
     # everything between the 's is the separator
     readSchemaLine $f line
-    if {![regexp {.*whitespace *= *('[^']*').*;.*} $line dummy separ]} {
-        puts "Can't find schema whitespace chars in <$line>"
+    if {[regexp {.*whitespace *= *('[^']*').*;.*} $line dummy separ] == 1} {
+        set issepar 0
+    } elseif {[regexp {.*separator *= *('[^']*').*;.*} $line dummy separ] \
+      == 1} {
+        set issepar 1
+    } else {
+	puts "Error defining whitespace or separator chars in <$line>"
+	set issepar 0
+        set separ "' \t'"
     }
     #puts "DIAG separator: $separ"
 

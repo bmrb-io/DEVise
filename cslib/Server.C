@@ -20,10 +20,19 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/09 20:45:09  wenger
+  Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+  previous merge.
+
   Revision 1.2  1998/01/07 19:27:51  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
   dependencies.
+
+  Revision 1.1.2.6  1998/01/13 18:27:33  wenger
+  Printing display now works in batch mode (pixmaps);  cleaned up
+  WindowRep classes slightly; interrupted system calls in server code
+  don't cause server to exit.
 
   Revision 1.1.2.5  1998/01/09 16:33:37  wenger
   Updated copyright date and version number; minor mods to compile for
@@ -194,13 +203,9 @@ void Server::WaitForConnection()
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
     if (clientfd < 0)
     {
+	fprintf(stderr, "Warning: ");
 	perror("accept() failed");
-	if (errno == EINTR)
-	{
-	    fprintf(stderr, "Server exits.\n");
-	    exit(1);
-	}
-	DOASSERT(0, "Error in network interface");
+        return;
     }
     int slot = FindIdleClientSlot();
     if (slot < 0)
@@ -297,9 +302,11 @@ void Server::ReadCmd()
     {
 	char errBuf[MAXPATHLEN + 256];
 	sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
+	fprintf(stderr, "Warning: ");
 	perror(errBuf);
+	return;
     }
-    DOASSERT(numFds > 0, "Internal error");
+
     //
     // Handle a new connection request
     //
