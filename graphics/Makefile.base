@@ -1,10 +1,5 @@
 CC = g++ 
 
-# flags: 
-#	-DUNIX: 
-#	-DGRAPHICS: set this to draw grpahics. Don't set if no graphics
-#		is to be sent to xlib. file affected: XWindowRep.c
-
 OPTFLAG = -O
 #OPTFLAG = -g
 
@@ -26,7 +21,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
-	Map3D.C Temp.c
+	Map3D.C Temp.c PSWindowRep.c PSDisplay.c
 
 SRC1 = $(filter %.c,$(LIBSRC))
 SRC2 = $(filter %.C,$(LIBSRC))
