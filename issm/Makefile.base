@@ -1,0 +1,12 @@
+CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
+
+LIBSRC = binconv.C extract.C rectape.C
+
+LIBOBJ = binconv.o extract.o rectape.o
+
+ALLSRC= $(LIBSRC) $(TESTSRC) 
+
+LIBOBJS= $(LIBOBJ)
+
+issmobj.o: $(LIBOBJS)
+	ld -r -o $@ $(LIBOBJS)
