@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/20 18:44:41  jussi
+  Replaced PENTIUM flag with SOLARIS.
+
   Revision 1.4  1996/03/26 15:34:38  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -29,12 +32,14 @@
 */
 
 #include <stdio.h>
-#include <sys/time.h>
 #include <signal.h>
+#include <sys/time.h>
 
 #include "Timer.h"
-
 #include "../graphics.new/machdep.h"
+
+/* timer interrupt interval in milliseconds */
+const int TIMER_INTERVAL = 500;
 
 struct TimerQueueEntry {
   TimerQueueEntry *next;
@@ -44,8 +49,8 @@ struct TimerQueueEntry {
 };
 
 Boolean Timer::_initialized = false;
-TimerQueueEntry *Timer::_head = NULL;
-TimerQueueEntry *Timer::_freeHead = NULL;
+TimerQueueEntry *Timer::_head = 0;
+TimerQueueEntry *Timer::_freeHead = 0;
 long Timer::_now;
 
 /***********************************************************
@@ -55,8 +60,8 @@ Alloc timer queue entry
 TimerQueueEntry *Timer::AllocEntry()
 {
   TimerQueueEntry *entry;
-  if (_freeHead == NULL)
-    entry =new TimerQueueEntry;
+  if (!_freeHead)
+    entry = new TimerQueueEntry;
   else {
     entry = _freeHead;
     _freeHead = entry->next;
@@ -88,20 +93,20 @@ void Timer::Queue(long when, TimerCallback *callback, int arg)
   entry->callback = callback;
   entry->arg = arg;
   
-  /*
-     printf("Queue %d %d\n", when,entry->when);
-  */
+#ifdef DEBUG
+  printf("Queue %d %d\n", when, entry->when);
+#endif
 
   StopTimer();
 
   /* queue up in ascending time order  */
   TimerQueueEntry *next = _head;
-  TimerQueueEntry *prev = NULL;
-  while (next != NULL && entry->when > next->when) {
+  TimerQueueEntry *prev = 0;
+  while (next && entry->when > next->when) {
     prev = next;
     next = next->next;
   }
-  if (prev == NULL)
+  if (!prev)
     _head = entry;
   else 
     prev->next = entry;
@@ -119,7 +124,7 @@ void Timer::TimerHandler(int)
 {
   _now += TIMER_INTERVAL;
   TimerQueueEntry *entry;
-  while (_head != NULL && _head->when <= _now) {
+  while (_head && _head->when <= _now) {
     entry = _head;
     _head = _head->next;
     entry->callback->TimerWake(entry->arg);
@@ -142,13 +147,14 @@ void Timer::InitTimer()
   _now = 0;
   
   /* init interrupt */
-  (void)signal(SIGALRM,TimerHandler);
+  (void)signal(SIGALRM, TimerHandler);
   
   struct itimerval timerVal;
   
-  timerVal.it_interval.tv_sec = timerVal.it_value.tv_sec = 0;
-  timerVal.it_interval.tv_usec = timerVal.it_value.tv_usec
-                               = TIMER_INTERVAL * 1000;
+  timerVal.it_interval.tv_sec = 0;
+  timerVal.it_interval.tv_usec = TIMER_INTERVAL * 1000;
+  timerVal.it_value.tv_sec = 0;
+  timerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
   setitimer(ITIMER_REAL,&timerVal, 0);
   
   _initialized = true;
@@ -163,7 +169,8 @@ static itimerval oldtimerVal;	/* value of timer when we stopped it */
 void Timer::StopTimer()
 {
   struct itimerval timerVal;
-  timerVal.it_value.tv_sec = timerVal.it_value.tv_usec = 0;
+  timerVal.it_value.tv_sec = 0;
+  timerVal.it_value.tv_usec = 0;
   setitimer(ITIMER_REAL, &timerVal, &oldtimerVal);
 }
 
@@ -176,10 +183,10 @@ void Timer::StartTimer()
   /* Reset timer to its old value */
   if (oldtimerVal.it_value.tv_sec == 0 &&
       oldtimerVal.it_value.tv_usec == 0) {
-    oldtimerVal.it_interval.tv_sec = oldtimerVal.it_value.tv_sec = 0;
-    oldtimerVal.it_interval.tv_usec = oldtimerVal.it_value.tv_usec
-                                    = TIMER_INTERVAL * 1000;
+    oldtimerVal.it_interval.tv_sec = 0;
+    oldtimerVal.it_interval.tv_usec = TIMER_INTERVAL * 1000;
+    oldtimerVal.it_value.tv_sec = 0;
+    oldtimerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
   }
   setitimer(ITIMER_REAL, &oldtimerVal, 0);
 }
-
