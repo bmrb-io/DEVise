@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1995/12/02 21:06:30  jussi
+  Added support for TK_WINDOW, added Set Label command, and fixed
+  error checking in insertWindow.
+
   Revision 1.14  1995/11/28 17:01:50  jussi
   Added copyright notice and renamed printWindows to saveWindow which
   now saves a single window image to a given file.
@@ -462,14 +466,29 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			FILE *file = (FILE *)atol(argv[2]);
 			fclose(file);
 		}
-		else if (strcmp(argv[1],"isMapped") == 0){
+		else if (strcmp(argv[1],"isMapped") == 0) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
-			if (vg == NULL){
+			if (vg == NULL) {
 				sprintf(interp->result,"Can't find view %s in isMapped",
 					argv[2]);
 				goto error;
 			}
 			sprintf(interp->result,"%d",(vg->Mapped()? 1: 0 ));
+		}
+		else if (strcmp(argv[1],"getLabel") == 0){
+			View *vg = (View *)classDir->FindInstance(argv[2]);
+			if (vg == NULL) {
+			  sprintf(interp->result,"Can't find view %s in getLabelParam",
+				  argv[2]);
+			  goto error;
+			}
+			Boolean occupyTop;
+			int extent;
+			char *name;
+			vg->GetLabelParam(occupyTop, extent, name);
+			sprintf(interp->result, "%d %d {%s}",
+				(occupyTop ? 1 : 0), extent,
+				(name ? name : ""));
 		}
 		else if (strcmp(argv[1],"tdataFileName") == 0){
 			TData *tdata = (TData *)classDir->FindInstance(argv[2]);
@@ -774,8 +793,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "can't find window";
 				goto error;
 			}
-			int index;
-			for (index=win->InitIterator(); win->More(index); ){
+			for(int index = win->InitIterator(); win->More(index); ){
 				ViewWin *view = (ViewWin *)win->Next(index);
 				Tcl_AppendElement(interp, view->GetName());
 			}
@@ -849,15 +867,18 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				Tcl_AppendElement(interp, buf);
 			}
 		}
-		else if (strcmp(argv[1], "ToggleStatistics") == 0) {
+		else if (strcmp(argv[1], "getViewStatistics") == 0) {
 		    View *vg = (View *)classDir->FindInstance(argv[2]);
-		    if (vg == NULL){
-			interp->result = "Can't find view in isMapped";
+		    if (vg == NULL) {
+			interp->result = "Can't find view in GetViewStatistics";
 			goto error;
-		      }
-		    /* Toggle value of DisplayStats */
-		    vg->ToggleDisplayStats();
-		  }
+		    }
+		    /* Return status of statistics display */
+		    if (vg->GetDisplayStats())
+		      interp->result = "1";
+		    else
+		      interp->result = "0";
+		}
 		else {
 			interp->result = "wrong args";
 			goto error;
@@ -883,13 +904,22 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			*/
 			sprintf(interp->result,"%ld",(long)file);
 		}
+		else if (strcmp(argv[1], "setViewStatistics") == 0) {
+		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    if (vg == NULL) {
+			interp->result = "Can't find view in SetViewStatistics";
+			goto error;
+		    }
+		    /* Turn on/off display of statistics */
+		    vg->SetDisplayStats(atoi(argv[3]));
+		}
 		else if (strcmp(argv[1],"savePixmap") == 0){
 			/*
 			printf("savePixmap %s %s %s\n",argv[1],argv[2],argv[3]);
 			*/
 			View *vg = (View *)classDir->FindInstance(argv[2]);
 			if (vg == NULL){
-				interp->result = "Can't find view in isMapped";
+				interp->result = "Can't find view in savePixmap";
 				goto error;
 			}
 			FILE *file = (FILE *)atol(argv[3]);
@@ -904,7 +934,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			*/
 			View *vg = (View *)classDir->FindInstance(argv[2]);
 			if (vg == NULL){
-				interp->result = "Can't find view in isMapped";
+				interp->result = "Can't find view in loadPixmap";
 				goto error;
 			}
 			FILE *file = (FILE *)atol(argv[3]);
@@ -916,17 +946,19 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else if (strcmp(argv[1],"getAxisDisplay") == 0 ) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
 			if (vg == NULL){
-				interp->result = "Can't find view in isMapped";
+				interp->result = "Can't find view in getAxisDisplay";
 				goto error;
 			}
 			Boolean stat, xAxis, yAxis;
 			vg->AxisDisplay(xAxis, yAxis);
 			if (strcmp(argv[3],"X") == 0) 
-				stat = xAxis;
-			else stat = yAxis;
+			  stat = xAxis;
+			else
+			  stat = yAxis;
 			if (stat)
-				interp->result = "1";
-			else interp->result = "0";
+			  interp->result = "1";
+			else
+			  interp->result = "0";
 		}
 		else if (strcmp(argv[1],"replaceView") == 0) {
 			View *view1 = (View *)classDir->FindInstance(argv[2]);
@@ -1136,13 +1168,14 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	else if (strcmp(argv[1],"setAxisDisplay") == 0 ) {
 		View *vg = (View *)classDir->FindInstance(argv[2]);
 		if (vg == NULL){
-			interp->result = "Can't find view in isMapped";
+			interp->result = "Can't find view in setAxisDisplay";
 			goto error;
 		}
 		Boolean stat = atoi(argv[4]);
 		if (strcmp(argv[3],"X") == 0)
-			vg->XAxisDisplayOnOff(stat);
-		else vg->YAxisDisplayOnOff(stat);
+		  vg->XAxisDisplayOnOff(stat);
+		else
+		  vg->YAxisDisplayOnOff(stat);
 	}
 	else if (strcmp(argv[1],"insertViewHistory") == 0 ){
 		View *view = (View *)classDir->FindInstance(argv[2]);
