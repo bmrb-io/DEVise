@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/08/29 14:55:52  wenger
+// Star2Devise can now extract relaxation parameters, H exchange rates, etc.
+// from all appropriate NMR-STAR files, not just bmr4096.str (the sessions
+// are not yet fully set up to handle this); fixed an error in the CSI
+// calculations; improved test_summarize script.
+//
 // Revision 1.8  2000/08/17 21:16:14  wenger
 // Got rid of Double.parseDouble() calls so this code can work with
 // Java 1.1.
@@ -1181,8 +1187,11 @@ public class Star2Devise {
 	    // that display the data we saved.
 	    //
 	    String display_link;
+	    boolean plotsAvailable = false;
 
             if (savedChemShifts) {
+		plotsAvailable = true;
+
 		display_link = display_link_base +
 		  S2DNames.CHEM_SHIFT_HTML_SUFFIX;
 		summary_writer.print(display_link);
@@ -1201,12 +1210,16 @@ public class Star2Devise {
 	    if (the_number.equals("4096")) { //TEMP -- current code/installation
 	      // treats 4096 as a special case
 	    if (savedRelax) {
+		plotsAvailable = true;
+
 	        display_link = display_link_base + S2DNames.RELAX_HTML_SUFFIX;
 		summary_writer.print(display_link);
 		summary_writer.println("\">Relaxation Parameters</a>");
 	    }
 
 	    if (savedHExch) {
+		plotsAvailable = true;
+
 	        display_link = display_link_base +
 		  S2DNames.H_EXCH_HTML_SUFFIX;
 		summary_writer.print(display_link);
@@ -1214,6 +1227,8 @@ public class Star2Devise {
 	    }
 
 	    if (savedCoupling) {
+		plotsAvailable = true;
+
 	        display_link = display_link_base +
 		  S2DNames.COUPLING_HTML_SUFFIX;
 		summary_writer.print(display_link);
@@ -1221,11 +1236,18 @@ public class Star2Devise {
 	    }
 
 	    if (savedS2Params) {
+		plotsAvailable = true;
+
 	        display_link = display_link_base + S2DNames.ORDER_HTML_SUFFIX;
 		summary_writer.print(display_link);
 		summary_writer.println("\">Order Parameters</a>");
 	    }
 	    } //TEMP
+
+	    if (!plotsAvailable) {
+	        summary_writer.print("<p>No DEVise plots currently" +
+		  " available for this data\n");
+	    }
 
 	    summary_writer.print("</body>\n</html>\n");
 
