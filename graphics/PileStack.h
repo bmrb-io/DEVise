@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/10/08 19:57:44  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.15  1999/08/12 16:02:48  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -188,9 +194,10 @@ public:
   void HandleKey(WindowRep *, int key, int xVal, int yVal);
 
 
-  void Refresh();
+  void Refresh(View *view);
   void QueryStarted(View *view);
   void QueryDone(View *view);
+  Boolean QueryRunning() { return _currentQueryView != NULL; }
 
   void Dump(FILE *fp);
   static void DumpAll(FILE *fp);
@@ -225,6 +232,12 @@ private:
   Boolean _drillDownDisabled;
   Boolean _keysDisabled;
 
+  // We want to avoid having PileStack::Refresh() called recursively, or
+  // at other times when the pile is in an "intermediate" state, because
+  // this just confuses things, and we have to re-do all of the refreshes
+  // at the end anyhow.
+  Boolean _disablePileRefresh;
+
   void SetNormal();
   void SetStacked();
   void SetPiled(Boolean doLink);
@@ -235,6 +248,9 @@ private:
   void SetPSProperties(View *view);
   void SynchronizeAllViews();
   void SynchronizeView(View *view);
+
+  Boolean RefreshPending();
+  void CancelAllRefreshes();
 };
 
 #endif // _PileStack_h_

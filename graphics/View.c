@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.199  1999/10/14 16:47:35  wenger
+  Fixed problem with missing view titles in the JS in the
+  SoilSci/TwoStation5Var.ds session (actually the background of the title
+  area being the wrong color).
+
   Revision 1.198  1999/10/08 22:04:31  wenger
   Fixed bugs 512 and 514 (problems related to cursor moving).
 
@@ -1078,12 +1083,15 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	SetDisabledActions(false, false, false, false);
 
+	_refreshPending = false;
+
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
 	_dispatcherID = Dispatcher::Current()->Register(dispatcherCallback, 10,
 													GoState);
 	DepMgr::Current()->RegisterEvent(dispatcherCallback,
 									 DepMgr::EventViewCreated);
+	_refreshPending = true;
 	Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
@@ -1829,6 +1837,8 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
+  _refreshPending = false;
+
   _bytes = bytes;
   _querySent = false;
   _hasLastFilter = false;
@@ -1890,6 +1900,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
    * next piled view here, but if we don't, things don't work right.
    * RKW June 25, 1997. */
 
+  //TEMP -- move this to PileStack class?
   Boolean lastInPile = true;
   if (_pileMode) {
     if (!aborted) {
@@ -2268,6 +2279,9 @@ void View::AbortQuery()
 #if defined(DEBUG)
   printf("View(%s)::AbortQuery()\n", _name);
 #endif
+
+  _refreshPending = false;
+
   // If the View object is really anything other than a
   // ViewData or maybe ViewLens, and _querySent is true,
   // this will call a pure virtual function.
@@ -2285,20 +2299,32 @@ void View::Refresh(Boolean refreshPile)
 {
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
+  printf("  _pileMode = %d, GetParentPileStack() = 0x%p\n", _pileMode,
+      GetParentPileStack());
 #endif
 
   if (_inDestructor) {
     return;
   }
 
-  if (refreshPile && _pileMode && !_isHighlightView &&
-      GetParentPileStack()) {
-    GetParentPileStack()->Refresh();
+  if (refreshPile && _pileMode && GetParentPileStack()) {
+    GetParentPileStack()->Refresh(this);
   } else {
     _doneRefresh = false;
     _refresh = true;
+	_refreshPending = true;
     Scheduler::Current()->RequestCallback(_dispatcherID);
   }
+}
+
+void
+View::CancelRefresh()
+{
+#if defined(DEBUG)
+  printf("View(%s)::CancelRefresh()\n", GetName());
+#endif
+  _refreshPending = false;
+  Scheduler::Current()->CancelCallback(_dispatcherID);
 }
 
 void View::ReportViewCreated()
@@ -3511,6 +3537,8 @@ void	View::Run(void)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
+    _refreshPending = false;
+
     VisualFilter histFilter;
 	FilterQueue *fq = GetHistory();
 	fq->Get(fq->Size() - 1, histFilter);
@@ -3941,6 +3969,7 @@ void	View::Run(void)
 			   _filter.yHigh);
 #endif
 
+        _refreshPending = true;
 		DerivedStartQuery(_filter, _timeStamp);
 	}
 	else

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.96  1999/10/08 19:57:46  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.95  1999/10/04 19:36:58  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -639,6 +645,13 @@ class View : public ViewWin
         /* refresh view (re-execute query) */
 	void Refresh(Boolean refreshPile = true);
 
+	// Cancel a refresh of this view.
+	void CancelRefresh();
+
+	// True means that a refresh has been requested or a query is
+	// running for this view.
+	Boolean RefreshPending() { return _refreshPending; }
+
 	/* Insert callback */
 	static void InsertViewCallback(ViewCallback *callBack);
 	static void DeleteViewCallback(ViewCallback *callBack);
@@ -1010,6 +1023,8 @@ protected:
 	    Boolean _cursorMoveDisabled;
 	    Boolean _drillDownDisabled;
 		Boolean _keysDisabled;
+
+		Boolean _refreshPending;
 };
 
 //******************************************************************************

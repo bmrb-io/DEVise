@@ -26,6 +26,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/10/08 19:57:44  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.18  1999/08/12 16:02:34  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -155,6 +161,7 @@ PileStack::PileStack(const char *name, ViewLayout *window)
   _psList.Append(this);
   _currentQueryView = NULL;
   SetDisabledActions(false, false, false, false);
+  _disablePileRefresh = false;
 
   _objectValid.Set();
 }
@@ -280,16 +287,18 @@ PileStack::Flip()
   printf("PileStack(%s)::Flip()\n", _name);
 #endif
 
-  //
-  // If a view is selected, deselect it, then reselect the first view at
-  // the end, so that we maintain the state of the first view being selected.
-  //
-  Boolean isSelected = ViewIsSelected();
-  if (isSelected) {
-    ((View *)GetFirstView())->DoSelect(false);
-  }
+  if (_state != PSNormal && _views.Size() > 1) {
+    _disablePileRefresh = true;
 
-  if (_state != PSNormal) {
+    //
+    // If a view is selected, deselect it, then reselect the first view at
+    // the end, so that we maintain the state of the first view being selected.
+    //
+    Boolean isSelected = ViewIsSelected();
+    if (isSelected) {
+      ((View *)GetFirstView())->DoSelect(false);
+    }
+
     //
     // Move the first child view to the end of the list.
     //
@@ -301,17 +310,11 @@ PileStack::Flip()
         prevView = view;
       } else {
         _window->SwapChildren(prevView, view);
+	//TEMP -- do we run into problems if there's an iterator on the list?
 	_views.Swap(prevView, view);
       }
     }
     GetViewList()->DoneIterator(index);
-
-    //
-    // If we're in pile mode, make sure the first view gets refreshed.
-    //
-    if (IsPiled()) {
-      GetFirstView()->Refresh();
-    }
 
     //
     // If we're in stack mode, raise the new top view.
@@ -334,10 +337,17 @@ PileStack::Flip()
       }
       DoneIterator(index);
     }
-  }
 
-  if (isSelected) {
-    SelectView();
+    if (IsPiled()) {
+      CancelAllRefreshes();
+      if (GetFirstView()) GetFirstView()->Refresh(false);
+    }
+
+    if (isSelected) {
+      SelectView();
+    }
+
+    _disablePileRefresh = false;
   }
 }
 
@@ -353,6 +363,8 @@ PileStack::InsertView(ViewWin *view)
   printf("PileStack(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
+  _disablePileRefresh = true;
+
   char errBuf[1024];
 
   // Make sure the view isn't already in this PileStack.
@@ -364,6 +376,7 @@ PileStack::InsertView(ViewWin *view)
           view->GetName(), GetName());
       reportErrNosys(errBuf);
       _views.DoneIterator(index);
+      _disablePileRefresh = false;
       return;
     }
   }
@@ -375,6 +388,7 @@ PileStack::InsertView(ViewWin *view)
         "already belongs to PileStack<%s>", view->GetName(), GetName(),
 	view->GetParentPileStack()->GetName());
     reportErrNosys(errBuf);
+    _disablePileRefresh = false;
     return;
   }
 
@@ -387,6 +401,7 @@ PileStack::InsertView(ViewWin *view)
 	  "in PileStack <%s>",
 	  view->GetName(), GetName());
       reportErrNosys(errBuf);
+      _disablePileRefresh = false;
       return;
     }
   }
@@ -449,6 +464,13 @@ PileStack::InsertView(ViewWin *view)
   if (ViewIsSelected()) SelectView();
 
   (void) PileOk();
+
+  if (IsPiled()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+
+  _disablePileRefresh = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -463,11 +485,15 @@ PileStack::DeleteView(ViewWin *view)
   printf("PileStack(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
 
+  _disablePileRefresh = true;
+
   if (!_views.Delete(view)) {
     char errBuf[1024];
     sprintf(errBuf, "Trying to delete view %s; view is not in PileStack %s",
         view->GetName(), GetName());
     reportErrNosys(errBuf);
+    _disablePileRefresh = false;
+    return;
   }
 
   view->SetParentPileStack(NULL);
@@ -498,6 +524,13 @@ PileStack::DeleteView(ViewWin *view)
     }
     DoneIterator(index);
   }
+
+  if (IsPiled()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+
+  _disablePileRefresh = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -542,6 +575,11 @@ PileStack::SetNormal()
   if (_window) _window->GetPreferredLayout(vert, horiz, stacked);
   if (_window) _window->SetPreferredLayout(vert, horiz, false);
 
+  CancelAllRefreshes();
+  if (_views.Size() > 1) {
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+
   _state = PSNormal;
 }
 
@@ -570,10 +608,13 @@ PileStack::SetStacked()
     _state = PSStacked;
 
     //
-    // If any view in the pile is selected, make sure we select the first
+    // If any view in the stack is selected, make sure we select the first
     // view.
     //
     if (ViewIsSelected()) SelectView();
+
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
   }
 }
 
@@ -589,6 +630,8 @@ PileStack::SetPiled(Boolean doLink)
 #endif
 
   if (CanPileOrStack(doLink ? PSPiledLinked : PSPiledNoLink)) {
+    _disablePileRefresh = true;
+
     //
     // Create the pile link and insert it into all views of the pile.
     //
@@ -653,6 +696,13 @@ PileStack::SetPiled(Boolean doLink)
     // view.
     //
     if (ViewIsSelected()) SelectView();
+
+    CancelAllRefreshes();
+    if (_views.Size() > 1) {
+      if (GetFirstView()) GetFirstView()->Refresh(false);
+    }
+
+    _disablePileRefresh = false;
   }
 }
 
@@ -678,6 +728,8 @@ PileStack::CanPileOrStack(State state)
   }
 #endif
 
+#if 0 // Allow piling 3D views for JavaScreen molecule highlighting.
+      // RKW 1999-10-22.
   if (state == PSPiledNoLink || state == PSPiledLinked) {
     int index = GetViewList()->InitIterator();
     while (result && GetViewList()->More(index)) {
@@ -689,6 +741,7 @@ PileStack::CanPileOrStack(State state)
     }
     GetViewList()->DoneIterator(index);
   }
+#endif
 
 #if (DEBUG >= 3)
   printf("  CanPileOrStackResult: %d\n", result);
@@ -869,6 +922,12 @@ PileStack::EnableXAxis(Boolean enable)
     view->XAxisDisplayOnOff(_xAxisOn, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -891,6 +950,12 @@ PileStack::EnableYAxis(Boolean enable)
     view->YAxisDisplayOnOff(_yAxisOn, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -913,6 +978,12 @@ PileStack::EnableXTicks(Boolean enable)
     view->XAxisTicksOnOff(_xTicksOn, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -935,6 +1006,12 @@ PileStack::EnableYTicks(Boolean enable)
     view->YAxisTicksOnOff(_yTicksOn, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -956,6 +1033,12 @@ PileStack::SetFont(const char *which, int family, float pointSize,
     view->SetFont(which, family, pointSize, bold, italic, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -976,6 +1059,12 @@ PileStack::SetLabelParam(Boolean occupyTop, int extent, const char *name)
     view->SetLabelParam(occupyTop, extent, name, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -996,6 +1085,12 @@ PileStack::SetXAxisDateFormat(const char *format)
     view->SetXAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -1016,6 +1111,12 @@ PileStack::SetYAxisDateFormat(const char *format)
     view->SetYAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -1026,7 +1127,7 @@ void
 PileStack::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if (DEBUG >= 1)
+#if (DEBUG >= 2)
   printf("PileStack(%s)::IsOnCursor()\n", _name);
 #endif
 
@@ -1162,20 +1263,69 @@ PileStack::HandleKey(WindowRep *, int key, int xVal, int yVal)
  * Refresh the pile (analogous to View::Refresh() on a single view).
  */
 void
-PileStack::Refresh()
+PileStack::Refresh(View *view)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::Refresh()\n", _name);
+  printf("PileStack(%s)::Refresh(%s)\n", _name, view->GetName());
 #endif
 
+  if (_disablePileRefresh) return;
+  _disablePileRefresh = true;
+
   if (IsPiled()) {
-    if (_currentQueryView != NULL) {
-      _currentQueryView->AbortQuery();
+
+    //
+    // Figure out which view we really want to refresh.
+    //
+    View *refreshView = NULL;
+    if (view->IsHighlightView()) {
+      //
+      // Get the second view in the pile (the first if only one view).
+      // We don't want the first because then we'd be refreshing the
+      // whole pile; but we don't just want the view that called us
+      // (that leads to bug 520).  RKW 1999-10-20.
+      //
+      int index = InitIterator();
+      if (More(index)) refreshView = (View *)Next(index);
+      if (More(index)) refreshView = (View *)Next(index);
+      DoneIterator(index);
+    } else if (GetFirstView()) {
+      refreshView = (View *)GetFirstView();
     }
 
-    if (GetFirstView()) GetFirstView()->Refresh(false);
+#if (DEBUG >= 2)
+    printf("refreshView = <%s>\n", refreshView ? refreshView->GetName() :
+        "NULL");
+#endif
+
+    //
+    // If a view *lower* in the pile than our refresh view (or our refresh
+    // view) already has a refresh pending, we don't need to do anything.
+    //
+    int index = InitIterator();
+    while (More(index)) {
+      View *tmpView = (View *)Next(index);
+      if (tmpView->RefreshPending()) {
+#if (DEBUG >= 3)
+        printf("  view <%s> already has refresh pending\n", tmpView->GetName());
+#endif
+	refreshView = NULL;
+	break;
+      }
+      if (tmpView == refreshView) break;
+    }
+    DoneIterator(index);
+
+    if (refreshView) {
+      CancelAllRefreshes();
+      refreshView->Refresh(false);
+    }
+  } else {
+    DOASSERT(false, "Shouldn't get to here!");
   }
+
+  _disablePileRefresh = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -1200,7 +1350,7 @@ PileStack::QueryStarted(View *view)
           "pile (%s) is already running a query", view->GetName(),
 	  _currentQueryView->GetName(), GetName());
       reportErrNosys(errBuf);
-      // DOASSERT(0, "bad query");
+      DOASSERT(0, "bad query");
     }
   }
 }
@@ -1439,6 +1589,61 @@ PileStack::SameViewOrSamePile(ViewWin *view1, ViewWin *view2)
   }
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::RefreshPending
+ * Checks whether any refreshes are pending for this pile.
+ */
+Boolean
+PileStack::RefreshPending()
+{
+#if (DEBUG >= 3)
+  printf("PileStack()::RefreshPending()\n");
+#endif
+
+  Boolean result = false;
+
+  int index = InitIterator();
+  while (More(index)) {
+    View *view = (View *)Next(index);
+    if (view->RefreshPending()) {
+      result = true;
+    }
+  }
+  DoneIterator(index);
+
+  if (_currentQueryView) {
+    result = true;
+  }
+
+  return result;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::CancelAllRefreshes
+ * Cancels all pending refreshes and queries in this pile.
+ */
+void
+PileStack::CancelAllRefreshes()
+{
+#if (DEBUG >= 3)
+  printf("PileStack()::CancelAllRefreshes()\n");
+#endif
+
+  int index = InitIterator();
+  while (More(index)) {
+    View *view = (View *)Next(index);
+    if (view->RefreshPending()) {
+      view->CancelRefresh();
+    }
+  }
+  DoneIterator(index);
+
+  if (_currentQueryView) {
+    _currentQueryView->AbortQuery();
+  }
 }
 
 /*============================================================================*/
