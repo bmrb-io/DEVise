@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/05/20 18:45:05  jussi
+  Merged with ClientServer library code.
+
   Revision 1.14  1996/04/18 18:17:04  jussi
   Added support for drawing into pixmaps instead of windows.
 
@@ -120,7 +123,11 @@ public:
 	virtual void PushClip(Coord x, Coord y, Coord w, Coord h);
 	virtual void PopClip();
 
-	/* export window image */
+	/* import other graphics and display in window */
+	virtual void ImportImage(Coord x, Coord y,
+				 DisplayExportFormat format, char *filename);
+
+	/* export window image to other graphics formats */
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
 	/* drawing primitives */
@@ -183,6 +190,9 @@ public:
 	virtual void SetNormalFont();
 	virtual void SetSmallFont();
 	virtual int  GetSmallFontHeight();
+
+	/* Draw rubberbanding rectangle */
+	virtual void DrawRubberband(int x1, int y1, int x2, int y2);
 
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height);
@@ -285,9 +295,6 @@ private:
 	void UpdateWinDimensions();
 
 #ifndef RAWMOUSEEVENTS
-	/* draw rubberbanding rectangle */
-	void DrawRubberband(int x1,int y1, int x2, int y2);
-
 	/* Handle button press event. Return the region covered by
 	   the selection in window coordinates */
 	void DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,

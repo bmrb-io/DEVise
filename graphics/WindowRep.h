@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/05/20 18:45:01  jussi
+  Merged with ClientServer library code.
+
   Revision 1.14  1996/04/11 17:56:35  jussi
   Added Raise() and Lower().
 
@@ -199,7 +202,11 @@ public:
     return _callbackList->Delete(c);
   }
 
-  /* convert window image to Postscript code */
+  /* import other graphics and display in window */
+  virtual void ImportImage(Coord x, Coord y,
+			   DisplayExportFormat format, char *filename) {}
+
+  /* export window image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) {}
 
   /* drawing primitives */
@@ -271,6 +278,9 @@ public:
   virtual void SetNormalFont() = 0;
   virtual void SetSmallFont() = 0;
   virtual int  GetSmallFontHeight() = 0;
+
+  /* Draw rubberbanding rectangle */
+  virtual void DrawRubberband(int x1, int y1, int x2, int y2) = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;

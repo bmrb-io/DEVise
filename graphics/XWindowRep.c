@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/05/20 18:45:04  jussi
+  Merged with ClientServer library code.
+
   Revision 1.34  1996/05/20 17:27:36  jussi
   Removed platform dependency in ExportImage().
 
@@ -360,6 +363,54 @@ void XWindowRep::PopClip()
   }
 }
 
+/* import window image */
+
+void XWindowRep::ImportImage(Coord x, Coord y,
+			     DisplayExportFormat format,
+			     char *filename)
+{
+  if (format != GIF) {
+    fprintf(stderr, "Import format not supported yet.\n");
+    return;
+  }
+
+  // GIF image support isn't complete yet
+  return;
+
+#ifdef DEBUG
+  printf("Reading GIF image from file %s\n", filename);
+#endif
+
+  FILE *fp = fopen(filename, "rb");
+  if (!fp) {
+    fprintf(stderr, "Cannot open file %s", filename);
+    return;
+  }
+
+  PICINFO picinfo;
+  if (LoadGIF(filename, &picinfo) != 1) {
+    fprintf(stderr, "Error importing GIF image\n");
+    fclose(fp);
+    return;
+  }
+
+  fclose(fp);
+
+  if (picinfo.comment)
+    printf("GIF comment: %s\n", picinfo.comment);
+
+  int screen = DefaultScreen(_display);
+  int depth = DefaultDepth(_display,screen);
+  Visual *visual = DefaultVisual(_display, screen);
+  XImage *image = XCreateImage(_display, visual, depth, ZPixmap,
+			       0, (char *)picinfo.pic,
+			       picinfo.w, picinfo.h, 8, 0);
+  DOASSERT(image, "Cannot create image");
+  XPutImage(_display, DRAWABLE, _gc, image, 0, 0, (int)(x - picinfo.w / 2.0),
+	    (int)(y - picinfo.h / 2.0), picinfo.w, picinfo.h);
+  XDestroyImage(image);
+}
+
 /* export window image */
 
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
@@ -415,6 +466,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 }
 
 /* export image as GIF */
+
 void XWindowRep::ExportGIF(char *filename)
 {
   XWindowAttributes xwa;
@@ -1007,7 +1059,6 @@ static int check_expose(Display *, XEvent *e, char *arg)
   return 0;
 }
 
-#ifndef RAWMOUSEEVENTS
 /**************************************************************
 Draw rubberband
 ****************************************************************/
@@ -1026,6 +1077,7 @@ void XWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
   XDrawRectangle(_display, _win, _rectGc, minX, minY, width, height);
 }
 
+#ifndef RAWMOUSEEVENTS
 static long buttonMasks[3] = {
   Button1MotionMask, Button2MotionMask, Button3MotionMask
 };
