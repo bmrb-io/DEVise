@@ -1,0 +1,220 @@
+#! /s/perl/bin/perl
+
+# Convert an old-style schema to the new form.
+
+foreach $file (@ARGV){
+
+    open(IN,"${file}.old") && die "File ${file}.old already exists. (aborting)\n";
+    close IN;
+
+    rename("$file", "${file}.old") || die "Couldn't mv $file to ${file}.old\n";
+
+    open(IN, "${file}.old");
+    open(OUT, "> $file");
+   
+    $lineno = 1;
+    $compattr = 0;
+ 
+    while(<IN>) {
+  
+        if ( /^\s*#/ || /^\s+$/ ) {     # A comment or blank line
+            print OUT;
+            $lineno++;
+            next;
+        }
+
+        # strip a comment off the end of a line?
+        if ( /^([^#]*)(#[^\n]*)$/ ) {
+            $_ = $1;
+            $cmmt = $2;
+            print OUT "    $cmmt\n";
+        }
+
+        # Now process the meat
+        if ( /^\s*type\s+(\S+)\s+(\S+)/ ) {
+
+            $sname = $1;
+            $type = $2;
+            $type = 'text' if ($type eq 'ascii');
+
+            print OUT "schema $sname {\n\n    type = $type;\n";
+
+        } elsif ( /^\s*comment\s+(\S+)/ ) {
+
+            $cmmt = $1;
+
+            # What if we contain a '?  Need to backquote it.
+            $cmmt =~ s/'/\\'/g;
+            
+            print OUT "    comment = '$cmmt';\n";
+
+        } elsif ( /^\s*separator\s+'([^']*)'/ ) {
+
+            $sep = $1;
+            $sep =~ s/\t/\\t/g;
+            $sep =~ s/'/\\'/g;
+
+            print OUT "    separator = '$sep';\n";
+    
+        } elsif ( /^\s*whitespace\s+'([^']*)'\s*'([^']*)'/ ) {
+            $ws = $1 . $2;
+            $ws =~ s/\t/\\t/g;
+            print OUT "    whitespace = '$ws';\n";
+
+        } elsif ( /^\s*whitespace\s+('[^']*')/ ) {
+
+            $ws = $1;
+            print OUT "    whitespace = $ws;\n";
+
+        } elsif ( /^\s*attr\s+(\S+)\s+(\w+)\s+([^\n]*)$/ ) {
+
+            $aname = $1;
+            $atype = $2;
+            $rest  = $3;
+
+            print OUT "\n    attr $aname {\n";
+            print OUT "        type = $atype;\n";
+            &attrcvt($atype,$rest);
+            print OUT "    }\n";
+
+        } elsif ( /^\s*sorted\s+attr\s+(\S+)\s+(\w+)\s+([^\n]*)$/ ) {
+
+            $aname = $1;
+            $atype = $2;
+            $rest  = $3;
+
+            print OUT "\n    attr $aname {\n";
+            print OUT "        type = $atype;\n";
+            print OUT "        sorted;\n";
+            &attrcvt($atype,$rest);
+            print OUT "    }\n";
+
+        } elsif ( /^\s*compattr\s+(\S+)\s+(\w+)\s+([^\n]*)$/ ) {
+
+            $aname = $1;
+            $atype = $2;
+            $rest  = $3;
+
+            $compattr = 1;
+
+            print OUT "\n    attr $aname {\n";
+            print OUT "        type = $atype;\n";
+            &attrcvt($atype,$rest);
+            print OUT "        value = <value>;   # ERROR: value needed\n";
+            print OUT "    }\n";
+
+        } elsif ( /^\s*sorted\s+compattr\s+(\S+)\s+(\w+)\s+([^\n]*)$/ ) {
+
+            $aname = $1;
+            $atype = $2;
+            $rest  = $3;
+
+            $compattr = 1;
+
+            print OUT "\n    attr $aname {\n";
+            print OUT "        type = $atype;\n";
+            print OUT "        sorted;\n";
+            &attrcvt($atype,$rest);
+            print OUT "        value = <value>;   # ERROR: value needed\n";
+            print OUT "    }\n";
+
+        } else {
+
+            print STDERR "\nError: $file:$lineno - could not convert:\n$_\n";
+        }
+
+        $lineno++;
+    }
+
+    if ($compattr) {
+        print STDERR "\nWarning: schema contained computed attributes.\n";
+        print STDERR "Search for 'ERROR' in new schema and repair.\n"
+    }
+
+    # close off the "schema" scope
+    print OUT "}\n";
+    close OUT;
+    close IN;
+}
+
+##########################
+
+sub attrcvt {
+
+  my($type, $line) = @_;
+  my(@params);
+  my($maxlen,$arg,$arg2,$val);
+
+  $line =~ s/'/\\'/g;
+  @params = split( /\s+/, $line);
+
+  return if (!@params);
+
+  # if string, assume the maxlen is first
+  if ($type eq 'string') {
+    $maxlen = shift @params;
+
+    print OUT "        maxlen = $maxlen;\n";
+  }
+
+  while (@params) {
+      $arg = shift @params;
+
+      if ($arg eq 'hi') {
+
+        $arg2 = shift @params;
+
+        # int or float number 
+        if ( $arg2 =~ /^(\d+\.?\d*|\.\d+)$/ ) {
+            $val = $arg2;
+        } else {
+            # Assume it's a string
+            $val = "'$arg2'";
+        }
+
+        print OUT "        max = $val;\n";
+
+      } elsif ($arg eq 'lo') {
+
+        $arg2 = shift @params;
+
+        # int or float number 
+        if ( $arg2 =~ /^(\d+\.?\d*|\.\d+)$/ ) {
+            $val = $arg2;
+        } else {
+            # Assume it's a string
+            $val = "'$arg2'";
+        }
+
+        print OUT "        min = $val;\n";
+
+      } else {
+          print STDERR "\nError: $file:$lineno - cannot convert:\n$line\n";
+      } 
+  }
+}
+
+##########################
+
+sub find_cp {
+
+  my($find_schema)= @_;
+
+  $comparser = '';
+
+  open(CIIN,"composite.ini") || die "No composite.ini found.\n";
+
+  while(<CIIN>) {
+  
+      next if ( /^\s*#/ || /^\s+$/ );     # A comment or blank line
+
+      ($jnk, $schema, $comparser) = split(/\s+/);
+      last if ($find_schema eq $schema);
+  }
+
+  close CIIN;
+
+  return $comparser;
+}
+
+##########################
