@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/01/10 21:00:41  jussi
+  Disabled debugging output.
+
   Revision 1.12  1996/01/10 19:02:36  jussi
   Reorganized code so that fewer function prototypes are needed.
   Removed bug which occurred when date hi/lo fields were defined
@@ -65,6 +68,7 @@
 
 #include "ParseCat.h"
 #include "TDataAsciiInterp.h"
+#include "TDataBinaryInterp.h"
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
@@ -287,6 +291,8 @@ char *ParseCatOriginal(char *catFile){
 	int numArgs;
 	char **args;
 	int recSize = 0;
+	char *sep = 0;
+	int numSep = 0;
 	int attrLength;
 	AttrType attrType;
 	char *commentString = 0;
@@ -531,7 +537,7 @@ char *ParseCatOriginal(char *catFile){
 		    break;
 		  default:
 		    fprintf(stderr,"ParseCat: don't know type\n");
-		  Exit::DoExit(2);
+		    Exit::DoExit(2);
 		  }
 		if (recSize/roundAmount*roundAmount != recSize){
 		    /* round to rounding boundaries */
@@ -628,50 +634,55 @@ char *ParseCatOriginal(char *catFile){
 		}
 	}
 
-	if (hasSeparator && hasWhitespace){
-		fprintf(stderr,"can't specify both whitespace and separator\n");
-		goto error;
-	}
-	if (!(hasSeparator || hasWhitespace)){
-		fprintf(stderr,"must specify either whitespace or separator\n");
-		goto error;
+	if (isAscii) {
+	  if (hasSeparator && hasWhitespace){
+	    fprintf(stderr,"can't specify both whitespace and separator\n");
+	    goto error;
+	  }
+	  if (!(hasSeparator || hasWhitespace)){
+	    fprintf(stderr,"must specify either whitespace or separator\n");
+	    goto error;
+	  }
 	}
 
-	char *sep;
-	int numSep;
 	if (hasSeparator) {
-		sep = new char[numSeparators];
-		for (i=0; i < numSeparators; i++){
-			sep[i] = separators[i];
-		}
-		numSep = numSeparators;
+	  sep = new char[numSeparators];
+	  for (i=0; i < numSeparators; i++){
+	    sep[i] = separators[i];
+	  }
+	  numSep = numSeparators;
 	}
-	else {
-		sep = new char[numWhitespace];
-		for (i=0; i < numWhitespace; i++){
-			sep[i] = whitespaces[i];
-		}
-		numSep = numWhitespace;
+	if (hasWhitespace) {
+	  sep = new char[numWhitespace];
+	  for (i=0; i < numWhitespace; i++){
+	    sep[i] = whitespaces[i];
+	    }
+	  numSep = numWhitespace;
 	}
-
-	if (!hasComment)
-		commentString = "#";
 	
+	if (!hasComment)
+	  commentString = "#";
+	  
 	if (hasSource){
-		printf("schema from %s\n",source);
+		printf("source: %s\n",source);
 		GenClassInfo *genInfo = FindGenClass(source);
 		ControlPanel::RegisterClass(
-			genInfo->Gen(source, fileType,
+			genInfo->Gen(source, isAscii, fileType,
 			attrs,recSize,sep, numSep, hasSeparator, commentString),
 			true);
-	}
-	else {
-		/* use default source */
-		printf("default schema source, recSize %d\n",recSize);
-		ControlPanel::RegisterClass(
-			new TDataAsciiInterpClassInfo(fileType,
-			attrs,recSize,sep, numSep, hasSeparator, commentString),
-			true);
+	} else {
+		if (isAscii) {
+		  printf("default source, recSize %d\n",recSize);
+		  ControlPanel::RegisterClass(
+		     new TDataAsciiInterpClassInfo(fileType,
+			attrs,recSize,sep, numSep, hasSeparator,
+			commentString), true);
+		} else {
+		  printf("default binary source, recSize %d\n",recSize);
+		  ControlPanel::RegisterClass(
+		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
+					      true);
+		}
 	}
 
 	fclose(file);
@@ -709,6 +720,8 @@ char *ParseCatPhysical(char *catFile){
 	int numArgs;
 	char **args;
 	int recSize = 0;
+	char *sep = 0;
+	int numSep = 0;
 	int attrLength;
 	AttrType attrType;
 	char *commentString = 0;
@@ -942,7 +955,7 @@ char *ParseCatPhysical(char *catFile){
 		    break;
 		  default:
 		    fprintf(stderr,"ParseCat: don't know type\n");
-		  Exit::DoExit(2);
+		    Exit::DoExit(2);
 		  }
 		if (recSize/roundAmount*roundAmount != recSize){
 		    /* round to rounding boundaries */
@@ -998,50 +1011,56 @@ char *ParseCatPhysical(char *catFile){
 		}
 	}
 
-	if (hasSeparator && hasWhitespace){
-		fprintf(stderr,"can't specify both whitespace and separator\n");
-		goto error;
-	}
-	if (!(hasSeparator || hasWhitespace)){
-		fprintf(stderr,"must specify either whitespace or separator\n");
-		goto error;
+	if (isAscii) {
+	  if (hasSeparator && hasWhitespace){
+	    fprintf(stderr,"can't specify both whitespace and separator\n");
+	    goto error;
+	  }
+	  if (!(hasSeparator || hasWhitespace)){
+	    fprintf(stderr,"must specify either whitespace or separator\n");
+	    goto error;
+	  }
 	}
 
-	char *sep;
-	int numSep;
 	if (hasSeparator) {
-		sep = new char[numSeparators];
-		for (i=0; i < numSeparators; i++){
-			sep[i] = separators[i];
-		}
-		numSep = numSeparators;
+	  sep = new char[numSeparators];
+	  for (i=0; i < numSeparators; i++){
+	    sep[i] = separators[i];
+	  }
+	  numSep = numSeparators;
 	}
-	else {
-		sep = new char[numWhitespace];
-		for (i=0; i < numWhitespace; i++){
-			sep[i] = whitespaces[i];
-		}
-		numSep = numWhitespace;
+	if (hasWhitespace) {
+	  sep = new char[numWhitespace];
+	  for (i=0; i < numWhitespace; i++){
+	    sep[i] = whitespaces[i];
+	  }
+	  numSep = numWhitespace;
 	}
-
+	
 	if (!hasComment)
-		commentString = "#";
+	  commentString = "#";
 	
 	if (hasSource){
-		printf("schema from %s\n",source);
+		printf("schema: %s\n",source);
 		GenClassInfo *genInfo = FindGenClass(source);
 		ControlPanel::RegisterClass(
-			genInfo->Gen(source, fileType,
+			genInfo->Gen(source, isAscii, fileType,
 			attrs,recSize,sep, numSep, hasSeparator, commentString),
 			true);
 	}
 	else {
-		/* use default source */
-		printf("default schema source, recSize %d\n",recSize);
-		ControlPanel::RegisterClass(
-			new TDataAsciiInterpClassInfo(fileType,
-			attrs,recSize,sep, numSep, hasSeparator, commentString),
-			true);
+		if (isAscii) {
+		  printf("default source, recSize %d\n",recSize);
+		  ControlPanel::RegisterClass(
+		     new TDataAsciiInterpClassInfo(fileType,
+			attrs,recSize,sep, numSep, hasSeparator,
+			commentString), true);
+		} else {
+		  printf("default binary source, recSize %d\n",recSize);
+		  ControlPanel::RegisterClass(
+		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
+					      true);
+		}
 	}
 
 	fclose(file);
