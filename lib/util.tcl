@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1996/09/17 19:31:23  wenger
+#  Changed default print filename from /u/g/u/guangshu/public/html/pictures/map/
+#  back to /tmp/devise.
+#
 #  Revision 1.29  1996/09/13 23:09:33  guangshu
 #  Added support to save maps when saving the display.
 #
@@ -472,10 +476,6 @@ proc getColor {varname} {
 proc PrintViewSetUp {} {
     global toprinter printcmd filename printsrc formatsel 
 
-    if {[WindowVisible .printdef]} {
-	return
-    }
-
     toplevel .printdef
     wm title .printdef "Print View"
     wm geometry .printdef +150+150
@@ -533,16 +533,21 @@ proc PrintViewSetUp {} {
 	    -variable printsrc -value 1
     radiobutton .printdef.top.row3.r3 -text "Selected Window" \
 	    -variable printsrc -value 0
-    pack .printdef.top.row3.l1 .printdef.top.row3.r1 .printdef.top.row3.r2 \
-	    .printdef.top.row3.r3 -side left -padx 2m \
+    radiobutton .printdef.top.row3.r4 -text "All Views" \
+	    -variable printsrc -value 3
+    pack .printdef.top.row3.l1 .printdef.top.row3.r1 .printdef.top.row3.r4 \
+	    .printdef.top.row3.r2 .printdef.top.row3.r3 -side left -padx 2m \
 	    -fill x -expand 1
 }
 
 ############################################################################
 proc PrintView {} {
     global toprinter printcmd filename  printsrc formatsel 
+    if {[WindowVisible .printdef]} {
+        return
+    }
+
     PrintViewSetUp
-#    set map 0
 
     frame .printdef.bot.but
     pack .printdef.bot.but -side top
@@ -563,8 +568,11 @@ proc PrintView {} {
 
 proc PrintWithMap {} {
      global toprinter printcmd filename printsrc formatsel
+     if {[WindowVisible .printdef]} {
+        return
+     }
+
      PrintViewSetUp
-#     set map 1
      
      frame .printdef.bot.ent
      pack .printdef.bot.ent -side top
@@ -588,7 +596,8 @@ proc PrintWithMap {} {
 
      button .printdef.bot.but.ok -text OK -width 10 \
 		-command {
-		PrintActual $toprinter $printcmd $filename $printsrc $formatsel 1 $mapfile $url $defaultUrl; \
+		PrintActual $toprinter $printcmd $filename $printsrc \
+			      $formatsel 1 $mapfile $url $defaultUrl; \
 		destroy .printdef
                }
      button .printdef.bot.but.cancel -text Cancel -width 10 \
@@ -629,7 +638,8 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	
 	if {$map == 1} {
 	   puts "Saving entire display to file $file"
-	   set err [ catch { DEVise saveDisplayImageAndMap $format $file $mapfile $url $defaultUrl } ]
+	   set err [ catch { DEVise saveDisplayImageAndMap $format $file \
+				 $mapfile $url $defaultUrl } ]
 	   if {$err > 0} {
 		dialog .printError "Display Image Save Error" \
 			"An error occurred while saving display image to file." \
@@ -647,7 +657,23 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	    return
 	}
 	return
+    } elseif {$printsrc == 3} {
+	if {$format != "gif"} {
+	    dialog .printError "Not Supported Yet" \
+		    "Saving entire display as $fmt is not supported yet." \
+		    "" 0 OK
+	    return
+  	}
+	set err [catch {DEVise saveDisplayView $format $filename} ]
+	if {$err > 0} {
+	     dialog .printError "View Image Save Error" \
+		     "An error occurred while saving display image to file." \
+		     "" 0 OK
+	     return
+	}
+	return
     }
+
 
     set windowlist ""
 
