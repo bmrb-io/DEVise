@@ -61,6 +61,16 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
 	<passwd>: the collaboration password.
 
+    2.6 JAVAC_SaveCurSession
+    Purpose: Save the current session when a user goes into collaboration
+             mode during a session is open.
+    Arguments: 0
+
+    2.6 JAVAC_ReopenSession
+    Purpose: Reopen saved session when a user goes back to "socket" mode
+             from collaboration mode
+    Arguments: 0
+
 3. JSPoP to JavaScreen
 
     3.1 JAVAC_User
