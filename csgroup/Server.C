@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/07/12 19:01:37  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.22  1999/05/04 17:16:52  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -777,14 +780,20 @@ void Server::ReadCmd()
     }
 
     // select()
-    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+	struct timeval timeout;
+	timeout.tv_sec = 60;
+	timeout.tv_usec = 0;
+    numFds = select(maxFdCheck + 1, &fdset, 0, 0, &timeout);
     if (numFds < 0)
     {
 		char errBuf[MAXPATHLEN + 256];
 		sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
 		perror(errBuf);
 		return;
-    }
+    } else if (numFds == 0) {
+		fprintf(stderr, "Select timed out\n");
+		return;
+	}
 
     //
     // Handle a new connection request

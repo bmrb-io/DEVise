@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.118  1999/06/30 17:38:50  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.117  1999/06/25 15:58:25  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -1612,13 +1617,13 @@ int findMonth(const char *mon){
 	return 0;
 }
 
-char **ExtractDate(char *string) {
+char **ExtractDate(const char *string) {
 	char **date = new char*[3];
 	date[0] = new char[4];
 	date[1] = new char[3];
 	date[2] = new char[5];
 
-	char *p = string;
+	const char *p = string;
 	strncpy(date[0], p, 4);
 	date[0][3] = '\0';
 	strncpy(date[1], p+4, 3);
@@ -1654,7 +1659,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 
     VisualFilter filter;
     GetVisualFilter(filter);
-    char *date_string;
+    const char *date_string;
     char **date;
 
     /* put the statistics in the stat buffer */

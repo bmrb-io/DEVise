@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/01/04 15:30:25  wenger
+  Misc. code cleanups.
+
   Wed Oct  1 14:32:06 CDT 1997 Zhenhai Lin
   Added/updated CVS header.
 */
@@ -116,8 +119,8 @@ protected:
     /* get structure for fonts */
     XFontStruct *GetFontStruct()       { return _fontStruct; };
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
-    void SetFont(char *family, char *weight, char *slant,
-                 char *width, float pointSize);
+    void SetFont(const char *family, const char *weight, const char *slant,
+                 const char *width, float pointSize);
     void SetNormalFont();
 
     /* Get width and height of X window */

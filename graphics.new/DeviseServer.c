@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/09/30 17:44:43  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.10  1998/09/10 23:25:10  wenger
   Added more error reporting.
 
@@ -83,8 +87,10 @@
 #include "CmdDescriptor.h"
 #include "Csprotocols.h"
 #include "Session.h"
+#include "DebugLog.h"
 
 //#define DEBUG
+#define DEBUG_LOG
 
 /*------------------------------------------------------------------------------
  * function: DeviseServer::DeviseServer
@@ -153,12 +159,25 @@ DeviseServer::Run()
 #endif
 
   if (_numClients < 1) {
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Before WaitForConnection()\n");
+#endif
     WaitForConnection();
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("After WaitForConnection()\n");
+#endif
     if (_numClients < 1) {
+      reportErrNosys("No client connected");
     }
   } else {
     // Note: SingleStep() receives a command and/or sets up a new connection.
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Before SingleStep()\n");
+#endif
     SingleStep();
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("After SingleStep()\n");
+#endif
   }
 }
 
@@ -167,6 +186,7 @@ DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
 {
 	cmdContainerp->Run(argc, argv, _control, cmdDes);
 }
+
 /*------------------------------------------------------------------------------
  * function: DeviseServer::WaitForConnection
  * Waits for a client connection.

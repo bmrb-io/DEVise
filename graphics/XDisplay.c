@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/05/20 15:18:39  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.74  1999/02/11 19:54:41  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -472,8 +477,8 @@ void XDisplay::SetNormalFont()
 
 /* Set font and point size */
 
-void XDisplay::SetFont(char *family, char *weight, char *slant,
-                       char *width, float pointSize)
+void XDisplay::SetFont(const char *family, const char *weight, const char *slant,
+                       const char *width, float pointSize)
 {
 #if defined(DEBUG)
   printf("XDisplay::SetFont(%s %s %s %s %f)\n", family, weight, slant, width,

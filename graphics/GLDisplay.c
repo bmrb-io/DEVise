@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/01/04 15:30:24  wenger
+  Misc. code cleanups.
+
 
   Wed Oct  1 14:32:06 CDT 1997 Zhenhai Lin
   Added/updated CVS header.
@@ -185,8 +188,8 @@ void GLDisplay::SetNormalFont()
 
 /* Set font and point size */
 
-void GLDisplay::SetFont(char *family, char *weight, char *slant,
-                       char *width, float pointSize)
+void GLDisplay::SetFont(const char *family, const char *weight, const char *slant,
+                       const char *width, float pointSize)
 {
 #if defined(DEBUG)
   printf("GLDisplay::SetFont(%s %s %s %s %f\n", family, weight, slant, width,

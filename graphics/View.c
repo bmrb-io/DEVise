@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.182  1999/07/15 19:26:19  wenger
+  More Y axis drawing improvements -- spaced ticks out a little more.
+
   Revision 1.181  1999/07/15 15:21:30  wenger
   Improved axis drawing when labels don't fit; Y labels spaced closer
   together.
@@ -1749,7 +1752,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   if (_xAxisAttrType == DateAttr) {
 
     // Draw the labels (date values).
-    char *label = DateString((time_t)_filter.xLow, _xAxisDateFormat);
+    const char *label = DateString((time_t)_filter.xLow, _xAxisDateFormat);
     win->AbsoluteText(label, startX, axisY - tickLength - (axisHeight-1),
         drawWidth / 2 - 1, axisHeight - 1, WindowRep::AlignWest, true);
     label = DateString((time_t)_filter.xHigh, _xAxisDateFormat);
@@ -1871,7 +1874,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   if (_yAxisAttrType == DateAttr) {
 
     // Draw the labels (date values).
-    char *label = DateString((time_t)_filter.yLow, _yAxisDateFormat);
+    const char *label = DateString((time_t)_filter.yLow, _yAxisDateFormat);
     win->AbsoluteText(label, axisX, startY, axisWidth - 1,
 		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
     label = DateString((time_t)_filter.yHigh, _yAxisDateFormat);

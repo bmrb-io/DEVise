@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  1999/03/01 17:47:34  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.76  1999/02/11 19:54:41  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -545,7 +548,7 @@ public:
 
   /* import other graphics and display in window */
   virtual void ImportImage(Coord x, Coord y,
-			   DisplayExportFormat format, char *filename) {}
+			   DisplayExportFormat format, const char *filename) {}
 
   /* export window image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, const char *filename) {}
@@ -556,7 +559,7 @@ public:
   virtual void SetDaliServer(const char *serverName) { DOASSERT(false,
     "Can't do SetDaliServer() on this object"); }
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
-    Coord height, char *filename, int imageLen, char *image,
+    Coord height, const char *filename, int imageLen, const char *image,
     float timeoutFactor = 1.0, Boolean maintainAspect = true)
     { reportErrNosys("This object does not support Tasvir operations");
       return StatusFailed; }
@@ -573,14 +576,14 @@ public:
   virtual DevStatus ETk_CreateWindow(Coord x, Coord y,
 				     Coord width, Coord height,
 				     ETkIfc::Anchor anchor,
-				     char *filename,
+				     const char *filename,
 				     int argc, char **argv,
 				     int &handle)
   {
       reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
   }
-  virtual int ETk_FindWindow(Coord centerX, Coord centerY, char *script)
+  virtual int ETk_FindWindow(Coord centerX, Coord centerY, const char *script)
   {
       reportErrNosys("This object does not support EmbeddedTk operations");
       return -1;
@@ -767,24 +770,24 @@ public:
      calculations or for drawing. Padding all texts with leading spaces
      so that they are the same lenght and setting skipLeadingSpaces
      to TRUE ensures that the texts are draw with the same size */
-  virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
+  virtual void ScaledText(const char *text, Coord x, Coord y, Coord width,
 		    Coord height, SymbolAlignment alignment = AlignCenter, 
 		    Boolean skipLeadingSpaces = false,
 		    Coord orientation = 0.0) = 0;
   
-  virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+  virtual void ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 		    Coord height, SymbolAlignment alignment = AlignCenter, 
 		    Boolean skipLeadingSpaces = false,
 		    Coord orientation = 0.0) = 0;
   
   /* draw absolute text: one that does not scale the text */
-  virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+  virtual void AbsoluteText(const char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    SymbolAlignment alignment = AlignCenter, 
 			    Boolean skipLeadingSpaces = false, 
 			    Coord orientation = 0.0) = 0;
 
-  virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+  virtual void AbsoluteDataText(const char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    SymbolAlignment alignment = AlignCenter, 
 			    Boolean skipLeadingSpaces = false, 
@@ -810,8 +813,9 @@ public:
   virtual void SetOrMode() {}
 
   /* Set font or return to normal */
-  virtual void SetFont(char *family, char *weight, char *slant,
-                       char *width, float pointSize) = 0;
+  virtual void SetFont(const char *family, const char *weight,
+                       const char *slant,
+                       const char *width, float pointSize) = 0;
   virtual void SetNormalFont() = 0;
   virtual void SetSmallFont() { SetFont("Courier", "Medium", "r", "Normal",
 					 8.0); }

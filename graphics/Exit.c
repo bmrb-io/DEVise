@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/11/16 18:58:58  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.20  1998/03/08 01:10:42  wenger
   Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
   CPU usage bug (308)).
@@ -134,10 +138,6 @@ void Exit::DoExit(int code)
 #endif
 #endif
 
-#if !defined(LIBCS) && !defined(ATTRPROJ)
-    DebugLog::DeleteAll();
-#endif
-
 #if !defined(LIBCS)
     /* Clean out temp directory.  This code was moved here from Control.c,
      * replacing inline code.  The cleanup should be here, so that it
@@ -161,6 +161,10 @@ void Exit::DoExit(int code)
 	fflush(stderr);
 	abort();
     }
+#endif
+
+#if !defined(LIBCS) && !defined(ATTRPROJ)
+    DebugLog::DeleteAll();
 #endif
 
     exit(code);

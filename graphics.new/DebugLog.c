@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/06/25 15:58:20  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.3  1999/06/23 21:39:15  wenger
   Added pid to log file name and timestamp to log entries.
 
@@ -36,6 +42,8 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/param.h>
 
 #include "DebugLog.h"
 #include "Util.h"
@@ -44,24 +52,31 @@
 //#define DEBUG
 
 static DebugLog *_defaultLog = NULL;
-static int _logNum = 0;
 
 /*------------------------------------------------------------------------------
  * function: DebugLog::DebugLog
  * Constructor.
  */
-DebugLog::DebugLog(char *filename, long maxSize)
+DebugLog::DebugLog(const char *filename, long maxSize)
 {
   if (Init::DoDebugLog()) {
-    _stream = fopen(filename, "w");
-    if (_stream == NULL) {
+    // Note: using open() intead of fopen() here so we can open an existing
+    // file for writing without truncating it.  RKW 1999-07-16.
+    _fd = open(filename, O_WRONLY | O_CREAT, 0644);
+    if (_fd == -1) {
       fprintf(stderr, "Can't open <%s>; errno = %d\n", filename, errno);
     } else {
-      fprintf(_stream, "BEGINNING OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
+      if (lseek(_fd, 0, SEEK_END) == -1) {
+        fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
+      }
+      char logBuf[1024];
+      sprintf(logBuf, "BEGINNING OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
+      write(_fd, logBuf, strlen(logBuf));
     }
     _maxSize = maxSize;
+    _logNum = 0;
   } else {
-    _stream = NULL;
+    _fd = -1;
   }
 }
 
@@ -71,10 +86,12 @@ DebugLog::DebugLog(char *filename, long maxSize)
  */
 DebugLog::~DebugLog()
 {
-  if (_stream != NULL) {
-    fprintf(_stream, "END OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
-    if (fclose(_stream) != 0) {
-      fprintf(stderr, "Error closing debug log file\n");
+  if (_fd != -1) {
+    char logBuf[1024];
+    sprintf(logBuf, "\nEND OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
+    write(_fd, logBuf, strlen(logBuf));
+    if (close(_fd) != 0) {
+      fprintf(stderr, "Error (%d) closing debug log file\n", errno);
     }
   }
 }
@@ -84,13 +101,18 @@ DebugLog::~DebugLog()
  * Log a message.
  */
 void
-DebugLog::Message(char *msg)
+DebugLog::Message(const char *msg)
 {
-  if (_stream != NULL) {
-    fprintf(_stream, "\n%d (%s): %s", _logNum++, GetTimeString(), msg);
-    fflush(_stream);
-    if (ftell(_stream) > _maxSize) {
-      rewind(_stream);
+  if (_fd != -1) {
+    char logBuf[1024];
+    sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
+    write(_fd, logBuf, strlen(logBuf));
+    write(_fd, msg, strlen(msg));
+
+    if (tell(_fd) > _maxSize) {
+      if (lseek(_fd, 0, SEEK_SET) == -1) {
+        fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
+      }
     }
   }
 }
@@ -100,15 +122,29 @@ DebugLog::Message(char *msg)
  * Log a message, with arguments.
  */
 void
-DebugLog::Message(char *msg1, int argc, const char * const *argv, char *msg2)
+DebugLog::Message(const char *msg1, int argc, const char * const *argv,
+    const char *msg2)
 {
-  if (_stream != NULL) {
-    fprintf(_stream, "\n%d (%s): %s", _logNum++, GetTimeString(), msg1);
-    PrintArgs(_stream, argc, argv, false);
-    fprintf(_stream, "%s", msg2);
-    fflush(_stream);
-    if (ftell(_stream) > _maxSize) {
-      rewind(_stream);
+  if (_fd != -1) {
+    char logBuf[MAXPATHLEN * 2];
+    sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
+    write(_fd, logBuf, strlen(logBuf));
+    write(_fd, msg1, strlen(msg1));
+
+    int index;
+    char *prefix = "";
+    for (index = 0; index < argc; index++) {
+      sprintf(logBuf, "%s<%s>", prefix, argv[index]);
+      write(_fd, logBuf, strlen(logBuf));
+      prefix = ", ";
+    }
+
+    write(_fd, msg2, strlen(msg2));
+
+    if (tell(_fd) > _maxSize) {
+      if (lseek(_fd, 0, SEEK_SET) == -1) {
+        fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
+      }
     }
   }
 }
@@ -144,10 +180,10 @@ DebugLog::DeleteAll()
  * function: DebugLog::GetTimeString
  * Return a string with the current time/date.
  */
-char *
+const char *
 DebugLog::GetTimeString()
 {
-  char *timeStr;
+  const char *timeStr;
   struct timeval logTime;
   if (gettimeofday(&logTime, NULL) >= 0) {
     timeStr = DateString(logTime.tv_sec);

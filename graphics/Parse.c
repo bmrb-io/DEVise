@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/16 11:14:34  kmurli
+  No change
+
   Revision 1.12  1996/11/23 21:23:29  jussi
   Removed Config.h. Includes Init.h instead.
 
@@ -189,7 +192,7 @@ static int GetMonth(char *month)
   return 0;
 }
 
-int ParseFloatDate(char *input, double &val)
+int ParseFloatDate(const char *input, double &val)
 {
   char line[256];
   strcpy(line, input);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1999/07/12 19:02:03  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.31  1999/03/01 23:08:58  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -254,7 +257,7 @@ char *CopyString(const char *str)
   return result;
 }
 
-char *DateString(time_t tm, const char *format)
+const char *DateString(time_t tm, const char *format)
 {
 #if 0
   if (tm < 0) {

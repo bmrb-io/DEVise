@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/01/05 20:53:48  wenger
+  Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
+  of the text symbol code.
+
   Revision 1.20  1998/06/18 21:41:11  wenger
   Client/server library related fixes and updates.
 
@@ -504,8 +508,8 @@ void GLWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 
 DevStatus GLWindowRep::DaliShowImage(Coord centerX, Coord centerY,
 				Coord width, Coord height,
-				char *filename, int imageLen,
-				char *image, float timeoutFactor = 1.0,
+				const char *filename, int imageLen,
+				const char *image, float timeoutFactor = 1.0,
 				Boolean maintainAspect = true)
 {
 #if defined(DEBUG)
@@ -613,7 +617,7 @@ _etkSearch(ETkWinList *list, int handle)
 DevStatus GLWindowRep::ETk_CreateWindow(Coord x, Coord y,
 				   Coord width, Coord height,
 				   ETkIfc::Anchor anchor,
-				   char *filename,
+				   const char *filename,
 				   int argc, char **argv,
 				   int &handle)
 {
@@ -694,7 +698,7 @@ DevStatus GLWindowRep::ETk_CreateWindow(Coord x, Coord y,
 // NOTE: the x,y coords are DATA coords, not pixel values.
 //
 int GLWindowRep::ETk_FindWindow(Coord centerX, Coord centerY,
-			   char *script)
+			   const char *script)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::ETk_FindWindow()\n",this);
@@ -1736,7 +1740,7 @@ void GLWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 }
 
-void GLWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
+void GLWindowRep::ScaledText(const char *text, Coord x, Coord y, Coord width,
 			     Coord height, SymbolAlignment alignment = AlignCenter,
 			     Boolean skipLeadingSpaces = false,
 			     Coord orientation = 0.0)
@@ -1753,7 +1757,7 @@ void GLWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 #endif
 }
 
-void GLWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+void GLWindowRep::ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 			     Coord height, SymbolAlignment alignment = AlignCenter,
 			     Boolean skipLeadingSpaces = false,
 			     Coord orientation = 0.0)
@@ -1768,7 +1772,7 @@ void GLWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
 #endif
 }
 
-void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+void GLWindowRep::AbsoluteText(const char *text, Coord x, Coord y, Coord width, 
 			       Coord height,
 			       SymbolAlignment alignment = AlignCenter,
 			       Boolean skipLeadingSpaces = false,
@@ -1786,7 +1790,7 @@ void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width,
 #endif
 }
 
-void GLWindowRep::AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+void GLWindowRep::AbsoluteDataText(const char *text, Coord x, Coord y, Coord width, 
 			       Coord height,
 			       SymbolAlignment alignment = AlignCenter,
 			       Boolean skipLeadingSpaces = false,
@@ -1844,8 +1848,8 @@ void GLWindowRep::SetOrMode()
 }
 
 /* Set font or return to normal */
-void GLWindowRep::SetFont(char *family, char *weight, char *slant,
-			  char *width, float pointSize)
+void GLWindowRep::SetFont(const char *family, const char *weight, const char *slant,
+			  const char *width, float pointSize)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::SetFont(%s,%f)\n", this, family, pointSize);
@@ -2495,7 +2499,7 @@ void GLWindowRep::HandleEvent(XEvent &event)
 #if defined(TK_WINDOW_OLD)
 /* Build Tk window around this window */
 void GLWindowRep::EmbedInTkWindow(GLWindowRep *parent,
-				  char *name,
+				  const char *name,
 				  unsigned int min_width,
 				  unsigned int min_height)
 {
@@ -2882,7 +2886,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
 //TEMP -- I think that DrawText() and DrawDataText() are about 95% the
 // same -- they should get consolidated into a single function.
 // RKW 1999-01-05.
-void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
+void GLWindowRep::DrawText(Boolean scaled, const char *text, Coord x, Coord y,
 			   Coord width, Coord height,
 			   SymbolAlignment alignment = AlignCenter,
 			   Boolean skipLeadingSpaces = false,
@@ -2959,7 +2963,7 @@ void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 #endif
 }
 
-void GLWindowRep::DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+void GLWindowRep::DrawDataText(Boolean scaled, const char *text, Coord x, Coord y,
 			   Coord width, Coord height,
 			   SymbolAlignment alignment = AlignCenter,
 			   Boolean skipLeadingSpaces = false,

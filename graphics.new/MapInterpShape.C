@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/06/30 17:38:48  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.67  1999/05/28 16:32:42  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -2066,6 +2071,8 @@ GetLabelText(char *gdata, TDataMap *map,
     GDataAttrOffset *offset = map->GetGDataOffset();
     StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
+    //TEMP -- should be const char * for assignment from DateString() --
+    // RKW 1999-07-16.
     char *label;
 
     if (!labelAttrValid) {
@@ -2088,7 +2095,7 @@ GetLabelText(char *gdata, TDataMap *map,
     } else if (labelAttrType == DateAttr) {
       /* Label attribute is a date.  Convert the UNIX date (stored as a
        * double in the GData) to a date string. */
-      label = DateString((time_t) map->GetShapeAttr0(gdata));
+      label = (char *)DateString((time_t) map->GetShapeAttr0(gdata));
     } else {
       /* Label attribute is a numerical value (stored as a double in the
        * GData).  Print it with the appropriate format string. */

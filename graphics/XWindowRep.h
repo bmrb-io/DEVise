@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/04/20 21:25:18  wenger
+  Combined DrawText() and DrawDataText() into NewDrawText() without changing
+  functionality.
+
   Revision 1.59  1999/03/01 17:47:35  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -390,8 +394,8 @@ class XWindowRep : public WindowRep
 	}
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                         Coord width, Coord height,
-                                        char *filename, int imageLen,
-                                        char *image, float timeoutFactor = 1.0,
+                                        const char *filename, int imageLen,
+                                        const char *image, float timeoutFactor = 1.0,
 					Boolean maintainAspect = true);
 	virtual DevStatus DaliFreeImages();
 	virtual int DaliImageCount()
@@ -407,11 +411,11 @@ class XWindowRep : public WindowRep
   	virtual DevStatus ETk_CreateWindow(Coord x, Coord y,
 					   Coord width, Coord height,
 					   ETkIfc::Anchor anchor,
-					   char *filename,
+					   const char *filename,
 					   int argc, char **argv,
 					   int &handle);
   	virtual int ETk_FindWindow(Coord centerX, Coord centerY,
-				   char *script);
+				   const char *script);
 	virtual DevStatus ETk_MoveWindow(int handle,
 					 Coord centerX, Coord centerY);
 	virtual DevStatus ETk_ResizeWindow(int handle,
@@ -523,23 +527,23 @@ class XWindowRep : public WindowRep
                           CursorStore *cstore=0);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-	virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
+	virtual void ScaledText(const char *text, Coord x, Coord y, Coord width,
 			  Coord height, SymbolAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
-	virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+	virtual void ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 			  Coord height, SymbolAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
-	virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+	virtual void AbsoluteText(const char *text, Coord x, Coord y, Coord width, 
 				  Coord height,
 				  SymbolAlignment alignment = AlignCenter,
 				  Boolean skipLeadingSpaces = false,
 				  Coord orientation = 0.0);
 
-	virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+	virtual void AbsoluteDataText(const char *text, Coord x, Coord y, Coord width, 
 				  Coord height,
 				  SymbolAlignment alignment = AlignCenter,
 				  Boolean skipLeadingSpaces = false,
@@ -551,8 +555,9 @@ class XWindowRep : public WindowRep
 	virtual void SetOrMode();
 
 	/* Set font or return to normal */
-        virtual void SetFont(char *family, char *weight, char *slant,
-                             char *width, float pointSize);
+        virtual void SetFont(const char *family, const char *weight,
+	                     const char *slant,
+                             const char *width, float pointSize);
 	virtual void SetNormalFont();
 	
 	/* Draw rubberbanding rectangle */
@@ -606,7 +611,7 @@ protected:
 
 	/* Build Tk window around this window */
 	virtual void EmbedInTkWindow(XWindowRep *parent,
-				     char *name,
+				     const char *name,
 				     unsigned int min_width,
 				     unsigned int min_height);
 
@@ -658,7 +663,7 @@ private:
 #endif
 
 	virtual void NewDrawText(Boolean isDataText,
-				  Boolean scaled, char *text, Coord x, Coord y,
+				  Boolean scaled, const char *text, Coord x, Coord y,
     			          Coord width, Coord height,
     			          SymbolAlignment alignment = AlignCenter,
     			          Boolean skipLeadingSpaces = false,

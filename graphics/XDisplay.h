@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/12/15 18:47:13  wenger
+  New option in fixed text symbol: if size is <=1, it is assumed to be a
+  fraction of the screen height, rather than the font size in points.
+
   Revision 1.33  1998/02/19 23:24:54  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -257,8 +261,8 @@ protected:
     /* get structure for fonts */
     XFontStruct *GetFontStruct()       { return _fontStruct; };
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
-    void SetFont(char *family, char *weight, char *slant,
-                 char *width, float pointSize);
+    void SetFont(const char *family, const char *weight, const char *slant,
+                 const char *width, float pointSize);
     void SetNormalFont();
 
     /* Get width and height of X window */

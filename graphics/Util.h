@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/01/18 22:34:46  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.21  1998/12/22 19:39:10  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -176,9 +184,9 @@ inline Boolean IsBlank(char *string)
 }
 
 /* convert double to string */
-char *DateString(time_t tm, const char *format = NULL);
+const char *DateString(time_t tm, const char *format = NULL);
 
-inline char *DateString(double d, char *format = NULL) {
+inline const char *DateString(double d, char *format = NULL) {
   return DateString((time_t)d);
 }
 

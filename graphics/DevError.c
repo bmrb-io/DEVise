@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/04/02 16:48:46  wenger
+  Added timestamp to error messages.
+
   Revision 1.5  1999/03/24 17:26:03  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -53,6 +56,9 @@
 #ifndef LIBCS
 #include "Init.h"
 #endif
+#include "DebugLog.h"
+
+#define DEBUG_LOG
 
 /*
  * Static global variables.
@@ -92,14 +98,21 @@ DevError::ReportError(char *message, char *file, int line, int errnum)
     }
     errStr << "  at " << file << ": " << line;
 
+#if 0 // Timestamp is already added by DebugLog class.
     struct timeval errTime;
     if (gettimeofday(&errTime, NULL) >= 0) {
         errStr << " (" << DateString(errTime.tv_sec) << ")\n";
     }
+#else
+    errStr << endl;
+#endif
 
     errStr << ends;
 
     fprintf(stderr, "%s", errStr.str());
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(errStr.str());
+#endif
     strncpy(_errBuf, errStr.str(), MAXPATHLEN * 2);
     _errBuf[MAXPATHLEN * 2 - 1] = '\0'; // ensure termination
 }

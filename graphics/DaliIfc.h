@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/09/04 17:26:12  wenger
+  Got Tasvir images to work in pixmaps (when running the JavaScreen, for
+  example) -- fixes bug 385.
+
   Revision 1.7  1997/05/05 16:53:42  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -74,18 +78,18 @@
 class DaliIfc
 {
 public:
-  static DevStatus ShowImage(char *daliServer, Drawable win, int centerX,
-    int centerY, int width, int height, char *filename, int imageLen,
-    char *image, int &handle, float timeoutFactor = 1.0,
+  static DevStatus ShowImage(const char *daliServer, Drawable win, int centerX,
+    int centerY, int width, int height, const char *filename, int imageLen,
+    const char *image, int &handle, float timeoutFactor = 1.0,
     int maxImageSize = 1000, Boolean maintainAspect = true);
-  static DevStatus PSShowImage(char *daliServer, int width, int height,
-    char *filename, int imageLen, char *image, FILE *printfile,
+  static DevStatus PSShowImage(const char *daliServer, int width, int height,
+    const char *filename, int imageLen, const char *image, FILE *printfile,
     float timeoutFactor = 1.0, Boolean maintainAspect = true);
 
-  static DevStatus FreeImage(char *daliServer, int handle);
-  static DevStatus FreeWindowImages(char *daliServer, Drawable win);
-  static DevStatus Reset(char *daliServer);
-  static DevStatus Quit(char *daliServer);
+  static DevStatus FreeImage(const char *daliServer, int handle);
+  static DevStatus FreeWindowImages(const char *daliServer, Drawable win);
+  static DevStatus Reset(const char *daliServer);
+  static DevStatus Quit(const char *daliServer);
 
   static DevStatus LaunchServer(char *&serverName);
 };

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.127  1999/06/04 16:32:01  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.126  1999/05/20 15:18:40  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -1096,7 +1103,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
  */
 DevStatus
 XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
-	Coord height, char *filename, int imageLen, char *image,
+	Coord height, const char *filename, int imageLen, const char *image,
 	float timeoutFactor, Boolean maintainAspect)
 {
 #if defined(DEBUG)
@@ -1216,7 +1223,7 @@ DevStatus
 XWindowRep::ETk_CreateWindow(Coord x, Coord y,
 			     Coord width, Coord height,
 			     ETkIfc::Anchor anchor,
-			     char *filename, int argc, char **argv,
+			     const char *filename, int argc, char **argv,
 			     int &handle)
 {
 #if defined(DEBUG) || defined(DEBUG_ETK)
@@ -1294,7 +1301,7 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
 // NOTE: the x,y coords are DATA coords, not pixel values.
 //
 int
-XWindowRep::ETk_FindWindow(Coord centerX, Coord centerY, char *script)
+XWindowRep::ETk_FindWindow(Coord centerX, Coord centerY, const char *script)
 {
 #if defined(DEBUG) || defined(DEBUG_ETK)
     printf("XWindowRep::ETk_FindWindow(%f,%f,%s)\n",
@@ -2864,7 +2871,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 
 /* Draw absolute text */
 
-void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
+void XWindowRep::AbsoluteText(const char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      SymbolAlignment alignment, 
 			      Boolean skipLeadingSpace, Coord orientation)
@@ -2879,7 +2886,7 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 }
 /* Draw absolute data text */
 
-void XWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
+void XWindowRep::AbsoluteDataText(const char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      SymbolAlignment alignment, 
 			      Boolean skipLeadingSpace, Coord orientation)
@@ -2896,7 +2903,7 @@ void XWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
 
 /* Draw scaled text */
 
-void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
+void XWindowRep::ScaledText(const char *text, Coord x, Coord y, Coord width,
 		      Coord height, SymbolAlignment alignment,
 		      Boolean skipLeadingSpace, Coord orientation)
 {
@@ -2911,7 +2918,7 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
  
 /* Draw scaled data text */
 
-void XWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+void XWindowRep::ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 		      Coord height, SymbolAlignment alignment,
 		      Boolean skipLeadingSpace, Coord orientation)
 {
@@ -2972,8 +2979,8 @@ void XWindowRep::SetCopyMode()
 //  if (scale != 1.0) XRotSetMagnification(1.0);
 }
 
-void XWindowRep::SetFont(char *family, char *weight, char *slant,
-                         char *width, float pointSize)
+void XWindowRep::SetFont(const char *family, const char *weight, const char *slant,
+                         const char *width, float pointSize)
 {
 #if defined(DEBUG)
   printf("XWindowRep(0x%p)::SetFont(%s,%f)\n", this, family, pointSize);
@@ -2993,7 +3000,7 @@ void XWindowRep::SetNormalFont()
   XSetFont(_display, _gc, fontStruct->fid);
 }
 
-void XWindowRep::NewDrawText(Boolean isDataText, Boolean scaled, char *text,
+void XWindowRep::NewDrawText(Boolean isDataText, Boolean scaled, const char *text,
 			  Coord x, Coord y, Coord width, Coord height,
 			  SymbolAlignment alignment,
 			  Boolean skipLeadingSpace, Coord orientation)
@@ -3155,7 +3162,7 @@ void XWindowRep::NewDrawText(Boolean isDataText, Boolean scaled, char *text,
 
   if (scale != 1.0) XRotSetMagnification(scale);
   XRotDrawAlignedString(_display, fontStruct, orientation,
-    DRAWABLE, _gc, startX, startY, text, xvtAlign);
+    DRAWABLE, _gc, startX, startY, (char *)text, xvtAlign);
   if (scale != 1.0) XRotSetMagnification(1.0);
 #endif
 }
@@ -3921,7 +3928,7 @@ static const unsigned int TkViewTopMargin    = 0;
 static const unsigned int TkViewBottomMargin = 20;
 
 void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
-				 char *name,
+				 const char *name,
 				 unsigned int min_width,
 				 unsigned int min_height)
 {

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/03/01 17:47:31  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.14  1999/02/11 19:54:30  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -177,8 +180,8 @@ public:
     }
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
 				  Coord width, Coord height,
-				  char *filename, int imageLen,
-				  char *image, float timeoutFactor = 1.0,
+				  const char *filename, int imageLen,
+				  const char *image, float timeoutFactor = 1.0,
 				  Boolean maintainAspect = true);
   virtual DevStatus DaliFreeImages();
   virtual int DaliImageCount()
@@ -194,11 +197,11 @@ public:
   virtual DevStatus ETk_CreateWindow(Coord x, Coord y,
 				     Coord width, Coord height,
 				     ETkIfc::Anchor anchor,
-				     char *filename,
+				     const char *filename,
 				     int argc, char **argv,
 				     int &handle);
   virtual int ETk_FindWindow(Coord centerX, Coord centerY,
-			     char *script);
+			     const char *script);
   virtual DevStatus ETk_MoveWindow(int handle,
 				   Coord centerX, Coord centerY);
   virtual DevStatus ETk_ResizeWindow(int handle,
@@ -350,23 +353,23 @@ public:
   virtual void Text3D(Coord x, Coord y, Coord z, char* text);
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-  virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
+  virtual void ScaledText(const char *text, Coord x, Coord y, Coord width,
 			  Coord height, SymbolAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
-  virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+  virtual void ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 			  Coord height, SymbolAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
-  virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+  virtual void AbsoluteText(const char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    SymbolAlignment alignment = AlignCenter,
 			    Boolean skipLeadingSpaces = false,
 			    Coord orientation = 0.0);
 
-  virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+  virtual void AbsoluteDataText(const char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    SymbolAlignment alignment = AlignCenter,
 			    Boolean skipLeadingSpaces = false,
@@ -392,8 +395,9 @@ public:
   virtual void SetOrMode();
 
   /* Set font or return to normal */
-  virtual void SetFont(char *family, char *weight, char *slant,
-		       char *width, float pointSize);
+  virtual void SetFont(const char *family, const char *weight,
+                       const char *slant,
+		       const char *width, float pointSize);
   virtual void SetNormalFont();
 	
   /* Draw rubberbanding rectangle */
@@ -450,7 +454,7 @@ protected:
 
   /* Build Tk window around this window */
   virtual void EmbedInTkWindow(GLWindowRep *parent,
-			       char *name,
+			       const char *name,
 			       unsigned int min_width,
 			       unsigned int min_height);
 
@@ -497,13 +501,13 @@ private:
 		     int &yhigh, int button);
 #endif
 
-  virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+  virtual void DrawText(Boolean scaled, const char *text, Coord x, Coord y,
 			Coord width, Coord height,
 			SymbolAlignment alignment = AlignCenter,
 			Boolean skipLeadingSpaces = false,
 			Coord orientation = 0.0);
 
-  virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+  virtual void DrawDataText(Boolean scaled, const char *text, Coord x, Coord y,
 			Coord width, Coord height,
 			SymbolAlignment alignment = AlignCenter,
 			Boolean skipLeadingSpaces = false,

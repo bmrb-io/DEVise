@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/01/05 20:53:50  wenger
+  Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
+  of the text symbol code.
+
   Revision 1.40  1998/12/15 14:54:56  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -493,7 +497,7 @@ void PSWindowRep::PopClip()
 
 void PSWindowRep::ImportImage(Coord x, Coord y,
                               DisplayExportFormat format,
-                              char *filename)
+                              const char *filename)
 {
 #ifdef DEBUG
   printf("Reading image from file %s\n", filename);
@@ -531,7 +535,7 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
  */
 DevStatus
 PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
-        Coord height, char *filename, int imageLen, char *image,
+        Coord height, const char *filename, int imageLen, const char *image,
         float timeoutFactor, Boolean maintainAspect)
 {
 #if defined(DEBUG)
@@ -1391,7 +1395,7 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 /*---------------------------------------------------------------------------*/
 /* Draw absolute text */
 
-void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
+void PSWindowRep::AbsoluteText(const char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      SymbolAlignment alignment, 
 			      Boolean skipLeadingSpace, Coord orientation)
@@ -1405,7 +1409,7 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
     orientation);
 }
 
-void PSWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
+void PSWindowRep::AbsoluteDataText(const char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      SymbolAlignment alignment, 
 			      Boolean skipLeadingSpace, Coord orientation)
@@ -1422,7 +1426,7 @@ void PSWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
 /*---------------------------------------------------------------------------*/
 /* Draw scaled text */
 
-void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
+void PSWindowRep::ScaledText(const char *text, Coord x, Coord y, Coord width,
 		       Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {
@@ -1437,7 +1441,7 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 
 /* Draw scaled data text */
 
-void PSWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+void PSWindowRep::ScaledDataText(const char *text, Coord x, Coord y, Coord width,
 		       Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {
@@ -1505,8 +1509,8 @@ void PSWindowRep::SetCopyMode()
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::SetFont(char *family, char *weight, char *slant,
-                          char *width, float pointSize)
+void PSWindowRep::SetFont(const char *family, const char *weight, const char *slant,
+                          const char *width, float pointSize)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::SetFont(%s %s %s %s %f\n", family, weight, slant,
@@ -1916,7 +1920,7 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 /*---------------------------------------------------------------------------*/
 /* Draw scaled or absolute text */
 
-void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
+void PSWindowRep::DrawText(Boolean scaled, const char *text, Coord x, Coord y,
 		       Coord width, Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {
@@ -2052,7 +2056,7 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 }
 
 
-void PSWindowRep::DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+void PSWindowRep::DrawDataText(Boolean scaled, const char *text, Coord x, Coord y,
 		       Coord width, Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/07/14 18:42:51  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.72  1999/07/13 17:32:29  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -1600,7 +1603,9 @@ DeviseCommand_date::Run(int argc, char** argv)
     {
         {
           time_t tm = time((time_t *)0);
-          ReturnVal(API_ACK, DateString(tm));
+	  //TEMP -- type of second arg should probably be const char * --
+	  // RKW 1999-07-16.
+          ReturnVal(API_ACK, (char *)DateString(tm));
           return 1;
         }
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/11 21:02:16  jussi
+  Added ParseSQLTimestamp() function. Added copyright notice.
+
   Revision 1.2  1995/09/05 21:12:58  jussi
   Added/updated CVS header.
 */
@@ -43,7 +46,7 @@ extern void Parse(char *line, int &num, char **&args, char *separators,
    Return true if parsed OK.
    date format is like: Thu Jan 26 17:27:42 CST 1995
 */
-int ParseFloatDate(char *line, double &val);
+int ParseFloatDate(const char *line, double &val);
 
 /*
    Parse a SQL time stamp of the format YYYY-MM-DD HH:MM:SS and return

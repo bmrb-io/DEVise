@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/02/11 19:54:32  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.30.6.1  1998/12/29 17:24:42  wenger
   First version of new PileStack objects implemented -- allows piles without
   pile links.  Can't be saved or restored in session files yet.
@@ -253,7 +258,7 @@ class PSWindowRep : public WindowRep
 
     /* import other graphics and display in window */
     virtual void ImportImage(Coord x, Coord y,
-                             DisplayExportFormat format, char *filename);
+                             DisplayExportFormat format, const char *filename);
 
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, const char *filename);
@@ -263,8 +268,8 @@ class PSWindowRep : public WindowRep
       CopyString(serverName); }
     virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                     Coord width, Coord height,
-                                    char *filename, int imageLen,
-                                    char *image, float timeoutFactor = 1.0,
+                                    const char *filename, int imageLen,
+                                    const char *image, float timeoutFactor = 1.0,
 				    Boolean maintainAspect = true);
     virtual DevStatus DaliFreeImages() { return StatusOk; }
     virtual int DaliImageCount() { return 0; }
@@ -324,23 +329,23 @@ class PSWindowRep : public WindowRep
                       CursorStore *cstore=0);
     virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-    virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
+    virtual void ScaledText(const char *text, Coord x, Coord y, Coord width,
                       Coord height, SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
     
-    virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+    virtual void ScaledDataText(const char *text, Coord x, Coord y, Coord width,
                       Coord height, SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
     
-    virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+    virtual void AbsoluteText(const char *text, Coord x, Coord y, Coord width, 
                               Coord height,
                               SymbolAlignment alignment = AlignCenter,
                               Boolean skipLeadingSpaces = false,
 			      Coord orientation = 0.0);
 
-    virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+    virtual void AbsoluteDataText(const char *text, Coord x, Coord y, Coord width, 
                               Coord height,
                               SymbolAlignment alignment = AlignCenter,
                               Boolean skipLeadingSpaces = false,
@@ -351,8 +356,9 @@ class PSWindowRep : public WindowRep
     virtual void SetCopyMode();
 
     /* Set font or return to normal font */
-    virtual void SetFont(char *family, char *weight, char *slant,
-                         char *width, float pointSize);
+    virtual void SetFont(const char *family, const char *weight,
+                         const char *slant,
+                         const char *width, float pointSize);
     virtual void SetNormalFont() { SetFont("Courier", "Medium", "r",
                                            "Normal", 12.0); }
 
@@ -430,13 +436,13 @@ private:
       Coord y2);
     void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 1.0);
 
-    virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+    virtual void DrawText(Boolean scaled, const char *text, Coord x, Coord y,
 		      Coord width, Coord height,
 		      SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
 
-    virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+    virtual void DrawDataText(Boolean scaled, const char *text, Coord x, Coord y,
 		      Coord width, Coord height,
 		      SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
