@@ -1,3 +1,4 @@
+
 /*
   ========================================================================
   DEVise Data Visualization Software
@@ -16,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/07/22 15:00:58  donjerko
+  *** empty log message ***
+
   Revision 1.23  1997/06/30 23:05:05  donjerko
   CVS:
 
@@ -126,6 +130,56 @@ void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val2 = ((EncodedDTF*)arg2);
 	assert(val1 && val2);
      result = (Type*)(val1->compare(*val2));
+}
+
+void dateSubD(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedDTF* val1 = ((EncodedDTF*)arg1) ;
+	EncodedDTF* val2 = ((EncodedDTF*)arg2) ;
+	*((EncodedIDT*) result) = (*val1 - *val2) ;
+}
+
+void dateSubI(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedDTF* val1 = ((EncodedDTF*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	*((EncodedDTF*) result) = (*val1 - *val2) ;
+}
+
+void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedDTF* val1 = ((EncodedDTF*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	*((EncodedDTF*) result) = (*val1 + *val2) ;
+}
+
+void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	assert(val1 && val2) ;
+	result = (Type*)(*val1 == *val2) ;
+}
+
+void intervalLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	assert(val1 && val2) ;
+	result = (Type*)(*val1 < *val2) ;
+}
+
+void intervalGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	assert(val1 && val2) ;
+	result = (Type*)(*val1 > *val2) ;
+}
+void intervalAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	*((EncodedIDT*) result) = (*val1 + *val2) ;
+}
+
+void intervalSub(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
+	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
+	*((EncodedIDT*) result) = (*val1 - *val2) ;
 }
 
 void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -416,6 +470,11 @@ void dateWrite(ostream& out, const Type* adt){
 	out << *((EncodedDTF*) adt);
 }
 
+void intervalWrite(ostream& out, const Type* adt){
+	assert(adt);
+	out << *((EncodedIDT*) adt);
+}
+
 void time_tWrite(ostream& out, const Type* adt){
 	assert(adt);
 	out << *((time_t*) adt);
@@ -485,6 +544,9 @@ int packSize(String type){	// throws exception
 	else if(type == "date"){
 		return sizeof(EncodedDTF);
 	}
+	else if(type == "interval") {
+		return sizeof(EncodedIDT) ;
+	}
 	else if(type == "time_t"){
 		return sizeof(time_t);
 	}
@@ -509,6 +571,10 @@ void doubleMarshal(const Type* adt, char* to){
 
 void dateMarshal(const Type* adt, char* to){
 	memcpy(to, adt, sizeof(EncodedDTF));
+}
+
+void intervalMarshal(const Type* adt, char* to){
+	memcpy(to, adt, sizeof(EncodedIDT));
 }
 
 void time_tMarshal(const Type* adt, char* to){
@@ -538,6 +604,9 @@ MarshalPtr getMarshalPtr(String type){
 	}
 	else if(type == "date"){
 		return dateMarshal;
+	}
+	else if(type == "interval") {
+		return intervalMarshal ;
 	}
 	else if(type == "time_t"){
 		return time_tMarshal;
@@ -570,6 +639,10 @@ void dateUnmarshal(char* from, Type*& adt){
 	memcpy(adt, from, sizeof(EncodedDTF));
 }
 
+void intervalUnmarshal(char* from, Type*& adt){
+	memcpy(adt, from, sizeof(EncodedIDT));
+}
+
 void time_tUnmarshal(char* from, Type*& adt){
 	memcpy(adt, from, sizeof(time_t));
 }
@@ -586,6 +659,9 @@ UnmarshalPtr getUnmarshalPtr(String type){
 	}
 	else if(type == "date"){
 		return dateUnmarshal;
+	}
+	else if(type == "interval"){
+		return intervalUnmarshal;
 	}
 	else if(type == "time_t"){
 		return time_tUnmarshal;
@@ -618,6 +694,9 @@ GeneralPtr* getOperatorPtr(
 	}
 	else if(root == "date"){
 		return IDate::getOperatorPtr(name, root, arg, retType);
+	}
+	else if(root == "interval"){
+		return IInterval::getOperatorPtr(name, root, arg, retType);
 	}
 	else if(root == "time_t"){
 		return ITime_t::getOperatorPtr(name, root, arg, retType);
@@ -698,6 +777,9 @@ WritePtr getWritePtr(TypeID root){
 	}
 	else if(root == "date"){
 		return dateWrite;
+	}
+	else if(root == "interval"){
+		return intervalWrite;
 	}
 	else if(root == "time_t"){
 		return time_tWrite;
@@ -1134,6 +1216,10 @@ void dateCopy(const Type* arg, Type*& result, size_t& sz){
 	*((EncodedDTF*) result) = *((EncodedDTF*) arg);
 }
 
+void intervalCopy(const Type* arg, Type*& result, size_t& sz){
+	*((EncodedIDT*) result) = *((EncodedIDT*) arg);
+}
+
 void stringCopy(const Type* arg, Type*& result, size_t& sz){
 	strncpy((char*) result, (char*) arg, sz);
 }
@@ -1151,6 +1237,9 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	}
 	else if(adt == DATE_TP){
 		return dateCopy;
+	}
+	else if(adt == INTERVAL_TP){
+		return intervalCopy;
 	}
 	else if(adt == "time_t"){
 		return time_tCopy;
@@ -1205,17 +1294,20 @@ int domain(TypeID adt){	// throws exception
 	else if(adt == "date"){
 		return 2;
 	}
-	else if(adt == "bool"){
+	else if(adt == "interval"){
 		return 3;
 	}
-	else if(adt == "int"){
+	else if(adt == "bool"){
 		return 4;
 	}
-	else if(adt == "float"){
+	else if(adt == "int"){
 		return 5;
 	}
-	else if(adt == "double"){
+	else if(adt == "float"){
 		return 6;
+	}
+	else if(adt == "double"){
+		return 7;
 	}
 	else{
 		String msg = String("Type \"") + adt + 
@@ -1266,6 +1358,9 @@ char* allocateSpace(TypeID type, size_t& size){
 	}
 	else if(type == "date"){
 		return (char*) new EncodedDTF();
+	}
+	else if(type == "interval") {
+		return (char*) new EncodedIDT() ;
 	}
 	else if(type == "time_t"){
 		return (char*) new time_t;

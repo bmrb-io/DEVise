@@ -1,3 +1,4 @@
+
 /*
   ========================================================================
   DEVise Data Visualization Software
@@ -16,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/07/22 15:00:58  donjerko
+  *** empty log message ***
+
   Revision 1.23  1997/06/27 23:17:23  donjerko
   Changed date structure from time_t and tm to EncodedDTF
 
@@ -110,6 +114,7 @@ const String UNKN_TYPE = "unknown";
 const String INT_TP = "int";
 const String DOUBLE_TP = "double";
 const String DATE_TP = "date";
+const String INTERVAL_TP = "interval" ;
 const String STRING_TP = "string";
 
 struct Stats{
@@ -191,12 +196,14 @@ void intCopy(const Type* arg, Type*& result, size_t& = ds);
 void doubleCopy(const Type* arg, Type*& result, size_t& = ds);
 void stringCopy(const Type* arg, Type*& result, size_t& = ds);
 void dateCopy(const Type* arg, Type*& result, size_t& sz);
+void intervalCopy(const Type* arg, Type*& result, size_t& sz);
 void time_tCopy(const Type* arg, Type*& result, size_t& sz);
 
 void intMarshal(const Type* adt, char* to);
 void doubleMarshal(const Type* adt, char* to);
 void stringMarshal(const Type* adt, char* to);
 void dateMarshal(const Type* adt, char* to);
+void intervalMarshal(const Type* adt, char* to);
 void time_tMarshal(const Type* adt, char* to);
 
 void dateToUnixTime(const Type* adt, char* to);
@@ -205,6 +212,7 @@ void intUnmarshal(char* from, Type*& adt);
 void doubleUnmarshal(char* from, Type*& adt);
 void stringUnmarshal(char* from, Type*& adt);
 void dateUnmarshal(char* from, Type*& adt);
+void intervalUnmarshal(char* from, Type*& adt);
 void time_tUnmarshal(char* from, Type*& adt);
 
 int boolSize(int a, int b);
@@ -265,6 +273,15 @@ void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateSubD(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateSubI(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+
+void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intervalLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intervalGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intervalSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intervalAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
 void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void time_tLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
@@ -310,6 +327,7 @@ void catEntryWrite(ostream&, const Type*);
 void schemaWrite(ostream&, const Type*);
 void indexDescWrite(ostream&, const Type*);
 void dateWrite(ostream& out, const Type* adt);
+void intervalWrite(ostream& out, const Type* adt);
 void time_tWrite(ostream& out, const Type* adt);
 
 class IInt {
@@ -559,6 +577,28 @@ public:
 		String name, TypeID root, TypeID arg, TypeID& retType){
 		String msg = 
 			"No operator " + name + " (" + root + ", " + arg + ") defined";
+          if(name == "-") {
+               if (arg == "date") {
+                    retType = "interval" ;
+                    return new GeneralPtr(dateSubD, sameSize) ;
+			}
+               else if (arg == "interval") {
+				retType = "date" ;
+				return new GeneralPtr(dateSubI, sameSize) ;
+			}
+			else {
+				THROW(new Exception(msg), NULL);
+			}
+		}
+		if (name == "+") {
+			if (arg == "interval") {
+				retType = "date" ;
+				return new GeneralPtr(dateAdd, sameSize) ;
+			}
+			else {
+				THROW(new Exception(msg), NULL) ;
+			}
+		}
 		if(arg != "date"){
 			THROW(new Exception(msg), NULL);
 		}
@@ -578,12 +618,47 @@ public:
 			retType = "int";
 			return new GeneralPtr(dateComp, sameSize);
 		}
-		else{
+		else {
 			THROW(new Exception(msg), NULL);
 		}
 	}
 };
 
+class IInterval {
+public:
+	static GeneralPtr* getOperatorPtr (
+		String name, TypeID root, TypeID arg, TypeID& retType) {
+		String msg =
+			"No operator " + name + " (" + root + ", " + arg + ") defined" ;
+		if (arg != "interval") {
+			THROW(new Exception(msg), NULL);
+		}
+		else if (name == "=") {
+			retType = "bool" ;
+			return new GeneralPtr(intervalEq, boolSize, oneOver100) ;
+		}
+		else if (name == "<") {
+			retType = "bool" ;
+			return new GeneralPtr(intervalLT, boolSize, oneOver3) ;
+		}
+		else if (name == ">") {
+			retType = "bool" ;
+			return new GeneralPtr(intervalGT, boolSize, oneOver3) ;
+		}
+		else if (name == "-") {
+			retType = "interval" ;
+			return new GeneralPtr(intervalSub, sameSize) ;
+		}
+		else if (name == "+") {
+			retType = "interval" ;
+			return new GeneralPtr(intervalAdd, sameSize) ;
+		}
+		else {
+			THROW(new Exception(msg), NULL) ;
+		}
+	}
+};
+	
 class ITime_t {
 public:
 	static GeneralPtr* getOperatorPtr(
