@@ -1,0 +1,100 @@
+
+  The DEVise internal types should be (at least):
+
+        int
+        real  (currently "double")
+        string
+
+        unixtime
+        date
+        datetime
+
+    others for consideration:
+        color
+        rational  (9 5/8)
+
+  The why and how.
+
+    int - Same as now.
+
+    real - I suspect the term 'double' has little meaning to a user not
+           familar with C; similarly, the term 'float' is inaccurate
+           for a user that is.  The moniker "real" avoids both of these
+           problems, without detailing how we are currently implementing it.
+           If we decide at some point to support smaller or larger floating
+           point formats, we can do so with a 'size' modifier, rather
+           than generate more types.
+
+
+   string - Same as now.
+
+   unixtime - Same as the current 'date' format.
+
+   date - The date only, 12/12/96.
+
+   datetime - A timestamp,  12/12/96 12:12:55.
+
+
+   The date and datetime formats should be stored internally with the
+   ISO/ANSI "struct tm" defined in <time.h>; the format for reading
+   should follow the conventions (or similar) as given in the  
+   'strftime' man page for printing.
+
+   Within the schema, a new 'date_format' field could be added to
+   address reading of (nearly) arbitrary dates and times. 
+
+   For Instance:
+
+        date_format = '%m/%d/%y %H:%M:%S';
+
+   could be specified within a schema for a date/datetime/unixtime
+   field; DEVise should handle the rest internally.
+
+
+   An excerpt from the strftime man page:
+
+     Directives
+     The following directives, shown without the optional field
+     width and precision specification, are replaced by the indi-
+     cated characters:
+
+	  %a	    Locale's abbreviated weekday name.
+	  %A	    Locale's full weekday name.
+	  %b	    Locale's abbreviated month name.
+	  %B	    Locale's full month name.
+	  %c	    Locale's appropriate date and time represen-
+		    tation.
+	  %d	    Day of the month as a decimal number [01,31].
+	  %E	    Locale's combined Emperor/Era name and year.
+	  %H	    Hour (24-hour clock) as a decimal number
+		    [00,23].
+	  %I	    Hour (12-hour clock) as a decimal number
+		    [01,12].
+	  %j	    Day of the year as a decimal number
+		    [001,366].
+	  %m	    Month as a decimal number [01,12].
+	  %M	    Minute as a decimal number [00,59].
+	  %n	    New-line character.
+	  %N	    Locale's Emperor/Era name.
+	  %o	    Locale's Emperor/Era year.
+	  %p	    Locale's equivalent of either AM or PM.
+	  %S	    Second as a decimal number [00,61].
+	  %t	    Tab character.
+	  %U	    Week number of the year (Sunday as the first
+		    day of the week) as a decimal number [00,53].
+		    All days in a new year preceding the first
+		    Sunday are considered to be in week 0.
+	  %w	    Weekday as a decimal number [0(Sunday),6].
+	  %W	    Week number of the year (Monday as the first
+		    day of the week) as a decimal number [00,53].
+		    All days in a new year preceding the first
+		    Sunday are considered to be in week 0.
+	  %x	    Locale's appropriate date representation.
+	  %X	    Locale's appropriate time representation.
+	  %y	    Year without century as a decimal number
+		    [00,99].
+	  %Y	    Year with century as a decimal number.
+	  %Z	    Time zone name (or by no characters if no
+		    time zone exists).
+	  %%	    %
+

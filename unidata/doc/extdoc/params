@@ -1,0 +1,85 @@
+
+  Description of the params used by UniData.
+
+  The class 'udParam' hides parameters to the data-processing
+  function calls so they can all share the same prototype, and
+  therefore share a function pointer, and be called by another
+  function that has no idea what they intend to do.
+
+  Perhaps I should backtrack a little. 
+
+  The Schema class builds a tree of Attributes with the
+  children of an attribute being the attributes it's composed of.
+  At the leaf level, all the attributes are simple builtin types
+  (int/float/string/etc).
+
+  The UniData class builds a similar tree of udParam's which
+  contain the function pointers to call, as well as parameters
+  that the called function will find useful.  This process
+  can be seen as a primitive form of compilation, we are
+  attempting to make as many decisions as possible before we
+  start reading data.  Once we start reading data, we use
+  the function pointers provided to call specialized reading
+  functions to perform the work.  Reading a record becomes
+  a walk over the tree of parameters, calling each function
+  in turn.  Of course, decisions that are based on the data
+  being read must be delayed til we are actually walking the
+  tree, but there's nothing we can do about that. 
+
+  Note that the udParam tree is similar, but not identical
+  to the tree of attributes.  The 'compilation' step may 
+  well decide to use several specialized functions to 
+  read in a field, rather than a single one. (For instance,
+  it may apply a position field via one, then apply a 'format=').
+  This is not currently done, as I have only written a few
+  of the reading functions so far, but hopefully will be done
+  in the near future.
+
+  The functions being called while walking the tree currently
+  fit into two general categories, with more to be added
+  sooner or later:
+    i)   copy functions:
+         These functions read the data from the field for a
+         builtin type (int/float/string).
+
+         For example, TxtCopy_Int copies an integer out of a
+         field represented as text.
+
+         For a int in a 'binary' schema, the BinCopy_Native
+         copier would be used.  Note that there is only a
+         single binary copy function, as it has no concern
+         for the data type, but rather only it's size, which
+         is available from the udParam structure.
+
+    ii)  splitter functions:
+         These functions split this attribute up into it's
+         component sub-attributes, calling each of their
+         functions in turn.
+
+         These are a little more complex, they must:
+           - deal with the sliding buffer, ensuring that
+             the entire data field is available for the
+             simple-minded copy functions it might be calling.
+
+           - attempt to perform their function, whatever that
+             is, while not assuming that all of their sub-fields
+             are within the buffer.
+
+    iii) computation functions:   (NYI)
+         There are no computation functions implemented yet.
+         The intent is that these functions will implement the
+         'filter=' and 'value=' commands, calling them at the
+         appropriate times.  I doubt this will add up to any
+         significant savings, but seems to fit into the whole
+         scheme well, don't you think?
+
+    iv)  misc internal functions: (NYI)
+         There are no misc internal functions implemented yet.
+         Things like stripping comments between records are
+         not really reading in data, and might be able to be
+         pushed off into these udParam functions as well.
+         Although there are a couple of these "internal"
+         functions, more thought is needed to see if they
+         can be implemented via this method.
+
+

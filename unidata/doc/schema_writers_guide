@@ -1,0 +1,1176 @@
+
+   A Guide to UniData for the schema writer
+  ------------------------------------------
+
+  Table of Contents                      Line No.
+  -----------------                      --------
+    Table of Contents                         5
+    Introduction                             20
+    A Simple Schema                          32
+    A Schema In General                      84
+      Reserved Words                        142
+    Schema-Level Options                    197
+    Attribute-Level Options                 355
+    Typedef                                 992
+    Enum                                   1039
+    Using Perl                             1109
+
+  ----------------------------------------------------------
+
+  Introduction
+
+  The UniData library allows a program that uses it to read nearly
+  any file.  To do this, it requires a description of the physical
+  layout of the file that will be referred to as a "schema".  This
+  document is intended as a tutorial and reference on how to
+  write a schema.  A familarity with Perl would be helpful to
+  reading this document, but should not be necessary.
+
+
+  ----------------------------------------------------------
+
+  A Simple Schema
+
+  Let's start out by taking a quick look at a simple example
+  for the schema "my_schema" defining two integer attributes,
+  "x" and "y":
+
+      schema my_schema {
+
+        # Definition of attribute x
+        attr x {
+          type = int;
+        }
+
+        # Definition of attribute y
+        attr y {
+          type = int;
+        }
+      }
+
+  A sample of the data file:
+      3     5
+      273   0
+      12   34
+
+
+  The keyword 'schema' starts a schema definition, it is
+  followed by an identifier that is the name of the schema,
+  and then the actual schema definition within braces.
+
+  Similarly, each attribute is defined with the keyword 'attr'
+  followed by the name of the attribute, followed by the
+  actual definition within braces.
+
+  Within the attribute definition the setting 'type' is set
+  to 'int'.  As you might suspect, this is only one of several
+  built-in types available.
+
+  The built-in types (with their equivilent C types)
+  are currently:
+    int        : int
+    float      : float
+    double     : double
+    string     : char*
+    datetime   : struct tm
+    unixtime   : time_t (unsigned long)
+
+  Notice that comments can be used within the schema; the
+  comment character is a pound-sign (#). Everything after
+  the # to the end of the line is ignored.
+
+  ----------------------------------------------------------
+
+  A Schema In General
+
+    A generic schema is presented here,  <> brackets are used
+    to indicate a specific item needed at this point.
+    [] brackets are used to indicate optional items that can
+    be supplied. Ellipsis (...) are used to indicate that an
+    arbitrary number of items can be supplied.
+
+  schema <schema-name> {
+
+    [schema-level options]
+    ...
+
+    [enum/typedef definitions]
+    ...
+
+    [attr-level options (that operate at any level)]
+
+    attr <attribute-name> {
+        type = <type-name>;
+
+        [attr-level options]
+        ...
+
+        [nested attr definitions]
+        ...
+    }
+
+    [more attr definitions]
+    ...
+  }
+
+  The {} braces (i.e., {} ) are required to balance, to allow simple
+  programs to be able to easily skip over a schema without having to
+  parse it.  If a brace is used in a literal string or comment, a
+  matching brace should be added in that or another comment to keep
+  the total number of each brace side equal.
+
+  Every item that is not inclosed in braces should be terminated
+  with a semicolon.
+  Extra semicolons (blank statements), are silently ignored.
+
+  When literal strings are specified, they should be single-quoted,
+  pascal style.  The C/perl style special characters supported are:
+    \'  - A literal single quote
+    \\  - A literal backquote
+    \t  - Tab
+    \n  - Newline
+    \r  - Carriage Return
+    \f  - FormFeed  (^L)
+    \v  - Vertical Tab
+    \b  - Backspace (^H)
+    \a  - Alert (bell - ^G)
+
+  Any other backquoted character represents itself,
+  with the backquote removed.
+
+
+  Reserved Words:
+
+  The following words are reserved, and should not be used
+  as names of items within the schema.  Names are case-sensitive,
+  i.e., only the all-lowercase versions of these words are reserved:
+
+    ascii
+    attr
+    binary
+    binary_order
+    char_set
+    comment
+    consecutive
+    converter
+
+    datetime
+    date_format
+    delimiter
+    double
+    enum
+    filter
+    float
+    format
+    function_of
+    global
+
+    int
+    length
+    list_of
+    max
+    maxlen
+    min
+    native
+    network
+    null_allowed
+
+    position
+    quote
+    reader
+    recsize
+    schema
+    separator
+    sorted
+    string
+
+    text
+    type
+    typedef
+    unique
+    unixtime
+    value
+    whitespace
+
+  ----------------------------------------------------------
+
+  Schema-Level Options
+
+    There are several options that can be expressed within
+    the outermost level of the schema, and not nested within
+    an attribute definition.  These options apply to the entire
+    data file, (or to each record in it separately).
+
+    Options:
+    --------
+    type
+            The 'type' keyword indicates the type of the datafile,
+            where the choices are 'text' or 'binary'. Note that
+            this option has a different (though similar) meaning
+            when used within a attribute or typedef definition.
+
+            Allowed Values: one of, text or binary
+
+            Sample Use:
+               type = binary;
+
+            Default Value: text
+
+    char_set
+            The 'char_set' keyword indicates the character set
+            used for a schema of type 'text'.  Currently, the
+            only allowed value is 'ascii', which is also the
+            default.  More character sets may be added later.
+
+            Allowed Values: ascii
+
+            Sample Use:
+               char_set = ascii;
+
+            Default Value: ascii
+
+    binary_order
+            The 'binary_order' keyword indicates the byte
+            ordering for a schema of type 'binary'.
+            Currently, only the native byte-ordering is
+            supported.
+
+            Allowed Values: one of, native or network
+
+            Sample Use:
+               char_set = native;
+
+            Default Value: native
+
+    recsize
+            The 'recsize' keyword indicates that the datafile
+            is composed of fixed-size records.  This field is
+            required for binary-type files.  When used with
+            text or binary files, it provides an efficient
+            index on the datafile.  The integer value should
+            be the size of each record in the datafile in bytes.
+
+            Allowed Values: <an integer value>
+
+            Sample Use:
+               recsize = 56;
+
+            Default Value: no default
+
+    delimiter
+            The 'delimiter' keyword indicates what character
+            an input record ends at for datafiles that do not
+            have fixed-length records.  One of recsize or
+            delimiter must be used to identify the extent of
+            a record within the datafile.
+
+            Allowed Values: <a quoted string>
+
+            Sample Use:
+               delimiter = ';';
+
+            Default Value: '\n' (a newline).
+
+    comment
+            The 'comment' keyword indicates what sections
+            within the datafile should be considered comments.
+            Comments are currently only allowed between records,
+            they are not allowed between the fields of a single
+            record (via this mechanism).
+
+            The comments are assumed to be non-nesting, with a
+            starting string that indicates the start of a comment,
+            and a second string indicating it's end.  If the second
+            string is not supplied, a newline is assumed, giving
+            the semantics of the common til-end-of-line style comment.
+
+            Multiple comment keyword lines may be specified in the
+            schema to indicate multiple forms of comments to be
+            eliminated.  They are removed in the order they are listed.
+
+            Allowed Values: <comment start string> [.. <comment end string>]
+
+            Sample Use:
+               #  C style comments:
+               comment = '/*' .. '*/';
+
+               #  C++ style comments:
+               comment = '//';
+
+               #  or equivilently:
+               comment = '//' .. '\n';
+
+            Default Value: no default
+
+    converter =  'wc -l $file';
+            The 'converter' keyword indicates that the specified
+            file converter should be called on the datafile,
+            and the converter's stdout should be read as the
+            real datafile.  Notice that the schema must then
+            describe the output of the converter command, rather
+            than it's input.  If the converter is not going to
+            be in the path of a forked shell, the absolute path
+            to the program should be supplied.
+
+            If the special variable '$file' is found in the converter
+            string, it is replaced with the name of the original
+            datafile; to allow for programs that want a filename argument.
+            If the $file variable is not present in the string, the
+            converter program will be expected to accept the original
+            datafile from stdin.  All converter programs must deliver
+            the converted output on stdout.
+
+            Allowed Values: <string specifying the converter command>
+
+            Sample Use:
+               # with a $file variable,
+               converter = 'wc -l $file';
+
+               # or without.
+               converter = 'tar tvf -';
+
+            Default Value: no default
+
+            Example Schema:
+              schema filesize {
+                  type = text;
+                  converter =  'wc $file';
+                  whitespace = ' \t';
+
+                  # Nested attributes.
+                  attr stats {
+                      attr nlines { type = int; }
+                      attr nwords { type = int; }
+                      attr nchars { type = int; }
+                  }
+
+                  attr filename {
+                    type = string;
+                    maxlen = 64;
+                  }
+              }
+
+  ----------------------------------------------------------
+
+  Attribute-Level Options
+
+    These options can be expressed with a attribute (or typedef)
+    defintion.  Some of them can also be expressed at the top-level
+    of the schema as well, as if it were an attribute that had
+    all the attributes nested within in (cause it is).  The ones
+    that work this way will have a mention of that fact in their
+    description, but generally, it's the one's that could make
+    sense at the top-level.
+
+
+    separator
+            The 'delimiter' keyword indicates what character
+            separates the fields (subfields) of this record (field).
+            This option works at the top-level also.
+            You can turn this option off by specifying an empty string, ''.
+
+            Allowed Values: <a quoted string>
+
+            Sample Use:
+               separator = ',';
+
+            Default Value: no default
+
+    whitespace
+            The 'delimiter' keyword indicates what character
+            separates the fields (subfields) of this record (field).
+            All of the characters present within the string are
+            individually considered whitespace, they need not be
+            present togather.
+
+            This option works at the top-level also.
+            This option scopes; each nested attribute uses the
+            value from it's parent attribute unless it is changed.
+            You can turn this option off by specifying an empty string, ''.
+
+            Allowed Values: <a quoted string>
+
+            Sample Use:
+               whitespace = ' \t\f';
+
+            Default Value: no default, but it scopes
+
+    type
+            The 'type' keyword indicates the type of the attribute,
+            where the choices are the built-in types (listed below)
+            or user-defined type names (defined via typedef or enum).
+            Note that this option has a different (though similar) meaning
+            when used at the top-level.
+
+            Allowed Values: one of int, float, double,
+                                   string, datetime, unixtime,
+                                   <typedef name>, <enum name>
+
+            Sample Use:
+               type = double;
+
+            Default Value: no default
+
+
+            The built-in types correspond directly to C types:
+
+              UniData type        equivilent C type
+              ------------        -----------------
+                     int                   int
+                   float                 float
+                  double                double
+                  string                char *
+                datetime             struct tm
+                unixtime                time_t (unsigned long)
+
+
+    maxlen
+            The 'maxlen' keyword indicates how much storage should
+            be reserved for strings that are read in. UniData
+            does not currently handle variable-length strings,
+            so this information is needed.  This option can be
+            specified for any attribute, though non-nesting non-string
+            attributes ignore it.  If specified at the top-level,
+            it specifies the length of all string attributes within
+            the schema (unless overridden).
+
+            This option works at the top-level also.
+            This option scopes; each nested attribute uses the
+            value from it's parent attribute unless it is changed.
+
+            Allowed Values: <an integer value>
+
+            Sample Use:
+               maxlen = 40;
+
+            Default Value: no default, but it scopes
+
+    quote
+            The 'quote' keyword indicates what the quoting character
+            is for strings in the datafile.  All strings in the file
+            need not be quoted.  If the strings are quoted, they
+            can use a backslash followed by the quote character to
+            indicate that they contain a literal quote. Any string
+            that begins with the quote character is presumed to
+            end with it also, so a string in the data who's first
+            character is literally the quote character _must_ be
+            quoted to be read properly.
+
+            This option works at the top-level also.
+            This option scopes; each nested attribute uses the
+            value from it's parent attribute unless it is changed.
+            You can turn this option off by specifying an empty string, ''.
+
+            Allowed Values: <a single character string>
+
+            Sample Use:
+               quote = '\'';
+
+               # Turn it off
+               quote = '';
+
+            Default Value: '"', and it scopes
+
+    date_format
+            The 'date_format' keyword indicates how attributes of
+            type datetime should be interpreted.
+
+            This option works at the top-level also.
+            This option scopes; each nested attribute uses the
+            value from it's parent attribute unless it is changed.
+            You can turn this option off by specifying an empty string, ''.
+
+            Allowed Values: <a string containing a legit format>
+
+            Sample Use:
+               # Reads dates like: 12/2/97
+               date_format = '%m/%d/%y';
+
+               # Force 2-digit per field,
+               # reads dates like: 120297
+               quote = '%2m%2d%2y';
+
+            Default Value: The ISO-standard format, '%Y-%m-%d %H:%M:%S',
+                           and it scopes.
+
+            Date Formats:
+
+              The date formats understood by UniData are similar to
+              those produced by the standard C function strftime().
+
+              There are a few extra format types not present in strftime,
+              to provide the extra flexibility desired when reading
+              rather than writing dates.
+
+              The codes have the following meanings:
+
+              Code            Replaced By
+              ----            -----------
+               %a      abbreviated weekday name, eg, "Mon"
+               %A      full weekday name, eg, "Monday"
+               %b      abbreviated month name, eg, "Feb"
+               %B      full month name, eg, "Febuary"
+               %d      day of the month as a decimal integer (01-31)
+               %H      the hour (24-hour clock) as a decimal integer (00-23)
+               %I      the hour (12-hour clock) as a decimal integer (01-12)
+               %j      day of the year as a decimal number (001-366)
+               %m      month, as a decimal number (01-12)
+               %M      minute, as a decimal number (00-59)
+               %P      AM/PM designation for 12-hour clock (AM)
+               %S      second, as a decimal number (00-61)
+                           (allows for up to 2 leap-seconds - 60 and 61)
+               %U      week number of the year (00-53)
+                           (Week number 1 has the first Sunday; previous days
+                            are week 0.)
+               %w      weekday as a decimal number (0-6, Sunday=0)
+               %W      week number of the year (00-53)
+                           (Week number 1 has the first Monday; previous days
+                            are week 0.)
+               %y      year without century as a decimal number (00-99)
+               %Y      year with century as a decimal number, eg, 1952
+               %z      time zone abbreviation:
+                            (CST, GMT, EST, CDT, ...)
+               %%      A single %
+
+               %?      Any single character, to be ignored
+               %n?     Ignore any n characters, eg, "%3?"
+             <any>     A literal character, to be ignored.
+
+               %c, %x, %X, %p: Are used in strftime(),
+                               but are not implemented here.
+
+               Misc Notes:
+               %a, %A, %b, %B, %P, and %z are case insensitive.
+
+               While strftime prints most numbers zero-filled, getftime
+               will accept values that are not.  (ie, 1/1/97 is okay,
+               it doesn't need to be 01/01/97)  To require a specific
+               number of chars, use a repeat count, eg "%2m%2d%2y"
+               will read a number of the form, 010197, which otherwise
+               cannot be interpreted properly.
+
+               Perl Node:
+               Whenever a attribute of type datetime is passed to/from
+               perl, it is converted to/from a string with the date
+               specified in the standard ISO time format.
+
+
+    position
+            The 'position' keyword can be used to indicate positioning
+            within the input file. You might see strict column
+            positioning within the output of a cobol program,
+            for instance. The first column of a record or field is
+            considered to be column 0.
+
+            This option works at the top-level also.
+            Consider using this option in combination with the
+            'length' keyword.
+
+
+            Allowed Values: <an integer range>
+                       or a <list of integer ranges>
+
+            Sample Use:
+               position = [5..7];
+
+               position = [8];
+
+               position = ( [2..], [5], [8..10], [..12] );
+
+            Default Value: None
+
+            Integer Ranges:
+                An integer range is contained within brackets,
+                and has the general form:
+                        [ <start> .. <end> ]
+
+                which is indicates that the range extends from the
+                column <start> up to and including the column <end>.
+
+                Either <start> or <end> can be missing:
+                    [ <start> .. ]
+                    [ .. <end> ]
+
+                which indicates an unknown <end> or <start> position,
+                respectively.
+
+                If the seperator is missing also, as in:
+                    [ <start> ]
+                the <start> position is taken as both the <start> and
+                <end> positions, a single character field.
+
+                If the brackets are missing, i.e., the "range" is
+                just a single interger, it is assumed to be the <start>
+                position, and the <end> position is unspecified, in
+                other words, it is shorthand for:
+                        [ <start> .. ]
+
+            For an attribute with other attributes nested inside it,
+            position may use the list form.  In this case, the position
+            ranges are applied in order to the subattributes of this
+            attribute.  Either way, the 0th position is always considered
+            to be the first column of the enclosing field.
+
+            If you do not wish to specify a range for a subattribute in
+            a list you can leave the range out, and just supply the
+            comma seperator for the next range:
+               position = ( [2..3], [5],  , [8..12] );
+                                         ^ - unspecified
+
+            The 'length' keyword is another way to express this positioning
+            information in simplier cases.
+
+    length
+            The 'length' keyword can be used to indicate positioning
+            within the input file. You might see strict column
+            positioning within the output of a cobol program,
+            for instance. The first column of a record or field is
+            considered to be column 0.
+
+            This option works at the top-level also.
+            Consider using this option in combination with the
+            'position' keyword.
+
+
+            Allowed Values: <an integer value>
+                       or a <list of integer values>
+
+            Sample Use:
+               length = 8;
+
+               length = (5,7,9,11);
+
+            Default Value: None
+
+
+            The integer specifies the length of the input field,
+            if no positioning information to the contrary is given,
+            the first field is assumed to start at position 0.
+
+            For an attribute with other attributes nested inside it,
+            length may use the list form.  In this case, the lengths
+            are applied in order to the subattributes of this attribute.
+
+            If you do not wish to specify a length for a subattribute
+            in a list you can leave the value out, and just supply the
+            comma seperator for the next value:
+               length = ( 3, 5,  , 8 );
+                                ^ - unspecified
+
+            The 'position' keyword is another way to express this
+            positioning information in more complex cases.
+
+
+    min/max
+            The 'min' and 'max' keywords indicate minimum and
+            maximum values for this attribute.  Currently, only
+            the types int, float, double, and string can have
+            minimum/maximum values specified.  Currently, UniData
+            does not make any use of this information, but it is
+            made available to the program using the reading library.
+
+            In the future, the UniData code may be modified to
+            throw out records outside this range, but it does
+            not currently do so.
+
+
+            Allowed Values: one of <an integer>, <a float>, <a string>
+
+            Sample Use:
+               min = 3.14;
+
+               max = 'zzzz';
+
+            Default Value: no default
+
+
+    sorted
+    unique
+    consecutive
+    null_allowed
+            These keywords are collectively referred to as "traits".
+            Any attribute can have any number of them listed. UniData
+            does not make any use of this information, but it is
+            made available to the program using the reading library.
+
+            These traits are binary choices, their presence in a
+            definition indicates they are "on", otherwise they're "off".
+
+
+            Allowed Values: no value needed
+
+            Sample Use:
+               sorted;
+
+               unique;
+
+            Default Value: no default
+
+            Interpretation:
+              While UniData makes no use of these traits, it is good
+              to be clear about what they are intended to mean, so
+              everyone is using the same definition.
+
+                sorted        : This attribute is listed in sorted order.
+                                (This is lame, admittedly. It only
+                                 allows a order of a single column to
+                                 be specified, and not say whether it
+                                 is increasing or decreasing.)
+
+                unique        : This attribute will have no duplicates.
+
+                consecutive   : The values of this attribute are consecutive,
+                                this subsumes sorted & unique, but is stronger
+                                still.
+
+                null_allowed  : Null values (no data) are allowed for
+                                this attribute.
+
+    format
+            The 'format' keyword can be used to indicate a
+            perl-style regular expression that should be used
+            to locate the field.  Unlike perl, only the forward slash
+            can be used as the delimitor character.  The parenthesized
+            parts of the regular expression are considered to be the
+            field(s) of interest.
+
+            See the man page for perl (perlre, in fact) for more
+            information about regular expressions and pattern matching.
+
+            This option works at the top-level also.
+            Warning: This option invokes a perl interpreter for each
+                     record read, for each instance of the option
+                     used, and can slow down the reading of a large
+                     data file considerably.  As with perl itself,
+                     being as specific as possible with the pattern
+                     minimizes the search time.
+
+
+            Allowed Values: <a perl-style format>
+
+            Sample Use:
+               # Grabs the number off the end of "FOO482"
+               format = /^\s*FOO(\d+)$/;
+
+               # Pick the words out of a line of digits, gets 3 fields.
+               format = /^\d*(\w+)\d+(\w+)\d+(\w*)/;
+
+            Default Value: None
+
+    value
+            The 'value' keyword can be used to indicate a perl
+            expression or subroutine that is used to _COMPUTE_ the
+            value of the this field.
+
+            Regardless of their apparent position in this schema,
+            this option (along with 'filter') is executed last.
+            So, when this option is running, all "normal" data
+            fields of this record have already been converted.
+            This allows their values to be used in the computation
+            of this fields value.  See the section in this document
+            on "Using Perl" for more detailed information.
+
+            Warning: This option invokes a perl interpreter for each
+                     record read, for each instance of the option
+                     used, and can slow down the reading of a large
+                     data file considerably.
+
+
+            Allowed Values: <a perl expression>
+                        or  <a perl subroutine>
+
+            Sample Use:
+                # Not real useful, this field is always 7.
+                value = 7;
+
+                # The total of two other fields
+                value = $x + $y;
+
+                # As a subroutine, other fields x,y,z assumed to exist.
+                value = {
+                            my($tmp) = $x * $x;
+                            $tmp += $y;
+                            $tmp -= $z;
+
+                            return $tmp;
+                        }
+
+            Default Value: None
+
+    filter
+            The 'filter' keyword can be used to indicate a perl
+            expression or subroutine that is run after the attribute
+            has been read via one of the normal methods. As such,
+            it can be useful for transforming or filtering the
+            value of this field, thus the name.
+
+            Regardless of their apparent position in this schema,
+            this option (along with 'value') is executed last.
+            So, when this option is running, all "normal" data
+            fields of this record have already been converted.
+            This allows their values to be used in the computation
+            of this fields value.  See the section in this document
+            on "Using Perl" for more detailed information.
+
+            Warning: This option invokes a perl interpreter for each
+                     record read, for each instance of the option
+                     used, and can slow down the reading of a large
+                     data file considerably.
+
+
+            Allowed Values: <a perl expression>
+                        or  <a perl subroutine>
+
+            Sample Use:
+                attr z {
+                    type = int;
+
+                    # Absolute value filter
+                    filter = ($z < 0) ? -$z : $z;
+                }
+
+                attr z {
+                    type = string;
+                    maxlen = 20;
+
+                    # Change to just the last 3 chars
+                    filter = substr($z,-1,3);
+                }
+
+                # As a subroutine, the previous value of this
+                # attribute is passed in as an argument.
+                filter = {
+                            my($tmpz) = @_;
+                            return $tmpz + 3;
+                         }
+
+            Default Value: None
+
+    reader
+            The 'reader' keyword can be used to indicate a perl
+            subroutine that is passed (a portion) the record as
+            an argument, and expected to extract the fields but
+            whatever means it chooses, and to return them as a list.
+
+            To comply with the protocol followed by the other
+            UniData functions, the reader must return the number
+            of characters consumed from the input stream as it's
+            first argument.  Any extra fields are ignored.  If
+            the reader decides this record is garbage, it should
+            return the empty list to indicate that fact.
+
+            Unlike, 'value' and 'filter', this subroutine is executed
+            in the order that it appears within the schema.
+
+            Warning: This option invokes a perl interpreter for each
+                     record read, for each instance of the option
+                     used, and can slow down the reading of a large
+                     data file considerably.
+
+
+            Allowed Values: <a perl subroutine>
+
+            Sample Schema:
+
+                schema form {
+                  type = text;
+
+                  reader = {
+                    # The idea is that the num of spaces
+                    # between items is the real data.
+
+                    my($line) = @_;
+                    my($a,$b,$c);
+
+                    if ( $line =~ /^\s*\w(\s+)[a-zA-Z]+(\s+)[a-zA-Z]+(\s+)/ ){
+                      $a = length($1);
+                      $b = length($2);
+                      $c = length($3);
+                    }
+
+                    return(length($line),$a,$b,$c);
+                  }
+
+                  attr int1 { type = int; }
+                  attr int2 { type = int; }
+                  attr int3 { type = int; }
+                }
+
+            Sample Data:
+
+                A djf   ABC     rrrtq
+                A   zz  M        qr
+
+            Will produce the records:
+                1  3  5
+                3  2  8
+
+            Default Value: None
+
+    global
+            The 'global' keyword can be used to define standard
+            perl variables and subroutines.  Each global section
+            is called once when the file is first being read,
+            as well as after a reset, and the file is being re-read.
+
+            This option is provided to allow schemas with "state",
+            as well as allowing the schema writer to modularize
+            the schema by creating named subroutines that can
+            be reused throughout the schema.
+
+            Allowed Values: <a perl expression>
+                        or  <a perl subroutine>
+
+            Sample Use:
+                # Set the global variable $seed initially.
+                global = $seed = 5;
+
+                # Seed the random number generator
+                global = srand(time|$$);
+
+
+                global = {
+
+                    # Do whatever you please
+
+                    print "Starting reading now!\n";
+
+                    sub swap {
+                        my($tmp);
+                        $tmp = $_[0];
+                        $_[1] = $_[0];
+                        $_[0] = $_[1];
+                    }
+
+                    sub say_hello {
+                        my($name) = @_;
+                        print "Hello $name.\n";
+                    }
+
+                    &say_hello('Bill');
+                }
+
+            Default Value: None
+
+    function_of
+            The 'function_of' keyword was intended to be used to define
+            the order in which 'value' attributes are computed.
+
+            It's implementation is incomplete, and specifying this
+            option currently has no effect.  The 'value' attributes
+            are currently always processed in the order of appearance
+            within the schema definition.
+
+
+            Allowed Values: a list of attribute names
+
+            Sample Use:
+
+                attr z {
+                    type = int;
+                    value = $x + $y;
+
+                    # Indicate that this attribute is a function
+                    # of the attributes x and y
+                    function_of = x,y;
+                }
+
+            Default Value: None
+
+          The reader should return a list filled with the fields in
+          a "flat" fashion. Only UniData internal types.
+          Note that datetime fields should be specified as strings,
+          and only in the ISO standard time format. (see date_format)
+
+    list_of
+            The 'list_of' keyword was intended to be a pseudo-join
+            of records with headers.  It's in the UniData lexer,
+            but no where else, using it will lead to a syntax error.
+
+  ----------------------------------------------------------
+
+  Typedef
+
+    A typedef can be used to generate a new type which is
+    a combination of pre-existing types:
+
+    For example:
+
+        schema box {
+
+          type = text;
+          comment = '//';
+          whitespace = ' \t';
+
+          typedef point {
+            attr x { type = int; }
+            attr y { type = int; }
+          }
+
+          typedef box {
+            attr color { type = int; }
+
+            attr upperleft { type = point; }
+            attr lowerright { type = point; }
+          }
+
+          attr mybox { type = box; }
+        }
+
+    Is a schema to read the following data:
+        0  1 1  8 7
+        5  2 2  5 5
+        9  3 3  4 4
+
+    Notice that this schema contains only a single attribute of type
+    "box".  The typedef option promotes modularity and reuse in
+    your schema design
+
+    typedef's can be defined only at the top-level, and can only
+    use the built-in types, or types already defined by previous
+    typedef/enum definitions.
+
+    Everything that is legal within an attribute definition is legal
+    within a typedef, you can think of it as a simple textual
+    expansion of the typedef wherever it is used.
+
+  ----------------------------------------------------------
+
+  Enum
+
+    UniData allows a simple enumerated type to be defined.
+
+    In general, the definition looks like this:
+
+    enum <type-name> {
+
+        symbol_0 [= 'string_0'];
+        ...
+        symbol_N [= 'string_N'];
+    }
+
+    Each symbol represents one of the strings, if the string is not
+    present, the text of the symbol itself is used as the string also.
+    A comma can also be used as the seperator within the enum,
+    rather than the semicolon.
+
+    For example:
+
+    enum icd9_t {
+
+        # I made these up, it's just an example.
+
+        Diabeties     = 'V675';
+        Herpes        = '5199';
+        HangNail      = '7442';
+        Heart_Disease = '07810';
+        Dizziness     = 'V723';
+    }
+
+    enum Number {
+
+        # Zero is now the default
+        zero = '',
+
+        one  = 'one',       # I'm too lazy for this.
+
+        two,
+        three,              # These do the same thing
+        four,
+        five
+    }
+
+    When UniData reads an enumerated type, it checks the table
+    of strings provided by the enum, and places only a lookup
+    code for the enum in the output record.  The lookup codes
+    are equivilent to the C type "unsigned short", which can
+    vary in size from system to system, but is guarenteed to be
+    at least 2 bytes long (can hold approximately 64,000 values).
+
+    If the value being read is not found in the string table,
+    the special symbol "Invalid" (value 0) is returned. The
+    schema designer can choose a new default symbol by setting
+    it's string value to the empty string, ''.
+
+    Multiple strings can be mapped to the same symbol via
+    multiple lines specifiying the symbol.  They will end up
+    having different value codes though, so a program that
+    uses the values directly will have to watch for that if
+    it wants to consider them "equal".  This is one of
+    those things that should probably be fixed later.
+
+    For a large file with only a few predetermined strings,
+    a decent amount of compression can be achieved in the
+    output records.  (Well, no duh).
+
+
+  ----------------------------------------------------------
+
+  Using Perl
+
+    A perl expression may not contain an embedded semicolon;
+    this allows the lexer to easily determine when the
+    expression is over, and to slurp it up in one chunk.
+
+    The perl "subroutines" have a nameless interface, which
+    should have been obvious from the examples.
+
+    Whenever a attribute of type datetime is passed to/from
+    perl, it is converted to/from a string with the date
+    specified in the standard ISO time format.
+
+    Only the "leaf" attributes, those with no nested attributes
+    have perl variables defined for them (only when perl is used
+    elsewhere in the schema).  Eventually, the others could be
+    implemented as lists, but this was looking way too expensive
+    to do right now.
+
+    If perl is used in the schema, _all_ leaf attributes have
+    perl variables for them, even if they are never used.
+    Their value can be changed in filter and value subroutines
+    for other attributes.  This is an artifact of the
+    implementation method used (and discussed below).
+
+
+    Flattened names for leaves:
+
+    The perl variable for a nested attribute, i.e.:
+
+        attr x {
+            attr y {
+                attr z {
+                    type = int;
+                }
+            }
+        }
+
+    is "flattened" to be $x_y_z
+
+    This is lame, but it's the only reasonable thing I could
+    come up with.  This applies to typedefs also, of course.
+
+
+    Under the Hood:
+
+   0  At startup (only), if any perl (format, reader, value,
+      filter, or global) is used is the schema, a single perl
+      interpreter (per UniData class instance) is started up.
+      All 'global' sections are run at this time.
+
+   1  When reading a record from the data file, all the normal
+      records, including those using 'format' and 'reader' are
+      read in the order they appear in.
+
+   2  If the schema contains any 'value' or 'filter' options,
+      _ALL_ attributes have their perl variables set to the
+      value read in.
+
+   3  All value and filter options are executed in the order
+      they are listed in the schema.
+
+   4  _ALL_ perl variables are read back in, and the resulting
+      record is returned.
+
+   5  Repeat for next record (goto 1).
+
+  ----------------------------------------------------------

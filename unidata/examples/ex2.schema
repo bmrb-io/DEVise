@@ -1,0 +1,18 @@
+
+schema form {
+  type = text;
+  comment = '//';
+  whitespace = ' \t';
+
+  enum mine {
+    First  = '1st',
+    Second = '2nd';
+    Third  = '3rd';
+    '4th';
+  }
+
+  attr pos1 { type = mine; }
+  attr pos2 { type = mine; }
+  attr pos3 { type = mine; }
+}
+

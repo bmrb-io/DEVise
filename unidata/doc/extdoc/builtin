@@ -1,0 +1,160 @@
+
+  Adding a new builtin type to UniData
+ --------------------------------------
+
+  Files to modify:
+    Token.h
+    Token.C
+    Lexer.l
+    Attr.h
+    Attr.C
+    Schema.C
+    UniData.C
+    UniData.h
+
+
+  Detailed Description:
+    Let's say we wanted to add a new type called 'money':
+
+    struct money_t {
+        long dollars;
+        char cents;
+    }
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Token.h
+        Add a #define for the new type with a unused value:
+
+    #define KY_MONEY  506
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Token.C
+        Add code to show_token() to print the type's name:
+
+        for file pointers:
+
+     case KY_MONEY:
+        fputs("money ",fp);
+        break;
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+        as well as streams:
+     case KY_MONEY:
+        *os << "money ";
+        break;
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Lexer.l
+      Add code for the lexer to recognize and return the new token:
+
+     <INITIAL>"money"  { return(KY_MONEY); }
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Attr.h
+      Add a line to the enum for attr_t, but leave UserDefined_Attr last:
+
+     Money_Attr,
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Attr.C
+      Add code in numerous places:
+
+      determ_size(): code to give type's size
+     
+      case Money_Attr:
+        _size = sizeof(struct money_t);
+        break;
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+     set_var(): code to pass the variable to perl
+
+     // We just pass money as a string, to avoid loss of precision. 
+    case Money_Attr: {
+        struct money_t *cash = (struct money_t*) field;
+        char tmpcash[50];
+        sprintf(tmpcash, "%d.%2d", cash->dollars, cash->cents);
+        sv_setpv(_perl_var,tmpcash);
+      }
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+     grab_var(): and code to read it back from perl.
+
+     case Money_Attr: {
+        struct money_t *cash = (struct money_t*) field;
+        sscanf(SvPV(_perl_var,na),"%ld.%d", &(cash->dollars),&(cash->cents));
+
+        // Check to make sure they didn't mess up the semantics
+        cash->dollars += cash->cents / 100;
+        cash->cents %= 100;
+       } 
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+     operator<< : for debugging use only
+
+     case Money_Attr:
+        out << "Money\n";
+        break;
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - Schema.C
+
+     Add a case for KY_TYPE in subParse():
+
+     case KY_MONEY:
+        NOT_TOP_LEVEL("money");
+        attr->set_type(Money_Attr);
+        attr->set_seper(NULL);
+        break;
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+     Add a loop to set offsets for the money type in DeepThought():
+
+     for (j=0; j < _nattrs; j++)
+       if (_flat_attrs->ith(j)->type() == Money_Attr) {
+           _flat_attrs->ith(j)->_offset = offst;
+           offst += sizeof(struct money_t); 
+       }
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - UniData.h
+
+     Add a prototype for the copying function you're going to write:
+
+     int TxtCopy_Money(char *dst, char *src, udParam *ud);
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+    - UniData.C
+
+     Add a case to select the copying function for this type
+     in build_params():
+
+     case Money_Attr:
+         prm->attrfunc = TxtCopy_Money;
+         break;
+    
+     o+o+o+o+o+o+o+o+o+o+o+o+o
+
+     Add a the copying function:
+int UniData::TxtCopy_UnixTime(char *dst, char *src, udParam *ud)
+{
+    char *ptr;
+                    // guarenteed to be aligned
+    struct money_t *cash = (struct money_t*) &(dst[ud->dst_off]);
+
+    src += strspn(src, ud->attr->whitespace());
+    cash->dollars = strtol(src, &ptr, 10);
+
+    src = ptr+1;     // Skip over the '.'
+    cash->cents = strtol(src, &ptr, 10);
+
+    _slbuf->set_init(ptr);
+
+    return (errno != ERANGE) && (ptr != src);
+}
+
+     o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o

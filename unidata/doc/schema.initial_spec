@@ -1,0 +1,481 @@
+
+Preliminary Schema Definition Format
+
+  Those familar with perl will (hopefully) notice many simularities.
+  It is my intent that the data-reading library _be_ a stripped-down 
+  perl interpreter, plus a few routines to implement the specifics
+  and extras we need.
+
+  One simplifying change: In perl, nearly anything can quote a
+  string or regular expression.  In this format, strings must
+  use single quotes, within strings only the standard \',\n,\t,etc.
+  are supported. Regular expressions are quoted with "/", within
+  them, full perl-style regular expressions are supported.
+  "[" and "]" outside of regular expressions quote ranges of values.
+  This change does not apply within sections that allow a perl expression
+  or code fragment, in which case any legal perl is acceptable.
+
+  I've retreated on the perl whole-file readers; instead, a converter
+  may be specified, which should be found in one of the directories
+  specified in the 'DEVISE_CONV' envirornment variable, or the
+  user's path.
+
+  The converter will be run as a separate process, and may read the
+  file itself, or get the input from stdin.  It will write its
+  output to stdout, which will be fed back into UniData.
+  This is very similar to the way the current Devise
+  converter's work.  This also allows the use of any language the
+  user wants.
+
+  The other perl functions have been changed to have a nameless
+  interface, so that the same reader function can be reused for
+  similar types and attributes.
+
+----------------------------------------------------------
+A schema is defined by:
+
+    schema <schema-name> {
+
+        type = <schema type>; # optional text/binary (default is text)
+        
+        char_set = ascii;     # optional; defaults to 'ascii'
+
+        binary_order = network;  # optional, default is 'native'.
+
+        recsize = <N>;        # optional (for fixed size records)
+
+        comment = '//';       # optional
+
+
+        separator = <string or pattern>;  # optional, no default.
+        whitespace = <string>;            # optional, no default.
+
+        delimiter = '\n';     # optional (default is '\n')
+
+        position = (n1, n2, n3, ..); # List of field positions
+                                     # Each ni can be a starting position
+                                     # or a full range, ie: [c1..c2]
+
+        length = (l1, l2, l3, ..);   # List of field length(s)
+
+        format = <format specification>  # optional  
+
+        <optional type definitions>
+
+        <attribute definitions>
+
+                            # Specify a converter to run on the file
+                            # $file, the schema describes the result
+                            # of the conversion.  The special variable
+                            # '$file' is supplied to allow the user to
+                            # indicate the file's position relative to
+                            # other (optional) arguments. 
+
+                            # if '$file' is not specified in the string,
+                            # UniData will assume the converter wants the
+                            # data file to be input via stdin.
+        converter =  'wc -l $file';
+
+        filter = <filter>;  # A perl data filter, that can modify the
+                            # attributes in some way; a filter is 
+                            # called after the data is obtained in the
+                            # normal way.  At this level, the filter
+                            # operates on the entire record, (including
+                            # computed fields) before it is returned.
+
+        global = { perl functions };
+                                  # Can have as many of these as you want,
+                                  # wherever you want, they all share
+                                  # a single namespace; making them a 
+                                  # convienent spot to define functions
+                                  # you plan on using a few times.
+    }
+
+
+  Discussion:
+  ----------
+    The schema is designed to be easy to parse, and to skip over.
+    As such the entire schema is bracketed, and is guarenteed to
+    have balancing brackets.  In general, I'm assuming a GUI will
+    be provided to create/edit the schema; and manual editing will
+    only be needed by advanced users.
+
+    type:      type of schema: text/binary, maybe more types later.
+
+    char_set:  The character set being used, initially, the only
+               value supported is 'ascii' which is the default.
+               In the future, 'ebcdic', and maybe others are possible.
+
+    binary_order:  Indicates the binary ordering the file uses,
+                   so this is only useful for schemas of type binary.
+
+                   Possible values:
+                      native : Whatever format is native to the machine
+                               reading the file. This is what is currently
+                               used, and so is the default.
+
+                      network: Network order
+
+    separator: separates fields, default is nothing.
+    whitespace: ignore these characters.
+
+    delimiter: separates records, default is a newline. 
+
+    comment: The comment start/end indicator, separated by '..';
+             for a pattern, it is considered to be the full comment.
+             There can be multiple comment statements, which are applied
+             in the order listed, for example:
+              comment = '//'..'\n';
+              comment = '/*'..'*/';
+
+          would eliminate all C++ style as well as C style comments.
+          
+          If a regular expression is used, the full matching text
+          is eliminated from the input, another (more expensive) way to 
+          eliminate C style comments is: 
+              comment = /\/\*[^\*]*\*\//;
+
+
+    format: A perl-style regular expression can be specified that
+            divides the record into fields, more on these later.
+
+
+    All symbols are case-sensitive, the type names and attribute names
+    are in separate namespaces.
+
+----------------------------------------------------------
+An attribute is defined by:
+
+    attr <attr-name> {
+
+        type = <type>;             # required
+
+        sorted;                    # optional, indicates file is ordered 
+                                   # by this field.
+
+        unique;                    # This field has unique values.
+        consecutive;               # This field is consecutive (rid?)
+
+        null_allowed;              # It's okay if field is empty
+
+        min = <min value>;         # optional
+        max = <max value>;         # optional
+
+                                   # Max length to store (does not affect pos) 
+        maxlen = <n>;              # currently meaningful only for strings
+
+        position = [45..60];       # opt: (45:start col num, 60:end col num)
+                                   # can also be a list, in which case it
+                                   # applies to subtypes
+
+        length = <n>;              # The length of this field, or if it's
+                                   # a list, it is the lengths of the subtypes
+ 
+        format = /<perl pattern>/; # optional (each type has default)
+
+        value = <perl expr>;       # optional, indicates this attribute
+        or                         # is computed.
+        value = {perl code}
+
+                                   # useful with 'value =' to indicate
+                                   # other fields which are used in
+                                   # computing this value.
+                                   # This indicates that the listed
+                                   # fields should be computed before
+                                   # this one if they are also value attrs.
+        function_of = <attr_name1> [,<attr_name2>,...];
+
+        filter = <perl expr>;      # optional filter(s)
+        or
+        filter = {perl code};
+
+        reader = <perl expr>;      # optional reader
+        or
+        reader = {any perl code};
+    }        
+
+    -or-
+
+    list_of <attr-name> {
+        < same as attr definition above >
+    }
+
+  Discussion:
+  ----------
+    type:    The name of this type, it must have been defined previously
+             in this file, or be one of Devise's builtin types.
+
+    sorted:  Boolean indicators, similar to the presently
+    unique:  available ones.
+
+    min/max: mininum/maximum values - can/should be specified in a
+             format consistent with this type.  For example, for
+             an enumerated type, you could limit the range for this
+             field. 
+
+    maxlen:  For strings in the current implementation, hopefully
+             we'll be able to get rid of this limitation sometime.
+
+    value:   Computes a value for this field, possibly based on
+             other attributes of this record. The code should
+             return the value to use, or set the varialbe corresponding
+             to the flattened field name.
+
+    filter:  A perl data filter, that can modify the attribute 
+             in some way.  Assumes it's already been read by the
+             normal method.  The code should return the new value to
+             use, or set the varialbe corresponding to the flattened
+             field name.  The current value is available in the 
+             flattened field name.
+
+    reader:  Perl code that actually reads the attribute from the
+             buffer supplied.
+
+
+    The list_of indicates that multiple occurances of this field may
+    occur, with the semantics being that a cross-product is done with
+    all other fields of the record, so that one record is generated
+    for each item in the list.  (Only allow one "list_of" type per
+    record?)  By cross product, I mean a join with no join column, ie
+    for a data record:
+
+        A B C
+          d e
+          f g
+          h i
+          j k
+
+    and an appropriate schema definition, 4 records would be generated
+    by the reader (assuming the lowercase letters are defined via list_of):
+        A B C d e
+        A B C f g
+        A B C h i
+        A B C j k
+
+----------------------------------------------------------
+A type is defined by one of the following:
+
+    A devise internal type: int, float, double, string, unixtime,
+                            datetime.
+
+    typedef <type-name> {
+
+        <attribute defintions>
+
+        format = /<perl format>/;    # If not specified, the default
+                                     # formats of the included types
+                                     # are appended to each other.
+
+        <optional reader function (perl)>
+    }
+
+
+    enum <type-name> {
+
+        symbol_0 = <representation_0>;
+        ... 
+        symbol_N = <representation_N>;    # rep can be a string, number
+                                          # or pattern.
+    }
+
+
+  Discussion:
+  ----------
+    Attributes defined within a typedef are not exactly the same
+    as ones defined alone.  If the 'position' indicator is present,
+    the values used should be offsets from the start of the type
+    field, they will be increased by the relative position of the
+    type when the type is applied in a context. (This is actually
+    always the case, position is always based on your enclosing scope.)
+
+    For the other attribute fields, any which can be reasonably
+    extended to some application in a context (sorted; min/max, etc.)
+    do so in the expected way.
+
+
+    The enum section defines an enumerated type.
+    It is supplied for several reasons:
+        1) Robustness / clarity.
+        2) pretties up the output.
+        3) some compression, devise is free to use an encoding
+           for the field, and a table to convert back on output. 
+
+    Each enum statement defines the symbol 'Invalid', which is used
+    when no other representation matches.  The match is attempted
+    in the order the symbols are listed.  Multiple representations
+    can be mapped to the same symbol via multiple lines specifiying
+    the symbol.
+
+    If no representation is supplied, the symbol itself is the
+    case-sensitive representation.
+
+    If a representation is given as '' (null string) it is considered to
+    be the default, and it is used in the case that no representation
+    for the current field is found in the list.
+   
+ 
+----------------------------------------------------------
+reader specification:
+
+    reader {
+        # perl program that is given the raw field, and
+        # is able to read and return the attribute(s).
+
+        # The perl program is required to have balancing brackets
+        # at the raw text level; if a program requires an unbalanced
+        # bracket, a bracket must be added in a comment to force 
+        # the text of the function to be balanced properly.
+
+        # the reader is assumed to be in perl subroutine form, and
+        # info is passed in via the standard '@_' list, and the result
+        # should be returned as a list.
+    }
+
+
+    reader protocol:
+
+        On entry the list '@_' will contain the portion of the line
+        that the schema indicates may be involved as the first field.
+        In cases were column indicators are not being used, this portion
+        will be the remainder of the line not consumed by previous fields.
+        There may also be extra fields supplied by the user at the
+        point this subroutine is called.  (see examples for details)
+
+        The reader should be a perl subroutine, that returns a
+        list filled with the fields in a flat fashion.
+        ie, only ints, strings, floats and other internal Devise types.
+        Note that datetime fields should be specified as strings,
+        and only in the ISO standard time format.
+
+        The reader should return an extra item at the front of the
+        list being returned, that when evaluated indicates the
+        number of characters of the input line that were consumed by
+        grabbing this type/attribute.
+
+        If the reader code finds an error in the data, so that it cannot
+        read this type/attribute, it should return the empty list
+        which will scrap this record.
+
+----------
+The sequence of events, when reading a schema containing perl
+code, computed fields, etc.
+
+  When reading starts:
+    0) Sections contained within 'global = {....};'; these will
+       generally be function definitions, etc.
+
+  For each record:
+    1) Read non-computed fields in the order listed in the schema,
+       reader functions will be called in the order listed also.
+
+    2) The filter functions (if any) are now called. 
+       The filter for a type is called before the filter
+       for an attribute when the two are at the same "level".
+
+    3) Compute computed fields in the order listed in the schema,
+       unless the 'function_of' modifier is being used in the schema,
+       in which case the ordering will chosen by Devise, to be "bottom-up",
+       with circularities disallowd.
+
+    4) The filter for entire schema.
+
+Extra "perl" variables and routines that are available:
+    $file - in converter string, specifies the position of
+            the filename argument. (not really a perl variable,
+            but it kinda looks like it.)
+
+    $<attr> - The value of the attribute named, if this value is
+              not a simple type, it will have be given as a list
+              of simple-types that is the flattened representation
+              of the type.  Flattening will probably be expensive,
+              and the interpreter will make the variable available
+              in a lazy fashion, so avoiding referencing non-simple
+              types in this fashion is probably a good idea. 
+              The names are scoped, and are resolved to be the 
+              name visible from the smallest enclosing scope.
+
+    $<attr>_<subfld> - Similar to the above, to access a subfield
+                       directly.  The same caveats apply as well.
+
+    &enum(<e-val>)  - A magic function that converts
+                      enum values back into their symbol form as
+                      a string.  The variable <e-val> must be of
+                      an enumerated type.
+
+    &enum_rep<e-val>) - A magic function that converts
+                      enum values into their representation; 
+                      hopefully, even for pattern representations
+                      it will be possible to efficiently return to
+                      the string that caused the reg expr to fire,
+                      as we have not yet moved off the record.
+
+    %color - An associative array going from color name to a
+             numerical color value.
+----------------------------------------------------------
+
+  Kevin pointed out a problem with ambiguities between different
+  ways of locating data.  With this in mind, I have set up a
+  hierarchy of preferred methods for the reader to use, the
+  reader will use the first choice available, and ignores other info.
+
+  -----
+  schema type = binary
+
+    To locate records:
+        1) recsize
+
+    fields:
+        0) position     # Only narrows down the field, the following
+        1) length       # would still be applied if present.
+
+        2) perl reader for field
+        3) standard devise binary format (same as now).
+
+  -----
+  schema type = text
+
+    To locate records:
+        1) recsize
+        2) delimiter 
+        3) default delimiter ('\n')
+        4) whitespace/seperator (and keep going til enough
+                                 fields are obtained)
+
+    fields:
+        0) position       # Only narrows down the field, following
+        1) length         # will still be used if present.
+
+        2) perl reader for field
+        3) format
+        4) separator
+   
+--------------------------------------------------------------
+perl reader functions:
+
+    There will be several different kinds:
+
+    1) computed, 'value = <perl>;'
+
+    2) filter, 'filter = <perl>;'
+
+    3) reader, 'reader = <perl>;'
+
+    Perl routines can be dropped in at any point with:
+        global = { <perl code> }
+    there is only one namespace for the schema, so routines
+    defined in this way can be used anywhere else in the
+    schema.
+
+    The order the attributes are obtained in is:
+        1) All non-computed attributes, in the order they are listed in.
+        2) computed attributes, in the order listed if no 'function_of'
+           statement is given.
+
+    The attribute names, with a prepended '$', will be valid
+    variables within functions, and contain the
+    value that attribute holds for this record.  In the case
+    of typedefs and nested attributes, the sub-values for a type
+    may be accessed via "dot" notation, where the "dot" is an
+    underscore, ie: $box_ulpt_x 
+    
+----------------------------------------------------------

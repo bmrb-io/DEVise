@@ -1,0 +1,78 @@
+
+  Description of the sliding buffer used by UniData.
+
+  I thought I should write a note on how this was done, it
+  initially seemed like a simple idea, but there got to be
+  a lot of caveats, so it got a little more complex.
+
+  There is a single buffer, of size UD_BUFSZE, that the 
+  data is read into.  Ideally, we do not want to limit
+  the size of the record that can be read to UD_BUFSZE;
+  in fact, we really should only need to have a single
+  leaf-level field in the buffer at a time.
+
+  The sliding buffer was implemented to address these
+  concerns, it is partially successful, with perhaps some
+  room for improvement.  It was originally part of the UniData
+  class, but as it became more complex, I have since pulled it
+  out into it's own class, SlideBuf.
+
+
+  The buffer has several components:
+    i)   char  _buf[UD_BUFSZE+1];
+    ii)  off_t _buf_off;
+    iii) int   _buf_init;
+    iv)  int   _buf_end;
+
+
+  i)   char  _buf[UD_BUFSZE+1];
+       This is the storage for the sliding buffer, there is an
+       extra char at the end for a nul, so we can assume the
+       buffer is always properly terminated.
+
+  ii)  off_t _buf_off;
+       This is the file offset the char at _buf[0] was obtained
+       from.  Needless to say, you can calculate the file offset 
+       of any char in the buffer from this info.
+
+  iii) int   _buf_init;
+  iv)  int   _buf_end;
+       These are the start and end of the useful portion of the
+       buffer.  The chars before _buf_init have already been
+       processed, while the chars at or after _buf_end are
+       garbage laying around in the buffer.  _buf[_buf_end] is
+       set to nul ('\0') to avoid accidentally using any of
+       the garbage.
+
+
+  When UniData is about to read a field, it checks it's size to
+  see if it's already completely in the buffer.  If it seems it
+  might not all be there, a slurp() is done to fill up the buffer
+  again, copying the still useful portion to the front of the
+  buffer before doing the read, and updating the above fields
+  accordingly.
+
+  So, you're thinking, this seems simple enough, why is the
+  code such a mess?  The problem stems from the relative 
+  positioning used for the 'position=' command in the schema;
+  the "zero" position for this command is taken to be the
+  start of the field of the enclosing attribute.  This is
+  convienent for the user (IMO), as well as being necessary
+  to preserve any usefulness of the 'position=' command in
+  a typedef.
+
+  To implement this relative positioning, each field keeps track
+  of the file offset it considers to be "zero".  Note that for large
+  records, this position may no longer be in buffer. 
+
+  The sliding buffer makes life more difficult for a function which
+  is examining the buffer, any time it calls a function which might
+  do a slurp() to get more data from the file, it must recalculate
+  buffer positions based on it's "zero" to guard against the buffer
+  having moved during the function call.
+
+  This makes the code fairly ugly, but I have attempted to 
+  improve it by splitting off the buffer into it's own class,
+  and hiding the buffer recalculations.
+
+

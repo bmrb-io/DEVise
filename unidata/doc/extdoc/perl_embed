@@ -1,0 +1,45 @@
+
+  Embedded perl:
+
+  This doc is not intended as an introduction to embedding perl, or
+  the perl API; for that, check out the man pages for perlembed,
+  perlguts, perlcall, and perlxps.
+
+
+  Each UniData object has it's own perl interpreter, to avoid namespace
+  classes when reading several files at once.
+
+  The 'PerlFrag' class attempts to encapsulate the majority of the
+  interface to perl.  The class allows perl code to be considered
+  'global' or as a subroutine.
+
+  For the global sections, the code itself is placed in an SV (scalar
+  variable), and evaluated when needed.  This type of evaluation is
+  a little slower, but it is only intended for the "global" UniData
+  command, and so only used once (or a few times) per file read.
+
+  The other method is to encapsulate the code within a subroutine,
+  which is then evaluated, which compiles the code.  The code can
+  then be evaluated more quickly when needed by simply running the
+  appropriate function.
+
+  For example, if the user supplies code like:
+
+  filter = {
+        my($perim);
+        $perim = (2 * $box_width) + (2 * $box_height);
+        return $perim;
+    }
+
+  This will be transformed into something like:
+
+  sub UNI000003 {
+        my($perim);
+        $perim = (2 * $box_width) + (2 * $box_height);
+        return $perim;
+    }
+
+  When needed, this subroutine can be quickly called via evaluating:
+      &UNI000003;
+
+   

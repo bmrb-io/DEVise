@@ -1,0 +1,30 @@
+
+schema box {
+
+  type = text;
+  comment = '//';
+  whitespace = ' \t';
+
+  typedef point {
+    attr x { type = int; }
+    attr y { type = int; }
+  }
+
+  attr box {
+    attr color { type = int; }
+
+#   attr upperleft { 
+#       attr x { type = int; }
+#       attr y { type = int; }
+#   }
+#   attr lowerright { 
+#       attr x { type = int; }
+#       attr y { type = int; }
+#   }
+ 
+ #  Show be able to use this instead, but it's broken.
+    attr upperleft { type = point; }
+    attr lowerright { type = point; }
+  }
+}
+

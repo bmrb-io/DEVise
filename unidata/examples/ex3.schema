@@ -1,0 +1,34 @@
+
+schema form {
+  type = text;
+  comment = '//';
+
+  reader = {
+    # Extract the uppercase sections from the data file.
+    # There _lengths_ are the real data.
+
+    my($line) = @_;
+    my($a,$b,$c);
+   
+    if ( $line =~ /^[a-z]*([A-Z]+)[a-z]+([A-Z]+)[a-z]+([A-Z]+)/ ) {
+      $a = length($1);
+      $b = length($2);
+      $c = length($3);
+    }
+
+    return(length($line),$a,$b,$c);
+  }
+
+  attr int1 {
+    type = int;
+  }
+
+  attr int2 {
+    type = int;
+  }
+
+  attr int3 {
+    type = int;
+  }
+}
+

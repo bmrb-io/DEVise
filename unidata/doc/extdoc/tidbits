@@ -1,0 +1,18 @@
+
+
+  Some tidbits to watch for in the UniData code (misc features):
+
+
+  All data returned by UniData is guarenteed to be aligned properly.
+  The alignment restrictions for various types is set in Config.h, btw.
+  UniData is able to align the data without inserting oodles of padding
+  by reordering the fields in the output record, putting the most
+  restrictive items first, followed by next most, etc.  Thus padding is
+  never required on a machine where the smaller alignment requirements
+  are multiples of the larger ones (most machines I've seen).
+  The schema provides an array of field offsets that corresponds to a
+  field's position within the schema so that programs can understand
+  the data.
+ 
+ 
+  

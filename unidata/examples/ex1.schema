@@ -1,0 +1,24 @@
+
+schema density {
+  type = text;
+  comment = '//';
+  whitespace = ' \t';
+  quote = '\'';
+
+  attr x {
+    type = int;
+  }
+
+  attr dens {
+    type = int;
+  }
+
+  attr dens {
+    type = string;
+    maxlen = 20;
+
+# " is the default quote char
+#    quote = '"';
+  }
+}
+
