@@ -1,0 +1,5 @@
+setenv DEVISE_LIB /p/miron/miron/DEVise/src/lib
+setenv DEVISE_TMP /tmp/devise-tmp
+setenv DEVISE_WORK /tmp/devise-work
+setenv TCL_LIBRARY /p/miron/miron/DEVise/solaris/tcl/lib/tcl
+setenv TK_LIBRARY /p/miron/miron/DEVise/solaris/tcl/lib/tk
