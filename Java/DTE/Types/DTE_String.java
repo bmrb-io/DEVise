@@ -99,13 +99,42 @@ public class DTE_String extends DTE_Type implements Cloneable
 	    ps.print(" ");   
 	}
     
-    
     public void copyTo(DTE_Type d)
 	{
 	    for(int i =0; i < length; i++)
 		((DTE_String)d).val[i] = val[i];
 	    ((DTE_String)d).length = length;
 	}
+
+    public boolean equals( DTE_String str ) {
+	if ( length != str.length )
+	    return false;
+
+        for ( int i=0; i < length; i++ ) 
+	    if ( val[i] != str.val[i] )
+		return false;
+
+        return true;
+    }
+
+    public int compare( DTE_String str ) {
+	int i = 0;
+	int j = 0;
+
+	while ( i < length && j < str.length ) {
+	    if ( val[i] < str.val[i] )
+		return -1;
+	    if ( val[i] > str.val[i] )
+		return 1;
+        }
+
+	if ( length < str.length )
+	    return -1;
+	if ( length > str.length )
+	    return 1;
+        return 0;
+    }
+
 }
 		    
 	    
