@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  2000/05/02 18:27:43  wenger
+#  Set up restart scripts for BMRB setup on yola/aden.
+#
 #  Revision 1.11  2000/04/17 20:15:49  wenger
 #  Fixed up architecture check.
 #
@@ -159,35 +162,41 @@ sub SaveLogs {
 #-----------------------------------------------------------
 
 sub KillJspopJss {
-  open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
+  @args = ("jspop.kill", "-id$idStr");
+  0xffff & system(@args) == 0 or print "Can't kill jspop ($?)\n";
 
-  while (<PS>) {
-    if ($_ =~ /.*java *jspop.*id$idStr/ || $_ =~ /.*java *jss.*id$idStr/) {
-      print "Killing $_";
-      if ($_ =~ / *(\d+)/) {
-        $pid = $1;
-        system("kill $pid");
-      }
-    }
-  }
-
-  close PS;
+  @args = ("jss.kill", "-id$idStr");
+  0xffff & system(@args) == 0 or print "Can't kill jss ($?)\n";
 }
 
 #-----------------------------------------------------------
 
 sub StartJspopJss {
+
   if ($idStr eq "regular") {
+
     sleep 15;
     system("jspop -id$idStr -cmdport6666 -imgport6644 -jspopport8622 &");
     sleep 5;
     system("jss -id$idStr -jssport7611 -jspopport8622 -server2 &");
+
   } elsif ($idStr eq "soil") {
+
     sleep 15;
     system("jspop -idsoil -cmdport5966 -imgport5944 -jspopport8922 &");
     sleep 5;
     system("jss -idsoil -jssport7911 -jspopport8922 -devisescriptDEVise.jspop_soil&");
+
+  } elsif ($idStr eq "test") {
+
+    sleep 15;
+    system("jspop -id$idStr -cmdport6266 -imgport6244 -jspopport8822 &");
+    sleep 5;
+    system("jss -id$idStr -jspophost$jspopHost -jssport7811 -jspopport8822 &");
+
   } else {
+
     die "Don't know how to start jspop and jss for id $idStr";
+
   }
 }

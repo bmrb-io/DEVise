@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2000/05/02 18:27:51  wenger
+#  Set up restart scripts for BMRB setup on yola/aden.
+#
 
 ############################################################
 
@@ -99,13 +102,24 @@ sub SaveLog {
 
 sub StartJspop {
   if ($idStr eq "regular") {
+
     sleep 15;
     system("jspop -id$idStr -cmdport6666 -imgport6644 -jspopport8622 &");
+
   } elsif ($idStr eq "soil") {
     sleep 15;
+
     system("jspop -idsoil -cmdport5966 -imgport5944 -jspopport8922 &");
+
+    } elsif ($idStr eq "test") {
+    
+      sleep 15;
+      system("jspop -id$idStr -cmdport6266 -imgport6244 -jspopport8822 &");
+
   } else {
+
     sleep 5;
     die "Don't know how to start jspop for id $idStr";
+
   }
 }

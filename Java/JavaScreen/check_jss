@@ -1,4 +1,5 @@
 #! /usr/bin/perl
+#! /s/std/bin/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -21,13 +22,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2000/05/02 18:27:52  wenger
+#  Set up restart scripts for BMRB setup on yola/aden.
+#
 
 ############################################################
 
 die "usage: check_jss <jspophost> [idStr]\n" if ($#ARGV < 0 or $#ARGV > 1);
 
 $jspopHost = shift(@ARGV);
-if ($#ARGV == 1) {
+if ($#ARGV == 0) {
   $idStr = shift(@ARGV);
 } else {
   $idStr = "regular";
@@ -127,13 +131,24 @@ sub KillJss {
 #-----------------------------------------------------------
 
 sub StartJss {
+
   if ($idStr eq "regular") {
+
     sleep 5;
-    system("jss -id$idStr -jspophost$jspopHost -jssport7611 -jspopport8622 -server2 &");
+    system("jss -id$idStr -jspophost$jspopHost -jssport7611 -jspopport8622 -server4 &");
+
   } elsif ($idStr eq "soil") {
+
     sleep 5;
-    system("jss -idsoil -jspophost$jspopHost -jssport7911 -jspopport8922 -devisescriptDEVise.jspop_soil&");
+    system("jss -id$idStr -jspophost$jspopHost -jssport7911 -jspopport8922 -devisescriptDEVise.jspop_soil &");
+
+  } elsif ($idStr eq "test") {
+
+    sleep 5;
+    system("jss -id$idStr -jspophost$jspopHost -jssport7811 -jspopport8822 &");
+
   } else {
     die "Don't know how to start jss for id $idStr";
+
   }
 }
