@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1996/08/07 15:44:36  guangshu
+#  Added updating statistics in query box.
+#
 #  Revision 1.17  1996/07/23 17:27:00  jussi
 #  Fixed bug in ViewUnlink.
 #
@@ -148,16 +151,16 @@ proc ProcessViewSelected { view } {
 		[lindex $filter 2] [lindex $filter 3] [lindex $filter 4]
     }
     #update allStats
-    if {$queryWinOpened} {
-	set stat [DEVise getAllStats $curView]
-	foreach i { max mean min count} {
-	     .query.$i delete 0 end
-        }
-	.query.max insert 0 [lindex $stat 0]
-	.query.mean insert 0 [lindex $stat 1]
-	.query.min insert 0 [lindex $stat 2]
-	.query.count insert 0 [lindex $stat 3]
-     }
+#    if {$queryWinOpened} {
+#	set stat [DEVise getAllStats $curView]
+#	foreach i { max mean min count} {
+#	     .query.$i delete 0 end
+#        }
+#	.query.max insert 0 [lindex $stat 0]
+#	.query.mean insert 0 [lindex $stat 1]
+#	.query.min insert 0 [lindex $stat 2]
+#	.query.count insert 0 [lindex $stat 3]
+#     }
 }
 
 ############################################################
@@ -182,6 +185,15 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked } {
 	.query.ylow insert 0 $yLow
 	.query.xhigh insert 0 $xHigh
 	.query.yhigh insert 0 $yHigh
+
+        set stat [DEVise getAllStats $curView]
+        foreach i { max mean min count} {
+              .query.$i delete 0 end
+        }
+        .query.max insert 0 [lindex $stat 0]
+        .query.mean insert 0 [lindex $stat 1]
+        .query.min insert 0 [lindex $stat 2]
+        .query.count insert 0 [lindex $stat 3]
    }
 
     if {$historyWinOpened} {
