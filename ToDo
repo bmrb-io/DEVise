@@ -385,6 +385,11 @@ Add an 'Apply' button to the Expression dialog in the mapping dialog.
 
 Add a cursor info dialog like the link info dialog. (rkw 5/21/97)
 
+Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
+
+If images are less than a certain number of pixels in size, just draw
+them as boxes and don't have Tasvir do anything. (ml/rkw 5/30/97).
+
 
 COMPLETED
 ---------
