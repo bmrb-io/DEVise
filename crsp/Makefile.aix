@@ -1,0 +1,13 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+cal: cal.h
+crsp_extract: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h
+crsp_extract: ../graphics/Exit.h
+crsp_index: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h
+main: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h
+sec: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h cal.h
+sec: ../graphics/Exit.h

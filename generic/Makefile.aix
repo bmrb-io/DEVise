@@ -1,0 +1,33 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+generic: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+generic: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+generic: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
+generic: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/Control.h
+generic: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+generic: ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic: ../graphics/Transform.h ../graphics/Pattern.h
+generic: ../graphics/DevisePixmap.h ../graphics/Compress.h
+generic: ../graphics/ViewCallback.h ../graphics/AttrList.h
+generic: ../graphics/Config.h ../graphics/Cursor.h
+generic: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+generic: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
+generic: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+generic: ../tape/SortedTable.h ../graphics.new/GData.h
+generic: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+generic: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+generic: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
+generic: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+generic: ../graphics.new/Action.h ../graphics.new/TDataMap.h
+generic: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+generic: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
+generic: ../graphics.new/ParseCat.h
+devise: ../graphics.new/ClientAPI.h ../graphics.new/ParseAPI.h
+deviseb: ../graphics.new/ClientAPI.h ../graphics.new/ParseAPI.h

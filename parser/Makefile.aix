@@ -1,0 +1,9 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+codegen: parse.h codegen.h
+main: parse.h
+parse: parse.h tokens.h codegen.h

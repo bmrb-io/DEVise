@@ -1,0 +1,11 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+binconv: binconv.h ../graphics/Exit.h
+extract: rectape.h ../tape/tapedrive.h ../graphics.new/machdep.h binconv.h
+extract: ../graphics/Exit.h issmdata.h
+rectape: rectape.h ../tape/tapedrive.h ../graphics.new/machdep.h binconv.h
+rectape: ../graphics/Exit.h

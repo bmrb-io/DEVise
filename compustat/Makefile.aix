@@ -1,0 +1,10 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+compustat: compustat.h index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+compustat: ../graphics/Exit.h
+index: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+project: compustat.h index.h ../tape/tapedrive.h ../graphics.new/machdep.h

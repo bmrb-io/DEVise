@@ -1,0 +1,43 @@
+depend:
+	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+QueryProcTape: QueryProcTape.h ../graphics.new/QueryProc.h
+QueryProcTape: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+QueryProcTape: ../graphics/Color.h ../graphics.new/RecId.h
+QueryProcTape: ../graphics.new/QPRange.h ../graphics/DList.h
+QueryProcTape: ../graphics/Exit.h ../graphics/BufPolicy.h
+QueryProcTape: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
+QueryProcTape: ../graphics.new/GData.h ../graphics.new/TData.h
+QueryProcTape: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+QueryProcTape: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+QueryProcTape: ../graphics/Init.h ../graphics.new/BufMgrFull.h
+QueryProcTape: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
+QueryProcTape: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+QueryProcTape: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+QueryProcTape: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+QueryProcTape: ../graphics/View.h ../graphics/ViewWin.h
+QueryProcTape: ../graphics/WindowRep.h ../graphics/Geom.h
+QueryProcTape: ../graphics/Transform.h ../graphics/DevisePixmap.h
+QueryProcTape: ../graphics/Compress.h ../graphics/Control.h
+QueryProcTape: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+QueryProcTape: ../graphics/AttrList.h ../graphics/Config.h
+QueryProcTape: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+QueryProcTape: ../graphics.new/ViewStats.h ../graphics.new/Action.h
+QueryProcTape: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
+QueryProcTape: ../graphics.new/TDataMapDispatch.h ../graphics/Display.h
+QueryProcTape: ../graphics/ColorMgr.h
+Templates: QueryProcTape.h ../graphics.new/QueryProc.h
+Templates: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+Templates: ../graphics/Color.h ../graphics.new/RecId.h
+Templates: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
+Templates: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
+Templates: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+Templates: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+Templates: ../graphics.new/BufferPolicy.h
+tapedrive: tapedrive.h ../graphics.new/machdep.h ../graphics/Exit.h
+testtape: tapedrive.h ../graphics.new/machdep.h
+vertape: tapedrive.h ../graphics.new/machdep.h

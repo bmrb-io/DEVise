@@ -1,0 +1,46 @@
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+.C.o: 
+	$(CC) -c  $(CFLAGS) $<
+
+CC = g++
+
+LDFLAGS = $(ARCH_LDFLAGS) \
+	  -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	  $(ARCH_LDPOST)
+CFLAGS = $(ARCH_FLAGS) -Wall -I../../graphics -I../../graphics.new \
+	-I../../tape -fexternal-templates -Wall -Wno-unused -O -DUNIX
+
+SRC = generic.c devise.C deviseb.C
+
+OBJ = $(SRC:.c=.o)
+OBJ += $(SRC:.C=.o)
+
+ALLOBJ = ../graphics/allobj.o ../graphics.new/libobj.o ../tape/tapeobj.o \
+	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
+
+CLIENTOBJ = ../graphics.new/clientobj.o
+SERVEROBJ = ../graphics.new/servobj.o
+MONOLITHOBJ = ../graphics.new/monolith.o
+
+all: generic devise devised deviseb
+
+devised: generic.o $(ALLOBJ) $(SERVEROBJ)
+	$(CC) -o $@ generic.o $(SERVEROBJ) $(ALLOBJ) $(LDFLAGS)
+
+devise: devise.o $(CLIENTOBJ)
+	$(CC) -o $@ $@.o $(CLIENTOBJ) $(LDFLAGS)
+
+deviseb: deviseb.o $(CLIENTOBJ)
+	$(CC) -o $@ $@.o $(CLIENTOBJ) $(ARCH_LDPOST)
+
+generic: generic.o $(ALLOBJ) $(MONOLITHOBJ)
+	$(CC) -o $@ $@.o $(MONOLITHOBJ) $(ALLOBJ) $(LDFLAGS)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm generic devised devise
+
+mostlyclean:
+	-rm $(OBJ)
