@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/04/19 17:20:46  wenger
+  Put the GenClassInfo code back in -- this is needed for tape data;
+  started adding the tape-related code back in (it was previously
+  deleted for some reason; I'm not yet done adding it back); added
+  the 'DEVise parseSchema' command and the first parts of the code
+  related to it.
+
   Revision 1.18  1996/04/17 16:34:38  wenger
   Conditionaled out the GenClassInfo class and all related code,
   since the program exits if that code is ever executed.
@@ -567,7 +574,13 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	char *commentString = 0;
 	Group *currgrp = NULL;
 
+#if 0 /* If this line is not executed, it causes a memory leak; however,
+		 if it _is_ executed, it causes errors for sessions with more than
+		 one physical schema.  This needs to be fixed up somehow, perhaps
+		 by having the TData object store a copy of the AttrList (attrs)
+		 instead of just a pointer to it.  RKW 4/22/96. */
 	if (attrs != NULL) delete attrs;
+#endif
 	attrs = NULL;
 	numAttrs = 0;
 
@@ -810,7 +823,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		GenClassInfo *genInfo = FindGenClass(source);
 		ControlPanel::RegisterClass(
 			genInfo->Gen(source, isAscii, fileType,
-			attrs,recSize,sep, numSep, hasSeparator, commentString),
+			attrs, recSize,sep, numSep, hasSeparator, commentString),
 			true);
 #else
 		fprintf(stderr, "Illegal token 'source' in schema\n");
@@ -823,7 +836,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		  printf("default source, recSize %d\n",recSize);
 		  ControlPanel::RegisterClass(
 		     new TDataAsciiInterpClassInfo(fileType,
-			attrs,recSize,sep, numSep, hasSeparator,
+			attrs, recSize,sep, numSep, hasSeparator,
 			commentString), true);
 		} else {
 		  printf("default binary source, recSize %d\n",recSize);
@@ -842,11 +855,9 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	return fileType;
 
 error:
-	if (file != NULL)
-		fclose(file);
+	if (file != NULL) fclose(file);
 
-	if (attrs != NULL)
-		delete attrs;
+	if (attrs != NULL) delete attrs;
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
 }
