@@ -265,7 +265,12 @@ public class DEViseServer implements Runnable
                 pop.pn("Client switching happened in server running on (" + hostname + ")");
                 switchClient(true);
                 action = DEViseServer.WORK;
-            }
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }    
         }
 
         return action;
