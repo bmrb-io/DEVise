@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2001/04/01 03:53:00  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+// Added cmdSet3DConfig(), process JAVAC_Set3DConfig command.
+//
 // Revision 1.55  2001/03/20 20:11:39  wenger
 // Added more debug output to the JS client and jspop.
 //
@@ -464,6 +468,9 @@ public class DEViseServer implements Runnable
         boolean isRemoveClient = false;
 
 	//TEMP -- kind of busywaiting?? YES
+	//
+	// Get and process commands from the client.
+	//
         while (true) {
             todo = getAction();
 
@@ -479,37 +486,21 @@ public class DEViseServer implements Runnable
                 serverCmds = null;
 
                 String clientCmd = null;
-                Vector serverDatas = new Vector();
 
+		//
+		// Get a single command from the client.
+		//
                 boolean isEnd = false;
                 while (!isEnd) {
                     try {
 
+			//
+			// If a collaborator just connected, initialize
+			// it.
+			//
 			if ( !client.collabSockets.isEmpty() 
-			    && client.collabInit == 1) {
-
-      			    pop.pn("We send the save-session command.");
-			    processClientCmd(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}", false, serverDatas);
-
-			    pop.pn("We send the close-session command.");
-			    //server.serverCmds = null;
-			    processClientCmd(DEViseCommands.CLOSE_SESSION, false, serverDatas);
-			    // keep the current session opened
-			    if ( ! client.isSessionOpened )
-				client.isSessionOpened = true;
-
-			    pop.pn("We send the open-session command.");
-			    sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}");
-	    
-			    serverDatas.removeAllElements();	
-			    processServerCmd(serverDatas);
-			    
-			    client.sendCmd(serverCmds);
-			    client.sendData(serverDatas);
-		            pop.pn("Done sending all data to " +
-			      "collaboration client");
-			    serverDatas.removeAllElements();
-			    serverCmds = null;
+		          && client.collabInit) {
+			    initializeCollaborator();
 			}
 
 			// Get a command from the client.
@@ -520,6 +511,10 @@ public class DEViseServer implements Runnable
                     } catch (InterruptedIOException e) {
                         // since client.getCmd() will not block, this is
 			// meaningless
+			if (DEBUG >= 1) {
+		            System.err.println("InterruptedIOException " +
+			      e.getMessage() + " in DEViseServer.run()");
+		        }
                     } catch (YException e) {
                         pop.pn("Client communication error1: " + e.getMsg());
                         removeCurrentClient();
@@ -528,6 +523,13 @@ public class DEViseServer implements Runnable
                         clientCmd = null;
                     }
                 }
+
+		if (clientCmd != null && DEBUG >= 1) {
+		    System.out.println("Server on " + hostname +
+		      " got command " + clientCmd + " from client " +
+		      client.getConnectionID().intValue() + " in thread " +
+		      Thread.currentThread());
+		}
 
                 if (clientCmd == null) {
                     continue;
@@ -542,9 +544,10 @@ public class DEViseServer implements Runnable
 
 		//
 		// Process the command.
-                // commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
-                // already been handled in DEViseClient
+                // Commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
+                // already been handled in DEViseClient.
 		//
+                Vector serverDatas = new Vector();
                 try {
 		    if (!processClientCmd(clientCmd, isRemoveClient,
 		      serverDatas)) {
@@ -748,7 +751,7 @@ public class DEViseServer implements Runnable
         }
 
 	// also close the collaboration JSs
-	if (client.collabInit != 1) {
+	if (!client.collabInit) {
 	    for (int i = 0; i < client.collabSockets.size(); i++) {
 		DEViseCommSocket sock = 
 		    (DEViseCommSocket)client.collabSockets.elementAt(i);			
@@ -768,7 +771,7 @@ public class DEViseServer implements Runnable
 		    sock.sendCmd(DEViseCommands.CLOSE_SESSION);
 		}			    
 	    }
-	} // if (client.collabInit != 1)
+	} // if (!client.collabInit)
     }
 
     private void cmdGetSessionList(String clientCmd) throws YException
@@ -1256,4 +1259,37 @@ public class DEViseServer implements Runnable
         return count;
     }
 
+    private void initializeCollaborator() throws YException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseServer.initializeCollaborator()" +
+	      " in thread " + Thread.currentThread());
+	}
+
+        pop.pn("We send the save-session command.");
+        Vector serverDatas = new Vector();
+	processClientCmd(DEViseCommands.SAVE_SESSION + " {" +
+	  client.savedSessionName + "}", false, serverDatas);
+
+	pop.pn("We send the close-session command.");
+	//server.serverCmds = null;
+	processClientCmd(DEViseCommands.CLOSE_SESSION, false, serverDatas);
+	// keep the current session opened
+	if ( ! client.isSessionOpened ) {
+	    client.isSessionOpened = true;
+	}
+
+	pop.pn("We send the open-session command.");
+	sendCmd(DEViseCommands.OPEN_SESSION + " {" +
+	  client.savedSessionName + "}");
+	    
+	serverDatas.removeAllElements();	
+	processServerCmd(serverDatas);
+			    
+        client.sendCmd(serverCmds);
+	client.sendData(serverDatas);
+	pop.pn("Done sending all data to " + "collaboration client");
+	serverDatas.removeAllElements();
+	serverCmds = null;
+    }
 }

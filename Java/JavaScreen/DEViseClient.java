@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2001/04/05 16:13:17  xuk
+// Fixed bugs for JSPoP status query.
+// Don't send JAVAC_GetServerState command to devised.
+//
 // Revision 1.36  2001/04/01 03:51:18  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -223,7 +227,7 @@ public class DEViseClient
     private static int _objectCount = 0;
 
     public Vector collabSockets = new Vector();
-    public int collabInit = 0;
+    public boolean collabInit = false;
 
     public boolean isAbleCollab = false;
     private String collabPass = null;
@@ -279,7 +283,7 @@ public class DEViseClient
     public void addCollabSocket(DEViseCommSocket sock) {
         //collabSocket = sock;
 	collabSockets.addElement(sock);
-	collabInit = 1;
+	collabInit = true;
     }
 
     public void addNewCmd(String cmd) {
@@ -481,9 +485,12 @@ public class DEViseClient
             try {
 		String command = (String)cmdBuffer.elementAt(0);
                 if (command != null) {
-		    if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
-                    sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
-                    throw new YException("Can not get user information for this client");
+		    if (!command.startsWith(DEViseCommands.CONNECT) &&
+		      user == null) {
+                        sendCmd(DEViseCommands.ERROR +
+			  " {No user infomation given}");
+                        throw new YException(
+			  "Cannot get user information for this client");
 		    }
 
 		    //
@@ -527,6 +534,8 @@ public class DEViseClient
 				pop.pn("Closed collaboration JS " + i + ".");
 			    }
 			} catch (YException e) {
+			    System.err.println("YException " + e.getMessage() +
+			      " in DEViseClient.getCmd()");
 			}
 			collabSockets.removeAllElements();
 	
@@ -587,8 +596,22 @@ public class DEViseClient
     {
         if (status != CLOSE) {
 	    if (cmd != null) {
+
+		if (!collabInit) {
+		    //
+		    // Send command to "normal" client.
+		    //
+		    pop.pn("Sending command to client(" + ID + " " + hostname +
+		       ") :  \"" + cmd + "\"");
+		    socket.sendCmd(cmd);
+		}
+
 		if (!collabSockets.isEmpty()) { // also send to collab JS
-		    if (collabInit == 1) {
+		    if (collabInit) {
+			//
+			// Send command only to the most-recently-connected
+			// collaboration client.
+			//
 			DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
 			if (!sock.isEmpty()) {
 			    try {
@@ -603,12 +626,17 @@ public class DEViseClient
 				    sock.sendCmd(cmd);
 				}
        			    } catch (InterruptedIOException e) {
+			        System.err.println("InterruptedIOException " +
+				  e.getMessage() + " in DEViseClient.sendCmd()");
 			    }
 			} else {
 			    pop.pn("Sending command to collabration client: " + cmd);
 			    sock.sendCmd(cmd);
 			}
 		    } else {
+			//
+			// Send commands to all collaboration clients.
+			//
 			for (int i = 0; i < collabSockets.size(); i++) {
 			    DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);			
 			    if (!sock.isEmpty()) {
@@ -632,6 +660,8 @@ public class DEViseClient
 					}
 				    }
 				} catch (InterruptedIOException e) {
+				    System.err.println("InterruptedIOException " +
+				      e.getMessage() + " in DEViseClient.sendCmd()");
 				}
 			    } else {
 				if (!cmd.startsWith(DEViseCommands.COLLAB_STATE)) {
@@ -642,11 +672,6 @@ public class DEViseClient
 			}
 		    }
                 }
-		if (collabInit != 1) {
-		    pop.pn("Sending command to client(" + ID + " " + hostname +
-		       ") :  \"" + cmd + "\"");
-		    socket.sendCmd(cmd);
-		}
 	    }
         } else {
             throw new YException("Invalid client");
@@ -656,46 +681,67 @@ public class DEViseClient
     public synchronized void sendData(Vector data) throws YException
     {
         if (status != CLOSE) {
-            if (data == null)
+            if (data == null) {
                 return;
+            }
 
-            for (int i = 0; i < data.size(); i++) {
-                byte[] d = (byte[])data.elementAt(i);
-                if (d != null && d.length > 0) {
-		    if (collabInit != 1) {
-			pop.pn("Sending data to client(" + ID + " " + hostname +
-			       ") (" + d.length + " bytes)");
-			pop.pn("  First: " + d[0] + "; middle: " +
-			  d[d.length/2] + "; last: " + d[d.length-1]);
-			socket.sendData(d);
-			pop.pn("  Done sending data");
-		    }
+	    try {
+                for (int i = 0; i < data.size(); i++) {
+                    byte[] d = (byte[])data.elementAt(i);
+                    if (d != null && d.length > 0) {
 
-		    if (! collabSockets.isEmpty()) { // also send to collab JS
-			if (collabInit == 1) {
-			    DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
-			    pop.pn("Sending data to collabration client (" + d.length + " bytes)");
+		        if (!collabInit) {
+			    //
+			    // Send data to "normal" client.
+			    //
+			    pop.pn("Sending data to client(" + ID + " " +
+			      hostname + ") (" + d.length + " bytes)");
 			    pop.pn("  First: " + d[0] + "; middle: " +
 			      d[d.length/2] + "; last: " + d[d.length-1]);
-			    sock.sendData(d);
-			    pop.pn("Done sending data");
-			} else {
-			    for (int j = 0; j < collabSockets.size(); j++) {
-				DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(j);
-				pop.pn("Sending data to collabration client" + " " + j + " (" + d.length + " bytes)");
+			    socket.sendData(d);
+			    pop.pn("  Done sending data");
+		        }
+
+		        if (! collabSockets.isEmpty()) { // also send to collab JS
+			    if (collabInit) {
+			        //
+			        // Send command only to the most-recently-
+				// connected collaboration client.
+			        //
+			        DEViseCommSocket sock =
+				  (DEViseCommSocket)collabSockets.lastElement();
+			        pop.pn("Sending data to collabration client ("
+				  + d.length + " bytes)");
 			        pop.pn("  First: " + d[0] + "; middle: " +
 			          d[d.length/2] + "; last: " + d[d.length-1]);
-				sock.sendData(d);
-				pop.pn("Done sending data");	
+			        sock.sendData(d);
+			        pop.pn("Done sending data");
+			    } else {
+			        //
+			        // Send data to all collaboration clients.
+			        //
+			        for (int j = 0; j < collabSockets.size(); j++) {
+				    DEViseCommSocket sock = (DEViseCommSocket)
+				      collabSockets.elementAt(j);
+				    pop.pn("Sending data to collabration client"
+				      + " " + j + " (" + d.length + " bytes)");
+			            pop.pn("  First: " + d[0] + "; middle: " +
+			              d[d.length/2] + "; last: " + d[d.length-1]);
+				    sock.sendData(d);
+				    pop.pn("Done sending data");	
+			        }
 			    }
-			}
+		        }
 		    }
-		}
+	        }
+	    } finally {
+		// Note: having collabInit be true seems to be a pretty
+		// "dangerous" state, so I want to be *sure* the flag
+		// always gets cleared.  RKW 2001-04-06.
+	        if (collabInit) {
+		    collabInit = false;
+	        }
 	    }
-
-	    if (collabInit == 1)
-		collabInit = 0;
-
         } else {
             throw new YException("Invalid client");
         }

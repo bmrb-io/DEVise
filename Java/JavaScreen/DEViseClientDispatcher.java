@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/01/08 20:31:50  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.8.4.1  2000/11/08 18:21:38  wenger
 // Fixed problem with client objects never getting finalized; added
 // removal of client objects once we hit maxclients limit;
@@ -115,6 +119,8 @@ public class DEViseClientDispatcher implements Runnable
             client = pop.getNextRequestingClient();
 
             if (client != null) {
+		System.out.println("Finding server for client " + client.ID);
+
                 server = pop.getNextAvailableServer();
                 if (server != null) {
                     server.setCurrentClient(client);

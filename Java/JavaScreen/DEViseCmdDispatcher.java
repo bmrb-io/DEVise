@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.89  2001/04/05 16:12:35  xuk
+// Fixed bugs for JSPoP status query.
+// Only process JAVAC_UpdataSeverState command for normal JS.
+//
 // Revision 1.88  2001/04/01 03:51:17  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -560,7 +564,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    _connectedAlready = true;
 
 	    // Start the heartbeat thread.
-	    //_heartbeat = new DEViseHeartbeat(this);
+	    _heartbeat = new DEViseHeartbeat(this);
         }
 
 	commands = DEViseGlobals.parseStr(cmd);

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2001/03/20 20:11:39  wenger
+// Added more debug output to the JS client and jspop.
+//
 // Revision 1.20  2001/03/08 21:10:13  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -303,6 +306,8 @@ public class DEViseCommSocket
             }
         } catch (IOException e) {
             closeSocket();
+            System.err.println("Can not read from input stream in " +
+	      "DEViseCommSocket:isEmpty()");
             throw new YException("Can not read from input stream",
 	      "DEViseCommSocket:isEmpty()");
         }
@@ -424,6 +429,8 @@ public class DEViseCommSocket
             os.flush();
         } catch (IOException e) {
             closeSocket();
+            System.err.println("Error occurs while writing to output " +
+	      "stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
             throw new YException("Error occurs while writing to output " +
 	      "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
         }
@@ -575,6 +582,8 @@ public class DEViseCommSocket
                            // actually does nothing
         } catch (IOException e) {
             closeSocket();
+            System.err.println("Error occurs while writing to output " +
+	      "stream" + e.getMessage() + " in DEViseCommSocket:sendData()");
             throw new YException("Error occurs while writing to output " +
 	      "stream" + e.getMessage(), "DEViseCommSocket:sendData()");
         }

@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2001/03/19 23:10:31  xuk
+// Fixed bug for no available JavaScreen for collaboration.
+//
 // Revision 1.46  2001/03/04 22:03:04  xuk
 // Disabled some buttons when JS in "collaboration" mode.
 //
@@ -558,7 +561,8 @@ public class jspop implements Runnable
                 pn("Before reading command");
                 if (DEBUG >= 1) {
 		    System.out.println(socket.dataAvailable() +
-		      " bytes available for receiving command");
+		      " bytes available for receiving command" +
+		      " in thread " + Thread.currentThread());
                 }
 
       		String cmd = socket.receiveCmd();
@@ -569,8 +573,7 @@ public class jspop implements Runnable
 		if (flag == -1) { // collaboration JS
 		    pn("Received collaboration request for client: " + id + ".");
 		    onCollab(socket, id, cmd);
-		}
-		else {
+		} else {
 		    boolean cgi;
 		    if (flag == 1) {
 			cgi = true;
@@ -755,7 +758,8 @@ public class jspop implements Runnable
                         pn("Before reading command");
                         if (DEBUG >= 1) {
 		            System.out.println(socket.dataAvailable() +
-		              " bytes available for receiving command");
+		              " bytes available for receiving command" +
+			      " in thread " + Thread.currentThread());
                         }
 			String cmd = socket.receiveCmd();
                         pn("After reading command");
@@ -1314,7 +1318,7 @@ public class jspop implements Runnable
         }
     }
 
-    public synchronized void onCollab(DEViseCommSocket socket, int id, String cmd)
+    private synchronized void onCollab(DEViseCommSocket socket, int id, String cmd)
     {   
 	try {	
 	    // first connection for collaboration
