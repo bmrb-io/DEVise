@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.11.4.13  2001/01/05 19:15:45  wenger
 // Updated copyright dates.
 //
@@ -203,20 +207,20 @@ public class DEViseCommSocket
         try {
             socket = new Socket(hostname, port);
         } catch (NoRouteToHostException e) {
-	    System.out.println("Exception in DEViseCommSocket constructor: " +
+	    System.err.println("Exception in DEViseCommSocket constructor: " +
 	      e.getMessage());
             closeSocket();
             throw new YException(
 	      "Can not find route to host, may caused by an internal firewall", 
 	      "DEViseCommSocket:constructor");
         } catch (UnknownHostException e) {
-	    System.out.println("Exception in DEViseCommSocket constructor: " +
+	    System.err.println("Exception in DEViseCommSocket constructor: " +
 	      e.getMessage());
             closeSocket();
-            throw new YException("Unkonwn host {" + hostname + "}",
+            throw new YException("Unknown host {" + hostname + "}",
 	      "DEViseCommSocket:constructor");
         } catch (IOException e) {
-	    System.out.println("Exception in DEViseCommSocket constructor: " +
+	    System.err.println("Exception in DEViseCommSocket constructor: " +
 	      e.getMessage());
             closeSocket();
             throw new YException("Can not open socket connection to host {"
@@ -423,12 +427,12 @@ public class DEViseCommSocket
 
     public void sendCmd(String cmd, short msgType) throws YException
     {
-        sendCmd(cmd, msgType, 0);
+        sendCmd(cmd, msgType, DEViseGlobals.DEFAULTID);
     }
 
     public void sendCmd(String cmd) throws YException
     {
-        sendCmd(cmd, DEViseGlobals.API_JAVA, 0);
+        sendCmd(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
     }
 
     // Receive a command.  Note that this method may be interrupted by
@@ -574,7 +578,7 @@ public class DEViseCommSocket
 	    try {
 	        bytes = is.available();
 	    } catch (IOException e) {
-		System.out.println("Exception " + e.getMessage() +
+		System.err.println("Exception " + e.getMessage() +
 		  "while getting number of bytes available");
 	        bytes = 0;
 	    }

@@ -3,7 +3,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2000
+#  (c) Copyright 1999-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,6 +21,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2001/01/08 20:31:55  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.1.4.2  2000/12/11 22:14:18  wenger
 #  Merged chagnes from link_gui_improvements thru js_restart_improvements
 #  onto the branch, removing imgport code from the restart scripts.
@@ -77,7 +81,7 @@ if ($arch eq "Linux") {
   $ps_cmd = "/usr/ucb/ps -axw";
 }
 
-open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
+open PS, "$ps_cmd 2>/dev/null |" or die "can't fork: $!";
 
 while (<PS>) {
   if ($idStr eq "") {

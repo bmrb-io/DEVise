@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 4.3.
+version 5.1.
 
 
 For the details of the format in which commands are send on the socket,
@@ -409,3 +409,9 @@ see comments in DEViseCommSocket.java.
     Arguments: 3
         <jss port>: the port used by this JSS to listen to JSPoP request
         <cmd port>: the command port used by the specified devised
+
+8. DEViseCheckPop to JSPoP
+
+    8.1 JAVAC_CheckPop
+    Purpose: checks that the JSPoP is runing and accepting connections.
+    Arguments: 0

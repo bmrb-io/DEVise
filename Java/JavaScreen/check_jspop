@@ -3,7 +3,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2000
+#  (c) Copyright 1999-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,6 +21,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  2001/01/08 20:31:55  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.12.4.4  2000/12/27 19:38:36  wenger
 #  Merged changes from js_restart_improvements thru zero_js_cache_check from
 #  the trunk onto the js_cgi_br branch.
@@ -134,7 +138,7 @@ if ($arch eq "Linux") {
   $ps_cmd = "/usr/ucb/ps -axw";
 }
 
-open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
+open PS, "$ps_cmd 2>/dev/null |" or die "can't fork: $!";
 
 while (<PS>) {
   if ($idStr eq "") {
@@ -150,11 +154,33 @@ while (<PS>) {
 
 close PS;
 
+
+# Make sure we can connect to the jspop.
+if ($foundJspop) {
+  my $connected = 0;
+
+  open CONNECT, "check_connect 2>check_connect.err |" or die "can't fork: $!";
+
+  while (<CONNECT>) {
+    if ($_ eq "OK\n") {
+      $connected = 1;
+    }
+  }
+  close CONNECT;
+
+  if (!$connected) {
+    print STDERR "Cannot connect to jspop\n";
+    $foundJspop = 0;
+  }
+} else {
+  print STDERR "No jspop process found\n";
+}
+
 print "foundJspop = $foundJspop\n" if ($debug);
 
 $curTime = localtime(time());
 if (!$foundJspop) {
-  print STDERR "No jspop process found (at $curTime)\n";
+  print STDERR "No jspop process found or cannot connect (at $curTime)\n";
 }
 
 if ($foundJspop) {

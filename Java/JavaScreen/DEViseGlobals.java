@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.44.2.11  2000/12/22 17:32:10  wenger
 // Changed JS version to 4.0 and protocol version to 5.0.
 //
@@ -159,6 +163,7 @@ import java.util.*;
 public final class DEViseGlobals
 {
     // global constants
+    //TEMP -- no longer need to distinguish w/ and w/o ID
     // API_JAVA is a JavaScreen command without JS ID; API_JAVA_WID is
     // a JavaScreen command *with* JS ID.
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
@@ -169,7 +174,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("4.0");
-    public static final String PROTOCOL_VERSION = new String("5.0");
+    public static final String PROTOCOL_VERSION = new String("5.1");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

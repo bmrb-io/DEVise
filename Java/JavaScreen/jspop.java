@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2001/01/08 20:31:58  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.29.4.14  2000/12/21 23:28:28  wenger
 // Got CGI mode working with applet, minor cleanup still needed; more debug
 // output in DEViseCommSocket, jspop, and js.cgi; comments updated for
@@ -496,35 +500,18 @@ public class jspop implements Runnable
                     pn("A direct socket client connection.");
 		}
 
-		if (socket != null) {
-		    activeSockets.addElement(socket);
-		}
+		activeSockets.addElement(socket);
 			
 	        if (id == DEViseGlobals.DEFAULTID) { // new JS
                     pn("New client");
 	            DEViseClient client = createClient(hostname, socket, cgi);
 		    client.addNewCmd(cmd);
-		    if (client.getStatus() != DEViseClient.SERVE)
-			client.setStatus(DEViseClient.REQUEST); 
 	        } else { // old JS
                     pn("Existing client");
 	            DEViseClient client = findClientById(id);
 		    if (client != null) {
-			//TEMP -- this code should probably be in the client
-			if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
-			    client.updateHeartbeat();
-			    // close client socket for cgi version
-			    if (cgi) {
-				socket.closeSocket();
-				pn("Socket between client and cgi is closed.");
-			    }
-			}
-			else {
-			    if (client.getStatus() != DEViseClient.SERVE)
-				client.setStatus(DEViseClient.REQUEST); 
-			    client.setSocket(socket);
-			    client.addNewCmd(cmd);
-			} 
+		        client.setSocket(socket);
+		        client.addNewCmd(cmd);
       		    } else {
 			throw new YException("No client for ID: " + id);
 		    }
@@ -663,7 +650,11 @@ public class jspop implements Runnable
 	    System.out.println("jspop.getNextRequestingClient()");
 	}
 
-	// check all the sockets for input
+	//
+	// Check all sockets for input; if there is input, read the command
+	// and add it to the appropriate client.  (This changes the client's
+	// state to REQUEST unless it's already connected to a server.)
+	//
 	try {
 	    for (int i = 0; i < activeSockets.size(); i++) {
 		DEViseCommSocket socket = (DEViseCommSocket)activeSockets.elementAt(i);
@@ -683,23 +674,12 @@ public class jspop implements Runnable
 			} else {
 			    pn("Formal JS connection.");
 			}
+			//TEMP -- what if cgi here != cgi in client?
 
 			DEViseClient client = findClientById(id);
 			if (client != null) {
-			    if (cmd.startsWith(DEViseCommands.HEART_BEAT)) { 
-				client.updateHeartbeat();
-				// close client socket for cgi version
-				if (cgi == 1) {
-				    socket.closeSocket();
-				    pn("Socket between client and cgi is closed.");
-				}
-			
-			    } else {
-				if (client.getStatus() != DEViseClient.SERVE)
-				    client.setStatus(DEViseClient.REQUEST); 
-				client.setSocket(socket);
-				client.addNewCmd(cmd);
-			    } 
+			    client.setSocket(socket);
+			    client.addNewCmd(cmd);
 			} else {
 			    throw new YException("No client for ID: " + id);
 			}
@@ -714,6 +694,10 @@ public class jspop implements Runnable
             pn(e.getMsg());
         }    
 
+	//
+	// Find the suspended client that's been waiting the longest time
+	// (weighted by client priority).
+	//
         float time = -1.0F, clientTime = 0.0F;
         DEViseClient client = null;
         Vector removedClient = new Vector();

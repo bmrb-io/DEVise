@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.1.4.2  2000/10/18 20:28:10  wenger
 // Merged changes from fixed_bug_616 through link_gui_improvements onto
 // the branch.
@@ -51,6 +55,8 @@ public final class DEViseCommands
     public static final String ABORT = JS_PREFIX + "Abort";
 
     public static final String ACK = JS_PREFIX + "Ack";
+
+    public static final String CHECK_POP = JS_PREFIX + "CheckPop";
 
     public static final String CLOSE_SESSION = JS_PREFIX + "CloseCurrentSession";
 

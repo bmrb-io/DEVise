@@ -1,0 +1,13 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+############################################################
+
+java DEViseCheckPop $*
+#TEMPTEMP java DEViseCheckPop  1> check_connect.err
+#TEMPTEMP java DEViseCheckPop $* 2> check_connect.err

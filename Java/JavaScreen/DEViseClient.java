@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2001/01/08 20:31:50  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.18.4.8  2000/12/22 15:44:58  wenger
 // Cleaned up sendCmd() methods.
 //
@@ -198,7 +202,39 @@ public class DEViseClient
     }
 
     public void addNewCmd(String cmd) {
-        cmdBuffer.addElement(cmd);
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID.intValue() +
+	      ").addNewCmd(" + cmd + ") in thread " + Thread.currentThread());
+	}
+
+	updateHeartbeat();
+
+	if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
+	    if (cgi) {
+		// Close socket here because there is no reply to heartbeat
+		// command.
+	        socket.closeSocket();
+	        pop.pn("Socket between client and cgi is closed.");
+	    }
+	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
+	    try {
+	        sendCmd(DEViseCommands.DONE);
+	    } catch (YException ex) {
+	        System.err.println("Error sending " + DEViseCommands.DONE +
+		  " command in response to " + DEViseCommands.CHECK_POP);
+	    }
+
+	    // Close here because the client exits after getting the reply.
+	    close();
+	} else {
+            cmdBuffer.addElement(cmd);
+
+	    if (getStatus() != SERVE) {
+	        setStatus(REQUEST);
+	    }
+	    // Note: socket can't be closed here because we have to
+	    // send the reply.
+	}
     }
 
     public boolean useCgi() {
@@ -270,6 +306,11 @@ public class DEViseClient
     // command the state becomes REQUEST).
     public synchronized int getStatus()
     {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseClient(" + ID.intValue() +
+	      ").getStatus() in thread " + Thread.currentThread());
+	}
+
         if (status == IDLE) {
 	    try {
 	        if (!isSocketEmpty()) {
@@ -314,6 +355,11 @@ public class DEViseClient
 
     public void removeLastCmd()
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID.intValue() +
+	      ").removeLastCmd() in thread " + Thread.currentThread());
+	}
+
         if (cmdBuffer.size() > 0) {
             cmdBuffer.removeElementAt(0);
         }
@@ -413,6 +459,11 @@ public class DEViseClient
 
     private synchronized String receiveCmd() throws YException, InterruptedIOException
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID.intValue() +
+	      ").receiveCmd() in thread " + Thread.currentThread());
+	}
+
         if (status != CLOSE) {
             String cmd = socket.receiveCmd();
             pop.pn("Received command from client(" + ID + " " + hostname +
