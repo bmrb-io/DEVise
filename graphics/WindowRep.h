@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1998/04/16 21:50:51  wenger
+  Committed Sanjay's text code.
+
   Revision 1.69  1998/04/13 22:24:59  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -571,7 +574,7 @@ public:
   }
   virtual DevStatus ETk_MoveResizeWindow(int handle,
 					 Coord centerX, Coord centerY,
-					 Coord centerX, Coord centerY)
+					 Coord width, Coord height)
   {
       reportErrNosys("This object does not support EmbeddedTk operations");
       return StatusFailed;
