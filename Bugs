@@ -1177,6 +1177,9 @@ Num Date        Status  Description
 
 310 03/04/98	OPEN	The collaborator uses lots of CPU when idle. (rkw)
 
+311 03/06/98	OPEN	Visual links don't always update correctly (see the CustomerAna.ds
+			session in the BankOne demo). (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
