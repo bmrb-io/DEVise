@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/23 23:46:00  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/03/21 22:15:37  guangshu
   Comment line ellimination.
 
@@ -216,12 +219,18 @@ void ClassDir::SetDefault(char *category, char *className,
 char *ClassDir::CreateWithParams(char *category, char *className,
 				 int numParams, char **paramNames)
 {
+#if defined(DEBUG) || 0
+  for(int i = 0; i<numParams; i++) {
+  	printf("In ClassDir: category=%s, className=%s, argv[%d]=%s\n", 
+		 category, className, i, paramNames[i]);
+  }
+#endif
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name,category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
 	ClassRec *classRec = catRec->_classRecs[j];
-#ifdef DEBUG
+#if defined(DEBUG) || 0
 	cout << "Comparing class " << className << " to "
 		<< classRec->classInfo->ClassName() << endl;
 #endif
@@ -268,6 +277,8 @@ void *ClassDir::FindInstance(char *name)
     for(int j = 0; j < catRec->_numClasses; j++) {
       ClassRec *classRec = catRec->_classRecs[j];
       for(int k = 0; k < classRec->_numInstances; k++) {
+
+//printf("In FindInstance, trying to compare with %s\n", classRec->_instances[k]->InstanceName());
 	if (!strcmp(classRec->_instances[k]->InstanceName(), name)){
 	  return classRec->_instances[k]->GetInstance();
 	  }
