@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/03 22:14:33  jussi
+  Updated code to reflect new interface between mapping objects and
+  shape objects.
+
   Revision 1.12  1996/04/12 23:34:09  jussi
   Added View * parameter to DrawGDataArray(), corresponding to the changes
   made earlier to MapInterpShape.h in graphics.new.
@@ -236,9 +240,9 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
 
   /* generate mapping */
 
-  fprintf(mapFile, "class %s : public TDataMapDispatch {\n", rec->name);
+  fprintf(mapFile, "class %s : public TDataMap {\n", rec->name);
   fprintf(mapFile, "public:\n");
-  fprintf(mapFile, "\t%s(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMapDispatch(\"%s\", tdata, gdataName, sizeof(%s_GData), 0",rec->name, rec->name, rec->name);
+  fprintf(mapFile, "\t%s(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions, int maxGDataPages= -1, void *uData = NULL) : TDataMap(\"%s\", tdata, gdataName, sizeof(%s_GData), 0",rec->name, rec->name, rec->name);
   if (rec->dynamicFields & BIT_X)
     fprintf(mapFile, "|VISUAL_X");
   if (rec->dynamicFields & BIT_Y)

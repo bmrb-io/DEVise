@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/07/03 22:15:25  jussi
+  Fixed an index error.
+
   Revision 1.32  1996/07/02 22:45:59  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -237,12 +240,12 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 			     unsigned long int flag,
 			     unsigned long int attrFlag,
 			     VisualFlag *dimensionInfo, int numDimensions):
-	TDataMapDispatch(name, tdata, name,
-			 FindGDataSize(cmd, tdata->GetAttrList(),
-				       flag, attrFlag),
-			 MappingInterpAllFlags, MappingInterpAllFlags,
-			 Init::MaxGDataPages(),
-			 dimensionInfo, numDimensions, true)
+	TDataMap(name, tdata, name,
+                 FindGDataSize(cmd, tdata->GetAttrList(),
+                               flag, attrFlag),
+                 MappingInterpAllFlags, MappingInterpAllFlags,
+                 Init::MaxGDataPages(),
+                 dimensionInfo, numDimensions, true)
 {
 #ifdef DEBUG
   printf("MappingInterp: 0x%p, %d dimensions, cmdFlag 0x%p, attrFlag 0x%p\n",

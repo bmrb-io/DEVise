@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/02 22:45:59  jussi
+  The bounding box of symbols is now correctly computed. Scatter
+  plots sometimes did not have all necessary data displayed in
+  them, as bounding box used to be incorrectly computed.
+
   Revision 1.20  1996/06/27 19:06:56  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -95,7 +100,7 @@
 
 #include <tcl.h>
 
-#include "TDataMapDispatch.h"
+#include "TDataMap.h"
 #include "Bitmap.h"
 #include "GDataRec.h"
 #include "TData.h"
@@ -149,7 +154,7 @@ class Shape;
 class AttrList;
 const int MaxInterpShapes = 13;
 
-class MappingInterp: public TDataMapDispatch {
+class MappingInterp: public TDataMap {
   friend inline double ConvertOne(char *from,
 				  MappingSimpleCmdEntry *entry,
 				  double defaultVal);
