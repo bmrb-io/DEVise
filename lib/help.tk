@@ -1,6 +1,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/19 15:42:40  jussi
+#	Minor changes to reflect updated Tcl/Tk package.
+#
 #	Revision 1.3  1995/09/05 22:48:00  jussi
 #	Added/updated CVS header.
 #
@@ -340,8 +343,7 @@ proc helpSelectTopic { widget ycoord canvasName textName } {
 
 #	find current selection 
 	if { $nearest >= 0 } {
-		$widget select from $nearest
-		$widget select to $nearest
+		$widget selection set $nearest
 	}
 	set attr [lindex [$widget get $nearest] 0]
 	if { [string compare $attr "" ] != 0 } {
@@ -390,9 +392,8 @@ proc helpSelectCanvasWidget { widget attr canvasName textName } {
 	if { $index < 0 } {
 		return
 	}
-	$widget select clear
-	$widget select from $index
-	$widget select to $index
+	$widget selection clear 0 end
+	$widget selection set $index
 
 	$canvasName itemconfigure $attr.fill -fill $hiliteColor
 	$canvasName itemconfigure $attr.outline -outline $hiliteColor
