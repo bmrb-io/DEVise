@@ -33,9 +33,6 @@ graphics/PostScript.doc.)  (ml/rkw 11/12/96)
 
 HIGH PRIORITY
 -------------
-Be able to store some kind of comment or explanation in a session file.
-(rkw 12/12/96)
-
 GUI for printing needs improvement. (ml/rkw 2/19/97)
 
 Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
@@ -360,9 +357,6 @@ that would let you select and execute a particular query. (rr/rkw 3/14/97)
 
 Allow larger sizes for fonts in text labels. (ml/rkw 3/18/97)
 
-Allow text labels to be generated from integer (or float/double?) attributes
-in addition to strings. (ml/rkw 3/18/97)
-
 Improve user interface for selecting font properties for text labels.
 (ml/rkw 3/18/97)
 
@@ -453,6 +447,12 @@ be shown automatically if there are no windows existing. (ma/rkw 1/15/97)
 
 The Devise documentation should have an explicit list of the steps needed
 to go from a raw data file to a Devise visualization. (ma/rkw 1/15/97)
+
+Allow text labels to be generated from integer (or float/double?) attributes
+in addition to strings. (ml/rkw 3/18/97)
+
+Be able to store some kind of comment or explanation in a session file.
+(rkw 12/12/96)
 
 
 CANCELLED

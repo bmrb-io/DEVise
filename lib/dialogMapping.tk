@@ -15,6 +15,11 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.28  1997/04/29 17:35:29  wenger
+#       Minor fixes to new text labels; added fixed text label shape;
+#       CheckDirSpace() no longer prints an error message if it can't get disk
+#       status.
+#
 #       Revision 1.27  1997/04/25 16:54:16  wenger
 #       Text labels are now sized in the same way as Rects; fixed font bug in
 #       middle button query popup; removed the dialog that warns you about your
@@ -126,6 +131,8 @@ proc DoEditMapping {} {
     if {![CurrentView]} {
 	return
     }
+
+#TEMPTEMP -- check for compiled mapping here
     
     if {[WindowVisible .editMapping]}  {
 	return

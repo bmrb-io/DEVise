@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1997/04/29 14:34:50  wenger
+#  User interface improvments: Quit and Close don't ask for confirmation
+#  if there is no session open; the file selection box gives better info
+#  as to what you are doing; Save and Save as aren't allowed if there is
+#  no session open; changed default print filename from
+#  /u/g/u/guangshu/public/html/pictures/map/ back to /tmp/devise again.
+#
 #  Revision 1.34  1997/04/21 23:07:57  guangshu
 #  Save statistics (In memory and by DTE) with session.
 #
@@ -430,6 +437,8 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     SaveMappings $f $fileDict mapDict $asBatchScript
 
     SaveMisc $f $asTemplate $asExport $viewDict $mapDict $asBatchScript
+
+    SaveDescription $f
 
     if {$asTemplate || $asExport} {
         puts $f ""

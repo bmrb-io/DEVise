@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.128  1997/04/29 17:35:27  wenger
+#	Minor fixes to new text labels; added fixed text label shape;
+#	CheckDirSpace() no longer prints an error message if it can't get disk
+#	status.
+#
 #	Revision 1.127  1997/04/29 14:34:46  wenger
 #	User interface improvments: Quit and Close don't ask for confirmation
 #	if there is no session open; the file selection box gives better info
@@ -647,6 +652,7 @@ if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
 
 source $libdir/dialog.tk
 source $libdir/FSBox.tk
+source $libdir/description.tcl
 source $libdir/dialogList.tk
 source $libdir/dialogInfo.tk
 source $libdir/dialogParam.tk
@@ -787,6 +793,10 @@ menu .mbar.session.menu.exportMenu -tearoff 0
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Delete Session" \
 	-command {DoDelete}
+
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Session Description" \
+	-command {ViewDescription}
 
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Add Replica" -command { AddReplica }
@@ -1453,9 +1463,11 @@ proc DoClose {{askUser 1}} {
 	
 	DEVise clearAll
 
+    ClearDescription
     set sessionName "session.tk"
 
     if {$templateMode} {
+#TEMPTEMP -- this is still old-style data source code!!
 	unset sourceList
 	set sourceFile $datadir/sourcedef.tcl
 	if {[file exists $sourceFile]} {
@@ -1487,6 +1499,7 @@ proc DoOpen { asTemplate } {
     }
 
     set sessionName "session.tk"
+    ClearDescription
     set restoring 1
     if {$asTemplate} {
 	set template 1
