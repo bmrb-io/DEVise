@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.104  2000/06/16 19:45:24  wenger
+  Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
+
   Revision 1.103  2000/06/16 18:28:39  wenger
   Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
 
@@ -477,6 +480,7 @@
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
 #define DO_CHECKSUM 1//TEMP
+//#define MOUSE_FORMAT //TEMP
 
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
 
@@ -501,7 +505,11 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 4;
+#if defined(MOUSE_FORMAT) //TEMP
+static const int protocolMinorVersion = 2;
+#else //TEMP
 static const int protocolMinorVersion = 1;
+#endif //TEMP
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -2094,9 +2102,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 				// it should be possible to get into that state, though.
 				// RKW 2000-05-01.
 				if (!_gdataViews.Find(view)) {
-#if 1 //TEMPTEMP?
 				    DrawViewCursors(view);
-#endif //TEMPTEMP?
 				}
 			}
 			if (tmpResult != DONE) result = tmpResult;
@@ -2142,9 +2148,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 			// Tell the JS to redraw all cursors in this view and its
 			// child views.
-#if 1 //TEMPTEMP?
 		    DrawViewCursors(view);
-#endif //TEMPTEMP?
 		}
 	}
 	_gdataViews.DoneIterator(viewIndex);
@@ -2913,8 +2917,11 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	Boolean drillDownEnabled = !drillDownDisabled;
 	Boolean keysEnabled = !keysDisabled;
 
+	Boolean showMouseLocation = view->GetShowMouseLocation() &&
+	  View::GetGlobalShowMouseLocation();
+
 	{ // limit variable scopes
-	  JSArgs args(31);
+	  JSArgs args(32);
 	  args.FillString(_controlCmdName[CREATEVIEW]);
 	  args.FillString(view->GetName());
 	  args.FillString(parent ? parent->GetName() : "");
@@ -2965,6 +2972,10 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		  args.FillInt(italic);
 	  }
 
+#if defined(MOUSE_FORMAT) //TEMP
+	  args.FillInt(showMouseLocation);
+#endif
+
 	  if (args.ReturnVal(this) < 0) status = -1;
 	}
 
@@ -3007,12 +3018,22 @@ JavaScreenCmd::SendViewDataArea(View *view)
    		// Generate the command to send.
 		//
 		{
-		  JSArgs args(5);
+		  const char *axisFormat;
+		  if (view->GetXAxisAttrType() == DateAttr) {
+		    axisFormat = view->GetXAxisDateFormat();
+		  } else {
+		    axisFormat = view->GetXAxisFloatFormat();
+		  }
+
+		  JSArgs args(6);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("X");
 		  args.FillDouble(filter.xLow);
 		  args.FillDouble(filter.xHigh);
+#if defined(MOUSE_FORMAT) //TEMP
+		  args.FillString(axisFormat);
+#endif
 
 		  args.ReturnVal(this);
 		}
@@ -3025,12 +3046,22 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		//
 
 		{
-		  JSArgs args(5);
+		  const char *axisFormat;
+		  if (view->GetYAxisAttrType() == DateAttr) {
+		    axisFormat = view->GetYAxisDateFormat();
+		  } else {
+		    axisFormat = view->GetYAxisFloatFormat();
+		  }
+
+		  JSArgs args(6);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("Y");
 		  args.FillDouble(filter.yLow);
 		  args.FillDouble(filter.yHigh);
+#if defined(MOUSE_FORMAT) //TEMP
+		  args.FillString(axisFormat);
+#endif
 
 		  args.ReturnVal(this);
 		}

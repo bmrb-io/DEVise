@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 4.1.
+version 4.2.
 
 
 0. Convention
@@ -334,6 +334,8 @@ version 4.1.
         <title font size>:
         <title font bold>:
         <title font italic>:
+	<show mouse location>: 1 if mouse location should be displayed
+	                       when the mouse is in this view, 0 otherwise.
 
     5.7 JAVAC_DeleteChildViews
     Purpose: tells the JavaScreen to delete all child views of the given
@@ -349,6 +351,12 @@ version 4.1.
         <axis>: "X" or "Y".
         <low value>: low (left or bottom of axis) data value.
         <high value>: high (right or top of axis) data value.
+	<axis/mouse format>: the format to be used in labeling axis ticks
+	                     and displaying the mouse location.  The format
+			     is either a printf-style string (e.g, "%.4f")
+			     or a cftime string (e.g., "%b %d %Y %T"),
+			     according to whether the axis data is a date
+			     or floating-point value.
 
     5.9 JAVAC_UpdateViewImage
     Purpose: tells the JavaScreen that a new GIF is being sent for the
