@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/08/03 15:34:39  jussi
+#  When views are merged, the 3D parameters of the currently selected
+#  view will determine the 3D parameters of the composite view.
+#
 #  Revision 1.12  1996/07/23 17:27:18  jussi
 #  Added support for piled views.
 #
@@ -527,6 +531,21 @@ proc DoWindowSplit {} {
 	set stat [DEVise getAxisDisplay $curView Y]
 	eval DEVise setAxisDisplay {$newView} Y $stat
 	
+        set viewDimensions [DEVise getViewDimensions $curView]
+        eval DEVise setViewDimensions {$newView} $viewDimensions
+        set viewSolid3D [DEVise getViewSolid3D $curView]
+        eval DEVise setViewSolid3D {$newView} $viewSolid3D
+        set viewXYZoom [DEVise getViewXYZoom $curView]
+        eval DEVise setViewXYZoom {$newView} $viewXYZoom
+        set camera [DEVise get3DLocation $curView]
+        set x [lindex $camera 1]
+        set y [lindex $camera 2]
+        set z [lindex $camera 3]
+        set fx [lindex $camera 4]
+        set fy [lindex $camera 5]
+        set fz [lindex $camera 6]
+        eval DEVise set3DLocation {$newView} $x $y $z $fx $fy $fz
+    
 	# move mapping $m from view $curView to $newView
 	DEVise insertMapping $newView $m
 	DEVise removeMapping $curView $m
