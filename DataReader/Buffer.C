@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/01/29 23:30:25  beyer
+  fixed memory leak and record size problem
+
   Revision 1.19  1999/01/18 22:34:13  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -361,11 +364,22 @@ bool Buffer::setBufferPos(int cPos) {
 	_in.seekg(cPos);
 	c = _in.peek();
 	if (c == -1) {
-		cerr << "Can not set file pointer to : " << cPos << endl;
+		cerr << "Cannot set file pointer to: " << cPos << endl;
+		_state = BufEof;
 		return false;
 	} else {
+		_state = BufRecordStart;
 		return true;
 	}
+}
+
+//---------------------------------------------------------------------------
+int Buffer::getBufferPos() {
+#if (DEBUG >= 1)
+	cout << "Buffer::getBufferPos()\n";
+#endif
+
+	return _in.tellg();
 }
 
 //---------------------------------------------------------------------------

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/01/29 23:30:26  beyer
+  fixed memory leak and record size problem
+
   Revision 1.11  1999/01/18 22:34:13  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -179,6 +182,9 @@ public:
 
 	// moves the pointer in a data file
 	bool setBufferPos(int cPos);
+
+	// get the current position in the file
+	int getBufferPos();
 
 private:
 	// reads an integer field  from data file upto given separator

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/01/18 22:34:15  wenger
+  Considerable changes to the DataReader:  reading is now per-field rather
+  than per-character (except for dates); the "extractor" functions now do
+  all the work, and the "value" functions have been eliminated; return values
+  are more clear, and behaviour in "boundary conditions" is better-defined;
+  fixed a number of bugs in the course of making these changes.  (The
+  DataReader could still use some more cleanup.)
+
   Revision 1.8  1998/11/03 17:53:33  okan
   Fixed Several bugs and changed DataReader to use UtilAtof
 
@@ -60,6 +68,12 @@ public:
 
 	// Function to read a random record.
 	bool getRndRec(char* dest, int fileOffset);
+
+	// Set pointer to given offset from beginning of file
+	bool setBufferPos(int offset);
+
+	// Get pointer offset from beginning of file
+	int getBufferPos();
 
 	// Check whether we're at EOF.
 	bool isEof();
