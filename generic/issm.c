@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 18:43:17  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.4  1995/12/14 15:43:50  jussi
   Replaced WinVertical and WinHorizontal with TileLayout.
 
@@ -150,10 +153,13 @@ public:
       return new TDataTapeInterpClassInfo(className,attrList,
 					  recSize, separators, numSeparators,
 					  isSeparator, commentString);
-    } else {
-      fprintf(stderr,"schema source %s not found\n", source);
-      Exit::DoExit(1);
     }
+
+    fprintf(stderr,"schema source %s not found\n", source);
+    Exit::DoExit(1);
+
+    // keep compiler happy
+    return 0;
   }
 };
 

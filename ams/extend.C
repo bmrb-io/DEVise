@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 16:01:11  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/05 20:23:48  jussi
   Updated CVS header.
 
@@ -151,7 +154,7 @@ int main(int argc, char **argv)
   int d = 1;
   int m = 1;
   int y = 1970;
-  int nrecs = 0;
+  unsigned int nrecs = 0;
 
   if (cont) {                           // first copy original file?
     // first copy original file to stdout
