@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/08/04 21:03:43  wenger
+#  First version -- may not be fully functional.
+#
 
 ############################################################
 
@@ -66,10 +69,14 @@ if (! -d $target/Java/JavaScreen) then
 endif
 
 cp -p Java/JavaScreen/*.class $target/Java/JavaScreen
+cp -p Java/JavaScreen/*.gif $target/Java/JavaScreen
+cp -p Java/JavaScreen/runjs $target/Java/JavaScreen
+cp -p Java/JavaScreen/devised.jspop $target/Java/JavaScreen
+cp -p Java/JavaScreen/js $target/Java/JavaScreen
+cp -p Java/JavaScreen/jspop $target/Java/JavaScreen
+cp -p Java/JavaScreen/users.cfg $target/Java/JavaScreen
 
-
-#TEMPTEMP -- release runjs script to /p/devise/run
-
+cp -p run_public/runjs $target/../run
 
 echo ""
 echo Done!
