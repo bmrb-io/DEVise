@@ -2187,6 +2187,10 @@ Num Date        Status  Description
 559 02/08/00	OPEN	JavaScreen should check protocol version compatibility
 			*before* getting session list, not *after*. (rkw)
 
+560 02/09/00	OPEN	If a cursor is very small, you may not be able to
+			move it without resizing it because you always
+			end up grabbing an edge. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
