@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  2001/05/27 19:59:21  wenger
+  Fixed bug 676 (problem with near-zero axis label values).
+
   Revision 1.8  2001/05/27 18:49:31  wenger
   Improved buffer checking with snprintfs.
 
@@ -215,6 +218,12 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
 
   AxisInfo info;
   SetInfo(info);
+
+  // Fix for bug 737.
+  if (info._lowValue >= info._highValue) {
+    reportErrNosys("Illegal axis values");
+	return;
+  }
 
   if (info._drawAxis) {
     CheckIntersect(x, y, w, h, info);

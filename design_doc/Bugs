@@ -2960,10 +2960,11 @@ Num Date        Status  Description
 			other ("flipping" the cursor) doesn't work right.
 			(rkw)
 
-737 11/28/01	OPEN	Creating a view with a visual filter in which the low
+737 11/28/01	FIXED	Creating a view with a visual filter in which the low
 			and high values are the same crashes DEVise (only
 			relevant for non-DEVise-generated session files).
 			(rkw)
+			(Fixed by rkw, 11/30/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
