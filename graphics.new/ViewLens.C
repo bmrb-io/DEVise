@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/08/17 18:51:56  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.14  1998/04/10 18:29:35  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -108,6 +112,9 @@
 #include "XColor.h"
 
 //#define DEBUG
+
+static const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
+static char _pixmapbuf[MAX_PIXMAP_BUF_SIZE];
 
 //******************************************************************************
 // Constructors and Destructors

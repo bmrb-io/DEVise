@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/04/10 18:29:35  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.10  1998/03/08 00:01:15  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -97,9 +102,6 @@ struct ViewInfo{
 }; 
 
 DefinePtrDList(ViewInfoList, ViewInfo *)
-
-static const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
-static char _pixmapbuf[MAX_PIXMAP_BUF_SIZE];
 
 //******************************************************************************
 // class ViewLens
