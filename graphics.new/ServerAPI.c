@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/05/15 16:41:08  jussi
+  Moved all networking code from ServerAPI.c to ClientAPI.c.
+  Improved support for bracketed or non-bracketed arguments
+  passed in commands.
+
   Revision 1.10  1996/05/14 19:18:41  jussi
   Changed memory allocation in ReadSocket(). Rather than
   malloc a chunk of memory for each element every time
@@ -302,13 +307,24 @@ int ServerAPI::ReadCommand()
 {
   DOASSERT(_socketFd >= 0, "Invalid socket");
 
+  // If the Dispacher uses select(), then we will be called only
+  // when there's new data to be read from _socketFd; otherwise
+  // the Dispatcher calls us constantly, so we want to read
+  // the socket in a non-blocking mode.
+
   u_short flag;
   int argc;
   char **argv;
+#ifdef USE_SELECT
+  int result = DeviseReceive(_socketFd, 1, flag, argc, argv);
+#else
   int result = DeviseReceive(_socketFd, 0, flag, argc, argv);
+#endif
   if (result < 0) {
-    if (errno == EAGAIN)
+#ifndef USE_SELECT
+    if (errno == EAGAIN || errno == EWOULDBLOCK)
       return 0;
+#endif
     perror("recv");
     return -1;
   }
@@ -347,14 +363,19 @@ int ServerAPI::ReadCommand()
   printf("Done executing command\n");
 #endif
 
+#ifndef USE_SELECT
   // go back to non-blocking mode
   (void)DeviseNonBlockMode(_socketFd);
+#endif
 
   return 1;
 
  error:
+#ifndef USE_SELECT
   // go back to non-blocking mode
   (void)DeviseNonBlockMode(_socketFd);
+#endif
+
   return -1;
 }
 
