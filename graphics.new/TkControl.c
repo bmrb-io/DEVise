@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1995/11/28 17:01:50  jussi
+  Added copyright notice and renamed printWindows to saveWindow which
+  now saves a single window image to a given file.
+
   Revision 1.13  1995/11/28 05:34:18  ravim
   Support for statistics.
 
@@ -77,6 +81,11 @@
 #include "Cursor.h"
 #include "Group.h"
 #include "GroupDir.h"
+
+#ifdef TK_WINDOW
+Tcl_Interp *ControlPanelTclInterp = 0;
+Tk_Window ControlPanelMainWindow = 0;
+#endif
 
 extern GroupDir *gdir;
 
@@ -141,6 +150,11 @@ TkControlPanel::TkControlPanel()
   }
   Tk_MoveWindow(_mainWindow, 0,0);
   Tk_GeometryRequest(_mainWindow, 100, 200);
+
+#ifdef TK_WINDOW
+  ControlPanelTclInterp = _interp;
+  ControlPanelMainWindow = _mainWindow;
+#endif
 
   /* Init tcl and tk */
   if (Tcl_Init(_interp) == TCL_ERROR) {
@@ -1077,12 +1091,13 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"insertWindow") == 0){
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
-				fprintf(stderr,"TkControl:Cmd insertWindow can't find view %s\n", argv[2]);
+			if (!view) {
+				fprintf(stderr,
+					"TkControl:Cmd insertWindow can't find view %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			ViewWin *win = (ViewWin *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (!win) {
 				fprintf(stderr,"TkControl:Cmd insertWindow can't find window %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
@@ -1222,9 +1237,23 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			classDir->CreateParams(argv[2],argv[3],argv[4],numArgs,args);
 			MakeReturnVals(interp, numArgs, args);
 		}
-		else if (strcmp(argv[1], "getItems") == 0)
-		{
+		else if (strcmp(argv[1], "getItems") == 0) {
 		  gdir->get_items(interp, argv[2], argv[3], argv[4]);
+		}
+	}
+	else if (argc == 6) {
+		if (strcmp(argv[1], "setLabel") == 0) {
+			View *view = (View *)classDir->FindInstance(argv[2]);
+			if (view == NULL) {
+				interp->result = "Can't find view in setLabel\n";
+				goto error;
+			}
+			view->SetLabelParam(atoi(argv[3]), atoi(argv[4]),
+					    argv[5]);
+		}
+		else {
+			interp->result = "wrong args";
+			goto error;
 		}
 	}
 	else if (argc == 7 ) {
@@ -1262,15 +1291,18 @@ error:
 	return TCL_ERROR;
 }
 
-void TkControlPanel::Run(){
-	while(Tk_DoOneEvent(
-		TK_X_EVENTS|TK_FILE_EVENTS|TK_IDLE_EVENTS|TK_DONT_WAIT) != 0);
+void TkControlPanel::Run()
+{
+  while(Tk_DoOneEvent(TK_X_EVENTS | TK_FILE_EVENTS
+		      | TK_IDLE_EVENTS | TK_DONT_WAIT) != 0);
 }
 
 /*************************************************************************/
 void TkControlPanel::SubclassInsertDisplay(DeviseDisplay * /*disp*/,
-	Coord /*x*/, Coord /*y*/, Coord /*w*/,Coord /*h*/){
-	/* noop for now */
+					   Coord /*x*/, Coord /*y*/,
+					   Coord /*w*/, Coord /*h*/)
+{
+  /* noop for now */
 }
 
 /************************************************************************/
@@ -1306,56 +1338,60 @@ void TkControlPanel::SetIdle() {
 	}
 }
 
-Boolean TkControlPanel::IsBusy() {
-	return (_busy > 0 );
+Boolean TkControlPanel::IsBusy()
+{
+  return (_busy > 0);
 }
 
 void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
-		int flushed) {
-	/*
-	printf("TkControl: filter changed\n");
-	*/
-	char cmd[256];
-	char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
-	if (view->GetXAxisAttrType() == DateAttr){
-		sprintf(xLowBuf,"%s",DateString(filter.xLow));
-		sprintf(xHighBuf,"%s",DateString(filter.xHigh));
-	}
-	else {
-		sprintf(xLowBuf,"%.2f",filter.xLow);
-		sprintf(xHighBuf,"%.2f",filter.xHigh);
-	}
+				   int flushed)
+{
+#ifdef DEBUG
+  printf("TkControl: filter changed\n");
+#endif
+
+  char cmd[256];
+  char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
+  if (view->GetXAxisAttrType() == DateAttr){
+    sprintf(xLowBuf, "%s", DateString(filter.xLow));
+    sprintf(xHighBuf, "%s", DateString(filter.xHigh));
+  } else {
+    sprintf(xLowBuf, "%.2f", filter.xLow);
+    sprintf(xHighBuf, "%.2f", filter.xHigh);
+  }
 				
-	if (view->GetYAxisAttrType() == DateAttr){
-		sprintf(yLowBuf,"%s",DateString(filter.yLow));
-		sprintf(yHighBuf,"%s",DateString(filter.yHigh));
-	}
-	else {
-		sprintf(yLowBuf,"%.2f",filter.yLow);
-		sprintf(yHighBuf,"%.2f",filter.yHigh);
-	}
-
-	sprintf(cmd,"ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
-		view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf,
-		yHighBuf);
-	(void)Tcl_Eval(_interp,cmd);
+  if (view->GetYAxisAttrType() == DateAttr){
+    sprintf(yLowBuf, "%s", DateString(filter.yLow));
+    sprintf(yHighBuf, "%s", DateString(filter.yHigh));
+  } else {
+    sprintf(yLowBuf, "%.2f", filter.yLow);
+    sprintf(yHighBuf, "%.2f", filter.yHigh);
+  }
+  
+  sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
+	  view->GetName(),  flushed,  xLowBuf,  yLowBuf,  xHighBuf,  yHighBuf);
+  (void)Tcl_Eval(_interp, cmd);
 }
 
-void TkControlPanel::ViewCreated(View *view){
-	char cmd[256];
-	sprintf(cmd,"ProcessViewCreated {%s}", view->GetName());
-	(void)Tcl_Eval(_interp,cmd);
+void TkControlPanel::ViewCreated(View *view)
+{
+  char cmd[256];
+  sprintf(cmd, "ProcessViewCreated {%s}", view->GetName());
+  (void)Tcl_Eval(_interp, cmd);
 }
-void TkControlPanel::ViewDestroyed(View *view){
-	char cmd[256];
-	sprintf(cmd,"ProcessViewDestroyed {%s}", view->GetName());
-	(void)Tcl_Eval(_interp,cmd);
+
+void TkControlPanel::ViewDestroyed(View *view)
+{
+  char cmd[256];
+  sprintf(cmd, "ProcessViewDestroyed {%s}", view->GetName());
+  (void)Tcl_Eval(_interp, cmd);
 }
 
 /* Make view the current view int he control panel */
-void TkControlPanel::SelectView(View *view){
-	char cmd[256];
-	sprintf(cmd,"ProcessViewSelected {%s}", view->GetName());
-	(void)Tcl_Eval(_interp,cmd);
-}
 
+void TkControlPanel::SelectView(View *view)
+{
+  char cmd[256];
+  sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
+  (void)Tcl_Eval(_interp, cmd);
+}
