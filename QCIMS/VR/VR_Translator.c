@@ -287,7 +287,8 @@ static int VR_XAllocColor(int cslot, XColor *color)
       if (!col_is_valid[color->pixel]) { 
         col_is_valid[color->pixel] = 1;
         VR_Colormaps[cslot].NumValid++;
-    } } 
+      }
+    }
     memcpy(&cols_in_map[color->pixel], color, sizeof(XColor));
     return 1; 
   }
@@ -3013,7 +3014,10 @@ static int GetRGBTranslatorInner(long tslot, VR_ImId iid,
 	      break;
             } else {
 	      ColorVal[i] = xcolor.pixel;
-      } } } } else {
+	    }
+	  }
+        }
+      } else {
 	/* ! DoYCC */ 
         for (i=0;i<total;i++) {
   	  g = RGBquantized[i].green;
@@ -3027,7 +3031,9 @@ static int GetRGBTranslatorInner(long tslot, VR_ImId iid,
 	    break;
           } else {
 	    ColorVal[i] = xcolor.pixel;
-      } } }
+	  }
+	}
+      }
     
       if ((numgot < total) &&
 	  (CFL_kind != VR_CFL_FORCE_DEFAULT)) { 
@@ -3053,7 +3059,9 @@ static int GetRGBTranslatorInner(long tslot, VR_ImId iid,
           free(RGBquantized);
           free(ColorVal);
 	  return(-1);
-    } } }       
+	}
+      }
+    }
 
     if (myCreation) {
       /*** allocate private RW colors ***/ 
@@ -3303,7 +3311,14 @@ extern VR_TransId VR_GetTranslatorFromCMofXWin(VR_ImId iid,
     strcpy(VR_errmsg,"GetTranslatorFromCMofXWin: XWindow seems invalid");
     return(-1);
   }
-  XGetWindowAttributes(VR_TheDisplay, win, &wattribs); 
+
+  /* XGetWindowAttributes fails on a pixmap, so if it fails try it again
+   * on the root window.  This is kind of kludgey, but it seems to work
+   * okay.  RKW 1998-09-04. */
+  if (XGetWindowAttributes(VR_TheDisplay, win, &wattribs) == 0) {
+    XGetWindowAttributes(VR_TheDisplay, RootWindow(VR_TheDisplay,
+      VR_TheScreen), &wattribs);
+  }
   if (VR_VisualInfo.Id != XVisualIDFromVisual(wattribs.visual)) {
     strcpy(VR_errmsg,"GetTranslatorFromCMofXWin: given XWindow's visual not same as VR_visual");
     return(-1);

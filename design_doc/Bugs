@@ -1458,6 +1458,9 @@ Num Date        Status  Description
 384 08/18/98	FIXED	Devisec doesn't actually quit when you select 'Quit'
 			from the Session menu. (rkw)
 
+385 09/03/98	FIXED	Tasvir images don't work in batch mode (with
+			JavaScreen, for example). (rr/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

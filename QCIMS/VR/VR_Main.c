@@ -226,8 +226,9 @@ extern VR_ReturnCode VR_InitViewerVisual(char *dname, FILE * errfile, int vclass
     if (!vlist) goto vis_not_found; /* should not happen */
     vclass = vlist[0].class;
     bestloc = 0;
-    if ((vlist[0].depth <= 16) || (vclass==TrueColor))
+    if ((vlist[0].depth <= 16) || (vclass==TrueColor)) {
       goto vis_found;
+    }
     /* else fall through */
     XFree(vlist);
     vlist = (XVisualInfo *) 0;
@@ -653,7 +654,13 @@ extern VR_WinId VR_SetWindow(int width, int height,int locx, int locy,
     return(-1);
   }
 
-  XGetWindowAttributes(VR_TheDisplay, the_win, &wattribs_in); 
+  /* XGetWindowAttributes fails on a pixmap, so if it fails try it again
+   * on the root window.  This is kind of kludgey, but it seems to work
+   * okay.  RKW 1998-09-04. */
+  if (XGetWindowAttributes(VR_TheDisplay, the_win, &wattribs_in) == 0) {
+    XGetWindowAttributes(VR_TheDisplay, RootWindow(VR_TheDisplay,
+      VR_TheScreen), &wattribs_in);
+  }
   if (XVisualIDFromVisual(wattribs_in.visual) != VR_VisualInfo.Id) {
     strcpy(VR_errmsg,"VR_SetWindow: XWindow visual does not match VR_visual");
     return(-1);
@@ -948,8 +955,14 @@ extern VR_ReturnCode VR_ChangeTranslator(VR_WinId wid, VR_TransId tid)
 
   old_tid = VR_Windows[wid].tid;
 
-  XGetWindowAttributes(VR_TheDisplay, VR_Windows[wid].win,
-	 &wattribs_in); 
+  /* XGetWindowAttributes fails on a pixmap, so if it fails try it again
+   * on the root window.  This is kind of kludgey, but it seems to work
+   * okay.  RKW 1998-09-04. */
+  if (XGetWindowAttributes(VR_TheDisplay, VR_Windows[wid].win,
+	 &wattribs_in) == 0) {
+    XGetWindowAttributes(VR_TheDisplay, RootWindow(VR_TheDisplay,
+      VR_TheScreen), &wattribs_in);
+  }
   cmap = VR_Colormaps[cslot].cmap; 
   if (wattribs_in.colormap != cmap) { 
     if (VR_Windows[wid].dont_change) return(VR_CANT_CHANGE_WINDOW); 

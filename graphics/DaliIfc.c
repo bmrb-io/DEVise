@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/02/26 00:18:51  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.11  1997/05/05 16:53:42  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -138,7 +141,7 @@ static int launchCount = 0;
  * Show an image using Dali.
  */
 DevStatus
-DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
+DaliIfc::ShowImage(char *daliServer, Drawable win, int centerX,
   int centerY, int width, int height, char *filename, int imageLen,
   char *image, int &handle, float timeoutFactor, int maxImageSize,
   Boolean maintainAspect)
@@ -312,7 +315,7 @@ DaliIfc::FreeImage(char *daliServer, int handle)
  * Free all Tasvir images in a given window.
  */
 DevStatus
-DaliIfc::FreeWindowImages(char *daliServer, Window win)
+DaliIfc::FreeWindowImages(char *daliServer, Drawable win)
 {
 #if defined(DEBUG)
   printf("DaliIfc::FreeWindowImages(%s, 0x%lx)\n", daliServer, (long) win);
@@ -675,7 +678,7 @@ ReadImage(int fd, int numBytes, FILE *printfile)
   int bytesLeft = numBytes;
   int bytesToRead, bytesRead, bytesWritten;
 
-//TEMPTEMP -- does this need a timeout?
+//TEMP -- does this need a timeout?
   while (bytesLeft > 0) {
     bytesToRead = MIN(bufSize, bytesLeft);
     bytesRead = read(fd, buffer, bytesToRead);

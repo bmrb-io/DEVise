@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.114  1998/08/24 14:57:32  wenger
+  Added misc. debug output.
+
   Revision 1.113  1998/08/20 18:55:37  wenger
   Fixed bug 252 (problem with color of drill-down text).
 
@@ -1060,7 +1063,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     if (filename == NULL) filename = "-";
 
     int handle;
-    result += DaliIfc::ShowImage(_daliServer, _win, (int) centerX,
+    result += DaliIfc::ShowImage(_daliServer, DRAWABLE, (int) centerX,
       (int) centerY, (int) width, (int) height, filename, imageLen, image,
       handle, timeoutFactor, 1000, maintainAspect);
     if (result.IsComplete())
