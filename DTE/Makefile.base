@@ -44,9 +44,9 @@ DTE_INCLUDES = \
 	-I../../src/color/export \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I../unidata \
-	-I../../unidata \
-	$(PERL_INCL)
+	-I../DataReader \
+	-I../../DataReader \
+	-I/s/flex/include
 
 #no-comment is for the perl files
 
@@ -57,6 +57,8 @@ CFLAGS_WO_TEMPLATES = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 #	-Wall -Wno-unused -Wno-comment \
 
 CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
+
+DTE_DEBUG = 1
 
 ifdef DTE_DEBUG
 	CFLAGS += -g
@@ -91,7 +93,7 @@ ifdef NO_UNIDATA
 	CORE_SRC += DevRead.dummy.c
 else
 	CORE_SRC += DevRead.c
-	STAND_ALONE_LIBS += -L../unidata -lunidata -L$(PERL_CORE) -lperl
+	STAND_ALONE_LIBS += -L../DataReader -ldatareader
 endif
 
 # Set up for profiling.
@@ -137,49 +139,49 @@ STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) unidata dte server
+all: $(LIBNAME) datareader dte server
 lib: $(LIBNAME)
 
-.PHONY: unidata 
+.PHONY: datareader 
 
-unidata:
-	cd ../unidata/ && make libunidata.a && cd ../DTE
+datareader:
+	cd ../DataReader/ && make libdatareader.a && cd ../DTE
 
 rtree:
 	cd ../RTree/ && make lib && make librarysbm && cd ../DTE
 
 CorePartOfLib: $(LIBNAME)($(CORE_OBJ))
 
-TableCreate: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  unidata rtree
+TableCreate: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  datareader rtree
 	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-TableCreate.pure: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  unidata rtree
+TableCreate.pure: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  datareader rtree
 	purify $(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) datareader rtree
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) datareader rtree
 	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) datareader rtree
 	purify $(CC) -o dte.pure $< $(STAND_ALONE_OBJ) \
 	$(CORE_OBJ) $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-quant: $(STAND_ALONE_OBJ) unidata
+quant: $(STAND_ALONE_OBJ) datareader
 	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-script: $(SCRIPT_OBJ) unidata
+script: $(SCRIPT_OBJ) datareader
 	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-scriptServer:	$(SCRIPTSERVER_OBJ) unidata
+scriptServer:	$(SCRIPTSERVER_OBJ) datareader
 	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) \
 	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
 
