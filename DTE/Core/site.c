@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/14 20:44:16  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.13  1997/04/10 21:50:30  donjerko
   Made integers inlined, added type cast operator.
 
@@ -171,6 +174,14 @@ void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
 			collectFrom(where, this, mySelect);
 		}
 	}
+}
+
+void Site::filterAll(List<BaseSelection*>* select){
+	
+	assert(select);
+	mySelect = new List<BaseSelection*>;
+	mySelect->addList(select);
+	filterList(select, this);
 }
 
 istream* contactURL(String name, 

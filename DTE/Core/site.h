@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/04/28 06:56:26  donjerko
+  *** empty log message ***
+
   Revision 1.19  1997/04/18 20:46:20  donjerko
   Added function pointers to marshall types.
 
@@ -163,6 +166,7 @@ public:
 	}
 	void filter(List<BaseSelection*>* select, 
 		List<BaseSelection*>* where = NULL);
+	void filterAll(List<BaseSelection*>* select);
 	virtual void display(ostream& out, int detail = 0);
 	String getName(){
 		return name;
