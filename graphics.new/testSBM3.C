@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/20 16:26:17  jussi
+  Removed call to SemaphoreV::create().
+
   Revision 1.3  1996/12/13 21:33:35  jussi
   Updated to use SemaphoreV::maxNumSemaphores().
 
@@ -34,6 +37,22 @@
 #include <ctype.h>
 
 #include "SBufMgr.h"
+
+/*
+   The following three definitions are not really needed except
+   to make this thing link properly. Init.c and Exit.c reference
+   these variables and functions.
+*/
+
+int RTreeFile = -1;
+
+void initialize_system(const char FileName[],
+                 int  &RTreeFile,
+                 int  VolumeSize) {}
+
+void shutdown_system(const char FileName[],
+               int  RTreeFile,
+               int  VolumeSize) {}
 
 int main(int argc, char **argv)
 {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/20 16:26:17  jussi
+  Removed call to SemaphoreV::create().
+
   Revision 1.9  1996/12/13 21:33:32  jussi
   Updated to use SemaphoreV::maxNumSemaphores().
 
@@ -60,6 +63,22 @@
 #endif
 
 #define CALL(c) { int res = c; if (res < 0) goto error; }
+
+/*
+   The following three definitions are not really needed except
+   to make this thing link properly. Init.c and Exit.c reference
+   these variables and functions.
+*/
+
+int RTreeFile = -1;
+
+void initialize_system(const char FileName[],
+                 int  &RTreeFile,
+                 int  VolumeSize) {}
+
+void shutdown_system(const char FileName[],
+               int  RTreeFile,
+               int  VolumeSize) {}
 
 static int pageSize = 32 * 1024;
 

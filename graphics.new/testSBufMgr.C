@@ -8,6 +8,22 @@
 
 #define CALL(c) { int res = c; if (res < 0) goto error; }
 
+/*
+   The following three definitions are not really needed except
+   to make this thing link properly. Init.c and Exit.c reference
+   these variables and functions.
+*/
+
+int RTreeFile = -1;
+
+void initialize_system(const char FileName[],
+                 int  &RTreeFile,
+                 int  VolumeSize) {}
+
+void shutdown_system(const char FileName[],
+               int  RTreeFile,
+               int  VolumeSize) {}
+
 int main()
 {
     const int poolSize = 64;
