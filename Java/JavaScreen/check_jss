@@ -22,6 +22,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2000/12/06 19:52:10  wenger
+#  Check scripts now have 'test' ID option, use new kill scripts; check_jss
+#  starts 4 deviseds (for BMRB).
+#
 #  Revision 1.1  2000/05/02 18:27:52  wenger
 #  Set up restart scripts for BMRB setup on yola/aden.
 #
@@ -36,6 +40,10 @@ if ($#ARGV == 0) {
 } else {
   $idStr = "regular";
 }
+
+# Set output file names according to ID string.
+$sout = "jss.out.$idStr";
+$dout = "devised.out.$idStr";
 
 $debug = 0;
 
@@ -100,14 +108,14 @@ if (!$foundJss || !$foundDevised) {
 
 sub SaveLogs {
   $timestamp = time();
-  print "Saving log files as jss.out.$timestamp and devised.out.$timestamp\n";
+  print "Saving log files as $sout.$timestamp and $dout.$timestamp\n";
 
   # Perl's rename() function doesn't seem to work!?!
-  @args = ("mv", "jss.out", "jss.out.$timestamp");
-  0xffff & system(@args) == 0 or print "Can't rename jss.out ($?)\n";
+  @args = ("mv", "$sout", "$sout.$timestamp");
+  0xffff & system(@args) == 0 or print "Can't rename $sout ($?)\n";
 
-  @args = ("mv", "devised.out", "devised.out.$timestamp");
-  0xffff & system(@args) == 0 or print "Can't rename devised.out ($?)\n";
+  @args = ("mv", "$dout", "$dout.$timestamp");
+  0xffff & system(@args) == 0 or print "Can't rename $dout ($?)\n";
 }
 
 #-----------------------------------------------------------

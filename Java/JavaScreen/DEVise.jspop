@@ -1,7 +1,26 @@
 #! /bin/csh -f
+
+############################################################
+
 # Start devised for JavaScreen.
 
-rmmem
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+# Set output file name according to ID string (if any).
+set outfile = "devised.out"
+@ index = 0
+while ($index < $#argv)
+  if ($argv[$index] == "-id") then
+    @ next = $index + 1
+    set outfile = $outfile.$argv[$next]
+    break
+  endif
+  @ index = $index + 1
+end
 
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/devise/public/bin )
@@ -37,4 +56,4 @@ setenv LM_LIB                   $DEVISE_LIB/LM
 #setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 setenv DEVISE_EXEC              ./devised
 
-$DEVISE_EXEC $* -logLevel 4 -jscache 1>>& devised.out  &
+$DEVISE_EXEC $* -logLevel 4 -jscache 1>>& $outfile &

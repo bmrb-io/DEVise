@@ -2,9 +2,32 @@
 
 ############################################################
 
+# Start the jss (JavaScreen Server).
+
+#-----------------------------------------------------------
+
 # $Id$
 
 ############################################################
+
+# Set output file name according to ID string (if any).
+set joutfile = "jss.out"
+set doutfile = "devised.out"
+foreach arg ($argv[*])
+  if ($arg == "-idregular") then
+    set joutfile = "jss.out.regular"
+    set doutfile = "devised.out.regular"
+    break
+  else if ($arg == "-idsoil") then
+    set joutfile = "jss.out.soil"
+    set doutfile = "devised.out.soil"
+    break
+  else if ($arg == "-idtest") then
+    set joutfile = "jss.out.test"
+    set doutfile = "devised.out.test"
+    break
+  endif
+end
 
 nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
 #nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
@@ -14,10 +37,9 @@ setenv DISPLAY unix:1.0
 # Make sure Xvfb gets going before starting the jss.
 sleep 10
 
-\rm -f devised.out
-\rm -f jss.out
-touch devised.out
-touch jss.out
+\rm -f $joutfile
+\rm -f $doutfile
+touch $joutfile
+touch $doutfile
 
-nohup java jss -debug $* >& jss.out &
-setenv DISPLAY unix:0.0
+nohup java jss -debug $* >& $joutfile &

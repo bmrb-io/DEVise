@@ -2,11 +2,30 @@
 
 ############################################################
 
+# Start the jspop (JavaScreen Point of Presence).
+
+#-----------------------------------------------------------
+
 # $Id$
 
 ############################################################
 
-\rm -f jspop.out
-touch jspop.out
+# Set output file name according to ID string (if any).
+set outfile = "jspop.out"
+foreach arg ($argv[*])
+  if ($arg == "-idregular") then
+    set outfile = "jspop.out.regular"
+    break
+  else if ($arg == "-idsoil") then
+    set outfile = "jspop.out.soil"
+    break
+  else if ($arg == "-idtest") then
+    set outfile = "jspop.out.test"
+    break
+  endif
+end
 
-nohup java jspop -debug $* >& jspop.out &
+\rm -f $outfile
+touch $outfile
+
+nohup java jspop -debug $* >& $outfile &
