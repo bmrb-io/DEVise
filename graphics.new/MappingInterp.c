@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/04/21 22:53:44  guangshu
+  Added function MapTAttr2GAttr.
+
   Revision 1.52  1997/04/16 18:53:37  wenger
   Text labels can now show non-string attributes; fixed a bug in constant
   strings in mapping (non-terminated string); added constant attributes to
@@ -232,7 +235,7 @@
   Added CVS header.
 */
 
-//#define DEBUG
+//#define DEBUG 
 
 #include <stdio.h>
 #include <tcl.h>
@@ -248,6 +251,9 @@
 #include "Temp.h"
 #include "MappingInterp.h"
 #include "MapInterpShape.h"
+#ifdef VIEW_SHAPE
+#include "ViewShape.h"
+#endif
 #include "ETkWindowShape.h"
 #include "Exit.h"
 #include "Util.h"
@@ -354,7 +360,12 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 #endif
 
   _tclCmd = new MappingInterpCmd();
-  _attrList = tdata->GetAttrList();
+  _attrList = tdata->GetAttrList(); // WARNING !!! This is unsafe!!! 
+                                    // AttrList is a private member of TDATA 
+				    // being managed by DTE, so how do we 
+				    // know that the attrList is allocated 
+				    // only once ?? Instead we should call
+				    // tdata->GetAttrList() each time
   _simpleCmd = new MappingSimpleCmd();
 
   if (!_interp) {
@@ -376,6 +387,9 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[13] = new FullMapping_LineShape;
     _shapes[14] = new FullMapping_LineShadeShape;
     _shapes[15] = new FullMapping_ETkWindowShape;
+#ifdef VIEW_SHAPE
+    _shapes[16] = new FullMapping_ViewShape;
+#endif
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {
@@ -509,13 +523,13 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 	return 0;
 
     }
-    
-    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
-	return entry.cmd.attr;
-    
+    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd) {
+      //	return entry.cmd.attr;
+      return _attrList->Get(entry.cmd.attrNum);
+    }
     return 0;
-    
-}
+  }
+
 
 char *MappingInterp::MapTAttr2GAttr(char *tname)
 {
@@ -565,8 +579,10 @@ AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
     simpleCmd = ConvertSimpleCmd(_cmd->shapeAttrCmd[i], entry,
 				 attrType, isSorted);
     
-    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
-	return entry.cmd.attr;
+    if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd) {
+//	return entry.cmd.attr;
+	return _attrList->Get(entry.cmd.attrNum);
+    }
     
     return 0;
 
@@ -1333,6 +1349,8 @@ static char *GetString()
   return _stringBuf;
 }
 
+
+#if 0
 /* Return TRUE if cmd is a simple command, and set entry to the
    converted cmmand entry. A simple command
    is either a constant, or a tdata attribute */
@@ -1377,7 +1395,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
       isSorted = true;
       return true;
     }
-
+    
     if ((info = _attrList->Find(cmd+1)) != NULL) {
       entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
       entry.cmd.attr = info;
@@ -1385,7 +1403,105 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
       isSorted = info->isSorted;
       return true;
     }
+#ifdef DEBUG
+    printf("Undefined variable name: %s\n", cmd + 1);
+    printf("Attribute list:\n");
+    _attrList->Print();
+#endif
+    return false;
+  }
 
+  if (*cmd == '"') {
+    int len = strlen(cmd);
+    char* end = cmd + len - 1;
+    if( len == 1 || *end != '"' ) return false;
+    len -= 2; 
+    char* str = new char[len+1];
+    strncpy(str, cmd+1, len);
+    str[len] = '\0'; // Terminate the string!
+    int strid;
+    if( StringStorage::Lookup(str, strid) < 0 ) {
+      // string not found, so insert it
+      assert( StringStorage::Insert(str, strid) );
+    } else {
+      // string already in table, so delete this copy
+      delete str;
+      str = NULL;
+    }
+#if defined(DEBUG)
+    printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
+#endif
+    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
+    entry.cmd.num = strid;
+    type = StringAttr;
+    isSorted = false;
+    return true;
+  }
+
+  if (ConvertNum(cmd, num)) {
+    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
+    entry.cmd.num = num;
+    type = DoubleAttr;
+    isSorted = false;
+    return true;
+  }
+
+  return false;
+}
+#endif
+
+/* Return TRUE if cmd is a simple command, and set entry to the
+   converted cmmand entry. A simple command
+   is either a constant, or a tdata attribute */
+
+Boolean MappingInterp::ConvertSimpleCmd(char *cmd, 
+					MappingSimpleCmdEntry &entry,
+					AttrType &type, Boolean &isSorted)
+{
+  /* do not use simple interpreter? */
+  if (!Init::UseSimpleInterpreter())
+    return false;
+
+#ifdef DEBUG
+  printf("ConvertSimpleCmd: '%s'\n",cmd);
+#endif
+
+  /* skip leading blanks and tabs */
+  while (*cmd == ' ' || *cmd == '\t') cmd++;
+
+  /* NULL command? */
+  if (*cmd == '\0') {
+    entry.cmdType = MappingSimpleCmdEntry::NULLCmd;
+    type = FloatAttr;
+    isSorted = false;
+    return true;
+  }
+  
+  AttrInfo *info;
+  double num;
+
+  if (*cmd == '$') {
+    /*
+       printf("got '$'\n");
+    */
+    if ( *(cmd+1) == '\0' )
+      return false;
+
+    if (!strcmp(cmd + 1, "recId")) {
+      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+      entry.cmd.attrNum = -1;
+      type = IntAttr;
+      isSorted = true;
+      return true;
+    }
+    
+    if ((info = _attrList->Find(cmd+1)) != NULL) {
+      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+      entry.cmd.attrNum = info->attrNum;
+      type = info->type;
+      isSorted = info->isSorted;
+      return true;
+    }
 #ifdef DEBUG
     printf("Undefined variable name: %s\n", cmd + 1);
     printf("Attribute list:\n");
@@ -1496,10 +1612,13 @@ void MappingInterp::PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry)
 {
   switch(entry->cmdType) {
   case MappingSimpleCmdEntry::AttrCmd:
-    if (entry->cmd.attr)
-      printf("\"%s\"", entry->cmd.attr->name);
-    else
+    if (entry->cmd.attrNum != -1) {
+      AttrInfo *info = _attrList->Get(entry->cmd.attrNum);
+      printf("\"%s\"", info->name);
+    }
+    else {
       printf("\"recId\"");
+    }
     break;
 
   case MappingSimpleCmdEntry::ConstCmd:
@@ -1618,20 +1737,22 @@ void MappingInterp::PrintCmd()
    entry as entry describing mapping, and defaultVal as the default value.
 */
 
-inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry, 
-			 double defaultVal)
+double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry, 
+				 double defaultVal)
 {
   AttrInfo *info;
   int offset;
   char *ptr;
+  double retVal;
 
   int code = 0;
   int key = 0;
 
+  printf("entry->cmdType : %d\n", entry->cmdType);
   switch(entry->cmdType) {
-
-  case MappingSimpleCmdEntry::AttrCmd:
-    info = entry->cmd.attr;
+  
+  case MappingSimpleCmdEntry::AttrCmd: {
+    info = _attrList->Get(entry->cmd.attrNum);
     if (!info)
       return MappingInterp::_tclRecId;
 
@@ -1640,17 +1761,25 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
 
     switch(info->type) {
 
-      case IntAttr:
-        return (double)(*((int *)ptr));
+      case IntAttr:{
+      	int tmp;
+      	memcpy(&tmp, ptr, sizeof(int));
+	return tmp;
         break;
+      }
+      case FloatAttr:{
+      	float tmp;
+      	memcpy(&tmp, ptr, sizeof(float));
+	return tmp;
+        break;
+     }
 
-      case FloatAttr:
-        return (double)(*((float *)ptr));
+      case DoubleAttr:{
+      	double tmp;
+      	memcpy(&tmp, ptr, sizeof(double));
+	return tmp;
         break;
-
-      case DoubleAttr:
-        return *((double *)ptr);
-        break;
+      }
 
       case StringAttr:
         code = StringStorage::Lookup(ptr, key);
@@ -1662,13 +1791,16 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
         return (double)key;
         break;
 
-      case DateAttr:
-        return (double)(*((time_t *)ptr));
+      case DateAttr:{
+      	time_t tmp;
+      	memcpy(&tmp, ptr, sizeof(time_t));
+	return (double) tmp;
         break;
+      }
     }
-
+    DOASSERT(0, "Unknown attr cmd type");
     break;
-
+  }
   case MappingSimpleCmdEntry::ConstCmd:
     /*
        printf("returning num: %f\n", entry->cmd.num);
@@ -1683,7 +1815,7 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
     return defaultVal;
     break;
   }
-
+  fflush(stdout);
   DOASSERT(0, "Unknown simple command type");
 
   // keep compiler happy
@@ -1703,9 +1835,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   char *gPtr = (char *)gdataPtr;
   _tclRecId = startRecId;
 
-
   for(int i = 0; i < numRecs; i++) {
-
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
     

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/04/21 22:54:53  guangshu
+  Added function MapTAttr2GAttr.
+
   Revision 1.28  1997/03/19 19:41:49  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -161,10 +164,14 @@ struct MappingInterpCmd {
 };
 
 struct MappingSimpleCmdEntry {
-  enum SimpleCmdType { AttrCmd, ConstCmd, NULLCmd };
+  enum SimpleCmdType { AttrCmd = 0, ConstCmd, NULLCmd };
   SimpleCmdType cmdType; /* type of command: either attribute, or constant*/
   union{
-    AttrInfo *attr;      /* ptr to attribute info */
+    int attrNum;		// rather than keeping a pointer which is 
+				// unsafe as DTE can change it, we keep the 
+				// attrnum which can be used to retrieve the 
+				// attrInfo at any point.
+//    AttrInfo *attr;      /* ptr to attribute info */
     double num;          /* value of constant field */
   } cmd;
 };
@@ -183,13 +190,22 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
+#ifdef VIEW_SHAPE 
+const int MaxInterpShapes = 17;
+#else 
 const int MaxInterpShapes = 16;
+#endif
+
 
 class MappingInterp: public TDataMap {
-  friend inline double ConvertOne(char *from,
-				  MappingSimpleCmdEntry *entry,
-				  double defaultVal);
-
+//  friend inline double ConvertOne(char *from,
+//				  MappingSimpleCmdEntry *entry,
+//				  double defaultVal);
+  
+protected:
+double ConvertOne(char *from,
+		  MappingSimpleCmdEntry *entry,
+		  double defaultVal);
 public:
   MappingInterp(char *name,
 		TData *tdata, MappingInterpCmd *cmd,
