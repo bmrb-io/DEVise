@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/01/23 17:40:58  jussi
+  Added distribution of records from GetX().
+
   Revision 1.19  1997/01/09 19:30:07  jussi
   Added measurement of query elapsed time (debugging output).
 
@@ -200,10 +203,10 @@ protected:
   Boolean InitQueries();
 
   /* Init for individual query types */
-  void InitQPFullX(QPFullData *query);
-  void InitQPFullYX(QPFullData *query);
-  void InitQPFullScatter(QPFullData *query);
-  
+  void InitQPFullX(QPFullData *qData);
+  void InitQPFullYX(QPFullData *qData);
+  void InitQPFullScatter(QPFullData *qData);
+  Boolean MasterNotCompleted(QPFullData *query);
   /*
      Process scan for 1 iteration for the range [query->current,query->high].
      Set state == QPFull_EndState if finished with scan.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/12 22:03:17  jussi
+  Cleaned up termination code in RestartSession().
+
   Revision 1.16  1996/08/29 22:23:25  guangshu
   Added functions OpenDataChannel and getFd.
 
@@ -115,6 +118,8 @@ public:
 
   /* Raise the control panel */
   virtual void Raise();
+  
+  virtual void NotifyFrontEnd(char *script);
 
   /* Abort program */
   virtual void DoAbort(char *reason);

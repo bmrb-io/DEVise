@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/02/03 04:12:16  donjerko
+  Catalog management moved to DTE
+
   Revision 1.48  1997/01/13 18:08:06  wenger
   Fixed bugs 043, 083, 084, 091, 114.
 
@@ -223,6 +226,7 @@
 #include "GroupDir.h"
 #include "ViewLayout.h"
 #include "VisualLink.h"
+#include "RecordLink.h"
 #include "FilterQueue.h"
 #include "DataSeg.h"
 #include "Version.h"
@@ -365,7 +369,43 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     control->ReturnVal(API_ACK, "done");
     return 1;
   }
+  if (!strcmp(argv[0], "setViewLensParams")) {
+     // name mode views 
+     ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
+     if (!lens) {
+       control->ReturnVal(API_NAK, "Cannot find lens");
+       return -1;
+     }
+     lens->SetMode(argv[2]);
+     VisualLink *link = (VisualLink *)classDir->FindInstance(argv[3]);
+     if (!link) {
+        control->ReturnVal(API_NAK,"Cannot find link");
+        return -1;
+     }
+     lens->SetLink(link);
+     lens->SetBgColor((GlobalColor)atoi(argv[4]));
 
+     int index = lens->InitViewLensIterator();
+     for (int j = 5;  j < argc ; j++) {
+         ViewGraph *v = (ViewGraph *)classDir->FindInstance(argv[j]);
+         if (!v) {
+            control->ReturnVal(API_NAK, "Cannot find view");
+            return -1;
+         }
+         printf("Inserting view %s\n", v->GetName());
+         if (lens->MoreViewsInLens(index)) {
+            ViewInfo *vinfo = lens->NextViewInfoInLens(index);
+            lens->ReplaceView(vinfo,v);
+         } else {
+            lens->InsertView(v);
+         }
+     }
+     // delete extra views 
+     index = lens->DeleteViewListTail(index);
+     lens->DoneViewLensIterator(index);
+     control->ReturnVal(API_ACK, "done");
+     return 1;
+  }
   if (argc == 1) {
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
@@ -535,6 +575,15 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, (view ? view->GetName() : ""));
       return 1;
     }
+    if (!strcmp(argv[0], "getLinkType")) {
+      RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      }
+      control->ReturnVal(API_ACK, (link->GetLinkType() == Positive)? "1" : "0");
+      return 1;
+    }
     if (!strcmp(argv[0], "setBatchMode")) {
       Boolean batch = (atoi(argv[1]) ? true : false);
       control->SetBatchMode(batch);
@@ -702,6 +751,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    
     if (!strcmp(argv[0], "getWindowLayout")) {
       ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
       if (!layout) {
@@ -913,6 +963,21 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "getWinGeometry")) {
+      ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
+      if (!win) {
+	control->ReturnVal(API_NAK, "Cannot find window");
+	return -1;
+      }
+      int x, y;
+      unsigned h, w;
+      int x0, y0;
+      win->Geometry(x, y, w, h);
+      win->AbsoluteOrigin(x0,y0);
+      sprintf (result, "{ %d %d %d %d %u %u }" , x0, y0, x, y, w, h);
+      control->ReturnVal(API_ACK, result);
+      return 1;	      
+    }
     if (!strcmp(argv[0], "getWinViews")) {
       ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
       if (!win) {
@@ -928,6 +993,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       win->DoneIterator(index);
       control->ReturnVal(API_ACK, result);
+
       return 1;
     }
     if (!strcmp(argv[0], "getLinkViews")) {
@@ -948,12 +1014,14 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getBgColor")) {
-      View *view = (View *)classDir->FindInstance(argv[1]);
+      ViewWin *view = (ViewWin *)classDir->FindInstance(argv[1]);
       if (!view) {
 	control->ReturnVal(API_NAK,"Cannot find view");
 	return -1;
       }
       GlobalColor color = view->GetBgColor();
+      printf("color = %ld\n", color);
+      sprintf(result,"%ld", color);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -1206,10 +1274,29 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, DevFileHeader::Get(argv[1]));
       return 1;
     }
+    if (!strcmp(argv[0], "getViewLensParams")) {
+      ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
+      if (!lens) {
+       control->ReturnVal(API_NAK, "Cannot find lens");
+       return -1;
+      }
+      /* Get mode */
+      sprintf(result, "%s %s { ", lens->GetMode(), lens->GetLink()->GetName()); 
+      /* get list of views */
+      int index = lens->InitViewLensIterator();
+      while(lens->MoreViewsInLens(index)) {
+           ViewGraph *view = lens->NextViewInLens(index);
+           strcat(result, " {");
+           strcat(result, view->GetName());
+           strcat(result, "} ");
+      }
+      lens->DoneViewLensIterator(index);
+      strcat(result, " } ");
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
   }
-
   if (argc == 3) {
-
     if(!strcmp(argv[0], "dteShowAttrNames")){
     	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
       control->ReturnVal(API_ACK, attrListing);
@@ -1226,7 +1313,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "");
       return 1;
     }
-
+    
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -1240,6 +1327,19 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       link->SetMasterView(view);
       control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setLinkType")) {
+      RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      }
+      if(atoi(argv[2]) == 0) {
+	link->SetLinkType(Positive);
+      } else if(atoi(argv[2]) == 1) {
+	link->SetLinkType(Negative);
+      }
       return 1;
     }
     if (!strcmp(argv[0], "setScreenSize")) {
@@ -1510,14 +1610,14 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(numArgs, args);
       return 1;
     }
-// MODIFIED BY SSL NOV 3 -BEGIN
+// MODIFIED BY SSL NOV 3 -BEGIN -NOT NEEDED NOW
     if (!strcmp(argv[0], "insertViewInLens")) { 
       ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
       if (!lens) {
 	control->ReturnVal(API_NAK, "Cannot find lens");
 	return -1;
       }
-      View *view = (View *)classDir->FindInstance(argv[2]);
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view){
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
@@ -1562,6 +1662,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
+      printf("insertLink %s %s\n", argv[1], argv[2]);
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
@@ -1595,6 +1696,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
+      printf("unLink %s %s\n", argv[1], argv[2]);
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
@@ -1939,6 +2041,23 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 6) {
+    if (!strcmp(argv[0], "setWinGeometry")) {
+      View *view = (View *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      int x, y;
+      unsigned h, w;
+      x = atoi(argv[2]);
+      y = atoi(argv[3]);
+      w = atoi(argv[4]);
+      h = atoi(argv[5]);
+      printf("%d %d %u %u\n", x, y, w, h);
+      view->SetGeometry(x, y, w, h);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }  
     if (!strcmp(argv[0], "setFilter")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -2005,7 +2124,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
   }
-
+  
   if (argc == 8) {
     if (!strcmp(argv[0], "set3DLocation")) {
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);

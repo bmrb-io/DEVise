@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/01/09 18:44:05  wenger
+  Did some cleanup of record link/piled view code.
+
   Revision 1.8  1996/11/26 16:51:38  ssl
   Added support for piled viws
 
@@ -81,7 +84,7 @@ static int RecordRangeCompare(const void *r1, const void *r2)
   return 0;
 }
 
-RecordLink::RecordLink(char *name, VisualFlag flag) :
+RecordLink::RecordLink(char *name, VisualFlag flag, RecordLinkType type) :
 	VisualLink(name, flag)
 {
 #ifdef DEBUG
@@ -97,6 +100,7 @@ RecordLink::RecordLink(char *name, VisualFlag flag) :
   _num = 0;
 
   _masterView = 0;
+  _linkType = type;
 }
 
 RecordLink::~RecordLink()

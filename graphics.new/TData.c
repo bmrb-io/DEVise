@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/01/24 01:56:59  wenger
+  Fixed bug 068 (major overhaul of DataSourceSegment class).
+
   Revision 1.15  1996/12/18 21:13:28  jussi
   Added code that instantiates the query processor/buffer manager
   so that forked DataSource processes can inherit shared memory
@@ -178,7 +181,11 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	  // Instantiate to a data stream..
 	    _data = new DataSourceDQL(param, _name);
 	}
-
+#ifdef VIEWTABLE
+	else if (!strcmp(_type, "VIEWTABLE")) {
+	    _data = View::GetViewTable();
+        }
+#endif
 #if 0
     // buffer stuff not working or used
     else if (!strcmp(_type, "BUFFER")) {
@@ -188,7 +195,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	_data = new DataSourceBuf(_param, buffer_size, data_size, NULL);
     }
 #endif
-
+ 
 #ifndef ATTRPROJ
 	//--------------------------------------------------------------------
 	// statistics datasources are stored in their corresponding viewgraph.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/23 21:17:40  jussi
+  Simplified code.
+
   Revision 1.3  1996/05/31 15:43:19  jussi
   Added copyright notice and cleaned up the code.
 
@@ -78,6 +81,9 @@ class QPRange {
     /* print the list */
     void Print();
     
+    friend
+    QPRange *Intersect(QPRange *r1, const QPRange *r2);
+
   protected:
     /* Find next record after current. Return NULL if no next rec.
        if cur == NULL, return 1st record */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/13 21:34:39  jussi
+  Added checking of available semaphores and shared memory.
+
   Revision 1.1  1996/12/03 20:28:49  jussi
   Initial revision.
 */
@@ -23,7 +26,7 @@
 #ifndef MemMgr_h
 #define MemMgr_h
 
-#include "DeviseTypes.h"
+#include "../../graphics/DeviseTypes.h"
 #include "DCE.h"
 
 // Memory manager

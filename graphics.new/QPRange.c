@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/03 20:33:39  jussi
+  Made callbacks conditional.
+
   Revision 1.8  1996/11/25 17:38:13  jussi
   Fixed Clear() method which failed to reinitialize some member
   variables.
@@ -363,3 +366,5 @@ void QPRange::Print()
         printf("[%ld,%ld] ", rec->low, rec->high);
     printf("\n");
 }
+
+

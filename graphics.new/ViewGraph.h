@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/11/26 16:51:42  ssl
+  Added support for piled viws
+
   Revision 1.29  1996/11/13 16:57:14  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -147,6 +150,7 @@ const int MAX_GSTAT = 10000;
 #include "RecId.h"
 #include "PointStorage.h"
 
+
 DefineDList(GStatList, int)
 
 class TDataMap;
@@ -178,6 +182,8 @@ public:
 
   // Stats update link access
   UpdateLink& GetUpdateLink() { return _updateLink; }
+  // Record link list
+  RecordLinkList *SlaveLinkList() { return &_slaveLink;}
 
   /* Insert/remove mappings from view */
   virtual void InsertMapping(TDataMap *map, char *label = "");

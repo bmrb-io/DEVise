@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/26 16:51:41  ssl
+  Added support for piled viws
+
   Revision 1.9  1996/11/13 16:57:12  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -285,7 +288,7 @@ ViewLensInfo::ViewLensInfo(char *name, char *fgName, char *bgName,
 
 ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 6 && argc != 7) {
+  if (argc != 5 && argc != 6 && argc != 7) {
     fprintf(stderr, "ViewLensInfo::CreateWithParams: wrong args\n");
     return NULL;
   }
@@ -303,7 +306,10 @@ ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
   // lists fgcolor first, followed by bgcolor
 
   char *fgName, *bgName;
-  if (argc == 6) {
+  if (argc == 5) {
+    fgName = CopyString("Black");
+    bgName = CopyString("AntiqueWhite");
+  } else if (argc == 6) {
     fgName = CopyString("Black");
     bgName = CopyString(argv[5]);
   } else {
@@ -313,7 +319,7 @@ ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
   GlobalColor fgColor = ColorMgr::AllocColor(fgName);
   GlobalColor bgColor = ColorMgr::AllocColor(bgName);
 
-  ViewLens *view = new ViewLens(name, filter, 
+  ViewLens *view = new ViewLens(name, filter,  GetQueryProc(),
 				fgColor, bgColor, NULL, NULL, NULL);
   return new ViewLensInfo(name, fgName, bgName, view);
 }

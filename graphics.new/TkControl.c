@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  1997/01/27 20:15:14  wenger
+  Workaround to bug 137: disables Stack Control dialog buttons while drawing.
+
   Revision 1.75  1997/01/23 17:02:23  wenger
   Changed startup code in TkControl so that '-sharedMem' argument works
   in batch mode.
@@ -534,8 +537,10 @@ void TkControlPanel::SetBusy()
 
 void TkControlPanel::SetIdle()
 {
-  DOASSERT(_busy > 0, "Control panel unexpectedly busy");
-
+  DOASSERT(_busy >= 0, "Control panel unexpectedly busy");
+  if (_busy == 0) {
+    return;
+  }
   if (--_busy == 0) {
     (void)Tcl_Eval(_interp, "ChangeStatus 0");
     Run();
@@ -610,3 +615,12 @@ void TkControlPanel::Raise()
   (void)Tcl_Eval(_interp, "raise .");
   Run();
 }
+
+void TkControlPanel::NotifyFrontEnd(char *script) 
+{
+  if (Tcl_Eval(_interp, script) != TCL_OK) {
+    fprintf(stderr, "Cannot execute %s: %s\n",
+            script, _interp->result);
+  }
+}
+

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/18 15:32:09  jussi
+  Added synchronization methods and IsBusy() method.
+
   Revision 1.9  1996/12/03 20:36:02  jussi
   Added support for concurrent I/O.
 
@@ -74,8 +77,7 @@
 
 #include <sys/types.h>
 
-#include "DeviseTypes.h"
-#include "Exit.h"
+#include "../../graphics/Exit.h"
 #include "MemMgr.h"
 
 

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.55  1997/01/28 18:14:12  jussi
+#  Removed references to removed files StringHash* and testStringHash.c.
+#
 #  Revision 1.54  1997/01/18 18:59:07  jussi
 #  Added testSBM2 and testSBM3 targets.
 #
@@ -74,7 +77,10 @@ include ../../Makefile.common
 CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics \
         -I../../DTE/DeviseSpecific -I../../DTE/Core\
         -I../../graphics.new -I../../tape -I../../generic \
-        -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
+        -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
+	  -DNEW_LAYOUT
+
+#-DVIEWTABLE
 
 # Buffer manager
 

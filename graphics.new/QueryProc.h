@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/01/23 17:40:18  jussi
+  Removed references to GetMgr() and GetXMin().
+
   Revision 1.8  1996/11/26 16:51:36  ssl
   Added support for piled viws
 
@@ -75,6 +78,8 @@ class QueryCallback {
   virtual RecordLinkList *GetRecordLinkList() { return 0; }
 
   virtual void PrintLinkInfo() {}
+  
+  virtual void *GetObj() = 0;  /* gets the obj which this querycallback is */
 };
 
 class QueryProc {

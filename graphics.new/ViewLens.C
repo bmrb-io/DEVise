@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/03 15:20:03  wenger
+  Conditionaled out some debug code.
+
   Revision 1.2  1996/12/02 16:54:32  wenger
   Fixed compile warning; added standard headers to some files;
   conditionaled out debug code.
@@ -28,37 +31,54 @@
 
 #include <time.h>
 
-#include "Util.h"
 #include "ViewLens.h"
-#include "Geom.h"
 #include "WindowRep.h"
 #include "XWindowRep.h"
-#include "FilterQueue.h"
-#include "Control.h"
 #include "TimeStamp.h"
-#include "Parse.h"
-#include "Map3D.h"
-#include "Display.h"
+#include "TDataMap.h"
+#include "Shape.h"
+#include "Util.h"
+#include "RecordLink.h"
 
 #define DEBUG
 
 ViewLens::ViewLens(char *name, VisualFilter &initFilter, 
+            	   QueryProc *qp,  
 		   GlobalColor foreground, GlobalColor background,
 		   AxisLabel *xAxis, AxisLabel *yAxis,
-		   Action *action, bool transparent, int dimension)
+		   Action *action, ViewLensMode mode, ViewLensDim dimension)
 : ViewGraph(name, initFilter, xAxis, yAxis, foreground, background,action)
 {
 #ifdef DEBUG
   printf("View::ViewLens(%s, this = %p)\n", name, this);
 #endif
-  _transparent = transparent;
+  _mode = mode;
   _dimension = dimension;
   _lensList = NULL;	// list of views in lens
-  _viewLensUpdate = false ;	// flag to signal update of the viewlens
+  _queryProc = qp;
+  _queryFilter = initFilter;
+  _lensLink = NULL;
   View::InsertViewCallback(this);
+  /************TEMP HACK **************/
+  _viewLensUpdate = false; // to avoid refresh of the view here 
+  XAxisDisplayOnOff(true); 
+  YAxisDisplayOnOff(true);
+  _viewLensUpdate = true;
+  /************TEMP HACK **************/
 }
-       
-void ViewLens::InsertView(View *v) 
+void ViewLens::ReplaceView(ViewInfo *vinfo, ViewGraph *v)       
+{
+  if (vinfo == NULL) {
+     if ( v != NULL ) {
+       InsertView(v);
+     }
+  } else {
+     vinfo->view = v;
+     vinfo->refreshStatus = false;
+     vinfo->toRefresh = false;
+  }     
+}
+void ViewLens::InsertView(ViewGraph *v) 
 {
   if (!_lensList) {
     _lensList = new ViewInfoList;
@@ -75,7 +95,19 @@ void ViewLens::InsertView(View *v)
   _lensList->Append(vinfo);
 }
 
-void ViewLens::DeleteView(View *v) 
+int ViewLens::DeleteViewListTail(int index) 
+{
+   if (index < 0) {
+      return index;
+   }
+   while(MoreViewsInLens(index)) {
+    ViewInfo *vi = NextViewInfoInLens(index);
+    _lensList->DeleteCurrent(index);
+   }
+   return index;  
+}
+
+void ViewLens::DeleteView(ViewGraph *v) 
 {
   DOASSERT(_lensList, "Invalid lenslist");
   if (v == NULL) 
@@ -118,10 +150,30 @@ ViewLens::~ViewLens()
   DoneViewLensIterator(index);
   delete  _lensList;
 }
+char* ViewLens::GetMode() 
+{
+  if (_mode == transparent) {
+     return "transparent";
+  }
+  if (_mode == opaque) {
+     return "opaque";
+  }
+  return NULL;
+}
+ void ViewLens::SetMode(char *modestr)
+ {
+   if (strcmp(modestr, "transparent") == 0) {
+      _mode = transparent;
+   } else if ( strcmp(modestr, "opaque") == 0) {
+      _mode = opaque;
+   }
+ }
 
-  
 void ViewLens::Refresh()
 {
+  if (!_viewLensUpdate) {
+    return;
+  }
   printf("ViewLens %s : refreshing \n", GetName());
   
   int index = InitViewLensIterator();
@@ -131,7 +183,6 @@ void ViewLens::Refresh()
     vi->toRefresh = false;
   }
   DoneViewLensIterator(index);
-  _viewLensUpdate = false;
     
   View::Refresh();
 }
@@ -161,7 +212,10 @@ void ViewLens::Run()
     printf("ViewLens %s can now proceed\n", GetName());
 #endif
     /* Do pixmap stuff here */
-    DrawStack();
+    //DrawStack();
+    //_timestamp = TimeStamp::NextTimeStamp();
+    //DerivedStartQuery(_queryFilter, _timestamp);
+    View::Run();
   } 
   else {
 #ifdef DEBUG
@@ -169,7 +223,6 @@ void ViewLens::Run()
     Dispatcher::Current()->RequestCallback(_dispatcherID);
 #endif
   }
-
 }
 
 /* from ViewCallback */
@@ -178,19 +231,23 @@ void ViewLens::ViewRecomputed(View *view) {
   printf("Got information of completion of %s\n", view->GetName());
 #endif
   int index = InitViewLensIterator();
+  bool found = false;
   while(MoreViewsInLens(index)) {
     ViewInfo *vi = NextViewInfoInLens(index);
     if (vi->view == view) { 
 #ifdef DEBUG
       printf("found view %s\n", vi->view->GetName());
 #endif
+      found = true;
       vi->refreshStatus = true;
       vi->toRefresh = false;
-      break;
     }
   }
   DoneViewLensIterator(index);
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  if (found) {
+      View::Refresh();
+  //    Dispatcher::Current()->RequestCallback(_dispatcherID);
+  }
 }
 
 
@@ -203,7 +260,7 @@ void ViewLens::ViewCreated(View *view) {
 /* from ViewCallback */
 void ViewLens::ViewDestroyed(View *view) {
   /* not needed */
-  DeleteView(view);
+  DeleteView((ViewGraph *)view);
 }
 
 
@@ -260,7 +317,6 @@ void ViewLens::FilterChanged(View *view, VisualFilter &filter, int flushed)
 #endif
     vi->toRefresh = true;
     vi->refreshStatus = false;
-
   }
 
 }
@@ -271,8 +327,27 @@ void ViewLens::DerivedStartQuery(VisualFilter &filter,
 #ifdef DEBUG
   printf("ViewLens:: %s start query \n", GetName());
 #endif
-  /* DO stuff here */
-  ReportQueryDone(0);
+  _timestamp = timestamp;
+  _index = InitViewLensIterator();
+  ViewInfo *vi = NULL;
+  ViewGraph *v = NULL;
+  if (MoreViewsInLens(_index)) {
+    vi = NextViewInfoInLens(_index); 
+    v = vi->view;
+    _curView = v;
+  }
+  v->GetVisualFilter(_queryFilter);
+  int mindex = v->InitMappingIterator(true);
+  if (v->MoreMapping(mindex)) {
+      _map = v->NextMapping(mindex)->map;
+      _pstorage.Clear();
+      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+  } else {
+#ifdef DEBUG
+      printf("View has no mappings; reporting query as done\n");
+#endif
+  }
+  v->DoneMappingIterator(mindex);
 }
 
 void ViewLens::DerivedAbortQuery()
@@ -280,8 +355,8 @@ void ViewLens::DerivedAbortQuery()
 #ifdef DEBUG
   printf("ViewLens:: %s abort query \n", GetName());
 #endif
+  DoneViewLensIterator(_index);
   /* Do stuff here */
-  ReportQueryDone(0);
 }
 
 
@@ -297,11 +372,14 @@ void ViewLens::DrawStack()
   winRep->Dimensions(Width, Height);
   winRep->FillRect(0, 0, Width - 1, Height - 1);
   
-  if (_transparent) {
+  if (_mode == transparent) {
     DrawTransparentStack();
   }
-  else {
+  else if (_mode == opaque) {
     DrawOpaqueStack();
+  }
+  else {
+    printf("mode not supported\n");
   }
 }
 
@@ -313,7 +391,7 @@ void ViewLens::DrawTransparentStack()
   DevisePixmap *basepixmap = 0;
   while(MoreViewsInLens(index)) {
     ViewInfo *vi = NextViewInfoInLens(index);
-    View*v = vi->view;
+    ViewGraph*v = vi->view;
     WindowRep *viewWinRep = v->GetWindowRep();
     DevisePixmap *newpixmap = viewWinRep->GetPixmap();      
     if (basepixmap == NULL) {
@@ -340,7 +418,7 @@ void ViewLens::DrawOpaqueStack()
   int index = InitViewLensIterator();
   while(MoreViewsInLens(index)) {
     ViewInfo *vi = NextViewInfoInLens(index);
-    View*v = vi->view;
+    ViewGraph*v = vi->view;
     viewWinRep = v->GetWindowRep();
   }
   DoneViewLensIterator(index);
@@ -385,7 +463,7 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
     char *basebuf 
       = ((XWindowRep *)basewin)->GetCompress()->DecompressLine((char *)&basedata[index1], 
 					      baseCount, outCount1);
-    printf("%s\n", basebuf);
+    //printf("%s\n", basebuf);
     char *tmpbasebuf = (char *) malloc(outCount1);
     memcpy(tmpbasebuf, basebuf, outCount1);
     char *newbuf 
@@ -406,9 +484,9 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
 	->CompressLine(tmpbasebuf, 
 		       basepixmap->bytes_per_line,
 		       outCount1);
-    printf("%s\n", tmpbasebuf);
+    //printf("%s\n", tmpbasebuf);
     delete tmpbasebuf;
-    printf("cBuf = %s\n", cBuf);
+    //printf("cBuf = %s\n", cBuf);
 
     if (outCount1 + outIndex1 + sizeof(int) > MAX_PIXMAP_BUF_SIZE ) {
       return NULL;
@@ -427,5 +505,108 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
   return basepixmap;
 }
 
+void ViewLens::QueryInit(void *userData)
+{
+   printf("ViewLens: %s : QueryInit\n", GetName());
+}
 
+void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
+                           void *gdata, int numGData)
+{
+#if defined(DEBUG)
+//  printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
+#endif
 
+  Coord maxWidth, maxHeight, maxDepth;
+  mapping->UpdateMaxSymSize(gdata, numGData);
+  mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
+
+  WindowRep *win = GetWindowRep();
+  GDataAttrOffset *offset = mapping->GetGDataOffset();
+  int gRecSize = mapping->GDataRecordSize();
+  char *ptr = (char *)gdata;
+  int recIndex = 0;
+  int firstRec = 0;
+  for(int i = 0; i < numGData; i++) {
+    // Extract X, Y, shape, and color information from gdata record
+    Coord x = GetX(ptr, mapping, offset);
+    Coord y = GetY(ptr, mapping, offset);
+    ShapeID shape = GetShape(ptr, mapping, offset);
+
+    GlobalColor color = mapping->GetDefaultColor();
+    if (offset->colorOffset >= 0)
+      color = *(GlobalColor *)(ptr + offset->colorOffset);
+    win->SetFgColor(color);
+    Boolean complexShape = mapping->IsComplexShape(shape);
+    complexShape |= (GetNumDimensions() == 3);
+
+    // Contiguous ranges which match the filter''s X and Y range
+    // are stored in the record link
+    if (!complexShape &&
+	(x + maxWidth / 2 < _queryFilter.xLow || 
+	 x - maxWidth / 2 > _queryFilter.xHigh || 
+	 y + maxHeight / 2 < _queryFilter.yLow || 
+	 y - maxHeight / 2 > _queryFilter.yHigh)) {
+	 if (i > firstRec)
+	   WriteMasterLink(recId + firstRec, i - firstRec);
+	     // Next contiguous batch of record ids starts at i+1
+	 firstRec = i + 1;
+     ptr += gRecSize;
+     continue;
+    }
+    // Draw data only if window is not iconified
+    if (!Iconified()) {
+      _recs[recIndex++] = ptr;
+      if (recIndex == WINDOWREP_BATCH_SIZE) {
+        mapping->DrawGDataArray(this, win, _recs, recIndex);
+        recIndex = 0;
+      }
+    }
+
+    ptr += gRecSize;
+  }
+
+  if (numGData > firstRec)
+    WriteMasterLink(recId + firstRec, numGData - firstRec);
+
+  if (!Iconified() && recIndex > 0) {
+    mapping->DrawGDataArray(this, win, _recs, recIndex);
+  }
+}
+
+void ViewLens::QueryDone(int bytes, void *userData)
+{
+#ifdef DEBUG
+  printf("ViewLens::Query done, index = %d, bytes = %d\n", _index, bytes);
+#endif
+  _pstorage.Clear();
+  ViewInfo *vi = NULL;
+  ViewGraph *v = NULL;
+  if ( _index < 0) {
+     return;
+  }
+  if(MoreViewsInLens(_index)) {
+      vi = NextViewInfoInLens(_index); 
+      v = (ViewGraph *)vi->view;
+      _curView = v;
+  } else {
+      printf("All views done \n");
+      DoneViewLensIterator(_index);
+      ReportQueryDone(bytes, false);
+      _map = 0;
+      _index = -1;
+      _curView = NULL;
+      return;
+  }
+  v->GetVisualFilter(_queryFilter);
+  int mindex = v->InitMappingIterator(true);
+  if (v->MoreMapping(mindex)) {
+      _map = v->NextMapping(mindex)->map;
+      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+   } else {
+#ifdef DEBUG
+      printf("View has no mappings; reporting query as done\n");
+#endif
+   }
+   v->DoneMappingIterator(mindex);
+}

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/31 18:39:23  jussi
+  Allocated resources are destroyed when process creation fails
+  in InitializeProc().
+
   Revision 1.13  1996/12/20 16:30:00  jussi
   Removed call to SemaphoreV::destroy().
 
@@ -75,8 +79,7 @@
   Added final version of code for reading schemas from session files;
   added an error-reporting class to improve error info.
  */
-
-#define _DataSource_c_
+//#define _DataSource_c_
 
 //#define DEBUG
 

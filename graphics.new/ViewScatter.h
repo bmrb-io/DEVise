@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/26 16:51:42  ssl
+  Added support for piled viws
+
   Revision 1.10  1996/11/13 16:57:14  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -83,6 +86,7 @@ public:
   
   virtual void InsertMapping(TDataMap *map);
   virtual void PrintLinkInfo() { ViewGraph::PrintLinkInfo();}
+  virtual void *GetObj() { return this; }
 
 protected:
   /* from View */

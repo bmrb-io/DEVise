@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/01/24 22:18:40  wenger
+  Fixed bug 136.
+
   Revision 1.44  1996/12/30 23:57:37  andyt
   First version with support for Embedded Tcl/Tk windows. Added new
   ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
@@ -659,8 +662,8 @@ void ViewGraph::PrepareStatsBuffer()
 #endif
 		break;
 	    }
-	}
-    }
+	  }
+      }
 
     double width = _allStats.GetHistWidth();
 #if defined(DEBUG)

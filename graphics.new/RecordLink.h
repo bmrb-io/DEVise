@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/26 16:51:38  ssl
+  Added support for piled viws
+
   Revision 1.3  1996/08/04 21:59:51  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -43,10 +46,11 @@ struct RecordRange {
 };
 
 DefinePtrDList(RecordRangeList, RecordRange *)
+enum RecordLinkType { Positive, Negative };
 
 class RecordLink : public VisualLink {
  public:
-  RecordLink(char *name, VisualFlag linkFlag);
+  RecordLink(char *name, VisualFlag linkFlag, RecordLinkType type = Positive);
   virtual ~RecordLink();
 
   char *GetFileName() { return (_file ? _file->GetName() : "none"); }
@@ -63,7 +67,9 @@ class RecordLink : public VisualLink {
   void Done();
   void Abort();
   void Print();
-
+  RecordLinkType GetLinkType () { return _linkType; }
+  void SetLinkType(RecordLinkType type) { _linkType = type; }
+  
  protected:
   void FlushToDisk();                   // write array contents to disk
 
@@ -75,6 +81,7 @@ class RecordLink : public VisualLink {
   int         _num;                     // number of entries in array
 
   ViewGraph   *_masterView;             // master of record link
+  RecordLinkType _linkType;            // positive or negative
 };
 
 #endif

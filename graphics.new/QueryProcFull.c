@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/01/30 21:41:10  jussi
+  Disabled 'query finished' debugging message.
+
   Revision 1.52  1997/01/24 21:19:03  wenger
   Fixed memory leak in X font handling code; noted other minor leaks.
 
@@ -242,6 +245,7 @@
 #include "BufPolicy.h"
 
 #define DEBUGLVL 0
+//#define DEBUG_NEG_LINKS 0
 
 /* Temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
@@ -358,10 +362,12 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   /* Find out if this query is a slave of a record link */
   query->isRecLinkSlave = false;
   RecordLinkList *recLinkList = callback->GetRecordLinkList();
-  int index = recLinkList->InitIterator();
-  if (recLinkList->More(index))
-    query->isRecLinkSlave = true;
-  recLinkList->DoneIterator(index);
+  if ( recLinkList) { 
+     int index = recLinkList->InitIterator();
+     if (recLinkList->More(index))
+        query->isRecLinkSlave = true;
+     recLinkList->DoneIterator(index);
+  }
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -431,7 +437,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->Append(query);
 #else
   /* Insert query into query list based on priority */
-  index = _queries->InitIterator();
+  int index = _queries->InitIterator();
   while (_queries->More(index)) {
     QPFullData *qd = _queries->Next(index);
     if (qd->priority > query->priority) {
@@ -446,11 +452,12 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 
 #if DEBUGLVL >= 5
   printf("List of queries in the query processor:\n");
-  index = _queries->InitIterator();
+  int index = _queries->InitIterator();
   while (_queries->More(index)) {
     QPFullData *qd = _queries->Next(index);
-    printf("  %s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
-	   qd->priority);
+    printf("  %s %s %d (slave : %d) \n",
+	   qd->tdata->GetName(), qd->map->GetName(),
+	   qd->priority, qd->isRecLinkSlave);
   }
   _queries->DoneIterator(index);
 #endif
@@ -709,100 +716,148 @@ void QueryProcFull::InitQPFullScatter(QPFullData *query)
 
 void QueryProcFull::PrepareProcessedList(QPFullData *query)
 {
-    if (!query->isRecLinkSlave)
-        return;
-
-    /*
-       First insert all record link ranges into a "unprocessed" list.
-       Then insert each unprocessed range of the unprocessed list
-       (i.e. the processed ranges) into the query's processed list.
-       The net effect is that we've marked all those record ranges
-       NOT in the record link as processed. The remaining record
-       ranges (i.e. those in the record link) will be processed normally.
-    */
-
-#if DEBUGLVL >= 3
-    printf("Creating unprocessed list for query 0x%p\n", query);
+  if (!query->isRecLinkSlave)
+    return;
+  
+  /*
+     First insert all record link ranges into a "unprocessed" list.
+     Then insert each unprocessed range of the unprocessed list
+     (i.e. the processed ranges) into the query''s processed list.
+     The net effect is that we've marked all those record ranges
+     NOT in the record link as processed. The remaining record
+     ranges (i.e. those in the record link) will be processed normally.
+     */
+  
+  /* Change : Since each record link can be positive or negative 
+   * each record link file is examined and the processed list for 
+   * the query is obtained from it. -SSL 01/29
+   */
+  
+  /* An implicit union operation is performed here - this should 
+   * be changed to an intersection operation -SSL. 01/29
+   */
+  
+#if DEBUG_NEG_LINKS 
+  printf("Creating unprocessed list for query 0x%p\n", query);
 #endif
-
-    DOASSERT(query->callback, "No callback");
-    RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+  
+  DOASSERT(query->callback, "No callback");
+  RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+  
+  RecId tlow, thigh;
+  if (!query->tdata->HeadID(tlow) || !query->tdata->LastID(thigh)) {
+    fprintf(stderr, "Failed to get TData record boundaries\n");
+    return;
+  }
+  
+  int index = recLinkList->InitIterator();
+  
+  while (recLinkList->More(index)) {
     QPRange unprocessed;
-
-    int index = recLinkList->InitIterator();
-
-    while (recLinkList->More(index)) {
-	RecordLink *recLink = recLinkList->Next(index);
-#if DEBUGLVL >= 5
-	printf("Processing record link file %s\n", recLink->GetFileName());
+    RecordLink *recLink = recLinkList->Next(index);
+    RecordLinkType linkType = recLink->GetLinkType();
+#if DEBUG_NEG_LINKS 
+    printf("Creating processed list from reclink 0x%p for query 0x%p\n",
+	   recLink, query);
+    printf("Link type = %d", linkType);
 #endif
-        RecId linkRec = 0;
-        while (1) {
-            RecId low;
-            int num;
-            int result = recLink->FetchRecs(linkRec, low, num);
-            if (result < 0) {
-                fprintf(stderr,
-                        "Cannot fetch record %ld from record link file %s\n",
-                        linkRec, recLink->GetFileName());
-            }
-            if (!result)
-                break;
-#if DEBUGLVL >= 5
-            printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
-                   low, low + num - 1, recLink->GetFileName(), linkRec);
-#endif
-            unprocessed.Insert(low, low + num - 1, NULL);
-            linkRec++;
-        }
-#if DEBUGLVL >= 5
-        printf("End of record link file %s (%ld records)\n",
-               recLink->GetFileName(), linkRec);
-#endif
-    }
-
-    recLinkList->DoneIterator(index);
-
-#if DEBUGLVL >= 3
-    printf("Creating processed list for query 0x%p\n", query);
-#endif
-
-    RecId tlow, thigh;
-    if (!query->tdata->HeadID(tlow) || !query->tdata->LastID(thigh)) {
-        fprintf(stderr, "Failed to get TData record boundaries\n");
-        return;
-    }
     
-    RecId current = tlow;
-
+#if DEBUG_NEG_LINKS 
+    printf("Processing record link file %s\n", recLink->GetFileName());
+#endif
+    RecId linkRec = 0;
     while (1) {
-        RecId low, high;
-        Boolean noHigh = unprocessed.NextUnprocessed(current, low, high);
-        if (low > thigh)
-            break;
-        if (noHigh)
-            high = thigh;
-#if DEBUGLVL >= 5
-        printf("Inserting range [%ld,%ld] into processed list\n",
-               low, high);
+      RecId low;
+      int num;
+      int result = recLink->FetchRecs(linkRec, low, num);
+      if (result < 0) {
+	fprintf(stderr,
+		"Cannot fetch record %ld from record link file %s\n",
+		linkRec, recLink->GetFileName());
+      }
+      if (!result)
+	break;
+#if DEBUG_NEG_LINKS 
+//      printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
+//	     low, low + num - 1, recLink->GetFileName(), linkRec);
 #endif
-        query->processed->Insert(low, high, NULL);
-        current = high + 1;
+      if (linkType == Positive) {
+	unprocessed.Insert(low, low + num - 1, NULL);
+      } else {  /* negative record link - put the same range into
+		 * query''s  processed list
+		 */
+#if DEBUG_NEG_LINKS 
+//	printf("Inserting range [%ld,%ld] into processed list\n",
+//	       low, low + num - 1);
+#endif
+	query->processed->Insert(low, low + num - 1, NULL);
+      }
+      linkRec++;
     }
-
-#if DEBUGLVL >= 5
-    printf("List looks like this after preparation:\n");
-    query->processed->Print();
+#if DEBUG_NEG_LINKS 
+    printf("End of record link file %s (%ld records)\n",
+	   recLink->GetFileName(), linkRec);
 #endif
-
-#if DEBUGLVL >= 3
-    printf("Done with PrepareProcessedList\n");
+    
+    if (linkType == Positive) {
+      RecId current = tlow;
+      while (1) {
+	RecId low, high;
+	Boolean noHigh = unprocessed.NextUnprocessed(current, low, high);
+	if (low > thigh)
+	  break;
+	if (noHigh)
+	  high = thigh;
+#if DEBUG_NEG_LINKS 
+//	printf("Inserting range [%ld,%ld] into processed list\n",
+//	       low, high);
+#endif
+	query->processed->Insert(low, high, NULL);
+	current = high + 1;
+      }
+    }
+  }
+  recLinkList->DoneIterator(index);
+  
+#if DEBUG_NEG_LINKS 
+  printf("List looks like this after preparation:\n");
+  query->processed->Print();
+#endif
+  
+#if DEBUG_NEG_LINKS 
+  printf("Done with PrepareProcessedList\n");
 #endif
 }
 
 /*
    Initialize one query. Return false if no query is in initial state.
 */
+Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
+{
+  // check if master view is in the currently executing list
+  RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
+
+  int rindex = recLinkList->InitIterator();  
+  while(recLinkList->More(rindex)) {
+    RecordLink *recLink = recLinkList->Next(rindex);
+    ViewGraph *masterView = recLink->GetMasterView();
+    int qindex = _queries->InitIterator();
+    while(_queries->More(qindex)) {
+      QPFullData *q = _queries->Next(qindex);
+#ifdef DEBUG
+      printf("Master %p : query %p, callback %p" , masterView, q, q->callback);
+#endif
+      if ((ViewGraph *)(q->callback->GetObj()) == masterView)  {
+	_queries->DoneIterator(qindex);
+	recLinkList->DoneIterator(rindex);
+	return true;
+      }
+    }
+    _queries->DoneIterator(qindex);
+  }
+  recLinkList->DoneIterator(rindex);
+  return false;
+}
 
 Boolean QueryProcFull::InitQueries()
 {
@@ -812,14 +867,19 @@ Boolean QueryProcFull::InitQueries()
 
     QPFullData *query = (QPFullData *)_queries->Next(index);
     if (query->state != QPFull_InitState)
-        continue;
-
+      continue;
+    if (query->isRecLinkSlave && (MasterNotCompleted(query))) {
+      continue;
+    }
     _queries->DoneIterator(index);
 
     DOASSERT(query->callback, "No callback");
     /* Call initialization of query */
     query->callback->QueryInit(query->userData);
-
+#ifdef DEBUG_NEG_LINKS
+    printf("****************************InitQuery %p (slave : %d) \n", query,
+	   query->isRecLinkSlave);
+#endif
     switch(query->qType) {
       case QPFull_X:
 	InitQPFullX(query);
@@ -1047,6 +1107,10 @@ void QueryProcFull::EndQueries()
   while (_queries->More(index)) {
     query = (QPFullData *)_queries->Next(index);
     if( query->state == QPFull_EndState ) {
+#ifdef DEBUG_NEG_LINKS
+      printf("****************************EndQuery %p (slave : %d) \n", query,
+	     query->isRecLinkSlave);
+#endif
       EndQuery(query);
       _queries->DeleteCurrent(index);
       delete query;
@@ -1069,6 +1133,10 @@ void QueryProcFull::EndQuery(QPFullData *query)
   if( query->callback != NULL ) {
     query->callback->QueryDone(query->bytes, query->userData);
   }
+#ifdef DEBUG_NEG_LINKS
+  printf("****************************EndQuery %p (slave : %d) \n", query,
+	 query->isRecLinkSlave);
+#endif
   JournalReport();
 }
 
