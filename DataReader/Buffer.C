@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/23 22:57:11  okan
+  *** empty log message ***
+
   Revision 1.5  1998/06/22 23:46:58  okan
   Fixed Some bugs...
 
@@ -864,6 +867,10 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 						return status;
 				}
 			} else 
+
+				if ((_curChar = getChar()) == 0)
+					return FOUNDEOF;
+
 				status = checkEOL(_curChar);
 				if (status == OK)
 					return FOUNDSEPARATOR;
