@@ -24,6 +24,7 @@ string DeviseInterface::typeName = "Table";
 string DummyInterface::typeName = "UNIXFILE";
 string ODBCInterface::typeName = "ODBC";
 string DBServerInterface::typeName = "DBServer";
+string GestaltInterface::typeName = "Gestalt"; // *** YL
 
 const string Stats::KEYWD = "stats";
 
@@ -244,6 +245,30 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
 	LOG(logFile << "Inserting into " << urlString << endl);
 
 	Inserter* inserter = new Inserter();
+	TRY(inserter->open(schema, urlString), NULL);
+
+     return inserter;
+}
+
+// *** YL
+Site* GestaltInterface::getSite(){ // Throws a exception
+
+	TRY(URL* url = new URL(urlString), NULL);
+	TRY(istream* in = url->getInputStream(), NULL);
+	StandardRead* unmarshal = new StandardRead();
+	TRY(unmarshal->open(schema, in, urlString), NULL);
+
+	delete url;
+     return new LocalTable("", unmarshal, urlString);	
+}
+
+Inserter* GestaltInterface::getInserter(TableName* table){ // Throws 
+	assert(table);
+	assert(table->isEmpty());
+
+	LOG(logFile << "Inserting into " << urlString << endl);
+
+	Inserter* inserter = new GestaltInserter();
 	TRY(inserter->open(schema, urlString), NULL);
 
      return inserter;
@@ -658,6 +683,13 @@ istream& Interface::read(istream& in)
 }
 
 istream& StandardInterface::read(istream& in){
+	in >> schema;
+	in >> urlString;
+	return Interface::read(in);
+}
+
+// *** YL
+istream& GestaltInterface::read(istream& in){
 	in >> schema;
 	in >> urlString;
 	return Interface::read(in);

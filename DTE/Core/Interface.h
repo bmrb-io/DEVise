@@ -122,6 +122,42 @@ public:
 	virtual vector<AccessMethod*> createAccessMethods();
 };
 
+class GestaltInterface: public Interface { // *** YL			       
+protected:
+ 	ISchema schema;
+	string urlString;
+public:
+	static string typeName;
+	GestaltInterface(){}
+	GestaltInterface(const ISchema& schema, const string& urlString) 
+		: schema(schema), urlString(urlString){}
+	GestaltInterface(const GestaltInterface& x) :
+		schema(x.schema), urlString(x.urlString) {}
+	virtual ~GestaltInterface(){}
+	virtual string getTypeNm(){
+		return typeName;
+	}
+	virtual Interface* duplicate() const {
+		return new GestaltInterface(*this);
+	}
+	virtual Site* getSite();
+	virtual istream& read(istream& in);
+	virtual void write(ostream& out) const {
+		out << typeName;
+		out << " " << schema;
+		out << " " << urlString; 
+		Interface::write(out);
+	}
+	virtual const ISchema* getISchema(TableName* table){ // throws
+		return &schema;
+	}
+	virtual Inserter* getInserter(TableName* table); // throws
+	virtual Interface* copyTo(void* space){
+		return new (space) GestaltInterface(*this);
+	}
+	// virtual vector<AccessMethod*> createAccessMethods();
+};
+ 
 class ViewInterface : public Interface {
 protected:
 	int numFlds;
