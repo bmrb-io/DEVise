@@ -24,7 +24,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/01 19:21:24  jussi
+  Initial revision.
+*/
 
 #define _DataSourceWeb_c_
 
@@ -164,13 +167,15 @@ DataSourceWeb::Close()
 {
     DO_DEBUG(printf("DataSourceWeb::Close()\n"));
 
+    if (_file != NULL) fclose(_file);
     if (_cfile != NULL) fclose(_cfile);
     if (_fd >= 0) close(_fd);
 
     _fd = -1;
     _cfile = NULL;
+    _file = NULL;
 
-    return DataSourceFileStream::Close();
+    return StatusOk;
 }
 
 /*------------------------------------------------------------------------------
@@ -181,6 +186,7 @@ void
 DataSourceWeb::AsyncIO()
 {
     DO_DEBUG(printf("DataSourceWeb::AsyncIO()\n"));
+    DOASSERT(_fd > 0 && _cfile, "Invalid socket or file");
 
     Timer::StopTimer();
 
@@ -201,7 +207,7 @@ DataSourceWeb::AsyncIO()
         _fd = -1;
     }
     if (len > 0) {
-        if (gotoEnd() < 0)
+	if (fseek(_cfile, 0, SEEK_END) < 0)
           reportError("cannot go to end of file", errno);
         else {
             if (fwrite(buffer, len, 1, _cfile) != 1)
