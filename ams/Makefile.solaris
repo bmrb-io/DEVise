@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.60  2001/08/03 18:12:28  wenger
+# Removed all OpenGL-related code.
+#
 # Revision 1.59  2000/08/10 16:09:36  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -137,11 +140,10 @@ MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/UpdateLink.h
 MapClassInfo.o: ../graphics.new/DeviseLink.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 MapClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-MapClassInfo.o: ../graphics.new/PointStorage.h ../graphics.new/TDataCMap.h
-MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h MapClassInfo.h
-MapClassInfo.o: Soil.h AmsMap.h
+MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
+MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/time.h /usr/include/sys/feature_tests.h
 ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -175,13 +177,12 @@ ams.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/DeviseLink.h
 ams.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
 ams.o: ../graphics/GDataSock.h ../graphics/Util.h /usr/include/ctype.h
-ams.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-ams.o: ../graphics.new/GDataRec.h ../graphics.new/ViewData.h
-ams.o: ../graphics.new/GDataBin.h ../graphics.new/CompositeParser.h
-ams.o: ../graphics.new/RecInterp.h ../graphics.new/TData.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: MapClassInfo.h
+ams.o: ../graphics.new/Action.h ../graphics.new/TDataMap.h
+ams.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
+ams.o: ../graphics.new/ViewData.h ../graphics.new/GDataBin.h
+ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 amsStat.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

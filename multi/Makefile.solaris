@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.56  2001/08/03 18:13:29  wenger
+# Removed all OpenGL-related code.
+#
 # Revision 1.55  2000/08/10 16:09:57  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -159,7 +162,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Connector.h
@@ -223,7 +225,6 @@ CycleEffMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleEffMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleEffMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleEffMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Connector.h
@@ -287,7 +288,6 @@ CycleOccMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleOccMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleOccMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleOccMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Connector.h
@@ -367,7 +367,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleSuspendedMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleSuspendedMappingClassInfo.o: /usr/include/ctype.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Action.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Connector.h
@@ -441,7 +440,6 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleWorkingMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleWorkingMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Connector.h
@@ -497,9 +495,7 @@ HostMappingClassInfo.o: ../graphics.new/UpdateLink.h
 HostMappingClassInfo.o: ../graphics.new/DeviseLink.h
 HostMappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h
 HostMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-HostMappingClassInfo.o: ../graphics.new/Action.h
-HostMappingClassInfo.o: ../graphics.new/PointStorage.h
-HostMappingClassInfo.o: ../graphics.new/TDataCMap.h
+HostMappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/TDataCMap.h
 HostMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 HostMappingClassInfo.o: ../graphics.new/Connector.h
 HostMappingClassInfo.o: ../graphics.new/GDataBin.h
@@ -548,8 +544,7 @@ MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 MappingClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/DeviseLink.h
 MappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h
 MappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-MappingClassInfo.o: ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Init.h
@@ -651,10 +646,9 @@ disp.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 disp.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 disp.o: ../graphics.new/UpdateLink.h ../graphics.new/DeviseLink.h
-disp.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h
-disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
-disp.o: ../graphics.new/ActionClassInfo.h TDataMulti.h
-disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+disp.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h Message.h
+disp.o: ../graphics/WinClassInfo.h ../graphics.new/ActionClassInfo.h
+disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics/Dispatcher.h MappingClassInfo.h HostMappingClassInfo.h
 disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
 disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h

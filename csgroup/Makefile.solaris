@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.24  2001/10/17 17:52:26  wenger
+# Updated Linux and Solaris dependencies.
+#
 # Revision 1.23  2001/06/12 15:35:42  wenger
 # Updated dependencies for solaris and linux.
 #
@@ -302,13 +305,12 @@ server_locfns.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 server_locfns.o: /usr/include/arpa/inet.h /usr/include/netdb.h
 server_locfns.o: /usr/include/errno.h /usr/include/sys/errno.h
 server_locfns.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-server_locfns.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-server_locfns.o: /usr/include/sys/procset.h /usr/include/signal.h
-server_locfns.o: /usr/include/sys/signal.h /usr/include/stdlib.h
-server_locfns.o: /usr/include/unistd.h error.h serverInterface.h colbr.h
-server_locfns.o: dbase.h htable.h bucket.h entry.h datum.h queue.h
-server_locfns.o: queueElem.h CollabTypes.h server.h sigfns.h servdb.h
-server_locfns.o: timeOut.h netfns.h ../graphics/Init.h
+server_locfns.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+server_locfns.o: /usr/include/signal.h /usr/include/sys/signal.h
+server_locfns.o: /usr/include/stdlib.h /usr/include/unistd.h error.h
+server_locfns.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h
+server_locfns.o: datum.h queue.h queueElem.h CollabTypes.h server.h sigfns.h
+server_locfns.o: servdb.h timeOut.h netfns.h ../graphics/Init.h
 server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.16  2001/08/03 18:13:29  wenger
+# Removed all OpenGL-related code.
+#
 # Revision 1.15  2000/08/10 16:09:58  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -73,10 +76,12 @@ depend:
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/features.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/gnu/stubs.h /usr/include/time.h
-CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/time.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/gnu/stubs.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/types.h
+CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/time.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/select.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/select.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/sigset.h
@@ -84,17 +89,22 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/math.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/huge_val.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/mathdef.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/mathcalls.h
-CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/wchar.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/wchar.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/gconv.h
+CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/stdio_lim.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/tclDecls.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/local_lim.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/linux/limits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+CycleCpuTimeMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevStatus.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/types.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/endian.h
@@ -149,7 +159,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Connector.h
@@ -162,27 +171,30 @@ CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 CycleEffMappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-CycleEffMappingClassInfo.o: /usr/include/time.h
-CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CycleEffMappingClassInfo.o: /usr/include/bits/time.h
 CycleEffMappingClassInfo.o: /usr/include/bits/types.h
+CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+CycleEffMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+CycleEffMappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+CycleEffMappingClassInfo.o: /usr/include/bits/time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/select.h
 CycleEffMappingClassInfo.o: /usr/include/bits/select.h
 CycleEffMappingClassInfo.o: /usr/include/bits/sigset.h /usr/include/math.h
 CycleEffMappingClassInfo.o: /usr/include/bits/huge_val.h
 CycleEffMappingClassInfo.o: /usr/include/bits/mathdef.h
-CycleEffMappingClassInfo.o: /usr/include/bits/mathcalls.h
-CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-CycleEffMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-CycleEffMappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
+CycleEffMappingClassInfo.o: /usr/include/bits/mathcalls.h /usr/include/tcl.h
+CycleEffMappingClassInfo.o: /usr/include/stdio.h /usr/include/libio.h
+CycleEffMappingClassInfo.o: /usr/include/_G_config.h /usr/include/wchar.h
+CycleEffMappingClassInfo.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 CycleEffMappingClassInfo.o: /usr/include/bits/stdio_lim.h
-CycleEffMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
-CycleEffMappingClassInfo.o: /usr/include/limits.h
+CycleEffMappingClassInfo.o: /usr/include/tclDecls.h ../graphics/DeviseTypes.h
+CycleEffMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+CycleEffMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleEffMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 CycleEffMappingClassInfo.o: /usr/include/bits/local_lim.h
 CycleEffMappingClassInfo.o: /usr/include/linux/limits.h
 CycleEffMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+CycleEffMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 CycleEffMappingClassInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 CycleEffMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 CycleEffMappingClassInfo.o: /usr/include/sys/sysmacros.h
@@ -229,7 +241,6 @@ CycleEffMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleEffMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleEffMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleEffMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Connector.h
@@ -242,27 +253,30 @@ CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
 CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 CycleOccMappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-CycleOccMappingClassInfo.o: /usr/include/time.h
-CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CycleOccMappingClassInfo.o: /usr/include/bits/time.h
 CycleOccMappingClassInfo.o: /usr/include/bits/types.h
+CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+CycleOccMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+CycleOccMappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+CycleOccMappingClassInfo.o: /usr/include/bits/time.h
 CycleOccMappingClassInfo.o: /usr/include/sys/select.h
 CycleOccMappingClassInfo.o: /usr/include/bits/select.h
 CycleOccMappingClassInfo.o: /usr/include/bits/sigset.h /usr/include/math.h
 CycleOccMappingClassInfo.o: /usr/include/bits/huge_val.h
 CycleOccMappingClassInfo.o: /usr/include/bits/mathdef.h
-CycleOccMappingClassInfo.o: /usr/include/bits/mathcalls.h
-CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-CycleOccMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-CycleOccMappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
+CycleOccMappingClassInfo.o: /usr/include/bits/mathcalls.h /usr/include/tcl.h
+CycleOccMappingClassInfo.o: /usr/include/stdio.h /usr/include/libio.h
+CycleOccMappingClassInfo.o: /usr/include/_G_config.h /usr/include/wchar.h
+CycleOccMappingClassInfo.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 CycleOccMappingClassInfo.o: /usr/include/bits/stdio_lim.h
-CycleOccMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
-CycleOccMappingClassInfo.o: /usr/include/limits.h
+CycleOccMappingClassInfo.o: /usr/include/tclDecls.h ../graphics/DeviseTypes.h
+CycleOccMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+CycleOccMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleOccMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 CycleOccMappingClassInfo.o: /usr/include/bits/local_lim.h
 CycleOccMappingClassInfo.o: /usr/include/linux/limits.h
 CycleOccMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+CycleOccMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 CycleOccMappingClassInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 CycleOccMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 CycleOccMappingClassInfo.o: /usr/include/sys/sysmacros.h
@@ -309,7 +323,6 @@ CycleOccMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleOccMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleOccMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleOccMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Connector.h
@@ -324,10 +337,12 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/features.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/cdefs.h
 CycleSuspendedMappingClassInfo.o: /usr/include/gnu/stubs.h
-CycleSuspendedMappingClassInfo.o: /usr/include/time.h
-CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/types.h
+CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/sched.h
+CycleSuspendedMappingClassInfo.o: /usr/include/time.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/select.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/select.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/sigset.h
@@ -335,18 +350,23 @@ CycleSuspendedMappingClassInfo.o: /usr/include/math.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/huge_val.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/mathdef.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/mathcalls.h
-CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 CycleSuspendedMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 CycleSuspendedMappingClassInfo.o: /usr/include/libio.h
 CycleSuspendedMappingClassInfo.o: /usr/include/_G_config.h
+CycleSuspendedMappingClassInfo.o: /usr/include/wchar.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/wchar.h
+CycleSuspendedMappingClassInfo.o: /usr/include/gconv.h
+CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/stdio_lim.h
+CycleSuspendedMappingClassInfo.o: /usr/include/tclDecls.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleSuspendedMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/local_lim.h
 CycleSuspendedMappingClassInfo.o: /usr/include/linux/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+CycleSuspendedMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevStatus.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/types.h
 CycleSuspendedMappingClassInfo.o: /usr/include/endian.h
@@ -406,7 +426,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleSuspendedMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleSuspendedMappingClassInfo.o: /usr/include/ctype.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Action.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Connector.h
@@ -420,10 +439,12 @@ CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
 CycleWorkingMappingClassInfo.o: /usr/include/features.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleWorkingMappingClassInfo.o: /usr/include/gnu/stubs.h /usr/include/time.h
-CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/time.h
+CycleWorkingMappingClassInfo.o: /usr/include/gnu/stubs.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/types.h
+CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/time.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/select.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/select.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/sigset.h
@@ -431,17 +452,22 @@ CycleWorkingMappingClassInfo.o: /usr/include/math.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/huge_val.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/mathdef.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/mathcalls.h
-CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 CycleWorkingMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 CycleWorkingMappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
+CycleWorkingMappingClassInfo.o: /usr/include/wchar.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/wchar.h
+CycleWorkingMappingClassInfo.o: /usr/include/gconv.h
+CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/stdio_lim.h
+CycleWorkingMappingClassInfo.o: /usr/include/tclDecls.h
 CycleWorkingMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleWorkingMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/local_lim.h
 CycleWorkingMappingClassInfo.o: /usr/include/linux/limits.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+CycleWorkingMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevStatus.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/types.h
 CycleWorkingMappingClassInfo.o: /usr/include/endian.h
@@ -496,7 +522,6 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/DeviseLink.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProc.h
 CycleWorkingMappingClassInfo.o: ../graphics/GDataSock.h ../graphics/Util.h
 CycleWorkingMappingClassInfo.o: /usr/include/ctype.h ../graphics.new/Action.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/PointStorage.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Connector.h
@@ -509,24 +534,27 @@ CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
 CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 HostMappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-HostMappingClassInfo.o: /usr/include/time.h
-HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-HostMappingClassInfo.o: /usr/include/bits/time.h /usr/include/bits/types.h
-HostMappingClassInfo.o: /usr/include/sys/select.h /usr/include/bits/select.h
-HostMappingClassInfo.o: /usr/include/bits/sigset.h /usr/include/math.h
-HostMappingClassInfo.o: /usr/include/bits/huge_val.h
+HostMappingClassInfo.o: /usr/include/bits/types.h
+HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+HostMappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+HostMappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+HostMappingClassInfo.o: /usr/include/bits/time.h /usr/include/sys/select.h
+HostMappingClassInfo.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+HostMappingClassInfo.o: /usr/include/math.h /usr/include/bits/huge_val.h
 HostMappingClassInfo.o: /usr/include/bits/mathdef.h
-HostMappingClassInfo.o: /usr/include/bits/mathcalls.h
-HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-HostMappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-HostMappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
-HostMappingClassInfo.o: /usr/include/bits/stdio_lim.h
+HostMappingClassInfo.o: /usr/include/bits/mathcalls.h /usr/include/tcl.h
+HostMappingClassInfo.o: /usr/include/stdio.h /usr/include/libio.h
+HostMappingClassInfo.o: /usr/include/_G_config.h /usr/include/wchar.h
+HostMappingClassInfo.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+HostMappingClassInfo.o: /usr/include/bits/stdio_lim.h /usr/include/tclDecls.h
 HostMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
-HostMappingClassInfo.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+HostMappingClassInfo.o: /usr/include/limits.h /usr/include/bits/wordsize.h
+HostMappingClassInfo.o: /usr/include/bits/posix1_lim.h
 HostMappingClassInfo.o: /usr/include/bits/local_lim.h
 HostMappingClassInfo.o: /usr/include/linux/limits.h
 HostMappingClassInfo.o: /usr/include/bits/posix2_lim.h
+HostMappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 HostMappingClassInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 HostMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 HostMappingClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/Display.h
@@ -566,9 +594,7 @@ HostMappingClassInfo.o: ../graphics.new/UpdateLink.h
 HostMappingClassInfo.o: ../graphics.new/DeviseLink.h
 HostMappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h
 HostMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-HostMappingClassInfo.o: ../graphics.new/Action.h
-HostMappingClassInfo.o: ../graphics.new/PointStorage.h
-HostMappingClassInfo.o: ../graphics.new/TDataCMap.h
+HostMappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/TDataCMap.h
 HostMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 HostMappingClassInfo.o: ../graphics.new/Connector.h
 HostMappingClassInfo.o: ../graphics.new/GDataBin.h
@@ -579,36 +605,41 @@ HostMappingClassInfo.o: HostMappingClassInfo.h HostRec.h
 HostMappingClassInfo.o: ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 MappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-MappingClassInfo.o: /usr/include/time.h
-MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-MappingClassInfo.o: /usr/include/bits/time.h /usr/include/bits/types.h
-MappingClassInfo.o: /usr/include/sys/select.h /usr/include/bits/select.h
-MappingClassInfo.o: /usr/include/bits/sigset.h /usr/include/math.h
-MappingClassInfo.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-MappingClassInfo.o: /usr/include/bits/mathcalls.h
-MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+MappingClassInfo.o: /usr/include/bits/types.h
+MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+MappingClassInfo.o: /usr/include/bits/pthreadtypes.h
+MappingClassInfo.o: /usr/include/bits/sched.h /usr/include/time.h
+MappingClassInfo.o: /usr/include/bits/time.h /usr/include/sys/select.h
+MappingClassInfo.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+MappingClassInfo.o: /usr/include/math.h /usr/include/bits/huge_val.h
+MappingClassInfo.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 MappingClassInfo.o: /usr/include/tcl.h /usr/include/stdio.h
-MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 MappingClassInfo.o: /usr/include/libio.h /usr/include/_G_config.h
-MappingClassInfo.o: /usr/include/bits/stdio_lim.h ../graphics/DeviseTypes.h
-MappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
+MappingClassInfo.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+MappingClassInfo.o: /usr/include/gconv.h
+MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+MappingClassInfo.o: /usr/include/bits/stdio_lim.h /usr/include/tclDecls.h
+MappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
+MappingClassInfo.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 MappingClassInfo.o: /usr/include/bits/posix1_lim.h
 MappingClassInfo.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-MappingClassInfo.o: /usr/include/bits/posix2_lim.h ../graphics/DevStatus.h
-MappingClassInfo.o: /usr/include/sys/types.h /usr/include/endian.h
-MappingClassInfo.o: /usr/include/bits/endian.h /usr/include/sys/sysmacros.h
-MappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
-MappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-MappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
-MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-MappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-MappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
-MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-MappingClassInfo.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-MappingClassInfo.o: /usr/include/asm/errno.h /usr/include/sys/param.h
-MappingClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
-MappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+MappingClassInfo.o: /usr/include/bits/posix2_lim.h
+MappingClassInfo.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
+MappingClassInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+MappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
+MappingClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/Display.h
+MappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
+MappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+MappingClassInfo.o: ../graphics/Transform.h ../graphics/VisualArg.h
+MappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+MappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+MappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+MappingClassInfo.o: /usr/include/errno.h /usr/include/bits/errno.h
+MappingClassInfo.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+MappingClassInfo.o: /usr/include/sys/param.h /usr/include/linux/param.h
+MappingClassInfo.o: /usr/include/asm/param.h ../graphics/ETkIfc.h
+MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 MappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 MappingClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 MappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
@@ -629,8 +660,7 @@ MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 MappingClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/DeviseLink.h
 MappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics/GDataSock.h
 MappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
-MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-MappingClassInfo.o: ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Init.h
@@ -640,20 +670,23 @@ MappingClassInfo.o: MappingClassInfo.h MultiRec.h ../graphics/Session.h
 MappingClassInfo.o: mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/features.h
 Message.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-Message.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-Message.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-Message.o: /usr/include/bits/types.h /usr/include/libio.h
-Message.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-Message.o: /usr/include/sys/time.h /usr/include/time.h
-Message.o: /usr/include/bits/time.h /usr/include/sys/select.h
-Message.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-Message.o: /usr/include/math.h /usr/include/bits/huge_val.h
-Message.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-Message.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-Message.o: MultiRec.h ../graphics.new/TData.h ../graphics/DeviseTypes.h
-Message.o: /usr/include/values.h /usr/include/limits.h
+Message.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+Message.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+Message.o: /usr/include/bits/sched.h /usr/include/libio.h
+Message.o: /usr/include/_G_config.h /usr/include/wchar.h
+Message.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+Message.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+Message.o: /usr/include/bits/stdio_lim.h /usr/include/sys/time.h
+Message.o: /usr/include/time.h /usr/include/bits/time.h
+Message.o: /usr/include/sys/select.h /usr/include/bits/select.h
+Message.o: /usr/include/bits/sigset.h /usr/include/math.h
+Message.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+Message.o: /usr/include/bits/mathcalls.h MultiRec.h ../graphics.new/TData.h
+Message.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Message.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 Message.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 Message.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+Message.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 Message.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 Message.o: /usr/include/endian.h /usr/include/bits/endian.h
 Message.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
@@ -662,21 +695,24 @@ Message.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
 Message.o: ../graphics/DList.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/features.h
 TDataCycle.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-TDataCycle.o: /usr/include/bits/types.h /usr/include/libio.h
-TDataCycle.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-TDataCycle.o: /usr/include/stdlib.h /usr/include/sys/types.h
-TDataCycle.o: /usr/include/time.h /usr/include/bits/time.h
+TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+TDataCycle.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+TDataCycle.o: /usr/include/bits/sched.h /usr/include/libio.h
+TDataCycle.o: /usr/include/_G_config.h /usr/include/wchar.h
+TDataCycle.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+TDataCycle.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
+TDataCycle.o: /usr/include/sys/types.h /usr/include/time.h
 TDataCycle.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataCycle.o: /usr/include/sys/select.h /usr/include/bits/select.h
-TDataCycle.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-TDataCycle.o: /usr/include/alloca.h TDataCycle.h ../graphics.new/TDataAscii.h
-TDataCycle.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-TDataCycle.o: /usr/include/values.h /usr/include/limits.h
+TDataCycle.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+TDataCycle.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h TDataCycle.h
+TDataCycle.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+TDataCycle.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TDataCycle.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 TDataCycle.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 TDataCycle.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 TDataCycle.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataCycle.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataCycle.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
@@ -689,21 +725,24 @@ TDataCycle.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/features.h
 TDataHost.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-TDataHost.o: /usr/include/bits/types.h /usr/include/libio.h
-TDataHost.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-TDataHost.o: /usr/include/stdlib.h /usr/include/sys/types.h
-TDataHost.o: /usr/include/time.h /usr/include/bits/time.h
+TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+TDataHost.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+TDataHost.o: /usr/include/bits/sched.h /usr/include/libio.h
+TDataHost.o: /usr/include/_G_config.h /usr/include/wchar.h
+TDataHost.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+TDataHost.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
+TDataHost.o: /usr/include/sys/types.h /usr/include/time.h
 TDataHost.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataHost.o: /usr/include/sys/select.h /usr/include/bits/select.h
-TDataHost.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-TDataHost.o: /usr/include/alloca.h TDataHost.h ../graphics.new/TDataAscii.h
-TDataHost.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-TDataHost.o: /usr/include/values.h /usr/include/limits.h
+TDataHost.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+TDataHost.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h TDataHost.h
+TDataHost.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+TDataHost.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TDataHost.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 TDataHost.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 TDataHost.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 TDataHost.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataHost.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataHost.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
@@ -716,21 +755,24 @@ TDataHost.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/features.h
 TDataMulti.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-TDataMulti.o: /usr/include/bits/types.h /usr/include/libio.h
-TDataMulti.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-TDataMulti.o: /usr/include/stdlib.h /usr/include/sys/types.h
-TDataMulti.o: /usr/include/time.h /usr/include/bits/time.h
+TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+TDataMulti.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+TDataMulti.o: /usr/include/bits/sched.h /usr/include/libio.h
+TDataMulti.o: /usr/include/_G_config.h /usr/include/wchar.h
+TDataMulti.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+TDataMulti.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
+TDataMulti.o: /usr/include/sys/types.h /usr/include/time.h
 TDataMulti.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataMulti.o: /usr/include/sys/select.h /usr/include/bits/select.h
-TDataMulti.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-TDataMulti.o: /usr/include/alloca.h TDataMulti.h ../graphics.new/TDataAscii.h
-TDataMulti.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-TDataMulti.o: /usr/include/values.h /usr/include/limits.h
+TDataMulti.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+TDataMulti.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h TDataMulti.h
+TDataMulti.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+TDataMulti.o: ../graphics/DeviseTypes.h /usr/include/values.h
+TDataMulti.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 TDataMulti.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 TDataMulti.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 TDataMulti.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataMulti.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataMulti.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
@@ -744,23 +786,24 @@ TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
 disp.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
 disp.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-disp.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-disp.o: /usr/include/time.h
-disp.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-disp.o: /usr/include/bits/time.h /usr/include/bits/types.h
-disp.o: /usr/include/sys/time.h /usr/include/sys/select.h
-disp.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-disp.o: ../graphics.new/TDataMap.h ../graphics/DeviseTypes.h
-disp.o: /usr/include/values.h /usr/include/limits.h
-disp.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-disp.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+disp.o: /usr/include/time.h /usr/include/bits/types.h
+disp.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+disp.o: /usr/include/bits/pthreadtypes.h /usr/include/bits/sched.h
+disp.o: /usr/include/sys/time.h /usr/include/bits/time.h
+disp.o: /usr/include/sys/select.h /usr/include/bits/select.h
+disp.o: /usr/include/bits/sigset.h ../graphics.new/TDataMap.h
+disp.o: ../graphics/DeviseTypes.h /usr/include/values.h /usr/include/limits.h
+disp.o: /usr/include/bits/wordsize.h /usr/include/bits/posix1_lim.h
+disp.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+disp.o: /usr/include/bits/posix2_lim.h
+disp.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 disp.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 disp.o: /usr/include/endian.h /usr/include/bits/endian.h
 disp.o: /usr/include/sys/sysmacros.h ../graphics/Pattern.h
 disp.o: ../graphics.new/ShapeID.h ../graphics/VisualArg.h
-disp.o: /usr/include/stdio.h
-disp.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-disp.o: /usr/include/libio.h /usr/include/_G_config.h
+disp.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+disp.o: /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h
+disp.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
 disp.o: /usr/include/bits/stdio_lim.h ../graphics/ViewDir.h
 disp.o: /usr/include/string.h ../graphics.new/RecId.h
 disp.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
@@ -786,9 +829,9 @@ disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
 disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 disp.o: ../graphics.new/MemMgr.h ../graphics.new/UpdateLink.h
 disp.o: ../graphics.new/DeviseLink.h ../graphics.new/QueryProc.h
-disp.o: ../graphics/GDataSock.h ../graphics.new/PointStorage.h Message.h
-disp.o: ../graphics/WinClassInfo.h ../graphics.new/ActionClassInfo.h
-disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+disp.o: ../graphics/GDataSock.h Message.h ../graphics/WinClassInfo.h
+disp.o: ../graphics.new/ActionClassInfo.h TDataMulti.h
+disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics/Dispatcher.h MappingClassInfo.h HostMappingClassInfo.h
 disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
 disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h

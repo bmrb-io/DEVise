@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.33  2000/03/23 19:51:49  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.32  2000/01/13 23:03:53  wenger
 # Updated dependencies.
 #
@@ -68,20 +71,19 @@ http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
 http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
 http_url.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 http_url.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-http_url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-http_url.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-http_url.o: /usr/include/netdb.h /usr/include/netinet/in.h
-http_url.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-http_url.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-http_url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-http_url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-http_url.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-http_url.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-http_url.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-http_url.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-http_url.o: /usr/include/sys/netconfig.h
+http_url.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+http_url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+http_url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+http_url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+http_url.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+http_url.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+http_url.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+http_url.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+http_url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+http_url.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+http_url.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 mk3dstruct.o: /usr/include/math.h /usr/include/time.h
 mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 mk3dstruct.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.105  2001/12/28 18:34:28  wenger
+# Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+#
 # Revision 1.104  2001/08/03 18:13:12  wenger
 # Removed all OpenGL-related code.
 #
@@ -496,20 +499,19 @@ DataSource.o: /usr/include/stdio_impl.h /usr/include/ctype.h
 DataSource.o: /usr/include/math.h ../graphics/DevError.h ../tape/tapedrive.h
 DataSource.o: machdep.h /usr/include/limits.h /usr/include/sys/wait.h
 DataSource.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSource.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSource.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-DataSource.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DataSource.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DataSource.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSource.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSource.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSource.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSource.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSource.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSource.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSource.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSource.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSource.o: /usr/include/sys/netconfig.h
+DataSource.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+DataSource.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DataSource.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DataSource.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DataSource.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DataSource.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DataSource.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DataSource.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DataSource.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DataSource.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DataSource.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DataSource.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DataSource.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 DataSourceBuf.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 DataSourceBuf.o: /usr/include/sys/isa_defs.h /usr/include/errno.h
 DataSourceBuf.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -527,19 +529,19 @@ DataSourceBuf.o: /usr/include/math.h ../graphics/DevError.h
 DataSourceBuf.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 DataSourceBuf.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 DataSourceBuf.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DataSourceBuf.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
-DataSourceBuf.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-DataSourceBuf.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DataSourceBuf.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DataSourceBuf.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DataSourceBuf.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DataSourceBuf.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-DataSourceBuf.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DataSourceBuf.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DataSourceBuf.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DataSourceBuf.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DataSourceBuf.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DataSourceBuf.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DataSourceBuf.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+DataSourceBuf.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+DataSourceBuf.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+DataSourceBuf.o: /usr/include/netdb.h /usr/include/netinet/in.h
+DataSourceBuf.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+DataSourceBuf.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+DataSourceBuf.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DataSourceBuf.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DataSourceBuf.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DataSourceBuf.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DataSourceBuf.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+DataSourceBuf.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+DataSourceBuf.o: /usr/include/sys/netconfig.h
 DataSourceDQL.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 DataSourceDQL.o: /usr/include/sys/isa_defs.h /usr/include/errno.h
 DataSourceDQL.o: /usr/include/sys/errno.h /usr/include/signal.h
@@ -605,21 +607,20 @@ DataSourceSegment.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
 DataSourceSegment.o: /usr/include/stdio_impl.h machdep.h
 DataSourceSegment.o: /usr/include/limits.h /usr/include/sys/wait.h
 DataSourceSegment.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceSegment.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceSegment.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-DataSourceSegment.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DataSourceSegment.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DataSourceSegment.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceSegment.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceSegment.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceSegment.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceSegment.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceSegment.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceSegment.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceSegment.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceSegment.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceSegment.o: /usr/include/sys/netconfig.h DataSourceBuf.h
-DataSourceSegment.o: DataSourceSegment.h ../graphics/Util.h
+DataSourceSegment.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+DataSourceSegment.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DataSourceSegment.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DataSourceSegment.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DataSourceSegment.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DataSourceSegment.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DataSourceSegment.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DataSourceSegment.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DataSourceSegment.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DataSourceSegment.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DataSourceSegment.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DataSourceSegment.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DataSourceSegment.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DataSourceSegment.o: DataSourceBuf.h DataSourceSegment.h ../graphics/Util.h
 DataSourceSegment.o: /usr/include/stdlib.h /usr/include/ctype.h
 DataSourceSegment.o: /usr/include/math.h ../graphics/DevError.h
 DataSourceSegment.o: DataSourceWeb.h
@@ -637,22 +638,22 @@ DataSourceTape.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 DataSourceTape.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 DataSourceTape.o: machdep.h /usr/include/limits.h /usr/include/sys/wait.h
 DataSourceTape.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceTape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceTape.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-DataSourceTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DataSourceTape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DataSourceTape.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceTape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceTape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceTape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceTape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceTape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceTape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceTape.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceTape.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceTape.o: /usr/include/sys/netconfig.h ../graphics/Util.h
-DataSourceTape.o: /usr/include/stdlib.h /usr/include/ctype.h
-DataSourceTape.o: /usr/include/math.h ../graphics/DevError.h
+DataSourceTape.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+DataSourceTape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DataSourceTape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DataSourceTape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DataSourceTape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DataSourceTape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DataSourceTape.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DataSourceTape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DataSourceTape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DataSourceTape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DataSourceTape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DataSourceTape.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DataSourceTape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DataSourceTape.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceTape.o: /usr/include/ctype.h /usr/include/math.h
+DataSourceTape.o: ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 DataSourceWeb.o: /usr/include/sys/isa_defs.h /usr/include/errno.h
 DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/signal.h
@@ -784,19 +785,19 @@ DrawTimer.o: ../graphics/BufPolicy.h machdep.h /usr/include/limits.h
 DrawTimer.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 DrawTimer.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 DrawTimer.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DrawTimer.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
-DrawTimer.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-DrawTimer.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DrawTimer.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DrawTimer.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DrawTimer.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DrawTimer.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-DrawTimer.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DrawTimer.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DrawTimer.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DrawTimer.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DrawTimer.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DrawTimer.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DrawTimer.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+DrawTimer.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+DrawTimer.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+DrawTimer.o: /usr/include/netdb.h /usr/include/netinet/in.h
+DrawTimer.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+DrawTimer.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+DrawTimer.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DrawTimer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DrawTimer.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DrawTimer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DrawTimer.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+DrawTimer.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+DrawTimer.o: /usr/include/sys/netconfig.h
 DrillDown3D.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DrillDown3D.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DrillDown3D.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -899,17 +900,16 @@ ExtProc.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 ExtProc.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/unistd.h
 ExtProc.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 ExtProc.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-ExtProc.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ExtProc.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h ExtProc.h
-ExtProc.o: ../graphics/DevStatus.h ../graphics/DeviseTypes.h
-ExtProc.o: /usr/include/values.h TDataMap.h ../graphics/Pattern.h ShapeID.h
-ExtProc.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-ExtProc.o: /usr/include/string.h RecId.h GDataRec.h ../graphics/AttrList.h
-ExtProc.o: ../src/utils/ObjectValid.h ../src/utils/ArgList.h
-ExtProc.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-ExtProc.o: /usr/include/math.h ../graphics/Exit.h ../graphics/DevError.h
-ExtProc.o: /usr/include/errno.h /usr/include/sys/errno.h
-ExtProc.o: /usr/include/sys/param.h
+ExtProc.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+ExtProc.o: /usr/include/sys/procset.h ExtProc.h ../graphics/DevStatus.h
+ExtProc.o: ../graphics/DeviseTypes.h /usr/include/values.h TDataMap.h
+ExtProc.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
+ExtProc.o: ../graphics/ViewDir.h /usr/include/string.h RecId.h GDataRec.h
+ExtProc.o: ../graphics/AttrList.h ../src/utils/ObjectValid.h
+ExtProc.o: ../src/utils/ArgList.h ../graphics/Util.h /usr/include/stdlib.h
+ExtProc.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+ExtProc.o: ../graphics/DevError.h /usr/include/errno.h
+ExtProc.o: /usr/include/sys/errno.h /usr/include/sys/param.h
 FileIndex.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 FileIndex.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 FileIndex.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1160,26 +1160,26 @@ ParseCat.o: /usr/include/unistd.h /usr/include/sys/unistd.h machdep.h
 ParseCat.o: /usr/include/limits.h /usr/include/sys/param.h
 ParseCat.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 ParseCat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-ParseCat.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
-ParseCat.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-ParseCat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-ParseCat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ParseCat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ParseCat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ParseCat.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-ParseCat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-ParseCat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-ParseCat.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-ParseCat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-ParseCat.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-ParseCat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ParseCat.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
-ParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
-ParseCat.o: ../graphics/ClassDir.h TDataAscii.h TData.h RecId.h DataSource.h
-ParseCat.o: ../graphics/Exit.h MemMgr.h ../graphics/Dispatcher.h
-ParseCat.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-ParseCat.o: ../graphics/AttrList.h TDataBinaryInterp.h TDataBinary.h
-ParseCat.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/VisualArg.h
+ParseCat.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+ParseCat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+ParseCat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+ParseCat.o: /usr/include/netdb.h /usr/include/netinet/in.h
+ParseCat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ParseCat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ParseCat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ParseCat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ParseCat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+ParseCat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ParseCat.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+ParseCat.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+ParseCat.o: /usr/include/sys/netconfig.h TDataAsciiInterp.h
+ParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ParseCat.o: ../graphics/DevStatus.h ../graphics/ClassDir.h TDataAscii.h
+ParseCat.o: TData.h RecId.h DataSource.h ../graphics/Exit.h MemMgr.h
+ParseCat.o: ../graphics/Dispatcher.h ../graphics/DList.h
+ParseCat.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
+ParseCat.o: ../graphics/Control.h ../graphics/VisualArg.h
 ParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
 ParseCat.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
 ParseCat.o: ../graphics/Init.h ../graphics/BufPolicy.h Group.h
@@ -1472,8 +1472,8 @@ TData.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
 TData.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 TData.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 TData.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TData.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TData.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+TData.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+TData.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 TData.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 TData.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 TData.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
@@ -1536,20 +1536,19 @@ TDataAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
 TDataAscii.o: ../tape/tapedrive.h machdep.h /usr/include/sys/param.h
 TDataAscii.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 TDataAscii.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataAscii.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataAscii.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TDataAscii.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-TDataAscii.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataAscii.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataAscii.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataAscii.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataAscii.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataAscii.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataAscii.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataAscii.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataAscii.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataAscii.o: /usr/include/sys/netconfig.h DataSourceBuf.h
-TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h
+TDataAscii.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+TDataAscii.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+TDataAscii.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+TDataAscii.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+TDataAscii.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+TDataAscii.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+TDataAscii.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+TDataAscii.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+TDataAscii.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+TDataAscii.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+TDataAscii.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+TDataAscii.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+TDataAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataAscii.o: ../graphics/VisualArg.h ../graphics/ViewDir.h FileIndex.h
 TDataAscii.o: DebugLog.h ../graphics/Init.h ../graphics/BufPolicy.h
 TDataAscii.o: DataSourceWeb.h ../graphics/DepMgr.h
@@ -1610,22 +1609,22 @@ TDataBinary.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
 TDataBinary.o: ../tape/tapedrive.h machdep.h /usr/include/sys/param.h
 TDataBinary.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 TDataBinary.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataBinary.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataBinary.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TDataBinary.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-TDataBinary.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataBinary.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataBinary.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataBinary.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataBinary.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataBinary.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataBinary.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataBinary.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataBinary.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataBinary.o: /usr/include/sys/netconfig.h ../graphics/DevError.h DataSeg.h
-TDataBinary.o: QueryProc.h ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataBinary.o: FileIndex.h DebugLog.h ../graphics/Init.h
-TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h ../graphics/DepMgr.h
+TDataBinary.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+TDataBinary.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+TDataBinary.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+TDataBinary.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+TDataBinary.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+TDataBinary.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+TDataBinary.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+TDataBinary.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+TDataBinary.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+TDataBinary.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+TDataBinary.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+TDataBinary.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+TDataBinary.o: ../graphics/DevError.h DataSeg.h QueryProc.h
+TDataBinary.o: ../graphics/VisualArg.h ../graphics/ViewDir.h FileIndex.h
+TDataBinary.o: DebugLog.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataBinary.o: DataSourceWeb.h ../graphics/DepMgr.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataBinaryInterp.o: /usr/include/sys/isa_defs.h /usr/include/unistd.h
 TDataBinaryInterp.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
@@ -1646,16 +1645,6 @@ TDataBinaryInterp.o: ../graphics/Util.h /usr/include/stdlib.h
 TDataBinaryInterp.o: /usr/include/ctype.h /usr/include/math.h
 TDataBinaryInterp.o: ../graphics/DevError.h /usr/include/errno.h
 TDataBinaryInterp.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-TDataDR.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-TDataDR.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-TDataDR.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h TDataDR.h
-TDataDR.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-TDataDR.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
-TDataDR.o: /usr/include/sys/time.h /usr/include/time.h TData.h
-TDataDR.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TDataDR.o: ../graphics/DevStatus.h RecId.h DataSource.h ../graphics/Exit.h
-TDataDR.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
-TDataDR.o: ../src/utils/ObjectValid.h
 TDataMap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataMap.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataMap.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1721,20 +1710,20 @@ TDataSeqAscii.o: /usr/include/math.h DataSourceFileStream.h
 TDataSeqAscii.o: DataSourceSegment.h DataSourceTape.h ../tape/tapedrive.h
 TDataSeqAscii.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
 TDataSeqAscii.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataSeqAscii.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataSeqAscii.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-TDataSeqAscii.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-TDataSeqAscii.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TDataSeqAscii.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TDataSeqAscii.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TDataSeqAscii.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-TDataSeqAscii.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TDataSeqAscii.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TDataSeqAscii.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TDataSeqAscii.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TDataSeqAscii.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-TDataSeqAscii.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TDataSeqAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
+TDataSeqAscii.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+TDataSeqAscii.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataSeqAscii.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+TDataSeqAscii.o: /usr/include/netdb.h /usr/include/netinet/in.h
+TDataSeqAscii.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+TDataSeqAscii.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+TDataSeqAscii.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+TDataSeqAscii.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+TDataSeqAscii.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+TDataSeqAscii.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+TDataSeqAscii.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+TDataSeqAscii.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+TDataSeqAscii.o: /usr/include/sys/netconfig.h DataSourceBuf.h
+TDataSeqAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataSeqAscii.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 TDataSeqAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
 TDataSeqAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
@@ -1835,20 +1824,19 @@ Version.o: /usr/include/sys/time.h /usr/include/time.h machdep.h
 Version.o: /usr/include/limits.h /usr/include/sys/param.h
 Version.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 Version.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-Version.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-Version.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-Version.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Version.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Version.o: /usr/include/netdb.h /usr/include/netinet/in.h
-Version.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-Version.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-Version.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Version.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Version.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Version.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Version.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-Version.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-Version.o: /usr/include/sys/netconfig.h
+Version.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+Version.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Version.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+Version.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Version.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+Version.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+Version.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+Version.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Version.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Version.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Version.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Version.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+Version.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 ViewClassInfo.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2065,10 +2053,6 @@ genStrData.o: /usr/include/sys/time.h /usr/include/time.h
 genStrData.o: /usr/include/sys/fcntl.h /usr/include/limits.h
 genStrData.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 genStrData.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-junk.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-junk.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-junk.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-junk.o: ../tape/HashTable.h
 makeBackTest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 makeBackTest.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 makeBackTest.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2520,18 +2504,17 @@ DCE.o: /usr/include/sys/errno.h /usr/include/limits.h /usr/include/sys/stat.h
 DCE.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
 DCE.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 DCE.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DCE.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DCE.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DCE.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DCE.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DCE.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-DCE.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DCE.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DCE.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DCE.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DCE.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DCE.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DCE.o: ../graphics/Exit.h
+DCE.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+DCE.o: /usr/include/netdb.h /usr/include/netinet/in.h
+DCE.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+DCE.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+DCE.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DCE.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DCE.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DCE.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DCE.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+DCE.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+DCE.o: /usr/include/sys/netconfig.h ../graphics/Exit.h
 DeviseCommand.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DeviseCommand.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DeviseCommand.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2863,22 +2846,22 @@ SBufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h machdep.h
 SBufMgr.o: /usr/include/limits.h /usr/include/sys/param.h
 SBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 SBufMgr.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-SBufMgr.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
-SBufMgr.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-SBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-SBufMgr.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-SBufMgr.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-SBufMgr.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-SBufMgr.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-SBufMgr.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-SBufMgr.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-SBufMgr.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-SBufMgr.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-SBufMgr.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-SBufMgr.o: /usr/include/sys/netconfig.h ../tape/HashTable.h
-SBufMgr.o: ../graphics/Exit.h ../graphics/DevError.h /usr/include/errno.h
-SBufMgr.o: /usr/include/sys/errno.h ../graphics/Util.h /usr/include/stdlib.h
-SBufMgr.o: /usr/include/ctype.h /usr/include/math.h Web.h
+SBufMgr.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+SBufMgr.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+SBufMgr.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+SBufMgr.o: /usr/include/netdb.h /usr/include/netinet/in.h
+SBufMgr.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+SBufMgr.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+SBufMgr.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+SBufMgr.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+SBufMgr.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
+SBufMgr.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+SBufMgr.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+SBufMgr.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+SBufMgr.o: ../tape/HashTable.h ../graphics/Exit.h ../graphics/DevError.h
+SBufMgr.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Util.h
+SBufMgr.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+SBufMgr.o: Web.h
 StringStorage.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 StringStorage.o: /usr/include/sys/isa_defs.h /usr/include/stdio.h
 StringStorage.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
@@ -2997,19 +2980,19 @@ Web.o: /usr/include/sys/unistd.h /usr/include/string.h /usr/include/errno.h
 Web.o: /usr/include/sys/errno.h ../graphics/Exit.h Web.h machdep.h
 Web.o: /usr/include/limits.h /usr/include/sys/param.h /usr/include/sys/wait.h
 Web.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-Web.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-Web.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-Web.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-Web.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Web.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Web.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Web.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-Web.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-Web.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-Web.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-Web.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Web.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-Web.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Web.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+Web.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Web.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Web.o: /usr/include/netdb.h /usr/include/netinet/in.h
+Web.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Web.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Web.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+Web.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+Web.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+Web.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+Web.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+Web.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+Web.o: /usr/include/sys/netconfig.h
 testSBM2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testSBM2.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testSBM2.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3023,20 +3006,19 @@ testSBM2.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
 testSBM2.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBM2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBM2.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testSBM2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBM2.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-testSBM2.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-testSBM2.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-testSBM2.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testSBM2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testSBM2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testSBM2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testSBM2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testSBM2.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-testSBM2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testSBM2.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testSBM2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBM2.o: ../tape/HashTable.h
+testSBM2.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+testSBM2.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+testSBM2.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testSBM2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+testSBM2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+testSBM2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+testSBM2.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+testSBM2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+testSBM2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+testSBM2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+testSBM2.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+testSBM2.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+testSBM2.o: /usr/include/sys/netconfig.h ../tape/HashTable.h
 testSBM3.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testSBM3.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testSBM3.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3050,20 +3032,19 @@ testSBM3.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
 testSBM3.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBM3.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBM3.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testSBM3.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBM3.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-testSBM3.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-testSBM3.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-testSBM3.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testSBM3.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testSBM3.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testSBM3.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testSBM3.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testSBM3.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-testSBM3.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testSBM3.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testSBM3.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBM3.o: ../tape/HashTable.h
+testSBM3.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+testSBM3.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+testSBM3.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testSBM3.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+testSBM3.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+testSBM3.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+testSBM3.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+testSBM3.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+testSBM3.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+testSBM3.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+testSBM3.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+testSBM3.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+testSBM3.o: /usr/include/sys/netconfig.h ../tape/HashTable.h
 testSBufMgr.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testSBufMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testSBufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3078,17 +3059,16 @@ testSBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
 testSBufMgr.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBufMgr.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBufMgr.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testSBufMgr.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBufMgr.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
-testSBufMgr.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-testSBufMgr.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-testSBufMgr.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testSBufMgr.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testSBufMgr.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testSBufMgr.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testSBufMgr.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testSBufMgr.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-testSBufMgr.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testSBufMgr.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testSBufMgr.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBufMgr.o: ../tape/HashTable.h
+testSBufMgr.o: /usr/include/sys/machsig.h /usr/include/sys/time_impl.h
+testSBufMgr.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+testSBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testSBufMgr.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+testSBufMgr.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+testSBufMgr.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+testSBufMgr.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+testSBufMgr.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+testSBufMgr.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+testSBufMgr.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+testSBufMgr.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+testSBufMgr.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+testSBufMgr.o: /usr/include/sys/netconfig.h ../tape/HashTable.h

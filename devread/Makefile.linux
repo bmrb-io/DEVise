@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  2001/08/03 18:12:47  wenger
+# Removed all OpenGL-related code.
+#
 # Revision 1.10  2000/08/10 16:09:51  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -54,22 +57,25 @@ depend:
 
 DevRead.o: /usr/include/stdio.h /usr/include/features.h
 DevRead.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-DevRead.o: /usr/include/bits/types.h /usr/include/libio.h
-DevRead.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-DevRead.o: /usr/include/string.h DevRead.h ../graphics/DeviseTypes.h
-DevRead.o: /usr/include/values.h /usr/include/limits.h
+DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+DevRead.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+DevRead.o: /usr/include/bits/sched.h /usr/include/libio.h
+DevRead.o: /usr/include/_G_config.h /usr/include/wchar.h
+DevRead.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+DevRead.o: /usr/include/bits/stdio_lim.h /usr/include/string.h DevRead.h
+DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DevRead.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 DevRead.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 DevRead.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+DevRead.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 DevRead.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DevRead.o: /usr/include/time.h /usr/include/endian.h
 DevRead.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 DevRead.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-DevRead.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h types.h
-DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
-DevRead.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+DevRead.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
+DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+DevRead.o: /usr/include/netinet/in.h /usr/include/stdint.h
 DevRead.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 DevRead.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 DevRead.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h marshal.h
@@ -83,35 +89,41 @@ DevRead.o: ../graphics/DList.h ../graphics/AttrList.h
 DevRead.o: ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/features.h
 drtest.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-drtest.o: /usr/include/bits/types.h /usr/include/libio.h
-drtest.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-drtest.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
+drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+drtest.o: /usr/include/bits/types.h /usr/include/bits/pthreadtypes.h
+drtest.o: /usr/include/bits/sched.h /usr/include/libio.h
+drtest.o: /usr/include/_G_config.h /usr/include/wchar.h
+drtest.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stdarg.h
+drtest.o: /usr/include/bits/stdio_lim.h /usr/include/sys/types.h
+drtest.o: /usr/include/time.h /usr/include/endian.h
 drtest.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 drtest.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-drtest.o: /usr/include/sys/sysmacros.h DevRead.h ../graphics/DeviseTypes.h
-drtest.o: /usr/include/values.h /usr/include/limits.h
+drtest.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h DevRead.h
+drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h
+drtest.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 drtest.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 drtest.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 drtest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
 drtest.o: /usr/include/assert.h /usr/include/netinet/in.h
-drtest.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-drtest.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-drtest.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-drtest.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h marshal.h
+drtest.o: /usr/include/stdint.h /usr/include/bits/socket.h
+drtest.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+drtest.o: /usr/include/asm/sockios.h /usr/include/bits/in.h
+drtest.o: /usr/include/bits/byteswap.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/features.h
 types.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 types.o: /usr/include/sys/types.h /usr/include/bits/types.h
-types.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+types.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
+types.o: /usr/include/bits/pthreadtypes.h /usr/include/bits/sched.h
 types.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
 types.o: /usr/include/sys/select.h /usr/include/bits/select.h
-types.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-types.o: /usr/include/netinet/in.h /usr/include/limits.h
-types.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-types.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-types.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-types.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+types.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+types.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
+types.o: /usr/include/stdint.h /usr/include/bits/wchar.h
+types.o: /usr/include/bits/wordsize.h /usr/include/bits/socket.h
+types.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+types.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+types.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
 types.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 types.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
