@@ -69,4 +69,6 @@ sleep 5
 
 generic/devise -p 6102
 
+sleep 2
+
 rmmem
