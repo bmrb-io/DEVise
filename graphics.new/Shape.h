@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/05/26 19:50:54  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.34  1999/05/21 14:52:42  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -197,34 +206,10 @@ class Shape {
     return result;
   }
 
-// BBTEMP -- this may no longer be needed
-  /* Find maximum symbol size. By default, use 0th and 1st shape
-     attribute as the width and height, respectively.  */
-  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-                          Coord &width, Coord &height) {
-    width = 0.0;
-    height = 0.0;
-
-    GDataAttrOffset *offset = map->GetGDataOffset();
-    int gRecSize = map->GDataRecordSize();
-    char *ptr = (char *)gdata;
-
-    for(int i = 0; i < numSyms; i++) {
-      Coord temp;
-      temp = fabs(map->GetSize(ptr)
-                  * map->GetShapeAttr0(ptr));
-      if (temp > width) width = temp;
-      temp = fabs(map->GetSize(ptr)
-                  * map->GetShapeAttr1(ptr));
-      if (temp > height) height = temp;
-      ptr += gRecSize;
-    }
-  }
-
   // Take converted GData records and plug in bounding box information.
   // The default is that ShapeAttr0 is width and ShapeAttr1 is height.
   virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-      TDataMap *tdMap) {
+      TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight) {
 #if defined(DEBUG)
     printf("Shape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
@@ -247,17 +232,27 @@ class Shape {
 
     char *dataP = (char *)gdataArray; // char * for ptr arithmetic
     int recSize = tdMap->GDataRecordSize();
+    Coord tmpMaxW = 0.0;
+    Coord tmpMaxH = 0.0;
     for (int recNum = 0; recNum < numRecs; recNum++) {
       Coord symSize = tdMap->GetSize(dataP);
-      Coord symWidth = tdMap->GetShapeAttr0(dataP);
-      Coord symHeight = tdMap->GetShapeAttr1(dataP);
+      Coord symWidth = symSize * tdMap->GetShapeAttr0(dataP);
+      Coord symHeight = symSize * tdMap->GetShapeAttr1(dataP);
 
-      tdMap->SetBoundingBox(dataP, -symSize * symWidth / 2.0,
-          symSize * symHeight / 2.0, symSize * symWidth / 2.0,
-	      -symSize * symHeight / 2.0);
+      tmpMaxW = MAX(tmpMaxW, symWidth);
+      tmpMaxH = MAX(tmpMaxH, symHeight);
+
+	  Coord halfWidth = symWidth / 2.0;
+	  Coord halfHeight = symHeight / 2.0;
+
+      tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
+	      -halfHeight);
 
       dataP += recSize;
     }
+
+    maxWidth = tmpMaxW;
+    maxHeight = tmpMaxH;
   }
 
   /* Draw GData symbols. */

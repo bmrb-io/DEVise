@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/05/26 19:50:49  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.6  1999/05/20 15:17:52  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -66,11 +75,8 @@ class FullMapping_ETkWindowShape
       return result;
     }
     
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-            TDataMap *tdMap);
+            TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,

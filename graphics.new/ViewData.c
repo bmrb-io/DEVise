@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/05/26 19:50:55  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.21  1999/05/21 14:52:50  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -272,9 +281,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	WindowRep*	win = GetWindowRep();
 
 	reverseIndex[0] = 0;
-#if 1 // BBTEMP -- mainly needed for drill-down query
-    mapping->UpdateMaxSymSize(gdata, numGData);
-#endif
 
 	GDataAttrOffset*	offset = mapping->GetGDataOffset();
 	int					gRecSize = mapping->GDataRecordSize();
@@ -334,7 +340,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	  LRy += y;
 
 #if defined(DEBUG)
-      printf("  Record %d bounding box: UL: %g, %g; LR: %g, %g\n",
+      printf("  Record %ld bounding box: UL: %g, %g; LR: %g, %g\n",
 	    recId + recNum, ULx, ULy, LRx, LRy);
 #endif
 
@@ -510,9 +516,14 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		// previous call to InVisualFilter().
 		// Do we really want the set of records we do stats on to not be
 		// the same as the set we draw?
-		//BBTEMP -- change here???
+#if 0 // Do stats if bounding box is in the visual filter, not just if X, Y
+      // is in the visual filter, so stats agree with what is drawn.
+	  // RKW 1999-05-28.
 		if (symArray[recNum].inFilter &&
 			InVisualFilter(_queryFilter, x, y, (Coord)0.0, (Coord)0.0))
+#else
+		if (symArray[recNum].inFilter)
+#endif
 		{
 			PColorID	pcid = mapping->GetPColorID(ptr);
 

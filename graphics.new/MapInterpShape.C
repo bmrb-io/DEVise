@@ -17,6 +17,15 @@
   $Id$
 
   $Log$
+  Revision 1.66  1999/05/26 19:50:50  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.65  1999/05/21 14:52:29  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -610,29 +619,9 @@ int FullMapping_BarShape::NumShapeAttrs()
 	return 1; 
 }
 
-void FullMapping_BarShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-						  Coord &width, Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-
-	GDataAttrOffset *offset = map->GetGDataOffset();
-	int gRecSize = map->GDataRecordSize();
-	char *ptr = (char *)gdata;
-
-	for(int i = 0; i < numSyms; i++) {
-	Coord temp = fabs(map->GetSize(ptr)
-			  * map->GetShapeAttr0(ptr));
-	if (temp > width) width = temp;
-	temp = fabs(map->GetY(ptr));
-	if (temp > height) height = temp;
-	ptr += gRecSize;
-	}
-}
-
 void
 FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
-    TDataMap *tdMap)
+    TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_BarShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -656,10 +645,12 @@ FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
 	Coord symY = tdMap->GetY(dataP);
     Coord symSize = tdMap->GetSize(dataP);
-    Coord symWidth = tdMap->GetShapeAttr0(dataP);
+    Coord symWidth = symSize * tdMap->GetShapeAttr0(dataP);
     Coord symError = tdMap->GetShapeAttr1(dataP);
 
 	Coord ULy;
@@ -679,12 +670,16 @@ FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
 	  }
 	}
 
-    tdMap->SetBoundingBox(dataP, -symSize * symWidth / 2.0,
-        ULy, symSize * symWidth / 2.0,
-        LRy);
+	tmpMaxW = MAX(tmpMaxW, symWidth);
+	tmpMaxH = MAX(tmpMaxH, ULy - LRy);
+
+    tdMap->SetBoundingBox(dataP, -symWidth / 2.0, ULy, symWidth / 2.0, LRy);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
 
 
@@ -1038,11 +1033,9 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  * map->GetShapeAttr1(gdata);
 	h *= pixelSize;
 
-// CEW: Start vector at shape center instead of centering it there	
-//	Coord x = map->GetX(gdata) - w / 2;
-//	Coord y = map->GetY(gdata) - h / 2;
-	Coord x = map->GetX(gdata);
-	Coord y = map->GetY(gdata);
+	// Moved vector back to being centered at X, Y.  RKW 1999-05-28.
+	Coord x = map->GetX(gdata) - w / 2;
+	Coord y = map->GetY(gdata) - h / 2;
 
 	win->SetForeground(map->GetColor(gdata));
 	win->SetPattern(map->GetPattern(gdata));
@@ -1061,6 +1054,9 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->Transform(w, h, tw, th);
 	tw -= x0;
 	th -= y0;
+	unsigned int winWidth, winHeight;
+	win->Dimensions(winWidth, winHeight);
+	ty = winHeight - ty - 1;
 
 	// draw arrow head
 	Coord arrowSize = 0.15 * sqrt(tw * tw + th * th);
@@ -1077,9 +1073,9 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	points[0].x = tx;
 	points[0].y = ty;
 	points[1].x = tx - arrowSize * cos(leftAngle);
-	points[1].y = ty - arrowSize * sin(leftAngle);
+	points[1].y = ty + arrowSize * sin(leftAngle);
 	points[2].x = tx - arrowSize * cos(rightAngle);
-	points[2].y = ty - arrowSize * sin(rightAngle);
+	points[2].y = ty + arrowSize * sin(rightAngle);
 
 	win->PushTop();
 	win->MakeIdentity();
@@ -1095,19 +1091,9 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 // -----------------------------------------------------------------
 
-
-void FullMapping_HorLineShape::MaxSymSize(TDataMap *map, void *gdata, 
-					  int numSyms,
-					  Coord &width, Coord &height)
-{
-	width = 1e9;
-	height = 0.0;
-}
-
-
 void
 FullMapping_HorLineShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_HorLineShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -1129,12 +1115,17 @@ FullMapping_HorLineShape::FindBoundingBoxes(void *gdataArray,
 #endif
   }
 
+  const double halfWidth = 1.0e9;
+
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
   for (int recNum = 0; recNum < numRecs; recNum++) {
-    tdMap->SetBoundingBox(dataP, -1.0e9, 0.0, 1.0e9, 0.0);
+    tdMap->SetBoundingBox(dataP, -halfWidth, 0.0, halfWidth, 0.0);
     dataP += recSize;
   }
+
+  maxWidth = 2 * halfWidth;
+  maxHeight = 0.0;
 }
   
 
@@ -1185,32 +1176,6 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 int FullMapping_SegmentShape::NumShapeAttrs()
 {
 	return 2;
-}
-
-
-
-void FullMapping_SegmentShape::MaxSymSize(TDataMap *map, void *gdata,
-					  int numSyms,
-					  Coord &width, Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-
-	GDataAttrOffset *offset = map->GetGDataOffset();
-	int gRecSize = map->GDataRecordSize();
-	char *ptr = (char *)gdata;
-
-	for(int i = 0; i < numSyms; i++) {
-	// double the width and height because segment starts at
-	// at (X,Y) and is not centered at (X,Y)
-	Coord w = 2 * map->GetSize(ptr)
-	  * map->GetShapeAttr0(ptr);
-	Coord h = 2 * map->GetSize(ptr)
-	  * map->GetShapeAttr1(ptr);
-	if (w > width) width = w;
-	if (h > height) height = h;
-	ptr += gRecSize;
-	}
 }
 
 
@@ -1327,32 +1292,9 @@ int FullMapping_HighLowShape::NumShapeAttrs()
 }
 
 
-void FullMapping_HighLowShape::MaxSymSize(TDataMap *map, void *gdata,
-					  int numSyms,
-					  Coord &width, Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-
-	GDataAttrOffset *offset = map->GetGDataOffset();
-	int gRecSize = map->GDataRecordSize();
-	char *ptr = (char *)gdata;
-
-	for(int i = 0; i < numSyms; i++) {
-	Coord temp = fabs(map->GetSize(ptr)
-			  * map->GetShapeAttr0(ptr));
-	if (temp > width) width = temp;
-	temp = map->GetShapeAttr1(ptr);
-	temp -= map->GetShapeAttr2(ptr);
-	if (temp > height) height = temp;
-	ptr += gRecSize;
-	}
-}
-
-
 void
 FullMapping_HighLowShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_HighLowShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -1376,21 +1318,32 @@ FullMapping_HighLowShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
 	Coord high;
     Coord y = high = tdMap->GetY(dataP);
-	Coord width = tdMap->GetShapeAttr0(dataP);
+    Coord symSize = tdMap->GetSize(dataP);
+	Coord width = symSize * tdMap->GetShapeAttr0(dataP);
 	Coord mid = tdMap->GetShapeAttr1(dataP);
 	Coord low = tdMap->GetShapeAttr2(dataP);
 
 	Coord trueHigh = MAX(high, MAX(mid, low));
 	Coord trueLow = MIN(high, MIN(mid, low));
 
-    tdMap->SetBoundingBox(dataP, -width / 2.0, trueHigh - y, width / 2.0,
+	tmpMaxW = MAX(tmpMaxW, width);
+	tmpMaxH = MAX(tmpMaxH, trueHigh - trueLow);
+
+	Coord halfWidth = width / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfWidth, trueHigh - y, halfWidth,
 	    trueLow - y);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
   
 
@@ -1503,46 +1456,27 @@ int FullMapping_PolylineShape::NumShapeAttrs()
 }
 
 
-void FullMapping_PolylineShape::MaxSymSize(TDataMap *map, void *gdata,
-					   int numSyms,
-					   Coord &width, Coord &height)
+void
+FullMapping_PolylineShape::GetPoints(char *dataP, TDataMap *tdMap,
+    int &numPts, Coord points[])
 {
-	width = 0;
-	height = 0;
+#if defined(DEBUG)
+  printf("FullMapping_PolylineShape::GetPoints(0x%p)\n", dataP);
+#endif
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
-	int gRecSize = map->GDataRecordSize();
-	char *ptr = (char *)gdata;
+  numPts = (int)tdMap->GetShapeAttr0(dataP);
+  numPts = MIN(numPts, (MAX_SHAPE_ATTRS - 1) / 2);
 
-	for(int i = 0; i < numSyms; i++) {
-	int npOff = offset->_shapeAttrOffset[0];
-	if (npOff < 0) {
-		ptr += gRecSize;
-		continue;
-	}
-	int np = (int)*(Coord *)(ptr + npOff);
-	for(int j = 1; j <= 2 * np; j++) {
-		if (j >= MAX_SHAPE_ATTRS)
-		  continue;
-		int off = offset->_shapeAttrOffset[j];
-		if (off < 0)
-		  continue;
-		Coord temp = *(Coord *)(ptr + off);
-		// every other shape attribute is X, every other is Y
-		if (j % 2) {
-		if (temp > width) width = temp;
-		} else {
-		if (temp > height) height = temp;
-		}
-	}
-	ptr += gRecSize;
-	}
+  for(int ptNum = 0; ptNum < numPts; ptNum++) {
+	points[ptNum * 2] = tdMap->GetShapeAttr(dataP, 1 + 2 * ptNum);
+	points[ptNum * 2 + 1] = tdMap->GetShapeAttr(dataP, 2 + 2 * ptNum);
+  }
 }
 
 
 void
 FullMapping_PolylineShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_PolylineShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -1566,10 +1500,36 @@ FullMapping_PolylineShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
-    tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0); //BBTEMP
+	int numPts;
+	Coord points[MAX_SHAPE_ATTRS];
+	GetPoints(dataP, tdMap, numPts, points);
+
+    Coord xMin = 0.0;
+    Coord xMax = 0.0;
+    Coord yMin = 0.0;
+    Coord yMax = 0.0;
+
+    for (int ptNum = 0; ptNum < numPts; ptNum++) {
+	  Coord ptX = points[2 * ptNum];
+	  Coord ptY = points[2 * ptNum + 1];
+	  xMin = MIN(xMin, ptX);
+	  xMax = MAX(xMax, ptX);
+	  yMin = MIN(yMin, ptY);
+	  yMax = MAX(yMax, ptY);
+	}
+
+	tmpMaxW = MAX(tmpMaxW, xMax - yMin);
+	tmpMaxH = MAX(tmpMaxH, yMax - yMin);
+
+    tdMap->SetBoundingBox(dataP, xMin, yMax, xMax, yMin);
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
   
 
@@ -1603,13 +1563,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
 	if (fixedSymSize) {
-#if 1 //BBTEMP
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-#else
-	Coord maxWidth = map->GetShapeAttr0(NULL);
-	Coord maxHeight = map->GetShapeAttr1(NULL);
-#endif
 
 #ifdef DEBUG
 	printf("PolylineShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -1641,26 +1596,18 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 
 	win->DrawPixel(x, y);
 
-	int npOff = offset->_shapeAttrOffset[0];
-	if (npOff < 0)
-		continue;
+    int numPts;
+	Coord points[MAX_SHAPE_ATTRS];
+	GetPoints(gdata, map, numPts, points);
 
-	int np = (int)*(Coord *)(gdata + npOff);
-#ifdef DEBUG
-	printf("Drawing %d additional data points\n", np);
-#endif
-	for(int j = 0; j < np; j++) {
-		if (1 + 2 * j + 1 >= MAX_SHAPE_ATTRS)
-		  break;
-		int xOff = offset->_shapeAttrOffset[1 + 2 * j];
-		int yOff = offset->_shapeAttrOffset[1 + 2 * j + 1];
-		if (xOff < 0 || yOff < 0)
-		  continue;
-		Coord x1 = *(Coord *)(gdata + xOff);
-		Coord y1 = *(Coord *)(gdata + yOff);
-		win->Line(x, y, x1, y1, width);
-		x = x1;
-		y = y1;
+	Coord oldX = x;
+	Coord oldY = y;
+	for (int ptNum = 0; ptNum < numPts; ptNum++) {
+	  Coord newX = x + points[2 * ptNum];
+	  Coord newY = y + points[2 * ptNum + 1];
+	  win->Line(oldX, oldY, newX, newY, width);
+	  oldX = newX;
+	  oldY = newY;
 	}
 	}
 
@@ -1679,18 +1626,9 @@ int FullMapping_GifImageShape::NumShapeAttrs()
 }
 
 
-void FullMapping_GifImageShape::MaxSymSize(TDataMap *map, void *gdata,
-					   int numSyms,
-					   Coord &width, Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-}
-
-
 void
 FullMapping_GifImageShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_GifImageShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -1714,14 +1652,21 @@ FullMapping_GifImageShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxSize = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
     Coord size = tdMap->GetSize(dataP);
 
-    tdMap->SetBoundingBox(dataP, -size / 2.0, size / 2.0, size / 2.0,
-	    -size / 2.0);
+	tmpMaxSize = MAX(tmpMaxSize, size);
+
+	Coord halfSize = size / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfSize, halfSize, halfSize, -halfSize);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxSize;
+  maxHeight = tmpMaxSize;
 }
 
 
@@ -1927,18 +1872,9 @@ int FullMapping_PolylineFileShape::NumShapeAttrs()
 }
 
 
-void FullMapping_PolylineFileShape::MaxSymSize(TDataMap *map, void *gdata,
-						   int numSyms,
-						   Coord &width, Coord &height)
-{
-	width = 0;
-	height = 0;
-}
-
-
 void
 FullMapping_PolylineFileShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_PolylineFileShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -1962,10 +1898,15 @@ FullMapping_PolylineFileShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
     tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0); //BBTEMP
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
 
 
@@ -2003,7 +1944,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 		printf("Key %d returns \"%s\", code %d\n", key, file, code);
 #endif
 	} else {
-#ifdef DEBUG
+#if defined(DEBUG)
 		printf("Using default file \"%s\"\n", file);
 #endif
 	}
@@ -2011,11 +1952,11 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	if (offset->_shapeAttrOffset[1] >= 0) {
 		int key = (int)map->GetShapeAttr1(gdata);
 		int code = stringTable->Lookup(key, format);
-#ifdef DEBUG
+#if defined(DEBUG)
 		printf("Key %d returns \"%s\", code %d\n", key, format, code);
 #endif
 	} else {
-#ifdef DEBUG
+#if defined(DEBUG)
 		printf("Using default format \"%s\"\n", format);
 #endif
 	}
@@ -2026,7 +1967,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 		continue;
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("Drawing polyline file %s at %.2f,%.2f\n", file, x, y);
 #endif
 
@@ -2079,15 +2020,6 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 int FullMapping_TextLabelShape::NumShapeAttrs()
 {
 	return 4;
-}
-
-
-void FullMapping_TextLabelShape::MaxSymSize(TDataMap *map, void *gdata, 
-						int numSyms,
-						Coord &width, Coord &height)
-{
-	width = 0;
-	height = 0;
 }
 
 
@@ -2227,7 +2159,7 @@ GetAlignment(ViewGraph *view, WindowRep::SymbolAlignment &alignment)
 
 void
 FullMapping_TextLabelShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_TextLabelShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -2257,23 +2189,35 @@ FullMapping_TextLabelShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
-    Coord width = tdMap->GetShapeAttr2(dataP);
-    Coord height = tdMap->GetShapeAttr3(dataP);
+    Coord symSize = tdMap->GetSize(dataP);
+    Coord symWidth = symSize * tdMap->GetShapeAttr2(dataP);
+    Coord symHeight = symSize * tdMap->GetShapeAttr3(dataP);
 
-	if (width < 0.0) {
+	if (symWidth < 0.0) {
 	  // This is a really rough estimate!!
       char labelBuf[128];
       char *label = GetLabelText(dataP, tdMap, labelAttrValid, labelAttrType,
 	    labelFormatValid, labelFormatType, labelBuf);
-	  width = height * strlen(label);
+	  symWidth = symHeight * strlen(label);
 	}
 
-    tdMap->SetBoundingBox(dataP, -width / 2.0, height / 2.0, width / 2.0,
-	    -height / 2.0);
+	tmpMaxW = MAX(tmpMaxW, symWidth);
+	tmpMaxH = MAX(tmpMaxH, symHeight);
+
+	Coord halfWidth = symWidth / 2.0;
+	Coord halfHeight = symHeight / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
+	    -halfHeight);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
 
 
@@ -2414,7 +2358,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 }
 
 // -----------------------------------------------------------------
-// -----------------------------------------------------------------
 
 
 int FullMapping_TextDataLabelShape::NumShapeAttrs()
@@ -2423,18 +2366,9 @@ int FullMapping_TextDataLabelShape::NumShapeAttrs()
 }
 
 
-void FullMapping_TextDataLabelShape::MaxSymSize(TDataMap *map, void *gdata, 
-						int numSyms,
-						Coord &width, Coord &height)
-{
-	width = 0;
-	height = 0;
-}
-
-
 void
 FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_TextDataLabelShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -2456,12 +2390,36 @@ FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
 #endif
   }
 
+  AttrList *attrList = tdMap->GDataAttrList();
+  Boolean labelAttrValid, labelFormatValid;
+  AttrType labelAttrType, labelFormatType;
+  GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
+	labelFormatValid, labelFormatType);
+
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
-    tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0); //BBTEMP
+    Coord symSize = tdMap->GetSize(dataP);
+	char labelBuf[128];
+    char *label = GetLabelText(dataP, tdMap, labelAttrValid, labelAttrType,
+	    labelFormatValid, labelFormatType, labelBuf);
+    Coord symWidth = strlen(label);
+
+	tmpMaxW = MAX(tmpMaxW, symWidth);
+	tmpMaxH = MAX(tmpMaxH, symSize);
+
+	Coord halfWidth = symWidth / 2.0;
+	Coord halfHeight = symSize / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
+	    -halfHeight);
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
 
 
@@ -2550,7 +2508,6 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
     Coord pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
-	char *weight = "Bold";
 
     /* Find or generate the label string. */
     char labelBuf[128];
@@ -2570,7 +2527,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
     printf("Text label: <%s>\n", label);
 #endif
 
-    height = pixelperUnitHeight * size;
+	height = size;
     width  = strlen(label);
 
     WindowRep::SymbolAlignment alignment;
@@ -2588,27 +2545,15 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
 // -----------------------------------------------------------------
 
-// -----------------------------------------------------------------
-
-
 int FullMapping_FixedTextLabelShape::NumShapeAttrs()
 {
 	return 2;
 }
 
 
-void FullMapping_FixedTextLabelShape::MaxSymSize(TDataMap *map, void *gdata, 
-						int numSyms,
-						Coord &width, Coord &height)
-{
-	width = 0;
-	height = 0;
-}
-
-
 void
 FullMapping_FixedTextLabelShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_FixedTextLabelShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -2638,6 +2583,9 @@ FullMapping_FixedTextLabelShape::FindBoundingBoxes(void *gdataArray,
     tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0);
     dataP += recSize;
   }
+
+  maxWidth = 0.0;
+  maxHeight = 0.0;
 }
 
 
@@ -2701,11 +2649,6 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 		DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 	}
 
-	char *weight = "Bold";
-	if (pointSize < minBoldFont) {
-	  weight = "Medium";
-	}
-
 	Coord orientation = map->GetOrientation(gdata);
 
     /* Find or generate the label string. */
@@ -2744,17 +2687,9 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 // -----------------------------------------------------------------
 
 
-void FullMapping_LineShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-					   Coord &width, Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-}
-
-
 void
 FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_LineShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -2782,6 +2717,9 @@ FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
     tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, 0.0);
     dataP += recSize;
   }
+
+  maxWidth = 0.0;
+  maxHeight = 0.0;
 }
   
 
@@ -2931,29 +2869,9 @@ void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
 // -----------------------------------------------------------------
 
 
-void FullMapping_LineShadeShape::MaxSymSize(TDataMap *map, 
-						void *gdata, int numSyms,
-						Coord &width,
-						Coord &height)
-{
-	width = 0.0;
-	height = 0.0;
-
-	GDataAttrOffset *offset = map->GetGDataOffset();
-	int gRecSize = map->GDataRecordSize();
-	char *ptr = (char *)gdata;
-
-	for(int i = 0; i < numSyms; i++) {
-	Coord temp = fabs(map->GetY(ptr));
-	if (temp > height) height = temp;
-	ptr += gRecSize;
-	}
-}
-
-
 void
 FullMapping_LineShadeShape::FindBoundingBoxes(void *gdataArray,
-    int numRecs, TDataMap *tdMap)
+    int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_LineShadeShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -2977,11 +2895,16 @@ FullMapping_LineShadeShape::FindBoundingBoxes(void *gdataArray,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
     Coord symY = tdMap->GetY(dataP);
+	tmpMaxH = MAX(tmpMaxH, symY);
     tdMap->SetBoundingBox(dataP, 0.0, 0.0, 0.0, -symY);
     dataP += recSize;
   }
+
+  maxWidth = 0.0;
+  maxHeight = tmpMaxH;
 }
   
 

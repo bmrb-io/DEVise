@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/05/26 19:50:54  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.35  1999/05/21 14:52:50  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -366,7 +375,8 @@ class TDataMap
 			   RecId &hintId);
 
   /* Update/get maximum symbol size */
-  virtual void UpdateMaxSymSize(void *gdata, int numSyms) = 0;
+  virtual void ResetMaxSymSize() { _maxSymWidth = _maxSymHeight =
+      _maxSymDepth = 0.0; }
   virtual void GetMaxSymSize(Coord &width, Coord &height, Coord &depth) {
     width = _maxSymWidth; height = _maxSymHeight; depth = _maxSymDepth;
   }
@@ -465,6 +475,15 @@ class TDataMap
     if (_gOffset->_shapeOffset < 0)
       return GetDefaultShape();
     return GetAttr(gdataRecP, _shapeOffset, ShapeID, _gOffset);
+  }
+
+  inline Coord GetShapeAttr(const char *gdataRecP, int attrNum) const
+  {
+    if (_gOffset->_shapeAttrOffset[attrNum] < 0) {
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[attrNum];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[attrNum], Coord, _gOffset);
   }
 
   inline Coord GetShapeAttr0(const char *gdataRecP) const

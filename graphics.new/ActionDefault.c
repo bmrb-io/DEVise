@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/05/26 19:50:48  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.38  1999/04/22 19:29:50  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -521,7 +530,6 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     filter.flag = VISUAL_X | VISUAL_Y;
 
     Coord height, width, depth;
-    // BBTEMP -- get rid of this?
     map->GetMaxSymSize(width,height,depth);
 
     /* Don't let the visual filter for the point query get any larger

@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/05/26 19:50:55  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.16  1999/05/20 15:17:56  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -77,17 +86,9 @@ int FullMapping_ViewShape::NumShapeAttrs()
   return 3;
 }
 
-void FullMapping_ViewShape::MaxSymSize(TDataMap *map, void *gdata, 
-				       int numSyms, 
-				       Coord &width, Coord &height)
-{
-  width = 0.0;
-  height = 0.0;
-}
-
 void
 FullMapping_ViewShape::FindBoundingBoxes(void *gdataArray, int numRecs,
-    TDataMap *tdMap)
+    TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_ViewShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -111,17 +112,27 @@ FullMapping_ViewShape::FindBoundingBoxes(void *gdataArray, int numRecs,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxW = 0.0;
+  Coord tmpMaxH = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
     Coord symSize = tdMap->GetSize(dataP);
-    Coord symWidth = tdMap->GetShapeAttr1(dataP);
-    Coord symHeight = tdMap->GetShapeAttr2(dataP);
+    Coord symWidth =  symSize * tdMap->GetShapeAttr1(dataP);
+    Coord symHeight =  symSize * tdMap->GetShapeAttr2(dataP);
 
-    tdMap->SetBoundingBox(dataP, -symSize * symWidth / 2.0,
-        symSize * symHeight / 2.0, symSize * symWidth / 2.0,
-        -symSize * symHeight / 2.0);
+    tmpMaxW = MAX(tmpMaxW, symWidth);
+    tmpMaxH = MAX(tmpMaxH, symHeight);
+
+    Coord halfWidth = symWidth / 2.0;
+    Coord halfHeight = symHeight / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
+        -halfHeight);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxW;
+  maxHeight = tmpMaxH;
 }
 
 void FullMapping_ViewShape::DrawGDataArray(WindowRep *win, 

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/05/26 19:50:51  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.45  1999/05/20 15:17:53  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -268,11 +277,8 @@ class FullMapping_BarShape
       return result;
     }
     
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -346,11 +352,8 @@ class FullMapping_HorLineShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-    
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -368,9 +371,6 @@ class FullMapping_SegmentShape
 
     virtual int NumShapeAttrs();
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-    
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -407,11 +407,8 @@ class FullMapping_HighLowShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -430,19 +427,18 @@ class FullMapping_PolylineShape
     virtual int NumShapeAttrs();
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
-      Boolean result = false;
-      //BBTEMP -- check
-      if (offsets->_sizeOffset >= 0) {
-        result = true;
-      }
+      // Note: this isn't really correct, but doing it correctly would require
+      // more parameters.  RKW 1999-05-28.
+      Boolean result = true;
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-    
+    // points should be an array of size MAX_SHAPE_ATTRS.  points[0] is
+    // X1, points[1] is Y1, etc.
+    void GetPoints(char *dataP, TDataMap *tdMap, int &numPts, Coord points[]);
+
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -468,11 +464,8 @@ class FullMapping_GifImageShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -492,18 +485,12 @@ class FullMapping_PolylineFileShape
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
-      //BBTEMP -- check
-      if (offsets->_sizeOffset >= 0) {
-        result = true;
-      }
+      //BBTEMP -- not correct
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-    
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -533,11 +520,8 @@ class FullMapping_TextLabelShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -557,18 +541,15 @@ class FullMapping_TextDataLabelShape
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
-	  //BBTEMP -- depends on string??
-      if (offsets->_sizeOffset >= 0) {
+      if (offsets->_sizeOffset >= 0 ||
+          offsets->_shapeAttrOffset[0] >= 0) {
         result = true;
       }
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -591,11 +572,8 @@ class FullMapping_FixedTextLabelShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -616,11 +594,8 @@ class FullMapping_LineShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -656,11 +631,8 @@ class FullMapping_LineShadeShape
       return result;
     }
 
-    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
-			    Coord &width, Coord &height);
-
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
-        TDataMap *tdMap);
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,

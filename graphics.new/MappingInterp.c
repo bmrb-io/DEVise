@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.86  1999/05/27 17:45:13  wenger
+  Lots of cleanup of MappingInterp code.
+
   Revision 1.85  1999/05/26 19:50:51  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -737,51 +740,6 @@ AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
     }
     
     return 0;
-}
-
-// BBTEMP -- we should probably get rid of this
-//--------------------------------------------------------------------------
-void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
-{
-  _maxSymWidth = 0;
-  _maxSymHeight = 0;
-  _maxSymDepth = 0;
-
-  if (_offsets->_shapeOffset < 0) {
-    /* constant shape */
-    ShapeID shape = GetDefaultShape();
-    _shapes[shape]->MaxSymSize(this, gdata, numSyms,
-                               _maxSymWidth, _maxSymHeight);
-#ifdef DEBUG
-    printf("Max symbol size is %.2f, %.2f\n", _maxSymWidth, _maxSymHeight);
-#endif
-    return;
-  }
-
-  /* dynamic shape */
-  int gRecSize = GDataRecordSize();
-  char *ptr = (char *)gdata;
-  int i = 0;
-  while (i < numSyms) {
-    char *start = ptr + i * gRecSize;
-    ShapeID shape = *((ShapeID *)(start + _offsets->_shapeOffset));
-    int j;
-    for(j = i + 1; j < numSyms; j++) {
-      char *end = ptr + j * gRecSize;
-      ShapeID nextShape = *((ShapeID *)(end + _offsets->_shapeOffset));
-      if (shape != nextShape)
-        break;
-    }
-    /* gdataArray[i..j-1] have the same shape */
-    Coord w, h;
-    _shapes[shape]->MaxSymSize(this, start, j - i, w, h);
-    if (w > _maxSymWidth) _maxSymWidth = w;
-    if (h > _maxSymHeight) _maxSymHeight = h;
-    i = j;
-  }
-#ifdef DEBUG
-  printf("Max symbol size is %.2f, %.2f\n", _maxSymWidth, _maxSymHeight);
-#endif
 }
 
 //--------------------------------------------------------------------------
@@ -2161,7 +2119,11 @@ MappingInterp::FindBoundingBoxes(void *gdataArray, int numRecs)
   if (_offsets->_shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();
-    _shapes[shape]->FindBoundingBoxes(gdataArray, numRecs, this);
+	Coord tmpMaxW, tmpMaxH;
+    _shapes[shape]->FindBoundingBoxes(gdataArray, numRecs, this, tmpMaxW,
+	    tmpMaxH);
+    _maxSymWidth = MAX(_maxSymWidth, tmpMaxW);
+    _maxSymHeight = MAX(_maxSymHeight, tmpMaxH);
   } else {
 	// Note: this could be made more efficient by making one call to
 	// FindBoundingBoxes() for each group of the same shape; but I'm not
@@ -2169,7 +2131,10 @@ MappingInterp::FindBoundingBoxes(void *gdataArray, int numRecs)
 	char *dataP = (char *)gdataArray; // char * for ptr arithmetic
     for (int recNum = 0; recNum < numRecs; recNum++) {
       ShapeID shape = *((ShapeID *)(dataP + _offsets->_shapeOffset));
-      _shapes[shape]->FindBoundingBoxes(dataP, 1, this);
+	  Coord tmpMaxW, tmpMaxH;
+      _shapes[shape]->FindBoundingBoxes(dataP, 1, this, tmpMaxW, tmpMaxH);
+      _maxSymWidth = MAX(_maxSymWidth, tmpMaxW);
+      _maxSymHeight = MAX(_maxSymHeight, tmpMaxH);
 	  dataP += GDataRecordSize();
     }
   }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/05/27 17:45:26  wenger
+  Lots of cleanup of MappingInterp code.
+
   Revision 1.46  1999/05/26 19:50:52  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -311,10 +314,10 @@ public:
   // values.
   virtual Boolean IsComplexShape(ShapeID shape) {
     switch (shape) {
-    case 9:
-    case 11:
-    case 13:
-    case 14:
+    // case 9: // Polyline -- bounding box is now correct.  RKW 1999-05-28.
+    case 11: // PolylineFile
+    case 13: // Line
+    case 14: // LineShade
       return true;
     }
     return false;
@@ -331,9 +334,6 @@ public:
   /* Get current commands */
   MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
 			   unsigned long int &attrFlag);
-  
-  /* Update maximum symbol size */
-  void UpdateMaxSymSize(void *gdata, int numSyms);
   
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num,

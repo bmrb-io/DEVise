@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.113  1999/05/21 14:52:52  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.112  1999/05/17 20:55:21  wenger
   Partially-kludged fix for bug 488 (problems with cursors in piled views
   in the JavaScreen).
@@ -2017,6 +2021,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
     _pstorage.Clear();
+    _map->ResetMaxSymSize();
     _queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0, _timestamp);
     if (GetParentPileStack()) GetParentPileStack()->QueryStarted(this);
 

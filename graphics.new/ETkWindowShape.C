@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/05/26 19:50:49  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.17  1999/05/21 14:52:24  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -112,18 +121,9 @@ int FullMapping_ETkWindowShape::NumShapeAttrs()
 }
 
 
-void FullMapping_ETkWindowShape::MaxSymSize(TDataMap *map, void *gdata,
-					    int numSyms,
-					    Coord &width, Coord &height)
-{
-    width = 0.0;
-    height = 0.0;
-}
-
-
 void
 FullMapping_ETkWindowShape::FindBoundingBoxes(void *gdataArray, int numRecs,
-    TDataMap *tdMap)
+    TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
 {
 #if defined(DEBUG)
   printf("FullMapping_ETkWindowShape::FindBoundingBoxes(%d)\n", numRecs);
@@ -147,14 +147,21 @@ FullMapping_ETkWindowShape::FindBoundingBoxes(void *gdataArray, int numRecs,
 
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
+  Coord tmpMaxSize = 0.0;
   for (int recNum = 0; recNum < numRecs; recNum++) {
     Coord symSize = tdMap->GetSize(dataP);
 
-    tdMap->SetBoundingBox(dataP, -symSize / 2.0, symSize / 2.0,
-	    symSize / 2.0, -symSize / 2.0);
+    tmpMaxSize = MAX(tmpMaxSize, symSize);
+
+    Coord halfSize = symSize / 2.0;
+
+    tdMap->SetBoundingBox(dataP, -halfSize, halfSize, halfSize, -halfSize);
 
     dataP += recSize;
   }
+
+  maxWidth = tmpMaxSize;
+  maxHeight = tmpMaxSize;
 }
 
 
@@ -358,7 +365,7 @@ GetShapeAttrValue(int i,
 		  AttrType &attrType)
 {
     GDataAttrOffset *offset;
-    ShapeAttr *defaultAttrs;
+    const ShapeAttr *defaultAttrs;
     int gdataOffset;
     AttrInfo *attrInfo;
     
