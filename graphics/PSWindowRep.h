@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/24 19:06:28  wenger
+  PostScript code for lines, rects, text at least partially working (disabled
+  for commit).  Still needs scaling and colors.  Added files for tarring
+  sources to make transfer to Linux machines, etc., easier.
+
   Revision 1.3  1996/09/10 20:07:09  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -87,6 +92,15 @@ public:
     virtual void SetFgColor(Color bg);
     virtual void SetBgColor(Color bg);
     virtual void SetWindowBgColor(Color bg);
+
+#ifdef LIBCS
+    /* Color selection interface using specific colors */
+    virtual void SetFgRGB(float r, float g, float b) {}
+    virtual void SetBgRGB(float r, float g, float b) {}
+    virtual void GetFgRGB(float &r, float &g, float &b) {}
+    virtual void GetBgRGB(float &r, float &g, float &b) {}
+    virtual void SetWindowBgRGB(float r, float g, float b) {}
+#endif
 
     virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
     /* Fill rectangles, variable width/height */
