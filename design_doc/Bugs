@@ -2064,6 +2064,12 @@ Num Date        Status  Description
 528 10/30/99	OPEN	Open Condor/UserWeek.ds session, try to save logical
 			session description -> devise crashes. (rkw)
 
+529 10/30/99	OPEN	JavaScreen doesn't deal correctly with text alignment
+			(see Condor/UserWeek.ds). (rkw)
+
+530 10/30/99	OPEN	When saving Condor/UserWeek.ds, all windows got moved
+			down one screen. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
