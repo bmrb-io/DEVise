@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/03 20:42:16  jussi
+  Moved memory management stuff to MemMgr.C. Introduced better types
+  for stream position (streampos_t), byte count (bytecount_t) and
+  request size (iosize_t).
+
   Revision 1.12  1996/11/23 21:05:00  jussi
   MemMgr now manages multi-page chunks instead of single pages.
 
@@ -831,6 +836,8 @@ int CacheMgr::Initialize()
                                buf, created);
     if (!_frmShm) {
       fprintf(stderr, "Cannot create page table in shared memory\n");
+      _mutex->destroy();
+      delete _mutex;
       return -1;
     }
     if (!created)
@@ -845,6 +852,8 @@ int CacheMgr::Initialize()
     _frames = new PageFrame [_numFrames];
     if (!_frames) {
       fprintf(stderr, "Cannot create page table in local memory\n");
+      _mutex->destroy();
+      delete _mutex;
       return -1;
     }
 #endif
@@ -864,12 +873,15 @@ CacheMgr::~CacheMgr()
     _DeallocMemory();
 
 #ifdef SBM_SHARED_MEMORY
+    if (_frmShm)
+        _frmShm->destroy();
     delete _frmShm;
 #else
     delete [] _frames;
 #endif
 
-    _mutex->destroy();
+    if (_mutex)
+        _mutex->destroy();
     delete _mutex;
 }
 
