@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/27 15:47:17  jussi
+  Replaced method ClearGData() with ClearTData() which allows both
+  TData and GData (which derives from TData) to be cleared.
+
   Revision 1.2  1995/09/05 22:14:14  jussi
   Added CVS header.
 */
@@ -25,6 +29,8 @@
 
 #include "BufMgr.h"
 #include "RangeInfo.h"
+#include "Init.h"
+#include "SBufMgr.h"
 
 class BufferPolicy;
 class RecRange;
@@ -35,7 +41,8 @@ class RangeInfo;
 class RangeInfoArrays;
 class RangeInfoAlloc;
 
-extern int BUFMGR_FULL_PAGESIZE;
+/* maintain histogram statistics of memory allocation sizes */
+//#define BUFMGRHIST
 
 const int MaxReturnRanges = 2;
 const int RANGE_ALLOC_HIST_SIZE = 6;
@@ -58,7 +65,7 @@ public:
 
   /* Retrieve next batch of records.  Return false if no more batches. */
   virtual Boolean GetRecs(Boolean &isTData, RecId &startRecId,
-			  int &numRecs, void *&buf, void **&recs);
+			  int &numRecs, void *&buf);
 	
   virtual void DoneGetRecs();
 
@@ -67,50 +74,35 @@ public:
      Give buffer manager hint about how to dispose the records.  */
   virtual void FreeRecs(void *buf, BufHint hint, Boolean dirty = false);
 
-  /*****  Prefetch Interface ****/
-  /* Init prefetch */
-  virtual void InitPrefetch(TData *tdata);
-
-  /* Prefetch record whose ID is "current".
-     Return TRUE if there is still buffer for prefetch,
-     and set "next" to the next Id after "current" to be prefetched. */
-  virtual Boolean DoPrefetch(RecId current, RecId &next);
-
-  /**** Policy ****/
-  /* Init buffer manager policy */
-  virtual void InitPolicy(BufPolicy::policy policy);
-
-  /* Print what's in memory for tdata */
-  void Print(TData *tdata);
-
-  /*** Allocate buffer for appending to tdata */
-  virtual Boolean HasBuffer() { return 1; }
-  virtual void InitAllocBuf(int recSize, int numRecs);
-  virtual Boolean GetBuf(void *&buf, int &numRecs);
-  virtual void FreeBuf(void *buf, TData *tdata, RecId startId);
-  virtual void DoneAllocBuf();
-
+  /* Get in-memory TData records */
   void InitTDataInMem(TData *tdata);
   Boolean GetInMemRecs(void *&buf, RecId &low, RecId &high);
   void FreeInMemRecs(void *buf, Boolean dirty = 0);
   void DoneTDataInMem();
 
-  virtual void PhaseHint(BufferPolicy::Phase phase);
-  virtual void FocusHint(RecId id, TData *, GData *);
+  virtual void PhaseHint(BufferPolicy::Phase phase) {
+      _policy->PhaseHint(phase);
+  }
 
+  virtual void FocusHint(RecId id, TData *tdata, GData *gdata) {
+      _policy->FocusHint(id, tdata, gdata);
+  }
+
+  /* Print what's in memory for tdata */
+  void Print(TData *tdata);
+
+  /* Print statistics */
   virtual void PrintStat();
 
 private:
   /* Allocate a range suitable for up to "size" bytes. 
      Return a range with size <= size bytes.
-     firm == true if definitely need a range.
-          == false if allocation can fail.
-     return NULL if firm == false, and can't find a range.
+     Fail assertion if no space found.
      Global modified:
      _rangeArrays: remove victim from _rangeArrays
      _policy: used to determine victim and placement.
-     */
-  RangeInfo *AllocRange(int size, Boolean firm= true);
+  */
+  RangeInfo *AllocRange(int size);
 
   /* Unlink range from all the lists. DO NOT free any memory
      for range, or its buffer space.
@@ -154,29 +146,32 @@ private:
 
   /* Get next range in memory that fits _lowId and _highId.
      set rangeInfo to next valid range.
-     globals used:
-     _lowId, _highId, _nextRangeInMem, _listHeadInMem.
+     Globals used:
+       _lowId, _highId, _nextRangeInMem, _listHeadInMem.
      Note: Set _nextRangeInMem should be initialized to 1st element 
      in the list before this function is called for the first time.
      */
   RangeInfo *_listHeadInMem;	/* in memory ranges */
   RangeInfo *_nextRangeInMem;
-  void InitNextRangeInMem(RangeInfo *listHead);
   Boolean GetNextRangeInMem(RangeInfo *&rangeInfo);
 
-  /* Init getting GData in mem */
-  void InitGetGDataInMem();
+  /* Init getting TData/GData in memory */
+  void InitGetDataInMem(RangeList *list);
+  void DoneGetDataInMem() {}
+
+  /* Get GData in memory */
   Boolean GetGDataInMem(RecId &startRecId, int &numRecs, void *&buf);
-  void DoneGetGDataInMem();
   
-  RangeInfo *_tInMemRange; /* current TData range being scanned */
-  RecId _tInMemCurLow;	/* next id in the range to look at */
-  Boolean _getTInMem;	/* TRUE if we need to get next range to scan */
-  RecId _gScanLow, _gScanHigh; /* current range to scan */
-  RecId _gScanCur;		/* next Id in [_gScanLow,_gScanHigh] to look at*/
-  void InitGetTDataInMem();
+  /* Get TData in memory */
   Boolean GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf);
-  void DoneGetTDataInMem();
+
+  /* Variables needed for TData in-memory fetch */
+  RangeInfo *_tInMemRange; /* current TData range being scanned */
+  RecId _tInMemCurLow;	   /* next id in the range to look at */
+  Boolean _getTInMem;	   /* TRUE if we need to get next range to scan */
+  RecId _gScanLow;         /* current range to scan */
+  RecId _gScanHigh;
+  RecId _gScanCur;	   /* next Id in [_gScanLow,_gScanHigh] to look at */
 
   enum GDataScanState{ GetGRangeState, CheckOverlapState, GScanState,
 		       GScanDoneState};
@@ -198,7 +193,6 @@ private:
   GData *_gdata;	/* GData for the query */
   RecId _lowId, _highId;	/* Range of IDs to retrieve */
   Boolean _tdataOnly; /* TRUE if only fetch TData */
-  void **_recPtrs;
 
   BufferPolicy *_policy;
   RecRange *_recRange;
@@ -206,9 +200,9 @@ private:
   /* Find buffer size given data size. Buffer size is always on page
      boundary */
   int BufSize(int dSize) {
-    if (dSize % BUFMGR_FULL_PAGESIZE == 0)
+    if (dSize % Init::PageSize() == 0)
       return dSize;
-    return (dSize/BUFMGR_FULL_PAGESIZE+1)*BUFMGR_FULL_PAGESIZE;
+    return (dSize / Init::PageSize() + 1) * Init::PageSize();
   }
 
   /* Truncate rangeInfo by the buffer size from the beginning, 
@@ -218,10 +212,7 @@ private:
   RangeInfo *Truncate(RangeInfo *rangeInfo, int bufSize);
 
   int _numArrays, _policyFlag;
-  int _bufSize;
-  int _maxPages;
   RangeInfoArrays *_rangeArrays;
-  RangeInfoAlloc *_rangeAlloc;
 
   /* for GetRangeNotInMem */
   TData *_tdataN;
@@ -256,22 +247,27 @@ private:
 
   RecordOrder _tdataFetchOrder; /* order to fetch TData records */
 
-  int _tReturned; /* # of TData bytes returned */
-  int _tHits;		/* # of TData bytes hit in buffer */
-  int _gReturned; /* # GData bytes returned */
-  int _gHits;	/* # of GData bytes hit int buffer*/
+  int _tReturned;   /* # of TData bytes returned */
+  int _tHits;	    /* # of TData bytes hit in buffer */
+  int _gReturned;   /* # GData bytes returned */
+  int _gHits;	    /* # of GData bytes hit int buffer*/
   int _totalRanges; /* total # of ranges returned */
-  int _totalBuf; /* total # of buffers occuipied by ranges returned */
-  int _totalData; /* total # of data bytes occupied by ranges returned */
+  int _totalBuf;    /* total # of buffers occuipied by ranges returned */
+  int _totalData;   /* total # of data bytes occupied by ranges returned */
 
+#if defined(BUFMGRHIST)
   /* # of times AllocRange called */
   int _totalAllocRange[RANGE_ALLOC_HIST_SIZE]; 
   int _totalAllocRangeBytes[RANGE_ALLOC_HIST_SIZE]; 
+#endif
   
   /* for keeping track of tdata->GetRecs() */
   int _totalGetRecBufSize;
   int _totalGetRecBytes;
   int _numGetRecs;
+
+  MemMgr *_memMgr;            /* memory manager */
+  int _pageSize;              /* page size */
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/08/08 21:00:50  beyer
+  Added some debugging statements
+
   Revision 1.9  1996/07/12 04:01:02  jussi
   Clenaed up the code.
 
@@ -44,7 +47,7 @@
 
 #include <stdio.h>
 
-#include "Config.h"
+#include "Init.h"
 #include "Exit.h"
 #include "BufMgrFull.h"
 #include "BufferPolicy.h"
@@ -55,18 +58,19 @@
 #include "RecRange.h"
 #include "TDataAttr.h"
 #include "GData.h"
-#include "Init.h"
 #include "BufferFifo.h"
 #include "BufferFocal.h"
 #include "BufferLifo.h"
 #include "BufferRnd.h"
+#include "BufferLru.h"
 
 //#define DEBUG
 
-int BUFMGR_FULL_PAGESIZE = DEVISE_PAGESIZE;
+#if defined(BUFMGRHIST)
 static int _rangeHistSize[RANGE_ALLOC_HIST_SIZE] = {
     131072, 65536, 32768, 16384, 8192, 0
 };
+#endif
 
 BufMgrFull::BufMgrFull(int bufSize)
 {
@@ -75,45 +79,53 @@ BufMgrFull::BufMgrFull(int bufSize)
     _totalGetRecBytes = _numGetRecs = _totalGetRecBufSize = 0;
     
     int i;
+#if defined(BUFMGRHIST)
     for(i = 0; i < RANGE_ALLOC_HIST_SIZE; i++)
         _totalAllocRange[i] = _totalAllocRangeBytes[i] = 0;
+#endif
     
     if (Init::Randomize())
         _tdataFetchOrder = Randomize;
     else
         _tdataFetchOrder = AnyOrder;
     
-    BUFMGR_FULL_PAGESIZE = Init::PageSize();
-    _recPtrs = new void * [BUFMGR_FULL_PAGESIZE];
-    DOASSERT(_recPtrs, "Out of memory");
-    
     if (Init::Policy() == BufPolicy::FOCAL) {
         printf("focal policy\n");
-        _policy = new BufferFocal();
+        _policy = new BufferFocal;
     } else if (Init::Policy() == BufPolicy::LIFO) {
         printf("Lifo policy\n");
-        _policy = new BufferLifo();
+        _policy = new BufferLifo;
     } else if (Init::Policy() == BufPolicy::RND) {
         printf("Rnd policy\n");
-        _policy = new BufferRnd();
+        _policy = new BufferRnd;
     } else {
         printf("Fifo policy\n");
-        _policy = new BufferFifo();
+        _policy = new BufferFifo;
     }
     DOASSERT(_policy, "Out of memory");
     
     _policy->Info(_numArrays, _policyFlag);
     
-    _maxPages = bufSize / BUFMGR_FULL_PAGESIZE;
-    if (_maxPages < 1)
-        _maxPages = 1;
-    _bufSize = _maxPages * BUFMGR_FULL_PAGESIZE;
+    _pageSize = Init::PageSize();
+    int bufPages = MAX(bufSize / _pageSize, 1);
     
-    _rangeAlloc = new RangeInfoAlloc(_bufSize);
-    _rangeArrays = new RangeInfoArrays(_numArrays, _maxPages);
-    DOASSERT(_rangeAlloc && _rangeArrays, "Out of memory");
+    // destroy all semaphores and shared memory segments
+    Semaphore::destroyAll();
+    SharedMemory::destroyAll();
+
+    // create space for 16 virtual semaphores
+    int status = SemaphoreV::create(16);
+    DOASSERT(status >= 0, "Cannot create virtual semaphores");
+
+    printf("Creating a %.2f MB buffer pool\n", bufSize / 1048576.0);
+
+    _memMgr = new MemMgr(bufPages, _pageSize, status);
+    DOASSERT(_memMgr && status >= 0, "Cannot create memory manager");
+
+    _rangeArrays = new RangeInfoArrays(_numArrays, bufPages);
+    DOASSERT(_rangeArrays, "Out of memory");
     
-    _tdataRangeList = new TDataRangeList();
+    _tdataRangeList = new TDataRangeList;
     _recRange = new RecRange(0);	
     DOASSERT(_tdataRangeList && _recRange, "Out of memory");
     
@@ -123,14 +135,8 @@ BufMgrFull::BufMgrFull(int bufSize)
     /* head of buffer allocation list */
     _allocHead.next = _allocHead.prev = &_allocHead;
     
-    _defaultPolicy = new BufferFifo();
+    _defaultPolicy = new BufferFifo;
     DOASSERT(_defaultPolicy, "Out of memory");
-}
-
-void BufMgrFull::InitNextRangeInMem(RangeInfo *listHead)
-{
-    _listHeadInMem = listHead;
-    _nextRangeInMem = listHead->next;
 }
 
 /*************************************************************
@@ -164,49 +170,31 @@ Boolean BufMgrFull::GetNextRangeInMem(RangeInfo *&rangeInfo)
     return false;
 }
 
-/* Init Getting GData in memory */
-
-void BufMgrFull::InitGetGDataInMem()
+void BufMgrFull::InitGetDataInMem(RangeList *list)
 {
-#ifdef DEBUG
-    printf("BufMgrFull:InitGetGDataInMem\n");
+#if defined(DEBUG)
+    printf("BufMgrFull:InitGetDataInMem\n");
 #endif
-  
+
     int numRanges;
     RangeInfo *listHead;
-    _gRangeList->GetRangeList(numRanges,listHead);
-    InitNextRangeInMem(listHead);
+    list->GetRangeList(numRanges,listHead);
+    _listHeadInMem = listHead;
+    _nextRangeInMem = listHead->next;
 }
 
 Boolean BufMgrFull::GetGDataInMem(RecId &startRecId, int &numRecs, void *&buf)
 {
     RangeInfo *rangeInfo;
-    if (GetNextRangeInMem(rangeInfo)) {
-        _recRange->Insert(rangeInfo->low, rangeInfo->high, NULL, NULL,
-                          RecRange::MergeIgnoreRecs, NULL);
-        CalcRetArgs(false, true, _gdata, rangeInfo, _lowId, _highId,
-                    buf, startRecId, numRecs);
-        SetUse(rangeInfo);
-        return true;
-    }
-    
-    return false;
-}
+    if (!GetNextRangeInMem(rangeInfo))
+        return false;
 
-void BufMgrFull::DoneGetGDataInMem()
-{
-}
-
-void BufMgrFull::InitGetTDataInMem() {
-#ifdef DEBUG
-    printf("BufMgrFull:InitGetTDataInMem\n");
-#endif
-
-    int numRanges;
-    RangeInfo *listHead;
-    _tRangeList->GetRangeList(numRanges,listHead);
-    InitNextRangeInMem(listHead);
-    _getTInMem = true;
+    _recRange->Insert(rangeInfo->low, rangeInfo->high, NULL, NULL,
+                    RecRange::MergeIgnoreRecs, NULL);
+    CalcRetArgs(false, true, _gdata, rangeInfo, _lowId, _highId,
+                buf, startRecId, numRecs);
+    SetUse(rangeInfo);
+    return true;
 }
 
 Boolean BufMgrFull::GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf)
@@ -228,7 +216,7 @@ Boolean BufMgrFull::GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf)
         RecId uLow, uHigh;
         Boolean noHigh = _recRange->NextUnprocessed(_tInMemCurLow,
                                                     uLow, uHigh);
-        /* Make [uLow,uHigh] fit in [_tInMemRange->low,_tInMemRange->high]*/
+        /* Make [uLow,uHigh] fit in [_tInMemRange->low,_tInMemRange->high] */
         if (noHigh || uHigh > _tInMemRange->high)
             uHigh = _tInMemRange->high;
         
@@ -236,40 +224,25 @@ Boolean BufMgrFull::GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf)
             /* done */
             return false;
         
-        /* make uHigh fit in [_lowId, _highId]. 
-           (uLow already >= _lowId) */
+        /* make uHigh fit in [_lowId, _highId] (uLow already >= _lowId) */
         if (uHigh > _highId)
             uHigh = _highId;
         
         if (uLow <= _tInMemRange->high) {
             /* still a valid range to return */
-            /*
-               CalcRetArgs(_tdata,_tInMemRange,
-               _lowId,_highId,buf,startRecId,numRecs);
-               */
-            CalcRetArgs(true, true,_tdata,_tInMemRange,
-                        uLow,uHigh,buf,startRecId,numRecs);
-            _recRange->Insert(startRecId, startRecId+numRecs-1,NULL,NULL,
-                              RecRange::MergeIgnoreRecs, NULL);
+            CalcRetArgs(true, true,_tdata, _tInMemRange,
+                        uLow, uHigh, buf, startRecId, numRecs);
+            _recRange->Insert(startRecId, startRecId + numRecs - 1,
+                              NULL, NULL, RecRange::MergeIgnoreRecs, NULL);
             SetUse(_tInMemRange);
-            _tInMemCurLow = startRecId+numRecs;
+            _tInMemCurLow = startRecId + numRecs;
             return true;
         }
-        else _getTInMem = true;
+
+        _getTInMem = true;
     }
     
     return false;
-}
-
-void BufMgrFull::DoneGetTDataInMem()
-{
-#if 0
-    printf("DoneTDataInMem: processed ranges: \n");
-    _recRange->Print();
-    
-    printf("TData in mem: \n");
-    _tRangeList->Print();
-#endif
 }
 
 void BufMgrFull::InitGDataScan()
@@ -283,7 +256,7 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
     RecId processLow, processHigh; /* what's to be processed next */
     RangeInfo *rangeInfo;
     
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("BufMgrFull::GDataScan [%ld,%ld]\n", _lowId, _highId);
 #endif
     
@@ -301,7 +274,7 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                     /* no more to scan */
                     done = true;
                     _gScanState = GScanDoneState;
-#ifdef DEBUG
+#if defined(DEBUG)
 		    printf("BufMgrFull::GDataScan no more ranges (%ld,%ld) (%ld,%ld)\n",
 			   _gScanLow, _gScanHigh, _lowId, _highId);
 #endif
@@ -309,7 +282,7 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                 }
                 if (_gScanHigh < _lowId) {
                     /* try next one */
-#ifdef DEBUG
+#if defined(DEBUG)
 		    printf("BufMgrFull::GDataScan skipping range (%ld,%ld) (%ld,%ld)\n",
 			   _gScanLow, _gScanHigh, _lowId, _highId);
 #endif
@@ -325,7 +298,7 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                 
                 _gScanCur = _gScanLow;
                 _gScanState= CheckOverlapState;
-#ifdef DEBUG
+#if defined(DEBUG)
 		printf("BufMgrFull::GDataScan moving on to CheckOverlap (%ld,%ld) (%ld,%ld) %ld\n",
 		       _gScanLow, _gScanHigh, _lowId, _highId, _gScanCur);
 #endif
@@ -499,7 +472,7 @@ void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
                              RecordOrder recOrder,
 			     Boolean tdataOnly)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("BufMgrFull::InitGetRecs (%ld,%ld) with tdata 0x%p, gdata 0x%p\n",
            lowId, highId, tdata, gdata);
 #endif
@@ -527,20 +500,21 @@ void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 
     if (!_tdataOnly && gdata != NULL) {
         /* start with getting in memory GData */
-        InitGetGDataInMem();
+        InitGetDataInMem(_gRangeList);
+        _getTInMem = false;
         _state = DoGDataInMem;
     } else {
         /* start with getting in memory TData */
-        InitGetTDataInMem();
+        InitGetDataInMem(_tRangeList);
+        _getTInMem = true;
         _state = DoTDataInMem;
     }
 }
 
 /* Retrieve next batch of records.  Return TRUE if still more batches. */
 Boolean BufMgrFull::GetRecs(Boolean &isTData, RecId &startRecId,
-			    int &numRecs, void *&buf, void **&recs)
+			    int &numRecs, void *&buf)
 {
-    recs = _recPtrs;
     Boolean done = false;
 
     while (!done) {
@@ -550,26 +524,25 @@ Boolean BufMgrFull::GetRecs(Boolean &isTData, RecId &startRecId,
             if (GetGDataInMem(startRecId, numRecs, buf)) {
                 isTData = false;
                 return true;
-            } else {
-                DoneGetGDataInMem();
-                InitGetTDataInMem();
-                _state = DoTDataInMem;
             }
+            DoneGetDataInMem();
+            InitGetDataInMem(_tRangeList);
+            _getTInMem = true;
+            _state = DoTDataInMem;
             break;
 
           case DoTDataInMem:
             if (GetTDataInMem(startRecId, numRecs, buf)) {
                 isTData = true;
                 return true;
+            }
+            DoneGetDataInMem();
+            if (!_tdataOnly && _gdata != NULL) {
+                InitGDataScan();
+                _state = DoGDataScan;
             } else {
-                DoneGetTDataInMem();
-                if (!_tdataOnly && _gdata != NULL) {
-                    InitGDataScan();
-                    _state = DoGDataScan;
-                } else {
-                    InitTDataScan();
-                    _state = DoTDataScan;
-                }
+                InitTDataScan();
+                _state = DoTDataScan;
             }
             break;
 
@@ -577,23 +550,20 @@ Boolean BufMgrFull::GetRecs(Boolean &isTData, RecId &startRecId,
             if (GDataScan(startRecId, numRecs, buf)) {
                 isTData = false;
                 return true;
-            } else {
-                DoneGDataScan();
-                InitTDataScan();
-                _state = DoTDataScan;
             }
+            DoneGDataScan();
+            InitTDataScan();
+            _state = DoTDataScan;
             break;
 
           case DoTDataScan:
             if (TDataScan(startRecId, numRecs, buf)) {
                 isTData = true;
                 return true;
-            } else {
-                DoneTDataScan();
-                _state = DoneBuffer;
-                return false;
             }
-            break;
+            DoneTDataScan();
+            _state = DoneBuffer;
+            return false;
 
           case DoneBuffer:
             DOASSERT(0, "Invalid action");
@@ -607,10 +577,10 @@ void BufMgrFull::DoneGetRecs()
 {
     switch(_state) {
       case DoGDataInMem:
-        DoneGetGDataInMem();
+        DoneGetDataInMem();
         break;
       case DoTDataInMem:
-        DoneGetTDataInMem();
+        DoneGetDataInMem();
         break;
       case DoGDataScan:
         DoneGDataScan();
@@ -626,7 +596,7 @@ void BufMgrFull::DoneGetRecs()
 
 void BufMgrFull::FreeRecs(void *buf, BufHint hint, Boolean dirty)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("FreeRecs 0x%p\n", buf);
 #endif
     ClearUse(buf, dirty);
@@ -663,30 +633,6 @@ void BufMgrFull::ClearUse(void *buf, Boolean dirty)
     }
 
     DOASSERT(0, "Cannot find buffer");
-}
-
-/*****  Prefetch Interface ****/
-
-/* Init prefetch */
-void BufMgrFull::InitPrefetch(TData *tdata)
-{
-}
-
-/* Prefetch record whose ID is "current".
-   Return TRUE if there is still buffer for prefetch,
-   and set "next" to the next Id after "current" to be prefetched. */
-
-Boolean BufMgrFull::DoPrefetch(RecId current, RecId &next)
-{
-    return false;
-}
-
-/**** Policy ****/
-
-/* Init buffer manager policy */
-
-void BufMgrFull::InitPolicy(BufPolicy::policy policy)
-{
 }
 
 /* Calculate the return parameter given rangeInfo */
@@ -739,15 +685,18 @@ void BufMgrFull::CalcRetArgs(Boolean isTData, Boolean isInMem,
     }
 }
 
-/* Allocate a range suitable for up to "size" bytes.
-   Minimum size returned BUFMGR_FULL_PAGESIZE */
+/*
+   Allocate a range suitable for up to "size" bytes.
+   Minimum size returned _pageSize.
+*/
 
-RangeInfo *BufMgrFull::AllocRange(int size, Boolean firm)
+RangeInfo *BufMgrFull::AllocRange(int size)
 {
-#ifdef DEBUG
-    printf("BufMgrFull::AllocRange(%d)\n",size);
+#if defined(DEBUG)
+    printf("BufMgrFull::AllocRange(%d)\n", size);
 #endif
 
+#if defined(BUFMGRHIST)
     for(int i = 0; i < RANGE_ALLOC_HIST_SIZE; i++) {
         if (size >= _rangeHistSize[i]) {
             _totalAllocRange[i]++;
@@ -755,73 +704,82 @@ RangeInfo *BufMgrFull::AllocRange(int size, Boolean firm)
             break;
         }
     }
+#endif
 
     size = BufSize(size); /* force allocation to page boundary */
-    RangeInfo *rangeInfo;
-    if ((rangeInfo = _rangeAlloc->AllocRange(size)) == NULL) {
-        /* no more to allocate. Pick a victim */
-#ifdef DEBUG
-        printf("pick victim\n");
-#endif
-        int arrayNum, pos;
-        Boolean found = false;
-        if (_policyFlag & ReportVictim)
-            found = _policy->PickVictim(_rangeArrays, arrayNum, pos);
-        else
-            found = _defaultPolicy->PickVictim(_rangeArrays, arrayNum, pos);
-        
-        if (!found) {
-            /* no victim found */
-            if (firm) {
-                DOASSERT(0, "Cannot find buffer victim");
-            }
-            return NULL;
-        }
-        
-        rangeInfo = _rangeArrays->GetRange(arrayNum, pos);
-        DOASSERT(!rangeInfo->InUse(), "Buffer victim in use");
-        
-#ifdef DEBUG
-        printf("victim (%ld,%ld), data %d, buf %d, gap %d\n",
-               rangeInfo->low, rangeInfo->high,
-               rangeInfo->DataSize(), rangeInfo->BufSize(),
-               rangeInfo->GapSize());
-#endif
-        
-        if (rangeInfo->Dirty()) {
-            /* write dirty range out*/
-            rangeInfo->tdata->WriteRecs(rangeInfo->low,
-                                        rangeInfo->high - rangeInfo->low + 1,
-                                        rangeInfo->GetData());
-            rangeInfo->ClearDirty();
-        }
-        
-        /*
-           if victim range is larger than requested size by at least
-           one page, then go and return the excess space
-        */
 
-        if (rangeInfo->DataSize() + rangeInfo->GapSize() - size
-            >= BUFMGR_FULL_PAGESIZE) {
-            /* still room left for data in this range */
-            rangeInfo = Truncate(rangeInfo, size);
-#ifdef DEBUG
-            printf("truncate victim by %d bytes\n", size);
+    char *buf;
+    int pages = size / _pageSize;
+    int status = _memMgr->Try(MemMgr::Cache, buf, pages);
+
+    // Did we successfully get at least some memory?
+    if (status >= 0) {
+        RangeInfo *newRange = new RangeInfo;
+        newRange->buf = buf;
+        newRange->bufSize = pages * _pageSize;
+#if defined(DEBUG)
+        printf("returning %d bytes\n", newRange->bufSize);
 #endif
-        } else {
-            UnlinkRange(rangeInfo, arrayNum, pos);
-            
-            ReportDeleted(rangeInfo->GetTData(),
-                          rangeInfo->low, rangeInfo->high);
-        }
+        return newRange;
     }
     
-#ifdef DEBUG
+    /* No more memory available. Pick a victim. */
+
+#if defined(DEBUG)
+    printf("pick victim\n");
+#endif
+
+    int arrayNum, pos;
+    Boolean found = false;
+    if (_policyFlag & BufferPolicy::ReportVictim)
+        found = _policy->PickVictim(_rangeArrays, arrayNum, pos);
+    else
+        found = _defaultPolicy->PickVictim(_rangeArrays, arrayNum, pos);
+        
+    DOASSERT(found, "Cannot find buffer victim");
+        
+    RangeInfo *rangeInfo = _rangeArrays->GetRange(arrayNum, pos);
+    DOASSERT(!rangeInfo->InUse(), "Buffer victim in use");
+    
+#if defined(DEBUG)
+    printf("victim (%ld,%ld), data %d, buf %d, gap %d\n",
+           rangeInfo->low, rangeInfo->high, rangeInfo->DataSize(),
+           rangeInfo->BufSize(), rangeInfo->GapSize());
+#endif
+    
+    if (rangeInfo->Dirty()) {
+        /* write dirty range out*/
+        rangeInfo->tdata->WriteRecs(rangeInfo->low,
+                                    rangeInfo->high - rangeInfo->low + 1,
+                                    rangeInfo->GetData());
+        rangeInfo->ClearDirty();
+    }
+
+    /*
+       if victim range is larger than requested size by at least
+       one page, then go and return the excess space
+    */
+
+    if (rangeInfo->DataSize() + rangeInfo->GapSize() - size
+        >= _pageSize) {
+        /* still room left for data in this range */
+        rangeInfo = Truncate(rangeInfo, size);
+#if defined(DEBUG)
+        printf("truncate victim by %d bytes\n", size);
+#endif
+    } else {
+        UnlinkRange(rangeInfo, arrayNum, pos);
+        
+        ReportDeleted(rangeInfo->GetTData(),
+                      rangeInfo->low, rangeInfo->high);
+    }
+    
+#if defined(DEBUG)
     printf("returning %d bytes\n", rangeInfo->bufSize);
 #endif
     
     /* sanity check */
-    DOASSERT(rangeInfo->bufSize % BUFMGR_FULL_PAGESIZE == 0,
+    DOASSERT(rangeInfo->bufSize % _pageSize == 0,
              "Invalid buffer size");
     
     return rangeInfo;
@@ -855,7 +813,7 @@ void BufMgrFull::InitGetRangeNotInMem(TData *tdata, RangeList *rangeList,
 
 Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("BufMgrFul::GetRangeNotInMem: _dSize %d\n", _dSizeN);
 #endif
 
@@ -871,8 +829,7 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
     int numRecs;
     int dataSize;
     Boolean stat = _tdataN->GetRecs(_rangeN->buf, _rangeN->bufSize,
-                                    startRid, numRecs,
-                                    dataSize, _recPtrs);
+                                    startRid, numRecs, dataSize);
     
     DOASSERT(stat, "Invalid status");
 
@@ -884,12 +841,10 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
     _totalGetRecBytes += dataSize;
     _numGetRecs++;
     
-    if (_rangeN->bufSize - BufSize(dataSize) >= BUFMGR_FULL_PAGESIZE) {
-        /* truncate range */
-#if defined(DEBUG)
-        printf("GetRangeNotInMem: truncate %d bytes\n", BufSize(dataSize));
-#endif
-        retRangeInfo = _rangeAlloc->Truncate(_rangeN, BufSize(dataSize));
+    if (_rangeN->bufSize - BufSize(dataSize) >= _pageSize) {
+        /* truncate range -- don't know how to do it yet */
+        retRangeInfo = _rangeN;
+        _rangeN = NULL;
     } else {
         retRangeInfo = _rangeN;
         _rangeN = NULL;
@@ -905,7 +860,7 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
   
     /* Place new range into policy arrays */
     int arrayNum, pos;
-    if (_policyFlag & ReportPlacement)
+    if (_policyFlag & BufferPolicy::ReportPlacement)
         _policy->Placement(retRangeInfo, _rangeArrays, arrayNum, pos);
     else
         _defaultPolicy->Placement(retRangeInfo, _rangeArrays, arrayNum, pos);
@@ -931,15 +886,12 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
 void BufMgrFull::DoneGetRangeNotInMem()
 {
     _tdataN->DoneGetRecs();
-    if (_rangeN != NULL) {
-        /* put it back on the list */
-#if 0
-        printf("BufMgrFull::DoneGetRangeNotInMem: remaining range not NULL\n");
-        printf("%d bytes in buffer\n", _rangeN->bufSize);
-        char buf[20];
-        printf("ret"); gets(buf);
-#endif
-        _rangeAlloc->FreeRange(_rangeN);
+    if (_rangeN) {
+        /* release memory */
+        int pages = _rangeN->BufSize() / _pageSize;
+        int status = _memMgr->Deallocate(MemMgr::Cache,
+                                         (char *)_rangeN->GetBuffer(),
+                                         pages);
         _rangeN = NULL;
     }
 }
@@ -951,31 +903,40 @@ void BufMgrFull::DoneGetRangeNotInMem()
 
 RangeInfo *BufMgrFull::Truncate(RangeInfo *rangeInfo, int bufSize)
 {
-    TData *tdata = rangeInfo->GetTData();
-    int recSize = tdata->RecSize();
+    int recSize = rangeInfo->GetTData()->RecSize();
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Truncate %d, recSize = %d\n", bufSize, recSize);
 #endif
     
+    DOASSERT(bufSize > 0, "Invalid truncation request");
+
     /* Figure out # of records truncated */
     int dataTruncated = (bufSize - rangeInfo->GapSize());
     if (dataTruncated > 0) {
-        int numRecs = (dataTruncated % recSize == 0 ?
-                       dataTruncated / recSize: dataTruncated/recSize + 1);
-        
+        int numRecs = dataTruncated / recSize;
+        if (dataTruncated % recSize != 0)
+            numRecs++;
+
         if (numRecs > 0)
             ReportDeleted(rangeInfo->GetTData(), rangeInfo->low,
                           rangeInfo->low + numRecs - 1);
         
         rangeInfo->low += numRecs;
         rangeInfo->data += numRecs * recSize;
-        rangeInfo->dataSize -= numRecs  *recSize;
+        rangeInfo->dataSize -= numRecs * recSize;
     }
     
     DOASSERT(rangeInfo->dataSize > 0, "Invalid data size");
     
-    return _rangeAlloc->Truncate(rangeInfo, bufSize);
+    RangeInfo *newInfo = new RangeInfo;
+    newInfo->buf = rangeInfo->buf;
+    newInfo->bufSize = bufSize;
+  
+    rangeInfo->bufSize -= bufSize;
+    rangeInfo->buf += bufSize;
+  
+    return newInfo;
 }
 
 
@@ -987,8 +948,8 @@ void BufMgrFull::Print(TData *tdata)
     rangeList->GetRangeList(num, head);
     printf("low\thigh\tdata\tbuf\tgap\n");
     for(RangeInfo *cur = head->next; cur != head; cur = cur->next) {
-        printf("%ld\t%ld\t%d\t%d\t%d\n",cur->low,cur->high,
-               cur->DataSize(),cur->BufSize(),cur->GapSize());
+        printf("%ld\t%ld\t%d\t%d\t%d\n", cur->low, cur->high,
+               cur->DataSize(), cur->BufSize(), cur->GapSize());
     }
 }
 
@@ -1001,8 +962,8 @@ RecId BufMgrFull::RoundToPage(TData *tdata, RecId low, RecId high,
     int recBytes = numRecs * recSize;
     RecId newHigh = high;
     int remain;
-    if ((remain = recBytes % BUFMGR_FULL_PAGESIZE) != 0) {
-        int bytesLeft = BUFMGR_FULL_PAGESIZE - remain;
+    if ((remain = recBytes % _pageSize) != 0) {
+        int bytesLeft = _pageSize - remain;
         newHigh += bytesLeft / recSize;
     }
     
@@ -1024,101 +985,10 @@ void BufMgrFull::CheckRange(RangeInfo *rangeInfo)
     return;
     
   error:
-    printf("Range error:buf 0x%p, data 0x%p, id (%ld,%ld), bsizes %d, dSize %d\n",
-           rangeInfo->buf,rangeInfo->data,rangeInfo->low,rangeInfo->high,
+    printf("Range error:buf 0x%p, data 0x%p, id (%ld,%ld), buf %d, data %d\n",
+           rangeInfo->buf, rangeInfo->data, rangeInfo->low, rangeInfo->high,
            rangeInfo->BufSize(), rangeInfo->DataSize());
     DOASSERT(0, "Invalid range");
-}
-
-/*** Buffer allocation for appending to TData */
-
-void BufMgrFull::InitAllocBuf(int recSize, int numRecs)
-{
-    _allocRecs = numRecs;                 /* # of records left */
-    _allocRecSize = recSize;
-    _allocDone = false;
-    
-    DOASSERT(_allocRecSize > 0, "Invalid record size");
-}
-
-Boolean BufMgrFull::GetBuf(void *&buf, int &numRecs)
-{
-    if (_allocRecs <= 0 || _allocDone)
-        return false;
-    
-    RangeInfo *rangeInfo = AllocRange(_allocRecSize * _allocRecs, false);
-    if (rangeInfo == NULL) {
-        /* done */
-        _allocDone = true;
-        return false;
-    }
-    
-    numRecs = rangeInfo->bufSize / _allocRecSize;
-    if (numRecs > _allocRecs)
-        numRecs = _allocRecs;
-    _allocRecs -= numRecs;
-    
-    buf = rangeInfo->buf;
-    rangeInfo->data = rangeInfo->buf;
-    rangeInfo->dataSize = numRecs * _allocRecSize;
-    
-    /* insert as head of list */
-    rangeInfo->next = _allocHead.next;
-    rangeInfo->prev = &_allocHead;
-    rangeInfo->next->prev = rangeInfo;
-    rangeInfo->prev->next = rangeInfo;
-  
-    return true;
-}
-
-void BufMgrFull::FreeBuf(void *buf, TData *tdata, RecId startId)
-{
-    /* find the range for this buffer */
-    for(RangeInfo *rangeInfo = _allocHead.next; rangeInfo != &_allocHead;
-        rangeInfo = rangeInfo->next) {
-        if (rangeInfo->buf == buf) {
-            /* found */
-            /* remove from list */
-            rangeInfo->prev->next = rangeInfo->next;
-            rangeInfo->next->prev = rangeInfo->prev;
-            rangeInfo->prev = rangeInfo->next = NULL;
-            
-            /* update fields */
-            rangeInfo->tdata = tdata;
-            rangeInfo->low = startId;
-            rangeInfo->high = startId + rangeInfo->dataSize/_allocRecSize - 1;
-            
-            /* Place new range into policy arrays */
-            int arrayNum, pos;
-            if (_policyFlag & ReportPlacement) {
-                _policy->Placement(rangeInfo, _rangeArrays, arrayNum, pos);
-            } else 
-                _defaultPolicy->Placement(rangeInfo, _rangeArrays,
-                                          arrayNum, pos);
-            _rangeArrays->Insert(arrayNum, pos, rangeInfo);
-            rangeInfo->listNum = arrayNum;
-            
-            /* put into list of ranges for this TData */
-            int numDisposed;
-            RangeInfo **disposed;
-            (_tdataRangeList->Get(tdata))->Insert(rangeInfo,
-                                                  RangeList::MergeIgnore,
-                                                  numDisposed, disposed);
-            
-            /* clean range immediately */
-            rangeInfo->tdata->WriteRecs(rangeInfo->low,
-                                        rangeInfo->high - rangeInfo->low + 1,
-                                        rangeInfo->GetData());
-            
-            ReportInserted(tdata, rangeInfo->low, rangeInfo->high);
-            
-            return;
-        }
-    }
-}
-
-void BufMgrFull::DoneAllocBuf()
-{
 }
 
 void BufMgrFull::InitTDataInMem(TData *tdata)
@@ -1153,19 +1023,9 @@ void BufMgrFull::DoneTDataInMem()
 {
 }
 
-void BufMgrFull::PhaseHint(BufferPolicy::Phase phase)
-{
-    _policy->PhaseHint(phase);
-}
-
-void BufMgrFull::FocusHint(RecId id, TData *tdata, GData *gdata)
-{
-    _policy->FocusHint(id,tdata, gdata);
-}
-
 void BufMgrFull::PrintStat()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     _rangeArrays->PrintStat();
 #endif
 
@@ -1181,16 +1041,18 @@ void BufMgrFull::PrintStat()
                _tReturned+_gReturned, _tHits+_gHits,
               (double)(_tHits+_gHits)/(double)(_tReturned+_gReturned) * 100.0);
     
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("%d bufs returned: avg buf size %f, avg data size: %f\n",
            _totalRanges, (double)_totalBuf/(double)_totalRanges,
            (double)_totalData/(double)_totalRanges);
     
+#if defined(BUFMGRHIST)
     for(int i = 0; i < RANGE_ALLOC_HIST_SIZE; i++) {
         printf("%d AllocRange() >= %d, avg size %.2f\n",
                _totalAllocRange[i], _rangeHistSize[i],
                (double)_totalAllocRangeBytes[i]/(double)_totalAllocRange[i]);
     }
+#endif
     
     printf("%d totalGetRecs, avg input Buf %.2f, avg size %.2f\n",
            _numGetRecs, (double)_totalGetRecBufSize/(double)_numGetRecs,
@@ -1205,7 +1067,10 @@ void BufMgrFull::Clear()
     for(int i = 0; i < numArrays; i++) {
         for(_rangeArrays->InitIterator(i); _rangeArrays->More(i);) {
             RangeInfo *rInfo = _rangeArrays->Next(i);
-            _rangeAlloc->FreeRange(rInfo);
+            int pages = rInfo->BufSize() / _pageSize;
+            int status = _memMgr->Deallocate(MemMgr::Cache,
+                                             (char *)rInfo->GetBuffer(),
+                                             pages);
         }
     }
     
@@ -1216,9 +1081,6 @@ void BufMgrFull::Clear()
     
     _policy->Clear();
     _defaultPolicy->Clear();
-    
-    /* Clear range allocator to go back to 1 contiguous block of memory */
-    _rangeAlloc->Clear();
 }
 
 /* Clear buffers occupied by TData/GData */
@@ -1235,7 +1097,10 @@ void BufMgrFull::ClearData(TData *data)
                 /* clear this one */
                 UnlinkRange(info, i, j);
                 ReportDeleted(data, info->low, info->high);
-                _rangeAlloc->FreeRange(info);
+                int pages = info->BufSize() / _pageSize;
+                int status = _memMgr->Deallocate(MemMgr::Cache,
+                                                 (char *)info->GetBuffer(),
+                                                 pages);
                 size--;
             } else
                 j++;
