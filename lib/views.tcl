@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1997/02/26 16:32:07  wenger
+#  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #  Revision 1.26  1997/02/14 16:48:09  wenger
 #  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -185,6 +188,7 @@ proc ProcessViewSelected { view } {
  
     set curView $view
 
+	puts "view = $view"
     Update3DLocation
     Update2DQueryWindow
     UpdateHistoryWindow

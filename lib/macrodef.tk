@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.74  1997/02/18 18:07:50  donjerko
+#	Added index deletions.
+#
 #	Revision 1.73  1997/02/14 16:48:05  wenger
 #	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -485,11 +488,11 @@ proc OpenNewDataSource {derivedOnly} {
     if {$snames == ""} { return "" }
 
     # must choose a single data stream
-    if {[llength $snames] > 1} {
-	dialog .singleStream "Select Single Stream" \
-                "You have selected more than one data stream.\
-                Only the first stream will be visualized." "" 0 Continue
-    }
+#     if {[llength $snames] > 1} {
+#	dialog .singleStream "Select Single Stream" \
+#                "You have selected more than one data stream.\
+#               Only the first stream will be visualized." "" 0 Continue
+#   }
     return [ OpenAndDefineDataSources $derivedOnly $snames ]
 }
 
@@ -499,6 +502,14 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
     global sourceList derivedSourceList
 
     puts "In OpenAndDefineDataSources($derivedOnly, $snames)"
+
+    if {[llength $snames] > 1} {
+	dialog .singleStream "Select Single Stream" \
+                "You have selected more than one data stream.\
+                Only the first stream will be visualized." "" 0 Continue
+	set snames [lindex $snames 0]
+    }
+
     foreach sname $snames {
 
        set sourcedef [OpenDataSource $sname]
@@ -569,8 +580,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 set schema $result
             }
         }
-	   }
-
 	   puts "before creating tdata"
 
         statusWindow .info "Status" \
@@ -578,7 +587,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         update
 
         # ask DEVise to create tdata
-	   puts "create tdata $schema $sname $stype $param"
+	   puts "creating UNIXFILE tdata $schema $sname $stype $param"
         set result [DEVise create tdata $schema $sname $stype $param]
 
 	   puts "after creating tdata"
@@ -590,11 +599,13 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                     "Cannot open data stream $sname" "" 0 OK
             return ""
         }
+	   }
+
     }
 	if { [isDTEType $stype] } {
-		return [list [lindex $snames 0] $sname]
+		return [list [lindex $snames 0] $sname 1]
 	} else {
-		return [list [lindex $snames 0] [file tail $schemafile]]
+		return [list [lindex $snames 0] [file tail $schemafile] 0]
 	}
 }
 
@@ -719,6 +730,9 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 
     set grplist [DEVise getItems $schemaname $topgrp $grpname]
 
+    set default ""
+    set defaultset 0
+
     foreach itm $grplist {
 	set subname [lindex $itm 0]
 	set type [lindex $itm 1]
@@ -727,6 +741,11 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 	# add a cascaded menu for group
 
 	if {$type != "intr"} {
+		if {!$defaultset} {
+			# set default value of var to the first in list
+			set defaultset 1
+			set default $prefix$subname
+		}
 	    $menu add radiobutton -label $subname -variable $var \
 		    -value $prefix$subname
 	} else {
@@ -735,6 +754,7 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 		    $subname $topgrp
 	}
     }
+    return $default
 }
 
 ############################################################
@@ -766,6 +786,8 @@ proc MacroImport {mode derivedOnly} {
 	set name_schema_pair [OpenNewDataSource $derivedOnly]
 	set tdata [lindex $name_schema_pair 0]
 	set schemaname [lindex $name_schema_pair 1]
+	set is_dte_type [lindex $name_schema_pair 2]
+	puts "is_dte_type = $is_dte_type"
 	set schemafile "$schemadir/$schemaname"
     }
     
@@ -781,7 +803,7 @@ proc MacroImport {mode derivedOnly} {
 	StatText $tdata $schemafile
     } else {
 #    set schemaname [file tail $schemafile]
-	MacroDefAuto $tdata $schemaname
+	MacroDefAuto $tdata $schemaname $is_dte_type
     }
 }
 
@@ -872,7 +894,7 @@ proc AllList {list  args} {
 }
 
 #############################################################
-proc MacroDefAuto {tdata schemaname} {
+proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList global curView
@@ -881,11 +903,13 @@ proc MacroDefAuto {tdata schemaname} {
 	return
     }
 	
-	set schema [DEVise getSchema $tdata]
+	puts "In MacroDefAuto($tdata, $schemaname)"
+
 #   set schemaname [file tail $schemafile]
 	
-	puts "schemaname = $schemaname" 
     set topgrp [SelectTopGroup $schemaname]
+
+    puts "topgrp = $topgrp"
 
     toplevel .auto
     wm title .auto "Define Visualization"
@@ -959,8 +983,8 @@ proc MacroDefAuto {tdata schemaname} {
     menubutton .auto.xsel.attr -relief raised \
 	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 20
     pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
-    setupAttrRadioMenu .auto.xsel.attr.g$topgrp x "" $schemaname \
-	    $topgrp $topgrp
+    set defaultx [setupAttrRadioMenu \
+    		.auto.xsel.attr.g$topgrp x "" $schemaname $topgrp $topgrp]
 
     label .auto.viewsel.label -text "View Type:"
     menubutton .auto.viewsel.view -relief raised \
@@ -1023,17 +1047,23 @@ proc MacroDefAuto {tdata schemaname} {
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
     setupAttrCheckButtons .auto.ysel.sel yvar $schemaname $topgrp $topgrp
 
-    # Try to select default X to be a sorted attribute
-    set x [lindex [lindex $schema 0] 0]
-    foreach attr $schema {
-	set name [lindex $attr 0]
-	set type [lindex $attr 1]
-	set sorted [lindex $attr 2]
-	if {$sorted > 0 && $name != "recId"} {
-	    set x $name
-	    break
-	}
-    }
+#   x is set to the first variable in the list (DD)
+
+    set x $defaultx
+
+#   set schema [DEVise dteListAttributes $tdata]
+#   set x [lindex [lindex $schema 0] 0]
+
+#   # Try to select default X to be a sorted attribute
+#   foreach attr $schema {
+#	set name [lindex $attr 0]
+#	set type [lindex $attr 1]
+#	set sorted [lindex $attr 2]
+#	if {$sorted > 0 && $name != "recId"} {
+#	    set x $name
+#	    break
+#	}
+#   }
 
     tk_menuBar .auto.xsel .auto.xsel.attr
     set cancel 0
@@ -1077,9 +1107,12 @@ proc MacroDefAuto {tdata schemaname} {
 	}
     }
     
-    # puts "The value of x is $x"
-    # puts "The ylist is $ylist"
+    puts "The value of x is $x"
+    puts "The ylist is $ylist"
     
+    if {$is_dte_type} {
+	    DEVise create tdata $tdata $tdata "$x $ylist"
+	}
     MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
 	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
 }
@@ -1380,7 +1413,6 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 
         ProcessViewSelected $viewinstance
-
         incr color
     }
 }

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.119  1997/02/26 16:32:01  wenger
+#	Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #	Revision 1.118  1997/02/18 18:07:49  donjerko
 #	Added index deletions.
 #
@@ -770,7 +773,7 @@ proc displayTable {table} {
      }
      set tdata [lindex $tdata_schema_pair 0]
      set schemaname [lindex $tdata_schema_pair 1]
-     MacroDefAuto $tdata $schemaname
+     MacroDefAuto $tdata $schemaname 1
 }
 
 .mbar.tdata.menu add command -label "Display" -command {
@@ -1051,7 +1054,8 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 	-command { DoResetLinkMaster}
 .mbar.view.menu.linkMenu add command -label "Set Link Type" \
 	-command { DoSetLinkType }
-	-command { DoResetLinkMaster }
+# this line is probably a mistake??? DD
+#	-command { DoResetLinkMaster }
 .mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Link Info" \
 	-command { DoDisplayLinkInfo }
