@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.122  1998/02/04 20:22:02  zhenhai
+  Fixed bugs of displaying date and customized text at axis.
+
   Revision 1.121  1998/02/03 18:31:26  zhenhai
   Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
   postscript printing.
@@ -698,6 +701,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_camera.V = 0;
 
 	_id = ++_nextId;
+
+	_symbolAlign = WindowRep::AlignCenter;
 
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);

@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.153  1998/02/02 18:26:32  wenger
+#	Strings file can now be loaded manually; name of strings file is now
+#	stored in session file; added 'serverExit' command and kill_devised
+#	script to cleanly kill devised; fixed bug 249; more info is now
+#	printed for unrecognized commands.
+#
 #	Revision 1.152  1998/01/14 22:24:45  wenger
 #	Changed 'Bring View Back' to 'Restore View'.
 #
@@ -777,6 +783,7 @@ source $libdir/win_print_config.tcl
 source $libdir/view_config.tcl
 source $libdir/cursor_grid.tcl
 source $libdir/GDataSock.tcl
+source $libdir/symbol_align.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -856,11 +863,13 @@ menubutton .mbar.window -text Window -underline 0 \
 menubutton .mbar.help -text Help -underline 0 \
 	-menu .mbar.help.menu
 
+# COLOR MENU.
 InitColorMenu .mbar
 
 pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
 	.mbar.window .mbar.color .mbar.help -expand 1 -side left -fill x
 
+# SESSION MENU.
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
 .mbar.session.menu add command -label "Save" -command DoSave
@@ -925,6 +934,7 @@ menu .mbar.session.menu.printMenu -tearoff 0
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 #.mbar.session.menu add command -label "Write description" -command { DEVise writeDesc /tmp/devise.desc }
 
+# TDATA MENU.
 menu .mbar.tdata.menu -tearoff 0
 
 proc displayTable {table} {
@@ -1233,6 +1243,7 @@ menu .mbar.tdata.menu.mappingMenu -tearoff 0
 .mbar.tdata.menu.mappingMenu add command -label "Resolve" \
 	-command ResolveMapping
 
+# GDATA MENU.
 menu .mbar.gdata.menu -tearoff 0
 
 .mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
@@ -1240,6 +1251,7 @@ menu .mbar.gdata.menu -tearoff 0
 .mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
 .mbar.gdata.menu add command -label "Flush TData" -command DoFlushTData
 
+# VIEW MENU.
 menu .mbar.view.menu -tearoff 0
 
 .mbar.view.menu add command -label "Toggle X Axis" \
@@ -1322,6 +1334,7 @@ menu .mbar.view.menu.statMenu -tearoff 0
     global curView
     DestroyView $curView
 }
+.mbar.view.menu add command -label "Alignment" -command EditSymbolAlignment
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
@@ -1380,6 +1393,7 @@ menu .mbar.view.menu.configmenu -tearoff false
 .mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
     -command { GetViewHorPan }
 
+# WINDOW MENU.
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Toggle X Axis" \
     -command { DoToggleAxisWindow X }
@@ -1422,6 +1436,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
 
+# HELP MENU.
 menu .mbar.help.menu -tearoff 0
 .mbar.help.menu add command -label "About..." -command { AboutDevise }
 .mbar.help.menu add separator

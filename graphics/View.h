@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1998/01/27 23:04:37  wenger
+  Broke the server's view selection dependency on the client (except when
+  running in collaboration mode).
+
   Revision 1.57  1997/12/16 17:53:52  zhenhai
   Added OpenGL features to graphics.
 
@@ -575,6 +579,11 @@ class View : public ViewWin
 
     Boolean IsHighlighted() { return _highlight; }
 
+	// Note: this is temporary, should get moved into mapping.
+	// RKW Feb. 5, 1998.
+	int GetAlign() { return _symbolAlign; }
+	void SetAlign(int symbolAlign) { _symbolAlign = symbolAlign; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -755,6 +764,8 @@ protected:
 									 unsigned width, unsigned height);
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
+
+		int _symbolAlign;
 };
 
 //******************************************************************************

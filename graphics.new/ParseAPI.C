@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.89  1998/02/03 23:46:36  wenger
+  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+  283 and 285 (resulted from problems in color manager merge);
+  conditionaled out some debug output.
+
   Revision 1.88  1998/02/02 18:26:14  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -1044,8 +1049,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     if (!strcmp(argv[0], "importFileType")) {
       char *name = ParseCat(argv[1]);
       if (!name) {
-	strcpy(result , "");
-	control->ReturnVal(API_NAK, result);
+	control->ReturnVal(API_NAK, "error parsing UNIXFILE schema");
 	return -1;
       }
       control->ReturnVal(API_ACK, name);
@@ -2022,6 +2026,25 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+
+    // Note: this is temporary, should get moved into mapping.
+    // RKW Feb. 5, 1998.
+    if (!strcmp(argv[0], "viewGetAlign")) {
+      // Argument: <view name>
+      // Returns: <alignment value>
+#if defined(DEBUG)
+      printf("viewGetAlign <%s>\n", argv[1]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	    control->ReturnVal(API_NAK, "Cannot find view");
+	    return -1;
+      }
+      char buf[1024];
+      sprintf(buf, "%d", view->GetAlign());
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
 
   if (argc == 3) {
@@ -2513,6 +2536,28 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+
+    // Note: this is temporary, should get moved into mapping.
+    // RKW Feb. 5, 1998.
+    if (!strcmp(argv[0], "viewSetAlign")) {
+      // Argument: <view name> <alignment value>
+      // Returns: "done"
+#if defined(DEBUG)
+      printf("viewSetAlign <%s> <%s>\n", argv[1], argv[2]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	    control->ReturnVal(API_NAK, "Cannot find view");
+	    return -1;
+      }
+      int newAlign = atoi(argv[2]);
+      if (view->GetAlign() != newAlign) {
+        view->SetAlign(newAlign);
+	view->Refresh();
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 4) {
@@ -2718,6 +2763,9 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       return 1;
     }
     if (!strcmp(argv[0], "winSetPrint")) {
+#if defined(DEBUG)
+      printf("winSetPrint %s %s %s\n", argv[1], argv[2], argv[3]);
+#endif
       ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
       if (!win) {
         control->ReturnVal(API_NAK, "Cannot find window");
