@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/22 15:58:08  jussi
+  Added copyright message.
+
   Revision 1.1  1995/09/06 15:31:02  jussi
   Moved file from ../issm to this directory.
 
@@ -169,6 +172,7 @@ main(int argc, char **argv)
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new WinVerInfo);
+  ControlPanel::RegisterClass(new WinHorInfo);
   ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo());

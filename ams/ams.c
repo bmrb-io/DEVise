@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 16:01:09  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/05 20:08:33  jussi
   Updated header
 
@@ -408,6 +411,7 @@ main(int argc, char **argv){
 
 	/* Register known classes  with control panel */
 	ControlPanel::RegisterClass(new WinVerInfo);
+	ControlPanel::RegisterClass(new WinHorInfo);
 	ControlPanel::RegisterClass(new ViewXInfo);
 	ControlPanel::RegisterClass(new ViewScatterInfo);
 	ControlPanel::RegisterClass(new VisualLinkClassInfo());

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:58:07  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:33:08  jussi
   Added CVS header.
 */
@@ -67,6 +70,7 @@ main(int argc, char **argv)
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new WinVerInfo);
+  ControlPanel::RegisterClass(new WinHorInfo);
   ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo());
