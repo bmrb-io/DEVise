@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000
+#  (c) Copyright 2000-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -47,6 +47,7 @@ endif
 
 # Compile the Java code.
 cd java_classes
+source set_path
 make
 cd ..
 
@@ -80,17 +81,6 @@ if (! -e $targetdir) then
 endif
 cp -p html/* $targetdir
 chmod a+r $targetdir/*
-chmod a+rx $targetdir/summarize
-
-# Create and set up the java classes directory.
-set targetdir = $demohome/dat/bmrb/dynamic_data/java_classes
-if (! -e $targetdir) then
-  mkdir $targetdir
-  chmod a+rx $targetdir
-endif
-cp java_classes/*.class $targetdir
-cp java_classes/*.jar $targetdir
-chmod a+r $targetdir/*.*
 
 # Create the link that we use to have the browser find the summary page.
 set targetdir = $wwwhome/public/bmrb/html
@@ -106,6 +96,8 @@ if (! -e $targetdir) then
 endif
 cp -p cgi-bin/make_view $targetdir
 chmod a+rx $targetdir/make_view
+cp -p cgi-bin/s2d $targetdir
+chmod a+rx $targetdir/s2d
 
 # Link data directory to CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
@@ -118,3 +110,13 @@ set targetdir = $wwwhome/cgi-bin/bmrb/session_dir
 if (! -e $targetdir) then
   ln -s $demohome/session.js/bmrb/dynamic_sessions $targetdir
 endif
+
+# Create and set up the java classes directory.
+set targetdir = $wwwhome/cgi-bin/bmrb/java_classes
+if (! -e $targetdir) then
+  mkdir $targetdir
+  chmod a+rx $targetdir
+endif
+cp java_classes/*.class $targetdir
+cp java_classes/*.jar $targetdir
+chmod a+r $targetdir/*.*

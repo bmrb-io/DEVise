@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/08/03 19:11:52  wenger
+// Added S2DException class; better tolerance for certain missing data.
+//
 // Revision 1.3  2000/08/02 17:47:44  wenger
 // Greatly improved error handling.
 //
@@ -100,10 +103,10 @@ public class LineTokens {
 
 	    } catch (ParseException e) {
 		System.err.println("Parse Exception: " + e.getMessage() );
-	        throw new S2DException("Error reading or tokenizing line");
+	        throw new S2DError("Error reading or tokenizing line");
 	    } catch (IOException e) {
 		System.err.println("IO Exception: " + e.getMessage() );
-	        throw new S2DException("Error reading or tokenizing line");
+	        throw new S2DError("Error reading or tokenizing line");
 	    }
 	    
 	    return st.ttype;

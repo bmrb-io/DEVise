@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/08/03 19:11:51  wenger
+// Added S2DException class; better tolerance for certain missing data.
+//
 // Revision 1.3  2000/08/02 17:47:44  wenger
 // Greatly improved error handling.
 //
@@ -36,10 +39,6 @@ public class AssgDataManager
 {
     private static final int DEBUG = 0;
 
-    private static final int MAX_ENTRIES = 30;
-
-    private static String filename;
-
     public class AssgEntry
     {
 	String residueLabel;
@@ -47,7 +46,10 @@ public class AssgDataManager
 	int numC;
 	int numN;
     }
-    
+
+    private static final int MAX_ENTRIES = 30;
+
+    private static String filename;
 
     private AssgEntry [] assgInfo = new AssgEntry[MAX_ENTRIES];
     private int totalNumEntries;
@@ -94,20 +96,21 @@ public class AssgDataManager
 	} catch (FileNotFoundException e) 
 	{
 	    System.err.println("File not found: " + e.getMessage() );
-	    throw new S2DException("Unable to read assignment file " +
+	    throw new S2DError("Unable to read assignment file " +
 	      filename);
 	} catch (IOException e)
 	{
 	    System.err.println("IO Exception: " + e.getMessage() );
-	    throw new S2DException("Unable to read assignment file " +
+	    throw new S2DError("Unable to read assignment file " +
 	      filename);
 	}
     }
     
 
-    //Given a particular residue label, returns (by reference) total
-    //Hydrogen, Carbon and Nitrogen assignments
-    public AssgEntry returnAssg( FileWriter error, String residueLabel) 
+    // Given a particular residue label, returns (by reference) total
+    // Hydrogen, Carbon and Nitrogen assignments
+    public AssgEntry returnAssg(String residueLabel) 
+      throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("AssgDataManager.returnAssg(" +
@@ -115,8 +118,6 @@ public class AssgDataManager
 	}
 	
 	AssgEntry totalAssignments = new AssgEntry();
-	PrintWriter out
-	    = new PrintWriter(new BufferedWriter(error));
 	boolean found = false;
 	int position = 0;
 	totalAssignments.numH = -1;
@@ -125,25 +126,23 @@ public class AssgDataManager
 	
 	while(!found && position < totalNumEntries)
 	{
-	    if(residueLabel.compareTo(assgInfo[position].residueLabel) == 0)
-	    {
+	    if (residueLabel.compareTo(assgInfo[position].residueLabel) == 0) {
 		totalAssignments.numH = assgInfo[position].numH;
 		totalAssignments.numC = assgInfo[position].numC;
 		totalAssignments.numN = assgInfo[position].numN;
 		found = true;
 		
-	    } else
+	    } else {
 		position++;
+	    }
 	}
 	
-	//Program aborts if not found, because this is an error!
-	if (!found)
-	{
-	    out.println("WARNING!!! " + residueLabel
-			+ " entry  not found in assignment "
-			+ "reference table file " + filename );
-	    
+	if (!found) {
+	    throw new S2DWarning("WARNING!!! " + residueLabel +
+	      " entry  not found in assignment " +
+	      "reference table file " + filename );
 	}
+
 	return totalAssignments;
     }
 }

@@ -1,0 +1,72 @@
+<html>
+<head>
+  <title>BMRB Data Viewer for bmr4264.str</title>
+  <script type="text/javascript" language="JavaScript"
+    src="helpmaster.js">
+  </script>
+  <script language="JavaScript">
+    <!--
+    function openhelp() {
+    newwin= window.open("help.html",
+    "per",
+    "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=300,height=300");
+    }
+    // -->
+  </script>
+</head>
+
+<body bgcolor="white">
+  <script language="JavaScript">
+    popupvar1 = 'Return to summary page';
+    popupvar2 = 'Keyboard shortcuts';
+    popupvar3 = 'Explanations for plots';
+    popupvar4 = 'DEVise home page';
+  </script>
+  <div id="popup" style="position:absolute; z-index:1;
+    visibility: hidden"></div>
+
+  <center>
+  <table border=0 width=500>
+    <tr align=center>
+      <td><a href="4264y.html" onMouseOut = "popupoff()"
+        onMouseOver="popupon(popupvar1, document.all ||
+	document.layers?event:null)">
+	<img onMouseOver="Return" border=0 src="arrow.gif"></a></td>
+		  
+       <td><a href="JavaScript:openhelp()" onMouseOut = "popupoff()"
+         onMouseOver="popupon(popupvar2, document.all ||
+	 document.layers?event:null)">
+	 <img border=0 src="keyboard.gif"></a></td>
+	  
+       <td><a href="help_d.html" onMouseOut = "popupoff()"
+          onMouseOver="popupon(popupvar3, document.all ||
+	  document.layers?event:null)">
+	  <img border=0 src="qmark.gif"></a></td>
+		
+       <td><a href="http://www.cs.wisc.edu/~devise" onMouseOut = "popupoff()"
+         onMouseOver="popupon(popupvar4, document.all ||
+	 document.layers?event:null)">
+	 <img border=0 src="devise_logo.jpg"></a></td>
+      </tr>
+    </table>
+  </center>
+  <hr>
+
+  <applet code=DEViseJSLoader.class archive=../../jsb1.jar,../../jsb2.jar width=800 height=600>
+    <param name="applet" value="jsb">
+    <param name="debug" value="0">
+    <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
+    <param name="cmdport" value="6666">
+    <param name="imgport" value="6644">
+    <param name="cgiurl" value="/cgi-bin/js.cgi">
+    <param name="rubberbandlimit" value="4x4">
+    <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
+    <param name="bgcolor" value="0+0+0">
+    <param name="screensize" value="800x600">
+  </applet>
+    
+  <br><br>
+  <center><h6>Comments?  Contact <a
+    href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </h6></center>
+</body></html>

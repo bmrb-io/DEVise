@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/10/11 23:04:25  wenger
+// Added coupling constants (for arbitrary entries, not just 4096) to the
+// peptide-cgi code.
+//
 // Revision 1.3  2000/10/06 16:52:48  wenger
 // Peptide-cgi code now handles multiple chemical shift save frames.  This
 // required a fairly major reorganization of the code (all html files are
@@ -82,6 +86,7 @@ public class S2DNames
     public static final String SAVE_ENTRY_INFO = "save_entry_information";
     public static final String SAVE_GMG4 = "save_GMG4";
     public static final String SAVEFRAME_CATEGORY = "_Saveframe_category";
+    public static final String SAVEFRAME_CAT_TYPE = "_Saveframe_category_type";
     public static final String SAVEFRAME_PREFIX = "_save";
     public static final String T1_RELAX = "T1_relaxation";
     public static final String T2_RELAX = "T2_relaxation";
@@ -97,6 +102,12 @@ public class S2DNames
     //
     public static final String BMRB_STAR_URL =
       "http://www.bmrb.wisc.edu/data_library/files/";
+
+    //
+    // NMR-Star file name components.
+    //
+    public static final String NMR_STAR_PREFIX = "bmr";
+    public static final String NMR_STAR_SUFFIX = ".str";
 
     //
     // Data type suffixes.

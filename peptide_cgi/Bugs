@@ -1,0 +1,9 @@
+				Bugs in Peptide-CGI
+				$Revision$
+
+Num Date        Status  Description
+--- --------    ------  -------------------------------------------------------
+001 01/17/01	OPEN	4264 has two residue counts in different save frames;
+			we don't deal with that correctly. (rkw)
+
+002 01/17/01	OPEN	Need help for coupling constants. (rkw)

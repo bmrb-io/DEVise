@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/08/03 19:11:52  wenger
+// Added S2DException class; better tolerance for certain missing data.
+//
 // Revision 1.3  2000/08/02 17:47:45  wenger
 // Greatly improved error handling.
 //
@@ -87,27 +90,22 @@ public class ShiftDataManager
 		
 	    }
 
-	} catch (FileNotFoundException e)
-	{
+	} catch (FileNotFoundException e) {
 	    System.err.println("File not found: " + e.getMessage() );
-	    throw new S2DException("Unable to open or read shift data file " +
+	    throw new S2DError("Unable to open or read shift data file " +
 	      filename);
-	} catch (IOException e)
-	{
+	} catch (IOException e) {
 	    System.err.println("IO Exception: " + e.getMessage() );
-	    throw new S2DException("Unable to open or read shift data file " +
+	    throw new S2DError("Unable to open or read shift data file " +
 	      filename);
 	}
     } // end constructor
 
     
-    //A function that takes as input arguments a residue name and an
-    //atom name and returns a pair of values -- standard value of
-    //chemical shift and the range. Also the reference parameter. The
-    //FileWriter is used to print error messages for all those calls
-    //which result in no match in the table.
-    public Pair returnValues( FileWriter error, String in_aminoAcidType, 
-			      String in_atomName )
+    // A function that takes as input arguments a residue name and an
+    // atom name and returns a pair of values -- standard value of
+    // chemical shift and the range. Also the reference parameter.
+    public Pair returnValues(String in_aminoAcidType, String in_atomName)
       throws S2DException
     {
 	if (DEBUG >= 1) {
@@ -115,8 +113,6 @@ public class ShiftDataManager
 	      in_aminoAcidType + ", " + in_atomName + ")");
 	}
 
-	boolean foundAminoAcidType = false;
-	boolean foundAtomName      = false;
 	Pair retValues = new Pair();
 	
 	//Initialize with default error values
@@ -125,56 +121,42 @@ public class ShiftDataManager
 	    
 	int position = 0;
 
+	boolean foundAminoAcidType = false;
 	while((!foundAminoAcidType) && position < totalNumEntries)
 	{
-	    if(in_aminoAcidType.compareTo(aminoAcidType[position]) == 0)
+	    if(in_aminoAcidType.compareTo(aminoAcidType[position]) == 0) {
 		foundAminoAcidType = true;
-	    else
+	    } else {
 		position++;
+	    }
 	}
 
-	try 
+	if(foundAminoAcidType)
 	{
-	    if(foundAminoAcidType)
-	    {
-		while(position < totalNumEntries
-		      && (!foundAtomName)
-		      && in_aminoAcidType.compareTo(aminoAcidType[position])
-		               == 0)
-		{
-		    if(in_atomName.compareTo(atomName[position]) == 0)
-			foundAtomName = true;
-		    else
-			position++;
-		}
+	    boolean foundAtomName = false;
+	    while(position < totalNumEntries && (!foundAtomName) &&
+	      in_aminoAcidType.compareTo(aminoAcidType[position]) == 0) {
+	        if(in_atomName.compareTo(atomName[position]) == 0) {
+	            foundAtomName = true;
+	        } else {
+		    position++;
+	        }
+	    }
 		
-		if(!foundAtomName)
-		{
-		    error.write("WARNING!!! ....Atom " + in_atomName 
-				+ " corresponding to amino acid "
-				+ in_aminoAcidType  
-				+ " not found in chemical "
-				+ "shift reference table file "
-				+ filename + "\n");
-		    return retValues;
-		}
-	    
-	    } else 
-	    {
-		error.write("Amino acid type " + in_aminoAcidType 
-			    + "  not found..... \n");
-		return retValues;
+	    if(!foundAtomName) {
+		throw new S2DWarning("WARNING!!! ....Atom " + in_atomName +
+		  " corresponding to amino acid " + in_aminoAcidType +
+		  " not found in chemical " + "shift reference table file " +
+		  filename);
 	    }
 	    
-	} catch (IOException e) {
-	    System.err.println("IO Exception: " + e.getMessage() );
-	    throw new S2DException("Unable to return chem shift values for " +
-	      in_aminoAcidType + ", " + in_atomName);
+	} else {
+	    throw new S2DError("Amino acid type " + in_aminoAcidType +
+	      "  not found..... \n");
 	}
-	
+	    
 	retValues.chemshift = chemicalShiftCorr[position];
 	retValues.offset  = range[position];
 	return retValues;
     } // end function returnValues
-	
 }

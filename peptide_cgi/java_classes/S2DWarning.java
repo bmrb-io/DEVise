@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,30 +12,27 @@
 
 // ------------------------------------------------------------------------
 
-// Exception for Star2Devise.
+// Warning for Star2Devise.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
-// Revision 1.1  2000/08/03 19:11:52  wenger
-// Added S2DException class; better tolerance for certain missing data.
-//
 
 // ========================================================================
 
-public abstract class S2DException extends Exception
+public class S2DWarning extends S2DException
 {
     private static final int DEBUG = 0;
 
-    public S2DException(String msg)
+    public S2DWarning(String msg)
     {
         super(msg);
 
-	if (DEBUG >= 1) {
-	    printStackTrace();
-	}
+        if (DEBUG >= 1) {
+            printStackTrace();
+        }
     }
 }
 
