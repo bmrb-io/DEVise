@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/03/17 17:19:09  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.45  1998/03/12 18:23:32  donjerko
   *** empty log message ***
 
@@ -172,6 +175,8 @@
 #ifndef __GNUG__
 using namespace std;
 #endif
+
+typedef float Cardinality;
 
 class ExecExpr;
 
@@ -745,8 +750,10 @@ public:
 class PrimeSelection : public BaseSelection{
 	string* alias;
 	string* fieldNm;
+	const TableAlias* parentTable;
 public:
-	PrimeSelection(string a, string attr) : BaseSelection() {
+	PrimeSelection(string a, string attr) 
+		: BaseSelection(), parentTable(0) {
 		alias = new string(a);
 		fieldNm = new string(attr);
 		typeID = "Unknown";
@@ -754,11 +761,15 @@ public:
 	}
 	PrimeSelection(
 		string* a, string* fieldNm = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0): 
-          BaseSelection(typeID, avgSize), alias(a), fieldNm(fieldNm) {}
+		int avgSize = 0, const TableAlias* parentTable = 0): 
+          BaseSelection(typeID, avgSize), alias(a), fieldNm(fieldNm),
+		parentTable(parentTable) {}
 	~PrimeSelection(){
 		delete alias;
 		delete fieldNm;
+	}
+	const TableAlias* getTable(){
+		return parentTable;
 	}
 	const string* getFieldNm(){
 		return fieldNm;
@@ -819,7 +830,6 @@ protected:
      BaseSelection* left;
 	BaseSelection* right;
 	OperatorPtr opPtr;
-	double selectivity;
 public:
 	Operator(string n, BaseSelection* l, BaseSelection* r)
 		: BaseSelection(), name(n), left(l), right(r) {
@@ -828,7 +838,6 @@ public:
           assert(left);
           assert(right);
 		avgSize = 0;
-		selectivity = 0;
      }
 	virtual ~Operator(){
 	}
@@ -926,9 +935,7 @@ public:
 	virtual int getSize(){
 		return avgSize;
 	}
-	virtual double getSelectivity(){
-		return selectivity;
-	}
+	virtual double getSelectivity();
 	virtual bool checkOrphan(){
 		TRY(left->checkOrphan(), false);
 		TRY(right->checkOrphan(), false);
@@ -1106,6 +1113,7 @@ protected:
 	int shiftVal;
 	const SiteDesc* sd;
 	TableName relTabName;
+	Cardinality card;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
@@ -1138,6 +1146,12 @@ public:
 	virtual void display(ostream& out, int detail = 0);
 	virtual Site* createSite();
 	virtual ISchema getISchema() const;
+	void setCardinality(Cardinality c){
+		card = c;
+	}
+	Cardinality getCardinality() const {
+		return card;
+	}
 };
 
 class QuoteAlias : public TableAlias {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/03/17 17:19:02  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.17  1997/11/24 06:01:25  donjerko
   Added more odbc files.
 
@@ -119,6 +122,7 @@ public:
 
 	virtual ~SortExec();
      virtual void initialize();         // To be called once at the start
+	virtual const Tuple* getFirst();
      virtual const Tuple* getNext(); // returns NULL when no more tuples
 };
 

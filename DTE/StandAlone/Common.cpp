@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/11/23 21:23:57  donjerko
+  Added dte server.
+
   Revision 1.18  1997/11/20 05:31:11  okan
   *** empty log message ***
 
@@ -91,13 +94,14 @@ void processQuery(istream& cin, ostream& cout){
 		EXIT(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds));
 		const Tuple* tup;
 
-		EXIT(engine.initialize());
-		while((tup = engine.getNext())){
+		EXIT(tup = engine.getFirst());
+		while(tup){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);
 				cout << '\t';
 			}
 			cout << endl;
+			tup = engine.getNext();
 		}
 		engine.finalize();
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/03/17 17:19:01  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.17  1997/11/08 21:02:27  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -335,6 +338,7 @@ SortExec::~SortExec(){
 		char run_num[5];
 		sprintf(run_num, "%d", i+1);
 		strcat(filename, run_num);
+//		cerr << "check out " << filename << endl;
 		unlink(filename);
 	}
 }
@@ -380,6 +384,12 @@ SortExec::SortExec(Iterator* inpIter, const TypeID* types, SortOrder order,
 	tupleLoader = new TupleLoader;
 	CON_TRY(tupleLoader->open(numFlds, typeIDs));
 	CON_END:;
+}
+
+const Tuple* SortExec::getFirst()
+{
+	initialize();
+	return SortExec::getNext();
 }
 
 UniqueSortExec::UniqueSortExec(

@@ -117,3 +117,8 @@ Interface* RelationManager::createInterface(const RelationId& relId)
 	assert(defStream);
 	return (Interface*) retVal;
 }
+
+void RelationManager::deleteRelation(const RelationId&)
+{
+	// mark relation deleted
+}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/12/04 04:05:09  donjerko
+  *** empty log message ***
+
   Revision 1.19  1997/11/12 23:17:22  donjerko
   Improved error checking.
 
@@ -115,6 +118,11 @@ public:
 		assert(schema);
           return schema->getTypeIDs();
      }
+	const Tuple* getFirst(){
+		assert(getNumFlds() != 0);
+		assert(topNodeIt);
+		return topNodeIt->getFirst();
+	}
 	const Tuple* getNext(){
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
@@ -133,11 +141,6 @@ public:
 	}
 	void reset(int lowRid, int highRid){
 		TRY(topNodeIt->reset(lowRid, highRid), NVOID );
-	}
-	void initialize(){
-		assert(getNumFlds() != 0);
-		assert(topNodeIt);
-		topNodeIt->initialize();
 	}
 	void finalize(){
 		topNodeIt->finalize();

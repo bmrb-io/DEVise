@@ -59,11 +59,15 @@ SPJQueryProduced::~SPJQueryProduced(){
 
 void printAlts(const AltEntry& a, ostream& out = cout)
 {
+/*
 	cout << "[ c = " << a.first << "   ";
 	a.second->display(cout);
 	cout << "]";
 	cout << endl;
+*/
 }
+
+static int debugExpressCnt = 0;
 
 bool SPJQueryProduced::expand(
 	const Query& q, 
@@ -75,9 +79,11 @@ bool SPJQueryProduced::expand(
 
 	if(alts.empty()){
 
-		int numAlts = (tableMap.getBitMap() + 1) / 2 - 1;
+		int numAlts = (1 << (tableMap.count() - 1)) - 1;
 
 		//   Allocate the space here to speed up the things
+
+		debugExpressCnt += numAlts;
 
 //		alts.reserve(numAlts);	// no don't know how many alts
 
@@ -166,6 +172,11 @@ bool SPJQueryProduced::expand(
 	return topExp;
 }
 
+Cost SPJQueryProduced::getCostConst() const {
+	assert(!alts.empty());
+	return alts.front().first;
+}
+
 Cost SPJQueryProduced::getCost(const LogPropTable& logPropTab) {
 	if(alts.empty()){
 		return 0;
@@ -187,12 +198,24 @@ Cost SPJQueryProduced::getCost(const LogPropTable& logPropTab) {
 	return alts.front().first;
 }
 
-void SPJQueryProduced::display(ostream& out) const {
+string SPJQueryProduced::toString() const
+{
+	assert(!alts.empty());
+	
+	JoinMethod* join = alts.front().second;
+	ostringstream ostr;
+	ostr << join->getName();
+	ostr << "(" << tableMap << ")";
+	string tmps = ostr.str();
+	return tmps;
+
+/*
 	if(alts.empty()){
 		out << tableMap;
 		return;
 	}
-#if defined(DEBUG) || 1
+*/
+#if defined(DEBUG)
 //	out << "listing ..." << endl;
 //	sort_heap(alts.begin(), alts.end(), AlternativeLess());
 //	for_each(alts.begin(), alts.end(), printAlts);
@@ -205,11 +228,27 @@ void SPJQueryProduced::display(ostream& out) const {
 //	printAlts(alts.front(), out);
 }
 
-Cost SPQueryProduced::getCost(const LogPropTable&) {
+Cost SPQueryProduced::getCostConst() const {
+	return cost;
+//	assert(bestAlt);
+//	return bestAlt->getCost();
+}
+
+Cost SPQueryProduced::getCost(const LogPropTable& lpt) {
+
+	// does not work for single selections
+
+//	cost = lpt[tableMap.getBitMap()].getNumPgs(); 
+
+	cost = 0;		// does not work for interesting orders
+	return cost;
+
+/*
 	if(!bestAlt){
 		return 0;
 	}
 	return bestAlt->getCost();
+*/
 }
 
 bool SPQueryProduced::expand(
@@ -235,60 +274,29 @@ Iterator* SPJQueryProduced::createExec() const {
 	return NULL;
 }
 
-void SPQueryProduced::display(ostream& out) const {
-	out << tableMap;
-	if(!bestAlt){
-		return;
-	}
-	bestAlt->display(out);
+string SPQueryProduced::toString() const
+{
+//	out << tableMap;
+	assert(bestAlt);
+	string retVal = bestAlt->getName() + "(" + tableMap.toString() + ")";
+	return retVal;
 }
 
 void Optimizer::run(){
 	const vector<TableAlias*>& tableList = query.getTableList();
 	int numTables = tableList.size();
 	int numComb = (1 << numTables);
-	const vector<BaseSelection*>& preds = query.getPredicateList();
-	vector<TableMap> predMaps;
-	predMaps.reserve(preds.size());
-	vector<BaseSelection*>::const_iterator pi;
-	for(pi = preds.begin(); pi != preds.end(); ++pi){
-		TableMap tmp = (*pi)->getTableMap(tableList);
-		predMaps.push_back(tmp);
-	}
 
-	logPropTab.reserve(numComb);
 	nodeTab.reserve(numComb);
-	logPropTab.push_back(LogicalProp(0));	// first position is unused
 	nodeTab.push_back((OptNode*) 0);	// first position is unused
-
-	cerr << "Creating log prop table of size " << numComb -1 << " ... ";
 
 	for(int i = 1; i < numComb; i++){
 
 		nodeTab.push_back((OptNode*) 0);	// initialize the node table
 
-		const TableMap currTabSet(i);
-		double card = 1;
-		int tupSz = 0;
-		int bitCount = 1;
-		for(int k = 0; k < tableList.size(); k++){
-			if(currTabSet.contains(TableMap(bitCount))){
-				card *= TABLE_CARD;
-				tupSz += NUM_FLDS * FIELD_SZ;		// assumes select *
-			}
-			bitCount <<= 1;
-		}
-		double selectivity = 1;
-		for(int j = 0; j < predMaps.size(); j++){
-			if(currTabSet.contains(predMaps[j])){
-				selectivity *= SELECTIVITY;
-			}
-		}
-		PageCount numPgs = card * selectivity * tupSz / PAGE_SZ;
-		logPropTab.push_back(LogicalProp(numPgs));
 	}
 
-	cerr << "done\n";
+	logPropTab.initialize(query);
 
 #if defined(DEBUG)
 
@@ -325,12 +333,78 @@ void Optimizer::run(){
 	cerr << "Optimization completed after " 
 		<< expansionCnt_debug << " iterations\n";
 	cerr << "Cost = " << root->getCost(logPropTab) << endl;
-	exit(1);
+	cerr << "Total Expressions expanded: " << debugExpressCnt << endl;
+	cerr << "Root expanded " << root->getNumExpandedNodes() << " out of ";
+	cerr << root->getTotalNumNodes() << " nodes " << endl;
+	display(cerr);
+	cout << debugExpressCnt << endl;
+	exit(0);
 }
 
 void Optimizer::display(ostream& out) const {
 	assert(root);
-	root->display(out);
+	int level = 0;
+	const LINE_LEN = 128;
+	int nodeCnt = 0;
+	vector<OptNode*> nodes;
+	vector<int> oldHooks;
+	nodes.push_back(root);
+	oldHooks.push_back(LINE_LEN / 2);
+	vector<string> nodeDescriptions;
+
+	while(!nodes.empty()){
+
+		string linepp(LINE_LEN, ' ');
+		string linep(LINE_LEN, ' ');
+		string line(LINE_LEN, ' ');
+
+		vector<int> newHooks;
+
+		assert(oldHooks.size() == nodes.size());
+		for(int i = 1; i <= nodes.size(); i++){
+
+			string desc = nodes[i - 1]->toString();
+			desc += " " + nodes[i - 1]->getLogProp(logPropTab).toString();
+			desc += " Cost: " + 
+				costToString(nodes[i - 1]->getCostConst());
+			nodeDescriptions.push_back(desc);
+
+			ostringstream nodeCntStr;
+			nodeCntStr << nodeCnt;
+			string tmps = nodeCntStr.str();
+			int offset = (1 + 2 *(i - 1)) * LINE_LEN / (2 * nodes.size());
+			int startDash = min(offset, oldHooks[i - 1]);
+			int endDash = max(offset, oldHooks[i - 1]);
+			linepp[oldHooks[i - 1]] = '|';
+			for(int j = startDash + 1; j < endDash; j++){
+				if(linepp[j] == ' '){
+					linepp[j] = '_';
+				}
+			}
+			linep[offset] = '|';
+			line.replace(offset - tmps.size() / 2, tmps.size(), tmps);
+			nodeCnt++;
+			if(nodes[i - 1]->getNumOfChilds() == 2){
+				newHooks.push_back(offset);
+				newHooks.push_back(offset + 1);
+			}
+			else if(nodes[i - 1]->getNumOfChilds() == 1){
+				newHooks.push_back(offset);
+			}
+		}
+
+		out << linepp << endl;
+		out << linep << endl;
+		out << line << endl;
+
+		oldHooks = newHooks;
+		level++;
+		nodes = root->getLevel(level);
+	}
+	out << endl;
+	for(int i = 0; i < nodeDescriptions.size(); i++){
+		out << i << ". " << nodeDescriptions[i] << endl;
+	}
 }
 
 Iterator* Optimizer::createExec() {
@@ -348,12 +422,7 @@ Iterator* FileScan::createExec() const {
 FileScan::FileScan(const NewStat& stat)
 {
 //	cost = stat.getNumPgs();
-	cost = TABLE_CARD * NUM_FLDS * FIELD_SZ / PAGE_SZ;
-}
-
-void FileScan::display(ostream& out)
-{
-//	out << "File Scan (cost = " << cost << ")";
+//	cost = TABLE_CARD * NUM_FLDS * FIELD_SZ / PAGE_SZ;
 }
 
 Cost FileScan::getCost() const
@@ -409,11 +478,19 @@ AccessMethod* DTESite::getBestAM(TableMap tableMap, const Query& q) const
 JoinMethod::JoinMethod(OptNode* left, OptNode* right) :
 	left(left), right(right)
 {
+#ifdef DEBUG_STAT
+	isExpandedM = false;
+#endif
 }
 
 bool JoinMethod::expand(
 	const Query& q, NodeTable& nodeTab, const LogPropTable& logPropTab)
 {
+
+#ifdef DEBUG_STAT
+	isExpandedM = true;
+#endif
+
 	bool retVal1 = left->expand(q, nodeTab, logPropTab);
 	bool retVal2 =	right->expand(q, nodeTab, logPropTab);
 	return retVal1 || retVal2;
@@ -435,17 +512,148 @@ Cost JoinMethod::getCost(const LogPropTable& logPropTab)
 	return baseCost + left->getCost(logPropTab) + right->getCost(logPropTab);
 }
 
-void JoinMethod::display(ostream& out)
-{
-	out << "join(";
-	left->display(out);
-	out << " + ";
-	right->display(out);
-	out << ")";
-}
-
 ostream& operator<<(ostream& out, const LogicalProp& x) {
 	return out << x.numPgs;	
 }
 
 // ostream& operator<<(ostream& out, const OptNode& x)
+
+vector<OptNode*> SPJQueryProduced::getLevel(int level)
+{
+	vector<OptNode*> retVal;
+	if(level == 0){
+		retVal.push_back(this);
+	}
+	else{
+		level--;
+		OptNode* left = alts.front().second->getLeft();
+		OptNode* right = alts.front().second->getRight();
+		retVal = left->getLevel(level);
+		vector<OptNode*> tmp = right->getLevel(level);
+		retVal.insert(retVal.end(), tmp.begin(), tmp.end());
+	}
+	return retVal;
+}
+
+vector<OptNode*> SPQueryProduced::getLevel(int level)
+{
+	vector<OptNode*> retVal;
+	if(level == 0){
+		retVal.push_back(this);
+	}
+	return retVal;
+}
+
+string LogicalProp::toString() const
+{
+	ostringstream tmp;
+	tmp << "Pgs: " << *this;
+	return tmp.str();
+}
+
+void LogPropTable::initialize(const Query& query)
+{
+	tableList = query.getTableList();
+	int numTables = tableList.size();
+	int numComb = (1 << numTables);
+	const vector<BaseSelection*>& preds = query.getPredicateList();
+	predMaps.reserve(preds.size());
+	vector<BaseSelection*>::const_iterator pi;
+	for(pi = preds.begin(); pi != preds.end(); ++pi){
+		TableMap tmp = (*pi)->getTableMap(tableList);
+		predMaps.push_back(tmp);
+	}
+
+	// calculating cardinalities
+
+	char* muS = getenv("MU");
+	assert(muS || !"please set env var MU");
+	int mu = atoi(muS);
+
+	char* ratioS = getenv("RATIO");
+	assert(ratioS || !"please ste env var RATIO");
+	double ratio = atof(ratioS);
+
+	double singleRatio = pow(ratio, double(1.0) / numTables);
+	cardinalities.push_back(mu * 
+		pow(ratio, double(numTables - 1) / (numTables*numTables)));
+
+	for(int i = 1; i < numTables; i++){
+		cerr << "card of " << i << " " << cardinalities[i - 1] << endl;
+		cardinalities.push_back(cardinalities[i - 1] / singleRatio);
+	}
+	cerr << "card of " << numTables << " " << cardinalities[numTables - 1] << endl;
+
+	for(int i = 0; i < numTables; i++){
+
+		// this will not be necessary later when the cardinalities are
+		// read from the catalog
+
+		tableList[i]->setCardinality(cardinalities[i]);
+	}
+
+	for(pi = preds.begin(); pi != preds.end(); ++pi){
+		selectivities.push_back((*pi)->getSelectivity());
+		cerr << "selectivity = " << (*pi)->getSelectivity() << endl;
+	}
+
+	logPropTab.reserve(numComb);
+	logPropTab.push_back(LogicalProp(0));   // first position is unused
+
+	cerr << "Creating log prop table of size " << numComb -1 << " ... ";
+
+	for(int i = 1; i < numComb; i++){
+
+		logPropTab.push_back(logPropFor(i));
+
+	}
+
+	cerr << "done\n";
+}
+
+LogicalProp LogPropTable::logPropFor(int i) const
+{
+	const TableMap currTabSet(i);
+	double card = 1;
+	int tupSz = 0;
+
+	// all the intermediate tables are of the same width
+
+	tupSz += NUM_FLDS * FIELD_SZ;		
+	int bitCount = 1;
+	for(int k = 0; k < tableList.size(); k++){
+		if(currTabSet.contains(TableMap(bitCount))){
+			card *= cardinalities[k];
+		}
+		bitCount <<= 1;
+	}
+	double selectivity = 1;
+	for(int j = 0; j < predMaps.size(); j++){
+		if(currTabSet.contains(predMaps[j])){
+			selectivity *= selectivities[j];
+		}
+	}
+	PageCount numPgs = card * selectivity * tupSz / PAGE_SZ;
+	return LogicalProp(numPgs);
+}
+
+#ifdef DEBUG_STAT
+
+int SPJQueryProduced::getTotalNumNodes() const
+{
+	return alts.size();
+}
+
+int SPJQueryProduced::getNumExpandedNodes() const
+{
+	vector<AltEntry>::const_iterator it;
+	int retVal = 0;
+	for(it = alts.begin(); it != alts.end(); ++it){
+		if((*it).second->isExpanded()){
+			retVal++;
+		}
+	}
+	return retVal;
+}
+
+#endif

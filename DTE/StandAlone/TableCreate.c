@@ -38,10 +38,12 @@ int main(){
 	Tuple* tuple = new Tuple[numFlds];
 	int* ip = new int;
 
-	*ip = 5;
-	tuple[0] = IInt::getTypePtr(ip);
-	in.insert(tuple);
-	*ip = 6;
+	for(int i = 0; i < 1000; i++){
+		*ip = i;
+		tuple[0] = IInt::getTypePtr(ip);
+		in.insert(tuple);
+	}
+	*ip = 0;
 	tuple[0] = IInt::getTypePtr(ip);
 	in.insert(tuple);
 	*ip = 5;
@@ -52,6 +54,7 @@ int main(){
 
 	delete [] tuple;
 	delete ip;
+     TRY(RELATION_MNGR.deleteRelation(relId), 1);
 
 	return 0;
 }

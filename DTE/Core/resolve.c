@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/03/17 17:19:09  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.33  1998/03/12 18:23:33  donjerko
   *** empty log message ***
 
@@ -320,7 +323,12 @@ TypeID Operator::typeCheck(){
 	}
 	opPtr = genPtr->opPtr;
 	avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
+	return typeID;
+}
+
+double Operator::getSelectivity(){
 	if(typeID == "bool"){
+		/*
 		SelectyPtr selectyPtr = genPtr->selectyPtr;
 		if(!selectyPtr){
 			string msg = "Undefined selectiviy for operator " + name;
@@ -329,8 +337,28 @@ TypeID Operator::typeCheck(){
 		else{
 			selectivity = selectyPtr(left, right);
 		}
+		*/
+
+		if(right->selectID() == SELECT_ID){
+			
+			// selectivity = 1 / cardinalityOfRightTable
+
+			PrimeSelection* rightc = (PrimeSelection*) right;
+			const TableAlias* rightTable = rightc->getTable();
+			assert(rightTable);
+			Cardinality c = rightTable->getCardinality();
+			if(!c){
+				return 1;
+			}
+			return 1.0 / c; 
+		}
+		else{
+			return 0.1;	// fix later
+		}
 	}
-	return typeID;
+	else{
+		assert(0);
+	}
 }
 
 ExecExpr* TypeCast::createExec(Site* site1, Site* site2)

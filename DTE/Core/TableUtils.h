@@ -41,6 +41,7 @@ public:
 		return TableMap(bitmap | x.bitmap);
 	}
 	friend ostream& operator<<(ostream&, const TableMap&);
+	string toString() const;
 };
 
 inline TableMap::TableMap(int bitmap) : bitmap(bitmap) {}

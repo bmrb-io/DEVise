@@ -150,8 +150,12 @@ rtree:
 
 CorePartOfLib: $(LIBNAME)($(CORE_OBJ))
 
-TableCreate: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)
+TableCreate: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  unidata rtree
 	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+TableCreate.pure: TableCreate.o $(STAND_ALONE_OBJ) $(CORE_OBJ)  unidata rtree
+	purify $(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree

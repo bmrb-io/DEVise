@@ -14,6 +14,7 @@ class RelationManager {
 public:
 	RelationManager();
 	RelationId registerNewRelation(const Interface&);
+	void deleteRelation(const RelationId&);
 	Interface* createInterface(const RelationId&);	
 };
 

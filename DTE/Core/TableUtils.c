@@ -81,3 +81,9 @@ TableMap::Iterator::Iterator(int bitmap, int counter = 0) :
 TableMap::Iterator::Iterator() :
 	refMap(0), currMap(0), counter(0){}
 
+string TableMap::toString() const
+{
+	ostringstream tmp;
+	tmp << *this;
+	return tmp.str();
+}

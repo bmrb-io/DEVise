@@ -71,10 +71,10 @@ Iterator* MaterializeParse::createExec(){
 
 	Inserter inserter;
 	inserter.open(outf, numFlds, typeIDs);
-	engine.initialize();
-	const Tuple* tuple;
-	while((tuple = engine.getNext())){
+	const Tuple* tuple = engine.getFirst();
+	while(tuple){
 		inserter.insert(tuple);
+		tuple = engine.getNext();
 	}
 
 	MaterViewInterface mvi

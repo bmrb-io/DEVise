@@ -43,6 +43,7 @@ template class List<basic_string<char, string_char_traits<char> > *>;
 template class List<void*>;
 template class List<void *const *>;
 template class vector<BaseSelection*>;
+template class vector<float>;
 template class vector<OptNode*>;
 template class vector<TableAlias*>;
 template class Array<ExecExpr*>;
@@ -61,6 +62,8 @@ template class vector<AltEntry>;
 template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::push_back(pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *const &);
 
 template class vector<void const *const *>;
+template class vector<int>;
+template class vector<string>;
 template vector<void const *const *>::push_back(void const *const *const &);
 template vector<void const *const *>::vector(void);
 template vector<void const *const *>::~vector(void);
@@ -70,6 +73,9 @@ template vector<pair<basic_string<char, string_char_traits<char> > *, basic_stri
 template vector<pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *> *>::~vector(void);
 
 template pair<basic_string<char, string_char_traits<char> > *, basic_string<char, string_char_traits<char> > *>::pair(basic_string<char, string_char_traits<char> > *const &, basic_string<char, string_char_traits<char> > *const &);
+
+template max(int const &, int const &);
+template min(int const &, int const &);
 
 static void template_junk1(void)
 {

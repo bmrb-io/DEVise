@@ -113,5 +113,6 @@ void UniqueInserter::close()
 
 	// do not delete istr
 
+	delete inp2;
 	remove(tmpFile.c_str());
 }

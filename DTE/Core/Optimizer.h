@@ -10,17 +10,28 @@
 #include "StringLess.h"
 #include "TableUtils.h"
 
+#define DEBUG_STAT
+
 typedef float Cost;
 typedef float PageCount;
 
-const Cost MAX_COST = DBL_MAX;
+inline string costToString(Cost c){
+	ostringstream tmp;
+	tmp << c;
+	return tmp.str();
+}
+
+//const Cost MAX_COST = DBL_MAX;
+
 const int MEMORY_PGS = 100;
-const int TABLE_CARD = 1000;
 const int FIELD_SZ = 100;
 const int NUM_FLDS = 2;
-const float SELECTIVITY = 0.001;
 const int PAGE_SZ = 4000;
-const float CUT_OFF_COST = 1e6;
+
+// FLT_MAX        3.402823466E+38F  /* max decimal value of a "float" */
+//const float CUT_OFF_COST = 1e6;
+
+const float CUT_OFF_COST = 1e10;
 
 class OptNode;
 class LogicalProp;
@@ -46,9 +57,8 @@ public:
 		return numPgs;
 	}
 	friend ostream& operator<<(ostream&, const LogicalProp&);
+	string toString() const;
 };
-
-typedef vector<LogicalProp> LogPropTable;
 
 class Query {
      vector<BaseSelection*> selectList;
@@ -87,6 +97,21 @@ public:
 	}
 };
 
+class LogPropTable {
+	vector<LogicalProp> logPropTab;
+	vector<TableMap> predMaps;
+	vector<TableAlias*> tableList;
+	vector<int> cardinalities;
+	vector<float> selectivities;
+public:
+	LogPropTable(){}
+	void initialize(const Query& query);
+	LogicalProp operator[](int i) const {
+		return logPropTab[i];
+	}
+	LogicalProp logPropFor(int i) const;
+};
+
 class JoinMethod {
 	OptNode* left;
 	OptNode* right;
@@ -96,10 +121,18 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual void display(ostream& out = cout);
+	virtual string getName() const {return "Join";}
 	virtual Cost getCost(const LogPropTable&);
 	static Cost getBaseCost(
 		const LogicalProp& leftLP, const LogicalProp& rightLP);
+	OptNode* getLeft(){return left;}
+	OptNode* getRight(){return right;}
+#if defined(DEBUG_STAT)
+private:
+	bool isExpandedM;
+public:
+	bool isExpanded(){return isExpandedM;}
+#endif
 };
 
 inline Cost JoinMethod::getBaseCost
@@ -121,7 +154,7 @@ public:
 //	vector<BaseSelection*> getProjectList();
 	virtual Iterator* createExec() const = 0;
 	virtual Cost getCost() const = 0;
-	virtual void display(ostream& out = cout) = 0;
+	virtual string getName() const = 0;
 };
 
 class FileScan : public AccessMethod {
@@ -129,7 +162,7 @@ class FileScan : public AccessMethod {
 public:
 	FileScan(const NewStat& stat);
 //	vector<BaseSelection*> getProjectList();
-	virtual void display(ostream& out = cout);
+	virtual string getName() const {return "FileScan";} 
 	virtual Iterator* createExec() const;
 	virtual Cost getCost() const;
 };
@@ -163,7 +196,12 @@ public:
 		const LogPropTable& logPropTab) = 0;
 	virtual Iterator* createExec() const = 0;
 	virtual Cost getCost(const LogPropTable& logPropTab) = 0;
-	virtual void display(ostream& out = cout) const = 0;
+	virtual string toString() const = 0;
+	virtual int getNumOfChilds() = 0;
+	virtual vector<OptNode*> getLevel(int level) = 0;
+	virtual Cost getCostConst() const = 0;
+	virtual int getTotalNumNodes() const = 0;	// for debugging
+	virtual int getNumExpandedNodes() const = 0;	// for debugging
 };
 
 class SPJQueryProduced : public OptNode {
@@ -176,12 +214,18 @@ public:
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
 	virtual Iterator* createExec() const;
-	virtual void display(ostream& out = cout) const;
+	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
+	virtual int getNumOfChilds(){return 2;}
+	virtual vector<OptNode*> getLevel(int level);
+	virtual Cost getCostConst() const;
+	virtual int getTotalNumNodes() const;	// for debugging
+	virtual int getNumExpandedNodes() const;	// for debugging
 };
 
 class SPQueryProduced : public OptNode {
 	AccessMethod* bestAlt;
+	Cost cost;		// temporarily here
 public:
 	SPQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
 	SPQueryProduced::~SPQueryProduced();
@@ -190,8 +234,13 @@ public:
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
 	virtual Iterator* createExec() const;
-	virtual void display(ostream& out = cout) const;
+	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
+	virtual int getNumOfChilds(){return 0;}
+	virtual vector<OptNode*> getLevel(int level);
+	virtual Cost getCostConst() const;
+	virtual int getTotalNumNodes() const {return 1;};  // for debugging
+	virtual int getNumExpandedNodes() const {return 1;};	// for debugging
 };
 
 class Optimizer {

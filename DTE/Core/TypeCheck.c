@@ -62,7 +62,9 @@ void TypeCheck::initialize(const vector<TableAlias*>& tableList){
 			string* aliasCopy = new string(*current->getAlias());
 			string* attCpy = new string(attrs[i]);
 			PrimeSelection* ps;
-			ps = new PrimeSelection(aliasCopy, attCpy, types[i]);
+			int avgSize = 0;
+			ps = new PrimeSelection(
+				aliasCopy, attCpy, types[i], avgSize, current);
 			insert(ps);
 		}
 	}
