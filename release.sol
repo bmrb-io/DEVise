@@ -21,6 +21,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/03/19 18:44:06  wenger
+#  Disabled RTree indices in DTE, got that to compile; fixed some compile
+#  warnings; undid accidental(?) changes to devise run script; devise.etk
+#  uses 'localhost' instead of '$HOSTNAME'; added Solaris-only release
+#  script.
+#
 
 ############################################################
 
@@ -126,9 +132,9 @@ foreach dir ($rundirs)
   endif
 end
 
-set runfiles = "run_public/devise run_public/devise.tasvir \
+set runfiles = "run_public/devise \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi run_public/devise.etk"
+	run_public/multi"
 
 foreach file ($runfiles)
   if ($file == "") then
