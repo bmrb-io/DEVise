@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.102  2001/10/16 22:14:27  wenger
+// Major cleanup of command playback code; fixed bug 711 (problem with
+// command log playback).
+//
 // Revision 1.101  2001/10/12 02:07:21  xuk
 // Using timestamp-based client ID.
 // In user(), id has been expanded to long.
@@ -923,9 +927,11 @@ public class DEViseCmdDispatcher implements Runnable
       else {
 	    try {
 		processCmd(commands[0]); // for the connect command
-		if (jsc.specialID != 0) // not the first connect command
-		    while (true)
+		if (jsc.specialID != 0) { // not the first connect command
+		    while (true) {
 			processCmd(null);
+	            }
+	        }
 	    }
 	    catch (YException e) {
 	    }
@@ -1054,8 +1060,9 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.collabQuit();
 
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
-            if (jsc.specialID == -1) // only for normal JS	    
+            if (jsc.specialID == -1) { // only for normal JS	    
 		jsc.showCollabState(response);
+            }
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
@@ -1064,8 +1071,9 @@ public class DEViseCmdDispatcher implements Runnable
                   response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
             }
 
-            if (jsc.specialID == -1) // only for normal JS
+            if (jsc.specialID == -1) { // only for normal JS
 		jsc.showServerState(args[1]);
+            }
 
         } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
 	    createView(response, args);
@@ -1078,8 +1086,9 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SESSION_LIST)) {
 	    // Number of arguments is variable.
-	    if (jsc.specialID == -1) // only for normal JS 
+	    if (jsc.specialID == -1) { // only for normal JS 
 		jsc.showSession(args, true);
+            }
 
         } else if (args[0].equals(DEViseCommands.DRAW_CURSOR)) {
 	    drawCursor(response, args);

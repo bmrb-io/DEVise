@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.120  2001/10/16 22:14:28  wenger
+// Major cleanup of command playback code; fixed bug 711 (problem with
+// command log playback).
+//
 // Revision 1.119  2001/10/12 02:05:56  xuk
 // Using timestamp-based client ID.
 // Expanded specialID to long.
@@ -2398,10 +2402,11 @@ class SetModeDlg extends Dialog
         socketButton.setForeground(jsc.jsValues.uiglobals.fg);
         socketButton.setFont(jsc.jsValues.uiglobals.font);
 
-	if (jsc.specialID == -1) 
+	if (jsc.specialID == -1) {
 	    cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
-	else 
+	} else {
 	    cgiButton.setBackground(Color.red);
+	}
         cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
         cgiButton.setFont(jsc.jsValues.uiglobals.font);
 
@@ -2409,17 +2414,19 @@ class SetModeDlg extends Dialog
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab))
+	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
 	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	else 
+	} else {
 	    enCollabButton.setBackground(Color.red);
+	}
         enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
         enCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
-	if ((jsc.specialID == -1) && (jsc.isCollab))
+	if ((jsc.specialID == -1) && (jsc.isCollab)) {
 	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	else 
+	} else {
 	    disCollabButton.setBackground(Color.red);
+	}
         disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
         disCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
@@ -2486,7 +2493,7 @@ class SetModeDlg extends Dialog
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	if (jsc.specialID == -1)
+	if (jsc.specialID == -1) {
 	    cgiButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2497,6 +2504,7 @@ class SetModeDlg extends Dialog
 			jsc.setCgiUrl();
                     }
                 });
+	}
 
         socketButton.addActionListener(new ActionListener()
                 {
@@ -2782,7 +2790,7 @@ class CollabDlg extends Frame
 	                    String list = clientList.getItem(idx);
 	                    int n = list.indexOf(' ');
 	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Integer.parseInt(clientID);
+	                    jsc.specialID = Long.parseLong(clientID);
                             close();
 	                    jsc.enterCollabPass();
                         }
@@ -2800,7 +2808,7 @@ class CollabDlg extends Frame
 	                    String list = clientList.getItem(idx);
 	                    int n = list.indexOf(' ');
 	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Integer.parseInt(clientID);
+	                    jsc.specialID = Long.parseLong(clientID);
 
                             close();
                             jsc.enterCollabPass();
