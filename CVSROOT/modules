@@ -49,7 +49,7 @@ devise		-a Makefile.common README \
 			aix alpha_osf20 compustat crsp csgroup cslib \
 			design_doc doc generic graphics graphics.new hp \
 			issm lib linux pmax_ul43a public releases run \
-			run_public \
+			run_public run.new \
 			scripts sgi solaris solsparc src sun tape test \
 			util xvertext
 devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS
