@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/09 18:03:56  jussi
+  Collection of fd's (fdset) now assembled and disassembled in
+  Register/Unregister instead of Run1. Callbacks to be deleted
+  are first appended to a delete list, and collectively removed
+  at the beginning of Run1.
+
   Revision 1.9  1996/04/08 16:56:01  jussi
   Changed name of DisplaySocketId to more generic 'fd'.
 
@@ -49,6 +55,9 @@
 #include <unistd.h>
 #include <memory.h>
 #include <sys/time.h>
+#ifdef AIX
+#include <sys/select.h>
+#endif
 
 #include "Dispatcher.h"
 #include "Control.h"
@@ -72,7 +81,11 @@ Boolean Dispatcher::_returnFlag;
 */
 Boolean Dispatcher::_quit = false;
 
+#ifndef HPUX
 fd_set Dispatcher::fdset;
+#else
+int Dispatcher::fdset;
+#endif
 int Dispatcher::maxFdCheck = 0;
 
 Dispatcher::Dispatcher(StateFlag state)
@@ -80,7 +93,11 @@ Dispatcher::Dispatcher(StateFlag state)
   _stateFlag = state;
   AppendDispatcher();
 
-  FD_ZERO(&fdset);
+#ifndef HPUX
+  memset(&fdset, 0, sizeof fdset);
+#else
+  fdset = 0;
+#endif
   maxFdCheck = 0;
 
   /* init current time */
@@ -127,7 +144,11 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   info->fd = fd;
 
   if (fd >= 0) {
+#ifndef HPUX
     FD_SET(fd, &fdset);
+#else
+    fdset |= 1 << fd;
+#endif
     if (fd > maxFdCheck)
       maxFdCheck = fd;
   }
@@ -190,8 +211,13 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _callbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
-      if (info->fd >= 0)
+      if (info->fd >= 0) {
+#ifndef HPUX
 	FD_CLR(info->fd, &fdset);
+#else
+	fdset &= ~(1 << info->fd);
+#endif
+      }
       _toDeleteCallbacks.Append(info);
       _callbacks.DoneIterator(index);
       return;
@@ -203,8 +229,13 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _allCallbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
-      if (info->fd >= 0)
+      if (info->fd >= 0) {
+#ifndef HPUX
 	FD_CLR(info->fd, &fdset);
+#else
+	fdset &= ~(1 << info->fd);
+#endif
+      }
       _toDeleteAllCallbacks.Append(info);
       _allCallbacks.DoneIterator(index);
       return;
@@ -371,7 +402,11 @@ void Dispatcher::Run1()
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 
+#ifndef HPUX
   fd_set fdread;
+#else
+  int fdread;
+#endif
   memcpy(&fdread, &fdset, sizeof fdread);
 
   int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, 0, &timeout);
@@ -389,12 +424,17 @@ void Dispatcher::Run1()
     for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
       DispatcherInfo *callback = _allCallbacks.Next(index);
       if (callback->flag & _stateFlag) {
-	if (callback->fd >= 0
-	    && FD_ISSET(callback->fd, &fdread)) {
-#ifdef DEBUG
-	  printf("Check for correctness... Called \n"); 
+	if (callback->fd >= 0) {
+#ifndef HPUX
+	  if (FD_ISSET(callback->fd, &fdread)) {
+#else
+	  if (fdread & (1 << callback->fd)) {
 #endif
-	  callback->callBack->Run();
+#ifdef DEBUG
+	    printf("Check for correctness... Called \n"); 
+#endif
+	    callback->callBack->Run();
+	  }
 	}
       }
     }
@@ -403,12 +443,17 @@ void Dispatcher::Run1()
     for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
       DispatcherInfo *callback = _callbacks.Next(index);
       if (callback->flag & _stateFlag) {
-	if (callback->fd >= 0
-	    && FD_ISSET(callback->fd, &fdread)) {
-#ifdef DEBUG
-	  printf("Check for correctness... Called \n");
+	if (callback->fd >= 0) {
+#ifndef HPUX
+	  if (FD_ISSET(callback->fd, &fdread)) {
+#else
+	  if (fdread & (1 << callback->fd)) {
 #endif
-	  callback->callBack->Run();
+#ifdef DEBUG
+	    printf("Check for correctness... Called \n");
+#endif
+	    callback->callBack->Run();
+	  }
 	}
       }	
     }

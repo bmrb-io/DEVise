@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/09 18:04:09  jussi
+  Collection of fd's (fdset) now assembled and disassembled in
+  Register/Unregister instead of Run1. Callbacks to be deleted
+  are first appended to a delete list, and collectively removed
+  at the beginning of Run1.
+
   Revision 1.7  1996/04/08 16:56:14  jussi
   Changed name of DisplaySocketId to more generic 'fd'.
 
@@ -299,7 +305,11 @@ private:
   static DispatcherList _dispatchers;
   
   /* Set of file descriptors to inspect for potential input */
+#ifndef HPUX
   static fd_set fdset;
+#else
+  static int fdset;
+#endif
   static int maxFdCheck;
 
   /* Set to true when dispatcher should quit */
