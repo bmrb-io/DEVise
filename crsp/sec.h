@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/09 22:43:18  jussi
+  Converted to use tape drive instead of regular file. Added trim_string
+  function to trim extra white space off of company names.
+
   Revision 1.1  1995/11/09 15:30:58  ravim
   Initial revision
 */
@@ -41,7 +45,7 @@ public:
   Security(TapeDrive &tape);
   ~Security();
 
-  void print_security();
+  void print_security(ostream& out);
 
   // data members - initially declared as pointers - will be dynamically
   // allocated at load time
