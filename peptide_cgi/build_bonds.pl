@@ -12,11 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This script takes Condor data, already split by split_user_data,
-#  and creates a DEVise session file that displays
-#  each user's data as a view symbol.
-
-# Build a full bond table (backbone and side chains) for a protein.
+#  Build a full bond table (backbone and side chains) for a protein.
 
 ############################################################
 

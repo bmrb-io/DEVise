@@ -1,16 +1,31 @@
 #!/s/perl/bin/perl -w
 
-# Richard Chang
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999-2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-# This generates the data for a given entry, and a summary page
-# It uses the CGI.pm package
+#  This script generates the data, session files, and html files for a
+#  given BMRB entry (accession number).
 
-# Parameters:
-#  number - the number of the file, ie 4101
+#  Parameters:
+#   number - the number of the file, ie 4101
 
-# can call using
-# http://biron/cgi-bin/bmrb/make_view?acc_no=bmr4033.str
+#  can call using
+#  http://pumori/cgi-bin/bmrb/make_view?number=4101
 
+############################################################
+
+# $Id$
+
+############################################################
 
 use CGI; # qw/:standard :html3/;
 use strict;
@@ -18,44 +33,39 @@ use strict;
 my ($acc_no, $number, $summary_page, $query);
 $query = new CGI;
 
-# $acc_no = $query->param('acc_no') || 'bmr4101.str';
-#$summary_page = substr($acc_no, 3, 4) . 'y.html';
-#$number = substr($acc_no, 3, 4);
-
 $number = $query->param('number') || '4101';
 $acc_no = 'bmr' . $number . '.str';
 $summary_page = $number . 'y.html';
 
-#$mode = 0644;
+my ($current_dir, $session_dir, $data_dir);
+$current_dir = `pwd`;
+chomp $current_dir;
+$session_dir = $current_dir . '/session_dir';
+$data_dir = $current_dir . '/data_dir';
 
-#chdir ('/p/devise/demo/session.js/bmrb/dynamic_sessions') 
-#  || die('Could not change directory to session.js/bmrb');
-#system('touch foo1')
-#  && die ("can't create foo1");
+# Go to the data directory.
+chdir ($data_dir)
+  or dienice('Could not change to data directory ($data_dir)');
 
+# If the summary page for this accession number already exists, assume
+# that we don't have to do anything.
+if (! -e $summary_page) {
+  system ("./summarize $acc_no" ) 
+   && dienice("could not generate data files with java");
 
-#The data directory
-chdir ('/p/devise/demo/dat/bmrb/BMRB')
-  || dienice('Could not change directory to BMRB');
-
- if (! -e $summary_page) {
-  system ("java -classpath .:/u/p/d/pdc/public/pub_research/ " .
-	  "Summarize $acc_no" ) 
-    && dienice("could not generate data files with java");
-
-  # for some reason, java generates a -rw-r----- file by default;
-  # change to -rw-rw-rw-
-   # chmod 0666, "$summary_page";
+  # Make sure the summary page is world-readable.
+  chmod 0644, "$summary_page";
   
-  # generate html pages
-  #  first, chemical shift info
+  # Generate html pages...
+
+  # First, chemical shift info.
   if (-e $number.'c.dat') {
     gen_html('csi');
     gen_html('deltashift');
     gen_html('percent');
   }
 
-  #  then, additional stuff like in bmr4096.str
+  # Then, additional stuff like in bmr4096.str.
   if (-e $number.'o.dat') {
     gen_html('coupling');
     gen_html('hxrates');
@@ -63,10 +73,12 @@ chdir ('/p/devise/demo/dat/bmrb/BMRB')
     gen_html('relax');
   }
       
-  # generate new sessions
+  # Generate new sessions
+  #TEMPTEMP -- does this need to be done even if the summary page exists?
+  # what if someone else just viewed a different sample? YES!!!
   if (-e $number.'c.dat') {
-    chdir ('/p/devise/demo/session.js/bmrb/dynamic_sessions') 
-      || dienice('Could not change directory to dynamic_sessions');
+    chdir ($session_dir) 
+      or dienice('Could not change to session_directory ($session_dir)');
 
     change_file('Csi','csi');
     change_file('DeltaShift','deltashift');
@@ -74,8 +86,8 @@ chdir ('/p/devise/demo/dat/bmrb/BMRB')
   }
   
   if (-e $number.'o.dat') {
-    chdir ('/p/devise/demo/session.js/bmrb/dynamic_sessions') 
-      || dienice('Could not change directory to dynamic_sessions');
+    chdir ($session_dir)
+      or dienice('Could not change to session_directory ($session_dir)');
     change_not_insert('coupling');
     change_not_insert('hxrates');
     change_not_insert('order');
@@ -85,8 +97,11 @@ chdir ('/p/devise/demo/dat/bmrb/BMRB')
 } # end if summary page doesn't exist
     
 # return summary page
-print $query->redirect("http://biron.cs.wisc.edu/bmrb/BMRB/$summary_page");
+print $query->redirect("http://pumori.cs.wisc.edu/bmrb/html/$summary_page");
 exit;
+
+#------------------------------------------------------------------------
+# Die in a way that generates output appropriate for a CGI script.
 
 sub dienice {
   my ($errmsg);
@@ -99,27 +114,24 @@ sub dienice {
   exit;
 }
 
-
+#------------------------------------------------------------------------
+#TEMPTEMP -- better comment here
 # also generates a DEVise session file.  But this doesn't add the
 # dteInsertCatalogEntry to the front, because these base files are
 # better prepared.
 # parameters:
 # 0 - the original data source in the base file
+
 sub change_not_insert {
   my($mode);
-#  my($full_data_stream);
-#  $full_data_stream = '.' . $number . substr($_[0], 0, 1);
-
-#  if ($_[0] eq 'coupling') {
-#    $full_data_stream = '.' . $number . 'u';
-#  }
 
   open(INPUT, "$_[0].base") ||
     dienice "Can't read $_[0].base";
   open(OUTSESSION, ">$_[0].ds") ||
     dienice "Can't output $_[0].ds";
-  print OUTSESSION ("# DEVise session file generated by make_file\n\n");
+  print OUTSESSION ("# DEVise session file generated by make_view\n\n");
 
+  #TEMPTEMP -- what's 4096 doing in here? -- what's in the base file?
   while (<INPUT>) {
     s/4096/$number/g;
     print OUTSESSION $_;
@@ -130,6 +142,7 @@ sub change_not_insert {
   $mode = 0664; chmod $mode, "$_[0].ds";
 }
 
+#------------------------------------------------------------------------
 # generates a DEVise session file for a new data file
 # parameters:
 # 0 - the DEVise schema, typically capitalized
@@ -147,8 +160,7 @@ sub change_file {
 
   $data_name = $number . substr($_[1], 0, 1);
   $data_file = $data_name . '.dat';
-  $data_path = '/afs/cs.wisc.edu/p/devise/demo/dat/bmrb/BMRB';
-  # '.BMRB.' is the directory for this data stream in DEVise
+  $data_path = '/p/devise/demo/dat/bmrb/dynamic_data';
   $full_data_stream = '.' . $data_name;
   
   open(INPUT, "$_[1].base") ||
@@ -156,7 +168,7 @@ sub change_file {
   open(OUTSESSION, ">$_[1].ds") ||
     dienice "Can't output $_[1].ds";
   
-  print OUTSESSION ("# DEVise session file generated by make_file\n\n");
+  print OUTSESSION ("# DEVise session file generated by make_view\n\n");
   print OUTSESSION ("# Per-session data source definitions\n");
   print OUTSESSION ("DEVise dteInsertCatalogEntry . {\"$data_name\" UNIXFILE $data_file $schema_type $schema_path \"\" 100 50 \"$data_path\" \"\"}\n\n");
   
@@ -171,6 +183,7 @@ sub change_file {
 }
 
 
+#------------------------------------------------------------------------
 # This displays the DEVise graphs for a page
 # by creating a page for Javascreen graphs on the fly
 # It uses the CGI.pm package
@@ -204,7 +217,7 @@ sub gen_html {
     <script language="JavaScript">
       <!--
       function openhelp() {
-      newwin= window.open("http://biron.cs.wisc.edu/bmrb/help.html",
+      newwin= window.open("http://pumori.cs.wisc.edu/bmrb/help.html",
       "per",
       "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=300,height=300");
       // -->
@@ -276,7 +289,7 @@ EndHeader
   print OUTPUT <<EndApp;
   <applet code=jsb.class archive=../../jsb.jar width=800 height=600>
     <param name="debug" value="0">
-    <param name="session" value="bmrb/2.0/$page.ds">
+    <param name="session" value="bmrb/dynamic_sessions/$page.ds">
     <param name="cmdport" value="6666">
     <param name="imgport" value="6644">
     <param name="rubberbandlimit" value="4x4">

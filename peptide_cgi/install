@@ -1,0 +1,115 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  Install the peptide-cgi setup.  Note: some of the installation is
+#  specific to a certain machine; this script is configured to do
+#  the installation on pumori -- slight changes may be needed to
+#  do the installation on other machines.
+
+#  To use the installed software, go to:
+#  http://pumori.cs.wisc.edu/bmrb/bmrb_select.html.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+set demohome = /p/devise/demo
+set wwwhome = /var/home/www
+
+
+echo You are about to install the peptide-cgi setup.  This
+echo will install files in $demohome
+echo and $wwwhome.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+
+# Compile the Java code.
+cd java_classes
+make
+cd ..
+
+# Create and set up the dynamic sessions directory.
+set targetdir = $demohome/session.js/bmrb/dynamic_sessions
+if (! -d $targetdir) then
+  mkdir $targetdir
+
+  # Needed so www-user can write here.
+  fs setacl $targetdir system:anyuser write
+endif
+cp -p dynamic_sessions/*.base $targetdir
+
+# Create and set up the data/html directory.
+set targetdir = $demohome/dat/bmrb/dynamic_data
+if (! -d $targetdir) then
+  mkdir $targetdir
+
+  # Needed so www-user can write here.
+  fs setacl $targetdir system:anyuser write
+endif
+cp -p html/[a-z]* $targetdir
+
+# Create and set up the java classes directory.
+set targetdir = $demohome/dat/bmrb/dynamic_data/java_classes
+if (! -d $targetdir) then
+  mkdir $targetdir
+endif
+cp java_classes/*.class $targetdir
+cp java_classes/*.jar $targetdir
+
+# Create and set up the directory containing the "front-end" html file.
+set targetdir = $wwwhome/public/bmrb
+if (! -d $targetdir) then
+  mkdir $targetdir
+  chmod 755 $targetdir
+endif
+cp -p bmrb_select.html $targetdir
+chmod 644 $targetdir/bmrb_select.html
+
+# Create the link that we use to have the browser find the summary page.
+set targetdir = $wwwhome/public/bmrb/html
+if (! -f $targetdir) then
+  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+endif
+
+# Create and set up the CGI directory.
+set targetdir = $wwwhome/cgi-bin/bmrb
+if (! -d $targetdir) then
+  mkdir $targetdir
+  chmod 755 $targetdir
+endif
+cp -p cgi-bin/make_view $targetdir
+chmod 755 $targetdir/make_view
+
+# Link data directory to CGI directory.
+set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
+if (! -f $targetdir) then
+  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+endif
+
+# Link session directory to CGI directory.
+set targetdir = $wwwhome/cgi-bin/bmrb/session_dir
+if (! -f $targetdir) then
+  ln -s $demohome/session.js/bmrb/dynamic_sessions $targetdir
+endif
