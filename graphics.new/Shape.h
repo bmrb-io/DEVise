@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/22 18:06:25  jussi
+  Symbol width and height are taken as an absolute value.
+
   Revision 1.6  1995/11/28 00:23:36  jussi
   Elevated a couple of #include statements from MapInterpShape.h
   to this file.
@@ -158,7 +161,8 @@ class Shape {
       _y[0] = GetY(gdata, map, offset);
       Color lastColor = GetColor(gdata, map, offset);
       
-      for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+      int colorIndex;
+      for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	char *colorGData = (char *)gdataArray[colorIndex];
 	if (GetColor(colorGData,map,offset) != lastColor)
 	  break;
