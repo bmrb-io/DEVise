@@ -1162,6 +1162,7 @@ Num Date        Status  Description
 
 304 03/02/98	FIXED	Background and foreground color settings don't get
 			saved in sessions. (ad/rkw)
+			(Fixed by rkw)
 
 305 03/02/98	OPEN	New DeviseCommand module doesn't check argument counts.
 			(rkw)
@@ -1172,15 +1173,19 @@ Num Date        Status  Description
 			quitting (at least on Intel/Solaris). (rkw)
 
 308 03/03/98	FIXED	devised uses lots of CPU when idle. (sm/rkw)
+			(Fixed by rkw)
 
 309 03/04/98	FIXED	Copying a view does not copy the background color
 			to the new view. (ml/rkw)
+			(Fixed by rkw)
 
 310 03/04/98	FIXED	The collaborator uses lots of CPU when idle. (rkw)
+			(Fixed by rkw 3/11/98)
 
 311 03/06/98	FIXED	Visual links don't always update correctly (see the CustomerAna.ds
 			session in the BankOne demo). (ml/rkw)
 			(See also bugs 115, 128.)
+			(Fixed by rkw)
 
 312 03/07/98	OPEN	Attempting to show link info sometimes fails with 'bad window
 			path name' inside the dialogInfo procedure. (rkw)
@@ -1206,15 +1211,17 @@ Num Date        Status  Description
 319 03/11/98	OPEN	It is possible to create data sources with duplicate
 			names. (rkw)
 
-320 03/11/98	FIXED (donko)	SQLViews don't work. (rkw)
+320 03/11/98	OPEN	SQLViews don't work. (rkw)
 
 321 03/11/98	FIXED	Rubberband line on Linux client/server form causes
 			crash. (rkw)
+			(Fixed by rkw 3/11/98)
 
 322 03/11/98	OPEN	Can't run client/server form on Linux without
 			collaborator. (rkw)
 322.1		FIXED	devised crashes if DEVISE_COLLABORATOR environment
 			variable is not set.
+			(Fixed by rkw 3/11/98)
 322.2		OPEN	devised crashes if DEVISE_COLLABORATOR is set but
 			no collaborator is running.
 
@@ -1231,6 +1238,11 @@ Num Date        Status  Description
 
 326 03/12/98	WORK	Lenses don't work (don't draw any data). (rkw)
 			(Workaround is disabling them in the GUI.)
+
+327 03/12/98	OPEN	Views don't quite fill up all the space they should
+			(this can be seen as white lines between the views
+			if you set the background color to something non-
+			white). (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
