@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/23 20:46:40  jussi
+  Cleaned up and added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:09  jussi
   Added/updated CVS header.
 */
@@ -31,6 +34,7 @@ public:
 };
 
 struct TimerQueueEntry;
+
 class Timer {
 public:
   /* queue timer.
@@ -47,7 +51,7 @@ public:
 
 private:
   /* Handler on timer interrupt */
-  static void TimerHandler(int);
+  static void TimerHandler(int arg);
 
   /* StopTimer() and StartTimer() should be used in pairs to
      run code that must be run with timer off :

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/23 20:46:29  jussi
+  Cleaned up.
+
   Revision 1.5  1996/05/20 18:44:41  jussi
   Replaced PENTIUM flag with SOLARIS.
 
@@ -35,8 +38,10 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "Timer.h"
 #include "../graphics.new/machdep.h"
+#include "Timer.h"
+
+//#define DEBUG
 
 /* timer interrupt interval in milliseconds */
 const int TIMER_INTERVAL = 500;
@@ -94,7 +99,7 @@ void Timer::Queue(long when, TimerCallback *callback, int arg)
   entry->arg = arg;
   
 #ifdef DEBUG
-  printf("Queue %d %d\n", when, entry->when);
+  printf("Queue %ld, %ld\n", when, entry->when);
 #endif
 
   StopTimer();
@@ -120,19 +125,27 @@ void Timer::Queue(long when, TimerCallback *callback, int arg)
 Handler of timer interrupt
 *********************************************************************/
 
-void Timer::TimerHandler(int)
+void Timer::TimerHandler(int arg)
 {
+#ifdef DEBUG
+  printf("In TimerHandler\n");
+#endif
+
+  (void)signal(SIGALRM, SIG_IGN);
+
   _now += TIMER_INTERVAL;
   TimerQueueEntry *entry;
   while (_head && _head->when <= _now) {
     entry = _head;
     _head = _head->next;
+#ifdef DEBUG
+    printf("Waking up %ld at %ld\n", entry->when, _now);
+#endif
     entry->callback->TimerWake(entry->arg);
     FreeEntry(entry);
   }
-#if defined(HPUX) || defined(AIX) || defined(SOLARIS)
+
   (void)signal(SIGALRM, TimerHandler);
-#endif
 }
 
 /************************************************************************
@@ -150,12 +163,11 @@ void Timer::InitTimer()
   (void)signal(SIGALRM, TimerHandler);
   
   struct itimerval timerVal;
-  
   timerVal.it_interval.tv_sec = 0;
   timerVal.it_interval.tv_usec = TIMER_INTERVAL * 1000;
   timerVal.it_value.tv_sec = 0;
   timerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
-  setitimer(ITIMER_REAL,&timerVal, 0);
+  setitimer(ITIMER_REAL, &timerVal, 0);
   
   _initialized = true;
 }
