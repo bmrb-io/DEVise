@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/03/24 20:47:16  jussi
+#  Added *.txt to documentation copy command.
+#
 #  Revision 1.2  1996/01/27 00:22:32  jussi
 #  Devise executable is now 'generic', not 'issm'.
 #
@@ -78,7 +81,7 @@ cp -p lib/[a-z]* $target/lib
 
 echo ""
 echo Releasing documentation...
-cp -p doc/*.ps *.txt $target/doc
+cp -p doc/*.ps doc/*.txt $target/doc
 cp -p doc/Agreement $target/doc
 cp -p doc/Copyright $target/doc
 cp -p doc/Disclaimer $target/doc
