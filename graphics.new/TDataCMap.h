@@ -16,14 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 19:52:11  jussi
+  Small fixes to remove compiler warnings. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:15:53  jussi
   Added CVS header.
-*/
-
-/* implements default mapping for connectors.
-   Default:
-     color:	white.
-     Pattern:	0.
 */
 
 #ifndef TDataCMap_h
@@ -41,15 +38,15 @@ class Connector;
 
 class TDataCMap {
 public:
-  TDataCMap(){
-    defaultColor = WhiteColor;
+  TDataCMap() {
+    defaultColor = BlackColor;
     defaultPattern = Pattern0;
     _shapeId = ContLineConnectorID;
     _numShapeAttrs = 0;
   }
 
-  /* called by to map 2 gdata to one connection */
-  virtual Boolean MapToConnection(void *grec1,void *grec2, Connector *c) {
+  /* called by GDataBin to map 2 gdata records to one connection */
+  virtual Boolean MapToConnection(void *grec1, void *grec2, Connector *c) {
     GDataBinRec *s1 = (GDataBinRec *)grec1;
     GDataBinRec *s2 = (GDataBinRec *)grec2;
     c->x1 = s1->x;
@@ -60,40 +57,37 @@ public:
     c->color = defaultColor;
     c->cShapeID = _shapeId;
     c->numShapeAttrs = _numShapeAttrs;
-    for (int i=0; i < _numShapeAttrs; i++){
+    for(int i = 0; i < _numShapeAttrs; i++)
       c->shapeAttrs[i] = _shapeAttrs[i];
-    }
-    
-    return Map(grec1,grec2,c);
+    return Map(grec1, grec2, c);
   }
 
-protected:
-  /* this is specified by the user */
-  virtual Boolean Map(void *, void *, Connector *) { return false; }
-
-  void SetDefaultColor(Color c) { defaultColor = c; };
-  void SetDefaultPattern(Pattern p){ defaultPattern = p; };
+  void SetDefaultColor(Color c) { defaultColor = c; }
+  void SetDefaultPattern(Pattern p) { defaultPattern = p; }
   void SetDefaultConnectorShape(ConnectorShapeID shapeId,
 				int numAttrs = 0,
 				ShapeAttr *shapeAttr = NULL) {
-    if (numAttrs > (int)MAX_CONNECTOR_SHAPE_ATTRS){
+    if (numAttrs > (int)MAX_CONNECTOR_SHAPE_ATTRS) {
       fprintf(stderr, "ConnectorMapping::SetDefaultShape:too many attrs %d\n",
 	      numAttrs);
       Exit::DoExit(1);
     }
     _shapeId = shapeId;
     _numShapeAttrs = numAttrs;
-    _shapeAttrs= shapeAttr;
+    _shapeAttrs = shapeAttr;
   }
-  Color GetDefaultColor(){ return defaultColor;}
+  Color GetDefaultColor() { return defaultColor; }
   Pattern GetDefaultPattern() { return defaultPattern; }
 
+protected:
+  virtual Boolean Map(void *, void *, Connector *) { return true; }
+
 private:
-  Color defaultColor;
-  Pattern defaultPattern;
+  Color            defaultColor;
+  Pattern          defaultPattern;
   ConnectorShapeID _shapeId;
-  int _numShapeAttrs;
-  ShapeAttr *_shapeAttrs;
+  int              _numShapeAttrs;
+  ShapeAttr        *_shapeAttrs;
 };
 
 #endif
