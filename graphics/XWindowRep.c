@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.123  1999/03/18 17:29:59  wenger
+  Implemented two-color option in HighLow symbols; compensated for
+  XFillRectangle() not working the way O'Reilly says it does (subtracted
+  one from width and height); test command for Condor User data visualization.
+
   Revision 1.122  1999/02/15 21:53:15  wenger
   Made XWindowRep::MoveResize() work correctly for pixmaps so that the
   new pile/stack code works for the JavaScreen.
@@ -4200,7 +4205,7 @@ void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
     if (filled) {
       // Correct for XFillRectangle() not working the way O'Reilly says it does.
       XFillRectangle(_display, DRAWABLE, _gc, symbolX,
-        symbolY, width - 1, height - 1);
+        symbolY, width, height);
     }
 
     // do I need to reduce the bounding boxes height & width by 1??

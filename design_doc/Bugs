@@ -1829,6 +1829,12 @@ Num Date        Status  Description
 474 03/23/99	FIXED	Margins on view home auto mode don't work. (rkw)
 			(Fixed by rkw, 3/23/99.)
 
+475 03/24/99	FIXED	RectX symbols aren't filled properly (see a2.tk
+			session). (rkw)
+
+476 03/24/99	OPEN	'5'/'home' on any visually-linked view should work
+			the way it does on piles. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
