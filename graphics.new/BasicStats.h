@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/13 17:29:07  jussi
+  ViewKGraph now uses the more general ViewCallback interface.
+
   Revision 1.9  1996/06/20 17:10:24  guangshu
   Added support for color statistics.
 
@@ -48,6 +51,7 @@
 #define BasicStats_h
 
 #include "DList.h"
+#include "DeviseTypes.h"
 #include "ViewStats.h"
 
 class ViewKGraph;
