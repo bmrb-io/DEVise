@@ -42,6 +42,32 @@ DEV_DEBUG to a non-zero value.  You don't have to change any of the
 makefiles.
 
 
+*** Adding Source Files
+
+When you add new source files, the files should start with the standard
+DEVise source code header (doc/std_header).
+
+
+*** Adding Source Directories
+
+New source directories should be added underneath the top-level src
+directory.  When you add a new source directory, you should add the
+appropriate directories and makefiles in the hp, linux, solaris, solsparc,
+and sun architecture directories.  For example, if you create a
+directory src/foo, containing bar.c, you should create hp/foo, linux/foo,
+solaris/foo, solsparc/foo, and sun/foo, each with the appropriate Makefile.
+bar.o and libfoo.a will be created in these directories, NOT in
+src/foo (see below).
+
+
+*** Library and Object Files
+
+All library (.a) and object (.o) files should be created a the directory
+*under the appropriate archictecture directory*, NOT in the same directory
+as the source files.  For example, the .a and .o files corresponding to
+the sources in graphics are in hp/graphics, solaris/graphics, etc.
+
+
 *** Executables
 
 Most executables are produced in the generic subdirectory under the
