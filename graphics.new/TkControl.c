@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  1996/12/20 16:26:26  jussi
+  Removed call to SemaphoreV::create().
+
   Revision 1.73  1996/12/15 20:21:53  wenger
   Added '-noshm' command line flag to allow user to disable shared memory;
   temporarily disabled RTree stuff.
@@ -344,6 +347,11 @@ TkControlPanel::TkControlPanel()
   ControlPanelTclInterp = _interp;
 #endif
 
+  if (!Init::UseSharedMem()) {
+    SemaphoreV::setEnabled(0);
+    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
+  }
+
   if (Init::BatchFile()) {
     // In batch mode, we don't need a Tk main window
     _mainWindow = 0;
@@ -376,11 +384,6 @@ TkControlPanel::TkControlPanel()
 #ifdef TK_WINDOW
   ControlPanelMainWindow = _mainWindow;
 #endif
-
-  if (!Init::UseSharedMem()) {
-    SemaphoreV::setEnabled(0);
-    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
-  }
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);
