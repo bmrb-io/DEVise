@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2001/01/09 15:51:12  wenger
+// Updated peptide-cgi code to match the latest JavaScreen version.
+//
 // Revision 1.17  2000/10/12 20:08:46  wenger
 // Star2Devise now tolerates not being able to get a value for residue
 // count; added more info to peptide-cgi keyboard help; updated star
@@ -2104,6 +2107,7 @@ TEMP*/
         dataWriter.print(
 "    <param name=\"cmdport\" value=\"6666\">\n" +
 "    <param name=\"imgport\" value=\"6644\">\n" +
+"    <param name=\"cgiurl\" value=\"/cgi-bin/js.cgi\">\n" +
 "    <param name=\"rubberbandlimit\" value=\"4x4\">\n" +
 "    <!-- old bgcolor     <param name=\"bgcolor\" value=\"64+96+0\"> -->\n" +
 "    <param name=\"bgcolor\" value=\"0+0+0\">\n" +
