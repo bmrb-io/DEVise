@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/09/12 18:42:31  wenger
+  Make sure imageDelay is non-negative.
+
   Revision 1.18  1996/09/12 18:37:43  wenger
   Added optional delay before drawing images.
 
@@ -593,7 +596,7 @@ void Init::DoInit(int &argc, char **argv)
 	}
 	_imageDelay = atoi(argv[i+1]);
 	// Make sure delay value is non-negative.
-	_imageDelay = max(0, _imageDelay);
+	_imageDelay = MAX(0, _imageDelay);
 	MoveArg(argc,argv,i,2);
       }
 
