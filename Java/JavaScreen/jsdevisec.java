@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.130  2001/11/19 17:17:03  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
 // Revision 1.129.2.1  2001/11/13 20:31:35  wenger
 // Cleaned up new collab code in the JSPoP and client: avoid unnecessary
 // client switches in the JSPoP (on JAVAC_Connect, for example), removed
@@ -935,7 +938,6 @@ public class jsdevisec extends Panel
 
     }
 
-
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
@@ -953,6 +955,7 @@ public class jsdevisec extends Panel
             msgbox = null;
 	    mainPanel.setBackground(jsValues.uiglobals.bg);
 	    jsValues.debug.log("Done with message box");
+
             return result;
         } else {
 	    // We only get here if we already have one message box showing,
@@ -2809,10 +2812,10 @@ class CollabSelectDlg extends Dialog
 			    }
 			    jsc.specialID = -1;
 			}
-			
+
 			command = command + DEViseCommands.ASK_COLLAB_LEADER;
 			jsc.dispatcher.start(command);
-			
+
 			close();
                     }
                 });
@@ -2925,6 +2928,7 @@ class CollabIdDlg extends Frame
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
     private String[] clients = null;
+    private boolean emptyList = false;
 
     private boolean status = false; // true means this dialog is showing
 
@@ -2974,9 +2978,8 @@ class CollabIdDlg extends Frame
         gridbag.setConstraints(panel, c);
         add(panel);
 
-        pack();
-
         setClientList(data);
+        pack();
 
         // reposition the window
         Point parentLoc = null;
@@ -3037,24 +3040,23 @@ class CollabIdDlg extends Frame
         //clientList.removeAll();
 
         for (int i = 1; i <= (clients.length-1)/3; i++) {
-	    String list = new String();
+	    String list = new String(); 
 	    list = clients[(i-1)*3+1] + clients[(i-1)*3+2] 
 		   + clients[(i-1)*3+3];
 	    clientList.add(list);
 	}
 
 	if (clientList.getItemCount() <= 0) {
-	  jsc.showMsg("No available JavaScreen for collaboration.");
-	  jsc.dispatcher.setStatus(0);
-	  jsc.restorePreCollab();
-	  throw new YException("No available JavaScreen for collaboration.");
+	    // jsc.showMsg("No available JavaScreen for collaboration.");
+	    clientList.add("No available collaboration leader.");
+	    emptyList = true;
 	} else {
 	    validate();
         }
     }
 
     private void startCollab() {
-        if (clientList.getItemCount() > 0) {
+        if (!emptyList) {
 	    int idx = clientList.getSelectedIndex();
 	    if (idx != -1) {
 	        String list = clientList.getItem(idx);

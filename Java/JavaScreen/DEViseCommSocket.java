@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2001/11/16 17:10:01  xuk
+// Send and receive command in String[] format in DEViseCommSocket.java.
+// Temporarily wrap old String format sendCmd and receiveCmd method outside these new methods, so needn't to change hige-level methods.
+//
 // Revision 1.33  2001/11/13 17:55:29  xuk
 // Cound send command in String[] format, no need to compose a long command string before sending.
 // Added a serial of sendCmd(String[] cmds, ...) methods.
@@ -517,14 +521,17 @@ public class DEViseCommSocket
 	    doSendCmd(cmd, msgType, ID);
 	}
 	*/
-
+	
         String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
         if (cmdBuffer == null || cmdBuffer.length == 0) {
 	    System.err.println("Unparseable command");
             return;
         }
-	
+
+	//synchronized (writeSync) {	
 	sendCmd(cmdBuffer, msgType, ID);
+	//}
+	
     }
 
     //-------------------------------------------------------------------
@@ -577,9 +584,10 @@ public class DEViseCommSocket
 
         synchronized (readSync) {
 	    cmdBuffer = doReceiveCmd();
+	    // return doReceiveCmd();
 	}
 
-	// change from String[] format to String format. 
+	// change from String[] format to String format.  
 	String response = new String("");
 	
 	for (int i=0; i<cmdBuffer.length; i++)
@@ -878,7 +886,7 @@ public class DEViseCommSocket
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
     // TEMP: disabled for String[] format
-    /*
+    /*    
     private String doReceiveCmd()
       throws YException, InterruptedIOException
     {
@@ -986,13 +994,14 @@ public class DEViseCommSocket
 
         return response;
     }
-    */
+    */    
 
     //-------------------------------------------------------------------
     // Receive a command in String[] format.
     // Note that this method may be interrupted by
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
+ 
     private String[] doReceiveCmd()
       throws YException, InterruptedIOException
     {

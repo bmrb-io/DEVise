@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.112  2001/11/19 17:17:02  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
 // Revision 1.111  2001/11/16 17:10:00  xuk
 // Send and receive command in String[] format in DEViseCommSocket.java.
 // Temporarily wrap old String format sendCmd and receiveCmd method outside these new methods, so needn't to change hige-level methods.
@@ -683,7 +686,6 @@ public class DEViseCmdDispatcher implements Runnable
 	}
 
 	jsc.jscreen.setLastAction(cmd);
-
 	// Note: command(s) will actually be sent by the run() method
 	// of this class.
         dispatcherThread = new Thread(this);
@@ -888,82 +890,82 @@ public class DEViseCmdDispatcher implements Runnable
             System.out.println("DEViseCmdDispatcher.run(" + commands[0] + ")");
         }
 
-      if (jsc.specialID == -1) { // for formal JS
-        try {
-	    for (int i = 0; i < commands.length; i++) {
-		if (getAbortStatus()) {
-		    setAbortStatus(false);
+	if (jsc.specialID == -1) { // for formal JS
+	    try {
+		for (int i = 0; i < commands.length; i++) {
+		    if (getAbortStatus()) {
+			setAbortStatus(false);
+			break;
+		    }
+		    
+		    if (commands[i].length() == 0) {
+			continue;
+		    } else if (!commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
+			jsc.pn("Invalid command: " + commands[i]);
+			continue;
+		    }
+
+		    if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
+			jsc.jscreen.updateScreen(false);
+			try {
+			    processCmd(commands[i]);
+			} catch (YException e1) {
+			    jsc.showMsg(e1.getMsg());
+			    disconnect();
+			}
+		    } else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
+			jsc.jscreen.updateScreen(false);
+			processCmd(commands[i]);
+		    } else {
+			processCmd(commands[i]);
+		    }
+		}
+
+		// Note: this is the "standard" place where the GUI gets
+		// changed to indicate that the command is finished.
+		jsc.animPanel.stop();
+		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+	    } catch (YException e) {
+		jsc.animPanel.stop();
+		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+		
+		// turn off the counter and the traffic light
+		jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
+		jsc.viewInfo.updateCount(0);
+		
+		// user pressed the stop button
+		switch (e.getID()) {
+		case 0: // low level communication error
+		    jsc.showMsg(e.getMsg());
+		    jsc.jscreen.updateScreen(false);
+		    disconnect();
 		    break;
-		}
-
-		if (commands[i].length() == 0) {
-		    continue;
-		} else if (!commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
-		    jsc.pn("Invalid command: " + commands[i]);
-		    continue;
-		}
-
-		if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
+		case 1: // invalid response from server
+		case 2: // ill-formated command received from server
+		    jsc.showMsg(e.getMsg());
 		    jsc.jscreen.updateScreen(false);
 		    try {
-		        processCmd(commands[i]);
+			jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
+			       "\"");
+			sendCmd(DEViseCommands.CLOSE_SESSION);
 		    } catch (YException e1) {
 			jsc.showMsg(e1.getMsg());
 			disconnect();
 		    }
-		} else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
+		    break;
+		default:
+		    jsc.showMsg(e.getMsg());
 		    jsc.jscreen.updateScreen(false);
-		    processCmd(commands[i]);
-		} else {
-		    processCmd(commands[i]);
-		}
-	    }
-
-	    // Note: this is the "standard" place where the GUI gets
-	    // changed to indicate that the command is finished.
-	    jsc.animPanel.stop();
-	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} catch (YException e) {
-	    jsc.animPanel.stop();
-	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-
-	    // turn off the counter and the traffic light
-	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
-	    jsc.viewInfo.updateCount(0);
-
-	    // user pressed the stop button
-	    switch (e.getID()) {
-	    case 0: // low level communication error
-		jsc.showMsg(e.getMsg());
-		jsc.jscreen.updateScreen(false);
-		disconnect();
-		break;
-	    case 1: // invalid response from server
-	    case 2: // ill-formated command received from server
-		jsc.showMsg(e.getMsg());
-		jsc.jscreen.updateScreen(false);
-		try {
-		    jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
-			   "\"");
-                    sendCmd(DEViseCommands.CLOSE_SESSION);
-		} catch (YException e1) {
-		    jsc.showMsg(e1.getMsg());
 		    disconnect();
+		    break;
 		}
-		break;
-	    default:
-		jsc.showMsg(e.getMsg());
-		jsc.jscreen.updateScreen(false);
-		disconnect();
-		break;
 	    }
+	    
+	    setAbortStatus(false);
+	    setStatus(0);
 	}
-
-        setAbortStatus(false);
-        setStatus(0);
-      }
-      // Collabration JavaScreen, waiting for incoming commands
-      else {
+	// Collabration JavaScreen, waiting for incoming commands
+	else {
 	    try {
 		processCmd(commands[0]); // for the connect command
 		while (jsc.specialID != -1) {
@@ -1005,7 +1007,7 @@ public class DEViseCmdDispatcher implements Runnable
 		       rsp[i]);
 		jsc.jsValues.debug.log("Processing command (" +
 				       (rsp.length - 1 - i) + ") " + rsp[i]);
-		
+
 		processReceivedCommand(command, rsp[i]);
 		
 		jsc.pn("  Done with command " + rsp[i]);
