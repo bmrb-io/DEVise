@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/25 01:24:08  jussi
+  Removed #ifdef CALCULATE_DIRECTLY which allowed one to quickly
+  switch back to the xPerPixel and yPerPixel method for testing.
+
   Revision 1.4  1995/11/25  01:20:07  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -99,6 +103,9 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
 #ifdef DEBUG
   printf("GDataBin: _maxYPixels: %d\n", _maxYPixels);
 #endif
+  if (!(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS))
+    printf("GDataBin: yhigh %.2f, ylow %.2f, _maxYPixels: %d\n",
+	   yhigh, ylow, _maxYPixels);
   assert(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS);
 
   _needX = true;
