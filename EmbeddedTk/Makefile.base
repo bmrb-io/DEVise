@@ -6,22 +6,23 @@ LDFLAGS = -L. -lm $(TCL_LIBS) $(X_LIBS) $(SOCKET_LIBS)
 DEFINES = $(DEBUG_FLAG) $(ARCH_FLAGS)
 CFLAGS = -Wall -Wno-unused $(INCS) $(DEFINES)
 
-# The line below forces CompDate.c to always be compiled.
-FORCE_DATE = $(CCC) -c $(CFLAGS) CompDate.c
+# The line below forces ETkCompDate.c to always be compiled.
+FORCE_DATE = $(CCC) -c $(CFLAGS) ETkCompDate.c
 
 ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o
 
 #
 # To compile the ETk server that support the Zoo object browser,
-# uncomment the following six lines, and set the locations of 
+# uncomment the following seven lines, and set the locations of 
 # the Zoo shipping code and DEVise client-server library.
 #
-#SHIP_DIR = ../ShippingComm
-#CSLIB_DIR = ../devise-cslib
-#INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
-#LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
-#DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DZOOQUERY
-#ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
+ZOO_DIR = /u/a/n/andyt/zoo
+SHIP_DIR = $(ZOO_DIR)/ShippingComm
+CSLIB_DIR = $(ZOO_DIR)/devise-cslib
+INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
+LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
+DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DZOOQUERY
+ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
 
 .c.o: 
 	$(CCC) -c $(CFLAGS) $<
@@ -40,12 +41,12 @@ client: SampleClient
 
 EmbeddedTk: $(ETK_OBJS)
 	$(FORCE_DATE)
-	$(CCC) -o EmbeddedTk $(ETK_OBJS) CompDate.o $(LDFLAGS)
+	$(CCC) -o EmbeddedTk $(ETK_OBJS) ETkCompDate.o $(LDFLAGS)
 
 CLIENT_OBJS = SampleClient.o ETkPatron.o
 SampleClient: $(CLIENT_OBJS)
 	$(FORCE_DATE)
-	$(CCC) -o $@ $(CLIENT_OBJS) CompDate.o $(LDFLAGS)
+	$(CCC) -o $@ $(CLIENT_OBJS) ETkCompDate.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
 

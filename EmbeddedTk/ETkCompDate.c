@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/05/22 21:34:16  arvind
+  Changed name of CompDate function - clash with cslib
+
   Revision 1.1  1997/05/21 20:27:07  andyt
   ETk server now prints compile date when it starts. SampleClient can now send
   "eval" commands to the ETk server.

@@ -5,7 +5,7 @@
 #include <string.h>
 #include "EmbeddedTk.h"
 #include "ETkPatron.h"
-#include "CompDate.h"
+#include "ETkCompDate.h"
 
 void Help();
 void Demo(char *server, int port);
@@ -420,7 +420,7 @@ main()
     
     cout << "-----------------------------------------------------" << endl;
     cout << " Sample client for the EmbeddedTk server" << endl;
-    cout << " Compile date: " << CompDate::Get() << endl;
+    cout << " Compile date: " << ETkCompDate::Get() << endl;
     cout << "-----------------------------------------------------" << endl;
     cout << endl;
     cout << "    Type \"?\" for help" << endl;

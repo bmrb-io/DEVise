@@ -55,6 +55,22 @@ EmbeddedTk.h for the global variable declarations (includes the window
 array, limits on the number of windows allowed, the name of the X
 display, and some other stuff).
 
+* The ETk server sends an acknowledgment to the client for every
+command issued. The ack is an ASCII string, and the first word is
+always OK or ERROR. The rest of the string is the result of the
+command (or an error message if the first word was ERROR).
+
+* When a client sends the 'show' command to the server, a new Tk
+window is created. The server returns an acknowledgment to the client
+after the window has been successfully created. The acknowledgment
+contains a "handle" for the window (ETk handles are integers) followed
+by the coordinates of the new window. Coordinates are always given as
+a list of 4 integers: "x-center y-center width height". An example of
+the server's reply: OK 3 100 100 200 300. This reply means that a new
+window was created, its handle is 3, the center of the window is at
+(100,100), the width of the window is 200, and the height of the
+window is 300.
+
 * Every ETk window is created with its own Tcl interpreter, to avoid
 naming conflicts among the Tcl scripts.
 

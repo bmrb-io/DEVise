@@ -3,6 +3,10 @@
    This file is NOT part of the standard ETk server. It is only
    necessary to create the version of ETk that supports the Zoo
    object browser
+   
+   IMPORTANT: This is a COPY of the ZooCommands.c file in the
+   zoo-tclsh module of the Zoo code repository.
+   
 */
 
 #include "ZooCommands.h"

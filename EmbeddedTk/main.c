@@ -1,7 +1,7 @@
 
 #include "TkWindowRep.h"
 #include "EmbeddedTk.h"
-#include "CompDate.h"
+#include "ETkCompDate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -995,7 +995,7 @@ main(int argc, char *argv[])
     
     fprintf(stderr, "-----------------------------------------------------\n");
     fprintf(stderr, " DEVise EmbeddedTk server\n");
-    fprintf(stderr, " Compile date: %s\n", CompDate::Get());
+    fprintf(stderr, " Compile date: %s\n", ETkCompDate::Get());
     fprintf(stderr, "-----------------------------------------------------\n");
     
     //
