@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/01/20 22:46:40  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.5  1998/11/23 19:19:08  donjerko
   *** empty log message ***
 
@@ -85,6 +91,9 @@ string extractQuery(istream& in){
 			query += c;
                         //}
 	}
+        if( !in ) {
+          return "";
+        }
 	return query;
 }
 
@@ -101,7 +110,7 @@ void processQuery(const string& query, ostream& out, const string& header){
 		const Tuple* tup;
 		TRY(tup = engine.getFirst(), NVOID);
 		while(tup) {
-                  tupAdt.print(out, tup);
+                  tupAdt.toAscii(out, tup);
                   out << endl;
                   tup = engine.getNext();
 		}
