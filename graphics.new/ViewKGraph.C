@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 20:07:25  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/08 23:43:49  ravim
   Callbacks added.
 
@@ -23,68 +26,66 @@
   Initial revision.
 */
 
-#include <stdio.h>
 #include "ViewKGraph.h"
+#include "Util.h"
+#include "Exit.h"
 
 ViewKGraph::ViewKGraph()
 {
-  _stats_list = NULL;
-  _kg = NULL;
-  _dis = NULL;
-  _numstats = 0;
+  _view_list = 0;
+  _kg = 0;
+  _dis = 0;
+  _numviews = 0;
   _statnum = STAT_NONE;
-  _name = NULL;
+  _name = 0;
 }
 
 ViewKGraph::~ViewKGraph()
 {
-  for(int i = 0; i < _numstats; i++)
-    _stats_list[i]->DeleteCallback(this);
-  delete [] _stats_list;
+  for(int i = 0; i < _numviews; i++)
+    _view_list[i]->GetStatObj()->DeleteCallback(this);
+  delete _view_list;
   delete _kg;
-  delete [] _name;
+  delete _name;
 }
 
 void ViewKGraph::Init()
 {
   // Remove itself from the callback list of all these stat objects
-  for(int i = 0; i < _numstats; i++)
-    (_stats_list[i])->DeleteCallback(this);
-  delete [] _stats_list;
+  for(int i = 0; i < _numviews; i++)
+    _view_list[i]->GetStatObj()->DeleteCallback(this);
+  delete _view_list;
+  _view_list = 0;
   
   // Initialize private members
-  _stats_list = NULL;
-  _numstats = 0;
-
+  _numviews = 0;
   _statnum = STAT_NONE;
+
+  delete _name;
+  _name = 0;
 }
 
 Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
 {
   // First check if Init has been called before this
-  if (_stats_list)
-    return false;
-  if (_numstats)
-    return false;
-  if (!num)
+  if (_view_list || _numviews || !num)
     return false;
 
-  _numstats = num;
-  _dis = ((v[0])->GetWindowRep())->GetDisplay();
-  // Create _stats_list
-  _stats_list = new (BasicStats *)[num];
-  int i;
-  for(i = 0; i < num; i++)
-    _stats_list[i] = v[i]->GetStatObj();
+  _numviews = num;
+  _dis = v[0]->GetWindowRep()->GetDisplay();
 
-  // Register to be called back when any of these stats change
-  for(i = 0; i < num; i++)
-    (_stats_list[i])->RegisterCallback(this);
+  // Create _view_list
+  _view_list = new (ViewGraph *) [num];
+  DOASSERT(_view_list, "Out of memory");
+
+  for(int i = 0; i < num; i++) {
+    _view_list[i] = v[i];
+    // Register to be called back when any of these stats change
+    _view_list[i]->GetStatObj()->RegisterCallback(this);
+  }
 
   // Store window name in private member
-  delete [] _name;
-  _name = new char[strlen(name)+1];
-  strcpy(_name, name);
+  _name = CopyString(name);
 
   return true;
 }
@@ -92,29 +93,33 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
 Boolean ViewKGraph::Display(int statnum)
 {
   // First check if views have been specified
-  if ((!_stats_list) || (!_numstats))
+  if (!_view_list || !_numviews)
     return false;
 
   _statnum = statnum;
 
   // Need to create the KGraph if not already existing
-  if (!_kg)
+  if (!_kg) {
     _kg = new KGraph(_dis);
+    DOASSERT(_kg, "Out of memory");
+  }
 
-  _kg->Init(_name, _stats_list[0]->GetStatName(_statnum));
+  _kg->Init(_name, _view_list[0]->GetStatObj()->GetStatName(_statnum));
+  _kg->setAxes(_numviews);
 
-  _kg->setAxes(_numstats);
-  Coord *parr = new Coord[_numstats];
-  for(int i = 0; i < _numstats; i++)
-    parr[i] = _stats_list[i]->GetStatVal(_statnum);
+  Coord *parr = new Coord [_numviews];
+  DOASSERT(parr, "Out of memory");
 
-  _kg->setPoints(parr, _numstats);
+  for(int i = 0; i < _numviews; i++)
+    parr[i] = _view_list[i]->GetStatObj()->GetStatVal(_statnum);
+
+  _kg->setPoints(parr, _numviews);
   _kg->Display();
 
   delete parr;
+
   return true;
 }
-
 
 void ViewKGraph::Callback(BasicStats *bs)
 {
