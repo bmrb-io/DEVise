@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/01/30 03:03:28  xuk
+// Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
+//
 // Revision 1.70  2001/01/23 22:58:16  xuk
 // fix bugs for mode switch.
 //
@@ -716,7 +719,6 @@ public class DEViseCmdDispatcher implements Runnable
       // Collabration JavaScreen, waiting for incoming commands
       else {
 	    try {
-		jsc.pn("We reached the processCmd(null).");
 		processCmd(commands[0]); // for the connect command
 		while (true)
 		    processCmd(null);
@@ -801,11 +803,34 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
-            if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
-                jsc.showMsg(response);
-            } else {
-                jsc.showSession(new String[] {response}, false);
-            }
+	    if (jsc.specialID != 0) {
+		jsc.showMsg(response);
+		setOnlineStatus(false);
+		jsc.specialID = 0;
+
+		disconnect();
+		_connectedAlready = false;
+
+		jsc.animPanel.stop();
+		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+		jsc.jscreen.updateScreen(false);
+
+
+		if (getStatus() != 0) {
+		    setAbortStatus(true);
+		}
+		setStatus(0);
+
+		dispatcherThread.stop();
+		dispatcherThread = null;
+
+	    } else {
+		if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
+		    jsc.showMsg(response);
+		} else {
+		    jsc.showSession(new String[] {response}, false);
+		}
+	    }
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
