@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/13 22:59:39  jussi
+  Added missing return statement.
+
   Revision 1.2  1996/12/13 21:34:38  jussi
   Added checking of available semaphores and shared memory.
 
@@ -36,6 +39,9 @@ MemMgr::MemMgr(int numPages, int pageSize, int &status) :
 	_numPages(numPages), _tableSize(numPages), _pageSize(pageSize)
 {
     _instance = this;
+
+    _shm = NULL;
+    _sem = _free = NULL;
 
     status = SetupSharedMemory();
     if (status < 0)
@@ -74,6 +80,7 @@ int MemMgr::SetupSharedMemory()
     _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
     if (!_sem || status < 0) {
       fprintf(stderr, "Cannot create semaphore\n");
+      _shm->destroy();
       delete _shm;
       return -1;
     }
@@ -82,6 +89,7 @@ int MemMgr::SetupSharedMemory()
     _free = new SemaphoreV(Semaphore::newKey(), status, 1);
     if (!_free || status < 0) {
       fprintf(stderr, "Cannot create semaphore\n");
+      _shm->destroy();
       delete _shm;
       _sem->destroy();
       delete _sem;
@@ -95,9 +103,8 @@ int MemMgr::SetupSharedMemory()
 int MemMgr::SetupLocalMemory()
 {
     // Make sure we don't reference (deleted) shared memory structures
-    _shm = 0;
-    _sem = 0;
-    _free = 0;
+    _shm = NULL;
+    _sem = _free = NULL;
 
     // We need space for page and also address in _freePage
     int size = _numPages * _pageSize
@@ -153,6 +160,10 @@ int MemMgr::Initialize()
 
 MemMgr::~MemMgr()
 {
+    if (_shm)
+        _shm->destroy();
+    else
+        delete _buf;
     delete _shm;
 
     if (_sem)
@@ -409,6 +420,9 @@ void MemMgr::Dump()
 
 DataPipe::DataPipe(int maxSize, int &status)
 {
+    _sem = _free = _data = NULL;
+    _shm = NULL;
+
     status = Initialize(maxSize);
 }
 
@@ -490,15 +504,20 @@ int DataPipe::Initialize(int maxSize)
 
 DataPipe::~DataPipe()
 {
+    if (_shm)
+        _shm->destroy();
     delete _shm;
 
-    _data->destroy();
+    if (_data)
+        _data->destroy();
     delete _data;
 
-    _free->destroy();
+    if (_free)
+        _free->destroy();
     delete _free;
 
-    _sem->destroy();
+    if (_sem)
+        _sem->destroy();
     delete _sem;
 }
 
