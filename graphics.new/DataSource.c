@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/18 15:57:15  jussi
+  Made one regular printf a debugging statement.
+
   Revision 1.9  1996/12/18 15:31:59  jussi
   Added synchronization methods and IsBusy() method.
 
@@ -315,6 +318,9 @@ DataSource::printStats()
 
 int DataSource::InitializeProc()
 {
+    /* Temporarily disable feature. */
+    return -1;
+
     if (_child >= 0) {
         fprintf(stderr, "Child process/thread exists already\n");
         return 0;
