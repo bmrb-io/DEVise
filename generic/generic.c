@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/05/05 03:06:41  jussi
+  Added IBMAddressTraceCompositeParser. Added missing attribute
+  high/low value computation for some composite parsers.
+
   Revision 1.18  1996/04/30 15:53:53  jussi
   Added link between StateLatLon parser and schema MARKETING.
 
@@ -714,7 +718,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Address", "X", "Y", "Color" };
+      char *primAttrs[] = { "Address", "Tag", "X", "Y", "Color" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -736,25 +740,26 @@ public:
 
     char *buf = (char *)recInterp->GetBuf();
     char *address = buf + attrOffset[0];
-    float *XPtr = (float *)(buf + attrOffset[1]);
-    float *YPtr = (float *)(buf + attrOffset[2]);
-    int *colorPtr = (int *)(buf + attrOffset[3]);
+    int *tagPtr = (int *)(buf + attrOffset[1]);
+    float *XPtr = (float *)(buf + attrOffset[2]);
+    float *YPtr = (float *)(buf + attrOffset[3]);
+    int *colorPtr = (int *)(buf + attrOffset[4]);
 
     // The high 32 bits are first, followed by the low 32 bits.
     // The lowest 2 bits are the tag.
 
     *YPtr = (address[0] & 0xfc) >> 2;
     *XPtr = ((address[0] & 0x03) << 4) | ((address[1] & 0xf0) >> 4);
-    int tag = address[7] & 0x03;
+    *tagPtr = address[7] & 0x03;
     *colorPtr = 0;
-    if (tag == 3)                       // instruction reference?
+    if (*tagPtr == 3)                   // instruction reference?
       *colorPtr = 2;                    // make it red
-    else if (tag == 1)                  // load reference?
+    else if (*tagPtr == 1)              // load reference?
       *colorPtr = 6;                    // make it green
-    else if (tag == 2)                  // store reference?
+    else if (*tagPtr == 2)              // store reference?
       *colorPtr = 3;                    // make it blue
     else
-      fprintf(stderr, "Invalid tag in trace: %d\n", tag);
+      fprintf(stderr, "Invalid tag in trace: %d\n", *tagPtr);
 
     // randomize the picture a little by creating a cloud
 
@@ -809,6 +814,9 @@ main(int argc, char **argv)
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
   CompositeParser::Register("IBMTRACE", new IBMAddressTraceComposite);
+  CompositeParser::Register("IBMTRACE1", new IBMAddressTraceComposite);
+  CompositeParser::Register("IBMTRACE2", new IBMAddressTraceComposite);
+  CompositeParser::Register("IBMTRACE3", new IBMAddressTraceComposite);
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
