@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/23 21:18:47  jussi
+  Simplified code.
+
   Revision 1.4  1995/12/14 21:19:02  jussi
   Replaced 0x%x with 0x%p.
 
@@ -127,14 +130,14 @@ RangeInfo *RangeList::Search(RecId id)
 }
 
 /************************************************************************
-  Search for the RangeInfo that contains the given recId.
+  Search for the RangeInfo that matches the given range exactly.
   Return NULL if none is found.
 *************************************************************************/
 
-RangeInfo *RangeList::SearchExact(RecId id)
+RangeInfo *RangeList::SearchExact(RecId low, RecId high)
 {
-    RangeInfo *info = Search(id);
-    if (info == NULL || id > info->high)
+    RangeInfo *info = Search(low);
+    if (info == NULL || info->low != low || info->high != high);
         return NULL;
     return info;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/23 21:18:47  jussi
+  Simplified code.
+
   Revision 1.2  1995/09/05 22:15:27  jussi
   Added CVS header.
 */
@@ -76,9 +79,9 @@ public:
        Update _hint. */
     RangeInfo *Search(RecId id);
 
-    /* Search for the RangeInfo that contains the given recId.
+    /* Search for the RangeInfo that matches the given range exactly.
        Return NULL if none is found */
-    RangeInfo *SearchExact(RecId id);
+    RangeInfo *SearchExact(RecId low, RecId high);
 
 private:
     /* main initialization for constructor */
