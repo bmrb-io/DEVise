@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 18:41:07  jussi
+  Added copyright notice and cleaned up code a bit. Changed argv
+  parameter to UpdateVisualFilter from const char ** to char **.
+
   Revision 1.2  1995/09/05 22:14:34  jussi
   Added CVS header.
 */
@@ -41,6 +45,9 @@ public:
   /* read input from file */
   Command(char *fname, QueryProc *qp);
   
+  /* destructor */
+  ~Command();
+
 protected:
   enum CmdState { WaitTime, WaitCmd, ReadInput, Eof };
   

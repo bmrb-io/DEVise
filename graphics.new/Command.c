@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/02/13 16:49:28  jussi
+  Minor fix for AIX.
+
   Revision 1.5  1995/12/28 20:08:58  jussi
   Small fix to remove compiler warning.
 
@@ -37,6 +40,7 @@
 #ifdef AIX
 #include <sys/select.h>
 #endif
+
 #include "Exit.h"
 #include "Time.h"
 #include "View.h"
@@ -72,6 +76,17 @@ Command::Command(char *fname, QueryProc *qp)
     Exit::DoExit(1);
   }
   Init();
+}
+
+/****************************************************
+Destuctor
+****************************************************/
+
+Command::~Command()
+{
+  Dispatcher::Current()->Unregister(this);
+  if (_input && _input != stdin)
+    fclose(_input);
 }
 
 /***********************************************************
