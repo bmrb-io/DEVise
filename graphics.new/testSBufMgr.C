@@ -89,7 +89,6 @@ int main()
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            len / 1048576.0 / secs);
 
-    task[0]->Terminate();
     delete task[0];
 
     printf("\nTesting Web write data access...\n");
@@ -146,7 +145,6 @@ int main()
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            len / 1048576.0 / secs);
 
-    task[0]->Terminate();
     delete task[0];
 
     // create files and I/O tasks
@@ -293,7 +291,6 @@ int main()
     printf("\n");
 
     for(i = 0; i < numFiles; i++) {
-        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];
@@ -343,7 +340,6 @@ int main()
     }
 
     for(i = 0; i < numFiles; i++) {
-        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];
@@ -364,7 +360,6 @@ int main()
     printf("\nThe tests failed.\n");
 
     for(i = 0; i < numFiles; i++) {
-        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];
