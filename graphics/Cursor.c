@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/02/08 20:06:24  wenger
+  If a view is a dest. view of a cursor, and the view's visual filter
+  gets changed such that the cursor is entirely outside the view, the
+  cursor is moved to the center of the destination view.
+
   Revision 1.22  1999/02/02 17:14:26  wenger
   Fixed bug 422 (setting cursor dest w/o source causes crash).
 
@@ -340,10 +345,11 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   if (!_src)
     return;
 
-  VisualFilter *filterP;
-  GetVisualFilter(filterP);
-  VisualFilter filter = *filterP;
-  VisualFilter oldFilter = *filterP;
+  VisualFilter filter;
+  // Note: we must get the filter directly from the source view here
+  // so that the flag is correct.
+  _src->GetVisualFilter(filter);
+  VisualFilter oldFilter = filter;
 
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
