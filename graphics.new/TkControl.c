@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/04/16 19:46:23  jussi
+  Added DoAbort() method.
+
   Revision 1.42  1996/04/15 15:08:11  jussi
   Interface to ViewGraph's mapping iterator has changed. Added another
   version of insertMapping command that takes the label as a parameter.
@@ -321,14 +324,18 @@ void TkControlPanel::StartSession()
   /* Create a new tcl command for WWW data */
   Tcl_CreateCommand(_interp, "www_extract", www_extract, 0, 0);
 
+  char *controlFile = "control.tk";
+  if (Init::BatchFile()) 
+    controlFile = "batch.tcl";
+
   char *envPath = getenv("DEVISE_LIB");
   char *control;
   char buf[256];
-  if (envPath != NULL) {
-    sprintf(buf,"%s/control.tk",envPath);
+  if (envPath) {
+    sprintf(buf, "%s/%s", envPath, controlFile);
     control = buf;
   } else
-    control = "control.tk";
+    control = controlFile;
 
   printf("Control panel file is: %s\n", control);
 
