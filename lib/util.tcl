@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/03/06 00:00:02  jussi
+#  Index number of color displayed in colored button in getColor.
+#
 #  Revision 1.10  1996/02/02 21:24:46  jussi
 #  Added getColor.
 #
@@ -547,4 +550,30 @@ proc PrintActual {toprinter printcmd filename allviews format} {
 	}
 	incr i
     }
+}
+
+proc ScaleUpper {val} {
+    set scale {0 0.001 0.01 0.1 1 2 5 10 20 30 40 50 100 200 300 400 500
+               1000 2000 3000 4000 5000 10000 50000 100000}
+    foreach s $scale {
+	if {$val < $s} {
+	    puts "$val, upper $s"
+	    return $s
+	}
+    }
+    return $val
+}
+
+proc ScaleLower {val} {
+    set scale {0 0.001 0.01 0.1 1 2 5 10 20 30 40 50 100 200 300 400 500
+               1000 2000 3000 4000 5000 10000 50000 100000}
+    set prevs $val
+    foreach s $scale {
+	if {$val < $s} {
+	    puts "$val, lower $prevs"
+	    return $prevs
+	}
+	set prevs $s
+    }
+    return $prevs
 }
