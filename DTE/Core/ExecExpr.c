@@ -1,19 +1,33 @@
 #include "ExecExpr.h"
+#include <ctype.h>
 
-/*
-ExecExpr* ExecExpr::createExpr(const string& fnname, const ExprList& args)
+
+ExecExpr* ExecExpr::createExpr(const string& fnname, ExprList* argp)
 {
-	if(args.size() == 1){
-		return new ExecTypeCast(args[0], fnname);
-	}
-	else if(args.size() == 2){
-		return new ExecOperator(args[0], args[1], fnname);
-	}
-	else{
-		return new ExecConstructor(args, fnname);
-	}
+  ExprList& args = *argp;
+
+  // strip 'op' from 'op<', 'op>=', etc
+  const char* f = fnname.c_str();
+  if( f[0] == 'o' && f[1] == 'p' && !isalpha(f[2]) ) {
+    f = &f[2];
+  }
+  string fn(f);
+
+  if(args.size() == 1){
+    return new ExecTypeCast(args[0], fn);
+    args.clear();                 // to keep from deleting expr
+    delete argp;
+  }
+  else if(args.size() == 2){
+    return new ExecOperator(args[0], args[1], fn);
+    args.clear();                 // to keep from deleting expr
+    delete argp;
+  }
+  else{
+    return new ExecConstructor(argp, fn);
+  }
 }
-*/
+
 
 ExecTypeCast::ExecTypeCast(ExecExpr* input, const TypeID& type) 
 	: ExecExpr(type), input(input)
@@ -54,12 +68,12 @@ ExecOperator::ExecOperator(ExecExpr* l, ExecExpr* r, const string& name)
 	destroyPtr = getDestroyPtr(typeID);
 }
 
-ExecConstructor::ExecConstructor(Array<ExecExpr*>* input, const string& name)
+ExecConstructor::ExecConstructor(ExprList* input, const string& name)
 	: ExecExpr(""), input(input)
 {
 	assert(input);
-	int numFlds = input->length;
-	inputVals = new Array<const Type*>(input->length);
+	int numFlds = input->size();
+	inputVals = new Array<const Type*>(numFlds);
 	TypeID* inpTypes = new TypeID[numFlds];
      for(int i = 0; i < numFlds; i++){
           inpTypes[i] = (*input)[i]->getTypeID();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/03/17 17:18:54  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.24  1998/03/13 04:02:16  donjerko
   *** empty log message ***
 
@@ -219,12 +222,20 @@ Iterator* IndexParse::createExec(){
 	LOG(logFile << "Creating executable:\n";)
 	TRY(Iterator* inpIter = site->createExec(), 0);
 
+        RandomAccessIterator* randIter = NULL;
+        if( inpIter->GetIteratorType() == Iterator::RANDOM_ITERATOR ) {
+          randIter = (RandomAccessIterator*)inpIter;
+        } else {
+          assert(!standAlone);  // standAlone (like primary) index needs
+                                // random access
+        }
+
 	inpIter->initialize();
 	const Tuple* tup = inpIter->getNext();
-	if(!standAlone){
-		TRY(offset = inpIter->getOffset(), NULL);
-		// cout << "offset = " << offset << endl;
-	}
+	if(!standAlone) {
+          offset = randIter->getOffset();
+          // cout << "offset = " << offset << endl;
+        }
 
 	MinAggregate mins[numTFlds];
 	MaxAggregate maxs[numTFlds];
@@ -260,7 +271,7 @@ Iterator* IndexParse::createExec(){
 		ind.write(flatTup, fixedSize);
 		if(!standAlone){
 			ind.write((char*) &offset, sizeof(Offset));
-			offset = inpIter->getOffset();
+			offset = randIter->getOffset();
 			// cout << "offset = " << offset << endl;
 		}
 		while((tup = inpIter->getNext())){
@@ -276,7 +287,7 @@ Iterator* IndexParse::createExec(){
 			marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
-				offset = inpIter->getOffset();
+				offset = randIter->getOffset();
 				// cout << "offset = " << offset << endl;
 				ind.write((char*) &offset, sizeof(Offset));
 			}

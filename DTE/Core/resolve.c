@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/06/24 22:14:08  donjerko
+  *** empty log message ***
+
   Revision 1.37  1998/06/17 20:53:14  donjerko
   *** empty log message ***
 
@@ -462,11 +465,11 @@ ExecExpr* Constructor::createExec(Site* site1, Site* site2)
 		return retVal;
 	}
 	int numFlds = args->cardinality();
-	Array<ExecExpr*>* input = new Array<ExecExpr*>(numFlds);
+	ExprList* input = new ExprList;
 	args->rewind();
 	for(int i = 0; i < numFlds; i++){
-		TRY((*input)[i] = args->get()->createExec(site1, site2), NULL);
-		args->step();
+          TRY(input->push_back(args->get()->createExec(site1, site2)), NULL);
+          args->step();
 	}
 	return new ExecConstructor(input, *name);
 }

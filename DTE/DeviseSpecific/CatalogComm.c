@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/04/27 17:30:15  wenger
+  Improvements to TAttrLinks and related code.
+
   Revision 1.28  1998/04/19 21:48:47  wenger
   Removed assertion in getDirAndFileNames() to not crash on unsuccessful
   data source searches.
@@ -147,7 +150,7 @@ char* executeQuery(const string& query){
 	}
 	out << ends;
 	delete [] writePtrs;
-	engine.finalize();
+	//engine.finalize();
 	char* retVal = out.str();
 
 #ifdef DEBUG
@@ -467,7 +470,7 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	assert((tuple = engine.getFirst()));
 	IndexDesc* indexDesc = (IndexDesc*) tuple[0];
 	assert(!(tuple = engine.getNext()));
-	engine.finalize();
+	//engine.finalize();
 	int numKeyFlds = indexDesc->getNumKeyFlds();
 	int numAddFlds = indexDesc->getNumAddFlds();
 	const string* keyFlds = indexDesc->getKeyFlds();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/03/17 17:18:59  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.18  1997/11/12 23:17:31  donjerko
   Improved error checking.
 
@@ -63,59 +66,142 @@
 #include "typed_rtree.h"
 #include "dbJussi.h"
 
-RTreeReadExec::RTreeReadExec(
-	const IndexDesc& indexDesc, int dataSize,
-	Type** tuple,
-	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
-	typed_key_t* queryBox) :
-	rtree(NULL), cursor(NULL), dataSize(dataSize),
-	tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
-	rtreeFldLens(rtreeFldLens), queryBox(queryBox) {
-	
-	db_mgr = NULL;
-	numKeyFlds = indexDesc.getNumKeyFlds();
-	numAddFlds = indexDesc.getNumAddFlds();
-	rootPgId = indexDesc.getRootPg();
 
-	ret_key = new typed_key_t;
-	dataContent = NULL;
-	
-	assert(ridPosition >= 0 && ridPosition < numKeyFlds + numAddFlds);
 
-	ridOffset = 0;
-	if(ridPosition < numKeyFlds){
-		ridInKey = true;
-		for(int i = 0; i < ridPosition; i++){
-			ridOffset += rtreeFldLens[i];
-		}
-	}
-	else{
-		ridInKey = false;
-		for(int i = numKeyFlds; i < ridPosition; i++){
-			ridOffset += rtreeFldLens[i];
-		}
-	}
+RTreeReadExec::RTreeReadExec(const string& _filename, int _root_page,
+                             BoundingBox* _bbox, const TypeIDList& _added_types)
+: filename(_filename), root_page(_root_page), bbox(_bbox),
+  added_types(_added_types)
+{
+  types = bbox->getTypes();
+  types.append(added_types);
+
+  // open rtree
+  db_mgr = new db_mgr_jussi(filename.c_str(), cacheMgr);
+  rtree = new typed_rtree_t(db_mgr);
+  page_id_t root;
+  memcpy(root.data, &root_page, sizeof(int));
+  assert( rtree->open(root) == RC_OK );
+
+  numKeyFlds = bbox->dims();
+  numAddFlds = added_types.size();
+
+  // create query
+  char* bounds = bbox->rtreePack();
+  string rtreeKeyTypes = bbox->rtreeTypes();
+  queryBox = new typed_key_t(bounds, // binary rep. of the search key
+                             numKeyFlds,     // dimensionality 
+                             rtreeKeyTypes.c_str(),  // encoded types as char*
+                             false);         // is point data
+  delete [] bounds;
+  cursor = new typed_cursor_t();
+
+  // get ready for results
+  dataSize = 0;
+  for(int i = 0 ; i < numAddFlds ; i++) {
+    int l = packSize(added_types[i]);
+    data_off.push_back(dataSize);
+    dataSize += l;
+  }
+  keyUnmarshalPtrs = getUnmarshalPtrs(bbox->getTypes());
+  dataUnmarshalPtrs = getUnmarshalPtrs(added_types);
+  tuple = allocateTuple(types);
 }
 
-RTreeReadExec::~RTreeReadExec(){
-	delete rtree;
-	delete cursor;
-	delete ret_key;
-	delete queryBox;
-	delete db_mgr;
-	delete [] tuple;
-	delete [] unmarshalPtrs;
-	delete [] rtreeFldLens;
+
+RTreeReadExec::~RTreeReadExec()
+{
+  deleteTuple(tuple, types);
+  delete bbox;
+  delete cursor;
+  delete queryBox;
+  delete rtree;
+  delete db_mgr;
 }
+
+
+void RTreeReadExec::initialize()
+{
+  // rtree->debug(stderr);
+
+  // kb: cursor should probably be closed if this is the second call,
+  // but I can't find a way to do that...
+  if (rtree->fetch_init(*cursor, *queryBox) != RC_OK){
+    printf("error in init\n");
+    assert(0);
+  }
+}
+
+
+const Tuple* RTreeReadExec::getNext()
+{
+  bool eof = false;
+  size_t dataLen;
+  typed_key_t* ret_key;
+  void* data;
+  assert(cursor);
+
+  if (rtree->fetch(*cursor, ret_key, data, dataLen, eof) != RC_OK) {
+    assert(0);
+  }
+  if(!eof) {
+    for(int i = 0; i < numKeyFlds; i++) {
+      void* ptr;
+      char* typeEncoding;
+      ret_key->min(i + 1, ptr, typeEncoding);
+      keyUnmarshalPtrs[i]((char*)ptr, tuple[i]);
+    }
+    int t = numKeyFlds;
+    for(int i = 0 ; i < numAddFlds; i++, t++) {
+      dataUnmarshalPtrs[i]( (char*)data + data_off[i], tuple[t]);
+    }
+    return tuple;
+  }
+  else {
+    return NULL;
+  }
+}
+
+
+
+const TypeIDList& RTreeReadExec::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
+
 
 RTreeIndex::~RTreeIndex(){
 }
 
-Iterator* RTreeIndex::createExec(){
-	assert(rTreeQuery);
-	int numKeyFlds = getNumKeyFlds();
-	int numAddFlds = getNumAddFlds();
 
+Iterator* RTreeIndex::createExec(){
+  assert(rTreeQuery);
+  int numKeyFlds = getNumKeyFlds();
+  int numAddFlds = getNumAddFlds();
+  
+  BoundingBox* bbox = new BoundingBox;
+  for(int i = 0; i < numKeyFlds; i++) {
+    Type* lo = duplicateObject(typeIDs[i], rTreeQuery[i].values[0]->getValue());
+    Type* hi = duplicateObject(typeIDs[i], rTreeQuery[i].values[1]->getValue());
+    bbox->push_back(new Range(typeIDs[i], lo, hi));
+  }
+  
+  TypeIDList added_types;
+  for(int i = numKeyFlds ; i < numFlds ; i++) {
+    added_types.push_back(typeIDs[i]);
+  }
+  
+  const char* rtree_file = "./testRTree";  //kb: fix this later
+  int root = indexDesc->getRootPg();
+  
+  return new RTreeReadExec(rtree_file, root, bbox, added_types);
+}
+
+
+#if 0
 	int querySize = queryBoxSize();
 	char* bounds = new char[querySize];
 	int offset = 0;
@@ -171,9 +257,9 @@ Iterator* RTreeIndex::createExec(){
 		cerr << "Index must contain recId field\n";
 		exit(1);
 	}
-	return new RTreeReadExec(*indexDesc, dataSize,
-		tuple, unmarshalPtrs, rtreeFldLens, ridIndex, queryBox);
+
 }
+
 
 int RTreeIndex::queryBoxSize(){
 	int numKeyFlds = getNumKeyFlds();
@@ -187,107 +273,8 @@ int RTreeIndex::queryBoxSize(){
 	}
 	return size;
 }
+#endif
 
-void RTreeReadExec::initialize(){
-
-	page_id_t root;
-	memcpy(root.data, &rootPgId, sizeof(int));
-	
-     const char* fileToContainRTree = "./testRTree";  // fix this later
-
-     db_mgr = new db_mgr_jussi(fileToContainRTree, cacheMgr);
-
-	rtree = new typed_rtree_t(db_mgr);
-
-	rtree->open(root);
-
-//	rtree->debug(stderr);
-
-	cursor = new typed_cursor_t();
-
-	if (rtree->fetch_init(*cursor, *queryBox) != RC_OK){
-		printf("error in init\n");
-		assert(0);
-	}
-}
-
-const Tuple* RTreeReadExec::getNext(){
-	bool eof = false;
-	size_t dataLen;
-
-	assert(cursor);
-	assert(ret_key);
-	void* dataVoidPtr;
-	if (rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
-		assert(0);
-	}
-	dataContent = (char*) dataVoidPtr;
-	if(!eof){
-		Offset offset;
-		assert(dataSize + sizeof(Offset) <= dataLen);
-		memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
-		assert(tuple);
-		// ret_key->print();
-		int numFlds = numKeyFlds + numAddFlds;
-		for(int i = 0; i < numKeyFlds; i++){
-			void* from;
-			char* typeEncoding;
-			ret_key->min(i + 1, from, typeEncoding);
-			unmarshalPtrs[i]((char*) from, tuple[i]);
-		}
-		int offs = 0;
-		for(int i = numKeyFlds; i < numFlds; i++){
-			char* from = ((char*) dataContent) + offs;
-			unmarshalPtrs[i](from, tuple[i]);
-			offs += rtreeFldLens[i];
-		}
-		#ifdef DTE_DEBUG
-		cout << "Offset = " << offset << endl;
-		#endif
-		return tuple;
-	}
-	else{
-		return NULL;
-	}
-}
-
-Offset RTreeReadExec::getNextOffset(){
-	bool eof = false;
-	size_t dataLen;
-
-	assert(cursor);
-	assert(ret_key);
-	void* dataVoidPtr;
-	assert(rtree);
-	if(rtree->fetch(*cursor, ret_key, dataVoidPtr, dataLen, eof) != RC_OK){
-		assert(0);
-	}
-	dataContent = (char*) dataVoidPtr;
-	if(!eof){
-		Offset offset;
-		memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
-		// cout << "Returning Offset = " << offset << endl;
-		return offset;
-	}
-	else{
-		return Offset();
-	}
-}
-
-RecId RTreeReadExec::getRecId(){
-	int recId;
-	void* from;
-	char* typeEncoding;
-	if(ridInKey){
-		assert(0);	// ridOffset should be an index
-		ret_key->min(ridOffset + 1, from, typeEncoding);
-	}
-	else{
-		from = ((char*) dataContent) + ridOffset;
-	}
-	memcpy(&recId, (char*) from, sizeof(int));
-	return recId;
-}
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	string attr;

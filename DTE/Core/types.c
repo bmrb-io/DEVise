@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/06/24 22:14:10  donjerko
+  *** empty log message ***
+
   Revision 1.56  1998/06/17 20:53:15  donjerko
   *** empty log message ***
 
@@ -1186,7 +1189,7 @@ Type* createPosInf(TypeID type){
 		return new IDouble(DBL_MAX);
 	}
 	else if(type.substr(0, 6) == "string"){
-		return strdup("zzzzzzzzzzzz");
+		return strdup("0xff0xff0xff0xff");
 	}
 	else{
 		string msg = "Don't know what is +Infinity for type: " + type;
@@ -1979,3 +1982,103 @@ GeneralPtr* IDouble::getOperatorPtr(
 		return NULL;
 	}
 }
+
+
+
+//---------------------------------------------------------------------------
+
+
+Type** allocateTuple(const TypeIDList& types)
+{
+  int n = types.size();
+  Type** tuple = new Type*[n];
+  for(int i = 0 ; i < n ; i++) {
+    tuple[i] = allocateSpace(types[i]);
+    assert(tuple != NULL);
+  }
+  return tuple;
+}
+
+
+void deleteTuple(Type** tuple, const TypeIDList& types)
+{
+  int n = types.size();
+  for(int i = 0 ; i < n ; i++) {
+    DestroyPtr delfn = getDestroyPtr(types[i]);
+    assert(delfn);
+    delfn(tuple[i]);
+  }
+  delete [] tuple;
+}
+
+
+vector<ReadPtr> getReadPtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<ReadPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getReadPtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<WritePtr> getWritePtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<WritePtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getWritePtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<MarshalPtr> getMarshalPtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<MarshalPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getMarshalPtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<UnmarshalPtr> getUnmarshalPtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<UnmarshalPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getUnmarshalPtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<DestroyPtr> getDestroyPtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<DestroyPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getDestroyPtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+TypeID* makeArray(const TypeIDList& types)
+{
+  int n = types.size();
+  TypeID* a = new TypeID[n];
+  for(int i = 0 ; i < n ; i++) {
+    a[i] = types[i];
+  }
+  return a;
+}
+

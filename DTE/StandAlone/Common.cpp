@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/09 20:26:32  donjerko
+  *** empty log message ***
+
   Revision 1.1  1997/11/23 21:23:57  donjerko
   Added dte server.
 
@@ -103,7 +106,7 @@ void processQuery(istream& cin, ostream& cout){
 			cout << endl;
 			tup = engine.getNext();
 		}
-		engine.finalize();
+		//engine.finalize();
 
 		delete [] writePtrs;
 	}

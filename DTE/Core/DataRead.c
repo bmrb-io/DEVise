@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/04 23:06:45  donjerko
+  Added DataReader.
+
   Revision 1.1  1998/06/03 22:09:49  okan
   *** empty log message ***
 
@@ -55,7 +58,169 @@
 #include <assert.h>
 
 #include "DataRead.h"
+#include "stdio.h"              // for sprintf
 
+
+DataReadExec::DataReadExec(const string& schemaFile, const string& dataFile)
+{
+  ud = new DataReader(dataFile.c_str(), schemaFile.c_str());
+  init();
+}
+
+
+DataReadExec::DataReadExec(DataReader* ud)
+: ud(ud)
+{
+  init();
+}
+
+
+void DataReadExec::init()
+{
+  translateTypes();
+  numFlds = types.size();
+
+  unmarshalPtrs = new UnmarshalPtr[numFlds];
+  destroyPtrs = new DestroyPtr[numFlds];
+  tuple = new Type*[numFlds];
+  offsets = new int[numFlds];
+
+  offsets[0] = 0;                // not used, recid
+  int count = 1;
+  for(int i = 0; i < ud->myDRSchema->qAttr ; i++){
+    if (ud->myDRSchema->tableAttr[i]->getFieldName() != NULL) {
+      offsets[count++] = ud->myDRSchema->tableAttr[i]->offset;
+    }
+  }
+  assert(numFlds == count);
+
+  for(int i = 0; i < numFlds; i++) {
+    unmarshalPtrs[i] = getUnmarshalPtr(types[i]);
+    destroyPtrs[i] = getDestroyPtr(types[i]);
+    assert(destroyPtrs[i]);
+    size_t currentSz;
+    tuple[i] = allocateSpace(types[i], currentSz);
+  }
+
+  buffSize = ud->myDRSchema->getRecSize();
+  buff = (char*) new double[(buffSize / sizeof(double)) + 1];
+  buff[buffSize - 1] = '\0';
+  recId = 0;
+}
+
+
+DataReadExec::~DataReadExec()
+{
+  delete [] buff;
+  delete ud;
+  delete [] unmarshalPtrs;
+  destroyTuple(tuple, numFlds, destroyPtrs);
+  delete [] destroyPtrs;
+  delete [] offsets;
+}
+
+
+void DataReadExec::translateTypes()
+{
+  char buf[100];
+
+  types.push_back(INT_TP);      // for recid
+
+  int fields = ud->myDRSchema->qAttr;
+  for(int i = 0 ; i < fields ; i++) {
+    if ((ud->myDRSchema->tableAttr[i])->getFieldName() == NULL) {
+      //skipping SKIP attributes
+      continue;
+    }
+    int fType = ud->myDRSchema->tableAttr[i]->getType();
+    switch (fType) {
+    case TYPE_INT:
+      types.push_back(INT_TP);
+      break;
+    case TYPE_STRING:
+      { int maxlen = ud->myDRSchema->tableAttr[i]->getMaxLen();
+        if( maxlen <= 0 )
+          maxlen = ud->myDRSchema->tableAttr[i]->getFieldLen();
+        sprintf(buf, "string%d", maxlen);
+        types.push_back(string(buf));
+      }
+      break;
+    case TYPE_DOUBLE:
+      types.push_back(DOUBLE_TP);
+      break;
+    case TYPE_DATE:
+      types.push_back(DATE_TP);
+      break;
+    default:
+      cout <<"This datareader type isn't handled yet: " << fType << endl;
+      exit(1);
+    }
+  }
+}
+
+
+void DataReadExec::initialize()
+{
+  //kb: shouldn't this seek to beginning??
+}
+
+
+const Tuple* DataReadExec::getNext()
+{
+  Status stat;
+  if(!ud->isOk()){	// should not happen
+    return NULL;
+  }
+  buff[offsets[1]] = '\0';
+  stat = ud->getRecord(buff);
+  if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
+    return NULL;
+  }
+  assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
+  intCopy((Type*) recId, tuple[0]);
+  for(int i = 1; i < numFlds; i++){
+    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
+  }
+  recId++;
+  return tuple;
+}
+
+
+Offset DataReadExec::getOffset()
+{
+  //kb: this is never set!!!
+  assert(!"dataread needs to be fixed!!");
+  return off;
+}
+
+
+const Tuple* DataReadExec::getThis(Offset offset)
+{
+  this->recId = -999;
+  Status stat;
+  if(!ud->isOk()){	// should not happen
+    return NULL;
+  }
+  stat = ud->getRndRec(buff, offset.getOffset());
+  if(stat == FOUNDEOF){
+    return NULL;
+  }
+  assert(stat == OK);
+  intCopy((Type*) recId, tuple[0]);
+  for(int i = 1; i < numFlds; i++){
+    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
+  }
+  return tuple;
+}
+
+
+const TypeIDList& DataReadExec::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
 
 void DataRead::translateUDInfo() {
 	numFlds = ud->myDRSchema->tAttr + 1; //for RECID
@@ -116,102 +281,25 @@ DataRead::DataRead(const string& schemaFile, const string& dataFile) :
 	CON_END:;
 }
 
-Iterator* DataRead::createExec(){
-	int i;
-	int count = 0;
-	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
-	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
-	size_t* currentSz = new size_t[numFlds];
-	Type** tuple = new Type*[numFlds];
-	int* offsets = new int[numFlds];
-
-	for (i = 1; i < (ud->myDRSchema->qAttr + 1) ; i++) {
-		if (ud->myDRSchema->tableAttr[i-1]->getFieldName() != NULL) {
-			count++;
-			offsets[count] = ud->myDRSchema->tableAttr[i-1]->offset;
-		}
-	}
-
-	for(i = 0; i < numFlds; i++){
-		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
-		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
-		assert(destroyPtrs[i]);
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
-	}
-	DataReadExec* retVal = new DataReadExec(
-		ud, unmarshalPtrs, destroyPtrs, tuple, offsets, numFlds);
-	ud = NULL;	// not the owner any more
-	return retVal;
+Iterator* DataRead::createExec()
+{
+  DataReadExec* retVal = new DataReadExec(ud);
+  ud = NULL;	// not the owner any more
+  return retVal;
 }
 
-DataReadExec::DataReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
-	DestroyPtr* destroyPtrs,
-	Type** tuple, int* offsets, int numFlds) :
-	ud(ud), unmarshalPtrs(unmarshalPtrs),
-	destroyPtrs(destroyPtrs), tuple(tuple),
-	offsets(offsets), numFlds(numFlds) {
 
-	buffSize = ud->myDRSchema->getRecSize();
-	buff = (char*) new double[(buffSize / sizeof(double)) + 1];
-	buff[buffSize - 1] = '\0';
-	recId = 0;
+
+
+void DataRead::Close()
+{
+  delete ud;
+  delete [] typeIDs;
+  typeIDs = NULL;
+  delete [] attributeNames;
+  attributeNames = NULL;
+  delete order;
+  order = NULL;
 }
 
-DataReadExec::~DataReadExec(){
-	delete [] buff;
-	delete ud;
-	delete [] unmarshalPtrs;
-	destroyTuple(tuple, numFlds, destroyPtrs);
-	delete [] destroyPtrs;
-	delete [] offsets;
-}
-
-const Tuple* DataReadExec::getNext(){
-	Status stat;
-	if(!ud->isOk()){	// should not happen
-		return NULL;
-	}
-	buff[offsets[1]] = '\0';
-	stat = ud->getRecord(buff);
-	if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
-		return NULL;
-	}
-	assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
-	intCopy((Type*) recId, tuple[0]);
-	for(int i = 1; i < numFlds; i++){
-		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-	}
-	recId++;
-	return tuple;
-}
-
-const Tuple* DataReadExec::getThis(Offset offset, RecId recId){
-	this->recId = recId;
-	Status stat;
-	if(!ud->isOk()){	// should not happen
-		return NULL;
-	}
-	stat = ud->getRndRec(buff, offset.getOffset());
-	if(stat == FOUNDEOF){
-		return NULL;
-	}
-	assert(stat == OK);
-	intCopy((Type*) recId, tuple[0]);
-	for(int i = 1; i < numFlds; i++){
-		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-	}
-	recId++;
-	return tuple;
-}
-
-void DataRead::Close(){
-
-	delete ud;
-	delete [] typeIDs;
-	typeIDs = NULL;
-	delete [] attributeNames;
-	attributeNames = NULL;
-	delete order;
-	order = NULL;
-}
 

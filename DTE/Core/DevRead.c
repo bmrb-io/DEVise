@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/06/04 23:06:46  donjerko
+  Added DataReader.
+
   Revision 1.29  1998/06/03 21:16:05  wenger
   Temporarily backed out DataReader code in DTE so DEVise will link.
 
@@ -112,41 +115,45 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	}
 }
 
-Iterator* DevRead::createExec(){
-	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
-	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
-	size_t* currentSz = new size_t[numFlds];
-	Type** tuple = new Type*[numFlds];
-	int* offsets = new int[numFlds];
-	AttrStk *stk = ud->schema()->GetFlatAttrs();
-	for(int i = 1; i < numFlds; i++){
-		Attr *at = stk->ith(i - 1);
-		offsets[i] = at->offset();
-	}
-	for(int i = 0; i < numFlds; i++){
-		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
-		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
-		assert(destroyPtrs[i]);
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
-	}
-	DevReadExec* retVal = new DevReadExec(
-		ud, unmarshalPtrs, destroyPtrs, tuple, offsets, numFlds);
-	ud = NULL;	// not the owner any more
-	return retVal;
+Iterator* DevRead::createExec()
+{
+  TypeIDList types;
+  for(int i = 0 ; i < numFlds ; i++) {
+    types.push_back(typeIDs[i]);
+  }
+  DevReadExec* retVal = new DevReadExec(ud, types);
+  ud = NULL;	// not the owner any more
+  return retVal;
 }
 
-DevReadExec::DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
-	DestroyPtr* destroyPtrs,
-	Type** tuple, int* offsets, int numFlds) :
-	ud(ud), unmarshalPtrs(unmarshalPtrs),
-	destroyPtrs(destroyPtrs), tuple(tuple),
-	offsets(offsets), numFlds(numFlds) {
 
-	buffSize = ud->recSze();
-	buff = (char*) new double[(buffSize / sizeof(double)) + 1];
-	buff[buffSize - 1] = '\0';
-	recId = 0;
+DevReadExec::DevReadExec(UniData* ud, const TypeIDList& types)
+: ud(ud), types(types)
+{
+  numFlds = types.size();
+  assert( numFlds == ud->schema()->NumFlatAttrs() + 1 ); // for recId
+  unmarshalPtrs = new UnmarshalPtr[numFlds];
+  destroyPtrs = new DestroyPtr[numFlds];
+  tuple = new Type*[numFlds];
+  offsets = new int[numFlds];
+
+  AttrStk *stk = ud->schema()->GetFlatAttrs();
+  offsets[0] = 0;               // not used, recid
+  for(int i = 0; i < numFlds; i++) {
+    offsets[i] = stk->ith(i - 1)->offset();
+    unmarshalPtrs[i] = getUnmarshalPtr(types[i]);
+    destroyPtrs[i] = getDestroyPtr(types[i]);
+    assert(destroyPtrs[i]);
+    size_t currentSz;
+    tuple[i] = allocateSpace(types[i], currentSz);
+  }
+
+  buffSize = ud->recSze();
+  buff = (char*) new double[(buffSize / sizeof(double)) + 1];
+  buff[buffSize - 1] = '\0';
+  recId = 0;
 }
+
 
 DevReadExec::~DevReadExec(){
 	delete [] buff;
@@ -156,6 +163,13 @@ DevReadExec::~DevReadExec(){
 	delete [] destroyPtrs;
 	delete [] offsets;
 }
+
+
+Offset DevReadExec::getOffset()
+{
+  return off;
+}
+
 
 const Tuple* DevReadExec::getNext(){
 	UD_Status stat;
@@ -175,24 +189,33 @@ const Tuple* DevReadExec::getNext(){
 	return tuple;
 }
 
-const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
-	this->recId = recId;
-	UD_Status stat;
-	if(!ud->isOk()){	// should not happen
-		return NULL;
-	}
-	stat = ud->getRndRec(buff, offset.getOffset());
-	if(stat == UD_EOF){
-		return NULL;
-	}
-	assert(stat == UD_OK);
-	intCopy((Type*) recId, tuple[0]);
-	for(int i = 1; i < numFlds; i++){
-		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
-	}
-	recId++;
-	return tuple;
+const Tuple* DevReadExec::getThis(Offset offset)
+{
+  this->recId = -999;
+  UD_Status stat;
+  if(!ud->isOk()){	// should not happen
+    return NULL;
+  }
+  stat = ud->getRndRec(buff, offset.getOffset());
+  if(stat == UD_EOF){
+    return NULL;
+  }
+  assert(stat == UD_OK);
+  intCopy((Type*) recId, tuple[0]);
+  for(int i = 1; i < numFlds; i++){
+    unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
+  }
+  recId++;
+  return tuple;
 }
+
+
+const TypeIDList& DevReadExec::getTypes()
+{
+  return types;
+}
+
+
 
 void DevRead::Close(){
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/06/04 23:26:27  donjerko
+  *** empty log message ***
+
   Revision 1.20  1998/06/04 23:06:50  donjerko
   Added DataReader.
 
@@ -291,6 +294,7 @@ Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
   return A[right-1];
 }
 
+
 void SortExec::insert_sort(Tuple **A, int length)
 {
   Tuple *temp;
@@ -317,80 +321,77 @@ void SortExec::insert_sort(Tuple **A, int length)
   return;
 }
 
-SortExec::~SortExec(){ 
-	delete inpIter;
-	delete tupleLoader;
-	delete [] typeIDs;
-	delete Q;
 
-	delete [] temp_files;
-	
-	// individual streams of temp_files are deleted by input_buf destructors
-
-	if(input_buf){
-		for(int i = 0; i < Nruns; i++){
-			delete input_buf[i];
-		}
-	}
-	delete [] input_buf;
-	delete output_buf;    // out_temp_file deleted too; 
-	delete [] sortFlds;
-	delete [] comparePtrs;
-	delete node_ptr;
-
-	char filename[20];
-	for (int i =0; i < Nruns; i++){
-		strcpy(filename,temp_filename);
-		char run_num[5];
-		sprintf(run_num, "%d", i+1);
-		strcat(filename, run_num);
-//		cerr << "check out " << filename << endl;
-		unlink(filename);
-	}
-}
-
-Iterator* Sort::createExec(){
-	assert(input);
-
-	TRY(Iterator* inpIter = input->createExec(), NULL);
-	TRY(int* sortFlds = findPositions(mySelect, orderBy), NULL);
-	int numSortFlds = orderBy->cardinality();
-
-#if defined(DEBUG)
-	cerr << "Sort fields are (index, type) = ";
-	for(int i = 0; i < numSortFlds; i++){
-		cerr << "(" << sortFlds[i] << ", ";
-		cerr << attrTypes[sortFlds[i]] << ") ";
-	}
-	cerr << endl;
-#endif
-
-	TRY(Iterator* retVal = new SortExec(
-		inpIter, attrTypes, order, 
-		sortFlds, numSortFlds, numFlds), 0);
-
-	return retVal;
-}
-
-SortExec::SortExec(Iterator* inpIter, const TypeID* types, SortOrder order,
-	int* sortFlds, int numSortFlds, int numFlds)
-	: inpIter(inpIter), order(order), Nruns(0), Q(NULL),
-	sortFlds(sortFlds),
-	numSortFlds(numSortFlds), numFlds(numFlds),
-	node_ptr(NULL)
+SortExec::SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order)
+: inpIter(inpIter), order(order)
 {
-	comparePtrs  = new GeneralPtr*[numFlds];
-	typeIDs = new TypeID[numFlds];
-	TypeID retVal;  // is a dummy	       
-	for (int i=0; i < numFlds; i++){
-		typeIDs[i] = types[i];
-		TypeID tp = typeIDs[i];
-		CON_TRY(comparePtrs[i] = getOperatorPtr("comp", tp, tp, retVal)); 
-	}
-	tupleLoader = new TupleLoader;
-	CON_TRY(tupleLoader->open(numFlds, typeIDs));
-	CON_END:;
+  Nruns = 0;
+  Q = NULL;
+  numFlds = inpIter->getNumFlds();
+
+  numSortFlds = sort_fields->size();
+  sortFlds = new int[numSortFlds];
+  for(int i = 0 ; i < numSortFlds ; i++) {
+    sortFlds[i] = (*sort_fields)[i].getPos();
+  }
+  delete sort_fields;
+
+  node_ptr = NULL;
+
+  typeIDs = makeArray(inpIter->getTypes());
+
+  comparePtrs  = new GeneralPtr*[numFlds];
+  for (int i=0; i < numFlds; i++) {
+    comparePtrs[i] = NULL;
+  }
+  TypeID retVal;  // is a dummy	       
+  for (int i=0; i < numSortFlds; i++) {
+    const TypeID& tp = typeIDs[sortFlds[i]];
+    CON_TRY(comparePtrs[sortFlds[i]] = getOperatorPtr("comp", tp, tp, retVal)); 
+    assert(retVal == INT_TP);
+  }
+
+  tupleLoader = new TupleLoader;
+  CON_TRY(tupleLoader->open(numFlds, typeIDs));
+
+ CON_END:;
 }
+
+
+
+SortExec::~SortExec()
+{ 
+  delete inpIter;
+  delete [] typeIDs;
+  delete tupleLoader;
+  delete Q;
+  
+  delete [] temp_files;
+	
+  // individual streams of temp_files are deleted by input_buf destructors
+
+  if(input_buf){
+    for(int i = 0; i < Nruns; i++){
+      delete input_buf[i];
+    }
+  }
+  delete [] input_buf;
+  delete output_buf;    // out_temp_file deleted too; 
+  delete [] sortFlds;
+  delete [] comparePtrs;
+  delete node_ptr;
+  
+  char filename[20];
+  for (int i =0; i < Nruns; i++){
+    strcpy(filename,temp_filename);
+    char run_num[5];
+    sprintf(run_num, "%d", i+1);
+    strcat(filename, run_num);
+    // cerr << "check out " << filename << endl;
+    unlink(filename);
+  }
+}
+
 
 const Tuple* SortExec::getFirst()
 {
@@ -398,38 +399,47 @@ const Tuple* SortExec::getFirst()
 	return SortExec::getNext();
 }
 
-UniqueSortExec::UniqueSortExec(
-	Iterator* inpIter, const TypeID* types, SortOrder order,
-     int* sortFlds, int numSortFlds, int numFlds)
-	: SortExec(inpIter, types, order, sortFlds, numSortFlds, numFlds)
+
+const TypeIDList& SortExec::getTypes()
 {
-	int i = 0;
-	CON_TRY(;);	// Base class may have thrown exception
+  return inpIter->getTypes();
+}
 
-     copyPtrs = new ADTCopyPtr[numFlds];
-     destroyPtrs = new DestroyPtr[numFlds];
-     tuple = new Type*[numFlds];
-     for(i = 0; i < numFlds; i++){
-          CON_TRY(copyPtrs[i] = getADTCopyPtr(types[i]));
-          CON_TRY(destroyPtrs[i] = getDestroyPtr(types[i]));
-          tuple[i] = allocateSpace(types[i]);
-     }
 
-	CON_END:;
+//---------------------------------------------------------------------------
+
+
+UniqueSortExec::UniqueSortExec(Iterator* inpIter, FieldList* sort_fields,
+                               SortOrder order)
+: SortExec(inpIter, sort_fields, order)
+{
+  int i = 0;
+  CON_TRY(;);	// Base class may have thrown exception
+
+  copyPtrs = new ADTCopyPtr[numFlds];
+  destroyPtrs = new DestroyPtr[numFlds];
+  tuple = new Type*[numFlds];
+  for(i = 0; i < numFlds; i++){
+    CON_TRY(copyPtrs[i] = getADTCopyPtr(typeIDs[i]));
+    CON_TRY(destroyPtrs[i] = getDestroyPtr(typeIDs[i]));
+    tuple[i] = allocateSpace(typeIDs[i]);
+  }
+  
+ CON_END:;
 }
 
 UniqueSortExec::~UniqueSortExec()
 {
-	destroyTuple(tuple, numFlds, destroyPtrs);
+  destroyTuple(tuple, numFlds, destroyPtrs);
 }
 
 const Tuple* UniqueSortExec::getFirst()
 {
-	const Tuple* input = SortExec::getFirst();
-	if(input){
-		copyTuple(input, tuple, numFlds, copyPtrs);
-	}
-	return input;
+  const Tuple* input = SortExec::getFirst();
+  if(input){
+    copyTuple(input, tuple, numFlds, copyPtrs);
+  }
+  return input;
 }
 
 const Tuple* UniqueSortExec::getNext()
@@ -449,3 +459,37 @@ const Tuple* UniqueSortExec::getNext()
 	}
 	return input;
 }
+
+
+//---------------------------------------------------------------------------
+
+Iterator* Sort::createExec(){
+	assert(input);
+
+	TRY(Iterator* inpIter = input->createExec(), NULL);
+	TRY(int* sortFlds = findPositions(mySelect, orderBy), NULL);
+	int numSortFlds = orderBy->cardinality();
+
+#if defined(DEBUG)
+	cerr << "Sort fields are (index, type) = ";
+	for(int i = 0; i < numSortFlds; i++){
+		cerr << "(" << sortFlds[i] << ", ";
+		cerr << attrTypes[sortFlds[i]] << ") ";
+	}
+	cerr << endl;
+#endif
+
+        FieldList* sort_fields = new FieldList;
+	for(int i = 0; i < numSortFlds; i++){
+          sort_fields->push_back(Field(attrTypes[sortFlds[i]], sortFlds[i]));
+        }
+        // SortExec used to delete these...
+        delete [] attrTypes;
+        delete [] sortFlds;
+
+	TRY(Iterator* retVal = new SortExec(inpIter, sort_fields, order), 0);
+
+	return retVal;
+}
+
+

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/12/04 04:05:18  donjerko
+  *** empty log message ***
+
   Revision 1.13  1997/11/05 00:19:45  donjerko
   Separated typechecking from optimization.
 
@@ -138,8 +141,8 @@ void displayVec(ostream& out, const vector<T>& vec, string sep = ", "){
 
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
-Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list, 
-	Site* site1, Site* site2 = NULL);
+class ExprList* enumerateList(List<BaseSelection*>* list,
+                              Site* site1, Site* site2 = NULL);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);

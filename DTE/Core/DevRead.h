@@ -37,7 +37,7 @@ typedef long off_t;
 
 TypeID translateUDType(Attr* at);
 
-class DevReadExec : public Iterator {
+class DevReadExec : public RandomAccessIterator {
 	char* buff;	// this has to be aligned!
 	int buffSize;
 	UniData* ud;
@@ -48,25 +48,20 @@ class DevReadExec : public Iterator {
 	int* offsets;
 	int numFlds;
 	int recId;
+        TypeIDList types;
 public:
-	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
-		DestroyPtr* destroyPtrs,
-		Type** tuple, int* offsets, int numFlds);
+	DevReadExec(UniData* ud, const TypeIDList& types);
 
 	virtual ~DevReadExec();
 
-	virtual const Tuple* getNext(streampos& pos){
-		assert(! "not implemented");
-		return getNext();
-	}
-
 	virtual const Tuple* getNext();
 
-	virtual const Tuple* getThis(Offset offset, RecId recId);
+	virtual const Tuple* getThis(Offset offset);
 
-     virtual Offset getOffset(){
-		return off;
-     }
+     virtual Offset getOffset();
+
+	virtual const TypeIDList& getTypes();
+
 };
 
 class DevRead : public PlanOp {

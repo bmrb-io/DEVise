@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/04/09 20:26:17  donjerko
+  *** empty log message ***
+
   Revision 1.20  1997/12/04 04:05:09  donjerko
   *** empty log message ***
 
@@ -127,6 +130,7 @@ public:
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
+        void finalize() {}      //kb: is this needed?
 	virtual const string* getAttributeNames(){
 		assert(schema);
 		return schema->getAttributeNames();
@@ -139,12 +143,15 @@ public:
 		assert(!"not implemented");
 		return 0;
 	}
+        /*
 	void reset(int lowRid, int highRid){
 		TRY(topNodeIt->reset(lowRid, highRid), NVOID );
 	}
 	void finalize(){
 		topNodeIt->finalize();
 	}
+        */
+
 	virtual Iterator* createExec(){
 		assert(0);
 		return 0;

@@ -103,9 +103,19 @@ void UniqueInserter::close()
 
 	StandReadExec* inp = new StandReadExec(numFlds, types, istr);
 	open(schema, finalFile, mode);
-	TRY(UniqueSortExec* inp2 = new UniqueSortExec(
-		inp, types, Ascending, sortFlds,
-		numSortFlds, numFlds), NVOID);
+
+
+        FieldList* sort_fields = new FieldList;
+	for(int i = 0; i < numSortFlds; i++){
+          sort_fields->push_back(Field(types[sortFlds[i]], sortFlds[i]));
+        }
+        // SortExec used to delete these...
+        delete [] types;
+        delete [] sortFlds;
+
+	TRY(Iterator* inp2 = new UniqueSortExec(inp, sort_fields, Ascending),
+            NVOID);
+
 	const Tuple* tup;
 	for(tup = inp2->getFirst(); tup; tup = inp2->getNext()){
 		insert(tup);

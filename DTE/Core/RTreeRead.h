@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/03/17 17:18:59  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.16  1997/11/12 23:17:31  donjerko
   Improved error checking.
 
@@ -59,6 +62,8 @@
 #include "myopt.h"
 #include "Iterator.h"
 #include "StandardRead.h"
+#include "BoundingBox.h"
+
 
 #ifndef __GNUG__
 using namespace std;
@@ -130,35 +135,52 @@ struct RTreePred {
 	}
 };
 
-class RTreeReadExec : public Iterator {
-	typed_rtree_t* rtree;
-	typed_cursor_t* cursor;
-	int dataSize;
-	int numKeyFlds;
-	int numAddFlds;
-     Type** tuple;
-     UnmarshalPtr* unmarshalPtrs;
-     int* rtreeFldLens;
 
-	char* dataContent;
-	typed_key_t* ret_key;
-	bool ridInKey;
-	int ridOffset;
-	int rootPgId;
-	typed_key_t* queryBox;
-	db_mgr_jussi* db_mgr;
+
+class RTreeReadExec : public Iterator
+{
 public:
-	RTreeReadExec(const IndexDesc& indexDesc,
-		int dataSize, Type** tuple,
-		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
-		typed_key_t* queryBox);
 
-	virtual ~RTreeReadExec();
-	virtual void initialize();
-	virtual const Tuple* getNext();
-	virtual Offset getNextOffset();
-	RecId getRecId();
+  RTreeReadExec(const string& _filename, int _root_page,
+                BoundingBox* _bbox, const TypeIDList& _added_types);
+
+  virtual ~RTreeReadExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  string filename;
+  int root_page;
+  BoundingBox* bbox;
+  TypeIDList added_types;
+  TypeIDList types;             // key (bbox) types + added types
+
+  db_mgr_jussi* db_mgr;
+  typed_rtree_t* rtree;
+  typed_cursor_t* cursor;
+  typed_key_t* queryBox;
+  vector<int> data_off;
+
+  Type** tuple;
+  int numKeyFlds;
+  int numAddFlds;
+  int dataSize;
+
+  vector<UnmarshalPtr> keyUnmarshalPtrs;
+  vector<UnmarshalPtr> dataUnmarshalPtrs;
+
+private:
+
+  RTreeReadExec(const RTreeReadExec& x);
+  RTreeReadExec& operator=(const RTreeReadExec& x);
 };
+
+
 
 class RTreeIndex : public StandardRead {
 
@@ -167,7 +189,6 @@ class RTreeIndex : public StandardRead {
 
 	IndexDesc* indexDesc;
 	RTreePred* rTreeQuery;
-	int queryBoxSize();
 public:
 	RTreeIndex(IndexDesc* indexDesc) : 
 		StandardRead(), indexDesc(indexDesc) {

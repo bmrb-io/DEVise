@@ -1,6 +1,392 @@
 #include "Aggregates.h"
 #include "MemoryMgr.h"
 #include "SeqSimVecAggregate.h"
+
+
+//---------------------------------------------------------------------------
+
+AggFn::AggFn(const string& fn_name, const Field& field)
+{
+  _pos = field.getPos();
+  const TypeID& type = field.getType();
+  if( fn_name == "sum" ) {
+    _fn = new ExecSum(type);
+  } else if( fn_name == "count" ) {
+    _fn = new ExecCount();
+  } else if( fn_name == "avg" ) {
+    _fn = new ExecAverage(type);
+  } else if( fn_name == "min" ) {
+    _fn = new ExecMinMax(type, ExecMinMax::MIN_AGG);
+  } else if( fn_name == "max" ) {
+    _fn = new ExecMinMax(type, ExecMinMax::MAX_AGG);
+  } else if( fn_name == "seq_sum" ) {
+    _fn = new ExecMovSum(type);
+  } else if( fn_name == "seq_count" ) {
+    _fn = new ExecMovCount();
+  } else if( fn_name == "seq_avg" ) {
+    _fn = new ExecMovAverage(type);
+  } else if( fn_name == "seq_min" ) {
+    _fn = new ExecMovMinMax(type, ExecMinMax::MIN_AGG);
+  } else if( fn_name == "seq_max" ) {
+    _fn = new ExecMovMinMax(type, ExecMinMax::MAX_AGG);
+  } else {
+    cerr << "unknown aggregate function: " << fn_name << endl;
+    exit(1);
+  }
+}
+
+
+//---------------------------------------------------------------------------
+
+
+StandAggsExec::StandAggsExec(Iterator* input, AggList* aggs)
+: inputIter(input), aggExecs(*aggs), types(aggs->getTypes())
+{
+  assert(input);
+  assert(aggs);
+  numFlds = aggs->size();
+  retTuple = new Tuple[numFlds];
+}
+
+
+StandAggsExec::~StandAggsExec()
+{
+  delete [] retTuple;
+  delete &aggExecs;
+  delete inputIter;
+}
+
+
+void StandAggsExec::initialize()
+{
+  inputIter->initialize();
+}
+
+const Tuple* StandAggsExec::getNext()
+{
+  const Tuple* currt = inputIter->getNext();
+  int i;
+  if(!currt){
+    return NULL;
+  }
+  for(i = 0; i < numFlds; i++){
+    aggExecs[i]->initialize(currt);
+  }
+  while((currt = inputIter->getNext())){
+    for(i = 0; i < numFlds; i++){
+      aggExecs[i]->update(currt);
+    }
+  }
+  
+  for(i = 0; i < numFlds; i++){
+    retTuple[i] = aggExecs[i]->getValue();
+  }
+  return retTuple;
+}
+
+
+const TypeIDList& StandAggsExec::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
+
+
+static void makeGroupBy(AggList& aggs, const FieldList& fields)
+{
+  int n = fields.size();
+  for(int i = 0 ; i < n ; i++) {
+    const TypeID& type = fields[i].getType();
+    int pos = fields[i].getPos();
+    ExecGroupAttr* x = new ExecGroupAttr(type);
+    aggs.push_back(AggFn(x, pos));
+  }
+}
+
+
+static void makeSeqBy(AggList& aggs, const FieldList& fields)
+{
+  int n = fields.size();
+  for(int i = 0 ; i < n ; i++) {
+    const TypeID& type = fields[i].getType();
+    int pos = fields[i].getPos();
+    ExecSeqAttr* x = new ExecSeqAttr(type);
+    aggs.push_back(AggFn(x, pos));
+  }
+}
+
+
+//---------------------------------------------------------------------------
+
+
+StandGroupByExec::StandGroupByExec(Iterator* _input, FieldList* group_fields,
+                                   AggList* _aggs)
+: inputIter(_input), aggExecs(*_aggs)
+{
+  assert(_input);
+  assert(_aggs);
+  assert(group_fields);
+
+  makeGroupBy(groupby, *group_fields);
+  delete group_fields;
+
+  types = groupby.getTypes();
+  const TypeIDList& aggtypes = aggExecs.getTypes();
+  types.append(aggtypes);
+  numGrpBys = groupby.size();
+  numAggs = aggExecs.size();
+  retTuple = new Tuple[numGrpBys+numAggs];
+}
+
+
+StandGroupByExec::~StandGroupByExec()
+{
+  delete [] retTuple;
+  delete &aggExecs;
+  delete inputIter;
+}
+
+
+void StandGroupByExec::initialize()
+{
+  inputIter->initialize();
+  currInTup = inputIter->getNext();
+}
+
+
+bool StandGroupByExec::sameGroup(const Tuple* tup)
+{
+  for (int i = 0; i < numGrpBys ; i++) {
+    if(groupby[i]->isDifferent(tup)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+const Tuple* StandGroupByExec::getNext()
+{
+  int i;
+  if(!currInTup){
+    return NULL;
+  }
+
+  for(i = 0; i < numGrpBys ; i++){
+    groupby[i]->initialize(currInTup);
+  }
+  for(i = 0; i < numAggs ; i++){
+    aggExecs[i]->initialize(currInTup);
+  }
+
+  currInTup = inputIter->getNext();
+  while( currInTup && sameGroup(currInTup) ) {
+    for(i = 0; i < numAggs; i++){
+      aggExecs[i]->update(currInTup);
+    }
+    currInTup = inputIter->getNext();
+  }
+
+  int k = 0;
+  for(i = 0; i < numGrpBys ; i++){
+    retTuple[k++] = groupby[i]->getValue();
+  }
+  for(i = 0; i < numAggs ; i++){
+    retTuple[k++] = aggExecs[i]->getValue();
+  }
+
+  return retTuple;
+}
+
+
+const TypeIDList& StandGroupByExec::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
+
+
+SeqAggsExec::SeqAggsExec(Iterator* _input,
+                         FieldList* group_fields, FieldList* seq_fields,
+                         AggList* _aggs, int winLow, int winHigh)
+: inputIter(_input), aggExecs(*_aggs), windowLow(winLow), windowHigh(winHigh)
+{
+  assert(_input);
+  assert(_aggs);
+  assert(seq_fields);
+
+  if( group_fields ) {
+    makeGroupBy(groupby, *group_fields);
+    delete group_fields;
+  }
+
+  makeSeqBy(seqby, *seq_fields);
+  delete seq_fields;
+
+  types = groupby.getTypes();
+  types.append(seqby.getTypes());
+  types.append(aggExecs.getTypes());
+
+  numGrpBys = groupby.size();
+  numSeqBys = seqby.size();
+  numAggs = aggExecs.size();
+  retTuple = new Tuple[numGrpBys+numSeqBys+numAggs];
+
+  currInTup = NULL;
+
+  fullWindowHeight = windowHigh - windowLow;
+  assert (fullWindowHeight > 0);
+
+  numTuplesToBeDropped.init(fullWindowHeight);
+}
+
+
+SeqAggsExec::~SeqAggsExec()
+{
+  delete [] retTuple;
+  delete &aggExecs;
+  delete inputIter;
+}
+
+
+bool SeqAggsExec::sameGroup(const Tuple* tup)
+{
+  for (int i = 0; i < numGrpBys ; i++) {
+    if(groupby[i]->isDifferent(tup)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+bool SeqAggsExec::isNewSeqVal(const Tuple* tup)
+{
+  for (int i = 0; i < numSeqBys; i++) {
+    if(seqby[i]->isDifferent(tup)) {
+      return true;
+    }
+    return false;
+  }
+}
+
+
+void SeqAggsExec::initialize()
+{
+  inputIter->initialize();
+  currInTup = inputIter->getNext();
+  endOfGroup = true;
+  currWindowHeight = 0;
+}
+
+
+void SeqAggsExec::setupFirst()
+{
+  for(int i = 0; i < numGrpBys ; i++){
+    groupby[i]->initialize(currInTup);
+  }
+  for(int i = 0; i < numSeqBys ; i++){
+    seqby[i]->initialize(currInTup);
+  }
+  for(int i = 0; i < numAggs ; i++){
+    aggExecs[i]->initialize(currInTup);
+  }
+  endOfGroup = false;
+  currWindowHeight = 1;
+  numTuplesToBeDropped.push(1);
+  currInTup = inputIter->getNext();
+}
+
+
+void SeqAggsExec::addData()
+{
+  // update aggs with currInTup and read in tuples till next value
+  endOfGroup = true;
+  while(currInTupIsValid()) {
+    if( isNewSeqVal(currInTup) ) {
+      if( currWindowHeight == fullWindowHeight ) {
+        endOfGroup = false;
+        break; // end of window
+      }
+      currWindowHeight++;
+      for(int i = 0; i < numSeqBys; i++) {
+        seqby[i]->update(currInTup);
+      }
+      numTuplesToBeDropped.push(0);
+    }
+    for(int i = 0; i < numAggs; i++){
+      aggExecs[i]->update(currInTup);
+    }
+    (numTuplesToBeDropped.back())++;
+    currInTup = inputIter->getNext();
+  }
+}
+
+
+void SeqAggsExec::getResult()
+{
+  int k = 0;
+  for(int i = 0; i < numGrpBys ; i++){
+    retTuple[k++] = groupby[i]->getValue();
+  }
+  for(int i = 0; i < numSeqBys ; i++){
+    retTuple[k++] = seqby[i]->getValue();
+  }
+  for(int i = 0; i < numAggs ; i++){
+    retTuple[k++] = aggExecs[i]->getValue();
+  }
+}
+
+
+void SeqAggsExec::dropData()
+{
+  // drop an ordinal
+  currWindowHeight--;
+  int toDeque = numTuplesToBeDropped.front();
+  numTuplesToBeDropped.pop();
+  for(int i = 0; i < numSeqBys; i++){
+    seqby[i]->dequeue(1);
+  }
+  for(int i = 0; i < numAggs; i++){
+    aggExecs[i]->dequeue(toDeque);  
+  }
+}
+
+
+const Tuple* SeqAggsExec::getNext()
+{
+  if( currInTup == NULL ) return NULL; // eof
+  if( !numTuplesToBeDropped.empty() ) { // drop data in cache
+    dropData();
+  }
+  if( numTuplesToBeDropped.empty() ) { // no data (left) in cache, init
+    setupFirst();
+  }
+  
+  if( !endOfGroup ) {           // need to add data to cache
+    addData();
+  }
+
+  getResult();
+
+  return retTuple;
+}
+
+
+const TypeIDList& SeqAggsExec::getTypes()
+{
+  return types;
+}
+
+
+
+//---------------------------------------------------------------------------
+
+
 bool Aggregates::isApplicable(){
 	return isApplicableValue;
 }
@@ -15,29 +401,6 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 
 	vector<BaseSelection*>::iterator it;
 	filteredSelList = new List<BaseSelection*>();
-
-	if(!binBy.empty()){
-		assert(groupBy.empty());
-		assert(sequenceBy.empty());
-		grpByPos = new int[1];
-		int i = 0;
-		for(it = selList.begin(); it != selList.end(); ++it){
-		  	if((*it)->match(binBy.front())){
-				grpByPos[0] = i;
-				vector<BaseSelection*>::iterator binIt;
-				binIt = binBy.begin();
-				++binIt;
-				assert((*binIt)->selectID() == CONST_ID);
-				ConstantSelection* init = (ConstantSelection*) *binIt;
-				++binIt;
-				assert((*binIt)->selectID() == CONST_ID);
-				ConstantSelection* step = (ConstantSelection*) *binIt;
-				aggFuncs[i] = new BinAttribute(init, step);
-			}
-			i++;
-		}
-		numGrpByFlds = 1;	// to avoid an assertion fail
-	}
 
 	if(!groupBy.empty()){
 	  numGrpByFlds = groupBy.size();
@@ -207,304 +570,54 @@ void Aggregates::typify(const string&, Site* inputPlanOp){
 }
 
 Iterator* Aggregates::createExec(){
-	assert(inputPlanOp);
-	TRY(Iterator* inputIter = inputPlanOp->createExec(), NULL);
-	assert(inputIter);
-	ExecAggregate** aggExecs = new ExecAggregate*[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		assert(aggFuncs[i]);
-		aggExecs[i] = aggFuncs[i]->createExec();
-	}
-
-	if(!binBy.empty()){
-		return new StandGroupByExec(inputIter, aggExecs, numFlds,
-			grpByPos, 1, aggPos, numAggs);
-	}
-
-	if(numGrpByFlds > 0){
-	  if (numSeqByFlds > 0) {
-	    // group by and seq by
-		if (sim_query)
-			return new MovSeqGroupByExec(inputIter, aggExecs, numFlds,
-				seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
-					  aggPos, numAggs,windowLow, windowHigh);
-		else
-			return new MovGroupByExec(inputIter, aggExecs, numFlds,
-				seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
-					  aggPos, numAggs,windowLow, windowHigh);
-	  }
-	  else {
-	    // just group by
-		return new StandGroupByExec(inputIter, aggExecs, numFlds,
-			grpByPos, numGrpByFlds, aggPos, numAggs);
-	  }
-	}
-	if(numSeqByFlds > 0){
-	  // just seq by
-		if (sim_query)
-			return new MovSeqAggsExec(inputIter, aggExecs, numFlds, seqByPos,
-				numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
-		else
-			return new MovAggsExec(inputIter, aggExecs, numFlds, seqByPos,
-				numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
-	}
-	else {
-		// No sequence by or group by 
-		return new StandAggsExec(inputIter, aggExecs, numFlds);
-	}
-}
-
-void StandAggsExec::initialize(){
-	assert(inputIter);
-	inputIter->initialize();
-}
-
-const Tuple* StandAggsExec::getNext(){
-	const Tuple* currt = inputIter->getNext();
-	int i;
-	if(!currt){
-		return NULL;
-	}
-	for(i = 0; i < numFlds; i++){
-		aggExecs[i]->initialize(currt[i]);
-	}
-	while((currt = inputIter->getNext())){
-		for(i = 0; i < numFlds; i++){
-			aggExecs[i]->update(currt[i]);
-		}
-	}
-
-	for(i = 0; i < numFlds; i++){
-		// Cast below gets rid of const.
-		retTuple[i] = (void *) aggExecs[i]->getValue();
-	}
-	return retTuple;
-}
-
-void StandGroupByExec::initialize(){
-	assert(inputIter);
-	inputIter->initialize();
-	currInTup = inputIter->getNext();
-}
-
-const Tuple* StandGroupByExec::getNext(){
-
-	int i;
-	if(!currInTup){
-		return NULL;
-	}
-	for(i = 0; i < numFlds; i++){
-		aggExecs[i]->initialize(currInTup[i]);
-	}
-	currInTup = inputIter->getNext();
-	while(currInTup && !isNewGroup(currInTup)){
-		for(i = 0; i < numAggs; i++){
-			aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-		}
-		currInTup = inputIter->getNext();
-	}
-
-	for(i = 0; i < numFlds; i++){
-		// Cast below gets rid of const.
-		retTuple[i] = (void *) aggExecs[i]->getValue();
-	}
-	return retTuple;
-}
-/*
-void MovAggsExec::initialize(){
-	assert(inputIter);
-	inputIter->initialize();
-	currInTup = inputIter->getNext();
-	if(!currInTup){
-	  return;
-	}
-
-	for(int i = 0; i < numFlds; i++){
-	  aggExecs[i]->initialize(currInTup[i]);
-	}
-
-	currWindowHeight = 1;
-	numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
-
-	currInTup = inputIter->getNext();
-	while(currInTup) { 
-	  if (isNewGroup(currInTup)) {
-	    nextDrop = (nextDrop+1) % fullWindowHeight; 
-
-	    if (currWindowHeight == fullWindowHeight) {
-	      break; // end of window
-	    }
-
-	    // Add the currInTuple to end of the seq by queue
-	    for (int i = 0; i < seqByPosLen; i++){
-	      aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
-	    }    
-	    currWindowHeight++;
-	  } 
-
-	  for(int i = 0; i < numAggs; i++){
-	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-	  }
-
-	  currInTup = inputIter->getNext();
-	  numTuplesToBeDropped[nextDrop]++;
-	}
-	for(int i = 0; i < numFlds; i++){ 
-		retTuple[i] = aggExecs[i]->getValue();
-	}	*/
-void MovAggsExec::initialize(){
+  assert(inputPlanOp);
+  TRY(Iterator* inputIter = inputPlanOp->createExec(), NULL);
   assert(inputIter);
-  inputIter->initialize();
-  currInTup = inputIter->getNext();
-  
-  if(!currInTup){
-    return;
-  }
-  setupFirst();
-}	
 
-void MovAggsExec::setupFirst() {
-  int i;
-
-  for(i = 0; i < numFlds; i++){
-    aggExecs[i]->initialize(currInTup[i]);
-  }
-  
-  currWindowHeight = 1;
-  fullWindowHeight = windowHigh - windowLow;
-  nextDrop = 0;
-  numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
-  
-  for (i = 1; i < fullWindowHeight; i++){
-    numTuplesToBeDropped[i] = 0;   
+  AggList* aggExecs = new AggList;
+  for(int i = 0; i < numAggs; i++) {
+    assert(aggFuncs[aggPos[i]]);
+    ExecAggregate* e = aggFuncs[aggPos[i]]->createExec();
+    aggExecs->push_back(AggFn(e, aggPos[i]));
   }
 
-  currInTup = inputIter->getNext();
-  endOfGroup = true;
-  while(currInTupIsValid()) { 
-    
-    if (isNewSeqVal(currInTup)) {
-      nextDrop = (nextDrop+1) % fullWindowHeight; 
-      
-      if (currWindowHeight == fullWindowHeight) {
-	endOfGroup = false;
-	break; // end of window
-      }
-      
-      // Add the currInTuple to end of the seq by queue
-      for (i = 0; i < seqByPosLen; i++){
-	aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
-      }    
-      currWindowHeight++;
+  FieldList* grpBys = NULL;
+  if( numGrpByFlds > 0 ) {
+    grpBys = new FieldList;
+    for(int i = 0; i < numGrpByFlds; i++) {
+      assert(aggFuncs[grpByPos[i]]);
+      grpBys->push_back( Field(typeIDs[grpByPos[i]], grpByPos[i]) );
     }
-    
-    for(i = 0; i < numAggs; i++){
-      aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+  }
+
+  FieldList* seqBys = NULL;
+  if( numSeqByFlds > 0 ) {
+    seqBys = new FieldList;
+    for(int i = 0; i < numSeqByFlds; i++) {
+      assert(aggFuncs[seqByPos[i]]);
+      seqBys->push_back( Field(typeIDs[seqByPos[i]], seqByPos[i]) );
     }
-    
-    currInTup = inputIter->getNext();
-    numTuplesToBeDropped[nextDrop]++;
+  }
+  
+  if (numSeqByFlds > 0) {
+    // seq by with or without group by
+    if (sim_query) cerr << "kb: not sure this works anymore...\n";
+    return new SeqAggsExec(inputIter, grpBys, seqBys,
+                           aggExecs, windowLow, windowHigh);
   }
 
-  for(i = 0; i < numFlds; i++){ 
-    // Cast below gets rid of const.
-    retTuple[i] = (void *) aggExecs[i]->getValue();
+  if(numGrpByFlds > 0){
+    // just regular old group by
+    return new StandGroupByExec(inputIter, grpBys, aggExecs);
   }
-  
-  // if window is greater than num of tuples, 
-  // set window height to number of tuples
-  
-  if (fullWindowHeight > currWindowHeight) {
-    fullWindowHeight = currWindowHeight;
-    nextDrop = 0;
-  }
-  
-  firstTime = true;
-  assert (currWindowHeight == fullWindowHeight); 
+
+  // No sequence by or group by -- simple aggregate
+  return new StandAggsExec(inputIter, aggExecs);
 }
 
-const Tuple* MovAggsExec::flushWindow(){
-  int i;
 
-  if (!currWindowHeight)
-    return NULL;
-  
-  for(i = 0; i < numAggs; i++){
-    aggExecs[aggPos[i]]->dequeue(toDeque);  
-  }
-  
-  for (i = 0; i < seqByPosLen; i++){
-    aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
-  }    
-  
-  nextDrop = (nextDrop+1) % fullWindowHeight;
-  
-  for(i = 0; i < numFlds; i++){ 
-    // Cast below gets rid of const.
-    retTuple[i] = (void *) aggExecs[i]->getValue();
-  }
-  
-  return retTuple;
-}
+//---------------------------------------------------------------------------
 
-const Tuple* MovSeqAggsExec::flushWindow(){
-	return NULL;
-}
-
-const Tuple* MovAggsExec::getNext(){
-	int i;
-
-	// the first window has been calculated before a call to this function
-
-	if (firstTime) {
-	  firstTime = false;
-	  return retTuple;
-	}
-  
-	toDeque = numTuplesToBeDropped[nextDrop];
-
-	// flushes the rest of the window if no more tuples left in the input
-	if (endOfGroup) {
-	  currWindowHeight--;
-	  return flushWindow(); 
-	}
-
-	// else update aggs with currInTup and read in tuples till next value
-	for(i = 0; i < numAggs; i++){
-	  aggExecs[aggPos[i]]->dequeue(toDeque);  
-	  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-	}
-
-	for (i = 0; i < seqByPosLen; i++){
-	  aggExecs[seqByPos[i]]->dequeue(1);
-	  aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
-	}    
-
-	numTuplesToBeDropped[nextDrop] = 1; // for currInTup
-	currInTup = inputIter->getNext();
-	endOfGroup = true;
-
-	while(currInTupIsValid()) {
-	  if (isNewSeqVal(currInTup)) {
-	    endOfGroup = false;
-	    break;
-	  } 
-	  for(i = 0; i < numAggs; i++){
-	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-	  }
-	  currInTup = inputIter->getNext();
-	  numTuplesToBeDropped[nextDrop]++; 
-	}
-
-	nextDrop = (nextDrop+1) % fullWindowHeight;
-
-	for(i = 0; i < numFlds; i++){ 
-		// Cast below gets rid of const.
-		retTuple[i] = (void *) aggExecs[i]->getValue();
-	}
-
-	return retTuple;
-}
 
 void ExecMovMinMax::dequeue(int n){
 	bool recalculate = false;
@@ -548,72 +661,3 @@ void ExecMovAverage::dequeue(int n){
 	}
 }
 
-const Tuple* MovGroupByExec::flushWindow(){
-
-	int i;
-
-  if (!currWindowHeight) { // window has been flushed
-    
-    if (!currInTup) {
-      return NULL; // end of file
-    }
-
-    for(i = 0; i < numAggs; i++){
-      aggExecs[aggPos[i]]->dequeue(toDeque);  
-    }
-    for (i = 0; i < seqByPosLen; i++){
-      aggExecs[seqByPos[i]]->dequeue(1);
-    }    
-
-    setupFirst();
-    firstTime = false;
-    return retTuple; 
-  }
-
-  for(i = 0; i < numAggs; i++){
-    aggExecs[aggPos[i]]->dequeue(toDeque);  
-  }
-  for (i = 0; i < seqByPosLen; i++){
-    // Cast below gets rid of const.
-    aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
-  }    
-
-  nextDrop = (nextDrop+1) % fullWindowHeight;
-  
-  for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = (void *) aggExecs[i]->getValue();
-  }
-
-  return retTuple;
-}
-
-const Tuple* MovSeqGroupByExec::flushWindow(){
-	int i;
-  while (currWindowHeight) { // window has been flushed
-  	for(i = 0; i < numAggs; i++){
-   	 aggExecs[aggPos[i]]->dequeue(toDeque);  
-  	}
-  	for (i = 0; i < seqByPosLen; i++){
-   	 aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
-  	}    
-
-  	nextDrop = (nextDrop+1) % fullWindowHeight;
-	currWindowHeight--;
-   }
-  
-    if (!currInTup) {
-      return NULL; // end of file
-    }
-
-    for(i = 0; i < numAggs; i++){
-      aggExecs[aggPos[i]]->dequeue(toDeque);  
-    }
-    for (i = 0; i < seqByPosLen; i++){
-      aggExecs[seqByPos[i]]->dequeue(1);
-    }    
-
-    setupFirst();
-    firstTime = false;
-    return retTuple; 
-
-}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/06/24 22:14:09  donjerko
+  *** empty log message ***
+
   Revision 1.34  1998/03/12 18:23:34  donjerko
   *** empty log message ***
 
@@ -688,36 +691,38 @@ void SiteGroup::typify(string option){	// Throws exception
 
 Iterator* LocalTable::createExec(){
 	assert(directSite);
-	Array<ExecExpr*>* select;
-	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, directSite), NULL);
+        ExprList* project;
+        ExprList* where;
+	TRY(project = enumerateList(mySelect, directSite), NULL);
 	TRY(where = enumerateList(myWhere, directSite), NULL);
 	Iterator* it = directSite->createExec();
-	return new SelProjExec(it, select, where);
+	return new SelProjExec(it, where, project);
 }
 
 Iterator* IndexScan::createExec(){
 	assert(directSite);
-	Array<ExecExpr*>* select;
-	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, directSite), NULL);
+        ExprList* project;
+        ExprList* where;
+	TRY(project = enumerateList(mySelect, directSite), NULL);
 	TRY(where = enumerateList(myWhere, directSite), NULL);
 	Iterator* it = directSite->createExec();
 	RTreeReadExec* indexIter = (RTreeReadExec*) index->createExec();
-	return new IndexScanExec(indexIter, it, select, where);
+        assert(!"sorry, indexes are broken right now...");
+        return NULL;
+	//return new IndexScanExec(indexIter, it, where, project);
 }
 
 Iterator* SiteGroup::createExec(){
-	Array<ExecExpr*>* select;
-	Array<ExecExpr*>* where;
-	TRY(select = enumerateList(mySelect, site1, site2), NULL);
+        ExprList* project;
+        ExprList* where;
+	TRY(project = enumerateList(mySelect, site1, site2), NULL);
 	TRY(where = enumerateList(myWhere, site1, site2), NULL);
 	int innerNumFlds = site2->getNumFlds();
 	TRY(Iterator* it1 = site1->createExec(), NULL);
 	TRY(Iterator* it2 = site2->createExec(), NULL);
-	TupleLoader* tupleLoader = new TupleLoader;
-	TRY(tupleLoader->open(innerNumFlds, site2->getTypeIDs()), NULL);
-	return new NLJoinExec(it1, it2, select, where, innerNumFlds, tupleLoader);
+	//TupleLoader* tupleLoader = new TupleLoader;
+	//TRY(tupleLoader->open(innerNumFlds, site2->getTypeIDs()), NULL);
+	return new NLJoinExec(it1, it2, where, project);
 }
 
 Iterator* UnionSite::createExec(){
@@ -770,6 +775,7 @@ SiteGroup::SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2)
 	delete tmp2;
 }
 
-Iterator* ISchemaSite::createExec(){
-	return new SingleAnswerIt(schema, schemaDestroy);
+Iterator* ISchemaSite::createExec()
+{
+  return new SingleAnswerIt(schema, SCHEMA_TP);
 }

@@ -58,5 +58,5 @@ Iterator* CreateTableParse::createExec()
 	RelationId relId;
 	TRY(relId = RELATION_MNGR.registerNewRelation(stdInt), NULL);
 	char* ans = strdup(relId.toString().c_str());
-	return new SingleAnswerIt(ans, stringDestroy);
+	return new SingleAnswerIt(ans, STRING_TP);
 }

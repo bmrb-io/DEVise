@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/06/24 22:14:11  donjerko
+  *** empty log message ***
+
   Revision 1.53  1998/06/24 05:03:01  okan
   Added ODBC List & DSN List commands
   Added insert & delete commands to update ODBC entries in related catalogs
@@ -186,6 +189,7 @@
 
 #include <assert.h>
 #include <new.h>
+#include <vector>
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
@@ -748,7 +752,7 @@ public:
 			return new GeneralPtr(stringGT, boolSize, oneOver3);
 		}
 		else if(name == "comp"){
-			retType = "bool";
+			retType = "int";
 			return new GeneralPtr(stringComp, boolSize, oneOver3);
 		}
 		else{
@@ -1082,5 +1086,115 @@ char* allocateSpace(TypeID type, size_t& size = dummySz);
 
 ConstructorPtr getConstructorPtr(
 	const string& name, const TypeID* inpTypes, int numFlds, TypeID& retType);
+
+
+class TypeIDList
+: private vector<TypeID>
+{
+public:
+
+  TypeIDList() {}
+
+  ~TypeIDList() {}
+
+  TypeIDList(const TypeIDList& x) : vector<TypeID>(x) {}
+
+  TypeIDList& operator=(const TypeIDList& x) {
+    vector<TypeID>::operator=(x);
+    return *this;
+  }
+
+  vector<TypeID>::size;
+  vector<TypeID>::push_back;
+  vector<TypeID>::operator[];
+  // vector<TypeID>::clear; // vector::clear not in gcc 2.7
+  void clear()
+    { erase(begin(), end()); }
+
+  void append(const TypeIDList& types)
+    { insert(end(), types.begin(), types.end()); }
+
+  void push_front(const TypeID& type)
+    { insert(begin(), type); }
+};
+
+
+
+Type** allocateTuple(const TypeIDList& types);
+
+void deleteTuple(Type** tuple, const TypeIDList& types);
+inline void deleteTuple(Tuple* tuple, const TypeIDList& types)
+{ deleteTuple((Type**)tuple, types); }
+
+vector<ReadPtr> getReadPtrs(const TypeIDList& types);
+vector<WritePtr> getWritePtrs(const TypeIDList& types);
+vector<MarshalPtr> getMarshalPtrs(const TypeIDList& types);
+vector<UnmarshalPtr> getUnmarshalPtrs(const TypeIDList& types);
+vector<DestroyPtr> getDestroyPtrs(const TypeIDList& types);
+int packSize(const TypeIDList& types);
+TypeID* makeArray(const TypeIDList& types); // for compat.,
+                                            // return must be deleted []
+
+class Field
+{
+public:
+  
+  Field(const TypeID& type, int pos)
+    : _type(type), _right(false), _pos(pos) {}
+  
+  Field(const TypeID& type, bool right, int pos) // right means second tuple
+    : _type(type), _right(right), _pos(pos) {}
+  
+  ~Field() {}
+  
+  Field(const Field& x) : _type(x._type), _pos(x._pos) {}
+  
+  Field& operator=(const Field& x) {
+    _type = x._type;
+    _pos = x._pos;
+    return *this;
+  }
+  
+  const TypeID& getType() const { return _type; }
+  
+  int getPos() const { return _pos; }
+
+  bool isLeft() const { return !_right; }
+
+  bool isRight() const { return _right; }
+  
+protected:
+
+  TypeID _type;
+  bool _right;
+  int _pos;
+
+  // needed for gcc 2.7
+  Field() {}
+  friend class vector<Field>;
+};
+
+
+class FieldList
+: private vector<Field>
+{
+public:
+
+  FieldList() {}
+
+  ~FieldList() {}
+
+  FieldList(const FieldList& x) : vector<Field>(x) {}
+
+  FieldList& operator=(const FieldList& x) {
+    vector<Field>::operator=(x);
+    return *this;
+  }
+
+  vector<Field>::size;
+  vector<Field>::push_back;
+  vector<Field>::operator[];
+};
+
 
 #endif

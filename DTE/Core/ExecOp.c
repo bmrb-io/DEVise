@@ -1,7 +1,3 @@
-#ifdef __GNUG__
-#pragma implementation "Array.h"
-#endif
-
 #include <string>
 
 #include "ExecOp.h"
@@ -9,136 +5,365 @@
 #include "RTreeRead.h"
 #include "MemoryMgr.h"
 
-Array<ExecExpr*>* dummy3; // Just needed for pragma implementation
+//---------------------------------------------------------------------------
+//kb: these should be put somewhere else...
 
-void IndexScanExec::initialize(){
-	assert(index);
-	index->initialize();
-	assert(inputIt);
-	inputIt->initialize();
+static bool evalWhere(ExprList& where,
+                      const Tuple* left, const Tuple* right = NULL)
+{
+  int n = where.size();
+  for(int i = 0 ; i < n ; i++) {
+    bool value = where[i]->evaluate(left, right) ? true : false;
+    if( !value ) return false;
+  }
+  return true;
 }
 
-const Tuple* IndexScanExec::getNext(){
-	bool cond = false;
-	const Tuple* input;
-	assert(next);
-	while(!cond){
-		Offset offset = index->getNextOffset();
-		if(offset.isNull()){
-			return NULL;
-		}
-		RecId recId = index->getRecId();
-		input = inputIt->getThis(offset, recId);
-		assert(input);
-		cond = evaluateList(myWhere, input);
-	}
-	tupleFromList(next, mySelect, input);
-	return next;
+static void evalProject(Tuple* ret, ExprList& proj,
+                        const Tuple* left, const Tuple* right = NULL)
+{
+  int n = proj.size();
+  for(int i = 0 ; i < n ; i++){
+    ret[i] = (Type*) proj[i]->evaluate(left, right);
+  }
 }
 
-const Tuple* SelProjExec::getNext(){
-	bool cond = false;
-	const Tuple* input;
-	assert(next);
-	while(!cond){
-		TRY(input = inputIt->getNext(), NULL);
-		if(!input){
-			return NULL;
-		}
-		cond = evaluateList(myWhere, input);
-	}
-	tupleFromList(next, mySelect, input);
-	return next;
+
+//---------------------------------------------------------------------------
+
+
+SelProjExec::SelProjExec(Iterator* inputIt, ExprList* where,
+                         ExprList* project)
+: inputIt(inputIt), myWhere(*where), myProject(*project)
+{
+  assert(inputIt);
+  assert(project);
+  assert(where);
+  next = new Tuple[myProject.size()];
 }
 
-const Tuple* SelProjExec::getThis(Offset offset, RecId recId){
-	assert(inputIt);
-	assert(next);
-	// cerr << "selprojexec getThis\n";
-	const Tuple* input = inputIt->getThis(offset, recId);
-	tupleFromList(next, mySelect, input);
-	return next;
+
+SelProjExec::~SelProjExec()
+{
+  delete inputIt;
+  delete &myWhere;
+  delete &myProject;
+  delete [] next;
+}
+  
+
+void SelProjExec::initialize()
+{
+  inputIt->initialize();
+}
+  
+
+const Tuple* SelProjExec::getNext()
+{
+  bool cond = false;
+  const Tuple* input;
+  assert(next);
+  while(!cond){
+    TRY(input = inputIt->getNext(), NULL);
+    if(!input){
+      return NULL;
+    }
+    cond = evalWhere(myWhere, input);
+  }
+  evalProject(next, myProject, input);
+  return next;
 }
 
-const Tuple* NLJoinExec::getNext(){
-	bool cond = false;
-	const Tuple* innerTup = NULL;
-	if(firstEntry){
-		outerTup = left->getNext();
-		firstEntry = false;
-	}
-	while(cond == false){
-		if(firstPass){
-			if((innerTup = right->getNext())){
-				const Tuple* tmp = tupleLoader->insert(innerTup);
-				innerRel.push_back(tmp);
-			}
-			else{
-				firstPass = false;
-				innerIter = innerRel.begin();
-				if(innerIter == innerRel.end()){
-					return NULL;
-				}
-				innerTup = *innerIter;
-				++innerIter;
-				outerTup = left->getNext();
-			}
-		}
-		else{
-			if(innerIter == innerRel.end()){
-				innerIter = innerRel.begin();
-				outerTup = left->getNext();
-			}
-			innerTup = *innerIter;
-			++innerIter;
-		}
-		assert(innerTup);
-		if(!outerTup){
-			return NULL;
-		}
-		cond = evaluateList(myWhere, outerTup, innerTup);
-	}
-	assert(outerTup);
-	assert(next);
-	tupleFromList(next, mySelect, outerTup, innerTup);
-	return next;
+
+const TypeIDList& SelProjExec::getTypes()
+{
+  return myProject.getTypes();
 }
 
-const Tuple* UnionExec::getNext(){
-	const Tuple* next;
-	if(runningFirst){
-		if((next = iter1->getNext())){
-			return next;
-		}
-		else{
-			runningFirst = false;
-			iter2->initialize();
-			return iter2->getNext();
-		}
-	}
-	else{
-		return iter2->getNext();
-	}
+
+//---------------------------------------------------------------------------
+
+
+TableLookupExec::TableLookupExec(Iterator* inputIt,
+                                 RandomAccessIterator* file, int offset_field,
+                                 ExprList* where, ExprList* project)
+: inputIt(inputIt), file(file), offset_field(offset_field),
+  myWhere(myWhere), myProject(myProject)
+{
+  assert(inputIt);
+  assert(file);
+  assert(where);
+  assert(project);
+  next = new Tuple[myProject.size()];
 }
 
-IndexScanExec::~IndexScanExec(){
-	delete index;
-	delete inputIt;
-	destroyArray(*mySelect);
-	delete mySelect;
-	destroyArray(*myWhere);
-	delete myWhere;
-	delete [] next;
+
+TableLookupExec::~TableLookupExec()
+{
+  delete inputIt;
+  delete file;
+  delete &myWhere;
+  delete &myProject;
+  delete [] next;
 }
 
-NLJoinExec::~NLJoinExec(){
-	delete left;
-	delete right;
-	destroyArray(*mySelect);
-	delete mySelect;
-	destroyArray(*myWhere);
-	delete myWhere;
-	delete [] next;
-	delete tupleLoader;
+
+void TableLookupExec::initialize()
+{
+  inputIt->initialize();
+  file->initialize();
 }
 
+
+const Tuple* TableLookupExec::getNext()
+{
+  const Tuple* file_rec;
+  const Tuple* input_rec;
+  do {
+    input_rec = inputIt->getNext();
+    if( !input_rec ) {
+      return NULL;
+    }
+    Offset offset( IInt::getInt(input_rec[offset_field]) );
+    file_rec = file->getThis(offset);
+    assert(input_rec);
+  } while( !evalWhere(myWhere, input_rec, file_rec) );
+  evalProject(next, myProject, input_rec, file_rec);
+  return next;
+}
+
+
+const TypeIDList& TableLookupExec::getTypes()
+{
+  return myProject.getTypes();
+}
+
+
+//---------------------------------------------------------------------------
+
+
+NLJoinExec::NLJoinExec(Iterator* left, Iterator* right, 
+                       ExprList* myWhere, ExprList* myProject)
+: left(left), right(right), myWhere(*myWhere), myProject(*myProject),
+  tupleLoader()
+{
+  assert(left);
+  assert(right);
+  assert(myWhere);
+  assert(myProject);
+  firstEntry = true;
+  firstPass = true;
+  outerTup = NULL;
+  next = new Tuple[myProject->size()];
+  //kb: tupleloader should take TypeIDList...
+  int numFlds = right->getNumFlds();
+  TypeID* t = makeArray(right->getTypes());
+  tupleLoader.open(numFlds, t);
+  delete [] t;
+}
+
+
+NLJoinExec::~NLJoinExec()
+{
+  delete left;
+  delete right;
+  delete &myProject;
+  delete &myWhere;
+  delete [] next;
+}
+
+
+void NLJoinExec::initialize()
+{
+  left->initialize();
+  right->initialize();
+}
+
+
+const Tuple* NLJoinExec::getNext()
+{
+  const Tuple* innerTup = NULL;
+  if(firstEntry) {
+    outerTup = left->getNext();
+    firstEntry = false;
+  }
+
+  do {
+    if(firstPass){
+      innerTup = right->getNext();
+      if( innerTup ) {
+        const Tuple* tmp = tupleLoader.insert(innerTup);
+        innerRel.push_back(tmp);
+      } 
+      else {
+        firstPass = false;
+        innerIter = innerRel.begin();
+        if(innerIter == innerRel.end()) {
+          return NULL;
+        }
+        innerTup = *innerIter;
+        ++innerIter;
+        outerTup = left->getNext();
+      }
+    }
+    else {
+      if(innerIter == innerRel.end()) {
+        innerIter = innerRel.begin();
+        outerTup = left->getNext();
+      }
+      innerTup = *innerIter;
+      ++innerIter;
+    }
+    assert(innerTup);
+    if(!outerTup) {
+      return NULL;
+    }
+  } while( !evalWhere(myWhere, outerTup, innerTup) );
+
+  evalProject(next, myProject, outerTup, innerTup);
+  return next;
+}
+
+
+const TypeIDList& NLJoinExec::getTypes()
+{
+  return myProject.getTypes();
+}
+
+
+
+
+//---------------------------------------------------------------------------
+
+
+UnionExec::UnionExec(Iterator* iter1, Iterator* iter2)
+: iter1(iter1), iter2(iter2), runningFirst(true)
+{
+}
+
+
+UnionExec::~UnionExec()
+{
+  delete iter1;
+  delete iter2;
+}
+
+
+void UnionExec::initialize()
+{
+  iter1->initialize();
+}
+
+
+const Tuple* UnionExec::getNext()
+{
+  if( runningFirst ) {
+    const Tuple* next = iter1->getNext();
+    if( next ) {
+      return next;
+    }
+    // end of first
+    runningFirst = false;
+    iter2->initialize();
+  }
+  // running second
+  return iter2->getNext();
+}
+
+
+const TypeIDList& UnionExec::getTypes()
+{
+  return iter1->getTypes();
+}
+
+
+//---------------------------------------------------------------------------
+
+
+RidAdderExec::RidAdderExec(Iterator* input)
+: input(input)
+{
+  types = input->getTypes();
+  types.push_front(INT_TP);
+  numFlds = input->getNumFlds();
+  tuple = new Tuple[numFlds+1];
+}
+
+
+RidAdderExec::~RidAdderExec()
+{
+  delete [] tuple;
+  delete input;
+}
+
+
+void RidAdderExec::initialize()
+{
+  counter = 0;
+  input->initialize();
+}
+
+
+const Tuple* RidAdderExec::getNext()
+{
+  const Tuple* inputTup = input->getNext();
+  if(!inputTup) {
+    return NULL;
+  }
+  tuple[0] = (void*) counter++;
+  for(int i = 0; i < numFlds; i++) {
+    tuple[i+1] = inputTup[i];
+  }
+  return tuple;
+}
+
+
+const TypeIDList& RidAdderExec::getTypes()
+{
+  return types;
+}
+
+
+
+
+//---------------------------------------------------------------------------
+
+
+SingleAnswerIt::SingleAnswerIt(Type* arg, const TypeID& type) 
+: done(false)
+{
+  types.push_back(type);
+  destroyPtr = getDestroyPtr(type);
+  retVal = arg;
+}
+
+
+SingleAnswerIt::~SingleAnswerIt()
+{
+  destroyPtr(retVal);
+}
+
+
+void SingleAnswerIt::initialize()
+{
+}
+
+
+const Tuple* SingleAnswerIt::getNext()
+{
+  if(done) {
+    return NULL;
+  }
+  done = true;
+  return (const Tuple*) &retVal;
+}
+
+
+TypeIDList& SingleAnswerIt::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 using namespace std;
 #endif
 
+
 class ExecExpr {
 protected:
 	TypeID typeID;
@@ -18,8 +19,79 @@ public:
 	const TypeID& getTypeID(){
 		return typeID;
 	}
-	// static ExecExpr* createExpr(const string& fnname, const ExprList& args);
+	static ExecExpr* createExpr(const string& fnname, class ExprList* argp);
 };
+
+
+//---------------------------------------------------------------------------
+
+
+class ExprList
+{
+public:
+
+  ExprList() {}
+
+  ~ExprList();
+
+  int size() { return _expr.size(); }
+
+  ExecExpr* operator[](int i) { return _expr[i]; }
+
+  void push_back(ExecExpr* e);
+
+  const TypeIDList& getTypes();
+
+  void clear();                 // clears without deleting
+
+protected:
+
+  vector<ExecExpr*> _expr;
+
+  TypeIDList _types;
+
+private:
+
+  ExprList(const ExprList& x);
+  ExprList& operator=(const ExprList& x);
+};
+
+
+inline
+ExprList::~ExprList()
+{
+  for(vector<ExecExpr*>::iterator i = _expr.begin() ; i != _expr.end() ; i++) {
+    delete *i;
+  }
+}
+
+
+inline
+void ExprList::push_back(ExecExpr* e)
+{
+  _expr.push_back(e);
+  _types.push_back(e->getTypeID());
+}
+
+
+inline
+const TypeIDList& ExprList::getTypes()
+{
+  return _types;
+}
+
+
+inline
+void ExprList::clear()
+{
+  // _expr.clear();   // vector::clear() not defined in gcc 2.7
+  _expr.erase(_expr.begin(),_expr.end());
+  _types.clear();
+}
+
+
+//---------------------------------------------------------------------------
+
 
 class ExecSelect : public ExecExpr {
      int leftRight;
@@ -27,7 +99,9 @@ class ExecSelect : public ExecExpr {
 public:	
      ExecSelect(const TypeID& type, int lr, int field) : 
 		ExecExpr(type), leftRight(lr), fieldNo(field) {}
-	virtual ~ExecSelect() {}
+     ExecSelect(const Field& f)
+       : ExecExpr(f.getType()), leftRight(f.isRight()), fieldNo(f.getPos()) {}
+     virtual ~ExecSelect() {}
      const Type* evaluate(const Tuple* left, const Tuple* right) {
           const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
           return base;
@@ -112,14 +186,14 @@ public:
 };
 
 class ExecConstructor : public ExecExpr{
-	Array<ExecExpr*>* input;
+        ExprList* input;
 	ConstructorPtr consPtr;
 	Type* value;
 	size_t valueSize;
 	DestroyPtr destroyPtr;
 	Array<const Type*>* inputVals;
 public:
-	ExecConstructor(Array<ExecExpr*>* input, const string& name);
+	ExecConstructor(ExprList* input, const string& name);
 	virtual ~ExecConstructor(){
 		delete input;
 		delete inputVals;
@@ -127,12 +201,17 @@ public:
 		destroyPtr(value);
 	}
 	const Type* evaluate(const Tuple* leftT, const Tuple* rightT) {
-		for(int i = 0; i < input->length; i++){
+                int n = input->size();
+		for(int i = 0; i < n ; i++){
 			(*inputVals)[i] = (*input)[i]->evaluate(leftT, rightT);
 		}
 		consPtr(*inputVals, value, valueSize);
 		return value;
 	}
 };
+
+
+
+
 
 #endif

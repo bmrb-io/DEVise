@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/03/17 17:19:03  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.20  1997/11/13 22:19:24  okan
   Changes about compilation on NT
 
@@ -85,22 +88,125 @@
 #include "url.h"
 #include "ExecOp.h"
 
-StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
-	string urlStr) : in(in), urlStr(urlStr)
+StandReadExec::StandReadExec(const TypeIDList& typeIDs, istream* in,
+                             string url)
+: types(typeIDs), in(in), url(url)
 {
-	this->numFlds = numFlds;
-	readPtrs = new ReadPtr[numFlds];
-	destroyPtrs = new DestroyPtr[numFlds];
-	currentSz = new size_t[numFlds];
-	tuple = new Type*[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		readPtrs[i] = getReadPtr(typeIDs[i]);
-		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
-		assert(destroyPtrs[i]);
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
-	}
-	currentLine = 1;
+  numFlds = types.size();
+  readPtrs = getReadPtrs(types);
+  tuple = allocateTuple(types);
+  first_pass = true;
 }
+
+
+StandReadExec::StandReadExec(const TypeIDList& typeIDs, string url)
+: types(typeIDs), in(in), url(url)
+{
+  URL url(url);
+  in = url.getInputStream();
+  numFlds = types.size();
+  readPtrs = getReadPtrs(types);
+  tuple = allocateTuple(types);
+  first_pass = true;
+}
+
+
+StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
+                             string url)
+: types(), in(in), url(url)
+{
+  this->numFlds = numFlds;
+  for(int i = 0 ; i < numFlds ; i++) {
+    types.push_back(typeIDs[i]);
+  }
+  //kb: should typeIDs be deleted?? looks like sometimes yes, sometimes no
+  // delete [] typeIDs;
+  readPtrs = getReadPtrs(types);
+  tuple = allocateTuple(types);
+  first_pass = true;
+}
+
+
+StandReadExec::~StandReadExec()
+{
+  delete in;
+  deleteTuple(tuple, types);
+}
+
+
+void StandReadExec::initialize()
+{
+  if( !first_pass ) {
+    // check for first pass because this could fail...
+    in->seekg(0, ios::beg);
+    if( !in->good() ) {
+      cerr << "attempt to rewind from bad stream in StandReadExec\n";
+    }
+  }
+  first_pass = false;
+  currentLine = 1;
+}
+
+
+const Tuple* StandReadExec::getNext()
+{
+  assert(in);
+  for(int i = 0; i < numFlds; i++) {
+    readPtrs[i](*in, ((Type**)tuple)[i]);
+    if(currExcept) {
+      ostringstream tmp;
+      tmp << "Line " << currentLine << " of " << url << ends;
+      currExcept->append(tmp.str());
+      return NULL;
+    }
+  }
+  currentLine++;
+  if(in->good()) {
+    return tuple;
+  }
+  else {
+    return NULL;
+  }
+}
+
+
+const Tuple* StandReadExec::getThis(Offset offset)
+{
+  assert(in);
+  if( offset.isNull() ) {
+    return NULL;
+  }
+  currentLine = -9999999;
+  streampos pos = offset.offset;
+  in->seekg(pos, ios::beg);
+  if( !in->good() ) {
+    cerr << "attempt to seek from bad stream in StandReadExec\n";
+    return NULL;
+  }
+  return StandReadExec::getNext();
+}
+
+
+Offset StandReadExec::getOffset()
+{
+  assert(in);
+  streampos pos = in->tellg();
+  if( !in->good() ) {
+    cerr << "attempt to get offset from bad stream in StandReadExec\n";
+    return Offset();
+  }
+  return Offset(pos);
+}
+
+
+const TypeIDList& StandReadExec::getTypes()
+{
+  return types;
+}
+
+
+//---------------------------------------------------------------------------
+
 
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	this->numFlds = numFlds;
@@ -129,7 +235,7 @@ void StandardRead::open(const ISchema& schema, istream* in,
 
 Iterator* RidAdder::createExec(){
 	TRY(Iterator* inpIter = input->createExec(), NULL);
-	return new RidAdderExec(inpIter, numFlds);
+	return new RidAdderExec(inpIter);
 }
 
 void NCDCRead::open(istream* in){	// Throws exception

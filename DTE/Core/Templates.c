@@ -1,3 +1,4 @@
+#if 0
 #include <iostream.h>
 #include <string>
 #include <vector>
@@ -15,7 +16,21 @@
 #include "ParseTree.h"
 
 #include <stl.h>	// includes all of stl
+#endif
 
+#include<string>
+#include<vector>
+#include<deque>
+
+
+template vector<class OptNode*>;
+template vector<string>;
+template deque<void*>;
+
+//template vector<string>::range_insert<string*>(string*, string*, string*,
+//                                               forward_iterator_tag);
+
+#if 0
 class BaseSelection;
 class Site;
 class JoinTable;
@@ -135,3 +150,5 @@ class LogicalProp;
 
 template class map<string, OptNode*, StringLess>;
 template class map<string, LogicalProp*, StringLess>;
+#endif
+

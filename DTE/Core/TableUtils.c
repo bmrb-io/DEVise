@@ -10,9 +10,10 @@ Iterator* createIteratorFor(
 	int numFlds = schema.getNumFlds();
 	const TypeID* types = schema.getTypeIDs();
 	StandReadExec* fs = new StandReadExec(numFlds, types, in);
-	Array<ExecExpr*>* select = new Array<ExecExpr*>(numFlds);
-	for(int i = 0; i < numFlds; i++){
-		(*select)[i] = new ExecSelect(types[i], 0, i);
+
+        ExprList* project = new ExprList;
+	for(int i = 0; i < numFlds; i++) {
+          project->push_back(new ExecSelect(types[i], 0, i));
 	}
 
 	BaseSelection* name = new EnumSelection(0, "string");
@@ -22,10 +23,10 @@ Iterator* createIteratorFor(
 	assert(predicate);
 	predicate->typeCheck();
 
-	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
-	TRY((*where)[0] = predicate->createExec(NULL, NULL), NULL);
+        ExprList* where = new ExprList;
+	TRY(where->push_back(predicate->createExec(NULL, NULL)), NULL);
 	assert((*where)[0]);
-	return new SelProjExec(fs, select, where);
+	return new SelProjExec(fs, where, project);
 }
 
 ostream& operator<<(ostream& out, const TableMap& x){

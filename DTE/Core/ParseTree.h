@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/06/24 05:02:58  okan
+  Added ODBC List & DSN List commands
+  Added insert & delete commands to update ODBC entries in related catalogs
+
   Revision 1.28  1998/03/17 17:18:58  donjerko
   Added new namespace management through relation ids.
 
@@ -125,7 +129,6 @@ class QueryTree : public ParseTree {
      vector<BaseSelection*>& groupByVec;
      vector<BaseSelection*>& sequenceByVec;
      vector<BaseSelection*>& orderByVec;
-     vector<BaseSelection*>& binByVec;
 
 	bool isSelectStar;
 
@@ -146,7 +149,6 @@ public:
 		vector<TableAlias*>* tableVec,
 		BaseSelection* predicates,
 		vector<BaseSelection *>*groupBy,
-		vector<BaseSelection *>* binBy,
 		BaseSelection* havingPredicate,
 		vector<BaseSelection*>* sequenceby,
 		BaseSelection* withPredicate,
@@ -154,7 +156,6 @@ public:
 		string* sortOrdering, bool isSelectStar) :
 		selectVec(*selectList), tableVec(*tableVec), 
 		predicates(predicates), groupByVec(*groupBy), 
-		binByVec(*binBy),
 		havingPredicate(havingPredicate),
 		sequenceByVec(*sequenceby), withPredicate(withPredicate), 
 		orderByVec(*orderBy), sortOrdering(sortOrdering),

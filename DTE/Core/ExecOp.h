@@ -3,9 +3,10 @@
 
 #include <vector>
 
-#include "Array.h"
 #include "ExecExpr.h"
-#include "Iterator.h"	 // for Iterator
+#include "Iterator.h"
+#include "MemoryMgr.h"
+
 
 #ifndef __GNUG__
 using namespace std;
@@ -14,185 +15,205 @@ using namespace std;
 class RTreeReadExec;
 class TupleLoader;
 
-class SelProjExec : public Iterator {
+
+class SelProjExec : public Iterator
+{
+public:
+
+  SelProjExec(Iterator* inputIt, ExprList* myWhere, ExprList* myProject);
+  
+  virtual ~SelProjExec();
+  
+  virtual void initialize();
+  
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
 protected:
-	Iterator* inputIt;
-	Array<ExecExpr*>* mySelect;
-	Array<ExecExpr*>* myWhere;
-	Tuple* next;
-public:
-	SelProjExec(Iterator* inputIt, 
-		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere) :
-		inputIt(inputIt), mySelect(mySelect), myWhere(myWhere) {
-		assert(mySelect);
-		assert(myWhere);
-		next = new Tuple[mySelect->length];
-	}
-	virtual ~SelProjExec(){
-		delete inputIt;
-		destroyArray(*mySelect);
-		delete mySelect;
-		destroyArray(*myWhere);
-		delete myWhere;
-		delete [] next;
-	}
-     virtual void initialize(){
-          assert(inputIt);
-          inputIt->initialize();
-     }
 
-     virtual const Tuple* getNext();
-     virtual Offset getOffset(){
-          assert(inputIt);
-          return inputIt->getOffset();
-     }
-     virtual const Tuple* getThis(Offset offset, RecId recId);
+  Iterator* inputIt;
+  ExprList& myWhere;
+  ExprList& myProject;
+  Tuple* next;
+
+private:
+
+  SelProjExec(const SelProjExec& x);
+  SelProjExec& operator=(const SelProjExec& x);
 };
 
-class IndexScanExec : public Iterator {
-	RTreeReadExec* index;
-	Array<ExecExpr*>* mySelect;
-	Array<ExecExpr*>* myWhere;
+
+//---------------------------------------------------------------------------
+
+
+class TableLookupExec : public Iterator
+{
+public:
+
+  TableLookupExec(Iterator* input, RandomAccessIterator* file, int offset_field,
+                  ExprList* where, ExprList* project);
+
+  virtual ~TableLookupExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
 protected:
-	Iterator* inputIt;
-	Tuple* next;
-public:
-	IndexScanExec(RTreeReadExec* index, Iterator* inputIt, 
-		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere) :
-		index(index),
-		mySelect(mySelect), myWhere(myWhere), inputIt(inputIt) {
-		next = new Tuple[mySelect->length];
-	}
-	virtual ~IndexScanExec();
-     virtual void initialize();
-     virtual const Tuple* getNext();
-     virtual Offset getOffset(){
-          assert(inputIt);
-          return inputIt->getOffset();
-     }
+
+  Iterator* inputIt;
+
+  RandomAccessIterator* file;
+
+  int offset_field;
+
+  ExprList& myWhere;
+
+  ExprList& myProject;
+
+  Tuple* next;
+
+private:
+
+  TableLookupExec(const TableLookupExec& x);
+  TableLookupExec& operator=(const TableLookupExec& x);
 };
 
-class NLJoinExec : public Iterator {
-	Iterator* left;
-	Iterator* right;
-	Array<ExecExpr*>* mySelect;
-	Array<ExecExpr*>* myWhere;
-	Tuple* next;
-     vector<const Tuple*> innerRel;
-	vector<const Tuple*>::const_iterator innerIter;
-     bool firstEntry;
-     bool firstPass;
-     const Tuple* outerTup;
-	int innerNumFlds;
-	TupleLoader* tupleLoader;
+
+//---------------------------------------------------------------------------
+
+
+
+class NLJoinExec : public Iterator
+{
 public:
-	NLJoinExec(Iterator* left, Iterator* right, 
-		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere,
-		int innerNumFlds, TupleLoader* tupleLoader) :
-		left(left), right(right), mySelect(mySelect), myWhere(myWhere),
-		innerNumFlds(innerNumFlds), tupleLoader(tupleLoader) {
-          firstEntry = true;
-          firstPass = true;
-          outerTup = NULL;
-		next = new Tuple[mySelect->length];
-	}
-	~NLJoinExec();
-     virtual void initialize(){
-          if (left){
-               left->initialize();
-          }
-          if(right){
-               right->initialize();
-          }
-     }
-	virtual const Tuple* getNext();
+
+  NLJoinExec(Iterator* left, Iterator* right, 
+             ExprList* myWhere, ExprList* myProject);
+
+  ~NLJoinExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  Iterator* left;
+  Iterator* right;
+  ExprList& myProject;
+  ExprList& myWhere;
+  Tuple* next;
+  vector<const Tuple*> innerRel;
+  vector<const Tuple*>::const_iterator innerIter;
+  bool firstEntry;
+  bool firstPass;
+  const Tuple* outerTup;
+  int innerNumFlds;
+  TupleLoader tupleLoader;
+
+private:
+
+  NLJoinExec(const NLJoinExec& x);
+  NLJoinExec& operator=(const NLJoinExec& x);
+
 };
 
-class UnionExec : public Iterator {
-	Iterator* iter1;
-	Iterator* iter2;
-	bool runningFirst;
+
+//---------------------------------------------------------------------------
+
+
+class UnionExec : public Iterator
+{
 public:
-	UnionExec(Iterator* iter1, Iterator* iter2) :
-		iter1(iter1), iter2(iter2), runningFirst(true) {}
-	~UnionExec(){
-		delete iter1;
-		delete iter2;
-	}
-     virtual void initialize(){
-          iter1->initialize();
-     }
-	virtual const Tuple* getNext();
+  UnionExec(Iterator* iter1, Iterator* iter2);
+
+  ~UnionExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+  
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  Iterator* iter1;
+  Iterator* iter2;
+  bool runningFirst;
+
+private:
+
+  UnionExec(const UnionExec& x);
+  UnionExec& operator=(const UnionExec& x);
 };
 
-class RidAdderExec : public Iterator {
-	Iterator* inp;
-	int numFlds;
-	Tuple* tuple;
-	int counter;
-public:
-	RidAdderExec(Iterator* inp, int numFlds) :
-		inp(inp), numFlds(numFlds) {
 
-		tuple = new Tuple[numFlds];
-		counter = 0;
-	}
-	~RidAdderExec(){
-		delete inp;
-		delete [] tuple;
-	}
-     virtual void initialize(){
-          inp->initialize();
-     }
-	virtual const Tuple* getNext(){
-		const Tuple* inputTup = inp->getNext();
-		if(!inputTup){
-			return NULL;
-		}
-		tuple[0] = (void*) counter++;
-		for(int i = 1; i < numFlds; i++){
-			tuple[i] = inputTup[i - 1];
-		}
-		return tuple;
-	}
-     virtual Offset getOffset(){
-          assert(inp);
-		// cerr << "Passed RidAdderExec\n";
-          return inp->getOffset();
-     }
-     virtual const Tuple* getThis(Offset offset, RecId recId){
-          assert(inp);
-          const Tuple* inputTup = inp->getThis(offset, recId);
-		assert(inputTup);
-		tuple[0] = (void*) recId;
-		// cerr << "tuple[0] set to " << int(tuple[0]) << endl;
-		for(int i = 1; i < numFlds; i++){
-			tuple[i] = inputTup[i - 1];
-		}
-		return tuple;
-	}
+//---------------------------------------------------------------------------
+
+
+class RidAdderExec : public Iterator
+{
+public:
+
+  RidAdderExec(Iterator* input);
+
+  ~RidAdderExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  Iterator* input;
+  int numFlds;
+  Tuple* tuple;
+  int counter;
+  TypeIDList types;
+
+private:
+
+  RidAdderExec(const RidAdderExec& x);
+  RidAdderExec& operator=(const RidAdderExec& x);
 };
 
-class SingleAnswerIt : public Iterator {
-	bool done;
-	DestroyPtr destroyPtr;
-	Type* retVal;
+
+//---------------------------------------------------------------------------
+
+
+class SingleAnswerIt
+: public Iterator
+{
 public:
-	SingleAnswerIt(Type* arg, DestroyPtr dp) 
-		: done(false), destroyPtr(dp) {
-		retVal = arg;
-	}
-	virtual ~SingleAnswerIt(){
-		destroyPtr(retVal);
-	}
-	virtual void initialize(){}
-	virtual const Tuple* getNext(){
-		if(done){
-			return NULL;
-		}
-		done = true;
-		return (const Tuple*) &retVal;
-	}
+  SingleAnswerIt(Type* arg, const TypeID& type);
+
+  virtual ~SingleAnswerIt();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual TypeIDList& getTypes();
+  
+protected:
+
+  bool done;
+  DestroyPtr destroyPtr;
+  Type* retVal;
+  TypeIDList types;
+
 };
+
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 #endif

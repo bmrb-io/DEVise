@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/03/12 18:23:18  donjerko
+  *** empty log message ***
+
   Revision 1.47  1998/02/09 21:12:10  donjerko
   Added Bin by clause and implementation.
 
@@ -70,23 +73,121 @@
 #include "MemoryMgr.h"
 //#include "SeqSimVecAggregate.h"
 #include "TypeCheck.h"
+#include "FixedLenQueue.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-class ExecAggregate {
+
+//---------------------------------------------------------------------------
+
+class ExecAggregate
+{
 public:
+  ExecAggregate(const TypeID& type) : _type(type) {}
+  virtual ~ExecAggregate() {}
   virtual void initialize(const Type* input) = 0;
   virtual void update(const Type* input) = 0;
-  virtual bool isDifferent(const Type* newVal){
-  	assert(!"Used only in grouping aggregates");
-	return false;
-  }
+  virtual bool isDifferent(const Type* newVal)
+    {assert(!"Used only in grouping aggregates"); return false; }
   virtual const Type* getValue() = 0;
-  virtual void dequeue(int n){assert(!"Used only by moving aggregates");}
+  virtual void dequeue(int n)
+    {assert(!"Used only by moving aggregates");}
+  const TypeID& getType() const { return _type; }
+protected:
+  TypeID _type;
 };
 
+
+//---------------------------------------------------------------------------
+
+
+class AggFn
+{
+public:
+  
+  AggFn(const string& fn_name, const Field& field);
+  
+  AggFn(ExecAggregate* fn, int pos)
+    : _fn(fn), _pos(pos) {}
+  
+  AggFn(const AggFn& x)
+    : _fn(x._fn), _pos(x._pos) {}
+  
+  AggFn& operator=(const AggFn& x)
+    { _fn = x._fn; _pos = x._pos; return *this; }
+  
+  void initialize(const Tuple* t)
+    { _fn->initialize(t[_pos]); }
+  
+  void update(const Tuple* t)
+    { _fn->update(t[_pos]); }
+  
+  bool isDifferent(const Tuple* t)
+    { return _fn->isDifferent(t[_pos]); }
+  
+  const Type* getValue()
+    { _fn->getValue(); }
+  
+  void dequeue(int n)
+    { _fn->dequeue(n); }
+
+  const TypeID& getType() const
+    { return _fn->getType(); }
+
+protected:
+  
+  ExecAggregate* _fn;
+  
+  int _pos;
+  
+  friend class AggList;
+
+  // needed for gcc 2.7
+  AggFn() : _fn(0), _pos(0) {}
+  friend class vector<AggFn>;
+};
+
+
+//---------------------------------------------------------------------------
+
+
+class AggList
+{
+public:
+
+  AggList() {}
+
+  ~AggList() {
+    int k = _aggs.size();
+    for(int i = 0 ; i < k ; i++) {
+      delete _aggs[i]._fn;
+    }
+  }
+
+  void push_back(const AggFn& fn)
+    { _aggs.push_back( fn ); _types.push_back(fn.getType()); }
+
+  size_t size() const { return _aggs.size(); }
+
+  AggFn* operator[](int i) { return &_aggs[i]; }
+
+  const TypeIDList& getTypes() const { return _types; }
+
+protected:
+
+  vector<AggFn> _aggs;
+  TypeIDList _types;
+
+private:
+
+  AggList(const AggList& x);
+  AggList& operator=(const AggList& x);
+};
+
+
+//---------------------------------------------------------------------------
 // Standard aggregate execs
 
 class ExecMinMax : public ExecAggregate {
@@ -98,10 +199,22 @@ protected:
   size_t valueSize;
 
 public:
-  ExecMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, DestroyPtr destroyPtr,
-	     Type* value, size_t valueSize) : 
-    opPtr(opPtr), copyPtr(copyPtr), destroyPtr(destroyPtr), 
-    minMax(value), valueSize(valueSize) {}
+
+  enum AggType { MIN_AGG, MAX_AGG };
+
+  ExecMinMax(const TypeID& type, AggType min_max)
+    : ExecAggregate(type) {
+      GeneralPtr* genPtr = NULL;
+      TypeID ret_type;
+      const char* fn = (min_max == MIN_AGG ? "<" : ">");
+      TRY(genPtr = getOperatorPtr(fn, type, type, ret_type),);
+      assert(genPtr);
+      opPtr = genPtr->opPtr;
+      assert(ret_type == "bool");
+      TRY(destroyPtr = getDestroyPtr(type),);
+      TRY(copyPtr = getADTCopyPtr(type),);
+      minMax = allocateSpace(type, valueSize);
+    }
 
   void initialize(const Type* input) {
     copyPtr(input, minMax, valueSize);	// copy first value as current minMax
@@ -125,35 +238,29 @@ public:
 };
 
 
+//---------------------------------------------------------------------------
+
+
 class ExecCount : public ExecAggregate {
 protected:
   int count;
-  Type* result;
-  DestroyPtr intDestroy;
   
 public:
-  ExecCount(DestroyPtr intDestroy) : intDestroy(intDestroy){
-	count = 0;
-  }
 
-  void initialize(const Type* input) {
-    count = 1;	
-  }
+  ExecCount() : ExecAggregate(INT_TP) { count = 0; }
 
-  void update(const Type* input)  {
-    count++;
-  }
+  void initialize(const Type* input) { count = 1; }
+
+  void update(const Type* input)  { count++; }
 	
   const Type* getValue() {
-    result = (Type*) count;  // assumes int is inlined
-    return result;
-  }
-
-  virtual ~ExecCount() {
-    intDestroy(result);
+    return (Type*)count;  // assumes int is inlined
   }
 
 };
+
+
+//---------------------------------------------------------------------------
 
 
 class ExecSum : public ExecAggregate {
@@ -165,10 +272,17 @@ protected:
   size_t valueSize;
 
 public:
-  ExecSum(OperatorPtr addPtr, ADTCopyPtr copyPtr, DestroyPtr sumDestroy,
-	  Type* value, size_t valueSize) :
-    addPtr(addPtr), copyPtr(copyPtr), sumDestroy(sumDestroy), 
-    sum(value), valueSize(valueSize) {}
+  ExecSum(const TypeID& type) : ExecAggregate(type) {
+    GeneralPtr* genPtr = NULL;
+    TypeID ret_type;
+    TRY(genPtr = getOperatorPtr("+", type, type, ret_type),);
+    assert(genPtr);
+    addPtr = genPtr->opPtr;
+    assert(ret_type == type);
+    TRY(sumDestroy = getDestroyPtr(type),);
+    TRY(copyPtr = getADTCopyPtr(type),);
+    sum = allocateSpace(type, valueSize);
+  }
 
   void initialize(const Type* input) {
     copyPtr(input, sum, valueSize);	
@@ -189,6 +303,9 @@ public:
 };
 
 
+//---------------------------------------------------------------------------
+
+
 class ExecAverage : public ExecAggregate {
 protected:
   OperatorPtr addPtr, divPtr;
@@ -201,15 +318,31 @@ protected:
   size_t valueSize;
 
 public:
-  ExecAverage(OperatorPtr addPtr,OperatorPtr divPtr, PromotePtr promotePtr,
-	      DestroyPtr sumDestroy, ADTCopyPtr copyPtr,
-		 Type* value, size_t valueSize) : 
-    addPtr(addPtr), divPtr(divPtr), promotePtr(promotePtr),
-    sumDestroy(sumDestroy), copyPtr(copyPtr),
-    sum(value), valueSize(valueSize) {
-    	count = 0;
-	result = allocateSpace("double");
-	}
+
+  ExecAverage(const TypeID& type) : ExecAggregate(type) {
+    GeneralPtr* genPtr = NULL;
+    TypeID ret_type;
+
+    TRY(genPtr = getOperatorPtr("+", type, type, ret_type),);
+    assert(genPtr);
+    addPtr = genPtr->opPtr;
+    assert(ret_type == type);
+
+    TRY(promotePtr = getPromotePtr(type, DOUBLE_TP),);
+    assert(promotePtr);
+
+    TRY(genPtr = getOperatorPtr("/", DOUBLE_TP, DOUBLE_TP, ret_type),);
+    assert(genPtr);
+    divPtr = genPtr->opPtr;
+    assert(ret_type == DOUBLE_TP);
+
+    TRY(sumDestroy = getDestroyPtr(type),);
+    TRY(copyPtr = getADTCopyPtr(type),);
+
+    sum = allocateSpace(type, valueSize);
+    count = 0;
+    result = allocateSpace("double");
+  }
 
   void initialize(const Type* input) {
     copyPtr(input, sum, valueSize);	
@@ -222,8 +355,8 @@ public:
   }
 	
   const Type* getValue() {
-    if (count == 0)
-      return (Type *) NULL; // What should be returned here?
+    if (count == 0) assert(!"average of no tuples?");
+      //return (Type *) NULL; // What should be returned here?
 
     IDouble tmp(0);
     Type *sumDouble = &tmp;
@@ -242,214 +375,218 @@ public:
 
 };
 
+
+//---------------------------------------------------------------------------
 // Moving aggregate Execs
 
+
 class ExecMovMinMax : public ExecMinMax {
-	TupleLoader* tupLoad;
-	OperatorPtr eqPtr;
+  TupleLoader* tupLoad;
+  OperatorPtr eqPtr;
 public:
-	ExecMovMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, 
-		      DestroyPtr destroyPtr,Type* value, size_t valueSize, 
-		      TupleLoader* tupLoad, OperatorPtr eqPtr) : 
-		ExecMinMax(opPtr, copyPtr, destroyPtr, value, valueSize),
-		tupLoad(tupLoad), eqPtr(eqPtr) {}
-	virtual void initialize(const Type* input){
-		ExecMinMax::initialize(input);
-		tupLoad->insert(&input);
-	}
-	virtual void update(const Type* input){
-	  if (tupLoad->empty()) {	// is this ever true? DD
-	    ExecMinMax::initialize(input);
-	  }
-	  else {
-	    ExecMinMax::update(input);
-	  }
-	  tupLoad->insert(&input);
-	}
-	const Type* getValue(){
-		assert(!tupLoad->empty());
-		return minMax;
-	}
-	virtual void dequeue(int n);
+  ExecMovMinMax(const TypeID& type, AggType min_max)
+    : ExecMinMax(type, min_max) {
+
+      GeneralPtr* genPtr = NULL;
+      TypeID ret_type;
+      TRY(genPtr = getOperatorPtr("=", type, type, ret_type),);
+      assert(genPtr);
+      eqPtr = genPtr->opPtr;
+      assert(ret_type == "bool");
+
+      int numFlds = 1;
+      tupLoad = new TupleLoader;
+      TRY(tupLoad->open(numFlds, &type),);
+    }
+
+  virtual void initialize(const Type* input){
+    ExecMinMax::initialize(input);
+    tupLoad->insert(&input);
+  }
+
+  virtual void update(const Type* input){
+    if (tupLoad->empty()) {	// is this ever true? DD
+      ExecMinMax::initialize(input);
+    }
+    else {
+      ExecMinMax::update(input);
+    }
+    tupLoad->insert(&input);
+  }
+
+  const Type* getValue(){
+    assert(!tupLoad->empty());
+    return minMax;
+  }
+
+  virtual void dequeue(int n);
 };
+
+
+
+//---------------------------------------------------------------------------
+
 
 class ExecMovCount : public ExecCount {
 public:
-  ExecMovCount(DestroyPtr destroyPtr) : ExecCount(destroyPtr) {}
+  ExecMovCount() : ExecCount() {}
 
   virtual void dequeue(int n){ 
      count -= n;
   }
 };
 
+
+//---------------------------------------------------------------------------
+
+
 class ExecMovSum : public ExecSum {
   TupleLoader* tupLoad;
   OperatorPtr subPtr;
-  OperatorPtr eqPtr;
   
 public:
-  ExecMovSum(OperatorPtr addPtr, ADTCopyPtr copyPtr, DestroyPtr sumDestroy,
-	     Type* value, size_t valueSize, TupleLoader* tupLoad, 
-	     OperatorPtr subPtr, OperatorPtr eqPtr) : 
-    ExecSum(addPtr, copyPtr, sumDestroy, value, valueSize), tupLoad(tupLoad), 
-    subPtr(subPtr), eqPtr(eqPtr) {}
 
-	virtual void initialize(const Type* input){
-		ExecSum::initialize(input);
-		tupLoad->insert(&input);
-	}
-	virtual void update(const Type* input){
-	  if (tupLoad->empty()) {
-		ExecSum::initialize(input);
-	  }
-	  else {
-	    ExecSum::update(input);
-	  }
-	  tupLoad->insert(&input);
-	}
-	const Type* getValue(){
-		assert(!tupLoad->empty());
-		return sum;
-	}
+  ExecMovSum(const TypeID& type) : ExecSum(type) {
+    GeneralPtr* genPtr = NULL;
+    TypeID ret_type;
+    TRY(genPtr = getOperatorPtr("-", type, type, ret_type),);
+    assert(genPtr);
+    subPtr = genPtr->opPtr;
+    assert(ret_type == type);
+
+    int numFlds = 1;
+    tupLoad = new TupleLoader;
+    TRY(tupLoad->open(numFlds, &type),);
+  }
+
+  virtual void initialize(const Type* input){
+    ExecSum::initialize(input);
+    tupLoad->insert(&input);
+  }
+
+  virtual void update(const Type* input){
+    if (tupLoad->empty()) {
+      ExecSum::initialize(input);
+    }
+    else {
+      ExecSum::update(input);
+    }
+    tupLoad->insert(&input);
+  }
+
+  const Type* getValue(){
+    assert(!tupLoad->empty());
+    return sum;
+  }
   virtual void dequeue(int n);
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class ExecMovAverage : public ExecAverage {
-	TupleLoader* tupLoad;
-	OperatorPtr eqPtr, subPtr;
+  TupleLoader* tupLoad;
+  OperatorPtr subPtr;
 public:
-  ExecMovAverage(OperatorPtr addPtr,OperatorPtr divPtr,PromotePtr promotePtr,
-		 DestroyPtr sumDestroy, ADTCopyPtr copyPtr, Type* value, 
-		 size_t valueSize, TupleLoader* tupLoad, 
-		 OperatorPtr subPtr,OperatorPtr eqPtr) : 
-    ExecAverage(addPtr, divPtr, promotePtr, sumDestroy, copyPtr, value, 
-		valueSize), tupLoad(tupLoad), subPtr(subPtr), eqPtr(eqPtr) {}
-    	
-	virtual void initialize(const Type* input){
-		ExecAverage::initialize(input);
-		tupLoad->insert(&input);
-	}
-	virtual void update(const Type* input){
-	  if (tupLoad->empty()) {
-	    ExecAverage::initialize(input);
-	  }
-	  else {
-	    ExecAverage::update(input);
-	  }
-	  tupLoad->insert(&input);
-	}
-	const Type* getValue(){
-		assert(!tupLoad->empty());
-		return ExecAverage::getValue();
-	}
+
+  ExecMovAverage(const TypeID& type) : ExecAverage(type) {
+    GeneralPtr* genPtr = NULL;
+    TypeID ret_type;
+    TRY(genPtr = getOperatorPtr("-", type, type, ret_type),);
+    assert(genPtr);
+    subPtr = genPtr->opPtr;
+    assert(ret_type == type);
+    
+    int numFlds = 1;
+    tupLoad = new TupleLoader;
+    TRY(tupLoad->open(numFlds, &type),);
+  }
+        
+  virtual void initialize(const Type* input){
+    ExecAverage::initialize(input);
+    tupLoad->insert(&input);
+  }
+
+  virtual void update(const Type* input){
+    if (tupLoad->empty()) {
+      ExecAverage::initialize(input);
+    }
+    else {
+      ExecAverage::update(input);
+    }
+    tupLoad->insert(&input);
+  }
+
+  const Type* getValue(){
+    assert(!tupLoad->empty());
+    return ExecAverage::getValue();
+  }
   virtual void dequeue(int n);
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class ExecGroupAttr : public ExecAggregate {
 protected:
-	ADTCopyPtr copyPtr;
-	OperatorPtr eqPtr;
-	Type* prevGroup;
-	size_t valueSize;
+  ADTCopyPtr copyPtr;
+  OperatorPtr eqPtr;
+  Type* prevGroup;
+  size_t valueSize;
 
 public:
-	ExecGroupAttr(ADTCopyPtr copyPtr, OperatorPtr eqPtr, Type* value, 
-		size_t valueSize) :
-		copyPtr(copyPtr), eqPtr(eqPtr), prevGroup(value), 
-		valueSize(valueSize) {}
 
-	virtual bool isDifferent(const Type* newVal){
-		Type* cmp;
-		eqPtr(prevGroup, newVal, cmp);
-		return !(cmp ? true : false);
-	}
+  ExecGroupAttr(const TypeID& type) : ExecAggregate(type) {
+    GeneralPtr* genPtr = NULL;
+    TypeID ret_type;
+    TRY(genPtr = getOperatorPtr("=", type, type, ret_type),);
+    assert(genPtr);
+    eqPtr = genPtr->opPtr;
+    assert(ret_type == "bool");
+    TRY(copyPtr = getADTCopyPtr(type),);
+    prevGroup = allocateSpace(type, valueSize);
+  }
 
-	virtual void initialize(const Type* input){
-		copyPtr(input, prevGroup, valueSize);	    
-	}
+  ~ExecGroupAttr() {
+    DestroyPtr destroyPtr = getDestroyPtr(_type);
+    destroyPtr(prevGroup);
+  }
 
-	virtual void update(const Type* input){
-		assert(0);
-	}
+  virtual bool isDifferent(const Type* newVal){
+    Type* cmp;
+    eqPtr(prevGroup, newVal, cmp);
+    return (int)cmp == 0;
+  }
 
-	virtual const Type* getValue(){
-		return prevGroup;
-	}
+  virtual void initialize(const Type* input){
+    copyPtr(input, prevGroup, valueSize);	    
+  }
+
+  virtual void update(const Type* input){
+    assert(0);
+  }
+
+  virtual const Type* getValue(){
+    return prevGroup;
+  }
 };
 
-class ExecBinAttr : public ExecAggregate {
-protected:
-	Type* step;
-	ADTCopyPtr copyPtr;
-	OperatorPtr ltPtr;
-	OperatorPtr addPtr;
-	DestroyPtr destroyPtr;
-	Type* low;
-	Type* high;
-	size_t valueSize;
 
-public:
-	ExecBinAttr(ConstantSelection* init, ConstantSelection* cs_step,
-		TypeID inputT)
-	{
-		assert(inputT == init->getTypeID());
-		assert(inputT == cs_step->getTypeID());
-		GeneralPtr* genPtr = NULL;
-		TypeID boolT;
-		genPtr = getOperatorPtr("<", inputT, inputT, boolT);
-		assert(genPtr);
-		ltPtr = genPtr->opPtr;
-		genPtr = getOperatorPtr("+", inputT, inputT, boolT);
-		assert(genPtr);
-		addPtr = genPtr->opPtr;
+//---------------------------------------------------------------------------
 
-		copyPtr = getADTCopyPtr(inputT);
-		assert(copyPtr);
-		step = allocateSpace(inputT, valueSize);
-		low = allocateSpace(inputT, valueSize);
-		high = allocateSpace(inputT, valueSize);
-
-		destroyPtr = getDestroyPtr(inputT);
-		assert(destroyPtr);
-
-		copyPtr(init->getValue(), high);
-		copyPtr(cs_step->getValue(), step);
-	}
-
-	~ExecBinAttr(){
-		destroyPtr(step);
-		destroyPtr(low);
-		destroyPtr(high);
-	}
-
-	virtual bool isDifferent(const Type* newVal){
-		Type* cmp;
-		ltPtr(newVal, high, cmp);
-		return !(cmp ? true : false);
-	}
-
-	virtual void initialize(const Type* input){
-		copyPtr(high, low, valueSize);
-		addPtr(low, step, high);
-		return;
-	}
-
-	virtual void update(const Type* input){
-		assert(0);
-	}
-
-	virtual const Type* getValue(){
-		return low;
-	}
-};
 
 class ExecSeqAttr : public ExecGroupAttr {
   TupleLoader* tupLoad;
 
 public:
-  ExecSeqAttr(ADTCopyPtr copyPtr, OperatorPtr eqPtr, Type* value, 
-	      size_t valueSize, TupleLoader* tupLoad) :
-    ExecGroupAttr(copyPtr, eqPtr, value, valueSize), tupLoad(tupLoad) {}
+
+  ExecSeqAttr(const TypeID& type) : ExecGroupAttr(type) {
+    int numFlds = 1;
+    tupLoad = new TupleLoader;
+    TRY(tupLoad->open(numFlds, &type),);
+  }
 
   virtual void initialize(const Type* input) {
     tupLoad->insert(&input);
@@ -468,14 +605,16 @@ public:
   }
 
   virtual void dequeue(int n){
-	for(int i = 0; i < n; i++){
-		assert(!tupLoad->empty());
-		tupLoad->pop_front();
-	}
+    for(int i = 0; i < n; i++){
+      assert(!tupLoad->empty());
+      tupLoad->pop_front();
+    }
   }
 
 };
 
+
+//---------------------------------------------------------------------------
 // aggregate type checking classes
 
 class Aggregate {
@@ -486,11 +625,11 @@ public:
 
 class MinAggregate : public Aggregate {
 protected:
-  OperatorPtr opPtr;
   TypeID typeID;
 
 public:
-  MinAggregate() : opPtr(NULL) {}
+  MinAggregate() {}
+  ~MinAggregate() {}
 
   TypeID typify(TypeID inputT){	// throws
     TypeID boolT;
@@ -498,27 +637,23 @@ public:
     GeneralPtr* genPtr = NULL;
     TRY(genPtr = getOperatorPtr("<", inputT, inputT, boolT), UNKN_TYPE);
     assert(genPtr);
-    opPtr = genPtr->opPtr;
     assert(boolT == "bool");
     return typeID;
   }
 
-  ExecAggregate* createExec(){
-    DestroyPtr destroyPtr;
-    TRY(destroyPtr = getDestroyPtr(typeID), NULL);
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    return new ExecMinMax(opPtr, copyPtr, destroyPtr, value, valueSize);
+  ExecAggregate* createExec() {
+    return new ExecMinMax(typeID, ExecMinMax::MIN_AGG);
   }
 
 };
 
-class MaxAggregate : public MinAggregate {
+class MaxAggregate : public Aggregate {
+protected:
+  TypeID typeID;
+
 public:
+  MaxAggregate() {}
+  ~MaxAggregate() {}
 
   TypeID typify(TypeID inputT){	// throws
     TypeID boolT;
@@ -526,9 +661,12 @@ public:
     GeneralPtr* genPtr = NULL;
     TRY(genPtr = getOperatorPtr(">", inputT, inputT, boolT), UNKN_TYPE);
     assert(genPtr);
-    opPtr = genPtr->opPtr;
     assert(boolT == "bool");
-    return inputT;
+    return typeID;
+  }
+
+  ExecAggregate* createExec() {
+    return new ExecMinMax(typeID, ExecMinMax::MAX_AGG);
   }
 
 };
@@ -536,58 +674,50 @@ public:
 class CountAggregate : public Aggregate {
 public:
   TypeID typify (TypeID inputT) {
-    return "int";
+    return INT_TP;
   }
 
   ExecAggregate* createExec() {
-    DestroyPtr intDestroy = getDestroyPtr(INT_TP);
-    assert(intDestroy);
-    return new ExecCount(intDestroy);
+    return new ExecCount();
   }
 };
 
 class SumAggregate : public Aggregate {
 protected:
-  OperatorPtr opPtr;
   TypeID typeID;
 
 public:
-  SumAggregate() : opPtr(NULL) {}
+  SumAggregate() {}
+  ~SumAggregate() {}
 
   TypeID typify(TypeID inputT){	// throws
-    TypeID boolT;
+    TypeID ret_type;
     typeID = inputT;
 
     GeneralPtr* genPtr = NULL;
-    TRY(genPtr = getOperatorPtr("+", inputT, inputT, boolT), UNKN_TYPE);
+    TRY(genPtr = getOperatorPtr("+", inputT, inputT, ret_type), UNKN_TYPE);
     assert(genPtr);
-    opPtr = genPtr->opPtr;
-    assert(boolT == inputT);
+    assert(ret_type == inputT);
     return typeID;
   }
 
   ExecAggregate* createExec(){
-    DestroyPtr sumDestroy;
-    TRY(sumDestroy = getDestroyPtr(typeID), NULL);
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    return new ExecSum(opPtr, copyPtr, sumDestroy, value, valueSize);
+    return new ExecSum(typeID);
   }
 
 };
 
+
+//---------------------------------------------------------------------------
+
+
 class AvgAggregate : public Aggregate {
 protected:
-  OperatorPtr addPtr, divPtr;
-  PromotePtr promotePtr;
   TypeID typeID;
 
 public:
-  AvgAggregate() : addPtr(NULL), divPtr(NULL) {}
+  AvgAggregate() {}
+  ~AvgAggregate() {}
 
   TypeID typify(TypeID inputT){	// throws
     TypeID resultT;
@@ -596,468 +726,236 @@ public:
     GeneralPtr* genPtr = NULL;
     TRY(genPtr = getOperatorPtr("+", inputT, inputT, resultT), UNKN_TYPE);
     assert(genPtr);
-    addPtr = genPtr->opPtr;
     assert(resultT == inputT);
 
     genPtr = NULL;
     TRY(genPtr = getOperatorPtr("/", "double", "double", resultT), UNKN_TYPE);
     assert(genPtr);
-    divPtr = genPtr->opPtr;
     assert(resultT == "double");
 
-    promotePtr = NULL;
+    PromotePtr promotePtr;
     TRY(promotePtr = getPromotePtr(inputT, "double"), UNKN_TYPE);
     assert(promotePtr);
     return resultT;
   }
 
   ExecAggregate* createExec(){
-    DestroyPtr sumDestroy;
-    ADTCopyPtr copyPtr;
-    TRY(sumDestroy = getDestroyPtr(typeID), NULL);
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    return new ExecAverage(addPtr, divPtr, promotePtr, 
-			   sumDestroy, copyPtr, value, valueSize);
+    return new ExecAverage(typeID);
   }
 
 };
 
+
+//---------------------------------------------------------------------------
 // moving aggregate type checking classes - derived from their "normal" classes
 
 class MovMinAggregate : public MinAggregate {
-  OperatorPtr eqPtr;
-  TupleLoader *tupLoad;
 public:
-
   ExecAggregate* createExec(){
-    DestroyPtr destroyPtr;
-    TRY(destroyPtr = getDestroyPtr(typeID), NULL);
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    TypeID retVal;  // is a dummy	       
-    GeneralPtr* genPtr;
-    TRY(genPtr = getOperatorPtr("=", typeID, typeID, retVal), NULL); 
-    assert(genPtr);
-    eqPtr = genPtr->opPtr;
-
-    int numFlds = 1;
-    tupLoad = new TupleLoader;
-    TRY(tupLoad->open(numFlds, &typeID), NULL);
-
-    return new ExecMovMinMax(opPtr, copyPtr, destroyPtr, value, 
-			     valueSize, tupLoad, eqPtr);
+    return new ExecMovMinMax(typeID, ExecMinMax::MIN_AGG);
   }
 };
 
+
+//---------------------------------------------------------------------------
+
+
 class MovMaxAggregate : public MaxAggregate {
-  OperatorPtr eqPtr;
-  TupleLoader *tupLoad;
 public:
-
   ExecAggregate* createExec(){
-    DestroyPtr destroyPtr;
-    TRY(destroyPtr = getDestroyPtr(typeID), NULL);
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    TypeID retVal;  // is a dummy	       
-    GeneralPtr* genPtr;
-    TRY(genPtr = getOperatorPtr("=", typeID, typeID,retVal), NULL); 
-    assert(genPtr);
-    eqPtr = genPtr->opPtr;
-
-    int numFlds = 1;
-    tupLoad = new TupleLoader;
-    TRY(tupLoad->open(numFlds, &typeID), NULL);
-
-    return new ExecMovMinMax(opPtr, copyPtr, destroyPtr, value, 
-			     valueSize, tupLoad, eqPtr);
+    return new ExecMovMinMax(typeID, ExecMinMax::MAX_AGG);
   }
 }; 
 
+
+//---------------------------------------------------------------------------
+
+
 class MovCountAggregate : public CountAggregate {
-  OperatorPtr eqPtr;
-  TupleLoader *tupLoad;
 public:
   ExecAggregate* createExec() {
-    DestroyPtr destroyPtr = getDestroyPtr(INT_TP);
-    assert(destroyPtr);
-    ExecAggregate* retVal = new ExecMovCount(destroyPtr);
-    return retVal;
+    return new ExecMovCount();
   }
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class MovSumAggregate : public SumAggregate {
-  OperatorPtr eqPtr, subPtr;
-  TupleLoader *tupLoad;
 public:
   ExecAggregate* createExec(){
-    DestroyPtr sumDestroy;
-    TRY(sumDestroy = getDestroyPtr(typeID), NULL);
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    TypeID boolT;
-    GeneralPtr* genPtr = NULL;
-    TRY(genPtr = getOperatorPtr("+", typeID, typeID, boolT), NULL);
-    assert(genPtr);
-    opPtr = genPtr->opPtr;
-    assert(boolT == typeID);
-
-    TRY(genPtr = getOperatorPtr("-", typeID, typeID, boolT), NULL);
-    assert(genPtr);
-    subPtr = genPtr->opPtr;
-    assert(boolT == typeID);
-    
-    TypeID retVal;  // is a dummy	       
-    TRY(genPtr = getOperatorPtr("=", typeID, typeID,retVal), NULL); 
-    assert(genPtr);
-    eqPtr = genPtr->opPtr;
-
-    int numFlds = 1;
-    tupLoad = new TupleLoader;
-    TRY(tupLoad->open(numFlds, &typeID), NULL);
-    return new ExecMovSum(opPtr, copyPtr, sumDestroy, value, valueSize, 
-			  tupLoad, subPtr, eqPtr);
+    return new ExecMovSum(typeID);
   }
 
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class MovAvgAggregate : public AvgAggregate {
-  TupleLoader *tupLoad;
-  OperatorPtr subPtr;
-  OperatorPtr eqPtr;
 public:
   ExecAggregate* createExec(){
-    DestroyPtr sumDestroy;
-    ADTCopyPtr copyPtr;
-    TRY(sumDestroy = getDestroyPtr(typeID), NULL);
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    GeneralPtr* genPtr;
-    TypeID boolT;
-    TRY(genPtr = getOperatorPtr("-", typeID, typeID, boolT), NULL);
-    assert(genPtr);
-    subPtr = genPtr->opPtr;
-    assert(boolT == typeID);
-
-    TypeID retVal;  // is a dummy	       
-    TRY(genPtr = getOperatorPtr("=", typeID, typeID,retVal), NULL); 
-    assert(genPtr);
-    eqPtr = genPtr->opPtr;
-
-    int numFlds = 1;
-    tupLoad = new TupleLoader;
-    TRY(tupLoad->open(numFlds, &typeID), NULL);
- 
-    return new ExecMovAverage(addPtr, divPtr, promotePtr,sumDestroy, copyPtr, 
-			      value, valueSize, tupLoad, subPtr, eqPtr);
+    return new ExecMovAverage(typeID);
   }
 
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class GroupAttribute : public Aggregate {
 protected:
   TypeID typeID;
-  OperatorPtr eqPtr;
   
 public:
   GroupAttribute() {}
+  ~GroupAttribute() {}
 
   virtual TypeID typify(TypeID inputT){	// throws
-    TypeID boolT;
     typeID = inputT;
 
-    TypeID retVal;  // is a dummy	       
+    TypeID ret_type;
     GeneralPtr* genPtr;
-    TRY(genPtr = getOperatorPtr("=", inputT, inputT, retVal), NULL); 
+    TRY(genPtr = getOperatorPtr("=", inputT, inputT, ret_type), NULL); 
     assert(genPtr);
-    eqPtr = genPtr->opPtr;
+    assert(ret_type == "bool");
     
     return typeID;
   }
 
   virtual ExecAggregate* createExec(){
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-    
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    return new ExecGroupAttr(copyPtr, eqPtr, value, valueSize);
+    return new ExecGroupAttr(typeID);
   }
 
 };
 
-class BinAttribute : public Aggregate {
-protected:
-	TypeID typeID;
-	ConstantSelection* init;
-	ConstantSelection* step;
-  
-public:
-  BinAttribute(ConstantSelection* init, ConstantSelection* step) 
-  	: init(init), step(step) {}
 
-  virtual TypeID typify(TypeID inputT){	// throws
-  	typeID = inputT;
-  	return inputT;
-  }
+//---------------------------------------------------------------------------
 
-  virtual ExecAggregate* createExec(){
-  	return new ExecBinAttr(init, step, typeID);
-  }
-
-};
 
 class SequenceAttribute : public GroupAttribute{
-
   virtual ExecAggregate* createExec(){
-    ADTCopyPtr copyPtr;
-    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-    
-    size_t valueSize;
-    Type *value = allocateSpace(typeID, valueSize);
-
-    // get a new tupleLoader
-    int numFlds = 1;
-    TupleLoader* tupLoad = new TupleLoader;
-    TRY(tupLoad->open(numFlds, &typeID), NULL);
-
-    return new ExecSeqAttr(copyPtr, eqPtr, value, valueSize, tupLoad);
+    return new ExecSeqAttr(typeID);
   }
-
 }; 
+
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
  
 class StandAggsExec : public Iterator {
-	Iterator* inputIter;
-	ExecAggregate** aggExecs;
-	int numFlds;
-	Tuple* retTuple;
-public:
-	StandAggsExec(Iterator* inputIter, ExecAggregate** aggExecs, int numFlds) :
-	  inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds){
-		  retTuple = new Tuple[numFlds];
-	}
-
-	virtual ~StandAggsExec(){
-		delete inputIter;
-		if(aggExecs){
-			for(int i = 0; i < numFlds; i++){
-				delete aggExecs[i];
-			}
-		}
-		delete [] aggExecs;
-		delete [] retTuple;
-	}
-
-	virtual void initialize();
-	virtual const Tuple* getNext();
-
-	// Need to check this..
-	virtual void reset(int lowRid, int highRid){
-		TRY(inputIter->reset(lowRid, highRid), NVOID );
-	}
-};
-
-class StandGroupByExec : public Iterator {
-protected:
-  Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
-  ExecAggregate** aggExecs;
-  int numFlds;
-  Tuple* retTuple;
-  int* grpByPos;		// positions of group by attributes
-  int grpByPosLen;
-  int* aggPos;
-  int numAggs;
-  const Tuple* currInTup;
-  
 public:
   
-	StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		int numFlds, int* grpByPos, 
-		int grpByPosLen,
-		int* aggPos, int numAggs) :
-
-		inputIter(inputIter), aggExecs(aggExecs),
-		numFlds(numFlds),  grpByPos(grpByPos),grpByPosLen(grpByPosLen),
-		aggPos(aggPos), numAggs(numAggs) {
-
-		retTuple = new Tuple[numFlds];
-		currInTup = NULL;
-		//assert(numAggs + grpByPosLen == numFlds);
-	}
-
-	virtual ~StandGroupByExec(){
-		if(aggExecs){
-			for(int i = 0; i < numFlds; i++){
-				delete aggExecs[i];
-			}
-		}
-		delete [] aggExecs;
-		delete [] grpByPos;
-		delete [] aggPos;
-		delete [] retTuple;
-		delete inputIter;
-	}
-
-	virtual void initialize();
-
-	virtual const Tuple* getNext();
+  StandAggsExec(Iterator* input, AggList* aggs);
   
-  // Need to check this..
-  virtual void reset(int lowRid, int highRid){
-    TRY(inputIter->reset(lowRid, highRid), NVOID );
-  }
-
-protected:
-	bool isNewGroup(const Tuple* tup){
-		for (int i = 0; i < grpByPosLen; i++){
-			ExecAggregate* curr = aggExecs[grpByPos[i]];
-			if(curr->isDifferent(tup[grpByPos[i]])){
-			 	return true;
-			}
-		}
-		return false;
-	}
-};
-
-
-class MovAggsExec : public StandGroupByExec {
-protected:
-  int* seqByPos;
-  int seqByPosLen;
-  int windowLow, windowHigh, fullWindowHeight; // window measurements
-  int *numTuplesToBeDropped; // array of size windowHeight 
-  int nextDrop; // pointer to element in array numTuplesToBeDropped
-  int toDeque; // numver of Tuples to be dropped
-  int currWindowHeight;
-  const Tuple* currInTup;
-  bool firstTime, endOfGroup; 
-
-public:
+  virtual ~StandAggsExec();
   
-	MovAggsExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		int numFlds, int* seqByPos, 
-		int seqByPosLen,
-		int* aggPos, int numAggs,
-		int windowLow, int windowHigh) : 
-	  StandGroupByExec (inputIter, aggExecs, numFlds, seqByPos, 
-			    seqByPosLen, aggPos, numAggs), 
-	  seqByPos(seqByPos), seqByPosLen(seqByPosLen), 
-	  windowLow(windowLow), windowHigh(windowHigh) {
-	    // seqBypos and grpByPos are same for this class
-	    // similarly seqByPosLen and grpByPosLen are same
-		retTuple = new Tuple[numFlds];
-		currInTup = NULL;
-		fullWindowHeight = windowHigh - windowLow;
-		assert (fullWindowHeight > 0); 
-		numTuplesToBeDropped = new int[fullWindowHeight];
-		for (int i = 0; i < fullWindowHeight; i++){
-		  numTuplesToBeDropped[i] = 0;   
-		}
-		nextDrop = currWindowHeight = 0;
-	}
-
-	virtual ~MovAggsExec() {
-		delete [] numTuplesToBeDropped;
-	}
-
   virtual void initialize();
+  
   virtual const Tuple* getNext();
 
+  virtual const TypeIDList& getTypes();
+
 protected:
-
-  bool isNewSeqVal(const Tuple* tup){
-    for (int i = 0; i < seqByPosLen; i++){
-      ExecAggregate* curr = aggExecs[seqByPos[i]];
-      if(curr->isDifferent(tup[seqByPos[i]])){
-	return true;
-      }
-    }
-    return false;
-  }
-
-  virtual const Tuple* flushWindow();
-  virtual void setupFirst();
-  virtual bool currInTupIsValid() { return (currInTup != NULL); }
+   
+  Iterator* inputIter;
+  AggList& aggExecs;
+  int numFlds;
+  TypeIDList types;
+  Tuple* retTuple;
 };
 
-class MovSeqAggsExec : public MovAggsExec {
-public :
-	MovSeqAggsExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		int numFlds, int* seqByPos, 
-		int seqByPosLen,
-		int* aggPos, int numAggs,
-		int windowLow, int windowHigh) : 
-	MovAggsExec(inputIter, aggExecs,
-		numFlds, seqByPos, 
-		seqByPosLen,
-		aggPos, numAggs,
-		windowLow, windowHigh) {} 
 
-protected :
-  virtual const Tuple* flushWindow();
-};
+//---------------------------------------------------------------------------
 
-class MovGroupByExec : public MovAggsExec {
+// Assumes input is sorted on grouping attributes
+
+class StandGroupByExec : public Iterator {
 public:
   
-  MovGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		 int numFlds, int* seqByPos, int seqByPosLen, 
-		 int* grpByPos, int grpByPosLen,
-		 int* aggPos, int numAggs,
-		 int windowLow, int windowHigh) : 
-    MovAggsExec (inputIter, aggExecs, numFlds, grpByPos, 
-		 grpByPosLen, aggPos, numAggs, windowLow, windowHigh) {
-      // override assignment of seqByPos and seqByPosLen 
-      // done by MovAggsExec constructor
-      this->seqByPos = seqByPos;
-      this->seqByPosLen = seqByPosLen;
-  }
+  StandGroupByExec(Iterator* input, FieldList* group_fields, AggList* aggs);
+
+  virtual ~StandGroupByExec();
+
+  virtual void initialize();
   
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
 protected:
-  virtual const Tuple* flushWindow();
-  virtual bool currInTupIsValid() { 
-    return (currInTup && !isNewGroup(currInTup));
-  }
+
+  bool sameGroup(const Tuple* tup);
+
+  Iterator* inputIter;
+  AggList& aggExecs;
+  AggList groupby;
+  TypeIDList types;
+  Tuple* retTuple;
+  int numAggs;
+  int numGrpBys;
+  const Tuple* currInTup;
 };
 
-class MovSeqGroupByExec : public MovGroupByExec {
+
+//---------------------------------------------------------------------------
+
+
+// Assumes input is sorted on grouping attributes, seq. attributes
+//kb: code assumes that all aggregates use the same window!
+//    and that window is passed to constructor...
+
+class SeqAggsExec : public Iterator
+{
 public:
   
-  MovSeqGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		 int numFlds, int* seqByPos, int seqByPosLen, 
-		 int* grpByPos, int grpByPosLen,
-		 int* aggPos, int numAggs,
-		 int windowLow, int windowHigh) : 
-  MovGroupByExec(inputIter, aggExecs,
-		 numFlds, seqByPos, seqByPosLen, 
-		 grpByPos, grpByPosLen,
-		 aggPos, numAggs,
-		 windowLow, windowHigh) {}
+  SeqAggsExec(Iterator* input, FieldList* group_fields, FieldList* seq_fields,
+              AggList* aggs, int winLow, int winHigh);
 
-protected :
-  virtual const Tuple* flushWindow();
+  virtual ~SeqAggsExec();
+
+  virtual void initialize();
+  
+  virtual const Tuple* getNext();
+
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  bool sameGroup(const Tuple* tup);
+  bool isNewSeqVal(const Tuple* tup);
+  void setupFirst();
+  void addData();
+  void dropData();
+  void getResult();
+  bool currInTupIsValid() 
+    { return (currInTup && sameGroup(currInTup)); }
+
+  Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
+  AggList& aggExecs;
+  AggList groupby;
+  AggList seqby;
+  TypeIDList types;
+  Tuple* retTuple;
+  int numAggs;
+  int numGrpBys;
+  int numSeqBys;
+  const Tuple* currInTup;
+
+  int windowLow, windowHigh, fullWindowHeight; // window measurements
+  FixedLenQueue<int> numTuplesToBeDropped;
+  int currWindowHeight;
+  bool endOfGroup; 
 };
+
+
+
+//---------------------------------------------------------------------------
+
 
 class Aggregates : public Site {
 	vector<BaseSelection*>& selList;
@@ -1074,7 +972,6 @@ class Aggregates : public Site {
 	int withPredicatePos;	
 	int havingPredicatePos;	
 	vector<BaseSelection*>& groupBy;
-	vector<BaseSelection*>& binBy;
 	int* grpByPos; // positions of groupBy fields
 	int* aggPos;		// positions of aggregate fields
 	TypeID* typeIDs;
@@ -1092,10 +989,9 @@ public:
 		vector<BaseSelection*>& sequenceBy,   
 		BaseSelection* withPredicate,
 		vector<BaseSelection*>& groupBy ,	
-		vector<BaseSelection*>& binBy,	
 		BaseSelection* havingPredicate=NULL)
 	  : Site(), selList(selectClause),sequenceBy(sequenceBy),
-	    withPredicate(withPredicate),groupBy(groupBy), binBy(binBy),
+	    withPredicate(withPredicate),groupBy(groupBy),
 	    havingPredicate(havingPredicate) {
 		
 		numFlds = selList.size();
@@ -1158,5 +1054,9 @@ public:
 	}
 	Iterator* createExec();
 };
+
+
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/06/04 23:06:50  donjerko
+  Added DataReader.
+
   Revision 1.19  1998/04/09 20:26:21  donjerko
   *** empty log message ***
 
@@ -93,7 +96,6 @@ class TupleLoader;
 class SortExec : public Iterator {
 	Iterator* inpIter;
 	TupleLoader* tupleLoader;
-	TypeID* typeIDs;
 	SortOrder order;          // Ascending or Descending
 	int       Nruns;          // Number of runs
 	PQueue *Q;                // Internal Priority Queue
@@ -104,6 +106,7 @@ class SortExec : public Iterator {
 	char      temp_filename[20]; // Name of temporary file to hold a run
 
 protected:
+	TypeID*  typeIDs;
 	int       *sortFlds;     // Index of fields to be sorted on 
 	int numSortFlds;    // Number of fields on which tuple is to be sorted
 	int numFlds;
@@ -118,30 +121,35 @@ private:
 	void insert_sort(Tuple **, int);
 	void sort_and_write_run(Tuple **, int);
 public:
-	SortExec(Iterator* inpIter, const TypeID* typeIDs,
-		SortOrder order,
-		int* sortFlds, int numSortFlds,
-		int numFlds);
-
+	SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
 	virtual ~SortExec();
-     virtual void initialize();         // To be called once at the start
+        virtual void initialize();         // To be called once at the start
 	virtual const Tuple* getFirst();
-     virtual const Tuple* getNext(); // returns NULL when no more tuples
+        virtual const Tuple* getNext(); // returns NULL when no more tuples
+        virtual const TypeIDList& getTypes();
+
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class UniqueSortExec : public SortExec {
-	Type** tuple;
-	DestroyPtr* destroyPtrs;
-	ADTCopyPtr* copyPtrs;
 public:
-	UniqueSortExec(Iterator* inpIter, const TypeID* typeIDs,
-		SortOrder order,
-		int* sortFlds, int numSortFlds,
-		int numFlds);
-	virtual ~UniqueSortExec();
-     virtual const Tuple* getFirst(); // returns NULL when no more tuples
-     virtual const Tuple* getNext(); // returns NULL when no more tuples
+  UniqueSortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
+  virtual ~UniqueSortExec();
+  virtual const Tuple* getFirst(); // returns NULL when no more tuples
+  virtual const Tuple* getNext(); // returns NULL when no more tuples
+protected:
+  Type** tuple;
+  DestroyPtr* destroyPtrs;
+  ADTCopyPtr* copyPtrs;
+
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class Sort : public Site {
 private:

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/12/04 04:05:09  donjerko
+  *** empty log message ***
+
   Revision 1.22  1997/11/24 23:13:14  weaver
   Changes for the new ColorManager.
 
@@ -143,7 +146,7 @@ int ViewEngine::optimize(){
 
 Iterator* ViewEngine::createExec(){
 	TRY(Iterator* tmp = parseTree->createExec(), 0);
-	return new RidAdderExec(tmp, numFlds);
+	return new RidAdderExec(tmp);
 }
 
 ViewEngine::ViewEngine(string query, const string* attrs, int numInpFlds) : 

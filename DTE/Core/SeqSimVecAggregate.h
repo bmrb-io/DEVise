@@ -33,7 +33,8 @@ protected:
 
 public:
   ExecSeqSimVec(OperatorPtr addPtr, ADTCopyPtr copyPtr, DestroyPtr seqDestroy,
-			Type* value, size_t valueSize) : 
+                Type* value, size_t valueSize)
+    : ExecAggregate(SEQSV_TP),
 	addPtr(addPtr), copyPtr(copyPtr), seqDestroy(seqDestroy),
 	seqVec(value), valueSize(valueSize) {}
 

@@ -26,32 +26,101 @@
 using namespace std;
 #endif
 
-class Iterator {
+
+//---------------------------------------------------------------------------
+
+
+class Iterator
+{
 public:
-     virtual void initialize(){}	// obsolete, use getFirst instead
-	virtual const Tuple* getFirst(){
-		initialize();
-		return getNext();
-	}
-     virtual const Tuple* getNext() = 0;
-     virtual const Tuple* getThis(Offset offset, RecId recId){
-		assert(!"getThis not supported for this iterator");
-		return NULL;
-	}
-     virtual Offset getNextOffset(){
-          assert(!"getNextOffset not supported for this iterator");
-          return Offset();
-     }
-     virtual Offset getOffset(){
-          assert(!"getOffset not supported for this iterator");
-          return Offset();
-     }
-     virtual void reset(int lowRid, int highRid){
-          assert(!"reset not implemented for this reader");
-     }
-	virtual void finalize(){}
-	virtual ~Iterator(){}
+
+  enum IteratorType {
+    SIMPLE_ITERATOR,
+    RANDOM_ITERATOR
+  };
+
+  Iterator() {}
+  
+  virtual ~Iterator();
+
+  virtual void initialize();	// obsolete, use getFirst instead
+
+  virtual const Tuple* getFirst();
+
+  virtual const Tuple* getNext() = 0;
+
+  virtual const TypeIDList& getTypes() = 0;
+
+  int getNumFlds() { return getTypes().size(); }
+
+  virtual IteratorType GetIteratorType();
+
+private:
+
+  Iterator(const Iterator& x);
+  Iterator& operator=(const Iterator& x);
 };
+
+
+//kb: these should be in a .c file:
+inline
+Iterator::~Iterator()
+{
+}
+
+inline
+void Iterator::initialize()
+{
+}
+
+inline
+const Tuple* Iterator::getFirst()
+{
+  initialize();
+  return getNext();
+}
+
+
+inline
+Iterator::IteratorType Iterator::GetIteratorType()
+{
+  return SIMPLE_ITERATOR;
+}
+
+
+//---------------------------------------------------------------------------
+
+
+class RandomAccessIterator : public Iterator
+{
+public:
+
+  RandomAccessIterator() {}
+
+  virtual const Tuple* getThis(Offset offset) = 0;
+
+  virtual Offset getOffset() = 0;
+
+  virtual IteratorType GetIteratorType();
+
+protected:
+
+private:
+
+  RandomAccessIterator(const RandomAccessIterator& x);
+  RandomAccessIterator& operator=(const RandomAccessIterator& x);
+};
+
+
+inline
+Iterator::IteratorType RandomAccessIterator::GetIteratorType()
+{
+  return RANDOM_ITERATOR;
+}
+
+
+//---------------------------------------------------------------------------
+
 
 class Stats;
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/06/24 22:14:06  donjerko
+  *** empty log message ***
+
   Revision 1.24  1998/03/17 17:19:03  donjerko
   Added new namespace management through relation ids.
 
@@ -93,56 +96,50 @@
 #include "types.h"
 #include "Iterator.h"
 #include "sysdep.h"
+#include <fstream.h>
 #include "Stats.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-class StandReadExec : public Iterator {
-	istream* in;
-	ReadPtr* readPtrs;
-	DestroyPtr* destroyPtrs;
-	Type** tuple;
-	size_t* currentSz;
-	int numFlds;
-	int currentLine;
-	string urlStr;
+class StandReadExec : public RandomAccessIterator
+{
 public:
-	StandReadExec(int numFlds, const TypeID* typeIDs, istream* in, 
-		string = "");
-	virtual ~StandReadExec(){
-		delete [] currentSz;
-		delete [] readPtrs;
-		destroyTuple(tuple, numFlds, destroyPtrs);
-		delete [] destroyPtrs;
-		delete in;
-	}
-	virtual const Tuple* getNext(streampos& pos){
-		assert(in);
-		pos = in->tellg();
-		return getNext();
-	}
-	virtual const Tuple* getNext(){
-		assert(in);
-          for(int i = 0; i < numFlds; i++){
-			readPtrs[i](*in, tuple[i]);
-			if(currExcept){
-				ostringstream tmp;
-				tmp << "Line " << currentLine << " of " << urlStr << ends;
-				currExcept->append(tmp.str());
-				return NULL;
-			}
-		}
-		currentLine++;
-		if(in->good()){
-			return tuple;
-		}
-		else {
-			return NULL;
-		}
-	}
+
+  StandReadExec(const TypeIDList& typeIDs, istream* in,
+                string url = "*noname*");
+
+  StandReadExec(const TypeIDList& typeIDs, string url);
+
+  StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
+                string url = "*noname*"); // defunct
+
+  virtual ~StandReadExec();
+
+  virtual void initialize();
+
+  virtual const Tuple* getNext();
+
+  virtual const Tuple* getThis(Offset offset);
+
+  virtual Offset getOffset();
+
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  TypeIDList types;
+  istream* in;
+  string url;
+  int numFlds;
+  vector<ReadPtr> readPtrs;
+  Type** tuple;
+  int currentLine;
+  bool first_pass;
+  
 };
+
 
 class StandardRead : public PlanOp {
 protected:
@@ -204,7 +201,7 @@ public:
 		return out;
 	}
 	virtual Iterator* createExec(){
-		return new StandReadExec(numFlds, typeIDs, in, urlStr);
+          return new StandReadExec(numFlds, typeIDs, in);
 	}
 };
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/06/17 22:20:04  donjerko
+  *** empty log message ***
+
   Revision 1.50  1998/03/12 18:23:24  donjerko
   *** empty log message ***
 
@@ -223,14 +226,12 @@ const ISchema* QueryTree::getISchema(){
 	else {
 
 		aggregates = new Aggregates(
-			selectVec, sequenceByVec, withPredicate, groupByVec,
-			binByVec);
+			selectVec, sequenceByVec, withPredicate, groupByVec);
 
 		TRY(aggregates->typeCheck(typeChecker), 0);
 	}
 	TRY(typeChecker.resolve(predicateVec), 0);
 	TRY(typeChecker.resolve(groupByVec), 0);
-	TRY(typeChecker.resolve(binByVec), 0);
 	TRY(typeChecker.resolve(orderByVec), 0);
 
 	setupSchema();
@@ -269,7 +270,6 @@ Iterator* QueryTree::createExec(){
 	bool minMaxCond = tableVec.size() == 1 &&
 				predicateVec.empty() &&
 				groupByVec.empty() &&
-				binByVec.empty() &&
 				orderByVec.empty();
 
 	if(minMaxCond && MinMax::isApplicable(selectVec)){
@@ -461,15 +461,6 @@ Iterator* QueryTree::createExec(){
 
 		siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
 		siteGroup->filterAll(selectList);
-		TRY(siteGroup->typify(option), NULL);
-	}
-
-	if(!binByVec.empty()){
-		assert(groupBy->isEmpty());
-		List<BaseSelection*>* binBy = new List<BaseSelection*>;
-		binBy->append(binByVec.front());
-		siteGroup = new 
-			Sort(siteGroup->getName(), binBy, siteGroup, sortOrdering);
 		TRY(siteGroup->typify(option), NULL);
 	}
 

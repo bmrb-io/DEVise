@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/11/24 23:13:16  weaver
+  Changes for the new ColorManager.
+
   Revision 1.19  1997/11/13 22:19:25  okan
   Changes about compilation on NT
 
@@ -184,19 +187,21 @@ void displayList(ostream& out, List<string*>* list, string sep){
 	}
 }
 
-Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
-	Site* site1, Site* site2)
+ExprList* enumerateList(List<BaseSelection*>* list,
+                        Site* site1, Site* site2)
 {
-	Array<ExecExpr*>* retVal = new Array<ExecExpr*>(list->cardinality());
-	list->rewind();
-	for(int i = 0; !list->atEnd(); i++){
-		ExecExpr* tmp;
-		TRY(tmp = list->get()->createExec(site1, site2), NULL);
-		assert(tmp);
-		(*retVal)[i] = tmp;
-		list->step();
-	}
-	return retVal;
+  ExprList* retVal = new ExprList;
+  list->rewind();
+  for(int i = 0; !list->atEnd(); i++){
+    BaseSelection* bs = list->get();
+    assert(bs);
+    ExecExpr* tmp;
+    TRY(tmp = bs->createExec(site1, site2), NULL);
+    assert(tmp);
+    retVal->push_back(tmp);
+    list->step();
+  }
+  return retVal;
 }
 
 /*

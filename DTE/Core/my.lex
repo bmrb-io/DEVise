@@ -15,6 +15,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/06/24 05:03:00  okan
+  Added ODBC List & DSN List commands
+  Added insert & delete commands to update ODBC entries in related catalogs
+
   Revision 1.31  1998/05/09 18:34:28  beyer
   real constants can now use E format
 
@@ -147,7 +151,6 @@ LessGreat    ">="|">"|"<="|"<"
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE] {return SEQUENCE;}
 [Gg][Rr][Oo][uU][Pp]  {return GROUP;}
-[Bb][Ii][Nn]		  {return BIN;}
 [Oo][Rr][Dd][Ee][Rr]  {return ORDER;}
 [Bb][Yy]			  {return BY;}
 [Aa][Ss][Cc] {return ASC;}

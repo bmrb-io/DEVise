@@ -33,37 +33,52 @@ class Attr;
 class DataReader;
 typedef long off_t;
 
-class DataReadExec : public Iterator {
-	char* buff;	// this has to be aligned!
-	int buffSize;
-	DataReader* ud;
-	UnmarshalPtr* unmarshalPtrs;
-	DestroyPtr* destroyPtrs;
-	Type** tuple;
-	off_t off;
-	int* offsets;
-	int numFlds;
-	int recId;
+
+//---------------------------------------------------------------------------
+
+
+class DataReadExec : public RandomAccessIterator
+{
 public:
-	DataReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
-		DestroyPtr* destroyPtrs,
-		Type** tuple, int* offsets, int numFlds);
 
-	virtual ~DataReadExec();
+  DataReadExec(const string& schemaFile, const string& dataFile); // throws
 
-	virtual const Tuple* getNext(streampos& pos){
-		assert(! "not implemented");
-		return getNext();
-	}
+  DataReadExec::DataReadExec(DataReader* ud);
+  
+  virtual ~DataReadExec();
 
-	virtual const Tuple* getNext();
+  virtual void initialize();
 
-	virtual const Tuple* getThis(Offset offset, RecId recId);
+  virtual const Tuple* getNext();
+  
+  virtual const Tuple* getThis(Offset offset);
+  
+  virtual Offset getOffset();
 
-     virtual Offset getOffset(){
-		return off;
-     }
+  virtual const TypeIDList& getTypes();
+
+protected:
+
+  void init();                  // completes construction
+
+  void translateTypes();
+
+  char* buff;	// this has to be aligned!
+  int buffSize;
+  DataReader* ud;
+  UnmarshalPtr* unmarshalPtrs;
+  DestroyPtr* destroyPtrs;
+  Type** tuple;
+  off_t off;
+  int* offsets;
+  int numFlds;
+  int recId;
+  TypeIDList types;
 };
+
+
+//---------------------------------------------------------------------------
+
 
 class DataRead : public PlanOp {
 	DataReader* ud;
