@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/12/21 17:07:30  wenger
+  Devise views now extend to the borders of the JavaScreen window in both
+  X and Y directions, even if this means changing window aspect ratios.
+
   Revision 1.45  1998/12/21 16:33:39  wenger
   Added more support for cursors, and view axes and titles, for the JavaScreen.
 
@@ -340,11 +344,18 @@ CreateWinInfo(char *name, ViewWin *window, Boolean isView = false)
 #endif
 
 	if (isView) {
-	  window->GetParent()->AbsoluteOrigin(winX, winY);
+	  window->AbsoluteOrigin(winX, winY);
 	  int tmpWinX, tmpWinY;
-	  window->AbsoluteOrigin(tmpWinX, tmpWinY);
+	  window->GetParent()->AbsoluteOrigin(tmpWinX, tmpWinY);
 	  winX += tmpWinX;
 	  winY += tmpWinY;
+
+	  // This gets the proper absolute location for view symbols.
+	  if (window->GetParent()->GetParent()) {
+	    window->GetParent()->GetParent()->AbsoluteOrigin(tmpWinX, tmpWinY);
+	    winX += tmpWinX;
+	    winY += tmpWinY;
+	  }
 	} else {
 	  window->AbsoluteOrigin(winX, winY);
 	}
@@ -640,7 +651,9 @@ CreateViewLists()
 		while (window->More(viewIndex)) {
 		  ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
 		  // Only send GIF for the first view of a pile.
-		  if (!isPiled) {
+		  // Also, don't send the GIF for a view that has subviews (this may
+		  // be temporary).
+		  if (!isPiled && view->NumChildren() == 0) {
 		    _gifViews.Append(view);
 			if (view->IsInPileMode()) isPiled = true;
 		  }
@@ -650,6 +663,18 @@ CreateViewLists()
           if (view->GetSendToSocket()) {
 		    _gdataViews.Append(view);
 		  }
+
+		  // Send GIFs for view symbols.  This only allows one level of
+		  // views within views -- we could make it recursive to allow
+		  // multiple levels.
+		  // Note: I'm not checking here for piles -- if we have view symbols
+		  // AND piles, we're probably in lots of trouble.  RKW 1999-01-04.
+		  int subViewIndex = view->InitIterator();
+		  while (view->More(subViewIndex)) {
+		    ViewGraph *subView = (ViewGraph *)view->Next(subViewIndex);
+			_gifViews.Append(subView);
+		  }
+		  view->DoneIterator(subViewIndex);
 	    }
 		window->DoneIterator(viewIndex);
 	  }
@@ -992,15 +1017,20 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
     FillScreen();
 
 	//
-	// Figure out which views need to generate GIFs and which views need
-	// to send GData (not disjoint).
+	// The following section of the code is a little kludgey for the
+	// following reason: CreateViewLists() and SetGDataFiles() have to
+	// be called *before* the queries run so that the GData files can
+	// be properly set up for any views that will send GData.  However,
+	// CreateViewLists() also has to be called *after* the queries have
+	// been run so that view symbols can be dealt with correctly
+	// Note that we'll almost certainly run into problems if we have
+	// a window that has view symbols in combination with piles or
+	// GData views...
 	//
-	CreateViewLists();
 
-	//
-	// Make sure that GData views are set up appropriately for the
-	// JavaScreen.
-	//
+	// Build up the view lists -- we really just use the GData views
+	// list at this point.
+	CreateViewLists();
 	SetGDataFiles();
 
 	// Wait for all queries to finish before continuing.
@@ -1013,6 +1043,16 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 #if defined(DEBUG)
 	printf("After WaitForQueries()\n");
 #endif
+
+	// Now re-create the view lists so that we get the correct view symbol
+	// views.  Note that we'll run into problems if we have "dynamic" view
+	// symbols (i.e., the user can change which views get displayed on the
+	// fly).
+	CreateViewLists();
+
+	//
+	// ...end of kludgey section.
+	//
 
 	//
 	// Make a JavaScreen window for each view, not each DEVise window.
@@ -1027,53 +1067,40 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	char **imageNames = new char *[winCount];
 	int winNum = 0;
 
-	int winIndex = DevWindow::InitIterator();
-	while (DevWindow::More(winIndex) && (_status == DONE))
-	{
-	  ClassInfo *info = DevWindow::Next(winIndex);
-	  ViewWin *window = (ViewWin *)info->GetInstance();
-	  if (window != NULL && !window->GetPrintExclude())
-	  {
-		int viewIndex = window->InitIterator();
-		while (window->More(viewIndex)) {
-			ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
-			JavaWindowInfo *winInfo;
-			if (view->IsInPileMode()) {
-				// Views in this window are in piled mode -- create one
-				// JavaScreen window for the entire DEVise window.
-				winInfo = CreateWinInfo(view->GetName(), window, false);
-			} else {
-				// This view is not piled -- create one JavaScreen window
-				// corresponding to this view.
-				winInfo = CreateWinInfo(view->GetName(), view, true);
-			}
-
-        	if (!view->ExportImage(GIF,
-			  winInfo->_imageName.c_str()).IsComplete()) {
-	        	errmsg = "Error exporting window image";
-				_status = ERROR;
-	    	} else {
-				int filesize = getFileSize(winInfo->_imageName.c_str());
-	        	if (filesize > 0) {
-					_status = RequestCreateWindow(*winInfo, filesize);
-				}
-			}
-
-			if (_status == DONE) {
-		    	imageNames[winNum] = CopyString(winInfo->_imageName.c_str());
-            	winNum++;
-			}
-
-			delete winInfo;
-
-			// If we're in piled mode, we've already taken care of all of
-			// the views in this window.
-			if (view->IsInPileMode()) break;
-		}
-		window->DoneIterator(viewIndex);
+    int viewIndex = _gifViews.InitIterator();
+	while (_gifViews.More(viewIndex)) {
+	  ViewGraph *view = (ViewGraph *)_gifViews.Next(viewIndex);
+	  JavaWindowInfo *winInfo;
+	  if (view->IsInPileMode()) {
+		// Views in this window are in piled mode -- create one
+		// JavaScreen window for the entire DEVise window.
+		winInfo = CreateWinInfo(view->GetName(), view->GetParent(),
+		  false);
+	  } else {
+		// This view is not piled -- create one JavaScreen window
+		// corresponding to this view.
+		winInfo = CreateWinInfo(view->GetName(), view, true);
 	  }
-	}
-	DevWindow::DoneIterator(winIndex);
+
+      if (!view->ExportImage(GIF,
+	      winInfo->_imageName.c_str()).IsComplete()) {
+	   	errmsg = "Error exporting window image";
+		_status = ERROR;
+	  } else {
+		int filesize = getFileSize(winInfo->_imageName.c_str());
+	   	if (filesize > 0) {
+		  _status = RequestCreateWindow(*winInfo, filesize);
+		}
+	  }
+
+	  if (_status == DONE) {
+    	imageNames[winNum] = CopyString(winInfo->_imageName.c_str());
+       	winNum++;
+	  }
+
+	  delete winInfo;
+    }
+	_gifViews.DoneIterator(viewIndex);
     winCount = winNum;
 
     SendViewInfo();
@@ -1081,7 +1108,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	//
 	// Send "update GData" commands for all of the "GData views".
 	//
-	int viewIndex = _gdataViews.InitIterator();
+	viewIndex = _gdataViews.InitIterator();
 	while (_gdataViews.More(viewIndex)) {
 		ViewGraph *view = (ViewGraph *)_gdataViews.Next(viewIndex);
 		if (RequestUpdateGData(view) != DONE) {
