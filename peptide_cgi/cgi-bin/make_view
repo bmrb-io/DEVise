@@ -1,6 +1,4 @@
-#!/s/perl/bin/perl -w
-# For yola.bmrb.wisc.edu
-#!/usr/freeware/bin/perl -w
+#! bin/perl -w
 
 #  ========================================================================
 #  DEVise Data Visualization Software

@@ -1,4 +1,4 @@
-#!/s/perl/bin/perl -w
+#! bin/perl -w
 
 #  ========================================================================
 #  DEVise Data Visualization Software

@@ -23,7 +23,7 @@ include Makefile.config
 S2D_PROPS_FILE = cgi-bin/s2d.props
 
 .PHONY : setup
-setup: s2d_props
+setup: s2d_props bin
 	#TEMP -- set up bin directory, etc.
 
 .PHONY : testsetup
@@ -41,7 +41,7 @@ install:
 .PHONY : clean
 clean:
 	-rm $(S2D_PROPS_FILE)
-	#TEMP -- remove up bin directory, etc.
+	-rm -rf cgi-bin/bin
 
 .PHONY : testclean
 testclean:
@@ -56,3 +56,8 @@ s2d_props:
 	echo "# Configuration-specific s2d properties" > $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.star_url=$(STAR_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.3d_url=$(3D_EXAMPLE_URL)" >> $(S2D_PROPS_FILE)
+
+bin:
+	mkdir cgi-bin/bin
+	ln -s $(JAVA_BIN)/java cgi-bin/bin
+	ln -s $(PERL_BIN)/perl cgi-bin/bin
