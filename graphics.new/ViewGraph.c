@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/08/07 19:27:11  jussi
+  Moved legends in merged view up a bit.
+
   Revision 1.36  1996/08/05 19:49:02  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -224,17 +227,17 @@ ViewGraph::~ViewGraph()
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
 {
-    // remove this view from the view list of the link; then add
+    // remove this view from the slave view list of the link; then add
     // the link as one of the links whose master this view is
 
-    link->DeleteView(this);
+    DropAsSlaveView(link);
     if (!_masterLink.Find(link)) {
 #ifdef DEBUG
         printf("View %s becomes master of record link %s\n", GetName(),
                link->GetName());
 #endif
         _masterLink.Append(link);
-    }
+      }
 
     Refresh();
 }
