@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/23 17:26:09  jussi
+  Added support for piled views.
+
   Revision 1.21  1996/07/19 02:43:01  jussi
   Added point storage for missing data points.
 
@@ -236,11 +239,11 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     Coord y = GetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
     Coord width, height;
-    
-    Boolean complexShape = mapping->IsComplexShape(shape);
     Color color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)
       color = *(Color *)(ptr + offset->colorOffset);
+    Boolean complexShape = mapping->IsComplexShape(shape);
+    complexShape |= (GetNumDimensions() == 3);
 
     // Collect statistics from last mapping and only those records
     // that match the filter's X and Y range

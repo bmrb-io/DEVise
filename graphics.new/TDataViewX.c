@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/07/26 16:17:42  guangshu
+  Assign yMax and yMin from tdata so the width of histogram is fixed for the whole data sets
+
   Revision 1.35  1996/07/25 14:32:36  guangshu
   Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
 
@@ -210,9 +213,8 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Init(this);
 
-  _gstat.Clear();  /* Clear the hashtable and calculate it again */
+  _gstat.Clear();     /* Clear the hashtable and calculate it again */
   _glist.DeleteAll(); /* Clear the gdata list */
-
 
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
@@ -354,9 +356,11 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       Color color = mapping->GetDefaultColor();
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
+      Boolean complexShape = mapping->IsComplexShape(shape);
+      complexShape |= (GetNumDimensions() == 3);
 
       // Line and LineShade records prevent record elimination
-      if (shape == 13 || shape == 14)
+      if (shape == 13 || shape == 14 || complexShape)
         canElimRecords = false;
 
       // Compute statistics only for records that match the filter's
@@ -366,35 +370,30 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	if (color < MAXCOLOR)
 	  _stats[color].Sample(x, y);
 	_allStats.Sample(x, y);
-	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y, yMin);
+	if (_allStats.GetHistWidth() > 0)
+            _allStats.Histogram(y, yMin);
       }
-      BasicStats *bs;
 
-      if(_glist.Size() <= MAX_GSTAT) {
-	 int X = (int) x;
-         if(_gstat.Lookup(X, bs)) {
-	   bs->Sample(x,y);
+      if (_glist.Size() <= MAX_GSTAT) {
+	 int X = (int)x;
+         BasicStats *bs;
+         if (_gstat.Lookup(X, bs)) {
+	   bs->Sample(x, y);
          } else {
 	   bs = new BasicStats();
+           DOASSERT(bs, "Out of memory");
 	   bs->Init(0);
 	   _glist.InsertOrderly(X, 1);
 	   bs->Sample(x, y);
 	   _gstat.Insert(X, bs);
-/*	   if(_gstat.Lookup(X, bs)){
-	      printf("%d %d %.2f %.2f %.2f %.2f\n",
-                   X, (int)bs->GetStatVal(STAT_COUNT),
-                   bs->GetStatVal(STAT_YSUM),
-                   bs->GetStatVal(STAT_MEAN),
-                   bs->GetStatVal(STAT_MAX),
-                   bs->GetStatVal(STAT_MIN));
-           } else { printf("Whoops! Insert failed\n"); } */
          } 
       } 
 
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
-      if (x < _queryFilter.xLow || x > _queryFilter.xHigh
-	  || y < _queryFilter.yLow || y > _queryFilter.yHigh) {
+      if (!complexShape &&
+          (x < _queryFilter.xLow || x > _queryFilter.xHigh
+           || y < _queryFilter.yLow || y > _queryFilter.yHigh)) {
 	if (i > firstRec)
 	  WriteMasterLink(recId + firstRec, i - firstRec);
 
