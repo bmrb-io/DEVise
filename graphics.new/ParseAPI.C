@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/21 02:20:12  jussi
+  Added getViewXYZoom and setViewXYZoom commands.
+
   Revision 1.21  1996/07/20 18:49:09  jussi
   Added getViewSolid3D and setViewSolid3D commands.
 
@@ -833,6 +836,28 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    if (!strcmp(argv[0], "getViewDisplayDataValues")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Return setting of data value display */
+      sprintf(result, "%d", (vg->GetDisplayDataValues() ? 1 : 0));
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
+    if (!strcmp(argv[0], "getViewPileMode")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Return pile mode flag */
+      sprintf(result, "%d", (vg->IsInPileMode() ? 1 : 0));
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
     if (!strcmp(argv[0], "getViewOverrideColor")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -960,6 +985,28 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Set XY or X/Y zoom */
       vg->SetXYZoom(atoi(argv[2]) ? true : false);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setViewDisplayDataValues")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Set data value display on/off */
+      vg->SetDisplayDataValues(atoi(argv[2]) ? true : false);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setViewPileMode")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Set pile mode flag */
+      vg->SetPileMode(atoi(argv[2]) ? true : false);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
