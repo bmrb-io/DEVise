@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/11/26 16:47:47  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.25  1996/11/26 15:44:11  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -152,8 +155,8 @@
 
 #define DIRECT_POSTSCRIPT 1
 
-ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg, int weight,
-  Boolean boundary)
+ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg,
+                 int weight, Boolean boundary)
 {
   DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
   _name = name;
@@ -299,7 +302,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   if (!_parent) {
     if (Init::DisplayLogo()) {
       /* Allocate top margin */
-      _topMargin = _windowRep->GetSmallFontHeight() + 2;
+      _topMargin = 9 + 2;
       /* Draw margins */
       DrawMargins();
     }
@@ -656,7 +659,6 @@ void ViewWin::DrawMargins()
 
   // draw logo
   WindowRep *win = GetWindowRep();
-  win->SetSmallFont();
   win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
   win->SetLineWidth(0);
@@ -664,6 +666,7 @@ void ViewWin::DrawMargins()
   win->SetFgColor(GetBgColor());
   win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
   win->SetFgColor(GetFgColor());
+  win->SetFont("Courier", "Medium", "r", "Normal", 80);
   win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
 		    WindowRep::AlignNorth, true);
   win->SetNormalFont();
