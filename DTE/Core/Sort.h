@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/06/28 21:47:42  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.20  1998/06/04 23:06:50  donjerko
   Added DataReader.
 
@@ -124,7 +128,6 @@ public:
 	SortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
 	virtual ~SortExec();
         virtual void initialize();         // To be called once at the start
-	virtual const Tuple* getFirst();
         virtual const Tuple* getNext(); // returns NULL when no more tuples
         virtual const TypeIDList& getTypes();
 
@@ -138,10 +141,11 @@ class UniqueSortExec : public SortExec {
 public:
   UniqueSortExec(Iterator* inpIter, FieldList* sort_fields, SortOrder order);
   virtual ~UniqueSortExec();
-  virtual const Tuple* getFirst(); // returns NULL when no more tuples
+  virtual void initialize();
   virtual const Tuple* getNext(); // returns NULL when no more tuples
 protected:
   Type** tuple;
+  const Tuple* nextTuple;
   DestroyPtr* destroyPtrs;
   ADTCopyPtr* copyPtrs;
 

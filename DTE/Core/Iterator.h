@@ -43,17 +43,17 @@ public:
   
   virtual ~Iterator();
 
-  virtual void initialize();	// obsolete, use getFirst instead
-
-  virtual const Tuple* getFirst();
+  virtual void initialize() = 0;
 
   virtual const Tuple* getNext() = 0;
 
   virtual const TypeIDList& getTypes() = 0;
 
-  int getNumFlds() { return getTypes().size(); }
-
   virtual IteratorType GetIteratorType();
+
+  const Tuple* getFirst() { initialize(); return getNext(); }
+
+  int getNumFlds() { return getTypes().size(); }
 
 private:
 
@@ -66,18 +66,6 @@ private:
 inline
 Iterator::~Iterator()
 {
-}
-
-inline
-void Iterator::initialize()
-{
-}
-
-inline
-const Tuple* Iterator::getFirst()
-{
-  initialize();
-  return getNext();
 }
 
 

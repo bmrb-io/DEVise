@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/07/07 19:18:23  beyer
+  Made large stack object into a large heap object to keep stack size small.
+  A big stack is bad for threads.
+
   Revision 1.22  1998/06/28 21:47:42  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -399,13 +403,6 @@ SortExec::~SortExec()
 }
 
 
-const Tuple* SortExec::getFirst()
-{
-	initialize();
-	return SortExec::getNext();
-}
-
-
 const TypeIDList& SortExec::getTypes()
 {
   return inpIter->getTypes();
@@ -439,31 +436,23 @@ UniqueSortExec::~UniqueSortExec()
   destroyTuple(tuple, numFlds, destroyPtrs);
 }
 
-const Tuple* UniqueSortExec::getFirst()
+void UniqueSortExec::initialize()
 {
-  const Tuple* input = SortExec::getFirst();
-  if(input){
-    copyTuple(input, tuple, numFlds, copyPtrs);
-  }
-  return input;
+  SortExec::initialize();
+  nextTuple = SortExec::getNext();
 }
 
 const Tuple* UniqueSortExec::getNext()
 {
-	const Tuple* input = SortExec::getNext();
-	while(input){
-		bool diffTuple = tupleCompare(sortFlds, numSortFlds, 
-			comparePtrs, input, tuple);
-		if(diffTuple){
+  if( nextTuple == NULL ) return NULL;
 
-			// different tuple, copy it over
-			
-			copyTuple(input, tuple, numFlds, copyPtrs);
-			break;
-		}
-		input = SortExec::getNext();
-	}
-	return input;
+  copyTuple(nextTuple, tuple, numFlds, copyPtrs);
+
+  do {
+    nextTuple = SortExec::getNext();
+  } while(nextTuple && !tupleCompare(sortFlds, numSortFlds,
+                                     comparePtrs, nextTuple, tuple));
+  return tuple;
 }
 
 
