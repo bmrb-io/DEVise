@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/19 02:52:32  jussi
+  Added LineShape and LineShadeShape.
+
   Revision 1.11  1996/06/27 19:06:57  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -136,10 +139,5 @@ class TextLabelShape : public Shape {};
 /* Line: connects adjacent data points, forming a line. */
 
 class LineShape : public Shape {};
-
-/* LineShade: connects adjacent data points, forming a line, then
-   shades the area between line and X axis. */
-
-class LineShadeShape : public Shape {};
 
 #endif
