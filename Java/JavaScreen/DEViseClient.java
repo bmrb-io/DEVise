@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2001/11/19 17:17:02  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
 // Revision 1.57  2001/11/13 17:57:01  xuk
 // Could send command in String[] format, no need to compose a long command string before sending.
 //
@@ -540,6 +543,13 @@ public class DEViseClient
 
     public synchronized void setSuspend()
     {
+	// happens during switching
+	if (status == REQUEST || ! cmdBuffer.isEmpty()) {
+	    status = REQUEST;
+	    pop.pn("We set request here.");
+	    return;
+	}
+
         if (status != CLOSE) {
             lastSuspendTime = DEViseGlobals.getCurrentTime();
             lastActiveTime = -1;

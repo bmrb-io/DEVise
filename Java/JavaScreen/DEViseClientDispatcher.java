@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2001/11/28 21:56:18  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.14  2001/11/27 18:13:11  xuk
 // Return error message to JS, when there is no devised running on JSPoP side.
 // Modified in run(), when there is no available DEViseServer, send error message to client and close client.
@@ -169,16 +172,18 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
                     server.setCurrentClient(client);
                 } else {
 		    // No available DEViseServer, or
-		    // No devised server
-		    try {
-			client.sendCmd( DEViseCommands.ERROR +
-					" {No available devised server.}");
-			client.close();
-		    } catch (YException e) {
-			String errMsg = e.getMessage();
-			pop.pn("Error in DEViseClientDispatcher: " +
-				       errMsg);
-		    }			
+		    // No devised server,
+		    // We only deal with no devised case here.
+		    if (pop.getServerCount() == 0)
+			try {
+			    client.sendCmd( DEViseCommands.ERROR +
+					    " {No available devised server.}");
+			    client.close();
+			} catch (YException e) {
+			    String errMsg = e.getMessage();
+			    pop.pn("Error in DEViseClientDispatcher: " +
+				   errMsg);
+			}			
 		}
 		
 		// Try to avoid any delay in garbage collection of clients.
