@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/16 20:57:10  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.7  1995/12/28 18:25:32  jussi
   Removed warnings related to for loop variable scope.
 
@@ -57,7 +60,26 @@ static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
-unsigned long int find_offset(FILE *idxfile, char cval[]);
+/*-------------------------------------------------------------------*/
+
+/*
+   Searches through the index file and finds the entry for the given 
+   CUSIP number. Then, returns the tape offset for this security.
+*/
+
+static long int find_offset(FILE *idxfile, char cval[])
+{
+  unsigned long int offval;
+  char fval[10];	// stores CUSIP in this
+
+  while(fscanf(idxfile, "%lu,%*d,%*d,%6s,%*[^\n]\n", &offval, fval) == 2) {
+    if (!strcmp(cval, fval))
+      return offval;
+  }
+
+  printf("ERROR: could not find CUSIP %s in the index file\n", cval);
+  return -1;
+}
 
 /*-------------------------------------------------------------------*/
 
@@ -70,25 +92,22 @@ unsigned long int find_offset(FILE *idxfile, char cval[]);
    every security in turn.
 */
 
-int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
-		char *tapeBsize, char *idxFile, char **argv, int argc)
+static int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
+		       char *tapeBsize, char *idxFile, char **argv, int argc)
 {
-  FILE *idxfile;
-
   DOASSERT(argc % 2 == 0, "Invalid parameters");
   int num = argc / 2;
 
   // Get the index file pointer
-  if ((idxfile = fopen(idxFile, "r")) == NULL)
-  {
+  FILE *idxfile;
+  if (!(idxfile = fopen(idxFile, "r"))) {
     printf("Error: could not open index file: %s\n", idxFile);
     return TCL_ERROR;
   }
   
   // We will retrieve num offsets and sort them
-  unsigned long int *offset_arr = (unsigned long int *)
-                                  malloc(num*sizeof(unsigned long int));
-  int *spos_arr = (int *)malloc(num*sizeof(int));
+  long int *offset_arr = (long int *)malloc(num * sizeof(long int));
+  int *spos_arr = (int *)malloc(num * sizeof(int));
 
   int i;
   for(i = 0; i < num; i++) {
@@ -117,21 +136,21 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   }
 
   TapeDrive tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
-  if (!tape)
-  {
+  if (!tape) {
     fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);
     return TCL_ERROR;
   }
 
   // Extract every security in turn
   for(i = 0; i < num; i++) {
+    if (offset_arr[i] < atol(tapeOff))
+      continue;
 #ifdef DEBUG
     cout << "Seeking to offset " << offset_arr[spos_arr[i]] << endl;
 #endif
-    if ((unsigned long)tape.seek(offset_arr[spos_arr[i]])
-	!= offset_arr[spos_arr[i]]) {
-      cerr << "Error in seeking to tape position " << offset_arr[spos_arr[i]]
-	   << endl;
+    if (tape.seek(offset_arr[spos_arr[i]]) != offset_arr[spos_arr[i]]) {
+      cerr << "Error in seeking to tape position "
+           << offset_arr[spos_arr[i]] << endl;
       perror("seek");
     } else {
       Security s(tape);
@@ -183,31 +202,4 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   return crsp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
 		     &argv[6], argc - 6);
-}
-
-// Searches through the index file and finds the entry for the given 
-// CUSIP number. Then, returns the tape offset for this security.
-
-unsigned long int find_offset(FILE *idxfile, char cval[])
-{
-  int tmpval1, tmpval2;
-  char tmpbuf[200];	// large enough to hold one line of index file
-  unsigned long int offval;
-  char fval[10];	// stores CUSIP in this
-
-  do 
-  {
-    // get offset
-    fscanf(idxfile, "%lu,%d,%d,%6s", &offval, &tmpval1, &tmpval2, fval);
-
-    // Ignore rest of line
-    fgets(tmpbuf, 200, idxfile);
-
-  } while ((strcmp(cval, fval)) && (!feof(idxfile)));
-
-  if (!strcmp(cval, fval))
-    return offval;
-
-  printf("ERROR: could not find CUSIP %s in the index file\n", cval);
-  return 0;
 }
