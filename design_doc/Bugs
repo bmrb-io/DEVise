@@ -1495,8 +1495,9 @@ Num Date        Status  Description
 			(devised crashes). (hy/rkw)
 			(Fixed by rkw, 09/15/98.)
 
-393 09/15/98	OPEN	Devised had 'Too many open files' error when serving
+393 09/15/98	FIXED	Devised had 'Too many open files' error when serving
 			three JavaScreens. (hy/rkw)
+			(Fixed by rkw, 09/22/98.)
 
 394 09/15/98	OPEN	Tasvir images don't work when running Xvfb with 24
 			bit depth as the X server. (rkw)

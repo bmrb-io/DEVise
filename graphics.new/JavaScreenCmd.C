@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/09/22 17:23:56  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.33  1998/09/15 22:29:17  wenger
   Fixed bug 392 (MolBio.tk crash in JavaScreen -- caused by cursor not
   connected to any views); workaround to bug 391 (problems with Xvfb).
@@ -349,6 +357,7 @@ getFileSize(const char* filename)
 	{
 		perror("Error in getting file size:");
 	}
+	close(fd);
 	return filesize;
 }
 
@@ -1663,6 +1672,9 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 			}
 		}
 		files.Sort();
+		if (closedir(directory) < 0) {
+			reportErrSys("Error closing directory");
+		}
     }
 
 	ArgList args(files.GetCount() * 3 + 1);
