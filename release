@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/01/27 00:22:32  jussi
+#  Devise executable is now 'generic', not 'issm'.
+#
 #  Revision 1.1  1996/01/23 22:06:45  jussi
 #  Initial revision.
 #
@@ -75,7 +78,7 @@ cp -p lib/[a-z]* $target/lib
 
 echo ""
 echo Releasing documentation...
-cp -p doc/*.ps $target/doc
+cp -p doc/*.ps *.txt $target/doc
 cp -p doc/Agreement $target/doc
 cp -p doc/Copyright $target/doc
 cp -p doc/Disclaimer $target/doc
