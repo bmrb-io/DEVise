@@ -1,4 +1,8 @@
-/* Snapshot.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Snapshot_h
 #define Snapshot_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* RangeInfoArray.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeInfoArray.h"
 #include "MultiArray.h"
 #include "RangeInfo.h"

@@ -1,4 +1,10 @@
-/* RecFile.h: supports file record read/write operations */
+/*
+  $Id$
+
+  $Log$*/
+
+/* supports file record read/write operations */
+
 #ifndef RecFile_h
 #define RecFile_h
 #include "DeviseTypes.h"

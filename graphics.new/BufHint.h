@@ -1,4 +1,10 @@
-/* BufHint.h: specification of buffer manager hints */
+/*
+  $Id$
+
+  $Log$*/
+
+/* specification of buffer manager hints */
+
 #ifndef BufHint_h
 #define BufHint_h
 

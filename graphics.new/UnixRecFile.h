@@ -1,4 +1,10 @@
-/* UnixRecFile.h: Unix RecFile implementation. */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Unix RecFile implementation */
+
 #ifndef UnixRecFile_h
 #define UnixRecFile_h
 #include "RecFile.h"

@@ -1,4 +1,10 @@
-/* Command.h: for reading command from a file responding to it */
+/*
+  $Id$
+
+  $Log$*/
+
+/* for reading command from a file responding to it */
+
 #ifndef Command_h
 #define Command_h
 #include "Dispatcher.h"

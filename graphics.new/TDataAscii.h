@@ -1,4 +1,10 @@
-/* TDataAscii.h: Textual data virtual base class*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* Textual data virtual base class */
+
 #ifndef TDataAscii_h
 #define TDataAscii_h
 #include <stdio.h>

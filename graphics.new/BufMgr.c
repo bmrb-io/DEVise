@@ -1,4 +1,8 @@
-/* BufMgr.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "BufMgr.h"
 
 void BufMgr::RegisterCallback(BufMgrCallback *c){

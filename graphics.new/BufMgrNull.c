@@ -1,4 +1,8 @@
-/* BufMgrNull.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Exit.h"
 #include "TData.h"

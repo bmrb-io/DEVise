@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ViewRanges.h"
 
 ViewRanges::ViewRanges(char *name,  ViewWin *parent, VisualFilter &initFilter,

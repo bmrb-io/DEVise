@@ -1,4 +1,8 @@
-/* RecId.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef RecId_h
 #define RecId_h
 

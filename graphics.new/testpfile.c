@@ -1,4 +1,10 @@
-/* testpfile.c : test page files*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* test page files */
+
 #include <stdio.h>
 #include <libc.h>
 #include "PageFile.h"

@@ -1,4 +1,8 @@
-/* ConnectorShape.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "LineConnector.h"
 
 ConnectorShapeRegistrar 

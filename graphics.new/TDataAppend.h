@@ -1,4 +1,10 @@
-/* TData.h: Append-only T-Data */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Append-only T-Data */
+
 #ifndef TDataAppend_h
 #define TDataAppend_h
 #include "TData.h"

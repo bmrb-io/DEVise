@@ -1,4 +1,10 @@
-/* TDataAsciiInterp.h: interpreted TData using parsed information */
+/*
+  $Id$
+
+  $Log$*/
+
+/* interpreted TData using parsed information */
+
 #ifndef TDataASciiInterp_h
 #define TDataASciiInterp_h
 #include "DeviseTypes.h"

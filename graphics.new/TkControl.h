@@ -1,4 +1,10 @@
-/* TkControl.h: Xaw implementation for control panel  */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Xaw implementation for control panel */
+
 #ifndef TkControl_h
 #define TkControl_h
 #include <tcl.h>

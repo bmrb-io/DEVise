@@ -1,4 +1,8 @@
-/* PageRange.c: */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <libc.h>
 #include <sys/types.h>

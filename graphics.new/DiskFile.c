@@ -1,4 +1,8 @@
-/* DiskFile.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifdef USE_AMSDISKFILE
 #include <stdio.h>
 #include "AmsDiskFile.h"

@@ -1,4 +1,10 @@
-/* DiskFile.h: supports page read/write operations */
+/*
+  $Id$
+
+  $Log$*/
+
+/* supports page read/write operations */
+
 #ifndef DiskFile_h
 #define DiskFile_h
 #include "DeviseTypes.h"

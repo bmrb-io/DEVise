@@ -1,4 +1,8 @@
-/* Snapshot.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Snapshot.h"
 #include "TDataMap.h"
 #include "TData.h"

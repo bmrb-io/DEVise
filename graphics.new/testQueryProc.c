@@ -1,9 +1,12 @@
-/* testQueryProc.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "BufMgr.h"
 #include "TDataAppend.h"
 #include "TDataMap.h"
 #include "QueryProc.h"
-
 
 const int BufSize = 10;	/* # of buffer pages */
 const int NumRecs = 1000;	/* # of records */

@@ -1,3 +1,7 @@
+/*
+  $Id$
+
+  $Log$*/
 
 struct CpuMapping_GData {
 	double x;

@@ -1,6 +1,13 @@
-/* testRaw.c: displays Khoros raw image
-usage: testraw [-w width] [-h height] [-f fname] [-t threshold]
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   displays Khoros raw image
+   usage: testraw [-w width] [-h height] [-f fname] [-t threshold]
 */
+
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "XDisplay.h"

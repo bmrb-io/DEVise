@@ -1,4 +1,8 @@
-/* TDataRangeList.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "TDataRangeList.h"
 #include "RangeList.h"
 

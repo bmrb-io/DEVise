@@ -1,4 +1,8 @@
-/* Full Query Processor */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef QueryProcFull_h
 #define QueryProcFull_h
 #include "QueryProc.h"

@@ -1,4 +1,8 @@
-/* ViewScatter.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ViewScatter.h"
 #include "TDataMap.h"
 

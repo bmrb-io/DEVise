@@ -1,4 +1,8 @@
-/* BufferFocal.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeInfoArray.h"
 #include "BufferFocal.h"
 #include "RangeInfo.h"

@@ -1,4 +1,8 @@
-/* RangeInfoArray.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef RangeInfoArray_h
 #define RangeInfoArray_h
 #include "DeviseTypes.h"

@@ -1,4 +1,10 @@
-/* RangeCallback.h: callback about range info */
+/*
+  $Id$
+
+  $Log$*/
+
+/* callback about range info */
+
 #ifndef RangeCallback_h
 #define RangeCallback_h
 #include "DeviseTypes.h"

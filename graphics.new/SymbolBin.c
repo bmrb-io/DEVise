@@ -1,4 +1,8 @@
-/* SymbolBin.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <math.h>
 #include "Exit.h"

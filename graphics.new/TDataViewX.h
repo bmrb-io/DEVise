@@ -1,4 +1,8 @@
-/* TDataViewX.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataViewX_h
 #define TDataViewX_h
 #include "QueryProc.h"

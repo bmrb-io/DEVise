@@ -1,4 +1,10 @@
-/* TData.h: Textual data virtual base class*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* Textual data virtual base class */
+
 #ifndef TData_h
 #define TData_h
 #include "DeviseTypes.h"

@@ -1,4 +1,10 @@
-/* testBufMech.c: test buffer mechanism */
+/*
+  $Id$
+
+  $Log$*/
+
+/* test buffer mechanism */
+
 #include <stdio.h>
 #include "DeviseTypes.h"
 #include "Exit.h"

@@ -1,4 +1,8 @@
-/* Rnd Buffer policy*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BuferRnd_h
 #define BuferRnd_h
 #include "BufferPolicy.h"

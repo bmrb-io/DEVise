@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Temp.h"
 
 Coord _x[WINDOWREP_BATCH_SIZE];

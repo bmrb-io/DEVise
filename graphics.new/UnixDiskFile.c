@@ -1,4 +1,8 @@
-/* UnixDiskFile.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "UnixDiskFile.h"
 #include <stdio.h>
 #include <libc.h>

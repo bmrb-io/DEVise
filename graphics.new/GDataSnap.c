@@ -1,4 +1,10 @@
-/* GDataSnap.c: takes snapshot of GData conversion */
+/*
+  $Id$
+
+  $Log$*/
+
+/* takes snapshot of GData conversion */
+
 #include "DeviseTypes.h"
 #include "RectShape.h"
 #include "ColorMgr.h"

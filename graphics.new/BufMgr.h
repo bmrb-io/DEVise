@@ -1,4 +1,8 @@
-/* BufMgr.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BufMgr_h
 #define BufMgr_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* Query Processor */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef QueryProcSimple_h
 #define QueryProcSimple_h
 #include "Config.h"

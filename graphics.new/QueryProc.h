@@ -1,4 +1,8 @@
-/* Query Processor */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef QueryProc_h
 #define QueryProc_h
 #include "DeviseTypes.h"

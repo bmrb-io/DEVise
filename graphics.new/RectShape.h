@@ -1,4 +1,8 @@
-/* RectShape.h: a rectangle shape. */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef RectShape_h
 #define RectShape_h
 #include "DeviseTypes.h"

@@ -1,4 +1,10 @@
-/* TDataRec.h: File of records */
+/*
+  $Id$
+
+  $Log$*/
+
+/* File of records */
+
 #ifndef TData2DRec_h
 #define TData2DRec_h
 #include "TDataRec.h"

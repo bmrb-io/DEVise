@@ -1,4 +1,10 @@
-/* QPRange.h: keeps track of ranges returned for query processor */
+/*
+  $Id$
+
+  $Log$*/
+
+/* keeps track of ranges returned for query processor */
+
 #ifndef QPRange_h
 #define QPRange_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* ConnectorShape.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ConnectorShape_h
 #define ConnectorShape_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* BufferRnd.g.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "RangeInfoArray.h"
 #include "BufferRnd.h"

@@ -1,7 +1,14 @@
-/* TDataCMap.h : implements default mapping for connectors.
-Default:
-	color:	white.
-	Pattern:	0.*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* implements default mapping for connectors.
+   Default:
+     color:	white.
+     Pattern:	0.
+*/
+
 #ifndef TDataCMap_h
 #define TDataCMap_h
 #include "Color.h"

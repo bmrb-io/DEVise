@@ -1,4 +1,10 @@
-/* GDataRangeSource.h: source of which GData ranges have been converted*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* source of which GData ranges have been converted */
+
 #ifndef GDataRangeSource_h
 #define GDataRangeSource_h
 #include "RangeCallback.h"

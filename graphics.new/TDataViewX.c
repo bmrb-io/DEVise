@@ -1,4 +1,8 @@
-/* TDataViewX.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Init.h"
 #include "TDataViewX.h"
 #include "TDataMap.h"

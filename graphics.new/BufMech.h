@@ -1,4 +1,8 @@
-/* Buffer mechanism */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BufMech_h
 #define BufMech_h
 #include "DeviseTypes.h"

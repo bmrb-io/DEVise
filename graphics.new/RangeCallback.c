@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeCallback.h"
 
 void RangeSource::RegisterCallback(RangeCallback *c){

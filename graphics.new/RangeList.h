@@ -1,4 +1,10 @@
-/* RangeList.h: used to keep track of ranges */
+/*
+  $Id$
+
+  $Log$*/
+
+/* used to keep track of ranges */
+
 #ifndef RangeList_h
 #define RangeList_h
 #include "DeviseTypes.h"

@@ -1,6 +1,10 @@
-/* testStr.c: displays string data
-flags:
-*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* displays string data */
+
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "Dispatcher.h"

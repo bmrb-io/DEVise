@@ -1,4 +1,8 @@
-/* AmsDiskFile.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <libc.h>
 #include "AmsDiskFile.h"
 #include "TDataAppend.h"

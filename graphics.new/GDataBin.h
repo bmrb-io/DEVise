@@ -1,4 +1,10 @@
-/* GDataBin: used to bin pixels together before returning the data */
+/*
+  $Id$
+
+  $Log$*/
+
+/* used to bin pixels together before returning the data */
+
 #ifndef GDataBin_h
 #define GDataBin_h
 #include "DeviseTypes.h"

@@ -1,9 +1,12 @@
-/* BufferLru.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeInfoArray.h"
 #include "BufferLru.h"
 #include "RangeInfo.h"
 #include "TDataAttr.h"
-
 
 BufferLru::BufferLru(){
 	_phase = BufferPolicy::ScanPhase;

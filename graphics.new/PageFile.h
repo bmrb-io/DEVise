@@ -1,4 +1,10 @@
-/*PageFile.h: Page file that uses a buffer manager to for I/O */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Page file that uses a buffer manager to for I/O */
+
 #ifndef PageFile_h
 #define PageFile_h
 #include "BufHint.h"

@@ -1,4 +1,8 @@
-/* TDataMapDispatch.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataMapDispatch_h
 #define TDataMapDispatch_h
 

@@ -1,4 +1,8 @@
-/* testQPRange.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Parse.h"
 #include "QPRange.h"

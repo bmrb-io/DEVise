@@ -1,4 +1,8 @@
-/* CompositeParser */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "RecInterp.h"
 #include "CompositeParser.h"

@@ -1,10 +1,17 @@
-/* ams1: displays grids of ams data: soldn vs time 
-flags:
-	-s 	show snapshot of gdata conversion
+/*
+  $Id$
+
+  $Log$*/
+
+/* displays grids of ams data: soldn vs time 
+
+   flags:
+	-s  show snapshot of gdata conversion
 	-o  overlap the graphs together.
 	-m  use only 1 buffer manager.
 	-r  display solar radiation,too.
 */
+
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "Dispatcher.h"

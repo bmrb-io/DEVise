@@ -1,4 +1,8 @@
-/* ActionDefault.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <time.h>
 #include "ActionDefault.h"

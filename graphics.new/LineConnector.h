@@ -1,4 +1,8 @@
-/* LineConnector.h*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef LineConnector_h
 #define LineConnector_h
 #include "ConnectorShape.h"

@@ -1,4 +1,8 @@
-/* ActionDefault.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ActionDefault_h
 #define ActionDefault_h
 #include "Action.h"

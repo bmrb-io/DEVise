@@ -1,4 +1,10 @@
-/* GData.h: graphical data virtual base class*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* graphical data virtual base class*/
+
 #ifndef GData_h
 #define GData_h
 #include "TData.h"

@@ -1,4 +1,8 @@
-/* MappingInterp.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <tcl.h>
 #include "DeviseTypes.h"

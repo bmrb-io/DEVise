@@ -1,4 +1,10 @@
-/* TDataRangeSource.h: source of which TData ranges have been converted*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* source of which TData ranges have been converted */
+
 #ifndef TDataRangeSource_h
 #define TDataRangeSource_h
 #include "RangeCallback.h"

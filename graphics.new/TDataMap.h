@@ -1,4 +1,10 @@
-/* TDataMap.h: mapping from TData to GData. */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Mapping from TData to GData */
+
 #ifndef TDataMap_h
 #define TDataMap_h
 #include <stdio.h>

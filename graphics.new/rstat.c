@@ -1,5 +1,11 @@
-/* rstat.c: print statistics on testAms1 runs.
-usage: rstat 
+/*
+  $Id$
+
+  $Log$*/
+
+/* print statistics on testAms1 runs.
+
+   usage: rstat 
 	input: standard input.
 	output: standard output.
 	flag: -s n : skip every nth line, including 1st. that is,
@@ -10,11 +16,11 @@ usage: rstat
 	output:
 		statistics for each visual filter.
 */
+
 #include <stdio.h>
 #include <libc.h>
 #include <math.h>
 #include "Parse.h"
-
 
 /* structure used to group records by visual filter width */
 struct GroupRec {

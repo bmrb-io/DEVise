@@ -1,4 +1,8 @@
-/* Interpreted mapping */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef MappingInterp_h
 #define MappingInterp_h
 #include <tcl.h>

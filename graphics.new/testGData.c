@@ -1,4 +1,8 @@
-/* testGdata.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Symbol.h"
 #include "TDataAppend.h"
 #include "GData.h"

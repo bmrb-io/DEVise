@@ -1,4 +1,8 @@
-/* TData.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "TData.h"
 #include "Exit.h"

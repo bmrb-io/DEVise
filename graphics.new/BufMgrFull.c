@@ -1,4 +1,8 @@
-/* BufMgrFull.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Config.h"
 #include "Exit.h"

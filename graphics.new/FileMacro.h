@@ -1,4 +1,8 @@
-/* FileMacro.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef FileMacro_h
 #define FileMacro_h
 

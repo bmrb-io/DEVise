@@ -1,4 +1,8 @@
-/* Class info for MappingInterp */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef MapInterpClassInfo_h
 #define MapInterpClassInfo_h
 #include "ClassDir.h"

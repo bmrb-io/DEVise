@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* TData user defined attributes */
+
 #ifndef TDataAttr_h
 #define TDataAttr_h
 #include "TData.h"

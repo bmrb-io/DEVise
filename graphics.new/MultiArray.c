@@ -1,4 +1,8 @@
-/* MultiArray.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "MultiArray.h"
 
 /* constructor */

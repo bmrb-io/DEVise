@@ -1,4 +1,8 @@
-/* GDataCallback.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef GDataCallback_h
 #define GDataCallback_h
 

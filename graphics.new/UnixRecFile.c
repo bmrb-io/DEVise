@@ -1,4 +1,8 @@
-/* UnixRecFile.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "UnixRecFile.h"
 #include <stdio.h>
 #include <libc.h>

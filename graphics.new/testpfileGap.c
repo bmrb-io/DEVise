@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* test page file with gap */
+
 #include <stdio.h>
 #include <libc.h>
 #include "DeviseTypes.h"

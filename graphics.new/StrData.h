@@ -1,4 +1,8 @@
-/* StrData.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef StrData_h
 #define StrData_h
 

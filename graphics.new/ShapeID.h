@@ -1,4 +1,10 @@
-/* ShapeID.h: definition of shape ID and shape attributes */
+/*
+  $Id$
+
+  $Log$*/
+
+/* definition of shape ID and shape attributes */
+
 #ifndef ShapeID_H
 #define ShapeID_H
 

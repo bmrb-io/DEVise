@@ -1,4 +1,8 @@
-/* TDataRangeSource.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "TDataRangeSource.h"
 #include "TData.h"
 #include "BufMgr.h"

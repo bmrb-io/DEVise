@@ -1,4 +1,8 @@
-/* ams.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ams_h
 #define ams_h
 #include <math.h>

@@ -1,4 +1,8 @@
-/* QPRange.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Exit.h"
 #include "QPRange.h"

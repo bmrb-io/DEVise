@@ -1,4 +1,8 @@
-/* BufMgr.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <libc.h>
 /*

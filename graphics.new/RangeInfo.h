@@ -1,4 +1,8 @@
-/* RangeInfo.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef RangeInfo_h
 #define RangeInfo_h
 #include <stdio.h>

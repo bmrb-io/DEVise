@@ -1,5 +1,10 @@
-/* GDataRangeMap.h: keeps track of TData to GData mappings that have
-been done*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* keeps track of TData to GData mappings that have been done */
+
 #ifndef GDataRangeMap_h
 #define GDataRangeMap_h
 #include <stdio.h>

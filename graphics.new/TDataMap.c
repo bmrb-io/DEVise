@@ -1,4 +1,8 @@
-/* TDataMap.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #if defined(SUN)||defined(PENTIUM)
 #include <string.h>

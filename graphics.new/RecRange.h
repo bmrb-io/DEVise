@@ -1,5 +1,10 @@
-/* RecRange.h: used by buffer manager to keep track of
-records already processed */
+/*
+  $Id$
+
+  $Log$*/
+
+/* used by buffer manager to keep track of records already processed */
+
 #ifndef RecRange_h
 #define RecRange_h
 #include "DeviseTypes.h"

@@ -1,6 +1,14 @@
-/* BufPageList.h: Doubly linked list of buffer pages.
-Uses the "next" and "prev" fields of a BufPage to link
-them into a list. */
+/*
+  $Id$
+
+  $Log$*/
+
+/* 
+   Doubly linked list of buffer pages.
+   Uses the "next" and "prev" fields of a BufPage to link
+   them into a list.
+*/
+
 #ifndef BufPageList_h
 #define BufPageList_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* RangeList.c: */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <errno.h>
 #include "Exit.h"

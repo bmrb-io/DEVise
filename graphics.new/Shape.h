@@ -1,4 +1,8 @@
-/* Shape.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Shape_h
 #define Shape_h
 #include <stdio.h>

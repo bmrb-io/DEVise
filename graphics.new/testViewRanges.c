@@ -1,4 +1,8 @@
-/* testViewRanges.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ViewWinVer.h"
 #include "ViewRanges.h"
 #include "RangeCallback.h"

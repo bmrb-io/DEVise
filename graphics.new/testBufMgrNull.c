@@ -1,5 +1,10 @@
-/* testBufMgrNull.c. Run "testRecFile" to generate records
-for into file "testFile" */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Run "testRecFile" to generate records for into file "testFile" */
+
 #include "TDataRec.h"
 #include "BufMgrNull.h"
 #include <stdio.h>

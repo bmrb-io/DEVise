@@ -1,5 +1,10 @@
-/* test2d.c: displays 2d dat
-*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* displays 2d dat */
+
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "XDisplay.h"

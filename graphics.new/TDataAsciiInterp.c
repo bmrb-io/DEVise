@@ -1,4 +1,8 @@
-/* TDataAsciiInterp.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <string.h>
 #include "TDataAsciiInterp.h"
 #include "AttrList.h"

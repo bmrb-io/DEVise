@@ -1,9 +1,12 @@
-/* BufferFifo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeInfoArray.h"
 #include "BufferFifo.h"
 #include "RangeInfo.h"
 #include "TDataAttr.h"
-
 
 BufferFifo::BufferFifo(){
 	_phase = BufferPolicy::ScanPhase;

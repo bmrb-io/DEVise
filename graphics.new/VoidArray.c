@@ -1,4 +1,8 @@
-/* VoidArray.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "VoidArray.h"
 #include "Exit.h"

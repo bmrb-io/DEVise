@@ -1,4 +1,10 @@
-/* SymbolBin: used to bin pixels together before returning the data */
+/*
+  $Id$
+
+  $Log$*/
+
+/* used to bin pixels together before returning the data */
+
 #ifndef SymbolBin_h
 #define SymbolBin_h
 #include "DeviseTypes.h"

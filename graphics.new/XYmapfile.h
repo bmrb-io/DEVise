@@ -1,3 +1,7 @@
+/*
+  $Id$
+
+  $Log$*/
 
 struct XYMapping_GData {
 	double x;

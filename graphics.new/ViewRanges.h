@@ -1,4 +1,8 @@
-/* ViewRanges.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ViewRanges_h
 #define ViewRanges_h
 #include "View.h"

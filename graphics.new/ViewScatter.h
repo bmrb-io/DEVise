@@ -1,4 +1,8 @@
-/* ViewScatter.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ViewScatter_h
 #define ViewScatter_h
 #include "QueryProc.h"

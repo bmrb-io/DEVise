@@ -1,4 +1,8 @@
-/* TDataRec.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Config.h"
 #include "Exit.h"
@@ -6,7 +10,6 @@
 #include "RecFile.h"
 #include "Init.h"
 int  TDATAREC_CHUNK_SIZE = DEVISE_PAGESIZE;
-
 
 TDataRec::TDataRec(char *name, int recSize):TData(){
 	 TDATAREC_CHUNK_SIZE = Init::PageSize();

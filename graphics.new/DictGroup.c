@@ -1,4 +1,8 @@
-/* DictGroup.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "DictGroup.h"
 

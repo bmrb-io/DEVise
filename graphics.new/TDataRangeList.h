@@ -1,4 +1,8 @@
-/* TDataRangeList.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TDataRangeList_h
 #define TDataRangeList_h
 

@@ -1,4 +1,10 @@
-/* testbit.c: tests bitmap */
+/*
+  $Id$
+
+  $Log$*/
+
+/* tests bitmap */
+
 #include <stdio.h>
 #include <libc.h>
 #include "Bitmap.h"

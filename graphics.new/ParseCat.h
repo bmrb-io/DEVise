@@ -1,4 +1,8 @@
-/* ParseCat.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ParseCat_h
 #define ParseCat_h
 #include "DeviseTypes.h"

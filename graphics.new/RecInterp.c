@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <time.h>
 #include "AttrList.h"

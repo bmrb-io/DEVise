@@ -1,4 +1,10 @@
-/* UnixDiskFile.h: Unix DiskFile implementation. */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Unix DiskFile implementation */
+
 #ifndef UnixDiskFile_h
 #define UnixDiskFile_h
 #include "DiskFile.h"

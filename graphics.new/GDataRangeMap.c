@@ -1,4 +1,8 @@
-/* GDataRangeMap.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

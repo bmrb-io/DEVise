@@ -1,4 +1,8 @@
-/* Lifo Buffer policy*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BuferLifo_h
 #define BuferLifo_h
 #include "BufferPolicy.h"

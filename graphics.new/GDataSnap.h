@@ -1,4 +1,10 @@
-/* GDataSnap.h: responsible for taking a snapeshot of GData */
+/*
+  $Id$
+
+  $Log$*/
+
+/* responsible for taking a snapeshot of GData */
+
 #ifndef GDataSnap_h
 #define GDataSnap_h
 #include "GDataVar.h"

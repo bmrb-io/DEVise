@@ -1,4 +1,8 @@
-/* Temp.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Temp_h
 #define Temp_h
 #include "DeviseTypes.h"

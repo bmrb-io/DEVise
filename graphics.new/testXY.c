@@ -1,7 +1,14 @@
-/* testXY: displays XY datafile 
-flags:
-	-s 	show snapshot of gdata conversion
+/*
+  $Id$
+
+  $Log$*/
+
+/* displays XY datafile 
+
+   flags:
+   -s show snapshot of gdata conversion
 */
+
 #include <sys/time.h>
 #include "DeviseTypes.h"
 #include "Dispatcher.h"

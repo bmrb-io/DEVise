@@ -1,4 +1,10 @@
-/* AmsDiskFile.h: supports page read/write operations */
+/*
+  $Id$
+
+  $Log$*/
+
+/* supports page read/write operations */
+
 #ifndef AmsDiskFile_h
 #define AmsDiskFile_h
 #include "DiskFile.h"

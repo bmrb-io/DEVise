@@ -1,4 +1,8 @@
-/* Buffer policy*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BufferPolicy_h
 #define BufferPolicy_h
 #include "DeviseTypes.h"

@@ -1,5 +1,9 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /***************************************************************************
-PageFile.h:
 a PageFile uses the buffer manager to do paged I/O.
             PageFile
                |
@@ -15,6 +19,7 @@ Layout of DiskFile:
     page 2: data page 2
     ...
 ****************************************************************************/
+
 #include <stdio.h>
 #include <libc.h>
 #include "Exit.h"

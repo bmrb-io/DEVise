@@ -1,4 +1,8 @@
-/* testPageRange.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include <libc.h>
 #include "PageRange.h"

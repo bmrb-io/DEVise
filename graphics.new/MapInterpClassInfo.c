@@ -1,4 +1,8 @@
-/* MapInterpClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "DeviseTypes.h"
 #include "Control.h"
 #include "MappingInterp.h"

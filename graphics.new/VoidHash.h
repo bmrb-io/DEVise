@@ -1,4 +1,8 @@
-/* BufHash.h: hash table for buffer manager */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef VoidHash_h
 #define VoidHash_h
 #include "DeviseTypes.h"

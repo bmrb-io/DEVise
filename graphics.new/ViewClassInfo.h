@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ViewClassInfo_h
 #define ViewClassInfo_h
 #include "ClassDir.h"

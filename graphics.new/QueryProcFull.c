@@ -1,4 +1,8 @@
-/* QueryProcFull.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "QueryProcFull.h"
 #include "Init.h"
 #include "Journal.h"

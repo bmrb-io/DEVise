@@ -1,4 +1,10 @@
-/* TDataAppend.c: Append-only Textual Data*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* Append-only Textual Data */
+
 #include <stdio.h>
 #include <libc.h>
 #include "Exit.h"

@@ -1,4 +1,10 @@
-/* DispQueryProc.h: query processor under the control of the dispatcher */
+/*
+  $Id$
+
+  $Log$*/
+
+/* query processor under the control of the dispatcher */
+
 #ifndef DispQueryProc_h
 #define DispQueryProc_h
 #include "Dispatcher.h"

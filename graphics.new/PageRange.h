@@ -1,5 +1,10 @@
-/* PageRange.h: used by query processor to keep track of
-pages already processed */
+/*
+  $Id$
+
+  $Log$*/
+
+/* used by query processor to keep track of pages already processed */
+
 #ifndef PageRange_h
 #define PageRange_h
 #include "DeviseTypes.h"

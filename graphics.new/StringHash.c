@@ -1,7 +1,10 @@
-/* StringHash.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "StringHash.h"
-
 
 StringHash::StringHash(){
 	debug = 0;

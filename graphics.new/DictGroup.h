@@ -1,4 +1,10 @@
-/* DictGroup.h: a dictionary with a group-by function.*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* a dictionary with a group-by function.*/
+
 #ifndef DictGroup_h
 #define DictGroup_h
 #include "DeviseTypes.h"

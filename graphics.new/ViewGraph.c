@@ -1,8 +1,11 @@
-/* ViewGraph.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
-
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		AxisLabel *xAxis, AxisLabel *yAxis,

@@ -1,4 +1,8 @@
-/* ViewClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>

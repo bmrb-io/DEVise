@@ -1,4 +1,10 @@
-/* TDataMmap.h: memory mapped file*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* memory mapped file */
+
 #ifndef TDataMmap_h
 #define TDataMmap_h
 #include "TDataAppend.h"

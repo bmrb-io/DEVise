@@ -1,4 +1,8 @@
-/* TestData.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TestData_h
 #define TestData_h
 struct Data{

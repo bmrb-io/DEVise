@@ -1,4 +1,8 @@
-/* ViewGraph.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ViewGraph_h
 #define ViewGraph_h
 #include "View.h"

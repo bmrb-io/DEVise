@@ -1,4 +1,8 @@
-/* GData.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Exit.h"
 #include "TDataAttr.h"
 #include "GData.h"

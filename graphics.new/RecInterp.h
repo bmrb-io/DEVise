@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* Interpreted record */
+
 #ifndef RecInterp_h
 #define RecInterp_h
 #include <sys/types.h>

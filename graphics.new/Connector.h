@@ -1,4 +1,8 @@
-/* Connector.h: A connector connects two symbols */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Connector_h
 #define Connector_h
 #include "DeviseTypes.h"

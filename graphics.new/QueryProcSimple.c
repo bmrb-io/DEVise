@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /***************************************************************************
 Debug flags:
 	DEBUG_QUERY_PROC: lots of debugging info

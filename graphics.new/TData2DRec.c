@@ -1,4 +1,8 @@
-/* TData2DRec.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "TData2DRec.h"
 

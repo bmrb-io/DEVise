@@ -1,5 +1,13 @@
-/* Composite parser for user to register a function to be called
-to decode composites */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   Composite parser for user to register a function to be called
+   to decode composites
+*/
+
 #ifndef CompositeParser_h
 #define CompositeParser_h
 

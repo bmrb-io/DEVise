@@ -1,3 +1,7 @@
+/*
+  $Id$
+
+  $Log$*/
 
 /*
 struct FullMapping_GData {

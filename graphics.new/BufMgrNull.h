@@ -1,4 +1,8 @@
-/* BufMgrNull.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BufMgrNull_h
 #define BufMgrNull_h
 #include "BufMgr.h"

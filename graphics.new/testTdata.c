@@ -1,5 +1,10 @@
-/* testTdata.c: tests TDataAppend. Remember to remove
-"tdatafile" before running .*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* tests TDataAppend. Remember to remove "tdatafile" before running .*/
+
 #include <stdio.h>
 #include <libc.h>
 #include "BufMgr.h"

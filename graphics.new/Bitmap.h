@@ -1,4 +1,8 @@
-/* Bitmap.h: bitmap lookup table */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Bitmap_h
 #define Bitmap_h
 #include "DeviseTypes.h"

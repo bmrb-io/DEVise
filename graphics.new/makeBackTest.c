@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /**************************************************************************
 MakeBackTest.c: make backwards test file
 	to compile: CC -o makeTest makeTest.c

@@ -1,4 +1,8 @@
-/* GDataRangeSource.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "GDataRangeSource.h"
 #include "TData.h"
 #include "GData.h"

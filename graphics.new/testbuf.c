@@ -1,4 +1,8 @@
-/* testbuf.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "BufPolicy.h"
 #include "BufMgr.h"
 #include "UnixDiskFile.h"

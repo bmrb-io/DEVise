@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef GDataRec_h
 #define GDataRec_h
 #include "Color.h"

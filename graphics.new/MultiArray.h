@@ -1,4 +1,10 @@
-/* Multi-Array: Multiple arrays of pointers to void*/
+/*
+  $Id$
+
+  $Log$*/
+
+/* Multiple arrays of pointers to void */
+
 #ifndef MultiArray_h
 #define MultiArray_h
 #include "DeviseTypes.h"

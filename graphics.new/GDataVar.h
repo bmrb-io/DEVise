@@ -1,4 +1,8 @@
-/* GDataVar.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef GDataVar_h
 #define GDataVar_h
 

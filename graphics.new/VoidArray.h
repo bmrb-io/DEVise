@@ -1,4 +1,8 @@
-/* VoidArray.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef VoidArray_h
 #define VoidArray_h
 #include "DeviseTypes.h"

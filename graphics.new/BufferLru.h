@@ -1,4 +1,8 @@
-/* Lru Buffer policy*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BuferLru_h
 #define BuferLru_h
 #include "BufferPolicy.h"

@@ -1,5 +1,13 @@
-/* makeGData.c: make GData from ams TData.
-usage: makeGData tdata gdata*/
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   make GData from ams TData.
+   usage: makeGData tdata gdata
+*/
+
 #include <stdio.h>
 #include <libc.h>
 #include <sys/types.h>

@@ -1,4 +1,8 @@
-/* queryProc.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "QueryProc.h"
 #include "DispQueryProc.h"
 #include "Exit.h"

@@ -1,4 +1,8 @@
-/* BufferLifo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "RangeInfoArray.h"
 #include "BufferLifo.h"
 #include "RangeInfo.h"
