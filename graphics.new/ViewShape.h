@@ -2,9 +2,7 @@
 #ifndef VIEW_SHAPE_H
 #define VIEW_SHAPE_H
 
-#include <iostream.h>
 #include "RectShape.h"
-#include "StringStorage.h"
 
 
 class FullMapping_ViewShape

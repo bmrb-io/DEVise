@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/10/02 15:23:52  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.10  1996/08/29 18:24:42  wenger
   A number of Dali-related improvements: ShapeAttr1 now specifies image
   type when shape is 'image'; added new '-bytes' flag to Dali commands
@@ -74,9 +78,6 @@
 #include "Control.h"
 #include "Util.h"
 #include "DevError.h"
-#ifndef ATTRPROJ
-#  include "StringStorage.h"
-#endif
 
 #ifndef ATTRPROJ
 TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
@@ -388,16 +389,6 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case StringAttr:
-#ifndef ATTRPROJ
-      string = CopyString(ptr);
-      code = StringStorage::Insert(string, key);
-#ifdef DEBUG
-      printf("Inserted \"%s\" with key %d, code %d\n", ptr, key, code);
-#endif
-      DOASSERT(code >= 0, "Cannot insert string");
-      if (!code)
-        delete string;
-#endif
       if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
 	return false;
       break;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/05/28 20:01:27  andyt
+  Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
+  constants, or string constants. Used to assume that all attributes except
+  argc were strings.
+
   Revision 1.7  1997/05/21 22:12:26  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -40,6 +45,7 @@
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 

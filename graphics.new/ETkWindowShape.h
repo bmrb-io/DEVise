@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:09:44  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef _ETKWINDOWSHAPE_H_
@@ -23,8 +27,6 @@
 
 #include <iostream.h>
 #include "RectShape.h"
-#include "StringStorage.h"
-//#define DEBUG
 
 class FullMapping_ETkWindowShape
 : public ETkWindowShape

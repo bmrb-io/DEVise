@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/05/08 00:18:56  wenger
+  'Can't find attribute in mapping' warning not printed for recId's.
+
   Revision 1.58  1997/05/06 17:20:39  wenger
   Now gives warning if your mapping has a TData attribute that doesn't
   exist!
@@ -798,8 +801,8 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case StringAttr:
 	  string = tPtr + attrInfo->offset;
-          code = StringStorage::Lookup(string, key);
-          DOASSERT(code >= 0, "Invalid key value for string");
+          code = StringStorage::Insert(string, key);
+          DOASSERT(code >= 0, "Cannot insert string");
 	  _tclAttrs[j] = (double)key;
 #if defined(DEBUG)
 	     printf("  Setting string attr %d to %f\n", j, _tclAttrs[j]);
@@ -1748,7 +1751,7 @@ double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry,
       }
 
       case StringAttr:
-        code = StringStorage::Lookup(ptr, key);
+        code = StringStorage::Insert(ptr, key);
 #ifdef DEBUG
         printf("Converted string \"%s\" to key %d, code %d\n", ptr, key, code);
 #endif

@@ -1,5 +1,6 @@
 #ifdef VIEW_SHAPE
 #include <sys/param.h>
+#include <iostream.h>
 
 #include "ViewShape.h"
 #include "MappingInterp.h"
@@ -9,6 +10,7 @@
 #include "DevError.h"
 #include "ClassDir.h"
 #include "Control.h"
+#include "StringStorage.h"
 //#define DEBUG 1
 
 int FullMapping_ViewShape::NumShapeAttrs()

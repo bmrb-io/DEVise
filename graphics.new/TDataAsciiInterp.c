@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/06/14 22:35:25  liping
+  re-write min/max and recId request with SQL queries
+
   Revision 1.31  1997/04/30 21:45:39  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile
@@ -163,7 +166,6 @@
 #include "TDataDQLInterp.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
-#  include "StringStorage.h"
 #endif
 
 //#define DEBUG
@@ -571,16 +573,6 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
       }
       strncpy(ptr, args[i], info->length);
       ptr[info->length - 1] = '\0';
-#ifndef ATTRPROJ
-      string = CopyString(ptr);
-      code = StringStorage::Insert(string, key);
-#ifdef DEBUG
-      printf("Inserted \"%s\" with key %d, code %d\n", ptr, key, code);
-#endif
-      DOASSERT(code >= 0, "Cannot insert string");
-      if (!code)
-        delete string;
-#endif
       break;
 
     case DateAttr:
