@@ -1822,7 +1822,7 @@ Num Date        Status  Description
 			colors, new views should be created with those
 			colors. (rkw)
 
-473 03/19/99	OPEN	'5' (home) doesn't work right on views that have
+473 03/19/99	FIXED	'5' (home) doesn't work right on views that have
 			HighLow symbols, because Y isn't the top of the
 			symbol. (rkw)
 
