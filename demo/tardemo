@@ -1,0 +1,1 @@
+tar cvfXz devise_demo.tgz exclude_list ./*

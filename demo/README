@@ -1,0 +1,122 @@
+			DEVise Demo README File
+				June 23, 1997
+
+(Note: if you have any questions on this stuff, talk to Kent.)
+
+
+SESSION FILES
+
+The following session files are available:
+    AssocRules.tk
+    BAA.tk
+    BankFace.tk: (Devise 1.4 only, needs Strings/Bank as devise.strings file).
+    COD1.tk
+    FamMed_pre_post_natal.tk
+    FamMed_visits.tk
+    Maps_Tk.tk: (Devise 1.4 only, needs Strings/Maps as devise.strings file).
+    MarsDemo.tk: images of mars (needs CD with images).
+    MolBio.tk: molecular biology cell images and data.
+    NIMA.tk
+    WordCount.tk: (Devise 1.4 only).
+    bank_dte1.tk: (Devise 1.4 only).
+    bank_dte2.tk: (Devise 1.4 only).
+    birch1.tk
+    birch2.tk
+    multi1.tk: data from PVM runs.
+    multi2.tk: data from PVM runs.
+    orange_rtree.tk: RTree of Orange County Tiger data.
+
+
+SESSION FILE MODES
+
+The demo session files all have their mode set to 444.  The reason for
+this is that they are specially hand-edited to be compatible with Devise
+1.3 _and_ 1.4.  If you save the session file from 1.4, you will not be able
+to load it in 1.3.  If you save it from 1.3, you will lose the session
+description.  If you have problems with a session file, or need to modify
+one, please talk to Kent.
+
+
+DEVISE STRINGS
+
+Two of the demo session files need a devise.strings file to work correctly.
+To run one of these sessions, you need to copy the appropriate file to
+devise.strings in your current directory.  I know that this is really a
+pain in the ass, but I haven't been able to get around it.  I tried hand-
+editing the session files to have them copy the strings file, but that
+didn't work.  Anyhow, the files are as follows:
+
+- BankFaces.tk needs /p/devise/demo/Strings/Bank copied to ./devise.strings.
+- Map_Tk.tk needs /p/devise/demo/Strings/Maps copied to ./devise.strings.
+
+If you don't have a devise.strings file, or you have the wrong one, and
+you load one of these sessions, some of the symbols will come up in the
+wrong place.
+
+
+NOTES ON RUNNING DEMOS
+
+- It's probably a good idea to quit Devise and start all over again fairly
+  frequently.  This is especially true if you are using sessions that have
+  Tasvir images in them.  If there are any problems, the Tasvir server can
+  use up huge amounts of memory (I've had one get as big as 176MB!).
+
+- There are still some problems with the multi sessions.  If you are running
+  those sessions, I would recommend that you quit Devise almost every time
+  you load a session.  Also, I _strongly_ recommend that you do not destroy
+  any views in the multi sessions.  If you need to do so, you should
+  immediately save the session and quit, then restart multi and reload the
+  session.
+
+- There is a problem with flipping piled views that sometimes causes
+  Devise to crash.  It doesn't _always_ happen, but I've seen in on the
+  Maps_Tk and orange_rtree sessions.
+
+
+DEVISE VERSIONS
+
+It is generally preferable to run the demos in DEVise 1.4, unless you want
+to demonstrate some feature that works in 1.3, but not in 1.4 (e.g., exporting
+templates).  In general, I think such features will usually fall outside
+of that we want to demo.
+
+All of the demo sessions current work in devise 1.4 or multi 1.4 (remember
+that you have to run multi to load the multi* sessions).  The following
+sessions do not work at all in DEVise 1.3:
+
+    - bank_dte1.tk
+    - bank_dte2.tk
+
+(they require DTE features that are not implemented in 1.3).
+
+The following sessions work, but not entirely correctly in DEVise 1.3:
+
+    - BankFace.tk
+    - Maps_Tk.tk
+    - WordCount.tk
+
+(the data is not displayed "nicely" because of changes in how the mappings
+are defined).
+
+Note: as of June 23, 1997, the Maps_Tk.tk session will not work in 1.3,
+either.  RKW.
+
+
+DEMO USER
+
+Both the Toshiba and ThinkPad machines have a 'demo' user set up on them.
+To run the demos, you should log in as this user.  It's paths are set up
+so that the commands devise, devise1.3, multi, and mult1.3 run the
+appropriate version of DEVise on the demo sessions, schemas, and data.
+The startup scripts automatically launch Tasvir and EmbeddedTk where
+necessary.  When you log in, you need to run startx to fire up the X
+ server.
+
+
+CD ROM PLAYER
+
+Once you've got the player physically hooked up, all you should have to
+do is run 'mount /cdrom' (as root) to get the CD ready to go.  When you
+run the MarsDemo session, it will read the images from the CD ROM.  You
+should run the command 'umount /cdrom' before removing the CD from the
+player.

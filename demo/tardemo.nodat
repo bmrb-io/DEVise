@@ -1,0 +1,2 @@
+tar cvfz devise_demo_nodat.tgz README Strings run schema session tardemo
+# TEMPTEMP -- should exclude *.ds.commands, *.ds.data

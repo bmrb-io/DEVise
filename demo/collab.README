@@ -1,0 +1,30 @@
+		Instructions for Running the Collaboration Demo
+				RKW March 25, 1998
+
+- Connect the ThinkPads (sparrow and zaphod) with the null-twisted-pair
+  Ethernet cable.  HAVE THE CABLE CONNECTED WHEN THE MACHINES BOOT.
+
+- Log onto both ThinkPads as the demo user (password is demo).
+
+- Run collab_main on one ThinkPad and collab_aux on the other (wait for
+  the collaborator to come up on the first machine before running
+  collab_aux).
+
+- Avoid typing <enter> at the end of the password when creating or
+  joining a group -- this has sometimes caused problems.
+
+- It seems to be a little better to create the group from the same machine
+  that the collaborator is running on -- I had better reliability that
+  way.  Dongbin is looking into what might be causing this.
+
+- Join the group from the DEVise on the other machine.
+
+- Open a session file, and away you go...
+
+- Run collab_cleanup on each machine when you're done.
+
+
+Note: the software that recognized the Ethernet card on zaphod doesn't
+run the correct configuration scripts for some reason, so if you pull
+out the card and put it back in, you need to run
+/etc/sysconfig/network-scripts/ifup (or reboot).
