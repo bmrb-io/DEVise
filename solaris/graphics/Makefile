@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1995/09/28 15:12:01  jussi
+#  Added copyright and CVS log messages.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I/usr/X11R6/include
+ARCH_FLAGS = -DPENTIUM -I/usr/X11R6/include -I/s/tcl/include
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
