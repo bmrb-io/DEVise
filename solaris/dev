@@ -72,7 +72,6 @@ if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable. Perhaps this platform is not supported?"
   exit 1
 endif
-
 $DEVISE_EXEC $*
 
 rmmem

@@ -27,12 +27,17 @@ int main(){
      delete [] attrs;
 	string filePath = "/tmp/junk";
      StandardInterface stdInt(schema, filePath);
+	string* vatt = new string[1];
+	vatt[0] = "va";
+	ViewInterface view(1, vatt, "select t.A from 1.2 as t");
 
      RelationId relId;
-     TRY(relId = RELATION_MNGR.registerNewRelation(stdInt), 1);
+//   TRY(relId = RELATION_MNGR.registerNewRelation(stdInt), 1);
+     TRY(relId = RELATION_MNGR.registerNewRelation(view), 1);
 
 	cerr << "Relation id is: " << relId.toString() << endl;
 
+	exit(0);
 	TRY(UniqueInserter in(schema, filePath, ios::out), 0);
 
 	Tuple* tuple = new Tuple[numFlds];
