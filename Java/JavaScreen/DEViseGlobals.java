@@ -19,6 +19,9 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.35  2000/03/23 16:26:14  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.34  2000/02/23 21:12:13  hongyu
 // *** empty log message ***
 //
@@ -87,7 +90,7 @@ public final class DEViseGlobals
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("3.2");
+    public static final String VERSION = new String("3.3");
     public static final String PROTOCOL_VERSION = new String("4.1");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");

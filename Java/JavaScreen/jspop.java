@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2000/04/05 06:25:40  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.26  2000/03/30 19:14:36  wenger
 // Improved error messages for socket creation failures.
 //
@@ -404,7 +407,7 @@ public class jspop implements Runnable
     // this method will also check which client need to be removed and remove it
     public synchronized DEViseClient getNextRequestingClient()
     {
-        float time = -1.0, clientTime = 0.0;
+        float time = -1.0F, clientTime = 0.0F;
         DEViseClient client = null;
         Vector removedClient = new Vector();
 
@@ -510,7 +513,7 @@ public class jspop implements Runnable
     {
         DEViseServer server = null;
         DEViseClient client = null;
-        float time = -1.0, clientTime = 0.0;
+        float time = -1.0F, clientTime = 0.0F;
 
         for (int i = 0; i < servers.size(); i++) {
             DEViseServer newserver = (DEViseServer)servers.elementAt(i);

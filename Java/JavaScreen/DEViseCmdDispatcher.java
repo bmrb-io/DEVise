@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2000/04/05 06:25:38  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.49  2000/04/03 21:21:22  wenger
 // When new GData arrives for a view, we remove the old GData from the
 // view and call the garbage collector before constructing the new
@@ -110,6 +113,8 @@ public class DEViseCmdDispatcher implements Runnable
     private boolean isOnline = false;
 
     private boolean isAbort = false;
+
+    private static final boolean _debug = false;
 
 
     public DEViseCmdDispatcher(jsdevisec what)
@@ -625,7 +630,9 @@ public class DEViseCmdDispatcher implements Runnable
                             results[k] = null;
                         }
 
-                        System.out.println("number of new gdata: " + results.length);
+			if (_debug) {
+                            System.out.println("number of new gdata: " + results.length);
+			}
 
                         jsc.jscreen.updateGData(viewname, gdList);
                         results = null;

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2000/04/05 06:25:39  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.40  2000/03/31 19:29:17  wenger
 // Changed code so that views and GData objects get garbage collected when
 // a session is closed; added debug code for tracking construction and
@@ -103,7 +106,7 @@ public class DEViseView
 
     public boolean isFirstTime = true;
 
-    private static boolean _debug = false;
+    private static final boolean _debug = false;
 
     public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, float Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy, int rb, int cm, int dd, int ky)
     {

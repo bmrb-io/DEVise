@@ -19,6 +19,9 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.29  2000/04/05 06:25:39  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.28  2000/04/03 22:24:53  wenger
 // Added named constants for GData symbol types; 3D GData symbols are now
 // differentiated by symbol type instead of string; removed some commented-
@@ -120,7 +123,7 @@ public class DEViseGData
     public int outline = 0;
 
     private static int _gdCount = 0;
-    private static boolean _debug = false;
+    private static final boolean _debug = false;
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
     // <symbol type> <shape attr 0> ... <shape attr 14>
