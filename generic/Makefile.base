@@ -1,0 +1,19 @@
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+CC = g++
+
+LDFLAGS = $(ARCH_LDFLAGS) \
+	../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o\
+	 -ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	$(ARCH_LDPOST)
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-fexternal-templates
+
+all: generic issm
+
+generic: generic.o ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
+
+issm:   issm.o ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
