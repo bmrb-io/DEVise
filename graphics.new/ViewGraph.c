@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/14 22:03:49  jussi
+  Added a couple of more checks in _DisplayStats handling.
+
   Revision 1.6  1995/12/14 20:18:52  jussi
   Fixed initialization of _DisplayStat and added more checking to
   SetViewStatistics (string passed to function can be shorter than
@@ -104,6 +107,7 @@ void ViewGraph::SetDisplayStats(char *stat)
     return;
   }
 
+/*
   if (ToRemoveStats(_DisplayStats, stat) == true)
   {
     strncpy(_DisplayStats, stat, STAT_NUM);
@@ -114,6 +118,19 @@ void ViewGraph::SetDisplayStats(char *stat)
     strncpy(_DisplayStats, stat, STAT_NUM);
     _stats.Report();
   }
+*/
+
+  // Never redisplay data as long as the visual filter is the same
+  // Before drawing the lines, need to figure out which of them to draw
+  // If a line existing before needs to be deleted - draw line again
+  // If a line not there before needs to be drawn - draw it
+  // If line not there before, not to be drawn - dont draw it
+  // If line there now, needs to remain - dont draw it
+  // Basically XOR logic
+  
+  StatsXOR(_DisplayStats, stat, _DisplayStats);
+  _stats.Report();
+  strncpy(_DisplayStats, stat, STAT_NUM);
 }
 
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
@@ -126,4 +143,10 @@ Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
     if ((oldset[i] == '1') && (newset[i] == '0'))
       return true;
   return false;
+}
+
+void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
+{
+  for (int i = 0; i < STAT_NUM; i++)
+    result[i] = ((oldstat[i] - '0')^(newstat[i] - '0')) + '0';
 }
