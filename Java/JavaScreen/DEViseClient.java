@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2001/01/26 22:22:21  wenger
+// Removed unused receiveCmd method.
+//
 // Revision 1.22  2001/01/24 16:35:04  xuk
 // Add setCgi() method for set cgi mode.
 //
@@ -164,6 +167,9 @@ public class DEViseClient
 
     private static int _objectCount = 0;
 
+    public DEViseCommSocket collabSocket = null;
+    public int collabInit = 0;
+
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
       boolean cgi)
     {
@@ -208,6 +214,11 @@ public class DEViseClient
 
     public void setSocket(DEViseCommSocket sock) {
         socket = sock;
+    }
+
+    public void setCollabSocket(DEViseCommSocket sock) {
+        collabSocket = sock;
+	collabInit = 1;
     }
 
     public void addNewCmd(String cmd) {
@@ -401,7 +412,7 @@ public class DEViseClient
 
 	    if (cmdBuffer.size() == 0) {
 		if (DEBUG >= 2) {
-		    System.out.println("  got null command");
+		    System.out.println("Got null command");
 	        }
 		return null;
 	    }
@@ -483,9 +494,20 @@ public class DEViseClient
     {
         if (status != CLOSE) {
 	    if (cmd != null) {
-                pop.pn("Sending command to client(" + ID + " " + hostname +
-	          ") :  \"" + cmd + "\"");
-                socket.sendCmd(cmd);
+		if (collabInit != 1) {
+		    pop.pn("Sending command to client(" + ID + " " + hostname +
+			   ") :  \"" + cmd + "\"");
+		    socket.sendCmd(cmd);
+		}
+		if (collabSocket != null) { // also send to collab JS
+		    if (!collabSocket.isEmpty()) {
+			collabSocket.closeSocket();
+			collabSocket = null;
+		    } else {
+		        pop.pn("Sending command to collabration client");
+                        collabSocket.sendCmd(cmd);
+		    }
+                }
 	    }
         } else {
             throw new YException("Invalid client");
@@ -501,12 +523,23 @@ public class DEViseClient
             for (int i = 0; i < data.size(); i++) {
                 byte[] d = (byte[])data.elementAt(i);
                 if (d != null && d.length > 0) {
-                    pop.pn("Sending data to client(" + ID + " " + hostname +
-		      ") (" + d.length + " bytes)");
-                    socket.sendData(d);
-                    pop.pn("  Done sending data");
+		    if (collabInit != 1) {
+			pop.pn("Sending data to client(" + ID + " " + hostname +
+			       ") (" + d.length + " bytes)");
+			socket.sendData(d);
+			pop.pn("  Done sending data");
+		    }
+                    if (collabSocket != null) { // also send to collab JS
+                        pop.pn("Sending data to collabration client" + "(" + d.length + " bytes)");
+                        collabSocket.sendData(d);
+                        pop.pn("  Done sending data");
+                    }
                 }
             }
+
+	    if (collabInit == 1)
+		collabInit = 0;
+
         } else {
             throw new YException("Invalid client");
         }
