@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/23  00:03:52  ravim
+  Parser changed to ANSI style - g++ now used uniformly
+ 
   Revision 1.3  1995/09/22 15:56:21  jussi
   Added copyright message.
 
@@ -30,22 +33,27 @@
 
 #include "parse.h"
 
-main(int argc,char **argv)
+main(int argc, char **argv)
 {
-  char *fname= "mapfile.h";
-  FILE *mapFile;
-  if (argc > 1){
+  char *fname = "mapfile.h";
+
+  if (argc > 1) {
     if (argc == 3 && argv[1][0] == '-' && argv[1][1] == 'o')
       fname = argv[2];
     else {
-      fprintf(stderr,"usage: parser [-o file] < infile\n");
+      fprintf(stderr, "usage: parser [-o file] < infile\n");
       exit(1);
     }
   }
-  mapFile =fopen(fname,"w+");
-  if (mapFile == NULL){
-    fprintf(stderr,"can't open mapfile.h\n");
+
+  FILE *mapFile;
+
+  if (!(mapFile = fopen(fname,"w+"))) {
+    fprintf(stderr, "can't open mapfile.h\n");
     exit(2);
   }
+
   Parse(mapFile);
+
+  fclose(mapFile);
 }
