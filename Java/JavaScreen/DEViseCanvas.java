@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2000/07/12 16:52:42  wenger
+// F1 key now shows help without clicking mouse button.
+//
 // Revision 1.54  2000/07/11 16:39:18  venkatan
 // *** empty log message ***
 //
@@ -125,6 +128,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.55  2000/07/12 16:52:42  wenger
+// F1 key now shows help without clicking mouse button.
+//
 // Revision 1.54  2000/07/11 16:39:18  venkatan
 // *** empty log message ***
 //
@@ -1579,14 +1585,17 @@ public class DEViseCanvas extends Container
             crystal.setSelect();
 
             for (int i = 0; i < view.viewPiledViews.size(); i++) {
-		        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
-		        for (int j = 0; j < v.viewGDatas.size(); j++) {
-                    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
-				    if (gdata.symbolType == gdata._symSegment) {
-                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color, true);
-                        crystal.setSelect(gdata.x1, gdata.y1, gdata.z1, gdata.color, true);
+	        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
+		for (int j = 0; j < v.viewGDatas.size(); j++) {
+		    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
+		    if (gdata.symbolType == gdata._symSegment) {
+		        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0,
+			  gdata.color, true);
+                        crystal.setSelect(gdata.x1, gdata.y1, gdata.z1,
+			  gdata.color, true);
                     } else {
-                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color, false);
+                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0,
+			  gdata.color, false);
                     }
                 }
             }

@@ -17,11 +17,17 @@
 // Note that if there is a pile of 3D views, there is only a single
 // DEViseCrystal object for the entire pile.
 
+// Note: this class should eventually be changed so that bonds are first-
+// class objects, as opposed to being represented as part of the atoms.
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.19  2000/06/21 18:37:29  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.18  2000/06/21 18:10:14  wenger
 // Changes to 3D requested by BMRB: removed axes; up/down mouse movement
 // does zooming; molecule doesn't move when changing atoms; 'r' resets
@@ -91,17 +97,24 @@ public class DEViseCrystal
     // float minBondLength, maxBondLength;
     public int bondWidth = 2;
 
-    public Color selectColor = Color.cyan;
     public Color axisColor = Color.red;
 
     Vector atomTypeList = new Vector();
     Vector atomList = new Vector();
     Stack deletedAtomIndexStack = new Stack();
 
-    // ADD COMMENT -- what is zSortMap?
-    int zSortMapSizeIncrement = 64, zSortMapSize, deletedAtomNumber;
-    int[] zSortMap = new int[64];
+    // zSortMap is an array of atom indices, sorted in decreasing
+    // *transformed* Z order.
+    private static final int zSortMapSizeIncrement = 64;
+    private int zSortMapSize = 0;
+    private int[] zSortMap = new int[zSortMapSizeIncrement];
 
+    // Note: _hasAtoms is false if we have atoms, but the atoms are used
+    // only to define bonds and are not to be drawn.
+    private boolean _hasAtoms = false;
+    private boolean _hasBonds = false;
+
+    // --------------------------------------------------------------------
     // min and max are minimum and maximum bond length for automatically
     // calculating bonds (no longer used).
     public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS,
@@ -126,6 +139,7 @@ public class DEViseCrystal
         //newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
+    // --------------------------------------------------------------------
     // min and max are minimum and maximum bond length for automatically
     // calculating bonds (no longer used).
     public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS,
@@ -135,20 +149,22 @@ public class DEViseCrystal
 
         if (atomName != null && atomPos != null &&
 	  atomName.length >= atomPos.length) {
+	    _hasAtoms = true;
             int i;
 
-            for (i = 0; i < atomName.length - 1; i++) {
+            for (i = 0; i < atomName.length; i++) {
                 addAtom(atomName[i], atomPos[i][0], atomPos[i][1],
 		  atomPos[i][2]);
             }
-
-            addAtom(atomName[i], atomPos[i][0], atomPos[i][1],
-	      atomPos[i][2], 2);
+	    center();
         }
+
+	// resort();
 
         //newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
+    // --------------------------------------------------------------------
     // min and max are minimum and maximum bond length for automatically
     // calculating bonds (no longer used).
     public DEViseCrystal(int width, int height, int shift, DEVise3DLCS LCS,
@@ -160,6 +176,7 @@ public class DEViseCrystal
         if (atomName != null && atomPos != null && atomColor != null &&
 	  atomName.length >= atomPos.length &&
 	  atomColor.length >= atomPos.length) {
+	    _hasAtoms = true;
             int i;
 
             for (i = 0; i < atomName.length - 1; i++) {
@@ -173,30 +190,32 @@ public class DEViseCrystal
 
         if (bondPos != null && bondColor != null &&
 	  bondColor.length >= bondPos.length) {
-            int i, index1, index2;
-            for (i = 0; i < bondPos.length - 1; i++) {
-                index1 = addAtom(bondColor[i].toString(), bondPos[i][0][0],
+	    _hasBonds = true;
+
+            int i, index1 = 0, index2 = 0;
+            for (i = 0; i < bondPos.length; i++) {
+                index1 = addAtom(null, bondPos[i][0][0],
 		  bondPos[i][0][1], bondPos[i][0][2], bondColor[i]);
-                index2 = addAtom(bondColor[i].toString(), bondPos[i][1][0],
+                index2 = addAtom(null, bondPos[i][1][0],
 		  bondPos[i][1][1], bondPos[i][1][2], bondColor[i]);
                 DEViseAtomInCrystal atom1 = getAtom(index1),
 		  atom2 = getAtom(index2);
                 atom1.addBond(index2);
                 atom2.addBond(index1);
             }
-            index1 = addAtom(bondColor[i].toString(), bondPos[i][0][0],
-	      bondPos[i][0][1], bondPos[i][0][2], bondColor[i]);
-            index2 = addAtom(bondColor[i].toString(), bondPos[i][1][0],
-	      bondPos[i][1][1], bondPos[i][1][2], bondColor[i], 2);
+	    center();
             DEViseAtomInCrystal atom1 = getAtom(index1),
 	      atom2 = getAtom(index2);
             atom1.addBond(index2);
             atom2.addBond(index1);
         }
 
+	// resort();
+
         //newBoxLength = oldlcs.pointDistance(0, 0, 0, 1, 1, 1);
     }
 
+    // --------------------------------------------------------------------
     public synchronized void paint(Component component, Graphics gc,
       boolean isMove)
     {
@@ -211,9 +230,6 @@ public class DEViseCrystal
             for (int i = 0; i < atomList.size(); i++) {
                 DEViseAtomInCrystal atom =
 		  (DEViseAtomInCrystal)atomList.elementAt(i);
-                if (!atom.status) { // ignore deleted atom
-                    continue;
-                }
 
 		// Calculate atom's position after translation/rotation/
 		// scaling.
@@ -221,7 +237,7 @@ public class DEViseCrystal
             }
 
 	    // Sort by Z value.
-            resort();
+            if (_hasAtoms) resort();
 
             isTransformed = false;
         }
@@ -232,10 +248,9 @@ public class DEViseCrystal
 
         byte[] atomDrawn = new byte[atomList.size()];
 
-        DEViseAtomInCrystal atom = null, atom1 = null;
+        DEViseAtomInCrystal atom = null;
 
         Color oldcolor = gc.getColor(), color = null, color1 = null;
-        boolean isBond = false;
 
         for (int i = 0; i < zSortMapSize; i++) {
             index = zSortMap[i];
@@ -249,23 +264,26 @@ public class DEViseCrystal
 
             atomDrawn[index] = 1;
 
-            if (atom.color == null) {
-                color = atom.type.color;
-            } else {
-                color = atom.color;
-            }
-
-            isBond = false;
+            if (atom.color != null) {
+	        color = atom.color;
+	    } else if (atom.realColor != null) {
+	        color = atom.realColor;
+	    } else if (atom.type != null) {
+	        color = atom.type.color;
+	    } else {
+		// Error!
+	        color = Color.white;
+	    }
 
             // Draw the bonds first.
             for (int j = 0; j < atom.bondNumber; j++) {
-                isBond = true;
                 index1 = atom.bond[j];
                 if (atomDrawn[index1] == 1) { // bond already drawed
                     continue;
                 }
 
-                atom1 = (DEViseAtomInCrystal)atomList.elementAt(index1);
+                DEViseAtomInCrystal atom1 =
+		  (DEViseAtomInCrystal)atomList.elementAt(index1);
                 x1 = (int)(atom1.lcspos[0] + 0.5f) + shiftedX;
                 y1 = (int)(atom1.lcspos[1] + 0.5f) + shiftedY;
 
@@ -276,9 +294,10 @@ public class DEViseCrystal
             z = (halfViewDistance - atom.lcspos[2]) / viewDistance *
 	      totalScaleFactor;
 
-	    // Now draw the atom.
-            if (!isBond) {
-                if (atom.isSelected == 0) {
+	    // Now draw the atom.  (If type == null, this atom is only
+	    // here to define the end of a bond, and should not be drawn.)
+            if (_hasAtoms && atom.type != null) {
+                if (!atom.isSelected) {
                     if (isMove) {
                         atom.type.paint(component, gc, x, y, z,
 		          DEViseAtomType.DRAW_PLAIN_UNSELECTED);
@@ -295,10 +314,10 @@ public class DEViseCrystal
 		          DEViseAtomType.DRAW_SHADED_SELECTED);
                     }
                 }
+                atom.drawX = x;
+                atom.drawY = y;
+                atom.drawSize = atom.type.drawSize;
             }
-            atom.drawX = x;
-            atom.drawY = y;
-            atom.drawSize = atom.type.drawSize;
         }
 
 /* BMRB people asked to get rid of the axes.  RKW 2000-06-21.
@@ -330,58 +349,66 @@ public class DEViseCrystal
 */
     }
 
+    // --------------------------------------------------------------------
     public float[] getPos(float[] pos)
     {
         return oldlcs.point(pos);
     }
 
+    // --------------------------------------------------------------------
     public int addAtom(String name, float x, float y, float z)
     {
         return addAtom(name, x, y, z, null, 0);
     }
 
+    // --------------------------------------------------------------------
     public int addAtom(String name, float x, float y, float z, Color color)
     {
         return addAtom(name, x, y, z, color, 0);
     }
 
-    // ADD COMMENT -- what is status?
+    // --------------------------------------------------------------------
+    // If status = 1, we need to resort the zSortMap.
+    // If status = 2, we need to put the information of the center
     public int addAtom(String name, float x, float y, float z, int status)
     {
         return addAtom(name, x, y, z, null, status);
     }
 
-    // ADD COMMENT -- what is status?
+    // --------------------------------------------------------------------
+    // If status = 1, we need to resort the zSortMap.
+    // If status = 2, we need to put the information of the center
     public int addAtom(String name, float x, float y, float z, Color color,
       int status)
     {
-        if (name == null) {
-            name = new String("UnknownAtom");
-        }
-
         // Find the atom type for the new atom; if not found, add the
 	// proper new atom type.
         DEViseAtomType type = null;
-        for (int i = 0; i < atomTypeList.size(); i++) {
-            DEViseAtomType at = (DEViseAtomType)atomTypeList.elementAt(i);
-            if ((name.toLowerCase()).equals(at.name.toLowerCase())) {
-                type = at;
-                break;
-            }
-        }
-
-        if (type == null) {
-            if (color != null) {
-                type = new DEViseAtomType(name, color);
-            } else {
-                type = new DEViseAtomType(name);
+        if (name != null) {
+            for (int i = 0; i < atomTypeList.size(); i++) {
+                DEViseAtomType at = (DEViseAtomType)atomTypeList.elementAt(i);
+                if ((name.toLowerCase()).equals(at.name.toLowerCase())) {
+                    type = at;
+                    break;
+                }
             }
 
-            atomTypeList.addElement(type);
+            if (type == null) {
+                if (color != null) {
+                    type = new DEViseAtomType(name, color);
+                } else {
+                    type = new DEViseAtomType(name);
+                }
+
+                atomTypeList.addElement(type);
+            }
         }
 
         // add new atom into atom list, if possible, overwrite deleted atom
         DEViseAtomInCrystal newAtom = new DEViseAtomInCrystal(type, x, y, z);
+	newAtom.color = color;
+	newAtom.realColor = color;
+
         int index;
         if (!deletedAtomIndexStack.empty()) {
             index = ((Integer)deletedAtomIndexStack.pop()).intValue();
@@ -406,8 +433,6 @@ public class DEViseCrystal
             zSortMap[zSortMapSize - 1] = index;
         }
 
-        // find the bond information for the new atom
-        DEViseAtomInCrystal atom = null;
         float[] pos1 = new float[3];
         oldlcs.point(newAtom.pos, pos1);
 
@@ -442,18 +467,7 @@ public class DEViseCrystal
             resort();
             lcs.point(newAtom.pos, newAtom.lcspos);
         } else if (status == 2) {
-            float dx = (float)Math.abs(maxiX - miniX),
-	      dy = Math.abs(maxiY - miniY),
-	      dz = Math.abs(maxiZ - miniZ), maxi = dx;
-            if (dy > maxi) {
-                maxi = dy;
-            }
-            if (dz > maxi) {
-                maxi = dz;
-            }
-            //newBoxLength = 2 * maxi;
-            newBoxLength = maxi;
-            resetAll(true);
+	    center();
         } else if (status == 0) {
 	    // do nothing
 	} else {
@@ -463,6 +477,7 @@ public class DEViseCrystal
         return index;
     }
 
+    // --------------------------------------------------------------------
     public DEViseAtomInCrystal getAtom(int index)
     {
         if (index < 0 || index >= atomList.size()) {
@@ -472,6 +487,24 @@ public class DEViseCrystal
         }
     }
 
+    // --------------------------------------------------------------------
+    private void center()
+    {
+        float dx = (float)Math.abs(maxiX - miniX),
+          dy = Math.abs(maxiY - miniY),
+	  dz = Math.abs(maxiZ - miniZ), maxi = dx;
+        if (dy > maxi) {
+            maxi = dy;
+        }
+        if (dz > maxi) {
+            maxi = dz;
+        }
+        //newBoxLength = 2 * maxi;
+        newBoxLength = maxi;
+        resetAll(true);
+    }
+
+    // --------------------------------------------------------------------
     public synchronized void resize(int width, int height)
     {
         if (width > 0 && height > 0) {
@@ -481,6 +514,7 @@ public class DEViseCrystal
         }
     }
 
+    // --------------------------------------------------------------------
     public synchronized void resetAll(boolean flag)
     {
         if (flag) {
@@ -526,15 +560,14 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
+    // --------------------------------------------------------------------
     // Sort atoms by transformed Z (increasing or decreasing???).
     private void resort()
     {
         quickindex(zSortMapSize, zSortMap);
-
-        zSortMapSize -= deletedAtomNumber;
-        deletedAtomNumber = 0;
     }
 
+    // --------------------------------------------------------------------
     private void quickIndexSwap(int i, int j)
     {
         int t = zSortMap[i];
@@ -542,6 +575,7 @@ public class DEViseCrystal
         zSortMap[j] = t;
     }
 
+    // --------------------------------------------------------------------
     private int quickIndexCompare(int i, int j)
     {
         if (i < 0) {
@@ -567,6 +601,7 @@ public class DEViseCrystal
         }
     }
 
+    // --------------------------------------------------------------------
     private void quickindex(int n, int[] map)
     {
         // functions needed by this function
@@ -666,6 +701,7 @@ public class DEViseCrystal
         }
     }
 
+    // --------------------------------------------------------------------
     // Translate the objects in the view; dx and dy are mouse movement in
     // pixels;
     public synchronized void translate(int dx, int dy)
@@ -678,6 +714,7 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
+    // --------------------------------------------------------------------
     // Scale the objects in the view; dx and dy are mouse movement in
     // pixels;
     public synchronized void scale(int dx, int dy)
@@ -695,6 +732,7 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
+    // --------------------------------------------------------------------
     // Rotate the objects in the view; dx and dy are mouse movement in
     // pixels;
     public synchronized void rotate(int dx, int dy)
@@ -740,6 +778,7 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
+    // --------------------------------------------------------------------
     // Set all atoms to not be selected.
     public void setSelect()
     {
@@ -748,17 +787,15 @@ public class DEViseCrystal
         for (int i = 0; i < atomList.size(); i++) {
             atom = (DEViseAtomInCrystal)atomList.elementAt(i);
 
-            if (!atom.status) { // ignore deleted atom
-                continue;
-            }
-
-            atom.isSelected = 0;
+            atom.isSelected = false;
             atom.color = null;
         }
     }
 
+    // --------------------------------------------------------------------
     // Set the atom (if any) at the given (non-transformed) location
     // to be selected (highlighted).
+    //TEMP -- linear search here! -- slow!!
     public void setSelect(float x, float y, float z, Color c, boolean isBond)
     {
         DEViseAtomInCrystal atom = null;
@@ -767,17 +804,13 @@ public class DEViseCrystal
         for (int i = 0; i < atomList.size(); i++) {
             atom = (DEViseAtomInCrystal)atomList.elementAt(i);
 
-            if (!atom.status) { // ignore deleted atom
-                continue;
-            }
-
             xx = (float)Math.abs(x - atom.pos[0]);
             yy = (float)Math.abs(y - atom.pos[1]);
             zz = (float)Math.abs(z - atom.pos[2]);
             if (xx < 1.0e-5f && yy < 1.0e-5f && zz < 1.0e-5f) {
                 if (!isBond) {
-                    atom.isSelected = 1;
-                    atom.type.setSelectColor(c);
+                    atom.isSelected = true;
+                    if (atom.type != null) atom.type.setSelectColor(c);
                 } else {
                     //atom.type.setColor(c);
                     atom.color = c;
@@ -786,10 +819,9 @@ public class DEViseCrystal
         }
     }
 
+    // --------------------------------------------------------------------
     public int getNumberOfAtoms()
     {
         return atomList.size();
     }
 }
-
-

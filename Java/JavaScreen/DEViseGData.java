@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2000/05/22 17:52:49  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.33  2000/05/04 17:40:28  wenger
 // Added new text object feature: GData Z value specifies max size of
 // font in points (if > 1).  (Allows me to fix problems with BMRB 4096
@@ -114,8 +118,7 @@ public class DEViseGData
     public static Font defaultFont = null;
 
     public jsdevisec jsc = null; //TEMP -- do we really need this for *every* GData record???
-    public DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
-    public String viewname = null; //TEMP -- do we really need this for *every* GData record???
+    private DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
 
     //public Rectangle GDataLoc = null;
     public Rectangle GDataLocInScreen = null;
@@ -148,7 +151,7 @@ public class DEViseGData
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
     // <symbol type> <shape attr 0> ... <shape attr 14>
-    public DEViseGData(jsdevisec panel, String vname, String gdata, float xm,
+    public DEViseGData(jsdevisec panel, DEViseView view, String gdata, float xm,
       float xo, float ym, float yo) throws YException
     {
 	_gdCount++;
@@ -160,14 +163,13 @@ public class DEViseGData
 	}
 
         jsc = panel;
-        viewname = vname;
 
-        parentView = jsc.jscreen.getView(viewname);
+        parentView = view;
         if (parentView == null) {
             throw new YException("Invalid parent view for GData!");
         }
 
-        String[] data = DEViseGlobals.parseString(gdata);
+        String[] data = DEViseGlobals.parseStringGD(gdata, '{', '}', false);
         if (data == null || data.length != 23)
             throw new YException("Invalid GData + {" + gdata + "}");
         gdata = null;

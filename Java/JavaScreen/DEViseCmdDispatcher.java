@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2000/07/11 16:39:18  venkatan
+// *** empty log message ***
+//
 // Revision 1.59  2000/07/10 12:26:02  venkatan
 // *** empty log message ***
 //
@@ -612,6 +615,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 String viewname = cmd[1];
+		DEViseView view = jsc.jscreen.getView(viewname);
 
 		// Remove the old GData from the view and hopefully free it.
         //        DEViseView view = jsc.jscreen.getView(viewname);
@@ -672,7 +676,7 @@ public class DEViseCmdDispatcher implements Runnable
                             DEViseGData data = null;
                             //jsc.pn("Received gdata is: \"" + results[k] + "\"");
                             try {
-                                data = new DEViseGData(jsc, viewname, results[k], xm, xo, ym, yo);
+                                data = new DEViseGData(jsc, view, results[k], xm, xo, ym, yo);
                             } catch (YException e1) {
                                 //throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                                 throw new YException(e1.getMsg(), 2);

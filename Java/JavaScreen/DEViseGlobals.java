@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2000/07/10 12:26:03  venkatan
+// *** empty log message ***
+//
 // Revision 1.39  2000/06/26 16:48:32  wenger
 // Added client-side JavaScreen debug logging.
 //
@@ -118,6 +121,87 @@ public final class DEViseGlobals
     public static boolean helpBox = false;
 
     // global functions
+
+    // Parse the given string; tokens are enclosed by startChar and endChar,
+    // or delimited by spaces.  If keep is true, startChar and endChar are
+    // included in the output tokens.
+    // Note: this method is currently being used only to parse GData,
+    // put it should eventually entirely replace the method immediately
+    // below.
+    public static String[] parseStringGD(String inputStr, char startChar,
+                                       char endChar, boolean keep)
+    {
+        //TEMP -- what about xx{ } or xx{x} ? how should they be parsed?
+	String[] result = null;
+
+	// Maximum possible number of tokens.
+        int maxToks = inputStr.length();
+
+	// Index into input string of the start and end of each token.
+	int[] starts = new int[maxToks];
+	int[] ends = new int[maxToks];
+
+	int tokCount = 0;
+	int depth = 0; // depth of braces we're currently enclosed by
+	boolean inSpaceTok = false;
+	int index = 0;
+	int length = inputStr.length();
+	while (index < length) {
+	    char current = inputStr.charAt(index);
+	    if (current == startChar) {
+	        if (depth == 0) {
+		    tokCount++;
+		    if (keep) {
+		        starts[tokCount-1] = index;
+		    } else {
+		        starts[tokCount-1] = index + 1;
+		    }
+		}
+		depth++;
+	    } else if (current == endChar) {
+	        depth--;
+		if (depth == 0) {
+		   if (keep) {
+		       ends[tokCount-1] = index;
+		   } else {
+		       ends[tokCount-1] = index - 1;
+		   }
+		}
+	    } else if (current == ' ') {
+	        if (depth == 0) {
+		    if (inSpaceTok) {
+		        inSpaceTok = false;
+			ends[tokCount-1] = index;
+		    }
+		}
+	    } else {
+	        if (depth == 0) {
+		    if (!inSpaceTok) {
+			inSpaceTok = true;
+		        tokCount++;
+			starts[tokCount-1] = index;
+		    }
+		}
+	    }
+
+	    index++;
+	}
+
+	if (tokCount > 0) {
+	    result = new String[tokCount];
+	    for (int tokNum = 0; tokNum < tokCount; tokNum++) {
+	        if (ends[tokNum] > starts[tokNum]) {
+		    result[tokNum] = inputStr.substring(starts[tokNum],
+		      ends[tokNum]);
+		} else {
+		    result[tokNum] = "";
+		}
+	    }
+	}
+
+	return result;
+    }
+
     public static String[] parseString(String inputStr, char startChar,
                                        char endChar, boolean keep)
     {

@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/05/24 14:07:09  wenger
+// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
+// DEViseAtomInCrystal, DEVise3DLCS).
+//
 // Revision 1.6  2000/04/05 06:25:36  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -41,11 +45,18 @@ import java.awt.*;
 
 public class DEViseAtomInCrystal
 {
+    // Note: type is null if atom is only here to define the end of a
+    // bond.
     public DEViseAtomType type = null;
 
-    public boolean status; // ADD COMMENT -- what is this?
-    public int isSelected;
+    public boolean isSelected;
+
+    // The color this atom is currently being drawn with (may change
+    // if the atom is selected).
     public Color color = null;
+
+    // The "real" color of this atom, independent of whether it's selected.
+    public Color realColor = null;
 
     // pos is position as specified in GData; lcspos is position after
     // translation, rotation, scaling.
@@ -56,10 +67,6 @@ public class DEViseAtomInCrystal
     // From physics point of view, number of bond for an atom will not
     // exceed 8, and is rarely exceed 4;
     public int[] bond = new int[4];
-
-    // ADD COMMENT -- what is this?
-    public boolean[] selectedBond = new boolean[4];
-    public int lastSelectedBondIndex = -1;
 
     // Apparently the location (in transformed coordinates) and the size
     // (all in pixels) at which this atom should be drawn.
@@ -75,8 +82,7 @@ public class DEViseAtomInCrystal
 
         bondNumber = 0;
 
-        status = true;
-        isSelected = 0;
+        isSelected = false;
     }
 
     // I think that index is the index in the DEViseCrystal's atomList
@@ -97,7 +103,6 @@ public class DEViseAtomInCrystal
         if (idx != -1) {
             for (int i = idx; i < bondNumber - 1; i++) {
                 bond[i] = bond[i + 1];
-                selectedBond[i] = selectedBond[i + 1];
             }
 
             bondNumber--;
@@ -113,14 +118,11 @@ public class DEViseAtomInCrystal
             int[] tmp = new int[bondNumber * 2];
             boolean[] tmp1 = new boolean[bondNumber * 2];
             System.arraycopy(bond, 0, tmp, 0, bondNumber);
-            System.arraycopy(selectedBond, 0, tmp1, 0, bondNumber);
             bond = tmp;
-            selectedBond = tmp1;
         }
 
 	// Enter the bond in the bonds array.
         bond[bondNumber] = index;
-        selectedBond[bondNumber] = false;
         bondNumber++;
     }
 }

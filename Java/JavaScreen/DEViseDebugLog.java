@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2000/06/26 16:48:32  wenger
+// Added client-side JavaScreen debug logging.
+//
 //
 
 // ------------------------------------------------------------------------
@@ -32,6 +35,7 @@ import  java.io.*;
 public class DEViseDebugLog
 {
     private static DEViseDebugLog _log = null;
+    private static final boolean _debug = false;
 
     static void create()
     {
@@ -40,6 +44,10 @@ public class DEViseDebugLog
 
     static void log(String msg)
     {
+        if (_debug) {
+            System.out.println(msg);
+        }
+
         if (_log != null) {
 	    _log.send(msg);
 	}
