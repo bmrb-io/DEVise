@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.97  1998/08/17 18:51:23  wenger
+# Updated solaris dependencies for egcs; fixed most compile warnings;
+# bumped version to 1.5.4.
+#
 # Revision 1.96  1998/08/10 15:25:37  donjerko
 # *** empty log message ***
 #
@@ -830,7 +834,7 @@ TableCreate.o: ../Core/queue.h ../Core/Array.h ../Core/SeqSimVec.h
 TableCreate.o: /usr/include/math.h /usr/include/floatingpoint.h
 TableCreate.o: /usr/include/sys/ieeefp.h ../Core/Stats.h ../Core/RelationId.h
 TableCreate.o: ../Core/Inserter.h
-main.o: InitShut.h Common.h
+main.o: InitShut.h Common.h ../Core/exception.h /usr/include/assert.h
 Common.o: /usr/include/assert.h /usr/include/math.h
 Common.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Common.o: ../Core/types.h ../Core/exception.h ../Core/Utility.h

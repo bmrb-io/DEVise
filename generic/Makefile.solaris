@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.57  1998/06/24 22:15:13  donjerko
+# *** empty log message ***
+#
 # Revision 1.56  1998/06/04 23:08:16  donjerko
 # *** empty log message ***
 #
@@ -118,7 +121,8 @@ collaborator.o: /usr/include/sys/select.h /usr/include/sys/time.h
 collaborator.o: /usr/include/time.h /usr/include/sys/signal.h
 collaborator.o: /usr/include/sys/unistd.h /usr/include/sys/siginfo.h
 collaborator.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-collaborator.o: /usr/include/unistd.h /usr/include/memory.h
+collaborator.o: /usr/include/unistd.h /usr/include/fcntl.h
+collaborator.o: /usr/include/sys/fcntl.h /usr/include/memory.h
 collaborator.o: /usr/include/sys/resource.h /usr/include/syslog.h
 collaborator.o: /usr/include/sys/syslog.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
