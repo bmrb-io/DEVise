@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/07/08 17:08:38  jussi
+#  The mapping legend (label) is now copied in DupWindow.
+#
 #  Revision 1.9  1996/07/01 19:32:28  jussi
 #  The 3D camera location is now duplicated in Window/Duplicate.
 #
@@ -618,11 +621,12 @@ proc RotateMergedView {} {
     # move first mapping to end of mapping list in view
     set map [lindex $mappings 0]
     set legend [DEVise getMappingLegend $curView $map]
-    if {$legend == ""} {
-	set legend "X"
-    }
     DEVise removeMapping $curView $map
-    DEVise insertMapping $curView $map $legend
+    if {$legend != ""} {
+        DEVise insertMapping $curView $map $legend
+    } else {
+        DEVise insertMapping $curView $map
+    }
     
     DEVise refreshView $curView
 }
