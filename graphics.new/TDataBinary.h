@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/05 03:08:29  jussi
+  Added support for composite attributes. Also added tape drive
+  support.
+
   Revision 1.2  1996/01/25 20:22:52  jussi
   Improved support for data files that grow while visualization
   is being performed.
@@ -38,6 +42,9 @@
 #include "RecOrder.h"
 #include "tapedrive.h"
 
+const int BIN_INIT_INDEX_SIZE= 50000;        // initial index size
+const int BIN_INDEX_ALLOC_INCREMENT = 25000; // allocation increment for index
+
 /* We cache the first BIN_CONTENT_COMPARE_BYTES from the
    file in the cache. The next time we start up, this cache is
    compared with what's in the file to determine if they are
@@ -47,7 +54,7 @@ const int BIN_CONTENT_COMPARE_BYTES = 4096;
 
 class TDataBinary: public TData, private DispatcherCallback {
 public:
-  TDataBinary(char *name, int recSize, int physRecSize);
+  TDataBinary(char *name, char *alias, int recSize, int physRecSize);
 
   virtual ~TDataBinary();
 
@@ -136,7 +143,7 @@ protected:
   void Initialize();
 
   /* Copy record into buffer. Return false if invalid record. */
-  virtual Boolean Decode(RecId id, void *recordBuf, char *line) = 0;
+  virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
   /* Read/Write specific to each subclass cache. The cached information
      is to be read during file start up, and written when file closes,
@@ -147,7 +154,7 @@ protected:
   virtual Boolean WriteCache(int fd){ return false; }
   virtual Boolean ReadCache(int fd){ return false; }
 
-  static char *MakeCacheName(char *file);
+  static char *MakeCacheName(char *alias);
 
 private:
   /* From DispatcherCallback */
@@ -155,10 +162,20 @@ private:
 
   virtual void Cleanup();
 
+  /* Build index */
+  void BuildIndex();
+
+  /* Extend index to hold more */
+  void ExtendIndex();
+
   void ReadRec(RecId id, int numRecs, void *buf);
+
+  /* Print indices */
+  void PrintIndices();
 
   long _totalRecs;                // total number of records
   char *_name;                    // name of file/dataset
+  char *_alias;                   // alias of file/dataset
   char *_cacheFileName;           // name of cache file
   int _recSize;                   // size of record
   int _physRecSize;               // physical record size
@@ -168,6 +185,9 @@ private:
 
   RecId _lowId, _highId;          // current range to read data
   RecId _nextId, _endId;          // range of next retrieval
+
+  long *_index;                   // index to records
+  long _indexSize;                // size of index
 
   long _lastPos;                  // position of last record in file
   long _currPos;                  // current file position

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/05 03:08:15  jussi
+  Added support for composite attributes. Also added tape drive
+  support.
+
   Revision 1.4  1996/04/20 19:56:58  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call
   itself when needed instead of being continuosly polled by the Dispatcher.
@@ -52,9 +56,10 @@
 static char fileContent[BIN_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[BIN_CONTENT_COMPARE_BYTES];
 
-TDataBinary::TDataBinary(char *name, int recSize, int physRecSize)
+TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
 {
   _name = name;
+  _alias = alias;
   _recSize = recSize;
   _physRecSize = physRecSize;
 
@@ -82,8 +87,11 @@ TDataBinary::TDataBinary(char *name, int recSize, int physRecSize)
   
   _lastPos = 0;
   _currPos = 0;
-
   _totalRecs = 0;
+
+  _indexSize = BIN_INIT_INDEX_SIZE;
+  _index = new long[_indexSize];
+
   _fileGrown = false;
 
   Dispatcher::Current()->Register(this);
@@ -101,6 +109,10 @@ TDataBinary::~TDataBinary()
     delete _tape;
   else
     fclose(_file);
+
+  delete _index;
+  delete _alias;
+  delete _name;
 }
 
 int TDataBinary::Dimensions(int *sizeDimension)
@@ -138,29 +150,8 @@ Boolean TDataBinary::LastID(RecId &recId)
     }
   }
 
-  if (_currPos > _lastPos) {
-    _lastPos = _currPos;
-    if (_lastPos % _physRecSize) {
-      fprintf(stderr,
-	      "Partial records in binary file: size %ld, record size %d\n",
-	      _lastPos, _physRecSize);
-      DOASSERT(0, "Partial records in binary file");
-    }
-
-    long oldTotal = _totalRecs;
-    _totalRecs = _lastPos / _physRecSize;
-
-    // scan records in order to get hi/lo values for each attribute
-    for(long rid = oldTotal; rid < _totalRecs; rid++) {
-      char buf[_recSize];
-      ReadRec((RecId)rid, 1, buf);
-    }
-
-    printf("%s: %ld total records, %ld new\n", _name,
-	   _totalRecs, _totalRecs - oldTotal);
-  }
-
-  _fileGrown = false;
+  if (_currPos > _lastPos)
+    BuildIndex();
 
   recId = _totalRecs - 1;
   return (_totalRecs > 0);
@@ -229,21 +220,20 @@ int TDataBinary::GetModTime()
   return (long)sbuf.st_mtime;
 }
 
-char *TDataBinary::MakeCacheName(char *file)
+char *TDataBinary::MakeCacheName(char *alias)
 {
-  char *fname = StripPath(file);
-  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
+  char *fname = StripPath(alias);
+  int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
   char *name = new char[nameLen];
-  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
-  DOASSERT(strlen(name) < nameLen, "Name too long");
+  sprintf(name, "%s/%s", Init::WorkDir(), fname);
   return name;
 }
 
 void TDataBinary::Initialize()
 {
-  RecId recid;
+  int i;
 
-  _cacheFileName = MakeCacheName(_name);
+  _cacheFileName = MakeCacheName(_alias);
 
   Boolean fileOpened = false;
   int cacheFd;
@@ -312,12 +302,36 @@ void TDataBinary::Initialize()
     goto error;
   }
 
+  if (_totalRecs >= _indexSize) {
+    delete _index;
+    _indexSize = _totalRecs + BIN_INDEX_ALLOC_INCREMENT;
+#ifdef DEBUG
+    printf("Initialize:allocating %ld index elements\n", _indexSize);
+#endif
+    _index = new long[_indexSize];
+  }
+
+  /* read the index */
+  if (read(cacheFd, _index, _totalRecs * sizeof(long))
+      != (int)(_totalRecs * sizeof(long))) {
+    perror("read");
+    goto error;
+  }
+  
+  for(i = 1; i < _totalRecs; i++) {
+    if (_index[i - 1] > _index[i]) {
+      printf("Cached index inconsistent; rebuilding\n");
+      goto error;
+    }
+  }
+
   close(cacheFd);
   
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
 
-  LastID(recid);
+  /* continue to build index */
+  BuildIndex();
 
   return;
 
@@ -329,12 +343,12 @@ void TDataBinary::Initialize()
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
 
-  LastID(recid);
+  BuildIndex();
 }
 
 void TDataBinary::Checkpoint()
 {
-  printf("Checkpointing %s: %ld total records, %ld new\n", _name,
+  printf("Checkpointing %s: %ld total records, %ld new\n", _alias,
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
@@ -401,6 +415,13 @@ void TDataBinary::Checkpoint()
     goto error;
   }
     
+  /* write indices */
+  if (write(cacheFd, _index, _totalRecs * sizeof(long))
+      != (int)(_totalRecs * sizeof(long))) {
+    perror("write");
+    goto error;
+  }
+
   close(cacheFd);
 
   if (_tape)
@@ -421,54 +442,146 @@ void TDataBinary::Checkpoint()
     _currPos = ftell(_file);
 }
 
+/* Build index for the file. This code should work when file size
+   is extended dynamically. Before calling this function, position
+   should be at the last place where file was scanned. */
+
+void TDataBinary::BuildIndex()
+{
+#ifdef DEBUG
+  printf("Entering BuildIndex\n");
+#endif
+
+  char physRec[_physRecSize];
+  char recBuf[_recSize];
+  int oldTotal = _totalRecs;
+  
+  if (_tape) {
+    // File has been appended, extend index
+    if (_tape->seek(_lastPos) != _lastPos) {
+      perror("tapeseek");
+      DOASSERT(0, "Cannot perform seek on tape drive");
+    }
+  } else {
+    // File has been appended, extend index
+    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
+      perror("fseek");
+      DOASSERT(0, "Cannot perform file seek");
+    }
+  }
+
+  _currPos = _lastPos;
+
+  while(1) {
+
+    int len = 0;
+
+    if (_tape)
+      len = _tape->read(physRec, _physRecSize);
+    else
+      len = fread(physRec, 1, _physRecSize, _file);
+    if (!len)
+      break;
+    DOASSERT(len >= 0, "Cannot read data stream");
+
+    if (len == _physRecSize) {
+      if (Decode(recBuf, _currPos / _physRecSize, physRec)) {
+	if (_totalRecs >= _indexSize)     // index buffer too small?
+	  ExtendIndex();                  // extend it
+	_index[_totalRecs++] = _currPos;
+      } else {
+#if 0
+	printf("Ignoring invalid or non-matching record\n");
+#endif
+      }
+    } else {
+      printf("Ignoring incomplete record (%d bytes)\n", len);
+    }
+
+    _currPos += len;
+  }
+
+  if (_tape) {
+    // last position is > current position because TapeDrive advances
+    // bufferOffset to the next block, past the EOF, when tape file
+    // ends
+    _lastPos = _tape->tell();
+    DOASSERT(_lastPos >= _currPos, "Incorrect file position");
+  } else {
+    _lastPos = ftell(_file);
+    DOASSERT(_lastPos == _currPos, "Incorrect file position");
+  }
+
+  _fileGrown = false;
+
+  printf("Index for %s: %ld total records, %ld new\n", _alias,
+	 _totalRecs, _totalRecs - oldTotal);
+}
+
 void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 {
 #ifdef DEBUG
   printf("TDataBinary::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
-  long recloc = id * _physRecSize;
-
-  if (_tape) {
-    if (_tape->seek(recloc) != recloc) {
-      perror("tapeseek");
-      DOASSERT(0, "Cannot perform seek on tape drive");
-    }
-  } else {
-    if (_currPos != recloc) {
-      if (fseek(_file, recloc, SEEK_SET) < 0) {
-	perror("fseek");
-	DOASSERT(0, "Cannot perform file seek");
-      }
-    }
-  }
-  _currPos = recloc;
+  char *ptr = (char *)buf;
 
   for(int i = 0; i < numRecs; i++) {
 
-    char *ptr = ((char *)buf) + i * _recSize;
+    long recloc = _index[id + i];
 
     if (_tape) {
+      if (_tape->seek(recloc) != recloc) {
+	perror("tapeseek");
+	DOASSERT(0, "Cannot perform seek on tape drive");
+      }
+      _currPos = recloc;
       if (_tape->read(ptr, _physRecSize) != _physRecSize)
 	DOASSERT(0, "Cannot read from tape");
     } else {
+      if (_currPos != recloc) {
+	if (fseek(_file, recloc, SEEK_SET) < 0) {
+	  perror("fseek");
+	  DOASSERT(0, "Cannot perform file seek");
+	}
+	_currPos = recloc;
+      }
       if (fread(ptr, _physRecSize, 1, _file) != 1) {
 	perror("fread");
 	DOASSERT(0, "Cannot read from file");
       }
     }
 
-    Boolean valid = Decode(id + i, ptr, ptr);
+    Boolean valid = Decode(ptr, _currPos / _physRecSize, ptr);
     DOASSERT(valid, "Inconsistent validity flag");
-  }
 
-  _currPos += numRecs * _physRecSize;
+    ptr += _recSize;
+    _currPos += _physRecSize;
+  }
+}
+
+void TDataBinary::ExtendIndex()
+{
+#ifdef DEBUG
+  printf("ExtendIndex:allocating %ld index elements\n",
+	 _indexSize + BIN_INDEX_ALLOC_INCREMENT);
+#endif
+
+  long *newIndex = new long[_indexSize + BIN_INDEX_ALLOC_INCREMENT];
+  memcpy(newIndex, _index, _indexSize * sizeof(long));
+  delete _index;
+  _index = newIndex;
+  _indexSize += BIN_INDEX_ALLOC_INCREMENT;
 }
 
 void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   DOASSERT(!_tape, "Writing to tape not supported yet");
 
+  if (_totalRecs >= _indexSize)         // index buffer too small?
+    ExtendIndex();                      // extend it
+
+  _index[_totalRecs++] = _lastPos;
   int len = numRecs * _physRecSize;
 
   if (_tape) {
@@ -506,4 +619,17 @@ void TDataBinary::Cleanup()
     delete _tape;
     _tape = NULL;
   }
+}
+
+void TDataBinary::PrintIndices()
+{
+  int cnt = 0;
+  for(long i = 0; i < _totalRecs; i++) {
+    printf("%ld ", _index[i]);
+    if (cnt++ == 10) {
+      printf("\n");
+      cnt = 0;
+    }
+  }
+  printf("\n");
 }
