@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/05/22 17:52:13  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.19  1996/05/07 16:43:00  jussi
   Cache file name now based on file alias (TData name). Added parameter
   to the Decode() function call.
@@ -126,10 +131,10 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
   }
   else
   {
-	if (_data->Open("r") != StatusOk)
-	{
+    if (_data->Open("r") != StatusOk)
+    {
       DOASSERT(0, "Cannot open data file");
-	}
+    }
   }
 
   _bytesFetched = 0;
@@ -178,9 +183,9 @@ Boolean TDataAscii::HeadID(RecId &recId)
 
 Boolean TDataAscii::LastID(RecId &recId)
 {
-  if (!_data->isTape) {
+  if (!_data->isTape()) {
     // see if file has grown
-	_currPos = _data->gotoEnd();
+    _currPos = _data->gotoEnd();
     if (_currPos > _lastPos)
       BuildIndex();
   } else {
@@ -572,7 +577,7 @@ void TDataAscii::ExtendIndex()
 
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
-  DOASSERT(!_data->isTape, "Writing to tape not supported yet");
+  DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
 
   if (_totalRecs >= _indexSize)         // index buffer too small?
     ExtendIndex();                      // extend it
@@ -610,7 +615,7 @@ void TDataAscii::Cleanup()
 {
   Checkpoint();
 
-  if (_data->isTape) {
+  if (_data->isTape()) {
     _data->printStats();
     delete _data;
     _data = NULL;
