@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/08/14 21:22:48  wenger
+  Minor dispatcher cleanups, etc.  Fixed release script to release
+  statically-linked executables for HP and Sun.
+
   Revision 1.22  1996/08/07 15:15:19  guangshu
   Add include string.h.
 
@@ -195,7 +199,7 @@ public:
 			int fd = -1); 
   
   /* Unregister callback */
-  void Unregister(DispatcherCallback *c); 
+  void Unregister(DispatcherCallback *c);
 
   /* Change the state of the dispatcher */
   void ChangeState(StateFlag flag) { _stateFlag = flag; }
@@ -230,11 +234,14 @@ public:
   /* Return from Run() */
   static void ReturnCurrent() { dispatcher._returnFlag = true; }
   
-  /* Notify dispatcher that we need to quit program */
-  static void QuitNotify();
+  /* Catch interrupts from the user and terminate program if necessary */
+  static void Terminate(int dummy);
 
   /* Cleanup dispatcher */
   static void Cleanup() { dispatcher.DoCleanup(); }
+
+  /* Check if user has hit interrupt (Control-C) */
+  static void CheckUserInterrupt();
 
   /***********************************************************************/
 
@@ -266,6 +273,7 @@ private:
 
   StateFlag _stateFlag;
   Boolean _returnFlag;	/* TRUE if we should quit running and return */
+  Boolean _firstIntr;	/* Set to true when dispatcher received interrupt */
   Boolean _quit;	/* Set to true when dispatcher should quit */
   
   /* Set of file descriptors to inspect for potential input */

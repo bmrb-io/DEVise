@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/12/12 21:09:39  jussi
+  DestroySessionData() now called before clean up.
+
   Revision 1.29  1996/11/26 09:28:54  beyer
   Dispatcher now calls the display callback every time through its run loop
   because the display might have events to be processed that are in memory
@@ -127,7 +130,8 @@
 #include <errno.h>
 #include <memory.h>
 #include <sys/time.h>
-#include<fcntl.h>
+#include <signal.h>
+#include <fcntl.h>
 #ifdef AIX
 #include <sys/select.h>
 #endif
@@ -149,7 +153,11 @@ Dispatcher dispatcher;
 Dispatcher::Dispatcher(StateFlag state)
 {
   _stateFlag = state;
+  _firstIntr = false;
   _quit = false;
+
+  /* reset interrupt handling for Control-C */
+  (void)signal(SIGINT, Terminate);
 
   FD_ZERO(&fdset);
   maxFdCheck = 0;
@@ -312,12 +320,27 @@ void Dispatcher::RunNoReturn()
     dispatcher.Run1();
 }
 
-void Dispatcher::QuitNotify()
+void Dispatcher::Terminate(int dummy)
 {
-  if (!dispatcher._quit)
-    printf("\nReceived interrupt from user.\n");
+  if (dispatcher._firstIntr) {
+    printf("\nReceived interrupt. Terminating program.\n");
+    dispatcher._quit = true;
+  } else {
+    printf("\nReceived interrupt. Hit interrupt once more to quit.\n");
+    dispatcher._firstIntr = true;
+  }
 
-  dispatcher._quit = true;
+  /* reset interrupt handling for INTR */
+  (void)signal(SIGINT, Terminate);
+}
+
+void Dispatcher::CheckUserInterrupt()
+{
+  if (dispatcher._quit) {
+    errno = 0;
+    Cleanup();
+    Exit::DoExit(0);
+  }
 }
 
 /********************************************************************
@@ -360,11 +383,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 
 void Dispatcher::Run1()
 {
-  if (_quit) {
-    errno = 0;
-    Cleanup();
-    Exit::DoExit(0);
-  }
+  CheckUserInterrupt();
 
   // kb 11/26/96
   // hack: X might have read messages from our connection and stored them
