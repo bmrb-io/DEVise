@@ -6,7 +6,7 @@ import java.io.*;
     record. Tuple is implemented as an array of types.
     It is constructed from an array of type descriptors. */
     
-public class Tuple //implements Cloneable 
+public class Tuple 
 {
     DTE_Type[] types;
     
@@ -18,8 +18,8 @@ public class Tuple //implements Cloneable
 	    types[i] = DTE_Type.typeFor(typeStrings[i]);
 	}
     }
-    
-    /** read returns false if the EOF is encountered */
+   
+    /** Read a tuple from a StreamTokenizer object "st". Returns false if the EOF is encountered */
     
     public boolean read(StreamTokenizer st) throws IOException 
 	{
@@ -31,6 +31,7 @@ public class Tuple //implements Cloneable
 	    return true;
 	}
     
+  /** Print this tuple to a PrintWriter object "ps".*/
     public void print(PrintWriter os)
 	{
 	    for(int i = 0; i < types.length; i++)
@@ -41,6 +42,7 @@ public class Tuple //implements Cloneable
 	    os.flush();
 	}
     
+  /** Print this tuple to a PrintStream object "ps".*/
     public void print(PrintStream os)
 	{
 	    for(int i = 0; i < types.length; i++)
@@ -49,37 +51,17 @@ public class Tuple //implements Cloneable
 	    os.println();
 	    os.flush();
 	}
-    
+
+  /** Return the fileds stored in the tuple, namely ' TypeDesc[] types'.*/
     public DTE_Type[] get_fields( )
 	{
 	    return types;
 	}
 
-    /** This function assume that the two Tuple objects have the same schema. */
+    /** Copy this tuple to tuple 't'. This function assume that the two Tuple objects have the same schema. */
     public void copyTo(Tuple t)
 	{
 	    for(int i = 0; i < types.length; i++)
 		types[i].copyTo(t.types[i]);
 	}
 } 
-	    
-
-    
-    /*
-      public Object clone()
-      {
-      Tuple t = new Tuple();
-      t.types = new DTE_Type[types.length];
-      for(int i = 0; i < types.length; i++)
-      t.types[i] = (DTE_Type)types[i].clone();
-      return t;
-      }
-    */
-
-
-
-
-
-
-
-

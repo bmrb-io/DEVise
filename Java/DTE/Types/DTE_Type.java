@@ -23,13 +23,22 @@ public abstract class DTE_Type {
 	System.out.println("Unknown type: "+type.getString( ) );
 	return null;
     }
-    
+
+  /** Read a DTE_Type from a StreamTokenizer object "st". */    
     abstract public boolean read(StreamTokenizer st) throws IOException;
+
+  /** Print a DTE_Type to a PrintWriter object "ps".*/
     abstract public void print(PrintWriter ps);
+
+  /** Print a DTE_Type to a PrintStream object "ps".*/
     abstract public void print(PrintStream ps);
-    //abstract public Object clone( );
+
+
     abstract public TypeDesc getType( );
     abstract public String toString( );
+
+  /** Copy this DTE_Type object to another DTE_Type object 'd'.*/
     abstract public void copyTo(DTE_Type d);
 }
+
 

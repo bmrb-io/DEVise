@@ -5,7 +5,7 @@ import Types.*;
 import Expressions.*;
 
 
-/** This class is used to store outer relation tuple when using NLjoin. */
+/** This class is used to store outer relation tuple when using Block Nested Loop join. */
  
 public class MemoryLoader implements Iterator
 { 
@@ -13,11 +13,10 @@ public class MemoryLoader implements Iterator
   Iterator reln;
   int size, curr = 0;
 
-  /* Argument:
-     size1: integer, specify how many outer relation tuples can be store in memory.
-     r: Iterator on outer relation.
-     types: TypeDesc array, specify the type of attributes of the outer relation tuple.
-     */
+  /** Argument:*/
+  /**         size1: integer, specify how many outer relation tuples can be store in memory.*/
+  /**         r: Iterator on outer relation.*/
+  /**         types: TypeDesc array, specify the type of attributes of the outer relation tuple.*/
 
   public MemoryLoader(int size1, Iterator r, TypeDesc[] types)
   {
@@ -30,6 +29,7 @@ public class MemoryLoader implements Iterator
     reln = r;
   }
 
+  /** This function load the outer relation tuples into the memory bucket. */
   public void load() throws IOException
   {
     Tuple t;
@@ -48,13 +48,15 @@ public class MemoryLoader implements Iterator
       }
   }
   
- 
+
+  /** Get the first tuple in the memory bucket.*/  
   public Tuple getFirst() throws IOException
   {
     curr = 0;
     return TupleArray[curr++];
   }
 
+  /** Return the next tuple in the memory bucket. Return null if no tuple left.*/
   public Tuple getNext() throws IOException
   {
     if( curr < size )

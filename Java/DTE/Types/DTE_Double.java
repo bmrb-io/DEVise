@@ -3,7 +3,7 @@ package Types;
 import java.io.*;
 import java.lang.*;
 
-public class DTE_Double extends DTE_Type  //implements Cloneable 
+public class DTE_Double extends DTE_Type  
 {
   double val;
 
@@ -20,11 +20,13 @@ public class DTE_Double extends DTE_Type  //implements Cloneable
           return val == cObj.val;
      }
 
+  /** Create an DTE_Double object with value to be 0.*/  
   public DTE_Double()
   {
     val = 0;
   }
 
+  /** Create an DTE_Double object with value to be i.*/  
   public DTE_Double(double i)
   {
     val = i;
@@ -45,6 +47,7 @@ public class DTE_Double extends DTE_Type  //implements Cloneable
     val = d;
   }
 
+  /** Read a DTE_Double from a StreamTokenizer object "st".*/
   public boolean read(StreamTokenizer st) throws IOException 
   {
     int status = st.nextToken();
@@ -62,25 +65,21 @@ public class DTE_Double extends DTE_Type  //implements Cloneable
     return true;
   }
  
+/** Print to a PrintWriter object "ps".*/
   public void print(PrintWriter ps)
   {
     ps.print(val);
     ps.print(" ");
   }
 
+/** Print to a PrintStream object "ps".*/
   public void print(PrintStream ps)
   {
     ps.print(val);
     ps.print(" "); 
   }
 
-    /*
-  public Object clone()
-  {
-    return new DTE_Double(val);
-  }
-    */
-
+  /** Copy this DTE_Double object to another DTE_Type object 'd'.*/ 
     public void copyTo(DTE_Type d)
 	{
 	    ((DTE_Double)d).val = val;

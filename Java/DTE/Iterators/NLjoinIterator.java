@@ -39,19 +39,15 @@ public class NLjoinIterator implements Iterator
   }
 
 
-  /* Argument:
-     left1:  iterator on outer relation
-     right1: iterator on outer relation
-     mySelect1: ExecExpr array, to test if the tuple satisfy the selection or
-               projection requirement
-     myWhere1:  ExecExpr array, after testing the tuple belong to the result,
-               use this to pick out fields in returned tuple, so the number of
-               elements of this array should be the same as that of the returned tuple.
-     typeStrings: TypeDesc array, specify the type of attributes of the returned tuple.
-     typeStrings1: TypeDesc array, specify the type of attributes of the outer relation tuple.
-     typeStrings2: TypeDesc array, specify the type of attributes of the inner relation tuple.
-     bucketsize: integer, specify how many outer relation tuples can be stored in memory. 
-*/
+  /** Argument:*/
+  /**          left1:  iterator on outer relation. */
+  /**          right1: iterator on outer relation. */
+  /**          mySelect1: ExecExpr array, to test if the tuple satisfy the join condition. */
+  /**     myWhere1:  ExecExpr array, after testing the tuple belong to the result, use this to pick out fields in returned tuple, so the number of elements of this array should be the same as that of the returned tuple.*/
+  /**     typeStrings: TypeDesc array, specify the type of attributes of the returned tuple.*/
+  /**     typeStrings1: TypeDesc array, specify the type of attributes of the outer relation tuple.*/
+  /**     typeStrings2: TypeDesc array, specify the type of attributes of the inner relation tuple.*/
+  /**     bucketsize: integer, specify how many outer relation tuples can be stored in memory.*/
 
   public NLjoinIterator(Iterator left1, Iterator right1, ExecExpr[] mySelect1, 
 			ExecExpr[] myWhere1,TypeDesc[] typeStrings, 
@@ -97,13 +93,13 @@ public class NLjoinIterator implements Iterator
   }
 
 
-
+  /** Simply return the next tuple. Call getNext()*/  
   public Tuple getFirst() throws IOException
   {
     return getNext();
   }
 
-
+  /** Return the next tuple that satisfy the join condition. Return null if no tuple left.*/
   public Tuple getNext() throws IOException
   {
     boolean cond = false;

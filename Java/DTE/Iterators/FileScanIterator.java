@@ -18,6 +18,9 @@ public class FileScanIterator implements Iterator
   boolean first_call = true;
   String filename;
   
+
+  /** Create a filescan iterator on file "fileName", the type of the tuple in the file should be the same as TypeDesc[] types. */
+
   public FileScanIterator(String fileName, TypeDesc[] types) 
        throws IOException
   {
@@ -28,7 +31,8 @@ public class FileScanIterator implements Iterator
     filename = fileName;		
   }
   
-  /** getFirst should be called before getNext */
+
+  /** getFirst should be called before getNext, it will open the inpuit file to return the first tuple. */
   
   public Tuple getFirst() throws IOException
   {
@@ -47,10 +51,9 @@ public class FileScanIterator implements Iterator
     return getNext();
   }
   
-  /** getNext returns a valid tuple object or null to signal the end of
-	iterator */
-  
-  public Tuple getNext() throws IOException 
+
+  /** getNext returns a valid tuple object or null to signal the end of iterator */
+    public Tuple getNext() throws IOException 
   {
     if(first_call)
       return getFirst();
