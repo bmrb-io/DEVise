@@ -1,0 +1,108 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Release the client/server and batch versions of DEVise.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+set files = "hp/generic/devise hp/generic/deviseb hp/generic/devised \
+solaris/generic/devise solaris/generic/deviseb solaris/generic/devised \
+solsparc/generic/devise solsparc/generic/deviseb solsparc/generic/devised \
+sun/generic/devise sun/generic/deviseb sun/generic/devised"
+
+set target = /p/devise/public
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+foreach file ($files)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  endif
+end
+
+echo You are about to release YOUR copy of Devise to the
+echo general public. The target directory is $target.
+echo ""
+echo The release includes Solaris/Sun/HP executables.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+echo ""
+echo Executing release procedures...
+sleep 1
+
+echo ""
+echo Releasing new copy of client/server and batch Devise executables...
+if (! -d $target) then
+  mkdir $target
+endif
+
+if (! -d $target/sunx86_54) then
+  mkdir $target/sunx86_54
+endif
+if (! -f $target/sunx86_55) then
+  ln -s sunx86_54 $target/sunx86_55
+endif
+cp -p solaris/generic/devise $target/sunx86_54/devisec
+cp -p solaris/generic/deviseb $target/sunx86_54/deviseb
+cp -p solaris/generic/devised $target/sunx86_54/devised
+
+if (! -d $target/sun4m_54) then
+  mkdir $target/sun4m_54
+endif
+if (! -f $target/sun4m_55) then
+  ln -s sun4m_54 $target/sun4m_55
+endif
+if (! -f $target/sun4x_55) then
+  ln -s sun4m_55 $target/sun4x_55
+endif
+cp -p solsparc/generic/devise $target/sun4m_54/devisec
+cp -p solsparc/generic/deviseb $target/sun4m_54/deviseb
+cp -p solsparc/generic/devised $target/sun4m_54/devised
+
+if (! -d $target/sun4m_412) then
+  mkdir $target/sun4m_412
+endif
+cp -p sun/generic/devise $target/sun4m_412/devisec
+cp -p sun/generic/deviseb $target/sun4m_412/deviseb
+cp -p sun/generic/devised $target/sun4m_412/devised
+
+if (! -d $target/hp700_ux90) then
+  mkdir $target/hp700_ux90
+endif
+cp -p hp/generic/devise $target/hp700_ux90/devisec
+cp -p hp/generic/deviseb $target/hp700_ux90/deviseb
+cp -p hp/generic/devised $target/hp700_ux90/devised
+
+
+echo ""
+echo Done!
