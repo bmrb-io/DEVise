@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/23 21:21:40  jussi
+  Made code use shared memory in MemMgr. Simplified some routines.
+
   Revision 1.3  1996/06/27 15:47:17  jussi
   Replaced method ClearGData() with ClearTData() which allows both
   TData and GData (which derives from TData) to be cleared.
@@ -24,250 +27,188 @@
   Added CVS header.
 */
 
-#ifndef BufMgfFull_h
+#ifndef BufMgrFull_h
 #define BufMgrFull_h
 
 #include "BufMgr.h"
 #include "RangeInfo.h"
 #include "Init.h"
-#include "SBufMgr.h"
-
-class BufferPolicy;
-class RecRange;
-class TData;
-class TDataRangeList;
-class RangeList;
-class RangeInfo;
-class RangeInfoArrays;
-class RangeInfoAlloc;
-
-/* maintain histogram statistics of memory allocation sizes */
-//#define BUFMGRHIST
-
-const int MaxReturnRanges = 2;
-const int RANGE_ALLOC_HIST_SIZE = 6;
+#include "MemMgr.h"
+#include "TDataRangeList.h"
+#include "RangeInfo.h"
+#include "RangeInfoArray.h"
 
 class BufMgrFull: public BufMgr {
-public:
-  BufMgrFull(int bufSize);
+  public:
+    BufMgrFull(int bufSize);
 
-  /* Free all buffers, and reinitialize */
-  virtual void Clear();
+    /*
+       For documentation on the public methods of this class, see
+       the header file of the base class (BufMgr.h).
+    */
 
-  /* Clear buffers occupied by TData/GData */
-  void ClearData(TData *data);
+    virtual void Clear();
 
-  /***** Retrieving/Freeing records *****/
+    void ClearData(TData *data);
 
-  virtual void InitGetRecs(TData *tdata,GData *gdata,
-			   RecId lowId, RecId highId, RecordOrder recOrder,
-			   Boolean tdataOnly = false);
+    virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
+                                 RecId lowId, RecId highId,
+                                 Boolean tdataOnly = false,
+                                 Boolean inMemoryOnly = false,
+                                 Boolean randomized = false,
+                                 Boolean asyncAllowed = false);
 
-  /* Retrieve next batch of records.  Return false if no more batches. */
-  virtual Boolean GetRecs(Boolean &isTData, RecId &startRecId,
-			  int &numRecs, void *&buf);
+    virtual BMHandle SelectReady();
+
+    virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
+                            RecId &startRecId, int &numRecs, char *&buf);
 	
-  virtual void DoneGetRecs();
+    virtual void DoneGetRecs(BMHandle handle);
 
-  /* Free batch of records returned by GetRecs(), with buf
-     as the address returned by GetRecs().
-     Give buffer manager hint about how to dispose the records.  */
-  virtual void FreeRecs(void *buf, BufHint hint, Boolean dirty = false);
+    virtual void FreeRecs(char *buf, Boolean dirty = false);
 
-  /* Get in-memory TData records */
-  void InitTDataInMem(TData *tdata);
-  Boolean GetInMemRecs(void *&buf, RecId &low, RecId &high);
-  void FreeInMemRecs(void *buf, Boolean dirty = 0);
-  void DoneTDataInMem();
+    virtual QPRange *GetProcessedRange(BMHandle handle);
 
-  virtual void PhaseHint(BufferPolicy::Phase phase) {
-      _policy->PhaseHint(phase);
-  }
+    virtual void InitPolicy(BufPolicy::policy policy) {}
 
-  virtual void FocusHint(RecId id, TData *tdata, GData *gdata) {
-      _policy->FocusHint(id, tdata, gdata);
-  }
+    virtual void PhaseHint(BufferPolicy::Phase phase) {
+        _policy->PhaseHint(phase);
+    }
 
-  /* Print what's in memory for tdata */
-  void Print(TData *tdata);
+    virtual void FocusHint(RecId id, TData *tdata, GData *gdata) {
+        _policy->FocusHint(id, tdata, gdata);
+    }
 
-  /* Print statistics */
-  virtual void PrintStat();
+    virtual void ReleaseMemory(MemMgr::PageType type, char *buf, int pages) {
+        int status = _memMgr->Deallocate(type, buf, pages);
+        DOASSERT(status >= 0, "Could not deallocate memory");
+    }
 
-private:
-  /* Allocate a range suitable for up to "size" bytes. 
-     Return a range with size <= size bytes.
-     Fail assertion if no space found.
-     Global modified:
-     _rangeArrays: remove victim from _rangeArrays
-     _policy: used to determine victim and placement.
-  */
-  RangeInfo *AllocRange(int size);
+    void Print(TData *tdata);
 
-  /* Unlink range from all the lists. DO NOT free any memory
-     for range, or its buffer space.
-     input: range: range information
-            array, pos: position on the policy list.
-     */
-  void UnlinkRange(RangeInfo *range, int array, int pos);
+    virtual void PrintStat();
+    
+  protected:
+    /***********************************************************************
+      Internal utility functions for getting data out of memory and
+      manipulating record ranges
+    ***********************************************************************/
 
-  /* ******************************************************
-     Return new "high" such high-low+1 is the maximum number
-     of records that can fit within page boundaries.
-     The new ID is not to exceed max.
-     *****************************************************/
-  RecId RoundToPage(TData *tdata, RecId low, RecId high, RecId max);
+    /* Calculate return parameters for a record range to be returned */
+    void CalcRetArgs(Boolean isTData, Boolean isInMem,
+                     TData *tdata, RangeInfo *rangeInfo,
+                     RecId lowId, RecId highId, 
+                     char *&buf,RecId &starRid,int &numRecs);
+    
+    /* Advance to next range of in-memory range list */
+    Boolean GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range);
+    
+    /* Get in-memory GData */
+    Boolean GetGDataInMem(BufMgrRequest *req, RecId &startRecId,
+                          int &numRecs, char *&buf);
+    
+    /* Get in-memory TData */
+    Boolean GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
+                          int &numRecs, char *&buf);
+    
+    /* Initiate I/O to get disk-resident GData */
+    Boolean InitGDataScan(BufMgrRequest *req);
+    
+    /* Initiate I/O to get disk-resident TData */
+    Boolean InitTDataScan(BufMgrRequest *req);
+    
+    /* Consume data produced by I/O initiated in InitGDataScan/InitTDataScan */
+    Boolean ScanDiskData(BufMgrRequest *req, RecId &startRecId,
+                         int &numRecs, char *&buf);
 
-  /**** Iterator to get range not in memory */
-  /* Init getting a range not in memory */
-  void InitGetRangeNotInMem(TData *tdata, RangeList *rangeList, 
-			    RecId lowId, RecId highId);
-  /* Get next range in memory. Return false if no more */
-  Boolean GetRangeNotInMem(RangeInfo *& rangeInfo);
-  void DoneGetRangeNotInMem();
-  
-  void CalcRetArgs(Boolean isTData, Boolean isInMem,
-		   TData *tdata, RangeInfo *rangeInfo,
-		   RecId lowId, RecId highId, 
-		   void *&buf,RecId &starRid,int &numRecs);
+    /* Consume data from the pipe of a TData */
+    Boolean ConsumePipeData(BufMgrRequest *req, DataSource *data,
+                            char *buf, RecId &startRid, int &numRecs,
+                            int &dataSize);
 
-  /* state of retrieval */
-  enum State { DoGDataInMem,		/* getting GData in memory */
-	       DoTDataInMem,		/* getting TData in memory */
-	       DoGDataScan,		/* Getting GData from disk */
-	       DoTDataScan,		/* Getting TData from disk */
-	       DoneBuffer		/* done retrieving data */
-  };
-  State _state;
-  TDataRangeList *_tdataRangeList;
+    /* Mark range as being in use (pinned) */
+    void SetUse(RangeInfo *rangeInfo);
+    
+    /* Mark range as not being in use (unpinned) */
+    void ClearUse(char *buf, Boolean dirty = false);
+    
+    /* Check integrity of range */
+    void CheckRange(RangeInfo *range);
+    
+    /* Given data size, find buffer size that is a multiple of page size */
+    int BufSize(int dataSize) {
+        int pages = dataSize / _pageSize;
+        if (dataSize % _pageSize != 0)
+            pages++;
+        return pages * _pageSize;
+    }
+    
+    /*
+       Allocate a range suitable for up to "size" bytes. 
+       Return a range with size <= size bytes.
+       Fail assertion if no space found.
+    */
+    RangeInfo *AllocRange(int size);
 
-  /***** For GetRecs iterator ****/
-  /* for getting in mem ranges */
+    /*
+       Truncate rangeInfo by the buffer size from the beginning, 
+       and return a new one for the truncated portion. 
+       Arrange the pointers so that the remaining data are
+       pointing to the right place.
+    */
+    RangeInfo *Truncate(RangeInfo *rangeInfo, int bufSize);
 
-  /* Get next range in memory that fits _lowId and _highId.
-     set rangeInfo to next valid range.
-     Globals used:
-       _lowId, _highId, _nextRangeInMem, _listHeadInMem.
-     Note: Set _nextRangeInMem should be initialized to 1st element 
-     in the list before this function is called for the first time.
-     */
-  RangeInfo *_listHeadInMem;	/* in memory ranges */
-  RangeInfo *_nextRangeInMem;
-  Boolean GetNextRangeInMem(RangeInfo *&rangeInfo);
+    /***********************************************************************
+      Data structures for buffer manager's internal state
+    ***********************************************************************/
+    
+    /* Arrays of TData/GData record ranges stored in memory */
+    int _numArrays;
+    RangeInfoArrays *_memoryRanges;
+    
+    /* Mapping of TData/GData to lists in _memoryRanges */
+    TDataRangeList _tdataInMemory;
+    
+    /* List of buffer manager requests */
+    BufMgrRequest _reqhead;
+    
+    /* List of "pinned" record ranges. Same as a page descriptor table */
+    const int MaxReturnRanges = 2;
+    RangeInfo *_returnRanges[MaxReturnRanges];
+    
+    /* Memory manager */
+    MemMgr *_memMgr;
+    
+    /* Page size */
+    int _pageSize;
+    
+    /* Last ready request */
+    BufMgrRequest *_lastReadyReq;
 
-  /* Init getting TData/GData in memory */
-  void InitGetDataInMem(RangeList *list);
-  void DoneGetDataInMem() {}
+    /***********************************************************************
+      Policy data structures and victim eviction
+    ***********************************************************************/
+    
+    /* Current and default buffer management policy */
+    int _policyFlag;
+    BufferPolicy *_policy;
+    BufferPolicy *_defaultPolicy;
+    
+    /***********************************************************************
+      Buffer manager statistics
+    ***********************************************************************/
 
-  /* Get GData in memory */
-  Boolean GetGDataInMem(RecId &startRecId, int &numRecs, void *&buf);
-  
-  /* Get TData in memory */
-  Boolean GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf);
-
-  /* Variables needed for TData in-memory fetch */
-  RangeInfo *_tInMemRange; /* current TData range being scanned */
-  RecId _tInMemCurLow;	   /* next id in the range to look at */
-  Boolean _getTInMem;	   /* TRUE if we need to get next range to scan */
-  RecId _gScanLow;         /* current range to scan */
-  RecId _gScanHigh;
-  RecId _gScanCur;	   /* next Id in [_gScanLow,_gScanHigh] to look at */
-
-  enum GDataScanState{ GetGRangeState, CheckOverlapState, GScanState,
-		       GScanDoneState};
-  GDataScanState _gScanState; /* State of GData scan */
-  void InitGDataScan();
-  Boolean GDataScan(RecId &startRecId, int &numRecs, void *&buf);
-  void DoneGDataScan();
-
-  void InitTDataScan();
-  Boolean TDataScan(RecId &startRecId, int &numRecs, void *&buf);
-  void DoneTDataScan();
-  Boolean _getTRange; /* TRUE if we need to get anoterh T range to scan */
-  RecId _tScanId; /* next TData id to start scanning */
-
-  RangeList *_tRangeList;	/* current in-mem TData list */
-  RangeList *_gRangeList;	/* current in-mem GData list */
-
-  TData *_tdata;	/* TData for the query */
-  GData *_gdata;	/* GData for the query */
-  RecId _lowId, _highId;	/* Range of IDs to retrieve */
-  Boolean _tdataOnly; /* TRUE if only fetch TData */
-
-  BufferPolicy *_policy;
-  RecRange *_recRange;
-
-  /* Find buffer size given data size. Buffer size is always on page
-     boundary */
-  int BufSize(int dSize) {
-    if (dSize % Init::PageSize() == 0)
-      return dSize;
-    return (dSize / Init::PageSize() + 1) * Init::PageSize();
-  }
-
-  /* Truncate rangeInfo by the buffer size from the beginning, 
-     and return a new one for the truncated portion. 
-     Arrange the pointers so that the remaining data are
-     pointing to the right place. */
-  RangeInfo *Truncate(RangeInfo *rangeInfo, int bufSize);
-
-  int _numArrays, _policyFlag;
-  RangeInfoArrays *_rangeArrays;
-
-  /* for GetRangeNotInMem */
-  TData *_tdataN;
-  RangeList *_rangeListN;
-  RecId _lowN,_highN;
-  int _dSizeN;	/* size of data left to fetch*/
-  RangeInfo *_rangeN; /* Current range */
-
-  /* check integrity of RangeInfo */
-  void CheckRange(RangeInfo *rangeInfo);
-
-  /** For allocating buffer */
-  RangeInfo _allocHead; /* list of allocated ranges */
-  int _allocRecs, _allocRecSize; /* # of recs left, and size of each record */
-  Boolean _allocDone;
-
-  /* Find a slot int _returnRanges to keep track of range
-     being returned. Mark range as in use */
-  void SetUse(RangeInfo *rangeInfo);
-
-  /* Mark a range as cleared for usage, and return it */
-  void ClearUse(void *buf, Boolean dirty=false);
-
-  /* For checking ranges alrady returned */
-  RangeInfo *_returnRanges[MaxReturnRanges];
-
-  /* For getting in memory ranges */
-  RangeInfo *_inMemHead;
-  RangeInfo *_inMemCur; /* current element */
-
-  BufferPolicy *_defaultPolicy;
-
-  RecordOrder _tdataFetchOrder; /* order to fetch TData records */
-
-  int _tReturned;   /* # of TData bytes returned */
-  int _tHits;	    /* # of TData bytes hit in buffer */
-  int _gReturned;   /* # GData bytes returned */
-  int _gHits;	    /* # of GData bytes hit int buffer*/
-  int _totalRanges; /* total # of ranges returned */
-  int _totalBuf;    /* total # of buffers occuipied by ranges returned */
-  int _totalData;   /* total # of data bytes occupied by ranges returned */
-
-#if defined(BUFMGRHIST)
-  /* # of times AllocRange called */
-  int _totalAllocRange[RANGE_ALLOC_HIST_SIZE]; 
-  int _totalAllocRangeBytes[RANGE_ALLOC_HIST_SIZE]; 
-#endif
-  
-  /* for keeping track of tdata->GetRecs() */
-  int _totalGetRecBufSize;
-  int _totalGetRecBytes;
-  int _numGetRecs;
-
-  MemMgr *_memMgr;            /* memory manager */
-  int _pageSize;              /* page size */
+    int _tReturned;           /* # of TData bytes returned */
+    int _tHits;	              /* # of TData bytes hit in buffer */
+    int _gReturned;           /* # GData bytes returned */
+    int _gHits;	              /* # of GData bytes hit in buffer */
+    int _totalRanges;         /* # of ranges returned */
+    int _totalBuf;            /* # of buffers occupied by ranges returned */
+    int _totalData;           /* # of data bytes occupied by ranges returned */
+    
+    int _numGetRecs;          /* # of tdata->GetRecs() calls */
+    int _totalGetRecBytes;    /* bytes received in tdata->GetRecs() */
+    int _totalGetRecBufSize;  /* buffer space used for tdata->GetRecs() */
 };
 
 #endif
