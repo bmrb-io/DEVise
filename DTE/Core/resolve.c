@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/04/09 20:26:24  donjerko
+  *** empty log message ***
+
   Revision 1.34  1998/03/17 17:19:09  donjerko
   Added new namespace management through relation ids.
 
@@ -358,6 +361,7 @@ double Operator::getSelectivity(){
 	}
 	else{
 		assert(0);
+		return 0;
 	}
 }
 
@@ -598,7 +602,7 @@ TableMap Operator::getTableMap(const vector<TableAlias*>& x) const {
 	return left->getTableMap(x) | right->getTableMap(x);
 }
 
-void TableAlias::display(ostream& out, int detail = 0){
+void TableAlias::display(ostream& out, int detail){
 	assert(table);
 	if (function ){
 		out << *function << " (" ;
@@ -613,7 +617,7 @@ void TableAlias::display(ostream& out, int detail = 0){
 	}
 }
 
-void NumberAlias::display(ostream& out, int detail = 0){
+void NumberAlias::display(ostream& out, int detail){
 	out << relId;
 	if(alias){
 		out << " as " << *alias;

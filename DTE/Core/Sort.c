@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/06/04 23:06:50  donjerko
+  Added DataReader.
+
   Revision 1.19  1998/04/09 20:26:20  donjerko
   *** empty log message ***
 
@@ -400,12 +403,13 @@ UniqueSortExec::UniqueSortExec(
      int* sortFlds, int numSortFlds, int numFlds)
 	: SortExec(inpIter, types, order, sortFlds, numSortFlds, numFlds)
 {
+	int i = 0;
 	CON_TRY(;);	// Base class may have thrown exception
 
      copyPtrs = new ADTCopyPtr[numFlds];
      destroyPtrs = new DestroyPtr[numFlds];
      tuple = new Type*[numFlds];
-     for(int i = 0; i < numFlds; i++){
+     for(i = 0; i < numFlds; i++){
           CON_TRY(copyPtrs[i] = getADTCopyPtr(types[i]));
           CON_TRY(destroyPtrs[i] = getDestroyPtr(types[i]));
           tuple[i] = allocateSpace(types[i]);

@@ -75,7 +75,7 @@ void Modifier::replace
 }
 
 UniqueInserter::UniqueInserter(const ISchema& schema, const string& urlstring, 
-          int mode = ios::app)
+          int mode)
 	: finalFile(urlstring), schema(schema), mode(mode)
 {
 	tmpFile = tmpnam(NULL);

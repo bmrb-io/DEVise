@@ -45,7 +45,7 @@ public:
 	  addPtr(seqVec, input, seqVec);
   }
 				   
-  Type* getValue() {
+  const Type* getValue() {
 	return seqVec;
   }
 
@@ -104,7 +104,7 @@ public:
 	}
 
 // This should return the value of the aggregate i.e. the summary vector
-	virtual Type* getValue() {
+	virtual const Type* getValue() {
 		assert(!tupLoad->empty());
 		// Call the function to find the MBR and insert it in RTree if new one
 		// created. Check for count to see whether this point will
