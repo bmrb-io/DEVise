@@ -461,6 +461,6 @@ void bulk_data_t::read_data(int infile)
 
 int bulk_data_t::QSortCol;
 int bulk_data_t::QSortDim;
-int *bulk_data_t::QSortDirection;
+int *bulk_data_t::QSortDirection = NULL;
 bool bulk_data_t::QSortPoint;
 

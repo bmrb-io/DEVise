@@ -74,11 +74,11 @@ class bulk_data_t
     int entry_sz;
     int pages_created;
     int off;
-    const int mem_avail=20*1024*1024;
+    static const int mem_avail=20*1024*1024;
 
     static int QSortCol;
     static int QSortDim;
-    static int *QSortDirection=NULL;
+    static int *QSortDirection;
     static bool QSortPoint;
 
     static void get_line(char *line,
