@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/03/20 22:22:34  guangshu
+  Enhanced statistics to allow user specified number of buckets in histograms
+  and goup by X and Y etc.
+
   Revision 1.52  1997/02/26 16:31:48  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -456,6 +460,25 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   if (offset->shapeOffset < 0 && mapping->GetDefaultShape() == 2)
       canElimRecords = true;
 
+  double width = _allStats.GetHistWidth();
+
+#if defined(DEBUG) || 0
+  printf("Hist width in TDataViewX is %g\n", width);
+#endif
+
+  double yMax = _allStats.GetStatVal(STAT_MAX);
+  double yMin = _allStats.GetStatVal(STAT_MIN);
+  double ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
+
+  if( width == 0 || ratio > 2) {
+        double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
+        double lo = (yMin > filter.yLow) ? yMin:filter.yLow;
+	_allStats.SetHistWidth(lo, hi);
+#if defined(DEBUG) || 0
+        printf("TDataViewX::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
+                yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
+#endif
+  }
   // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
 

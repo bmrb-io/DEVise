@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/04/03 16:36:48  wenger
+  Reduced memory and CPU usage in statistics; fixed a memory leak in the
+  statistics code; switched devised back to listening on port 6100
+  (changed accidentally?); turned off a bunch of debug output.
+
   Revision 1.33  1997/03/20 22:25:37  guangshu
   Enhanced statistics in hitogram, group by.
 
@@ -172,7 +177,7 @@ const int MAXCOLOR = 43;
   const int DERIVED_BUF_SIZE = 800000;
 #else
   const int MAX_GSTAT = 199;
-  const int DERIVED_BUF_SIZE = 3200;
+  const int DERIVED_BUF_SIZE = 9600;
 #endif
 
 const int HIST_BUF_SIZE = 6144;
@@ -269,6 +274,7 @@ public:
   virtual Boolean IsGStatInMem() { return _gstatInMem; }
   virtual void ResetGStatInMem() { _gstatInMem = true; }
   virtual Boolean IsXDateType();
+  virtual Boolean IsYDateType();
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -279,10 +285,18 @@ public:
   void SetHistBucks(int num) { _allStats.SetnumBuckets(num); }
 
   /* Return pointer to buffer with view statistics */
-  DataSourceBuf* GetViewStatistics() { return _statBuffer; }
-  DataSourceBuf* GetViewHistogram()  { return _histBuffer; }
-  DataSourceBuf* GetGdataStatisticsX() { return _gdataStatBufferX; }
-  DataSourceBuf* GetGdataStatisticsY() { return _gdataStatBufferY; }
+  DataSourceBuf* GetViewStatistics() { 
+        if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
+  	return _statBuffer; }
+  DataSourceBuf* GetViewHistogram()  { 
+  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
+	return _histBuffer; }
+  DataSourceBuf* GetGdataStatisticsX() { 
+  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
+	return _gdataStatBufferX; }
+  DataSourceBuf* GetGdataStatisticsY() { 
+  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
+	return _gdataStatBufferY; }
 
   // uses filter''s y range to set the histogram upper & lower bounds
   void SetHistogramWidthToFilter();
@@ -305,6 +319,8 @@ public:
 
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer(TDataMap *map);
+  void setHistViewname(char *name) { histViewName = name; }
+  char *getHistViewname() { return histViewName; }
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
@@ -317,6 +333,7 @@ public:
 
   /* True if statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
+  char *histViewName;
 
   BasicStats _allStats;            /* basic stats for all categories */
   BasicStats _stats[MAXCOLOR];     /* basic stats per category */

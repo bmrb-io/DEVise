@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/03/20 22:18:04  guangshu
+  changed GDATASTAT to GDATASTAT_X AND GDATASTAT_Y
+
   Revision 1.18  1997/03/07 17:44:20  donjerko
   *** empty log message ***
 
@@ -215,21 +218,34 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+6);
 	DOASSERT(v, "BASICSTAT view not found");
 	_data = v->GetViewStatistics();
-    } else if (!strcmp(_type, "HISTOGRAM")) {
-	DOASSERT( strncmp(name, "Hist: ", 6) == 0, "invalid histogram prefix");
-	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+6);
+    } else if (!strncmp(_type, "HISTOGRAM", 9)) {
+	DOASSERT( strncmp(name, "Hist", 4) == 0, "invalid histogram prefix");
+        char *viewName = strchr(name, ':');
+        viewName ++;
+        while (*viewName == ' ') viewName++;
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(viewName);
 	DOASSERT(v, "HISTOGRAM view not found");
 	_data = v->GetViewHistogram();
 	DO_DEBUG(printf("found histogram data source 0x%p from view 0x%p\n",
 			_data, v));
-    } else if (!strcmp(_type, "GDATASTAT_X")) {
-	DOASSERT( strncmp(name, "GstatX: ", 8) == 0, "invalid gdatastat prefix");
-	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+8);
+    } else if (!strncmp(_type, "GDATASTAT_X", 11)) {
+	DOASSERT( strncmp(name, "GstatX", 6) == 0, "invalid gdatastat prefix");
+	char *viewName = strchr(name, ':');
+	viewName ++;
+	while (*viewName == ' ') viewName++;
+	if (!strncmp(name, "GstatXDTE", 9)) {
+		char *pos = strrchr(viewName, ':');
+		if (pos) *pos = '\0';
+        }
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(viewName);
 	DOASSERT(v, "GDATASTAT view not found");
 	_data = v->GetGdataStatisticsX();
-    } else if (!strcmp(_type, "GDATASTAT_Y")) {
-	DOASSERT( strncmp(name, "GstatY: ", 8) == 0, "invalid gdatastat prefix");
-	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+8);
+    } else if (!strncmp(_type, "GDATASTAT_Y", 11)) {
+	DOASSERT( strncmp(name, "GstatY", 6) == 0, "invalid gdatastat prefix");
+	char *viewName = strchr(name, ':');
+	viewName ++;
+	while (*viewName == ' ') viewName++;
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(viewName);
 	DOASSERT(v, "GDATASTAT view not found");
 	_data = v->GetGdataStatisticsY();
     }
