@@ -39,10 +39,10 @@ public class Selection implements Expression {
 		for(int i = 0; i < nodes.length; i++){
 			exprList[i] = nodes[i].getProjectList();
 		}
-		for(int leftRight = 0; leftRight < nodes.length; leftRight++){
-			for(int field = 0; field < exprList[leftRight].length; field++){
-				if(exprList[leftRight][field] == this){
-					return new ExecSelect(leftRight, field);
+		for(int i = 0; i < nodes.length; i++){
+			for(int field = 0; field < exprList[i].length; field++){
+				if(exprList[i][field] == this){
+					return new ExecSelect(i, field);
 				}
 			}
 		}

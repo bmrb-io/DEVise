@@ -21,6 +21,6 @@ public class Constant implements Expression {
 	}
 
 	public ExecExpr createExec(OptNode[] opn){
-		return null;
+		return new ExecConst(value);
 	}
 };

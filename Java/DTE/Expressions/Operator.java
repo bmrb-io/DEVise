@@ -31,6 +31,9 @@ public class Operator implements Expression {
 	}
 
 	public ExecExpr createExec( OptNode[] opn ){
-		return null;
-	}
+		ExecExpr l = left->createExec(opn); 
+		ExecExpr r = right->createExec(opn);
+		return new ExecOperator(l, r, operator);
+}
+
 };
