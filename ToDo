@@ -466,6 +466,16 @@ Convert all file-related system calls (lseek, etc.) to 64-bit versions.
 Perhaps have a command to allow a client to prevent other clients from
 connecting to the server while that client is connected. (rkw 1/29/98)
 
+Get rid of special "multi" version of DEVise -- make improvements to
+expressions, etc., if necessary to do what we need with the regular
+version of DEVise. (rkw, et al 2/5/98)
+
+Get rid of composite parsers (make sure UniData can handle all necessary
+cases). (rkw, et al 2/5/98)
+
+Build DEVise for Solaris with threads so we don't have to use semaphores.
+(rkw, et al 2/5/98)
+
 
 COMPLETED
 ---------
