@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/06/27 00:00:35  jussi
+#  Coordinates of 3D focal point are now saved and displayed.
+#
 #  Revision 1.12  1996/06/26 17:22:06  wenger
 #  Finished code for saving data to templates (includes quite a bit of
 #  cleanup of the DoActualSave procedure).
@@ -764,6 +767,7 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
 	set fx [lindex $camera 4]
 	set fy [lindex $camera 5]
 	set fz [lindex $camera 6]
+	set viewVar [DictLookup $viewDict $view]
 	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z $fx $fy $fz"
     }
 }
