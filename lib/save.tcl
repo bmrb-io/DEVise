@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1996/07/23 17:26:44  jussi
+#  Added saving of pileMode, overrideColor, and displayDataValues flags.
+#
 #  Revision 1.24  1996/07/21 02:22:45  jussi
 #  Added saving of flags indicating solid/wireframe 3D objects and
 #  XY vs. X/Y zoom mode.
@@ -310,7 +313,7 @@ proc SaveCursorViews { file dict asBatchScript } {
 
 # Save session
 proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
-    global mode templateMode schemadir datadir
+    global templateMode schemadir datadir
 
     # you can't save an imported file until it has been merged
     if {$templateMode} { 
@@ -374,10 +377,6 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     # Save the schemas or the references to the schema files.
     SaveAllSchemas $f $asExport
 
-    puts $f "# Layout mode"
-    puts $f "DEVise changeMode 0"
-    puts $f ""
-
     # Save the commands needed to create the views.
     set viewDict ""
     SaveViews $f viewDict $asBatchScript
@@ -399,12 +398,6 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     SaveMappings $f $fileDict mapDict $asBatchScript
 
     SaveMisc $f $asTemplate $asExport $viewDict $mapDict $asBatchScript
-
-    if { $mode == 1 } {
-        puts $f ""
-	puts $f "# Display mode"
-	puts $f "DEVise changeMode 1"
-    }
 
     if {$asTemplate || $asExport} {
         puts $f ""
