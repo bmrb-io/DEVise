@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.90  1996/12/03 16:02:25  jussi
+  Disabled a debugging message.
+
   Revision 1.89  1996/12/02 16:54:22  wenger
   Fixed compile warning; added standard headers to some files;
   conditionaled out debug code.
@@ -1041,6 +1044,8 @@ void View::DrawLabel()
   win->PushTop();
   win->MakeIdentity();
   
+  win->SetNormalFont();
+
   if (_label.occupyTop) {
     /* draw label */
     int labelX, labelY, labelWidth, labelHeight;
@@ -1094,6 +1099,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   
   win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
+  win->SetNormalFont();
 
   /* draw a line from startX to the end of the view */
   win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
@@ -1163,14 +1169,14 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     /* make sure label doesn't go past left or right edge */
     if (xLeft < startX) {
       xLeft = startX;
-      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignWest, true);
     } else if (xLeft + xAxis.labelWidth > axisX + axisWidth) {
       xLeft = axisX + axisWidth - xAxis.labelWidth;
-      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignEast, true);
     } else {
-      win->AbsoluteText(buf, xLeft, axisY, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignCenter, true);
     }
     tickMark += tickInc;
@@ -1204,6 +1210,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 
   win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
+  win->SetNormalFont();
 
   /* draw a line from startY to the bottom of the view */
   win->Line(axisMaxX, startY, axisMaxX, axisMaxY + 1, 1.0);
@@ -1269,7 +1276,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     win->Line(axisMaxX, y, axisMaxX - 3, y, 1);
     char buf[32];
     sprintf(buf, "%.*g", yAxis.significantDigits, tickMark);
-    Coord yTop = y - yAxis.labelWidth / 2;
+    Coord yTop = y - yAxis.labelWidth / 2 + 3;
     /* make sure label doesn't go past left or right edge */
     if (yTop < startY) {
       yTop = startY;
