@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  1996/08/05 17:26:13  beyer
+  changed filter reporting format to %g (from %.2f)
+
   Revision 1.64  1996/08/04 21:29:52  beyer
   Added Raise() to raise the control panel to the top of the stacking order.
 
@@ -283,6 +286,8 @@ extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
+int _quiet;
+
 ControlPanel *GetNewControl()
 {
   return new TkControlPanel;
@@ -344,6 +349,7 @@ void TkControlPanel::StartSession()
   printf("\n");
 
   Tcl_LinkVar(_interp, "argv0", (char *)&_argv0, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "quiet", (char *)&_quiet, TCL_LINK_INT);
 
   /* Create a new tcl command for control panel */
   Tcl_CreateCommand(_interp, "DEVise", DEViseCmd, this, 0);
