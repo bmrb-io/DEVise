@@ -1249,6 +1249,10 @@ Num Date        Status  Description
 			white). (ml/rkw)
 			(Fixed by rkw 3/13/98)
 
+328 03/13/98	OPEN	Typing a <return> at the end of the password in the
+			GUI when joining a group causes the DEVise server
+			to crash. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
