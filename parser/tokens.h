@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/23 00:03:55  ravim
+  Parser changed to ANSI style - g++ now used uniformly
+
   Revision 1.4  1995/09/22 15:56:24  jussi
   Added copyright message.
 */
@@ -51,7 +54,7 @@ extern int yylex();
 #ifdef IBM_POWER_STATION
 extern unsigned char yytext[];
 #else
-extern char yytext[];
+extern char *yytext;
 #endif
 
 #include <malloc.h>

@@ -2,6 +2,10 @@ depend:
 	makedepend -fMakefile.sun -I../parser *.c
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-codegen.o: /usr/include/stdio.h parse.h
+codegen.o: /usr/include/stdio.h /usr/include/string.h
+codegen.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h parse.h
+codegen.o: codegen.h
 main.o: parse.h /usr/include/stdio.h
-parse.o: /usr/include/stdio.h parse.h tokens.h codegen.h
+parse.o: /usr/include/stdio.h /usr/include/stdlib.h
+parse.o: /usr/include/sys/stdtypes.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

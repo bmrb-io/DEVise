@@ -10,4 +10,4 @@ parser: main.o parse.o lex.yy.o codegen.o
 lex.yy.o: lex.yy.c
 
 lex.yy.c: scan.lex tokens.h
-	lex $(VPATH)/scan.lex
+	flex $(VPATH)/scan.lex

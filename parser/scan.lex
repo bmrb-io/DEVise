@@ -30,7 +30,7 @@
 %%
 /* user subroutines */
 void syntax_error(){
-	printf("syntax error at line %d, buffer contains %s\n", yylineno, yytext);
+	printf("syntax error , buffer contains %s\n", yytext);
 	exit(2);
 }
 
@@ -46,7 +46,7 @@ int index = 0;
 char *text;
 
     while (!done){
-        c = lex_input();
+        c = yyinput();
         if (c == 0)
             syntax_error();
         else if (c == '{'){

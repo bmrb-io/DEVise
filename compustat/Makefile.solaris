@@ -9,18 +9,28 @@ compustat.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 compustat.o: /usr/include/unistd.h /usr/include/sys/types.h
 compustat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 compustat.o: /usr/include/sys/select.h /usr/include/sys/time.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/unistd.h compustat.h
-compustat.o: index.h
+compustat.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
+compustat.o: /usr/X11R6/include/X11/Xlib.h /usr/X11R6/include/X11/X.h
+compustat.o: /usr/X11R6/include/X11/Xfuncproto.h
+compustat.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
+compustat.o: compustat.h index.h ../tape/tapedrive.h ../tape/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h
 extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-extract.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
-extract.o: /usr/include/unistd.h /usr/include/sys/types.h
-extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
-extract.o: /usr/include/sys/time.h /usr/include/sys/unistd.h compustat.h
-extract.o: index.h
 index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/unistd.h /usr/include/sys/types.h
 index.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 index.o: /usr/include/sys/select.h /usr/include/sys/time.h
 index.o: /usr/include/sys/time.h /usr/include/sys/unistd.h index.h
+index.o: ../tape/tapedrive.h ../tape/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+index.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+index.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
