@@ -213,6 +213,7 @@ void ViewGraph::DropAsMasterView(RecordLink *link)
     }
 }
 
+
 void ViewGraph::AddAsSlaveView(RecordLink *link)
 {
     // view cannot be a master
@@ -260,7 +261,22 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
         if (info && info->type == DateAttr)
           SetYAxisAttrType(DateAttr);
     }
-    
+
+    int index = InitMappingIterator();
+    if (MoreMapping(index)) {
+        AttrInfo *yAttr = map->MapGAttr2TAttr("y");
+        if(yAttr && yAttr->hasHiVal && yAttr->hasLoVal){
+	    yMax = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+	    yMin = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+        } else { 
+  	    VisualFilter filter;
+	    GetVisualFilter(filter);
+	    yMax = filter.yHigh;
+	    yMin = filter.yLow;
+	}
+	_allStats.SetHistWidth(yMax, yMin);
+    } else { fprintf(stderr, "No more Mapping\n"); }	 
+    DoneMappingIterator(index);
     Refresh();
 }
 
@@ -575,6 +591,7 @@ void ViewGraph::PrepareStatsBuffer()
            strcat(_gdataStatBuffer, line);
        }
     }	
+    _glist.DoneIterator(index);
 
 #ifdef DEBUG
     printf("%s\n", _statBuffer);
