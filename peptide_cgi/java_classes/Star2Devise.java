@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/08/17 14:35:52  wenger
+// Made code more tolerant of numerical parsing errors (fixes problem with
+// bmr4267.str).
+//
 // Revision 1.5  2000/08/16 21:50:09  wenger
 // Split calcChemShifts into several smaller methods to make it easier to
 // deal with.
@@ -1288,9 +1292,9 @@ public class Star2Devise {
  	    PrintWriter summary_writer 
  		= new PrintWriter(new BufferedWriter
  				  ( new OutputStreamWriter ( outStream ))) ;
-	    summary_writer.println("<html><head><title>Summary for " +
-				   file_name + "</title></head>" + 
-				   "<body bgcolor = white>");
+	    summary_writer.println("<html>\n<head>\n<title>Summary for " +
+				   file_name + "</title>\n</head>\n" + 
+				   "<body bgcolor = white>\n");
 	    summary_writer.println("<h3>DEVise plots for:");
 	    summary_writer.println(system_name + "</h3>");
 	    summary_writer.println("Title: <tt>" + title + "</tt>");
@@ -1314,16 +1318,16 @@ public class Star2Devise {
 
 		    // and create links
 		    summary_writer.print(display_link);
-		    summary_writer.print("\">Chemical Shift Index</a>");
+		    summary_writer.println("\">Chemical Shift Index</a>");
 
 	            display_link = display_link_base + "d.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print
+		    summary_writer.println
 			("\">Chemical Shift Delta</a>");
 
 	            display_link = display_link_base + "p.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print
+		    summary_writer.println
 			("\">Percent Assigned Atoms</a>");
 		    
 		} 
@@ -1385,23 +1389,23 @@ public class Star2Devise {
 		    // and create the links
 	            display_link = display_link_base + "h.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print("\">H-Exchange Rates</a>");
+		    summary_writer.println("\">H-Exchange Rates</a>");
 
 	            display_link = display_link_base + "o.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print("\">Order Parameters</a>");
+		    summary_writer.println("\">Order Parameters</a>");
 
 	            display_link = display_link_base + "r.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print("\">Relaxation Parameters</a>");
+		    summary_writer.println("\">Relaxation Parameters</a>");
 
 	            display_link = display_link_base + "g.html";
 		    summary_writer.print(display_link);
-		    summary_writer.print("\">Coupling Constants</a>");
+		    summary_writer.println("\">Coupling Constants</a>");
 		}
 	    }
 
-	    summary_writer.print("</body></html>");
+	    summary_writer.print("</body>\n</html>\n");
 
 // loop_
 // _Saveframe_category_type 
