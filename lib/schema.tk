@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1995/12/20 07:03:00  ravim
+#  High and low values of attrs can be specified.
+#
 #  Revision 1.11  1995/12/15 03:38:20  ravim
 #  User mode used for displaying schemas.
 #
@@ -77,6 +80,10 @@ source $catalogFile
 proc SchemaBrowse {} {
     global UserMode
 
+    if {[catch {set err $UserMode}]} {
+	set UserMode 1
+    }
+
     if {$UserMode == 0} {
 	SchemaSuperuser
     } else {
@@ -92,7 +99,7 @@ proc SchemaUser {} {
 
     toplevel .psch -bg red4
     wm title .psch "Current Schemas"
-    wm iconname .psch "Schemas"
+    wm geometry .psch +50+50
 
     frame .psch.top -relief raised -bg honeydew2
     frame .psch.mid -relief raised -bg honeydew2
@@ -122,7 +129,7 @@ proc SchemaUser {} {
 	    -command {
 	set physchema [.psch.mid.list get active]
 	if {$physchema == ""} {
-	    showmesg "Please choose a schema by clicking on the entry"
+	    showmesg "Please choose a schema by clicking on the entry."
 	} else {
 	    displayattrs $physchema
 	}
@@ -130,7 +137,7 @@ proc SchemaUser {} {
     button .psch.bot.view -text "Views" -bg gray75 -fg IndianRed4 -command {
 	set physchema [.psch.mid.list get active]
 	if {$physchema == ""} {
-	    showmesg "Please choose a schema by clicking on the entry"
+	    showmesg "Please choose a schema by clicking on the entry."
 	} else {
 	    destroy .psch
 	    displogical $physchema
@@ -142,9 +149,6 @@ proc SchemaUser {} {
     pack .psch.bot.attr .psch.bot.view .psch.bot.quit \
 	    -side left -padx 3m -pady 1m -expand 1
 
-    # Finally grab focus
-    tkwait visibility .psch
-    grab set .psch
     tkwait window .psch
 }
 
@@ -157,7 +161,7 @@ proc SchemaSuperuser {} {
 
     toplevel .psch -bg red4
     wm title .psch "Physical Schemas"
-    wm iconname .psch "Schemas"
+    wm geometry .psch +50+50
 
     frame .psch.top -relief raised -bg honeydew2
     frame .psch.mid -relief raised -bg honeydew2
@@ -199,7 +203,7 @@ proc SchemaSuperuser {} {
     button .psch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
 	set sel [.psch.mid.list get active]
 	if {$sel == ""} {
-	    showmesg "Select the schema to remove by clicking once on the entry"
+	    showmesg "Select the schema to remove by clicking once on the entry."
 	} else {
 	    dialog .rem "Remove Schema" \
 		    "This will remove the schema and all defined views." \
@@ -222,9 +226,6 @@ proc SchemaSuperuser {} {
     pack .psch.bot.new .psch.bot.open .psch.bot.del .psch.bot.quit -side left \
 	    -padx 3m -pady 1m -expand 1
 
-    # Finally grab focus
-    tkwait visibility .psch
-    grab set .psch
     tkwait window .psch
 }
 
@@ -232,164 +233,170 @@ proc SchemaSuperuser {} {
 # This procedure creates a window depicting all the fields for the schema
 # and their values if any.
 proc newschemawin {} {
-global sname ftype comm separ attrlist aname atype asort attrnum \
-	tgrps glist Logical
+    global sname ftype comm separ attrlist aname atype asort attrnum \
+	    tgrps glist Logical
 
-# Count number of attributes
-set attrnum 0
+    # Count number of attributes
+    set attrnum 0
 
-toplevel .newschema -bg red4
-wm title .newschema "Schema Description"
-wm iconname .newschema "Schema"
-
-# Top level rows in the window
-frame .newschema.firstrow -relief raised -bg honeydew2
-frame .newschema.commseprow -relief raised  -bg honeydew2
-frame .newschema.opt -relief raised  -bg honeydew2
-frame .newschema.attr -relief raised -bg honeydew2
-pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
-	.newschema.opt 	-side top -fill x -padx 1m -pady 1m
-
-#-----------------------------------------------------------
-# Within first row - name and type
-frame .newschema.fname -relief raised -bd 1 -bg honeydew2
-frame .newschema.ftype -relief raised -bd 1 -bg red4
-pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
-	-side left -fill x -padx 3m -pady 1m
-
-label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red4
-entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
-	-textvariable sname -bg bisque
-pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
-	-pady 1m
-
-label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red4
-radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
-	-value ascii -anchor nw -bg honeydew2
-radiobutton .newschema.ftype.binary -text Binary -variable ftype \
-	-value binary -anchor nw -bg honeydew2
-pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
-	-side top -fill x
-
-#-----------------------------------------------------------
-# Comment and separator characters
-frame .newschema.comm -relief raised -bg honeydew2
-frame .newschema.separ -relief raised -bg honeydew2
-pack .newschema.comm -side left  -in .newschema.commseprow \
-	-padx 3m -pady 1m 
-pack .newschema.separ -side right  -in .newschema.commseprow \
-	-padx 3m -pady 1m
-
-label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red4
-entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
-	-textvariable comm -bg bisque
-pack .newschema.comm.label .newschema.comm.entry -side left \
-	-padx 1m -pady 1m
-
-label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red4
-entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
-	-textvariable separ -bg bisque
-pack .newschema.separ.label .newschema.separ.entry -side left \
-	-padx 1m -pady 1m 
-
-#-----------------------------------------------------------
-# Attributes
-frame .newschema.attrlist -relief raised  -bg honeydew2
-frame .newschema.attradd -relief raised -bg honeydew2
-pack .newschema.attrlist -in .newschema.attr \
-	-side top -padx 3m -pady 1m -fill x
-pack .newschema.attradd -in .newschema.attr \
-	-side bottom -padx 3m -pady 1m -fill x
-
-label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red4
-label .newschema.attrlist.spec -text "Type      Order     Hi     Lo     Name" -bg honeydew2 -fg red4 -font 9x15
-pack .newschema.attrlist.label -side top -fill x
-pack .newschema.attrlist.spec -side top -anchor nw
-listbox .newschema.attrlist.list -relief raised -bd 1 \
-	-yscrollcommand ".newschema.attrlist.scroll set" \
-	-xscrollcommand ".newschema.attrlist.xscroll set" \
-	-font 9x15 -selectmode extended -bg honeydew2
-scrollbar .newschema.attrlist.scroll \
-	-command ".newschema.attrlist.list yview" -bg honeydew2
-scrollbar .newschema.attrlist.xscroll -orient horizontal \
-	-command ".newschema.attrlist.list xview" -bg honeydew2
-pack .newschema.attrlist.scroll -side right -fill y
-pack .newschema.attrlist.xscroll -side bottom -fill x
-pack .newschema.attrlist.list -fill x 
-
-# By default insert all elements of attrlist into the list
-foreach attr $attrlist {
-    # Format before inserting
-    set ttype [lindex $attr 0]
-    set tsort [lindex $attr 1]
-    set thival [lindex $attr 2]
-    set tloval [lindex $attr 3]
-    set tname [lindex $attr 4]
-    set fstr [format "%-8s  %-8s  %-6s %-6s %s" $ttype $tsort $thival $tloval $tname]
-    .newschema.attrlist.list insert end $fstr
-    set attrnum [expr $attrnum+1]
-}
-
-frame .newschema.attrspec -relief raised -bg honeydew2
-frame .newschema.attrop -relief raised -bg honeydew2
-pack .newschema.attrspec .newschema.attrop \
-	-in .newschema.attradd -side top -fill x -padx 3m -pady 1m
-
-frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
-frame .newschema.atype -relief raised -bd 1 -bg honeydew2
-frame .newschema.asort -relief raised -bd 1 -bg honeydew2
-frame .newschema.ahival -relief raised -bd 1 -bg honeydew2
-frame .newschema.aloval -relief raised -bd 1 -bg honeydew2
-pack .newschema.attrname .newschema.atype .newschema.asort \
-	.newschema.ahival .newschema.aloval \
-	-in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
-
-label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red4
-entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
-	-textvariable aname -bg bisque
-pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
-	-pady 1m
-
-label .newschema.ahival.label -text "Attribute High Value " -bg honeydew2 -fg red4
-entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
-	-textvariable ahival -bg bisque
-pack .newschema.ahival.label .newschema.ahival.entry -side left -padx 3m \
-	-pady 1m
-
-label .newschema.aloval.label -text "Attribute Low Value  " -bg honeydew2 -fg red4
-entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
-	-textvariable aloval -bg bisque
-pack .newschema.aloval.label .newschema.aloval.entry -side left -padx 3m \
-	-pady 1m
-
-
-label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red4
-radiobutton .newschema.atype.double -text double -variable atype \
-	-value "double" -anchor nw -bg honeydew2
-radiobutton .newschema.atype.int -text int -variable atype \
-	-value "int" -anchor nw -bg honeydew2
-radiobutton .newschema.atype.string -text string -variable atype \
-	-value "string" -anchor nw -bg honeydew2
-radiobutton .newschema.atype.float -text float -variable atype \
-	-value "float" -anchor nw -bg honeydew2
-radiobutton .newschema.atype.date -text date -variable atype \
-	-value "date" -anchor nw -bg honeydew2
-pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
-	.newschema.atype.string .newschema.atype.float \
-	.newschema.atype.date  -side left -fill x -padx 1m 
-label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red4
-radiobutton .newschema.asort.yes -text Yes -variable asort \
-	-value "sorted" -anchor nw -bg honeydew2
-radiobutton .newschema.asort.no -text No -variable asort \
-	-value "unsorted" -anchor nw -bg honeydew2
-pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
-	-side left -fill x -padx 1m
-
-button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command {
-    if {$aname == ""} {
-	showmesg "Attribute name has not been specified. Cannot insert it \
-		into the schema. "
-    } else {
+    toplevel .newschema -bg red4
+    wm title .newschema "Schema Description"
+    wm geometry .newschema +50+50
+    
+    # Top level rows in the window
+    frame .newschema.firstrow -relief raised -bg honeydew2
+    frame .newschema.commseprow -relief raised  -bg honeydew2
+    frame .newschema.opt -relief raised  -bg honeydew2
+    frame .newschema.attr -relief raised -bg honeydew2
+    pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
+	    .newschema.opt 	-side top -fill x -padx 1m -pady 1m
+    
+    #-----------------------------------------------------------
+    # Within first row - name and type
+    frame .newschema.fname -relief raised -bd 1 -bg honeydew2
+    frame .newschema.ftype -relief raised -bd 1 -bg red4
+    pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
+	    -side left -fill x -padx 3m -pady 1m
+    
+    label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red4
+    entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable sname -bg bisque
+    pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
+	    -pady 1m
+    
+    label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red4
+    radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
+	    -value ascii -anchor nw -bg honeydew2
+    radiobutton .newschema.ftype.binary -text Binary -variable ftype \
+	    -value binary -anchor nw -bg honeydew2
+    pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
+	    -side top -fill x
+    
+    #-----------------------------------------------------------
+    # Comment and separator characters
+    frame .newschema.comm -relief raised -bg honeydew2
+    frame .newschema.separ -relief raised -bg honeydew2
+    pack .newschema.comm -side left  -in .newschema.commseprow \
+	    -padx 3m -pady 1m 
+    pack .newschema.separ -side right  -in .newschema.commseprow \
+	    -padx 3m -pady 1m
+    
+    label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red4
+    entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
+	    -textvariable comm -bg bisque
+    pack .newschema.comm.label .newschema.comm.entry -side left \
+	    -padx 1m -pady 1m
+    
+    label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red4
+    entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
+	    -textvariable separ -bg bisque
+    pack .newschema.separ.label .newschema.separ.entry -side left \
+	    -padx 1m -pady 1m 
+    
+    #-----------------------------------------------------------
+    # Attributes
+    frame .newschema.attrlist -relief raised  -bg honeydew2
+    frame .newschema.attradd -relief raised -bg honeydew2
+    pack .newschema.attrlist -in .newschema.attr \
+	    -side top -padx 3m -pady 1m -fill x
+    pack .newschema.attradd -in .newschema.attr \
+	    -side bottom -padx 3m -pady 1m -fill x
+    
+    label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red4
+    label .newschema.attrlist.spec -text "Type      Order     Hi     Lo     Name" -bg honeydew2 -fg red4 -font 9x15
+    pack .newschema.attrlist.label -side top -fill x
+    pack .newschema.attrlist.spec -side top -anchor nw
+    listbox .newschema.attrlist.list -relief raised -bd 1 \
+	    -yscrollcommand ".newschema.attrlist.scroll set" \
+	    -xscrollcommand ".newschema.attrlist.xscroll set" \
+	    -font 9x15 -selectmode extended -bg honeydew2
+    scrollbar .newschema.attrlist.scroll \
+	    -command ".newschema.attrlist.list yview" -bg honeydew2
+    scrollbar .newschema.attrlist.xscroll -orient horizontal \
+	    -command ".newschema.attrlist.list xview" -bg honeydew2
+    pack .newschema.attrlist.scroll -side right -fill y
+    pack .newschema.attrlist.xscroll -side bottom -fill x
+    pack .newschema.attrlist.list -fill x 
+    
+    # By default insert all elements of attrlist into the list
+    foreach attr $attrlist {
+	# Format before inserting
+	set ttype [lindex $attr 0]
+	set tsort [lindex $attr 1]
+	set thival [lindex $attr 2]
+	set tloval [lindex $attr 3]
+	set tname [lindex $attr 4]
+	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $ttype $tsort $thival $tloval $tname]
+	.newschema.attrlist.list insert end $fstr
+	set attrnum [expr $attrnum+1]
+    }
+    
+    frame .newschema.attrspec -relief raised -bg honeydew2
+    frame .newschema.attrop -relief raised -bg honeydew2
+    pack .newschema.attrspec .newschema.attrop \
+	    -in .newschema.attradd -side top -fill x -padx 3m -pady 1m
+    
+    frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
+    frame .newschema.atype -relief raised -bd 1 -bg honeydew2
+    frame .newschema.asort -relief raised -bd 1 -bg honeydew2
+    frame .newschema.ahival -relief raised -bd 1 -bg honeydew2
+    frame .newschema.aloval -relief raised -bd 1 -bg honeydew2
+    pack .newschema.attrname .newschema.atype .newschema.asort \
+	    .newschema.ahival .newschema.aloval \
+	    -in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
+    
+    label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red4
+    entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable aname -bg bisque
+    pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
+	    -pady 1m
+    
+    label .newschema.ahival.label -text "Attribute High Value " -bg honeydew2 -fg red4
+    entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable ahival -bg bisque
+    pack .newschema.ahival.label .newschema.ahival.entry -side left -padx 3m \
+	    -pady 1m
+    
+    label .newschema.aloval.label -text "Attribute Low Value  " -bg honeydew2 -fg red4
+    entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable aloval -bg bisque
+    pack .newschema.aloval.label .newschema.aloval.entry -side left -padx 3m \
+	    -pady 1m
+    
+    
+    label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red4
+    radiobutton .newschema.atype.double -text double -variable atype \
+	    -value "double" -anchor nw -bg honeydew2
+    radiobutton .newschema.atype.int -text int -variable atype \
+	    -value "int" -anchor nw -bg honeydew2
+    radiobutton .newschema.atype.string -text string -variable atype \
+	    -value "string" -anchor nw -bg honeydew2
+    radiobutton .newschema.atype.float -text float -variable atype \
+	    -value "float" -anchor nw -bg honeydew2
+    radiobutton .newschema.atype.date -text date -variable atype \
+	    -value "date" -anchor nw -bg honeydew2
+    pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
+	    .newschema.atype.string .newschema.atype.float \
+	    .newschema.atype.date  -side left -fill x -padx 1m 
+    label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red4
+    radiobutton .newschema.asort.yes -text Yes -variable asort \
+	    -value "sorted" -anchor nw -bg honeydew2
+    radiobutton .newschema.asort.no -text No -variable asort \
+	    -value "unsorted" -anchor nw -bg honeydew2
+    pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
+	    -side left -fill x -padx 1m
+    
+    button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command {
+	if {$ahival == ""} {
+	    set ahival "none"
+	}
+	if {$aloval == ""} {
+	    set aloval "none"
+	}
+	if {$aname == ""} {
+	    showmesg "Attribute name has not been specified."
+	    return
+	}
 	# Increment count
 	set attrnum [expr $attrnum+1]
 	# Insert into list and clear selection
@@ -401,92 +408,84 @@ button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command
 	set ahival ""
 	set aloval ""
     }
-}
-button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
-	-command {
-    .newschema.attrlist.list delete active
-    # Decrement count
-    set attrnum [expr $attrnum-1]
-}
-# Set up key binding for modify list
-bind .newschema.attrlist.list <Double-1> {
-    set attrl [.newschema.attrlist.list get active] 
-    set atype [lindex $attrl 0]
-    set asort [lindex $attrl 1] 
-    set ahival [lindex $attrl 2]
-    set aloval [lindex $attrl 3]
-    set aname [lindex $attrl 4]
-    
-}
-    
-button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
-	-command {
-    if {$aname == ""} {
-	showmesg "Double click on an item to select it."
-    } else {
-	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
-	.newschema.attrlist.list insert active $fstr
+    button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
+	    -command {
 	.newschema.attrlist.list delete active
-	# Clear selection
-	set aname ""
-	set atype "double"
-	set asort "unsorted"
-	set ahival ""
-	set aloval ""
+	# Decrement count
+	set attrnum [expr $attrnum-1]
     }
-}
-pack .newschema.attrop.add .newschema.attrop.delete \
-	.newschema.attrop.modify -side left -padx 3m -pady 1m -expand 1
-
-#-----------------------------------------------------------
-# Bottom portion of window
-button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
-    if {$sname == ""} {
-	showmesg "Schema name is not specified. Cannot save a schema \
-		without a name."
-    } else {
-	# Print out everthing onto screen
-#	puts "Schema Name : $sname "
-#	puts "Type of file : $ftype"
-#	puts "Comment chars : $comm "
-#	puts "Separator chars : $separ"
-#	puts "List of attrs"
-	set attrlist {}
-	while {$attrnum > 0} {
-	    set attr [.newschema.attrlist.list get [expr $attrnum-1]]
-#	    puts "Attr : $attr"
-	    set attrnum [expr $attrnum-1]
-
-	    # Append to attrlist
-	    set attrlist [linsert $attrlist 0 $attr]
+    # Set up key binding for modify list
+    bind .newschema.attrlist.list <Double-1> {
+	set attrl [.newschema.attrlist.list get active] 
+	set atype [lindex $attrl 0]
+	set asort [lindex $attrl 1] 
+	set ahival [lindex $attrl 2]
+	if {$ahival == "none"} {
+	    set ahival ""
 	}
-
-	# Write into a file 
-	writephysical $sname $ftype $comm $separ $attrlist
-	# Update catalog with this new physical schema (if new).
-	if {[info exists Logical($sname)] == 0} {
-	    # Since this is the initial version of the physical schema
-	    # we will create a default logical schema. This is simply
-	    # a file in the logical schema dir which has the same name
-	    # and points to this as its physical schema. No groups are
-	    # defined yet.
-	    writeDefaultLogical $sname
-	    set Logical($sname) [list $sname]
-	    writecatalog
+	set aloval [lindex $attrl 3]
+	if {$aloval == "none"} {
+	    set aloval ""
 	}
-	destroy .newschema
+	set aname [lindex $attrl 4]
     }
-}
-button .newschema.opt.quit -text Cancel -bg gray75 -fg IndianRed4 -command { 
-    destroy .newschema }
-pack .newschema.opt.save .newschema.opt.quit  -side left \
-	-padx 3m -pady 1m -expand 1
-
-#-----------------------------------------------------------
-# Finally grab focus
-tkwait visibility .newschema
-grab set .newschema
-tkwait window .newschema
+    
+    button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
+	    -command {
+	if {$aname == ""} {
+	    showmesg "Double-click on an item to select it."
+	} else {
+	    set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
+	    .newschema.attrlist.list insert active $fstr
+	    .newschema.attrlist.list delete active
+	    # Clear selection
+	    set aname ""
+	    set atype "double"
+	    set asort "unsorted"
+	    set ahival ""
+	    set aloval ""
+	}
+    }
+    pack .newschema.attrop.add .newschema.attrop.delete \
+	    .newschema.attrop.modify -side left -padx 3m -pady 1m -expand 1
+    
+    #-----------------------------------------------------------
+    # Bottom portion of window
+    button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
+	if {$sname == ""} {
+	    showmesg "No schema name specified."
+	} else {
+	    set attrlist {}
+	    while {$attrnum > 0} {
+		set attr [.newschema.attrlist.list get [expr $attrnum-1]]
+		set attrnum [expr $attrnum-1]
+		
+		# Append to attrlist
+		set attrlist [linsert $attrlist 0 $attr]
+	    }
+	    
+	    # Write into a file 
+	    writephysical $sname $ftype $comm $separ $attrlist
+	    # Update catalog with this new physical schema (if new).
+	    if {[info exists Logical($sname)] == 0} {
+		# Since this is the initial version of the physical schema
+		# we will create a default logical schema. This is simply
+		# a file in the logical schema dir which has the same name
+		# and points to this as its physical schema. No groups are
+		# defined yet.
+		writeDefaultLogical $sname
+		set Logical($sname) [list $sname]
+		writecatalog
+	    }
+	    destroy .newschema
+	}
+    }
+    button .newschema.opt.quit -text Cancel -bg gray75 -fg IndianRed4 \
+	    -command { destroy .newschema }
+    pack .newschema.opt.save .newschema.opt.quit  -side left \
+	    -padx 3m -pady 1m -expand 1
+    
+    tkwait window .newschema
 }
 
 #-----------------------------------------------------------
@@ -540,7 +539,7 @@ proc openschema {filename} {
 proc showmesg {str} {
     toplevel .msg -bg red4
     wm title .msg Message
-    wm iconname .msg Message
+    wm geometry .msg +100+100
     
     frame .msg.str -relief raised -bd 1 -bg red4
     frame .msg.ok -relief raised -bg red4
@@ -603,10 +602,10 @@ proc writephysical {name type comm sep alist} {
 	    puts -nonewline $f "sorted "
 	}
 	puts -nonewline $f "attr $aname $atype"
-	if {$ahival != "UNDEF"} {
+	if {$ahival != "none"} {
 	    puts -nonewline $f " hi $ahival"
 	}
-	if {$aloval != "UNDEF"} {
+	if {$aloval != "none"} {
 	    puts -nonewline $f " lo $aloval"
 	}
 	puts $f ""
@@ -627,10 +626,14 @@ proc readlogical {filename} {
 
     # Group declarations
     set len [gets $f line]
-    while {$len != -1} {
+    while {$len >= 0} {
 	set nm [lindex $line 1]
-	set tgrps [lappend tgrps $nm]
-	ginput $f $nm
+	if {[lindex $line 0] == ""} {
+	    # skip blank lines
+	} else {
+	    set tgrps [lappend tgrps $nm]
+	    ginput $f $nm
+	}
 	set len [gets $f line]
     }
     # Close file
@@ -666,17 +669,6 @@ proc readphysical {filename} {
     set num 0
     while {$len != -1} {
 	set first [lindex $line 0]
-#	if {$first != "sorted"} {
-#	    scan $line "attr %s %s" attrname attrtype
-#	    set attr [list $attrtype unsorted $attrname] 
-#	} else {
-#	    scan $line "sorted attr %s %s" attrname attrtype
-#	    set attr [list $attrtype sorted $attrname]
-#	}
-	
-	set hipos [lsearch $line "hi"]
-	set lopos [lsearch $line "lo"]
-
 	if {$first != "sorted"} {
 	    set scanstr "attr %s %s"
 	    set sorted unsorted
@@ -686,12 +678,15 @@ proc readphysical {filename} {
 	}
 	set argstr "attrname attrtype"
 
+	set hipos [lsearch $line "hi"]
 	if {$hipos != -1} {
 	    set histr " hi %s"
 	    set scanstr $scanstr$histr
 	    set histr " hival"
 	    set argstr $argstr$histr
 	}
+
+	set lopos [lsearch $line "lo"]
 	if {$lopos != -1} {
 	    set lostr " lo %s"
 	    set scanstr $scanstr$lostr
@@ -699,8 +694,8 @@ proc readphysical {filename} {
 	    set argstr $argstr$lostr
 	}
 
-	set hival UNDEF
-	set loval UNDEF
+	set hival "none"
+	set loval "none"
 
 	set cmd "scan \$line \"$scanstr\" $argstr"
 	eval $cmd
@@ -711,7 +706,7 @@ proc readphysical {filename} {
 	set len [gets $f line]
 	set num [expr $num+1]
     }
-    # Close file
+
     close $f
     set sname $filename
 }
@@ -722,6 +717,7 @@ proc gbrowse {} {
 
     toplevel .gbrowse -bg red4
     wm title .gbrowse "$physchema View : $logschema"
+    wm geometry .gbrowse +50+50
     wm iconname .gbrowse "Groups"
 
     # Toplevel rows
@@ -746,10 +742,10 @@ proc gbrowse {} {
 
     # Populate the list with all the attrs 
     foreach attr $attrlist {
-	.gbrowse.attrs.list insert end [lindex $attr 2]
+	.gbrowse.attrs.list insert end [lindex $attr 4]
     }
 
-    # Bind the double click on this list
+    # Bind the mouse click on this list
     bind .gbrowse.attrs.list <Double-1> {
 	set iname [.gbrowse.attrs.list get active]
     }
@@ -795,7 +791,7 @@ proc gbrowse {} {
     button .gbrowse.ops.op.create -text "Create" \
 	    -bg gray75 -fg IndianRed4 	-command {
 	if {$gname == ""} {
-	    showmesg "Please specify the name of the group"
+	    showmesg "Please specify the name of the group."
 	} elseif {[info exists glist($gname)] == 1} {
 	    showmesg "Group with this name already exists."
 	    set gname ""
@@ -807,7 +803,7 @@ proc gbrowse {} {
     button .gbrowse.ops.op.delete -text "Delete" \
 	    -bg gray75 -fg IndianRed4	-command {
 	if {$gname == ""} {
-	    showmesg "Please specify the name of the group"
+	    showmesg "Please specify the name of the group."
 	} else {
 	    # Search through tgrps and delete gname 
 	    set idx [lsearch $tgrps $gname]
@@ -829,7 +825,7 @@ proc gbrowse {} {
     button .gbrowse.ops.op.modify -text "Modify" \
 	    -bg gray75 -fg IndianRed4	-command {
 	if {$gname == ""} {
-	    showmesg "Please specify the name of the group"
+	    showmesg "Please specify the name of the group."
 	} elseif {[lsearch $tgrps $gname] == -1} {
 	    showmesg "Group with this name does not exist."
 	} else {
@@ -853,12 +849,6 @@ proc gbrowse {} {
     pack .gbrowse.ops.op.create .gbrowse.ops.op.delete \
 	    .gbrowse.ops.op.modify .gbrowse.ops.op.quit \
 	    -side left -padx 3m -pady 1m -expand 1
-
-    #-----------------------------------------------------------
-    # Finally grab focus
-#    tkwait visibility .gbrowse
-#    grab set .gbrowse
-#    tkwait window .gbrowse
 }
 
 proc dispgrp {gname } {
@@ -869,7 +859,7 @@ proc dispgrp {gname } {
 
     toplevel .grp -bg red4
     wm title .grp Group 
-    wm iconname .grp Group
+    wm geometry .grp +100+100
 
     frame .grp.list -relief raised -bg honeydew2
     frame .grp.ops -relief raised -bg honeydew2
@@ -1058,7 +1048,7 @@ proc dispgrp {gname } {
     pack .grp.ngrp.bot.add .grp.ngrp.bot.del \
 	    -side left -expand 1 -padx 3m -pady 1m
 
-    # Bind the double-click on the listbox
+    # Bind the mouse click on the listbox
     bind .grp.list.list <Double-1> {
 	set selec [.grp.list.list get active]
 	set selec [string trim $selec]
@@ -1100,13 +1090,7 @@ proc dispgrp {gname } {
     }
     pack .grp.bot.save .grp.bot.cancel -side left -expand 1 \
 	    -padx 3m -pady 1m    
-
-    # Finally grab focus
-#    tkwait visibility .grp
-#    grab set .grp
-#    tkwait window .grp
 }
-
 
 proc printgrps {} {
     global tgrps
@@ -1180,19 +1164,23 @@ proc ginput {f name} {
     global glist
 
     set glist($name) ""
-    # input  the group structure for nm from file f
+
     set len [gets $f line]
 
-    while {$line != "endgroup"} {
+    while {$len >= 0 && $line != "endgroup"} {
 	set ty [lindex $line 0]
 	set nm [lindex $line 1]
 	if {$ty == "item"} {
 	    set elem [list $nm i]
 	    set glist($name) [lappend glist($name) $elem]
-	} else {
+	} elseif {$ty == "group"} {
 	    set elem [list $nm g]
 	    set glist($name) [lappend glist($name) $elem]
 	    ginput $f $nm
+	} elseif {$ty == ""} {
+	    # skip blank lines
+	} else {
+	    puts "Unrecognized keyword $ty ignored."
 	}
 	set len [gets $f line]
     }
@@ -1318,7 +1306,7 @@ proc displogical {pname} {
     # Display the logical schema corr. to the passed physical schema
     toplevel .lsch -bg red4
     wm title .lsch "Current Views"
-    wm iconname .lsch "Schemas"
+    wm geometry .lsch +50+50
 
     frame .lsch.top -relief raised -bg honeydew2
     frame .lsch.mid -relief raised -bg honeydew2
@@ -1345,7 +1333,7 @@ proc displogical {pname} {
     pack .lsch.mid.scroll -side right -fill y
     pack .lsch.mid.list -fill x
 
-    # bind double-click on the listbox
+    # bind mouse click on the listbox
     bind .lsch.mid.list <Double-1> {
 	set logschema [.lsch.mid.list get active]
     }
@@ -1361,7 +1349,7 @@ proc displogical {pname} {
     # Button to create a New one, Open or Quit
     button .lsch.bot.new -text New -bg gray75 -fg IndianRed4 -command {
 	if {$logschema == ""} {
-	    showmesg "Please type in the name of the schema to be created"
+	    showmesg "Please type in the name of the schema to be created."
 	} else {
 	    set tgrps ""
 	    destroy .lsch
@@ -1370,7 +1358,7 @@ proc displogical {pname} {
     }
     button .lsch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
 	if {$logschema == ""} {
-	    showmesg "Please choose a schema by clicking on the entry"
+	    showmesg "Please choose a schema by clicking on the entry."
 	} else {
 	    destroy .lsch
 	    readlogical $logschema
@@ -1380,8 +1368,8 @@ proc displogical {pname} {
 
     button .lsch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
 	if {$logschema == ""} {
-	    showmesg "Please select the view to remove by double clicking on \
-		    the entry"
+	    showmesg "Please select the view to remove by clicking on \
+		    the entry."
 	} else {
 	    dialog .rem "Remove View" \
 		    "This will remove the view permanently. Proceed ? " \
@@ -1423,11 +1411,15 @@ proc displogical {pname} {
 proc displayattrs {pname} {
     global attrlist
 
+    # destroy .slist window if it already exists
+    catch {destroy .slist}
+
     # Create a window with a listbox showing the names of all the attrs
     # in the physical schema pname
     
     toplevel .slist -bg red4
     wm title .slist "Attributes in $pname"
+    wm geometry .slist +100+100
     wm iconname .slist "$pname"
 
     frame .slist.top -relief raised -bg honeydew2
@@ -1456,11 +1448,8 @@ proc displayattrs {pname} {
 	destroy .slist
     }
     pack .slist.bot.ok
-    # Finally grab focus
-    tkwait visibility .slist
-    grab set .slist
-    tkwait window .slist
 
+    tkwait window .slist
 }
 
 
