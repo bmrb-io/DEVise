@@ -26,6 +26,8 @@
 #else
 #   include "Dispatcher.h"
 #endif
+
+#include "queue.h"
 #include "TData.h"
 #include "RecId.h"
 #include "DataSource.h"

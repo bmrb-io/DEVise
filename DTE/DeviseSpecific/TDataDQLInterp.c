@@ -72,11 +72,13 @@ TData *tdata, char* tableName): _attrs(attrs)
 
 TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo()
 {
+	cout << "IN TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
   if (_tdata)
     delete _tdata;
   if (_className) free (_className);
   if (_query) free (_query);
   if (_name)  free(_name);
+	cout << "OUT TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;
 }
 
 char *TDataDQLInterpClassInfo::ClassName()
