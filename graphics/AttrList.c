@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/21 21:10:43  jussi
+  Added copyright notice and cleaned up a bit.
+
   Revision 1.3  1995/09/05 21:12:22  jussi
   Added/updated CVS header.
 
@@ -77,7 +80,6 @@ void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
   _attrs[attrNum] = info;
 }
 
-/* iterator for list of attributes */
 void AttrList::InitIterator()
 {
   _index = 0;
@@ -90,8 +92,13 @@ Boolean AttrList::More()
 
 AttrInfo *AttrList::Next()
 {
-  AttrInfo *info = _attrs[_index];
-  _index++;
+  AttrInfo *info;
+
+  do {
+    info = _attrs[_index];
+    _index++;
+  } while (!info && _index < _size);
+
   return info;
 }
 
@@ -110,11 +117,10 @@ AttrInfo *AttrList::Find(char *name)
   return NULL;
 }
 
-/* Get ith TData info */
 AttrInfo *AttrList::Get(int n)
 {
-  if (n < 0 || n >= _size ){
-    fprintf(stderr,"AttrList::Get(%d): %d existing attrs\n", n,_size);
+  if (n < 0 || n >= _size) {
+    fprintf(stderr, "AttrList::Get(%d): %d existing attrs\n", n, _size);
     Exit::DoExit(2);
   }
   return _attrs[n];
