@@ -1,0 +1,84 @@
+#! /bin/csh -f
+# Run DEVise server with Xvfb instead of the "real" X server (for testing).
+# Note: this must be run on the user's local machine.
+
+# Start Xvfb and set DISPLAY accordingly.
+Xvfb :1 -screen 0 1024x768x8 &
+setenv DISPLAY unix:1.0
+
+rmmem
+
+# For Tasvir and EmbeddedTk.
+set path = ( $path /p/qclic/Code/Qclic/bin.common )
+set path = ( $path /p/devise/public/bin )
+
+setenv DEVISE_ROOT		/p/devise
+
+# Set up the 'standard' data, sessions, etc., so these will be used
+# if something is missing from the demo or personal versions.
+setenv DEVISE_DAT		$DEVISE_ROOT/dat
+setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
+setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog
+setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file
+setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
+setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
+setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_CACHE		$DEVISE_ROOT/cache
+setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
+setenv DEVISE_SESSION		$DEVISE_ROOT/session
+setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
+
+if ($#argv > 0) then
+  if ("$1" == "p") then
+    # Use personal data, sessions, etc.
+    set personal_file = ~/.dev.personal
+    if (-f $personal_file) then
+      source $personal_file
+    else
+      echo "DEVise personal info file $personal_file doesn't exist"
+      exit 1
+    endif
+    shift
+  else if ("$1" == "d") then
+    # Use demo data, sessions, etc.
+    setenv DEVISE_DAT		$DEVISE_ROOT/demo/dat
+    setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/demo/schema/schema/catalog.dte
+    setenv DEVISE_ID_FILE	$DEVISE_ROOT/demo/schema/schema/temp_catalog
+    setenv DEVISE_DEF_FILE	$DEVISE_ROOT/demo/schema/schema/def_file
+    setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/demo/schema/schema/sysind.dte
+    setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/demo/schema/schema/minmax.dte
+    setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/demo/dat
+    setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/demo/dat
+    setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  	$DEVISE_ROOT/demo/schema/schema
+    setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/session
+    setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/palette
+    shift
+  else if ("$1" == "u") then
+    echo "Usage: dev|mul [p|d|u] [DEVise args]"
+    exit 1
+  endif
+endif
+
+setenv DEVISE_TMP		/tmp/$USER-devise-tmp
+setenv DEVISE_WORK		/tmp/$USER-devise-work
+setenv LM_DAT			/tmp/LM/dat
+setenv LM_TMP			/tmp/LM/dat
+
+setenv DEVISE_LIB		$cwd/../lib
+setenv LM_LIB			$DEVISE_LIB/LM
+
+generic/devised -port 6102 -quit 1 &
+
+sleep 5
+
+# Reset display so that the client is visible, and start the client.
+setenv DISPLAY unix:0.0
+generic/devise -p 6102
+
+# Kill Xvfb
+set pid=`ps -ax | grep Xvfb | head -1 | cut -c1-6`
+kill $pid
+
+rmmem
