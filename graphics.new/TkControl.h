@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/04 21:29:53  beyer
+  Added Raise() to raise the control panel to the top of the stacking order.
+
   Revision 1.14  1996/07/13 17:27:50  jussi
   Removed unnecessary virtual function prototypes.
 
@@ -128,6 +131,9 @@ public:
 
   /* Remove replica server */
   virtual int RemoveReplica(char *hostName, int port) { return 1; }
+
+  virtual void OpenDataChannel(int port) { }
+  virtual int getFd(){ return -1;} 
 
 protected:
 
