@@ -11,7 +11,6 @@ MemMgr *memMgr;
 CacheMgr *cacheMgr;
 
 void initialize_system(){
-	cerr << "Initializing streaming buf. mgr\n";
   int status;
   memMgr = new MemMgr(poolSize, pageSize, status);
   assert(memMgr);
@@ -25,7 +24,6 @@ void initialize_system(){
 }
 
 void shutdown_system(){
-	cerr << "Closing streaming buf. mgr\n";
 	delete cacheMgr;
 	delete memMgr;
 	cacheMgr = NULL;

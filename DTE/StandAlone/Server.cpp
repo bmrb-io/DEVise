@@ -13,14 +13,23 @@
 */
 
 #include "InitShut.h"
+#include "SockStream.h"
 #include "Common.h"
 #include "sysdep.h"
+
+const unsigned short PORT = 6571;
 
 int main(int argc, char** argv){
 
      initialize_system();
 
-	processQuery(cin, cout);
+	Cor_sockbuf listener(PORT);
+
+	while(true){
+		Cor_sockbuf* sockBuf = listener.AcceptConnection(); 
+		iostream str(sockBuf);
+		processQuery(str, str);
+	}
 
      shutdown_system();
 }
