@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/28 21:09:16  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.10  1995/12/14 18:40:14  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -389,7 +392,7 @@ fprintf(mapFile, "\t\t\t}\n");
   fprintf(mapFile, "\t}\n");
 #endif
 
-  fprintf(mapFile, "\tvirtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {\n");
+  fprintf(mapFile, "\tvirtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {\n");
   if (rec->dynamicFields & BIT_SHAPE) {
     fprintf(mapFile, "\t\tint i = 0;\n");
     fprintf(mapFile, "\t\twhile (i < numSyms) {\n");
@@ -398,11 +401,11 @@ fprintf(mapFile, "\t\t\t%s_GData *sym = (%s_GData *)syms[i];\n", rec->name, rec-
     fprintf(mapFile, "\t\t\t\tif ( ((%s_GData *)syms[symIndex])->shapeID != sym->shapeID)\n",rec->name);
     fprintf(mapFile, "\t\t\t\tbreak;\n");
     fprintf(mapFile, "\t\t\t}\n");
-    fprintf(mapFile, "\t\t\tmap_shape[sym->shapeID]->DrawGDataArray(win, &syms[i],symIndex-i, this, GetPixelWidth());\n");
+    fprintf(mapFile, "\t\t\tmap_shape[sym->shapeID]->DrawGDataArray(win, &syms[i],symIndex-i, this, view, GetPixelWidth());\n");
     fprintf(mapFile, "\t\t\ti = symIndex;\n");
     fprintf(mapFile, "\t\t}\n");
   } else
-    fprintf(mapFile, "\t\t_shapes[0]->DrawGDataArray(win, syms, numSyms, this, TDataMap::GetPixelWidth());\n");
+    fprintf(mapFile, "\t\t_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());\n");
   
   fprintf(mapFile, "\t}\n\n");
   
