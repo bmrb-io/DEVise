@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.20  1996/01/13 20:57:27  jussi
+#	Fixed minor bugs. Added CachePrune function.
+#
 #	Revision 1.19  1996/01/13 03:18:31  jussi
 #	Refined the support for WWW. Cache files are invalidated when
 #	query (URL) is updated.
@@ -923,8 +926,10 @@ proc updateSources {} {
     foreach dispName [lsort [array names sourceList]] {
 	set source [lindex $sourceList($dispName) 0]
 	set cachefile [lindex $sourceList($dispName) 4]
-	set cached [file exists $cachefile]
-	if {$cached} { set cached "Cached" } else { set cached "" }
+	set cached ""
+	if {[isCached $dispName -1 -1]} {
+	    set cached "Cached"
+	}
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
 		$dispName $source $cached]
 	.srcsel.top.list insert end $item
