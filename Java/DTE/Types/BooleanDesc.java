@@ -3,7 +3,7 @@ package Types;
 import java.io.*;
 import Operators.*;
 
-public class IntDesc implements TypeDesc {
+public class BooleanDesc implements TypeDesc {
     static final String name = "boolean";
 
     public String getString( ) {

@@ -6,6 +6,9 @@ import Operators.*;
 public class IntDesc implements TypeDesc {
     static final String name = "int";
 
+    public IntDesc( ){
+    }
+
     public String getString( ) {
         return name;
     }

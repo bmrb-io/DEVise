@@ -1,6 +1,6 @@
 package Operators;
 
-import java.io.*;
+import Types.*;
 
 public interface EvalOperator {
     public TypeDesc getType( );
