@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/09 18:06:13  jussi
+  Added Flush() method.
+
   Revision 1.14  1996/04/08 16:58:39  jussi
   #define'd XLIB_ILLEGAL_ACCESS so that we have access to Display->fd
   in the X display data structured. Minor other fixes.
@@ -164,9 +167,14 @@ void XDisplay::Register()
   printf("About to be registered... %d\n",_display->fd);
 #endif
 
+#if 0
   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
 						10, AllState, true,
 						_display->fd);
+#else
+  (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
+						10, AllState, true, -1);
+#endif
 }
 
 void XDisplay::Flush()
