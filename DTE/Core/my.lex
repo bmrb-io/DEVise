@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/03/17 17:19:08  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.28  1998/03/12 18:23:29  donjerko
   *** empty log message ***
 
@@ -171,11 +174,11 @@ LessGreat    ">="|">"|"<="|"<"
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INTY;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \'([^']|\'\')*\' {
-	yylval.stringLit = stripSQLQuotes(yytext);
+	yylval.stringLit = new string(stripSQLQuotes(yytext));
 	return STRING_CONST;
 }
 \"([^"]|\"\")*\" {
-	yylval.stringLit = stripSQLQuotes(yytext);
+	yylval.stringLit = new string(stripSQLQuotes(yytext));
 	return STRING;
 }
 .            {return yytext[0];}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/02/17 23:09:11  donjerko
+  *** empty log message ***
+
   Revision 1.10  1997/12/04 04:05:10  donjerko
   *** empty log message ***
 
@@ -105,15 +108,13 @@ Iterator* InsertParse::createExec(){
 	cerr << "got string: " << tmp << endl;
 #endif
 	size_t bufLen = tmp.size() + 1;
-	// char* inStr = new char[bufLen];
-	string* inStr = stripSQLQuotes(tmp.c_str());
+	string inStr = stripSQLQuotes(tmp.c_str());
 #if defined(DEBUG)
-	cerr << "Appending to the file: " << *inStr << endl;
+	cerr << "Appending to the file: " << inStr << endl;
 #endif
 //	TRY(site->writeOpen(), NULL);
-	site->append(inStr->c_str());
+	site->append(inStr.c_str());
 	site->writeClose();
 	delete site;
-	delete inStr;
 	return 0;
 }

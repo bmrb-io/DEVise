@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/03/17 17:19:06  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.14  1998/02/17 23:09:12  donjerko
   *** empty log message ***
 
@@ -200,8 +203,8 @@ string* dupStrArr(const string* inp, int numFlds){
 	return retVal;
 }
 
-string* stripSQLQuotes(const char* input){
-	string* retVal = new string;
+string stripSQLQuotes(const char* input){
+	string retVal;
 	char quote = input[0];
 	bool escape = false;
 	for(int i = 1; input[i] != '\0'; i++){
@@ -210,13 +213,13 @@ string* stripSQLQuotes(const char* input){
 				escape = true;
 			}
 			else{
-				*retVal += quote;
+				retVal += quote;
 				escape = false;
 			}
 		}
 		else{
 			assert(!escape);  // this should never fail
-			*retVal += input[i];
+			retVal += input[i];
 		}
 	}
 	return retVal;

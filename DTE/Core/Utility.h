@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/03/17 17:19:06  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.11  1998/02/17 23:09:13  donjerko
   *** empty log message ***
 
@@ -75,7 +78,7 @@ void stripQuotes(istream& in, char* buf, size_t bufsz);// can throw excetion
 
 string addQuotes(const string& in);
 
-string* stripSQLQuotes(const char* input);
+string stripSQLQuotes(const char* input);
 
 string addSQLQuotes(const char* inp, char quote);
 
