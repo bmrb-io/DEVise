@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 21:58:52  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.2  1995/09/05 22:14:30  jussi
   Added CVS header.
 */
@@ -26,36 +29,24 @@
 #include "BufferPolicy.h"
 
 class BufferLru: public BufferPolicy {
-public:
-  BufferLru();
+  public:
+    /* Return the next victim */
+    virtual Boolean PickVictim(RangeInfoArrays *rangeArrays,
+                               int &arrayNum, int &pos) {
+        /* Find least recently used by picking one from the end */
+        for(int i = rangeArrays->Size(0) - 1; i >= 0 ; i--) {
+            RangeInfo *rangeInfo = rangeArrays->GetRange(0, i);
+            if (!rangeInfo->InUse()) {
+                /* found one */
+                arrayNum = 0;
+                pos = i;
+                return true;
+            }
+        }
 
-  virtual void Clear();
-
-  /* Return the info about this buffer policy */
-  virtual void Info(int &numArrays, int &policyFlag) {
-    numArrays = 1;
-    policyFlag = ReportVictim | ReportPlacement | ReportUsage;
-  }
-
-  /* Return the next victim */
-  virtual Boolean PickVictim(RangeInfoArrays *rangeArrays,
-			     int &arrayNum, int &pos);
-
-  /* Report information about usage */
-  virtual void Usage(RangeInfoArrays *rangeArrays, int arrayNum, int pos);
-
-  /* A new range has been read into memory. Decide where to put it
-     by setting listNum and pos*/
-  virtual void Placement(RangeInfo *info, RangeInfoArrays *rangeArrays,
-			 int &arrayNum, int &pos);
-
-  virtual void PhaseHint(BufferPolicy::Phase phase);
-  virtual void FocusHint(RecId focus, TData *tdata, GData *gdata);
-
-private:
-  BufferPolicy::Phase _phase;
-  RecId _convertedLast;                 /* last ID to be converted */
-  Boolean _hasConverted; 
+        /* can't find anything as victim */
+        return false;
+    }
 };
 
 #endif
