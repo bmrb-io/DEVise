@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/24 19:48:51  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.5  1996/06/23 20:32:49  jussi
   Cleaned up.
 
@@ -40,6 +46,12 @@ DispQueryProcSimple::DispQueryProcSimple()
   Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
+DispQueryProcSimple::~DispQueryProcSimple()
+{
+  Dispatcher::FlushMarkers(readFd);
+  Dispatcher::CloseMarker(readFd, writeFd);
+}
+
 /********************************************************************8
 Called by dispatcher when we can run
 **********************************************************************/
@@ -55,6 +67,12 @@ DispQueryProcFull::DispQueryProcFull()
   Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
   Dispatcher::InsertMarker(writeFd);
   Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+}
+
+DispQueryProcFull::~DispQueryProcFull()
+{
+  Dispatcher::FlushMarkers(readFd);
+  Dispatcher::CloseMarker(readFd, writeFd);
 }
 
 void DispQueryProcFull::Run()

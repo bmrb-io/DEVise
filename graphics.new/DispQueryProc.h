@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/24 19:48:52  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.3  1996/04/08 21:38:40  jussi
   Added copyright statement and a little more.
 
@@ -40,6 +46,7 @@ class DispQueryProcSimple: public QueryProcSimple,
                            public TimerCallback {
 public:
   DispQueryProcSimple();
+  ~DispQueryProcSimple();
 
   /* active query processor when timer expires */
   virtual void TimerWake(int arg) {
@@ -58,6 +65,7 @@ class DispQueryProcFull: public QueryProcFull,
                          public TimerCallback {
 public:
   DispQueryProcFull();
+  ~DispQueryProcFull();
 
   /* active query processor when timer expires */
   virtual void TimerWake(int arg) {
