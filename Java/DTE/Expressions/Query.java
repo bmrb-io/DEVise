@@ -141,12 +141,13 @@ public class Query {
 		return toString();
 	}
 	public PlanNode optimize() throws IOException {
-		PlanNode topNode = null;
-          for(int j = 0; j < fromClause.size(); j++){
-               TableAlias curTa = (TableAlias) fromClause.elementAt(j);
-               PlanNode planNode = new FileScanNode(curTa, this);
-               topNode = planNode;
+		TableAlias curTa = (TableAlias) fromClause.elementAt(0);
+		PlanNode leftNode = new FileScanNode(curTa, this);
+          for(int j = 1; j < fromClause.size(); j++){
+               curTa = (TableAlias) fromClause.elementAt(j);
+               PlanNode rightNode = new FileScanNode(curTa, this);
+			leftNode = new NLJoinNode(leftNode, rightNode, this);
           }
-		return topNode;
+		return leftNode;
 	}
 }
