@@ -15,14 +15,18 @@
 #ifndef ClientAPI_h
 #define ClientAPI_h
 
+#include <sys/types.h>
+
 #ifdef SUN
 #include "missing.h"
 #endif
 
+#include "ParseAPI.h"
+
 extern int DeviseOpen(char *hostName, int port, int control);
-extern int DeviseReceive(char *result, int &flag, char *errorMsg);
-extern int DeviseSend(char **argv, int num);
-extern int DeviseClose();
+extern int DeviseReceive(int fd, char *result, u_short &flag, char *errorMsg);
+extern int DeviseSend(int fd, char **argv, int num);
+extern int DeviseClose(int fd);
 
 const int DefaultDevisePort = 6100;
 
