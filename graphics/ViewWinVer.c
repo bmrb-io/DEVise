@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 15:08:52  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:13:22  jussi
   Added/updated CVS header.
 */
@@ -23,7 +26,7 @@
 #include "ViewWinVer.h"
 #include "Display.h"
 
-#define DEBUG
+//#define DEBUG
 
 /* top level window */
 

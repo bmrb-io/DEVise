@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 15:08:06  jussi
+  Added preliminary stuff needed for Tk window support.
+
   Revision 1.2  1995/09/05 21:13:18  jussi
   Added/updated CVS header.
 */
@@ -32,7 +35,7 @@
 #include "TkControl.h"
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
 {
