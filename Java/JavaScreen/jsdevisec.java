@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.114  2001/09/27 19:52:33  wenger
+// Fixed bug 688 (problem dealing with links in session directories);
+// improved JS error handling for session open; eliminated a bunch of
+// duplicate code in the JS.
+//
 // Revision 1.113  2001/09/10 21:20:09  xuk
 // Solve the client disconnection problem.
 // Added disconnectedMode() method to indicate disconnected mode of JavaScreen.
@@ -366,6 +371,7 @@ public class jsdevisec extends Panel
     private ServerStateDlg statedlg = null;
     private SettingDlg settingdlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
+    private SetLogFileDlg setlogfiledlg = null;
     private SetModeDlg setmodedlg = null;
     public CollabDlg collabdlg = null;
     public CollabPassDlg collabpassdlg = null;
@@ -403,6 +409,13 @@ public class jsdevisec extends Panel
 
     // enable/disable collaboration
     public boolean isCollab = false;
+
+    // for command log playback
+    public boolean isPlayback = false;
+    public String logFileName = null;
+    public boolean isDisplay = true;
+    public boolean isOriginal = true;
+    private DEVisePlayback playback = null;
 
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
@@ -953,6 +966,21 @@ public class jsdevisec extends Panel
         setcgiurldlg.open();
         setcgiurldlg = null;
     }
+
+    // set the logfile name for command log playback
+    public void setLogFile()
+    {
+        setlogfiledlg = new SetLogFileDlg(this, parentFrame, isCenterScreen);
+        setlogfiledlg.open();
+        setlogfiledlg = null;
+    }
+
+    // command log playback
+    public void logPlayBack()
+    {
+	playback = new DEVisePlayback(this, dispatcher, logFileName);
+    }
+
 
     public void setMode()
     {
@@ -2143,6 +2171,171 @@ class SetCgiUrlDlg extends Dialog
     }
 }
 
+
+// Dialog for setting logfile name for playback.
+class SetLogFileDlg extends Dialog
+{
+    jsdevisec jsc = null;
+    public TextField file = new TextField("http://", 30);
+    public Checkbox display = new Checkbox("Is Display", true);
+    public Checkbox original = new Checkbox("Original Rate", true);
+    public Button setButton = new Button("   Set   ");
+    public Button cancelButton = new Button("  Cancel ");    
+    private boolean status = false; // true means this dialog is showing
+
+    public SetLogFileDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating SetLogFileDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Setting Logfile Name");
+
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
+
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
+
+        file.setBackground(jsc.jsValues.uiglobals.textBg);
+	file.setForeground(jsc.jsValues.uiglobals.textFg);
+        file.setFont(jsc.jsValues.uiglobals.textFont);
+
+        display.setBackground(jsc.jsValues.uiglobals.textBg);
+	display.setForeground(jsc.jsValues.uiglobals.textFg);
+        display.setFont(jsc.jsValues.uiglobals.textFont);
+
+        original.setBackground(jsc.jsValues.uiglobals.textBg);
+	original.setForeground(jsc.jsValues.uiglobals.textFg);
+        original.setFont(jsc.jsValues.uiglobals.textFont);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(10, 10, 10, 10);
+
+        c.gridwidth = 1;
+        Label label = new Label("Logfile URL:");
+        gridbag.setConstraints(label, c);
+        add(label);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(file, c);
+        add(file);
+
+        Checkbox [] checkbox = new Checkbox[2];
+        checkbox[0] = display;
+        checkbox[1] = original;
+        DEViseComponentPanel panel1 = new DEViseComponentPanel(checkbox,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+
+        gridbag.setConstraints(panel1, c);
+        add(panel1);
+
+        Button [] button = new Button[2];
+        button[0] = setButton;
+        button[1] = cancelButton;
+        DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+
+        gridbag.setConstraints(panel2, c);
+        add(panel2);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        setButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.logFileName = file.getText();
+			jsc.isDisplay = display.getState();
+			jsc.isOriginal = original.getState();
+			jsc.isPlayback = true;
+			close();
+			jsc.logPlayBack();
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			close();
+                    }
+                });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening SetLogFileDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed SetLogFileDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+
 // ------------------------------------------------------------------------
 
 // Dialog for setting socket/cgi mode.
@@ -2154,6 +2347,7 @@ class SetModeDlg extends Dialog
     public Button collabButton = new Button("Start Collaboration");
     public Button enCollabButton = new Button("Enable Collaboration");
     public Button disCollabButton = new Button("Disable Collaboration");
+    public Button playbackButton = new Button("Playback");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -2200,6 +2394,10 @@ class SetModeDlg extends Dialog
         disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
         disCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
+        playbackButton.setBackground(jsc.jsValues.uiglobals.bg);
+        playbackButton.setForeground(jsc.jsValues.uiglobals.fg);
+        playbackButton.setFont(jsc.jsValues.uiglobals.font);
+
         cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
         cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
         cancelButton.setFont(jsc.jsValues.uiglobals.font);
@@ -2230,6 +2428,8 @@ class SetModeDlg extends Dialog
         add(enCollabButton);
         gridbag.setConstraints(disCollabButton, c);
         add(disCollabButton);
+        gridbag.setConstraints(playbackButton, c);
+        add(playbackButton);
         gridbag.setConstraints(cancelButton, c);
         add(cancelButton);
 
@@ -2396,6 +2596,15 @@ class SetModeDlg extends Dialog
                     }
                 });
 
+	playbackButton.addActionListener(new ActionListener()
+	    {
+		public void actionPerformed(ActionEvent event)
+		{
+		    close();
+		    jsc.setLogFile();
+		}
+	    });
+	
         cancelButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2424,7 +2633,7 @@ class SetModeDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening SetCgiUrlDlg");
+	jsc.jsValues.debug.log("Opening SetModeDlg");
         status = true;
         setVisible(true);
     }
