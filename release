@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/12/30 17:50:07  wenger
+#  Got latest sources to compile on Linux; updated Linux dependencies;
+#  changes devise.dali to devise.tasvir in release script.
+#
 #  Revision 1.9  1996/10/17 23:30:01  wenger
 #  Added sample data, session, and schema files to sources; modified
 #  the release script so that these files get installed into the target
@@ -163,6 +167,7 @@ if (! -d $target/lib) then
   mkdir $target/lib
 endif
 cp -p lib/[a-z]* $target/lib
+cp -p lib/FSBox.tk $target/lib
 
 
 echo ""
