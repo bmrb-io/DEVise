@@ -83,6 +83,9 @@ int genrtree_p::max_entries_per_page()
 {
   genrtree_p_hdr &hdr = (*(alloc_hdr()));
 
+//	cout << "elem_size() = " << elem_size() << endl;
+//	cout << "key_size() = " << key_size() << endl;
+
   get_hdr(hdr);
   int result = ((PAGE_SIZE - DPFIXED - 5*sizeof(slot_t) - hdr.page_repr_size())*8) /
                (elem_size()*8+key_size()+1);

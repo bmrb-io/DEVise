@@ -133,6 +133,9 @@ bool port_genrtree_p::is_leaf()
 
 int port_genrtree_p::num_page_entries()
 {
+	assert(slot_val(3));
+//	cout << "max_entries_per_page() = " << max_entries_per_page() << endl;
+	assert(max_entries_per_page() >= 0);
   return bm_num_set((unsigned char *)slot_val(3), max_entries_per_page());
 }
 

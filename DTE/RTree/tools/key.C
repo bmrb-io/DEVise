@@ -93,7 +93,7 @@ gen_key_t::gen_key_t(char *bounds,
 {
   int point_data_sz=0;
   num_dim = in_dim;
-  types = (char *)malloc(strlen(in_types));
+  types = (char *)malloc(strlen(in_types) + 1);	// added + 1 DD
   strcpy(types, in_types);
   char *type_info = types;
   for(int dim=0; dim<num_dim; dim++)
@@ -137,7 +137,7 @@ void gen_key_t::add_extra(char *extra_plus,
   data_sz = 0;
   if (types != NULL)
     free(types);
-  types = (char *)malloc(strlen(in_types));
+  types = (char *)malloc(strlen(in_types) + 1);
   strcpy(types, in_types);
 
   char *type_info = types;
@@ -995,11 +995,21 @@ void gen_key_t::print_visualize_info_to_file(FILE *outfile)
     {
       int dim_num;
 
-      for (dim_num=1; dim_num<=num_dim; dim_num++)
-	fprintf(outfile, "%d ", min(dim_num));
-      for (dim_num=1; dim_num<=num_dim-1; dim_num++)
-	fprintf(outfile, "%d ", max(dim_num));
-      fprintf(outfile, "%d", max(num_dim));
+      for (dim_num=1; dim_num<=num_dim; dim_num++){
+	 	int tmp = min(dim_num);
+		for(int i = 0; i < 4; i++){
+			fprintf(outfile, "%x ", *((char*) &tmp + i));
+		}
+	}
+//	fprintf(outfile, "%d ", min(dim_num));
+      for (dim_num=1; dim_num<=num_dim; dim_num++){
+	 	int tmp = max(dim_num);
+		for(int i = 0; i < 4; i++){
+			fprintf(outfile, "%x ", *((char*) &tmp + i));
+		}
+	}
+
+//	fprintf(outfile, "%d ", max(dim_num));
     }        
 }
 

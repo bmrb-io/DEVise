@@ -19,6 +19,7 @@
 #include <stream.h> 
 #include <sys/types.h> 
 #include "bitmap.h" 
+#include <assert.h>
 
 inline int div8(long x)         { return x >> 3; }
 inline int mod8(long x)         { return x & 7; }
@@ -99,6 +100,7 @@ int bm_num_set(const unsigned char* bm, int size)
 {
     int count;
     int mask;
+    assert(size >= 0);
     for (count = 0, mask = 1; size; size--)  {
 	if (*bm & mask)	count++;
 	if ((mask <<= 1) == 0x100)  {
