@@ -1355,7 +1355,7 @@ Num Date        Status  Description
 			be aligned correctly (not positioned by center)
 			(see the colors.ds session). (rkw)
 
-358 05/27/98	OPEN	A number of places in the code pass the wrong types
+358 05/27/98	FIXED	A number of places in the code pass the wrong types
 			to WindowRep::SetForeground() and
 			WindowRep::SetBackground(). (rkw)
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.73  1998/05/21 18:18:33  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.72  1998/05/14 18:21:14  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -467,8 +472,10 @@ class WindowRep
 		DeviseDisplay*	 	GetDisplay(void)		{ return _display;	};
 		const DeviseDisplay*	GetDisplay(void) const	{ return _display;	};
 
+#if 0 // Not used -- RKW May 29, 1998
 		Coloring&				GetColoring(void)		{ return coloring;	}
 		const Coloring&			GetColoring(void) const { return coloring;	}
+#endif
 
 		PColorID		GetForeground(void) const;
 		PColorID		GetBackground(void) const;

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/02/19 23:24:19  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.20  1998/01/07 19:27:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -225,7 +233,7 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->Dimensions(w, h);
 	
 	/* outline the whole window */
-	_winReps.GetWindowRep()->SetForeground(GetColorID(blackColor));
+	_winReps.GetWindowRep()->SetForeground(GetPColorID(blackColor));
 	_winReps.GetWindowRep()->Line(x, y, x + w - 1, y, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y, x + w - 1, y + h - 1, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y + h - 1, x, y + h - 1, 1);
