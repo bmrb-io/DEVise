@@ -20,6 +20,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.59.2.2  2001/11/14 19:05:17  wenger
+// Should have changed protocol version to 9.1 before, when I added the
+// JAVAC_InitCollaboration command.
+//
+// Revision 1.59.2.1  2001/11/13 20:31:35  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
+// Revision 1.59  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.58.2.2  2001/11/07 17:22:36  wenger
 // Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
 // handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -239,7 +257,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("9.0");
+    public static final String PROTOCOL_VERSION = new String("9.1");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
@@ -452,6 +470,22 @@ public final class DEViseGlobals
     public static long getCurrentTime()
     {
         return System.currentTimeMillis();
+    }
+
+    // Given a string of the form "<major>.<minor>" returns "<major>";
+    // if there is no dot, returns the whole string.
+    public static String getMajorVersion(String version)
+    {
+	String result = "";
+
+        int dotIndex = version.indexOf('.');
+	if (dotIndex != -1) {
+	    result = version.substring(0, dotIndex);
+	} else {
+	    result = version;
+	}
+
+	return result;
     }
 
 }

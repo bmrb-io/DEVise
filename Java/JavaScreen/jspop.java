@@ -22,9 +22,19 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
+// // $Id$
 
 // $Log$
+// Revision 1.73  2001/11/13 17:57:01  xuk
+// Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.72.2.1  2001/11/13 20:31:36  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
 // Revision 1.72  2001/11/07 22:31:30  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -715,8 +725,6 @@ public class jspop implements Runnable
             pn(e.getMsg() + "\nClose socket connection to client \"" +
 	      hostname + "\"");
         }
-
-        System.out.println("jspop state: " + getServerState());
     }
 
     private void checkHeartbeats()
@@ -861,26 +869,13 @@ public class jspop implements Runnable
 		// if the socket has been closed. RKW 2001-10-22.
 		if (clientSock.isOpen()) {
 		    if (clientSock.hasCommand()) {
-			long id;
-			int cgi;
-
-                        pn("Before getting command");
 			String cmd = clientSock.getCommand();
-                        pn("After getting command");
 
-			id = clientSock.getCmdId();
-			cgi = clientSock.getCmdCgiFlag();
-			boolean firstCommand = clientSock.isFirstCommand();
+			int id = clientSock.getCmdId();
+			int cgi = clientSock.getCmdCgiFlag();
 			clientSock.clearCommand();
-	    		pn("Received command from client(" + id +
-			  ") :  \"" + cmd + "\"");		
 
-			if (firstCommand) {
-			    processFirstCommand(clientSock.getHostname(),
-			      clientSock, cmd, id, cgi);
-			} else {
-			    processCommand(clientSock, cmd, id, cgi);
-			}
+		        processCommand(clientSock, cmd, id, cgi);
 		    }
 		} else { // !socket.isOpen
 		    if (DEBUG >= 2) {
@@ -1195,6 +1190,8 @@ public class jspop implements Runnable
 	// eventually it gets moved from there to the active clients list.
 	addClient(client);
 
+        System.out.println("jspop state: " + getServerState());
+
 	return client;
     }
 
@@ -1454,29 +1451,27 @@ public class jspop implements Runnable
         }
     }
 
-    private void processFirstCommand(String hostname,
-      DEViseClientSocket clientSock, String cmd, long id, int flag)
-      throws YException
+    private void processCommand(DEViseClientSocket clientSock,
+      String cmd, long id, int flag) throws YException
     {
         if (DEBUG >= 1) {
-	    System.out.println("jspop.processFirstCommand(" + hostname +
-	      ", " + cmd + ")");
+	    System.out.println("jspop.processCommand(" + cmd + ")");
 	}
 
 	boolean cgi;
 	if (flag == 1) {
 	    cgi = true;
-	    pn("A CGI client connection.");
+	    pn("Receiving command CGI.");
 	} else {
 	    cgi  = false;
-	    pn("A direct socket client connection.");
+	    pn("Receiving command via socket.");
 	}
 	
 	pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
-	
 	if (id == DEViseGlobals.DEFAULTID) { // new JS
 	    pn("New client");
-	    DEViseClient client = createClient(hostname, clientSock, cgi);
+	    DEViseClient client = createClient(clientSock.getHostname(),
+	      clientSock, cgi);
 	    client.addNewCmd(cmd);
 	} else { // old JS
 	    pn("Existing client");
@@ -1486,6 +1481,14 @@ public class jspop implements Runnable
 		client.setCgi(cgi); 
 		client.setSocket(clientSock);
 		client.addNewCmd(cmd);
+
+	        if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) &&
+	          (client.isAbleCollab)) {
+	            // disable collaboration
+		    // Why? -- RKW 2001-11-09.
+		    client.isAbleCollab = false;
+		    pn("Disable collaboration." + client.isAbleCollab);
+	        }
 	    } else {
 		clientSock.sendCommand(DEViseCommands.ERROR +
 				       " {Client connection is invalid.  Please exit " +
@@ -1493,48 +1496,6 @@ public class jspop implements Runnable
 		clientSock.closeSocket();
 		throw new YException("No client for ID: " + id);
 	    }
-	}
-    }
-
-    private void processCommand(DEViseClientSocket clientSock, String cmd,
-      long id, int cgi) throws YException
-    {
-        if (DEBUG >= 1) {
-	    System.out.println("jspop.processCommand(" + cmd + ")");
-	}
-
-	boolean cgiflag;
-
-	if (cgi != 0) {
-	    //TEMP -- we may never get here?
-	    cgiflag = true;
-	    pn("Receiving command CGI.");
-	} else {
-	    cgiflag = false;
-	    pn("Receiving command via socket.");
-	}
-
-	if (id != DEViseGlobals.DEFAULTID) {
-	    DEViseClient client = findClientById(id);
-	    if (client != null) {
-                // set cgi flag; added for mode changing
-	        client.setCgi(cgiflag);
-       	        client.setSocket(clientSock);
-	        client.addNewCmd(cmd);
-	        // disable collaboration
-	        if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) &&
-	          (client.isAbleCollab)) {
-		    client.isAbleCollab = false;
-		    pn("Disable collaboration." + client.isAbleCollab);
-	        }
-	    } else {
-	        clientSock.sendCommand(DEViseCommands.ERROR +
-	          " {Client connection is invalid.  Please exit the JavaScreen.}");
-	        clientSock.closeSocket();
-	        throw new YException("No client for ID: " + id);
-	    }
-	} else {
-	    System.out.println("Ignoring command from client with default ID");
 	}
     }
 
@@ -1594,6 +1555,13 @@ public class jspop implements Runnable
 			leaderClient.addCollabClients(client, hostname);
 			client.collabLeader = leaderClient;
 
+			//TEMP -- ideally, the JSPoP would initiate the
+			// saving of the pre-collaboration session in here
+			// somewhere; however, for now this is still done
+			// by the client. RKW 2001-11-13.
+
+			client.sendCmd(DEViseCommands.INIT_COLLAB + " " + id);
+
 			client.sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + 
 				       leaderClient.screenDimX + " " + 
 				       leaderClient.screenDimY+ " " + 
@@ -1601,6 +1569,9 @@ public class jspop implements Runnable
 				       leaderClient.screenResY);
 			client.sendCmd(DEViseCommands.DONE);
 			
+			// Make sure the leader client has a server so it
+			// can save and reload the current session to generate
+			// the commands and data to initialize the collaborator.
 			DEViseServer server = getNextAvailableServer();
 			if (server != null && 
 			    (server.getCurrentClient()) != leaderClient) {
@@ -1610,11 +1581,11 @@ public class jspop implements Runnable
 			pn("Incorrect password.");
 			client.sendCmd(DEViseCommands.ERROR +
 				       " {Incorrect password. Please try again.}");
-			// TEMP: send this command in String[] format
-			/*
-			  client.sendCmd(new String[] {DEViseCommands.ERROR, 
-			  "Incorrect password. Please try again."}); 
-			*/
+                        // TEMP: send this command in String[] format
+                        /*
+                          client.sendCmd(new String[] {DEViseCommands.ERROR,
+                          "Incorrect password. Please try again."});
+                        */
 		    }
 		} else { // disable collaboration
 		    pn("Disabled to collaborate with client.");

@@ -22,6 +22,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.129.2.1  2001/11/13 20:31:35  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
+// Revision 1.129  2001/11/07 23:09:28  wenger
+// Merged changes from js_no_reconnect_br_2 thru js_no_reconnect_br_3.
+// (Mostly installation-related improvements.)
+//
 // Revision 1.128  2001/11/07 22:31:29  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -219,7 +230,7 @@
 // Revision 1.83  2001/02/16 17:51:16  xuk
 // Added new command and GUI for collaboration JS to collect active client ID list.
 // Added showClientList();
-// Changed CollabDlg() for new GUI.
+// Changed CollabIdDlg() for new GUI.
 //
 // Revision 1.82  2001/02/15 03:21:35  xuk
 // Fixed bugs for collaboration JavaScreen.
@@ -443,8 +454,8 @@ public class jsdevisec extends Panel
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetLogFileDlg setlogfiledlg = null;
     private SetModeDlg setmodedlg = null;
-    private ShowCollabDlg showcollabdlg = null;
-    public CollabDlg collabdlg = null;
+    private CollabSelectDlg collabSelectDlg = null;
+    public CollabIdDlg collabIdDlg = null;
     public CollabPassDlg collabpassdlg = null;
     public EnterCollabPassDlg entercollabpassdlg = null;
     public CollabStateDlg collabstatedlg = null;
@@ -990,9 +1001,14 @@ public class jsdevisec extends Panel
 
     public void showClientList(String msg)
     {
-        collabdlg = new CollabDlg(this, parentFrame, isCenterScreen, msg);
-        collabdlg.open();
-	collabdlg = null;
+	try {
+            collabIdDlg = new CollabIdDlg(this, parentFrame,
+	      isCenterScreen, msg);
+            collabIdDlg.open();
+	} catch (YException ex) {
+	    System.err.println(ex.getMessage());
+	}
+	collabIdDlg = null;
     }
 
     public void showCollabPass()
@@ -1085,9 +1101,9 @@ public class jsdevisec extends Panel
 
     public void showCollab()
     {
-        showcollabdlg = new ShowCollabDlg(this, parentFrame, isCenterScreen);
-        showcollabdlg.open();
-        showcollabdlg = null;
+        collabSelectDlg = new CollabSelectDlg(this, parentFrame, isCenterScreen);
+        collabSelectDlg.open();
+        collabSelectDlg = null;
     }
 
     public boolean isShowingMsg()
@@ -1188,6 +1204,22 @@ public class jsdevisec extends Panel
         commMode.setText("Playback");
     }
 
+    public synchronized void collabInit(int leaderId)
+    {
+        pn("jsdevisec.collabInit(" + leaderId + " )");
+
+	//TEMP We really should do this here (on the assumption that saving
+	// an existing session will be taken care of by the JSPoP).
+	// jscreen.updateScreen(false);
+
+	//TEMP We really shouldn't set specialID until here, in case we
+	// didn't succeed in collaborating, but not setting it earlier
+	// somehow goofs things up.  RKW 2001-11-12.
+        // specialID = leaderId;
+
+	collabMode();
+    }
+
     public synchronized void collabQuit()
     {
 	pn("Quit from collaboration mode.");
@@ -1203,6 +1235,19 @@ public class jsdevisec extends Panel
 	specialID = -1;
 	socketMode();
     }	
+
+    // Restore any pre-collaboration session.
+    public synchronized void restorePreCollab()
+    {
+	//TEMP -- this should really be taken care of by the DEViseClient
+	// object in the JSPoP, but I don't want to make too many changes
+	// right now.  RKW 2001-11-12.
+        if (sessionSaved) {
+	    isSessionOpened = true;
+	    dispatcher.start(DEViseCommands.REOPEN_SESSION);
+	    sessionSaved = false;
+	}
+    }
 
     public void setDisplaySize(String command) 
     {
@@ -1714,10 +1759,11 @@ class SettingDlg extends Dialog
         statButton.setForeground(jsc.jsValues.uiglobals.fg);
         statButton.setFont(jsc.jsValues.uiglobals.font);
 
-	if (jsc.specialID == -1) 
+	if (jsc.specialID == -1) {
 	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
-	else 
+	} else {
 	    collabButton.setBackground(Color.red);
+	}
 	    
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
@@ -1870,7 +1916,7 @@ class SettingDlg extends Dialog
                     }
                 });
 
-	if (jsc.specialID == -1) 
+	if (jsc.specialID == -1) {
 	    collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -1879,6 +1925,7 @@ class SettingDlg extends Dialog
                         close();
                     }
                 });
+        }
 
         cancelButton.addActionListener(new ActionListener()
                 {
@@ -2559,26 +2606,6 @@ class SetModeDlg extends Dialog
                     {
 			jsc.jsValues.connection.cgi = false;
 			jsc.socketMode();
-
-			// switch out off the collaboration mode
-			if (jsc.specialID != -1) {
-
-			    jsc.specialID = -1;
-			    jsc.collabinterrupted = true;
-			    jsc.dispatcher.dispatcherThread.interrupt();
-
-			    jsc.animPanel.stop();
-			    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			    jsc.jscreen.updateScreen(false);
-			    jsc.dispatcher.setStatus(0);
-			    
-			    if (jsc.sessionSaved) {
-				jsc.isSessionOpened = true;
-				jsc.dispatcher.start(DEViseCommands.REOPEN_SESSION);
-				jsc.sessionSaved = false;
-			    }
-			}
- 
 			close();
                     }
                 });
@@ -2636,8 +2663,8 @@ class SetModeDlg extends Dialog
 
 // ------------------------------------------------------------------------
 
-// Dialog for collaboration.
-class ShowCollabDlg extends Dialog
+// Dialog to select collaboration state.
+class CollabSelectDlg extends Dialog
 {
     jsdevisec jsc = null;
 
@@ -2648,11 +2675,11 @@ class ShowCollabDlg extends Dialog
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
-    public ShowCollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    public CollabSelectDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
     {
         super(owner, true);
 
-	what.jsValues.debug.log("Creating SetModeDlg");
+	what.jsValues.debug.log("Creating CollabSelectDlg");
 
         jsc = what;
 
@@ -2749,7 +2776,7 @@ class ShowCollabDlg extends Dialog
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	if (jsc.specialID == -1) 
+	if (jsc.specialID == -1) {
 	    collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2758,7 +2785,14 @@ class ShowCollabDlg extends Dialog
 			
 			// if switch from "socket" mode, save current 
 			// session.
+			// TEMP: this should really be taken care of in
+			// the JSPoP, so we don't save and close the session
+			// unless we have actually succeeded in getting
+			// into collaboration mode.  RKW 2001-11-12.
+			// (If we start collaboration and then cancel,
+			// we've lost our pre-collaboration session.)
                         if (jsc.isSessionOpened) {
+			    jsc.jscreen.updateScreen(false);
 			    jsc.sessionSaved = true;
 			    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
                         }
@@ -2766,6 +2800,9 @@ class ShowCollabDlg extends Dialog
 			// if already in "collaboration" mode,
 			// send JAVAC_CollabExit to exit from previous collaboration
 			if (jsc.specialID != -1) {
+			    // Note: the GUI doesn't seem to let you get to
+			    // here, so I'm not sure whether this works.
+			    // RKW 2001-11-13.
 			    if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
 				jsc.collabinterrupted = true;
 				jsc.dispatcher.dispatcherThread.interrupt();
@@ -2777,15 +2814,11 @@ class ShowCollabDlg extends Dialog
 			jsc.dispatcher.start(command);
 			
 			close();
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-			jsc.dispatcher.setStatus(0);
-			jsc.collabMode();
                     }
                 });
+	    }
 
-	if (jsc.specialID != -1)
+	if (jsc.specialID != -1) {
 	    endButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2800,17 +2833,14 @@ class ShowCollabDlg extends Dialog
 			jsc.jscreen.updateScreen(false);
 			jsc.dispatcher.setStatus(0);
 			
-			if (jsc.sessionSaved) {
-			    jsc.isSessionOpened = true;
-			    jsc.dispatcher.start(DEViseCommands.REOPEN_SESSION);
-			    jsc.sessionSaved = false;
-			}
+			jsc.restorePreCollab();
 
  			close();
                     }
                 });
+	    }
 
-	if ((jsc.specialID == -1) && (!jsc.isCollab))
+	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
 	    enCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2820,8 +2850,9 @@ class ShowCollabDlg extends Dialog
 			jsc.showCollabPass();
                     }
                 });
+	    }
 
-	if ((jsc.specialID == -1) && (jsc.isCollab))
+	if ((jsc.specialID == -1) && (jsc.isCollab)) {
 	    disCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -2831,6 +2862,7 @@ class ShowCollabDlg extends Dialog
 			jsc.disableCollab();
                     }
                 });
+	    }
 
 	cancelButton.addActionListener(new ActionListener()
                 {
@@ -2860,7 +2892,7 @@ class ShowCollabDlg extends Dialog
     // dispatcher thread
     public void open()
     {
-	jsc.jsValues.debug.log("Opening ShowCollabDlg");
+	jsc.jsValues.debug.log("Opening CollabSelectDlg");
         status = true;
         setVisible(true);
     }
@@ -2872,7 +2904,7 @@ class ShowCollabDlg extends Dialog
 
             status = false;
         }
-	jsc.jsValues.debug.log("Closed ShowCollabDlg");
+	jsc.jsValues.debug.log("Closed CollabSelectDlg");
     }
 
     // true means this dialog is showing
@@ -2884,7 +2916,7 @@ class ShowCollabDlg extends Dialog
 
 // ------------------------------------------------------------------------
 // Dialog for setting collabrated JavaScreen ID.
-class CollabDlg extends Frame
+class CollabIdDlg extends Frame
 {
     private jsdevisec jsc = null;
 
@@ -2896,10 +2928,10 @@ class CollabDlg extends Frame
 
     private boolean status = false; // true means this dialog is showing
 
-    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen,
-      String data)
+    public CollabIdDlg(jsdevisec what, Frame owner, boolean isCenterScreen,
+      String data) throws YException
     {
-	what.jsValues.debug.log("Creating CollabDlg");
+	what.jsValues.debug.log("Creating CollabIdDlg");
 
         jsc = what;
 
@@ -2972,18 +3004,9 @@ class CollabDlg extends Frame
             {
                 public void mouseClicked(MouseEvent event)
                 {
-                    if ((event.getClickCount() > 1)  &&
-		      (clientList.getItemCount() > 0)) {
-                        int idx = clientList.getSelectedIndex();
-                        if (idx != -1) {
-	                    String list = clientList.getItem(idx);
-	                    int n = list.indexOf(' ');
-	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Integer.parseInt(clientID);
-                            close();
-	                    jsc.enterCollabPass();
-                        }
-                    }
+                    if (event.getClickCount() > 1) {
+		        startCollab();
+		    }
                 }
             });
 
@@ -2991,22 +3014,7 @@ class CollabDlg extends Frame
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    if (clientList.getItemCount() > 0) {
-                        int idx = clientList.getSelectedIndex();
-                        if (idx != -1) {
-	                    String list = clientList.getItem(idx);
-	                    int n = list.indexOf(' ');
-	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Integer.parseInt(clientID);
-
-                            close();
-                            jsc.enterCollabPass();
-                        }
-                    } else { // no available collaboration leader
-                        // go back to normal mode
-                        jsc.collabQuit();
-                        close(); 
-		    }
+		    startCollab();
                 }
             });
 
@@ -3014,14 +3022,15 @@ class CollabDlg extends Frame
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    jsc.collabQuit();
                     close();
+	            jsc.dispatcher.setStatus(0);
+		    jsc.restorePreCollab();
                 }
             });
 
     }
 
-    public void setClientList(String data)
+    public void setClientList(String data) throws YException
     {
       	clients = DEViseGlobals.parseString(data);	
 
@@ -3036,12 +3045,32 @@ class CollabDlg extends Frame
 
 	if (clientList.getItemCount() <= 0) {
 	  jsc.showMsg("No available JavaScreen for collaboration.");
-	  
-	  jsc.collabQuit();
-	  close();
+	  jsc.dispatcher.setStatus(0);
+	  jsc.restorePreCollab();
+	  throw new YException("No available JavaScreen for collaboration.");
 	} else {
 	    validate();
         }
+    }
+
+    private void startCollab() {
+        if (clientList.getItemCount() > 0) {
+	    int idx = clientList.getSelectedIndex();
+	    if (idx != -1) {
+	        String list = clientList.getItem(idx);
+		int n = list.indexOf(' ');
+		String clientID = list.substring(0,n);
+		jsc.specialID = Integer.parseInt(clientID);
+
+                close();
+		jsc.enterCollabPass();
+	    }
+	} else { // no available collaboration leader
+	    // go back to normal mode
+	    jsc.collabQuit();
+	    jsc.restorePreCollab();
+	    close(); 
+	}
     }
 
     protected void processEvent(AWTEvent event)
@@ -3056,7 +3085,7 @@ class CollabDlg extends Frame
 
     public void open()
     {
-	jsc.jsValues.debug.log("Opening CollabDlg");
+	jsc.jsValues.debug.log("Opening CollabIdDlg");
         status = true;
         setVisible(true);
     }
@@ -3066,9 +3095,9 @@ class CollabDlg extends Frame
         if (status) {
             dispose();
             status = false;
-            jsc.collabdlg = null;
+            jsc.collabIdDlg = null;
         }
-	jsc.jsValues.debug.log("Closed CollabDlg");
+	jsc.jsValues.debug.log("Closed CollabIdDlg");
     }
 
     // true means this dialog is showing
@@ -3315,10 +3344,9 @@ class EnterCollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-
 			jsc.collabPass = pass.getText();
 
-			String id = new Long(jsc.specialID).toString();
+			String id = new Integer(jsc.specialID).toString();
 			String command = DEViseCommands.COLLABORATE + " {" + 
 			    id + "} {" + jsc.collabPass + "}";
 
@@ -3487,7 +3515,7 @@ class CollabStateDlg extends Frame
         if (status) {
             dispose();
             status = false;
-            jsc.collabdlg = null;
+            jsc.collabIdDlg = null;
         }
 	jsc.jsValues.debug.log("Closed CollabStateDlg");
     }

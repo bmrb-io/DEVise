@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 7.0.
+version 9.1.
 
 
 For the details of the format in which commands are send on the socket,
@@ -79,7 +79,8 @@ see comments in DEViseCommSocket.java.
         <password>: password of leader client
 
     2.10 JAVAC_AskCollabLeader
-    Purpose: Query the avilable collaboration leaders
+    Purpose: Query the avilable collaboration leaders (JAVAC_Clients is
+             sent in response)
     Arguments: 0
 
 
@@ -102,7 +103,8 @@ see comments in DEViseCommSocket.java.
                   status.
 
     3.4 JAVAC_Clients
-    Purpose: send the active client list to collaboration JavaScreen
+    Purpose: send the list of available collaboration leaders to a JS
+             client that wants to collaborate
     Arguments: variable number of IDs of active clients.
 	<client 1 ID>: the ID of client 1
 	<client 1 host>: the host of client 1
@@ -124,6 +126,13 @@ see comments in DEViseCommSocket.java.
     Arguments: 0
 
     3.7 JAVAC_Set3DConfig (see section 2.9).
+
+    3.8 JAVAC_InitCollaboration
+    Purpose: confirms that collaboration has been correctly set up in the
+             JSPoP, and puts the JS client in to collaboration mode
+    Arguments:
+        <leader ID>: client ID of the leader of this collaborator
+
 
 
 4. JavaScreen to devised (via JSPoP)

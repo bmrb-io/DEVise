@@ -24,6 +24,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2001/11/13 17:57:01  xuk
+// Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.56.2.1  2001/11/13 20:31:34  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
 // Revision 1.56  2001/11/07 22:31:28  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -317,6 +327,8 @@ public class DEViseClient
     public long lastActiveTime = -1;
     public long lastSuspendTime = -1;
 
+    // Pending commands (will be sent to the devised, unless dealt with
+    // otherwise).
     private Vector cmdBuffer = new Vector();
 
     private boolean cgi; // whether to use cgi instead of socket
@@ -329,7 +341,6 @@ public class DEViseClient
     private static int _objectCount = 0;
 
     public Vector collabClients = new Vector();
-    public Vector collabHostName = new Vector();
     public boolean collabInit = false;
 
     public boolean isAbleCollab = false;
@@ -392,7 +403,6 @@ public class DEViseClient
 
     public void addCollabClients(DEViseClient client, String hostname) {
 	collabClients.addElement(client);
-	collabHostName.addElement(hostname);
         collabInit = true;
     }
     
@@ -400,7 +410,6 @@ public class DEViseClient
 	int i = collabClients.indexOf(client);
 
 	collabClients.removeElement(client);
-	collabHostName.removeElementAt(i);
 
 	pop.pn("Collaborating JS: " + i + " is removed.");
 	// client.closeSocket();
@@ -415,17 +424,20 @@ public class DEViseClient
 
 	updateHeartbeat();
 
+	// Note: commands that do not actually require communication with
+	// a devised should be directly handled here to avoid unnecessary
+	// client switches. RKW 2001-11-09.
 	if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
 	    // Note: this must be dealt with here so we don't generate
 	    // unnecessary server switches.
 	    try {
 	        sendCmd(DEViseCommands.DONE);
-	        if (useCgi()) {
-		    closeSocket();
-		}
 	    } catch (YException ex) {
-	        System.err.println("Error sending " + DEViseCommands.DONE +
-		  " command in response to " + DEViseCommands.CHECK_POP);
+	        System.err.println(ex.getMessage());
+	    }
+
+	    if (useCgi()) {
+	        closeSocket();
 	    }
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
 	    try {
@@ -442,6 +454,32 @@ public class DEViseClient
 
 	    // Close here because the client exits after getting the reply.
 	    close();
+
+	} else if (cmd.startsWith(DEViseCommands.CONNECT)) {
+	    connect(cmd);
+            if (useCgi()) {
+	        closeSocket();
+	    }
+	} else if (cmd.startsWith(DEViseCommands.ASK_COLLAB_LEADER)) {
+	    askCollabLeader(cmd);
+            if (useCgi()) {
+	        closeSocket();
+	    }
+	} else if (cmd.startsWith(DEViseCommands.COLLABORATE)) {
+	    collaborate(cmd);
+            if (useCgi()) {
+	        closeSocket();
+	    }
+        } else if (cmd.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
+	    getCollabList();
+            if (useCgi()) {
+	        closeSocket();
+	    }
+        } else if (cmd.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
+            setCollabPassword(cmd);
+            if (useCgi()) {
+	        closeSocket();
+	    }
 
 	} else {
             cmdBuffer.addElement(cmd);
@@ -647,6 +685,9 @@ public class DEViseClient
 		}
 
                 if (command != null) {
+		    //TEMP -- move to addNewCmd()?
+		    //TEMP -- should probably allow JAVAC_Exit through -- at
+		    // any rate, make sure client object gets deleted
 		    if (!command.startsWith(DEViseCommands.CONNECT) &&
 		      user == null) {
                         sendCmd(DEViseCommands.ERROR +
@@ -661,22 +702,8 @@ public class DEViseClient
 		    // are "normal".
 		    //
 		    if (command.startsWith(DEViseCommands.ABORT)) {
+			//TEMP -- move to addNewCmd()?
 			cmdBuffer.removeAllElements();
-		    } else if (command.startsWith(DEViseCommands.CONNECT)) {
-			String[] cmds = DEViseGlobals.parseString(command);
-			if (cmds != null && cmds.length == 4) {
-			    user = pop.getUser(cmds[1], cmds[2]);
-			    if (user != null) { 
-				cmdBuffer.removeAllElements();
-				cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
-			    } else {
-				sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
-				throw new YException("Client send invalid login information");
-			    }
-			} else {
-			    sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
-			    throw new YException("Invalid connection request received from client");
-			}
 		    } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
@@ -701,9 +728,9 @@ public class DEViseClient
 			      " in DEViseClient.getCmd()");
 			}
 			collabClients.removeAllElements();
-			collabHostName.removeAllElements();
 	
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
+			//TEMP -- move to addNewCmd()?
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
 			// TEMP: for String[] format.
@@ -712,29 +739,8 @@ public class DEViseClient
 			  sendCmd(DEViseCommands.DONE);
 			*/
 			cmdBuffer.removeAllElements();
-		    } else if (command.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
-			String cmd = DEViseCommands.COLLAB_STATE;
-			for (int j=0; j<collabHostName.size(); j++) {
-			    String host = (String)collabHostName.elementAt(j);
-			    cmd = cmd + " {" + host + "}";
-			}
-			cmd = cmd.trim();
-			sendCmd(new String[] {cmd, DEViseCommands.DONE});
-			// TEMP: for String[] format.
-			/*
-			  sendCmd(cmd);
-			  sendCmd(DEViseCommands.DONE);
-			*/
-			cmdBuffer.removeAllElements();
-		    } else if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
-			isAbleCollab = true;
-
-			String[] cmds = DEViseGlobals.parseString(command);
-			collabPass = cmds[1];
-			pop.pn("We get the collab passwd: " + collabPass);
-			sendCmd(DEViseCommands.DONE);
-			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.DISABLE_COLLAB)) {
+			//TEMP -- move to addNewCmd()?
 			isAbleCollab = false;
 
 			try {
@@ -751,26 +757,11 @@ public class DEViseClient
 			      " in DEViseClient.getCmd()");
 			}
 			collabClients.removeAllElements();
-			collabHostName.removeAllElements();			
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
 
-		    } else if (command.startsWith(DEViseCommands.ASK_COLLAB_LEADER)) {
-			String cmd = pop.getCollabLeaders();
-			pop.pn("Sending client list to collaboration JS: " + cmd);
-			try {
-			    sendCmd(cmd);
-			    sendCmd(DEViseCommands.DONE);
-			} catch (YException e) {
-			    System.err.println("YException " + e.getMessage() +
-			      " in DEViseClient.getCmd()");
-			}
-			cmdBuffer.removeAllElements();
-
-		    } else if (command.startsWith(DEViseCommands.COLLABORATE)) {
-			pop.setUpCollab(this, command, hostname);
-			cmdBuffer.removeAllElements();			
 		    } else if (command.startsWith(DEViseCommands.COLLAB_EXIT)) {
+			//TEMP -- move to addNewCmd()?
 			collabLeader.removeCollabClient(this);
 			cmdBuffer.removeElement(command);
 		    } else {
@@ -1032,4 +1023,126 @@ public class DEViseClient
 	    return false;
     }
 
+    private void connect(String command)
+    {
+	try {
+            String[] cmds = DEViseGlobals.parseString(command);
+	    if (cmds != null && cmds.length == 4) {
+
+		// Make sure the client's protocol version is compatible
+		// with the JSPoP's.
+		String clientMajPVer = DEViseGlobals.getMajorVersion(cmds[3]);
+		String popMajPVer = DEViseGlobals.getMajorVersion(
+		  DEViseGlobals.PROTOCOL_VERSION);
+		if (!clientMajPVer.equals(popMajPVer)) {
+	            sendCmd(DEViseCommands.ERROR +
+		      " {Expected protocol version " +
+		      DEViseGlobals.PROTOCOL_VERSION +
+		      "; JavaScreen client has version " + cmds[3] + "}");
+		    throw new YException("Protocol version incompatibility");
+		}
+
+		// Now make sure that we have a legal username and password.
+	        user = pop.getUser(cmds[1], cmds[2]);
+	        if (user != null) {
+	            sendCmd(DEViseCommands.USER + " " + ID);
+	            sendCmd(DEViseCommands.DONE);
+	        } else {
+	            sendCmd(DEViseCommands.ERROR + " {Invalid login}");
+		    throw new YException(
+		      "Client send invalid login information");
+	        }
+	    } else {
+	        sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
+	        throw new YException(
+	          "Invalid connection request received from client");
+            }
+	} catch (YException ex) {
+	    System.err.println(ex.getMessage());
+	}
+    }
+
+    private void askCollabLeader(String command)
+    {
+	String cmd = null;
+	if (useCgi()) {
+	    cmd = DEViseCommands.ERROR + " {cannot collaborate in CGI mode}";
+	} else {
+	    cmd = pop.getCollabLeaders();
+	    pop.pn("Sending client list to collaboration JS: " + cmd);
+	}
+
+	try {
+	    sendCmd(cmd);
+	    sendCmd(DEViseCommands.DONE);
+	} catch (YException e) {
+	    System.err.println("YException " + e.getMessage() +
+	      " in DEViseClient.askCollabLeader()");
+	}
+
+	cmdBuffer.removeAllElements();
+    }
+
+    private void collaborate(String command)
+    {
+	if (useCgi()) {
+	    String cmd = DEViseCommands.ERROR +
+	      " {cannot collaborate in CGI mode}";
+	    try {
+	        sendCmd(cmd);
+	    } catch (YException ex) {
+	        System.err.println("YException " + ex.getMessage() +
+	          " in DEViseClient.collaborate()");
+	    }
+	} else {
+            pop.setUpCollab(this, command, hostname);
+	}
+	cmdBuffer.removeAllElements();			
+    }
+
+    private void getCollabList()
+    {
+        String cmd = DEViseCommands.COLLAB_STATE;
+        for (int index = 0; index < collabClients.size(); index++) {
+	    DEViseClient client = (DEViseClient)collabClients.elementAt(index);
+	    cmd += " {" + client.hostname + " (" + client.ID + ")}";
+	}
+
+	cmd = cmd.trim();
+	try {
+	    sendCmd(new String[] {cmd, DEViseCommands.DONE});
+	} catch (YException e) {
+	    System.err.println("YException " + e.getMessage() +
+	      " in DEViseClient.getCollabList()");
+	}
+	cmdBuffer.removeAllElements();
+    }
+
+    private void setCollabPassword(String command)
+    {
+        if (useCgi()) {
+            String cmd = DEViseCommands.ERROR +
+              " {cannot be a collaboration leader in CGI mode}"; 
+            try {
+                sendCmd(cmd);
+            } catch (YException ex) {
+                System.err.println("YException " + ex.getMessage() +
+                  " in DEViseClient.collaborate()");
+            }
+        } else {
+	    isAbleCollab = true;
+	
+	    String[] cmds = DEViseGlobals.parseString(command);
+	    collabPass = cmds[1];
+	    pop.pn("We get the collab passwd: " + collabPass);
+	    try {
+	        sendCmd(DEViseCommands.DONE);
+	    } catch (YException e) {
+	        System.err.println("YException " + e.getMessage() +
+	          " in DEViseClient.setCollabPassword()");
+	    }
+        }
+
+	cmdBuffer.removeAllElements();
+    }
 }

@@ -19,6 +19,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.2.1  2001/11/13 20:31:35  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
+// Revision 1.15  2001/10/30 17:29:09  xuk
+// reated DEViseClient object for collaborating clients in jspop.
+// Added JAVAC_ASK_COLLAB_LEADER and JAVAC_COLLABORATE commands.
+//
 // Revision 1.14  2001/05/11 20:36:06  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -103,9 +114,20 @@ public final class DEViseCommands
 
     public static final String ACK = JS_PREFIX + "Ack";
 
+    public static final String ASK_COLLAB_LEADER = JS_PREFIX +
+      "AskCollabLeader";
+
     public static final String CHECK_POP = JS_PREFIX + "CheckPop";
 
+    public static final String CLIENTS = JS_PREFIX + "Clients";
+
     public static final String CLOSE_SESSION = JS_PREFIX + "CloseCurrentSession";
+
+    public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
+
+    public static final String COLLABORATE = JS_PREFIX + "Collaborate";
+
+    public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
 
     public static final String CONNECT = JS_PREFIX + "Connect";
 
@@ -117,6 +139,8 @@ public final class DEViseCommands
       "DeleteChildViews";
 
     public static final String DELETE_VIEW = JS_PREFIX + "DeleteView";
+
+    public static final String DISABLE_COLLAB = JS_PREFIX + "DisableCollab";
 
     public static final String DONE = JS_PREFIX + "Done";
 
@@ -130,6 +154,8 @@ public final class DEViseCommands
 
     public static final String FAIL = JS_PREFIX + "Fail";
 
+    public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
+
     public static final String GET_SERVER_STATE = JS_PREFIX + "GetServerState";
 
     public static final String GET_SESSION_LIST = JS_PREFIX + "GetSessionList";
@@ -137,6 +163,8 @@ public final class DEViseCommands
     public static final String GET_VIEW_HELP = JS_PREFIX + "GetViewHelp";
 
     public static final String HEART_BEAT = JS_PREFIX + "HeartBeat";
+
+    public static final String INIT_COLLAB = JS_PREFIX + "InitCollaboration";
 
     public static final String KEY_ACTION = JS_PREFIX + "KeyAction";
 
@@ -149,7 +177,15 @@ public final class DEViseCommands
 
     public static final String RESET_FILTERS = JS_PREFIX + "ResetFilters";
 
+    public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
+
+    public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
+
     public static final String SAVE_SESSION = JS_PREFIX + "SaveSession";
+
+    public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
+
+    public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
 
     public static final String SET_DISPLAY_SIZE = JS_PREFIX + "SetDisplaySize";
 
@@ -177,27 +213,7 @@ public final class DEViseCommands
 
     public static final String VIEW_DATA_AREA = JS_PREFIX + "ViewDataArea";
 
-    public static final String CLIENTS = JS_PREFIX + "Clients";
 
-    public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
-
-    public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
-
-    public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
-
-    public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
-
-    public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
-
-    public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
-
-    public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
-
-    public static final String DISABLE_COLLAB = JS_PREFIX + "DisableCollab";
-
-    public static final String ASK_COLLAB_LEADER = JS_PREFIX + "AskCollabLeader";
-
-    public static final String COLLABORATE = JS_PREFIX + "Collaborate";
     // -------------------------------------------------------------------
     // JSS commands.
 

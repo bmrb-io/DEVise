@@ -23,8 +23,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.111  2001/11/16 17:10:00  xuk
+// Send and receive command in String[] format in DEViseCommSocket.java.
+// Temporarily wrap old String format sendCmd and receiveCmd method outside these new methods, so needn't to change hige-level methods.
+//
 // Revision 1.110  2001/11/13 17:57:00  xuk
 // Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.109.2.1  2001/11/13 20:31:35  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
 //
 // Revision 1.109  2001/11/07 22:31:28  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
@@ -656,13 +667,6 @@ public class DEViseCmdDispatcher implements Runnable
 	    
 	    _connectedAlready = true;
 
-	    // for JS switched back from collaboration
-	    if ((jsc.specialID == -1) && (jsc.sessionSaved)) {
-		jsc.isSessionOpened = true;
-		jsc.sessionSaved = false;
-		cmd = cmd + "\n" + DEViseCommands.REOPEN_SESSION;
-	    }
-
 	    // Start the heartbeat thread.
 	    // if (jsc.specialID == -1) {
 	    _heartbeat = new DEViseHeartbeat(this);
@@ -1083,9 +1087,14 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.CLIENTS)) {
             jsc.showClientList(response);
 
+        } else if (args[0].equals(DEViseCommands.INIT_COLLAB)) {
+	    jsc.collabInit(Integer.parseInt(args[1]));
         } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
 	    jsc.collabQuit();
+	    //TEMP -- should the stuff below all get moved into collabQuit()?
+	    // RKW 2001-11-12.
 	    jsc.restoreDisplaySize();
+	    jsc.restorePreCollab();
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
             if (jsc.specialID == -1) { // only for normal JS	    
 		jsc.showCollabState(response);

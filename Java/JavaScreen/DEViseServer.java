@@ -27,6 +27,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2001/11/13 17:57:01  xuk
+// Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.71.2.1  2001/11/13 20:31:35  wenger
+// Cleaned up new collab code in the JSPoP and client: avoid unnecessary
+// client switches in the JSPoP (on JAVAC_Connect, for example), removed
+// processFirstCommand() from jspop; JSPoP checks devised protocol version
+// when devised connects; cleaned up client-side collab code a bit (handles
+// some errors better, restores pre-collaboration state better).
+//
 // Revision 1.71  2001/11/07 22:31:29  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -388,9 +398,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     {
         pop.pn("Trying to start a DEViseServer ...");
 
-        // start devised and connect to it
-        if (!startSocket())
+        // connect to the devised
+        if (!startSocket()) {
             throw new YException("Can not start DEViseServer");
+        }
 
         // start server Thread but first check if server thread is still active
         if (getStatus() == STATUS_STOPPED) {
@@ -400,6 +411,12 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	    serverThread.setName("DEViseServer " + _objectNum);
             serverThread.start();
         }
+
+	// Make sure the JSPoP's protocol version is compatible with the
+	// devised.
+        Vector serverDatas = new Vector();
+	processClientCmd(DEViseCommands.PROTOCOL_VERSION + " " +
+	  DEViseGlobals.PROTOCOL_VERSION, serverDatas);
 
         pop.pn("Successfully started a DEViseServer ...");
     }
@@ -557,10 +574,13 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     public void run()
     {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseServer.run()");
+	}
+
 	DEViseThreadChecker.getInstance().register(this);
 
         int todo;
-        boolean isRemoveClient = false;
 
 	//TEMP -- kind of busywaiting?? YES
 	//
@@ -659,8 +679,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		//
                 Vector serverDatas = new Vector();
                 try {
-		    if (!processClientCmd(clientCmd, isRemoveClient,
-		      serverDatas)) {
+		    if (!processClientCmd(clientCmd, serverDatas)) {
 			
 			// close client socket for cgi version
 			if (client != null && client.useCgi()) {
@@ -716,10 +735,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 			client.closeSocket();
 			pop.pn("Socket between client and cgi is closed.");
 		    }
-                    if (isRemoveClient) {
-                        isRemoveClient = false;
-                        removeCurrentClient(false);
-                    }
                 } catch (YException e) {
                     pop.pn("Client communication error3: " + e.getMsg());
                     removeCurrentClient();
@@ -736,11 +751,16 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     // Returns true if command needs the rest of the "standard" processing,
     // false otherwise.
-    private boolean processClientCmd(String clientCmd, boolean isRemoveClient,
-      Vector serverDatas) throws YException
+    private boolean processClientCmd(String clientCmd, Vector serverDatas)
+      throws YException
     {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseServer.processClientCmd(" +
+	      clientCmd + ")");
+	}
+
         if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
-	    cmdProtocolVersion(clientCmd, isRemoveClient);
+	    cmdProtocolVersion(clientCmd);
 
         } else if (clientCmd.startsWith(DEViseCommands.EXIT)) {
 	    cmdExit();
@@ -805,23 +825,23 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 // ------------------------------------------------------------------------
 // Methods to process specific client commands.
 
-    private void cmdProtocolVersion(String clientCmd, boolean isRemoveClient)
+    private void cmdProtocolVersion(String clientCmd)
       throws YException
     {
-        if (sendCmd(clientCmd)) {
-            serverCmds = new String[2];
-            serverCmds[0] = DEViseCommands.USER + " " +
-            client.ID;
-            serverCmds[1] = DEViseCommands.DONE;
-        } else {
-            isRemoveClient = true;
+        if (!sendCmd(clientCmd)) {
+	    // Note: we're exiting here because otherwise we will just keep
+	    // trying to start a devised, and failing.  RKW 2001-11-12.
+	    System.err.println("JSPoP exiting because of protocol " +
+	      "mismatch with devised!!");
+	    System.exit(1);
         }
     }
 
     public void cmdSaveSession() throws YException
     {
 	pop.pn("We send the save_session command.");
-	cmdClientDefault(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}");
+	cmdClientDefault(DEViseCommands.SAVE_SESSION + " {" +
+	  client.savedSessionName + "}");
 	client.sessionSaved = true;
 	pop.pn("We send the close_session command.");
 	cmdCloseSession();
@@ -1197,6 +1217,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	}
 
         if (client != null) {
+            if (DEBUG >= 1) {
+	        System.out.println("  Current client is: " + client.ID);
+	    }
+
             if (client.isSessionOpened) {
                 client.isClientSwitched = true;
                 client.isSwitchSuccessful = false;
@@ -1230,7 +1254,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
             pop.suspendClient(client);
             client = null;
-        }
+        } else {
+            if (DEBUG >= 1) {
+	        System.out.println("  No current client");
+	    }
+	}
 
         if (startNewClient) {
             client = newClient;
@@ -1392,11 +1420,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         pop.pn("We send the save-session command.");
         Vector serverDatas = new Vector();
 	processClientCmd(DEViseCommands.SAVE_SESSION + " {" +
-	  client.savedSessionName + "}", false, serverDatas);
+	  client.savedSessionName + "}", serverDatas);
 
 	pop.pn("We send the close-session command.");
 	//server.serverCmds = null;
-	processClientCmd(DEViseCommands.CLOSE_SESSION, false, serverDatas);
+	processClientCmd(DEViseCommands.CLOSE_SESSION, serverDatas);
 	// keep the current session opened
 	if ( ! client.isSessionOpened ) {
 	    client.isSessionOpened = true;
