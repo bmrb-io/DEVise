@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/18 15:28:10  jussi
+  Made waitForChildProcess() public. Improved error handling.
+
   Revision 1.10  1996/12/03 20:24:59  jussi
   Renamed preprocessor flags.
 
@@ -198,7 +201,7 @@ protected:
   FILE *file;                           // pointer to open file
   int fileNo;                           // file number on tape
 
-  const int _max_mt_op = 15;
+  static const int _max_mt_op = 15;
   long mt_ios[_max_mt_op];              // number of I/O calls
   long mt_cnt[_max_mt_op];              // number of I/O counts
   double mt_tim[_max_mt_op];            // times of I/O requests
