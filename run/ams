@@ -20,6 +20,7 @@ setenv DEVISE_LIB     $DEVISE_ROOT/`whoami`/lib
 setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    bin/ams/ams
+setenv DEVISE_PALETTE	$DEVISE_ROOT/palette
 
 if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable ($DEVISE_EXEC)."
