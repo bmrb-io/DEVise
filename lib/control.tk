@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.210  2000/02/08 22:12:12  wenger
+#	Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+#	edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+#	version now 4.0; added GUI to edit view help, and commands to save it
+#	to session files.
+#	
 #	Revision 1.209  2000/01/14 18:23:23  wenger
 #	Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
 #	filters back to the values defined in the session file, without actually
@@ -1230,8 +1236,8 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
-.mbar.session.menu add separator
-.mbar.session.menu add command -label "Test" -command { source test }
+#.mbar.session.menu add separator
+#.mbar.session.menu add command -label "Test" -command { source test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
