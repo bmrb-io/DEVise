@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/08/23 16:55:44  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.12  1996/07/14 20:04:47  jussi
   Made code to compile in OSF/1.
 
@@ -53,6 +58,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #if defined(SOLARIS) || defined(HPUX) || defined(AIX)
 #include <dirent.h>
 #else
@@ -216,5 +222,35 @@ void CheckAndMakeDirectory(char *dir, int clear )
       Exit::DoExit(1);
     }
   }
+}
+
+/* Check whether we have enough space in a given directory. */
+void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
+{
+  struct statvfs stats;
+
+  if (statvfs(dirname, &stats) != 0)
+  {
+    reportErrSys("Can't get status of file system");
+  }
+  else
+  {
+    int bytesFree = stats.f_bavail * stats.f_frsize;
+    if (bytesFree < exitSize)
+    {
+      char errBuf[1024];
+      sprintf(errBuf, "%s directory (%s) has less than %d bytes free\n",
+	envVar, dirname, exitSize);
+      Exit::DoAbort(errBuf, __FILE__, __LINE__);
+    }
+    else if (bytesFree < warnSize)
+    {
+      fprintf(stderr,
+	"Warning: %s directory (%s) has less than %d bytes free\n",
+	envVar, dirname, warnSize);
+    }
+  }
+
+  return;
 }
 

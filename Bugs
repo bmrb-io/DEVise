@@ -138,6 +138,12 @@ Num Date        Status  Description
 044 09/25/96	FIXED	GDataBin objects take way too much memory (256K
 			for Connectors). (rkw)
 
+045 10/07/96	OPEN	User can't enter a tab for a separator in the
+			schema editing window. (rkw)
+
+046 10/07/96	OPEN	Create a window with the same name as a data stream
+			-> crash. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

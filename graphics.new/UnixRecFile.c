@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/10/02 15:23:53  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.7  1996/08/04 21:59:56  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -52,6 +56,8 @@
 #include "Exit.h"
 #include "DevError.h"
 
+static char errBuf[1024];
+
 /****************************************************************
 Create a new file. Return NULL if file already exists
 ****************************************************************/
@@ -68,8 +74,8 @@ UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 
   /* Cannot open file. Create it */
   if ((fd = open(name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
-    fprintf(stderr, "File %s: ", name);
-    reportErrSys("open");
+    sprintf(errBuf, "opening file %s", name);
+    reportErrSys(errBuf);
     Exit::DoExit(1);
   }
 
@@ -91,12 +97,14 @@ UnixRecFile *UnixRecFile::OpenFile(char *name, int recSize, Boolean trunc)
   /* Find size of file */
   struct stat fileStat;
   if (fstat(fd, &fileStat) != 0) {
-    reportErrSys("fstat");
+    sprintf(errBuf, "fstat on file %s", name);
+    reportErrSys(errBuf);
     Exit::DoExit(1);
   }
   
   if ((fileStat.st_size % recSize) != 0) {
-    fprintf(stderr, "File %s not multiple of rec size\n",name);
+    sprintf(errBuf, "File %s not multiple of rec size\n", name);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
 
@@ -139,14 +147,16 @@ Get data for this page and put it into buffer
 void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
 {
   if (recNum < 0 || recNum+numRecs > _totalRecs) {
-    fprintf(stderr, "ReadRec: rec %d invalid (%d)\n", recNum, _totalRecs);
+    sprintf(errBuf, "ReadRec: rec %d invalid (%d)\n", recNum, _totalRecs);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
   
   if (_seekRec != recNum) {
     off_t pos = (off_t) (recNum * _recSize);
     if (lseek(_fd, pos, SEEK_SET) != pos) {
-      reportErrSys("lseek");
+      sprintf(errBuf, "lseek on file %s", _name);
+      reportErrSys(errBuf);
       Exit::DoExit(1);
     }
   }
@@ -157,17 +167,18 @@ void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
     len = read(_fd, (char *)buf, toRead);
     if (len< 0) {
       if ( errno != EINTR) {
-	reportErrSys("read");
+	sprintf(errBuf, "read on file %s", _name);
+	reportErrSys(errBuf);
 	Exit::DoExit(1);
       }
     } else if (len == 0) {
       if (toRead != _recSize * numRecs) {
 	/* read partial number of records, should not happen */
-	fprintf(stderr, "ReadRec: partial read\n");
+	reportErrNosys("ReadRec: partial read");
 	Exit::DoExit(1);
       } else {
 	/* trying to read at eof. */
-	fprintf(stderr, "ReadRec: read beyond EOF\n");
+	reportErrNosys("ReadRec: read beyond EOF");
 	Exit::DoExit(2);
       }
     } else {
@@ -187,14 +198,16 @@ Write a page.
 void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 {
   if (recNum < 0) {
-    fprintf(stderr, "WriteRec: rec %d invalid\n", recNum);
+    sprintf(errBuf, "WriteRec: rec %d invalid\n", recNum);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
   
   if (_seekRec != recNum) {
     off_t pos = (off_t)(recNum * _recSize);
     if (lseek(_fd, pos, SEEK_SET) != pos) {
-      reportErrSys("lseek");
+      sprintf(errBuf, "lseek on file %s", _name);
+      reportErrSys(errBuf);
       Exit::DoExit(1);
     }
   }
@@ -205,7 +218,8 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
     len = write(_fd, (char *)buf, toWrite);
     if (len< 0) {
       if (errno != EINTR) {
-	reportErrSys("write");
+	sprintf(errBuf, "writing file %s\n", _name);
+	reportErrSys(errBuf);
 	Exit::DoExit(1);
       }
     } else {
@@ -233,7 +247,8 @@ int UnixRecFile::GetModTime()
 {
   struct stat sbuf;
   if (fstat(_fd, &sbuf) < 0) {
-    reportErrSys("fstat");
+    sprintf(errBuf, "fstat on file %s", _name);
+    reportErrSys(errBuf);
     Exit::DoExit(1);
   }
 

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/08/07 20:11:46  wenger
+  Fixed various key event-related bugs (see Bugs file); changed
+  direction of camera movement for 3D to be more in agreement
+  with how panning works for 2D views.
+
   Revision 1.29  1996/08/04 21:31:40  beyer
   Changed to use new DataSourceBuf constructor.
 
@@ -471,6 +476,8 @@ ParseAttr(
 	}
 
 	char *attrName = CopyString(args[1]);
+	DOASSERT(strchr(attrName, '/') == NULL,
+	  "Cannot have '/' in attribute name");
 
 	Boolean hasMatchVal = false;
 	AttrVal matchVal;
@@ -818,6 +825,14 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 		}
 	}
 
+	// Note: the only difference between separators and white space
+	// is that if you specify separators, each separator is parsed
+	// as delineating a new attribute, even if there are multiple
+	// separators in a row.  If you specify whitespace, multiple
+	// consecutive white space characters are treated as a single
+	// separator; also they are ignored if they preceed the first
+	// attribute.  A separator preceding the first attribute in
+	// a record will cause an error.  See Parse.c.  RKW 10/7/96.
 	if (isAscii) {
 	  if (hasSeparator && hasWhitespace){
 	    fprintf(stderr,"can't specify both whitespace and separator\n");

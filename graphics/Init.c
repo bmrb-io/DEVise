@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/09/19 19:32:46  wenger
+  Devise now complains about illegal command-line flags (fixes bug 042).
+
   Revision 1.20  1996/09/12 18:49:40  wenger
   Oops!  I guess I should make sure this works before I commit it.
 
@@ -147,6 +150,7 @@ int Init::_gdataPages = -1; /* max # of disk pages for gdata */
 char *Init::_progName = 0; /* name of program */
 char *Init::_workDir = 0; /* name of work directory */
 char *Init::_tmpDir = 0;/* name of temp directory */
+char *Init::_cacheDir = 0;/* name of cache directory */
 char *Init::_sessionName = "session.tk";	/* name of program */
 Boolean Init::_dispLogo = true;
 char *Init::_batchFile = 0;
@@ -251,6 +255,13 @@ void Init::DoInit(int &argc, char **argv)
     workDir = "work";
   CheckAndMakeDirectory(workDir);
   _workDir = CopyString(workDir);
+  CheckDirSpace(workDir, "DEVISE_WORK", 1024 * 1024, 0);
+
+  /* Get name of cache directory. */
+  char *cacheDir = getenv("DEVISE_CACHE");
+  if (!cacheDir) cacheDir = ".";
+  _cacheDir = CopyString(cacheDir);
+  CheckDirSpace(cacheDir, "DEVISE_CACHE", 1024 * 1024, 0);
 
   char *journalName = NULL;
 #define MAXARGS 512
@@ -278,6 +289,7 @@ void Init::DoInit(int &argc, char **argv)
   sprintf(buf, "%s/DEVise_%ld", tmpDir, (long)pid);
   CheckAndMakeDirectory(buf, true);
   _tmpDir = CopyString(buf);
+  CheckDirSpace(tmpDir, "DEVISE_TMP", 1024 * 1024, 0);
 
   /* parse parameters */
   int i = 1;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/02 15:53:31  wenger
+  Added AttrProj member functions for reading entire records (no projection).
+
   Revision 1.2  1996/05/22 18:50:39  wenger
   Greatly simplified Init::DoInit() to only do what's necessary for
   attribute projection; other minor changes.
@@ -88,6 +91,7 @@ int Init::_gdataPages = -1; /* max # of disk pages for gdata */
 char *Init::_progName = 0; /* name of program */
 char *Init::_workDir = 0; /* name of work directory */
 char *Init::_tmpDir = 0;/* name of temp directory */
+char *Init::_cacheDir = 0;/* name of cache directory */
 char *Init::_sessionName = "session.tk";	/* name of program */
 Boolean Init::_dispLogo = true;
 char *Init::_batchFile = 0;
@@ -160,6 +164,11 @@ void Init::DoInit()
   char *workDir = "/tmp";
   _workDir = CopyString(workDir);
 #endif
+
+  /* Get name of cache directory. */
+  char *cacheDir = getenv("DEVISE_CACHE");
+  if (!cacheDir) cacheDir = ".";
+  _cacheDir = CopyString(cacheDir);
 
 #if 0
   char *journalName = NULL;

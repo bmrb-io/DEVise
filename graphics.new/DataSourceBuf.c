@@ -20,6 +20,11 @@
    $Id$
 
    $Log$
+   Revision 1.5  1996/08/05 19:48:56  wenger
+   Fixed compile errors caused by some of Kevin's recent changes; changed
+   the attrproj stuff to make a .a file instead of a .o; added some more
+   TData file writing stuff; misc. cleanup.
+
    Revision 1.4  1996/08/04 21:23:23  beyer
    DataSource's are now reference counted.
    Added Version() which TData now check to see if the DataSource has changed,
@@ -156,6 +161,8 @@ DataSourceBuf::Fgets(char *buffer, int bufSize)
     if (_currentLoc == NULL ) {
 	reportError("DataSourceBuf: not open", devNoSyserr);
     } else if( _currentLoc > _end_data || *_currentLoc == '\0' ) {
+	if (_currentLoc > _end_data) reportErrNosys(
+	  "Reading past end of data");
 	return NULL;		// Signal "EOF" - don't modify buffer
     } else {
 	while ((outputP < endOfBuf) && !endOfLine) {

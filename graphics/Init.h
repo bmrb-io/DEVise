@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/09/12 18:37:45  wenger
+  Added optional delay before drawing images.
+
   Revision 1.8  1996/09/05 20:00:12  jussi
   Added screenWidth and screenHeight command line arguments.
 
@@ -88,6 +91,9 @@ public:
 
   /* Return name of Tmp directory */
   static char *TmpDir() { return _tmpDir; }
+
+  /* Return name of Cache directory */
+  static char *CacheDir() { return _cacheDir; }
   
   static Boolean Restore() { return _restore; }
   static long ProgModTime();
@@ -132,8 +138,9 @@ private:
   static Boolean _abort;
   static int _gdataPages;
   static char *_progName;	/* name of program */
+  static char *_workDir;    /* name of work directory */
   static char *_tmpDir;    /* name of temp directory */
-  static char *_workDir;    /* name of program */
+  static char *_cacheDir;    /* name of cache directory */
   static char *_sessionName;
   static Boolean _dispLogo;
   static char *_batchFile;

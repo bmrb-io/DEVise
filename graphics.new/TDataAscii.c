@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/10/04 17:24:16  wenger
+  Moved handling of indices from TDataAscii and TDataBinary to new
+  FileIndex class.
+
   Revision 1.40  1996/10/02 15:23:50  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -537,6 +541,13 @@ void TDataAscii::BuildIndex()
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
 #endif
+
+  if (_totalRecs <= 0) {
+    char errBuf[1024];
+    sprintf(errBuf, "No valid records for data stream %s\n"
+      "    (check schema/data correspondence)\n", _name);
+    Exit::DoAbort(errBuf, __FILE__, __LINE__);
+  }
 }
 
 /* Rebuild index */

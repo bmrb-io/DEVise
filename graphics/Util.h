@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/23 16:55:45  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.10  1996/07/18 01:25:28  jussi
   Added definition of strdup for Ultrix.
 
@@ -81,6 +86,9 @@ extern char *CopyString(char *str);
 /* Clear contents of directory */
 void ClearDir(char *dir);
 void CheckAndMakeDirectory(char *dir, int clear = 0);
+
+/* Check space available in a directory. */
+void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize);
 
 /* strip file of path name */
 inline char *StripPath(char *name) {

@@ -197,6 +197,9 @@ Display session name somewhere. (rkw 9/26/96)
 
 Combine TDataAscii and TDataBinary. (rkw/jpm 10/3/96)
 
+Add a note to the user manual more clearly specifying the difference
+between separators and white space. (rkw 10/7/96)
+
 
 COMPLETED
 ---------

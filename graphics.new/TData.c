@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/08/23 16:56:20  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.8  1996/08/15 19:54:31  wenger
   Added 'pure' targets for attrproj and devread; fixed some dynamic
   memory problems.  Found some bugs while demo'ing for soils science
@@ -75,6 +80,12 @@
 
 #ifndef ATTRPROJ
 #include "DataSourceWeb.h"
+#endif
+
+#ifdef ATTRPROJ
+#   include "ApInit.h"
+#else
+#   include "Init.h"
 #endif
 
 static DevStatus WriteString(int fd, char *string);
@@ -363,9 +374,7 @@ void TData::InvalidateTData()
 char* TData::MakeCacheFileName(char *name, char *type)
 {
   char *fname = StripPath(name);
-  char *cacheDir = getenv("DEVISE_CACHE");
-  if (!cacheDir)
-    cacheDir = ".";
+  char *cacheDir = Init::CacheDir();
   int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
   char *fn = new char [nameLen];
   sprintf(fn, "%s/%s.%s", cacheDir, fname, type);

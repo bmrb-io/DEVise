@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/10/02 15:23:51  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.21  1996/07/21 02:23:23  jussi
   Added code that deletes allocated string space if string not
   inserted into string hash table.
@@ -362,6 +366,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 #ifdef DEBUG
     printf("Too few arguments (%d < %d) or commented line\n",
 	   numArgs, _numPhysAttrs);
+    printf("  %s\n", line);
 #endif
     return false;
   }

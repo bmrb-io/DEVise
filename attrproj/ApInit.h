@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/22 18:50:41  wenger
+  Greatly simplified Init::DoInit() to only do what's necessary for
+  attribute projection; other minor changes.
+
   Revision 1.2  1996/04/25 19:25:07  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -69,6 +73,9 @@ public:
 
   /* Return name of Tmp directory */
   static char *TmpDir() { return _tmpDir; }
+
+  /* Return name of cache directory */
+  static char *CacheDir() { return _cacheDir; }
   
   static Boolean Restore() { return _restore; }
   static long ProgModTime();
@@ -108,8 +115,9 @@ private:
   static Boolean _abort;
   static int _gdataPages;
   static char *_progName;	/* name of program */
-  static char *_tmpDir;    /* name of temp directory */
   static char *_workDir;    /* name of program */
+  static char *_tmpDir;    /* name of temp directory */
+  static char *_cacheDir;    /* name of cache directory */
   static char *_sessionName;
   static Boolean _dispLogo;
   static char *_batchFile;

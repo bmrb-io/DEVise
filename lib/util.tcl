@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1996/09/18 20:08:22  guangshu
+#  Added option when save gif files. It can save every view inside a window.
+#  Before it can only save the whole window.
+#
 #  Revision 1.30  1996/09/17 19:31:23  wenger
 #  Changed default print filename from /u/g/u/guangshu/public/html/pictures/map/
 #  back to /tmp/devise.
@@ -788,7 +792,7 @@ proc AbortProgram {reason} {
 	           printed in the text window.\n\n\
 		   If the error is reproducible, please send the error\
 		   message along with a description of how the error\
-		   can be produced to jussi@cs.wisc.edu.\n\n\
+		   can be produced to devise-sup@cs.wisc.edu.\n\n\
 		   The program will now exit."
     button .abort.exit -text Exit -width 10 -command "destroy .abort"
     pack .abort.msg .abort.exit -side top -padx 5m -pady 3m
