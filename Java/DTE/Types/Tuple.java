@@ -28,6 +28,7 @@ public class Tuple implements Cloneable {
 		}
 		return true;
 	}
+		
 	public void print(PrintWriter os){
 		for(int i = 0; i < types.length; i++){
 			types[i].print(os);
@@ -36,7 +37,6 @@ public class Tuple implements Cloneable {
 		os.flush();
 	}
 
- 
 	public void print(PrintStream os){
 		for(int i = 0; i < types.length; i++){
 			types[i].print(os);
@@ -45,11 +45,9 @@ public class Tuple implements Cloneable {
 		os.flush();
 	}
  
-
-
-        public void get_field(DTE_Type[] t)
+        public DTE_Type[] get_fields( )
         {
-	  t = types;
+	  	return types;
 	}
     
         public Object clone()
