@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 21:40:55  jussi
+  Got rid of strings.h and stuck with string.h.
+
   Revision 1.3  1995/12/02 20:55:11  jussi
   Substituted DeviseTime for Time and added copyright notice.
 
@@ -68,13 +71,8 @@ Journal::Init
 void Journal::Init(char *journalName, int argc, char **argv){
 	/* find current time */
 char buf[80];
-#if defined(HPUX) || defined(IBM_POWER_STATION) || defined(SUN) || defined(PENTIUM)
-	time_t curTime = (int)time((time_t *)NULL);
+        time_t curTime = time(0);
 	struct tm *timeStruct = localtime(&curTime);
-#else
-	int curTime = time((int *)0);
-	struct tm *timeStruct = localtime(&curTime);
-#endif
 	Boolean newFile = false;
 
 	_time = DeviseTime::Now();
