@@ -675,7 +675,7 @@ public class DEViseCrystal
         }
     }
             
-    public void setSelect(double x, double y, double z)
+    public void setSelect(double x, double y, double z, Color c)
     {   
         DEViseAtomInCrystal atom = null;
         double xx, yy, zz;
@@ -692,6 +692,7 @@ public class DEViseCrystal
             zz = Math.abs(z - atom.pos[2]);
             if (xx < 1.0e-5 && yy < 1.0e-5 && zz < 1.0e-5) {
                 atom.isSelected = 1;
+                atom.type.setSelectColor(c);
             }
         }
     }

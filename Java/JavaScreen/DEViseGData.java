@@ -13,6 +13,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  1999/11/02 21:37:39  wenger
+// Made separate methods for constructing the different symbol types, without
+// really changing the functionality, to clean things up and make fixes to
+// text alignment, etc., easier to do.
+//
 // Revision 1.21  1999/10/28 17:48:46  wenger
 // Fixed various JavaScreen/devised bugs (incorrect location of GData symbols
 // in JS; incorrect location of child views; extra destroys of child GData
@@ -467,11 +472,8 @@ public class DEViseGData
             height = -height;
 
         color = DEViseGlobals.convertColor(data[3]);
-        if (color.getRed() == 0) {
-            string = "Zn";
-        } else {
-            string = "Se";
-        }
+        
+        string = data[10];
     }
 
     protected void DefaultSymbol(double size, double xm, double ym)

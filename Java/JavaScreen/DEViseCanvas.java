@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  1999/11/01 17:40:15  hongyu
+// *** empty log message ***
+//
 // Revision 1.20  1999/10/14 15:08:53  hongyu
 // *** empty log message ***
 //
@@ -884,7 +887,7 @@ public class DEViseCanvas extends Container
             Point p = event.getPoint();
             isMouseDragged = true;
 
-            if (view.viewDimension == 3 && crystal != null) {
+            if (view.viewDimension == 3 && crystal != null) {                
                 int dx = p.x - op.x, dy = p.y - op.y;
                 op.x = p.x;
                 op.y = p.y;
@@ -1149,10 +1152,15 @@ public class DEViseCanvas extends Container
 
             try {
                 createCrystalFromData(new StringReader(string));
+                for (int i = 0; i < view.viewGDatas.size(); i++) {
+                    DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                    DEViseAtomInCrystal atom = crystal.getAtom(i);
+                    atom.type.setColor(gdata.color);
+                }                
             } catch (YException e) {
                 jsc.pn(e.getMessage());
                 crystal = null;
-		return;
+		        return;
             }
         }
 
@@ -1160,10 +1168,10 @@ public class DEViseCanvas extends Container
             crystal.setSelect();
 
             for (int i = 0; i < view.viewPiledViews.size(); i++) {
-		DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
-		for (int j = 0; j < v.viewGDatas.size(); j++) {
-                    DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                    crystal.setSelect(gdata.x0, gdata.y0, gdata.z0);
+		        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
+		        for (int j = 0; j < v.viewGDatas.size(); j++) {
+                    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
+                    crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color);
                 } 
             }
         }

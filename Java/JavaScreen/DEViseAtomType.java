@@ -47,7 +47,7 @@ public class DEViseAtomType {
             name = n;
         }
 
-        if (radius > 0.0) {
+        if (rr > 0.0) {
             radius = rr;
         }
 
@@ -78,7 +78,74 @@ public class DEViseAtomType {
         color = new Color(red, green, blue);
         XORcolor = new Color(xorcolor(color.getRGB()));
     }
+    
+    public void setColor(Color c)
+    {
+        if (c != null) {
+            color = c;
+            red = color.getRed();
+            green = color.getGreen();
+            blue = color.getBlue();
+            XORcolor = new Color(xorcolor(color.getRGB()));
+            image = null;
+            data = null;
+        }
+    }
+    
+    public void setSelectColor(Color c)
+    {
+        if (c != null) {
+            selectedColor = c;
+        }
+    }
+    
+    public void setRadius(int r)
+    {   
+        int oldR = R;
+        
+        R = r;
+        if (R < 5) {
+            R = 5;
+        }
+        if (R > 50) {
+            R = 50;
+        }
+        
+        D = 2 * R;
+        rangeD = D - minD;
+        
+        radius = radius * (double)R / oldR;
+        
+        data = null;
+        image = null;
+    }
+    
+    public void setRadius(double r)
+    {   
+        double oldradius = radius;
+        
+        if (r > 0) {
+            radius = r;
+        } else {
+            return;
+        }
+        
+        R = (int)(R * radius / oldradius);
+        if (R < 5) {
+            R = 5;
+        }
 
+        if (R > 50) {
+            R = 50;
+        }
+
+        D = 2 * R;
+        rangeD = D - minD;
+
+        data = null;
+        image = null;            
+    }    
+           
     public void reset(double pixelToUnit)
     {
         if (pixelToUnit <= 0.0) {

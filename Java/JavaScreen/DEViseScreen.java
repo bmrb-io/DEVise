@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  1999/11/01 17:40:16  hongyu
+// *** empty log message ***
+//
 // Revision 1.40  1999/10/14 15:09:05  hongyu
 // *** empty log message ***
 //
@@ -437,9 +440,9 @@ public class DEViseScreen extends Panel
         }
 
         if (view.viewDimension == 3 && view.canvas != null) {
-	    view.canvas.crystal = null;
-	    view.canvas.createCrystal();
-	} else if (view.piledView != null && view.piledView.viewDimension == 3 && view.piledView.canvas != null) {
+	        view.canvas.crystal = null;
+	        view.canvas.createCrystal();
+	    } else if (view.piledView != null && view.piledView.viewDimension == 3 && view.piledView.canvas != null) {
             view.piledView.canvas.createCrystal();
         }
 
@@ -537,10 +540,6 @@ public class DEViseScreen extends Panel
     // Enable double-buffering
     public void update(Graphics gc)
     {
-        if (gc == null) {
-            return;
-        }
-
         if (offScrImg == null) {
             offScrImg = createImage(screenDim.width, screenDim.height);
         }
