@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/09/22 19:13:41  wenger
+  Fixed bug 393 (consumption of file descriptors in JavaScreen support
+  code).
+
   Revision 1.34  1998/09/22 17:23:56  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -186,6 +190,8 @@
 #include "CursorClassInfo.h"
 
 //#define DEBUG
+
+#define ROUND_TO_INT(value) ((int)(value + 0.5))
 
 Boolean JavaScreenCmd::_postponeCursorCmds = false;
 
@@ -1477,10 +1483,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 		winRep->Transform(cursorFilter.xHigh, cursorFilter.yHigh, xPix2,
 	  	  yPix2);
 	
-		xPixLow = (int)MIN(xPix1, xPix2);
-		yPixLow = (int)MIN(yPix1, yPix2);
-		xPixHigh = (int)MAX(xPix1, xPix2);
-		yPixHigh = (int)MAX(yPix1, yPix2);
+		xPixLow = ROUND_TO_INT(MIN(xPix1, xPix2));
+		yPixLow = ROUND_TO_INT(MIN(yPix1, yPix2));
+		xPixHigh = ROUND_TO_INT(MAX(xPix1, xPix2));
+		yPixHigh = ROUND_TO_INT(MAX(yPix1, yPix2));
 	}
 
 #if defined(DEBUG)
@@ -1511,8 +1517,8 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 
 	int xLoc = (int)MIN(xPixLow, xPixHigh);
 	int yLoc = (int)MIN(yPixLow, yPixHigh);
-	int width = (int)ABS(xPixHigh - xPixLow);
-	int height = (int)ABS(yPixHigh - yPixLow);
+	int width = (int)ABS(xPixHigh - xPixLow) + 1;
+	int height = (int)ABS(yPixHigh - yPixLow) + 1;
 #if defined(DEBUG)
     printf("x, y: (%d, %d), width, height: (%d, %d)\n", xLoc, yLoc, width,
 	  height);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.144  1998/09/10 23:24:27  wenger
+  Fixed JavaScreen client switch GIF geometry problem.
+
   Revision 1.143  1998/09/08 20:26:01  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -1036,6 +1039,8 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
     return false;
 
   /* change the X and Y coordinates of the cursor */
+  // Why the heck do we do this?  Why not just move the center of the
+  // cursor to where the mouse click happened?  RKW 1998-09-25.
   Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
   FindWorld(x, y, x + 1, y - 1, worldXLow, worldYLow, worldXHigh, worldYHigh);
   DeviseCursor *cursor = _cursors->GetFirst();
@@ -1734,7 +1739,9 @@ void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
 void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 		     Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh)
 {
-
+#if defined(DEBUG)
+  printf("View::FindWorld(%d, %d, %d, %d)\n", sx1, sy1, sx2, sy2);
+#endif
 
   Coord x1, x2, y1, y2;
   WindowRep *winRep = GetWindowRep();
@@ -2469,6 +2476,7 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 
   VisualFilter *cFilter;
   cursor->GetVisualFilter(cFilter);
+
 
   Coord xLow, yLow, xHigh, yHigh;
   xLow = MAX(_filter.xLow, cFilter->xLow);

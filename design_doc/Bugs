@@ -1429,7 +1429,7 @@ Num Date        Status  Description
 			Intel/Solaris). (rkw)
 			(Also crashes on Intel/Linux.)
 
-378 07/09/98	OPEN	Client/server DEVise doesn't work on Intel/Linux
+378 07/09/98	FIXED	Client/server DEVise doesn't work on Intel/Linux
 			(raven) -- server says that connections is 
 			established, but DEVise window never shows up.
 			(rkw)
@@ -1448,7 +1448,7 @@ Num Date        Status  Description
 			*and* slave of the same set link; if you do this,
 			and then zoom in that view, DEVise crashes. (rkw)
 
-382 08/11/98	OPEN	Change to client connection protocol for JavaScreen
+382 08/11/98	FIXED	Change to client connection protocol for JavaScreen
 			makes deviseb and devisec not work. (rkw)
 
 383 08/12/98	OPEN	If you quit Devise without ever having displayed
@@ -1481,7 +1481,7 @@ Num Date        Status  Description
 
 389 09/09/98	OPEN	EmbeddedTk doesn't work with JavaScreen. (rkw)
 
-390 09/14/98	OPEN	JavaScreen draws XY cursor too high in the Y
+390 09/14/98	FIXED	JavaScreen draws XY cursor too high in the Y
 			direction. (rkw)
 
 391 09/15/98	WORK	Opening the MarsMiron.tk demo session fails when

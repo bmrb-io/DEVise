@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/05/21 18:18:37  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.55  1998/05/14 18:21:18  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -448,12 +453,12 @@ class XWindowRep : public WindowRep
 
 	virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
 		WindowRep::Transform(x,y,newX,newY);
-		newY=_height - newY - 1;
+		newY = _height - newY - 1;
 	}
 
 	virtual void InverseTransform
 	  (Coord x, Coord y, Coord &oldX, Coord &oldY) {
-	  y=_height-y;
+	  y = _height - y - 1;
 	  WindowRep::InverseTransform(x,y,oldX, oldY);
 	}
 
