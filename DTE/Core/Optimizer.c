@@ -608,7 +608,7 @@ vector<OptNode*> SPQueryProduced::getLevel(int level)
 string LogicalProp::toString() const
 {
 	ostringstream tmp;
-	tmp << "Pgs: " << *this;
+	tmp << "Pgs: " << *this << '\0';
 	return tmp.str();
 }
 
