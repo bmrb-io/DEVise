@@ -82,12 +82,12 @@ public class DEViseCrystal
         }
     }
 
-    public void paint(Component component, Graphics gc)
-    {
+    public synchronized void paint(Component component, Graphics gc)
+    {   
         if (component == null || gc == null || !isReady) {
             return;
         }
-
+        
         if (isTransformed) {
             for (int i = 0; i < atomList.size(); i++) {
                 DEViseAtomInCrystal atom = (DEViseAtomInCrystal)atomList.elementAt(i);
@@ -99,10 +99,10 @@ public class DEViseCrystal
             }
 
             resort();
-
+                        
             isTransformed = false;
         }
-
+        
         int x, y, x1, y1, xm, ym, index, index1;
         double z;
         double[] pos = new double[3];
@@ -110,7 +110,7 @@ public class DEViseCrystal
         DEViseAtomInCrystal atom = null, atom1 = null;
 
         Color oldcolor = gc.getColor(), color = null, color1 = null;
-
+        
         for (int i = 0; i < zSortMapSize; i++) {
             index = zSortMap[i];
             if (index < 0) { // ignore deleted atom
@@ -171,15 +171,15 @@ public class DEViseCrystal
             atom.drawY = y;
             atom.drawSize = atom.type.drawSize;
         }
-
+        
         gc.setColor(axisColor);
         Font oldfont = gc.getFont(), font = new Font("Serif", Font.PLAIN, 12);
         gc.setFont(font);
 
         z = 10 / pixelToDataUnit;
-        pos = lcs.point(z, 0, 0, false);
+        pos = lcs.point(z, 0, 0, false);        
         x = (int)(pos[0] + 0.5) + shiftedX;
-        y = (int)(pos[1] + 0.5) + shiftedY;
+        y = (int)(pos[1] + 0.5) + shiftedY; 
         gc.drawLine(shiftedX, shiftedY, x, y);
         gc.drawString("a", x, y);
         pos = lcs.point(0, z, 0, false);
@@ -192,7 +192,7 @@ public class DEViseCrystal
         y = (int)(pos[1] + 0.5) + shiftedY;
         gc.drawLine(shiftedX, shiftedY, x, y);
         gc.drawString("c", x, y);
-
+        
         gc.setColor(oldcolor);
         gc.setFont(oldfont);
     }
@@ -531,7 +531,7 @@ public class DEViseCrystal
         }
     }
 
-    public void translate(int dx, int dy)
+    public synchronized void translate(int dx, int dy)
     {
         totalShiftedX += dx;
         totalShiftedY += dy;
@@ -541,7 +541,7 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
-    public void scale(int dx, int dy)
+    public synchronized void scale(int dx, int dy)
     {
         double factor = Math.sqrt((double)dx * dx + (double)dy * dy) / Math.sqrt((double)viewArea.width * viewArea.width + (double)viewArea.height * viewArea.height);
         if (dx < 0) {
@@ -558,10 +558,37 @@ public class DEViseCrystal
         isTransformed = true;
     }
 
-    public void rotate(int dx, int dy)
+    public synchronized void rotate(int dx, int dy)
     {
-        double anglex = Math.asin((double)dy * 2 / viewArea.width) * YGlobals.rad;
-        double angley = Math.asin((double)dx * -2 / viewArea.height) * YGlobals.rad;
+        int dxx = Math.abs(dx * -2);
+        int dyy = Math.abs(dy * 2);
+        
+        while (dxx > viewArea.height) {
+            dxx -= viewArea.height;
+            if (dx > 0) {
+                lcs.yrotate(-90);
+                totalYRotation -= 90;
+            } else {
+                lcs.yrotate(90);
+                totalYRotation += 90;
+            }
+        }    
+        while (dyy > viewArea.width) {
+            dyy -= viewArea.width;
+            if (dy > 0) {
+                lcs.xrotate(90);
+                totalXRotation += 90;
+            } else {
+                lcs.xrotate(-90);
+                totalXRotation -= 90;
+            }
+        }
+        
+        dxx = (dx > 0) ? -dxx : dxx;
+        dyy = (dy > 0) ? dyy : -dyy;
+
+        double anglex = Math.asin((double)dyy / viewArea.width) * YGlobals.rad;
+        double angley = Math.asin((double)dxx / viewArea.height) * YGlobals.rad;
 
         lcs.xrotate(anglex);
         lcs.yrotate(angley);
