@@ -2,21 +2,28 @@
 
 \rm jspop.out
 echo "launching jspop"
-jspop -debug &
+jspop &
 
-sleep 15
+sleep 5
+
+\rm jss.out
+echo "launching jss"
+jss &
+
+sleep 5
 
 \rm js.out
 echo "launching JavaScreen"
-js -debug >& js.out
+js >& js.out
 
-echo "JavaScreen done; killing jspop and devised"
-set pid=`ps -ax | grep 'java jspop' | head -1 | cut -c1-6`
+echo "JavaScreen done; killing jspop, jss, devised, and Xvfb"
+set pid=`ps -axw | grep 'java jspop' | head -1 | cut -c1-6`
 kill $pid
 
-set pid=`ps -ax | grep devised | head -1 | cut -c1-6`
-kill -INT $pid
-sleep 1
-kill -INT $pid
-sleep 1
-kill -INT $pid
+set pid=`ps -axw | grep 'java jss' | head -1 | cut -c1-6`
+kill $pid
+
+set pid=`ps -axw | grep 'Xvfb' | head -1 | cut -c1-6`
+kill $pid
+
+DEVise.kill

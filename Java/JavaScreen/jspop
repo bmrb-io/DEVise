@@ -8,6 +8,7 @@
 
 nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
 #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+#nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
 setenv DISPLAY unix:1.0
 
 # Make sure Xvfb gets going before starting the jss.

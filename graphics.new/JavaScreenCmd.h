@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  2000/03/28 21:46:25  wenger
+  Started implementation of caching commands, GIFs, and GData to speed up
+  session opening.
+
   Revision 1.33  2000/03/27 21:42:34  wenger
   Removed unused JavaScreenCmd::DrawAllCursors() method.
 
@@ -168,6 +172,7 @@
 #ifndef _JAVA_SCREEN_CMD
 #define _JAVA_SCREEN_CMD
 
+#include <stdio.h>
 #include <string>
 
 #include "DeviseTypes.h"
@@ -180,7 +185,6 @@ class ControlPanel;
 class ViewGraph;
 
 class DeviseCursor;
-class FILE;
 
 
 class JavaScreenCmd
