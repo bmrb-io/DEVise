@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/06/24 15:52:02  wenger
+#  First version of Tcl code to save data to templates.
+#
 #  Revision 1.10  1996/06/21 20:11:03  jussi
 #  Location of camera is now saved in the session file.
 #
@@ -216,7 +219,7 @@ proc SaveCursorViews { file dict} {
 
 # Save session
 proc DoActualSave { infile asTemplate asExport withData } {
-    global mode curView sourceFile sourceList sourceTypes
+    global mode
     global templateMode schemadir datadir
 
     # you can't save an imported file until it has been merged
@@ -265,271 +268,32 @@ proc DoActualSave { infile asTemplate asExport withData } {
 	puts $f ""
     }
 
-    puts $f "# Import schemas"
-    set catFile [DEVise catFiles]
-    foreach file $catFile {
-	if {$asExport} {
-	    # read contents of schema
-	    set fileP [open $file r]
-	    gets $fileP schemaTest
-	    if {[lindex $schemaTest 0] == "physical"} {
-		set lschema $schemaTest
-		set lschema [concat $lschema [read $fileP]]
-		close $fileP
-		set fileP [open [lindex $schemaTest end] "r"]
-	    } else {
-		close $fileP	
-		set fileP [open $file "r"]
-		set lschema ""
-	    }
-	    set pschema [read $fileP]
-	    close $fileP
-	    set sname [file tail $file]
-	    puts $f "set physSchema($sname) \"$pschema\""
-	    puts $f "set logSchema($sname) \"$lschema\""
-	    puts $f "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
-	} else {
-	    puts $f "DEVise importFileType $file"
-	}
-    }
-    puts $f ""
+    # Save the schemas or the references to the schema files.
+    SaveAllSchemas $f $asExport
 
     puts $f "# Layout mode"
     puts $f "DEVise changeMode 0"
     puts $f ""
 
-    puts $f "# Import file (Create TData)"
-    puts $f ""
-    if {!$asExport && !$asTemplate} {
-	puts $f "set loadPixmap 1"
-	puts $f ""
-    } 
+    # Save the commands needed to create the data sources.
+    set positionOffsets(dummy) ""
+    set lengthOffsets(dummy) ""
+    SaveDataSources $f $asExport $asTemplate $withData positionOffsets \
+	lengthOffsets
 
+    # Save the commands needed to create the TDatas.
     set fileDict ""
-    set fileNum 1
-    set totalTData [llength [DEVise get tdata]]
+    SaveCreateTDatas $f $asTemplate fileDict
 
-    # If we're saving data in the session file, we refer to the session file
-    # via the 'file' variable so things will work if the session file is
-    # renamed.
-    if {$withData} {
-	puts $f "set filename \[file tail \$file\]"
-	puts $f "set directory \[file dirname \$file\]"
-    }
-
-    set placeholder "          "
-
-    #TEMPTEMP
-    global positionOffsets lengthOffsets
-
-    if {$asExport} {
-	foreach class [DEVise get tdata] {
-	    foreach inst [DEVise get tdata $class] {
-		set params [DEVise getCreateParam tdata $class $inst]
-		set fileAlias [lindex $params 1]
-		set sourcedef $sourceList($fileAlias)
-		# in sourcedef, replace path name of entry #3 with \$schemadir
-		# if entry #0 == UNIXFILE, replace entry #7 with \$datadir
-		if {$withData} {
-		    #TEMPTEMP -- need to add on offset, length -- what if
-		    #this TData is already a file segment?
-		    #set sourcedef [lreplace $sourcedef 1 1 \$filename]
-		    #set sourcedef [lreplace $sourcedef 7 7 \$directory]
-
-		    set sourcedef [format "%s \$filename %s %s \{%s\} %s %s \$directory" [lindex $sourcedef 0] [lindex $sourcedef 2] [lindex $sourcedef 3] [lindex $sourcedef 4] [lindex $sourcedef 5] [lindex $sourcedef 6]]
-
-		    puts -nonewline $f "\taddDataSource $fileAlias \[list $sourcedef \{"
-		    set "positionOffsets($fileAlias)" [tell $f]
-		    puts -nonewline $f "$placeholder "
-		    set "lengthOffsets($fileAlias)" [tell $f]
-		    puts $f "$placeholder\}\]"
-		} else {
-		    puts $f "\taddDataSource $fileAlias \[list $sourcedef\]"
-		}
-		set instances [DEVise get tdata $class]
-	    }
-	}
-    }
-
-    foreach class [DEVise get tdata] {
-	foreach inst [DEVise get tdata $class] {
-	    set params [DEVise getCreateParam tdata $class $inst]
-	    set filePath [lindex $params 0]
-	    set fileAlias [lindex $params 1]
-	    set fileDict [DictInsert $fileDict $fileAlias tdata_$fileNum]
-	    set tdataVar tdata_$fileNum
-	    if {$asTemplate} {
-		puts $f "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
-		puts $f "if \{\$$tdataVar == \"\"\} \{"
-		puts $f "\treturn 0"
-		puts $f "\}"
-	    } else {
-		puts $f "if \{ \$template \} \{"
-		puts $f "\tset loadPixmap 0"
-		puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
-
-		puts $f "\tif \{\$$tdataVar == \"\"\} \{"
-		puts $f "\t\treturn 0"
-		puts $f "\t\}"
-		puts $f "\} else \{"
-		puts $f "\tset $tdataVar \{$fileAlias\}"
-		puts $f "\tset source \[OpenDataSource $$tdataVar]"
-		puts $f "\tif \{\$source == \"\"\} \{"
-		puts $f "\t\treturn 0"
-		puts $f "\t\}"
-		puts $f "\tset dispname \[lindex \$source 0\]"
-		puts $f "\tset filePath \[lindex \$source 1\]"
-		puts $f "\tDEVise create tdata $class \$filePath \$dispname"
-		puts $f "\tif \{\$dispname != \$$tdataVar\} \{"
-		puts $f "\t\tset loadPixmap 0"
-		puts $f "\t\tset $tdataVar \$dispname"
-		puts $f "\t\}"
-		puts $f "\}"
-	    }
-	    set fileNum [expr $fileNum+1]
-	}
-    }
-    puts $f  ""
-
-    puts $f "# Create interpreted mapping classes "
-    foreach mclass [ DEVise get mapping ] {
-	# puts "mclass $mclass"
-	puts $f "DEVise createMappingClass $mclass"
-    }
-    puts $f ""
-
-    puts $f "# Create mappings instance (GData)"
+    # Save the commands needed to create the mappings.
     set mapDict ""
-    set mapNum 1
-    foreach mapClass [ DEVise get mapping ] {
-	foreach inst [DEVise get mapping $mapClass] {
-	    set params [DEVise getCreateParam mapping $mapClass $inst]
-	    set fileAlias [lindex $params 0]
-	    set fileVar [DictLookup $fileDict $fileAlias]
-	    set gdataName [lindex $params 1]
-	    regsub $fileAlias $gdataName \%s gdataExpr
-	    puts $f "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
-	    puts $f "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
-	    set mapDict [DictInsert $mapDict $inst map_$mapNum]
-	    incr mapNum
-	}
-    }
-    puts $f ""
+    SaveMappings $f $fileDict mapDict
 
-    puts $f "# Save pixel width for mappings"
-    foreach map [ GdataSet ] {
-	set width [DEVise getPixelWidth $map]
-	set gdataVar [DictLookup $mapDict $map]
-	puts $f "DEVise setPixelWidth \$$gdataVar $width"
-    }
-    puts $f  ""
-
-    puts $f "# Create views"
+    # Save the commands needed to create the views.
     set viewDict ""
-    set viewNum 1
-    foreach viewClass [ DEVise get view ] {
-	foreach inst [ DEVise get view $viewClass ] {
-	    set params [DEVise getCreateParam view $viewClass $inst]
-	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
-	    set viewVar view_$viewNum
-	    if {$viewMap == ""} { 
-		puts $f "set $viewVar $inst"
-	    } else {
-		set viewTData [DEVise getMappingTData $viewMap]
-		set tdataVar [DictLookup $fileDict $viewTData]
-		regsub $viewTData $inst \%s viewExpr
-		puts $f "set $viewVar \[ format \"$viewExpr\" \$$tdataVar \]"
-	    }
-	    puts $f "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
+    SaveViews $f viewDict $fileDict
 
-	    set viewLabelParams [DEVise getLabel $inst]
-	    puts $f "DEVise setLabel \$$viewVar $viewLabelParams"
-	    set viewStatParams [DEVise getViewStatistics $inst]
-	    puts $f "DEVise setViewStatistics \$$viewVar $viewStatParams"
-	    set viewDimensions [DEVise getViewDimensions $inst]
-	    puts $f "DEVise setViewDimensions \$$viewVar $viewDimensions"
-
-	    set viewDict [DictInsert $viewDict $inst $viewVar]
-	    set viewNum [expr $viewNum+1]
-	}
-    }
-    puts $f ""
-
-    puts $f "# Create windows"
-    SaveCategory $f "window" 
-    puts $f ""
-
-    puts $f "# Setup window layouts"
-    foreach win [WinSet] {
-	set layout [DEVise getWindowLayout $win]
-	puts $f "DEVise setWindowLayout \{$win\} $layout"
-    }
-    puts $f ""
-    
-    puts $f "# Create Links"
-    SaveCategory $f "link" 
-    puts $f ""
-
-    puts $f "# Create Cursors"
-    SaveCategory $f "cursor"
-    puts $f ""
-
-    puts $f "# Create axislabel"
-    SaveCategory $f "axisLabel"
-    puts $f ""
-
-    puts $f "# Create Actions"
-    SaveCategory $f "action"
-    puts $f ""
-
-    puts $f "# Put labels into views"
-    SaveAllViewAxisLabel $f $viewDict
-    puts $f ""
-
-    puts $f "# Put action into view"
-    SaveAllViewAction $f $viewDict
-    puts $f ""
-
-    puts $f "# Link views"
-    SaveLinkViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Put views in cursors"
-    SaveCursorViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Put axis label into views"
-    puts $f ""
-
-    puts $f "# Insert mappings into views"
-    SaveAllViewMappings $f $mapDict $viewDict 
-    puts $f ""
-
-    puts $f "# Insert views into windows"
-    SaveAllWindowViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Init history of view"
-    foreach view [ViewSet] {
-	set viewVar [DictLookup $viewDict $view]
-	puts $f "DEVise clearViewHistory \$$viewVar"
-	if {$asTemplate || $asExport} {
-	    continue
-	}
-	foreach hist [ DEVise getVisualFilters $view ] {
-	    puts $f "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
-	}
-    }
-
-    puts $f ""
-    puts $f "# Set camera location for each view"
-    foreach view [ViewSet] {
-	set camera [DEVise get3DLocation $view]
-	set x [lindex $camera 1]
-	set y [lindex $camera 2]
-	set z [lindex $camera 3]
-	puts $f "DEVise set3DLocation \$$viewVar $x $y $z"
-    }
+    SaveMisc $f $asTemplate $asExport $viewDict $mapDict
 
     if { $mode == 1 } {
         puts $f ""
@@ -542,10 +306,9 @@ proc DoActualSave { infile asTemplate asExport withData } {
 	puts $f "return 1"
     }
 
-# save data here
+    # Save the actual data if required.
     if {$withData} {
-	#TEMPTEMP SaveAllData $f positionOffsets lengthOffsets
-	SaveAllData $f
+	SaveAllData $f positionOffsets lengthOffsets
     }
 
     if {$asTemplate || $asExport} {
@@ -554,39 +317,9 @@ proc DoActualSave { infile asTemplate asExport withData } {
 	return
     }
 
-    # Save pixmaps 
-    set bitmapFile $infile.pixmap
-    if { [ file exists $bitmapFile ] } {
-	if { ! [ file writable $bitmapFile ] } {
-	    dialog .saveError "Cannot Save Pixmap" \
-		    "File $bitmapFile not writable" "" 0 OK
-	    ChangeStatus 0
-	    return
-	}
-    }
-
-    set bitF [DEVise open $bitmapFile wb]
-    set date [DEVise date]
-    DEVise writeLine $date $bitF
-    set savedCurView $curView
-    ProcessViewSelected ""
-
-    puts $f ""
-    puts $f "# Load pixmaps from views"
-    puts $f "set pixmapName $bitmapFile"
-    puts $f "if \{ \$loadPixmap && \[ file exists \$pixmapName \] \} \{"
-    puts $f "	set pixmapFile \[ DEVise open \$pixmapName rb \]"
-    puts $f "	set fileDate \[ DEVise readLine \$pixmapFile \]"
-    puts $f "	set sessionDate \{$date\}"
-    puts $f "	if \{\$fileDate == \$sessionDate\} \{ "
-    foreach view [ViewSet] {
-	DEVise savePixmap $view $bitF
-	puts $f "		DEVise loadPixmap \{$view\} \$pixmapFile"
-    }
-    puts $f "	\}"
-    puts $f "	DEVise close \$pixmapFile"
-    puts $f "\}"
-    DEVise close $bitF
+    # Save the pixmaps.
+    set savedCurView ""
+    SavePixmaps $f $infile savedCurView
 
     ProcessViewSelected $savedCurView
 
@@ -708,13 +441,333 @@ proc DoTemplateMerge {} {
     puts "Done with merging template catalog with global catalog"
 }
 
+
+
 ############################################################
 
-# Save all TDatas to the given file.
-#TEMPTEMP proc SaveAllData { fileId positionOffsets lengthOffsets } {
-proc SaveAllData { fileId } {
-    #TEMPTEMP
-    global positionOffsets lengthOffsets
+# Save all schemas to the given file.
+proc SaveAllSchemas { fileId asExport } {
+    puts $fileId "# Import schemas"
+    set catFile [DEVise catFiles]
+    foreach file $catFile {
+	SaveOneSchema $fileId $asExport $file
+    }
+    puts $fileId ""
+}
+
+############################################################
+
+# Save one schema to the given file.
+proc SaveOneSchema { fileId asExport schemaFile } {
+    if {$asExport} {
+	# read contents of schema
+	set fileP [open $schemaFile r]
+	gets $fileP schemaTest
+	if {[lindex $schemaTest 0] == "physical"} {
+	    set lschema $schemaTest
+	    set lschema [concat $lschema [read $fileP]]
+	    close $fileP
+	    set fileP [open [lindex $schemaTest end] "r"]
+	} else {
+	    close $fileP	
+	    set fileP [open $schemaFile "r"]
+	    set lschema ""
+	}
+	set pschema [read $fileP]
+	close $fileP
+	set sname [file tail $schemaFile]
+	puts $fileId "set physSchema($sname) \"$pschema\""
+	puts $fileId "set logSchema($sname) \"$lschema\""
+	puts $fileId "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
+    } else {
+	puts $fileId "DEVise importFileType $schemaFile"
+    }
+}
+
+
+############################################################
+
+# Save the appropriate commands to create the data sources.
+proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
+    lenOffRef } {
+    upvar $posOffRef positionOffsets
+    upvar $lenOffRef lengthOffsets
+    global sourceList
+
+    puts $fileId "# Import file (Create TData)"
+    puts $fileId ""
+    if {!$asExport && !$asTemplate} {
+	puts $fileId "set loadPixmap 1"
+	puts $fileId ""
+    } 
+
+    # If we're saving data in the session file, we refer to the session file
+    # via the 'file' variable so things will work if the session file is
+    # renamed.
+    if {$withData} {
+	puts $fileId "set filename \[file tail \$file\]"
+	puts $fileId "set directory \[file dirname \$file\]"
+    }
+
+    if {$asExport} {
+        # Placeholder for data offset and length.  This will be written to the
+    	# template now, and then overwritten later with the real offset and
+    	# length when we know them.
+    	set placeholder "          "
+
+	foreach class [DEVise get tdata] {
+	    foreach inst [DEVise get tdata $class] {
+		set params [DEVise getCreateParam tdata $class $inst]
+		set fileAlias [lindex $params 1]
+		set sourcedef $sourceList($fileAlias)
+
+		if {$withData} {
+		    # Replace the filename with '$filename' and the directory
+		    # with '$directory'.  We use format instead of lreplace
+		    # because lreplace puts braces around $filename and
+		    # $directory, and that goofs things up when you try
+		    # to load the template.
+		    set sourcedef [format \
+			"%s \$filename %s %s \{%s\} %s %s \$directory" \
+	    		[lindex $sourcedef 0] [lindex $sourcedef 2] \
+			[lindex $sourcedef 3] [lindex $sourcedef 4] \
+			[lindex $sourcedef 5] [lindex $sourcedef 6]]
+
+		    puts -nonewline $fileId \
+	    		"\taddDataSource $fileAlias \[list $sourcedef \{"
+		    set "positionOffsets($fileAlias)" [tell $fileId]
+		    puts -nonewline $fileId "$placeholder "
+		    set "lengthOffsets($fileAlias)" [tell $fileId]
+		    puts $fileId "$placeholder\}\]"
+		} else {
+		    puts $fileId "\taddDataSource $fileAlias \[list $sourcedef\]"
+		}
+	    }
+	}
+    }
+}
+
+
+############################################################
+
+# Save the commands to create the TDatas to the given file.
+proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
+    upvar $fileDictRef fileDict
+
+    set fileNum 1
+    set totalTData [llength [DEVise get tdata]]
+
+    foreach class [DEVise get tdata] {
+	foreach inst [DEVise get tdata $class] {
+	    set params [DEVise getCreateParam tdata $class $inst]
+	    set filePath [lindex $params 0]
+	    set fileAlias [lindex $params 1]
+	    set fileDict [DictInsert $fileDict $fileAlias tdata_$fileNum]
+	    set tdataVar tdata_$fileNum
+	    if {$asTemplate} {
+		puts $fileId "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
+		puts $fileId "if \{\$$tdataVar == \"\"\} \{"
+		puts $fileId "\treturn 0"
+		puts $fileId "\}"
+	    } else {
+		puts $fileId "if \{ \$template \} \{"
+		puts $fileId "\tset loadPixmap 0"
+		puts $fileId "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
+
+		puts $fileId "\tif \{\$$tdataVar == \"\"\} \{"
+		puts $fileId "\t\treturn 0"
+		puts $fileId "\t\}"
+		puts $fileId "\} else \{"
+		puts $fileId "\tset $tdataVar \{$fileAlias\}"
+		puts $fileId "\tset source \[OpenDataSource $$tdataVar]"
+		puts $fileId "\tif \{\$source == \"\"\} \{"
+		puts $fileId "\t\treturn 0"
+		puts $fileId "\t\}"
+		puts $fileId "\tset dispname \[lindex \$source 0\]"
+		puts $fileId "\tset filePath \[lindex \$source 1\]"
+		puts $fileId "\tDEVise create tdata $class \$filePath \$dispname"
+		puts $fileId "\tif \{\$dispname != \$$tdataVar\} \{"
+		puts $fileId "\t\tset loadPixmap 0"
+		puts $fileId "\t\tset $tdataVar \$dispname"
+		puts $fileId "\t\}"
+		puts $fileId "\}"
+	    }
+
+	    set fileNum [expr $fileNum+1]
+	}
+    }
+    puts $fileId  ""
+}
+
+
+############################################################
+
+# Save mappings to the given file.
+proc SaveMappings { fileId fileDict mapDictRef } {
+    upvar $mapDictRef mapDict
+
+    puts $fileId "# Create interpreted mapping classes "
+    foreach mclass [ DEVise get mapping ] {
+	# puts "mclass $mclass"
+	puts $fileId "DEVise createMappingClass $mclass"
+    }
+    puts $fileId ""
+
+    puts $fileId "# Create mappings instance (GData)"
+    set mapDict ""
+    set mapNum 1
+    foreach mapClass [ DEVise get mapping ] {
+	foreach inst [DEVise get mapping $mapClass] {
+	    set params [DEVise getCreateParam mapping $mapClass $inst]
+	    set fileAlias [lindex $params 0]
+	    set fileVar [DictLookup $fileDict $fileAlias]
+	    set gdataName [lindex $params 1]
+	    regsub $fileAlias $gdataName \%s gdataExpr
+	    puts $fileId "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
+	    puts $fileId "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
+	    set mapDict [DictInsert $mapDict $inst map_$mapNum]
+	    incr mapNum
+	}
+    }
+    puts $fileId ""
+
+    puts $fileId "# Save pixel width for mappings"
+    foreach map [ GdataSet ] {
+	set width [DEVise getPixelWidth $map]
+	set gdataVar [DictLookup $mapDict $map]
+	puts $fileId "DEVise setPixelWidth \$$gdataVar $width"
+    }
+    puts $fileId ""
+}
+
+
+############################################################
+
+# Save views to the given file.
+proc SaveViews { fileId viewDictRef fileDict } {
+    upvar $viewDictRef viewDict
+
+    puts $fileId "# Create views"
+    set viewDict ""
+    set viewNum 1
+    foreach viewClass [ DEVise get view ] {
+	foreach inst [ DEVise get view $viewClass ] {
+	    set params [DEVise getCreateParam view $viewClass $inst]
+	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
+	    set viewVar view_$viewNum
+	    if {$viewMap == ""} { 
+		puts $fileId "set $viewVar $inst"
+	    } else {
+		set viewTData [DEVise getMappingTData $viewMap]
+		set tdataVar [DictLookup $fileDict $viewTData]
+		regsub $viewTData $inst \%s viewExpr
+		puts $fileId "set $viewVar \[ format \"$viewExpr\" \$$tdataVar \]"
+	    }
+	    puts $fileId "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
+
+	    set viewLabelParams [DEVise getLabel $inst]
+	    puts $fileId "DEVise setLabel \$$viewVar $viewLabelParams"
+	    set viewStatParams [DEVise getViewStatistics $inst]
+	    puts $fileId "DEVise setViewStatistics \$$viewVar $viewStatParams"
+	    set viewDimensions [DEVise getViewDimensions $inst]
+	    puts $fileId "DEVise setViewDimensions \$$viewVar $viewDimensions"
+
+	    set viewDict [DictInsert $viewDict $inst $viewVar]
+	    set viewNum [expr $viewNum+1]
+	}
+    }
+    puts $fileId ""
+}
+
+
+############################################################
+
+# Save miscellaneous stuff to the given file.
+proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
+    puts $fileId "# Create windows"
+    SaveCategory $fileId "window" 
+    puts $fileId ""
+
+    puts $fileId "# Setup window layouts"
+    foreach win [WinSet] {
+	set layout [DEVise getWindowLayout $win]
+	puts $fileId "DEVise setWindowLayout \{$win\} $layout"
+    }
+    puts $fileId ""
+    
+    puts $fileId "# Create Links"
+    SaveCategory $fileId "link" 
+    puts $fileId ""
+
+    puts $fileId "# Create Cursors"
+    SaveCategory $fileId "cursor"
+    puts $fileId ""
+
+    puts $fileId "# Create axislabel"
+    SaveCategory $fileId "axisLabel"
+    puts $fileId ""
+
+    puts $fileId "# Create Actions"
+    SaveCategory $fileId "action"
+    puts $fileId ""
+
+    puts $fileId "# Put labels into views"
+    SaveAllViewAxisLabel $fileId $viewDict
+    puts $fileId ""
+
+    puts $fileId "# Put action into view"
+    SaveAllViewAction $fileId $viewDict
+    puts $fileId ""
+
+    puts $fileId "# Link views"
+    SaveLinkViews $fileId $viewDict
+    puts $fileId ""
+
+    puts $fileId "# Put views in cursors"
+    SaveCursorViews $fileId $viewDict
+    puts $fileId ""
+
+    puts $fileId "# Put axis label into views"
+    puts $fileId ""
+
+    puts $fileId "# Insert mappings into views"
+    SaveAllViewMappings $fileId $mapDict $viewDict 
+    puts $fileId ""
+
+    puts $fileId "# Insert views into windows"
+    SaveAllWindowViews $fileId $viewDict
+    puts $fileId ""
+
+    puts $fileId "# Init history of view"
+    foreach view [ViewSet] {
+	set viewVar [DictLookup $viewDict $view]
+	puts $fileId "DEVise clearViewHistory \$$viewVar"
+	if {$asTemplate || $asExport} {
+	    continue
+	}
+	foreach hist [ DEVise getVisualFilters $view ] {
+	    puts $fileId "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
+	}
+    }
+
+    puts $fileId ""
+    puts $fileId "# Set camera location for each view"
+    foreach view [ViewSet] {
+	set camera [DEVise get3DLocation $view]
+	set x [lindex $camera 1]
+	set y [lindex $camera 2]
+	set z [lindex $camera 3]
+	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z"
+    }
+}
+
+
+############################################################
+
+# Save all TDatas (the actual data) to the given file.
+proc SaveAllData { fileId positionOffsets lengthOffsets } {
+    upvar $positionOffsets posOff
+    upvar $lengthOffsets lenOff
 
     # Keep from making duplicates by keeping a list of what we have saved.
     set dataSaved ""
@@ -724,7 +777,7 @@ proc SaveAllData { fileId } {
         set instances [ DEVise get tdata $class ]
         foreach inst $instances {
 	    if {[lsearch $dataSaved $inst] == -1} {
-		SaveOneData $fileId $inst $positionOffsets($inst) $lengthOffsets($inst)
+		SaveOneData $fileId $inst $posOff($inst) $lenOff($inst)
 	        lappend dataSaved $inst
 	    }
         }
@@ -735,11 +788,19 @@ proc SaveAllData { fileId } {
 
 ############################################################
 
-# Save the given TData to the given file.
+# Save the given TData (the actual data) to the given output (template)
+# file.
+#   fileId is the file descriptor of the output file.
+#   tdata is the name of the TData to save.
+#   positionOffset is the offset in the output file at which we
+#     must write the position of the data in the output file.
+#   lengthOffset is the offset in the output file at which we
+#     must write the length of the data in the output file.
+
 proc SaveOneData { fileId tdata positionOffset lengthOffset } {
     global sourceList
 
-    #TEMPTEMP -- probably need a catch here?
+    # Get the source information for this TData.
     set source $sourceList($tdata)
 
     # Make sure this TData is a UNIXFILE, otherwise we can't save it yet.
@@ -755,24 +816,80 @@ proc SaveOneData { fileId tdata positionOffset lengthOffset } {
     # Open data file here so we don't output the other stuff if open fails.
     set tdFile [open $dirname/$filename r]
 
+    # Put a comment into the output file telling what TData this is.
     puts $fileId ""
     puts $fileId "### $tdata"
 
-#TEMPTEMP -- need to deal with tdatas that are only part of a file
-    set data [read $tdFile]
+    # Now read the TData from its file (determining whether the TData occupies
+    # the entire file or just a segment of the file).
+    set segment [lindex $source 8]
+    if {$segment == ""} {
+	# Read the whole file.
+    	set data [read $tdFile]
+    } else {
+	# Read just the specified part of the file.
+	seek $tdFile [lindex $segment 0] start
+    	set data [read $tdFile [lindex $segment 1]]
+    }
 
+    close $tdFile
+
+    # Dump the TData into the output file, saving its offset and length.
     set tdataPosition [tell $fileId]
     puts $fileId $data
+    unset data
     set tdataLength [expr [tell $fileId] - $tdataPosition]
 
+    # Now go back and fill in the data offset and length in the places
+    # we reserved for them in the addDataSource command.  Note that after
+    # doing so, we need to seek back to the end of the output file so that
+    # subsequent writes will write at the right place.
     seek $fileId $positionOffset
     puts -nonewline $fileId $tdataPosition
     seek $fileId $lengthOffset
     puts -nonewline $fileId $tdataLength
     seek $fileId 0 end
-    unset fileId
-
-    close $tdFile
 
     return
+}
+
+############################################################
+
+# Save pixmaps.
+proc SavePixmaps { fileId infile savedCurViewRef } {
+    upvar $savedCurViewRef savedCurView
+    global curView
+
+    set bitmapFile $infile.pixmap
+    if { [ file exists $bitmapFile ] } {
+	if { ! [ file writable $bitmapFile ] } {
+	    dialog .saveError "Cannot Save Pixmap" \
+		    "File $bitmapFile not writable" "" 0 OK
+	    ChangeStatus 0
+	    return
+	}
+    }
+
+    set bitF [DEVise open $bitmapFile wb]
+    set date [DEVise date]
+    DEVise writeLine $date $bitF
+    set savedCurView $curView
+    ProcessViewSelected ""
+
+    puts $fileId ""
+    puts $fileId "# Load pixmaps from views"
+    puts $fileId "set pixmapName $bitmapFile"
+    puts $fileId "if \{ \$loadPixmap && \[ file exists \$pixmapName \] \} \{"
+    puts $fileId "	set pixmapFile \[ DEVise open \$pixmapName rb \]"
+    puts $fileId "	set fileDate \[ DEVise readLine \$pixmapFile \]"
+    puts $fileId "	set sessionDate \{$date\}"
+    puts $fileId "	if \{\$fileDate == \$sessionDate\} \{ "
+    foreach view [ViewSet] {
+	DEVise savePixmap $view $bitF
+	puts $fileId "		DEVise loadPixmap \{$view\} \$pixmapFile"
+    }
+    puts $fileId "	\}"
+    puts $fileId "	DEVise close \$pixmapFile"
+    puts $fileId "\}"
+    DEVise close $bitF
 }
