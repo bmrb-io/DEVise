@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/16 07:21:26  donjerko
+  Fixed some compile problems
+
   Revision 1.1  1996/12/15 06:32:01  donjerko
   Added the DeviseSpecific directory to DTE
 
@@ -119,11 +122,18 @@ TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 	_sizes = new int[_numFlds]; 
 	for(int i = 0; i < _numFlds; i++){
 		String res[20];
-		int numSplit = split(attrs[i],res,20,String("."));
+		int numSplit = split(attrs[i],res,20,String(","));
 				
-		char* atname = strdup(res[numSplit -1].chars());
+		char* atname = strdup(res[0].chars());
 		int deviseSize = packSize(_result[0][i], _types[i]);
 		_sizes[i] = deviseSize;
+		if(numSplit > 1){
+			String temp = atname;
+			delete atname;
+			temp += ")";
+			atname = strdup(temp.chars());
+		}
+
 		AttrType deviseType = getDeviseType(_types[i]);
 		_attrs.InsertAttr(i, atname, offset, deviseSize, 
 			deviseType, false, 0, false, false, false, 0, false, 0); 

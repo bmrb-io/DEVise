@@ -220,11 +220,12 @@ void TDataDQL::BuildIndex()
 }
 
 TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
-
+	
+	char *ptr = (char *)buf;
 	for(long unsigned int i = id  ; i < numRecs + id; i++){
 		for(int j = 0; j < _numFlds; j++){
-			marshal(_result[i][j], (char*) buf, _types[j]);
-			buf += _sizes[j];
+			marshal(_result[i][j], (char*) ptr, _types[j]);
+			ptr += _sizes[j];
 		}
 	}
 

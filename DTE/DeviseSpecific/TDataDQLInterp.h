@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/16 07:21:26  donjerko
+  Fixed some compile problems
+
   Revision 1.1  1996/12/15 06:32:01  donjerko
   Added the DeviseSpecific directory to DTE
 
@@ -81,7 +84,6 @@ private:
   TuplePtrXPlex _result;
   int* _sizes;
 };
-
 class RecInterp;
 
 class TDataDQLInterp: public TDataDQL {
