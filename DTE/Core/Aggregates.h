@@ -784,6 +784,8 @@ protected:
 };
 
 class MovAggsExec : public StandGroupByExec {
+  int* seqByPos;
+  int seqByPosLen;
   int windowLow, windowHigh, fullWindowHeight; // window measurements
   int *numTuplesToBeDropped; // array of size windowHeight 
   int nextDrop; // pointer to element in array numTuplesToBeDropped
@@ -800,7 +802,8 @@ public:
 		int windowLow, int windowHigh) : 
 	  StandGroupByExec (inputIter, aggExecs, numFlds, seqByPos, 
 			    seqByPosLen, aggPos, numAggs), 
-		windowLow(windowLow), windowHigh(windowHigh) {
+	  seqByPos(seqByPos), seqByPosLen(seqByPosLen), 
+	  windowLow(windowLow), windowHigh(windowHigh) {
 
 		retTuple = new Tuple[numFlds];
 		currInTup = NULL;
@@ -826,7 +829,7 @@ public:
 class Aggregates : public Site {
 	List<BaseSelection*>* selList;
 	List<BaseSelection*>* filteredSelList;
-	BaseSelection * sequenceAttr;
+	List<BaseSelection*>* sequenceBy;
 	bool isApplicableValue;
 	bool alreadyChecked;
   TypeID seqAttrType; // sequence by on only one attribute?
@@ -847,12 +850,12 @@ class Aggregates : public Site {
 
 public:
 	Aggregates(
-		List<BaseSelection*>* selectClause,	// queries select clause
-		BaseSelection * sequenceby,	// queries select clause
+		List<BaseSelection*>* selectClause, // queries select clause
+		List<BaseSelection*>* sequenceby,   // queries seq by clause
 		BaseSelection* withPredicate,
 		List<BaseSelection*>* groupBy ,	// group by clause
 		BaseSelection* having = NULL			// having clause
-	) : Site(), selList(selectClause),sequenceAttr(sequenceby),
+	) : Site(), selList(selectClause),sequenceBy(sequenceby),
 			withPredicate(withPredicate),groupBy(groupBy){
 		
 		Site::mySelect = selList;
@@ -883,7 +886,7 @@ public:
 	virtual ~Aggregates(){
 		// do not delete selList;
 		// couses problems
-		// delete sequenceAttr;
+		// delete sequenceBy;
 		// delete inputPlanOp;
 		// delete filteredSelList;		// do not destroy
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/10/14 05:16:29  arvind
+  Implemented a first version of moving aggregates (without group bys).
+
   Revision 1.17  1997/10/07 18:33:36  donjerko
   *** empty log message ***
 
@@ -65,7 +68,7 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
-	BaseSelection* sequenceby;
+	List<BaseSelection*>* sequenceby;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* groupBy;
 	List<BaseSelection*>* orderBy;
@@ -76,7 +79,7 @@ public:
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		BaseSelection *sequenceby,
+		List<BaseSelection*>* sequenceby,
 		BaseSelection* withPredicate,
 		List<BaseSelection *>*groupBy,
 		List<BaseSelection*>* orderBy,

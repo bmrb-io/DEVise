@@ -23,14 +23,13 @@ bool Aggregates::isApplicable(){
 		grpByPos = new int[groupBy->cardinality()];
 	}
 	
-	// need to extend for multiple seq by fields
-	if (sequenceAttr) {
-	  seqByPos = new int[1];
+	if (sequenceBy && !sequenceBy->isEmpty()) {
+	  seqByPos = new int[sequenceBy->cardinality()];
 	}
 
 	bool hasMoving = false; //to check moving and normal aggs are not mixed
 	int i = 0;
-	numGrpByFlds = 0;
+	numGrpByFlds = numSeqByFlds = 0;
 	while(!selList->atEnd()){
 		
 		BaseSelection* curr = selList->get();
@@ -96,7 +95,8 @@ bool Aggregates::isApplicable(){
 			grpByPos[numGrpByFlds++] = i;
 			aggFuncs[i] = new GroupAttribute();
 		}
-		else if (sequenceAttr) { 
+		else if (sequenceBy && !sequenceBy->isEmpty()) { 
+		  isApplicableValue = true;
 		  seqByPos[numSeqByFlds++] = i;
 		  aggFuncs[i] = new SequenceAttribute();  
 		}
@@ -127,7 +127,7 @@ bool Aggregates::isApplicable(){
 	  }
 	}
 	
-	if (sequenceAttr) {
+	if (sequenceBy && !sequenceBy->isEmpty()) {
 	  assert (numSeqByFlds > 0);
 	  numAggs = 0;
 	  int tmp = 0;
@@ -265,8 +265,8 @@ void MovAggsExec::initialize(){
 	    }
 
 	    // Add the currInTuple to end of the seq by queue
-	    for (int i = 0; i < grpByPosLen; i++){
-	      aggExecs[grpByPos[i]]->update(currInTup[grpByPos[i]]); 
+	    for (int i = 0; i < seqByPosLen; i++){
+	      aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
 	    }    
 	    currWindowHeight++;
 	  } 
@@ -309,6 +309,8 @@ const Tuple* MovAggsExec::getNext(){
 	// no more tuples left in the stream
 	if (!currInTup) { 
 
+	  currWindowHeight--;
+
 	  if (!currWindowHeight)
 	    return NULL;
 
@@ -316,12 +318,15 @@ const Tuple* MovAggsExec::getNext(){
 	    aggExecs[aggPos[i]]->dequeue(toDeque);  
 	  }
 
-	  for (int i = 0; i < grpByPosLen; i++){
-	    aggExecs[grpByPos[i]]->dequeue(1);// values in seqby Q are unique
+	  for (int i = 0; i < seqByPosLen; i++){
+	    aggExecs[seqByPos[i]]->dequeue(1);// values in seqby Q are unique
 	  }    
 
-	  currWindowHeight--;
 	  nextDrop = (nextDrop+1) % fullWindowHeight;
+
+	  for(int i = 0; i < numFlds; i++){ 
+	    retTuple[i] = aggExecs[i]->getValue();
+	  }
 	  return retTuple;
 	}
 
@@ -331,9 +336,9 @@ const Tuple* MovAggsExec::getNext(){
 	  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 	}
 
-	for (int i = 0; i < grpByPosLen; i++){
-	  aggExecs[grpByPos[i]]->dequeue(1);
-	  aggExecs[grpByPos[i]]->update(currInTup[grpByPos[i]]); 
+	for (int i = 0; i < seqByPosLen; i++){
+	  aggExecs[seqByPos[i]]->dequeue(1);
+	  aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
 	}    
 
 	numTuplesToBeDropped[nextDrop] = 1; // for currInTup

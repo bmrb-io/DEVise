@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/10/14 05:17:19  arvind
+  Implemented a first version of moving aggregates (without group bys).
+
   Revision 1.30  1997/10/07 18:33:38  donjerko
   *** empty log message ***
 
@@ -182,7 +185,7 @@ static int my_yyaccept();
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <constantSel> constant
-%type <sel> optSequenceByClause
+%type <selList> optSequenceByClause
 %type <stringLit> index_name
 %type <listOfStrings> table_name
 %type <stringLit> optIndType
@@ -348,9 +351,9 @@ optWhereClause : WHERE predicate {
 	}
 	;
 
-optSequenceByClause :SEQUENCE BY STRING '.' STRING optWithClause{
-		$$ = new PrimeSelection($3, $5);
-		withPredicate= $6;
+optSequenceByClause :SEQUENCE BY listOfSelections optWithClause{
+		$$ = $3;
+		withPredicate= $4;
 	}
 	| {
 		$$ = NULL;
