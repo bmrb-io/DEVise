@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/02/06 19:32:28  jussi
+  Moved logo drawing to ViewWin.c.
+
   Revision 1.14  1996/02/05 23:57:00  jussi
   Added DEVise logo display.
 
@@ -174,44 +177,41 @@ public:
 	static void DoneViewIterator(int index) { _viewList->DoneIterator(index); }
 
 
-   /* Set axes callback */
-   void SetXAxisAttrType(AttrType type);
-   AttrType GetXAxisAttrType() { return _xAxisAttrType;}
-   void SetYAxisAttrType(AttrType type);
-   AttrType GetYAxisAttrType() { return _yAxisAttrType; }
-   void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback;}
-   AxisLabel *GetXAxisLabel() { return _xAxisLabel; }
-   void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback;}
-   AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
+	/* Set axes callback */
+	void SetXAxisAttrType(AttrType type);
+	AttrType GetXAxisAttrType() { return _xAxisAttrType;}
+	void SetYAxisAttrType(AttrType type);
+	AttrType GetYAxisAttrType() { return _yAxisAttrType; }
+	void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback;}
+	AxisLabel *GetXAxisLabel() { return _xAxisLabel; }
+	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback;}
+	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
 
-   /* set/clear min info about a view */
-   void SetXMin(Boolean hasXMin, Coord xMin=0.0) {
-		_hasXMin = hasXMin;
-		_xMin = xMin;
-   }
-   Boolean GetXMin(Coord &xMin){
-		xMin = _xMin;
-		return _hasXMin;
-   }
+	/* set/clear min info about a view */
+	void SetXMin(Boolean hasXMin, Coord xMin=0.0) {
+	  _hasXMin = hasXMin;
+	  _xMin = xMin;
+	}
+	Boolean GetXMin(Coord &xMin){
+	  xMin = _xMin;
+	  return _hasXMin;
+	}
 
-   void SetAction(Action *action);
-   Action *GetAction() { return _action; }
+	void SetAction(Action *action);
+	Action *GetAction() { return _action; }
+	
+	void XAxisDisplayOnOff(Boolean stat);
+	void YAxisDisplayOnOff(Boolean stat);
+	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
+	  xOnOff = xAxis.inUse;
+	  yOnOff = yAxis.inUse;
+	}
 
-   /*
-   void AxisDisplayOnOff(Boolean stat);
-   */
-   void XAxisDisplayOnOff(Boolean stat);
-   void YAxisDisplayOnOff(Boolean stat);
-   void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
-		xOnOff = xAxis.inUse;
-		yOnOff = yAxis.inUse;
-   }
-
-   /* get label parameters */
-   void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
-
-   /* set label parameters */
-   void SetLabelParam(Boolean occupyTop, int extent, char *name=NULL);
+	/* get label parameters */
+	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
+	
+	/* set label parameters */
+	void SetLabelParam(Boolean occupyTop, int extent, char *name=NULL);
 
 	void Refresh() ;
 
@@ -228,6 +228,10 @@ public:
 	void DeleteCursor(DeviseCursor *cursor);
 	Boolean DrawCursors();
 	Boolean HideCursors();
+
+	/* get/set dimensionality */
+	int GetNumDimensions() { return _numDimensions; }
+	void SetNumDimensions(int d);
 
 	/******** Pixmap manipulations *********/
 
@@ -358,7 +362,6 @@ private:
 
 	Boolean  _displaySymbol; /* true if to be displayed */
 	AxisInfo xAxis, yAxis;   /* X and y axis info */
-	Boolean _axisDisplay;   /* TRUE if axes should be displayed */
 
 	Action *_action;
 
@@ -419,6 +422,8 @@ private:
 	Compression *_compress; /* compression class */
 
 	Boolean _cursorsOn;             /* true if cursors displayed */
+
+	int _numDimensions;             /* number of dimensions */
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;

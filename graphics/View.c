@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/02/06 19:32:41  jussi
+  Moved logo drawing to ViewWin.c.
+
   Revision 1.23  1996/02/05 23:56:57  jussi
   Added DEVise logo display.
 
@@ -157,6 +160,7 @@ View::View(char *name, Action *action, VisualFilter &initFilter,
   _compress = new SimpleCompress();
 
   _cursorsOn = false;
+  _numDimensions = 2;
 }
 
 void View::Init(char *name,Action *action, VisualFilter &filter,
@@ -218,8 +222,6 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
   _label.occupyTop = false;
   _label.extent = 12;
   _label.name = 0;
-  
-  _axisDisplay = true;
   
   _cursors = new DeviseCursorList;
   
@@ -445,6 +447,9 @@ void View::HandleKey(WindowRep *w, char key, int x, int y)
 
 Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 {
+  if (_numDimensions != 2)
+    return false;
+
   int cursorX, cursorY, cursorW, cursorH;
   Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
 
@@ -474,6 +479,9 @@ Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
 #ifdef DEBUG
   printf("View::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
 #endif
+
+  if (_numDimensions != 2)
+    return false;
 
   ControlPanel::Instance()->SelectView(this);
 
@@ -506,6 +514,23 @@ Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
   }
 
   return false;
+}
+
+/* set dimensionality */
+
+void View::SetNumDimensions(int d)
+{
+  if (d != 2 && d != 3) {
+    fprintf(stderr, "View::SetNumDimensions %d invalid\n", d);
+    return;
+  }
+
+  if (d == _numDimensions)
+    return;
+
+  _numDimensions = d;
+  _filterChanged = true;
+  _updateTransform = true;
 }
 
 /* get area for displaying label */
@@ -549,6 +574,8 @@ area = x,y,width, height, and startX, as follows:
 void View::GetXAxisArea(int &x, int &y, int &width, int &height,
 			int &startX)
 {
+  assert(_numDimensions == 2);
+
   unsigned int windW, winH;
   Geometry(x, y, windW, winH);
 
@@ -593,6 +620,8 @@ area = x,y,width, height, and startX, as follows:
 
 void View::GetYAxisArea(int &x, int &y, int &width, int &height)
 {
+  assert(_numDimensions == 2);
+
   unsigned int winW, winH;
   Geometry(x, y, winW, winH);
 
@@ -642,13 +671,13 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     height = winHeight;
   }
   
-  if (_axisDisplay) {
+  if (_numDimensions == 2) {
     /* need to display axes */
     if (xAxis.inUse)
       height -= xAxis.width;
     else if (_label.occupyTop)
       height -= 2;
-
+    
     if (yAxis.inUse) {
       x += yAxis.width;
       width -= yAxis.width;
@@ -685,7 +714,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   win->SetFgColor(GetBgColor());
   DrawHighlight();
 
-  if (_axisDisplay) {
+  if (_numDimensions == 2) {
     int axisX, axisY, axisWidth, axisHeight, startX;
     if (xAxis.inUse) {
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
@@ -702,6 +731,9 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   }
 
   win->PopClip();
+
+  if (_numDimensions == 3)
+    win->DrawRefAxis();
 }
 
 void View::DrawLabel()
@@ -739,6 +771,8 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   printf("DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
+  assert(_numDimensions == 2);
+
   int axisX, axisY, axisWidth, axisHeight, startX;
   GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
   int axisMaxX = axisX + axisWidth - 1;
@@ -817,6 +851,8 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   printf("DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
+  assert(_numDimensions == 2);
+
   char buf[30];
 
   int axisX, axisY, axisWidth, axisHeight;
@@ -886,16 +922,6 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   
   win->PopTransform();
 }
-
-#if 0
-void View::AxisDisplayOnOff(Boolean stat)
-{
-  if (stat != _axisDisplay) {
-    _axisDisplay = stat;
-    _updateTransform = true;
-  }
-}
-#endif
 
 /* Find world coord given screen coord */
 
@@ -1583,6 +1609,8 @@ void View::DeleteCursor(DeviseCursor *cursor)
 
 void View::GetXCursorArea(int &x, int &y, int &w, int &h)
 {
+  assert(_numDimensions == 2);
+
   int startX;
   if (xAxis.inUse) {
     GetXAxisArea(x, y, w, h, startX);
@@ -1601,6 +1629,8 @@ void View::GetXCursorArea(int &x, int &y, int &w, int &h)
 
 void View::GetYCursorArea(int &x, int &y, int &w, int &h)
 {
+  assert(_numDimensions == 2);
+
   if (yAxis.inUse) {
     GetYAxisArea(x, y, w, h);
   } else {
