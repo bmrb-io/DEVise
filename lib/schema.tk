@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/01/08 18:54:45  jussi
+#  Cleaned up a bit the code and rearranged focus grabs. Removed some
+#  bugs related to operating on new and old schemas with no hi or
+#  lo values specified for some attributes.
+#
 #  Revision 1.12  1995/12/20 07:03:00  ravim
 #  High and low values of attrs can be specified.
 #
@@ -79,10 +84,6 @@ source $catalogFile
 # to execute based on the user mode specified in the .rc file
 proc SchemaBrowse {} {
     global UserMode
-
-    if {[catch {set err $UserMode}]} {
-	set UserMode 1
-    }
 
     if {$UserMode == 0} {
 	SchemaSuperuser
