@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1997/10/01 19:11:27  wenger
+#  Fixed bugs in UniData schema editor GUI.
+#
 #  Revision 1.34  1997/09/11 21:33:58  wenger
 #  Fixed bug 198 ("text" vs. "ascii" conflict in old-style schema editor GUI).
 #
@@ -2025,9 +2028,6 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
     pack .gbrowse.fname.label .gbrowse.fname.entry -side left -padx 1m \
  	    -pady 1m
 
-    #----------------------------------------------------------
-    # Create a listbox with all the attrs in the logical schema
-	
 	label .gbrowse.attrs.label -text "Available Attributes"
     pack .gbrowse.attrs.label -side top -fill x
     listbox .gbrowse.attrs.list -relief raised -bd 1 \
@@ -2211,6 +2211,12 @@ proc qbrowseOKAction {} {
 		$select == "" || $as == ""} {
 		dialog .noName "Missing Information" \
 			"Please Enter All Required Information." "" 0 OK
+		return ""
+	}
+	set query "select $select from $from where $where"
+	set errmsg [DEVise dteCheckSQLViewEntry $as $query]
+	if {$errmsg != ""} {
+		dialog .noName "Incorrect Input" $errmsg "" 0 OK
 		return ""
 	}
 	set q_retVal [list $viewName $from $select $as $where]
