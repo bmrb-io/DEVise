@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.85  2001/03/19 23:10:31  xuk
+// Fixed bug for no available JavaScreen for collaboration.
+//
 // Revision 1.84  2001/03/09 20:24:36  wenger
 // Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
 // to the trunk; updated linux and solaris dependencies.
@@ -1010,9 +1013,9 @@ public class DEViseCmdDispatcher implements Runnable
                jsc.jsValues.connection.helpBox = false ;
             }
 
-        } else if (args[0].equals(DEViseCommands.KEYPRESSED_3DVIEW)) {
+        } else if (args[0].equals(DEViseCommands.COLLAB_3DVIEW)) {
             // this command is for collaboration JS
-            jsc.jscreen.keyPressed_3D(args[1]);
+            jsc.jscreen.collab3DView(args);
 
         } else {
             throw new YException("Unsupported command (" + response +

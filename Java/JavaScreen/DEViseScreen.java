@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2001/01/08 20:31:52  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.63.4.5  2000/11/21 01:51:33  xuk
 // Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
 //
@@ -923,4 +927,131 @@ public class DEViseScreen extends Panel
 	    }
 	}
     }
+
+    // Following methods are for collaboration JavaScreens to 
+    // process 3D view actions.
+    
+    public void collab3DView(String[] args)
+    {
+	DEViseView view = null;
+	DEViseCanvas canvas = null;
+	DEViseCrystal crystal = null;
+	int i = 0;
+
+	for (i = 0; i < allViews.size(); i++) {
+	    view = (DEViseView)allViews.elementAt(i);
+	    if (view.viewName.equals(args[2]))
+		break;
+	}
+
+	if ((i == allViews.size()) || (view == null)) {
+	    jsc.pn("No view found!");
+	    return;
+	}
+
+	canvas = view.getCanvas();
+	if (canvas == null) {
+	    jsc.pn("No canvas found!");
+	    return;
+	}
+
+	crystal = canvas.crystal;
+	if (crystal == null) {
+	    jsc.pn("No crystal found!");
+	    return;
+	}	    
+
+	jsc.pn("Crystal found!");
+
+	if (args[1].equals("1")) {
+	    jsc.pn("Key 'r' pressed.");
+	    crystal.totalShiftedX = 0;
+	    crystal.totalShiftedY = 0;
+	    crystal.totalX = 0.0f;
+	    crystal.totalY = 0.0f;
+	    crystal.totalZ = 0.0f;
+	    crystal.totalXRotation = 0.0f;
+	    crystal.totalYRotation = 0.0f;
+	    crystal.totalScaleFactor = 1.0f;
+	    crystal.resetAll(true);
+	    canvas.repaint();
+
+	} else if (args[1].equals("2")) {
+	    jsc.pn("Mouse pressed.");
+	    
+	    int x = Integer.parseInt(args[3]);
+	    int y = Integer.parseInt(args[4]);
+	    Point p = new Point(x,y);
+
+            canvas.ep.x = canvas.op.x = canvas.sp.x = p.x;
+            canvas.ep.y = canvas.op.y = canvas.sp.y = p.y;
+
+      	    setCursor(DEViseUIGlobals.hdCursor);
+
+	    canvas.activeView = view;
+            jsc.viewInfo.updateInfo(view.viewName,
+				    view.getX(p.x), view.getY(p.y));
+	    if (getCurrentView() != view) {
+		setCurrentView(view);
+	    }
+	} else if (args[1].equals("3")) {
+	    jsc.pn("Mouse released.");
+
+	    int x = Integer.parseInt(args[3]);
+	    int y = Integer.parseInt(args[4]);
+	    Point p = new Point(x,y);
+
+            canvas.isMouseDragged = false;
+
+	    int dx = p.x - canvas.op.x, dy = p.y - canvas.op.y;
+	    canvas.op.x = p.x;
+	    canvas.op.y = p.y;
+
+	    jsc.viewInfo.updateInfo(canvas.activeView.getX(p.x),
+		  canvas.activeView.getY(p.y));
+
+	    if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+		crystal.translate(dx, dy);
+	    } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+		crystal.scale(dx, dy);
+	    } else {
+		crystal.rotate(dx, dy);
+	    }
+	    
+	    //canvas.isMouseDragged = false;
+	    canvas.repaint();
+
+	} else if (args[1].equals("4")) {
+	    jsc.pn("Mouse dragged.");
+
+	    int x = Integer.parseInt(args[3]);
+	    int y = Integer.parseInt(args[4]);
+	    Point p = new Point(x,y);
+
+            canvas.isMouseDragged = true;
+
+	    int dx = p.x - canvas.op.x, dy = p.y - canvas.op.y;
+	    canvas.op.x = p.x;
+	    canvas.op.y = p.y;
+
+	    jsc.viewInfo.updateInfo(canvas.activeView.getX(p.x),
+		  canvas.activeView.getY(p.y));
+
+	    if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+		crystal.translate(dx, dy);
+	    } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+		crystal.scale(dx, dy);
+	    } else {
+		crystal.rotate(dx, dy);
+	    }
+
+	    jsc.jsValues.canvas.isInteractive = true;
+	    jsc.jsValues.canvas.sourceCanvas = canvas;
+	    repaint();
+	}
+
+    }
+    
 }
+
+

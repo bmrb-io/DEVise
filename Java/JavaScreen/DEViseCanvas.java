@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2001/01/08 20:31:50  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.66.2.6  2000/11/22 17:43:56  wenger
 // Finished cleanup of static variables fix; re-changed CGI command code to
 // match the current version of the CGI script.
@@ -273,7 +277,7 @@ public class DEViseCanvas extends Container
 
     public int oldHighlightAtomIndex = -1, highlightAtomIndex = -1;
     public Point point = new Point();
-    DEViseCrystal crystal = null;
+    public DEViseCrystal crystal = null;
 
     public DEViseView view = null; // base view if piled
 
@@ -289,7 +293,7 @@ public class DEViseCanvas extends Container
     private Image offScrImg = null;
     private boolean isImageUpdated = false;
 
-    private boolean isMouseDragged = false, isInViewDataArea = false,
+    public boolean isMouseDragged = false, isInViewDataArea = false,
       isInDataArea = false;
     private DEViseCursor selectedCursor = null;
 
@@ -304,6 +308,8 @@ public class DEViseCanvas extends Container
     public int helpMsgX = -1, helpMsgY = -1;
 
     Point sp = new Point(), ep = new Point(), op = new Point();
+
+    private int mouseDragCount = 0;
 
     //
     // This is a fix to a problem that seems to be in the JVM itself:
@@ -975,7 +981,7 @@ public class DEViseCanvas extends Container
                     String cmd = DEViseCommands.GET_VIEW_HELP + " " +
 		      activeView.getCurlyName() + " " + helpMsgX + " "
 		      + helpMsgY;
-		    //  jscreen.guiAction = true;
+		    // jscreen.guiAction = true;
      		    dispatcher.start(cmd);
                     return;
             }
@@ -992,6 +998,13 @@ public class DEViseCanvas extends Container
 		    crystal.totalScaleFactor = 1.0f;
 		    crystal.resetAll(true);
 		    repaint();
+
+		    // send command to collaborations if necessary
+		    if (jsc.specialID == -1) {
+			String cmd = DEViseCommands.COLLAB_3DVIEW + 
+			    " {1} " + activeView.getCurlyName();
+			dispatcher.start(cmd);	
+		    }		
 		}
                 return;
             }
@@ -1148,6 +1161,15 @@ public class DEViseCanvas extends Container
                     jscreen.setCurrentView(activeView);
                 }
 
+		// send command to collaborations if necessary
+		
+		if (jsc.specialID == -1) {
+		    String cmd = DEViseCommands.COLLAB_3DVIEW + 
+			" {2} " + activeView.getCurlyName() + 
+			" {" + p.x + "}" + " {" + p.y + "}";
+		    dispatcher.start(cmd);	
+		}	
+			
                 return;
             }
 
@@ -1175,6 +1197,17 @@ public class DEViseCanvas extends Container
             if (view.viewDimension == 3) {
                 isMouseDragged = false;
                 repaint();
+
+		// send command to collaborations if necessary
+		Point p = event.getPoint();		
+		
+		if (jsc.specialID == -1) {
+		    String cmd = DEViseCommands.COLLAB_3DVIEW + 
+			" {3} " + activeView.getCurlyName() + 
+			" {" + p.x + "}" + " {" + p.y + "}";
+		    dispatcher.start(cmd);	
+		}	
+
                 return;
             }
 
@@ -1372,6 +1405,18 @@ public class DEViseCanvas extends Container
                 jsc.jsValues.canvas.isInteractive = true;
                 jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
+
+		// send command to collaborations if necessary
+		mouseDragCount++;
+
+		if ((mouseDragCount % 10) == 0) {
+		    if (jsc.specialID == -1) {
+			String cmd = DEViseCommands.COLLAB_3DVIEW + 
+			    " {4} " + activeView.getCurlyName() + 
+			    " {" + p.x + "}" + " {" + p.y + "}";
+			dispatcher.start(cmd);	
+		    }	
+		}
                 return;
             }
 

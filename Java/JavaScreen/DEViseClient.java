@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2001/03/03 20:11:27  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+// 1.Changes in getCmd() to process JAVAC_SaveCurSession command.
+// 2.Added sessionSaved to rememeber a user goes into collaboration mode while a session is still open.
+//
 // Revision 1.32  2001/02/23 17:41:41  xuk
 // Added machine name and session name on the client list sent to collaboration JS.
 //
@@ -532,6 +537,11 @@ public class DEViseClient
 			pop.pn("We get the collab passwd: " + collabPass);
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
+		    } else if (command.startsWith(DEViseCommands.COLLAB_3DVIEW)) {
+			String[] cmds = DEViseGlobals.parseString(command);
+			sendCmd(DEViseCommands.DONE);
+			cmdBuffer.removeAllElements();		
+			collab3DView(cmds);
 		    } else {
 			//
 			// Send an ACK immediately so that the client
@@ -722,6 +732,39 @@ public class DEViseClient
 	    return true;
 	else
 	    return false;
+    }
+
+    private void collab3DView(String[] args)
+    {
+	String cmd = DEViseCommands.COLLAB_3DVIEW;
+	for (int i=1; i<args.length; i++) 
+	    cmd = cmd + " {" + args[i] + "}";
+
+       	try {	
+	    for (int i = 0; i < collabSockets.size(); i++) {
+		DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);			
+		if (!sock.isEmpty()) {
+		    String clientCmd = sock.receiveCmd();
+		    
+		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+			collabSockets.removeElement(sock);
+			sock.closeSocket();
+			sock = null;
+		    } else {
+			pop.pn("Sending command to collabration client " + i + ": " + cmd);
+			sock.sendCmd(cmd);
+			sock.sendCmd(DEViseCommands.DONE);
+		    } 
+		} else {
+		    pop.pn("Sending command to collabration client " + i + ": " + cmd);
+		    sock.sendCmd(cmd);
+		    sock.sendCmd(DEViseCommands.DONE);
+		}			    
+	    }
+	} catch (InterruptedIOException e) {
+	} catch (YException e) {
+	}
+	
     }
 
 }

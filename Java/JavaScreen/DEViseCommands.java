@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/03/03 20:13:11  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+// 1. Added JAVAC_SaveCurSession command.
+// 2. Added JAVAC_ReopenSession command.
+//
 // Revision 1.8  2001/02/22 17:09:35  xuk
 // Added JAVAC_CollabExit command for closing collaboration JSs.
 //
@@ -158,6 +163,9 @@ public final class DEViseCommands
 
     public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
     public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
+
+    public static final String COLLAB_3DVIEW = JS_PREFIX + "Collab3DView";
+
     // -------------------------------------------------------------------
     // JSS commands.
 
