@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.128  1999/10/12 17:59:39  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.127  1999/10/08 22:04:42  wenger
   Fixed bugs 512 and 514 (problems related to cursor moving).
 
@@ -2296,7 +2303,13 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 	    GoHome(false);
 		// Make sure view redraws even if filter isn't changed.
 		// (Fixes bug 482.)
-		Refresh();
+
+		// Part of kludgey fix for bug 527.  RKW 1999-10-30.
+		//TEMP -- will this really work right for piles?  what we really
+		// want to do in a pile is go thru all views in the pile once, then
+		// set the visual filters and go thru the pile again
+		_pileViewHold = false;//TEMP?
+		Refresh(false/*TEMP?*/);
 	} else {
 	    PrepareStatsBuffer(map);
 	    DrawLegend();

@@ -2058,7 +2058,8 @@ Num Date        Status  Description
 			larger and smaller -> errors accumulate in the view
 			positioning. (oz/rkw)
 
-527 10/29/99	OPEN	Condor/UserWeek.ds session doesn't work right. (rkw)
+527 10/29/99	KLUDGED	Condor/UserWeek.ds session doesn't work right. (rkw)
+			(Kludgily fixed by rkw, 10/30/99.)
 
 528 10/30/99	OPEN	Open Condor/UserWeek.ds session, try to save logical
 			session description -> devise crashes. (rkw)

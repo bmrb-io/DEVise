@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.200  1999/10/22 20:54:02  wenger
+  Major changes to how view refreshes are handled (prevents "extra" queries
+  from being run in piled views, fixes bug 520); also fixed bug 517.
+
   Revision 1.199  1999/10/14 16:47:35  wenger
   Fixed problem with missing view titles in the JS in the
   SoilSci/TwoStation5Var.ds session (actually the background of the title
@@ -2306,6 +2310,9 @@ void View::Refresh(Boolean refreshPile)
   if (_inDestructor) {
     return;
   }
+
+  // Part of kludgey fix for bug 527.  RKW 1999-10-30.
+  AbortQuery();//TEMP
 
   if (refreshPile && _pileMode && GetParentPileStack()) {
     GetParentPileStack()->Refresh(this);
