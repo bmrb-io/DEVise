@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/04/22 20:25:46  jussi
+  Added calls to Dispatcher::InsertMarker() to a few additional places
+  where a View redisplay must be initiated.
+
   Revision 1.33  1996/04/20 19:52:16  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -141,7 +145,6 @@
 #include "Util.h"
 #include "View.h"
 #include "Geom.h"
-#include "Action.h"
 #include "WindowRep.h"
 #include "FilterQueue.h"
 #include "Control.h"
@@ -171,14 +174,14 @@ ViewList *View::_viewList = NULL;   /* list of all views */
 int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList;
 
-View::View(char *name, Action *action, VisualFilter &initFilter, 
+View::View(char *name, VisualFilter &initFilter, 
 	   Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
 	   int weight, Boolean boundary) :
 	ViewWin(name, fg, bg, weight, boundary)
 {
   _modeRefresh = false;
   _hasTimestamp = false;
-  Init(name,action, initFilter, xAxis, yAxis);
+  Init(name, initFilter, xAxis, yAxis);
   _filterQueue = new FilterQueue();
   ReportViewCreated();
   
@@ -200,7 +203,7 @@ View::View(char *name, Action *action, VisualFilter &initFilter,
   _overrideColor = fg;
 }
 
-void View::Init(char *name,Action *action, VisualFilter &filter,
+void View::Init(char *name, VisualFilter &filter,
 		AxisLabel *xAxisLabel, AxisLabel *yAxisLabel)
 {
   _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
@@ -221,10 +224,6 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
   if (!_viewList)
     _viewList = new ViewList;
   _viewList->Insert(this);
-  
-  _action = action;
-  if (!_action)
-    _action = new Action("");
   
   _displaySymbol = true;
 
@@ -422,6 +421,34 @@ void View::Mark(int index, Boolean marked)
   _filterQueue->Mark(index, marked);
 }
 
+Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
+{
+  if (_numDimensions != 2)
+    return false;
+
+  int cursorX, cursorY, cursorW, cursorH;
+  Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
+
+  GetXCursorArea(cursorX, cursorY, cursorW, cursorH);
+  int cursorMaxX = cursorX + cursorW - 1;
+  int cursorMaxY = cursorY + cursorH - 1;
+
+  if (x >= cursorX && x <= cursorMaxX &&
+      y >= cursorY && y <= cursorMaxY) {
+    /* event for cursor area */
+    if (_cursors->Size() > 0) {
+      /* change location of the X coord */
+      FindWorld(x, y, x + 1, y - 1,
+		worldXLow, worldYLow, worldXHigh, worldYHigh);
+      DeviseCursor *cursor = _cursors->GetFirst();
+      cursor->MoveSourceX((worldXHigh + worldXLow) / 2.0);
+    }
+    return true;
+  }
+
+  return false;
+}
+
 void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
 			unsigned height)
 {
@@ -457,117 +484,6 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
   }
 
   Dispatcher::InsertMarker(writeFd);
-}
-
-/* Handle button press event */
-
-void View::HandlePress(WindowRep *w, int xlow, int ylow,
-		       int xhigh, int yhigh, int button)
-{
-  ControlPanel::Instance()->SelectView(this);
-	
-  if (xlow == xhigh && ylow == yhigh) {
-    if (CheckCursorOp(w, xlow, ylow, button))
-      /* was a cursor event */
-      return;
-  }
-  
-  if (_action) {
-    /* transform from screen to world coordinates */
-    Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-    FindWorld(xlow, ylow, xhigh, yhigh,
-	      worldXLow, worldYLow, worldXHigh, worldYHigh);
-    
-    _action->AreaSelected(this, worldXLow, worldYLow, worldXHigh, 
-			  worldYHigh, button);
-  }
-}
-
-/* handle key event */
-
-void View::HandleKey(WindowRep *w, char key, int x, int y)
-{
-  ControlPanel::Instance()->SelectView(this);
-
-  if (_action) {
-    /* xform from screen to world coord */
-    Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-    FindWorld(x, y, x, y,
-	      worldXLow, worldYLow, worldXHigh, worldYHigh);
-    
-    _action->KeySelected(this, key, worldXLow, worldYLow);
-  }
-}
-
-Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
-{
-  if (_numDimensions != 2)
-    return false;
-
-  int cursorX, cursorY, cursorW, cursorH;
-  Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-
-  GetXCursorArea(cursorX, cursorY, cursorW, cursorH);
-  int cursorMaxX = cursorX + cursorW - 1;
-  int cursorMaxY = cursorY + cursorH - 1;
-
-  if (x >= cursorX && x <= cursorMaxX &&
-      y >= cursorY && y <= cursorMaxY) {
-    /* event for cursor area */
-    if (_cursors->Size() > 0) {
-      /* change location of the X coord */
-      FindWorld(x, y, x + 1, y - 1,
-		worldXLow, worldYLow, worldXHigh, worldYHigh);
-      DeviseCursor *cursor = _cursors->GetFirst();
-      cursor->MoveSourceX((worldXHigh + worldXLow) / 2.0);
-    }
-    return true;
-  }
-
-  return false;
-}
-
-Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
-			  char **&msgs, int &numMsgs)
-{
-#ifdef DEBUG
-  printf("View::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
-#endif
-
-  if (_numDimensions != 2)
-    return false;
-
-  ControlPanel::Instance()->SelectView(this);
-
-  static char *buf[10];
-  Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-  
-  if (CheckCursorOp(win, x, y, button)) {
-    /* it was cursor event */
-    return false;
-  }
-
-  int labelX, labelY, labelW, labelH;
-  GetLabelArea(labelX, labelY, labelW, labelH);
-
-  if (x >= labelX && x <= labelX + labelW - 1
-      && y >= labelY && y <= labelY + labelH - 1) {
-    buf[0] = GetName();
-    msgs = buf;
-    numMsgs = 1;
-    return true;
-  }
-  
-  if (_action) {
-    /* transform from screen x/y into world x/y */
-    FindWorld(x, y, x + 1, y - 1,
-	      worldXLow,worldYLow, worldXHigh, worldYHigh);
-    return _action->PopUp(this, worldXLow, worldYLow,
-			  worldXHigh, worldYHigh, button,
-			  msgs, numMsgs);
-  }
-
-  return false;
 }
 
 /* set dimensionality */
@@ -1672,15 +1588,6 @@ void View::SetYAxisAttrType(AttrType type)
 char *View::DispatchedName()
 {
   return "View";
-}
-
-void View::SetAction(Action *action)
-{ 
-#ifdef DEBUG
-  printf("SetAction 0x%p\n",action);
-#endif
-  
-  _action = action; 
 }
 
 void View::AppendCursor(DeviseCursor *cursor)

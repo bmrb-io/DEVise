@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/04/20 19:52:21  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.18  1996/04/10 02:43:54  jussi
   Added small check to SetXMin() to accommodate multiple mappings
   per view.
@@ -138,13 +145,12 @@ struct LabelInfo {
 			     width if label occupies left of view */
 };
 
-class Action;
 class FilterQueue;
 
 class View: public ViewWin, private DispatcherCallback,
 	private ControlPanelCallback {
 public:
-	View(char *name, Action *action, VisualFilter &initFilter,
+	View(char *name, VisualFilter &initFilter,
 		Color foreground = ForegroundColor,
 	        Color background = BackgroundColor,
 		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
@@ -208,9 +214,6 @@ public:
 	  return _hasXMin;
 	}
 
-	void SetAction(Action *action);
-	Action *GetAction() { return _action; }
-	
 	void XAxisDisplayOnOff(Boolean stat);
 	void YAxisDisplayOnOff(Boolean stat);
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
@@ -285,21 +288,34 @@ public:
 	virtual Boolean DisplayConnectors(Boolean state) { return state; }
 
 protected:
-    /* called by base class when it has been mapped/unmapped */
+	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped(); /* called just after mapping */
 	virtual void SubClassUnmapped(); /* called just before unmapping */
 
-
 	/* Base class decides when to start/abort a query. Derived
 	class must implement the following: */
-	virtual void DerivedStartQuery(VisualFilter &filter, int timestamp)=0;
-	virtual void DerivedAbortQuery()=0;
+	virtual void DerivedStartQuery(VisualFilter &filter,
+				       int timestamp) = 0;
+	virtual void DerivedAbortQuery() = 0;
 
 	/* When a query is done, derived class must inform the base class */
 	void ReportQueryDone(int bytes);
 
 	/* Report size of data display area. */
 	void GetDataArea(int &x, int &y, int &width,int &height);
+
+	/* check Cursor Op. Return cursor operated on */
+	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
+
+	/* Find World coord given screen coord */
+	void FindWorld(int sx1, int sy1, int sx2, int sy2,
+		       Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh);
+
+	/* Get area for displaying label */
+	void GetLabelArea(int &x, int &y, int &w, int &h);
+	void GetXAxisArea(int &x, int &y, int &width, int &height,
+			  int &startX);
+	void GetYAxisArea(int &x, int &y, int &width, int &height);
 
 private:
 	void DrawHighlight();
@@ -331,12 +347,6 @@ private:
 	void GetXCursorArea(int &x, int &y, int &w, int &h);
 	void GetYCursorArea(int &x, int &y, int &w, int &h);
 
-	/* Get area for displaying label */
-	void GetLabelArea(int &x, int &y, int &w, int &h);
-	void View::GetXAxisArea(int &x, int &y, int &width, int &height,
-				int &startX);
-	void GetYAxisArea(int &x, int &y, int &width, int &height);
-
 	/* Drawing axes and label*/
 	void DrawAxesLabel(WindowRep *win, int x, int y, int w, int h);
 	void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
@@ -347,41 +357,33 @@ private:
 	/* Calculate the transformation for this view */
 	void CalcTransform(Transform2D &transform);
 
-	/* Find World coord given screen coord */
-	void FindWorld(int sx1, int sy1, int sx2, int sy2,
-		Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh);
-
 	/* from WindowRepCallback */
 	/* draw in the exposed area */
 	virtual void HandleExpose(WindowRep * w, int x, int y,
-			unsigned width, unsigned height);
+				  unsigned width, unsigned height);
 
 	/* Handle button press event */
 	virtual void HandlePress(WindowRep * w, int xlow,
-		int ylow, int xhigh, int yhigh, int button);
+				 int ylow, int xhigh, int yhigh,
+				 int button) = 0;
 
 	/* handle key event */
-	virtual void HandleKey(WindowRep *w ,char key, int x, int y);
+	virtual void HandleKey(WindowRep *w ,char key, int x, int y) = 0;
 
 	virtual void HandleResize(WindowRep * w, int xlow,
-				int ylow, unsigned width, unsigned height);
-
+				  int ylow, unsigned width,
+				  unsigned height);
 
 	/* handle pop-up */
 	virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
-		char **&msgs, int &numMsgs);
+				    char **&msgs, int &numMsgs) = 0;
 
 	/* Initialize */
-	void Init(char *name, Action *action, VisualFilter &filter,
-		AxisLabel *xAxis, AxisLabel *yAxis);
-
-	/* check Cursor Op. Return cursor operated on */
-	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
+	void Init(char *name, VisualFilter &filter,
+		  AxisLabel *xAxis, AxisLabel *yAxis);
 
 	Boolean  _displaySymbol; /* true if to be displayed */
 	AxisInfo xAxis, yAxis;   /* X and y axis info */
-
-	Action *_action;
 
 	AxisLabel *_xAxisLabel;
 	AxisLabel *_yAxisLabel;
