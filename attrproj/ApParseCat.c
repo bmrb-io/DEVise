@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/25 19:25:10  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
   Revision 1.1  1996/04/22 18:01:47  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -29,8 +33,7 @@
 #include <stdio.h>
 
 #include "ApParseCat.h"
-#include "AttrList.h"/*TEMPTEMP?*/
-//TEMPTEMP?#include "ApGroup.h"
+#include "AttrList.h"
 #include "ApGroupDir.h"
 #include "Parse.h"
 #include "ApInit.h"
@@ -435,7 +438,8 @@ ParseAttr(
  * schema and a logical schema) is being read.
  */
 static char *
-ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly)
+ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
+	TData *&tDataP)
 {
 	FILE *file= NULL;
 	Boolean hasSource = false;
@@ -713,40 +717,21 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly)
 	}
 	else
 	{
-#if 0 /*TEMPTEMP*/
 		if (isAscii) {
 		  printf("default source, recSize %d\n",recSize);
-		  ControlPanel::RegisterClass(
-		     new TDataAsciiInterpClassInfo(fileType,
-			attrs, recSize,sep, numSep, hasSeparator,
-			commentString), true);
-		} else {
-		  printf("default binary source, recSize %d\n",recSize);
-		  ControlPanel::RegisterClass(
-		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
-					      true);
+		  tDataP = new TDataAsciiInterp(dataFile, recSize,
+			attrs, sep, numSep, hasSeparator, commentString);
 		}
-#else
-		if (isAscii) {
-		  printf("default source, recSize %d\n",recSize);
-#if 1 /*TEMPTEMP*/
-		  TData *junk = new TDataAsciiInterp(dataFile, recSize,
-			attrs, sep, numSep, hasSeparator,
-			commentString);
-#endif
-		} else {
+		else
+		{
 		  printf("default binary source, recSize %d\n",recSize);
-#if 1 /*TEMPTEMP*/
-		  TData *junk = new TDataBinaryInterp(dataFile, recSize, attrs);
-#endif
+		  tDataP = new TDataBinaryInterp(dataFile, recSize, attrs);
 		}
-#endif
 	}
 
 	fclose(file);
 
-	if (Init::PrintTDataAttr())
-		attrs->Print();
+	if (Init::PrintTDataAttr()) attrs->Print();
 	return fileType;
 
 error:
@@ -882,7 +867,7 @@ ParseCatLogical(char *catFile, char *sname)
  * Read and parse a schema file.
  */
 char *
-ParseCat(char *catFile, char *dataFile) 
+ParseCat(char *catFile, char *dataFile, TData *&tDataP) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(abc, false) and then ParseCatLogical(catFile)
@@ -901,7 +886,7 @@ ParseCat(char *catFile, char *dataFile)
     if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
 	{
       fclose(fp);
-      result = ParseCatPhysical(catFile, dataFile, true);
+      result = ParseCatPhysical(catFile, dataFile, true, tDataP);
     }
 	else
 	{
@@ -910,7 +895,10 @@ ParseCat(char *catFile, char *dataFile)
       fclose(fp);
 
       char *sname;
-      if (!(sname = ParseCatPhysical(buf, dataFile, false))) result = NULL;
+      if (!(sname = ParseCatPhysical(buf, dataFile, false, tDataP)))
+	  {
+		result = NULL;
+	  }
 
       result = ParseCatLogical(catFile, sname);
 	}
@@ -928,7 +916,5 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 {
 	char *		result = NULL;
 
-/*TEMPTEMP*/fprintf(stderr, ">> Into ParseSchema(");
-/*TEMPTEMP*/fprintf(stderr, "  %s, %s, %s)\n", schemaName, physSchema, logSchema);
 	return result;
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:16  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 /* interpreted TData using parsed information */
@@ -24,13 +28,13 @@
 #define ApTDataAsciiInterp_h
 
 #include "DeviseTypes.h"
-//TEMPTEMP#include "ClassDir.h"
+//#include "ClassDir.h"
 #include "ApTDataAscii.h"
 
 class AttrList;
 class AttrInfo;
 
-#if 0 /*TEMPTEMP*/
+#if 0
 
 class TDataAsciiInterpClassInfo: public ClassInfo {
 public:
@@ -76,7 +80,7 @@ private:
   char *_commentString;
   Boolean _isSeparator;
 };
-#endif /*TEMPTEMP*/
+#endif
 
 /* Max # of fields for which the interprter searches for a
    matching value */

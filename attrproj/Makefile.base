@@ -3,16 +3,18 @@
 
 CC = g++
 
+BIRCH_DIR = /u/z/h/zhang/public/BIRCH
+
 LDFLAGS = $(ARCH_LDFLAGS) $(ALLOBJ) -ltcl -lm $(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused -O -DUNIX
+	-I$(BIRCH_DIR) -fexternal-templates -Wall -Wno-unused -O -DUNIX
 
 TESTSRC = aptest.c
 TESTOBJ = $(TESTSRC:.c=.o)
 
 LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
 	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
-	ApTDataBinaryInterp.c ApTDataBinary.c
+	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c
 LOCALOBJ = $(LOCALSRC:.c=.o)
 
 LIBOBJ = \
@@ -25,6 +27,7 @@ LIBOBJ = \
 	../graphics.new/TData.o \
 	../tape/tapedrive.o \
 	$(LOCALOBJ)
+#	$(BIRCH_DIR)/vector.o \
 
 LIB = AttrProjLib.o
 

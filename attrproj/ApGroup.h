@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/25 19:25:02  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
   Revision 1.1  1996/04/22 18:01:40  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -61,7 +65,7 @@ public:
   Group *insert_item(char *name);
   Group *insert_group(char *name);
   Group *parent_group();
-#if 0 /*TEMPTEMP*/
+#if 0
   void subitems(Tcl_Interp *interp);
 #endif
 };

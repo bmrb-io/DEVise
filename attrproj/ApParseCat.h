@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/25 19:25:12  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
   Revision 1.1  1996/04/22 18:01:48  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -26,6 +30,7 @@
 #define ApParseCat_h
 
 #include "DeviseTypes.h"
+#include "TData.h"
 #if 0
 #include "ClassDir.h"
 #include "AttrList.h"
@@ -35,7 +40,7 @@
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
-extern char *ParseCat(char *catFile, char *dataFile);
+extern char *ParseCat(char *catFile, char *dataFile, TData *&tDataP);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,

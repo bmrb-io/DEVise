@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:17  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 #include <iostream.h>
@@ -37,7 +41,7 @@
 
 TDataBinary::TDataBinary(char *name, int recSize) : TData()
 {
-  //TEMPTEMPDispatcher::Current()->Register(this);
+  //Dispatcher::Current()->Register(this);
 
   _name = name;
   _recSize = recSize;
@@ -69,7 +73,7 @@ TDataBinary::~TDataBinary()
   printf("TDataBinary destructor\n");
 #endif
 
-  //TEMPTEMPDispatcher::Current()->Unregister(this);
+  //Dispatcher::Current()->Unregister(this);
   fclose(_file);
 }
 

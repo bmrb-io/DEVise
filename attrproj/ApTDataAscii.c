@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:13  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 #include <iostream.h>
@@ -42,7 +46,6 @@ static char cachedFileContent[FILE_CONTENT_COMPARE_BYTES];
 
 TDataAscii::TDataAscii(char *name, int recSize) : TData()
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::TDataAscii(%s)\n", name);
   // Dispatcher::Current()->Register(this,10,GoState,false,);
 
   _name = name;
@@ -84,7 +87,7 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   // fileno is defined in stdio.h that returns the descriptor
   
   //Dispatcher::Current()->Register(this,10,GoState,false,fileno(_file));
-  //TEMPTEMPDispatcher::Current()->Register(this);
+  //Dispatcher::Current()->Register(this);
 
 
 }
@@ -98,7 +101,7 @@ TDataAscii::~TDataAscii()
   delete _recBuf;
   delete _index;
 
-  //TEMPTEMPDispatcher::Current()->Unregister(this);
+  //Dispatcher::Current()->Unregister(this);
 
   if (_tape)
     delete _tape;
@@ -144,8 +147,6 @@ Boolean TDataAscii::LastID(RecId &recId)
 
 void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::InitGetRecs()\n");
-/*TEMPTEMP*/fprintf(stderr, "  lowId = %d, highId = %d\n", (int) lowId, (int) highId);
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
@@ -159,7 +160,6 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
 			    RecId &startRid,int &numRecs, int &dataSize,
 			    void **recPtrs)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::GetRecs()\n");
 #ifdef DEBUG
   printf("TDataAscii::GetRecs buf = 0x%p\n", buf);
 #endif
@@ -182,7 +182,6 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
   
   _bytesFetched += dataSize;
   
-/*TEMPTEMP*/fprintf(stderr, "  startRid = %d, numRecs = %d\n", (int) startRid, (int) numRecs);
   return true;
 }
 
@@ -209,9 +208,7 @@ int TDataAscii::GetModTime()
 
 char *TDataAscii::MakeCacheName(char *file)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::MakeCacheName(%s)\n", file);
   char *fname = StripPath(file);
-/*TEMPTEMP*/fprintf(stderr, "  %s: %d; fname = %s\n", __FILE__, __LINE__, fname);
   unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
   char *name = new char[nameLen];
   sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
@@ -221,7 +218,6 @@ char *TDataAscii::MakeCacheName(char *file)
 
 void TDataAscii::Initialize()
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::Initialize()\n");
   int i = 0;
 
   /* Read file contents into buffer */
@@ -439,7 +435,6 @@ void TDataAscii::Checkpoint()
 
 void TDataAscii::BuildIndex()
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::BuildIndex()\n");
 #ifdef DEBUG
   printf("Entering BuildIndex\n");
 #endif
@@ -515,7 +510,6 @@ void TDataAscii::BuildIndex()
 
 void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAscii::ReadRec()\n");
 #ifdef DEBUG
   printf("TDataAscii::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif

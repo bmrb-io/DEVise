@@ -16,16 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:20  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 #ifndef ApTDataBinaryInterp_h
 #define ApTDataBinaryInterp_h
 
 #include "DeviseTypes.h"
-//TEMPTEMP?#include "ClassDir.h"
+//#include "ClassDir.h"
 #include "ApTDataBinary.h"
 
-#if 0/*TEMPTEMP*/
+#if 0
 
 class AttrList;
 class AttrInfo;
@@ -68,7 +72,7 @@ private:
   int _recSize;
   AttrList *_attrList;
 };
-#endif /*TEMPTEMP*/
+#endif
 
 class TDataBinaryInterp: public TDataBinary {
 public:

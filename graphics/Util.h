@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 19:49:39  jussi
+  Replaced assert() calls with DOASSERT().
+
   Revision 1.5  1996/04/15 19:32:28  wenger
   Consolidated the two (nearly identical) functions for
   reading/parsing physical schema, and cleaned up the
@@ -169,5 +172,13 @@ inline double UtilAtof(char *str)
   double ret = sign * (integer + fraction / _UtilPower10[decimals]) * scale;
   return ret;
 }
+
+
+#ifdef DEBUG
+#define DO_DEBUG(stuff) stuff
+#else
+#define DO_DEBUG(stuff)
+#endif
+
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:14  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 /* Textual data virtual base class */
@@ -27,7 +31,7 @@
 #include <sys/types.h>
 
 #include "DeviseTypes.h"
-//TEMPTEMP#include "Dispatcher.h"
+//#include "Dispatcher.h"
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/25 19:25:15  wenger
+  Attribute projection code can now parse a schema, and create the
+  corresponding TData object.
+
 */
 
 #include <string.h>
@@ -27,7 +31,6 @@
 #include "RecInterp.h"
 #include "CompositeParser.h"
 #include "Parse.h"
-//TEMPTEMP#include "Control.h"
 #include "Util.h"
 
 //#define DEBUG
@@ -41,7 +44,6 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 						     Boolean isSeparator,
 						     char *commentString)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo()\n");
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
   _className = className;
   _attrList = attrList;
@@ -58,7 +60,6 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 						     char *alias,
 						     TData *tdata)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo()\n");
   _className = className;
   _name = name;
   _alias = alias;
@@ -92,7 +93,6 @@ void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
 
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterpClassInfo::CreateWithParams()\n");
   if (argc != 2)
     return (ClassInfo *)NULL;
 
@@ -129,7 +129,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
 				   Boolean isSeparator, char *commentString) :
 	TDataAscii(name, recSize)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterp::TDataAsciiInterp(%s)\n", name);
 #ifdef DEBUG
   printf("TDataAsciiInterp %s, recSize %d\n", name, recSize);
 #endif
@@ -209,7 +208,6 @@ Boolean TDataAsciiInterp::WriteCache(int fd)
 
 Boolean TDataAsciiInterp::ReadCache(int fd)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterp::ReadCache()\n");
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
     perror("read");
@@ -249,8 +247,6 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
 
 Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
 {
-/*TEMPTEMP*/fprintf(stderr, ">> Into TDataAsciiInterp::Decode()\n");
-// /*TEMPTEMP*/fprintf(stderr, "  line = '%s'\n", line);
   /* set buffer for interpreted record */
   _recInterp->SetBuf(recordBuf);
   
