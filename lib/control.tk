@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.137  1997/06/25 21:25:11  wenger
+#	Added writeDesc (write session description) command needed by Hongyu's
+#	Java client.
+#
 #	Revision 1.136  1997/06/10 19:31:59  wenger
 #	Restored revisions 1.131 through 1.134 which were destroyed by the
 #	last commit of this file.
@@ -831,31 +835,32 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save" -command DoSave
 .mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
-.mbar.session.menu add separator
-.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
-.mbar.session.menu add command -label "Save as Template" \
-	-command {DoSaveAs 1 0 0 0}
-.mbar.session.menu add command -label "Save as Batch Script" \
-	-command {DoSaveAs 0 0 0 1}
-.mbar.session.menu add separator
+# <<< Changes for saving sessions as batch scripts only...
+#TEMP.mbar.session.menu add separator
+#TEMP.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
+#TEMP.mbar.session.menu add command -label "Save as Template" \
+#TEMP	-command {DoSaveAs 1 0 0 0}
+#TEMP.mbar.session.menu add separator
 
-.mbar.session.menu add cascade -label "Export Template" \
-	-menu .mbar.session.menu.exportMenu
-menu .mbar.session.menu.exportMenu -tearoff 0
-.mbar.session.menu.exportMenu add command -label "Without Data" \
-	-command {DoSaveAs 0 1 0 0}
-.mbar.session.menu.exportMenu add command -label "With Data" \
-	-command {DoSaveAs 0 1 1 0}
-.mbar.session.menu add command -label "Merge Template" \
-	-command {DoTemplateMerge}
+#TEMP.mbar.session.menu add cascade -label "Export Template" \
+#TEMP	-menu .mbar.session.menu.exportMenu
+#TEMPmenu .mbar.session.menu.exportMenu -tearoff 0
+#TEMP.mbar.session.menu.exportMenu add command -label "Without Data" \
+#TEMP	-command {DoSaveAs 0 1 0 0}
+#TEMP.mbar.session.menu.exportMenu add command -label "With Data" \
+#TEMP	-command {DoSaveAs 0 1 1 0}
+#TEMP.mbar.session.menu add command -label "Merge Template" \
+#TEMP	-command {DoTemplateMerge}
 
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Delete Session" \
 	-command {DoDelete}
 
-.mbar.session.menu add separator
-.mbar.session.menu add command -label "Session Description" \
-	-command {ViewDescription}
+#TEMP -- session descriptions don't work with batch scripts
+#TEMP.mbar.session.menu add separator
+#TEMP.mbar.session.menu add command -label "Session Description" \
+#TEMP	-command {ViewDescription}
+# ... >>>
 
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Add Replica" -command { AddReplica }
@@ -1631,7 +1636,9 @@ proc DoOpen { asTemplate } {
     
     # Get a session file name
     set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk
+    # Change for saving sessions as batch scripts only.
+    #TEMP?set fsBox(pattern) *.tk
+    set fsBox(pattern) {*.[dt][sk]}
     set file [ FSBox "Select session file to open" ]
     
     if {$file == ""} {
@@ -1668,7 +1675,9 @@ proc DoDelete {} {
 
     # Get a session file name
     set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk
+    # Change for saving sessions as batch scripts only.
+    #TEMP?set fsBox(pattern) *.tk
+    set fsBox(pattern) {*.[dt][sk]}
     set file [ FSBox "Select session file to DELETE" ]
     
     if {$file == ""} {

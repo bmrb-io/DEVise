@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/06/18 21:06:40  wenger
+#  Fixed problems saving to batch scripts.
+#
 #  Revision 1.37  1997/05/30 15:41:37  wenger
 #  Most of the way to user-configurable '4', '5', and '6' keys -- committing
 #  this stuff now so it doesn't get mixed up with special stuff for printing
@@ -365,6 +368,9 @@ proc SaveCursorViews { file dict asBatchScript } {
 proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     global templateMode schemadir datadir
 
+    # Change for saving sessions as batch scripts only.
+    set asBatchScript 1
+
     # you can't save an imported file until it has been merged
     if {$templateMode} { 
 	dialog .open "Merge Data" \
@@ -505,10 +511,23 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
 
     # Get file name
     set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk
-    set file [ FSBox ]
+    #TEMP?set fsBox(pattern) *.tk
+    set fsBox(pattern) *.ds
+    set file [ FSBox "Select file to save session as" ]
     
     if {$file == ""} { return }
+
+    # <<< Changes for saving sessions as batch scripts only...
+    # If the user selected a .tk file, change extension to .ds.
+    regsub {.tk} $file {.ds} file
+
+    # If there is no extension, append .ds.
+    set slash [string last "/" $file]
+    set fileonly [string range $file [expr $slash + 1] end]
+    if {![regexp {\.} $fileonly]} {
+      set file $file.ds
+    }
+    # ... >>>
 
     set button [ dialog .saveSession "Save Session" \
 	    "Save session to file\n$file?"  "" 0  OK {Cancel} ]
