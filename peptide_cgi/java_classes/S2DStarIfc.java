@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:07  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -354,6 +357,23 @@ public class S2DStarIfc {
         return result;
     }
 
+    //-------------------------------------------------------------------
+    public String getSpectrometerFreq(SaveFrameNode frame)
+    {
+        String result = null;
+
+	//TEMP -- change string to constant
+        VectorCheckType list = frame.searchByName("_Spectrometer_frequency_1H");
+        if (list.size() == 1) {
+            DataItemNode node = (DataItemNode)list.elementAt(0);
+	    result = node.getValue();
+        } else {
+	    result = "Details not available for this save frame.";
+        }
+
+        return result;
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
@@ -494,7 +514,7 @@ class S2DStarUtil
         // There should be only one data loop.
         if (loopList.size() != 1) { 
            throw new S2DError("Found " + loopList.size() +
-              " " + S2DNames.CHEM_SHIFT_VALUE + " tags, only expect 1." );
+              " " + loopId + " tags, only expect 1." );
         }
 
         DataLoopNode loop = (DataLoopNode)loopList.firstElement();

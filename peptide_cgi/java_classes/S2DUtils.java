@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/17 19:55:46  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 // Revision 1.1  2000/08/11 21:41:34  wenger
 // Fixed problems with the code assuming that BMRB accession numbers always
 // have four digits.
@@ -34,7 +37,7 @@ public class S2DUtils
 
     public static final int TYPE_INVALID = 0, TYPE_DELTASHIFT = 1,
       TYPE_CSI = 2, TYPE_PCT_ASSIGN = 3, TYPE_COUPLING = 4,
-      TYPE_HXRATES = 5, TYPE_ORDER = 6, TYPE_RELAX = 7;
+      TYPE_HXRATES = 5, TYPE_ORDER = 6, TYPE_T1_RELAX = 7, TYPE_T2_RELAX = 8;
 
     public static final String starPrefix = "bmr";
     public static final String starSuffix = ".str";

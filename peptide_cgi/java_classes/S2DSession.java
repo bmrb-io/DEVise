@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:07  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -33,8 +36,17 @@ public class S2DSession {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
     static void write(String sessionDir, int dataType, int accessionNum,
       int frameIndex) throws S2DException
+    {
+        write(sessionDir, dataType, accessionNum, frameIndex, null);
+    }
+
+    //-------------------------------------------------------------------
+    static void write(String sessionDir, int dataType, int accessionNum,
+      int frameIndex, String title) throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DSession.write(" + sessionDir + ", " +
@@ -82,13 +94,19 @@ public class S2DSession {
 	    dataSuffix = S2DNames.
 	    searchString = "";
 	    break;
-
-        case S2DUtils.TYPE_RELAX:
-	    baseName = "relax.base";
-	    dataSuffix = S2DNames.
-	    searchString = "";
-	    break;
 TEMP*/
+
+        case S2DUtils.TYPE_T1_RELAX:
+	    baseName = "relax.base";
+	    dataSuffix = S2DNames.T1_SUFFIX;
+	    searchString = "4267t11";
+	    break;
+
+        case S2DUtils.TYPE_T2_RELAX:
+	    baseName = "relax.base";
+	    dataSuffix = S2DNames.T2_SUFFIX;
+	    searchString = "4267t11";
+	    break;
 
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
@@ -110,6 +128,9 @@ TEMP*/
 	    while ((line = reader.readLine()) != null) {
 	        String line2 = S2DUtils.replace(line, searchString,
 		  replaceString);
+		if (title != null) {
+		    line2 = S2DUtils.replace(line2, "dummy title", title);
+		}
 	        writer.write(line2 + "\n");
 	    }
 

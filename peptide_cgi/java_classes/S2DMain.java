@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:07  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -103,14 +106,15 @@ public class S2DMain {
 	  star.getFileName(), star.getSystemName(),
 	  star.getEntryTitle());
 
+	//TEMP -- do I really want to skip stuff if I get an error?
 	saveChemShifts(star);
-	saveT1Relaxation();
-	saveT2Relaxation();
-	saveHetNOE();
-	saveHExchangeRate();
+	saveT1Relaxation(star);
+	saveT2Relaxation(star);
+	saveHetNOE(star);
+	saveHExchangeRate(star);
 	saveCoupling(star);
-	saveHExchangeProtFact();
-	saveS2Params();
+	saveHExchangeProtFact(star);
+	saveS2Params(star);
 
 	_summary.close();
 	_summary = null;
@@ -136,6 +140,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save all chem shift data for this entry.
+    // Note: this can be tested with 4264.
     private void saveChemShifts(S2DStarIfc star) throws S2DException
     {
         if (DEBUG >= 2) {
@@ -172,27 +177,57 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveT1Relaxation()
+    // Save all T1 relaxation data for this entry.
+    // Note: this can be tested with 4267.
+    private void saveT1Relaxation(S2DStarIfc star) throws S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveT1Relaxation()");
 	}
 
-	// add real code here
+	Enumeration frameList = star.getDataFramesByCat(S2DNames.T1_RELAX);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFrameT1Relax(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving T1 relaxation for " +
+		  "frame " + star.getFrameName(frame) + ": " +
+		  ex.getMessage());
+	    }
+	    frameIndex++;
+        }
     }
 
     //-------------------------------------------------------------------
-    private void saveT2Relaxation()
+    // Save all T2 relaxation data for this entry.
+    // Note: this can be tested with 4267.
+    private void saveT2Relaxation(S2DStarIfc star) throws S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveT2Relaxation()");
 	}
 
-	// add real code here
+	Enumeration frameList = star.getDataFramesByCat(S2DNames.T2_RELAX);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFrameT2Relax(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving T2 relaxation for " +
+		  "frame " + star.getFrameName(frame) + ": " +
+		  ex.getMessage());
+	    }
+	    frameIndex++;
+        }
     }
 
     //-------------------------------------------------------------------
-    private void saveHetNOE()
+    private void saveHetNOE(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveHetNOE()");
@@ -202,7 +237,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveHExchangeRate()
+    private void saveHExchangeRate(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveHExchangeRate()");
@@ -212,6 +247,8 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Save all coupling constants for this entry.
+    // Note: this can be tested with 4297.
     private void saveCoupling(S2DStarIfc star) throws S2DException
     {
         if (DEBUG >= 2) {
@@ -236,7 +273,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveHExchangeProtFact()
+    private void saveHExchangeProtFact(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveHExchangeProtFact()");
@@ -246,7 +283,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveS2Params()
+    private void saveS2Params(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveS2Params()");
@@ -346,6 +383,85 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Save T1 relaxation values for one save frame.
+    private void saveFrameT1Relax(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameT1Relax(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//TEMP -- change strings to named constants
+	String[] resSeqCodes = star.getFrameValues(frame,
+	  "_T1_value", "_Residue_seq_code");
+
+	String[] resLabels = star.getFrameValues(frame,
+	  "_T1_value", "_Residue_label");
+
+	String[] atomNames = star.getFrameValues(frame,
+	  "_T1_value", "_Atom_name");
+
+	//TEMP 4245 has _15N_T1_value, _15N_T1_value_error
+	String[] relaxValues = star.getFrameValues(frame,
+	  "_T1_value", "_T1_value");
+
+	//TEMP -- should we allow for this not being present?
+	String[] relaxErrors = star.getFrameValues(frame,
+	  "_T1_value", "_T1_value_error");
+
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
+	  _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
+	  star.getSpectrometerFreq(frame), resSeqCodes,
+	  resLabels, atomNames, relaxValues, relaxErrors);
+
+	relaxation.writeRelaxation(frameIndex);
+
+	_summary.endFrame();
+    }
+
+    //-------------------------------------------------------------------
+    // Save T2 relaxation values for one save frame.
+    private void saveFrameT2Relax(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameT2Relax(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//TEMP -- change strings to named constants
+	String[] resSeqCodes = star.getFrameValues(frame,
+	  "_T2_value", "_Residue_seq_code");
+
+	String[] resLabels = star.getFrameValues(frame,
+	  "_T2_value", "_Residue_label");
+
+	String[] atomNames = star.getFrameValues(frame,
+	  "_T2_value", "_Atom_name");
+
+	//TEMP 4245 has _15N_T2_value, _15N_T2_value_error
+	String[] relaxValues = star.getFrameValues(frame,
+	  "_T2_value", "_T2_value");
+
+	String[] relaxErrors = star.getFrameValues(frame,
+	  "_T2_value", "_T2_value_error");
+
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
+	  _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
+	  star.getSpectrometerFreq(frame), resSeqCodes,
+	  resLabels, atomNames, relaxValues, relaxErrors);
+
+	relaxation.writeRelaxation(frameIndex);
+
+	_summary.endFrame();
+    }
+
+    //-------------------------------------------------------------------
     // Save coupling constants for one save frame.
     private void saveFrameCoupling(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
@@ -383,22 +499,14 @@ public class S2DMain {
 	String[] couplingConstValues = star.getFrameValues(frame,
 	  "_Coupling_constant_value", "_Coupling_constant_value");
 
-	String[] couplingConstMins = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_min_value");
-
-	String[] couplingConstMaxes = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_max_value");
-
-	String[] couplingConstErrors = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_value_error");
+	String[] couplingConstErrors = null;//TEMP -- get this if possible
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
         S2DCoupling coupling = new S2DCoupling(_accessionNum, _dataDir,
 	  _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
 	  atom1ResLabels, atom1Names, atom2ResSeqs, atom2ResLabels,
-	  atom2Names, couplingConstValues, couplingConstMins,
-	  couplingConstMaxes, couplingConstErrors);
+	  atom2Names, couplingConstValues, couplingConstErrors);
 
 	coupling.writeCoupling(frameIndex);
 

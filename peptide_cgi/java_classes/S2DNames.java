@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/01/17 19:55:46  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 // Revision 1.4  2000/10/11 23:04:25  wenger
 // Added coupling constants (for arbitrary entries, not just 4096) to the
 // peptide-cgi code.
@@ -126,17 +129,12 @@ public class S2DNames
     //
     // Data file suffixes.
     //
-    public static final String CONSTRAINTS_DAT_SUFFIX = "i.dat";
     public static final String DAT_SUFFIX = ".dat";
 
     //
     // Html file suffixes.
     //
-    public static final String COUPLING_HTML_SUFFIX = "g.html";
-    public static final String H_EXCH_HTML_SUFFIX = "h.html";
     public static final String HTML_SUFFIX = ".html";
-    public static final String ORDER_HTML_SUFFIX = "o.html";
-    public static final String RELAX_HTML_SUFFIX = "r.html";
     public static final String SUMMARY_HTML_SUFFIX = "y.html";
 
     //

@@ -98,6 +98,8 @@ cp -p cgi-bin/make_view $targetdir
 chmod a+rx $targetdir/make_view
 cp -p cgi-bin/s2d $targetdir
 chmod a+rx $targetdir/s2d
+cp -p cgi-bin/set_modes $targetdir
+chmod a+rx $targetdir/set_modes
 
 # Link data directory to CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
@@ -120,3 +122,6 @@ endif
 cp java_classes/*.class $targetdir
 cp java_classes/*.jar $targetdir
 chmod a+r $targetdir/*.*
+
+# Copy the schemas to the demo area.
+cp schema/bmrb* /p/devise/demo/schema/schema/physical

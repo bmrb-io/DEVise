@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:08  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -104,7 +107,7 @@ public class S2DSummaryHtml {
     public void startFrame(String frameDetails) throws S2DException
     {
 	try {
-            _writer.write("\n<br>\n");
+            _writer.write("\n<hr>\n");
 	    _writer.write("<p><b>" + frameDetails + "</b>\n");
 	    _writer.write("<ul>\n");
 	} catch (IOException ex) {
@@ -161,6 +164,16 @@ public class S2DSummaryHtml {
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Coupling Constants</a> (" + count + ")\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the relaxation link.
+    public void writeRelax(String suffix, String name, int frameIndex,
+      int count) throws IOException
+    {
+        _writer.write("<li><a href=\"" + _accNum +
+	  suffix + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + name + "</a> (" + count + ")\n");
     }
 
     //===================================================================

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:07  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -73,11 +76,15 @@ public class S2DSpecificHtml {
         case S2DUtils.TYPE_ORDER:
 	    dataSuffix = S2DNames.
 	    break;
-
-        case S2DUtils.TYPE_RELAX:
-	    dataSuffix = S2DNames.
-	    break;
 TEMP*/
+
+        case S2DUtils.TYPE_T1_RELAX:
+	    dataSuffix = S2DNames.T1_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_T2_RELAX:
+	    dataSuffix = S2DNames.T2_SUFFIX;
+	    break;
 
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);

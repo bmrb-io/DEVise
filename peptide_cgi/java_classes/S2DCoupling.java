@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:06  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -45,8 +48,6 @@ public class S2DCoupling {
     private String[] _atom2ResLabels;
     private String[] _atom2Names;
     private String[] _couplingConstValues;
-    private String[] _couplingConstMins;
-    private String[] _couplingConstMaxes;
     private String[] _couplingConstErrors;
 
     //===================================================================
@@ -58,8 +59,7 @@ public class S2DCoupling {
       S2DSummaryHtml summary, String[] couplingConstCodes,
       String[] atom1ResSeqs, String[] atom1ResLabels, String[] atom1Names,
       String[] atom2ResSeqs, String[] atom2ResLabels, String[] atom2Names,
-      String[] couplingConstValues, String[] couplingConstMins,
-      String[] couplingConstMaxes, String[] couplingConstErrors)
+      String[] couplingConstValues, String[] couplingConstErrors)
       throws S2DException
     {
         if (DEBUG >= 1) {
@@ -79,8 +79,6 @@ public class S2DCoupling {
         _atom2ResLabels = atom2ResLabels;
         _atom2Names = atom2Names;
         _couplingConstValues = couplingConstValues;
-        _couplingConstMins = couplingConstMins;
-        _couplingConstMaxes = couplingConstMaxes;
         _couplingConstErrors = couplingConstErrors;
     }
 
@@ -106,9 +104,8 @@ public class S2DCoupling {
 		  " " + _atom1Names[index] + " " + _atom2ResSeqs[index] +
 		  " " + _atom2ResLabels[index] + " " + _atom2Names[index] +
 		  " " + _couplingConstValues[index] + " " +
-		  _couplingConstMins[index] + " " +
-		  _couplingConstMaxes[index] + " " +
-		  _couplingConstErrors[index] + "\n");
+		  //TEMP _couplingConstErrors[index] +
+		  "\n");
 	    }
 
 	    couplingWriter.close();
