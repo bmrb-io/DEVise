@@ -2907,10 +2907,11 @@ Num Date        Status  Description
 			in client. (rkw)
 			(Fixed by rkw, 11/07/01.)
 
-726 11/01/01	OPEN	JavaScreen: if the jspop is running, but there is
+726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			no devised, and a client connects, the JSPoP should
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
+			(Fixed by xuk, 11/27/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
