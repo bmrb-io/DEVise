@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.27  1996/01/10 18:48:46  jussi
+#	Attribute hi/lo values now take their values from either the
+#	schema or the .rc file (schema has precedence). For bar charts,
+#	ylo is 0 by default.
+#
 #	Revision 1.26  1996/01/10 00:38:42  jussi
 #	Added support for hi/lo values defined in schema.
 #
@@ -1191,6 +1196,24 @@ proc DefSource {} {
 	}
     }
 
+    # cache data to disk right now
+    if {[isCached $sname -1 -1] == ""} {
+	set but [dialog .cacheData "Caching Data" \
+		"Cache \"$sname\" to disk now?" \
+		"" 1 Yes No]
+	if {$but == 1} {
+	    dialog .notCached "Must Cache Data Stream" \
+		    "Cannot visualize data without caching it to disk first." \
+		    "" 0 OK
+	    return ""
+	}
+    }
+
+    set source [cacheData $sname -1 -1]
+    if {$source == ""} {
+	return
+    }
+
     set schema [lindex $sourceList($sname) 2]
     set schemafile [lindex $sourceList($sname) 3]
 
@@ -1217,24 +1240,6 @@ proc DefSource {} {
     set err [catch {set sdef $maps($schema)}]
     if {$err > 0} {
 	set maps($schema) ""
-    }
-
-    # cache data to disk right now
-    if {[isCached $sname -1 -1] == ""} {
-	set but [dialog .cacheData "Caching Data" \
-		"Cache \"$sname\" to disk now?" \
-		"" 1 Yes No]
-	if {$but == 1} {
-	    dialog .notCached "Must Cache Data Stream" \
-		    "Cannot visualize data without caching it to disk first." \
-		    "" 0 OK
-	    return ""
-	}
-    }
-
-    set source [cacheData $sname -1 -1]
-    if {$source == ""} {
-	return
     }
 
     statusWindow .info "Status" \
