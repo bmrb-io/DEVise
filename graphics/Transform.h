@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/21 19:28:31  jussi
+  Cleaned up 3D transformation code.
+
   Revision 1.7  1996/06/15 21:06:13  yuc
   Clean up some more stuffs in the "view transformation" matrix.
 
@@ -433,12 +436,12 @@ public:
     _a20 = st; _a21 = cp * ct; _a22 = ct * sp; _a23 = 0.0;
 
     // 4th row
-    _a30 = -(camera.fx * ct) + (camera.fz * st);
+    _a30 = -(camera.fx * ct) + (-camera.fz * st);
     _a31 = -((camera.fy + camera._rho * cp) * sp) + 
-             cp * (camera.fz * ct + camera._rho * sp +
+             cp * (-camera.fz * ct + camera._rho * sp +
 		   camera.fx * st);
     _a32 = cp * (camera.fy + camera._rho * cp) +
-                 sp * (camera.fz * ct + camera._rho * sp +
+                 sp * (-camera.fz * ct + camera._rho * sp +
 		       camera.fx * st);
     _a33 = 1.0;
 
