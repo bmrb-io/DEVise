@@ -223,6 +223,11 @@ Add a command-line flag that suppresses the generation of derived TDatas
 Allow environment variables in paths in the data stream catalog.
 (rkw 10/17/96)
 
+Possibly allow each user to have their own composite.ini file. (rkw 10/29/96)
+
+Add documentation on date attribute format and related composite parsers
+to the user manual. (rkw 10/29/96)
+
 
 COMPLETED
 ---------
