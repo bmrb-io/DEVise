@@ -1,0 +1,158 @@
+Basic Assumption:
+
+1. API Communication is build on top of DEVise low level socket communication
+   protocol.
+2. Client intercept user's action (Mouse, Key and other) and send
+   corresponding events to server, Server take whatever action need to be done
+   and then send command or list of commands to client to instruct client to
+   change its visual appearance.
+3. Separator between commands is one new line ('\n'), separator between
+   arguments in a command is one space (' '), no augument should contain '\n',
+   any argument contain space should included within one pair of braces 
+   ('{' and '}').
+4. Each command or list of commands (from Server or to Server) should ends 
+   with a control command (will explained below).
+5. All auguments (include string, int, float, ...) are send as string.
+6. All mouse action position can be either pixel position in the image or the
+   real x and y value after visual filter applied. It is not yet be 
+   determined. But in the following API commands description, I just assume
+   the position is pixel position in image.
+7. Client communicate with Server with two socket, all binary image data is
+   send through dedicated Image Socket, all other data or commands is send 
+   through command Socket.
+8. Client ensure no command will send to Server until the execution of current
+   received commands is completely finished.
+
+API commands(Implemented in current version of JavaScreen and Dummy Server):
+
+1. Control commands:
+
+    *1. Format: "JAVAC_Done"
+        Arguments: None
+        Semantic: indicate successful execution of received commands and end
+                  of sending of responding commands.
+        User: Server and Client
+    *2. Format: "JAVAC_Fail"
+        Arguments: None
+        Semantic: indicate any fatal failure (unrecoverable) of execution of
+                  received commands and end of sending of responding commands.
+        User: Server and Client
+    *3. Format: "JAVAC_Error <errMsg>"
+        Arguments: One
+               errMsg: error message
+        Semantic: indicate any failure (may be recoverable) of execution of
+                  received commands and end of sending of responding commands. 
+        User: Server and Client
+    
+2. Mouse Action:
+
+    *1. Format: "JAVAC_MouseAction_Click <viewName> <x> <y>"
+        Arguments: Three
+               viewName: name of the view that event happened
+               x: x position
+               y: y position
+        Semantic: indicate a mouse single_click event, either get a record
+                  value at that position or select view as current view.
+        User: Client
+    *2. Format: "JAVAC_MouseAction_DoubleClick <viewName> <x> <y>"
+        Arguments: Three
+               viewName: name of the view that event happened
+               x: x position
+               y: y position
+        Semantic: indicate a mouse double_click event, process cursor (such as
+                  get GData) at that position if exists.
+        User: Client
+    *3. Format: "JAVAC_MouseAction_RubberBand <viewName> <x0> <y0> <width> <height>"
+        Arguments: Five
+               viewName: name of the view that event happened
+               x0: upleft corner x position
+               y0: upleft corner y position
+               width: width of rubber band
+               height: height of rubber band
+        Semantic: indicate a mouse single_click event, visual filtering
+        User: Client
+    
+    *4. ... whatever new events in your guy's mind
+    
+3. Key Action:
+
+    *1. Format: "JAVAC_KeyAction <viewName> <whichKey>"
+        Arguments: Two
+               viewName: name of the view that event happened
+               whichKey: name of the key
+        Semantic: indicate a key pressed event, meaning is not yet be defined
+        User: Client
+
+4. Other Action:
+
+    *1. Format: "JAVAC_GetSessionList"
+        Arguments: None
+        Semantic: Client want to view current available sessions.
+                  Server need to send client a list of available session names
+        User: Client
+    
+    *2. Format: "JAVAC_OpenSession <sessionName>"
+        Arguments: One
+               sessionName: the name of the session need to be opened.
+        Semantic: Client want to start a new session.
+                  Server need to instruct client to build visual
+                  representation of a new session.
+        User: Client
+    *3. Format: "JAVAC_CloseCurrentSession"
+        Arguments: None
+        Semantic: Client want to close current session.
+                  Server do not need to send client anything except control 
+                  command.
+        User: Client
+    *4. Format: "JAVAC_Exit"
+        Arguments: None
+        Semantic: Client is quit.
+                  Server do not need to send client anything except control 
+                  command.
+        User: Client
+    *5. ... whatever in your guy's mind.
+       
+5. Commands that change visual appearance:
+
+    *1. Format: "JAVAC_UpdateSessionList <name1> ..."
+        Arguments: Variable
+               name: name of the session
+        Semantic: Return a list of current available session name to Client
+        User: Server
+    *2. Format: "JAVAC_UpdateRecordValue <value>"
+        Arguments: One
+               value: record value
+        Semantic: Return a record value to Client
+        User: Server
+    *3. Format: "JAVAC_UpdateGData <name1> <value1> ..."
+        Arguments: Variable
+               name: name of one table entry in GData
+               value: value of one table entry in GData
+        Semantic: Return Gdata (a list of name-value pairs) to Client
+        User: Server
+    *4. Format: "JAVAC_CreateWindow <windowName> <x0> <y0> <width> <height> 
+                 <imageSize> <numOfView> <view1Name> <view1X> <view1Y> 
+                 <view1Width> <view1Height> ..."
+        Arguments: Variable
+               windowName: name of the window
+               x0: upleft corner x position of the window
+               y0: upleft corner y position of the window
+               width: width of the window
+               height: height of the window
+               imageSize: the size of the image assiciated with the window
+               numOfView: number of views contained in the window
+               viewName: name of the view
+               viewX: upleft corner x position of the view in the window
+               viewY: upleft corner y position of the view in the window
+               viewWidht: width of the view
+               viewHeight: height of the view               
+        Semantic: Tell client to open a window, only used in reply to 
+                  'OpenSession' now.
+        User: Server
+    *5. Format: "JAVAC_UpdateWindow <name> <imageSize>"
+        Arguments: Two
+               name: name of the window to be updated
+               value: size of the updated image
+        Semantic: Tell client to update a window with the new image
+        User: Server
+    *6. ... whatever in your guy's mind                                         
