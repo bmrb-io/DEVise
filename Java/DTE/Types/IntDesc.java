@@ -16,7 +16,7 @@ public class IntDesc implements TypeDesc {
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws IllegalArgumentException
     {
-        if ( arg.getString( ).equals(name) )
+        if ( ! arg.getString( ).equals(name) )
 	    throw new IllegalArgumentException("give me an int!\n"); 
 
         if ( opStr.equals("==") ) 

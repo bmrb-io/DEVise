@@ -6,6 +6,9 @@ import Operators.*;
 public class BooleanDesc implements TypeDesc {
     static final String name = "boolean";
 
+    public BooleanDesc( ) {
+    }
+
     public String getString( ) {
         return name;
     }
@@ -13,7 +16,7 @@ public class BooleanDesc implements TypeDesc {
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws IllegalArgumentException
     {
-        if ( arg.getString( ).equals(name) )
+        if ( ! arg.getString( ).equals(name) )
 	    throw new IllegalArgumentException("give me an boolean!\n"); 
 
         if ( opStr.equals("&&") ) 

@@ -13,7 +13,7 @@ public class StringDesc implements TypeDesc {
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws IllegalArgumentException
     {
-        if ( arg.getString( ).equals(name) )
+        if ( ! arg.getString( ).equals(name) )
 	    throw new IllegalArgumentException("give me a string!\n"); 
 
         if ( opStr.equals("==") ) 

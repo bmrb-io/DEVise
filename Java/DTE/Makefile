@@ -1,7 +1,7 @@
 DEBUG=-g -deprecation
 CLASSES = Classes
 #PACKAGE=Util
-#CLASSPATH=/s/java/lib/classes.zip:../$(CLASSES)
+#CLASSPATH=/s/java/lib/classes.zip:../$(CLASSES):$(CLASSES)/test:.
 
 SRC =   DTE_Type.java \
 	Iterator.java \
@@ -23,6 +23,9 @@ Parser/SQLParser.java: Parser/SQLParser.jj
 	cd Parser; javacc SQLParser.jj; cd ..
 
 all:
+	javac FileScanIteator.java -d $(CLASSES)
+
+hj:
 	javac TestExpr.java -d $(CLASSES)
 
 doc:

@@ -11,16 +11,15 @@ public class ExecSelect implements ExecExpr {
 		fieldNo = field;
 	}
 
-     	public DTE_Type evaluate(Tuple left, Tuple right) {
+     	public void evaluate(Tuple left, Tuple right, DTE_Type result) {
 		DTE_Type[] fields = { };
 
 		if(leftRight == 0)
 			fields = left.get_fields( );
-		else if(leftRight == 1 )	
+		else 
 			fields = right.get_fields( );
-		// else ...
 
-		return fields[ fieldNo ];
+		result = fields[ fieldNo ];
      	}
-};
+}
 

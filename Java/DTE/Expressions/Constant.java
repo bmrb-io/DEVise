@@ -23,7 +23,7 @@ public class Constant implements Expression {
 		return value.toString( );
 	}
 
-	public TypeDesc getType( )
+	public TypeDesc getTypeDesc( )
 	{
 		return type;
 	}
@@ -40,5 +40,5 @@ public class Constant implements Expression {
 	public ExecExpr createExec( OptNode[] opn ) {
 		return new ExecConst( value );
 	}
-};
+}
 

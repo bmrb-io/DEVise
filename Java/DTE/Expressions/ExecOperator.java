@@ -14,12 +14,12 @@ public class ExecOperator implements ExecExpr{
 	evalOp = op;
     }
 
-    public DTE_Type evaluate(Tuple leftT, Tuple rightT) {
-	DTE_Type arg1 = left.evaluate( leftT, rightT );
-	DTE_Type arg2 = right.evaluate( leftT, rightT );
+    public void evaluate(Tuple leftT, Tuple rightT, DTE_Type result) {
+	DTE_Type arg1 = null;
+        left.evaluate( leftT, rightT, arg1 );
+	DTE_Type arg2 = null;
+        right.evaluate( leftT, rightT, arg2 );
 
-	DTE_Type result = DTE_Type.typeFor( evalOp.getType( ) );
 	evalOp.evaluate( arg1, arg2, result );
-	return result;
     }
 }

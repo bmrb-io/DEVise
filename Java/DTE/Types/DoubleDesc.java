@@ -13,7 +13,7 @@ public class DoubleDesc implements TypeDesc {
     public EvalOperator getOperator( String opStr, TypeDesc arg )
 	throws IllegalArgumentException
     {
-        if ( arg.getString( ).equals(name) )
+        if ( ! arg.getString( ).equals(name) )
 	    throw new IllegalArgumentException("give me an double!\n"); 
 
         if ( opStr.equals("==") ) 
