@@ -10,16 +10,23 @@
 # or altered in any way without prior permission from the DEVise
 # Development Group.
 
-
 # Makefile for classes to get data from starfiles.
+
+############################################################
 
 # $Id$
 
+############################################################
+
+include ../Makefile.config
+
+JAVAC = $(JAVA_BIN)/javac
+
 all:
-	javac -classpath ./starlibj.jar *.java
+	$(JAVAC) -classpath ./starlibj.jar *.java
 
 dep:
-	javac -deprecation -classpath ./starlibj.jar *.java
+	$(JAVAC) -deprecation -classpath ./starlibj.jar *.java
 
 clean:
 	-rm *.class

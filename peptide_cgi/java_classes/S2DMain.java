@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2001/07/25 19:56:23  wenger
+// Started adding configuration setup stuff; s2d gets URLs from properties
+// file.
+//
 // Revision 1.19  2001/07/25 17:46:49  wenger
 // Added -usage and -version args to S2DMain, changed version to 2.12;
 // slightly improved s2d error messages; install script now uses find
@@ -170,8 +174,8 @@ public class S2DMain {
 	    System.out.print(")\n");
 	}
 
-	getProperties();
 	checkArgs(args);
+	getProperties();
     }
 
     //===================================================================

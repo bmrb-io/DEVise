@@ -35,8 +35,8 @@ dist: peptide-cgi
 
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:
-	ln -s ../Makefile .
-	ln -s ../Makefile.config .
+	ln -s ../../Makefile .
+	ln -s ../../Makefile.config .
 	ln -s ../../bmrb_select.html .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
@@ -50,7 +50,6 @@ peptide-cgi-setup:
 	  make -f Makefile.dist java_classes-setup; rm Makefile.dist
 	mkdir schema; cd schema; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist schema-setup; rm Makefile.dist
-	ln -s ../../setup_test .
 
 .PHONEY : cgi-bin-setup
 cgi-bin-setup:
@@ -73,6 +72,7 @@ html-setup:
 	ln -s ../../../html/assignments.txt .
 	ln -s ../../../html/chemshift.txt .
 
+#TEMP -- make sure .class files exist
 .PHONEY : java_classes-setup
 java_classes-setup:
 	ln -s ../../../java_classes/*.class .

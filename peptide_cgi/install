@@ -179,6 +179,8 @@ cp -p cgi-bin/s2d $targetdir
 chmod a+rx $targetdir/s2d
 cp -p cgi-bin/set_modes $targetdir
 chmod a+rx $targetdir/set_modes
+cp -p cgi-bin/s2d.props $targetdir
+chmod a+rx $targetdir/s2d.props
 
 
 # Link data directory to CGI directory.
