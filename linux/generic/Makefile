@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  2001/10/17 17:37:01  wenger
+#  Linux devised now statically linked to make distributions work.
+#
 #  Revision 1.16  2001/08/03 18:13:22  wenger
 #  Removed all OpenGL-related code.
 #
@@ -95,7 +98,7 @@ ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 ARCH_D_SYSLIBS = -lX11 -lm -ldl
 ARCH_SYSLIBS = -ltk8.0 -ltcl8.0 $(ARCH_D_SYSLIBS)
 ARCH_LDPOST  = 
-ARCH_D_LDPOST  = -static
+ARCH_D_LDPOST  = $(ARCH_LDPOST)
 # to make everything statically-linked...
 #ARCH_LDPOST  = -static
 ARCH_STATIC_LDPOST  = -static
