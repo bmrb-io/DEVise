@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.83  1996/07/13 00:21:47  jussi
+#	Added View/Color Statistics menu option.
+#
 #	Revision 1.82  1996/07/09 16:00:43  wenger
 #	Added master version number and compile date to C++ code (also displayed
 #	in the user interface); added -usage and -version command line arguments;
@@ -485,6 +488,8 @@ if {0} {
     #set foreGround black
     #tk colormodel . monochrome
 }
+
+wm title . "DEVise"
 
 frame .mbar  -relief raised -bd 4 -bg green
 frame .panel -bg white
