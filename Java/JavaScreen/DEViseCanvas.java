@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2000/07/19 20:11:35  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.58  2000/07/18 18:12:49  venkatan
 // The highlighting of the border for the active view is disabled.
 //
@@ -140,6 +145,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.59  2000/07/19 20:11:35  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.58  2000/07/18 18:12:49  venkatan
 // The highlighting of the border for the active view is disabled.
 //
@@ -1094,8 +1104,8 @@ public class DEViseCanvas extends Container
                     cursor.image = null;
 
                     if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
-                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " " +
-			  cursor.name + " " + cursor.x + " " + cursor.y +
+                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " {" +
+			  cursor.name + "} " + cursor.x + " " + cursor.y +
 			  " " + cursor.width + " " + cursor.height;
 
                         jscreen.guiAction = true;
@@ -1179,8 +1189,8 @@ public class DEViseCanvas extends Container
                         cursor.updateCursorLoc(dx, dy, whichCursorSide,
 			  true);
 
-                        cmd = DEViseCommands.CURSOR_CHANGED + " " +
-			  cursor.name + " " + cursor.x + " " + cursor.y + " "
+                        cmd = DEViseCommands.CURSOR_CHANGED + " {" +
+			  cursor.name + "} " + cursor.x + " " + cursor.y + " "
 			  + cursor.width + " " + cursor.height;
 
                         cursor.image = null;

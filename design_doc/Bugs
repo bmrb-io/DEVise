@@ -2294,9 +2294,10 @@ Num Date        Status  Description
 			a child view is drawn incorrectly (the bits of the
 			child view are also XOR'ed). (rkw)
 
-586 05/01/00	OPEN	Cursors with spaces in their names do not work right
+586 05/01/00	FIXED	Cursors with spaces in their names do not work right
 			in the JavaScreen (cannot be moved). (rkw)
 			(See Misc/orange_rtree.tk.)
+			(Fixed by rkw, 7/20/00.)
 
 587 05/15/00	FIXED	Clicking to move a cursor changes its size (see
 			4096_side_newselect.ds). (rkw)
