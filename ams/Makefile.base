@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/08/06 20:10:56  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 #  Revision 1.12  1996/07/18 14:20:09  jussi
 #  Replaced name libgraphics.new.a with libgraphicsnew.a.
 #
@@ -59,10 +63,10 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 LDFLAGS = $(ARCH_LDFLAGS) \
-	-L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
-	-lissm -lcrsp -lcstat -ltape -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm \
-	$(ARCH_LDPOST)
+	-L../graphics.new -L../graphics -L../tape -L../issm -L../DTE \
+	-L../crsp -L../compustat -lmonolith -lgraphicsnew -ldte -lgraphics \
+	-lgraphicsnew -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
+        $(ARCH_LDPOST)
 
 SRC = ams.c MapClassInfo.c
 
