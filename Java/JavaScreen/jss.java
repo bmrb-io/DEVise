@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  1999/12/07 23:24:27  hongyu
+// *** empty log message ***
+//
 
 // ========================================================================
 
@@ -29,7 +32,12 @@ public class jss implements Runnable
     private String localHostname = null;
     private ServerSocket jssServerSocket = null;
     private int jssPort = DEViseGlobals.JSSPORT;
+
+    private int jspopPort = DEViseGlobals.JSPOPPORT;
     private String jspopHost = DEViseGlobals.JSPOPHOST;
+    private Socket jspopSocket = null;
+    private DataOutputStream jspopOS = null;
+    private DataInputStream jspopIS = null;
 
     private int devisedNumber = 1;
     private int debugLevel = 0;
@@ -90,6 +98,8 @@ public class jss implements Runnable
     {
         System.out.println("Start closing jss server ...");
 
+        disconnectFromJSPOP();
+
         System.out.println("Try to close existing devised server ...");
         while (deviseds.size() > 0) {
             devised server = (devised)deviseds.elementAt(0);
@@ -116,11 +126,24 @@ public class jss implements Runnable
     public void run()
     {
         System.out.println("\njss server started ...\n");
-        System.out.println("\nTry to connect to jspop server ...\n");        
-        
-        
+
         boolean isListen = true;
         String hostname = null;
+
+        System.out.println("\nTry to connect to jspop server ...\n");
+        try {
+            connectToJSPOP();
+            for (int i = 0; i < deviseds.size(); i++) {
+                devised server = (devised)deviseds.elementAt(i);
+                sendToJSPOP("JSS_Add " + server.cmdPort + " " + server.imgPort);
+            }
+        } catch (YException e) {
+            System.out.println(e.getMessage());
+            isListen = false;
+        }
+
+        disconnectFromJSPOP();
+
         while (isListen) {
             Socket socket = null;
             try {
@@ -128,6 +151,40 @@ public class jss implements Runnable
                 hostname = socket.getInetAddress().getHostName();
                 if (hostname.equals(jspopHost)) {
                     System.out.println("Connection request from " + hostname + " is accepted ...");
+                    try {
+                        jspopIS = new DataInputStream(socket.getInputStream());
+                        String msg = receiveFromJSPOP();
+                        boolean isQuit = false;
+                        try {
+                            isQuit = processRequest(msg);
+                        } catch (YException exp) {
+                            System.out.println("Failed to process request from jspop");
+                            System.out.println(exp.getMessage());
+                            disconnectFromJSPOP();
+                        }
+
+                        isListen = !isQuit;
+                    } catch (IOException ex) {
+                        System.out.println("IO Error while open connection to jspop host " + jspopHost);
+                    } catch (YException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+
+                    if (jspopIS != null) {
+                        try {
+                            jspopIS.close();
+                        } catch (IOException ex) {
+                        }
+                        jspopIS = null;
+                    }
+
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (IOException ex) {
+                        }
+                        socket = null;
+                    }
                 } else {
                     System.out.println("Connection request from " + hostname + " is rejected ...");
                     try {
@@ -139,24 +196,155 @@ public class jss implements Runnable
                 System.out.println("jss server can not listen on jss socket so it is aborting!");
                 break;
             }
-
-            processRequest(socket);
         }
 
         quit();
     }
 
-    private synchronized void processRequest(Socket socket)
+    private void disconnectFromJSPOP()
     {
-        if (socket == null) {
-            return;
+        if (jspopOS != null) {
+            try {
+                jspopOS.close();
+            } catch (IOException e) {
+            }
+            jspopOS = null;
         }
+
+        if (jspopSocket != null) {
+            try {
+                jspopSocket.close();
+            } catch (IOException e) {
+            }
+            jspopSocket = null;
+        }
+    }
+
+    private void connectToJSPOP() throws YException
+    {
+        disconnectFromJSPOP();
+
+        try {
+            jspopSocket = new Socket(jspopHost, jspopPort);
+            jspopOS = new DataOutputStream(new BufferedOutputStream(jspopSocket.getOutputStream()));
+        } catch (UnknownHostException e) {
+            throw new YException("Can not find jspop host " + jspopHost);
+        } catch (NoRouteToHostException e) {
+            throw new YException("Can not find route to jspop host, may caused by an internal firewall");
+        } catch (IOException e) {
+            throw new YException("IO Error while connecting to jspop host " + jspopHost);
+        }
+    }
+
+    private void sendToJSPOP(String msg) throws YException
+    {
+        if (jspopOS == null) {
+            throw new YException("Null jspop output stream!", "jss:sendToJSPOP()");
+        }
+
+        if (msg == null) {
+            throw new YException("Null message!", "jss:sendToJSPOP()");
+        }
+
+        try {
+            jspopOS.writeInt(msg.length());
+            jspopOS.writeBytes(msg);
+            jspopOS.flush();
+        } catch (IOException e) {
+            throw new YException("IO Error while send message to JSPOP", "jss:sendToJSPOP()");
+        }
+    }
+
+    private String receiveFromJSPOP() throws YException
+    {
+        if (jspopIS == null) {
+            throw new YException("Null jspop input stream!", "jss:receiveFromJSPOP()");
+        }
+
+        try {
+            int length = jspopIS.readInt();
+            byte[] data = new byte[length];
+            jspopIS.readFully(data);
+            return new String(data);
+        } catch (IOException e) {
+            throw new YException("IO Error while receive message from JSPOP", "jss:receiveFromJSPOP()");
+        }
+    }
+
+    private synchronized boolean processRequest(String msg) throws YException
+    {
+        if (msg == null) {
+            return false;
+        }
+
+        String[] cmd = DEViseGlobals.parseString(msg);
+        if (cmd == null) {
+            System.out.println("Invalid request received from jspop \"" + msg + "\"");
+            return false;
+        }
+
+        if (cmd[0].startsWith("JSS_Restart") && cmd.length == 3) {
+            try {
+                int cmdport = Integer.parseInt(cmd[1]);
+                int imgport = Integer.parseInt(cmd[2]);
+                for (int i = 0; i < deviseds.size(); i++) {
+                    devised server = (devised)deviseds.elementAt(i);
+                    if (server.cmdPort == cmdport && server.imgPort == imgport) {
+                        server.stop();
+                        deviseds.removeElement(server);
+
+                        try {
+                            server = new devised();
+                        } catch (YException ex) {
+                            System.out.println("Can not start new devised");
+                            server = null;
+                        }
+
+                        if (server != null) {
+                            deviseds.addElement(server);
+                            connectToJSPOP();
+                            sendToJSPOP("JSS_Add " + server.cmdPort + " " + server.imgPort);
+                            disconnectFromJSPOP();
+                        }
+
+                        break;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid request received from jspop \"" + msg + "\"");
+            }
+        } else if (cmd[0].startsWith("JSS_Quit")) {
+            return true;
+        } else {
+            System.out.println("Invalid request received from jspop \"" + msg + "\"");
+        }
+
+        return false;
     }
 
     private void checkArguments(String[] args)
     {
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-server")) {
+            if (args[i].startsWith("-quit")) {
+                try {
+                    Socket socket = new Socket("localhost", jssPort);
+                    DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+                    String msg = "JSS_Quit";
+                    os.writeInt(msg.length());
+                    os.writeBytes(msg);
+                    os.flush();
+                    os.close();
+                    socket.close();
+                } catch (UnknownHostException e) {
+                    System.out.println("Can not find local jss host");
+                } catch (NoRouteToHostException e) {
+                    System.out.println("Can not find route to local jss host, may caused by an internal firewall");
+                } catch (IOException e) {
+                    System.out.println("IO Error while connecting to local jss host");
+                }
+
+                System.exit(0);
+            } else if (args[i].startsWith("-server")) {
                 if (!args[i].substring(7).equals("")) {
                     try {
                         devisedNumber = Integer.parseInt(args[i].substring(7));

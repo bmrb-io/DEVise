@@ -13,6 +13,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  1999/12/10 15:30:13  wenger
+// Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
+// during drag; split off protocol version from "main" version.
+//
 // Revision 1.29  1999/12/08 15:34:12  wenger
 // Changed version to 3.1.
 //
@@ -63,7 +67,7 @@ public final class DEViseGlobals
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688;
+    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("biron.cs.wisc.edu");
     public static final String VERSION = new String("3.1.1");
     public static final String PROTOCOL_VERSION = new String("3.0");
