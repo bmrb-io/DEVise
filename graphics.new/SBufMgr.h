@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/09/26 19:02:33  jussi
+  Renamed file from ExtBufMgr -> SBufMgr. Added Web I/O task and
+  changed buffer manager to allow more concurrency between I/Os.
+
   Revision 1.2  1996/09/07 01:43:31  jussi
   Method BufferDealloc() is used also when BUFFER is not defined.
 
@@ -45,9 +49,9 @@
 //#define PIPE_DATA
 //#define BUFFER
 
-#if defined(SOLARIS) || defined(LINUX)
+#if defined(SOLARIS)
 #define THREAD_TASK
-#elif defined(SUN) || defined(HPUX)
+#elif defined(SUN) || defined(HPUX) || defined(LINUX)
 #define PROCESS_TASK
 #define SHARED_MEMORY
 #else
