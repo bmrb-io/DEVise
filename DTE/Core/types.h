@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/06/21 22:48:09  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.21  1997/06/16 16:04:56  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -102,6 +105,8 @@ static size_t ds;	// used only as a place holder
 const String UNKN_TYPE = "unknown";
 const String INT_TP = "int";
 const String DOUBLE_TP = "double";
+const String DATE_TP = "date";
+const String STRING_TP = "string";
 
 struct Stats{
 	int* fldSizes;
@@ -174,22 +179,26 @@ void insert(String tableStr, Tuple* tuple);	// throws exception
 
 int domain(const TypeID adt);	// throws exception
 
+bool sameType(TypeID t1, TypeID t2);
+
 int typeCompare(TypeID arg1, TypeID arg2);	// throws
 
 void intCopy(const Type* arg, Type*& result, size_t& = ds);
 void doubleCopy(const Type* arg, Type*& result, size_t& = ds);
 void stringCopy(const Type* arg, Type*& result, size_t& = ds);
+void dateCopy(const Type* arg, Type*& result, size_t& sz);
 
 void intMarshal(const Type* adt, char* to);
 void doubleMarshal(const Type* adt, char* to);
 void stringMarshal(const Type* adt, char* to);
 void dateMarshal(const Type* adt, char* to);
 
+void dateToUnixTime(const Type* adt, char* to);
+
 void intUnmarshal(char* from, Type*& adt);
 void doubleUnmarshal(char* from, Type*& adt);
 void stringUnmarshal(char* from, Type*& adt);
 void dateUnmarshal(char* from, Type*& adt);
-void tmUnmarshal(char* from, Type*& adt);
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
@@ -252,6 +261,7 @@ void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void intToDouble(const Type* arg, Type*& result, size_t& = ds);
 void doubleToDouble(const Type* arg, Type*& result, size_t& = ds);
 void intToInt(const Type* arg, Type*& result, size_t& = ds);
+void stringLToString(const Type* arg, Type*& result, size_t& = ds);
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
@@ -531,35 +541,7 @@ public:
 };
 
 class IDate {
-	time_t date;
 public:
-     IDate() : date(0){}
-	IDate(const time_t date) : date(date) {}
-	IDate(const IDate& arg){
-		date = arg.date;
-	}
-	~IDate(){}
-	void setValue(time_t arg){
-		date = arg;
-	}
-	time_t getValue(){
-		return date;
-	}
-	void display(ostream& out){
-		char tmstr[100];
-		cftime(tmstr, NULL, &date);	// could be ISO_TIME
-		out << tmstr;
-	}
-	IDate& operator=(IDate& arg){
-		date = arg.date;
-		return *this;
-	}
-     void unmarshal(char* from){
-          memcpy(&date, from, sizeof(time_t));
-     }
-	int packSize(){
-		return sizeof(time_t);
-	}
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID root, TypeID arg, TypeID& retType){
 		String msg = 
@@ -588,65 +570,6 @@ public:
 		}
 	}
 };
-
-/*
-class IDateTime {
-	time_t date;
-public:
-     IDateTime() : date(0){}
-	IDateTime(const time_t date) : date(date) {}
-	IDateTime(const IDateTime& arg){
-		date = arg.date;
-	}
-	~IDateTime(){}
-	void setValue(time_t arg){
-		date = arg;
-	}
-	time_t getValue(){
-		return date;
-	}
-	void display(ostream& out){
-		out << date;
-	}
-	IDateTime& operator=(IDateTime& arg){
-		date = arg.date;
-		return *this;
-	}
-     void unmarshal(char* from){
-          memcpy(&date, from, sizeof(time_t));
-     }
-	int packSize(){
-		return sizeof(time_t);
-	}
-	static GeneralPtr* getOperatorPtr(
-		String name, TypeID root, TypeID arg, TypeID& retType){
-		String msg = 
-			"No operator " + name + " (" + root + ", " + arg + ") defined";
-		if(arg != "date"){
-			THROW(new Exception(msg), NULL);
-		}
-		else if(name == "="){
-			retType = "bool";
-			return new GeneralPtr(dateEq, boolSize, oneOver100);
-		}
-		else if(name == "<"){
-			retType = "bool";
-			return new GeneralPtr(dateLT, boolSize, oneOver3);
-		}
-		else if(name == ">"){
-			retType = "bool";
-			return new GeneralPtr(dateGT, boolSize, oneOver3);
-		}
-		else if(name == "comp"){
-		        retType = "int";
-			return new GeneralPtr(dateComp, sameSize);
-		}
-		else{
-			THROW(new Exception(msg), NULL);
-		}
-	}
-};
-*/
 
 class Site;
 class Interface;
@@ -873,8 +796,6 @@ public:
 		MemoryLoader::reset();
 	}
 };
-
-void displayAs(ostream& out, void* adt, String type);
 
 int packSize(String type);    // throws exception
 

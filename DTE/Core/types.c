@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/06/21 22:48:08  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.20  1997/06/16 16:04:55  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -87,38 +90,35 @@
 #include "myopt.h"		// for TableName
 #include "catalog.h"	// for Interface
 #include "Utility.h"
+#include "DateTime.h"
 #include <String.h>
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
-	time_t val1 = ((IDate*)arg1)->getValue();
-	time_t val2 = ((IDate*)arg2)->getValue();
-     result = (Type*)(val1 == val2);
+	EncodedDTF* val1 = ((EncodedDTF*)arg1);
+	EncodedDTF* val2 = ((EncodedDTF*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 == *val2);
 }
 
 void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
-	time_t val1 = ((IDate*)arg1)->getValue();
-	time_t val2 = ((IDate*)arg2)->getValue();
-     result = (Type*)(val1 < val2);
+	EncodedDTF* val1 = ((EncodedDTF*)arg1);
+	EncodedDTF* val2 = ((EncodedDTF*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 < *val2);
 }
 
 void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
-	time_t val1 = ((IDate*)arg1)->getValue();
-	time_t val2 = ((IDate*)arg2)->getValue();
-     result = (Type*)(val1 > val2);
+	EncodedDTF* val1 = ((EncodedDTF*)arg1);
+	EncodedDTF* val2 = ((EncodedDTF*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(*val1 > *val2);
 }
 
 void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
-	time_t val1 = ((IDate*)arg1)->getValue();
-	time_t val2 = ((IDate*)arg2)->getValue();
-	if(val1 > val2){
-		result = (Type*) 1;
-	}
-	else if(val1 == val2){
-		result = (Type*)(0);
-	}
-	else{
-		result = (Type*)(-1);
-	}
+	EncodedDTF* val1 = ((EncodedDTF*)arg1);
+	EncodedDTF* val2 = ((EncodedDTF*)arg2);
+	assert(val1 && val2);
+     result = (Type*)(val1->compare(*val2));
 }
 
 void catEntryName(const Type* arg1, Type* result){
@@ -386,7 +386,7 @@ void indexDescWrite(ostream& out, const Type* adt){
 
 void dateWrite(ostream& out, const Type* adt){
 	assert(adt);
-	((IDate*) adt)->display(out);
+	out << *((EncodedDTF*) adt);
 }
 
 int boolSize(int a, int b){
@@ -414,31 +414,6 @@ double oneOver10(BaseSelection* left, BaseSelection* right){
 
 double oneOver100(BaseSelection* left, BaseSelection* right){
 	return 0.01;
-}
-
-void displayAs(ostream& out, void* adt, String type){
-	if(type == "int"){
-		out << int(adt);
-	}
-	else if(type.through(5).contains("string")){
-		out << addQuotes((char*) adt);
-	}
-	else if(type == "bool"){
-		boolWrite(out, adt);
-	}
-	else if(type == "double"){
-		((IDouble*) adt)->display(out);
-	}
-	else if(type == "catentry"){
-		((CatEntry*) adt)->display(out);
-	}
-	else if(type == "date"){
-		((IDate*) adt)->display(out);
-	}
-	else{
-		cout << "Don't know how to display type: " << type << endl;
-		assert(0);
-	}
 }
 
 int packSize(const Type* adt, String type){
@@ -476,7 +451,7 @@ int packSize(String type){	// throws exception
 		return len;
 	}
 	else if(type == "date"){
-		return sizeof(IDate);
+		return sizeof(EncodedDTF);
 	}
 	else{
 		String msg = "Don't know size of " + type; 
@@ -499,6 +474,17 @@ void doubleMarshal(const Type* adt, char* to){
 
 void dateMarshal(const Type* adt, char* to){
 	memcpy(to, adt, sizeof(time_t));
+}
+
+void dateToUnixTime(const Type* adt, char* to){
+	EncodedDTF* val = (EncodedDTF*) adt;
+	struct tm tmp;
+	val->maketm(tmp);
+	time_t ut = mktime(&tmp);
+	if(ut == (time_t) -1){
+		cerr << "Failed to convert " << *val << " to unix time" << endl;
+	}
+	memcpy(to, &ut, sizeof(time_t));
 }
 
 MarshalPtr getMarshalPtr(String type){
@@ -539,15 +525,7 @@ void doubleUnmarshal(char* from, Type*& adt){
 }
 
 void dateUnmarshal(char* from, Type*& adt){
-	memcpy(adt, from, sizeof(IDate));
-}
-
-void tmUnmarshal(char* from, Type*& adt){
-	time_t ut = mktime((struct tm*) from);
-	if(ut == (time_t) -1){
-		cout << "Failed to convert to unix time" << endl;
-	}
-	memcpy(adt, &ut, sizeof(IDate));
+	memcpy(adt, from, sizeof(EncodedDTF));
 }
 
 UnmarshalPtr getUnmarshalPtr(String type){
@@ -1042,12 +1020,20 @@ void doubleToDouble(const Type* arg, Type*& result, size_t&){
 	*((double*) result) = *((double*)(arg));
 }
 
+void stringLToString(const Type* arg, Type*& result, size_t& sz){
+	assert(result);
+	strncpy((char*) result, (char*) arg, sz);
+}
+
 PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	if(from == "int" && to == "double"){
 		return intToDouble;
 	}
 	else if(from == "double" && to == "double"){
 		return doubleToDouble;
+	}
+	else if(from.through(5).contains(STRING_TP) && to == STRING_TP){
+		return stringLToString;
 	}
 	if(from == INT_TP && to == INT_TP){
 		return intToInt;
@@ -1066,6 +1052,10 @@ void doubleCopy(const Type* arg, Type*& result, size_t& sz){
 	*((double*) result) = *((double*) arg);
 }
 
+void dateCopy(const Type* arg, Type*& result, size_t& sz){
+	*((EncodedDTF*) result) = *((EncodedDTF*) arg);
+}
+
 void stringCopy(const Type* arg, Type*& result, size_t& sz){
 	strncpy((char*) result, (char*) arg, sz);
 }
@@ -1077,12 +1067,16 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	else if(adt == "double"){
 		return doubleCopy;
 	}
+	else if(adt == DATE_TP){
+		return dateCopy;
+	}
 	else if(adt.through(5).contains("string")){
 		return stringCopy;
 	}
 	else{
-		String msg = String("No function to copy ") + adt;
-		THROW(new Exception(msg), NULL);
+		cerr << "Function to copy " << adt << " not implemented\n";
+		assert(0);
+		return NULL;
 	}
 }
 
@@ -1102,24 +1096,41 @@ void updateHighLow(int numFlds, const OperatorPtr* lessPtrs,
 	}
 }
 
+bool sameType(TypeID t1, TypeID t2){
+	if(t1 == t2){
+		return true;
+	}
+	else if(t1.through(5).contains(STRING_TP) && 
+		t1.through(5).contains(STRING_TP)){
+
+		return true;
+	}
+	else{
+		return false;
+	}
+};
+
 int domain(TypeID adt){	// throws exception
-	if(adt.through(5).contains("string")){
+	if(adt.through(5).contains(STRING_TP) && adt != STRING_TP){
 		return 0;
 	}
-	else if(adt == "date"){
+	else if(adt == STRING_TP){
 		return 1;
 	}
-	else if(adt == "bool"){
+	else if(adt == "date"){
 		return 2;
 	}
-	else if(adt == "int"){
+	else if(adt == "bool"){
 		return 3;
 	}
-	else if(adt == "float"){
+	else if(adt == "int"){
 		return 4;
 	}
-	else if(adt == "double"){
+	else if(adt == "float"){
 		return 5;
+	}
+	else if(adt == "double"){
+		return 6;
 	}
 	else{
 		String msg = String("Type \"") + adt + 
@@ -1134,7 +1145,7 @@ int typeCompare(TypeID arg1, TypeID arg2){	// throws
 	}
 	TRY(int d1 = domain(arg1), 0);
 	TRY(int d2 = domain(arg2), 0);
-	return (d1 > d2) ? 1 : -1;
+	return d1 - d2;
 }
 
 WritePtr* newWritePtrs(const TypeID* types, int numFlds){ // throws
@@ -1168,7 +1179,7 @@ char* allocateSpace(TypeID type, size_t& size){
 		return new char[packSize(type)];
 	}
 	else if(type == "date"){
-		return (char*) new IDate();
+		return (char*) new EncodedDTF();
 	}
 	else if(type == "catentry"){
 		return (char*) new CatEntry();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/06/16 16:04:53  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.15  1997/04/14 20:44:15  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -375,7 +378,7 @@ TypeID Operator::typify(List<Site*>* sites){
 	TRY(right->typify(sites), "");
 	TypeID root = left->getTypeID();
 	TypeID arg = right->getTypeID();
-	if(root != arg){
+	if(!sameType(root, arg)){
 
 		// need to typecast
 
@@ -397,7 +400,6 @@ TypeID Operator::typify(List<Site*>* sites){
 			root = arg;
 		}
 	}
-	assert(root == arg);
 	GeneralPtr* genPtr;
 	TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
 	if(!genPtr){

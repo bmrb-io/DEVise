@@ -3,6 +3,9 @@
 #include "DevRead.h"
 #include "UniData.h"
 
+#undef assert
+#include <assert.h>
+
 TypeID translateUDType(Attr* at){
 
    switch (at->type()) {
@@ -70,12 +73,7 @@ Iterator* DevRead::createExec(){
 	size_t* currentSz = new size_t[numFlds];
 	Tuple* tuple = new Tuple[numFlds];
 	for(int i = 0; i < numFlds; i++){
-		if(typeIDs[i] == "date"){
-			unmarshalPtrs[i] = tmUnmarshal;
-		}
-		else{
-			unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
-		}
+		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
 		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
 	return new DevReadExec(ud, unmarshalPtrs, tuple, offsets, numFlds);
@@ -83,8 +81,7 @@ Iterator* DevRead::createExec(){
 
 const Tuple* DevReadExec::getNext(){
 	UD_Status stat;
-	if(!ud->isOk()){
-		assert(0);
+	if(!ud->isOk()){	// should not happen
 		return NULL;
 	}
 	stat = ud->getRec(buff,&off);

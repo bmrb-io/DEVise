@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/06/16 16:04:52  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.24  1997/04/18 20:46:19  donjerko
   Added function pointers to marshall types.
 
@@ -390,7 +393,9 @@ public:
 		return bool(result);
 	}
 	virtual void display(ostream& out, int detail = 0){
-		displayAs(out, value, typeID);
+		WritePtr wp = getWritePtr(typeID);
+		assert(wp);
+		wp(out, value);
 		BaseSelection::display(out, detail);
 	}
 	virtual BaseSelection* filter(Site* site){

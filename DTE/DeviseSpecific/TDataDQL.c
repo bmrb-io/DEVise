@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/06/16 16:05:11  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.13  1997/06/10 19:21:25  wenger
   Removed (some) debug output.
 
@@ -128,7 +131,12 @@ void TDataDQL::runQuery(){
 	}
 	_marshalPtrs = new MarshalPtr[_numFlds];
 	for(int i = 0; i < _numFlds; i++){
-		_marshalPtrs[i] = getMarshalPtr(_types[i]);
+		if(_types[i] == DATE_TP){
+			_marshalPtrs[i] = dateToUnixTime;
+		}
+		else{
+			_marshalPtrs[i] = getMarshalPtr(_types[i]);
+		}
 	}
      Tuple* tup;
 	Tuple* highTup = new Tuple[_numFlds];
@@ -145,7 +153,13 @@ void TDataDQL::runQuery(){
 	_attrs.Clear();
 	for(int i = 0; i < _numFlds; i++){
 
-		TRY(int deviseSize = packSize(_types[i]), );
+		int deviseSize;
+		if(_types[i] == DATE_TP){
+			deviseSize = sizeof(time_t);	
+		}
+		else{
+			TRY(deviseSize = packSize(_types[i]), );
+		}
 #if defined(DEBUG)
 		cout << "deviseSize = " << deviseSize << endl;
 #endif
