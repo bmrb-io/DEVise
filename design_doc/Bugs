@@ -2505,8 +2505,9 @@ Num Date        Status  Description
 			shown (and a view is selected) when the Stop button
 			is clicked. (rkw)
 
-633 01/17/01	OPEN	Load 4297g1.ds, zoom in in the X direction -- bars
+633 01/17/01	DUP	Load 4297g1.ds, zoom in in the X direction -- bars
 			are no longer properly displayed. (rkw)
+			(Duplicate of 635.)
 
 634 01/19/01	OPEN	JavaScreen: arrow keys don't work unless num lock is
 			turned on. (rkw)
@@ -2515,14 +2516,24 @@ Num Date        Status  Description
 			generated sessions (e.g., 4297g1.ds). (rkw)
 			(Fixed by rkw, 1/25/01.)
 
-636 01/25/01	OPEN	JavaScreen: automatic switchover from socket to CGI
+636 01/25/01	FIXED	JavaScreen: automatic switchover from socket to CGI
 			mode takes too long. (rkw)
+			(Fixed by rkw, 2/1/01.)
 
 637 01/30/01    OPEN    JavaScreen: all of the buttons have gotten bigger.
                         (rkw)
 
 638 01/30/01    OPEN    JavaScreen: Filter button seems to make things hang.
 			(rkw)
+
+639 02/01/01	FIXED	JavaScreen: if you start the JSA twice in Netscape
+			without forcing a reload, the gears and traffic
+			lights don't show up the second time. (rkw)
+			(Fixed by rkw, 2/5/01.)
+
+640 02/02/01	FIXED	JavaScreen: clicking "Exit" in the JSA doesn't
+			destroy the debug window, if there is one. (rkw)
+			(Fixed by rkw, 2/5/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
