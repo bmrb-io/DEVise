@@ -2,4 +2,4 @@
 # jspops if necessary.
 6,16,26,36,46,56 * * * * cd /local.pumori/devise/js.regular; ./run_check
 7,17,27,37,47,57 * * * * cd /local.pumori/devise/js.soil; ./run_check_soil
-47 3,15 * * * /local.pumori/devise/JavaScreen/run_top
+47 3,15 * * * /local.pumori/devise/js.regular/run_top
