@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  1999/07/21 18:51:09  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.75  1999/07/19 19:46:40  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -5398,6 +5401,51 @@ IMPLEMENT_COMMAND_BEGIN(updateAxisTypes)
 	}
 IMPLEMENT_COMMAND_END
 
+IMPLEMENT_COMMAND_BEGIN(getViewGeometry)
+    // Arguments: <view name>
+    // Returns: <x> <y> <width> <height>
+	//   (x, y, width, and height are expressed as a fraction of the
+	//   window size)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		int winX, winY;
+		unsigned winWidth, winHeight;
+		Layout *win = (Layout *)(view->GetParent());
+		win->Geometry(winX, winY, winWidth, winHeight);
+		win->AbsoluteOrigin(winX, winY);
+
+		int viewX, viewY;
+		unsigned int viewWidth, viewHeight;
+		view->Geometry(viewX, viewY, viewWidth, viewHeight);
+		view->AbsoluteOrigin(viewX, viewY);
+		viewX -= winX;
+		viewY -= winY;
+
+		Coord relViewX = (Coord)viewX / (Coord)winWidth;
+		Coord relViewY = (Coord)viewY / (Coord)winHeight;
+		Coord relViewWidth = (Coord)viewWidth / (Coord)winWidth;
+		Coord relViewHeight = (Coord)viewHeight / (Coord)winHeight;
+		char buf[128];
+		sprintf(buf, "%g %g %g %g", relViewX, relViewY, relViewWidth,
+		    relViewHeight);
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getViewGeom\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
 IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
     // Arguments: <view name> <x> <y> <width> <height>
 	//   (x, y, width, and height are expressed as a fraction of the
@@ -5425,6 +5473,8 @@ IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
 
 		view->MoveResize(viewX, viewY, viewWidth, viewHeight);
 		view->SetGeometry(viewX, viewY, viewWidth, viewHeight);
+		// Note: this will probably cause a crash if view is a view
+		// symbol.  RKW 1999-08-13.
 		win->SetLayoutProperties(CUSTOM, 0, 0);
         ReturnVal(API_ACK, "done");
 	    return 1;

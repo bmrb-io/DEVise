@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/07/21 18:51:09  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.43  1999/07/14 18:42:51  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -509,6 +512,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setXAxisDateFormat)
 	REGISTER_COMMAND(setYAxisDateFormat)
 	REGISTER_COMMAND(updateAxisTypes)
+	REGISTER_COMMAND(getViewGeometry)
 	REGISTER_COMMAND(setViewGeometry)
 	REGISTER_COMMAND(setPileStackState)
 	REGISTER_COMMAND(getPileStackState)

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/07/21 18:51:11  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.40  1999/07/14 18:42:53  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -1612,6 +1615,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(updateAxisTypes) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getViewGeometry) 
 DECLARE_CLASS_END
 
 //

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/07/21 18:51:00  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.55  1999/07/14 18:42:38  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -299,6 +302,7 @@
 #include "Color.h"
 #include "ViewGeom.h"
 #include "ViewGraph.h"
+#include "Layout.h"
 
 
 //#define DEBUG
@@ -1362,11 +1366,29 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
   status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
       "getWinViews", instance);
   if (status.IsComplete()) {
+    //
+    // Insert views into windows.
+    //
     int index;
     for (index = 0; index < argcOut; index++) {
       fprintf(saveData->fp, "DEVise insertWindow {%s} {%s}\n",
 	  argvOut[index], instance);
     }
+
+    //
+    // Save view geometries if window layout is custom.
+    //
+    ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+    Layout *window = (Layout *)classDir->FindInstance(instance);
+    LayoutMode mode;
+    window->GetLayoutMode(mode);
+    if (mode == CUSTOM) {
+      for (index = 0; index < argcOut; index++) {
+        status += SaveParams(saveData, "getViewGeometry", "setViewGeometry",
+            argvOut[index], NULL, NULL, false);
+      }
+    }
+    
     free((char *) argvOut);
   }
 

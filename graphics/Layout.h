@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/03/01 17:47:32  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.4  1997/11/24 23:14:22  weaver
   Changes for the new ColorManager.
 
@@ -64,6 +67,9 @@ class Layout : public ViewLayout
 
   virtual void SetPreferredLayout(int v, int h, Boolean stacked);
   virtual void SetLayoutProperties(LayoutMode mode, int rows, int columns);
+  virtual void GetLayoutMode(LayoutMode &mode) {
+    mode = _mode;
+  }
 
   virtual void Append(ViewWin *child);
   virtual void Delete(ViewWin *child);
