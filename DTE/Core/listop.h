@@ -16,11 +16,8 @@
   $Id$
 
   $Log$
-  Revision 1.6  1997/04/04 23:10:30  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+  Revision 1.7  1997/04/08 01:47:35  donjerko
+  Set up the basis for ORDER BY clause implementation.
 
   Revision 1.5  1996/12/21 22:21:48  donjerko
   Added hierarchical namespace.
@@ -88,9 +85,9 @@ void enumerateList(List<BaseSelection*>* list,
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(
-	List<BaseSelection*>* list, Tuple* left, Tuple* right = NULL);
+	List<BaseSelection*>* list, const Tuple* left, const Tuple* right = NULL);
 void tupleFromList(Tuple* next,
-	List<BaseSelection*>* list, Tuple* left, Tuple* right = NULL);
+	List<BaseSelection*>* list, const Tuple* left, const Tuple* right = NULL);
 void typifyList(List<Site*>* sites, String option);
 TypeID* getTypesFromList(List<BaseSelection*>* list);
 double listSelectivity(List<BaseSelection*>* list);

@@ -16,14 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/05/21 14:31:40  wenger
+  More changes for Linux.
+
   Revision 1.15  1997/04/10 21:50:26  donjerko
   Made integers inlined, added type cast operator.
-
-  Revision 1.14  1997/04/04 23:10:27  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.13  1997/03/23 23:45:22  donjerko
   Made boolean vars to be in the tuple.
@@ -93,7 +90,8 @@ void readFilter(String viewNm, String& select,
 Site* DeviseInterface::getSite(){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
-	Iterator* unmarshal = new DevRead(schema, data);
+	DevRead* unmarshal = new DevRead();
+	TRY(unmarshal->Open(schema, data), NULL);
 	if(viewNm == ""){
 		return new LocalTable("", unmarshal);	
 	}
@@ -120,7 +118,7 @@ Site* DeviseInterface::getSite(){
 	return retVal;
 }
 
-Schema* DeviseInterface::getSchema(TableName* table){
+ISchema* DeviseInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
@@ -128,7 +126,8 @@ Schema* DeviseInterface::getSchema(TableName* table){
 	if(viewNm.empty()){
 		char* schema = strdup(schemaNm.chars());
 		char* data = strdup(dataNm.chars());
-		DevRead tmp(schema, data);
+		DevRead tmp;
+		TRY(tmp.Open(schema, data), NULL);
 		numFlds = tmp.getNumFlds();
 		attributeNames = tmp.getAttributeNames();
 	}
@@ -137,7 +136,7 @@ Schema* DeviseInterface::getSchema(TableName* table){
 		String where;
 		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
 	}
-	return new Schema(attributeNames, numFlds);
+	return new ISchema(attributeNames, numFlds);
 }
 
 Site* StandardInterface::getSite(){ // Throws a exception
@@ -163,7 +162,7 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
      return inserter;
 }
 
-Schema* StandardInterface::getSchema(TableName* table){
+ISchema* StandardInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
@@ -175,7 +174,7 @@ Schema* StandardInterface::getSchema(TableName* table){
 	numFlds = iterator->getNumFlds();
 	attributeNames = iterator->getAttributeNames();
 	delete iterator;
-	return new Schema(attributeNames, numFlds);
+	return new ISchema(attributeNames, numFlds);
 }
 
 Site* CatalogInterface::getSite(){ // Throws a exception
@@ -185,11 +184,11 @@ Site* CatalogInterface::getSite(){ // Throws a exception
 	return retVal;
 }
 
-Schema* CatalogInterface::getSchema(TableName* table){
+ISchema* CatalogInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	String* attributeNames = new String("catentry");
-	return new Schema(attributeNames, 1);
+	return new ISchema(attributeNames, 1);
 }
 
 istream& CGIInterface::read(istream& in){  // throws
@@ -253,7 +252,7 @@ Site* ViewInterface::getSite(){
 	return new LocalTable("", engine); 
 }
 
-Schema* QueryInterface::getSchema(TableName* table){	// throws exception
+ISchema* QueryInterface::getISchema(TableName* table){	// throws exception
 	int count = 2;
 	String* options = new String[count];
 	String* values = new String[count];
@@ -278,10 +277,10 @@ Schema* QueryInterface::getSchema(TableName* table){	// throws exception
 	TypeID* types = iterator->getTypeIDs();
 	assert(types[0] == "schema");
 	iterator->initialize();
-	Tuple tuple[1];
-	assert(iterator->getNext(tuple));
-	Schema* schema = (Schema*) tuple[0];
-	assert(!iterator->getNext(tuple));
+	const Tuple* tuple;
+	assert(tuple = iterator->getNext());
+	ISchema* schema = new ISchema(*((ISchema*) tuple[0]));
+	assert(!iterator->getNext());
 	delete iterator;
 	return schema;
 }
@@ -304,23 +303,19 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
-	Tuple tuple[1];
+	const Tuple* tuple;
 	cout << "searching for " << firstPathNm << " in " << fileName << endl;
 
-	while(fileRead->getNext(tuple)){
+	while((tuple = fileRead->getNext())){
 		CatEntry* entry = (CatEntry*) tuple[0];
 		assert(entry);
 		String tableNm = entry->getName();
 		if(tableNm == firstPathNm){
 			delete in;
 			TRY(Interface* interf = entry->getInterface(), NULL);
-			// to do: delete tuple
-			delete entry;	// does not delete interface
-			entry = NULL;
 			if(interf->getType() == Interface::CATALOG){
 				CatalogInterface* tmp = (CatalogInterface*) interf;
 				TRY(String newFileNm = tmp->getCatalogName(), NULL);
-				delete interf;
 				Catalog tmpCat(newFileNm);
 				return tmpCat.findInterface(path);
 			}
@@ -330,12 +325,8 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 				THROW(new Exception(msg), NULL);
 			}
 			else{
-				return interf;
+				return interf;	// should be return interf->duplicate()
 			}
-		}
-		else{
-			delete entry;
-			entry = NULL;
 		}
 	}
 	delete in;

@@ -16,11 +16,9 @@
   $Id$
 
   $Log$
-  Revision 1.6  1997/04/04 23:10:25  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+
+  Revision 1.7  1997/06/14 22:34:35  liping
+  re-write min/max and recId request with SQL queries
 
   Revision 1.5  1997/03/28 16:07:26  wenger
   Added headers to all source files that didn't have them; updated
@@ -59,7 +57,7 @@ struct RTreePred {
 		}
 		else if(opName == ">="){
 			bounded[0] = true;
-			values[1] = constant;
+			values[0] = constant;
 		}
 		else if(opName == "<"){
 			bounded[1] = true;
@@ -96,6 +94,7 @@ struct RTreePred {
 		intersect(tmp);
 	}
 	void intersect(const RTreePred& pred){
+
 		if(pred.bounded[0] && !bounded[0]){
 			bounded[0] = true;
 			closed[0] = pred.closed[0];
@@ -133,7 +132,7 @@ struct RTreePred {
 			}
 		}
 	}
-	String toString(){
+	String toString() const {
 		String retVal;
 		if(closed[0]){
 			retVal += "[";
@@ -178,6 +177,7 @@ class RTreeIndex : public StandardRead {
 	int queryBoxSize();
 	bool initialized;
 	int dataSize;
+	Tuple* retVal;
 public:
 	RTreeIndex(IndexDesc* indexDesc) : 
 		StandardRead(), indexDesc(indexDesc) {
@@ -191,11 +191,13 @@ public:
 		}
 		cursor = NULL;
 		queryBox = NULL;
+		retVal = new Tuple[numFlds];
 		initialized = false;
 	}
 	virtual ~RTreeIndex(){
 		delete queryBox;
 		delete cursor;
+		delete retVal;
 	}
 	bool canUse(BaseSelection* predicate);	// Throws exception
 	void write(ostream& out){
@@ -224,7 +226,7 @@ public:
 		return indexDesc->getNumAddFlds();
 	}
 	virtual void initialize();
-	virtual bool getNext(Tuple* next);
+	virtual const Tuple* getNext();
 	virtual Offset getNextOffset();
 };
 

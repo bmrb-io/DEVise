@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1997/06/13 18:56:08  wenger
+#  Added xvertext lib to ALLLIBS.
+#
 #  Revision 1.31  1997/06/13 18:07:16  wenger
 #  Orientation is now working for text labels and fixed text labels.
 #
@@ -78,7 +81,8 @@ LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
 	-lgraphicsnew -lgraphics \
 	-lgraphicsnew -ldte \
 	-llm -lXrot \
-	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
+	-lissm -lcrsp -lcstat -ltape \
+	-L$(PERL_CORE) -lperl -L../unidata -lunidata $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lX11
 
@@ -96,7 +100,8 @@ OBJ = $(SRCc:.c=.o)
 OBJ += $(SRCC:.C=.o)
 
 ALLLIBS = ../graphics/libgraphics.a \
-	../graphics.new/libgraphicsnew.a ../DTE/libdte.a \
+	../graphics.new/libgraphicsnew.a ../unidata/libunidata.a \
+	../DTE/libdte.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a  ../LM/liblm.a ../xvertext/libXrot.a
 

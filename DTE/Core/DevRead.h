@@ -13,102 +13,111 @@
 */
 
 /*
-  Header file for DevRead (Devise Reader) class.
- */
-
-/*
-    $Id$
-    $Log$
-    Revision 1.3  1996/12/16 11:13:04  kmurli
-    Changes to make the code work for separate TDataDQL etc..and also changes
-    done to make Aggregates more robust
-
-    Revision 1.2  1996/12/15 06:41:04  donjerko
-    Added support for RTree indexes
-
-    Revision 1.1  1996/11/23 02:00:35  donjerko
-    Restructered DTE directory
-
-    Revision 1.1  1996/11/18 18:08:46  donjerko
-    Initial DTE release.
-
-    Revision 1.1  1996/08/14 19:04:31  flisakow
-      Checkin of DevRead class, a near duplicate of the AttrProj class,
-      it is an interface to reading data from Devise files.
 
  */
 
-#ifndef _DevRead_h_
-#define _DevRead_h_
+#ifndef UNIDATA_READ_H
+#define UNIDATA_READ_H
 
-
-#include "DeviseTypes.h"
-#include "RecId.h"
-
+#include <iostream.h>
+#include <String.h>
 #include "types.h"
 #include "Iterator.h"
 
-class TData;
+const int BUFSZE = 2048;
 
-class DevRead : public Iterator
-{
-  public:
+class Attr;
+class UniData;
+typedef long off_t;
 
-    DevRead() {
-        _tDataP = NULL;
-        _recBuf = NULL;
-        _recBufSize = 0;
-        _numAttr = 0;
-    }
+TypeID translateUDType(Attr* at);
 
-	  // schema may later be put into the dataFile
-    DevRead(char *schemaFile, char *dataFile) {
-        _tDataP = NULL;
-        _recBuf = NULL;
-        _recBufSize = 0;
-        _numAttr = 0;
-        Open(schemaFile,dataFile);
-    }
-	
-   virtual ~DevRead() { Close(); }
+class DevRead : public Iterator {
+protected:
+	UniData* ud;
+	char buff[BUFSZE+1];
+	off_t off;
+	int numFlds;
+	String* typeIDs;
+	String* attributeNames;
+	UnmarshalPtr* unmarshalPtrs;
+	int* offsets;
+	String* order;
+	Tuple* tuple;
+	int recId;
+public:
+     DevRead() : 
+		ud(NULL), numFlds(0), typeIDs(NULL), 
+		attributeNames(NULL),
+		unmarshalPtrs(NULL), offsets(NULL), order(NULL), tuple(NULL) {
 
-    DevStatus Open(char *schemaFile, char *dataFile);
-    DevStatus Close();
-	
-	virtual String *getOrderingAttrib();
-
-	virtual int getNumFlds() { return(_numAttr); }
-
-	  // For now, it should return "int", "string" etc.
-	virtual String *getTypeIDs();
-
-	virtual String *getAttributeNames();
-
-	  // returns false when done
-	virtual bool getNext(Tuple* next);
-
-	virtual void reset(int lowRid, int highRid);
-
-	virtual void setOffset(Offset offset);
-
-	virtual Offset getOffset(){
-		return Offset((int) _nxtRecId);
+		buff[BUFSZE] = '\0';
+		recId = 0;
 	}
 
-  private:
+	virtual ~DevRead() { Close(); }
 
-	int computeNumFlds();
+	virtual void open(istream* in){	// Throws exception
+		assert(0);
+	}
 
-    TData         *_tDataP;
-    RecId          _nxtRecId;     // The next record to examine
-    RecId          _lastRecId;    // The last record to examine
+	void Open(char* schemaFile, char* dataFile); // throws
 
-    char          *_recBuf;
-    int            _recBufSize;
-    int            _numAttr;      // The number of attributes
+	void Close();
+
+	virtual int getNumFlds(){
+		return numFlds;
+	}
+	virtual String *getTypeIDs(){
+		assert(typeIDs);
+		return typeIDs;
+	}
+	virtual String* getAttributeNames(){
+		assert(attributeNames);
+		String* retVal = new String[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			retVal[i] = attributeNames[i];
+		}
+		return retVal;
+	}
+	virtual String* getOrderingAttrib(){
+		return order;
+	}
+	virtual const Tuple* getNext(streampos& pos){
+		assert(! "not implemented");
+		return getNext();
+	}
+
+	virtual const Tuple* getNext();
+
+	virtual void setOffset(Offset offset){
+		off = offset.getOffset();
+	}
+
+     virtual Offset getOffset(){
+		return off;
+     }
+	virtual ostream& display(ostream& out){
+		out << "Num fields: " << numFlds << endl;
+		out << "(";
+		for(int i = 0; i < numFlds; i++){
+			out << typeIDs[i] << " " << attributeNames[i];
+			out << (i == numFlds - 1 ? "" : ", ");
+		}
+		out << ")";
+		return out;
+	}
+	virtual void writeHeader(ostream& out){
+		out << numFlds << " ";
+		for(int i = 0; i < numFlds; i++){
+			out << typeIDs[i] << " ";
+		}
+		cout << endl;
+		for(int i = 0; i < numFlds; i++){
+			out << attributeNames[i] << " ";
+		}
+		out << ";" << endl;
+	}
 };
 
-
-#endif // _DevRead_h_
-
-/*============================================================================*/
+#endif

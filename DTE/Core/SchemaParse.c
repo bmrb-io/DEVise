@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.3  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -51,12 +52,13 @@ String getIndexCatName(){
 }
 */
 
-class SchemaSite : public Site {
-	Schema* schema;	
+class ISchemaSite : public Site {
+	ISchema* schema;	
 	bool done;
+	Tuple retVal[1];
 public:
-	SchemaSite(Schema* schema) : Site(), schema(schema), done(false) {}
-	virtual ~SchemaSite(){
+	ISchemaSite(ISchema* schema) : Site(), schema(schema), done(false) {}
+	virtual ~ISchemaSite(){
 		// do not delete schema
 	}
 	virtual int getNumFlds(){
@@ -69,23 +71,23 @@ public:
           return new String("schema");
      }
 	virtual void initialize(){}
-	virtual bool getNext(Tuple* retVal){
+	virtual const Tuple* getNext(){
 		if(done){
-			return false;
+			return NULL;
 		}
 		done = true;
 		retVal[0] = schema;
-		return true;
+		return retVal;
 	}
 };
 
-Site* SchemaParse::createSite(){
+Site* ISchemaParse::createSite(){
 	Catalog* catalog = getRootCatalog();
 	Interface* interf;
 	assert(catalog);
 	TRY(interf = catalog->findInterface(tableName), NULL);
 	delete catalog;
-	TRY(Schema* schema = interf->getSchema(tableName), NULL);
+	TRY(ISchema* schema = interf->getISchema(tableName), NULL);
 	delete interf;
-	return new SchemaSite(schema);
+	return new ISchemaSite(schema);
 }

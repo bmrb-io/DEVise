@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.3  1997/03/28 16:07:28  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -39,6 +40,8 @@ String& stripQuotes(char* str){
 }
 
 String& stripQuotes(istream& in){	// can throw excetion
+
+	// use the other version
 
 	// strips backslashes from the string (and outer quotes)
 
@@ -82,6 +85,56 @@ String& stripQuotes(istream& in){	// can throw excetion
 		}
 	}
 	return value;
+}
+
+void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
+
+	// strips backslashes from the string (and outer quotes)
+
+	String& value = *(new String);
+	char tmp;
+	in >> tmp;
+	int length = 0;
+	buf[length] = '\0';
+	if(!in){
+		return;
+	}
+	if(tmp != '"'){
+		THROW(new Exception("Leading \" expected"), );
+	}
+	bool escape = false;
+	while(1){
+		assert(length < bufsz);
+		in.get(tmp);
+		if(!in){
+			String e = "Closing \" expected";
+			buf[length] = '\0';
+			THROW(new Exception(e), );
+		}
+		if(escape){
+			escape = false;
+			switch(tmp){
+			case '\\':
+				buf[length++] = '\\';
+				break;
+			case '"':
+				buf[length++] = '"';
+				break;
+			default:
+				assert(0);
+			}
+		}
+		else if(tmp == '\\'){
+			escape = true;
+		}
+		else if(tmp == '"'){
+			break;
+		}
+		else{
+			buf[length++] = tmp;
+		}
+	}
+	buf[length] = '\0';
 }
 
 String& addQuotes(String in){	// can throw excetion

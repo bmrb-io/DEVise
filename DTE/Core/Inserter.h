@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/04/10 21:50:24  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.2  1997/03/28 16:07:24  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -49,7 +52,8 @@ public:
 		Iterator* iterator = new StandardRead();
 		TRY(iterator->open(in), );
 		numFlds = iterator->getNumFlds();
-		TRY(writePtrs = iterator->getWritePtrs(), );
+		const TypeID* types = iterator->getTypeIDs();
+		TRY(writePtrs = newWritePtrs(types, numFlds), );
 		delete in;
 		TRY(out = url->getOutputStream(ios::app), );
 		delete url;
@@ -57,10 +61,7 @@ public:
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;
-		writePtrs = new WritePtr[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			TRY(writePtrs[i] = getWritePtr(typeIDs[i]), );
-		}
+		TRY(writePtrs = newWritePtrs(typeIDs, numFlds), );
 	}
 	void insert(Tuple* tuple){ // throws
 		assert(out);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/26 13:59:04  donjerko
+  Fixed the extraction of header.
+
   Revision 1.4  1997/02/18 18:06:08  donjerko
   Added skeleton files for sorting.
 
@@ -111,9 +114,9 @@ public:
 		// sockBuf cannot be deleted at this point because it is used
 		// in the istream
 
-		delete url;
-		delete host;
-		delete file;
+		free(url);
+		free(host);
+		free(file);
 	}
      istream* getInputStream();
      void post(ostrstream& content){

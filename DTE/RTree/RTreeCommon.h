@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:47  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef RTREE_COMMON_H
 #define RTREE_COMMON_H
 
-const int VolumeSize = 1*1024*1024;
+const int VolumeSize = 10*1024*1024;
 static const char* VolumeName = "RTREE";
 extern int RTreeFile;
 

@@ -45,7 +45,7 @@
 class TDataDQL: public TData, private DispatcherCallback {
 public:
 	TDataDQL(AttrList attrs,char *name,char *type,
-	int numFlds, String* types, int recSize, TuplePtrXPlex& result, 
+	int numFlds, String* types, int recSize, long totalRecs, 
 	int* sizes);
 
 	TDataDQL(char* tableName, List<char*>* attrList, char* query);
@@ -174,7 +174,6 @@ private:
 	AttrList _attrs;
 	int _numFlds;
 	String* _types;
-	TuplePtrXPlex _result;
 	int* _sizes;
 	char* _query;
 	List<char*>* attrList;

@@ -16,14 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/04/14 20:44:12  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.8  1997/04/08 01:47:34  donjerko
   Set up the basis for ORDER BY clause implementation.
-
-  Revision 1.7  1997/04/04 23:10:29  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.6  1997/03/23 23:45:23  donjerko
   Made boolean vars to be in the tuple.
@@ -237,7 +234,9 @@ bool boolCheckList(List<BaseSelection*>* list){
 	return true;
 }
 
-bool evaluateList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
+bool evaluateList(
+	List<BaseSelection*>* list, const Tuple* left, const Tuple* right){
+
 	list->rewind();
 	while(!list->atEnd()){
 		bool value = list->get()->evaluate(left, right);
@@ -250,11 +249,11 @@ bool evaluateList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
 }
 
 void tupleFromList(Tuple* retVal, 
-		List<BaseSelection*>* list, Tuple* left, Tuple* right){
+		List<BaseSelection*>* list, const Tuple* left, const Tuple* right){
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){
-		retVal[i] = list->get()->evaluate(left, right);
+		retVal[i] = (Type*) list->get()->evaluate(left, right);
 		list->step();
 		i++;
 	}

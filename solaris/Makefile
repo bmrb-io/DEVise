@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.20  1997/06/11 18:34:48  wenger
+# Got xvertext set up to compile on hp, linux, solaris, solsparc, and sun.
+#
 # Revision 1.19  1997/05/28 15:40:44  wenger
 # Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 #
@@ -41,7 +44,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	attrproj devread DTE LM xvertext
+	attrproj devread unidata DTE LM xvertext
 
 MODULES = $(LIBMODULES) parser generic multi
 

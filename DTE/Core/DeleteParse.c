@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.3  1997/03/28 16:07:23  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -68,16 +69,16 @@ Site* DeleteParse::createSite(){
 		String msg = "Predicate has type " +  type + " (bool expected)";
 		THROW(new Exception(msg), NULL);
 	}
-	List<BaseSelection*>* siteSchema = site->getSelectList();
-	assert(siteSchema);
-	TRY(predicate = predicate->enumerate(*alias, siteSchema, "", NULL), NULL); 
+	List<BaseSelection*>* siteISchema = site->getSelectList();
+	assert(siteISchema);
+	TRY(predicate = predicate->enumerate(*alias, siteISchema, "", NULL), NULL); 
 	assert(predicate);
 	predicate->display(cout);
 	TRY(site->enumerate(), NULL);
 	site->initialize();
 	int inputNumFlds = site->getNumFlds();
-	Tuple tmpTuple[inputNumFlds];
-	while((site->getNext(tmpTuple))){
+	const Tuple* tmpTuple;
+	while((tmpTuple = site->getNext())){
 		cond = predicate->evaluate(tmpTuple, NULL);
 		if(!cond){
 			Tuple* copy = new Tuple[inputNumFlds];

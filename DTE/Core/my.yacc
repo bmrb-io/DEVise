@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/04/14 20:44:13  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.21  1997/04/10 21:50:28  donjerko
   Made integers inlined, added type cast operator.
 
@@ -172,7 +175,7 @@ input : query {
 definition: CREATE optIndType INDEX index_name ON table_name 
 	'(' keyAttrs ')' optIndAdd {
 		parseTree = new IndexParse($2, $4, $6, $8, $10);
-		YYACCEPT;
+		return my_yyaccept();
 	}
 	| DROP INDEX table_name index_name {
 		parseTree = new DropIndexParse($3, $4);
@@ -187,7 +190,7 @@ definition: CREATE optIndType INDEX index_name ON table_name
 		YYACCEPT;
 	}
 	| SCHEMA table_name {
-		parseTree = new SchemaParse($2);
+		parseTree = new ISchemaParse($2);
 		YYACCEPT;
 	}
 	;
@@ -209,7 +212,7 @@ optIndAdd: ADD '(' listOfStrings ')' {
 	;
 constant :
 	STRING_CONST {
-		$$ = new ConstantSelection("string", new IString($1));
+		$$ = new ConstantSelection("string", $1->chars());
 	}
 	| INT {
 		$$ = new ConstantSelection("int", (Type*) $1);

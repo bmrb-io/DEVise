@@ -44,7 +44,7 @@ static Tcl_Interp *globalInterp = 0;
 
 static const char *resultHeader = "Result of Execution\n";
 static const char *schemaFmt =
-	"Schema ( < %[^>]> ) OrderAttr %d density %f, range %n";
+	"ISchema ( < %[^>]> ) OrderAttr %d density %f, range %n";
 static const char *dateAttr = "hmdy";
 static const char *intAttr = "int";
 static const char *doubleAttr = "double";

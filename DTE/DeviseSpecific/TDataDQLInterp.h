@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/04/21 22:45:41  guangshu
+  Added function CreateWithParametersNew to do group by in DTE.
+
   Revision 1.8  1997/03/20 20:43:17  donjerko
   Increased the default size of Plex to 1000
 
@@ -107,7 +110,6 @@ private:
   int _numFlds;
   String* _types;
   AttrList _attrs;
-  TuplePtrXPlex _result;
   int* _sizes;
   int _counter;
 };
@@ -116,7 +118,7 @@ class RecInterp;
 class TDataDQLInterp: public TDataDQL {
 public:
   TDataDQLInterp(AttrList attrs,char *name,char *type,
-	int numFlds, String* types, int recSize, TuplePtrXPlex& result,
+	int numFlds, String* types, int recSize, long totalRecs,
 	int* sizes);
   TDataDQLInterp(char* tableName, List<char*>* attrList, char* query);
   virtual ~TDataDQLInterp();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/04/08 01:47:32  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.10  1997/03/28 16:07:25  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -148,13 +151,13 @@ public:
 	}
 };
 
-class SchemaParse : public ParseTree {
+class ISchemaParse : public ParseTree {
 	TableName* tableName;
 public:
-	SchemaParse(List<String*>* tableName) :
+	ISchemaParse(List<String*>* tableName) :
 		tableName(new TableName(tableName)) {}
 	virtual Site* createSite();	// throws exception
-	virtual ~SchemaParse(){
+	virtual ~ISchemaParse(){
 		delete tableName;	// destroy too
 	}
 };

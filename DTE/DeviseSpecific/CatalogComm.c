@@ -16,11 +16,10 @@
   $Id$
 
   $Log$
-  Revision 1.7  1997/04/04 23:10:39  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+  Revision 1.8  1997/04/22 15:25:24  wenger
+  Conditionaled out lots of debug code; fixed data source visualization
+  window so the window for the data again defaults to 'New' if there are
+  no windows.
 
   Revision 1.6  1997/04/03 16:37:15  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
@@ -79,12 +78,13 @@ char* executeQuery(const char* query){
 	if(engine.getNumFlds() == 0){
 		return NULL;
 	}
-	TRY(WritePtr* writePtrs = engine.getWritePtrs(), NULL);
+	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
+	WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds);
 	assert(writePtrs);
 	engine.initialize();
 	ostrstream out;
-	Tuple tup[numFlds];
-	while(engine.getNext(tup)){
+	const Tuple* tup;
+	while((tup = engine.getNext())){
 		out << "{";
 		for(int i = 0; i < numFlds; i++){
 			(writePtrs[i])(out, tup[i]);
@@ -93,6 +93,7 @@ char* executeQuery(const char* query){
 		out << "} ";
 	}
 	out << ends;
+	delete [] writePtrs;
 	engine.finalize();
 	char* retVal = out.str();
 
@@ -214,7 +215,9 @@ void dteInsertCatalogEntry(const char* catName, const char* values){
 char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
      char* schema = strdup(schemaFile);
      char* data = strdup(dataFile);
-	DevRead tmp(schema, data);
+	DevRead tmp;
+	tmp.Open(schema, data);
+	CATCH(exit(1));
 	int numFlds = tmp.getNumFlds();
 	String* attrs = tmp.getAttributeNames();
 	String retVal;
@@ -243,10 +246,10 @@ char* dteListAttributes(const char* tableName){
 	TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "schema");
 	engine.initialize();
-	Tuple tuple[1];
-	assert(engine.getNext(tuple));
-	Schema* schema = (Schema*) tuple[0];
-	assert(!engine.getNext(tuple));
+	const Tuple* tuple;
+	assert((tuple = engine.getNext()));
+	ISchema* schema = (ISchema*) tuple[0];
+	assert(!(tuple = engine.getNext()));
 	engine.finalize();
 	attrNames = schema->getAttributeNames();
 	numFlds = schema->getNumFlds();
@@ -356,10 +359,10 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "indexdesc");
 	engine.initialize();
-	Tuple tuple[1];
-	assert(engine.getNext(tuple));
+	const Tuple* tuple;
+	assert((tuple = engine.getNext()));
 	IndexDesc* indexDesc = (IndexDesc*) tuple[0];
-	assert(!engine.getNext(tuple));
+	assert(!(tuple = engine.getNext()));
 	engine.finalize();
 	int numKeyFlds = indexDesc->getNumKeyFlds();
 	int numAddFlds = indexDesc->getNumAddFlds();

@@ -20,7 +20,12 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
-NO_RTREE = 1
+#NO_RTREE = 1
+
+PERL_INCL = -I$(PERL_CORE)
+
+#READ_FLAGS = -L../devread -ldevread
+READ_FLAGS = -L../unidata -lunidata -L$(PERL_CORE) -lperl
 
 DTE_INCLUDES = \
 	-I$(DTE_DIR)/Core \
@@ -30,9 +35,11 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/Script \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I../../attrproj \
 	-I$(DTE_DIR)/GUI \
-	-I$(DTE_DIR)/Script
+	-I$(DTE_DIR)/Script \
+	-I../../unidata \
+	$(PERL_INCL) \
+ 	-I../../attrproj
 
 CFLAGS = $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused $(OPTFLAG) \
@@ -45,10 +52,11 @@ ifdef NO_RTREE
 endif
 
 CORE_SRC = DevRead.c resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
-	listop.c catalog.c SockStream.c url.c StandardRead.c FunctionRead.c \
+	listop.c catalog.c SockStream.c url.c StandardRead.c \
 	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
-	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c ApParseCat.c \
+	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c TuplePtr.Plex.c TuplePtr.XPlex.c
+#	ApParseCat.c FunctionRead.c
 
 ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c
@@ -144,31 +152,31 @@ lib: $(LIBNAME)
 
 dte: $(STAND_ALONE_OBJ)
 	$(CC) -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 pure: $(STAND_ALONE_OBJ)
 	purify $(CC) -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 quant: $(STAND_ALONE_OBJ)
 	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 script: $(SCRIPT_OBJ)
-	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) -L../devread \
-	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) \
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 scriptServer:	$(SCRIPTSERVER_OBJ)
-	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) -L../devread \
-	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
+	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) \
+	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
 
 scriptClient:	$(SCRIPTCLIENT_OBJ)
 	$(CC) -o scriptClient $(SCRIPTCLIENT_OBJ) $(ARCH_LDFLAGS) \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 gui: $(GUI_OBJ)
-	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) -L../devread \
-	-ldevread $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
+	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) \
+	$(READ_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
 FormatVolume: FormatVolume.C
 	$(CC) $< -o $@

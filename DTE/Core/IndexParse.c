@@ -16,11 +16,8 @@
   $Id$
 
   $Log$
-  Revision 1.8  1997/04/04 23:10:23  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+  Revision 1.9  1997/04/18 20:46:16  donjerko
+  Added function pointers to marshall types.
 
   Revision 1.7  1997/03/28 16:07:24  wenger
   Added headers to all source files that didn't have them; updated
@@ -113,14 +110,14 @@ Site* IndexParse::createSite(){
 	assert(numFlds == numKeyFlds + numAddFlds);
 	String* types = site->getTypeIDs();
 	MarshalPtr* marshalPtrs = new MarshalPtr[numFlds];
-	int sizes = new int[numFlds];
+	int* sizes = new int[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		marshalPtrs[i] = getMarshalPtr(types[i]);
 		sizes[i] = packSize(types[i]);
 	}
-	String rtreeSchema;
+	String rtreeISchema;
 	for(int i = 0; i < numKeyFlds; i++){
-		rtreeSchema += rTreeEncode(types[i]);
+		rtreeISchema += rTreeEncode(types[i]);
 	}
 
 	TRY(int recIDSize = packSize(&(types[numKeyFlds]), numAddFlds), NULL);
@@ -130,7 +127,7 @@ Site* IndexParse::createSite(){
 	int points = 1; // set to 0 for rectangles
 	ostrstream line1;
 	line1 << numKeyFlds << " " << recIDSize << " " << points << " ";
-	line1 << rtreeSchema;
+	line1 << rtreeISchema;
 	int fillSize  = (line1.pcount() + 1) % 8;	// allign on 8 byte boundary
 	for(int i = 0; i < fillSize; i++){
 		line1 << " ";
@@ -140,18 +137,17 @@ Site* IndexParse::createSite(){
 	ofstream ind(bulkfile);
 	assert(ind);
 	ind << line1.rdbuf();
-	Tuple* tup;
 	int fixedSize; 
 	int tupSize;
 	Offset offset;
+	site->initialize();
 	if(!standAlone){
 		TRY(offset = site->getOffset(), NULL);
-		cout << "offset = " << offset << endl;
+		// cout << "offset = " << offset << endl;
 	}
-	Tuple* tup = new Tuple[numFlds];
-     bool more = site->getNext(tup);
+	const Tuple* tup = site->getNext();
 	char* flatTup = NULL;
-	if(more){ // make sure this is not empty
+	if(tup){ // make sure this is not empty
 		TRY(fixedSize = packSize(types, numFlds), NULL);
 		flatTup = new char[fixedSize];
 		marshal(tup, flatTup, marshalPtrs, sizes, numFlds);
@@ -159,19 +155,19 @@ Site* IndexParse::createSite(){
 		if(!standAlone){
 			ind.write((char*) &offset, sizeof(Offset));
 			offset = site->getOffset();
-			cout << "offset = " << offset << endl;
+			// cout << "offset = " << offset << endl;
 		}
-		while(site->getNext(tup)){
+		while((tup = site->getNext())){
 			tupSize = packSize(tup, types, numFlds);
 			if(tupSize != fixedSize){
 				assert(0);
 			}
-			marshal(tup, flatTup, marshalPtrs, numFlds);
+			marshal(tup, flatTup, marshalPtrs, sizes, numFlds);
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
 				ind.write((char*) &offset, sizeof(Offset));
 				offset = site->getOffset();
-				cout << "offset = " << offset << endl;
+				// cout << "offset = " << offset << endl;
 			}
 		}
 	}
@@ -220,13 +216,12 @@ Site* IndexParse::createSite(){
 		addTypes[i] = types[numKeyFlds + i];
 	}
 
-	Tuple* tuple = new Tuple[3];
-	tuple[0] = new IString(tablename.chars());
-	tuple[1] = new IString(indexName);
+	Tuple tuple[3];
+	tuple[0] = (Type*) tablename.chars();
+	tuple[1] = (Type*) indexName->chars();
 	tuple[2] = new IndexDesc(numKeyFlds, keyFlds, numAddFlds, addFlds,
 			!standAlone, root1.pid, keyTypes, addTypes);	
 	TRY(insert(".sysind", tuple), NULL);
-	delete tuple;
 	delete catalog;
 	delete [] marshalPtrs;
 	delete [] sizes;

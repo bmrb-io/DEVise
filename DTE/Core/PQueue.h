@@ -7,7 +7,7 @@
 typedef enum {Ascending, Descending } SortOrder;
 
 struct Node{
-  Tuple *tuple;
+  const Tuple *tuple;
   int run_num;
 };
 

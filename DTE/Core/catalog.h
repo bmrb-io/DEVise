@@ -16,11 +16,8 @@
   $Id$
 
   $Log$
-  Revision 1.12  1997/04/04 23:10:28  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+  Revision 1.13  1997/04/06 19:01:40  donjerko
+  *** empty log message ***
 
   Revision 1.11  1997/02/25 22:14:53  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
@@ -98,7 +95,7 @@ public:
 	virtual Type getType(){
 		return UNKNOWN;
 	}
-	virtual Schema* getSchema(TableName* table) = 0;	// throws
+	virtual ISchema* getISchema(TableName* table) = 0;	// throws
 	virtual Inserter* getInserter(TableName* table){ // throws
 		THROW(new Exception("Insertion not supported"), NULL);
 	}
@@ -137,8 +134,8 @@ public:
 		out << " " << priority << " " << addQuotes(command);
 		out << " " << addQuotes(segment);
 	}
-	virtual Schema* getSchema(TableName* table){
-		String msg = "Schema lookup not supported for UNIXFILEs";
+	virtual ISchema* getISchema(TableName* table){
+		String msg = "ISchema lookup not supported for UNIXFILEs";
 		THROW(new Exception(msg), NULL);
 	}
 };
@@ -163,13 +160,13 @@ public:
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out);
-	virtual Schema* getSchema(TableName* table){
+	virtual ISchema* getISchema(TableName* table){
 		assert(table);
 		assert(table->isEmpty());
 		assert(attributeNames);
 		String* retVal = attributeNames;
 		attributeNames = NULL;
-		return new Schema(retVal, numFlds);
+		return new ISchema(retVal, numFlds);
 	}
 };
 
@@ -193,7 +190,7 @@ public:
 		out << "\t" << addQuotes(viewNm);
 		Interface::write(out);
 	}
-	virtual Schema* getSchema(TableName* table);
+	virtual ISchema* getISchema(TableName* table);
 };
 
 class StandardInterface : public Interface{
@@ -209,7 +206,7 @@ public:
 		out << " " << urlString;
 		Interface::write(out);
 	}
-	virtual Schema* getSchema(TableName* table);	// throws exception
+	virtual ISchema* getISchema(TableName* table);	// throws exception
 	virtual Inserter* getInserter(TableName* table); // throws
 };
 
@@ -233,7 +230,7 @@ public:
 	virtual Type getType(){
 		return QUERY;
 	}
-	virtual Schema* getSchema(TableName* table);	// throws exception
+	virtual ISchema* getISchema(TableName* table);	// throws exception
 };
 
 class CGIInterface : public Interface{
@@ -265,8 +262,8 @@ public:
 		}
 		Interface::write(out);
 	}
-	virtual Schema* getSchema(TableName* table){
-		String msg = "Schema lookup not yet implemented for CGIs";
+	virtual ISchema* getISchema(TableName* table){
+		String msg = "ISchema lookup not yet implemented for CGIs";
 		THROW(new Exception(msg), NULL);
 	}
 };
@@ -292,7 +289,7 @@ public:
 	virtual Type getType(){
 		return CATALOG;
 	}
-	virtual Schema* getSchema(TableName* table);	// throws exception
+	virtual ISchema* getISchema(TableName* table);	// throws exception
 };
 
 #endif

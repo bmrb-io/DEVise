@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.2  1997/02/03 04:11:27  donjerko
   Catalog management moved to DTE
 
@@ -56,13 +57,8 @@ public:
 	virtual String * getOrderingAttrib(){
 		return iterator->getOrderingAttrib();
 	}
-	virtual bool getNext(Tuple* next){
-		Tuple* tmp = funcPtr();
-		if(tmp == NULL){
-			return false;
-		}
-		memcpy(next, tmp, numFlds * sizeof(Type*));
-		return true;
+	virtual const Tuple* getNext(){
+		return funcPtr();
 	}
 	virtual ostream& display(ostream& out){
 		return iterator->display(out);

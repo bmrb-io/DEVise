@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.6  1997/03/28 16:07:25  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -78,13 +79,15 @@ int RTreeIndex::queryBoxSize(){
 	int numKeyFlds = getNumKeyFlds();
 	for(int j = 0; j < 2; j++){	// add lower than upper bounds
 		for(int i = 0; i < numKeyFlds; i++){
-			size += rTreeQuery[i].values[j]->binarySize();
+			ConstantSelection* cs = rTreeQuery[i].values[j];
+			assert(cs);
+			size += cs->binarySize();
 		}
 	}
 	return size;
 }
 
-bool RTreeIndex::getNext(Tuple* retVal){
+const Tuple* RTreeIndex::getNext(){
 	assert(initialized);
 	gen_key_t ret_key;
 	bool eof = false;
@@ -98,6 +101,7 @@ bool RTreeIndex::getNext(Tuple* retVal){
 	}
 	Offset offset;
 	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
+	assert(retVal);
 	if(!eof){
 		// ret_key.print();
 		int offs = 0;
@@ -120,10 +124,10 @@ bool RTreeIndex::getNext(Tuple* retVal){
 		#ifdef DEBUG
 		cout << "Offset = " << offset << endl;
 		#endif
-		return true;
+		return retVal;
 	}
 	else{
-		return false;
+		return NULL;
 	}
 }
 
@@ -159,7 +163,7 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 		for(int i = 0; i < numKeyFlds; i++){
 			if(attributeNames[i] == attr){
 				cout << "Updating rtree query on att " << i;
-				cout << "with: " << opName << " ";
+				cout << " with: " << opName << " ";
 				constant->display(cout);
 				cout << endl;
 				TRY(rTreeQuery[i].update(opName, constant), false);

@@ -16,18 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/06/03 16:17:50  arvind
+  Removed the bug regarding strdup and strcat when naming temp files.
+
   Revision 1.6  1997/05/30 15:44:36  arvind
   External Sorting code using Qsort for in-memory sorting and priority queues
   for merging.
 
   Revision 1.5  1997/04/08 01:47:34  donjerko
   Set up the basis for ORDER BY clause implementation.
-
-  Revision 1.4  1997/04/04 23:10:26  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.3  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
@@ -58,10 +55,10 @@ private:
   PQueue *Q;                // Internal Priority Queue
 
   StandardRead *input_buf;  // Used to read in the sorted runs while merging
-  ifstream  *temp_files;    // Temporary files that hold the runs
+  ifstream** temp_files;    // Temporary files that hold the runs
   Inserter  *output_buf;    // Output buffer in which current run is placed
   ofstream  *out_temp_file; // File connected with output_buf
-  char      *temp_filename; // Name of temporary file to hold a run
+  char      temp_filename[20]; // Name of temporary file to hold a run
     
   int       Nruns;          // Number of runs
   TypeID    *attrTypes;     // Attribute types of the tuple fields
@@ -71,6 +68,8 @@ private:
   int       *sortFlds;     // Index of fields to be sorted on 
   SortOrder order;          // Ascending or Descending
   GeneralPtr **comparePtrs; // Comparison operators
+  Node* node_ptr;
+  TupleLoader tupleLoader;
     
   void generate_runs();
 //  void PQ1_generate_runs();
@@ -85,18 +84,19 @@ private:
 public:
 
     Sort(String nm, List<BaseSelection*>* orderBy, Site* input): /*SortOrder*/
-       Site(nm), orderBy(orderBy), input(input) /*, order(order) */ 
+       Site(nm), orderBy(orderBy), input(input),
+	  node_ptr(NULL) /*, order(order) */ 
        {}
 
     ~Sort()
       { 
-         if (temp_files) delete [] temp_files; 
-         if (out_temp_file) delete out_temp_file; 
-         if (output_buf) delete output_buf; 
-         if (input_buf) delete [] input_buf;
-         if (Q) delete Q;
-         if (attrTypes) delete attrTypes;
-         if (comparePtrs) delete comparePtrs;
+         delete [] temp_files;
+         // out_temp_file deleted by Inserter; 
+         delete output_buf; 
+         delete [] input_buf;
+         delete Q;
+         delete [] attrTypes;
+         delete [] comparePtrs;
 
          char filename[20];
 	 for (int i =0; i < Nruns; i++)
@@ -135,7 +135,7 @@ public:
      }
     
      virtual void initialize();         // To be called once at the start
-     virtual bool getNext(Tuple* next); // returns false when no more tuples
+     virtual const Tuple* getNext(); // returns NULL when no more tuples
 
 	virtual Stats* getStats(){
 		return input->getStats();
@@ -146,6 +146,7 @@ public:
 		TRY(typifyList(mySelect, tmpL), );
 		numFlds = mySelect->cardinality();
 		attrTypes = getTypesFromList(mySelect);
+		TRY(tupleLoader.open(numFlds, attrTypes), );
 		TRY(sortFlds = findPositions(mySelect, orderBy), );
                 numSortFlds = orderBy->cardinality();
 		cout << "Sort fields are (index, type) = ";
@@ -158,8 +159,8 @@ public:
 
        virtual void enumerate(){
           assert(input);
-          List<BaseSelection*>* baseSchema = input->getSelectList();
-          TRY(enumerateList(mySelect, name, baseSchema), );
+          List<BaseSelection*>* baseISchema = input->getSelectList();
+          TRY(enumerateList(mySelect, name, baseISchema), );
           input->enumerate();
       }
 

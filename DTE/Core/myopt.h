@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/04/18 20:46:19  donjerko
+  Added function pointers to marshall types.
+
   Revision 1.23  1997/04/14 20:44:14  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -161,7 +164,7 @@ public:
 		assert(0);
 		return ""; // avoid compiler warning
 	}
-	virtual Type* evaluate(Tuple* left, Tuple* right){
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
@@ -331,8 +334,8 @@ public:
 	virtual TypeID getTypeID(){
 		return parent->getTypeID();
 	}
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
+		const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
 		return base;
 	}
      virtual bool match(BaseSelection* x){
@@ -347,11 +350,13 @@ class ConstantSelection : public BaseSelection {
 public:
 	ConstantSelection(TypeID typeID, const Type* val) : 
 		BaseSelection(), typeID(typeID) {
-		value = NULL;
+
+		size_t objSize;
+		value = allocateSpace(typeID, objSize);
 		ADTCopyPtr cp = getADTCopyPtr(typeID);
 		assert(cp);
 		if(cp){
-			value = cp(val);
+			cp(val, value, objSize);
 		}
 	}
 	virtual ~ConstantSelection(){
@@ -380,7 +385,9 @@ public:
 		TRY(genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp), false);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
-		return genPtr->opPtr(value, arg.value);
+		Type* result;
+		genPtr->opPtr(value, arg.value, result);
+		return bool(result);
 	}
 	virtual void display(ostream& out, int detail = 0){
 		displayAs(out, value, typeID);
@@ -410,11 +417,10 @@ public:
 		GeneralPtr* genPtr;
 		TRY(genPtr = getOperatorPtr("=", typeID, y->typeID, tmp), false);
 		assert(tmp == "bool");
+		Type* result;
 		assert(genPtr && genPtr->opPtr);
-		if(!genPtr->opPtr(value, y->value)){
-			return false;
-		}
-		return true;
+		genPtr->opPtr(value, y->value, result);
+		return bool(result);
 	}
      virtual BaseSelection* enumerate(
           String site1, List<BaseSelection*>* list1,
@@ -428,8 +434,8 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return value;		// may need to duplicate
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
+		return value;
 	}
 	virtual int getSize(){
 		return packSize(value, typeID);
@@ -443,15 +449,24 @@ class TypeCast : public BaseSelection {
 	TypeID typeID;
 	BaseSelection* input;
 	PromotePtr promotePtr;
+	Type* value;
+	size_t valueSize;
 public:
-	TypeCast(TypeID& typeID, BaseSelection* input) : 
-		BaseSelection(), typeID(typeID), input(input), promotePtr(NULL) {
-	}
-	TypeCast(TypeID& typeID, BaseSelection* input, PromotePtr promotePtr) : 
+	TypeCast(TypeID& typeID, BaseSelection* input, 
+		PromotePtr promotePtr = NULL) : 
 		BaseSelection(), typeID(typeID), input(input), 
-		promotePtr(promotePtr) {
+		promotePtr(promotePtr){
+
+		value = allocateSpace(typeID, valueSize);
+	}
+	TypeCast(const TypeCast& x) {
+		typeID = x.typeID;
+		input = x.input->duplicate();
+		promotePtr = x.promotePtr;
+		value = allocateSpace(typeID, valueSize);
 	}
 	virtual ~TypeCast(){
+		delete value;
 	}
 	virtual void display(ostream& out, int detail = 0){
 		out << typeID << "(";
@@ -476,7 +491,7 @@ public:
 		return input->exclusive(attributeNames, numFlds);
 	}
 	virtual BaseSelection* duplicate(){
-		return new TypeCast(typeID, input->duplicate(), promotePtr);
+		return new TypeCast(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 	}
@@ -518,8 +533,9 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return promotePtr(input->evaluate(left, right));
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
+		promotePtr(input->evaluate(left, right), value);
+		return value;
 	}
 	virtual int getSize(){
 		return packSize(typeID);
@@ -537,13 +553,33 @@ protected:
 	BaseSelection* input;
 	MemberPtr memberPtr;
 	int avgSize;	// to estimate result sizes
+	Type* value;
+	size_t valueSize;
 public:
-	Member(String* name, BaseSelection* input, MemberPtr memberPtr = NULL,
-			TypeID typeID = "unknown") : 
+	Member(String* name, BaseSelection* input) : 
+		BaseSelection(), name(name), typeID(UNKN_TYPE), input(input), 
+		memberPtr(NULL) {
+
+		value = NULL;
+	}
+	Member(String* name, BaseSelection* input, MemberPtr memberPtr,
+			TypeID typeID) : 
 		BaseSelection(), name(name), typeID(typeID), input(input), 
 		memberPtr(memberPtr) {
+
+		value = allocateSpace(typeID, valueSize);
+	}
+	Member(const Member& x){
+		name = new String(*x.name);
+		typeID = x.typeID;
+		input = x.input->duplicate();
+		memberPtr = x.memberPtr;
+		avgSize = x.avgSize;
+		value = NULL;	// assuming that copy constructor is not called
+		// after typify
 	}
 	virtual ~Member(){
+		delete value;
 	}
 	virtual void display(ostream& out, int detail = 0){
 		input->display(out, detail);
@@ -570,8 +606,7 @@ public:
 		return input->exclusive(attributeNames, numFlds);
 	}
 	virtual BaseSelection* duplicate(){
-		return new Member(
-			new String(*name), input->duplicate(), memberPtr, typeID);
+		return new Member(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		input->collect(s, to);
@@ -613,6 +648,7 @@ public:
 		assert(genPtr);
 		memberPtr = genPtr->memberPtr;
 		assert(memberPtr);
+		value = allocateSpace(typeID, valueSize);
 		return typeID;
 	}
      virtual TypeID getTypeID(){
@@ -621,8 +657,9 @@ public:
 	virtual void setTypeID(TypeID type){
 		typeID = type;
 	}
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return memberPtr(input->evaluate(left, right));
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
+		memberPtr(input->evaluate(left, right), value);
+		return value;
 	}
 	virtual int getSize(){
 		return avgSize;
@@ -733,9 +770,9 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual Type* evaluate(Tuple* left, Tuple* right){
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
 		assert(0);
-		return memberPtr(input->evaluate(left, right));
+		return NULL;
 	}
 	virtual int getSize(){
 		assert(0);
@@ -824,7 +861,7 @@ public:
 	virtual String toStringAttOnly(){
 		return *fieldNm;
 	}
-	virtual Type* evaluate(Tuple* left, Tuple* right){
+	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
 		assert(!"Evaluate called on PrimeSelection");
 		return NULL;
 	}
@@ -1003,10 +1040,18 @@ public:
 class ExecOperator : public Operator{
      OperatorPtr opPtr;
 	Operator* parent;
+	Type* value;
+	size_t valueSize;
 public:
 	ExecOperator(String n, BaseSelection* l, BaseSelection* r, 
 		OperatorPtr opPtr, Operator* parent) :
-		Operator(n, l, r), opPtr(opPtr), parent(parent) {}
+		Operator(n, l, r), opPtr(opPtr), parent(parent) {
+		
+		value = allocateSpace(getTypeID(), valueSize);
+	}
+	~ExecOperator(){
+		delete value;
+	}
 	virtual void display(ostream& out, int detail = 0){
 		assert(parent);
 		parent->display(out);
@@ -1020,10 +1065,11 @@ public:
      virtual TypeID getTypeID(){
           return parent->getTypeID();
      }
-	virtual Type* evaluate(Tuple* leftT, Tuple* rightT){
-		Type* arg1 = left->evaluate(leftT, rightT);
-		Type* arg2 = right->evaluate(leftT, rightT);
-		return opPtr(arg1, arg2);
+	virtual const Type* evaluate(const Tuple* leftT, const Tuple* rightT){
+		const Type* arg1 = left->evaluate(leftT, rightT);
+		const Type* arg2 = right->evaluate(leftT, rightT);
+		opPtr(arg1, arg2, value, valueSize);
+		return value;
 	}
 };
 
@@ -1159,7 +1205,7 @@ public:
 		tmp << ends;
 		char* tmps = tmp.str();
 		String retVal(tmps);
-		delete tmps;
+		// delete tmps; // should use free instead?
 		return retVal;
 	}
 	int cardinality(){

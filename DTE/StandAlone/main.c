@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.8  1997/03/28 16:08:05  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -30,14 +31,14 @@
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
-#include "ApInit.h" /* for DoInit */
+// #include "ApInit.h" /* for DoInit */
 #include "RTreeCommon.h"
 
 const int DETAIL = 1;
 
 int main(int argc, char** argv){
 
-	Init::DoInit();	// to initialize Devise reading stuff
+//	Init::DoInit();	// to initialize Devise reading stuff
 	String query;
 	char c = '\0';
 	while(1){
@@ -66,16 +67,17 @@ int main(int argc, char** argv){
 	TRY(engine.optimize(), 0);
 	int numFlds = engine.getNumFlds();
 	if(numFlds > 0){
-		TRY(WritePtr* writePtrs = engine.getWritePtrs(), 0);
+		const TypeID* typeIDs = engine.getTypeIDs();
+		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), 0);
 		String* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";
 		}
 		cout << endl << "---------------------------------" << endl;
-		Tuple tup[numFlds];
+		const Tuple* tup;
 
 		engine.initialize();
-		while(engine.getNext(tup)){
+		while((tup = engine.getNext())){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);
 				cout << '\t';
@@ -83,6 +85,8 @@ int main(int argc, char** argv){
 			cout << endl;
 		}
 		engine.finalize();
+
+		delete [] writePtrs;
 	}
 
      // shutdown

@@ -26,14 +26,10 @@ public:
 	virtual int getNumFlds() = 0;
 	virtual String *getTypeIDs() = 0;
 	virtual String *getAttributeNames() = 0;
-	virtual WritePtr* getWritePtrs(){
-		assert(!"getWritePtrs not implemented");
-		return NULL;
-	}
 	virtual String *getOrderingAttrib(){
 		assert(0);
 	}
-	virtual bool getNext(Tuple* next) = 0;
+	virtual const Tuple* getNext() = 0;
 	virtual Stats* getStats(){
 
 		// default stats

@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.2  1997/03/28 16:07:28  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -30,7 +31,9 @@
 
 String& stripQuotes(char* str);	// can throw excetion
 
-String& stripQuotes(istream& in);	// can throw excetion
+String& stripQuotes(istream& in);	// obsolete, can throw excetion
+
+void stripQuotes(istream& in, char* buf, int bufsz);// can throw excetion
 
 String& addQuotes(String str);
 

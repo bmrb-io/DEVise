@@ -16,11 +16,8 @@
   $Id$
 
   $Log$
-  Revision 1.9  1997/04/04 23:10:26  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
+  Revision 1.10  1997/04/10 21:50:25  donjerko
+  Made integers inlined, added type cast operator.
 
   Revision 1.8  1997/03/23 23:45:21  donjerko
   Made boolean vars to be in the tuple.
@@ -63,21 +60,27 @@ protected:
 	ReadPtr* readPtrs;
 	String* order;
 	Stats* stats;
+	Tuple* tuple;
+	size_t* currentSz;
 public:
      StandardRead() : 
 		in(NULL), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
-		readPtrs(NULL), order(NULL), stats(NULL) {}
+		readPtrs(NULL), order(NULL), stats(NULL), tuple(NULL),
+		currentSz(NULL) {}
 
 	virtual ~StandardRead(){
 		delete in;
+		destroyTuple(tuple, numFlds, typeIDs);
+		delete [] tuple;
 		delete [] typeIDs;
 		delete [] attributeNames;
 		delete [] readPtrs;
-		delete [] stats;
+		delete stats;
+		delete [] currentSz;
 	}
 	virtual void open(istream* in);	// Throws exception
-	void open(istream* in, int numFlds, TypeID* typeIDs); // throws
+	void open(istream* in, int numFlds, const TypeID* typeIDs); // throws
 		// used for tmp tables
 
 	void writeTo(ofstream* outfile);
@@ -96,27 +99,25 @@ public:
 		}
 		return retVal;
 	}
-	virtual WritePtr* getWritePtrs(){	// throws
-          WritePtr* writePtrs = new WritePtr[numFlds];
-          for(int i = 0; i < numFlds; i++){
-               TRY(writePtrs[i] = getWritePtr(typeIDs[i]), NULL);
-          }
-          return writePtrs;
-	}
 	virtual String * getOrderingAttrib(){
 		return order;
 	}
-	virtual bool getNext(streampos& pos, Tuple* next){
+	virtual const Tuple* getNext(streampos& pos){
 		assert(in);
 		pos = in->tellg();
-		return getNext(next);
+		return getNext();
 	}
-	virtual bool getNext(Tuple* tuple){
+	virtual const Tuple* getNext(){
 		assert(in);
           for(int i = 0; i < numFlds; i++){
-			TRY((readPtrs[i])(*in, tuple[i]), false);
+			TRY((readPtrs[i])(*in, tuple[i]), NULL);
 		}
-		return in->good();
+		if(in->good()){
+			return tuple;
+		}
+		else {
+			return NULL;
+		}
 	}
      virtual Stats* getStats(){
           return stats;

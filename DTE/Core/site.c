@@ -16,17 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/05/07 18:56:54  donjerko
+  Added filterAll function.
+
   Revision 1.14  1997/04/14 20:44:16  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
   Revision 1.13  1997/04/10 21:50:30  donjerko
   Made integers inlined, added type cast operator.
-
-  Revision 1.12  1997/04/04 23:10:30  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.11  1997/03/23 23:45:24  donjerko
   Made boolean vars to be in the tuple.
@@ -145,7 +142,8 @@ void LocalTable::typify(String option){	// Throws exception
 		int shiftVal = ta->getShiftVal();
 		assert(!"Need to convert iterator to site");
 		assert(iterator);
-		iterator = new FunctionRead(iterator, function, shiftVal);
+		assert(!"not implemented");
+		// iterator = new FunctionRead(iterator, function, shiftVal);
 		assert(iterator);
 		TRY(iterator->initialize(), );
 	}
@@ -204,6 +202,8 @@ istream* contactURL(String name,
 		}
 	}
 	TRY(istream* in = url->getInputStream(), NULL);
+	assert(in);
+	assert(in->good());
 	delete url;
 	String code;
 	*in >> code;
@@ -234,7 +234,7 @@ istream* contactURL(String name,
 	return in;
 }
 
-void Site::typify(String option){	// Throws a exception
+void Site::typify(String option){	// Throws an exception
 	int count = 2;
 	String* options = new String[count];
 	String* values = new String[count];
@@ -440,7 +440,7 @@ Site* findIndexFor(String tableStr){	// throws
 	delete interf;
 	BaseSelection* name = new PrimeSelection("t", "table");
 	BaseSelection* value = new ConstantSelection(
-		"string", new IString(tableStr.chars()));
+		"string", strdup(tableStr.chars()));
 	BaseSelection* predicate = new Operator("=", name, value);
 	site->addPredicate(predicate);
 	site->addTable(new TableAlias(".sysind", "t"));
@@ -460,9 +460,9 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	indexForTable->initialize();
 	int tmpNumFlds = indexForTable->getNumFlds();
 	assert(tmpNumFlds == 3);
-	Tuple* tup = new Tuple[tmpNumFlds];
-	while(indexForTable->getNext(tup)){
-		IndexDesc* indexDesc = (IndexDesc*) tup[2];
+	const Tuple* tup;
+	while((tup = indexForTable->getNext())){
+		IndexDesc* indexDesc = new IndexDesc(*((IndexDesc*) tup[2]));
 		cout << "Index Desc for " << tableNm << ": ";
 		indexDesc->display(cout);
 		cout << endl;
@@ -522,54 +522,53 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			retVal->append(newAlt);
 		}
 	}
-	delete tup;
 	delete indexForTable;
 	return retVal;
 }
 
-bool SiteGroup::getNext(Tuple* next){
+const Tuple* SiteGroup::getNext(){
 	bool cond = false;
-	Tuple* innerTup = NULL;
-	assert(outerTup);
+	const Tuple* innerTup = NULL;
 	if(firstEntry){
-		moreOuter = site1->getNext(outerTup);
+		outerTup = site1->getNext();
 		firstEntry = false;
 	}
 	int innerNumFlds = site2->getNumFlds();
 	while(cond == false){
 		if(firstPass){
-			innerTup = new Tuple[innerNumFlds];
-			if(site2->getNext(innerTup)){
-				innerRel.append(innerTup);
+			if((innerTup = site2->getNext())){
+				innerRel.append((Tuple*)innerTup);	// must store the values!
+				// need to fix appendt to take const Tuple*
 			}
 			else{
 				firstPass = false;
 				innerRel.rewind();
 				if(innerRel.atEnd()){
-					return false;
+					return NULL;
 				}
 				innerTup = innerRel.get();
 				innerRel.step();
-				moreOuter = site1->getNext(outerTup);
+				outerTup = site1->getNext();
 			}
 		}
 		else{
 			if(innerRel.atEnd()){
 				innerRel.rewind();
-				moreOuter = site1->getNext(outerTup);
+				outerTup = site1->getNext();
 			}
 			innerTup = innerRel.get();
 			innerRel.step();
 		}
 		assert(innerTup);
-		if(!moreOuter){
-			return false;
+		if(!outerTup){
+			return NULL;
 		}
 		cond = evaluateList(myWhere, outerTup, innerTup);
 	}
-	assert(moreOuter);
+	assert(outerTup);
+	assert(next);
 	tupleFromList(next, mySelect, outerTup, innerTup);
-	return true;
+	return next;
 }
 
 void SiteGroup::typify(String option){	// Throws exception
@@ -584,6 +583,7 @@ void SiteGroup::typify(String option){	// Throws exception
 		TRY(typifyList(mySelect, tmpL), );
 	}
 	numFlds = mySelect->cardinality();
+	next = new Tuple[numFlds];
 	TRY(typifyList(myWhere, tmpL), );
 	double selectivity = listSelectivity(myWhere);
 	int card1 = site1->getStats()->cardinality;

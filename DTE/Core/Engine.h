@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.9  1997/03/23 23:45:19  donjerko
   Made boolean vars to be in the tuple.
 
@@ -54,13 +55,11 @@ class Engine : public Iterator {
 	String query;
 	Site* topNode;
 	String* attributeNames;
-	WritePtr* writePtrs;
 public:
 	Engine(String query) : query(query), topNode(NULL),
-		attributeNames(NULL), writePtrs(NULL) {}
+		attributeNames(NULL) {}
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
-		delete [] writePtrs;
 		delete [] attributeNames;
 	}
 	int optimize();	// throws
@@ -70,8 +69,8 @@ public:
      virtual String* getTypeIDs(){
           return topNode->getTypeIDs();
      }
-	virtual bool getNext(Tuple* next){
-		return topNode->getNext(next);
+	virtual const Tuple* getNext(){
+		return topNode->getNext();
 	}
 	virtual String* getAttributeNames(){
 		if(attributeNames){
@@ -96,18 +95,6 @@ public:
 	}
 	Stats* getStats(){
 		return topNode->getStats();
-	}
-	WritePtr* getWritePtrs(){	 // throws
-		if(writePtrs){
-			return writePtrs;
-		}
-		int numFlds = getNumFlds();
-		TypeID* types = getTypeIDs();
-		writePtrs = new WritePtr[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			TRY(writePtrs[i] = getWritePtr(types[i]), NULL);
-		}
-		return writePtrs;
 	}
 	void reset(int lowRid, int highRid){
 		TRY(topNode->reset(lowRid, highRid), );

@@ -255,9 +255,9 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 
 TDataDQLInterp::TDataDQLInterp(
 	AttrList attrs,char *name, char *type, 
-	int numFlds, String* types, int recSize, TuplePtrXPlex& result, 
+	int numFlds, String* types, int recSize, long totalRecs, 
 	int* sizes) : 
-	TDataDQL(attrs, name, type, numFlds, types, recSize, result, sizes)
+	TDataDQL(attrs, name, type, numFlds, types, recSize, totalRecs, sizes)
 {
   
  // Need to form a attribute list and pass it back..

@@ -12,6 +12,15 @@
   Development Group.
 */
 
+/*
+  $Id$
+
+  $Log$
+  Revision 1.13  1997/06/10 19:21:25  wenger
+  Removed (some) debug output.
+
+*/
+
 // #define DEBUG
 #include <assert.h>
 #include <iostream.h>
@@ -24,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <String.h>
 #include "AttrList.h"
 #include "Timer.h"
 
@@ -43,6 +53,7 @@
 #include "types.h"
 #include "TuplePtr.XPlex.h"
 #include "queue.h"
+#include "CatalogComm.h"
 
 #ifdef ATTRPROJ
 #   include "ApInit.h"
@@ -53,15 +64,36 @@
 
 # define  _STREAM_COMPAT
 
+AttrType getDeviseType(String type){
+	if(type == "int"){
+		return IntAttr;
+	}
+	else if(type == "float"){
+		return FloatAttr;
+	}
+	else if(type == "double"){
+		return DoubleAttr;
+	}
+	else if(type.through(5).contains("string")){
+		return StringAttr;
+	}
+	else if(type == "date"){
+		return DateAttr;
+	}
+	else{
+		cout << "Don't know DEVise type for: " << type << endl;
+		assert(0);
+	}
+}
+
 TDataDQL::TDataDQL(
 	AttrList attrs,char *name, char *type, 
-	int numFlds, String* types, int recSize, TuplePtrXPlex& result,
+	int numFlds, String* types, int recSize, long totalRecs,
 	int* sizes) : 
 	TData(name, type, strdup("query"), 0), // query <- name
 	_attrs(attrs),
 	_numFlds(numFlds),
 	_types(types),
-	_result(result),
 	_sizes(sizes),
 	_attributeNames(NULL),
 	_marshalPtrs(NULL)
@@ -74,20 +106,26 @@ TDataDQL::TDataDQL(
     _attrs.Print();
 #endif
 
-	_totalRecs = _result.length();
+	_totalRecs = totalRecs;
 
 	TData::_recSize = recSize;
 }
 
 void TDataDQL::runQuery(){
 
+#if defined(DEBUG) || 1
+	cout << "Running: " << _query << endl;
+#endif
+
 	Timer::StopTimer();
-	_result.clear();
-     Engine engine(_query);
+	Engine engine(_query);
      TRY(engine.optimize(), );
-     _numFlds = engine.getNumFlds();
-     _types = engine.getTypeIDs();
-	_attributeNames = engine.getAttributeNames();
+     assert(_numFlds == engine.getNumFlds() / 2);
+	_types = new TypeID[_numFlds];
+	const TypeID* tmpTypes = engine.getTypeIDs();
+	for(int i = 0; i < _numFlds; i++){
+		_types[i] = tmpTypes[2 * i];
+	}
 	_marshalPtrs = new MarshalPtr[_numFlds];
 	for(int i = 0; i < _numFlds; i++){
 		_marshalPtrs[i] = getMarshalPtr(_types[i]);
@@ -99,113 +137,19 @@ void TDataDQL::runQuery(){
 	memset(lowTup, 0, _numFlds * sizeof(Tuple));
 
 	engine.initialize();
-	Tuple* firstTup = new Tuple[_numFlds];
-	bool more = engine.getNext(firstTup);
-	if(more){
-		for(int i = 0; i < _numFlds; i++){
-			lowTup[i] = firstTup[i];
-			highTup[i] = firstTup[i];
-		}
-          _result.add_high(firstTup);
-	}
-	else{
-		cout << "Empty result set" << endl;
-	}
-	OperatorPtr* lessPtrs = new OperatorPtr[_numFlds];
-	OperatorPtr* greaterPtrs = new OperatorPtr[_numFlds];
-     for(int i = 0; i < _numFlds; i++){
-          TypeID retVal;
-		GeneralPtr* tmp;
-          TRY(tmp = getOperatorPtr("<",_types[i],_types[i],retVal), );
-		assert(tmp);
-		lessPtrs[i] = tmp->opPtr;
-          TRY(tmp = getOperatorPtr(">",_types[i],_types[i],retVal), );
-		assert(tmp);
-		greaterPtrs[i] = tmp->opPtr;
-     }
-
-	tup = new Tuple[_numFlds];
-     while(engine.getNext(tup)){
-		updateHighLow(_numFlds, lessPtrs, greaterPtrs, tup, highTup, lowTup);
-          _result.add_high(tup);
-		tup = new Tuple[_numFlds];
-     }
-	delete tup;
-
-#if defined(DEBUG)
-	cout << "Done with query ----------------------------------\n";
-#endif
-#ifdef DEBUG
-     for(int j = _result.low(); j < _result.fence(); j++){
-          for(int i = 0; i < _numFlds; i++){
-               displayAs(cout, _result[j][i], _types[i]);
-               cout << '\t';
-          }
-          cout << endl;
-     }
-#endif
+	const Tuple* firstTup = engine.getNext();
+	assert(firstTup);
 
 	int offset = 0;
 	_sizes = new int[_numFlds]; 
-	if(attrList){
-		attrList->rewind();
-	}
 	_attrs.Clear();
-
-	// generate the query;
-	String MMquery;
-	MMquery = "select ";
-	for (int MMi = 0; MMi<_numFlds; MMi++)
-	{
-	  	MMquery += "min(";
-		MMquery += _attributeNames[MMi];
-		MMquery += "), ";
-		MMquery += "max(";
-                MMquery += _attributeNames[MMi];
-		if (MMi == _numFlds - 1)
-			MMquery += ") ";
-		else
-			MMquery += "), ";
-	}
-	MMquery += "from ";
-	MMquery += _tableName;
-	MMquery += " as t";
-	
-	// start the engine
-	// cout << "*************** New Max/Min *************"; // for debugging
-	Engine MMengine(MMquery);
-  	MMengine.optimize();
-	CATCH(
-        	cout << "DTE error coused by query: \n";
-        	cout << "   " << MMquery << endl;
-        	currExcept->display();
-        	currExcept = NULL;
-        	cout << endl;
-        	exit(0);
-	)
-	Tuple MMtup[_numFlds];
-	MMengine.initialize();
-	MMengine.getNext(MMtup);
-	 
-	
-		
-
 	for(int i = 0; i < _numFlds; i++){
 
-		const char* atname = NULL;
-		if(attrList){
-			assert(!attrList->atEnd());
-			atname = attrList->get();
-			attrList->step();
-		}
-		else{
-			atname = strchr(_attributeNames[i].chars(), '.') + sizeof(char);
-		}
-		assert(atname);
-#if defined(DEBUG)
-		cout << "atname = " << atname << endl;
-#endif
 		TRY(int deviseSize = packSize(_types[i]), );
+#if defined(DEBUG)
+		cout << "deviseSize = " << deviseSize << endl;
+#endif
+
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
 		bool hasHighLow = false;
@@ -217,14 +161,15 @@ void TDataDQL::runQuery(){
 
 			hasHighLow = false;
 		}
-		else if(highTup[i] && lowTup[i]){
+		else {
 			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
 			hasHighLow = true;
-			_marshalPtrs[i](MMtup[i*2+1], (char*) hiVal);
-			_marshalPtrs[i](MMtup[i*2], (char*) loVal);
+			_marshalPtrs[i](firstTup[2 * i + 1], (char*) hiVal);
+			_marshalPtrs[i](firstTup[2 * i], (char*) loVal);
 		}
 
-		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
+		_attrs.InsertAttr(i, strdup(_attributeNames[i].chars()), 
+			offset, deviseSize, 
 			deviseType, false, 0, false, false, hasHighLow, hiVal, 
 			hasHighLow, loVal); 
 		offset += deviseSize;
@@ -232,11 +177,12 @@ void TDataDQL::runQuery(){
 
 	_recSize = offset;
 
-	_totalRecs = _result.length();
+	_totalRecs = ((int) firstTup[1]) + 1;	// max(recId)
 
 //	DataSeg::Set(_tableName, _query, 0, 0);
 
 #if defined(DEBUG)
+	cout << "_totalRecs = " << _totalRecs << endl;
 //	cout << "Attr list is:\n";
 	_attrs.Print();
 #endif
@@ -250,7 +196,25 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
 	_tableName = strdup(tableName);
 	_marshalPtrs = NULL;
-	_query = strdup(query);
+	char* attNames = dteListAttributes(_tableName);
+	char* attName = strtok(attNames, " ");
+	String minmaxQ("select ");
+	const int MAX_NUM_ATTRS = 100;
+	_attributeNames = new String[MAX_NUM_ATTRS];
+	int i = 0;
+	while(attName){
+		assert(i < MAX_NUM_ATTRS);	
+		_attributeNames[i] = String(attName);
+		minmaxQ += String("min(t.") + attName + "), max(t." + attName + ")";
+		attName = strtok(NULL, " "); 	
+		if(attName){
+			minmaxQ += ", ";
+		}
+		i++;
+	}
+	_numFlds = i;
+	minmaxQ += String(" from ") + _tableName + " as t";
+	_query = strdup(minmaxQ.chars());
 	this->attrList = attrList;
 	runQuery();
 	CATCH(
@@ -334,64 +298,9 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
-
-//  this is the only thing that need to be changed in the SQL version  
-//  ReadRec(req->nextId, numRecs, buf);
-
-//  Issue a query to the engine;
-  String SQLquery;
-  SQLquery="select ";
-  SQLquery+="* ";
-  SQLquery+="from ";
-  SQLquery+=_tableName;
-  SQLquery+=" as t where ";
-  char whereClause[29+sizeof(unsigned long)*2];
-  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", req->nextId, (unsigned long)((req->nextId)+numRecs-1));
-  SQLquery+=whereClause;
-  String query(SQLquery);
-
-// debugging
-   cout << "SQL query issued as: \n" << query << "\n";
-// end of debugging;
-
-  Engine engine(query);
-  engine.optimize();
-CATCH(
-	cout << "DTE error coused by query: \n";
-	cout << "   " << query << endl;
-	currExcept->display();
-	currExcept = NULL;
-	cout << endl;
-	exit(0);
-)
-
-  int numFlds = engine.getNumFlds();
-  assert(numFlds > 0);
-	WritePtr* writePtrs = engine.getWritePtrs(); // do I need it?
-  String* types = engine.getTypeIDs();
-  Tuple tup[numFlds];
-  int sizeOfFields[numFlds];
-  for (int i=0; i < numFlds; i++){
-    sizeOfFields[i]=packSize(types[i]);
-     	DBDQLNEW(sizeOfFields[i]);
-	DBDQLNEW(types[i]);}
   
-  char *ptr = (char *)buf;
-  engine.initialize();
-  int counter=0; // how many tuples have been written to buf;
-  // int offset=0; // where in the buf should the next field go into;
-  while ( (engine.getNext(tup)) && (counter<numRecs) )
-    {
-      for(int i = 0; i < numFlds; i++)
-	{
-	  _marshalPtrs[i](tup[i], (char*) ptr);
-
-	  ptr+=sizeOfFields[i];
-	}
-      counter++;
-    }
-  // end of the changes in the SQL version;
-      
+  ReadRec(req->nextId, numRecs, buf);
+  
   startRid = req->nextId;
   dataSize = numRecs * _recSize;
   req->nextId += numRecs;
@@ -482,12 +391,51 @@ void TDataDQL::BuildIndex()
 TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 	
 	char *ptr = (char *)buf;
-	for(long unsigned int i = id  ; i < numRecs + id; i++){
+
+//  Issue a query to the engine;
+  String SQLquery;
+  SQLquery="select ";
+  SQLquery+="* ";
+  SQLquery+="from ";
+  SQLquery+=_tableName;
+  SQLquery+=" as t where ";
+  char whereClause[29+sizeof(unsigned long)*2];
+  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", 
+		id, (unsigned long)(id + numRecs - 1));
+  SQLquery+=whereClause;
+  String query(SQLquery);
+
+#if defined(DEBUG) || 1
+	cout << "Running: " << query << endl;
+#endif
+
+  Engine engine(query);
+  engine.optimize();
+CATCH(
+     cout << "DTE error coused by query: \n";
+     cout << "   " << query << endl;
+     currExcept->display();
+     currExcept = NULL;
+     cout << endl;
+     exit(0);
+)
+
+  engine.initialize();
+  int counter=0; // how many tuples have been written to buf;
+
+  const Tuple* tuple;
+
+  while((tuple = engine.getNext())){
+
+		counter++;
+		assert(counter <= numRecs);
 		for(int j = 0; j < _numFlds; j++){
-			_marshalPtrs[j](_result[i][j], (char*) ptr);
+			_marshalPtrs[j](tuple[j], (char*) ptr);
 			ptr += _sizes[j];
 		}
 	}
+
+	assert(counter == numRecs);
 
     return TD_OK;
 }

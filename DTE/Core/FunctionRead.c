@@ -16,14 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/21 16:37:00  wenger
+  Removed lex.yy.c from CVS to fix compile problems; fixed some compile
+  warnings in the DTE; default is now to compile with neither -O nor
+  -gstabs -- set DEV_DEBUG env. var. to -1 for -O, anything else for
+  -gstabs; bumped version number up to 1.4.3.
+
   Revision 1.5  1997/04/10 21:50:23  donjerko
   Made integers inlined, added type cast operator.
-
-  Revision 1.4  1997/04/04 23:10:22  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.3  1997/03/23 23:45:19  donjerko
   Made boolean vars to be in the tuple.

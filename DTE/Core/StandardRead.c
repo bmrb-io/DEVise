@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/04/10 21:50:25  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.8  1997/03/23 23:45:21  donjerko
   Made boolean vars to be in the tuple.
 
@@ -62,11 +65,14 @@ void StandardRead::open(istream* in){	// Throws exception
 	typeIDs = new String[numFlds];
 	attributeNames = new String[numFlds];
 	readPtrs = new ReadPtr[numFlds];
+	tuple = new Tuple[numFlds];
+	currentSz = new size_t[numFlds];
 	int i;
 	for(i = 0; i < numFlds; i++){
 		(*in) >> typeIDs[i];
 		assert(in->good());
 		readPtrs[i] = getReadPtr(typeIDs[i]);
+		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
 	for(i = 0; i < numFlds; i++){
 		(*in) >> attributeNames[i];
@@ -97,12 +103,17 @@ void StandardRead::open(istream* in){	// Throws exception
 	}
 }
 
-void StandardRead::open(istream* in, int numFlds, TypeID* typeIDs){
+void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	this->in = in;
 	this->numFlds = numFlds;
+	this->typeIDs = new TypeID[numFlds];
 	readPtrs = new ReadPtr[numFlds];
+	currentSz = new size_t[numFlds];
+	tuple = new Tuple[numFlds];
 	for(int i = 0; i < numFlds; i++){
+		this->typeIDs[i] = typeIDs[i];
 		TRY(readPtrs[i] = getReadPtr(typeIDs[i]), );
+		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
 }
 
@@ -156,9 +167,12 @@ void NCDCRead::open(istream* in){	// Throws exception
      typeIDs[1] = "int";
 	attributeNames = new String[numFlds];
 	readPtrs = new ReadPtr[numFlds];
+	currentSz = new size_t[numFlds];
+	tuple = new Tuple[numFlds];
 	int i;
 	for(i = 0; i < numFlds; i++){
 		readPtrs[i] = getReadPtr(typeIDs[i]);
+		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
 	attributeNames[0] = "day";
 	attributeNames[1] = "temp";

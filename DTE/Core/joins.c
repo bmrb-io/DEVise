@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.6  1997/03/28 16:07:28  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -95,9 +96,15 @@ void Joins::typify(String  option){
 
 }
 
-bool Joins::getNext(Tuple* retVal)
-{
+const Tuple* Joins::getNext(){
+
+// bool Joins::getNext(Tuple* retVal)
 	
+	assert(!"not implemented");
+	return NULL;
+
+	/*
+
 	if (!moreInnerTup && innerRel.isEmpty()||outerRel.atEnd())
 		if (!innerFill())	
 			return false;
@@ -145,10 +152,15 @@ bool Joins::getNext(Tuple* retVal)
 	for(int i = 0;i < rightCountFlds;i++)
 		retVal[i+leftCountFlds] = rightTup[i];
 	return true;
+
+*/
 }
 
 bool Joins::outerFill(){
 	
+	assert(!"not implemented");
+	return false;
+/*
 	outerRel.removeAll();
 	nextOuterTup = new Tuple[left->getNumFlds()];
 	assert(nextOuterTup);
@@ -176,10 +188,17 @@ bool Joins::outerFill(){
 	}
 	outerRel.rewind();
 	return true;
+*/
+
 }
 
 bool Joins::innerFill(){
 	
+	assert(!"not implemented");
+	return NULL;
+
+/* commented by DD
+
 	innerRel.removeAll();
 	nextInnerTup = new Tuple[right->getNumFlds()];
 	assert(nextInnerTup);
@@ -208,6 +227,7 @@ bool Joins::innerFill(){
 	}
 	innerRel.rewind();
 	return true;
+*/
 }
 
 Site* JoinTable::Plan(List<Site*>*siteList,List<BaseSelection*>*selectList,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/06/14 22:34:36  liping
+  re-write min/max and recId request with SQL queries
+
   Revision 1.19  1997/05/30 15:49:59  arvind
   Added a "comp" operator for all data types. Semantics are same as for
   strcmp(left, right):
@@ -84,10 +87,18 @@
 #include <netinet/in.h>
 #include <time.h>
 #include "exception.h"
-#include "AttrList.h"
 #include "Utility.h"
+#include "queue.h"
 
 class BaseSelection;
+
+const int INITIAL_STRING_SIZE = 4000;
+// const char* ISO_TM = "%Y-%m-%d %H:%M:%S";
+
+static size_t ds;	// used only as a place holder
+const String UNKN_TYPE = "unknown";
+const String INT_TP = "int";
+const String DOUBLE_TP = "double";
 
 struct Stats{
 	int* fldSizes;
@@ -143,17 +154,18 @@ inline ostream& operator<<(ostream& out, Offset off){
 typedef void Type;
 typedef String TypeID;
 typedef Type* Tuple;
-typedef Type* (*OperatorPtr)(Type*, Type*);
-typedef Type* (*PromotePtr)(const Type*);
-typedef Type* (*ADTCopyPtr)(const Type*);
-typedef Type* (*MemberPtr)(Type*);
+typedef void (*OperatorPtr)(const Type*, const Type*, Type*&, size_t& = ds);
+typedef void (*PromotePtr)(const Type*, Type*&, size_t& = ds);
+typedef void (*ADTCopyPtr)(const Type*, Type*&, size_t& = ds);
+typedef void (*MemberPtr)(const Type*, Type*);
 typedef void (*ReadPtr)(istream&, Type*&);
 typedef void (*DestroyPtr)(Type*);
-typedef void (*WritePtr)(ostream&, Type*);
+typedef void (*WritePtr)(ostream&, const Type*);
 typedef int (*SizePtr)(int, int);
 typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
-typedef void (*MarshalPtr)(Type* adt, char* to);
+typedef void (*MarshalPtr)(const Type* adt, char* to);
+typedef void (*UnmarshalPtr)(char* from, Type*& adt);
  
 void insert(String tableStr, Tuple* tuple);	// throws exception
 
@@ -161,14 +173,20 @@ int domain(const TypeID adt);	// throws exception
 
 int typeCompare(TypeID arg1, TypeID arg2);	// throws
 
-Type* intCopy(const Type* arg);
-Type* doubleCopy(const Type* arg);
-Type* stringCopy(const Type* arg);
+void intCopy(const Type* arg, Type*& result, size_t& = ds);
+void doubleCopy(const Type* arg, Type*& result, size_t& = ds);
+void stringCopy(const Type* arg, Type*& result, size_t& = ds);
 
-void intMarshal(Type* adt, char* to);
-void doubleMarshal(Type* adt, char* to);
-void stringMarshal(Type* adt, char* to);
-void dateMarshal(Type* adt, char* to);
+void intMarshal(const Type* adt, char* to);
+void doubleMarshal(const Type* adt, char* to);
+void stringMarshal(const Type* adt, char* to);
+void dateMarshal(const Type* adt, char* to);
+
+void intUnmarshal(char* from, Type*& adt);
+void doubleUnmarshal(char* from, Type*& adt);
+void stringUnmarshal(char* from, Type*& adt);
+void dateUnmarshal(char* from, Type*& adt);
+void tmUnmarshal(char* from, Type*& adt);
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
@@ -179,6 +197,7 @@ void stringDestroy(Type* adt);
 void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
 void catEntryDestroy(Type* adt);
+void indexDescDestroy(Type* adt);
 
 struct GeneralPtr{
 	OperatorPtr opPtr;
@@ -209,43 +228,46 @@ double oneOver3(BaseSelection* left, BaseSelection* right);
 double oneOver10(BaseSelection* left, BaseSelection* right);
 double oneOver100(BaseSelection* left, BaseSelection* right);
 
-Type* catEntryName(Type* arg1);
-Type* catEntryType(Type* arg1);
+void catEntryName(const Type* arg1, Type* result);
+void catEntryType(const Type* arg1, Type* result);
 
-Type* intAdd(Type* arg1, Type* arg2);
-Type* intSub(Type* arg1, Type* arg2);
-Type* intEq(Type* arg1, Type* arg2);
-Type* intLT(Type* arg1, Type* arg2);
-Type* intLE(Type* arg1, Type* arg2);
-Type* intGT(Type* arg1, Type* arg2);
-Type* intGE(Type* arg1, Type* arg2);
-Type* intComp(Type *arg1,Type *arg2);
+void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intLE(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& = ds);
+void intMin(const Type *arg1,const Type *arg2, Type*& result, size_t& = ds);
 
-Type* dateEq(Type* arg1, Type* arg2);
-Type* dateLT(Type* arg1, Type* arg2);
-Type* dateGT(Type* arg1, Type* arg2);
-Type* dateComp(Type *arg1,Type *arg2);
+void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
-Type* intToDouble(const Type* intarg);
+void intToDouble(const Type* arg, Type*& result, size_t& = ds);
+void doubleToDouble(const Type* arg, Type*& result, size_t& = ds);
+void intToInt(const Type* arg, Type*& result, size_t& = ds);
 
-Type* doubleAdd(Type* arg1, Type* arg2);
-Type* doubleSub(Type* arg1, Type* arg2);
-Type* doubleDiv(Type* arg1, Type* arg2);
-Type* doubleEq(Type* arg1, Type* arg2);
-Type* doubleLT(Type* arg1, Type* arg2);
-Type* doubleGT(Type* arg1, Type* arg2);
-Type* doubleComp(Type *arg1,Type *arg2);
+void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void doubleComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
-Type* stringEq(Type* arg1, Type* arg2);
-Type* stringLT(Type* arg1, Type* arg2);
-Type* stringGT(Type* arg1, Type* arg2);
-Type* stringComp(Type *arg1,Type *arg2);
+void stringEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void stringLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void stringGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void stringComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
-Type* boolOr(Type* arg1, Type* arg2);
-Type* boolAnd(Type* arg1, Type* arg2);
-Type* boolEq(Type* arg1, Type* arg2);
-Type* boolLT(Type* arg1, Type* arg2);
-Type* boolComp(Type *arg1,Type *arg2);
+void boolOr(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void boolAnd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void boolEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void boolLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void boolComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
 
 void intRead(istream&, Type*&);
 void stringRead(istream&, Type*&);
@@ -255,15 +277,17 @@ void catEntryRead(istream&, Type*&);
 void schemaRead(istream&, Type*&);
 void indexDescRead(istream&, Type*&);
 
-void intWrite(ostream&, Type*);
-void stringWrite(ostream&, Type*);
-void doubleWrite(ostream&, Type*);
-void boolWrite(ostream&, Type*);
-void catEntryWrite(ostream&, Type*);
-void schemaWrite(ostream&, Type*);
-void indexDescWrite(ostream&, Type*);
+void intWrite(ostream&, const Type*);
+void stringWrite(ostream&, const Type*);
+void doubleWrite(ostream&, const Type*);
+void boolWrite(ostream&, const Type*);
+void catEntryWrite(ostream&, const Type*);
+void schemaWrite(ostream&, const Type*);
+void indexDescWrite(ostream&, const Type*);
+void dateWrite(ostream& out, const Type* adt);
 
 class IInt {
+/*
      int value;
 public:
      IInt() {}
@@ -294,6 +318,7 @@ public:
 		// memcpy(&tmp, from, sizeof(int));
 		// value = ntohl(tmp);
 	}
+*/
      
 	// This class is "intupled", meaning that the void* from the tuple
 	// caries the value.
@@ -338,6 +363,10 @@ public:
 		else if(name == "comp"){
 			retType = "int";
 			return new GeneralPtr(intComp, sameSize);
+		}
+		else if(name == "min"){
+			retType = "int";
+			return new GeneralPtr(intMin, sameSize);
 		}
 		else{
 			return NULL;
@@ -445,107 +474,10 @@ public:
      }
 };
 
+class IString {
+	char string[0];
+public:
 /*
-class IString {
-     int length;
-	char* string;
-public:
-     IString() : length(0), string(NULL){}
-	IString(const char* s) : length(strlen(s) + 1){
-		string = strdup(s);
-	}
-	~IString(){
-		delete string;
-	}
-	void setValue(char *s){
-		if (s)
-			string = strdup(s);
-		else
-			string = NULL;
-	}
-	IString(String* s){
-		length = s->length() + 1; 
-		string = strdup(s->chars());
-	}
-     IString(char* s, int l) : length(l), string(s){}
-	char* getValue(){
-		return string;
-	}
-	IString(IString & str){
-		length = str.length;
-		string = strdup(str.string);
-	}
-	void display(ostream& out){
-		assert(string);
-		out << addQuotes(string);
-	}
-	IString & operator=(IString & str){
-		length = str.length;
-		string = strdup(str.string);
-		return *this;
-	}
-		
-	int packSize(){
-
-		// return sizeof(int) + length;
-
-		return length;
-	}
-	void marshal(char* to){
-
-		// int tmp = htonl(length);
-		// memcpy(to, &tmp, sizeof(int));
-		// memcpy(to + sizeof(int), string, length);
-
-		memcpy(to, string, length);
-	}
-	void unmarshal(char* from){
-		int tmp;
-		memcpy(&tmp, from, sizeof(int));
-		length = ntohl(tmp);
-		string = new char[length];
-		memcpy(string, from + sizeof(int), length);
-	}
-	static GeneralPtr* getOperatorPtr(
-		String name, TypeID arg, TypeID& retType){
-		if(arg != "string"){
-			return NULL;
-		}
-		else if(name == "="){
-			retType = "bool";
-			return new GeneralPtr(stringEq, boolSize, oneOver100);
-		}
-		else if(name == "<"){
-			retType = "bool";
-			return new GeneralPtr(stringLT, boolSize, oneOver3);
-		}
-		else if(name == ">"){
-			retType = "bool";
-			return new GeneralPtr(stringGT, boolSize, oneOver3);
-		}
-		else{
-			return NULL;
-		}
-	}
-};
-*/
-
-class IString {
-	char* string;		// should be changed to char string[0]
-public:
-     IString() : string(NULL){}
-	IString(const char* s) {
-		string = strdup(s);
-	}
-     IString(const String* s){
-          string = strdup(s->chars());
-     }
-	IString(const IString& arg){
-		string = strdup(arg.string);
-	}
-	~IString(){
-		delete string;
-	}
 	void setValue(char *s){
 		if (s)
 			string = strdup(s);
@@ -554,9 +486,6 @@ public:
 	}
 	char* getValue(){
 		return string;
-	}
-	IString(IString& str){
-		string = strdup(str.string);
 	}
 	void display(ostream& out){
 		assert(string);
@@ -569,15 +498,10 @@ public:
 	int packSize(){
 		return strlen(string) + 1;
 	}
-	/*
-	void marshal(char* to, int len){
-		strncpy(to, string, len);
-		to[len - 1] = '\0';
-	}
-	*/
 	void unmarshal(char* from){
 		strcpy(string, from);
 	}
+*/
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID root, TypeID arg, TypeID& retType){
 		String msg = "No operator " + name + " (" + root + 
@@ -596,10 +520,6 @@ public:
 		else if(name == ">"){
 			retType = "bool";
 			return new GeneralPtr(stringGT, boolSize, oneOver3);
-		}
-		else if(name == "comp"){
-			retType = "int";
-			return new GeneralPtr(stringComp, sameSize);
 		}
 		else{
 			THROW(new Exception(msg), NULL);
@@ -623,9 +543,69 @@ public:
 		return date;
 	}
 	void display(ostream& out){
-		out << date;
+		char tmstr[100];
+		cftime(tmstr, NULL, &date);	// could be ISO_TIME
+		out << tmstr;
 	}
 	IDate& operator=(IDate& arg){
+		date = arg.date;
+		return *this;
+	}
+     void unmarshal(char* from){
+          memcpy(&date, from, sizeof(time_t));
+     }
+	int packSize(){
+		return sizeof(time_t);
+	}
+	static GeneralPtr* getOperatorPtr(
+		String name, TypeID root, TypeID arg, TypeID& retType){
+		String msg = 
+			"No operator " + name + " (" + root + ", " + arg + ") defined";
+		if(arg != "date"){
+			THROW(new Exception(msg), NULL);
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(dateEq, boolSize, oneOver100);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(dateLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(dateGT, boolSize, oneOver3);
+		}
+		else if(name == "comp"){
+			retType = "int";
+			return new GeneralPtr(dateComp, sameSize);
+		}
+		else{
+			THROW(new Exception(msg), NULL);
+		}
+	}
+};
+
+/*
+class IDateTime {
+	time_t date;
+public:
+     IDateTime() : date(0){}
+	IDateTime(const time_t date) : date(date) {}
+	IDateTime(const IDateTime& arg){
+		date = arg.date;
+	}
+	~IDateTime(){}
+	void setValue(time_t arg){
+		date = arg;
+	}
+	time_t getValue(){
+		return date;
+	}
+	void display(ostream& out){
+		out << date;
+	}
+	IDateTime& operator=(IDateTime& arg){
 		date = arg.date;
 		return *this;
 	}
@@ -663,6 +643,7 @@ public:
 		}
 	}
 };
+*/
 
 class Site;
 class Interface;
@@ -672,7 +653,7 @@ class CatEntry {
 	Interface* interface;
 	String typeNm;
 public:
-	CatEntry(String singleName) : 
+	CatEntry(String singleName = "") : 
 		singleName(singleName), interface(NULL) {}
 	~CatEntry();
 	istream& read(istream& in); // Throws Exception
@@ -768,14 +749,21 @@ public:
 	}
 };
 
-class Schema {
+class ISchema {
 	String* attributeNames;
 	int numFlds;
 public:
-	Schema() : attributeNames(NULL), numFlds(0) {}
-	Schema(String* attributeNames, int numFlds) :
+	ISchema() : attributeNames(NULL), numFlds(0) {}
+	ISchema(String* attributeNames, int numFlds) :
 		attributeNames(attributeNames), numFlds(numFlds) {}
-	~Schema(){
+	ISchema(const ISchema& x){
+		numFlds = x.numFlds;
+		attributeNames = new String[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			attributeNames[i] = x.attributeNames[i];
+		}
+	}
+	~ISchema(){
 		delete [] attributeNames;
 	}
 	istream& read(istream& in); // Throws Exception
@@ -791,21 +779,115 @@ public:
 	}
 };
 
+class MemoryLoader {
+	const size_t PAGE_SZ = 4 * 1024;
+	size_t remainSpace;
+	List<void*> pagePtrs;
+	void* spacePtr;
+public:
+	MemoryLoader(){
+		remainSpace = 0;
+		spacePtr = NULL;
+	}
+	virtual ~MemoryLoader(){
+		for(pagePtrs.rewind(); !pagePtrs.atEnd(); pagePtrs.step()){
+			delete [] pagePtrs.get();
+		}
+	}
+	void* allocate(size_t spaceNeed){
+		void* retVal;	
+		if(remainSpace >= spaceNeed){
+			remainSpace -= spaceNeed;
+		}
+		else {
+			if(!pagePtrs.atEnd()){
+				spacePtr = pagePtrs.get();
+			}
+			else {
+				spacePtr = (Type*) new char[PAGE_SZ];
+				pagePtrs.append(spacePtr);
+			}
+			pagePtrs.step();
+			remainSpace = PAGE_SZ;
+		}
+		retVal = spacePtr;
+		spacePtr = (char*)(spacePtr) + spaceNeed;
+		return retVal;
+	}
+	virtual void reset(){
+		pagePtrs.rewind();
+	}
+	virtual Type* load(const Type*){
+		assert(0);
+		return NULL;
+	}
+};
+
+class IntLoader : public MemoryLoader {
+public:
+	virtual Type* load(const Type* arg){
+		return (Type*) arg;
+	}
+};
+
+class DoubleLoader : public MemoryLoader {
+public:
+	virtual Type* load(const Type* arg){
+		IDouble* retVal = (IDouble*) allocate(sizeof(IDouble));
+		*retVal = *((IDouble*) arg);
+		return retVal;
+	}
+};
+
+MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds);    // throws
+
+class TupleLoader : public MemoryLoader {
+	int numFlds;
+	MemoryLoader** typeLoaders;
+public:
+	TupleLoader(){
+		typeLoaders = NULL;
+	}
+	virtual ~TupleLoader(){
+		delete [] typeLoaders;
+	}
+	void open(int numFlds, const TypeID* typeIDs){ // throws
+		this->numFlds = numFlds;
+		TRY(typeLoaders = newTypeLoaders(typeIDs, numFlds), );
+	}
+	Tuple* insert(const Tuple* tuple){ // throws
+		size_t spaceNeed = numFlds * sizeof(Type*);
+		Tuple* retVal = (Tuple*) allocate(spaceNeed);
+		for(int i = 0; i < numFlds; i++){
+			retVal[i] = typeLoaders[i]->load(tuple[i]);
+		}
+		return retVal;
+	}
+	virtual void reset(){
+		for(int i = 0; i < numFlds; i++){
+			typeLoaders[i]->reset();
+		}
+		MemoryLoader::reset();
+	}
+};
+
 void displayAs(ostream& out, void* adt, String type);
 
 int packSize(String type);    // throws exception
 
 int packSize(const TypeID* types, int numFlds);    // throws exception
 
-int packSize(void* adt, String type);
+int packSize(const Type* adt, String type);
 
-int packSize(Tuple* tup, TypeID* types, int numFlds);
+int packSize(const Tuple* tup, TypeID* types, int numFlds);
 
 String rTreeEncode(String type);
 
 MarshalPtr getMarshalPtr(String type);
 
-void marshal(Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
+UnmarshalPtr getUnmarshalPtr(String type);
+
+void marshal(const Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
 	int* sizes, int numFlds);
 
 Type* unmarshal(char* from, String type);
@@ -820,9 +902,7 @@ GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType);
 ReadPtr getReadPtr(TypeID root);
 WritePtr getWritePtr(TypeID root);	// throws exception
 
-Type * getNullValue(TypeID &);
-
-AttrType getDeviseType(String type);
+void zeroOut(Type*& arg, TypeID &root);
 
 Type* createNegInf(TypeID typeID);
 
@@ -830,8 +910,10 @@ Type* createPosInf(TypeID typeID);
 
 void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers); // throws
 
+void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types); // throws
+
 int tupleCompare(int *compare_flds, int num_compare_flds, 
-       GeneralPtr **comparePtrs, Tuple *left, Tuple *right); 
+       GeneralPtr **comparePtrs, const Tuple *left, const Tuple *right); 
 // returns 1 if compare(left,right) = 1 on any compare_fld, else returns 0
 
 DestroyPtr getDestroyPtr(TypeID root); // throws
@@ -844,6 +926,9 @@ void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs,
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
 	Tuple* highTup, Tuple* lowTup);
 
+WritePtr* newWritePtrs(const TypeID* types, int numFlds);	// throws
+DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds);	// throws
 
+char* allocateSpace(TypeID type, size_t& size = ds);
 
 #endif

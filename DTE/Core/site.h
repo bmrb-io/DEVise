@@ -16,20 +16,12 @@
   $Id$
 
   $Log$
-  Revision 1.20  1997/04/28 06:56:26  donjerko
-  *** empty log message ***
 
   Revision 1.19  1997/04/18 20:46:20  donjerko
   Added function pointers to marshall types.
 
   Revision 1.18  1997/04/08 01:47:36  donjerko
   Set up the basis for ORDER BY clause implementation.
-
-  Revision 1.17  1997/04/04 23:10:31  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.16  1997/03/23 23:45:24  donjerko
   Made boolean vars to be in the tuple.
@@ -71,7 +63,7 @@
 #include "exception.h"
 #include "Iterator.h"
 #include "StandardRead.h"
-#include "FunctionRead.h"
+// #include "FunctionRead.h"	// temporarily broken
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
@@ -178,9 +170,9 @@ public:
 	}
 	virtual void enumerate(){}
      virtual void typify(String option);	// Throws a exception
-	virtual bool getNext(Tuple* next){
+	virtual const Tuple* getNext(){
 		assert(iterator);
-		return iterator->getNext(next);
+		return iterator->getNext();
 	}
 	virtual int getNumFlds(){
 		if(mySelect){
@@ -283,7 +275,7 @@ class LocalTable : public Site {
 	ofstream* fout;
 	WritePtr* writePtrs;
 protected:
-	Tuple* input;
+	Tuple* next;
 	Site* directSite;
 public:
      LocalTable(String nm, Iterator* marsh, String fileToWrite = "") : 
@@ -294,7 +286,7 @@ public:
 		this->fileToWrite = fileToWrite;
 		fout = NULL;
 		writePtrs = NULL;
-		input = NULL;
+		next = NULL;
 	}
 	LocalTable(String nm, List<BaseSelection*>* select, 
 		List<BaseSelection*>* where, Iterator* iterator) : Site(nm) {
@@ -310,7 +302,7 @@ public:
 		this->iterator = NULL;
 		fout = NULL;
 		writePtrs = NULL;
-		input = NULL;
+		next = NULL;
 	}
 	LocalTable(String nm, Site* base) : Site(nm) {
 
@@ -322,13 +314,13 @@ public:
 		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;
-		input = NULL;
+		next = NULL;
 	}
 	virtual ~LocalTable(){
 		delete fout;
 		delete writePtrs;
 		delete directSite;
-		delete input;
+		delete [] next;
 	}
 	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
@@ -341,31 +333,34 @@ public:
 	}
 	virtual void enumerate(){
 		assert(directSite);
-		List<BaseSelection*>* baseSchema = directSite->getSelectList();
-		TRY(enumerateList(mySelect, name, baseSchema), );
-		TRY(enumerateList(myWhere, name, baseSchema), );
+		List<BaseSelection*>* baseISchema = directSite->getSelectList();
+		TRY(enumerateList(mySelect, name, baseISchema), );
+		TRY(enumerateList(myWhere, name, baseISchema), );
 		directSite->enumerate();
 	}
 	virtual void typify(String option);	// Throws exception
 	virtual void initialize(){
+		assert(directSite);
 		directSite->initialize();
 		Site::initialize();
-		input = new Tuple[directSite->getNumFlds()];
+		next = new Tuple[numFlds];
 	}
-	virtual bool getNext(Tuple* next){
+	virtual const Tuple* getNext(){
 		bool cond = false;
-		assert(input);
+		const Tuple* input;
+		assert(next);
 		while(!cond){
 
 			// same thing as iterator->getNext()
 
-			if(!directSite->getNext(input)){
-				return false;
+			input = directSite->getNext();
+			if(!input){
+				return NULL;
 			}
 			cond = evaluateList(myWhere, input);
 		}
 		tupleFromList(next, mySelect, input);
-		return true;
+		return next;
 	}
 	virtual List<Site*>* generateAlternatives();
      virtual Offset getOffset(){
@@ -419,21 +414,22 @@ public:
 		index->initialize();
 		LocalTable::initialize();
 	}
-	virtual bool getNext(Tuple* next){
+	virtual const Tuple* getNext(){
 		bool cond = false;
-		assert(input);
+		const Tuple* input;
+		assert(next);
 		while(!cond){
 			Offset offset = index->getNextOffset();
 			if(offset.isNull()){
-				return false;
+				return NULL;
 			}
 			iterator->setOffset(offset);
-			bool more = iterator->getNext(input);
-			assert(more);
+			input = iterator->getNext();
+			assert(input);
 			cond = evaluateList(myWhere, input);
 		}
 		tupleFromList(next, mySelect, input);
-		return true;
+		return next;
 	}
 };
 
@@ -467,8 +463,8 @@ protected:
 	List<Tuple*> innerRel;
 	bool firstEntry;
 	bool firstPass;
-	Tuple* outerTup;
-	bool moreOuter;
+	const Tuple* outerTup;
+	Tuple* next;
 public:
 	SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2){
 		sites = new List<Site*>;
@@ -492,11 +488,11 @@ public:
 		firstEntry = true;
 		firstPass = true;
 		outerTup = NULL;
+		next = NULL;
 	}
 	virtual void initialize(){
 		if (site1){
 			site1->initialize();
-			outerTup = new Tuple[site1->getNumFlds()];
 		}
 		if(site2){
 			site2->initialize();
@@ -506,7 +502,7 @@ public:
 //		delete sites;	// list only PROBLEm
 		delete site1;
 		delete site2;
-		delete outerTup;
+		delete next;
 	}
 	virtual bool have(Site* siteGroup){
 		List<Site*>* checkList = siteGroup->getList();
@@ -554,7 +550,7 @@ public:
 		out << endl;
 		site2->display(out, detail);
 	}
-	virtual bool getNext(Tuple* next);
+	virtual const Tuple* getNext();
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}
@@ -584,19 +580,20 @@ public:
 	virtual void initialize(){
 		iter1->initialize();
 	}
-	virtual bool getNext(Tuple* next){
+	virtual const Tuple* getNext(){
+		const Tuple* next;
 		if(runningFirst){
-			if(iter1->getNext(next)){
-				return true;
+			if((next = iter1->getNext())){
+				return next;
 			}
 			else{
 				runningFirst = false;
 				iter2->initialize();
-				return iter2->getNext(next);
+				return iter2->getNext();
 			}
 		}
 		else{
-			return iter2->getNext(next);
+			return iter2->getNext();
 		}
 	}
 	~UnionSite(){

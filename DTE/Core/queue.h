@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.8  1997/03/20 20:42:24  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.

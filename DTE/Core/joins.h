@@ -16,6 +16,7 @@
   $Id$
 
   $Log$
+
   Revision 1.4  1997/03/28 16:07:29  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -35,7 +36,7 @@ class Joins:public SiteGroup{
 					nextInnerTup(NULL), moreInnerTup(true), 
 					nextOuterTup(NULL), moreOuterTup(true) { }
 		
-			virtual bool getNext(Tuple* next);
+			virtual const Tuple* getNext();
 			virtual void typify(String );
 		private:
 			List<Tuple *> innerRel;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/14 20:44:15  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.14  1997/04/10 21:50:29  donjerko
   Made integers inlined, added type cast operator.
 
@@ -335,14 +338,11 @@ ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const {
 	
 	// throws
 
-	if(typeToPromote != typeID){
-		TRY(PromotePtr ptr = getPromotePtr(typeID, typeToPromote), NULL);
-		Type* newvalue = ptr(value);
-		return new ConstantSelection(typeToPromote, newvalue);
-	}
-	else {
-		return new ConstantSelection(typeID, value);
-	}
+	TRY(PromotePtr ptr = getPromotePtr(typeID, typeToPromote), NULL);
+	size_t objSz;
+	Type* newvalue = allocateSpace(typeToPromote, objSz);
+	ptr(value, newvalue, objSz);
+	return new ConstantSelection(typeToPromote, newvalue);
 }
 
 BaseSelection* ConstantSelection::duplicate() {

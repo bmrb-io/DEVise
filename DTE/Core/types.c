@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/06/14 22:34:36  liping
+  re-write min/max and recId request with SQL queries
+
   Revision 1.18  1997/05/30 15:49:59  arvind
   Added a "comp" operator for all data types. Semantics are same as for
   strcmp(left, right):
@@ -83,209 +86,215 @@
 #include "Utility.h"
 #include <String.h>
 
-Type* dateEq(Type* arg1, Type* arg2){
+void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	time_t val1 = ((IDate*)arg1)->getValue();
 	time_t val2 = ((IDate*)arg2)->getValue();
-     return (Type*)(val1 == val2);
+     result = (Type*)(val1 == val2);
 }
 
-Type* dateLT(Type* arg1, Type* arg2){
+void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	time_t val1 = ((IDate*)arg1)->getValue();
 	time_t val2 = ((IDate*)arg2)->getValue();
-     return (Type*)(val1 < val2);
+     result = (Type*)(val1 < val2);
 }
 
-Type* dateGT(Type* arg1, Type* arg2){
+void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	time_t val1 = ((IDate*)arg1)->getValue();
 	time_t val2 = ((IDate*)arg2)->getValue();
-     return (Type*)(val1 > val2);
+     result = (Type*)(val1 > val2);
 }
 
-Type* dateComp(Type* arg1, Type* arg2){
+void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	time_t val1 = ((IDate*)arg1)->getValue();
 	time_t val2 = ((IDate*)arg2)->getValue();
 	if(val1 > val2){
-		return (Type*) 1;
+		result = (Type*) 1;
 	}
 	else if(val1 == val2){
-		return (Type*)(0);
+		result = (Type*)(0);
 	}
 	else{
-		return (Type*)(-1);
+		result = (Type*)(-1);
 	}
 }
 
-Type* catEntryName(Type* arg1){
+void catEntryName(const Type* arg1, Type* result){
 	CatEntry* entry = (CatEntry*) arg1;
 	String tmp = entry->getName();
-	return new IString(tmp.chars());
+	strcpy((char*) result, tmp.chars());
 }
 
-Type* catEntryType(Type* arg1){
+void catEntryType(const Type* arg1, Type* result){
 	CatEntry* entry = (CatEntry*) arg1;
 	String tmp = entry->getType();
-	return new IString(tmp.chars());
+	strcpy((char*) result, tmp.chars());
 }
 
-Type* intAdd(Type* arg1, Type* arg2){
+void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
-     return (Type*) (val1 + val2);
+     result = (Type*) (val1 + val2);
 }
 
-Type* intSub(Type* arg1, Type* arg2){
+void intSub(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
-     return (Type*) (val1 - val2);
+     result = (Type*) (val1 - val2);
 }
 
-Type* intEq(Type* arg1, Type* arg2){
+void intEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
-     return (Type*) (val1 == val2);
+     result = (Type*) (val1 == val2);
 }
 
-Type* intLT(Type* arg1, Type* arg2){
+void intLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
-     return (Type*)(val1 < val2);
+     result = (Type*)(val1 < val2);
 }
 
-Type* intLE(Type* arg1, Type* arg2){
-        int val1 = int(arg1);
-        int val2 = int(arg2);
-     return (Type*)(val1 <= val2);
-}
-
-Type* intGT(Type* arg1, Type* arg2){
+void intLE(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
-     return (Type*)(val1 > val2);
+     result = (Type*)(val1 <= val2);
 }
 
-Type* intGE(Type* arg1, Type* arg2){
-        int val1 = int(arg1);
-        int val2 = int(arg2);
-     return (Type*)(val1 >= val2);
+void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     result = (Type*)(val1 > val2);
 }
 
-Type* intComp(Type* arg1, Type* arg2){
+void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     result = (Type*)(val1 >= val2);
+}
+
+void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
 	if(val1 > val2){
-		return (Type*) 1;
+		result = (Type*) 1;
 	}
 	else if(val1 == val2){
-		return (Type*)(0);
+		result = (Type*)(0);
 	}
 	else{
-		return (Type*)(-1);
+		result = (Type*)(-1);
 	}
 }
 
-Type* doubleAdd(Type* arg1, Type* arg2){
-	double val1 = ((IDouble*)arg1)->getValue();
-	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 + val2);
+void intMin(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     result = (Type*)(val1 > val2);
 }
 
-Type* doubleSub(Type* arg1, Type* arg2){
+void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1 - val2);
+	*((double*) result) = val1 + val2;
 }
 
-Type* doubleDiv(Type* arg1, Type* arg2){
+void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return new IDouble(val1/val2);
+	*((double*) result) = val1 - val2;
 }
 
-Type* doubleEq(Type* arg1, Type* arg2){
+void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 == val2);
+	*((double*) result) = val1 / val2;
 }
 
-Type* doubleLT(Type* arg1, Type* arg2){
+void doubleEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 < val2);
+	result = (Type*)(val1 == val2);
 }
 
-Type* doubleGT(Type* arg1, Type* arg2){
+void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
-     return (Type*)(val1 > val2);
+	result = (Type*)(val1 < val2);
 }
 
-Type* doubleComp(Type* arg1, Type* arg2){
+void doubleGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	double val1 = ((IDouble*)arg1)->getValue();
+	double val2 = ((IDouble*)arg2)->getValue();
+	result = (Type*)(val1 > val2);
+}
+
+void doubleComp(const Type *arg1,const Type *arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
 	if(val1 > val2){
-		return (Type*) 1;
+		result = (Type*) 1;
 	}
 	else if(val1 == val2){
-		return (Type*)(0);
+		result = (Type*)(0);
 	}
 	else{
-		return (Type*)(-1);
+		result = (Type*)(-1);
 	}
 }
 
-Type* boolEq(Type* arg1, Type* arg2){
-     return (Type*)(arg1 == arg2);
+void boolOr(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+     result = (Type*)(arg1 || arg2);
 }
 
-Type* boolOr(Type* arg1, Type* arg2){
-     return (Type*)(arg1 || arg2);
+void boolAnd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+     result = (Type*)(arg1 && arg2);
 }
 
-Type* boolAnd(Type* arg1, Type* arg2){
-     return (Type*)(arg1 && arg2);
+void boolEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+     result = (Type*)(arg1 == arg2);
 }
 
-Type* boolLT(Type* arg1, Type* arg2){
-     return (Type*)(arg1 < arg2);
+void boolLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+     result = (Type*)(arg1 < arg2);
 }
 
-Type* boolComp(Type* arg1, Type* arg2){
+void boolComp(const Type *arg1,const Type *arg2, Type*& result, size_t& rsz){
 	if(arg1 > arg2){
-		return (Type*) 1;
+		result = (Type*) 1;
 	}
 	else if(arg1 == arg2){
-		return (Type*)(0);
+		result = (Type*)(0);
 	}
 	else{
-   	        return (Type*)(-1);
+		result = (Type*)(-1);
 	}
 }
 
-Type* stringEq(Type* arg1, Type* arg2){
-	char* val1 = ((IString*)arg1)->getValue();
-	char* val2 = ((IString*)arg2)->getValue();
+void stringEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	char* val1 = (char*) arg1;
+	char* val2 = (char*) arg2;
 	int cmp = strcmp(val1, val2);
-	return (Type*)(cmp == 0);
+	result = (Type*)(cmp == 0);
 }
 
-Type* stringLT(Type* arg1, Type* arg2){
-	char* val1 = ((IString*)arg1)->getValue();
-	char* val2 = ((IString*)arg2)->getValue();
+void stringLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	char* val1 = (char*) arg1;
+	char* val2 = (char*) arg2;
 	int cmp = strcmp(val1, val2);
-	return (Type*)(cmp < 0);
+	result = (Type*)(cmp < 0);
 }
 
-Type* stringGT(Type* arg1, Type* arg2){
-	char* val1 = ((IString*)arg1)->getValue();
-	char* val2 = ((IString*)arg2)->getValue();
+void stringGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	char* val1 = (char*) arg1;
+	char* val2 = (char*) arg2;
 	int cmp = strcmp(val1, val2);
-	return (Type*)(cmp > 0);
+	result = (Type*)(cmp > 0);
 }
 
-Type* stringComp(Type* arg1, Type* arg2){
-	char* val1 = ((IString*)arg1)->getValue();
-	char* val2 = ((IString*)arg2)->getValue();
-	return (Type*) strcmp(val1, val2);
+void stringComp(const Type *arg1,const Type *arg2, Type*& result, size_t& rsz){
+	char* val1 = (char*) arg1;
+	char* val2 = (char*) arg2;
+	result = (Type*) strcmp(val1, val2);
 }
 
 void intRead(istream& in, Type*& adt){
@@ -297,12 +306,11 @@ void intRead(istream& in, Type*& adt){
 void doubleRead(istream& in, Type*& adt){
 	double i;
 	in >> i;
-	adt = new IDouble(i);
+	*((double*) adt) = i;
 }
 
 void stringRead(istream& in, Type*& adt){
-	String tmp = stripQuotes(in);
-	adt = new IString(tmp.chars());
+	stripQuotes(in, (char*) adt, INITIAL_STRING_SIZE);
 }
 
 void boolRead(istream& in, Type*& adt){
@@ -317,35 +325,38 @@ void catEntryRead(istream& in, Type*& adt){
 	if(!in){
 		return;
 	}
-	adt = new CatEntry(nameStr);
+	CatEntry* tmp = new CatEntry(nameStr);
+	memcpy(adt, tmp, sizeof(CatEntry)); // memory leak
 	TRY(((CatEntry*) adt)->read(in), );
 }
 
 void schemaRead(istream& in, Type*& adt){
-	adt = new Schema();
-	TRY(((Schema*) adt)->read(in), );
+	ISchema* tmp = new ISchema();
+	memcpy(adt, tmp, sizeof(ISchema));
+	TRY(((ISchema*) adt)->read(in), );
 }
 
 void indexDescRead(istream& in, Type*& adt){
-	adt = new IndexDesc();
+	IndexDesc* tmp = new IndexDesc();	
+	memcpy(adt, tmp, sizeof(IndexDesc));
 	TRY(((IndexDesc*) adt)->read(in), );
 }
 
-void intWrite(ostream& out, Type* adt){
+void intWrite(ostream& out, const Type* adt){
 	out << int(adt);
 }
 
-void stringWrite(ostream& out, Type* adt){
+void stringWrite(ostream& out, const Type* adt){
 	assert(adt);
-	((IString*) adt)->display(out);
+	out << addQuotes((char*) adt);
 }
 
-void doubleWrite(ostream& out, Type* adt){
+void doubleWrite(ostream& out, const Type* adt){
 	assert(adt);
 	((IDouble*) adt)->display(out);
 }
 
-void boolWrite(ostream& out, Type* adt){
+void boolWrite(ostream& out, const Type* adt){
 	assert(adt);
 	if(adt){
 		out << true;
@@ -355,19 +366,24 @@ void boolWrite(ostream& out, Type* adt){
 	}
 }
 
-void catEntryWrite(ostream& out, Type* adt){
+void catEntryWrite(ostream& out, const Type* adt){
 	assert(adt);
 	((CatEntry*) adt)->display(out);
 }
 
-void schemaWrite(ostream& out, Type* adt){
+void schemaWrite(ostream& out, const Type* adt){
 	assert(adt);
-	((Schema*) adt)->display(out);
+	((ISchema*) adt)->display(out);
 }
 
-void indexDescWrite(ostream& out, Type* adt){
+void indexDescWrite(ostream& out, const Type* adt){
 	assert(adt);
 	((IndexDesc*) adt)->display(out);
+}
+
+void dateWrite(ostream& out, const Type* adt){
+	assert(adt);
+	((IDate*) adt)->display(out);
 }
 
 int boolSize(int a, int b){
@@ -402,7 +418,7 @@ void displayAs(ostream& out, void* adt, String type){
 		out << int(adt);
 	}
 	else if(type.through(5).contains("string")){
-		((IString*) adt)->display(out);
+		out << addQuotes((char*) adt);
 	}
 	else if(type == "bool"){
 		boolWrite(out, adt);
@@ -422,12 +438,12 @@ void displayAs(ostream& out, void* adt, String type){
 	}
 }
 
-int packSize(void* adt, String type){
+int packSize(const Type* adt, String type){
 	if(type == "int"){
 		return sizeof(int);
 	}
 	else if(type == "string"){
-		return ((IString*) adt)->packSize();
+		return strlen((char*) adt) + 1;
 	}
 	else if(type == "double"){
 		return ((IDouble*) adt)->packSize();
@@ -453,7 +469,7 @@ int packSize(String type){	// throws exception
 		return sizeof(IDouble);
 	}
 	else if(type.through(5).contains("string")){
-		int len = atoi(type.from(6).chars());
+		int len = atoi(type.from(6).chars()) + 1;
 		return len;
 	}
 	else if(type == "date"){
@@ -466,19 +482,19 @@ int packSize(String type){	// throws exception
 	}
 }
 
-void intMarshal(Type* adt, char* to){
+void intMarshal(const Type* adt, char* to){
 	memcpy(to, &adt, sizeof(int));
 }
 
-void stringMarshal(Type* adt, char* to){
-	strcpy(to, ((IString*) adt)->getValue());
+void stringMarshal(const Type* adt, char* to){
+	strcpy(to, (char*) adt);
 }
 
-void doubleMarshal(Type* adt, char* to){
+void doubleMarshal(const Type* adt, char* to){
 	memcpy(to, adt, sizeof(double));
 }
 
-void dateMarshal(Type* adt, char* to){
+void dateMarshal(const Type* adt, char* to){
 	memcpy(to, adt, sizeof(time_t));
 }
 
@@ -498,13 +514,60 @@ MarshalPtr getMarshalPtr(String type){
 	else if(type.through(5).contains("string")){
 
 		// length needs to be passed for the binary data
-		// int len = atoi(type.from(6).chars());
-		// ((IString*) adt)->marshal(to, len);
 
 		return stringMarshal;
 	}
 	else{
 		cout << "Don't know how to marshal type: " << type << endl;
+		assert(0);
+	}
+}
+
+void intUnmarshal(char* from, Type*& adt){
+	memcpy(&adt, from, sizeof(int));
+}
+
+void stringUnmarshal(char* from, Type*& adt){
+	strcpy((char*) adt, from);
+}
+
+void doubleUnmarshal(char* from, Type*& adt){
+	memcpy(adt, from, sizeof(IDouble));
+}
+
+void dateUnmarshal(char* from, Type*& adt){
+	memcpy(adt, from, sizeof(IDate));
+}
+
+void tmUnmarshal(char* from, Type*& adt){
+	time_t ut = mktime((struct tm*) from);
+	if(ut == (time_t) -1){
+		cout << "Failed to convert to unix time" << endl;
+	}
+	memcpy(adt, &ut, sizeof(IDate));
+}
+
+UnmarshalPtr getUnmarshalPtr(String type){
+	if(type == "int"){
+		return intUnmarshal;
+	}
+	else if(type == "string"){
+		return stringUnmarshal;
+	}
+	else if(type == "double"){
+		return doubleUnmarshal;
+	}
+	else if(type == "date"){
+		return dateUnmarshal;
+	}
+	else if(type.through(5).contains("string")){
+
+		// length needs to be passed for the binary data
+
+		return stringUnmarshal;
+	}
+	else{
+		cout << "Don't know how to unmarshal type: " << type << endl;
 		assert(0);
 	}
 }
@@ -516,9 +579,7 @@ Type* unmarshal(char* from, String type){
 		return (Type*) tmp;
 	}
 	else if(type == "string"){
-		IString* adt = new IString;
-		adt->unmarshal(from);
-		return adt;
+		return strdup(from);
 	}
 	else if(type == "double"){
 		IDouble* adt = new IDouble;
@@ -627,49 +688,30 @@ WritePtr getWritePtr(TypeID root){
 	else if(root == "indexdesc"){
 		return indexDescWrite;
 	}
+	else if(root == "date"){
+		return dateWrite;
+	}
 	else{
-		String msg = "Cannot fine WritePtr for type: " + root;
+		String msg = "Cannot find WritePtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
 }
 
-AttrType getDeviseType(String type){
-	if(type == "int"){
-		return IntAttr;
-	}
-	else if(type == "float"){
-		return FloatAttr;
-	}
-	else if(type == "double"){
-		return DoubleAttr;
-	}
-	else if(type.through(5).contains("string")){
-		return StringAttr;
-	}
-	else if(type == "date"){
-		return DateAttr;
-	}
-	else{
-		cout << "Don't know DEVise type for: " << type << endl;
-		assert(0);
-	}
-}
-
-Type * getNullValue(TypeID &root){
+void zeroOut(Type*& arg, TypeID &root){
 	if(root == "int"){
-		return (Type*)(0);
+		arg = (Type*) 0;
 	}
 	else if(root.through(5).contains("string")){
-		return new IString("");
+		*((char*) arg) = '\0';
 	}
 	else if(root == "bool"){
-		return (Type*)(false);
+		arg = (Type*) false;
 	}
 	else if(root == "double"){
-		return new IDouble(0);
+		*((double*) arg) = 0;
 	}
 	else{
-		cout << "No such type: " << root << endl;
+		cout << "Cannot zero out: " << root << endl;
 		assert(0);
 	}
 }
@@ -694,7 +736,7 @@ String rTreeEncode(String type){
 	}
 }
 
-int packSize(Tuple* tup, TypeID* types, int numFlds){
+int packSize(const Tuple* tup, TypeID* types, int numFlds){
 	int retVal = 0;
 	for(int i = 0; i < numFlds; i++){
 		retVal += packSize(tup[i], types[i]);
@@ -710,7 +752,7 @@ int packSize(const TypeID* types, int numFlds){	// throws exception
 	return retVal;
 }
 
-void marshal(Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
+void marshal(const Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
 	int* sizes, int numFlds){
 	int offset = 0;
 	for(int i = 0; i < numFlds; i++){
@@ -895,7 +937,7 @@ void IndexDesc::display(ostream& out){
 	out << rootPg;
 }
 
-istream& Schema::read(istream& in){ // Throws Exception
+istream& ISchema::read(istream& in){ // Throws Exception
 	in >> numFlds;
 	if(!in){
 		return in;
@@ -907,7 +949,7 @@ istream& Schema::read(istream& in){ // Throws Exception
 	return in;
 }
 
-void Schema::display(ostream& out){
+void ISchema::display(ostream& out){
 	out << numFlds;
 	for(int i = 0; i < numFlds; i++){
 		out << " " << attributeNames[i];
@@ -918,27 +960,38 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 	assert(destroyers);
 	for(int i = 0; i < numFlds; i++){
 		destroyers[i](tuple[i]);
-		delete tuple[i];
+	}
+}
+
+void destroyTuple(Tuple* tuple, int numFlds, const TypeID* types){ // throws
+	for(int i = 0; i < numFlds; i++){
+		TRY(DestroyPtr destroyer = getDestroyPtr(types[i]), );
+		destroyer(tuple[i]);
 	}
 }
 
 int tupleCompare(int *compare_flds, int num_compare_flds, 
-                 GeneralPtr **comparePtrs, Tuple *left, Tuple *right)
+	GeneralPtr **comparePtrs, const Tuple *left, const Tuple *right)
 {
   // Returns -1 if left < right 
   //          0 if left = right
   //          1 if left > right
   // Each comparePtrs is a GeneralPtr with name = "comp"
 
+  assert(right);
+  assert(left);
+
+  Type* cmp;
+
   for(int i = 0; i < num_compare_flds; i++)
     {
       assert (compare_flds[i] >= 0 );
-      int cmp = int(comparePtrs[compare_flds[i]]->opPtr(left[compare_flds[i]],
-						    right[compare_flds[i]]));
-      if (cmp < 0) 
+      comparePtrs[compare_flds[i]]->opPtr(left[compare_flds[i]],
+						    right[compare_flds[i]], cmp);
+      if (int(cmp) < 0) 
         return -1;
 
-      if (cmp > 0)
+      if (int(cmp) > 0)
         return 1;
      } // continue checking only if the tuples are equal on current compare_fld
 
@@ -962,8 +1015,13 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == "catentry"){
 		return catEntryDestroy;
 	}
+	else if(root == "indexdesc"){
+		return indexDescDestroy;
+	}
 	else{
 		String msg = "Don't know how to destroy type: " + root;
+		cout << msg << endl;
+		exit(1);
 		THROW(new Exception(msg), NULL);
 	}
 }
@@ -981,20 +1039,40 @@ void doubleDestroy(Type* adt){
 }
 
 void stringDestroy(Type* adt){
-	delete (IString*) adt;
+	delete [] (char*) adt;
 }
 
 void catEntryDestroy(Type* adt){
 	delete (CatEntry*) adt;
 }
 
-Type* intToDouble(const Type* intarg){
-	return new IDouble(int(intarg));
+void indexDescDestroy(Type* adt){
+	delete (IndexDesc*) adt;
+}
+
+void intToDouble(const Type* arg, Type*& result, size_t&){
+	assert(result);
+	*((double*) result) = int(arg);
+}
+
+void intToInt(const Type* arg, Type*& result, size_t&){
+	((int) result) = int(arg);
+}
+
+void doubleToDouble(const Type* arg, Type*& result, size_t&){
+	assert(result);
+	*((double*) result) = *((double*)(arg));
 }
 
 PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	if(from == "int" && to == "double"){
 		return intToDouble;
+	}
+	else if(from == "double" && to == "double"){
+		return doubleToDouble;
+	}
+	if(from == INT_TP && to == INT_TP){
+		return intToInt;
 	}
 	else{
 		String msg = String("Cannot promote ") + from + " to " + to;
@@ -1002,16 +1080,16 @@ PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	}
 }
 
-Type* intCopy(const Type* arg){
-	return (Type*) arg;
+void intCopy(const Type* arg, Type*& result, size_t& sz){
+	result = (Type*) arg;
 }
 
-Type* doubleCopy(const Type* arg){
-	return new IDouble(*((IDouble*) arg));
+void doubleCopy(const Type* arg, Type*& result, size_t& sz){
+	*((double*) result) = *((double*) arg);
 }
 
-Type* stringCopy(const Type* arg){
-	return new IString(*((IString*) arg));
+void stringCopy(const Type* arg, Type*& result, size_t& sz){
+	strncpy((char*) result, (char*) arg, sz);
 }
 
 ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
@@ -1033,11 +1111,14 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 void updateHighLow(int numFlds, const OperatorPtr* lessPtrs, 
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
 	Tuple* highTup, Tuple* lowTup){
+	Type* result;
 	for (int i = 0; i < numFlds; i++){
-		if(lessPtrs[i](tup[i], lowTup[i])){
+		lessPtrs[i](tup[i], lowTup[i], result);
+		if(bool(result)){
 			lowTup[i] = tup[i];
 		}
-		if(greaterPtrs[i](tup[i], highTup[i])){
+		greaterPtrs[i](tup[i], highTup[i], result);
+		if(bool(result)){
 			highTup[i] = tup[i];
 		}
 	}
@@ -1078,3 +1159,68 @@ int typeCompare(TypeID arg1, TypeID arg2){	// throws
 	return (d1 > d2) ? 1 : -1;
 }
 
+WritePtr* newWritePtrs(const TypeID* types, int numFlds){ // throws
+	WritePtr* retVal = new WritePtr[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		TRY(retVal[i] = getWritePtr(types[i]), NULL);
+	}
+	return retVal;
+}
+
+DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds){ // throws
+	DestroyPtr* retVal = new DestroyPtr[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		TRY(retVal[i] = getDestroyPtr(types[i]), NULL);
+	}
+	return retVal;
+}
+
+char* allocateSpace(TypeID type, size_t& size){
+	if(type == "int" || type == "bool"){
+		return NULL;
+	}
+	else if(type == "string"){
+		size = INITIAL_STRING_SIZE;
+		return new char[size];
+	}
+	else if(type == "double"){
+		return (char*) new double;
+	}
+	else if(type.through(5).contains("string")){
+		return new char[packSize(type)];
+	}
+	else if(type == "date"){
+		return (char*) new IDate();
+	}
+	else if(type == "catentry"){
+		return (char*) new CatEntry();
+	}
+	else if(type == "schema"){
+		return (char*) new ISchema();
+	}
+	else if(type == "indexdesc"){
+		// return new char[sizeof(IndexDesc)];
+		return (char*) new IndexDesc();
+	}
+	else{
+		cout << "Don't know how to allocate space for " << type << endl; 
+		assert(0);
+		return NULL;
+	}
+}
+
+MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
+	MemoryLoader** retVal = new MemoryLoader*[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		if(types[i] == INT_TP){
+			retVal[i] = new IntLoader();
+		}
+		else if(types[i] == DOUBLE_TP){
+			retVal[i] = new DoubleLoader();
+		}
+		else{
+			assert(!"loader not implemented for this type");
+		}
+	}
+	return retVal;
+}

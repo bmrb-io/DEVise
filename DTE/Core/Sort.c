@@ -16,18 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/06/03 16:17:45  arvind
+  Removed the bug regarding strdup and strcat when naming temp files.
+
   Revision 1.7  1997/05/30 15:44:35  arvind
   External Sorting code using Qsort for in-memory sorting and priority queues
   for merging.
 
   Revision 1.6  1997/04/08 01:47:33  donjerko
   Set up the basis for ORDER BY clause implementation.
-
-  Revision 1.5  1997/04/04 23:10:25  donjerko
-  Changed the getNext interface:
-  	from: Tuple* getNext()
-  	to:   bool getNext(Tuple*)
-  This will make the code more efficient in memory allocation.
 
   Revision 1.4  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
@@ -37,7 +34,10 @@
 
 #include <assert.h>
 #include "Sort.h"
-  
+
+#include "StandardRead.h"
+#include "Inserter.h"
+#include "types.h"
 
 void Sort::initialize()
 {
@@ -45,7 +45,6 @@ void Sort::initialize()
    input->initialize();
    tuple_size = numFlds * sizeof(Type *); 
    Nruns = 0;
-   temp_filename = new char[20];
    strcpy(temp_filename, "sort_temp_file");   
 
    // Creates the runs and sets up the Q for merging the runs
@@ -63,11 +62,10 @@ void Sort::initialize()
 
    // Create a priority queue in memory to merge runs
    Q = new PQueue(numFlds,attrTypes,numSortFlds,sortFlds, order, Nruns);
-   Tuple *tuple_area = new Tuple[tuple_size*Nruns];
 
    // Open up all the temp files
    input_buf = new StandardRead[Nruns];
-   temp_files = new ifstream[Nruns];
+   temp_files = new ifstream*[Nruns];
 
    char filename[20];
    char run_num[5];
@@ -77,56 +75,53 @@ void Sort::initialize()
       strcpy(filename, temp_filename); 
       sprintf(run_num, "%d", i+1);
       strcat(filename, run_num);
-      temp_files[i].open(filename);
-      input_buf[i].open(&temp_files[i], numFlds, attrTypes);
+	 temp_files[i] = new ifstream(filename);
+      input_buf[i].open(temp_files[i], numFlds, attrTypes);
 
       // Read the next tuple
-      Tuple *next_tuple = tuple_area + tuple_size*i;
-      if  (!input_buf[i].getNext(next_tuple))  // Empty run??
+      const Tuple *next_tuple = NULL;
+      if  (!(next_tuple = input_buf[i].getNext()))  // Empty run??
         continue;
       
       // Create a new node to be inserted into Q
       Node* node_ptr    = new Node;
-      node_ptr->tuple   = new Tuple[numFlds];
+      node_ptr->tuple   = next_tuple;
       node_ptr->run_num = i;    // setup run number
       
-      memcpy(node_ptr->tuple, next_tuple, tuple_size);
       Q->enq(node_ptr);     
    }
 
-   delete [] tuple_area;
    return;
 }
 
-bool Sort::getNext(Tuple* tuple)
+const Tuple* Sort::getNext()
 {
   // Return the next value from the prority queue
   // Also insert into the queue the next value from the appropriate input 
   // buffer - the one corresponding to the value just dequeued.
 
-  if (Q->num_elems() == 0) 
-     return false; 
+  if(node_ptr){
+    
+	  // Retrieve next value from appropriate input buffer 
+	  const Tuple* tuple;
+
+	  if ((tuple = input_buf[node_ptr->run_num].getNext()))
+	   {
+		 // Enqueue the retrieved tuple 
+
+		 node_ptr->tuple = tuple;
+		 Q->enq(node_ptr);
+	   }
+
+  }
   
+  if (Q->num_elems() == 0) 
+     return NULL; 
+
   // Dequeue min/max from priority queue
-  Node* node_ptr = Q->deq();
-  memcpy(tuple, node_ptr->tuple, tuple_size);  
-
-  // Retrieve next value from appropriate input buffer 
-  Tuple* new_tuple = new Tuple[numFlds];
-
-  if (input_buf[node_ptr->run_num].getNext(new_tuple))        
-   {
-      // Enqueue the retrieved tuple 
-      Node *new_node = new Node;
-      new_node->tuple = new Tuple [numFlds];
-      memcpy(new_node->tuple, new_tuple, numFlds * sizeof(Type *));  
-
-      new_node->run_num = node_ptr->run_num;
-      Q->enq(new_node);
-   }
-
-  delete [] new_tuple;
-  return true;
+  node_ptr = Q->deq();
+  assert(node_ptr);
+  return node_ptr->tuple;
 }
 
 
@@ -136,32 +131,29 @@ void Sort::generate_runs()
    // Generate the runs for subsequent merging
    // Use quick sort to perform the sorting
 
-   Tuple *table[MAX_MEM]; // array of pointers to Tuple
+   Tuple* table[MAX_MEM]; // array of pointers to Tuple
    int count = 0;
-   int offset = 0;
    output_buf = new Inserter();	
-   Tuple *tuple_area = new Tuple[numFlds*MAX_MEM]; 
+
+   const Tuple* currTup;
 
    // Read in tuples and set pointers in the table 
-   while(input->getNext(tuple_area+offset)) 
+   while((currTup = input->getNext())) 
    {
-     table[count] = tuple_area + offset;
-     offset += tuple_size;
+     table[count] = tupleLoader.insert(currTup);
      count++;
 
      if (count >= MAX_MEM/(int)sizeof(Tuple)) //Number of tuples exceeds memory
        {
          sort_and_write_run(table, count);
          count = 0;
-         offset = 0;
+	    tupleLoader.reset();
        }
    }
    
    if (count) // there are tuples left to be written out
      sort_and_write_run(table, count);
 
-   delete []table;
-   delete []tuple_area;
    return;
 }
 
@@ -263,4 +255,3 @@ void Sort::insert_sort(Tuple **A, int length)
 
   return;
 }
-
