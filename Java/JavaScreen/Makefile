@@ -61,7 +61,7 @@ client: *.java
 	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
 	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
-	    jsdevisec.java
+	    jsdevisec.java DEVisePlayback.java
 
 appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java
@@ -93,6 +93,7 @@ jarb:
 	jar cf jsb2.jar JavaScreen/*.class  JavaScreen/*.gif
 
 clean:
+
 	-rm JavaScreen/*.class JavaScreen/*.gif *.jar
 
 .PHONY: setup
@@ -103,3 +104,4 @@ setup:
 .PHONY: install
 install:
 	make -f Makefile.setup install
+
