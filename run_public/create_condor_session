@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/03/23 20:57:24  wenger
+#  Session code checks for existance of data sources.
+#
 #  Revision 1.1  1999/03/23 20:31:16  wenger
 #  First version -- still needs a little cleanup, but almost there.
 #
@@ -148,8 +151,11 @@ sub CreateSession {
   # Insert mappings into views.
   InsertMappings($mapClass);
 
-  # Create a window and insert the UserList_view view.
-  CreateWindow();
+  # Create links and cursors and insert them into views.
+  CreateLinksCursors();
+
+  # Create a window and insert the AllUsers_view view.
+  CreateWindows();
 
   # Force the visual filters to get updated when this session is opened.
   print SES_OUT "DEVise updateFilters\n";
@@ -203,16 +209,34 @@ sub DefineData {
 sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
+  print SES_OUT "DEVise create {view} {Scatter} AllUsers_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise viewSetHome {AllUsers_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
+      "100.0 100.0\n";
+  print SES_OUT "DEVise setViewAutoFilter AllUsers_view 1\n";
+  print SES_OUT "\n";
+
   print SES_OUT "DEVise create {view} {Scatter} UserList_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise viewSetHome {UserList_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
+      "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
   print SES_OUT "\n";
 
   my $user;
   foreach $user (sort keys %userlist) {
+    # Create the view.
     print SES_OUT "DEVise create {view} {Scatter} ${user}_view 0 1 0 1 36 3\n";
-    print SES_OUT "DEVise setLabel {${user}_view} 1 16 $user\n";
+
+    # Force the bottom of the visual filter to be set to 0 on home.
+    print SES_OUT "DEVise viewSetHome {${user}_view} 1 1 1 1 0.0 0.0 0.0 0.0 ",
+      "100.0 100.0\n";
+
+    # Set this view for automatic filter updating.
     print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
 
+    # Turn on the Y axis.
+    print SES_OUT "DEVise setAxisDisplay ${user}_view {Y} 1\n";
+
+    #TEMP -- should X axes be linked??
     #TEMP -- add more non-default stuff here
 
     print SES_OUT "\n";
@@ -236,8 +260,11 @@ sub CreateMappings {
 
   my $dataName = "${data_prefix}UserList";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "UserList#$mappingClass {} {\$X} {\$Y} {} 8 0.9 0 0 17 {\$ViewName} ",
+      "AllUser#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} ",
       "1 1 {} {} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "UserList#$mappingClass {} {0} {\$X} {} 8 0.015 0 0 16 {\$UserName} ",
+      "{} {} {} {} {} {} {} {} {}\n";
 
   my $user;
   foreach $user (sort keys %userlist) {
@@ -261,6 +288,8 @@ sub InsertMappings {
 
   print SES_OUT "\n# Insert mappings into views\n";
 
+  print SES_OUT "DEVise insertMapping {AllUsers_view} ",
+      "{AllUser#$mappingClass}\n";
   print SES_OUT "DEVise insertMapping {UserList_view} ",
       "{UserList#$mappingClass}\n";
 
@@ -272,11 +301,23 @@ sub InsertMappings {
 
 #-----------------------------------------------------------
 
-sub CreateWindow {
-  print SES_OUT "\n# Create a window and insert the UserList_view view\n";
+sub CreateLinksCursors {
+  print SES_OUT "DEVise create {link} {Visual_Link} {UserYLink} 3\n";
+  print SES_OUT "DEVise insertLink {UserYLink} {AllUsers_view}\n";
+  print SES_OUT "DEVise insertLink {UserYLink} {UserList_view}\n";
+}
+
+#-----------------------------------------------------------
+
+sub CreateWindows {
+  print SES_OUT "\n# Create a window and insert the AllUsers_view view\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} AllUsers_win ",
+      "0.264648 0.324219 0.721680 0.638021 0 0\n";
+  print SES_OUT "DEVise insertWindow {AllUsers_view} {AllUsers_win}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} UserList_win ",
-      "0.014648 0.662760 0.969727 0.296875 0 0\n";
+      "0.013672 0.324219 0.233398 0.636719 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList_win}\n";
 }
 
