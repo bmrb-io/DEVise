@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2001/03/20 17:49:46  xuk
+// Added collaboration for 3D Views.
+//
 // Revision 1.65  2001/01/08 20:31:52  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -1010,15 +1013,21 @@ public class DEViseScreen extends Panel
 	    jsc.viewInfo.updateInfo(canvas.activeView.getX(p.x),
 		  canvas.activeView.getY(p.y));
 
-	    if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+	    if (args[5].equals("1")) {
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_ALT;
+		jsc.pn("translate...");
 		crystal.translate(dx, dy);
-	    } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+	    } else if (args[5].equals("2")) {
+		jsc.pn("scale...");
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_CONTROL;
 		crystal.scale(dx, dy);
 	    } else {
+		jsc.pn("rotate...");		
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
 		crystal.rotate(dx, dy);
 	    }
-	    
-	    //canvas.isMouseDragged = false;
+
+       	    //canvas.isMouseDragged = false;
 	    canvas.repaint();
 
 	} else if (args[1].equals("4")) {
@@ -1037,11 +1046,17 @@ public class DEViseScreen extends Panel
 	    jsc.viewInfo.updateInfo(canvas.activeView.getX(p.x),
 		  canvas.activeView.getY(p.y));
 
-	    if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+	    if (args[5].equals("1")) {
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_ALT;
+		jsc.pn("translate...");
 		crystal.translate(dx, dy);
-	    } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+	    } else if (args[5].equals("2")) {
+		jsc.pn("scale...");
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_CONTROL;
 		crystal.scale(dx, dy);
 	    } else {
+		jsc.pn("rotate...");		
+		jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
 		crystal.rotate(dx, dy);
 	    }
 
