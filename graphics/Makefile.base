@@ -25,7 +25,8 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
 	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c
+	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
+	Map3D.C Temp.c
 
 SRC1 = $(filter %.c,$(LIBSRC))
 SRC2 = $(filter %.C,$(LIBSRC))
