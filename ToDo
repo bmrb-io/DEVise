@@ -456,6 +456,16 @@ Build and release only the client/server form of DEVise. (devel 12/11/97)
 
 Add info to the user manual about expressions in mappings. (rkw 1/13/98)
 
+UniData should have the option to treat \<delimiter> as an occurrance of
+the character <delimiter> within a field, as opposed to treating it as
+a field delimiter. (rkw/ad 1/28/98)
+
+Convert all file-related system calls (lseek, etc.) to 64-bit versions.
+(kb/rkw 1/29/98)
+
+Perhaps have a command to allow a client to prevent other clients from
+connecting to the server while that client is connected. (rkw 1/29/98)
+
 
 COMPLETED
 ---------
