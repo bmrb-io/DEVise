@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  2001/04/03 19:57:41  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.28  2000/07/12 20:49:28  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -402,7 +406,10 @@ FullMapping_ViewShape::GetPile(TDataMap *map, AttrList *attrList,
       ps = PileStack::FindByName(pileName);
       if (!ps) {
         ps = new PileStack(pileName, NULL);
-        ps->SetState(PileStack::PSPiledLinked);
+        int noLink = (int)map->GetShapeAttr(gdata, 11);
+	PileStack::State psState = noLink ? PileStack::PSPiledNoLink :
+	    PileStack::PSPiledLinked;
+        ps->SetState(psState);
       }
     }
   }

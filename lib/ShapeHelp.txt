@@ -1,4 +1,5 @@
 RECT - rectangle
+    Shape value: 0
     Attrs:
         0) width
         1) height
@@ -7,6 +8,7 @@ RECT - rectangle
         4) line width
 
 RECTX - proportional rectangle
+    Shape value: 1
     Attrs:
         0) width (proportionalized to window width/height ratio)
         1) height (proportionalized to window width/height ratio)
@@ -19,20 +21,24 @@ RECTX - proportional rectangle
         14) argument 8 (optional)
 
 BAR - vertical bar (as in a bar graph)
+    Shape value: 2
     Attrs:
         0) width
         1) (optional) error
         4) line width
 
 LINE - line (straight, infinite length)
+    Shape value: 13
     Attrs:
         3) x offset
         4) line width
 
 LINESHADE - line (as LINE, but shaded (filled to 0 Y value))
+    Shape value: 14
     Attrs: none
 
 REG POLYGON - regular polygon
+    Shape value: 3
     Attrs:
         0) width
         1) height
@@ -40,22 +46,26 @@ REG POLYGON - regular polygon
         4) line width
 
 OVAL - oval
+    Shape value: 4
     Attrs:
         0) width
         1) height
         4) line width
 
 VECTOR - vector (line segment terminated with an arrow)
+    Shape value: 5
     Attrs:
         0) x length (width)
         1) y length (height)
         4) line width
 
 HORLINE - horizontal line
+    Shape value: 6
     Attrs:
         4) line width
 
 SEGMENT - line segment (straight, finite length)
+    Shape value: 7
     Attrs:
         0) x length (width)
         1) y length (height)
@@ -64,6 +74,7 @@ SEGMENT - line segment (straight, finite length)
 
 HIGHLOW - vertical bar (as in bar graph with the bottoms
 of the bars not at 0)
+    Shape value: 8
     Attrs:
         0) width
         1) y maximum (high)
@@ -71,12 +82,14 @@ of the bars not at 0)
         4) line width
 
 POLYLINE - arbitrary-shape polygon
+    Shape value: 9
     Attrs: Successive attrs describe X and Y offsets to the next
         point on the polygon, originating at the data point, i.e.
         (X, Y) to (X+Attr0, Y+Attr1) to (X+Attr0+Attr2,
         Y+Attr1+Attr3), etc.
 
 IMAGE - graphic image imported from a file
+    Shape value: 10
     Attrs:
         0) filename or image
         1) image type (1=image file, send filename to
@@ -87,6 +100,7 @@ IMAGE - graphic image imported from a file
 
 POLYLINE FILE - arbitrary-shape polygon (vertex offsets in a
 file)
+    Shape value: 11
     Attrs:
         0) filename
         1) format (currently an unmodifiable single format)
@@ -94,6 +108,7 @@ file)
 
 TEXT LABEL - a string (text characters) with font size fitted to
 the specified rectangle
+    Shape value: 12
     Attrs:
         0) string
         1) format string (for numerical attributes only) (not
@@ -116,6 +131,7 @@ the specified rectangle
 
 FIXED TEXT LABEL - a string (text characters) with a fixed
 font size
+    Shape value: 16
     Attrs:
         0) string
         1) format string (for numerical attributes only) (not
@@ -131,12 +147,14 @@ font size
 
 TCL/TK WINDOW - rectangular region containing a Tcl/Tk
 window
+    Shape value: 15
     Attrs:
         0) filename of Tcl/Tk script to run in the window
         1) number of additional arguments
         2-3) additional command line arguments to Tcl/Tk script
 
 VIEW - a view displayed as a symbol within the parent view
+    Shape value: 17
     Attrs:
         0) name of view
         1) width
@@ -148,8 +166,11 @@ VIEW - a view displayed as a symbol within the parent view
         7) (optional) view sym filter x high
         8) (optional) view sym filter y high
         9) (optional) value for child view's mapping
+        10) (optional) title of child view
+        11) (optional) unlinked pile (not in GUI)
 
 TEXT DATA LABEL - some variation of text
+    Shape value: 18
     Attrs:
         0) string
         1) alignment (-4 = northwest, -3 = west, -2 = southwest, -1 = north,
