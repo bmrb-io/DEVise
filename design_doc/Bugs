@@ -1741,6 +1741,15 @@ Num Date        Status  Description
 			for the appropriate TData, instead of just getting
 			the list of attributes from the TData object. (kb/rkw)
 
+454 02/02/99	OPEN	'sorted' and 'key' in DataReader schemas don't do
+			anything. (rkw)
+
+455 02/03/99	OPEN	Date formats in DataReader cannot contain double
+			quotes ("). (rkw)
+
+456 02/03/99	OPEN	The DataReader doesn't do anything with the
+			encoding option. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

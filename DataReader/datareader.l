@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/01/18 18:08:06  beyer
+  added support for '\r'
+
   Revision 1.9  1998/11/03 17:53:35  okan
   Fixed Several bugs and changed DataReader to use UtilAtof
 
@@ -72,22 +75,20 @@ digit	[0-9]+
 <COMMENT>. ;
 <COMMENT>\n { line_nr++;};
 
-schema		return SCHEMA_TOKEN;
-delimiter	return DELIM_TOKEN;
-separator	return SEPARATOR_TOKEN;
+datareader	return SCHEMA_TOKEN;
+2.0			return VERSION_TOKEN;
+record_separator return REC_SEP_TOKEN; // was 'delimiter'
+field_separator	return FLD_SEP_TOKEN; // was 'separator'
 nullif		return NULLIF_TOKEN;
-attr		return ATTR_TOKEN;
-skip		return SKIP_TOKEN;
 maxlen		return MAXLEN_TOKEN;
 length		return LENGTH_TOKEN;
 quote		return QUOTE_TOKEN;
 hidden		return HIDDEN_TOKEN;
-type		return TYPE_TOKEN;
 int			return INT_TOKEN;
 double		return DOUBLE_TOKEN;
 string		return STRING_TOKEN;
 date		return DATE_TOKEN;
-date_format return DATE_FORMAT;
+date_format return DATE_FORMAT_TOKEN;
 key			return KEY_TOKEN;
 sorted		return SORTED_TOKEN;
 encoding	return ENCODING_TOKEN;

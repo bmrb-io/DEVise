@@ -1,20 +1,9 @@
-schema test2_schema {
-	delimiter = [\n]+;
-	separator = [ 	]+ ;
-	comment = "#";
+datareader 2.0;
+
+record_separator = [\n]+;
+field_separator = [ 	]+ ;
+comment = "#";
 	
-	attr date1 {
-		type = date;
-		date_format = "YYYYMMDD";
-	}
-
-	attr date2 {
-		type = date;
-		date_format = "MON-YY";
-	}
-
-	attr date3 {
-		type = date;
-		date_format = "MONTH-YYYY";
-	}
-}
+date date1 date_format = "YYYYMMDD";
+date date2 date_format = "MON-YY";
+date date3 date_format = "MONTH-YYYY";

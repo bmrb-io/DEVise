@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/02/01 19:18:37  wenger
+  Added DataReader functions to set and get file offset.
+
   Revision 1.20  1999/01/29 23:30:25  beyer
   fixed memory leak and record size problem
 
@@ -416,6 +419,10 @@ Buffer::ReadRecord(char *dest, DRSchema *schema)
 #endif
 			char *tmpPoint = dest + schema->tableAttr[attrNum]->offset;
 			if (!extractField(schema->tableAttr[attrNum], tmpPoint)) {
+#if (DEBUG >= 1) //TEMP -- maybe this should always be enabled
+				cerr << "Extract function failed for attribute " <<
+				  schema->tableAttr[attrNum]->getFieldName() << endl;
+#endif
 				result = false;
 			}
 #if (DEBUG >= 2)
@@ -1238,6 +1245,7 @@ Buffer::consumeRecord()
 				_state = BufEol;
 			}
 		}
+		if (_state == BufEol) _state = BufRecordStart;
 	}
 }
 

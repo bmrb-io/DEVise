@@ -1,9 +1,7 @@
-schema test6_schema {
-	delimiter = [\n]+;
-	separator = [ 	]+ ;
-	comment = "#";
+datareader 2.0;
+
+record_separator = [\n]+;
+field_separator = [ 	]+ ;
+comment = "#";
 	
-	attr sci_const {
-		type = double;
-	}
-}
+double sci_const;

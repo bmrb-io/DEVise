@@ -1,17 +1,10 @@
-schema test5_schema {
-	# no delimiter -- I'm trying to see if we can have ends-of-records
-	# defined purely by the field count
+datareader 2.0;
 
-	delimiter = [];
-	separator = [	]+;
+# no delimiter -- I'm trying to see if we can have ends-of-records
+# defined purely by the field count
 
-	attr rider {
-		type = string;
-		maxlen = 25;
-	}
+record_separator = [];
+field_separator = [	]+;
 
-	attr race {
-		type = string;
-		maxlen = 25;
-	}
-}
+string rider maxlen = 25;
+string race maxlen = 25;

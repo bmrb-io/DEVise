@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/02/01 19:18:51  wenger
+  Added DataReader functions to set and get file offset.
+
   Revision 1.10  1999/01/18 22:34:17  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -66,6 +69,7 @@ PrintRecord(DataReader* myDataReader, char results[])
 		char* tmp;
 		EncodedDTF tmpDate;
 		if (myDataReader->myDRSchema->tableAttr[i]->getFieldName() == NULL) {
+			// This is a skip attribute.
 			continue;
 		}
 		switch (myDataReader->myDRSchema->tableAttr[i]->getType()) {

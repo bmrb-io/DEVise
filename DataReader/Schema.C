@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/01/29 23:30:26  beyer
+  fixed memory leak and record size problem
+
   Revision 1.15  1999/01/18 22:34:16  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -304,7 +307,7 @@ Status DRSchema::finalizeDRSchema() {
 
 		// calculate record length, length of fields and offsets of fields in
 		// the destination buffer
-                _recSize = Align(_recSize, MAX_ALIGN);//kb: hack to make everything aligned
+		_recSize = Align(_recSize, MAX_ALIGN);//kb: hack to make everything aligned
 		tableAttr[i]->offset = _recSize;
 		tableAttr[i]->setLength(fLen);
 		_recSize += fLen;
@@ -372,13 +375,9 @@ Status DRSchema::finalizeDRSchema() {
 
 		}
 
-		// TEMP -- why do we do the separator twice?  (see code a few lines
-		// above this).  RKW 1998-10-13.
-		// TEMPANS -- You are right, I deleted the previous one.
 		if (_separator != NULL) {
 			if (tableAttr[i]->getSeparator() == NULL) {
-				if ((tableAttr[i]->getQuote() == -1) &&
-				  (tableAttr[i]->getFieldLen() == -1)) {
+				if (tableAttr[i]->getFieldLen() == -1) {
 					// Attribute object must 'own' the separator object
 					// and its string.
 					Holder *tmpSep = new Holder;

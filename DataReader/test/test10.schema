@@ -1,0 +1,25 @@
+#
+#
+
+datareader 2.0;
+
+record_separator = [\n]+;
+field_separator = [\t ]+;
+quote = ["];
+comment = "#";
+
+string SendDate[128];
+string FromName[128];
+string FromEmail[128];
+string Subject[128];
+string ContentType[128];
+string MessageType[128];
+string Name[128];
+string Topic[128];
+string Organization[128];
+string StartDate[128];
+string Location[128];
+string Deadline[128];
+string CallFor[128];
+string WebPage[128];
+string MessageURL[128];

@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1998
+# (c) Copyright 1992-1999
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -19,6 +19,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1999/01/18 22:34:16  wenger
+# Considerable changes to the DataReader:  reading is now per-field rather
+# than per-character (except for dates); the "extractor" functions now do
+# all the work, and the "value" functions have been eliminated; return values
+# are more clear, and behaviour in "boundary conditions" is better-defined;
+# fixed a number of bugs in the course of making these changes.  (The
+# DataReader could still use some more cleanup.)
+#
 # Revision 1.8  1998/11/03 17:53:34  okan
 # Fixed Several bugs and changed DataReader to use UtilAtof
 #
@@ -146,5 +154,13 @@ test7: testParser
 test8: testParser
 	testParser ../../DataReader/test/test8.dat \
 		../../DataReader/test/test8.schema
+
+test9: testParser
+	testParser ../../DataReader/test/test9.dat \
+		../../DataReader/test/test9.schema
+
+test10: testParser
+	testParser ../../DataReader/test/test10.dat \
+		../../DataReader/test/test10.schema
 
 ###############################################################################

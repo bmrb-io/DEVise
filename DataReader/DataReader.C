@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/02/01 19:18:50  wenger
+  Added DataReader functions to set and get file offset.
+
   Revision 1.11  1999/01/18 22:34:14  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -86,6 +89,8 @@ DataReader::DataReader(const char* dataFile, const char* schemaFile)
 		rc = myParser->parse();
 		schemaStream.close();
 		delete myParser;
+
+		myDRSchema->setDRSchemaName(strdup(schemaFile));
 
 #if defined(DEBUG)
 		cout << "\nSchema before finalizing\n";

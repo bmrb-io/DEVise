@@ -1,21 +1,10 @@
-schema test8_schema {
-	delimiter = [\n]+;
-	separator = [	]+ ;
-	comment = "#";
-	sorted = (int1);
+datareader 2.0;
+
+record_separator = [\n]+;
+field_separator = [	]+ ;
+comment = "#";
+sorted = (int1);
 	
-	attr int1 {
-		type = int;
-		length = 6;
-	}
-
-	attr double1 {
-		type = double;
-		length = 8;
-	}
-
-	attr str1 {
-		type = string;
-		length = 12;
-	}
-}
+int int1 length = 6;
+double double1 length = 8;
+string str1 length = 12;
