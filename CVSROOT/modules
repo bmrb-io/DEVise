@@ -53,4 +53,4 @@ devise		-a Makefile.common README \
 			scripts sgi solaris solsparc src sun tape test \
 			util xvertext
 devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS
-devisebmrb	-a devisefull peptide_cgi dist
+devisebmrb	-a devisefull peptide_cgi dist bmrb
