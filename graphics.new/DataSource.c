@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/03 20:36:02  jussi
+  Added support for concurrent I/O.
+
   Revision 1.6  1996/08/04 21:23:22  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -309,6 +312,11 @@ int DataSource::InitializeProc()
     if (_child >= 0) {
         fprintf(stderr, "Child process/thread exists already\n");
         return 0;
+    }
+
+    if (SemaphoreV::numAvailable() < 4) {
+        // One semaphore needed for DataSource, and 3 more for DataPipe.
+        return -1;
     }
 
     int status;
