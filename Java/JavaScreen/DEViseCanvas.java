@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  1999/12/07 23:18:20  hongyu
+// *** empty log message ***
+//
 // Revision 1.25  1999/12/06 23:22:22  hongyu
 // *** empty log message ***
 //
@@ -109,7 +112,7 @@ public class DEViseCanvas extends Container
     public static int lastKey = KeyEvent.VK_UNDEFINED;
     
     public static DEViseCanvas sourceCanvas = null;
-    public static boolean isInterative = false;
+    public static boolean isInteractive = false;
     
     public static int totalpaintcount = 0;
 
@@ -212,8 +215,8 @@ public class DEViseCanvas extends Container
     }
 
     public void paint(Graphics gc)
-    {   
-        if (DEViseCanvas.isInterative) {
+    {
+        if (DEViseCanvas.isInteractive) {
             if (DEViseCanvas.sourceCanvas != this) {
                 return;
             }
@@ -254,6 +257,7 @@ public class DEViseCanvas extends Container
         }
     }
 
+    //TEMP -- why do we have this *and* DEViseCrystal.paint()????
     private synchronized boolean paintCrystal(Graphics gc)
     {
         if (view.viewDimension != 3) {
@@ -760,11 +764,12 @@ public class DEViseCanvas extends Container
             // Each mouse click will be here once, so double click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
-            
-            DEViseCanvas.isInterative = false;
+
+            DEViseCanvas.isInteractive = false;
             
             if (view.viewDimension == 3) {
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
+		repaint();
                 return;
             }
 
@@ -930,7 +935,7 @@ public class DEViseCanvas extends Container
                     crystal.rotate(dx, dy);
                 }
                 
-                DEViseCanvas.isInterative = true;
+                DEViseCanvas.isInteractive = true;
                 DEViseCanvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
                 return;
@@ -963,7 +968,7 @@ public class DEViseCanvas extends Container
                     }
                 }
             
-                DEViseCanvas.isInterative = true;
+                DEViseCanvas.isInteractive = true;
                 DEViseCanvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
             }
@@ -1003,7 +1008,7 @@ public class DEViseCanvas extends Container
 
             checkMousePos(p, true);
             
-            //DEViseCanvas.isInterative = true;
+            //DEViseCanvas.isInteractive = true;
             //DEViseCanvas.sourceCanvas = DEViseCanvas.this;
             //repaint();
         }

@@ -262,6 +262,15 @@ public class DEViseAtomType {
             }
         }
         
+	if (DEViseCanvas.isInteractive) {
+            if (lastDrawStyle == 1) {
+                gc.setColor(selectedColor);
+            } else {
+                gc.setColor(color);
+            }    
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+	    return;
+	}
         if (lastDrawStyle == 1 || lastDrawStyle == 2) {
             Color oldcolor = gc.getColor();
             if (lastDrawStyle == 1) {

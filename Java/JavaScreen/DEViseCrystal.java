@@ -337,7 +337,7 @@ public class DEViseCrystal
             if (dz > maxi) {
                 maxi = dz;
             }
-            newBoxLength = 2 * maxi;
+            newBoxLength = maxi;
             resetAll(true);
         }
     }
@@ -733,5 +733,3 @@ public class DEViseCrystal
         return atomList.size();
     }        
 }
-
-            
