@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.230  2000/09/11 19:24:46  wenger
+  Fixed bug 617 and some other problems with the cursor constraints code.
+
   Revision 1.229  2000/08/10 16:10:40  wenger
   Phase 1 of getting rid of shared-memory-related code.
 
@@ -1040,7 +1043,6 @@
 #include "Session.h"
 #include "CmdContainer.h"
 #include "ArgList.h"
-#include "ControlPanelSimple.h"
 
 //******************************************************************************
 
@@ -1374,11 +1376,7 @@ void View::SetVisualFilterCommand(const VisualFilter &filter,
     sprintf(tmpBuf, "%.20g", filter.yHigh);
     args.AddArg(tmpBuf);
 
-    CmdSource cmdSrc(CmdSource::USER, CLIENT_INVALID);
-    CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_SERVER);
-    ControlPanelSimple control;
-    CmdContainer::GetCmdContainer()->Run(args.GetCount(), args.GetArgs(),
-	    &control, cmdDes);
+    CmdContainer::GenerateCommand(args.GetCount(), args.GetArgs());
   }
 }
 
@@ -1635,11 +1633,11 @@ void View::SetPileMode(Boolean mode)
   Refresh();
 }
 
-void View::Flip()
+void View::Flip(Boolean doCommand)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(%s)::Flip()\n", GetName());
+  printf("View(%s)::Flip(%d)\n", GetName(), doCommand);
 #endif
 
   // Find the right PileStack to flip:
@@ -1663,7 +1661,11 @@ void View::Flip()
   }
 
   if (ps) {
-    ps->Flip();
+    if (doCommand) {
+      ps->FlipCommand();
+    } else {
+      ps->Flip();
+    }
   }
 }
 

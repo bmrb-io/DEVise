@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  2000/09/14 19:38:45  wenger
+  Added GUI to view and change cursor type (X, Y, or XY).
+
   Revision 1.39  2000/09/11 19:24:43  wenger
   Fixed bug 617 and some other problems with the cursor constraints code.
 
@@ -403,11 +406,11 @@ void DeviseCursor::ViewDestroyed(View *view)
 }
 
 void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
-    Boolean noCommand)
+    Boolean doCommand)
 {
 #if defined(DEBUG)
-  printf("DeviseCursor(%s)::MoveSource(%g, %g, %g, %g)\n", GetName(), x, y,
-      width, height);
+  printf("DeviseCursor(%s)::MoveSource(%g, %g, %g, %g, %d)\n", GetName(),
+      x, y, width, height, doCommand);
 #endif
 
   if (!_src) {
@@ -461,7 +464,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
       (void)_dst->HideCursors();
     }
 
-    if (noCommand) {
+    if (doCommand) {
       _src->SetVisualFilterCommand(filter);
     } else {
       _src->SetVisualFilter(filter);
@@ -1194,7 +1197,7 @@ DeviseCursor::SatisfyConstraints()
   Coord width = filter.xHigh - filter.xLow;
   Coord height = filter.yHigh - filter.yLow;
 
-  MoveSource(xCen, yCen, width, height);
+  MoveSource(xCen, yCen, width, height, false);
 }
 
 void

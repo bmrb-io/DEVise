@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  2000/09/14 19:38:59  wenger
+  Added GUI to view and change cursor type (X, Y, or XY).
+
   Revision 1.28  2000/09/11 19:24:44  wenger
   Fixed bug 617 and some other problems with the cursor constraints code.
 
@@ -192,7 +195,7 @@ class DeviseCursor : private ViewCallback
 
   /* Move the X and Y coords of source; X and Y are the center of the cursor */
   void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0,
-      Boolean noCommand = false);
+      Boolean doCommand = true);
 
   /* Get or set the grid parameters. */
   void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY,

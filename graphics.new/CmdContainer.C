@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  2000/09/14 19:39:06  wenger
+  Added GUI to view and change cursor type (X, Y, or XY).
+
   Revision 1.66  2000/08/30 20:09:04  wenger
   Added the option of forcing a cursor to be entirely within its destination
   view; added control for whether a cursor must be at least partially within
@@ -334,6 +337,7 @@
 #include "Util.h"
 #include "DevError.h"
 #include "DebugLog.h"
+#include "ControlPanelSimple.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -362,6 +366,15 @@ CmdContainer *
 CmdContainer::GetCmdContainer()
 {
     return cmdContainerP;
+}
+
+void
+CmdContainer::GenerateCommand(int argc, const char* const *argv)
+{
+    CmdSource cmdSrc(CmdSource::USER, CLIENT_INVALID);
+    CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_SERVER);
+    ControlPanelSimple control;
+    CmdContainer::GetCmdContainer()->Run(argc, argv, &control, cmdDes);
 }
 
 CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,

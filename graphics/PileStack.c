@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  2000/06/20 22:16:54  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.24  2000/03/14 17:05:08  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -151,6 +154,9 @@
 #include "DevError.h"
 #include "Session.h"
 #include "DList.h"
+#include "ArgList.h"
+#include "DeviseCommand.h"
+#include "CmdContainer.h"
 
 DefinePtrDList(PileStackList, PileStack *)
 
@@ -366,6 +372,38 @@ PileStack::SwapViews(ViewWin *view1, ViewWin *view2)
 #endif
 
   GetViewList()->Swap(view1, view2);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::FlipCommand
+ * Flip the pile or stack, by generating a flip command.
+ */
+void
+PileStack::FlipCommand()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::FlipCommand()\n", _name);
+#endif
+
+  if (DeviseCommand::GetCmdDepth() > 1) {
+    // We don't want this to be sent to collaborating deviseds, etc.
+    Flip();
+
+  } else {
+    // Propagate to other deviseds if we're in group mode.
+
+    const char *winName = _window->GetName();
+    if (winName != NULL) {
+      ArgList args(2);
+      args.AddArg("flipPileStack");
+      args.AddArg(winName);
+
+      CmdContainer::GenerateCommand(args.GetCount(), args.GetArgs());
+    } else {
+      reportErrNosys("No window name available");
+    }
+  }
 }
 
 /*------------------------------------------------------------------------------

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.40  2000/03/28 17:55:57  wenger
+  Oops!  Used 'f' and 'F' for flip, so 'c' or 'C' now makes cursor fill
+  destination view (slightly different than before -- it previously did
+  a home on the source view, but I think filling the dest. view is better).
+
   Revision 1.39  2000/03/21 16:24:55  wenger
   'f' or 'F' key in a view now flips the appropriate pile or stack, if
   there is one.
@@ -501,7 +506,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       // do this for *one* view in the pile, since all of the views
       // get the key press event.  RKW 2000-03-21.
       if (ps->GetFirstView() == view) {
-        view->Flip();
+        view->Flip(true);
       }
     }
 #endif

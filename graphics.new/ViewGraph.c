@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.145  2000/10/16 16:11:47  wenger
+  Link creation GUI now gives a choice of positive or negative record
+  links; fixed bug 622 (record link type not saved in session files);
+  fixed bug 623 (record link update problem); other link-related cleanups.
+
   Revision 1.144  2000/10/13 19:58:31  wenger
   Got rid of GDataSocket creation errors in JavaScreen support.
 
@@ -1631,7 +1636,7 @@ ViewGraph::CursorHome()
       Coord y = (filter.yHigh + filter.yLow) / 2.0;
       Coord width = filter.xHigh - filter.xLow;
       Coord height = filter.yHigh - filter.yLow;
-      cursor->MoveSource(x, y, width, height);
+      cursor->MoveSource(x, y, width, height, true);
     }
   }
   _cursors->DoneIterator(index);
@@ -2660,7 +2665,7 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 			dataX2, dataY2);
 	    cursor->MoveSource((dataX1 + dataX2) / 2.0,
 		    (dataY1 + dataY2) / 2.0,
-			ABS(dataX2 - dataX1), ABS(dataY2 - dataY1));
+			ABS(dataX2 - dataX1), ABS(dataY2 - dataY1), true);
 	  }
 
 	  return;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.111  2000/07/17 16:07:46  wenger
+  Added visual filter info to metavisualization session description.
+
   Revision 1.110  2000/07/12 20:49:15  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -739,7 +742,7 @@ class View : public ViewWin
 	void SetPileMode(Boolean mode);
 
 	// Flip the appropriate PileStack object, if any.
-	void Flip();
+	void Flip(Boolean doCommand = false);
 
 	Boolean IsHighlightView() { return _isHighlightView; }
 	void SetHighlightView(Boolean highlightView) {

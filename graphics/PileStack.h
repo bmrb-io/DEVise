@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/06/20 22:16:54  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.20  1999/11/29 21:07:52  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -183,6 +186,7 @@ public:
   Boolean IsPiled() {
     return (_state == PSPiledNoLink || _state == PSPiledLinked); }
 
+  void FlipCommand();
   void Flip();
 
   // Insert/delete views.

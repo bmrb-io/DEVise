@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  2000/07/28 17:01:19  wenger
+  Added support for x-only zoom in the JavaScreen.
+
   Revision 1.106  2000/07/20 17:11:39  wenger
   Turned on sending of mouse display format info to the JavaScreen.
 
@@ -1704,7 +1707,7 @@ JavaScreenCmd::CursorChanged()
 	Coord centerY = (dataYLow + dataYHigh) / 2.0;;
 	Coord width = ABS(dataXHigh - dataXLow);
 	Coord height = ABS(dataYHigh - dataYLow);
-	cursor->MoveSource(centerX, centerY, width, height);
+	cursor->MoveSource(centerX, centerY, width, height, false);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/12/06 18:41:03  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.9  1999/12/02 15:06:57  wenger
   Fixed bug 538 (slow session saving).
 
@@ -63,6 +67,10 @@ class CmdContainer
 		typedef enum {MONOLITHIC=0,CSGROUP} Make;
 
 		static CmdContainer *GetCmdContainer();
+
+		// Generate a command internally (used so that actions get logged/
+		// passed to collaborators as appropriate).
+		static void GenerateCommand(int argc, const char* const *argv);
 
 		CmdContainer(ControlPanel* control, Make make, DeviseServer* server);
 		~CmdContainer();
