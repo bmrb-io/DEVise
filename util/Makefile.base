@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/08/13 17:45:45  flisakow
+#      Make consistently uses C and CC for gcc and g++, respectively.
+#
 #  Revision 1.12  1996/08/06 20:12:40  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -30,12 +33,6 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
 	-Wall -Wno-unused $(OPTFLAG)
 
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
-
-# Note: this overrides Makefile.common
-.c.o:
-	$(C) -c $(CFLAGS) $<
-.C.o:
-	$(CC) -c $(CFLAGS) $<
 
 SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
 	tardump.c lc.c dbcext.c addlatlon.c mk3dstruct.C
@@ -51,25 +48,25 @@ TARGET = $(OBJ:.o=)
 all: $(TARGET)
 
 http_url: http_url.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 atof: atof.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 mkbinfile: mkbinfile.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 gendots: gendots.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 genimage: genimage.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 addlatlon: addlatlon.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 mk3dstruct: mk3dstruct.o
-	$(CCC) -o $@ $@.o $(LDFLAGS)
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 issm2bin: issm2bin.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
