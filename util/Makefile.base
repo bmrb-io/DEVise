@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/11/23 21:02:36  jussi
+#  Removed default compile rules.
+#
 #  Revision 1.13  1996/08/13 17:45:45  flisakow
 #      Make consistently uses C and CC for gcc and g++, respectively.
 #
@@ -35,7 +38,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 
 SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
-	tardump.c lc.c dbcext.c addlatlon.c mk3dstruct.C
+	tardump.c lc.c dbcext.c addlatlon.c mk3dstruct.C mkparfile.C
 
 SRCc = $(filter %.c,$(SRC))
 SRCC = $(filter %.C,$(SRC))
@@ -54,6 +57,9 @@ atof: atof.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 mkbinfile: mkbinfile.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
+
+mkparfile: mkparfile.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 gendots: gendots.o
