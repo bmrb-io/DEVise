@@ -278,6 +278,9 @@ Have a command to invalidate all TData for a particular file, force
 rebuild of indices, etc. (to allow changing data in a view while the
 view is open).  (ds/rkw 12/09/96).
 
+Put info about batch and client/server modes in the user documentation.
+(rkw 12/09/96)
+
 
 COMPLETED
 ---------
