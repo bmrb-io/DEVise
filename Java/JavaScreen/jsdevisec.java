@@ -44,7 +44,7 @@ public class jsdevisec extends Panel
 
     public boolean isShowProgramInfo = false;
     public String rootDir = "DEViseSession";
-    public String currentDir = "";
+    public String currentDir = "DEViseSession";
     public String currentSession = null;
     
     public Cursor lastCursor = DEViseGlobals.defaultCursor;
@@ -205,13 +205,20 @@ public class jsdevisec extends Panel
 
 
         isSessionOpened = false;
-        currentDir = currentDir + rootDir;
         
         dispatcher = new DEViseCmdDispatcher(this);
 
         if (sessionName != null) {
-            sessionName = rootDir + "/" + sessionName;
-            dispatcher.start("JAVAC_SetDisplaySize " + jscreen.getScreenDim().width + " " + jscreen.getScreenDim().height + "\n" + "JAVAC_OpenSession {" + sessionName + "}");
+            int index = sessionName.lastIndexOf('/');
+            if (index > 0) {
+                currentDir = currentDir + "/" + sessionName.substring(0, index);                                            
+                currentSession = sessionName.substring(index + 1, sessionName.length());
+            } else {
+                currentSession = sessionName;
+            }
+            
+            //sessionName = rootDir + "/" + sessionName;
+            dispatcher.start("JAVAC_SetDisplaySize " + jscreen.getScreenDim().width + " " + jscreen.getScreenDim().height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
         }
     }
 
@@ -599,8 +606,7 @@ class SessionDlg extends Frame
                                             
                                             int index = jsc.currentDir.lastIndexOf('/');
                                             if (index > 0) {
-                                                jsc.currentDir = jsc.currentDir.substring(0, index);
-                                                
+                                                jsc.currentDir = jsc.currentDir.substring(0, index);                                                
                                             } else {
                                                 jsc.showMsg("Invalid current directory \"" + jsc.currentDir + "\"!");
                                                 jsc.currentDir = jsc.rootDir;
