@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 18:42:45  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.5  1995/12/14 15:43:12  jussi
   Replaced WinVertical and WinHorizontal with TileLayout.
 
@@ -29,10 +32,11 @@
   Added CVS header.
 */
 
-#include <sys/types.h>
-#include <sys/time.h>
-#include <time.h>
 #include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/types.h>
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "Display.h"
@@ -56,23 +60,157 @@
 #include "CursorClassInfo.h"
 #include "ParseCat.h"
 
-int debug = 0;
+static time_t GetTime(struct tm &now)
+{
+  static struct tm lasttm;
+  static time_t    lasttime = (time_t)-1;
 
-/* Generic composite parser */
-class GenericComposite : public UserComposite {
+  /* see if we can reuse the time value from last call's
+     mktime() call; mktime costs 1 msec per call so we
+     don't want to call it too often */
+  
+  time_t nowtime = 0;
+
+  if (lasttime != (time_t)-1 && now.tm_year == lasttm.tm_year
+      && now.tm_mon == lasttm.tm_mon) {
+    int diff = (now.tm_mday - lasttm.tm_mday) * 24 * 3600 +
+               (now.tm_hour - lasttm.tm_hour) * 3600 +
+	       (now.tm_min  - lasttm.tm_min) * 60 +
+	       (now.tm_sec  - lasttm.tm_sec);
+    nowtime = lasttime + diff;
+  } else {
+    nowtime = mktime(&now);
+    lasttime = nowtime;
+    lasttm = now;
+  }
+
+  return nowtime;
+}
+
+/* User composite function for dates of the form YYMMDD */
+
+class YyMmDdComposite : public UserComposite {
 public:
 
-  GenericComposite() { }
-  virtual void Decode(RecInterp *recInterp) { }
+  YyMmDdComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
 
+  virtual ~YyMmDdComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "YYMMDD", "DATE" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr,
+		  "YyMmDd composite parser: can't find attribute %s\n",
+		  primAttrs[i]);
+	  Exit::DoExit(2);
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    
+    /* decode date */
+    static struct tm now;
+    int seq = *(int *)(buf + attrOffset[0]);
+    now.tm_mday = seq % 100;
+    now.tm_mon = (seq / 100) % 100 - 1;
+    now.tm_year = seq / 10000;
+    now.tm_hour = 0;
+    now.tm_min = 0;
+    now.tm_sec = 0;
+
+    time_t *datePtr = (time_t *)(buf + attrOffset[1]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/* User composite function for OBSDATE field */
+
+class ObsDateComposite : public UserComposite {
+public:
+
+  ObsDateComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~ObsDateComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "OBS_DAY", "OBS_MON", "OBS_YEAR",
+			    "OBS_HOUR", "OBS_MIN", "OBS_SEC",
+			    "DATE" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr,
+		  "ObsDate composite parser: can't find attribute %s\n",
+		  primAttrs[i]);
+	  Exit::DoExit(2);
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    
+    /* decode date */
+    static struct tm now;
+    now.tm_mday = *(int *)(buf + attrOffset[0]);
+    now.tm_mon = *(int *)(buf + attrOffset[1]) - 1;
+    now.tm_year = *(int *)(buf + attrOffset[2]) - 1900;
+    now.tm_hour = *(int *)(buf + attrOffset[3]);
+    now.tm_min = *(int *)(buf + attrOffset[4]);
+    now.tm_sec = *(int *)(buf + attrOffset[5]);
+
+    time_t *datePtr = (time_t *)(buf + attrOffset[6]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
 };
 
 main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
 
-  /* Register composite parser */
-  CompositeParser::Register("Generic-Schema", new GenericComposite);
+  /* Register composite parsers */
+  CompositeParser::Register("BEST_STOCK", new YyMmDdComposite);
+  CompositeParser::Register("MIT_STOCK", new YyMmDdComposite);
+  CompositeParser::Register("ISSM-Trade", new ObsDateComposite);
+  CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);
@@ -88,7 +226,7 @@ main(int argc, char **argv)
      Otherwise, we'll get an error */
   DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
 
-  // keep compiler happy
+  /* keep compiler happy */
   disp = disp;
 
   /* Start session (possibly restoring an old one */
