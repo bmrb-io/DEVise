@@ -16,6 +16,12 @@
    $Id$
 
    $Log$
+   Revision 1.17  1997/10/10 21:13:45  liping
+   The interface between TData and BufMgr and the interface between BufMgr and
+   QueryProc were changed
+   The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+           4. Granularity in the structure "Range"
+
    Revision 1.16  1997/07/03 01:53:45  liping
    changed query interface to TData from RecId to double
 
@@ -208,9 +214,13 @@ class TData {
 
     /**************************************************************
       Init getting records.
+    ***************************************************************
+	NOTE: interval->NumRecs is now used by caller to say the 
+	      MAXIMAL # of records it wants
     ***************************************************************/
     virtual TDHandle InitGetRecs(// double lowVal, double highVal,
-				 Range *range,
+				 Interval *interval,
+				 int &bytesleft,
                                  Boolean asyncAllowed = false,
                                  ReleaseMemoryCallback *callback = NULL
 				 ) = 0;
@@ -229,7 +239,7 @@ class TData {
 	startRid and numRecs are now recorded in range
       *************************************************************/
     virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            Range *range, /*double &startVal, int &numRecs,*/ int &dataSize) = 0;
+                            Interval *interval, int &dataSize) = 0;
 
     virtual void DoneGetRecs(TDHandle handle) = 0;
 

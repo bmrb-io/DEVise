@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/07 17:06:06  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.8  1997/01/11 20:56:43  jussi
   Improved error detection and graceful termination.
 
@@ -39,6 +42,7 @@
 */
 
 #include <stdio.h>
+#include <iostream.h>
 #include <errno.h>
 
 #include "Exit.h"
@@ -65,8 +69,8 @@ void RangeList::Init()
 {
     /* init page range list*/
     _rangeList.next = _rangeList.prev = &_rangeList;
-    _rangeList.low = 0;
-    _rangeList.high = 0;
+    _rangeList.interval.Low = 0; // useless since it's in the constructor of RangeInfo?
+    _rangeList.interval.High = 0;// useless since it's in the constructor of RangeInfo?
     
     _rangeListSize = 0;
     
@@ -82,8 +86,11 @@ RangeList::~RangeList()
 }
 
 /*************************************************************************
-  Search for the 1st RangeList that contains id numbers
+  Search for the 1st RangeList that contains key values
   <= id. Return NULL if no such RagneData is found.  Update _hint. 
+**************************************************************************
+  now the search result RangeInfo does not necessarily really include
+  a record with such key value.
 *************************************************************************/
 
 RangeInfo *RangeList::Search(Coord id)
@@ -100,12 +107,12 @@ RangeInfo *RangeList::Search(Coord id)
     else /* start searching from beginning */
         current = _rangeList.next;
     
-    if (id < current->low) {
+    if (id < (current->interval).Low) {
         /* search backwards */
         for (current = current->prev; current != &_rangeList; 
              current = current->prev) {
             _searchSteps++;
-            if (id >= current->low) {
+            if (id >= current->interval.Low) {
                 /* found */
                 _hint = current;
                 return current;
@@ -115,17 +122,17 @@ RangeInfo *RangeList::Search(Coord id)
         return NULL;
     }
 
-    if (id > current->high) {
+    if (id > current->interval.High) {
         /* search forwards */
         for (current = current->next; current != &_rangeList; 
              current = current->next) {
             _searchSteps++;
-            if (id < current->low) {
+            if (id < current->interval.Low) {
                 /* page is beyond previous page range. */
                 _hint = current->prev;
                 return current->prev;
             }
-            else if (id <= current->high) {
+            else if (id <= current->interval.High) {
                 /* page number is within this page range */
                 _hint = current;
                 return current;
@@ -149,7 +156,7 @@ RangeInfo *RangeList::Search(Coord id)
 RangeInfo *RangeList::SearchExact(Coord low, Coord high)
 {
     RangeInfo *info = Search(low);
-    if (info == NULL || info->low != low || info->high != high);
+    if (info == NULL || info->interval.Low != low || info->interval.High != high);
         return NULL;
     return info;
 }
@@ -194,11 +201,11 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
     
     /* figure out the action to take */
     if (current == NULL) {
-        if (next == NULL || high < _rangeList.next->low - 1) {
+        if (next == NULL || (!(Adjacent(rangeInfo, next))) ) {
             /* create a new range */
             action = CREATE_RANGE;
         } else {
-            DOASSERT(high == _rangeList.next->low - 1, "Inconsistent state");
+            DOASSERT(Adjacent(rangeInfo, next), "Inconsistent state");
             if (rangeInfo->data+rangeInfo->dataSize == _rangeList.next->data) {
                 if (info == MergeLeft || info == MergeIgnore)
                     /* create a new range since we can't merge with 
@@ -213,9 +220,9 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         }
     } else {
         /* current not NULL */
-        DOASSERT(low > current->high, "Inconsistent state");
+        DOASSERT(low > current->interval.High, "Inconsistent state");
         if (next == NULL) {
-            if (low == current->high+1 
+	    if (Adjacent(current, rangeInfo)
                 && current->data+current->dataSize == rangeInfo->data) {
                 if (info == MergeRight || info == MergeIgnore)
                     /* can only merge with next range, but there is no
@@ -229,10 +236,10 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         }
         else {
             /* next range is not NULL */
-            DOASSERT(high < next->low, "Inconsistent state");
-            Boolean canLeft = (low == current->high + 1
+            DOASSERT(high < next->interval.Low, "Inconsistent state");
+            Boolean canLeft = (Adjacent(current, rangeInfo)
                   && current->data+current->dataSize == rangeInfo->data);
-            Boolean canRight = (high == next->low-1
+            Boolean canRight = (Adjacent(rangeInfo, next)
                   && rangeInfo->data + rangeInfo->dataSize == next->data);
             if (canLeft && canRight) {
                 /* inbetween two ranges */
@@ -280,14 +287,19 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         
         numDisposed = 0;
         break;
+
       case MERGE_CURRENT:
         /* merge recId number with current */
         numDisposed = 1;
         _disposed[0] = rangeInfo;
-        current->high = high;
+        current->interval.High = high;
+	current->interval.NumRecs += rangeInfo->interval.NumRecs;
+	current->interval.has_right = rangeInfo->interval.has_right;
+	current->interval.right_adjacent = rangeInfo->interval.right_adjacent;
         current->dataSize += rangeInfo->dataSize;
         current->bufSize += rangeInfo->bufSize;
         break;
+
       case MERGE_NEXT:
         /* merge with next */
         numDisposed = 1;
@@ -296,17 +308,25 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         next->dataSize += rangeInfo->dataSize;
         next->buf = rangeInfo->buf;
         next->bufSize += rangeInfo->bufSize;
-        next->low = rangeInfo->low;
+        next->interval.Low = rangeInfo->interval.Low;
+	next->interval.NumRecs += rangeInfo->interval.NumRecs;
+	next->interval.has_left = rangeInfo->interval.has_left;
+	next->interval.left_adjacent = rangeInfo->interval.left_adjacent;
         break;
+
       case MERGE_BOTH:
         /* merge with both current and next */
         numDisposed = 2;
         _disposed[0] = next;
         _disposed[1] = rangeInfo;
         
-        current->high = next->high;
+        current->interval.High = next->interval.High;
         current->dataSize += (rangeInfo->dataSize + next->dataSize);
         current->bufSize += (rangeInfo->bufSize + next->bufSize);
+	current->interval.NumRecs += rangeInfo->interval.NumRecs;
+	current->interval.NumRecs += next->interval.NumRecs;
+	current->interval.has_right = next->interval.has_right;
+	current->interval.right_adjacent = next->interval.right_adjacent;
         
         /* delete next */
         current->next = next->next;
@@ -314,7 +334,6 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         
         if (_hint == next)
             _hint = current;
-        
         break;
     }
     _rangeListSize = _rangeListSize+1 - numDisposed;
@@ -352,7 +371,7 @@ void RangeList::Print()
     printf("low\thi\tdata\tdataSize\tbuf\tbufSize\n");
     RangeInfo *data;
     for (data = _rangeList.next; data != &_rangeList; data = data->next) {
-        printf("%ld\t%ld\t0x%p\t%d\t0x%p\t%d\n",(RecId)data->low, (RecId)data->high,
+        printf("%f\t%f\t0x%p\t%d\t0x%p\t%d\n", data->interval.Low, data->interval.High,
                data->data,data->dataSize,data->buf,data->bufSize);
         if (++num > 7) {
             printf("\n");
@@ -362,4 +381,29 @@ void RangeList::Print()
     printf("\n");
     printf("%d search, %d steps, %f steps/search\n", _numSearch,
            _searchSteps, (double)_searchSteps/(double)_numSearch);
+}
+
+// given two RangeInfo, return true iff they are truly adjacent, which means
+// the high value of the left RangeInfo equals the LeftAdjacent of the right &
+// the low value of the right RangeInfo equals the RightAdjacent of the left
+Boolean RangeList::Adjacent(RangeInfo *left, RangeInfo *right)
+{
+	if ( (left == NULL) || (right == NULL) )
+		return false;
+
+	if ( (!(left->HasRight())) || (!(right->HasLeft())) )
+		return false;
+
+	Coord leftLow, leftHigh, rightLow, rightHigh;
+
+	left->RecIds(leftLow, leftHigh);
+	right->RecIds(rightLow, rightHigh);
+
+	if ( leftHigh != right->LeftAdjacent() )
+		return false;
+
+	if ( rightLow != left->RightAdjacent() )
+		return false;
+
+	return true;
 }

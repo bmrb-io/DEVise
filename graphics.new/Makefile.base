@@ -18,6 +18,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.64  1997/12/11 04:47:56  beyer
+#  .o files that are placed into libraries (.a) are now removed.
+#
 #  Revision 1.63  1997/12/04 18:31:25  wenger
 #  Merged new expression evaluation code thru the expression_br_2 tag.
 #
@@ -139,7 +142,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 # Buffer manager
 
 BufMgrSrc = BufMgr.c VoidArray.c RangeInfoArray.c BufMgrFull.c \
-	RangeList.c TDataRangeList.c MultiArray.c RangeCallback.c
+	RangeInfo.c RangeList.c TDataRangeList.c MultiArray.c RangeCallback.c
 
 BufMgrObj = $(BufMgrSrc:.c=.o)
 
@@ -237,7 +240,7 @@ rstat: rstat.o ../graphics/Parse.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o ../graphics/Exit.o -lm
 
 TESTBUFMGROBJ =  RangeInfoArray.o MultiArray.o ../graphics/Parse.o \
-	VoidArray.o BufMgrFull.o RangeList.o TDataRangeList.o
+	VoidArray.o BufMgrFull.o RanghInfo.o RangeList.o TDataRangeList.o
 
 testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 	$(CC) -o $@ $@.o $(TESTBUFMGROBJ) ../graphics/ExitClean.o
@@ -246,10 +249,10 @@ testGDataRange: testGDataRange.o GDataRangeMap.o ../graphics/Parse.o \
 	../graphics/ExitClean.o
 	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o \
 		../graphics/ExitClean.o
-
-testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o \
+	
+testRangeList: testRangeList.o ../graphics/Parse.o RangeInfo.o RangeList.o \
 	../graphics/Exit.o
-	$(CC) -o $@ $@.o ../graphics/Parse.o RangeList.o \
+	$(CC) -o $@ $@.o ../graphics/Parse.o  RangeInfo.o RangeList.o \
 		../graphics/ExitClean.o
 
 testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o \

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/10 21:13:41  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.8  1997/07/03 01:53:35  liping
   changed query interface to TData from RecId to double
 
@@ -109,9 +115,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(Range *range, Boolean asyncAllowed,
-                                 ReleaseMemoryCallback *callback
-                                 ) ;
+	virtual TDHandle InitGetRecs(Interval *interval, int &bytesleft,
+				     Boolean asyncAllowed,
+                                     ReleaseMemoryCallback *callback
+				     ) ;
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -128,7 +135,7 @@ public:
         startRid and numRecs are now recorded in range
       *************************************************************/
 	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            Range *range, int &dataSize) ;
+                            Interval *interval, int &dataSize) ;
 
 	virtual void DoneGetRecs(TDHandle handle);
 
@@ -161,7 +168,7 @@ public:
 
 	/* Iterator for what's converted, returned in ascending order */
 	void InitConvertedIterator();
-	Boolean NextRange(RecId &lowId, RecId &highId);
+	Boolean NextRange(Coord &lowId, Coord &highId);
 	void DoneConvertedIterator();
 
 	/* Print what has been converted */

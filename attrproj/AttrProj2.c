@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/10/10 21:10:47  liping
+  Using new TData::InitGetRecs and TData::GetRecs interface (the Range interface)
+
   Revision 1.5  1997/07/03 01:51:57  liping
   changed query interface to TData from RecId to double
 
@@ -307,25 +310,26 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	int			numRecs;
 	DevStatus	result = StatusOk;
 
-	Range range;
-	range.Low = recId;
-	range.High = recId;
-	range.AttrName = "recId";
-	range.Granularity = 0; // not used
-	TData::TDHandle handle = _tDataP->InitGetRecs(&range);
+	Interval interval;
+	interval.Low = recId;
+	interval.High = recId;
+	interval.AttrName = "recId";
+	interval.Granularity = 1; 
+	int dummy;
+	TData::TDHandle handle = _tDataP->InitGetRecs(&interval, dummy);
 	
-	Range second_range;
+	Interval second_interval;
 	if (!_tDataP->GetRecs(handle, _recBuf, _recBufSize,
-                              &second_range, dataSize))
+                              &second_interval, dataSize))
 	{
-		recId = (RecId) (second_range.Low);
-		numRecs = second_range.NumRecs;
+		recId = (RecId) (second_interval.Low);
+		numRecs = second_interval.NumRecs;
 		result = StatusFailed;
 	}
 	else
 	{
-		recId = (RecId) (second_range.Low);
-		numRecs = second_range.NumRecs;
+		recId = (RecId) (second_interval.Low);
+		numRecs = second_interval.NumRecs;
 		AttrList *	attrListP = _tDataP->GetAttrList();
 		int		projNum = 0;
 		Projection * projP = _projList.GetFirstProj();
@@ -364,27 +368,28 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 
 	DevStatus	result = StatusOk;
 
-	Range range;
-	range.Low = range.High = recId;
-	range.AttrName = "recId";
-	range.Granularity = 0; // not used
-	TData::TDHandle handle = _tDataP->InitGetRecs(&range);
+	Interval interval;
+	interval.Low = interval.High = recId;
+	interval.AttrName = "recId";
+	interval.Granularity = 1;
+	int dummy;
+	TData::TDHandle handle = _tDataP->InitGetRecs(&interval, dummy);
 
 	int			dataSize;
 	int			numRecs;
-	Range 			second_range;
+	Interval		second_interval;
 	
 	if (!_tDataP->GetRecs(handle, _recBuf, _recBufSize,
-                              &range, dataSize))
+                              &interval, dataSize))
 	{
-		recId = (RecId)(second_range.Low);
-		numRecs = second_range.NumRecs;
+		recId = (RecId)(second_interval.Low);
+		numRecs = second_interval.NumRecs;
 		result = StatusFailed;
 	}
 	else
 	{
-		recId = (RecId)(second_range.Low);
-		numRecs = second_range.NumRecs;
+		recId = (RecId)(second_interval.Low);
+		numRecs = second_interval.NumRecs;
 		AttrList *	attrListP = _tDataP->GetAttrList();
 		int			attrNum = 0;
 

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.89  1997/12/22 17:55:03  donjerko
+# Initial version of Saeed's sequence similarity search.
+#
 # Revision 1.88  1997/12/12 16:37:00  wenger
 # Updated solaris dependencies.
 #
@@ -249,34 +252,36 @@ BufHash.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 BufHash.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 BufHash.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 BufHash.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-BufHash.o: QPRange.h
+BufHash.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 BufMech.o: BufMech.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMech.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 BufMech.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 BufMech.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 BufMech.o: /usr/include/sys/time.h /usr/include/time.h RecId.h RangeInfo.h
 BufMech.o: /usr/include/stdio.h /usr/include/sys/va_list.h ../graphics/Exit.h
-BufMech.o: RangeInfoArray.h RangeHash.h BufferPolicy.h TData.h DataSource.h
-BufMech.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-BufMech.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-BufMech.o: /usr/include/errno.h /usr/include/sys/errno.h
-BufMech.o: /usr/include/assert.h /usr/include/limits.h
-BufMech.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/param.h
-BufMech.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-BufMech.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-BufMech.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-BufMech.o: /usr/include/netdb.h /usr/include/sys/socket.h
-BufMech.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-BufMech.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-BufMech.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-BufMech.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-BufMech.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-BufMech.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-BufMech.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-BufMech.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-BufMech.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-BufMech.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-BufMech.o: /usr/include/sys/byteorder.h
+BufMech.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+BufMech.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+BufMech.o: /usr/include/sys/unistd.h /usr/include/errno.h
+BufMech.o: /usr/include/sys/errno.h /usr/include/assert.h
+BufMech.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+BufMech.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+BufMech.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+BufMech.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+BufMech.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+BufMech.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+BufMech.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+BufMech.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+BufMech.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+BufMech.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+BufMech.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+BufMech.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+BufMech.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+BufMech.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+BufMech.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+BufMech.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+BufMech.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+BufMech.o: ../graphics/BufPolicy.h RangeInfoArray.h RangeHash.h
+BufMech.o: BufferPolicy.h
 BufMgr.o: BufMgr.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMgr.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 BufMgr.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
@@ -304,7 +309,8 @@ BufMgr.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 BufMgr.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 BufMgr.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 BufMgr.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h GData.h
-BufMgr.o: RangeList.h RangeInfo.h QPRange.h
+BufMgr.o: RangeList.h RangeInfo.h ../graphics/AttrList.h ../graphics/Init.h
+BufMgr.o: QPRange.h
 BufMgrFull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 BufMgrFull.o: /usr/include/sys/va_list.h ../graphics/Init.h
 BufMgrFull.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -334,9 +340,9 @@ BufMgrFull.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 BufMgrFull.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 BufMgrFull.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 BufMgrFull.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-BufMgrFull.o: QPRange.h TDataRangeList.h TDataAttr.h BufferFifo.h
-BufMgrFull.o: BufferFocal.h BufferLifo.h BufferRnd.h /usr/include/stdlib.h
-BufMgrFull.o: BufferLru.h
+BufMgrFull.o: ../graphics/AttrList.h QPRange.h TDataRangeList.h TDataAttr.h
+BufMgrFull.o: BufferFifo.h BufferFocal.h BufferLifo.h BufferRnd.h
+BufMgrFull.o: /usr/include/stdlib.h BufferLru.h
 BufPage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 BufPage.o: /usr/include/sys/va_list.h /usr/include/stdlib.h BufPage.h
 BufPage.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -373,7 +379,7 @@ BufPageList.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 BufPageList.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 BufPageList.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 BufPageList.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-BufPageList.o: QPRange.h
+BufPageList.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 ClientAPI.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ClientAPI.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 ClientAPI.o: /usr/include/string.h /usr/include/sys/types.h
@@ -428,9 +434,9 @@ Command.o: ../graphics/Timer.h ../graphics/Parse.h BufMgr.h
 Command.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 Command.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/errno.h
 Command.o: /usr/include/sys/errno.h /usr/include/assert.h
-Command.o: /usr/include/sys/stat.h GData.h RangeList.h RangeInfo.h QPRange.h
-Command.o: QueryProc.h ../graphics/Control.h ../graphics/ClassDir.h
-Command.o: ../graphics/Init.h
+Command.o: /usr/include/sys/stat.h GData.h RangeList.h RangeInfo.h
+Command.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h QueryProc.h
+Command.o: ../graphics/Control.h ../graphics/ClassDir.h
 CompositeParser.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 CompositeParser.o: /usr/include/sys/va_list.h RecInterp.h
 CompositeParser.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -1062,7 +1068,8 @@ PageFile.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 PageFile.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 PageFile.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 PageFile.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-PageFile.o: QPRange.h DiskFile.h PageFile.h BufHint.h PageRange.h
+PageFile.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h DiskFile.h
+PageFile.o: PageFile.h BufHint.h PageRange.h
 PageRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 PageRange.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 PageRange.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -1155,10 +1162,10 @@ QueryProc.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 QueryProc.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 QueryProc.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 QueryProc.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h GData.h
-QueryProc.o: RangeList.h RangeInfo.h ../graphics/Scheduler.h
-QueryProc.o: ../graphics/Control.h ../graphics/ClassDir.h ViewGraph.h
-QueryProc.o: Action.h PointStorage.h ../tape/HashTable.h TDataMap.h ShapeID.h
-QueryProc.o: GDataRec.h ../graphics/AttrList.h ../graphics/Init.h
+QueryProc.o: RangeList.h RangeInfo.h ../graphics/AttrList.h
+QueryProc.o: ../graphics/Init.h ../graphics/Scheduler.h ../graphics/Control.h
+QueryProc.o: ../graphics/ClassDir.h ViewGraph.h Action.h PointStorage.h
+QueryProc.o: ../tape/HashTable.h TDataMap.h ShapeID.h GDataRec.h
 QueryProc.o: ../src/color/Coloring.h
 QueryProcFull.o: QueryProcFull.h /usr/include/time.h
 QueryProcFull.o: /usr/include/sys/feature_tests.h /usr/include/sys/time.h
@@ -1192,7 +1199,8 @@ QueryProcFull.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 QueryProcFull.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 QueryProcFull.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 QueryProcFull.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-QueryProcFull.o: GData.h RangeList.h RangeInfo.h ../graphics/Scheduler.h
+QueryProcFull.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+QueryProcFull.o: ../graphics/Init.h ../graphics/Scheduler.h
 QueryProcFull.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
 QueryProcFull.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryProcFull.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
@@ -1203,14 +1211,13 @@ QueryProcFull.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
 QueryProcFull.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 QueryProcFull.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 QueryProcFull.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-QueryProcFull.o: ../src/color/Coloring.h ../graphics/Init.h BufMgrFull.h
-QueryProcFull.o: TDataRangeList.h TDataMap.h ShapeID.h GDataRec.h
-QueryProcFull.o: ../graphics/AttrList.h MappingInterp.h /s/tcl/include/tcl.h
-QueryProcFull.o: Bitmap.h ViewGraph.h Action.h PointStorage.h
-QueryProcFull.o: ../tape/HashTable.h GDataBin.h ../graphics/Control.h
-QueryProcFull.o: ../graphics/ClassDir.h RecordLink.h RecFile.h VisualLink.h
-QueryProcFull.o: ../graphics/ViewCallback.h Shape.h ../graphics/Temp.h
-QueryProcFull.o: ../graphics/Map3D.h DrawTimer.h
+QueryProcFull.o: ../src/color/Coloring.h BufMgrFull.h TDataRangeList.h
+QueryProcFull.o: TDataMap.h ShapeID.h GDataRec.h MappingInterp.h
+QueryProcFull.o: /s/tcl/include/tcl.h Bitmap.h ViewGraph.h Action.h
+QueryProcFull.o: PointStorage.h ../tape/HashTable.h GDataBin.h
+QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h RecordLink.h
+QueryProcFull.o: RecFile.h VisualLink.h ../graphics/ViewCallback.h Shape.h
+QueryProcFull.o: ../graphics/Temp.h ../graphics/Map3D.h DrawTimer.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -1224,6 +1231,57 @@ RangeHash.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeHash.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 RangeHash.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 RangeHash.o: /usr/include/sys/time.h /usr/include/time.h RangeInfo.h RecId.h
+RangeHash.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+RangeHash.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+RangeHash.o: /usr/include/sys/unistd.h /usr/include/errno.h
+RangeHash.o: /usr/include/sys/errno.h /usr/include/assert.h
+RangeHash.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+RangeHash.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+RangeHash.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+RangeHash.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+RangeHash.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+RangeHash.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+RangeHash.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+RangeHash.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+RangeHash.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+RangeHash.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+RangeHash.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+RangeHash.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+RangeHash.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+RangeHash.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+RangeHash.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+RangeHash.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+RangeHash.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+RangeHash.o: ../graphics/BufPolicy.h
+RangeInfo.o: RangeInfo.h /usr/include/stdio.h
+RangeInfo.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+RangeInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
+RangeInfo.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+RangeInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+RangeInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
+RangeInfo.o: /usr/include/time.h ../graphics/Exit.h RecId.h TData.h
+RangeInfo.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+RangeInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+RangeInfo.o: /usr/include/sys/unistd.h /usr/include/errno.h
+RangeInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
+RangeInfo.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+RangeInfo.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+RangeInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+RangeInfo.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+RangeInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+RangeInfo.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+RangeInfo.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+RangeInfo.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+RangeInfo.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+RangeInfo.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+RangeInfo.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+RangeInfo.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+RangeInfo.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+RangeInfo.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+RangeInfo.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+RangeInfo.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+RangeInfo.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+RangeInfo.o: ../graphics/BufPolicy.h
 RangeInfoArray.o: RangeInfoArray.h ../graphics/DeviseTypes.h
 RangeInfoArray.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeInfoArray.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -1231,7 +1289,29 @@ RangeInfoArray.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 RangeInfoArray.o: /usr/include/sys/select.h /usr/include/sys/time.h
 RangeInfoArray.o: /usr/include/time.h MultiArray.h /usr/include/stdio.h
 RangeInfoArray.o: /usr/include/sys/va_list.h VoidArray.h ../graphics/Exit.h
-RangeInfoArray.o: RangeInfo.h RecId.h
+RangeInfoArray.o: RangeInfo.h RecId.h TData.h DataSource.h MemMgr.h DCE.h
+RangeInfoArray.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+RangeInfoArray.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+RangeInfoArray.o: /usr/include/errno.h /usr/include/sys/errno.h
+RangeInfoArray.o: /usr/include/assert.h /usr/include/limits.h
+RangeInfoArray.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/param.h
+RangeInfoArray.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+RangeInfoArray.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+RangeInfoArray.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+RangeInfoArray.o: /usr/include/netdb.h /usr/include/sys/socket.h
+RangeInfoArray.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+RangeInfoArray.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+RangeInfoArray.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+RangeInfoArray.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+RangeInfoArray.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+RangeInfoArray.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+RangeInfoArray.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+RangeInfoArray.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+RangeInfoArray.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+RangeInfoArray.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+RangeInfoArray.o: /usr/include/sys/byteorder.h ../graphics/AttrList.h
+RangeInfoArray.o: ../graphics/DList.h ../graphics/Init.h
+RangeInfoArray.o: ../graphics/BufPolicy.h
 RangeList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 RangeList.o: /usr/include/sys/va_list.h /usr/include/errno.h
 RangeList.o: /usr/include/sys/errno.h ../graphics/Exit.h RangeList.h
@@ -1239,7 +1319,28 @@ RangeList.o: ../graphics/DeviseTypes.h /usr/include/values.h
 RangeList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 RangeList.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 RangeList.o: /usr/include/sys/select.h /usr/include/sys/time.h
-RangeList.o: /usr/include/time.h RecId.h RangeInfo.h ../graphics/DevError.h
+RangeList.o: /usr/include/time.h RecId.h RangeInfo.h TData.h DataSource.h
+RangeList.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+RangeList.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+RangeList.o: /usr/include/assert.h /usr/include/limits.h
+RangeList.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/param.h
+RangeList.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+RangeList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+RangeList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+RangeList.o: /usr/include/netdb.h /usr/include/sys/socket.h
+RangeList.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+RangeList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+RangeList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+RangeList.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+RangeList.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+RangeList.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+RangeList.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+RangeList.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+RangeList.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+RangeList.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+RangeList.o: /usr/include/sys/byteorder.h ../graphics/AttrList.h
+RangeList.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+RangeList.o: ../graphics/DevError.h
 RecFile.o: UnixRecFile.h /usr/include/errno.h /usr/include/sys/errno.h
 RecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 RecFile.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -1380,8 +1481,9 @@ TDataAppend.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TDataAppend.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 TDataAppend.o: /usr/include/sys/byteorder.h DiskFile.h BufMgr.h
 TDataAppend.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h
-TDataAppend.o: ../graphics/DList.h GData.h RangeList.h RangeInfo.h QPRange.h
-TDataAppend.o: PageFile.h BufHint.h
+TDataAppend.o: ../graphics/DList.h GData.h RangeList.h RangeInfo.h
+TDataAppend.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h PageFile.h
+TDataAppend.o: BufHint.h
 TDataAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataAscii.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TDataAscii.o: /usr/include/fcntl.h /usr/include/sys/types.h
@@ -1609,14 +1711,36 @@ TDataMmap.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 TDataMmap.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TDataMmap.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 TDataMmap.o: /usr/include/sys/byteorder.h DiskFile.h
-TDataRangeList.o: TDataRangeList.h RangeList.h ../graphics/DeviseTypes.h
+TDataRangeList.o: TDataRangeList.h ../graphics/DeviseTypes.h
 TDataRangeList.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataRangeList.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 TDataRangeList.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 TDataRangeList.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataRangeList.o: /usr/include/time.h RecId.h RangeInfo.h
+TDataRangeList.o: /usr/include/time.h RangeList.h RecId.h RangeInfo.h
 TDataRangeList.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-TDataRangeList.o: ../graphics/Exit.h
+TDataRangeList.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
+TDataRangeList.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+TDataRangeList.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+TDataRangeList.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataRangeList.o: /usr/include/assert.h /usr/include/limits.h
+TDataRangeList.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/param.h
+TDataRangeList.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+TDataRangeList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+TDataRangeList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+TDataRangeList.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataRangeList.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+TDataRangeList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+TDataRangeList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+TDataRangeList.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+TDataRangeList.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+TDataRangeList.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+TDataRangeList.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+TDataRangeList.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+TDataRangeList.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+TDataRangeList.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+TDataRangeList.o: /usr/include/sys/byteorder.h ../graphics/AttrList.h
+TDataRangeList.o: ../graphics/DList.h ../graphics/Init.h
+TDataRangeList.o: ../graphics/BufPolicy.h
 TDataSeqAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataSeqAscii.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TDataSeqAscii.o: /usr/include/fcntl.h /usr/include/sys/types.h
@@ -1935,7 +2059,8 @@ makeGData.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 makeGData.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 makeGData.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 makeGData.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-makeGData.o: QPRange.h TDataAppend.h DiskFile.h ams.h /usr/include/math.h
+makeGData.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
+makeGData.o: TDataAppend.h DiskFile.h ams.h /usr/include/math.h
 makeGData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 makeTest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 makeTest.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
@@ -1970,10 +2095,10 @@ testBufMgrFull.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 testBufMgrFull.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 testBufMgrFull.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 testBufMgrFull.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-testBufMgrFull.o: RangeInfo.h RangeInfoArray.h BufferPolicy.h BufMgrFull.h
-testBufMgrFull.o: BufMgr.h ../graphics/BufPolicy.h ../graphics/DList.h
-testBufMgrFull.o: GData.h RangeList.h QPRange.h ../graphics/Init.h
-testBufMgrFull.o: TDataRangeList.h
+testBufMgrFull.o: RangeInfo.h ../graphics/AttrList.h ../graphics/DList.h
+testBufMgrFull.o: ../graphics/Init.h ../graphics/BufPolicy.h RangeInfoArray.h
+testBufMgrFull.o: BufferPolicy.h BufMgrFull.h BufMgr.h GData.h RangeList.h
+testBufMgrFull.o: QPRange.h TDataRangeList.h
 testBufPage.o: BufPage.h /usr/include/stdio.h
 testBufPage.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 testBufPage.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -2045,10 +2170,10 @@ testQueryProc.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 testQueryProc.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 testQueryProc.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 testQueryProc.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-testQueryProc.o: GData.h RangeList.h RangeInfo.h QPRange.h TDataAppend.h
-testQueryProc.o: DiskFile.h TDataMap.h ../graphics/Pattern.h ShapeID.h
+testQueryProc.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+testQueryProc.o: ../graphics/Init.h QPRange.h TDataAppend.h DiskFile.h
+testQueryProc.o: TDataMap.h ../graphics/Pattern.h ShapeID.h
 testQueryProc.o: ../graphics/VisualArg.h ../src/color/Color.h GDataRec.h
-testQueryProc.o: ../graphics/AttrList.h ../graphics/Init.h
 testQueryProc.o: ../src/color/Coloring.h QueryProc.h
 testRangeList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testRangeList.o: /usr/include/sys/va_list.h /usr/include/stdlib.h RangeList.h
@@ -2057,6 +2182,28 @@ testRangeList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 testRangeList.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 testRangeList.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testRangeList.o: /usr/include/time.h RecId.h RangeInfo.h ../graphics/Exit.h
+testRangeList.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+testRangeList.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+testRangeList.o: /usr/include/sys/unistd.h /usr/include/errno.h
+testRangeList.o: /usr/include/sys/errno.h /usr/include/assert.h
+testRangeList.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+testRangeList.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+testRangeList.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+testRangeList.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+testRangeList.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+testRangeList.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+testRangeList.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+testRangeList.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+testRangeList.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+testRangeList.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+testRangeList.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+testRangeList.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+testRangeList.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+testRangeList.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+testRangeList.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+testRangeList.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+testRangeList.o: ../graphics/AttrList.h ../graphics/DList.h
+testRangeList.o: ../graphics/Init.h ../graphics/BufPolicy.h
 testRangeList.o: ../graphics/Parse.h
 testRecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 testRecFile.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -2117,7 +2264,8 @@ testTdata.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 testTdata.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 testTdata.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 testTdata.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-testTdata.o: QPRange.h TDataAppend.h DiskFile.h
+testTdata.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
+testTdata.o: TDataAppend.h DiskFile.h
 testViewRanges.o: ../graphics/TileLayout.h ../graphics/ViewLayout.h
 testViewRanges.o: ViewRanges.h RangeCallback.h ../graphics/DeviseTypes.h
 testViewRanges.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2167,7 +2315,8 @@ testbuf.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 testbuf.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 testbuf.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 testbuf.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h GData.h
-testbuf.o: RangeList.h RangeInfo.h QPRange.h UnixDiskFile.h DiskFile.h
+testbuf.o: RangeList.h RangeInfo.h ../graphics/AttrList.h ../graphics/Init.h
+testbuf.o: QPRange.h UnixDiskFile.h DiskFile.h
 testhole.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
 testhole.o: DiskFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 testhole.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -2210,7 +2359,7 @@ testpfile.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 testpfile.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 testpfile.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 testpfile.o: /usr/include/sys/byteorder.h GData.h RangeList.h RangeInfo.h
-testpfile.o: QPRange.h
+testpfile.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 testpfileGap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testpfileGap.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 testpfileGap.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -2240,7 +2389,8 @@ testpfileGap.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 testpfileGap.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 testpfileGap.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 testpfileGap.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-testpfileGap.o: GData.h RangeList.h RangeInfo.h QPRange.h PageRange.h
+testpfileGap.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+testpfileGap.o: ../graphics/Init.h QPRange.h PageRange.h
 BasicStats.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 BasicStats.o: /usr/include/sys/va_list.h /usr/include/math.h
 BasicStats.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h

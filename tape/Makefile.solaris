@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.40  1997/11/24 23:16:27  weaver
+# Changes for the new ColorManager.
+#
 # Revision 1.39  1997/09/29 02:53:01  donjerko
 # *** empty log message ***
 #
@@ -75,6 +78,7 @@ Templates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 Templates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 Templates.o: /usr/include/sys/byteorder.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/AttrList.h ../graphics/Init.h
 Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h

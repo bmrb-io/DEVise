@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/10/07 17:06:08  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.4  1996/12/18 15:31:05  jussi
   Changed syntax of SearchExact().
 
@@ -89,6 +92,13 @@ public:
 private:
     /* main initialization for constructor */
     void Init();
+
+    // given two RangeInfo, return true iff they are truly adjacent, which means
+    // the high value of the left RangeInfo equals the LeftAdjacent of the right
+    // and
+    // the low value of the right RangeInfo equals the RightAdjacent of the left
+    Boolean Adjacent(RangeInfo *left, RangeInfo *right);
+
 
     /* head of linked list of RangeData */
     RangeInfo _rangeList;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/10/07 17:06:06  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.5  1996/11/23 21:18:35  jussi
   Simplified code.
 
@@ -37,6 +40,10 @@
 #include "DeviseTypes.h"
 #include "Exit.h"
 #include "RecId.h"
+#include "TData.h"
+#include "AttrList.h"
+
+static const int BMFULL_RECS_PER_BATCH = 1024;
 
 class TData;
 
@@ -52,17 +59,25 @@ public:
         bufSize = 0;
         tdata = NULL;
         dataSize = 0;
-        low = high = 0;
         next = prev = 0;
+	interval.Low = 0;
+	interval.High = 0;
+	interval.NumRecs = 0;
+	interval.has_left = interval.has_right = false;
     }
+
+    Boolean HasLeft() { return interval.has_left; }
+    Boolean HasRight() { return interval.has_right; }
+    Coord LeftAdjacent() { return interval.left_adjacent; }
+    Coord RightAdjacent() { return interval.right_adjacent; }
 
     /* Get TData for this range */
     TData *GetTData() { return tdata; }
 
     /* Get record ID associated with this range */
     void RecIds(Coord &lowId, Coord &highId) {
-        lowId = low;
-        highId = high;
+        lowId = interval.Low;
+        highId = interval.High;
     }
 
     /* Get data size and buffer size */
@@ -93,25 +108,42 @@ public:
     Boolean Dirty() { return _dirty; }
     void SetDirty() { _dirty = 1; }
     void ClearDirty() { _dirty = 0; }
-    
+
+    // given a low/high closed interval, return the records in this interval.
+    // limit the number of records to BMFULL_RECS_PER_BATCH.
+    // set numRecs to 0 if no such record found
+    // return false only if something is wrong
+    // nextVal is the right adjacent value of endVal or endVal+1 if endVal is
+    // 		already the largest possible value of this attr of this TData 
+    Boolean ReturnRecs(Coord lowVal, Coord highVal, char *&buf,
+			Coord &startVal, Coord &endVal, int &numRecs, 
+			Coord nextVal);
+
+    // given pointer to a record and AttrName, find the value of this attribute
+    Boolean GetAttrVal(char *record, char *attrName, double &value);
+
+	// check the integrity of this RangeInfo
+	void CheckIntegrity();
+
   protected:
     int listNum;             /* which list we are in */
     int posNum;		     /* position in the list */
     
     TData *tdata;
+
     char *data;	             /* pointer to beginning of data.
                                 There might be a gap in the beginning. */
     int dataSize;	     /* size of data */
-    Coord low, high;         /* record IDs */
-    
+    char *buf;	             /* actual data buffer*/
+    int bufSize;	     /* size of data and buffer */
+
+    Interval interval;	// AttrName, Granularity, Low and High are all used
+
     friend class RangeList;
     friend class BufMgrFull;
     
     RangeInfo *next, *prev;  /* for RangeList */
    
-    char *buf;	             /* actual data buffer*/
-    int bufSize;	     /* size of data and buffer */
-    
   private:
     Boolean _dirty;
     int _inUse;

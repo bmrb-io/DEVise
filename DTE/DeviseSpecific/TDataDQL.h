@@ -82,9 +82,10 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual TDHandle InitGetRecs(Range *range,
+	virtual TDHandle InitGetRecs(Interval *interval, int &bytesleft,
                                  Boolean asyncAllowed = false,
-                                 ReleaseMemoryCallback *callback);
+                                 ReleaseMemoryCallback *callback
+				 );
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -101,7 +102,7 @@ public:
         startRid and numRecs are now recorded in range
       *************************************************************/
  	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
-                            Range *range, int &dataSize) ;
+                            Interval *interval, int &dataSize) ;
 
 	virtual void DoneGetRecs(TDHandle handle);
 

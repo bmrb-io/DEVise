@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1997/11/24 23:15:17  weaver
+  Changes for the new ColorManager.
+
   Revision 1.60  1997/10/10 21:13:46  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -471,14 +474,15 @@ Boolean TDataAscii::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataAscii::InitGetRecs(Range *range,
+TData::TDHandle TDataAscii::InitGetRecs(Interval *interval, int &bytesleft,
                                  Boolean asyncAllowed,
-                                 ReleaseMemoryCallback *callback)
+                                 ReleaseMemoryCallback *callback
+				 )
 {
 
-	if (!strcmp(range->AttrName, "recId")){ //recId supported
-		RecId lowId = (RecId)(range->Low);
-  		RecId highId = (RecId)(range->High);
+	if (!strcmp(interval->AttrName, "recId")){ //recId supported
+		RecId lowId = (RecId)(interval->Low);
+  		RecId highId = (RecId)(interval->High);
 
 #if DEBUGLVL >= 3
   printf("TDataAscii::InitGetRecs [%ld,%ld]\n", lowId, highId);
@@ -495,8 +499,14 @@ TData::TDHandle TDataAscii::InitGetRecs(Range *range,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = range->AttrName;
-  req->granularity = range -> Granularity;
+  req->AttrName = interval->AttrName;
+  req->granularity = interval -> Granularity;
+
+  // Do things similar to LimitRecords
+  if (interval->NumRecs < (int)(highId - lowId + 1))
+  {
+        req->endVal = lowId + (interval->NumRecs) - 1;
+  }
 
   /* Compute location and number of bytes to retrieve */
   streampos_t offset = _indexP->Get((RecId)(req->nextVal));
@@ -534,6 +544,8 @@ TData::TDHandle TDataAscii::InitGetRecs(Range *range,
   req->lastChunkBytes = 0;
   req->nextChunk = offset;
 
+  bytesleft = (int) (req->endVal - req->nextVal + 1) * RecSize();
+
   return req;
 }
 	else
@@ -544,7 +556,7 @@ TData::TDHandle TDataAscii::InitGetRecs(Range *range,
 }
 
 Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
-                            Range *range, int &dataSize)
+                            Interval *interval, int &dataSize)
 {
   if (!req) {
     return false;
@@ -558,26 +570,50 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataAscii::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
 #endif
 
-  range->NumRecs = bufSize / _recSize;
-  DOASSERT(range->NumRecs > 0, "Not enough record buffer space");
+  interval->NumRecs = bufSize / _recSize;
+  DOASSERT(interval->NumRecs > 0, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < range->NumRecs)
-    range->NumRecs = num;
+  if (num < interval->NumRecs)
+    interval->NumRecs = num;
   
   if (req->iohandle == 0)
-    ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
+    ReadRec((RecId)(req->nextVal), interval->NumRecs, buf);
   else
-    ReadRecAsync(req, (RecId)(req->nextVal), range->NumRecs, buf);
+    ReadRecAsync(req, (RecId)(req->nextVal), interval->NumRecs, buf);
   
-  range->Low = req->nextVal;
-  dataSize = range->NumRecs * _recSize;
-  req->nextVal += range->NumRecs;
+  interval->Low = req->nextVal;
+  dataSize = interval->NumRecs * _recSize;
+  req->nextVal += interval->NumRecs;
   
   _bytesFetched += dataSize;
+
+  interval->High = interval->Low + interval->NumRecs - 1;
+  interval->AttrName = req->AttrName;
+  interval->Granularity = req->granularity;
+
+  RecId HIGHId, LOWId;
+  DOASSERT(HeadID(LOWId), "can not find HeadID");
+  DOASSERT(LastID(HIGHId), "can not find LastID");
+  if (LOWId < req->nextVal)
+  {
+        interval->has_left = true;
+        interval->left_adjacent = interval->Low - 1;
+  }
+  else
+        interval->has_left = false;
+
+  if (HIGHId > interval->High)
+  {
+        interval->has_right = true;
+        interval->right_adjacent = interval->High + 1;
+  }
+  else
+        interval->has_right = false;
+
   
   if (req->iohandle > 0 && req->nextVal > req->endVal)
     FlushDataPipe(req);

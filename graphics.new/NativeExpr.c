@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/12/04 21:00:37  wenger
+  Added standard DEVise headers.
+
  */
 
 #include <stdio.h>
@@ -307,7 +310,7 @@ CGraphicExpr::~CGraphicExpr()
       free( ppszGDataAttr[iCount] );
 }
 
-int CGraphicExpr::GetRange( Range GDataRange[], Range **ppSourceRangeList, 
+int CGraphicExpr::GetRange( Interval GDataRange[], Interval **ppSourceRangeList, 
 			    int &iNumOfRanges )
 {
   int iCount;
@@ -377,7 +380,7 @@ int CGraphicExpr::GetRange( Range GDataRange[], Range **ppSourceRangeList,
 }
 
 // private member function
-int CGraphicExpr::AddRange( Range **ppSourceRange, Coord High, Coord Low, 
+int CGraphicExpr::AddRange( Interval **ppSourceRange, Coord High, Coord Low, 
 			    char *pszVar, int& iNumOfRanges, 
 			    struct Node *pInverse )
 {
@@ -388,11 +391,11 @@ int CGraphicExpr::AddRange( Range **ppSourceRange, Coord High, Coord Low,
   if( iNumOfRanges == 1 )
   {
     // a new start
-    *ppSourceRange = (Range *)malloc( sizeof(Range) );
+    *ppSourceRange = (Interval *)malloc( sizeof(Interval) );
   }
   else
-    *ppSourceRange = (Range *)realloc( *ppSourceRange, 
-				       iNumOfRanges * sizeof(Range) );
+    *ppSourceRange = (Interval *)realloc( *ppSourceRange, 
+				       iNumOfRanges * sizeof(Interval) );
 
   (*ppSourceRange)[iNumOfRanges - 1].AttrName = 
     (char *)malloc( strlen( pszVar ) + 1 );

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/12/04 04:05:33  donjerko
+  *** empty log message ***
+
   Revision 1.26  1997/11/12 23:17:47  donjerko
   Improved error checking.
 
@@ -336,19 +339,19 @@ Boolean TDataDQL::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataDQL::InitGetRecs(Range *range,
+TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
                                  Boolean asyncAllowed,
-                                 ReleaseMemoryCallback *callback)
+                                 ReleaseMemoryCallback *callback
+				 )
 {
 	
 #if defined(DEBUG)
   cerr << "TDataDQL::InitGetRecs(" << range->Low << ", " << range->High << ")\n";
 #endif
 
-  if (!strcmp(range->AttrName,"recId")) { // recId stuff
-	//cout << "*********** double is functioning in TDataDQL. **********\n";
-  RecId lowId = (RecId)(range->Low);
-  RecId highId = (RecId)(range->High);
+  if (!strcmp(interval->AttrName,"recId")) { // recId stuff
+  RecId lowId = (RecId)(interval->Low);
+  RecId highId = (RecId)(interval->High);
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
@@ -359,8 +362,14 @@ TData::TDHandle TDataDQL::InitGetRecs(Range *range,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = range->AttrName;
-  req->granularity = range->Granularity;
+  req->AttrName = interval->AttrName;
+  req->granularity = interval->Granularity;
+
+  // Do things similar to LimitRecords
+  if (interval->NumRecs < highId - lowId +1)
+  {
+        req->endVal = lowId + (interval->NumRecs) - 1;
+  }
 
   _nextToFetch = lowId;
 //  Issue a query to the engine;
@@ -379,7 +388,7 @@ TData::TDHandle TDataDQL::InitGetRecs(Range *range,
 		cerr << cumRecs << " records retreived (" << percent << "%) ";
 		cerr << "dte called " << entryCount << " times" << endl;
 	}
-	cumRecs += range->High - range->Low + 1;
+	cumRecs += interval->High - interval->Low + 1;
 #endif
 
 	delete engine;
@@ -404,6 +413,8 @@ CATCH(
      exit(0);
 )
 
+  bytesleft = (int)(RecSize() * ( req->endVal - req->nextVal + 1));
+
   return req;
   } // end of recId stuff
   
@@ -415,31 +426,55 @@ CATCH(
 }
 
 Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize, 
-			  Range *range, int &dataSize)
+			  Interval *interval, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
 
 	if (!strcmp(req->AttrName, "recId")) { // recId stuff
 
-  range->NumRecs = bufSize / _recSize;
-  DOASSERT(range->NumRecs, "Not enough record buffer space");
+  interval->NumRecs = bufSize / _recSize;
+  DOASSERT(interval->NumRecs, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < range->NumRecs)
-    range->NumRecs = num;
+  if (num < interval->NumRecs)
+    interval->NumRecs = num;
   
   assert(_nextToFetch == (RecId)(req->nextVal));
 
-  ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
+  ReadRec((RecId)(req->nextVal), interval->NumRecs, buf);
   
-  range->Low = req->nextVal;
-  dataSize = range->NumRecs * _recSize;
-  req->nextVal += range->NumRecs;
+  interval->Low = req->nextVal;
+  dataSize = interval->NumRecs * _recSize;
+  req->nextVal += interval->NumRecs;
   
   _bytesFetched += dataSize;
+
+  interval->High = interval->Low + interval->NumRecs - 1;
+  interval->AttrName = req->AttrName;
+  interval->Granularity = req->granularity;
+
+  RecId HIGHId, LOWId;
+  DOASSERT(HeadID(LOWId), "can not find HeadID");
+  DOASSERT(LastID(HIGHId), "can not find LastID");
+  if (LOWId < req->nextVal)
+  {
+        interval->has_left = true;
+        interval->left_adjacent = interval->Low - 1;
+  }
+  else
+        interval->has_left = false;
+
+  if (HIGHId > interval->High)
+  {
+        interval->has_right = true;
+        interval->right_adjacent = interval->High + 1;
+  }
+  else
+        interval->has_right = false;
+
 
 #if defined(DEBUG)
 	static int entryCount;

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/12/04 21:00:38  wenger
+  Added standard DEVise headers.
+
  */
 
 #ifndef NativeExpr_h
@@ -130,11 +133,11 @@ public:
   CGraphicExpr( MappingInterpCmd *cmd );
   ~CGraphicExpr();
 
-  int GetRange( Range GDataRange[], Range **ppSourceRangeList, 
+  int GetRange( Interval GDataRange[], Interval **ppSourceRangeList, 
 		int &iNumOfRanges );
 
 private:
-  int AddRange( Range **ppSourceRangeList, Coord High, Coord Low, char *pszVar,
+  int AddRange( Interval **ppSourceRangeList, Coord High, Coord Low, char *pszVar,
 		int& iNumOfRanges, struct Node *pInverse );
 };
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/10/10 21:13:41  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.16  1997/10/07 17:06:00  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -174,15 +180,15 @@ char *GData::GetName()
 Init getting records.
 ***************************************************************/
 
-TData::TDHandle GData::InitGetRecs(Range *range,
+TData::TDHandle GData::InitGetRecs(Interval *interval, int &bytesleft,
                                  Boolean asyncAllowed ,
                                  ReleaseMemoryCallback *callback
                                  )
 {
 
-	if (!strcmp(range->AttrName,"recId")) { // recId stuff
-	RecId lowId = (RecId)(range->Low);
-  	RecId highId = (RecId)(range->High);
+	if (!strcmp(interval->AttrName,"recId")) { // recId stuff
+	RecId lowId = (RecId)(interval->Low);
+  	RecId highId = (RecId)(interval->High);
 
 #ifdef DEBUG
   printf("GData::InitGetRecs(%ld,%ld)\n", lowId, highId);
@@ -194,12 +200,22 @@ TData::TDHandle GData::InitGetRecs(Range *range,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = range->AttrName;
-  req->granularity = range->Granularity;
+  req->AttrName = interval->AttrName;
+  req->granularity = interval->Granularity;
 
   req->numRecs = highId - lowId + 1;
+
+  // Do things similar to LimitRecords
+  if (interval->NumRecs < (int)(highId - lowId +1)) 
+  {
+	req->numRecs = interval->NumRecs;
+	req->endVal = lowId + req->numRecs - 1;
+  }
+
   req->rec = _rangeMap->FindMaxLower((RecId)(req->nextVal));
   DOASSERT(req->rec, "Invalid record range");
+
+  bytesleft = (req->numRecs) * RecSize();
 
   return req;
   } // end of recId stuff
@@ -212,7 +228,7 @@ TData::TDHandle GData::InitGetRecs(Range *range,
 }
 
 Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
-                       Range *range, int &dataFetched)
+                       Interval *interval, int &dataFetched)
 {
   DOASSERT(treq, "Invalid request handle");
 
@@ -239,11 +255,33 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
   char *bufAddr = (char *)buf;
   
   /* Set return param and update internal vars */
-  range->Low = req->nextVal;
-  range->NumRecs = num;
+  interval->Low = req->nextVal;
+  interval->NumRecs = num;
   req->numRecs -= num;
-  dataFetched = (range->NumRecs) *_recSize;
-  
+  dataFetched = (interval->NumRecs) *_recSize;
+  interval->High = interval->Low + num - 1;
+  interval->AttrName = req->AttrName;
+  interval->Granularity = req->granularity;
+
+  RecId HIGHId, LOWId;
+  DOASSERT(HeadID(LOWId), "can not find HeadID");
+  DOASSERT(LastID(HIGHId), "can not find LastID");
+  if (LOWId < req->nextVal)
+  {
+	interval->has_left = true;
+	interval->left_adjacent = interval->Low - 1;
+  }
+  else
+	interval->has_left = false;
+
+  if (HIGHId > interval->High)
+  {
+	interval->has_right = true;
+	interval->right_adjacent = interval->High + 1;
+  }
+  else
+	interval->has_right = false;
+
 #ifdef DEBUG
   printf("%d fetched, %d bytes returned, %ld left\n",
 	 range->NumRecs, dataFetched, req->numRecs);
@@ -366,14 +404,15 @@ void GData::InitConvertedIterator()
   _rangeMap->InitListIterator();
 }
 
-Boolean GData::NextRange(RecId &lowId, RecId &highId)
+Boolean GData::NextRange(Coord &lowVal, Coord &highVal)
 {
   GDataRangeMapRec *rec = _rangeMap->NextRec();
   if (!rec)
     return false;
 
-  lowId = rec->tLow;
-  highId = rec->tHigh;
+  lowVal = rec->tLow;
+  highVal = rec->tHigh;
+
   return true;
 }
 

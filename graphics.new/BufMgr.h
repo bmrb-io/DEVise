@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/10 21:13:38  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.8  1997/10/07 17:05:56  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -69,7 +75,7 @@ public:
     virtual void Clear() = 0;
 
     /* Clear buffers occupied by given TData/GData */
-    virtual void ClearData(TData *data) = 0;
+    virtual void ClearData(TData *data, char *attrName = "recId", Coord granularith = 1) = 0;
 
     /* Information stored about a buffer manager request */
     struct BufMgrRequest {
@@ -80,6 +86,7 @@ public:
         QPRange processed;                /* list of processed ranges */
         Coord low;                        /* start of requested record range */
         Coord high;                       /* end of requested record range */
+	char *attrName;			  // name of sorted attr requested
 	Coord granularity;		  /* requested granularity */
         Boolean asyncAllowed;             /* asynchronous I/O allowed */
         Boolean inMemoryOnly;             /* return in-memory data only */
@@ -108,7 +115,7 @@ public:
        If asyncAllowed is true, asynchronous I/O can be used.
     */
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-				 Range *range,
+				 Interval *interval,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -127,7 +134,7 @@ public:
        The record range is indicated by startRecId and numRecs.
     */
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-			    Range *range,
+			    Interval *interval,
                             // Coord &startRecId, int &numRecs,
                             char *&buf) = 0;
     

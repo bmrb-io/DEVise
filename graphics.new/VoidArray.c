@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:10:29  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.3  1997/01/24 21:19:04  wenger
   Fixed memory leak in X font handling code; noted other minor leaks.
 
@@ -44,7 +48,7 @@ VoidArray::~VoidArray() {
   printf("VoidArray::~VoidArray()\n");
 #endif
 
-        delete _array;
+        delete[] _array;
 }
 
 /* Iterator */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/11/24 23:15:20  weaver
+  Changes for the new ColorManager.
+
   Revision 1.7  1997/10/10 21:13:48  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -180,13 +183,14 @@ Boolean TDataSeqAscii::LastID(RecId &recId)
   return false;
 }
 
-TData::TDHandle TDataSeqAscii::InitGetRecs(Range *range,
+TData::TDHandle TDataSeqAscii::InitGetRecs(Interval *interval, int &bytesleft,
                                            Boolean asyncAllowed,
-                                           ReleaseMemoryCallback *callback)
+                                           ReleaseMemoryCallback *callback
+					   )
 {
-	if (!strcmp(range->AttrName, "recId")){ //recId supported
-                RecId lowId = (RecId)(range->Low);
-                RecId highId = (RecId)(range->High);
+	if (!strcmp(interval->AttrName, "recId")){ //recId supported
+                RecId lowId = (RecId)(interval->Low);
+                RecId highId = (RecId)(interval->High);
 
 #if defined(DEBUG)
   cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
@@ -199,8 +203,16 @@ TData::TDHandle TDataSeqAscii::InitGetRecs(Range *range,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = range->AttrName;
-  req->granularity = range->Granularity;
+  req->AttrName = interval->AttrName;
+  req->granularity = interval->Granularity;
+
+  // Do things similar to LimitRecords
+  if (interval->NumRecs < (int)(highId - lowId + 1))
+  {
+        req->endVal = lowId + (interval->NumRecs) - 1;
+  }
+
+  bytesleft = (int)((req->endVal - req->nextVal + 1)) * RecSize();
 
   return req;}
 	else 
@@ -211,7 +223,7 @@ TData::TDHandle TDataSeqAscii::InitGetRecs(Range *range,
 }
 
 Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
-                               Range *range, int &dataSize)
+                               Interval *interval, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
 	
@@ -221,23 +233,47 @@ Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
   printf("TDataSeqAscii::GetRecs buf = 0x%p\n", buf);
 #endif
 
-  range->NumRecs = bufSize / _recSize;
-  DOASSERT(range->NumRecs, "Not enough record buffer space");
+  interval->NumRecs = bufSize / _recSize;
+  DOASSERT(interval->NumRecs, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < range->NumRecs)
-    range->NumRecs = num;
+  if (num < interval->NumRecs)
+    interval->NumRecs = num;
   
-  TD_Status status = ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
+  TD_Status status = ReadRec((RecId)(req->nextVal), interval->NumRecs, buf);
   if (status != TD_OK)
     return false;
  
-  range->Low = req->nextVal;
-  dataSize = range->NumRecs * _recSize;
-  req->nextVal += range->NumRecs;
+  interval->Low = req->nextVal;
+  dataSize = interval->NumRecs * _recSize;
+  req->nextVal += interval->NumRecs;
+
+  interval->High = interval->Low + interval->NumRecs - 1;
+  interval->AttrName = req->AttrName;
+  interval->Granularity = req->granularity;
+
+  RecId HIGHId, LOWId;
+  DOASSERT(HeadID(LOWId), "can not find HeadID");
+  DOASSERT(LastID(HIGHId), "can not find LastID");
+  if (LOWId < req->nextVal)
+  {
+        interval->has_left = true;
+        interval->left_adjacent = interval->Low - 1;
+  }
+  else
+        interval->has_left = false;
+
+  if (HIGHId > interval->High)
+  {
+        interval->has_right = true;
+        interval->right_adjacent = interval->High + 1;
+  }
+  else
+        interval->has_right = false;
+
   
   _bytesFetched += dataSize;
   

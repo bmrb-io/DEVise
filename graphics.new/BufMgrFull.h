@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/10 21:13:40  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.8  1997/10/07 17:05:58  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -64,10 +70,10 @@ class BufMgrFull: public BufMgr {
 
     virtual void Clear();
 
-    void ClearData(TData *data);
+    void ClearData(TData *data, char *attrName="recId", Coord granularity=1);
 
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-				 Range *range,
+				 Interval *interval,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -76,7 +82,7 @@ class BufMgrFull: public BufMgr {
     virtual BMHandle SelectReady();
 
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-			    Range *range,
+			    Interval *interval,
                             char *&buf);
 	
     virtual void DoneGetRecs(BMHandle handle);
@@ -120,7 +126,7 @@ class BufMgrFull: public BufMgr {
     Boolean GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range);
     
     /* Get in-memory GData/TData */
-    Boolean GetDataInMem(BufMgrRequest *req, Coord &startRecId,
+    Boolean GetDataInMem(BufMgrRequest *req, Coord &startVal, Coord &endVal,
                          int &numRecs, char *&buf);
     
     /* Initiate I/O to get disk-resident GData */
@@ -130,8 +136,8 @@ class BufMgrFull: public BufMgr {
     Boolean InitTDataScan(BufMgrRequest *req);
     
     /* Consume data produced by I/O initiated in InitGDataScan/InitTDataScan */
-    Boolean ScanDiskData(BufMgrRequest *req, Coord &startRecId,
-                         int &numRecs, char *&buf);
+    Boolean ScanDiskData(BufMgrRequest *req, Coord &startVal,
+                         Coord &endVal, int &numRecs, char *&buf);
 
     /* Consume data from the pipe of a TData */
     Boolean ConsumePipeData(BufMgrRequest *req, DataSource *data,

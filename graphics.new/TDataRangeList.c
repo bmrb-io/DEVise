@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/23 21:15:20  jussi
+  Minor improvements.
+
   Revision 1.2  1995/09/05 22:15:59  jussi
   Added CVS header.
 */
@@ -29,24 +32,26 @@ TDataRangeList::TDataRangeList()
         _hashTbl[i] = NULL;
 }
 
-TDataRangeListEntry *TDataRangeList::Find(TData *tdata)
+TDataRangeListEntry *TDataRangeList::Find(TData *tdata, char *attr_name, Coord granularity)
 {
     int bucket = Hash(tdata);
     TDataRangeListEntry *cur;
     for(cur = _hashTbl[bucket]; cur != NULL; cur = cur->next) {
-        if (cur->tdata == tdata)
+        if ( (cur->tdata == tdata) && (!(strcmp(cur->attrName, attr_name))) && (cur->granularity == granularity) )
             break;
     }
     return cur;
 }
 
-RangeList *TDataRangeList::Get(TData *tdata)
+RangeList *TDataRangeList::Get(TData *tdata, char *attr_name="recId", Coord granularity=1)
 {
-    TDataRangeListEntry *cur = Find(tdata);
+    TDataRangeListEntry *cur = Find(tdata, attr_name, granularity);
     if (cur == NULL) {
         /* create a new one */
         cur = new TDataRangeListEntry;
         cur->tdata = tdata;
+	cur->attrName = attr_name;
+	cur->granularity = granularity;
         cur->rangeList = new RangeList;
         int bucket = Hash(tdata);
         cur->next = _hashTbl[bucket];

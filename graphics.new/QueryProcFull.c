@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.71  1997/12/01 21:21:34  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+  into the trunk.
+
   Revision 1.70  1997/11/25 22:04:03  wenger
   Fixed drill-down problem.
 
@@ -1022,14 +1026,14 @@ Boolean QueryProcFull::InitQueries()
         Boolean tdataOnly = UseTDataQuery(query->tdata, query->filter);
 
 	// use Range;
-	Range range;
-	range.Low = query->low;
-	range.High = query->high;
-	range.AttrName = "recId";
-	range.Granularity = 0; // not used for now
+	Interval interval;
+	interval.Low = query->low;
+	interval.High = query->high;
+	interval.AttrName = "recId";
+	interval.Granularity = 1; // not used for now
 
         query->handle = _mgr->InitGetRecs(query->tdata, query->gdata,
-					  &range,
+					  &interval,
                                           tdataOnly, false,
                                           query->isRandom, true);
 #if DEBUGLVL >= 3
@@ -1086,12 +1090,12 @@ void QueryProcFull::ProcessScan(QPFullData *query)
         char *buf;
         Boolean isTData;
 
-	Range range;
+	Interval interval;
         
         Boolean gotData = _mgr->GetRecs(query->handle, isTData,
-                                        &range, buf);
-	startRid = (RecId)(range.Low);
-	numRecs = range.NumRecs;
+                                        &interval, buf);
+	startRid = (RecId)(interval.Low);
+	numRecs = interval.NumRecs;
 
         /* Query is finished when buffer manager finds no more data */
         if (!gotData) {
@@ -1886,14 +1890,13 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
          convert them.
       */
 	
-	// use Range;
-        Range range;
-        range.Low = uLow;
-        range.High = uHigh;
-        range.AttrName = "recId";
-        range.Granularity = 0; // not used for now
+        Interval interval;
+        interval.Low = uLow;
+        interval.High = uHigh;
+        interval.AttrName = "recId";
+        interval.Granularity = 1; // not used for now
 
-      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, &range,
+      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, &interval,
                                                   true, true);
 
       QPRange *processed = _mgr->GetProcessedRange(handle);
@@ -1904,12 +1907,12 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
           char *buf;
           Boolean isTData;
 
-	Range range;
+	Interval interval;
 
-        Boolean gotit = _mgr->GetRecs(handle, isTData, &range,
+        Boolean gotit = _mgr->GetRecs(handle, isTData, &interval,
                                         buf);
-	startRid = (RecId)(range.Low);
-	numRecs = range.NumRecs;
+	startRid = (RecId)(interval.Low);
+	numRecs = interval.NumRecs;
 
           if (!gotit)
               break;
@@ -2053,21 +2056,22 @@ void QueryProcFull::DoGDataConvert()
   
   /* Convert [low, low + recsLeft - 1] */
 
-  Range range;
-  range.Low = low;
-  range.High = high;
-  range.AttrName = "recId";
-  range.Granularity = 0; // not used
-  TData::TDHandle handle = tdata->InitGetRecs(&range);
+  Interval interval;
+  interval.Low = low;
+  interval.High = high;
+  interval.AttrName = "recId";
+  interval.Granularity = 1; // not used
+  int dummy;
+  TData::TDHandle handle = tdata->InitGetRecs(&interval, dummy);
   RecId startRid;
   int numRetrieved;
   int dataSize;
   Boolean status = tdata->GetRecs(handle, _tdataBuf, TDATA_BUF_SIZE,
-                                  &range, dataSize);
+                                  &interval, dataSize);
   
   DOASSERT(status, "Cannot get TData");
-  startRid = (RecId) range.Low;
-  numRetrieved = range.NumRecs;
+  startRid = (RecId) interval.Low;
+  numRetrieved = interval.NumRecs;
   tdata->DoneGetRecs(handle);
   
   /* Convert [startRid, startRid + numRetrieved - 1] */
@@ -2198,13 +2202,13 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   /* Initialize buffer manager scan */
 	
 	// use Range;
-        Range range;
-        range.Low = _tdataQuery->low;
-        range.High = _tdataQuery->high;
-        range.AttrName = "recId";
-        range.Granularity = 0; // not used for now
+        Interval interval;
+        interval.Low = _tdataQuery->low;
+        interval.High = _tdataQuery->high;
+        interval.AttrName = "recId";
+        interval.Granularity = 1; // not used for now
 
-  _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(), &range,
+  _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(), &interval,
                                           true);
 
   _tdataQuery->processed = _mgr->GetProcessedRange(_tdataQuery->handle);
@@ -2230,7 +2234,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     TData *tdata = _tdataQuery->tdata;
     TDataMap *map = _tdataQuery->map;
     Boolean isTData;
-    Range range;
+    Interval interval;
     Boolean result;
 
     GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
@@ -2238,10 +2242,10 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     while (1) {
         if (!_hasTqueryRecs) {
             /* go to buffer manager to get more records */
-	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, &range,
+	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, &interval,
                                _tqueryBuf); 
-		_tqueryStartRid = (RecId)(range.Low);
-		_tqueryNumRecs = range.NumRecs;
+		_tqueryStartRid = (RecId)(interval.Low);
+		_tqueryNumRecs= interval.NumRecs;
 
           	if (!result)
                 {
@@ -2391,26 +2395,25 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
       x = query->map->GetDefaultX();
       return;
   }
-	// use Range;
-        Range range;
-        range.Low = id;
-        range.High = id;
-        range.AttrName = "recId";
-        range.Granularity = 0; // not used for now
+        Interval interval;
+        interval.Low = id;
+        interval.High = id;
+        interval.AttrName = "recId";
+        interval.Granularity = 1; // not used for now
 
   BufMgr::BMHandle handle = _mgr->InitGetRecs(query->tdata,
                                               query->map->GetGData(),
-                                              &range, false, false,
+                                              &interval, false, false,
                                               true, true);
   RecId startRid;
   int numRecs;
   char *buf;
   Boolean isTData;
-  Range second_range;
+  Interval Get_interval;
 
-  Boolean gotit = _mgr->GetRecs(handle, isTData, &second_range, buf);
-	startRid = (RecId)(second_range.Low);
-	numRecs = second_range.NumRecs;
+  Boolean gotit = _mgr->GetRecs(handle, isTData, &Get_interval, buf);
+	startRid = (RecId)(Get_interval.Low);
+	numRecs = Get_interval.NumRecs;
 
   DOASSERT(gotit, "Did not get data");
   DOASSERT(numRecs == 1, "Did not get one record");

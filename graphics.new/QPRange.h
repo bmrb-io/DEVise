@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/07 17:06:02  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.6  1997/08/20 22:11:04  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -127,6 +130,8 @@ class QPRange {
     int _rangeListSize;
     
     QPRangeRec *_hint; /* hint about where to search for next record */
+
+    Coord granularity; // granularity of values in the range
 };
 
 #endif
