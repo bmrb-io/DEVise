@@ -1106,6 +1106,23 @@ Num Date        Status  Description
 			are no dependencies for View.o in
 			graphics/Makefile.solaris(!) (rkw)
 
+287 02/10/98	OPEN	Sometimes can't display data sources (from Tables
+			menu -- opening sessions works okay). (rkw)
+
+288 02/10/98	OPEN	Can't select a view (in monolithic form)
+			(with code as of collab_br_1). (rkw)
+
+289 02/10/98	OPEN	Quit causes an error messages, doesn't actually
+			quit (in monolithic form) (with code as of
+			collab_br_1). (rkw)
+
+290 02/10/98	OPEN	Monolithic form of DEVise shouldn't show group
+			GUI. (rkw)
+
+291 02/10/98	OPEN	DEVise client/server pair can't run at all without
+			DEVISE_COLLABORATOR envrionment variable defined
+			(with code as of collab_br_1). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
