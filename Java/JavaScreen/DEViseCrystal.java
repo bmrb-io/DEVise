@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2001/04/20 01:24:14  xuk
+// Added Functionality for 3D view drill-down.
+// Added drillDown3D() function.
+//
 // Revision 1.21  2001/04/01 03:51:17  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -844,11 +848,13 @@ public class DEViseCrystal
 
 
     // 3D drill-down
-    public void drillDown3D(Point p, Vector v)
+    public String drillDown3D(Point p, Vector v)
     {
-        int x, y; 
-	int index;
+        int x1, y1, x2, y2; 
+	int index, index1;
         DEViseAtomInCrystal atom = null;
+	byte[] atomAdded = new byte[atomList.size()];
+	String s = "";
 
         for (int i = 0; i < zSortMapSize; i++) {
             index = zSortMap[i];
@@ -857,17 +863,55 @@ public class DEViseCrystal
             }
 
             atom = (DEViseAtomInCrystal)atomList.elementAt(index);
-            x = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
-            y = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
+            x1 = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
+            y1 = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
 
-	    if (_hasAtoms && atom.type != null)
-		if ((p.x >= (x-atom.type.drawSize/2)) 
-		    && (p.x <= (x+atom.type.drawSize/2)) 
-		    && (p.y >= (y-atom.type.drawSize/2)) 
-		    && (p.y <= (y+atom.type.drawSize/2))) {
+	    if (_hasAtoms) { // ball
+		if ((p.x >= (x1 - atom.type.drawSize/2)) 
+		    && (p.x <= (x1 + atom.type.drawSize/2)) 
+		    && (p.y >= (y1 - atom.type.drawSize/2)) 
+		    && (p.y <= (y1 + atom.type.drawSize/2))) {
 		    v.addElement(atom);
+		    s = s + "x = " + x1 + " y = " + y1 + "\n";
 		}
+	    } else { // segments
+
+		// find the bonds.
+		for (int j = 0; j < atom.bondNumber; j++) {
+		    index1 = atom.bond[j];
+		    if (atomAdded[index1] == 1) { // bond already drawed
+			continue;
+		    }
+
+		    DEViseAtomInCrystal atom1 =
+			(DEViseAtomInCrystal)atomList.elementAt(index1);
+		    x2 = (int)(atom1.lcspos[0] + 0.5f) + shiftedX;
+		    y2 = (int)(atom1.lcspos[1] + 0.5f) + shiftedY;
+
+		    // p(x,y) is on the line?
+		    //if (((p.y-y1) * (x2-x1)) == ((y2-y1) * (p.x-x1))) {
+		    int minx = (x1 < x2) ? x1 : x2;
+		    int maxx = (x1 >= x2) ? x1 : x2;
+		    int miny = (y1 < y2) ? y1 : y2;
+		    int maxy = (y1 >= y2) ? y1 : y2;		    
+		    if ((p.x >= minx) && (p.x <= maxx) 
+		    && (p.y >= miny) && (p.y <= maxy)) {
+			if (atomAdded[index] != 1) {
+			    v.addElement(atom);
+			    atomAdded[index] = 1;
+			}
+			if (atomAdded[index1] != 1) {
+			    v.addElement(atom1);
+			    atomAdded[index1] = 1;
+			}
+
+			s = s + "x1 = " + x1 + " y1 = " + y1 + 
+			  " x2 = " + x2 + " y2 = " + y2 +"\n";
+		    }			
+		}
+	    }
 	}
+	return s;
     }
 
 }

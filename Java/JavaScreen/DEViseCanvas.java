@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2001/04/20 01:23:46  xuk
+// Added Functionality for 3D view drill-down.
+// 1.Changed mouseReleased() function;
+// 2.Added dirllDown3D() function.
+//
 // Revision 1.71  2001/04/01 03:51:12  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -1786,7 +1791,7 @@ public class DEViseCanvas extends Container
 			  bColor = new Vector(size);
             for (int i = 0; i < size; i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-				if (gdata.symbolType == gdata._symSegment) {
+		if (gdata.symbolType == gdata._symSegment) {
                     float[][] pos = new float[2][3];
                     pos[0][0] = gdata.x0;
                     pos[0][1] = gdata.y0;
@@ -1881,11 +1886,16 @@ public class DEViseCanvas extends Container
     // 3D drill-down
     public void drillDown3D(Point p)
     {
-	//jsc.pn("mouse point: " + p.x + " " + p.y);
+	jsc.pn("Mouse point: " + p.x + " " + p.y);
 	Vector atomList = new Vector();
 	Float f;
+	String s = null;
 
-	crystal.drillDown3D(p, atomList);
+	s = crystal.drillDown3D(p, atomList);
+	if (atomList.size() > 0)
+	    jsc.pn(s);
+	else 
+	    jsc.pn("No atom.");
 
 	if (atomList.size() > 0) {
 	    String cmd = DEViseCommands.SHOW_RECORDS + " " + 
@@ -1903,7 +1913,7 @@ public class DEViseCanvas extends Container
 	    dispatcher.start(cmd);
 	}
 	
-	isInViewDataArea = false;
+	isInViewDataArea = true;
 	selectedCursor = null;
 	whichCursorSide = DEViseCursor.sideNone;
 	isMouseDragged = false;
