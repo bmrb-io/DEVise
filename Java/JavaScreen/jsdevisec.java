@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.112  2001/08/20 18:20:08  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.111  2001/08/17 19:01:37  wenger
 // Cleaned up formatting.
 //
@@ -505,12 +511,12 @@ public class jsdevisec extends Panel
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 5,
 	  DEViseComponentPanel.ALIGN_LEFT, this);
-	  if (jsValues.connection.cgi) {
-	      cgiMode();
-	  } else {
-	      socketMode();
-	  }
-	  buttonPanel.add(commMode);
+	if (jsValues.connection.cgi) {
+	    cgiMode();
+	} else {
+	    socketMode();
+	}
+	buttonPanel.add(commMode);
 
         mainPanel.add(buttonPanel);
 
@@ -1013,17 +1019,26 @@ public class jsdevisec extends Panel
     
     public void socketMode()
     {
+	commMode.setForeground(Color.white);
         commMode.setText("Socket");
     }
 
     public void collabMode()
     {
+	commMode.setForeground(Color.white);
         commMode.setText("Collaboration");
     }
 
     public void cgiMode()
     {
+	commMode.setForeground(Color.white);
         commMode.setText("CGI");
+    }
+
+    public void disconnectedMode()
+    {
+	commMode.setForeground(Color.red);
+        commMode.setText("Disconnected");
     }
 
     public synchronized void collabQuit()
