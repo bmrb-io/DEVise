@@ -1,0 +1,77 @@
+			General Notes on XMan
+		(Based on Discussions with Omer on 2000-05-15.)
+		$Id$
+
+* Top-Level Organization
+
+There are three man pieces of code comprising xman:
+
+1. (Not named yet) (written by Hao Wang -- hbwang).  Provides access
+to Paradyn data.  This code is not really working yet.  An xman data
+format needs to be agreed upon.
+
+2. xnav (written by Wei Zhou -- zhou).  Used to pick which data to
+display, and also look at structural differences between the data
+for two runs.
+
+3. xvis (written by Omer Zaki -- ozaki).  Uses DEVise to visualize
+the data selected with xnav.  xvis is a server, and xnav is the
+client.  Of course, xvis is the client for a devised.
+
+Right now xvis only allows one xnav client at a time, and can only
+handle one devised at a time -- this will probably change eventually.
+Also, xvis currently does the conversion of data from Paradyn format to
+DEVise format.  This will change once part 1 is working.
+
+Parts 1 and 2 are not really integrated yet.  Parts 2 and 3 are integrated,
+but need some changes in order to be more robust.  They will also have
+to be change a bit when part 1 is integrated.
+
+
+* Java
+
+All code is Java (Java 1.2).  The code uses packages.
+
+
+* Running Demos
+
+demo_xnav: this uses xnav and xvis together.  To start it, first run
+startXVisServer (you can specify a port number).  Then run startXNav
+with the port number used by xvis.  In xnav, select Open, go into
+an experiment directory, select a hist* file, and click Open.  Then
+select data to be shown, and click Display.
+
+demo_xvis: this just runs xvis without xnav.  To start it, just run
+startExample.  Clicking on one of the 'Session' buttons displays a
+data set.
+
+
+* Problems
+
+If xvis asks DEVise to display too many data files (for example, more than
+50), DEVise crashes.
+
+Xvis often doesn't quit cleanly.
+
+Once in a while the devised doesn't get killed off when it should.
+
+
+* Xvis Code
+
+- XVisServer: the entry point to xvis -- has the main() method.
+
+- Tool: has the GUI for the xvis-only demo.
+
+- XVisClient: xnav uses this class to communicate with xvis.  Xnav
+  creates an XVisClient object, and calls methods in that object, which
+  then send commands to xvis.
+
+- DeviseManager: an object of this class corresponds to a devised.
+  It sends and receives commands (there is a thread specifically for
+  receiving commands from the devised).  There is a method in this
+  class for each command xvis sends to the devised (the class hides
+  the details of the command formats).  There are two mode switches:
+  verbose turns on and off verbose debug output.  devisedSync turns
+  on and off syncronous command sending (xvis sends a command and
+  waits for the reply before sending the next command).  Asyncronous
+  mode is the default because it's much faster.
