@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2001/11/06 16:27:20  xuk
+// Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
+//
 // Revision 1.69  2001/10/30 17:39:15  xuk
 // reated DEViseClient object for collaborating clients in jspop.
 // 1. In processFirstCommand(), no need to check collaboration flag;
@@ -381,6 +384,9 @@ public class jspop implements Runnable
     // enable client log or not
     public boolean clientLog = true;
 
+    // saving temporary session files in one directory
+    public String sessionDir = null;
+
     //----------------------------------------------------------------------
 
     public static void main(String[] args)
@@ -456,7 +462,26 @@ public class jspop implements Runnable
 
         try {
             InetAddress address = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
+	
+	    // create a new subdir for temporary session files
+	    String dir = "/p/devise/demo/session.js/.tmp/" +
+		address.getHostName() + _popCmdPort;
+	    sessionDir = ".tmp/" + address.getHostName() + _popCmdPort;
+
+	    File td = new File(dir);
+	    if (td.exists()) {
+		String[] files = td.list();
+		for (int i=0; i<files.length; i++) {
+		    String filename = dir + "/" + files[i];
+		    File file = new File(filename);
+		    file.delete();
+		}
+		System.out.println("\nSession directory exists. All temporary files are deleted.\n");
+	    } else {
+		td.mkdir(); 
+		System.out.println("\nWe successfully create " + dir + "  for this jspop \n");
+	    }
+	} catch (UnknownHostException e) {
             System.out.println("Can not start jspop - unknown local host!");
             System.exit(1);
         }
