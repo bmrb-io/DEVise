@@ -432,9 +432,14 @@ int  Attr::propagate_pos()
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Copy the top level of src attribute (a typedef?) to this.
-void Attr::assign(Attr *src)
+void Attr::assign(Attr *src, AttrStk *owner, int usename)
 {
-    // Don't want name, but take everything else.
+    // Don't want flat name, but take everything else.
+    if (usename) {
+      delete [] _name;
+      _name = new char [strlen(src->_name)+1];
+      strcpy(_name,src->_name);
+    }
 
     _type   = src->_type;
     _size   = src->_size;
@@ -442,6 +447,14 @@ void Attr::assign(Attr *src)
 
     delete _subattr;
     _subattr = src->_subattr->dup();
+    
+    // Need to duplicate all subattributes as well, to avoid ptr-sharing.
+    for (int j=0; j < _nattrs; j++) {
+        Attr *tmp = new Attr();
+        owner->push(tmp);
+        tmp->assign(_subattr->ith(j),owner,1);
+        _subattr->set_ith(j,tmp);
+    }
     
     _min_type = src->_min_type;
     _max_type = src->_max_type;

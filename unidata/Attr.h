@@ -249,7 +249,7 @@ class Attr {
     int  propagate_pos();
 
       // Copy the top level of src attribute (a typedef?) to this.
-    void assign(Attr *src);
+    void assign(Attr *src, AttrStk *owner, int usename=0);
 
       // Stream printing (for debugging)
     friend ostream& operator<< (ostream& out, const Attr& attr); 
@@ -282,6 +282,9 @@ class AttrStk {
         return (i < _num) ? (_stk[i]) : (Attr*) NULL;
     }
 
+    void set_ith(int i, Attr *attr=NULL) {
+        _stk[i] = attr;
+    }
       // Empty out the stack, if del then delete the Attr* being stored.
     void empty(int del=0);
 

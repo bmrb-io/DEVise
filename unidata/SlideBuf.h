@@ -25,10 +25,10 @@
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
             // Any single field must fit in this buffer (as text).
-#define   UD_BUFSZE    8192
+#define   UD_BUFSZE   16284
 
             // Get more stuff in the buffer when we get this low?
-#define   UD_BUFSLACK   64
+#define   UD_BUFSLACK   256
 
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o

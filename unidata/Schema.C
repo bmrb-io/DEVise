@@ -565,9 +565,9 @@ int Schema::subParse(Attr *attr)
                         return(0);
                     }
 
-                    delete [] ult.Str;
+                    dispose_token(tok,&ult);
                     subattr = _typedefs->ith(pos);
-                    attr->assign(subattr);
+                    attr->assign(subattr,_attr_own);
 
                     break;
 

@@ -231,7 +231,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -250,7 +250,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -268,7 +268,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -286,9 +286,9 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
-                else if (v < 100)
+                else if ((v < 100) && (*buf != '0'))
                     len = 2;
                 else
                     len = 3;
@@ -306,7 +306,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -324,7 +324,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -355,7 +355,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -376,7 +376,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -413,7 +413,7 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
@@ -428,12 +428,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                 if ((v < 0) || (v > 99))
                     return 0;
                   // We should really smite them for not being
-                  // more specific, but for now, round up for > 50.
+                  // more specific, but for now, round up for < 50.
                 tme->tm_year = v + ((v <= 50) ? 100 : 0);
 
                 if (repeat)
                     len = repeat;
-                else if (v < 10)
+                else if ((v < 10) && (*buf != '0'))
                     len = 1;
                 else
                     len = 2;
