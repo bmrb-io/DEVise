@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:15  jussi
+  Added/updated CVS header.
+*/
 
 #include <time.h>
 #include "Util.h"
@@ -1795,7 +1798,7 @@ printf("Load pixmap at bytes %d\n", ftell(file));
 
 	_pixmap = new DevisePixmap();
 	if (fread(_pixmap,sizeof(*_pixmap),1,file) != 1){
-		perror("XWindowRep::LoadPixmap");
+		perror("View::LoadPixmap");
 		Exit::DoExit(1);
 	}
 	printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d pad %d\n",
@@ -1815,7 +1818,7 @@ printf("before decompress, at %d\n", ftell(file));
 	unsigned char *data = (unsigned char *)
 		malloc(_pixmap->imageBytes);
 	if (data == NULL){
-		fprintf(stderr,"XWindowRep::LoadPixmap: no memory\n");
+		fprintf(stderr,"View::LoadPixmap: no memory\n");
 		Exit::DoExit(1);
 	}
 	_pixmap->data = data;
