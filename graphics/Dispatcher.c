@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/12/12 22:01:23  jussi
+  Cleaned up termination code and added CheckUserInterrupt() method.
+
   Revision 1.30  1996/12/12 21:09:39  jussi
   DestroySessionData() now called before clean up.
 
@@ -135,6 +138,11 @@
 #ifdef AIX
 #include <sys/select.h>
 #endif
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX)
+#include <dirent.h>
+#else
+#include <sys/dir.h>
+#endif
 
 #include "machdep.h"
 #include "Dispatcher.h"
@@ -156,8 +164,19 @@ Dispatcher::Dispatcher(StateFlag state)
   _firstIntr = false;
   _quit = false;
 
-  /* reset interrupt handling for Control-C */
+  /* Set handling of Control-C interrupt */
   (void)signal(SIGINT, Terminate);
+
+  /* Set handling of severe signals */
+  (void)signal(SIGILL, ImmediateTerminate);
+  (void)signal(SIGFPE, ImmediateTerminate);
+  (void)signal(SIGSEGV, ImmediateTerminate);
+  (void)signal(SIGBUS, ImmediateTerminate);
+  (void)signal(SIGSYS, ImmediateTerminate);
+
+  /* Set this process to be the session leader */
+  if (setpgrp() < 0)
+      perror("setgrp");
 
   FD_ZERO(&fdset);
   maxFdCheck = 0;
@@ -320,7 +339,7 @@ void Dispatcher::RunNoReturn()
     dispatcher.Run1();
 }
 
-void Dispatcher::Terminate(int dummy)
+void Dispatcher::Terminate(int sig)
 {
   if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
@@ -332,6 +351,27 @@ void Dispatcher::Terminate(int dummy)
 
   /* reset interrupt handling for INTR */
   (void)signal(SIGINT, Terminate);
+}
+
+void Dispatcher::ImmediateTerminate(int sig)
+{
+  /*
+     We get here when there is a severe error in the system
+     such as a segment violation. We must abort immediately.
+     Try to do a little clean-up work if possible.
+     In the future, perhaps print a stack trace.
+  */
+
+  fprintf(stderr, "\n");
+  fprintf(stderr, "An unrecoverable system error (code %d) occurred.\n",
+          sig);
+  fprintf(stderr, "Aborting.\n");
+
+  /* Kill all processes in the process group */
+
+  kill(-getpgrp(), SIGKILL);
+
+  exit(1);
 }
 
 void Dispatcher::CheckUserInterrupt()

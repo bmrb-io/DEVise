@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/12/12 22:01:23  jussi
+  Cleaned up termination code and added CheckUserInterrupt() method.
+
   Revision 1.23  1996/08/14 21:22:48  wenger
   Minor dispatcher cleanups, etc.  Fixed release script to release
   statically-linked executables for HP and Sun.
@@ -236,6 +239,9 @@ public:
   
   /* Catch interrupts from the user and terminate program if necessary */
   static void Terminate(int dummy);
+
+  /* Terminate program immediately */
+  static void ImmediateTerminate(int dummy);
 
   /* Cleanup dispatcher */
   static void Cleanup() { dispatcher.DoCleanup(); }
