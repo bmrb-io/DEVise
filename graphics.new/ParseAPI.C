@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  1997/06/09 14:46:52  wenger
+  Added cursor grid; fixed bug 187; a few minor cleanups.
+
   Revision 1.67  1997/05/30 21:18:54  wenger
   Oops!  Minor error in new print config. stuff.
 
@@ -326,6 +329,7 @@
 #include "LMControl.h"		// LayoutManager
 
 #include "CatalogComm.h"
+#include "SessionDesc.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -1722,6 +1726,18 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, buf);
       return 1;
     }
+    if (!strcmp(argv[0], "writeDesc")) {
+      // Argument: <file name>
+#if defined(DEBUG)
+      printf("writeDesc <%s>\n", argv[1]);
+#endif
+      if (!SessionDesc::Write(argv[1]).IsComplete()) {
+        control->ReturnVal(API_NAK, "can't write session description");
+        return -1;
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
   if (argc == 3) {
 
@@ -2672,7 +2688,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
   }
 
-  fprintf(stderr, "Unrecognized command or wrong number of args: %s\n",
+  fprintf(stderr, "Unrecognized command or wrong number of args: '%s'\n",
     argv[0]);
   fprintf(stderr, "argc = %d\n", argc);
   control->ReturnVal(API_NAK, "Unrecognized command");

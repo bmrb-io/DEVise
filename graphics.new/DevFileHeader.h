@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/03 02:41:37  kmurli
+  Modified to include the query schema level. Also modified to include DQL
+  processing
+
   Revision 1.2  1996/08/23 16:56:15  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -53,6 +57,7 @@
 #define FILE_TYPE_CORAL		"coral"
 #define FILE_TYPE_PIXMAP	"pixmap"
 #define FILE_TYPE_SCHEMACAT	"schemaCat"
+#define FILE_TYPE_SESSIONDESC	"sessionDesc"
 
 
 class DevFileHeader

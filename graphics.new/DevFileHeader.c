@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/03 02:41:36  kmurli
+  Modified to include the query schema level. Also modified to include DQL
+  processing
+
   Revision 1.1  1996/07/11 17:25:36  wenger
   Devise now writes headers to some of the files it writes;
   DataSourceSegment class allows non-fixed data length with non-zero
@@ -69,7 +73,8 @@ DevFileHeader::Get(char *fileType)
 		!strcmp(fileType, FILE_TYPE_CACHE) ||
 		!strcmp(fileType, FILE_TYPE_CORAL) ||
 		!strcmp(fileType, FILE_TYPE_PIXMAP) ||
-		!strcmp(fileType, FILE_TYPE_SCHEMACAT))
+		!strcmp(fileType, FILE_TYPE_SCHEMACAT) ||
+		!strcmp(fileType, FILE_TYPE_SESSIONDESC))
 	{
 		// File type is legal.
 	}

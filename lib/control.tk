@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.136  1997/06/10 19:31:59  wenger
+#	Restored revisions 1.131 through 1.134 which were destroyed by the
+#	last commit of this file.
+#
 #	Revision 1.135  1997/06/10 02:29:04  guangshu
 #	Added Unidata Physical schema menu button.
 #
@@ -872,6 +876,7 @@ menu .mbar.session.menu.printMenu -tearoff 0
 #.mbar.session.menu add separator
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
+#.mbar.session.menu add command -label "Write description" -command { DEVise writeDesc /tmp/devise.desc }
 
 menu .mbar.tdata.menu -tearoff 0
 
