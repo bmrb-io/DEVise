@@ -12,8 +12,8 @@ MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MapClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 MapClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-MapClassInfo.o: ../graphics/Pattern.h ../graphics/Journal.h
+MapClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
+MapClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
 MapClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
 MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
@@ -45,8 +45,8 @@ ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 ams.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ams.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ams.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
 ams.o: /usr/include/math.h /usr/include/floatingpoint.h
 ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h ../graphics/Control.h
 ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
@@ -80,9 +80,7 @@ amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
 amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-amsStat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DiskFile.h
 amsStat.o: ../graphics.new/ams.h /usr/include/math.h
 amsStat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h

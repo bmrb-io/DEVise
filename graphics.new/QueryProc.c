@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:56:31  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:14  jussi
   Added CVS header.
 */
 
 #include "QueryProc.h"
 #include "DispQueryProc.h"
+#include "Init.h"
 #include "Exit.h"
 
 QueryProc *QueryProc::_queryProc = NULL;

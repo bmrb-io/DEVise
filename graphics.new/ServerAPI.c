@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/05/22 21:04:29  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.13  1996/05/20 18:42:28  jussi
   Merged with ClientServer library code.
 
@@ -89,6 +92,8 @@
 #include "ServerAPI.h"
 #include "QueryProc.h"
 #include "ParseCat.h"
+#include "View.h"
+#include "Util.h"
 
 #ifdef SUN
 #include "missing.h"

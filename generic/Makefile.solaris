@@ -10,8 +10,8 @@ generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
 generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
 generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
-generic.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-generic.o: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/Display.h
+generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
 generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.69  1996/05/31 15:49:03  jussi
+#	Added menu options for SetLinkMaster and ResetLinkMaster.
+#
 #	Revision 1.68  1996/05/22 21:05:43  jussi
 #	Added HighLow shape.
 #
@@ -358,6 +361,7 @@ source $libdir/save.tcl
 source $libdir/history.tcl
 source $libdir/query.tcl
 source $libdir/window.tcl
+source $libdir/tdata.tk
 
 set mode 0
 DEVise changeMode $mode
@@ -442,15 +446,20 @@ pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
 .mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0}
+.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
 .mbar.session.menu add command -label "Save as Template" \
-	-command {DoSaveAs 1 0}
+	-command {DoSaveAs 1 0 0}
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Export Template" \
-	-command {DoSaveAs 0 1}
+.mbar.session.menu add cascade -label "Export Template" \
+	-menu .mbar.session.menu.exportMenu
+menu .mbar.session.menu.exportMenu -tearoff 0
+.mbar.session.menu.exportMenu add command -label "Without Data" \
+	-command {DoSaveAs 0 1 0}
+.mbar.session.menu.exportMenu add command -label "With Data" \
+	-command {DoSaveAs 0 1 1}
 .mbar.session.menu add command -label "Merge Template" \
 	-command {DoTemplateMerge}
 .mbar.session.menu add separator
@@ -482,6 +491,7 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 	-menu .mbar.tdata.menu.mappingMenu
 
 .mbar.tdata.menu add command -label "Define" -command { MacroImport 1 }
+.mbar.tdata.menu add command -label "Show TDatas" -command { ShowTDatas }
 
 menu .mbar.tdata.menu.mappingMenu -tearoff 0
 
@@ -889,9 +899,16 @@ proc DoClose {} {
 
     if {$templateMode} {	
 	set but [dialog .open "Merge Data" \
-	   "You must Merge Template before you can close" "" 1 Ok]
-	return 0
-   }	
+	   "If you Close without Merging, you will lose access to this data" \
+	   "" 0 "Cancel" "Close" "Merge, then Close"]
+	if {$but == 0} {
+	    return 0
+	} elseif {$but == 1} {
+	    # Just allow the close to continue.
+	} elseif {$but == 2} {
+	    DoTemplateMerge
+	}
+    }	
 
     set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
@@ -912,6 +929,7 @@ proc DoClose {} {
 	    puts "Using data stream catalog $sourceFile"
 	    source $sourceFile	
 	}
+	set templateMode 0
     }
 
     return 1

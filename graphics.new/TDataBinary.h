@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/22 17:52:18  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.4  1996/05/07 16:44:20  jussi
   Cache file name now based on file alias (TData name). Added recPos
   parameter to Decode() function call. Added support for a simple
@@ -46,7 +51,6 @@
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"
-#include "tapedrive.h"
 
 const int BIN_INIT_INDEX_SIZE= 50000;        // initial index size
 const int BIN_INDEX_ALLOC_INCREMENT = 25000; // allocation increment for index

@@ -12,9 +12,9 @@ MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 MapClassInfo.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 MapClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/DList.h
-MapClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-MapClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MapClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
@@ -44,8 +44,8 @@ ams.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
-ams.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-ams.o: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/Display.h
+ams.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+ams.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
 ams.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
 ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h ../graphics/Control.h
 ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
@@ -76,9 +76,7 @@ amsStat.o: /usr/include/limits.h /usr/include/unistd.h /usr/include/sys/uio.h
 amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-amsStat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DiskFile.h
 amsStat.o: ../graphics.new/ams.h /usr/include/math.h
 amsStat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/stdlib.h

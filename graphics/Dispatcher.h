@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/05/09 18:12:06  kmurli
+  No change to this makefile.
+
   Revision 1.11  1996/04/30 15:58:46  jussi
   Added #ifdef USE_SELECT which can be used to disable the use
   of select(). The display update problem still plagues the
@@ -70,7 +73,6 @@
 
 #include "DeviseTypes.h"
 #include "DList.h"
-#include "VisualArg.h"
 #include "Journal.h"
 #include "Exit.h"
 

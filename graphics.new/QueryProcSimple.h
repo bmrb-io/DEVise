@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/10 01:46:20  jussi
+  Added call to Flush() when query processor becomes idle.
+
   Revision 1.5  1996/01/15 16:56:17  jussi
   Minor fixes.
 
@@ -36,11 +39,9 @@
 #include "QueryProc.h"
 #include "DeviseTypes.h"
 #include "VisualArg.h"
-#include "Init.h"
 #include "BufPolicy.h"
 #include "BufHint.h"
 #include "RecId.h"
-#include "GDataRec.h"
 
 class BufMgr;
 class TData;

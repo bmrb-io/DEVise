@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/07 19:41:06  wenger
+  Integrated some of the special attribute projection sources back
+  into the regular Devise sources.
+
   Revision 1.7  1996/05/11 17:29:55  jussi
   Removed subitems() function that used Tcl_Interp arguments.
 
@@ -45,16 +49,7 @@
 
 #include <stdlib.h>
 
-#ifndef ATTRPROJ
-#include "ClassDir.h"
-#include "ViewGraph.h"
-#include "View.h"
-#include "TData.h"
-#include "TDataMap.h"
-#include "Init.h"
-#include "Util.h"
 #include "MapInterpClassInfo.h"
-#endif
 
 #define MAX_STR_LEN 200
 

@@ -9,8 +9,8 @@ generic.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/string.h
 generic.o: /usr/include/math.h /usr/include/sys/types.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 generic.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-generic.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
 generic.o: ../graphics/ColorMgr.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h

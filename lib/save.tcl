@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/05/31 16:36:12  jussi
+#  Minor fix in DoActualSave.
+#
 #  Revision 1.5  1996/05/31 15:49:34  jussi
 #  Fixed problem with tdata dictionary. Added saving of link master.
 #
@@ -191,7 +194,7 @@ proc SaveCursorViews { file dict} {
 ############################################################
 
 # Save session
-proc DoActualSave { infile asTemplate asExport } {
+proc DoActualSave { infile asTemplate asExport withData } {
     global mode curView sourceFile sourceList sourceTypes
     global templateMode schemadir datadir
 
@@ -278,6 +281,14 @@ proc DoActualSave { infile asTemplate asExport } {
     set fileDict ""
     set fileNum 1
     set totalTData [llength [DEVise get tdata]]
+
+    # If we're saving data in the session file, we refer to the session file
+    # via the 'file' variable so things will work if the session file is
+    # renamed.
+    if {$withData} {
+	puts $f "set filename \[file tail \$file\]"
+	puts $f "set directory \[file dirname \$file\]"
+    }
 
     if {$asExport} {
 	foreach class [DEVise get tdata] {
@@ -472,6 +483,14 @@ proc DoActualSave { infile asTemplate asExport } {
     if {$asTemplate || $asExport} {
         puts $f ""
 	puts $f "return 1"
+    }
+
+# save data here
+    if {$withData} {
+	SaveData $f
+    }
+
+    if {$asTemplate || $asExport} {
 	ChangeStatus 0
 	close $f
 	return
@@ -526,16 +545,16 @@ proc DoSave {} {
     global sessionName templateMode
 
     if {$sessionName == "session.tk"} {
-	DoSaveAs 0 0
+	DoSaveAs 0 0 0
 	return
     }
 
-    DoActualSave $sessionName 0 0
+    DoActualSave $sessionName 0 0 0
 }
 
 ############################################################
 
-proc DoSaveAs { asTemplate asExport } {
+proc DoSaveAs { asTemplate asExport withData } {
     global sessionName fsBox sessiondir templateMode
 
     # Get file name
@@ -549,7 +568,7 @@ proc DoSaveAs { asTemplate asExport } {
 	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
     if {$button != 1} { return }
 
-    DoActualSave $file $asTemplate $asExport
+    DoActualSave $file $asTemplate $asExport $withData
     if {!$asTemplate} {
 	set sessionName $file
     }
@@ -631,6 +650,24 @@ proc DoTemplateMerge {} {
     puts "Done with merging template catalog with global catalog"
 }
 
+############################################################
 
+# Save TDatas to the given file.
+proc SaveData {fileId} {
 
+    # Keep from making duplicates by keeping a list of what we have saved.
+    set dataSaved ""
 
+    set classes [ DEVise get tdata ]
+    foreach class $classes {
+        set instances [ DEVise get tdata $class ]
+        foreach inst $instances {
+	    if {[lsearch $dataSaved $inst] == -1} {
+                puts $fileId "### $inst"
+	        lappend dataSaved $inst
+	    }
+        }
+    }
+
+    return
+}

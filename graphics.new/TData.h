@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/13 21:08:47  jussi
+  Added copyright notice.
+
   Revision 1.2  1995/09/05 22:15:45  jussi
   Added CVS header.
 */
@@ -28,8 +31,6 @@
 #include "DeviseTypes.h"
 #include "RecId.h"
 #include "RecOrder.h"
-#include "VisualArg.h"
-#include "DList.h"
 
 class AttrList;
 const int MAX_TDATA_ATTRS = 256; /* max number of TData attributes allowed */

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/04 14:21:38  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
   Revision 1.9  1996/05/31 17:09:38  jussi
   Fixed off-by-one error in "showkgraph" command parsing.
 
@@ -245,17 +251,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       vg->InvalidatePixmaps();
       control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
-    if (!strcmp(argv[0], "createMappingClass")) {
-      MapInterpClassInfo *interp = control->GetInterpProto();
-      ClassInfo *classInfo = interp->CreateWithParams(1, &argv[1]);
-      if (!classInfo) {
-	control->ReturnVal(API_NAK, "Cannot create mapping class");
-	return -1;
-      }
-      ControlPanel::RegisterClass(classInfo, true);
-      control->ReturnVal(API_ACK, classInfo->ClassName());
       return 1;
     }
     if (!strcmp(argv[0], "readLine")) {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1996/05/22 21:04:31  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.53  1996/05/15 16:41:42  jussi
   TkControl now uses the new server synchronization mechanism.
 
@@ -210,6 +213,9 @@
 
 #include "TkControl.h"
 #include "ParseCat.h"
+#include "View.h"
+#include "Util.h"
+#include "Init.h"
 
 //#define DEBUG
 
