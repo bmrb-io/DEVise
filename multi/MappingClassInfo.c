@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/07 21:13:10  jussi
+  Renamed MappingInfo to MultiMappingInfo.
+
   Revision 1.2  1995/12/14 19:24:13  jussi
   Added copyright notice and CVS header. Removed reference to
   ViewWinVer.h.
@@ -76,9 +79,9 @@ void MultiMappingInfo::ParamNames(int &argc, char **&argv)
   argc = 2;
   argv = arg;
   arg[0] = buf1;
-  sprintf(buf1,"File_Alias %s", ControlPanel::Instance()->FileAlias());
+  strcpy(buf1, "File_Alias {foobar}");
   arg[1] = buf2;
-  sprintf(buf2, "GData_Name %s", ControlPanel::Instance()->GDataName());
+  strcpy(buf2, "GData_Name {foobar}");
 }
 
 /* Create instance using the supplied parameters. Return

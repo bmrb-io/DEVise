@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 18:45:26  jussi
+  Removed #include "ViewWinVer.h".
+
   Revision 1.4  1995/09/22 16:01:07  jussi
   Added copyright message.
 
@@ -73,11 +76,11 @@ static char *arg[5];
 /* Get name of parameters */
 void MapInfo::ParamNames(int &argc, char **&argv){
     argc = 2;
-	argv = arg;
-	arg[0] = buf1;
-	sprintf(buf1,"File_Alias %s", ControlPanel::Instance()->FileAlias());
-	arg[1] = buf2;
-	sprintf(buf2,"GData_Name %s",ControlPanel::Instance()->GDataName());
+    argv = arg;
+    arg[0] = buf1;
+    strcpy(buf1,"File_Alias {foobar}");
+    arg[1] = buf2;
+    strcpy(buf2,"GData_Name {foobar}");
 }
 
 /* Create instance using the supplied parameters. Return

@@ -15,7 +15,11 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/12/14 19:24:17  jussi
+  Added copyright notice and CVS header. Removed reference to
+  ViewWinVer.h.
+*/
 
 #include <sys/time.h>
 #include <time.h>
@@ -65,11 +69,11 @@ static char *arg[5];
 /* Get name of parameters */
 void HostMappingInfo::ParamNames(int &argc, char **&argv){
     argc = 2;
-	argv = arg;
-	arg[0] = buf1;
-	sprintf(buf1,"File_Alias %s", ControlPanel::Instance()->FileAlias());
-	arg[1] = buf2;
-	sprintf(buf2,"GData_Name %s",ControlPanel::Instance()->GDataName());
+    argv = arg;
+    arg[0] = buf1;
+    strcpy(buf1, "File_Alias {foobar}");
+    arg[1] = buf2;
+    strcpy(buf2, "GData_Name {foobar}");
 }
 
 /* Create instance using the supplied parameters. Return

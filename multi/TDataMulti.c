@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/07 21:13:39  jussi
+  Added record position parameter to Decode(). Added alias parameter
+  to constructor.
+
   Revision 1.3  1996/04/12 23:44:04  jussi
   Removed IsValid() and removed RecId parameter from Decode().
 
@@ -57,8 +61,8 @@ void MultiClassInfo::ParamNames(int &argc, char **&argv)
   args[0] = buf1;
   args[1] = buf2;
   
-  sprintf(buf1, "File %s", ControlPanel::Instance()->FileName());
-  sprintf(buf2, "Alias %s", ControlPanel::Instance()->FileAlias());
+  strcpy(buf1, "File {foobar}");
+  strcpy(buf2, "Alias {foobar}");
 }
 
 ClassInfo *MultiClassInfo::CreateWithParams(int argc, char **argv)
