@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.65  1998/05/29 15:19:06  wenger
+  Rubberband lines now work in JavaScreen, at least for single-window
+  sessions.
+
   Revision 1.64  1998/05/06 22:04:45  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -620,6 +624,9 @@ class View : public ViewWin
 	int GetAlign() { return _symbolAlign; }
 	void SetAlign(int symbolAlign) { _symbolAlign = symbolAlign; }
 
+	static void SetDrawCursors(Boolean draw) { _drawCursors = draw; }
+	static void SetJSCursors(Boolean js) { _jsCursors = js; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -677,7 +684,7 @@ protected:
 	void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
 	void DrawYAxis(WindowRep *win, int x, int y, int w, int h);
 	void DrawLabel();
-	void DoDrawCursors();
+	void DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor);
 
 	/* Calculate the transformation for this view */
 	void CalcTransform2(WindowRep* winrep);
@@ -809,6 +816,9 @@ protected:
 									 unsigned width, unsigned height);
 
 		int _symbolAlign;
+
+		static Boolean _drawCursors;
+		static Boolean _jsCursors;
 };
 
 //******************************************************************************

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.141  1998/07/06 21:06:35  wenger
+  More memory leak hunting -- partly tracked down some in the DTE.
+
   Revision 1.140  1998/07/03 23:42:09  wenger
   Fixed some memory leaks; added provision to print data segment size
   at certain places in the code.
@@ -639,6 +642,7 @@
 #include "RecordLink.h"
 #include "Scheduler.h"
 #include "DepMgr.h"
+#include "JavaScreenCmd.h"
 
 //******************************************************************************
 
@@ -678,6 +682,8 @@ ViewCallbackList *View::_viewCallbackList = 0;
 DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 #endif
 
+Boolean View::_drawCursors = true;
+Boolean View::_jsCursors = false;
 
 //******************************************************************************
 // Constructors and Destructors
@@ -2341,15 +2347,13 @@ void View::DeleteCursor(DeviseCursor *cursor)
   _cursors->Delete(cursor);
 }
 
-Boolean View::DrawCursors()
+// This seems to return true if it changes anything, false otherwise.
+Boolean
+View::DrawCursors()
 {
 #if defined(DEBUG)
   printf("DrawCursors for %s\n", GetName());
 #endif
-  int index;
-
-  WindowRep *winRep = GetWindowRep();
-//TEMP -- do we want to set the GifDirty flag here???
 
   if (!Mapped()) {
 #if defined(DEBUG)
@@ -2358,137 +2362,141 @@ Boolean View::DrawCursors()
     return false;
   }
 
-  if (Init::UseOpenGL()) {
-    if (!_cursorsOn) {
-      for(index = _cursors->InitIterator(); _cursors->More(index);) {
-        DeviseCursor *cursor = _cursors->Next(index);
-        cursor->ReadCursorStore(winRep);
-      }
-      _cursors->DoneIterator(index);
+  if (!_cursorsOn) {
+    WindowRep *winRep = GetWindowRep();
+    if (_drawCursors) winRep->SetGifDirty(true);
 
-      for(index = _cursors->InitIterator(); _cursors->More(index);) {
-        DeviseCursor *cursor = _cursors->Next(index);
-        cursor->DrawCursorFill(winRep);
-      }
-      _cursors->DoneIterator(index);
-
-      for(index = _cursors->InitIterator(); _cursors->More(index);) {
-        DeviseCursor *cursor = _cursors->Next(index);
-        cursor->DrawCursorBorder(winRep);
-      }
-      _cursors->DoneIterator(index);
-
-      _cursorsOn = true;
-      return false;
+    int index;
+    for(index = _cursors->InitIterator(); _cursors->More(index);) {
+      DeviseCursor *cursor = _cursors->Next(index);
+	  if (_drawCursors) {
+        if (Init::UseOpenGL()) {
+          cursor->ReadCursorStore(winRep);
+        }
+	  }
     }
-  }
-  else {
-    if (!_cursorsOn) {
-      DoDrawCursors();
-      _cursorsOn = true;
-      return false;
+    _cursors->DoneIterator(index);
+
+    for(index = _cursors->InitIterator(); _cursors->More(index);) {
+      DeviseCursor *cursor = _cursors->Next(index);
+	  if (_drawCursors) {
+        if (Init::UseOpenGL()) {
+          cursor->DrawCursorFill(winRep);
+        } else {
+          DoDrawCursor(winRep, cursor);
+        }
+	  }
+	  if (_jsCursors) {
+	    JavaScreenCmd::DrawCursor(this, cursor);
+	  }
     }
-  }
+    _cursors->DoneIterator(index);
 
-  return true;
-}
-
-Boolean View::HideCursors()
-{
-#if defined(DEBUG)
-  printf("HideCursors for %s\n", GetName());
-#endif
-  int index;
-  WindowRep *winRep = GetWindowRep();
-//TEMP -- do we want to set the GifDirty flag here???
-
-  if (!Mapped()) {
-#if defined(DEBUG)
-    printf("not mapped\n");
-#endif
-    return false;
-  }
-
-  if (Init::UseOpenGL()) {
-    if (_cursorsOn) {
-      for(index = _cursors->InitIterator(); _cursors->More(index);) {
-        DeviseCursor *cursor = _cursors->Next(index);
-        cursor->DrawCursorStore(winRep);
-      }
-      _cursors->DoneIterator(index);
-      _cursorsOn = false;
-      return true;
+    for(index = _cursors->InitIterator(); _cursors->More(index);) {
+      DeviseCursor *cursor = _cursors->Next(index);
+	  if (_drawCursors) {
+        if (Init::UseOpenGL()) {
+          cursor->DrawCursorBorder(winRep);
+        }
+	  }
     }
-  }
-  else {
-    if (_cursorsOn) {
-      DoDrawCursors();
-      _cursorsOn = false;
-      return true;
-    }
+    _cursors->DoneIterator(index);
+    _cursorsOn = true;
+    return true;
   }
 
   return false;
 }
 
-void View::DoDrawCursors()
+// This seems to return true if it changes anything, false otherwise.
+Boolean
+View::HideCursors()
 {
 #if defined(DEBUG)
-  printf("DoDrawCursors\n");
+  printf("HideCursors for %s\n", GetName());
 #endif
 
-  if (_numDimensions == 3)
-    return;
+  if (!Mapped()) {
+#if defined(DEBUG)
+    printf("not mapped\n");
+#endif
+    return false;
+  }
 
-  WindowRep *winRep = GetWindowRep();
-//TEMP -- do we want to set the GifDirty flag here???
+  if (_cursorsOn) {
+    WindowRep *winRep = GetWindowRep();
+    if (_drawCursors) winRep->SetGifDirty(true);
+
+    int index;
+    for(index = _cursors->InitIterator(); _cursors->More(index);) {
+      DeviseCursor *cursor = _cursors->Next(index);
+	  if (_drawCursors) {
+        if (Init::UseOpenGL()) {
+          cursor->DrawCursorStore(winRep);
+        } else {
+          DoDrawCursor(winRep, cursor);
+        }
+	  }
+	  if (_jsCursors) {
+	    JavaScreenCmd::EraseCursor(this, cursor);
+	  }
+    }
+    _cursors->DoneIterator(index);
+    _cursorsOn = false;
+    return true;
+  }
+
+  return false;
+}
+
+void
+View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
+{
+#if defined(DEBUG)
+  printf("DoDrawCursor(%s)\n", cursor->GetName());
+#endif
+
   winRep->SetPattern(Pattern0);
   winRep->SetLineWidth(0);
   winRep->SetXorMode();
-  
-  int index;
-  for(index = _cursors->InitIterator(); _cursors->More(index);) {
-    DeviseCursor *cursor = _cursors->Next(index);
-    VisualFilter *filter;
-    cursor->GetVisualFilter(filter);
 
-    Coord xLow, yLow, xHigh, yHigh;
-    xLow = MAX(_filter.xLow, filter->xLow);
-    xHigh = MIN(_filter.xHigh, filter->xHigh);
-    yLow = MAX(_filter.yLow, filter->yLow);
-    yHigh = MIN(_filter.yHigh, filter->yHigh);
+  VisualFilter *cFilter;
+  cursor->GetVisualFilter(cFilter);
 
-    if ((filter->flag & VISUAL_X) && (filter->flag & VISUAL_Y)) {
+  Coord xLow, yLow, xHigh, yHigh;
+  xLow = MAX(_filter.xLow, cFilter->xLow);
+  xHigh = MIN(_filter.xHigh, cFilter->xHigh);
+  yLow = MAX(_filter.yLow, cFilter->yLow);
+  yHigh = MIN(_filter.yHigh, cFilter->yHigh);
+
+  if ((cFilter->flag & VISUAL_X) && (cFilter->flag & VISUAL_Y)) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing XY cursor %s in\n  %s\n",
-	  cursor->GetName(), GetName());
+    printf("DoDrawCursor: Drawing XY cursor %s in\n  %s\n",
+        cursor->GetName(), GetName());
 #endif
-      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
-	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
-	winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
-      }
-    } else if (filter->flag & VISUAL_X) {
+    if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh
+        || cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
+      winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
+    }
+  } else if (cFilter->flag & VISUAL_X) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing X cursor %s in\n  %s\n",
-	  cursor->GetName(), GetName());
+    printf("DoDrawCursor: Drawing X cursor %s in\n  %s\n",
+        cursor->GetName(), GetName());
 #endif
-      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
-	winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
-			 _filter.yHigh - _filter.yLow);
-      }
-    } else if (filter->flag & VISUAL_Y) {
+    if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh)) {
+	  winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
+	      _filter.yHigh - _filter.yLow);
+    }
+  } else if (cFilter->flag & VISUAL_Y) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing Y cursor %s in\n  %s\n",
-	  cursor->GetName(), GetName());
+    printf("DoDrawCursor: Drawing Y cursor %s in\n  %s\n",
+        cursor->GetName(), GetName());
 #endif
-      if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
-	winRep->ClearBackground(_filter.xLow, yLow,
-			 _filter.xHigh - _filter.xLow, yHigh - yLow);
-      }
+    if (!(cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
+	  winRep->ClearBackground(_filter.xLow, yLow,
+	      _filter.xHigh - _filter.xLow, yHigh - yLow);
     }
   }
-
-  _cursors->DoneIterator(index);
 
   winRep->SetCopyMode();
 }
@@ -2640,7 +2648,7 @@ void View::SavePixmaps(FILE *file)
   if (!saved) {
     /* Return cursors to original state */
     if (cursorState)
-      DrawCursors();
+      (void) DrawCursors();
     DisplaySymbols(dispSymbol);
     DisplayConnectors(dispConnector);
     return;

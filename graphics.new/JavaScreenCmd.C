@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/08/24 15:01:03  wenger
+  Implemented support for JavaScreen drill-down.
+
   Revision 1.20  1998/08/17 17:12:02  wenger
   Devised now responds to KeyAction commands from JavaScreen.
 
@@ -119,6 +122,7 @@
 #include "QueryProc.h"
 #include "Display.h"
 #include "ArgList.h"
+#include "Cursor.h"
 
 //#define DEBUG
 
@@ -186,7 +190,6 @@ JavaScreenCmd::GetSessionList()
     printf("JavaScreenCmd::GetSessionList(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc == 0) {
@@ -210,7 +213,6 @@ JavaScreenCmd::OpenSession()
     printf("JavaScreenCmd::OpenSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc != 1)
@@ -218,6 +220,10 @@ JavaScreenCmd::OpenSession()
 		errmsg = "{Usage: OpenSession <session name>}";
 		_status = ERROR;
 		return;
+	}
+
+	if (_sessionDir == NULL) {
+		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
 	}
 
 	char fullpath[MAXPATHLEN];
@@ -240,6 +246,11 @@ JavaScreenCmd::OpenSession()
 
 	// Set batch mode so the server makes pixmaps instead of windows.
 	ControlPanel::Instance()->SetBatchMode(true);
+
+	// Tell view class not to draw cursors, but to request JavaScreen to
+	// draw them.
+	View::SetDrawCursors(false);
+	View::SetJSCursors(true);
 
 	// Turn of collaboration; otherwise the collaboration stuff
 	// interferes with some commands from the JavaScreen.
@@ -268,7 +279,6 @@ JavaScreenCmd::OpenSession()
 #if defined(DEBUG)
         printf("window name: %s\n", window->GetName());
 		printf("%d children\n", window->NumChildren());
-	    fflush(stdout);
 #endif
 
         JavaViewInfo **views = new JavaViewInfo*[window->NumChildren()];
@@ -355,16 +365,34 @@ JavaScreenCmd::MouseAction_Click()
     printf("JavaScreenCmd::MouseAction_Click(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc != 3)
 	{
+		// Note: x and y are relative to *window* origin, not view origin.
 		errmsg = "{Usage: MouseAction_Click <view name> <x> <y>}";
 		_status = ERROR;
 		return;
 	}
 
+	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "{Can't find specified view}";
+		_status = ERROR;
+		return;
+	}
+
+	int xLoc = atoi(_argv[1]);
+	int yLoc = atoi(_argv[2]);
+
+    view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
+
+	// Make sure everything has actually been re-drawn before we
+	// continue.
+	WaitForQueries();
+
+	// Send the updated window image(s).
+	_status = SendChangedWindows();
 }
 
 void
@@ -374,7 +402,6 @@ JavaScreenCmd::MouseAction_DoubleClick()
     printf("JavaScreenCmd::MouseAction_DoubleClick(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	// Note: x and y are relative to window origin, not view origin.
@@ -423,7 +450,6 @@ JavaScreenCmd::MouseAction_RubberBand()
     printf("JavaScreenCmd::MouseAction_RubberBand(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc != 5)
@@ -524,7 +550,6 @@ JavaScreenCmd::CloseCurrentSession()
     printf("JavaScreenCmd::CloseCurrentSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 //TEMP -- check _argc
@@ -543,7 +568,6 @@ JavaScreenCmd::SetDisplaySize()
     printf("JavaScreenCmd::SetDisplaySize(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc != 2) {
@@ -567,7 +591,6 @@ JavaScreenCmd::KeyAction()
     printf("JavaScreenCmd::KeyAction(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	//TEMP -- this must be changed to give key press location
@@ -608,7 +631,6 @@ JavaScreenCmd::SaveSession()
     printf("JavaScreenCmd::SaveSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	if (_argc != 1)
@@ -638,7 +660,6 @@ JavaScreenCmd::ServerExit()
     printf("JavaScreenCmd::ServerExit(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 	printf("Server exiting on command from JavaScreen\n");
@@ -656,7 +677,6 @@ JavaScreenCmd::ServerCloseSocket()
     printf("JavaScreenCmd::ServerCloseSocket(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 //TEMP -- add body of function
@@ -673,7 +693,6 @@ JavaScreenCmd::ImageChannel()
     printf("JavaScreenCmd::ImageChannel(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
-	fflush(stdout);
 #endif
 
 //TEMP -- add body of function
@@ -688,7 +707,6 @@ JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::RequestUpdateGData()\n");
-	fflush(stdout);
 #endif
 
 	// Add---begin
@@ -713,7 +731,6 @@ JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::RequestUpdateRecordValue()\n");
-	fflush(stdout);
 #endif
 
     char **args = new char *[argc+1];
@@ -771,6 +788,8 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_UpdateRecordValue",
 	"JAVAC_UpdateGData",
 	"JAVAC_UpdateWindow",
+	"JAVAC_DrawCursor",
+	"JAVAC_EraseCursor",
 	"JAVAC_Done",
 	"JAVAC_Error",
 	"JAVAC_Fail"
@@ -779,6 +798,10 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 
 JavaScreenCmd::~JavaScreenCmd()
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
+#endif
+
 	int	i;
 	for (i=0; i< _argc; ++i)
 		delete []_argv[i];
@@ -794,10 +817,13 @@ JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
+#endif
+
 	int	i;
 	static	char	leftBrace ='{';
 	static  char	rightBrace ='}';
-
 
 	_control  = control;
 	_ctype = ctype;
@@ -847,8 +873,7 @@ int
 JavaScreenCmd::Run()
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd::Run(%d)\n", _ctype);
-	fflush(stdout);
+    printf("JavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
 #endif
 
 	_status = DONE;
@@ -965,7 +990,6 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::SendWindowImage(%s)\n", fileName);
-	fflush(stdout);
 #endif
 
 	ControlCmdType	status = DONE;
@@ -1000,7 +1024,6 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 
 #if defined(DEBUG)
     printf("  done sending window image\n");
-	fflush(stdout);
 #endif
 
 	return status;
@@ -1011,7 +1034,6 @@ JavaScreenCmd::SendChangedWindows()
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::SendChangedWindows()\n");
-	fflush(stdout);
 #endif
 
     JavaScreenCmd::ControlCmdType result = DONE;
@@ -1069,7 +1091,6 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 #if defined (DEBUG)
     printf("JavaScreenCmd::RequestCreateWindow(%s)\n",
 	winInfo._winName.c_str());
-	fflush(stdout);
 #endif
 
 	const char*	fileName = winInfo._imageName.c_str();
@@ -1141,9 +1162,9 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 		// free all ..
 		for (i=0; i< argc; ++i)
 		{
-			free(argv[i]);
+			delete [] argv[i];
 		}
-		delete []argv;
+		delete [] argv;
 	}
 	return status;
 }
@@ -1154,7 +1175,6 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 {
 #if defined (DEBUG)
     printf("JavaScreenCmd::RequestUpdateWindow(%s, %d)\n", winName, imageSize);
-	fflush(stdout);
 #endif
 
 	char* argv[3];
@@ -1163,15 +1183,99 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 	argv[pos++] = winName;
 	FillInt(argv, pos, imageSize);
 	ReturnVal(3, argv);
-	free(argv[2]);
+	delete [] argv[2];
 	return DONE;
+}
+
+void
+JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
+      cursor->GetName());
+#endif
+
+	// Get the cursor's visual filter (the same as the source view's).
+    VisualFilter *filter;
+	cursor->GetVisualFilter(filter);
+#if defined(DEBUG)
+    printf("Cursor vis. filter: (%g, %g), (%g, %g)\n", filter->xLow,
+	  filter->yLow, filter->xHigh, filter->yHigh);
+#endif
+
+	// Transform data coordinates to pixels.
+	Coord xPixLow, yPixLow, xPixHigh, yPixHigh;
+	WindowRep *winRep = view->GetWindowRep();
+	winRep->Transform(filter->xLow, filter->yLow, xPixLow, yPixLow);
+	winRep->Transform(filter->xHigh, filter->yHigh, xPixHigh, yPixHigh);
+#if defined(DEBUG)
+    printf("Pixels: (%g, %g), (%g, %g)\n", xPixLow, yPixLow, xPixHigh,
+	  yPixHigh);
+#endif
+
+	int xLoc = (int)MIN(xPixLow, xPixHigh);
+	int yLoc = (int)MIN(yPixLow, yPixHigh);
+	int width = (int)ABS(xPixHigh - xPixLow);
+	int height = (int)ABS(yPixHigh - yPixLow);
+
+#if defined(DEBUG)
+    printf("x, y: (%d, %d), width, height: (%d, %d)\n", xLoc, yLoc, width,
+	  height);
+#endif
+
+    // Translate from view origin to window origin.
+	int viewX, viewY;
+	winRep->Origin(viewX, viewY);
+#if defined(DEBUG)
+    printf("View (window rep) origin: %d, %d\n", viewX, viewY);
+#endif
+
+	xLoc += viewX;
+	yLoc += viewY;
+
+
+	char *argv[6];
+	int	pos = 0;
+	argv[pos++] = _controlCmdName[DRAWCURSOR];
+	argv[pos++] = view->GetName();
+	FillInt(argv, pos, xLoc);
+	FillInt(argv, pos, yLoc);
+	FillInt(argv, pos, width);
+	FillInt(argv, pos, height);
+
+    // This JavaScreenCmd object is created only to send the command.
+    JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
+    jsc.ReturnVal(6, argv);
+
+	delete [] argv[2];
+	delete [] argv[3];
+	delete [] argv[4];
+	delete [] argv[5];
+
+}
+
+void
+JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
+      cursor->GetName());
+#endif
+
+	char* argv[2];
+	argv[0] = _controlCmdName[ERASECURSOR];
+	argv[1] = view->GetName();
+
+    // This JavaScreenCmd object is created only to send the command.
+    JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
+    jsc.ReturnVal(2, argv);
 }
 
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd::ReturnVal(");
+    printf("JavaScreenCmd(0x%p)::ReturnVal(", this);
 	PrintArgs(stdout, argc, argv, false);
 	printf(")\n");
 #endif

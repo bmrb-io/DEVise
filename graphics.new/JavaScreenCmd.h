@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/08/24 14:51:33  wenger
+  Implemented support for JavaScreen drill-down.
+
   Revision 1.10  1998/08/13 18:14:46  wenger
   More updates to JavaScreen support.
 
@@ -117,6 +120,8 @@ class JavaWindowInfo
 		JavaViewInfo*	_viewList;
 };
 
+class DeviseCursor;
+
 class JavaScreenCmd
 {
 	public:
@@ -134,7 +139,8 @@ class JavaScreenCmd
 			SAVESESSION,
 			SERVEREXIT,
 			SERVERCLOSESOCKET,
-			IMAGECHANNEL
+			IMAGECHANNEL,
+			NULL_SVC_CMD
 		}ServiceCmdType;
 
 		typedef enum
@@ -144,6 +150,8 @@ class JavaScreenCmd
 			UPDATERECORDVALUE,
 			UPDATEGDATA,
 			UPDATEWINDOW,
+			DRAWCURSOR,
+			ERASECURSOR,
 			DONE,
 			ERROR,
 			FAIL,
@@ -194,10 +202,16 @@ class JavaScreenCmd
 		void CloseJavaConnection();
 		ControlCmdType SendWindowImage(const char* fileName, int& filesize);
 		ControlCmdType SendChangedWindows();
-		void FillArgv(char** argv, int& pos, const JavaRectangle& jr);
-		void FillInt(char** argv, int& pos, int i);
+		static void FillArgv(char** argv, int& pos, const JavaRectangle& jr);
+		static void FillInt(char** argv, int& pos, int i);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);
+
+	protected:
+		friend class View;
+
+		static void DrawCursor(View *view, DeviseCursor *cursor);
+		static void EraseCursor(View *view, DeviseCursor *cursor);
 };
 #endif
