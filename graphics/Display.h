@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/04 05:18:28  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from
+  Display) corrected a bug in call to register function. Also now
+  dispatcher uses socket number passed from the XDisplay class to
+  select on it and call the relevant functions.
+
   Revision 1.4  1996/03/29 18:13:50  wenger
   Got testWindowRep to compile and run, added drawing in
   windows; fixed a few more compile warnings, etc.
@@ -61,8 +68,6 @@ public:
   /* Create a new window rep, 
      relative == 1 if in relative dimensions.*/
   virtual WindowRep* CreateWindowRep(char *name, Coord x, Coord y,
-					 // Width and height as a fraction of parent's
-					 // width and height.
 				     Coord width, Coord height, 
 				     Color fgnd = ForegroundColor,
 				     Color bgnd = BackgroundColor, 
@@ -84,12 +89,10 @@ public:
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
   static void DoneIterator(int index) { _displays.DoneIterator(index); }
 
+  /* This is to force the derived classes to register themselves with the
+     dispatcher */
 
-  // This is to force the dervied classes to register themselves with the
-  // dispatcher..
   virtual void Register() = 0;
-
-
 
 protected:
   /* must be called from within the initializer of derived class

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/04 05:18:31  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from
+  Display) corrected a bug in call to register function. Also now
+  dispatcher uses socket number passed from the XDisplay class to
+  select on it and call the relevant functions.
+
   Revision 1.8  1996/02/05 23:55:18  jussi
   Added support for small fonts.
 
@@ -97,11 +104,8 @@ public:
     /* Do internal event processing, but do not block while doing it */
     virtual void InternalProcessing();
 
-
-	// Register with the dispatcher..
-	virtual void  Register();
-
-		
+    // Register with the dispatcher..
+    virtual void  Register();
 
 protected:
     /* from DeviseDisplay */

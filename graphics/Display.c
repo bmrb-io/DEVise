@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/04 05:18:27  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from
+  Display) corrected a bug in call to register function. Also now
+  dispatcher uses socket number passed from the XDisplay class to
+  select on it and call the relevant functions.
+
   Revision 1.4  1995/12/28 18:45:35  jussi
   Small fixes to remove compiler warnings.
 
@@ -48,8 +55,10 @@ DeviseDisplay::DeviseDisplay()
 {
   _dispatcher = Dispatcher::Current();
  
- // This is needed in the derived classes 
- //_dispatcher->Register(this,AllState,true,-1);
+  // A derived class must register with the Dispatcher in order
+  // to get a chance to inspect event queues; use a call similar
+  // to this one:
+  // _dispatcher->Register(this, AllState, true, -1);
 
   _numColors = 0;
   _colorMapSize = InitColorMapSize;
