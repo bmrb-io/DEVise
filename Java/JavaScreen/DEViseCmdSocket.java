@@ -133,8 +133,7 @@ public class DEViseCmdSocket
     }
 
     // if at the moment of calling, there are something coming from the input stream,
-    // or at the moment of calling, there are already some bytes read from the input
-    // stream, isEmpty will return false, otherwise, it will return true.
+    // isEmpty will return false, otherwise, it will return true.
     public synchronized boolean isEmpty() throws YException
     {
         try {
@@ -252,15 +251,6 @@ public class DEViseCmdSocket
         sendCmd(cmd, DEViseGlobals.API_JAVA);
     }
 
-    // Java integer(byte, short, int, long) are all signed data and use 2's complement
-    // mechanism, which is, the value of the highest bit (if data is short, then -2^16
-    // for negative sign 1 and 0 for positive sign 0) plus the rest 15 bits's combined
-    // value is the final value of this number. For example, 0xff = -1, 0x7f = 127,
-    // 0x00 = 0 and 0x80 = -128
-
-    // Java widening conversion (such as from byte to int): sign extended
-    // Java narrowing conversion (such as from int to byte): cut off the higher bits
-    //                            so not only will lose value, might also change sign
     public synchronized String receiveRsp() throws YException, InterruptedIOException
     {
         if (is == null) {

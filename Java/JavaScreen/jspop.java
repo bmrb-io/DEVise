@@ -87,6 +87,7 @@ public class jspop implements Runnable
 
         try {
             imgServerSocket = new ServerSocket(imgPort);
+            imgServerSocket.setSoTimeout(6000);
         } catch (IOException e) {
             System.out.println("Can not start server socket at port " + imgPort);
             try {
@@ -103,6 +104,7 @@ public class jspop implements Runnable
         System.out.println("DEVise JSPOP Server started ...\n");
 
         boolean isListen = true;
+        boolean isTimeout = false;
         while (isListen) {
             Socket socket1 = null;
             Socket socket2 = null;
@@ -112,30 +114,43 @@ public class jspop implements Runnable
             
             try {
                 socket1 = cmdServerSocket.accept();
-                socket2 = imgServerSocket.accept();
                 
                 try {
-                    String name = socket1.getInetAddress().getHostName();
-                    System.out.println("Client connection request from " + name + " is received ...");
-                    
-                    cmd = new DEViseCmdSocket(socket1, 1000);
-                    img = new DEViseImgSocket(socket2, 2000);
-                    client = new DEViseClient(cmd, img, name);
-                } catch (YException e) {
-                    YGlobals.Ydebugpn(e.getMessage());
-                    
-                    if (cmd != null) {
-                        cmd.closeSocket();
-                        cmd = null;
+                    socket2 = imgServerSocket.accept();
+                    isTimeout = false;
+                } catch (IOException e) {
+                    isTimeout = true;
+                }    
+                
+                if (isTimeout) {
+                    try {
+                        socket1.close();
+                    } catch (IOException e) {
                     }
+                } else {
+                    try {
+                        String name = socket1.getInetAddress().getHostName();
+                        System.out.println("Client connection request from " + name + " is received ...");
                     
-                    if (img != null) {
-                        img.closeSocket();
-                        img = null;
-                    }                                                                 
-                } 
+                        cmd = new DEViseCmdSocket(socket1, 1000);
+                        img = new DEViseImgSocket(socket2, 1000);
+                        client = new DEViseClient(cmd, img, name);
+                    } catch (YException e) {
+                        YGlobals.Ydebugpn(e.getMessage());
+                        
+                        if (cmd != null) {
+                            cmd.closeSocket();
+                            cmd = null;
+                        }
+                    
+                        if (img != null) {
+                            img.closeSocket();
+                            img = null;
+                        }                                                                 
+                    } 
                                         
-                dispatcher.addClient(client);
+                    dispatcher.addClient(client);
+                }
             } catch (IOException e) {
                 System.out.println("DEVise POP Server can not listen on port: " + cmdPort + " or " + imgPort + "\nDEVise JSPOP Server is aborted!");
                 isListen = false;

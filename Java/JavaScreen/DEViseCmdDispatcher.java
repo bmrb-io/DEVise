@@ -58,6 +58,7 @@ public class DEViseCmdDispatcher implements Runnable
     public DEViseCmdSocket cmdSocket = null;
     public DEViseImgSocket imgSocket = null;
     public int connectID = DEViseGlobals.DEFAULTID;
+    private DEViseOpenDlg openDlg = null;
 
     public DEViseCmdDispatcher(jsdevisec what, String host, String user, String pass, int port)
     {
@@ -111,13 +112,7 @@ public class DEViseCmdDispatcher implements Runnable
     public synchronized void startDispatcher()
     {
         if (status < 0) {
-            clearCmdBuffer();
-            status = 0;
-            abort = false;
-
             insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}");
-            dispatcherThread = new Thread(this);
-            dispatcherThread.start();
         } else {
             YGlobals.Ydebugpn("Dispatcher is still active at Dispatcher:startDispatcher!");
             return;
@@ -127,8 +122,13 @@ public class DEViseCmdDispatcher implements Runnable
     public synchronized void insertCmd(String cmd, int pos)
     {
         if (status < 0) {
-            YGlobals.Ydebugpn("Dispatcher is already stopped at DEViseCmdDispatcher:insertCmd!");
-            return;
+            YGlobals.Ydebugpn("Try to restart dispatcher ...");
+            status = 0;
+            abort = false;
+            dispatcherThread = new Thread(this);
+            dispatcherThread.start();
+            if (!cmd.startsWith("JAVAC_Connect"))
+                cmd = "JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}" + "\n" + cmd;
         }
 
         if (abort) // Can not insert command while in the process of abortion of previous command
@@ -316,8 +316,8 @@ public class DEViseCmdDispatcher implements Runnable
 
                             // we need to do something special for this command because there is a open
                             // dialog hanging out there
-                            if (command.startsWith("JAVAC_GetSessionList")) {
-                                jsc.updateSessionList(null, e.getMessage());
+                            if (command.startsWith("JAVAC_GetSessionList") && openDlg != null && openDlg.getStatus()) {
+                                YGlobals.Yshowmsg(openDlg, e.getMessage());
                             } else {
                                 YGlobals.Yshowmsg(jsc, e.getMessage());
                             }
@@ -326,8 +326,9 @@ public class DEViseCmdDispatcher implements Runnable
                             try {
                                 // we need to do something special for this command because there is a open
                                 // dialog hanging out there
-                                if (command.startsWith("JAVAC_GetSessionList")) {
-                                    jsc.updateSessionList(null, e.getMessage());
+                                if (command.startsWith("JAVAC_GetSessionList") && openDlg != null && openDlg.getStatus()) {
+                                    YGlobals.Yshowmsg(openDlg, e.getMessage());
+                                    openDlg.close();
                                 }
 
                                 // we need to clear both CMD and IMG sockets
@@ -355,8 +356,9 @@ public class DEViseCmdDispatcher implements Runnable
                             try {
                                 // we need to do something special for this command because there is a open
                                 // dialog hanging out there
-                                if (command.startsWith("JAVAC_GetSessionList")) {
-                                    jsc.updateSessionList(null, "Error");
+                                if (command.startsWith("JAVAC_GetSessionList") && openDlg != null && openDlg.getStatus()) {
+                                    YGlobals.Yshowmsg(openDlg, e.getMessage());
+                                    openDlg.close();
                                 }
 
                                 // we need to clear both CMD and IMG sockets
@@ -447,35 +449,20 @@ public class DEViseCmdDispatcher implements Runnable
                     if (!command.startsWith("JAVAC_GetSessionList"))
                         YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i] + "!");
                     else
-                        //YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i], false, false);
-                        throw new YException("Server Error: " + rsp[i], 5);
+                        YGlobals.Yshowmsg(openDlg, "Server Error: " + rsp[i] + "!");
 
                     throw new YException("Server Error: " + rsp[i] + "!", 5);
                 } else {
                     if (!command.startsWith("JAVAC_GetSessionList"))
                         YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1]);
                     else
-                        //YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1], false, false);
-                        throw new YException("Server Error: " + cmd[1] + "!", 5);
-
-                    //throw new YException("Server Error: " + cmd[i] + " to command: " + command, 5);
+                        YGlobals.Yshowmsg(openDlg, "Server Error: " + cmd[1] + "!");
                 }
             } else if (rsp[i].startsWith("JAVAC_Fail")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
-                    //if (!command.startsWith("JAVAC_GetSessionList"))
-                    //    YGlobals.Yshowmsg(jsc, "Server failed: " + rsp[i]);
-                    //else
-                        //YGlobals.Yshowmsg(jsc, "Server Failed: " + rsp[i], false, false);
-                        //throw new YException("Server failed: " + rsp[i], 2);
-
                     throw new YException("Server Failed: " + rsp[i] + "!", 2);
                 } else {
-                    //if (!command.startsWith("JAVAC_GetSessionList"))
-                    //    YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[1]);
-                    //else
-                        ;//YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[i], false, false);
-
                     throw new YException("Server failed: " + cmd[1] + "!", 2);
                 }
             } else if (rsp[i].startsWith("JAVAC_CreateWindow")) {
@@ -573,11 +560,14 @@ public class DEViseCmdDispatcher implements Runnable
                 cmd = DEViseGlobals.parseString(rsp[i]);
 
                 if (cmd == null) {
-                    jsc.updateSessionList(null, "Invalid list");
                     throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
-                jsc.updateSessionList(cmd, null);
+                if (openDlg != null && openDlg.getStatus()) {
+                    openDlg.setSessionList(cmd);
+                } else {
+                    openDlg = new DEViseOpenDlg(jsc, cmd);
+                }
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 6) {
@@ -606,7 +596,7 @@ public class DEViseCmdDispatcher implements Runnable
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {
                     throw new YException("Ill-formated command " + rsp[i] + "!", 5);
-                } else {                
+                } else {
                     RecordDlg dlg = new RecordDlg(jsc, cmd);
                     dlg.show();
                 }
@@ -805,3 +795,168 @@ class RecordDlg extends Dialog
                 });
     }
 }
+
+class DEViseOpenDlg extends Frame
+{
+    private jsdevisec jsc = null;
+    private boolean status = false;
+    private String sessionName = null;
+    private List fileList = null;
+    private Label label = new Label("Current available sessions at /DEViseSessionRoot");
+    private Button okButton = new Button("OK");
+    private Button cancelButton = new Button("Cancel");
+    private String[] sessions = null;
+    private boolean[] sessionTypes = null;
+    private String[] sessionNames = null;
+    private String currentDir = new String("/DEViseSessionRoot");
+
+    public DEViseOpenDlg(jsdevisec what, String[] data)
+    {
+        jsc = what;
+
+        setBackground(DEViseGlobals.uibgcolor);
+        setForeground(DEViseGlobals.uifgcolor);
+        setFont(DEViseGlobals.uifont);
+
+        label.setFont(new Font("Serif", Font.BOLD, 16));
+
+        fileList = new List(8, false);
+        //fileList.setBackground(DEViseGlobals.textbgcolor);
+        fileList.setBackground(Color.white);
+        fileList.setForeground(DEViseGlobals.textfgcolor);
+        fileList.setFont(DEViseGlobals.textfont);
+
+        status = true;
+        setSessionList(data);
+
+        Button [] button = new Button[2];
+        button[0] = okButton;
+        button[1] = cancelButton;
+        ComponentPanel panel = new ComponentPanel(button, "Horizontal", 20);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        //c.gridheight = 1;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 10, 5, 10);
+        //c.ipadx = 0;
+        //c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
+        gridbag.setConstraints(label, c);
+        add(label);
+        gridbag.setConstraints(fileList, c);
+        add(fileList);
+        gridbag.setConstraints(panel, c);
+        add(panel);
+
+        setTitle("Java Screen Open Dialog");
+        pack();
+
+        // reposition the dialog
+        Point parentLoc = jsc.getLocation();
+        Dimension mysize = getSize();
+        Dimension parentSize = jsc.getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        show();
+
+        okButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (fileList.getItemCount() > 0) {
+                            int idx = fileList.getSelectedIndex();
+                            if (idx != -1) {
+                                sessionName = fileList.getItem(idx);
+
+                                if (sessionName.startsWith("[")) {
+                                    String[] name = YGlobals.Yparsestring(sessionName, '[', ']');
+                                    if (name[0].equals("..")) {
+                                        String[] tmpname = YGlobals.Yparsestr(currentDir, "/");
+                                        currentDir = new String("");
+                                        for (int i = 0; i < tmpname.length - 1; i++) {
+                                            currentDir = currentDir + "/" + tmpname[i];
+                                        }
+                                    } else {
+                                        currentDir = currentDir + "/" + name[0];
+                                    }
+
+                                    label = new Label("Current available sessions at " + currentDir);
+                                    jsc.dispatcher.insertCmd("JAVAC_GetSessionList {" + name[0] + "}");
+                                } else {
+                                    status = false;
+                                    dispose();
+                                    jsc.dispatcher.insertCmd("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
+                                                             + "\nJAVAC_OpenSession {" + sessionName + "}");
+                                }
+                            }
+                        }
+                    }
+                });
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        status = false;
+                        sessionName = null;
+                        dispose();
+                    }
+                });
+
+    }
+
+    public boolean getStatus()
+    {
+        return status;
+    }
+
+    public void close()
+    {
+        status = false;
+        sessionName = null;
+        dispose();
+    }
+
+    public void setSessionList(String[] data)
+    {
+        sessions = data;
+        // need to correct for num < 1
+        int number = (sessions.length - 1) / 3;
+        sessionNames = new String[number];
+        sessionTypes = new boolean[number];
+        String tmpstr = null;
+        for (int i = 0; i < number; i++) {
+            sessionNames[i] = sessions[i * 3 + 1];
+            tmpstr = sessions[i * 3 + 2];
+            if (tmpstr.equals("0")) {
+                sessionTypes[i] = true;
+            } else {
+                sessionTypes[i] = false;
+            }
+        }
+
+        fileList.removeAll();
+        for (int i = 0; i < number; i++) {
+            if (sessionTypes[i]) {
+                fileList.add(sessionNames[i]);
+            } else {
+                fileList.add("[" + sessionNames[i] + "]");
+            }
+        }
+
+        validate();
+    }
+}
+
