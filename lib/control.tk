@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.41  1995/12/22 18:08:51  jussi
+#	Added Vector Shape. Fixed session file code; cursor names may
+#	have spaces which used to break the session file.
+#
 #	Revision 1.40  1995/12/20 02:26:26  ravim
 #	Variable to store temp. directory location added.
 #
@@ -263,16 +267,15 @@ proc DictLookup { dict name } {
 
 # Create a new unique name based on old name
 proc UniqueName { name} {
-    #  puts "UniqueName incoming $name"
     while { [DEVise exists $name] } {
 	set len [string length $name]
-	set lastChar [string index $name [expr $len-1]]
+	set lastChar [string index $name [expr $len - 1]]
 	if { [scan $lastChar "%d" temp] == 1 } {
 	    # numeric for the last character
-	    set name [format "%s%d" [string range $name 0 [expr $len-2]] \
-		    [expr $lastChar+1]]
+	    set name [format "%s%d" [string range $name 0 [expr $len - 2]] \
+		    [expr $lastChar + 1]]
 	} else {
-	    set name [format "%s%d" $name 1]
+	    set name "$name 2"
 	}
     }
     return $name
@@ -1301,15 +1304,17 @@ proc DoViewRemove {} {
 	return
     }
 
-    # Remove view
-    set ans [DEVise removeView $curView]
-    if {$ans != ""} {
-	dialogList .removeError "RemoveError" $ans "" 0 OK
-	return
-    }
+    set viewToRemove $curView
 
     # Unselect current view
     ProcessViewSelected ""
+
+    # Remove view
+    set ans [DEVise removeView $viewToRemove]
+    if {$ans != ""} {
+	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
+	return
+    }
 }
 
 # Move view to another window
@@ -1933,8 +1938,6 @@ proc ProcessViewSelected { view } {
 
 # Process filter changed in a view
 proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
-    # puts "ProcessViewFilterChange { $view $flushed $xLow \
-    #    $yLow $xHigh $yHigh $marked}" 
     global curView historyWinOpened
 
     if {$view != $curView} {
@@ -2533,7 +2536,7 @@ proc DoViewLink {} {
 # Unlink current view
 proc DoViewUnlink {} {
     global curView dialogListVar
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .unlinkError "No Current View" \
 		"Select a view first by clicking in it." "" 0 OK ]
 	return
@@ -2548,15 +2551,15 @@ proc DoViewUnlink {} {
     }
 
     if { [llength $viewLinks ] == 0 } {
-	set but [ dialog .removeLink "RemoveLink" \
+	set but [ dialog .removeLink "No Links" \
 		"View $curView has no established link" "" 0 OK ]
     } else {
-	set answer [ dialogList .getLink "GetLink" \
+	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to unlink for view $curView" "" 0 \
 		{ Cancel OK } $linkSet ]
 	if { $answer == 0 } {
 	    return
-	} elseif { [ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif { $dialogListVar(selected) == "" } {
 	    return
 	} else {
 	    DEVise unlinkView $dialogListVar(selected) $curView
@@ -2784,7 +2787,7 @@ proc DoClose {} {
     }
     
     foreach view [ViewSet] {
-	# puts "destroying view $view"
+	puts "destroying view $view"
 	DEVise destroy $view
     }
 
