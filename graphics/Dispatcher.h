@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/24 03:36:03  wenger
+  Fixed dispatcher to compile for HP.
+
   Revision 1.18  1996/07/23 19:33:55  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -115,6 +118,8 @@
 #undef FD_ZERO
 #undef FD_ISSET
 #endif
+
+#include <string.h> // for memset()
 
 inline void FD_SET(int fd, fd_set* fdset) { (*fdset) |= 1 << fd; }
 inline void FD_CLR(int fd, fd_set* fdset) { (*fdset) &= ~(1 << fd); }
