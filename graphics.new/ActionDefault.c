@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 20:48:04  jussi
+  Cleaned up the code a bit.
+
   Revision 1.5  1995/12/14 21:15:25  jussi
   Replaced 0x%x with 0x%p.
 
@@ -89,7 +92,7 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
     /* scroll data left */
     view->GetVisualFilter(filter);
     Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh-filter.xLow)/2.0;
+    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
     filter.xLow += halfWidth;
     filter.xHigh = filter.xLow + width;
     if (useRight && filter.xHigh > right) {
@@ -102,7 +105,7 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
   else if (key == 'z' || key == 'z' || key == '9') {
     /* zoom out */
     view->GetVisualFilter(filter);
-    Coord halfWidth = (filter.xHigh-filter.xLow)/2.0;
+    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
     filter.xLow -= halfWidth;
     filter.xHigh += halfWidth;
     Coord xMin;
