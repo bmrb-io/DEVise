@@ -3,10 +3,12 @@ depend:
 		-I/usr/include/X11 -I/usr/local/include *.C
 # DO NOT DELETE
 
-atof.o: /usr/include/stdlib.h /usr/include/sgidefs.h
-atof.o: /usr/local/include/assert.h /usr/include/ctype.h /usr/include/time.h
-atof.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-atof.o: /usr/include/sys/select.h
+atof.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/assert.h
+atof.o: /usr/include/ctype.h /usr/include/time.h /usr/include/sys/types.h
+atof.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+atof.o: /usr/include/math.h /usr/include/sys/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 http_url.o: /usr/include/unistd.h /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
