@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:14:52  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:22  jussi
   Added CVS header.
 */
@@ -77,7 +80,7 @@ RangeInfoAlloc::RangeInfoAlloc(int bufSize)
     _startAddr = (char *)addr;
   }
   /*
-     printf("buffer 0x%x in RangeInfoAlloc\n",_startAddr);
+     printf("buffer 0x%p in RangeInfoAlloc\n",_startAddr);
   */
   
   _bufFreeList = AllocRangeInfo();
@@ -85,7 +88,7 @@ RangeInfoAlloc::RangeInfoAlloc(int bufSize)
   _bufFreeList->buf = (char *)_startAddr;
   _bufFreeList->bufSize = bufSize;
   _bufSize = bufSize;
-  printf("Allocate buffer start = 0x%x, end = 0x%x\n",
+  printf("Allocate buffer start = 0x%p, end = 0x%p\n",
 	 _startAddr, _startAddr + bufSize - 1);
 }
 
