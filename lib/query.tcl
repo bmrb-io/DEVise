@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1997/01/23 00:07:35  jussi
+#  Replaced references to queryWinOpened with calls to WindowExists.
+#
 #  Revision 1.9  1997/01/22 20:13:58  wenger
 #  Removed other non-functional user interface components (includes workaround
 #  for bug 127); fixed a number of OK/Cancel button positions.
@@ -404,12 +407,30 @@ proc AboutDevise {} {
 
     toplevel    .about
     wm title    .about "About DEVise"
-    wm geometry .about +100+100
 
-    message .about.msg -justify center -width 10c \
-	    -text "Message about DEVise."
+    set version [DEVise version]
+    set compDate [DEVise compDate]
+    set copyright [DEVise copyright]
+
+    message .about.bigname -justify center -width 10c \
+	-text DEVise -font -*-times-medium-i-normal--*-300-*-*-*-*-*-*
+    message .about.name -justify center -width 10c \
+	-text "(Data Exploration and Visualization)"
+    message .about.version -justify center -width 10c \
+	-text "Version $version: $compDate"
+    message .about.copyright -justify center -width 10c \
+	-text "$copyright DEVise Development Group\nMadison, Wisconsin\nAll Rights Reserved"
+    message .about.support -justify center -width 10c \
+	-text "Send questions and bug reports to devise-sup@cs.wisc.edu"
+    message .about.web -justify center -width 10c \
+	-text "Web site: http://www.cs.wisc.edu/~devise/"
+
     button .about.ok -text OK -width 10 -command "destroy .about"
-    pack .about.msg .about.ok -side top -padx 5m -pady 3m
+
+    pack .about.bigname .about.name -side top -pady 0m
+
+    pack .about.version .about.copyright \
+	.about.support .about.web .about.ok -side top -padx 5m -pady 3m
 }
 
 proc Do3DQuery {} { 
