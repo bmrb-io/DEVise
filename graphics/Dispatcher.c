@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/01/11 18:19:07  jussi
+  Added handling of severe errors (SIGSEGV etc.).
+
   Revision 1.31  1996/12/12 22:01:23  jussi
   Cleaned up termination code and added CheckUserInterrupt() method.
 
@@ -175,8 +178,7 @@ Dispatcher::Dispatcher(StateFlag state)
   (void)signal(SIGSYS, ImmediateTerminate);
 
   /* Set this process to be the session leader */
-  if (setpgrp() < 0)
-      perror("setgrp");
+  (void)setsid();
 
   FD_ZERO(&fdset);
   maxFdCheck = 0;
