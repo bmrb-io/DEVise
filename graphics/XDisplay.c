@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/02/26 23:46:39  jussi
+  XDisplay tries to load 5x8 font if loading 5x7 fails.
+
   Revision 1.11  1996/02/05 23:55:17  jussi
   Added support for small fonts.
 
@@ -33,7 +36,7 @@
   Revision 1.7  1995/12/14 21:13:40  jussi
   Replaced 0x%x with 0x%p.
 
-  Revision 1.6  1995/12/06 21:22:33  jussi
+  RevisionXDisplay 1.6  1995/12/06 21:22:33  jussi
   Tries to allocate a color by using a close color approximation
   if requested color cannot be allocated.
 
@@ -138,15 +141,22 @@ XDisplay::XDisplay(char *name)
   /* tell Tk to pass all X events to us */
   Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
 #endif
+
+	Register();
+
 }
 
-#ifdef TK_WINDOW_EV2
-XDisplay::~XDisplay()
+// A simple function to register the Display with the dispatcher..
+
+void XDisplay::Register()
 {
-  /* tell Tk to pass all X events to us */
-  Tk_DeleteGenericHandler(HandleTkEvent, (ClientData)this);
-}
+#ifdef DEBUG
+   printf("About to be registered... %d\n",_display->fd);
 #endif
+
+   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,10,AllState,true,_display->fd);
+}
+
 
 /*******************************************************************
 Allocate closest matching color

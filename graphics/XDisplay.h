@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/02/05 23:55:18  jussi
+  Added support for small fonts.
+
   Revision 1.7  1996/01/30 00:03:28  jussi
   Fixed spelling of void.
 
@@ -94,6 +97,12 @@ public:
     /* Do internal event processing, but do not block while doing it */
     virtual void InternalProcessing();
 
+
+	// Register with the dispatcher..
+	virtual void  Register();
+
+		
+
 protected:
     /* from DeviseDisplay */
     Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
@@ -150,7 +159,7 @@ protected:
       realWidth = width * winWidth;
       realHeight = height * winHeight;
     }
-		
+
 private:
     Display *_display;		    /* X display */
     XWindowRepList _winList;        /* list of X windows created */

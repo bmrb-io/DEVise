@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:45:35  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/14 16:59:30  jussi
   Small fixes, and added copyright notice.
 
@@ -44,7 +47,9 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
 DeviseDisplay::DeviseDisplay()
 {
   _dispatcher = Dispatcher::Current();
-  _dispatcher->Register(this,AllState,true);
+ 
+ // This is needed in the derived classes 
+ //_dispatcher->Register(this,AllState,true,-1);
 
   _numColors = 0;
   _colorMapSize = InitColorMapSize;

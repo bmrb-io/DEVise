@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/27 00:20:31  jussi
+  QuitNotify() is now defined in .c file.
+
   Revision 1.4  1996/01/11 21:57:08  jussi
   Replaced libc.h with stdlib.h.
 
@@ -63,6 +66,7 @@ public:
   DispatcherCallback *callBack;
   StateFlag flag;
   int priority;
+  int DisplaySocketId;
 };
 
 class DeviseWindow;
@@ -116,7 +120,7 @@ public:
   /* callback registration. all == TRUE if register with
      ALL dispatchers. */
   void Register(DispatcherCallback *c, int priority = 10,
-		StateFlag flag=GoState, Boolean all = false); 
+		StateFlag flag=GoState, Boolean all = false,int DisplaySocketId = -1); 
   
   /* unregister */
   void Unregister(DispatcherCallback *c); 
@@ -258,6 +262,7 @@ private:
   /* callback for this dispatcher*/
   /* DList <DispatcherInfo *> _callbacks;	*/
   DispatcherInfoList _callbacks, _toInsertCallbacks;
+
 
   /* callback for ALL dispatchers*/
   /* static DList <DispatcherInfo *> _allCallbacks; */

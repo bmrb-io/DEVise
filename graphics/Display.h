@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/29 18:13:50  wenger
+  Got testWindowRep to compile and run, added drawing in
+  windows; fixed a few more compile warnings, etc.
+
   Revision 1.3  1996/01/30 00:02:31  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -41,7 +45,8 @@ class DeviseDisplay;
 
 DefinePtrDList(DeviseDisplayList, DeviseDisplay *);
 
-class DeviseDisplay: private DispatcherCallback {
+// changed to a public derivation to avoid problems in registeration
+class DeviseDisplay: public DispatcherCallback {
 public:
   DeviseDisplay();
 
@@ -79,6 +84,13 @@ public:
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
   static void DoneIterator(int index) { _displays.DoneIterator(index); }
 
+
+  // This is to force the dervied classes to register themselves with the
+  // dispatcher..
+  virtual void Register() = 0;
+
+
+
 protected:
   /* must be called from within the initializer of derived class
      to get the initial set of colors from the color manager */
@@ -107,6 +119,14 @@ protected:
 
   /* get local color given global color. */
   Color GetLocalColor(Color globalColor);
+
+ // Returns a pointer to the current dispatcher. This is necessary for 
+ // registeration in XDisplay and other derived classes.
+  
+  Dispatcher * ReturnDispatcher(){
+	return _dispatcher;
+  }
+
 
 private:
   virtual char *DispatchedName();
