@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/10/20 19:46:16  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.15  1998/09/22 17:23:55  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -1431,5 +1438,10 @@ DECLARE_CLASS_END
 DECLARE_CLASS_DeviseCommand_(getCursorType) 
 DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGoHome) 
+DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

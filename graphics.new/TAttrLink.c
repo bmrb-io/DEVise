@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/06/15 19:55:21  wenger
+  Fixed bugs 338 and 363 (problems with special cases of set links).
+
   Revision 1.10  1998/06/12 19:55:30  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -183,6 +186,9 @@ TAttrLink::SetMasterView(ViewGraph *view)
       view != NULL ? view->GetName() : "NULL");
 #endif
 
+  // I'm not sure why we don't return here if view and _masterView are
+  // both NULL (and this is my own code!) -- maybe to make sure we
+  // destroy the master table.  RKW 1998-10-21.
   if (view != NULL && _masterView == view) return;
 
   (void) DestroyMasterTable();
@@ -369,11 +375,13 @@ TAttrLink::CreateMasterTable()
 
   DevStatus result = StatusOk;
 
-  _masterTableName = _masterView->CreateDerivedTable(_name, _masterAttrName);
-  if (_masterTableName == NULL) {
-    char errBuf[1024];
-    sprintf(errBuf, "Can't create master table for link %s\n", _name);
-    result = StatusFailed;
+  if (_masterView != NULL) {
+    _masterTableName = _masterView->CreateDerivedTable(_name, _masterAttrName);
+    if (_masterTableName == NULL) {
+      char errBuf[1024];
+      sprintf(errBuf, "Can't create master table for link %s\n", _name);
+      result = StatusFailed;
+    }
   }
 
   return result;
@@ -391,8 +399,11 @@ TAttrLink::DestroyMasterTable()
   printf("TAttrLink(%s)::DestroyMasterTable()\n", _name);
 #endif
 
-  if (_masterTableName != NULL) _masterView->DestroyDerivedTable(
-      _masterTableName);
+  if (_masterTableName != NULL) {
+    DOASSERT(_masterView != NULL,
+	"Can't have master table without master view");
+    _masterView->DestroyDerivedTable(_masterTableName);
+  }
   delete [] _masterTableName;
   _masterTableName = NULL;
 
@@ -407,34 +418,36 @@ TData *
 TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {
 #if defined(DEBUG)
-  printf("TAttrLink()::GetTData(%s, %d)\n", view->GetName(), tdType);
+  char *viewName = (view != NULL) ? view->GetName() : "NULL";
+  printf("TAttrLink()::GetTData(%s, %d)\n", viewName, tdType);
 #endif
 
-  TData *tdata;
-  TDataMap *tdMap = view->GetFirstMap();
-  if (tdMap == NULL) {
-    tdata = NULL;
-  } else {
-    switch (tdType) {
-    case TDataPhys:
-      tdata = tdMap->GetPhysTData();
-      break;
+  TData *tdata = NULL;
 
-    case TDataLog:
-      tdata = tdMap->GetLogTData();
-      break;
+  if (view != NULL) {
+    TDataMap *tdMap = view->GetFirstMap();
+    if (tdMap != NULL) {
+      switch (tdType) {
+      case TDataPhys:
+        tdata = tdMap->GetPhysTData();
+        break;
 
-    default:
-      reportErrNosys("Illegal TData type");
-      tdata = NULL;
-      break;
+      case TDataLog:
+        tdata = tdMap->GetLogTData();
+        break;
+
+      default:
+        reportErrNosys("Illegal TData type");
+        tdata = NULL;
+        break;
+      }
     }
-  }
 
-  if (tdata == NULL) {
-    char errBuf[256];
-    sprintf(errBuf, "Can't get TData for view %s", view->GetName());
-    reportErrNosys(errBuf);
+    if (tdata == NULL) {
+      char errBuf[256];
+      sprintf(errBuf, "Can't get TData for view %s", view->GetName());
+      reportErrNosys(errBuf);
+    }
   }
 
   return tdata;
@@ -464,7 +477,7 @@ TAttrLink::SetMasterAttr(char *masterAttrName)
     (void) CreateMasterTable();
     ReCreateSlaveTDatas();
 
-    _masterView->Refresh();
+    if (_masterView != NULL) _masterView->Refresh();
   }
 }
 

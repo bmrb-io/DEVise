@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1997/11/24 23:15:44  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.12  1997/02/26 16:32:05  wenger
 #  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -104,7 +107,7 @@ proc SetQuery {} {
     frame .query.xyRange.top.yEntry.yhigh
     frame .query.xyRange.top.yEntry.ylow
 
-    frame .query.xyRange.bottom.xDummy -width 280
+    frame .query.xyRange.bottom.xDummy
     frame .query.xyRange.bottom.xEntry
     frame .query.xyRange.bottom.xEntry.xlow
     frame .query.xyRange.bottom.xEntry.xhigh
@@ -211,7 +214,11 @@ proc SetQuery {} {
 
     frame .query.sel
     pack .query.sel -in .query.xyRange.bottom.xDummy \
-	    -side top -pady 1m -expand $expand -fill $fill
+	    -side bottom -expand $expand -fill $fill
+
+    button .query.goHome -text "Set X, Y to Show All" -command {
+      global curView; DEVise viewGoHome $curView }
+    pack .query.goHome -in .query.sel -side bottom -padx 12m
 
 #    button .query.sel.attr -text "Attributes..." \
 #	    -command DoAttributeSelect
@@ -219,9 +226,9 @@ proc SetQuery {} {
 #    pack .query.sel.attr -side left -padx 3m
 
     # This frame takes up the space held by the removed buttons.
-    frame .query.sel.placeholder -relief flat -width 65m -height 8m \
-        -borderwidth 4
-    pack .query.sel.placeholder -side left -padx 3m
+#    frame .query.sel.placeholder -relief flat -width 65m -height 8m \
+#        -borderwidth 4
+#    pack .query.sel.placeholder -side left -padx 3m
 
     if {0} {
 	frame .query.sel.sample -relief groove -bd 2

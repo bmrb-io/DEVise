@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/10/13 19:40:35  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.12  1998/07/29 14:20:18  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -69,6 +73,8 @@
 #else
 #   include "Init.h"
 #endif
+
+#define REC_ID_NAME "recId"
 
 enum AttrType { IntAttr, FloatAttr, DoubleAttr, StringAttr, DateAttr };
 

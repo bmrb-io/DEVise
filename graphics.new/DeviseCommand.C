@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/10/20 19:46:15  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.27  1998/10/13 19:40:42  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -4665,7 +4672,7 @@ IMPLEMENT_COMMAND_BEGIN(getCountMapping)
 		view->GetCountMapping(enabled, countAttr, putAttr);
 
 		char buf[128];
-		sprintf(buf, "%d %s %s", enabled, countAttr, putAttr);
+		sprintf(buf, "%d {%s} {%s}", enabled, countAttr, putAttr);
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -4735,6 +4742,30 @@ IMPLEMENT_COMMAND_BEGIN(getCursorType)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in getCursorType\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGoHome)
+    // Arguments: <view name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		view->GoHome();
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewGoHome\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

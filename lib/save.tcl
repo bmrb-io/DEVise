@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1997/11/24 23:15:46  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.42  1997/10/03 16:01:48  wenger
 #  Enabled session opening and saving from back end; incremented version; a
 #  few more minor fixes to session-related code.
@@ -258,8 +261,15 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     #TEMP?set fsBox(pattern) *.tk
     set fsBox(pattern) *.ds
     set file [ FSBox "Select file to save session as" ]
-    
+
     if {$file == ""} { return }
+
+    if {[file isdirectory $file]} {
+      puts "Select a file, not a directory"
+      dialog .fileWarningDialog "" "Please select a file, not a directory" \
+	"" 0 {OK}
+      return
+    }
 
     # <<< Changes for saving sessions as batch scripts only...
     # If the user selected a .tk file, change extension to .ds.

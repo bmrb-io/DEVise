@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.73  1998/08/17 18:51:50  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.72  1998/07/10 21:20:06  wenger
   Minor cleanups and improvements.
 
@@ -611,8 +615,10 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
     Boolean isSorted;
     Boolean simpleCmd = false;
 
-    if (!(_cmdFlag & which_attr))
+    if (!(_cmdFlag & which_attr)) {
 	return 0;
+    }
+
     switch (which_attr)
     {
       case MappingCmd_X:
@@ -652,8 +658,25 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 
     }
     if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd) {
-      //	return entry.cmd.attr;
-      return _tdata->GetAttrList()->Get(entry.cmd.attrNum);
+      // If attribute is recId, return a pointer to this "dummy" AttrInfo
+      // structure, so calling function can tell the difference between
+      // recId and a constant mapping.
+      if (entry.cmd.attrNum == -1) {
+	static AttrInfo recId;
+        recId.name = REC_ID_NAME;
+        recId.attrNum = -1;
+        recId.offset = -1;
+        recId.length = 0;
+        recId.isComposite = false;
+        recId.isSorted = true;
+        recId.hasMatchVal = false;
+        recId.hasHiVal = false;
+        recId.hasLoVal = false;
+
+	return &recId;
+      } else {
+        return _tdata->GetAttrList()->Get(entry.cmd.attrNum);
+      }
     }
     return 0;
 }
@@ -867,7 +890,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
  
     // added by whh, support for native expression analysis
     InitAttrList();
-    InsertAttr( "recId", startRecId + i );
+    InsertAttr(REC_ID_NAME , startRecId + i );
 
     int j;
     for(j = 0; j <= _maxTDataAttrNum; j++) {
@@ -1591,7 +1614,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
     if ( *(cmd+1) == '\0' )
       return false;
 
-    if (!strcmp(cmd + 1, "recId")) {
+    if (!strcmp(cmd + 1, REC_ID_NAME)) {
       entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
       entry.cmd.attrNum = -1;
       type = IntAttr;
@@ -1680,7 +1703,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 			  memcpy(buf, cmd + 1, len);
 			  buf[len] = 0;
 			
-	      if (strcmp(buf, "recId") == 0) {
+	      if (strcmp(buf, REC_ID_NAME) == 0) {
           InsertString("$recId");
 	      } else {
 			    AttrInfo *info = _tdata->GetAttrList()->Find(buf);

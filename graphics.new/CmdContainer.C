@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/10/20 19:46:12  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.17  1998/09/08 20:26:13  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -369,6 +376,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getCountMapping)
 	REGISTER_COMMAND(setCountMapping)
 	REGISTER_COMMAND(getCursorType)
+	REGISTER_COMMAND(viewGoHome)
 }
 
 CmdContainer::~CmdContainer()

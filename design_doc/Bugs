@@ -383,13 +383,13 @@ Num Date        Status  Description
 			to have each window have its own X link. (ml/rkw)
 			Deferred
 
-101 12/16/96	OPEN	'5' key sometimes doesn't work correctly (for example,
+101 12/16/96	FIXED	'5' key sometimes doesn't work correctly (for example,
 			load the session test/bad5key.tk). (ml/rkw)
                         Cause: recIds don't have hi/lo values.
                         Technical cause: recIds don't have AttrInfo in
                         the TData, (ie, map->MapGAttr2TAttr(MappingCmd_X)
                         returns NULL when X is mapped to recId).
-			Deferred
+			(Fixed by rkw, 10/20/98.)
 
 102 12/17/96	OPEN	Control-c doesn't seem to be able to terminate
 			Devise if you have an input-grabbing Tk dialog
@@ -888,7 +888,8 @@ Num Date        Status  Description
 219 09/11/97    OPEN    Group by's are not working.  Seems related to new
                         schema file format. (ksb)
 
-220 09/11/97    OPEN    '5' doesn't go to 0 for Y min on bar graphs. (ksb)
+220 09/11/97    CD	'5' doesn't go to 0 for Y min on bar graphs. (ksb)
+			(Tested, can't duplicate by rkw 10/20/98.)
 
 221 09/12/97	OPEN	Point query doesn't seem to work right in "Number of
 			Occurences for Each Word" view of WordCount demo (too
@@ -1609,17 +1610,19 @@ Num Date        Status  Description
 420 10/14/98	OPEN	If you pile and stack the same views, the opposite
 			view is on top of the pile vs. the stack. (rkw)
 
-421 10/19/98	OPEN	Closing any of the test/setlink*.ds sessions causes
+421 10/19/98	FIXED	Closing any of the test/setlink*.ds sessions causes
 			DEVise to crash. (rkw)
+			(Fixed by rkw, 10/21/98.)
 
 422 10/19/98	OPEN	Setting a cursor destination without setting the
 			source causes a crash. (rkw)
 
-423 10/20/98	OPEN	Don't allow user to (accidentally) save a session
+423 10/20/98	FIXED	Don't allow user to (accidentally) save a session
 			to the full path $DEVISE_SESSION (destroys session
 			directory). (rkw)
+			(Fixed by rkw, 10/20/98.)
 
-424 10/20/98	OPEN	Create an SQLView -- it doesn't get added to the
+424 10/20/98	CD	Create an SQLView -- it doesn't get added to the
 			data source catalog. (rr/rkw)
 
 425 10/20/98	OPEN	Creating an SQLView -- "Select All" and "Mirror"

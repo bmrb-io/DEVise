@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.85  1998/10/20 19:46:18  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.84  1998/10/01 17:54:18  wenger
   Implemented the sending of GData to the JavaScreen.
 
@@ -884,11 +891,22 @@ void ViewGraph::GoHome()
         DoneMappingIterator(index);
         return;
     }
-
     TDataMap *map = NextMapping(index)->map;
+    DoneMappingIterator(index);
+
     AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
     AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
     AttrInfo *zAttr = map->MapGAttr2TAttr(MappingCmd_Z);
+
+    Boolean hasFirstRec, hasLastRec;
+    RecId firstRec, lastRec;
+    if (!strcmp(xAttr->name, REC_ID_NAME) ||
+	!strcmp(yAttr->name, REC_ID_NAME)) {
+      TData *tdata = map->GetPhysTData();
+      hasFirstRec = tdata->HeadID(firstRec);
+      hasLastRec = tdata->LastID(lastRec);
+      
+    }
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
@@ -897,12 +915,23 @@ void ViewGraph::GoHome()
 	switch (_homeInfo.mode) {
 	case HomeAuto: {
           if (xAttr) {
-              if (xAttr->hasLoVal)
+              if (xAttr->hasLoVal) {
                 filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type) -
 		  _homeInfo.autoXMargin;
-              if (xAttr->hasHiVal)
+	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		if (hasFirstRec) {
+                  filter.xLow = (Coord)firstRec;
+		}
+	      }
+
+              if (xAttr->hasHiVal) {
                 filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type) +
 		  _homeInfo.autoXMargin;
+	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		if (hasLastRec) {
+                  filter.xHigh = (Coord)lastRec;
+		}
+	      }
 
               if (filter.xHigh == filter.xLow) {
                   filter.xHigh += 1.0;
@@ -910,12 +939,22 @@ void ViewGraph::GoHome()
               }
           }
           if (yAttr) {
-              if (yAttr->hasLoVal)
+              if (yAttr->hasLoVal) {
                 filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type) -
 		  _homeInfo.autoYMargin;
-              if (yAttr->hasHiVal)
+	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		if (hasFirstRec) {
+                  filter.yLow = (Coord)firstRec;
+		}
+	      }
+              if (yAttr->hasHiVal) {
                 filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type) +
 		  _homeInfo.autoYMargin;
+	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		if (hasLastRec) {
+                  filter.yHigh = (Coord)lastRec;
+		}
+	      }
 
               if (filter.yHigh == filter.yLow) {
                   filter.yLow -= 1.0;
@@ -975,8 +1014,6 @@ void ViewGraph::GoHome()
         c.pan_up=0;
         SetCamera(c);
     }
-
-    DoneMappingIterator(index);
 }
 
 void ViewGraph::PanLeftOrRight(PanDirection direction)
