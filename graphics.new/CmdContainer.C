@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/08 00:01:03  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.3  1998/03/03 05:21:03  taodb
   Added extendable stack to command object
 
@@ -329,7 +333,7 @@ CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
 DeviseCommand*
 CmdContainer::lookupCmd(char* cmdName)
 {
-	DeviseCommand* 	cmdp;
+	DeviseCommand* 	cmdp = NULL;
 	Datum	key(cmdName,strlen(cmdName)+1);
 	Datum	*datap;
 
