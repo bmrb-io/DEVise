@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/05/15 16:45:10  jussi
+  Added support for the new server synchronization mechanism.
+  Removed ExecuteScript function.
+
   Revision 1.11  1996/05/13 18:11:01  jussi
   Emptied ViewCreated and ViewDestroyed and moved them to
   the header file.
@@ -75,6 +79,7 @@ class TkControlPanel: public ControlPanel, public DispatcherCallback,
 {
 public:
   TkControlPanel();
+  virtual ~TkControlPanel();
 
 #ifdef TK_WINDOW
   virtual Tcl_Interp *GetInterp() { return _interp; }
@@ -133,9 +138,6 @@ private:
   virtual void ViewCreated(View *view) {}
   virtual void ViewDestroyed(View *view) {}
 
-  char *DispatchedName() { return "TkControlPanel"; }
-  void Run();
-
   int _busy;
   static MapInterpClassInfo *_interpProto;
 
@@ -156,6 +158,9 @@ private:
       Tcl_AppendElement(_interp, argv[i]);
     return 1;
   }
+
+  char *DispatchedName() { return "TkControlPanel"; }
+  void Run();
 };
 
 #endif
