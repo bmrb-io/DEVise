@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/03/23 23:46:14  donjerko
+  *** empty log message ***
+
   Revision 1.48  1997/03/19 19:41:48  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -1311,6 +1314,28 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     _attrList->Print();
 #endif
     return false;
+  }
+
+  if (*cmd == '"') {
+    int len = strlen(cmd);
+    char* end = cmd + len - 1;
+    if( len == 1 || *end != '"' ) return false;
+    len -= 2; 
+    char* str = new char[len+1];
+    strncpy(str, cmd+1, len);
+    int strid;
+    if( StringStorage::Lookup(str, strid) < 0 ) {
+      // string not found, so insert it
+      assert( StringStorage::Insert(str, strid) );
+    } else {
+      // string already in table, so delete this copy
+      delete str;
+    }
+    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
+    entry.cmd.num = strid;
+    type = IntAttr;
+    isSorted = false;
+    return true;
   }
 
   if (ConvertNum(cmd, num)) {
