@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/28 05:26:07  ravim
+  Support for statistics.
+*/
 
 #ifndef BasicStats_h
 #define BasicStats_h
@@ -40,8 +43,9 @@ public:
   virtual void Report();
 
 private:
-  double sum;
-  double sum_sqr;
+  double ysum, xsum;
+  double ysum_sqr, xsum_sqr;
+  double ymin, xmin, ymax, xmax;
   int nsamples;
 };
 #endif
