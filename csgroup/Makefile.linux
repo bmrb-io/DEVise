@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.12  1999/07/12 19:01:36  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.11  1998/06/30 19:12:19  wenger
 # Got DEVise to compile on linux again.
 #
@@ -233,7 +236,15 @@ rcvMsg.o: callBks.h error.h ctrlMsg.h netfns.h timeOut.h ckptfile.h
 rcvMsg.o: /usr/include/stdio.h
 rcvMsg.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 rcvMsg.o: /usr/include/libio.h /usr/include/_G_config.h
-rcvMsg.o: /usr/include/bits/stdio_lim.h
+rcvMsg.o: /usr/include/bits/stdio_lim.h ../graphics/DevError.h
+rcvMsg.o: /usr/include/errno.h /usr/include/bits/errno.h
+rcvMsg.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+rcvMsg.o: /usr/include/sys/param.h /usr/include/limits.h
+rcvMsg.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+rcvMsg.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+rcvMsg.o: /usr/include/linux/param.h /usr/include/asm/param.h
+rcvMsg.o: ../graphics/DeviseTypes.h /usr/include/values.h
+rcvMsg.o: ../graphics/DevStatus.h
 server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_clnt.o: /usr/include/features.h /usr/include/sys/cdefs.h
 server_clnt.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h
@@ -284,9 +295,7 @@ server_locfns.o: /usr/include/bits/posix2_lim.h
 server_locfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
-server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
+server_locfns.o: ../graphics/Exit.h CmdDescriptor.h CmdSerialize.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/features.h
 server_rmtfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 server_rmtfns.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
@@ -392,30 +401,6 @@ Client.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 Client.o: /usr/include/netdb.h /usr/include/rpc/netdb.h Client.h
 Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
 CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
-CmdLog.o: /usr/include/stdio.h /usr/include/features.h
-CmdLog.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-CmdLog.o: /usr/include/bits/types.h /usr/include/libio.h
-CmdLog.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-CmdLog.o: /usr/include/ctype.h /usr/include/endian.h
-CmdLog.o: /usr/include/bits/endian.h /usr/include/sys/types.h
-CmdLog.o: /usr/include/time.h /usr/include/sys/select.h
-CmdLog.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-CmdLog.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
-CmdLog.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-CmdLog.o: /usr/include/getopt.h /usr/include/fcntl.h
-CmdLog.o: /usr/include/bits/fcntl.h /usr/include/sys/stat.h
-CmdLog.o: /usr/include/bits/stat.h /usr/include/sys/time.h
-CmdLog.o: /usr/include/bits/time.h CmdLog.h CmdSerialize.h
-CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-CmdLog.o: /usr/include/values.h /usr/include/limits.h
-CmdLog.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-CmdLog.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-CmdLog.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-CmdLog.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
-CmdLog.o: /usr/include/string.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/features.h
 CmdSerialize.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 CmdSerialize.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -428,24 +413,6 @@ CmdSerialize.o: /usr/include/stdio.h
 CmdSerialize.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 CmdSerialize.o: /usr/include/libio.h /usr/include/_G_config.h
 CmdSerialize.o: /usr/include/bits/stdio_lim.h CmdSerialize.h
-CommandObj.o: CommandObj.h CmdDescriptor.h CmdSerialize.h Csprotocols.h
-CommandObj.o: /usr/include/sys/types.h /usr/include/features.h
-CommandObj.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-CommandObj.o: /usr/include/bits/types.h
-CommandObj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-CommandObj.o: /usr/include/time.h /usr/include/endian.h
-CommandObj.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-CommandObj.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-CommandObj.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-CommandObj.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-CommandObj.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-CommandObj.o: /usr/include/netinet/in.h /usr/include/stdint.h
-CommandObj.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-CommandObj.o: /usr/include/arpa/inet.h /usr/include/netdb.h
-CommandObj.o: /usr/include/rpc/netdb.h codec.h /usr/include/stdio.h
-CommandObj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-CommandObj.o: /usr/include/libio.h /usr/include/_G_config.h
-CommandObj.o: /usr/include/bits/stdio_lim.h ../graphics/View.h
 Keys.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 Keys.o: /usr/include/gnu/stubs.h
 Keys.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -492,14 +459,15 @@ Server.o: /usr/include/values.h /usr/include/limits.h
 Server.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 Server.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
+Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
-Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
-Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
-Server.o: keys.h Csprotocols.h /usr/include/netdb.h /usr/include/rpc/netdb.h
-Server.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Init.h
-Server.o: ../graphics/BufPolicy.h
+Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
+Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
+Server.o: /usr/include/netdb.h /usr/include/rpc/netdb.h ../graphics/Util.h
+Server.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
+Server.o: ../graphics/DevError.h /usr/include/sys/param.h
+Server.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TclClient.o: /usr/include/stdio.h /usr/include/features.h
 TclClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TclClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

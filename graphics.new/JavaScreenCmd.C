@@ -2346,15 +2346,11 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	char baseBuf[MAXPATHLEN];
 	char newBuf[MAXPATHLEN];
 
-	// resolvepath() doesn't terminate the strings(!).
-	memset(baseBuf, 0, MAXPATHLEN);
-	memset(newBuf, 0, MAXPATHLEN);
-
 	const char *sessionDir = basePath;
-    if (resolvepath(basePath, baseBuf, MAXPATHLEN) < 0) {
-	    reportErrSys("Error in resolvepath()");
-	} else if (resolvepath(newPath, newBuf, MAXPATHLEN) < 0) {
-	    reportErrSys("Error in resolvepath()");
+    if (!realpath(basePath, baseBuf)) {
+	    reportErrSys("Error in realpath()");
+	} else if (!realpath(newPath, newBuf)) {
+	    reportErrSys("Error in realpath()");
 	} else {
 #if defined(DEBUG)
         printf("baseBuf = <%s>\n", baseBuf);

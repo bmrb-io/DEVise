@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  1999/07/12 19:03:09  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.14  1998/05/08 14:00:52  wenger
 # Updated Linux dependencies.
 #
@@ -78,36 +81,35 @@ Templates.o: /usr/include/libio.h /usr/include/_G_config.h
 Templates.o: /usr/include/bits/stdio_lim.h ../graphics/ViewDir.h
 Templates.o: /usr/include/string.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
-Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
-Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
-Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
-Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-Templates.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-Templates.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-Templates.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-Templates.o: /usr/include/bits/confname.h /usr/include/getopt.h
-Templates.o: /usr/include/bits/shm.h /usr/include/errno.h
-Templates.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-Templates.o: /usr/include/asm/errno.h /usr/include/assert.h
-Templates.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Templates.o: /usr/include/linux/param.h /usr/include/asm/param.h
-Templates.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-Templates.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-Templates.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-Templates.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-Templates.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-Templates.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-Templates.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-Templates.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-Templates.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-Templates.o: /usr/include/stdint.h /usr/include/bits/in.h
-Templates.o: /usr/include/bits/byteswap.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
-Templates.o: ../graphics/AttrList.h ../graphics/Init.h
-Templates.o: ../graphics/Scheduler.h
+Templates.o: ../graphics/Dispatcher.h SortedTable.h ../graphics/Timer.h
+Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
+Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
+Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+Templates.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
+Templates.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
+Templates.o: /usr/include/sys/shm.h /usr/include/unistd.h
+Templates.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+Templates.o: /usr/include/getopt.h /usr/include/bits/shm.h
+Templates.o: /usr/include/errno.h /usr/include/bits/errno.h
+Templates.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Templates.o: /usr/include/assert.h /usr/include/sys/stat.h
+Templates.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
+Templates.o: /usr/include/sys/param.h /usr/include/linux/param.h
+Templates.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+Templates.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+Templates.o: /usr/include/bits/siginfo.h /usr/include/sys/ioctl.h
+Templates.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+Templates.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+Templates.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
+Templates.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
+Templates.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+Templates.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Templates.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Templates.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
+Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
+Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/features.h
 devtype.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 devtype.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

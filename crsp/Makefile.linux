@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1999/07/12 19:01:30  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.7  1997/11/12 15:44:12  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -64,25 +67,22 @@ crsp_extract.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
 crsp_extract.o: /usr/include/string.h /usr/include/tcl.h /usr/include/stdio.h
 crsp_extract.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 crsp_extract.o: /usr/include/libio.h /usr/include/_G_config.h
-crsp_extract.o: /usr/include/bits/stdio_lim.h /usr/include/tk.h
-crsp_extract.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
-crsp_extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-crsp_extract.o: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h
-crsp_extract.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-crsp_extract.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-crsp_extract.o: /usr/include/bits/posix2_lim.h /usr/include/sys/param.h
-crsp_extract.o: /usr/include/linux/param.h /usr/include/asm/param.h
-crsp_extract.o: /usr/include/sys/time.h /usr/include/bits/time.h
-crsp_extract.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-crsp_extract.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-crsp_extract.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-crsp_extract.o: /usr/include/sys/shm.h /usr/include/unistd.h
-crsp_extract.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-crsp_extract.o: /usr/include/getopt.h /usr/include/bits/shm.h
-crsp_extract.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-crsp_extract.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-crsp_extract.o: /usr/include/bits/ioctl-types.h
+crsp_extract.o: /usr/include/bits/stdio_lim.h sec.h ../tape/tapedrive.h
+crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+crsp_extract.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+crsp_extract.o: /usr/include/sys/param.h /usr/include/linux/param.h
+crsp_extract.o: /usr/include/asm/param.h /usr/include/sys/time.h
+crsp_extract.o: /usr/include/bits/time.h /usr/include/sys/wait.h
+crsp_extract.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+crsp_extract.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
+crsp_extract.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+crsp_extract.o: /usr/include/bits/confname.h /usr/include/getopt.h
+crsp_extract.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
+crsp_extract.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
+crsp_extract.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+crsp_extract.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
 crsp_extract.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
 crsp_extract.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 crsp_extract.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h

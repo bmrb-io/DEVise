@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1999/07/12 19:01:44  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.9  1998/06/30 19:12:27  wenger
 # Got DEVise to compile on linux again.
 #
@@ -173,16 +176,15 @@ WinServer.o: /usr/include/libio.h /usr/include/_G_config.h
 WinServer.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
 WinServer.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 WinServer.o: /usr/include/bits/mathcalls.h ../graphics/Dispatcher.h
-WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-WinServer.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-WinServer.o: /usr/include/string.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/ViewWin.h
 WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
-WinServer.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
-WinServer.o: /usr/include/errno.h /usr/include/bits/errno.h
-WinServer.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-WinServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+WinServer.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+WinServer.o: /usr/include/string.h ../graphics/Pattern.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+WinServer.o: /usr/include/asm/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+WinServer.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 WinServer.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/features.h
@@ -219,11 +221,11 @@ server.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 server.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
 server.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 server.o: /usr/include/bits/mathcalls.h ../graphics/Dispatcher.h
-server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/ViewWin.h
+server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/ViewWin.h
 server.o: ../graphics/WindowRep.h ../graphics/Transform.h
-server.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 server.o: /usr/include/asm/errno.h /usr/include/sys/param.h
 server.o: /usr/include/linux/param.h /usr/include/asm/param.h
