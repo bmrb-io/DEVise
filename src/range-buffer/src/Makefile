@@ -47,5 +47,5 @@ demo:		$(OBJS) demo.c
 
 clean:
 		\rm -f $(RBMROOT)/obj/$(OBJS)
-		\rm -f $(RBMROOT)/bin/*
+		\rm -f $(RBMROOT)/bin/demo
 		\rm -f *.o
