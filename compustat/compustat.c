@@ -1,9 +1,26 @@
 /*
-   $Id$
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
 
-   $Log$
-   Revision 1.1  1995/09/18 18:30:32  jussi
-   Initial revision of archive.
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.3  1995/09/19 14:59:41  jussi
+  Added log message.
+
+  Revision 1.1  1995/09/18 18:30:32  jussi
+  Initial revision of archive.
 */
 
 #include <stdio.h>
@@ -11,12 +28,51 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <tcl.h>
+#include <tk.h>
 
 #include "compustat.h"
+#include "tapedrive.h"
 
-#define INFILE_NAME "compustat.dat"
+static Tcl_Interp *globalInterp = 0;
+
+#define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
+
 #define IDXFILE_NAME "compustat.idx"
-static char outfile_path[] = "./";
+static char *outfile_path = 0;
+static char *tapeDrive = 0;
+static char *tapeFile = 0;
+
+/*-------------------------------------------------------------------*/
+
+/* This function interfaces the Compustat extraction routines to
+   TCL/TK. The path name for output files is taken from TCL. */
+
+int comp_create(char **, int);
+int create_comp_dat(char *, char *);
+
+int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
+{
+  /* Allow other functions to UPDATE_TCL */
+
+  globalInterp = interp;
+
+  /* Get parameter values from TCL script */
+
+  tapeDrive = Tcl_GetVar(interp, "cstat_tapeDrive", TCL_GLOBAL_ONLY);
+  tapeFile = Tcl_GetVar(interp, "cstat_tapeFile", TCL_GLOBAL_ONLY);
+  outfile_path = Tcl_GetVar(interp, "cstat_diskPath", TCL_GLOBAL_ONLY);
+  if (!tapeDrive || !tapeFile || !outfile_path) {
+    fprintf(stderr, "One of cstat_tapeDrive, cstat_tapeFile,\n");
+    fprintf(stderr, "or cstat_diskPath is undefined.\n");
+    fprintf(stderr, "Define cstat_diskPath in $(DEVISE_LIB)/cstat.tk.\n");
+    return TCL_ERROR;
+  }
+
+  /* do not pass argv[0] (name of TCL command) */
+
+  return comp_create(&argv[1], argc - 1);
+}
 
 /*-------------------------------------------------------------------*/
 
@@ -28,7 +84,7 @@ static char outfile_path[] = "./";
    create_comp_dat for every successive symbol. */
 /* syms is the array of character strings and num is the number of strings
    passed */
-void comp_create(char **syms, int num)
+int comp_create(char **syms, int num)
 {
   FILE *idxfile;
   int *offset_arr;
@@ -40,7 +96,7 @@ void comp_create(char **syms, int num)
   if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
   {
     printf("Error: could not open index file\n");
-    exit(0);
+    return TCL_ERROR;
   }
   
   /* We will retrieve num offsets and sort them */
@@ -69,11 +125,23 @@ void comp_create(char **syms, int num)
 
   /* Call create_comp_dat for every symbol in turn */
   for (i = 0; i < num; i++)
-    create_comp_dat("SMBL", syms[spos_arr[i]]);
+  {
+    char tclCmd[255];
+    if (create_comp_dat("SMBL", syms[spos_arr[i]]) != TCL_OK) {
+      fprintf(stderr, "Error in extracting %s\n", syms[spos_arr[i]]);
+    } else {
+      sprintf(tclCmd, "cstat_tapeToDisk %s", syms[spos_arr[i]]);
+      if (Tcl_Eval(globalInterp, tclCmd) != TCL_OK)
+	fprintf(stderr, "Error: %s\n", globalInterp->result);
+      UPDATE_TCL;
+    }
+  }
 
   free(offset_arr);
   free(spos_arr);
   fclose(idxfile);
+
+  return TCL_OK;
 }
 
 /*-------------------------------------------------------------------*/
@@ -81,9 +149,8 @@ void comp_create(char **syms, int num)
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
 */
-void create_comp_dat(char fname[], char fvalue[])
+int create_comp_dat(char *fname, char *fvalue)
 {
-  FILE *infile;
   FILE *idxfile;
   FILE *outfile;
   int i, j;
@@ -93,18 +160,18 @@ void create_comp_dat(char fname[], char fvalue[])
   char smbl_val[COMP_MAX_STR_LEN];
   char tmpval[COMP_MAX_STR_LEN];
 
-  /* Get the input file pointer */
-  if ((infile = fopen(INFILE_NAME, "r")) == NULL)
+  TapeDrive tape(tapeDrive, "r", atoi(tapeFile), 8332);
+  if (!tape)
   {
-    printf("Error: could not open input file\n");
-    exit(0);
+    fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);
+    return TCL_ERROR;
   }
 
   /* Get the index file pointer */
   if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
   {
     printf("Error: could not open index file\n");
-    exit(0);
+    return TCL_ERROR;
   }
 
   /* Find the record for the company in the index file and open an output
@@ -112,21 +179,22 @@ void create_comp_dat(char fname[], char fvalue[])
   if (find_rec(idxfile, fname, fvalue, &recoffset, &year, smbl_val) == FALSE)
   {
     printf("Error: Invalid field name, value combination\n");
-    fclose(infile);
     fclose(idxfile);
-    return;
+    return TCL_ERROR;
   }
 
   /* Create a name of the file based on the value of SMBL field.
      Create the output file and return the file pointer. */
   /* Create name for the data file to be generated */
-  sprintf(tmpval, "%s%s.dat", outfile_path, smbl_val);
+  sprintf(tmpval, "%s/%s.dat", outfile_path, smbl_val);
+
+  printf("Creating Compustat file %s\n", tmpval);
 
   /* Open file pointer for the data file */
   if ((outfile = fopen(tmpval, "w")) == NULL)
   {
     printf("Error: could not create file for writing data\n");
-    exit(0);
+    return TCL_ERROR;
   }
 
   /* Loop through sets of five years-
@@ -137,12 +205,12 @@ void create_comp_dat(char fname[], char fvalue[])
   for (i = 0; i < 4; i++)
   {
     /* Read record for first record into memory */
-    fseek(infile, recoffset, SEEK_SET);
-    fread(recbuf1, sizeof(char), (size_t)COMP_REC_LENGTH, infile);
+    tape.seek(recoffset);
+    tape.read(recbuf1, (size_t)COMP_REC_LENGTH);
 
     /* Read record for the other set of attrs eg : (1,5), (2,6), .. */
-    fseek(infile, recoffset + 4*COMP_REC_LENGTH, SEEK_SET);
-    fread(recbuf2, sizeof(char), (size_t)COMP_REC_LENGTH, infile);
+    tape.seek(recoffset + 4*COMP_REC_LENGTH);
+    tape.read(recbuf2, (size_t)COMP_REC_LENGTH);
 
     /* Loop  for five years - pass in pointers to data arrays for each of
        the two sets of attrs */
@@ -156,21 +224,12 @@ void create_comp_dat(char fname[], char fvalue[])
   }
 
   /* Close files */
-  if (fclose(infile) == EOF)
-  {
-    printf("Error in closing input file\n");
-    exit(0);
-  }
   if (fclose(idxfile) == EOF)
-  {
-    printf("Error in closing index file\n");
-    exit(0);
-  }
+    perror("fclose");
   if (fclose(outfile) == EOF)
-  {
-    printf("Error in closing output file\n");
-    exit(0);
-  }
+    perror("fclose");
+
+  return TCL_OK;
 }
 
 /*-------------------------------------------------------------------*/
@@ -180,7 +239,7 @@ void create_comp_dat(char fname[], char fvalue[])
    In that record, return the OFFSET, YEAR and SMBL fields. */
 
 int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
-	      int *year, char *smbl_val)
+	     int *year, char *smbl_val)
 {
   int i;
   int offset_pos, year_pos, smbl_pos, fname_pos;
@@ -206,7 +265,7 @@ int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off,
   if (fname_pos == smbl_pos)
     fname_val = (char *)&(smbl_val[0]);
   else
-    fname_val = malloc(COMP_MAX_STR_LEN);
+    fname_val = (char *)malloc(COMP_MAX_STR_LEN);
 
   /* Go in a loop - In every record save the values of OFFSET, YEAR, SMBL
      and fname fields. At the end of the loop check if the value of fname
@@ -334,14 +393,14 @@ double comp_get_val(char *str, int len, int pre)
   double denom;
 
   /* Extract the first (len - pre) characters out - integer part */
-  intpart = malloc(len - pre +1);
+  intpart = (char *)malloc(len - pre +1);
   memcpy(intpart, str, len - pre);
   intpart[len - pre] = '\0';
   intval = atoi(intpart);
   free(intpart);
 
   /* Extract the last pre characters out - decimal part */
-  decpart = malloc(pre + 1);
+  decpart = (char *)malloc(pre + 1);
   memcpy(decpart, str+len-pre, pre);
   decpart[pre] = '\0';
   decval = atoi(decpart);

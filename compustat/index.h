@@ -1,12 +1,29 @@
 /*
-   $Id$
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
 
-   $Log$
-   Revision 1.3  1995/09/19 14:59:45  jussi
-   Added log message.
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
 
-   Revision 1.1  1995/09/18 18:30:35  jussi
-   Initial revision of archive.
+/*
+  $Id$
+
+  $Log$
+  Revision 1.4  1995/09/19 16:42:52  jussi
+  Modified for attaching to tape drive.
+
+  Revision 1.3  1995/09/19 14:59:45  jussi
+  Added log message.
+
+  Revision 1.1  1995/09/18 18:30:35  jussi
+  Initial revision of archive.
 */
 
 #ifndef _INDEX_H_

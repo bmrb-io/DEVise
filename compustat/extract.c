@@ -1,9 +1,26 @@
 /*
-   $Id$
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
 
-   $Log$
-   Revision 1.1  1995/09/18 18:30:33  jussi
-   Initial revision of archive.
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.3  1995/09/19 14:59:43  jussi
+  Added log message.
+
+  Revision 1.1  1995/09/18 18:30:33  jussi
+  Initial revision of archive.
 */
 
 #include <stdio.h>

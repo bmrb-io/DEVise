@@ -1,7 +1,24 @@
 /*
-   $Id$
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
 
-   $Log$*/
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.1  1995/09/06 15:28:54  jussi
+  Initial revision of archive.
+*/
 
 #include <math.h>
 #include <assert.h>

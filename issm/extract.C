@@ -1,15 +1,32 @@
 /*
-   $Id$
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
 
-   $Log$
- * Revision 1.3  1995/09/11  15:23:42  jussi
- * Removed .bak files.
- *
-   Revision 1.2  1995/09/06 17:23:57  jussi
-   Updated names of linked variables.
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
 
-   Revision 1.1  1995/09/06 15:28:56  jussi
-   Initial revision of archive.
+/*
+  $Id$
+
+  $Log$
+  Revision 1.4  1995/09/11 17:33:15  jussi
+  Updated names of tapeToDisk and status to reflect the issm prefix.
+
+  Revision 1.3  1995/09/11  15:23:42  jussi
+  Removed .bak files.
+
+  Revision 1.2  1995/09/06 17:23:57  jussi
+  Updated names of linked variables.
+
+  Revision 1.1  1995/09/06 15:28:56  jussi
+  Initial revision of archive.
 */
 
 #include <iostream.h>
@@ -23,12 +40,10 @@
 #define X
 
 #ifdef X
-extern "C" {
 #include <tcl.h>
 #include <tk.h>
-}
 
-Tcl_Interp *globalInterp = 0;
+static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 

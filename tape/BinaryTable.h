@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  University of Wisconsin at Madison
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 20:26:53  jussi
+  Added CVS header.
+*/
 
 #ifndef BINTABLE_H
 #define BINTABLE_H
@@ -11,7 +28,6 @@
 #endif
 
 #include <iostream.h>
-
 
 // a generic sorted table with binary search interface
 
@@ -41,7 +57,6 @@ class HashTable {
 		 int numBuckets);            // user-provided hash function
 };
 
-
 // Construct hash table. Allocate memory for hash table and
 // initialize its elements.
 
@@ -58,7 +73,6 @@ HashTable<Index,Value>::HashTable(int tableSz,
   for(int i = 0; i < tableSize; i++)
     ht[i] = NULL;
 }
-
 
 // Insert entry into hash table mapping Index to Value.
 // Returns 0 if OK, an error code otherwise.
@@ -85,7 +99,6 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
 
   return 0;
 }
-
 
 // Check if Index is currently in the hash table. If so, return
 // corresponding value and OK status (0). Otherwise return -1.
@@ -114,7 +127,6 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 
   return -1;
 }
-
 
 // A function which allows duplicate Indices to be retrieved
 // iteratively. The first match is returned in next if current
@@ -152,7 +164,6 @@ int HashTable<Index,Value>::getNext(Index &index, void *current,
   return -1;
 }
 
-
 // Delete Index entry from hash table. Return OK (0) if index was found.
 // Else return -1.
 
@@ -183,7 +194,6 @@ int HashTable<Index,Value>::remove(Index &index)
   return -1;
 }
 
-
 // Clear hash table by deallocating hash buckets in table.
 
 template <class Index, class Value>
@@ -201,7 +211,6 @@ int HashTable<Index,Value>::clear()
   return 0;
 }
 
-
 // Delete hash table by deallocating hash buckets in table and then
 // deleting table itself.
 
@@ -211,7 +220,6 @@ HashTable<Index,Value>::~HashTable()
   clear();
   delete ht;
 }
-
 
 #ifdef DEBUGHASH
 // Dump hash table contents.
