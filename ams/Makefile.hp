@@ -17,24 +17,25 @@ MapClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 MapClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+MapClassInfo.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
+MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-MapClassInfo.o: /usr/include/sys/shm.h /usr/include/errno.h
-MapClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
-MapClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-MapClassInfo.o: /usr/include/limits.h /usr/include/sys/param.h
+MapClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+MapClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+MapClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 MapClassInfo.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 MapClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
 MapClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
@@ -59,6 +60,7 @@ ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
 ams.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics.new/MapInterpClassInfo.h
@@ -71,12 +73,12 @@ ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 ams.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 ams.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
-ams.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/sys/stat.h
-ams.o: ../graphics.new/machdep.h /usr/include/limits.h
-ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-ams.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h /usr/include/netdb.h
+ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
+ams.o: /usr/include/limits.h /usr/include/sys/stat.h
+ams.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+ams.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+ams.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+ams.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h

@@ -22,8 +22,8 @@ Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 Templates.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 Templates.o: /usr/include/sys/shm.h /usr/include/errno.h
 Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
-Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-Templates.o: /usr/include/limits.h /usr/include/sys/param.h
+Templates.o: /usr/include/limits.h /usr/include/sys/stat.h
+Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 Templates.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 Templates.o: /usr/include/sys/time.h /usr/include/machine/spl.h
 Templates.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h

@@ -24,8 +24,8 @@ Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 Templates.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 Templates.o: /usr/include/errno.h /usr/include/sys/errno.h
-Templates.o: /usr/include/assert.h /usr/include/sys/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/limits.h
+Templates.o: /usr/include/assert.h /usr/include/limits.h
+Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
 Templates.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 Templates.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 Templates.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h

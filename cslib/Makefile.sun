@@ -23,7 +23,7 @@ ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
 ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ClientServer.o: ../graphics/Compress.h
+ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 client.o: /usr/include/stdio.h /usr/include/stdlib.h
 client.o: /usr/include/sys/stdtypes.h /usr/include/string.h ClientServer.h
 client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -39,6 +39,8 @@ client.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 client.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 client.o: ../graphics/WindowRep.h ../graphics/Transform.h
 client.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+client.o: ../graphics/DevError.h /usr/include/errno.h
+client.o: /usr/include/sys/errno.h
 server.o: /usr/include/stdio.h /usr/include/stdlib.h
 server.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 server.o: /usr/include/assert.h ClientServer.h /s/tcl/include/tcl.h
@@ -55,4 +57,6 @@ server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 server.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 server.o: ../graphics/WindowRep.h ../graphics/Transform.h
 server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-server.o: ../graphics/DualWindowRep.h ../graphics/PSDisplay.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
+server.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
+server.o: ../graphics/PSDisplay.h

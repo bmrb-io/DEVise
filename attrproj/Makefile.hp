@@ -24,8 +24,8 @@ ApParseCat.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 ApParseCat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ApParseCat.o: /usr/include/sys/shm.h /usr/include/errno.h
 ApParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-ApParseCat.o: /usr/include/limits.h /usr/include/sys/param.h
+ApParseCat.o: /usr/include/limits.h /usr/include/sys/stat.h
+ApParseCat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 ApParseCat.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 ApParseCat.o: /usr/include/sys/time.h /usr/include/machine/spl.h
 ApParseCat.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -54,8 +54,8 @@ ApParseCat2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 ApParseCat2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ApParseCat2.o: /usr/include/sys/shm.h /usr/include/errno.h
 ApParseCat2.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat2.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-ApParseCat2.o: /usr/include/limits.h /usr/include/sys/param.h
+ApParseCat2.o: /usr/include/limits.h /usr/include/sys/stat.h
+ApParseCat2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 ApParseCat2.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 ApParseCat2.o: /usr/include/sys/time.h /usr/include/machine/spl.h
 ApParseCat2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -86,8 +86,8 @@ AttrProj.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 AttrProj.o: /usr/include/sys/shm.h /usr/include/errno.h
 AttrProj.o: /usr/include/sys/errno.h /usr/include/assert.h
-AttrProj.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj.o: /usr/include/limits.h /usr/include/sys/param.h
+AttrProj.o: /usr/include/limits.h /usr/include/sys/stat.h
+AttrProj.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 AttrProj.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 AttrProj.o: /usr/include/sys/time.h /usr/include/machine/spl.h
 AttrProj.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -108,8 +108,8 @@ AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 AttrProj2.o: /usr/include/sys/shm.h /usr/include/errno.h
 AttrProj2.o: /usr/include/sys/errno.h /usr/include/assert.h
-AttrProj2.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj2.o: /usr/include/limits.h /usr/include/sys/param.h
+AttrProj2.o: /usr/include/limits.h /usr/include/sys/stat.h
+AttrProj2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 AttrProj2.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 AttrProj2.o: /usr/include/sys/time.h /usr/include/machine/spl.h
 AttrProj2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h

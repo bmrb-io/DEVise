@@ -5,28 +5,28 @@ depend:
 # DO NOT DELETE
 
 ClientServer.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ClientServer.o: /usr/include/stdlib.h /usr/include/string.h
-ClientServer.o: /usr/include/errno.h /usr/include/sys/errno.h
-ClientServer.o: /usr/include/unistd.h /usr/include/sys/types.h
-ClientServer.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ClientServer.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ClientServer.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
-ClientServer.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ClientServer.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ClientServer.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ClientServer.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-ClientServer.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-ClientServer.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-ClientServer.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-ClientServer.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-ClientServer.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-ClientServer.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-ClientServer.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-ClientServer.o: /usr/include/sys/byteorder.h /s/tcl/include/tcl.h
-ClientServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
-ClientServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-ClientServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-ClientServer.o: ClientServer.h ../graphics/Display.h
+ClientServer.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+ClientServer.o: /usr/include/string.h /usr/include/errno.h
+ClientServer.o: /usr/include/sys/errno.h /usr/include/unistd.h
+ClientServer.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ClientServer.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ClientServer.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ClientServer.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+ClientServer.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ClientServer.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ClientServer.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ClientServer.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+ClientServer.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+ClientServer.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
+ClientServer.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ClientServer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ClientServer.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+ClientServer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ClientServer.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+ClientServer.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
+ClientServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ClientServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+ClientServer.o: /usr/include/stddef.h ClientServer.h ../graphics/Display.h
 ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
 ClientServer.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -36,10 +36,11 @@ ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
 ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ClientServer.o: ../graphics/Compress.h
+ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-client.o: /usr/include/stdlib.h /usr/include/string.h ClientServer.h
-client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+client.o: /usr/include/string.h ClientServer.h /s/tcl/include/tcl.h
+client.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 client.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 client.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 client.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -54,23 +55,26 @@ client.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
 client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
 client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-client.o: ../graphics/Compress.h
+client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+client.o: /usr/include/sys/errno.h
 server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
-server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-server.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
-server.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-server.o: /usr/include/sys/select.h /usr/include/sys/time.h
-server.o: /usr/include/sys/time.h /s/X11/include/X11/X.h
-server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-server.o: /usr/include/stddef.h ../graphics/Display.h
-server.o: ../graphics/DeviseTypes.h /usr/include/values.h
-server.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
-server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-server.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/unistd.h
+server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+server.o: /usr/include/string.h /usr/include/assert.h ClientServer.h
+server.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+server.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+server.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+server.o: /usr/include/sys/time.h /usr/include/sys/time.h
+server.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+server.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
+server.o: /usr/include/math.h /usr/include/floatingpoint.h
+server.o: /usr/include/sys/ieeefp.h ../graphics/Color.h
+server.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 server.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
 server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
 server.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
 server.o: ../graphics/PSDisplay.h

@@ -25,7 +25,8 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/WindowRep.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevisePixmap.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -50,17 +51,14 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/param.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/machine/param.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/devaddr.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/signal.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/vm/faultcode.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/machine/mmu.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/debug/debug.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/mon/sunromvec.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/mon/openprom.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/mon/obpdefs.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/stat.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttychars.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttydev.h
@@ -108,6 +106,8 @@ CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Transform.h
 CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleEffMappingClassInfo.o: /usr/include/sys/errno.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -128,16 +128,12 @@ CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 CycleEffMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
 CycleEffMappingClassInfo.o: /usr/include/machine/param.h
+CycleEffMappingClassInfo.o: /usr/include/machine/devaddr.h
 CycleEffMappingClassInfo.o: /usr/include/sys/signal.h
 CycleEffMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleEffMappingClassInfo.o: /usr/include/machine/mmu.h
-CycleEffMappingClassInfo.o: /usr/include/debug/debug.h
-CycleEffMappingClassInfo.o: /usr/include/mon/sunromvec.h
-CycleEffMappingClassInfo.o: /usr/include/mon/openprom.h
-CycleEffMappingClassInfo.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-CycleEffMappingClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
-CycleEffMappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-CycleEffMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
+CycleEffMappingClassInfo.o: /usr/include/machine/mmu.h /usr/include/assert.h
+CycleEffMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+CycleEffMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 CycleEffMappingClassInfo.o: /usr/include/sys/ioctl.h
 CycleEffMappingClassInfo.o: /usr/include/sys/ttychars.h
 CycleEffMappingClassInfo.o: /usr/include/sys/ttydev.h
@@ -183,6 +179,8 @@ CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Transform.h
 CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleOccMappingClassInfo.o: /usr/include/sys/errno.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -203,16 +201,12 @@ CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 CycleOccMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
 CycleOccMappingClassInfo.o: /usr/include/machine/param.h
+CycleOccMappingClassInfo.o: /usr/include/machine/devaddr.h
 CycleOccMappingClassInfo.o: /usr/include/sys/signal.h
 CycleOccMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleOccMappingClassInfo.o: /usr/include/machine/mmu.h
-CycleOccMappingClassInfo.o: /usr/include/debug/debug.h
-CycleOccMappingClassInfo.o: /usr/include/mon/sunromvec.h
-CycleOccMappingClassInfo.o: /usr/include/mon/openprom.h
-CycleOccMappingClassInfo.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-CycleOccMappingClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
-CycleOccMappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-CycleOccMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
+CycleOccMappingClassInfo.o: /usr/include/machine/mmu.h /usr/include/assert.h
+CycleOccMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+CycleOccMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 CycleOccMappingClassInfo.o: /usr/include/sys/ioctl.h
 CycleOccMappingClassInfo.o: /usr/include/sys/ttychars.h
 CycleOccMappingClassInfo.o: /usr/include/sys/ttydev.h
@@ -265,6 +259,8 @@ CycleSuspendedMappingClassInfo.o: ../graphics/WindowRep.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Transform.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Compress.h
+CycleSuspendedMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/errno.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -293,19 +289,13 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/param.h
 CycleSuspendedMappingClassInfo.o: /usr/include/machine/param.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/devaddr.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/signal.h
 CycleSuspendedMappingClassInfo.o: /usr/include/vm/faultcode.h
 CycleSuspendedMappingClassInfo.o: /usr/include/machine/mmu.h
-CycleSuspendedMappingClassInfo.o: /usr/include/debug/debug.h
-CycleSuspendedMappingClassInfo.o: /usr/include/mon/sunromvec.h
-CycleSuspendedMappingClassInfo.o: /usr/include/mon/openprom.h
-CycleSuspendedMappingClassInfo.o: /usr/include/mon/obpdefs.h
-CycleSuspendedMappingClassInfo.o: /usr/include/errno.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/errno.h
-CycleSuspendedMappingClassInfo.o: /usr/include/assert.h
+CycleSuspendedMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/ttychars.h
@@ -357,7 +347,8 @@ CycleWorkingMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleWorkingMappingClassInfo.o: ../graphics/WindowRep.h
 CycleWorkingMappingClassInfo.o: ../graphics/Transform.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevisePixmap.h
-CycleWorkingMappingClassInfo.o: ../graphics/Compress.h
+CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+CycleWorkingMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -382,17 +373,14 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/param.h
 CycleWorkingMappingClassInfo.o: /usr/include/machine/param.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/devaddr.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/signal.h
 CycleWorkingMappingClassInfo.o: /usr/include/vm/faultcode.h
 CycleWorkingMappingClassInfo.o: /usr/include/machine/mmu.h
-CycleWorkingMappingClassInfo.o: /usr/include/debug/debug.h
-CycleWorkingMappingClassInfo.o: /usr/include/mon/sunromvec.h
-CycleWorkingMappingClassInfo.o: /usr/include/mon/openprom.h
-CycleWorkingMappingClassInfo.o: /usr/include/mon/obpdefs.h
-CycleWorkingMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/stat.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/ttychars.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/ttydev.h
@@ -438,9 +426,11 @@ HostMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 HostMappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 HostMappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 HostMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+HostMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+HostMappingClassInfo.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
+HostMappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+HostMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+HostMappingClassInfo.o: ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
 HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
@@ -455,14 +445,11 @@ HostMappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 HostMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 HostMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 HostMappingClassInfo.o: /usr/include/sys/param.h /usr/include/machine/param.h
+HostMappingClassInfo.o: /usr/include/machine/devaddr.h
 HostMappingClassInfo.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-HostMappingClassInfo.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-HostMappingClassInfo.o: /usr/include/mon/sunromvec.h
-HostMappingClassInfo.o: /usr/include/mon/openprom.h
-HostMappingClassInfo.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-HostMappingClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
-HostMappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-HostMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
+HostMappingClassInfo.o: /usr/include/machine/mmu.h /usr/include/assert.h
+HostMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 HostMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 HostMappingClassInfo.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 HostMappingClassInfo.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
@@ -498,38 +485,38 @@ MappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 MappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+MappingClassInfo.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
+MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+MappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+MappingClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+MappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+MappingClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MappingClassInfo.o: ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 MappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 MappingClassInfo.o: /usr/include/sys/param.h /usr/include/machine/param.h
-MappingClassInfo.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-MappingClassInfo.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-MappingClassInfo.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-MappingClassInfo.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-MappingClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
+MappingClassInfo.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+MappingClassInfo.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+MappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 MappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-MappingClassInfo.o: /usr/include/limits.h /usr/include/sys/wait.h
-MappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-MappingClassInfo.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-MappingClassInfo.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-MappingClassInfo.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-MappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/socket.h
-MappingClassInfo.o: /usr/include/netinet/in.h ../graphics.new/UpdateLink.h
-MappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-MappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+MappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+MappingClassInfo.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+MappingClassInfo.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+MappingClassInfo.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+MappingClassInfo.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+MappingClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+MappingClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+MappingClassInfo.o: ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
@@ -549,19 +536,18 @@ Message.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 Message.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 Message.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 Message.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-Message.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-Message.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-Message.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-Message.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-Message.o: /usr/include/errno.h /usr/include/sys/errno.h
-Message.o: /usr/include/assert.h /usr/include/sys/stat.h
-Message.o: ../graphics.new/machdep.h /usr/include/limits.h
-Message.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-Message.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Message.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Message.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Message.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Message.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Message.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+Message.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Message.o: /usr/include/machine/mmu.h /usr/include/errno.h
+Message.o: /usr/include/sys/errno.h /usr/include/assert.h
+Message.o: /usr/include/limits.h /usr/include/sys/stat.h
+Message.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
+Message.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Message.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Message.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Message.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Message.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Message.o: /usr/include/netinet/in.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataCycle.o: /usr/include/sys/stdtypes.h TDataCycle.h
 TDataCycle.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
@@ -576,24 +562,23 @@ TDataCycle.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 TDataCycle.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 TDataCycle.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataCycle.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataCycle.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataCycle.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-TDataCycle.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-TDataCycle.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-TDataCycle.o: /usr/include/sys/errno.h /usr/include/assert.h
+TDataCycle.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataCycle.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataCycle.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataCycle.o: /usr/include/assert.h /usr/include/limits.h
 TDataCycle.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-TDataCycle.o: /usr/include/limits.h /usr/include/sys/time.h
-TDataCycle.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataCycle.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataCycle.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataCycle.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataCycle.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataCycle.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataCycle.o: /usr/include/netinet/in.h ../graphics.new/FileIndex.h
-TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
-TDataCycle.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataCycle.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataCycle.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataCycle.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataCycle.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataCycle.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataCycle.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataCycle.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataCycle.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataCycle.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataCycle.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h CycleRec.h
+TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataCycle.o: /usr/include/ctype.h /usr/include/math.h
+TDataCycle.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataHost.o: /usr/include/sys/stdtypes.h TDataHost.h
 TDataHost.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
@@ -608,24 +593,23 @@ TDataHost.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 TDataHost.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 TDataHost.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataHost.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataHost.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataHost.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-TDataHost.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-TDataHost.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-TDataHost.o: /usr/include/sys/errno.h /usr/include/assert.h
+TDataHost.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataHost.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataHost.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataHost.o: /usr/include/assert.h /usr/include/limits.h
 TDataHost.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-TDataHost.o: /usr/include/limits.h /usr/include/sys/time.h
-TDataHost.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataHost.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataHost.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataHost.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataHost.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataHost.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataHost.o: /usr/include/netinet/in.h ../graphics.new/FileIndex.h
-TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
-TDataHost.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataHost.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataHost.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataHost.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataHost.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataHost.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataHost.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataHost.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataHost.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataHost.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataHost.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h HostRec.h
+TDataHost.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataHost.o: /usr/include/ctype.h /usr/include/math.h
+TDataHost.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataMulti.o: /usr/include/sys/stdtypes.h TDataMulti.h
 TDataMulti.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
@@ -640,24 +624,23 @@ TDataMulti.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 TDataMulti.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 TDataMulti.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataMulti.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataMulti.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataMulti.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-TDataMulti.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-TDataMulti.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-TDataMulti.o: /usr/include/sys/errno.h /usr/include/assert.h
+TDataMulti.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataMulti.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataMulti.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataMulti.o: /usr/include/assert.h /usr/include/limits.h
 TDataMulti.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-TDataMulti.o: /usr/include/limits.h /usr/include/sys/time.h
-TDataMulti.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataMulti.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataMulti.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataMulti.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataMulti.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataMulti.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataMulti.o: /usr/include/netinet/in.h ../graphics.new/FileIndex.h
-TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
-TDataMulti.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataMulti.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataMulti.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
+TDataMulti.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataMulti.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataMulti.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataMulti.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataMulti.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataMulti.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataMulti.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataMulti.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h MultiRec.h
+TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataMulti.o: /usr/include/ctype.h /usr/include/math.h
+TDataMulti.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/floatingpoint.h
 disp.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
 disp.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -670,6 +653,7 @@ disp.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 disp.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/ColorMgr.h
 disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+disp.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 disp.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 disp.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 disp.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
@@ -683,13 +667,11 @@ disp.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 disp.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-disp.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-disp.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-disp.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-disp.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-disp.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
-disp.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-disp.o: /usr/include/limits.h /usr/include/sys/wait.h
+disp.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+disp.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+disp.o: /usr/include/machine/mmu.h /usr/include/assert.h
+disp.o: /usr/include/limits.h /usr/include/sys/stat.h
+disp.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 disp.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 disp.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 disp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h

@@ -29,8 +29,8 @@ DevRead.o: ../graphics/Exit.h ../graphics.new/TData.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 DevRead.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
-DevRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
-DevRead.o: ../graphics.new/machdep.h /usr/include/limits.h
+DevRead.o: /usr/include/sys/errno.h /usr/include/limits.h
+DevRead.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
 DevRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 DevRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 DevRead.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
