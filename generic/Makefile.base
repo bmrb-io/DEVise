@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1997/04/09 18:24:22  wenger
+#  Fixed various makefiles (removed extra -gstabs flags, etc.);
+#  setup script now links client.tcl into all cslib directories;
+#  added 24 point font to available sizes in font selection GUI.
+#
 #  Revision 1.27  1997/04/04 15:44:36  wenger
 #  Set up makefiles to allow making a 'profile' version of Devise.
 #
@@ -59,6 +64,8 @@ LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
 	-lgraphicsnew -ldte \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
+
+TEST_LDFLAGS = -L../graphics -lgraphics -lX11
 
 # Set up for profiling.
 ifneq ($(DEV_PROFILE),)
@@ -143,8 +150,9 @@ deviseb.pure: deviseb.o $(CLIENTLIB)
 	$(PURIFY) $(PURE_OPT) $(DEVISEB)
 
 
-TESTWS = $(CC) -o $@ testWindowSpeed.o CompDate.o $(ARCH_LDFLAGS) \
-        -L../graphics.new -lmonolith $(LDFLAGS)
+TESTWS = $(CC) -o $@ testWindowSpeed.o ../graphics.new/MapIntToInt.o \
+	../graphics.new/Version.o CompDate.o $(ARCH_LDFLAGS) \
+        -L../graphics.new -lmonolith $(TEST_LDFLAGS)
 
 testWindowSpeed: testWindowSpeed.o $(ALLLIBS) $(MONOLITHLIB)
 	$(FORCE_DATE)

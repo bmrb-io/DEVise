@@ -15,13 +15,16 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/11/15 21:30:07  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
 
-#include "TkControl.h"
+#include "TestControl.h"
 #include "Display.h"
 #include "WindowRep.h"
 
@@ -72,7 +75,7 @@ void measure(WindowRep *win, char *name, int type)
 
 int main(int argc, char **argv)
 {
-    ControlPanel::_controlPanel = new TkControlPanel;
+    ControlPanel::_controlPanel = new TestControlPanel;
 
     DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
     WindowRep *win = disp->CreateWindowRep("test", 0.2, 0.2, .3, .3);
@@ -99,3 +102,20 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+/* The following are dummies just to catch the references. */
+
+int RTreeFile;
+
+void initialize_system(const char FileName[],
+                 int  &RTreeFile,
+                 int  VolumeSize)
+{
+}
+
+void shutdown_system(const char FileName[],
+               int  RTreeFile,
+               int  VolumeSize)
+{
+}
+

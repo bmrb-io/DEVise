@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/01 19:49:08  wenger
+  Got the testWindowRep program working again.
+
   Revision 1.5  1996/08/04 21:07:47  beyer
   changed key handling
 
@@ -35,7 +38,7 @@
 #include "Display.h"
 #include "WindowRep.h"
 #include "Init.h"
-#include "Control.h"
+#include "TestControl.h"
 
 class MyWinCallback: public WindowRepCallback{
 public:
@@ -113,30 +116,8 @@ void shutdown_system(const char FileName[],
 {
 }
 
-class ControlPanelDum : public ControlPanel {
-public:
-  virtual void SelectView(View *view) {}
-  virtual void SetBusy() {}
-  virtual void SetIdle() {}
-  virtual Boolean IsBusy() { return false; }
-  virtual int ReturnVal(u_short flag, char *result) { return 0; }
-  virtual int ReturnVal(int argc, char **argv) { return 0; }
-  virtual GroupDir *GetGroupDir() { return NULL; }
-  virtual MapInterpClassInfo *GetInterpProto() { return NULL; }
-  virtual int AddReplica(char *hostName, int port) { return 0; }
-  virtual int RemoveReplica(char *hostName, int port) { return 0; }
-  virtual void OpenDataChannel(int port) {}
-  virtual int getFd() { return 0; }
-
-protected:
-  virtual void SubclassInsertDisplay(DeviseDisplay *disp,
-                                     Coord x, Coord y,
-                                     Coord w, Coord h) {}
-  virtual void SubclassDoInit() {}
-};
-
 ControlPanel *
 GetNewControl()
 {
-  return new ControlPanelDum;
+  return new TestControlPanel;
 }
