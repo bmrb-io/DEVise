@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1999/06/08 20:29:58  wenger
+#  Fixed split.
+#
 #  Revision 1.2  1999/02/17 18:48:54  wenger
 #  Made this script work even if the devised command has a very long path.
 #
@@ -33,7 +36,10 @@
 if ($#ARGV >= 0) {
     $pattern = "devised -port $ARGV[0]";
     # ww option forces extra-wide output
-    open PS, "ps -axww >& 1 |" or die "can't fork: $!";
+    #TEMP -ww option in ps goofs things up; but without it we may goof
+    # up if path is too long
+    #TEMPopen PS, "ps -axww >& 1 |" or die "can't fork: $!";
+    open PS, "ps -ax >& 1 |" or die "can't fork: $!";
 } else {
     $pattern = "devised";
     # c option prevents path from being shown as part of command name
@@ -43,7 +49,10 @@ if ($#ARGV >= 0) {
 while (<PS>) {
 #    print "line: ";
 #    print;
-    if ($_ =~ /$pattern/) {
+    # Avoid killing ourself!
+    if ((!($_ =~ /kill_devised2/)) and $_ =~ /$pattern/) {
+	print "Killing $_";
+
 	@words = split /  */, $_;
 	$pid = @words[1];
 

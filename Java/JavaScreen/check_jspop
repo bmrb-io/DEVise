@@ -1,0 +1,100 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This is a script to check whether the jspop is running, and restart
+#  it if it's not.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+$foundJspop = 0;
+$foundDevised = 0;
+
+
+# ww option forces extra-wide output
+#TEMP -ww option in ps goofs things up; but without it we may goof
+# up if path is too long
+#TEMP open PS, "ps -axww >& 1 |" or die "can't fork: $!";
+open PS, "ps -ax >& 1 |" or die "can't fork: $!";
+
+while (<PS>) {
+  if ($_ =~ /java *jspop/) {
+    $foundJspop = 1;
+  }
+  if ($_ =~ /devised -port/) {
+    $foundDevised = 1;
+  }
+}
+
+close PS;
+
+
+if (!$foundJspop) {
+  $curTime = localtime(time());
+  print "No jspop process found (at $curTime)\n";
+  print "Restarting jspop\n";
+
+  # Make sure we kill off any stray deviseds.
+  system("kill_devised2");
+  SaveLogs();
+  system("jspop &");
+} elsif (!$foundDevised) {
+  $curTime = localtime(time());
+  print "No devised process found (at $curTime)\n";
+  print "Restarting jspop\n";
+
+  # If there are no deviseds running, that probably means there are problems
+  # with the jspop, so kill it and start over.
+  KillJspop();
+  SaveLogs();
+  system("jspop &");
+}
+
+#-----------------------------------------------------------
+
+sub SaveLogs {
+  $timestamp = time();
+  print "Saving log files as jspop.out.$timestamp and devised.out.$timestamp\n";
+
+  # Perl's rename() function doesn't seem to work!?!
+  @args = ("mv", "jspop.out", "jspop.out.$timestamp");
+  0xffff & system(@args) == 0 or print "Can't rename jspop.out ($?)\n";
+
+  @args = ("mv", "devised.out", "devised.out.$timestamp");
+  0xffff & system(@args) == 0 or print "Can't rename devised.out ($?)\n";
+}
+
+#-----------------------------------------------------------
+
+sub KillJspop {
+  open PS, "ps -axww >& 1 |" or die "can't fork: $!";
+
+  while (<PS>) {
+    # Might as well kill Xvfb, too, in case it has any problems.
+    if ($_ =~ /java *jspop/ or $_ =~ /Xvfb/) {
+      print "Killing $_";
+      $foundJspop = 1;
+      @words = split /  */, $_;
+      $pid = @words[1];
+      system("kill $pid");
+    }
+  }
+
+  close PS;
+}
