@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/07 20:46:27  jussi
+  Commented out InitTimer() because timer functions are currently
+  not used, and sometimes a SIGALRM gets through unhandled, causing
+  image to exit.
+
   Revision 1.2  1995/09/05 21:12:52  jussi
   Added/update CVS header.
 */
@@ -79,7 +84,7 @@ Boolean Init::_convertGData = true; /* true if TData is converted into G
 									while system is idle */
 Boolean Init::_abort = false; /* TRUE if abort instead of exit() on program 
 							exit */
-Boolean Init::_iconify= true; /* TRUE if windows are iconified when
+Boolean Init::_iconify= false; /* TRUE if windows are iconified when
 							restoring a session */
 int Init::_gdataPages = -1; /* max # of disk pages for gdata */
 char *Init::_progName;	/* name of program */
